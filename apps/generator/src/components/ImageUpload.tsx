@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { Button } from './Button'
 
 export function ImageUpload() {
@@ -67,7 +68,14 @@ export function ImageUpload() {
         <div className="space-y-2">
           <div className="text-sm text-green-600">Upload successful!</div>
           <div className="border rounded p-2">
-            <img src={uploadedUrl} alt="Uploaded" className="w-full h-auto rounded" />
+            <div className="relative w-full h-48">
+              <Image 
+                src={uploadedUrl} 
+                alt="Uploaded" 
+                fill
+                className="object-contain rounded"
+              />
+            </div>
           </div>
         </div>
       )}
