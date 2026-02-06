@@ -35,9 +35,15 @@ function parseArgs() {
     const key = args[i].replace('--', '');
     const value = args[i + 1];
     if (key === 'dir') config.dir = value;
-    if (key === 'quality') config.quality = parseInt(value, 10);
+    if (key === 'quality') {
+      const parsed = parseInt(value, 10);
+      if (!Number.isNaN(parsed)) config.quality = parsed;
+    }
     if (key === 'format') config.format = value;
-    if (key === 'maxWidth') config.maxWidth = parseInt(value, 10);
+    if (key === 'maxWidth') {
+      const parsed = parseInt(value, 10);
+      if (!Number.isNaN(parsed)) config.maxWidth = parsed;
+    }
   }
 
   return config;

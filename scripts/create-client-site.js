@@ -91,12 +91,12 @@ function main() {
   console.log(`Output: ${outputDir}`);
 
   const replacements = {
-    '{{BUSINESS_NAME}}': config.name,
-    '{{BUSINESS_TYPE}}': config.type,
-    '{{BUSINESS_PHONE}}': config.phone || '(555) 000-0000',
-    '{{BUSINESS_EMAIL}}': config.email || 'contact@example.com',
-    '{{BUSINESS_ADDRESS}}': config.address || '123 Main St',
-    '{{BUSINESS_DESCRIPTION}}': config.description || `Professional ${config.type} services`,
+    'PLACEHOLDER_BUSINESS_NAME': config.name,
+    'PLACEHOLDER_BUSINESS_TYPE': config.type,
+    'PLACEHOLDER_BUSINESS_PHONE': config.phone || '(555) 000-0000',
+    'PLACEHOLDER_BUSINESS_EMAIL': config.email || 'contact@example.com',
+    'PLACEHOLDER_BUSINESS_ADDRESS': config.address || '123 Main St',
+    'PLACEHOLDER_BUSINESS_DESCRIPTION': config.description || `Professional ${config.type} services`,
   };
 
   copyDirectory(TEMPLATE_DIR, outputDir, replacements);

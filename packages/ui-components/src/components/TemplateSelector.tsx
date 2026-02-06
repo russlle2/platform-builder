@@ -27,9 +27,10 @@ export function TemplateSelector({
   selectedId,
   onSelect,
 }: TemplateSelectorProps) {
-  const [currentIndex, setCurrentIndex] = React.useState(
-    templates.findIndex((t) => t.id === selectedId) || 0
-  );
+  const [currentIndex, setCurrentIndex] = React.useState(() => {
+    const idx = templates.findIndex((t) => t.id === selectedId);
+    return idx !== -1 ? idx : 0;
+  });
 
   const goLeft = () => {
     const newIndex = currentIndex > 0 ? currentIndex - 1 : templates.length - 1;
