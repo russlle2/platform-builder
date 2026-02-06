@@ -67,7 +67,7 @@ function copyDirectory(src, dest, replacements) {
       let content = fs.readFileSync(srcPath, 'utf8');
 
       for (const [placeholder, value] of Object.entries(replacements)) {
-        content = content.replace(new RegExp(placeholder.replace(/[{}]/g, '\\$&'), 'g'), value);
+        content = content.split(placeholder).join(value);
       }
 
       fs.writeFileSync(destPath, content);
