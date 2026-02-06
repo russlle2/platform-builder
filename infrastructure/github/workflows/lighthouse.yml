@@ -1,0 +1,47 @@
+name: Lighthouse Audit
+
+on:
+  deployment_status:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: 'URL to audit'
+        required: true
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || github.event.deployment_status.state == 'success'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Determine URL
+        id: url
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "target=${{ github.event.inputs.url }}" >> $GITHUB_OUTPUT
+          else
+            echo "target=${{ github.event.deployment_status.target_url }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run Lighthouse
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: ${{ steps.url.outputs.target }}
+          configPath: .lighthouserc.json
+          uploadArtifacts: true
+
+      - name: Check Performance Score
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const results = JSON.parse(fs.readFileSync('.lighthouseci/manifest.json', 'utf8'));
+            for (const result of results) {
+              const summary = JSON.parse(fs.readFileSync(result.jsonPath, 'utf8'));
+              const perfScore = summary.categories.performance.score * 100;
+              console.log(`Performance score: ${perfScore}`);
+              if (perfScore < 90) {
+                core.setFailed(`Performance score ${perfScore} is below threshold of 90`);
+              }
+            }

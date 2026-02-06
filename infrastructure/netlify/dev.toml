@@ -1,0 +1,19 @@
+# Development Environment Configuration
+[build]
+  base = "apps/generator-app"
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
+  NEXT_PUBLIC_ENV = "development"
+  NEXT_PUBLIC_API_URL = "https://dev-api.yourdomain.com"
+  NEXT_PUBLIC_SITE_URL = "https://dev.yourdomain.com"
+
+[context.deploy-preview]
+  command = "npm run build"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"

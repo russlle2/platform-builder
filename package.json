@@ -1,0 +1,26 @@
+{
+  "name": "platform-builder",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Industrial-premium platform for HVAC and Plumbing professionals to build their web presence",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=apps/generator-app",
+    "build": "npm run build --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "optimize-images": "node scripts/optimize-images.js",
+    "create-client-site": "node scripts/create-client-site.js",
+    "sync-content": "node scripts/sync-content.js"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

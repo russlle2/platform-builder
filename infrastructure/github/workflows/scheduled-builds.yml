@@ -1,0 +1,41 @@
+name: Scheduled Builds
+
+on:
+  schedule:
+    # Run nightly at 2:00 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  rebuild-sites:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Rebuild all client sites
+        run: npm run build
+
+      - name: Regenerate sitemaps
+        run: node scripts/sync-content.js
+
+      - name: Sync CMS content
+        run: node scripts/sync-content.js --sync
+
+      - name: Deploy
+        uses: nwtgck/actions-netlify@v3
+        with:
+          publish-dir: apps/generator-app/.next
+          production-deploy: true
+          netlify-config-path: infrastructure/netlify/production.toml
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
