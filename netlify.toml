@@ -1,0 +1,23 @@
+# Generator App Deployment
+[build]
+  base = "apps/generator"
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Build settings
+[context.production]
+  command = "npm ci && npm run generator:build"
+
+[context.deploy-preview]
+  command = "npm ci && npm run generator:build"
+
+[context.branch-deploy]
+  command = "npm ci && npm run generator:build"
