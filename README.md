@@ -1,203 +1,352 @@
-# Platform Builder
+# Platform Builder - Industrial-Premium HVAC & Plumbing Platform
 
-A comprehensive monorepo for a website-builder platform with a generator app, client-site template, shared UI components, utilities, and deployment infrastructure.
+An advanced, industrial-premium platform where HVAC and Plumbing professionals can instantly see, shape, and understand their website without learning tools, without confusion, and without committing until they approve.
 
-## 🏗️ Project Structure
+## 🏗️ Monorepo Architecture
 
 ```
 platform-builder/
 ├── apps/
-│   ├── generator/          # Main website generator application (Next.js)
+│   ├── generator-app/          # Main dashboard, editor, wizard, pricing
 │   │   ├── src/
-│   │   │   ├── app/       # App router pages and layouts
-│   │   │   ├── components/ # Generator-specific components
-│   │   │   ├── store/     # Zustand state management
-│   │   │   └── lib/       # Utility functions
-│   │   └── public/        # Static assets
+│   │   │   ├── app/           # Next.js App Router pages
+│   │   │   │   ├── page.tsx           # Home with hero section
+│   │   │   │   ├── wizard/            # Live Build Wizard
+│   │   │   │   ├── pricing/           # Transparent pricing tiers
+│   │   │   │   ├── live-demo/         # Interactive demo
+│   │   │   │   ├── proof/             # Social proof gallery
+│   │   │   │   ├── archive/           # Template archive
+│   │   │   │   ├── builds/            # User builds dashboard
+│   │   │   │   └── api/upload/        # Image upload endpoint
+│   │   │   ├── components/    # React components
+│   │   │   │   ├── Navigation.tsx
+│   │   │   │   ├── ImageUploadWithOptimize.tsx
+│   │   │   │   ├── LivePreview.tsx
+│   │   │   │   └── TemplateSelector.tsx
+│   │   │   └── store/         # Zustand state management
+│   │   └── public/
+│   │       ├── images/        # Placeholder image paths
+│   │       └── uploads/       # User-uploaded images
 │   │
-│   └── client-site/       # Template for generated client websites
+│   └── client-template/        # Base template for generated sites
 │       ├── src/
-│       │   ├── app/       # Template pages
-│       │   └── components/ # Template components
-│       └── public/        # Static assets
+│       └── public/
 │
 ├── packages/
-│   ├── ui/                # Shared UI component library
+│   ├── ui-components/         # Shared React/Tailwind components
+│   │   └── src/components/
+│   ├── utils/                 # Shared utilities (SEO, routing)
 │   │   └── src/
-│   │       └── components/ # Button, Input, Card, Textarea, etc.
-│   │
-│   ├── utils/             # Shared utility functions
-│   │   └── src/          # Format, validation utilities
-│   │
-│   └── scripts/           # Build and deployment scripts
-│       └── src/          # CLI tools for building and deploying
+│   ├── image-optimizer/       # Sharp-based optimization pipeline
+│   │   └── src/index.ts
+│   └── scripts/               # Build and deployment scripts
+│       └── src/
 │
-└── .github/
-    └── workflows/         # CI/CD workflows
+├── infrastructure/
+│   ├── netlify/               # Multi-environment Netlify configs
+│   │   ├── dev.toml
+│   │   ├── staging.toml
+│   │   ├── production.toml
+│   │   └── netlify.toml
+│   ├── github/workflows/      # CI/CD GitHub Actions
+│   │   ├── deploy.yml             # Production deployment
+│   │   ├── preview.yml            # PR preview deployments
+│   │   ├── tests.yml              # Automated testing
+│   │   ├── lighthouse.yml         # Performance audits
+│   │   ├── optimize-images.yml    # Image optimization
+│   │   └── scheduled-builds.yml   # Nightly rebuilds
+│   └── scripts/               # Automation scripts
+│       ├── create-client-site.js
+│       ├── sync-content.js
+│       └── optimize-images.js
+│
+├── package.json               # Root workspace config
+└── .lighthouserc.json        # Lighthouse CI config
 ```
+
+## 🎨 Design System
+
+### Global Environment
+- **Background**: Aerial top-down HVAC condenser (90° vertical angle)
+- **Fan Motion**: Smooth Z-axis rotation illusion
+- **Lighting**: Industrial daylight with neutral-cool metal tones
+- **Persistence**: Background appears across all pages
+
+### Surface System
+- **Primary Surface**: Lacquered mahogany wood
+- **Finish**: High-gloss with real wood grain texture
+- **Usage**: Text blocks, cards, editor panels, previews, pricing
+
+### Color Palette
+```css
+--hvac-industrial-blue: #2563eb
+--hvac-metal-gray: #64748b
+--mahogany-primary: #3e1f1f
+--mahogany-gloss: #5a2e2e
+--text-bright-white: #ffffff (high contrast)
+```
+
+### Navigation
+- Persistent top navigation with high contrast
+- Items: Home, Live Demo, Editor, Pricing, Proof, Archive, Builds
+- Immediate hover feedback
+- Clear, direct navigation
 
 ## 🚀 Features
 
-### Generator App
-- **Drag-and-drop editor** for building websites
-- **Component library** with reusable elements
-- **State management** using Zustand
-- **Template browser** with pre-designed layouts
-- **Image upload API** with validation
-- **Real-time preview** of changes
+### Homepage
+- **Hero Section**: Mahogany plank with bold headline
+- **Headline**: "Skip the learning curve - Build Your HVAC And Plumbing Services Presence Like A Pro"
+- **Primary CTA**: "Reserve your spot"
+- **Scarcity Message**: "Limited to 30 active monthly members nationwide"
 
-### Client Site Template
-- **Responsive design** out of the box
-- **Multiple sections**: Hero, About, Services, Contact
-- **SEO-friendly** structure
-- **Customizable** components
+### Live Build Wizard
+- **Split Panel Layout**: Questions on left, live preview on right
+- **Step-Based Navigation**: No scrolling required
+- **Real-Time Updates**: Every change updates preview instantly
+- **Features**:
+  - Template switching with content preservation
+  - Accent color picker
+  - Font selection (heading/body)
+  - Image uploads (logo, hero, background, gallery)
+  - Auto-fill toggle for suggested content
+  - Service selection
 
-### Shared Packages
-- **@platform-builder/ui**: Reusable UI components (Button, Input, Card, Textarea)
-- **@platform-builder/utils**: Common utilities (formatting, validation, helpers)
-- **@platform-builder/scripts**: Build and deployment automation
+### Image Handling System
+1. **User Uploads**: Drag-and-drop, file picker, real-time preview
+2. **Optimize Toggle**: Optional Sharp optimization
+3. **User Library**: Account-based image storage (for logged-in users)
+4. **API Endpoints**:
+   - `POST /api/upload` - Upload images
+   - `GET /api/upload` - List user images
+   - `DELETE /api/upload?filename=xxx` - Delete images
+
+### Pricing Tiers
+- **Custom Build**: $499 (50/50 split, refund before approval)
+- **Entrepreneur**: $99/month
+- **Executive**: $399/month (Most Popular)
+- **CEO**: $999/month (Premium)
+
+### Template System
+- 9+ HVAC-relevant templates
+- 1080p media
+- Template switching preserves user data
+- Only layout/background changes
 
 ## 📦 Installation
 
 ```bash
-# Install dependencies for all workspaces
+# Install all workspace dependencies
 npm install
 
-# Install dependencies for a specific workspace
-npm install --workspace=apps/generator
+# Install dependencies for specific workspace
+npm install --workspace=apps/generator-app
 ```
 
 ## 🛠️ Development
 
 ```bash
-# Start the generator app in development mode
+# Start generator app
 npm run generator:dev
+# → http://localhost:3000
 
-# Start the client site in development mode
+# Start client template
 npm run client:dev
+# → http://localhost:3001
 
-# Run both apps simultaneously
-npm run dev
-```
-
-The generator app will be available at `http://localhost:3000`
-The client site will be available at `http://localhost:3001`
-
-## 🏗️ Building
-
-```bash
-# Build all apps and packages
+# Build all workspaces
 npm run build
 
-# Build specific app
-npm run generator:build
-npm run client:build
+# Run tests
+npm run test
 
-# Use the build script
-npx platform-build
+# Lint all workspaces
+npm run lint
 ```
 
-## 📝 Available Scripts
+## 🎨 Available Scripts
 
 ### Root Level
-- `npm run dev` - Start generator app in development mode
-- `npm run build` - Build all workspaces
-- `npm run lint` - Lint all workspaces
-- `npm run test` - Run tests in all workspaces
-- `npm run clean` - Clean node_modules and build artifacts
+```bash
+npm run dev                  # Start generator-app
+npm run build                # Build all workspaces
+npm run lint                 # Lint all workspaces
+npm run test                 # Test all workspaces
+npm run clean                # Clean build artifacts
+
+# Client site management
+npm run create-client <name>  # Create new client site
+npm run sync-content          # Sync content to all sites
+npm run optimize-images       # Optimize all images
+
+# Deployment
+npm run deploy:dev            # Deploy to dev
+npm run deploy:staging        # Deploy to staging
+npm run deploy:production     # Deploy to production
+```
 
 ### Generator App
-- `npm run generator:dev` - Start in development mode
-- `npm run generator:build` - Build for production
+```bash
+npm run generator:dev         # Development mode
+npm run generator:build       # Build for production
+```
 
-### Client Site
-- `npm run client:dev` - Start in development mode
-- `npm run client:build` - Build for production
+### Client Template
+```bash
+npm run client:dev            # Development mode
+npm run client:build          # Build for production
+```
 
-## 🎨 Technology Stack
+## 🌐 CI/CD Pipeline
+
+### GitHub Actions Workflows
+
+1. **deploy.yml** - Production Deployment
+   - Triggers on push to `main`
+   - Builds and deploys to Netlify production
+   - Deploys both generator-app and client-template
+
+2. **preview.yml** - Preview Deployments
+   - Triggers on pull requests and branches
+   - Deploys preview sites to Netlify
+   - Comments preview URLs on PRs
+
+3. **tests.yml** - Automated Testing
+   - Runs linting, type checking, unit tests
+   - Tests on Node.js 18 and 20
+   - Security scanning with npm audit
+   - Blocks deployment on failure
+
+4. **lighthouse.yml** - Performance Audits
+   - Runs Lighthouse CI on every deployment
+   - Enforces performance > 90%
+   - Comments scores on PRs
+   - Fails build if thresholds not met
+
+5. **optimize-images.yml** - Image Optimization
+   - Triggers on image file changes
+   - Automatically optimizes with Sharp
+   - Commits optimized images back to repo
+
+6. **scheduled-builds.yml** - Nightly Rebuilds
+   - Runs daily at midnight UTC
+   - Rebuilds all sites
+   - Regenerates sitemaps
+   - Syncs CMS content
+   - Performs health checks
+
+### Multi-Environment Setup
+
+Configure these secrets in GitHub:
+- `NETLIFY_AUTH_TOKEN` - Your Netlify auth token
+- `NETLIFY_SITE_ID` - Generator app site ID
+- `NETLIFY_SITE_ID_CLIENT` - Client template site ID
+
+### Netlify Environments
+
+- **Development**: `dev.yourdomain.com` (dev.toml)
+- **Staging**: `staging.yourdomain.com` (staging.toml)
+- **Production**: `yourdomain.com` (production.toml)
+
+Each environment has:
+- Separate environment variables
+- Separate build settings
+- Separate deployment triggers
+
+## 📸 Image Optimization
+
+Built-in Sharp-based optimization pipeline:
+
+```bash
+# Optimize specific directory
+node infrastructure/scripts/optimize-images.js apps/generator-app/public
+
+# Optimize all images
+npm run optimize-images
+```
+
+Features:
+- Automatic compression (80% quality)
+- WebP and AVIF conversion
+- Responsive variants (320w, 640w, 768w, 1024w, 1280w, 1920w)
+- Preserves original files
+- Comprehensive optimization reports
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+npm run test
+
+# Lint all code
+npm run lint
+
+# Type checking
+npx tsc --noEmit
+```
+
+## 🚢 Deployment
+
+### Manual Deployment
+```bash
+# Build production
+npm run build
+
+# Deploy to Netlify
+npm run deploy:production
+```
+
+### Automatic Deployment
+- Push to `main` → Auto-deploy to production
+- Create PR → Auto-deploy preview
+- Merge PR → Auto-deploy to production
+
+## 📋 Environment Variables
+
+Create `.env.local` in `apps/generator-app/`:
+
+```env
+NEXT_PUBLIC_SITE_NAME="HVAC Pro"
+NEXT_PUBLIC_API_URL=https://api.yourdomain.com
+NETLIFY_AUTH_TOKEN=your_token_here
+NETLIFY_SITE_ID=your_site_id_here
+```
+
+## 🎯 Technology Stack
 
 - **Framework**: Next.js 14 (App Router)
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
 - **State Management**: Zustand
+- **Image Processing**: Sharp
 - **Package Manager**: npm workspaces
 - **CI/CD**: GitHub Actions
 - **Deployment**: Netlify
+- **Performance**: Lighthouse CI
 
-## 📋 API Endpoints
+## 📖 Documentation
 
-### Upload API
-**POST** `/api/upload`
+- [Image Assets Guide](apps/generator-app/public/images/README.md)
+- [Upload System Guide](apps/generator-app/public/uploads/README.md)
+- [Image Optimizer API](packages/image-optimizer/src/index.ts)
 
-Upload images for use in the website builder.
+## 🤝 Contributing
 
-**Request**:
-- Content-Type: `multipart/form-data`
-- Body: `file` (image file)
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run tests: `npm run test`
+5. Submit a pull request
 
-**Response**:
-```json
-{
-  "success": true,
-  "url": "https://...",
-  "filename": "image.jpg",
-  "size": 12345,
-  "type": "image/jpeg"
-}
-```
+## 📄 License
 
-**Validation**:
-- Allowed types: JPEG, PNG, GIF, WebP
-- Max size: 5MB
+Private - All Rights Reserved
 
-## 🌐 Deployment
+---
 
-### Netlify Configuration
+**Built for Elite HVAC & Plumbing Professionals**
 
-The project includes Netlify configuration for both apps:
-
-1. **Generator App**: `netlify.toml` in root
-2. **Client Site**: `apps/client-site/netlify.toml`
-
-### Environment Variables
-
-Set these secrets in your GitHub repository for CI/CD:
-
-- `NETLIFY_AUTH_TOKEN`: Your Netlify authentication token
-- `NETLIFY_SITE_ID`: Site ID for generator app
-- `NETLIFY_SITE_ID_CLIENT`: Site ID for client site
-
-### Manual Deployment
-
-```bash
-# Deploy generator app
-npm run generator:build
-netlify deploy --prod --dir=apps/generator/.next
-
-# Deploy client site
-npm run client:build
-netlify deploy --prod --dir=apps/client-site/.next
-```
-
-## 🧪 CI/CD Workflows
-
-### Continuous Integration (`ci.yml`)
-Runs on every push and pull request:
-- Linting across all workspaces
-- Building all apps and packages
-- Runs on Node.js 18.x and 20.x
-
-### Deployment (`deploy.yml`)
-Runs on pushes to `main`:
-- Builds and deploys generator app to Netlify
-- Builds and deploys client site to Netlify
-
-## 🔧 Adding New Components
-
-### To the UI Package
-
-1. Create component in `packages/ui/src/components/YourComponent.tsx`
-2. Export from `packages/ui/src/index.ts`
+Skip the learning curve. Build like a pro.
 3. Use in apps: `import { YourComponent } from '@platform-builder/ui'`
 
 ### To the Generator App

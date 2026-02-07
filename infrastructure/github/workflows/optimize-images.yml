@@ -1,0 +1,83 @@
+name: Optimize Images
+
+on:
+  push:
+    paths:
+      - '**.jpg'
+      - '**.jpeg'
+      - '**.png'
+      - '**.gif'
+      - '**.webp'
+      - 'apps/**/public/**'
+  workflow_dispatch:
+  schedule:
+    - cron: '0 2 * * *'  # Daily at 2 AM
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  optimize:
+    name: Optimize Images
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Sharp
+        run: npm install sharp --no-save
+
+      - name: Optimize images in generator-app
+        run: node infrastructure/scripts/optimize-images.js apps/generator-app/public
+        continue-on-error: true
+
+      - name: Optimize images in client-template
+        run: node infrastructure/scripts/optimize-images.js apps/client-template/public
+        continue-on-error: true
+
+      - name: Optimize images in ui-components
+        run: node infrastructure/scripts/optimize-images.js packages/ui-components
+        continue-on-error: true
+
+      - name: Check for changes
+        id: git-check
+        run: |
+          git diff --exit-code || echo "changes=true" >> $GITHUB_OUTPUT
+
+      - name: Commit optimized images
+        if: steps.git-check.outputs.changes == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add -A
+          git commit -m "chore: optimize images [skip ci]"
+
+      - name: Push changes
+        if: steps.git-check.outputs.changes == 'true'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
+
+      - name: Create summary
+        run: |
+          echo "## 🎨 Image Optimization Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Image optimization completed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Optimized directories:" >> $GITHUB_STEP_SUMMARY
+          echo "- apps/generator-app/public" >> $GITHUB_STEP_SUMMARY
+          echo "- apps/client-template/public" >> $GITHUB_STEP_SUMMARY
+          echo "- packages/ui-components" >> $GITHUB_STEP_SUMMARY

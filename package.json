@@ -7,19 +7,27 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm run dev --workspace=apps/generator",
+    "dev": "npm run dev --workspace=apps/generator-app",
     "build": "npm run build --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
-    "clean": "rm -rf node_modules apps/*/node_modules apps/*/.next apps/*/dist packages/*/node_modules packages/*/dist",
-    "generator:dev": "npm run dev --workspace=apps/generator",
-    "generator:build": "npm run build --workspace=apps/generator",
-    "client:dev": "npm run dev --workspace=apps/client-site",
-    "client:build": "npm run build --workspace=apps/client-site"
+    "clean": "powershell -Command \"Remove-Item -Recurse -Force node_modules, apps/*/node_modules, apps/*/.next, apps/*/dist, packages/*/node_modules, packages/*/dist -ErrorAction SilentlyContinue\"",
+    "generator:dev": "npm run dev --workspace=apps/generator-app",
+    "generator:build": "npm run build --workspace=apps/generator-app",
+    "client:dev": "npm run dev --workspace=apps/client-template",
+    "client:build": "npm run build --workspace=apps/client-template",
+    "create-client": "node infrastructure/scripts/create-client-site.js",
+    "sync-content": "node infrastructure/scripts/sync-content.js",
+    "optimize-images": "node infrastructure/scripts/optimize-images.js",
+    "deploy:dev": "netlify deploy --site dev --config infrastructure/netlify/dev.toml",
+    "deploy:staging": "netlify deploy --site staging --config infrastructure/netlify/staging.toml",
+    "deploy:production": "netlify deploy --prod --config infrastructure/netlify/production.toml"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",
-    "typescript": "^5.3.2"
+    "typescript": "^5.3.2",
+    "sharp": "^0.33.0",
+    "@types/sharp": "^0.32.0"
   },
   "engines": {
     "node": ">=18.0.0",

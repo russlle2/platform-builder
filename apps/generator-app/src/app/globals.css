@@ -1,0 +1,195 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Industrial HVAC Theme Colors */
+  --hvac-industrial-blue: #2563eb;
+  --hvac-metal-gray: #64748b;
+  --hvac-condenser-dark: #1e293b;
+  
+  /* Mahogany Surface Colors */
+  --mahogany-primary: #3e1f1f;
+  --mahogany-gloss: #5a2e2e;
+  --mahogany-highlight: #8b4513;
+  
+  /* High Contrast Text */
+  --text-bright-white: #ffffff;
+  --text-pure-white: rgba(255, 255, 255, 1);
+  --text-shadow: rgba(0, 0, 0, 0.3);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-slate-900 text-white antialiased;
+  }
+}
+
+/* Global HVAC Background with Condenser */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background: linear-gradient(
+      180deg,
+      rgba(15, 23, 42, 0.95) 0%,
+      rgba(30, 41, 59, 0.9) 100%
+    ),
+    url('/images/hvac-condenser.jpg') center center / cover no-repeat;
+  background-attachment: fixed;
+}
+
+/* Mahogany Surface Component Class */
+.mahogany-surface {
+  background: linear-gradient(
+    135deg,
+    var(--mahogany-primary) 0%,
+    var(--mahogany-gloss) 50%,
+    var(--mahogany-primary) 100%
+  );
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(139, 69, 19, 0.3),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(139, 69, 19, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Wood grain texture overlay */
+.mahogany-surface::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.03) 2px,
+      rgba(0, 0, 0, 0.03) 4px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 1px,
+      rgba(139, 69, 19, 0.02) 1px,
+      rgba(139, 69, 19, 0.02) 2px
+    );
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* High gloss finish */
+.mahogany-surface::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent
+  );
+  pointer-events: none;
+  animation: gloss-shine 8s ease-in-out infinite;
+}
+
+@keyframes gloss-shine {
+  0%, 100% { left: -100%; }
+  50% { left: 150%; }
+}
+
+/* Text Shadow for High Contrast */
+.text-bright-white {
+  color: var(--text-bright-white);
+  text-shadow: 
+    0 2px 4px var(--text-shadow),
+    0 1px 2px rgba(0, 0, 0, 0.5);
+  letter-spacing: -0.02em;
+}
+
+.text-pure-white {
+  color: var(--text-pure-white);
+  opacity: 1;
+}
+
+/* Fan Rotation Animation (for HVAC condenser effect) */
+@keyframes fan-spin {
+  from {
+    transform: rotate(0deg) translateZ(0);
+  }
+  to {
+    transform: rotate(360deg) translateZ(0);
+  }
+}
+
+.hvac-fan-rotation {
+  animation: fan-spin 8s linear infinite;
+  will-change: transform;
+}
+
+/* Button Hover Effects */
+.cta-button {
+  @apply px-8 py-4 text-lg font-bold rounded-lg transition-all duration-300;
+  @apply text-bright-white bg-gradient-to-r from-blue-600 to-blue-700;
+  @apply shadow-lg hover:shadow-xl hover:scale-105;
+  @apply border-2 border-blue-500;
+}
+
+.cta-button:hover {
+  @apply from-blue-500 to-blue-600;
+  box-shadow: 0 0 30px rgba(37, 99, 235, 0.5);
+}
+
+/* Navigation Hover */
+.nav-item {
+  @apply text-white font-semibold text-base px-4 py-2 rounded-md;
+  @apply transition-all duration-200;
+  @apply hover:bg-white/10 hover:scale-105;
+  cursor: pointer;
+}
+
+/* Card Surfaces with Mahogany */
+.card-mahogany {
+  @apply mahogany-surface rounded-xl p-6;
+}
+
+/* Preview Container */
+.preview-container {
+  @apply mahogany-surface rounded-lg;
+  min-height: 600px;
+}
+
+/* Live Demo Container */
+.live-demo-container {
+  @apply mahogany-surface rounded-2xl;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+/* Scarcity Message */
+.scarcity-message {
+  @apply text-yellow-400 font-semibold text-sm;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+/* Responsive container */
+.container-hvac {
+  @apply container mx-auto px-4 sm:px-6 lg:px-8;
+  max-width: 1400px;
+}

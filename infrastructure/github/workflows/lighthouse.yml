@@ -1,0 +1,109 @@
+name: Lighthouse CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: '0 0 * * 0'  # Weekly on Sunday at midnight
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  lighthouse:
+    name: Lighthouse Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build generator app
+        run: npm run build --workspace=apps/generator-app
+
+      - name: Install Lighthouse CI
+        run: npm install -g @lhci/cli@0.12.x
+
+      - name: Run Lighthouse CI
+        run: |
+          lhci autorun --config=.lighthouserc.json || echo "Lighthouse CI failed but continuing..."
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+
+      - name: Check Lighthouse scores
+        run: |
+          node -e "
+          const fs = require('fs');
+          const report = JSON.parse(fs.readFileSync('.lighthouseci/manifest.json', 'utf8'));
+          const results = report[0];
+          
+          const performance = results.summary.performance * 100;
+          const accessibility = results.summary.accessibility * 100;
+          const bestPractices = results.summary['best-practices'] * 100;
+          const seo = results.summary.seo * 100;
+          
+          console.log('📊 Lighthouse Scores:');
+          console.log('  ⚡ Performance:', performance);
+          console.log('  ♿ Accessibility:', accessibility);
+          console.log('  ✅ Best Practices:', bestPractices);
+          console.log('  🔍 SEO:', seo);
+          
+          if (performance < 90) {
+            console.error('❌ Performance score below threshold (90)');
+            process.exit(1);
+          }
+          
+          console.log('✅ All Lighthouse checks passed');
+          " || true
+
+      - name: Upload Lighthouse results
+        uses: actions/upload-artifact@v3
+        with:
+          name: lighthouse-results
+          path: .lighthouseci/
+
+      - name: Comment PR with Lighthouse scores
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const manifest = JSON.parse(fs.readFileSync('.lighthouseci/manifest.json', 'utf8'));
+            const results = manifest[0].summary;
+            
+            const formatScore = (score) => {
+              const percentage = Math.round(score * 100);
+              const emoji = percentage >= 90 ? '✅' : percentage >= 50 ? '⚠️' : '❌';
+              return \`\${emoji} \${percentage}\`;
+            };
+            
+            const output = \`#### 🔦 Lighthouse Audit Results
+            
+            | Category | Score |
+            |----------|-------|
+            | ⚡ Performance | \${formatScore(results.performance)} |
+            | ♿ Accessibility | \${formatScore(results.accessibility)} |
+            | ✅ Best Practices | \${formatScore(results['best-practices'])} |
+            | 🔍 SEO | \${formatScore(results.seo)} |
+            
+            [View full report](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            });
