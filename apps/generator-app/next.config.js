@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
+  basePath: '/platform-builder', // Add this line
   transpilePackages: ['@platform-builder/ui-components', '@platform-builder/utils'],
   images: {
     formats: ['image/avif', 'image/webp'],
