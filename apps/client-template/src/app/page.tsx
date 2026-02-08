@@ -72,11 +72,20 @@ export default function HomePage() {
       <section id="contact" className="py-20 bg-gray-50">
         <div className="container mx-auto px-4 max-w-2xl">
           <h2 className="text-4xl font-bold text-center mb-12">Get In Touch</h2>
-          <form className="space-y-6">
+          <form 
+            className="space-y-6"
+            name="contact"
+            method="POST"
+            data-netlify="true"
+            action="/success"
+          >
+            <input type="hidden" name="form-name" value="contact" />
             <div>
               <label className="block text-sm font-medium mb-2">Name</label>
               <input
                 type="text"
+                name="name"
+                required
                 className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Your name"
               />
@@ -85,6 +94,8 @@ export default function HomePage() {
               <label className="block text-sm font-medium mb-2">Email</label>
               <input
                 type="email"
+                name="email"
+                required
                 className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="your@email.com"
               />
@@ -92,6 +103,8 @@ export default function HomePage() {
             <div>
               <label className="block text-sm font-medium mb-2">Message</label>
               <textarea
+                name="message"
+                required
                 rows={5}
                 className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Your message"

@@ -11,6 +11,7 @@ const navItems = [
   { label: 'Proof', href: '/proof' },
   { label: 'Archive', href: '/archive' },
   { label: 'Builds', href: '/builds' },
+  { label: 'Contact', href: '/contact' },
 ]
 
 export default function Navigation() {

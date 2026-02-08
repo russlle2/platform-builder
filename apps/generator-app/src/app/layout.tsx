@@ -2,6 +2,7 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import Navigation from '@/components/Navigation'
+import Chatbot from '@/components/Chatbot'
 import type { ReactNode } from 'react'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -22,6 +23,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <Navigation />
         {children}
+        <Chatbot />
       </body>
     </html>
   )
