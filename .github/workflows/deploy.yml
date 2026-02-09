@@ -22,12 +22,12 @@ jobs:
         run: npm ci
       
       - name: Build generator app
-        run: npm run generator:build
+        run: npm run generator-app:build
       
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v2
         with:
-          publish-dir: './apps/generator/.next'
+          publish-dir: './apps/generator-app/.next'
           production-branch: main
           github-token: ${{ secrets.GITHUB_TOKEN }}
           deploy-message: "Deploy from GitHub Actions"
