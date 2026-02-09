@@ -61,9 +61,10 @@ interface TemplateSelectorProps {
 }
 
 export function TemplateSelector({ selected, onSelect }: TemplateSelectorProps) {
-  const [currentIndex, setCurrentIndex] = useState(
-    templates.findIndex(t => t.id === selected) || 0
-  )
+  const [currentIndex, setCurrentIndex] = useState(() => {
+    const index = templates.findIndex(t => t.id === selected)
+    return index >= 0 ? index : 0
+  })
 
   const handlePrevious = () => {
     const newIndex = currentIndex > 0 ? currentIndex - 1 : templates.length - 1

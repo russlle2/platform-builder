@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { writeFile, mkdir } from 'fs/promises'
+import { writeFile, mkdir, readdir, stat, unlink } from 'fs/promises'
 import { existsSync } from 'fs'
 import path from 'path'
 
@@ -64,14 +64,14 @@ export async function POST(request: NextRequest) {
     await writeFile(filePath, buffer)
 
     // TODO: Integrate Sharp optimization when optimize flag is true
-    // For now, return basic response
+    // For now, optimization is not implemented
     return NextResponse.json({
       success: true,
       url: `/uploads/${fileName}`,
       filename: fileName,
       size: file.size,
       type: file.type,
-      optimized: optimizeFlag,
+      optimized: false, // Will be true when Sharp optimization is implemented
     })
 
   } catch (error) {
@@ -92,24 +92,26 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ images: [] })
     }
 
-    const fs = require('fs')
-    const files = fs.readdirSync(uploadDir)
+    const files = await readdir(uploadDir)
     
-    const images = files
-      .filter((file: string) => {
-        const ext = path.extname(file).toLowerCase()
-        return ['.jpg', '.jpeg', '.png', '.gif', '.webp'].includes(ext)
-      })
-      .map((file: string) => {
-        const stats = fs.statSync(path.join(uploadDir, file))
-        return {
-          filename: file,
-          url: `/uploads/${file}`,
-          size: stats.size,
-          uploadedAt: stats.birthtime,
-        }
-      })
-      .sort((a: any, b: any) => b.uploadedAt - a.uploadedAt)
+    const images = await Promise.all(
+      files
+        .filter((file: string) => {
+          const ext = path.extname(file).toLowerCase()
+          return ['.jpg', '.jpeg', '.png', '.gif', '.webp'].includes(ext)
+        })
+        .map(async (file: string) => {
+          const stats = await stat(path.join(uploadDir, file))
+          return {
+            filename: file,
+            url: `/uploads/${file}`,
+            size: stats.size,
+            uploadedAt: stats.birthtime,
+          }
+        })
+    )
+    
+    images.sort((a: any, b: any) => b.uploadedAt - a.uploadedAt)
 
     return NextResponse.json({ images })
   } catch (error) {
@@ -143,8 +145,7 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
-    const fs = require('fs')
-    fs.unlinkSync(filePath)
+    await unlink(filePath)
 
     return NextResponse.json({ success: true, message: 'Image deleted' })
   } catch (error) {

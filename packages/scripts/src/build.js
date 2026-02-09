@@ -4,7 +4,7 @@ const { execSync } = require('child_process');
 
 console.log('🏗️  Building platform-builder monorepo...');
 
-const workspaces = ['packages/ui', 'packages/utils', 'apps/generator', 'apps/client-site'];
+const workspaces = ['packages/ui-components', 'packages/utils', 'packages/image-optimizer', 'apps/generator-app', 'apps/client-template'];
 
 workspaces.forEach((workspace) => {
   console.log(`\n📦 Building ${workspace}...`);
