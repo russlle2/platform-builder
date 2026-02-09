@@ -272,7 +272,7 @@ function BusinessInfoStep({
         <label className="text-white font-medium">
           Auto-fill suggested missing fields
           <span className="block text-sm text-gray-300">
-            We'll suggest professional content for any empty fields. You can always change it.
+            We&apos;ll suggest professional content for any empty fields. You can always change it.
           </span>
         </label>
       </div>
@@ -386,7 +386,7 @@ function TemplateStep({
   return (
     <div className="space-y-6">
       <p className="text-gray-300">
-        Choose a template. Don't worry—you can switch anytime without losing your content.
+        Choose a template. Don&apos;t worry—you can switch anytime without losing your content.
       </p>
       <TemplateSelector
         selected={data.template}
@@ -446,7 +446,7 @@ function BrandingStep({
           className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <p className="text-sm text-gray-400 mt-2">
-          Describe in your own words—we'll handle the technical details
+          Describe in your own words—we&apos;ll handle the technical details
         </p>
       </div>
     </div>
