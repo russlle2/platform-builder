@@ -68,7 +68,7 @@ Build and deployment automation:
 
 **GitHub Actions Workflows**:
 - `ci.yml` - Continuous integration (lint, type-check, build)
-- `deploy.yml` - Deployment to Netlify
+- `deploy.yml`Deployment to Netlify
 
 **Netlify Configuration**:
 - Root `netlify.toml` for generator app
