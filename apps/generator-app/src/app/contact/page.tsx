@@ -12,7 +12,7 @@ export default function ContactPage() {
     const myForm = e.currentTarget
     const formData = new FormData(myForm)
 
-    fetch('/', {
+    fetch('/__forms.html', {
       method: 'POST',
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams(formData as any).toString(),
@@ -29,7 +29,7 @@ export default function ContactPage() {
             Get In Touch
           </h1>
           <p className="text-xl text-pure-white max-w-2xl mx-auto">
-            Have questions about building your presence? We're here to help you skip the learning curve.
+            Have questions about building your presence? We&apos;re here to help you skip the learning curve.
           </p>
         </div>
 
@@ -42,7 +42,7 @@ export default function ContactPage() {
             </div>
             <h2 className="text-3xl font-bold text-white mb-4">Message Received</h2>
             <p className="text-gray-300 text-lg mb-8">
-              Thanks for reaching out! We'll be in touch shortly.
+              Thanks for reaching out! We&apos;ll be in touch shortly.
             </p>
             <button
               onClick={() => setSubmitted(false)}
@@ -57,8 +57,11 @@ export default function ContactPage() {
             className="space-y-8"
             name="contact-platform"
             method="POST"
+            action="/__forms.html"
             data-netlify="true"
+            netlify-honeypot="bot-field"
           >
+            <input type="hidden" name="bot-field" />
             <input type="hidden" name="form-name" value="contact-platform" />
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
