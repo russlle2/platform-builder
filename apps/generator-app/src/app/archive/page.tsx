@@ -1,8 +1,16 @@
+import Image from 'next/image';
+
 export default function ArchivePage() {
   return (
     <main className="relative min-h-screen">
       <div className="fixed inset-0 z-0">
-        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: 'url(/images/hvac-condenser.jpg)' }} />
+        <Image
+          src="/images/hvac-condenser.jpg"
+          alt="HVAC condenser background"
+          fill
+          className="object-cover object-center"
+          priority
+        />
         <div className="absolute inset-0 bg-slate-50/80" />
       </div>
       <div className="relative z-10 pt-24 pb-24 max-w-6xl mx-auto px-4">
