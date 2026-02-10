@@ -1,9 +1,8 @@
 # Base Netlify Configuration
 [build]
-  base = "apps/generator-app"
+  base = "."
   command = "npm ci && npm run build --workspace=apps/generator-app"
   publish = "apps/generator-app/.next"
-  functions = "apps/generator-app/netlify/functions"
 
 [build.environment]
   NODE_VERSION = "20"
@@ -20,6 +19,13 @@
     X-Frame-Options = "DENY"
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
+
+# Dev context
+[context.deploy-preview]
+  command = "npm ci && npm run build --workspace=apps/generator-app"
+
+[context.branch-deploy]
+  command = "npm ci && npm run build --workspace=apps/generator-app"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"

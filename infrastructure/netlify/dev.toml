@@ -1,9 +1,8 @@
 # Development Environment Configuration
 [build]
-  base = "apps/generator-app"
+  base = "."
   command = "npm ci && npm run build --workspace=apps/generator-app"
   publish = "apps/generator-app/.next"
-  functions = "apps/generator-app/netlify/functions"
 
 [build.environment]
   NODE_VERSION = "20"
@@ -14,6 +13,9 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+[context.deploy-preview]
+  command = "npm ci && npm run build --workspace=apps/generator-app"
 
 [[headers]]
   for = "/*"
