@@ -96,14 +96,6 @@ export default function PricingPage() {
           </p>
         </div>
       </section>
-    <main className="relative min-h-screen">
-      <div className="fixed inset-0 z-0">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: 'url(/images/hvac-condenser.jpg)' }}
-        />
-        <div className="absolute inset-0 bg-slate-50/80" />
-      </div>
 
       {/* Pricing Cards */}
       <section className="container-hvac pb-20">
