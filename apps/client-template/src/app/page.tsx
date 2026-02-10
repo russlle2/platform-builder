@@ -1,7 +1,10 @@
+import Image from 'next/image'
+import Link from 'next/link'
+
 /* ------------------------------------------------------------------ *
  *  Client Template — placeholder constants replaced by                *
  *  scripts/create-client-site.js at generation time.                  *
- * ------------------------------------------------------------------ */
+ ------------------------------------------------------------------ */
 
 const BUSINESS_NAME = 'PLACEHOLDER_BUSINESS_NAME';
 const BUSINESS_DESCRIPTION = 'PLACEHOLDER_BUSINESS_DESCRIPTION';
@@ -9,17 +12,17 @@ const BUSINESS_PHONE = 'PLACEHOLDER_BUSINESS_PHONE';
 const BUSINESS_EMAIL = 'PLACEHOLDER_BUSINESS_EMAIL';
 const BUSINESS_ADDRESS = 'PLACEHOLDER_BUSINESS_ADDRESS';
 
-export default function ClientHomePage() {
+export default function HomePage() {
   return (
-    <main>
+    <div className="min-h-screen bg-white">
       {/* Navigation */}
       <nav className="bg-gray-900 text-white">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <span className="text-xl font-bold">{BUSINESS_NAME}</span>
           <div className="flex space-x-6 text-sm">
-            <a href="#services" className="hover:text-amber-400 transition-colors">Services</a>
-            <a href="#about" className="hover:text-amber-400 transition-colors">About</a>
-            <a href="#contact" className="hover:text-amber-400 transition-colors">Contact</a>
+            <Link href="#services" className="hover:text-amber-400 transition-colors">Services</Link>
+            <Link href="#about" className="hover:text-amber-400 transition-colors">About</Link>
+            <Link href="#contact" className="hover:text-amber-400 transition-colors">Contact</Link>
           </div>
         </div>
       </nav>
@@ -33,9 +36,9 @@ export default function ClientHomePage() {
         <div className="relative z-10 max-w-6xl mx-auto px-4 py-20">
           <h1 className="text-5xl font-bold text-white mb-4">{BUSINESS_NAME}</h1>
           <p className="text-xl text-white mb-8">{BUSINESS_DESCRIPTION}</p>
-          <a href="#contact" className="inline-block px-8 py-3 bg-amber-600 text-white font-bold rounded-lg hover:bg-amber-700 transition-colors">
+          <Link href="#contact" className="inline-block px-8 py-3 bg-amber-600 text-white font-bold rounded-lg hover:bg-amber-700 transition-colors">
             Get a Free Quote
-          </a>
+          </Link>
         </div>
       </section>
 
@@ -55,12 +58,60 @@ export default function ClientHomePage() {
         </div>
       </section>
 
-      {/* Contact */}
+      {/* Contact Section */}
       <section id="contact" className="py-20">
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Contact Us</h2>
-          <p className="text-gray-700 mb-8">{BUSINESS_PHONE} &bull; {BUSINESS_EMAIL}</p>
-          <p className="text-gray-700">{BUSINESS_ADDRESS}</p>
+        <div className="container mx-auto px-4 max-w-2xl">
+          <h2 className="text-4xl font-bold text-center mb-8">Get In Touch</h2>
+          <div className="text-center mb-12">
+            <p className="text-gray-700 mb-2">{BUSINESS_PHONE} &bull; {BUSINESS_EMAIL}</p>
+            <p className="text-gray-700">{BUSINESS_ADDRESS}</p>
+          </div>
+          
+          <form 
+            className="space-y-6"
+            name="contact"
+            method="POST"
+            data-netlify="true"
+            action="/success"
+          >
+            <input type="hidden" name="form-name" value="contact" />
+            <div>
+              <label className="block text-sm font-medium mb-2">Name</label>
+              <input
+                type="text"
+                name="name"
+                required
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Your name"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Email</label>
+              <input
+                type="email"
+                name="email"
+                required
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="your@email.com"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Message</label>
+              <textarea
+                name="message"
+                required
+                rows={5}
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Your message"
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+            >
+              Send Message
+            </button>
+          </form>
         </div>
       </section>
 
@@ -70,6 +121,6 @@ export default function ClientHomePage() {
           <p>&copy; {new Date().getFullYear()} {BUSINESS_NAME}. All rights reserved.</p>
         </div>
       </footer>
-    </main>
-  );
+    </div>
+  )
 }

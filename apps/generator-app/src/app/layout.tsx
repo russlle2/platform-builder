@@ -1,19 +1,31 @@
-import type { Metadata } from 'next';
-import '@/styles/globals.css';
-import { AppLayout } from '@/components/layout/AppLayout';
+import './globals.css'
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+import Chatbot from '@/components/Chatbot'
+import { AppLayout } from '@/components/layout/AppLayout'
+import type { ReactNode } from 'react'
+
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Platform Builder — Build Your HVAC & Plumbing Web Presence',
-  description:
-    'The industrial-premium platform where HVAC and Plumbing professionals can instantly see, shape, and understand their website.',
-};
+  title: 'HVAC & Plumbing Platform Builder - Build Like A Pro',
+  description: 'Skip the learning curve. Build your HVAC and Plumbing services presence instantly, without confusion, without learning tools.',
+  keywords: 'HVAC website builder, plumbing website, professional services, no-code platform',
+}
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: ReactNode
+}) {
   return (
     <html lang="en">
-      <body className="bg-slate-50 text-slate-900 antialiased">
-        <AppLayout>{children}</AppLayout>
+      <body className={`${inter.className} bg-slate-50 text-slate-900 antialiased`}> 
+        <AppLayout>
+          {children}
+        </AppLayout>
+        <Chatbot />
       </body>
     </html>
-  );
+  )
 }

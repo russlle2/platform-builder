@@ -1,34 +1,25 @@
+# Base Netlify Configuration
 [build]
   base = "apps/generator-app"
-  command = "npm run build"
-  publish = ".next"
+  command = "npm ci && npm run build --workspace=apps/generator-app"
+  publish = "apps/generator-app/.next"
+  functions = "apps/generator-app/netlify/functions"
 
 [build.environment]
   NODE_VERSION = "20"
-  NPM_FLAGS = "--prefix=/dev/null"
+  NEXT_TELEMETRY_DISABLED = "1"
 
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
-
-# Redirects
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-  conditions = {Role = ["admin"]}
 
-# Headers
 [[headers]]
   for = "/*"
   [headers.values]
     X-Frame-Options = "DENY"
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
 
-# Dev context
-[context.deploy-preview]
-  command = "npm run build"
-
-[context.branch-deploy]
-  command = "npm run build"
+[[plugins]]
+  package = "@netlify/plugin-nextjs"

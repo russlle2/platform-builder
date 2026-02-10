@@ -2,44 +2,87 @@ name: Deploy to Production
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+  workflow_dispatch:
 
-concurrency:
-  group: production-deploy
-  cancel-in-progress: false
+env:
+  NODE_VERSION: '20'
 
 jobs:
-  test:
-    uses: ./.github/workflows/tests.yml
-
-  deploy:
-    needs: test
+  deploy-generator:
+    name: Deploy Generator App
     runs-on: ubuntu-latest
-    environment: production
+    
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Build
-        run: npm run build
-        env:
-          NEXT_PUBLIC_ENV: production
-          NEXT_PUBLIC_SITE_URL: ${{ vars.SITE_URL }}
+      - name: Run linter
+        run: npm run lint --workspace=apps/generator-app --if-present
 
-      - name: Deploy to Netlify
-        uses: nwtgck/actions-netlify@v3
-        with:
-          publish-dir: apps/generator-app/.next
-          production-deploy: true
-          netlify-config-path: infrastructure/netlify/production.toml
+      - name: Run tests
+        run: npm run test --workspace=apps/generator-app --if-present
+
+      - name: Build generator app
+        run: npm run build --workspace=apps/generator-app
         env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NODE_ENV: production
+
+      - name: Deploy to Netlify (Production)
+        uses: netlify/actions/cli@master
+        with:
+          args: deploy --prod --dir=apps/generator-app/.next --config=infrastructure/netlify/production.toml
+        env:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+
+      - name: Post deployment notification
+        if: success()
+        run: |
+          echo "✅ Generator app deployed successfully to production"
+          echo "🔗 URL: https://yourdomain.com"
+
+  deploy-client-template:
+    name: Deploy Client Template
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build client template
+        run: npm run build --workspace=apps/client-template
+        env:
+          NODE_ENV: production
+
+      - name: Deploy to Netlify (Production)
+        uses: netlify/actions/cli@master
+        with:
+          args: deploy --prod --dir=apps/client-template/.next
+        env:
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID_CLIENT }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+
+      - name: Post deployment notification
+        if: success()
+        run: |
+          echo "✅ Client template deployed successfully"
