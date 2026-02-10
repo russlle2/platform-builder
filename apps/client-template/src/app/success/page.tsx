@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 export default function SuccessPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -12,6 +14,14 @@ export default function SuccessPage() {
         <a href="/" className="inline-block px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors">
           Return Home
         </a>
+      </div>
+    </div>
+  )
+}
+        <p className="text-gray-600 mb-6">Thanks for reaching out. We&apos;ll get back to you shortly.</p>
+        <Link href="/" className="inline-block px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors">
+          Return Home
+        </Link>
       </div>
     </div>
   )
