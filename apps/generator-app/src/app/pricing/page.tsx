@@ -8,7 +8,7 @@ export default function PricingPage() {
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: 'url(/images/hvac-condenser.jpg)' }}
         />
-        <div className="absolute inset-0 bg-gray-950/70" />
+        <div className="absolute inset-0 bg-slate-50/80" />
       </div>
 
       <div className="relative z-10 pt-24 pb-24">

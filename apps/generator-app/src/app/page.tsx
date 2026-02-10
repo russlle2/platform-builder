@@ -11,7 +11,7 @@ export default function HomePage() {
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: 'url(/images/hvac-condenser.jpg)' }}
         />
-        <div className="absolute inset-0 bg-gray-950/70" />
+        <div className="absolute inset-0 bg-slate-50/80" />
         {/* Fan rotation effect */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 opacity-5">
           <div className="w-full h-full rounded-full border-4 border-gray-400 animate-spin" style={{ animationDuration: '20s' }} />

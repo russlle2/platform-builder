@@ -9,7 +9,7 @@ export default function EditorPage() {
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: 'url(/images/hvac-condenser.jpg)' }}
         />
-        <div className="absolute inset-0 bg-gray-950/80" />
+        <div className="absolute inset-0 bg-slate-50/85" />
       </div>
 
       <div className="relative z-10 pt-20 h-screen">

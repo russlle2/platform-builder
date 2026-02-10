@@ -131,7 +131,7 @@ export function EditorWizard() {
         <div className="px-6 py-4 border-b border-amber-700/30">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold text-white">{STEPS[step - 1].title}</h2>
-            <span className="text-amber-300 text-sm font-medium">Step {step} of {STEPS.length}</span>
+            <span className="text-amber-100 text-sm font-medium">Step {step} of {STEPS.length}</span>
           </div>
           <div className="mt-3 h-1.5 bg-amber-950 rounded-full overflow-hidden">
             <div
@@ -233,7 +233,7 @@ export function EditorWizard() {
               <ImageField label="Background Image" value={data.backgroundImage} onChange={(v) => updateField('backgroundImage', v)} />
               <div>
                 <label className="block text-white font-medium text-sm mb-2">Gallery Images</label>
-                <div className="border-2 border-dashed border-gray-600 rounded-xl p-6 text-center text-gray-400 text-sm hover:border-amber-500 transition-colors cursor-pointer">
+                <div className="border-2 border-dashed border-gray-600 rounded-xl p-6 text-center text-gray-200 text-sm hover:border-amber-500 transition-colors cursor-pointer">
                   Drag &amp; drop images or click to upload gallery photos
                 </div>
               </div>
@@ -264,7 +264,7 @@ export function EditorWizard() {
                 </a>
                 <a
                   href="/pricing"
-                  className="inline-block text-amber-300 hover:text-amber-200 underline text-sm"
+                  className="inline-block text-amber-100 hover:text-amber-200 underline text-sm"
                 >
                   Continue → /pricing
                 </a>
@@ -304,7 +304,7 @@ export function EditorWizard() {
               <div className="w-3 h-3 rounded-full bg-green-500" />
             </div>
             <div className="flex-grow mx-4">
-              <div className="bg-gray-700 rounded-md px-3 py-1 text-gray-400 text-xs">
+              <div className="bg-gray-700 rounded-md px-3 py-1 text-gray-200 text-xs">
                 {data.businessName ? `${data.businessName.toLowerCase().replace(/\s+/g, '')}.com` : 'yoursite.com'}
               </div>
             </div>
@@ -323,9 +323,9 @@ export function EditorWizard() {
                   {data.businessName || 'Your Business Name'}
                 </span>
                 <div className="flex space-x-3 text-sm" style={{ fontFamily: data.bodyFont }}>
-                  <span className="text-white/80">Services</span>
-                  <span className="text-white/80">About</span>
-                  <span className="text-white/80">Contact</span>
+                  <span className="text-white">Services</span>
+                  <span className="text-white">About</span>
+                  <span className="text-white">Contact</span>
                 </div>
               </div>
 
@@ -445,7 +445,7 @@ function ImageField({ label, value, onChange }: { label: string; value: string; 
             />
           </div>
         ) : (
-          <p className="text-gray-400 text-sm text-center">Click to upload or enter image path</p>
+          <p className="text-gray-200 text-sm text-center">Click to upload or enter image path</p>
         )}
       </div>
       {/* Optimize toggle */}
@@ -462,7 +462,7 @@ function ImageField({ label, value, onChange }: { label: string; value: string; 
 function Detail({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <span className="text-amber-300 text-xs">{label}</span>
+      <span className="text-amber-100 text-xs">{label}</span>
       <p className="text-white">{value || '—'}</p>
     </div>
   );
