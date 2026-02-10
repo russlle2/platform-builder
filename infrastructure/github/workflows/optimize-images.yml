@@ -3,6 +3,7 @@ name: Optimize Images
 on:
   push:
     paths:
+<<<<<<< HEAD
       - '**.jpg'
       - '**.jpeg'
       - '**.png'
@@ -26,16 +27,37 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+=======
+      - '**/*.jpg'
+      - '**/*.jpeg'
+      - '**/*.png'
+      - '**/*.webp'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  optimize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+>>>>>>> origin/main
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
+<<<<<<< HEAD
           node-version: ${{ env.NODE_VERSION }}
+=======
+          node-version: '20'
+>>>>>>> origin/main
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
+<<<<<<< HEAD
       - name: Install Sharp
         run: npm install sharp --no-save
 
@@ -58,11 +80,24 @@ jobs:
 
       - name: Commit optimized images
         if: steps.git-check.outputs.changes == 'true'
+=======
+      - name: Optimize images
+        run: node scripts/optimize-images.js
+
+      - name: Check for changes
+        id: changes
+        run: |
+          git diff --quiet || echo "has_changes=true" >> $GITHUB_OUTPUT
+
+      - name: Commit optimized images
+        if: steps.changes.outputs.has_changes == 'true'
+>>>>>>> origin/main
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add -A
           git commit -m "chore: optimize images [skip ci]"
+<<<<<<< HEAD
 
       - name: Push changes
         if: steps.git-check.outputs.changes == 'true'
@@ -81,3 +116,6 @@ jobs:
           echo "- apps/generator-app/public" >> $GITHUB_STEP_SUMMARY
           echo "- apps/client-template/public" >> $GITHUB_STEP_SUMMARY
           echo "- packages/ui-components" >> $GITHUB_STEP_SUMMARY
+=======
+          git push
+>>>>>>> origin/main

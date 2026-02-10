@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 name: Preview Deployments
 
 on:
@@ -18,16 +19,44 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+=======
+name: Preview Deployment
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches-ignore: [main]
+
+concurrency:
+  group: preview-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    uses: ./.github/workflows/tests.yml
+
+  preview:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+>>>>>>> origin/main
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
+<<<<<<< HEAD
           node-version: ${{ env.NODE_VERSION }}
+=======
+          node-version: '20'
+>>>>>>> origin/main
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
+<<<<<<< HEAD
       - name: Build generator app
         run: npm run build --workspace=apps/generator-app
         env:
@@ -43,20 +72,44 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
 
       - name: Comment preview URL on PR
+=======
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_ENV: preview
+          NEXT_PUBLIC_SITE_URL: ${{ vars.PREVIEW_URL }}
+
+      - name: Deploy Preview to Netlify
+        uses: nwtgck/actions-netlify@v3
+        with:
+          publish-dir: apps/generator-app/.next
+          production-deploy: false
+          alias: preview-${{ github.event.number || github.sha }}
+          netlify-config-path: infrastructure/netlify/dev.toml
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+
+      - name: Comment PR with preview URL
+>>>>>>> origin/main
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
           script: |
+<<<<<<< HEAD
             const output = `#### 🚀 Preview Deployment
             
             **Generator App Preview:** ${{ steps.netlify-deploy.outputs.deploy-url }}
             
             Preview will be automatically updated on new commits.`;
             
+=======
+>>>>>>> origin/main
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
+<<<<<<< HEAD
               body: output
             });
 
@@ -106,3 +159,7 @@ jobs:
               repo: context.repo.repo,
               body: output
             });
+=======
+              body: `🚀 Preview deployment ready!\n\nURL: https://preview-${context.issue.number}--${process.env.NETLIFY_SITE_ID}.netlify.app`
+            })
+>>>>>>> origin/main

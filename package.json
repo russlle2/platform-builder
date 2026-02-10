@@ -1,7 +1,14 @@
 {
+<<<<<<< HEAD
   "name": "platform-builder-monorepo",
   "version": "1.0.0",
   "private": true,
+=======
+  "name": "platform-builder",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Industrial-premium platform for HVAC and Plumbing professionals to build their web presence",
+>>>>>>> origin/main
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -9,6 +16,7 @@
   "scripts": {
     "dev": "npm run dev --workspace=apps/generator-app",
     "build": "npm run build --workspaces --if-present",
+<<<<<<< HEAD
     "lint": "npm run lint --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "clean": "powershell -Command \"Remove-Item -Recurse -Force node_modules, apps/*/node_modules, apps/*/.next, apps/*/dist, packages/*/node_modules, packages/*/dist -ErrorAction SilentlyContinue\"",
@@ -32,5 +40,23 @@
   "engines": {
     "node": ">=18.0.0",
     "npm": ">=9.0.0"
+=======
+    "generate": "npm run build --workspaces --if-present && cp -r apps/generator-app/out ./out",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "optimize-images": "node scripts/optimize-images.js",
+    "create-client-site": "node scripts/create-client-site.js",
+    "sync-content": "node scripts/sync-content.js"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.18",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.18",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+>>>>>>> origin/main
   }
 }

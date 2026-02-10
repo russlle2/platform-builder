@@ -1,6 +1,7 @@
 # Staging Environment Configuration
 [build]
   base = "apps/generator-app"
+<<<<<<< HEAD
   command = "npm ci && npm run build --workspace=apps/generator-app"
   publish = "apps/generator-app/.next"
   functions = "apps/generator-app/netlify/functions"
@@ -14,10 +15,24 @@
   from = "/*"
   to = "/index.html"
   status = 200
+=======
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
+  NEXT_PUBLIC_ENV = "staging"
+  NEXT_PUBLIC_API_URL = "https://staging-api.yourdomain.com"
+  NEXT_PUBLIC_SITE_URL = "https://staging.yourdomain.com"
+
+[context.deploy-preview]
+  command = "npm run build"
+>>>>>>> origin/main
 
 [[headers]]
   for = "/*"
   [headers.values]
+<<<<<<< HEAD
     X-Frame-Options = "DENY"
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
@@ -44,3 +59,7 @@
     accessibility = 0.9
     best-practices = 0.9
     seo = 0.9
+=======
+    X-Robots-Tag = "noindex, nofollow"
+    X-Frame-Options = "DENY"
+>>>>>>> origin/main

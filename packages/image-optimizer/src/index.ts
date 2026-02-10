@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import sharp from 'sharp';
 import { promises as fs } from 'fs';
 import path from 'path';
@@ -214,3 +215,7 @@ export default {
   convertToFormats,
   getImageMetadata,
 };
+=======
+export { optimizeImage, type OptimizeOptions, type OptimizeResult } from './optimizer';
+export { processDirectory } from './batch';
+>>>>>>> origin/main

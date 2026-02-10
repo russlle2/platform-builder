@@ -2,6 +2,7 @@ name: Deploy to Production
 
 on:
   push:
+<<<<<<< HEAD
     branches:
       - main
   workflow_dispatch:
@@ -17,16 +18,39 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+=======
+    branches: [main]
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  test:
+    uses: ./.github/workflows/tests.yml
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+>>>>>>> origin/main
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
+<<<<<<< HEAD
           node-version: ${{ env.NODE_VERSION }}
+=======
+          node-version: '20'
+>>>>>>> origin/main
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
+<<<<<<< HEAD
       - name: Run linter
         run: npm run lint --workspace=apps/generator-app --if-present
 
@@ -86,3 +110,20 @@ jobs:
         if: success()
         run: |
           echo "✅ Client template deployed successfully"
+=======
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_ENV: production
+          NEXT_PUBLIC_SITE_URL: ${{ vars.SITE_URL }}
+
+      - name: Deploy to Netlify
+        uses: nwtgck/actions-netlify@v3
+        with:
+          publish-dir: apps/generator-app/.next
+          production-deploy: true
+          netlify-config-path: infrastructure/netlify/production.toml
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+>>>>>>> origin/main
