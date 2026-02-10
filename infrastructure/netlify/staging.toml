@@ -1,20 +1,46 @@
 # Staging Environment Configuration
 [build]
   base = "apps/generator-app"
-  command = "npm run build"
-  publish = ".next"
+  command = "npm ci && npm run build --workspace=apps/generator-app"
+  publish = "apps/generator-app/.next"
+  functions = "apps/generator-app/netlify/functions"
 
 [build.environment]
   NODE_VERSION = "20"
-  NEXT_PUBLIC_ENV = "staging"
-  NEXT_PUBLIC_API_URL = "https://staging-api.yourdomain.com"
-  NEXT_PUBLIC_SITE_URL = "https://staging.yourdomain.com"
+  NEXT_TELEMETRY_DISABLED = "1"
+  NODE_ENV = "staging"
 
-[context.deploy-preview]
-  command = "npm run build"
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
 
 [[headers]]
   for = "/*"
   [headers.values]
-    X-Robots-Tag = "noindex, nofollow"
     X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';"
+
+[context.staging]
+  environment = { NODE_ENV = "staging" }
+
+# Performance optimization
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[[plugins]]
+  package = "netlify-plugin-cache"
+  [plugins.inputs]
+    paths = [ "node_modules", ".next/cache" ]
+
+# Lighthouse CI
+[[plugins]]
+  package = "netlify-plugin-lighthouse"
+  [plugins.inputs]
+    performance = 0.9
+    accessibility = 0.9
+    best-practices = 0.9
+    seo = 0.9

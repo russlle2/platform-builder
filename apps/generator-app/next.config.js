@@ -1,18 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
-  basePath: '/platform-builder', // Add this line
+  reactStrictMode: true,
   transpilePackages: ['@platform-builder/ui-components', '@platform-builder/utils'],
   images: {
-    formats: ['image/avif', 'image/webp'],
+    domains: ['placeholder.com', 'via.placeholder.com'],
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**',
+        hostname: '**.placeholder.com',
       },
     ],
-    unoptimized: true, // Required for static export with remote images
   },
-};
+}
 
-module.exports = nextConfig;
+module.exports = nextConfig

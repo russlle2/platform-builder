@@ -1,41 +1,158 @@
-# Platform Builder
+# Platform Builder - Industrial-Premium HVAC & Plumbing Platform
 
-Industrial-premium platform for HVAC and Plumbing professionals to instantly see, shape, and understand their website.
+An advanced, industrial-premium platform where HVAC and Plumbing professionals can instantly see, shape, and understand their website without learning tools, without confusion, and without committing until they approve.
 
-## Monorepo Structure
+## 🏗️ Monorepo Architecture
 
 ```
+platform-builder/
 ├── apps/
-│   ├── generator-app/      # Main dashboard, editor, live preview, pricing, wizard (Next.js)
-│   └── client-template/    # Base template for generating client sites (Next.js)
+│   ├── generator-app/          # Main dashboard, editor, wizard, pricing
+│   │   ├── src/
+│   │   │   ├── app/           # Next.js App Router pages
+│   │   │   │   ├── page.tsx           # Home with hero section
+│   │   │   │   ├── wizard/            # Live Build Wizard
+│   │   │   │   ├── pricing/           # Transparent pricing tiers
+│   │   │   │   ├── live-demo/         # Interactive demo
+│   │   │   │   ├── proof/             # Social proof gallery
+│   │   │   │   ├── archive/           # Template archive
+│   │   │   │   ├── builds/            # User builds dashboard
+│   │   │   │   └── api/upload/        # Image upload endpoint
+│   │   │   ├── components/    # React components
+│   │   │   │   ├── Navigation.tsx
+│   │   │   │   ├── ImageUploadWithOptimize.tsx
+│   │   │   │   ├── LivePreview.tsx
+│   │   │   │   └── TemplateSelector.tsx
+│   │   │   └── store/         # Zustand state management
+│   │   └── public/
+│   │       ├── images/        # Placeholder image paths
+│   │       └── uploads/       # User-uploaded images
+│   │
+│   └── client-template/        # Base template for generated sites
+│       ├── src/
+│       └── public/
+│
 ├── packages/
-│   ├── ui-components/      # Shared React/Tailwind components
-│   ├── utils/              # Shared utilities (SEO, routing, formatting)
-│   └── image-optimizer/    # Sharp-based image optimization pipeline
+│   ├── ui-components/         # Shared React/Tailwind components
+│   │   └── src/components/
+│   ├── utils/                 # Shared utilities (SEO, routing)
+│   │   └── src/
+│   ├── image-optimizer/       # Sharp-based optimization pipeline
+│   │   └── src/index.ts
+│   └── scripts/               # Build and deployment scripts
+│       └── src/
+│
 ├── infrastructure/
-│   ├── netlify/            # Netlify configs (dev, staging, production)
-│   └── github/workflows/  # CI/CD workflows
-├── scripts/                # Automation scripts
-└── package.json            # Root workspace config
+│   ├── netlify/               # Multi-environment Netlify configs
+│   │   ├── dev.toml
+│   │   ├── staging.toml
+│   │   ├── production.toml
+│   │   └── netlify.toml
+│   ├── github/workflows/      # CI/CD GitHub Actions
+│   │   ├── deploy.yml             # Production deployment
+│   │   ├── preview.yml            # PR preview deployments
+│   │   ├── tests.yml              # Automated testing
+│   │   ├── lighthouse.yml         # Performance audits
+│   │   ├── optimize-images.yml    # Image optimization
+│   │   └── scheduled-builds.yml   # Nightly rebuilds
+│   └── scripts/               # Automation scripts
+│       ├── create-client-site.js
+│       ├── sync-content.js
+│       └── optimize-images.js
+│
+├── package.json               # Root workspace config
+└── .lighthouserc.json        # Lighthouse CI config
 ```
 
-## Tech Stack
+## 🎨 Design System
 
-- **Framework:** Next.js 15 (App Router)
-- **UI:** React 19, Tailwind CSS 4
-- **Language:** TypeScript 5
-- **Image Processing:** Sharp
-- **CI/CD:** GitHub Actions + Netlify
-- **Monorepo:** npm workspaces
+### Global Environment
+- **Background**: Aerial top-down HVAC condenser (90° vertical angle)
+- **Fan Motion**: Smooth Z-axis rotation illusion
+- **Lighting**: Industrial daylight with neutral-cool metal tones
+- **Persistence**: Background appears across all pages
 
-## Getting Started
+### Surface System
+- **Primary Surface**: Lacquered mahogany wood
+- **Finish**: High-gloss with real wood grain texture
+- **Usage**: Text blocks, cards, editor panels, previews, pricing
+
+### Color Palette
+```css
+--hvac-industrial-blue: #2563eb
+--hvac-metal-gray: #64748b
+--mahogany-primary: #3e1f1f
+--mahogany-gloss: #5a2e2e
+--text-bright-white: #ffffff (high contrast)
+```
+
+### Navigation
+- Persistent top navigation with high contrast
+- Items: Home, Live Demo, Editor, Pricing, Proof, Archive, Builds
+- Immediate hover feedback
+- Clear, direct navigation
+
+## 🚀 Features
+
+### Homepage
+- **Hero Section**: Mahogany plank with bold headline
+- **Headline**: "Skip the learning curve - Build Your HVAC And Plumbing Services Presence Like A Pro"
+- **Primary CTA**: "Reserve your spot"
+- **Scarcity Message**: "Limited to 30 active monthly members nationwide"
+
+### Live Build Wizard
+- **Split Panel Layout**: Questions on left, live preview on right
+- **Step-Based Navigation**: No scrolling required
+- **Real-Time Updates**: Every change updates preview instantly
+- **Features**:
+  - Template switching with content preservation
+  - Accent color picker
+  - Font selection (heading/body)
+  - Image uploads (logo, hero, background, gallery)
+  - Auto-fill toggle for suggested content
+  - Service selection
+
+### Image Handling System
+1. **User Uploads**: Drag-and-drop, file picker, real-time preview
+2. **Optimize Toggle**: Optional Sharp optimization
+3. **User Library**: Account-based image storage (for logged-in users)
+4. **API Endpoints**:
+   - `POST /api/upload` - Upload images
+   - `GET /api/upload` - List user images
+   - `DELETE /api/upload?filename=xxx` - Delete images
+
+### Pricing Tiers
+- **Custom Build**: $499 (50/50 split, refund before approval)
+- **Entrepreneur**: $99/month
+- **Executive**: $399/month (Most Popular)
+- **CEO**: $999/month (Premium)
+
+### Template System
+- 9+ HVAC-relevant templates
+- 1080p media
+- Template switching preserves user data
+- Only layout/background changes
+
+## 📦 Installation
 
 ```bash
-# Install all dependencies
+# Install all workspace dependencies
 npm install
 
-# Start the generator app in development
-npm run dev
+# Install dependencies for specific workspace
+npm install --workspace=apps/generator-app
+```
+
+## 🛠️ Development
+
+```bash
+# Start generator app
+npm run generator:dev
+# → http://localhost:3000
+
+# Start client template
+npm run client:dev
+# → http://localhost:3001
 
 # Build all workspaces
 npm run build
@@ -43,77 +160,224 @@ npm run build
 # Run tests
 npm run test
 
-# Run linting
+# Lint all workspaces
 npm run lint
 ```
 
-## Apps
+## 🎨 Available Scripts
 
-### Generator App (`apps/generator-app`)
-
-The main platform with:
-- **Home** — Hero section with HVAC condenser background, mahogany surface design
-- **Live Demo** — Desktop-like preview that opens the Live Build Wizard
-- **Editor** — Step-based wizard (left panel: questions, right panel: live preview)
-- **Pricing** — Four tiers: Entrepreneur ($99/mo), Custom Build ($499), Executive ($399/mo), CEO ($999/mo)
-- **Proof** — Case studies and testimonials
-- **Archive** — Saved configurations
-- **Builds** — Deployment monitoring
-
-### Client Template (`apps/client-template`)
-
-Base template for generating client sites with placeholder tokens (`{{BUSINESS_NAME}}`, etc.).
-
-## Packages
-
-### `@platform-builder/ui-components`
-
-Shared components: Button, Card, Navigation, Hero, PricingCard, ImageUploader, Toggle, WizardPanel, PreviewFrame, TemplateSelector.
-
-### `@platform-builder/utils`
-
-Utilities for SEO (meta tags, sitemaps, robots.txt), formatting (phone, currency, dates, slugify), and routing.
-
-### `@platform-builder/image-optimizer`
-
-Sharp-based pipeline for compressing, converting, and resizing images.
-
-## Scripts
-
+### Root Level
 ```bash
-# Create a new client site from template
-node scripts/create-client-site.js --name "Business Name" --type hvac
+npm run dev                  # Start generator-app
+npm run build                # Build all workspaces
+npm run lint                 # Lint all workspaces
+npm run test                 # Test all workspaces
+npm run clean                # Clean build artifacts
 
-# Sync content and regenerate sitemaps
-node scripts/sync-content.js
+# Client site management
+npm run create-client <name>  # Create new client site
+npm run sync-content          # Sync content to all sites
+npm run optimize-images       # Optimize all images
 
-# Optimize images
-node scripts/optimize-images.js
+# Deployment
+npm run deploy:dev            # Deploy to dev
+npm run deploy:staging        # Deploy to staging
+npm run deploy:production     # Deploy to production
 ```
 
-## CI/CD Workflows
+### Generator App
+```bash
+npm run generator:dev         # Development mode
+npm run generator:build       # Build for production
+```
 
-| Workflow | Trigger | Purpose |
-|----------|---------|---------|
-| `deploy.yml` | Push to `main` | Deploy to production |
-| `preview.yml` | PRs and branches | Deploy preview sites |
-| `tests.yml` | PRs and pushes | Lint, typecheck, unit & integration tests |
-| `lighthouse.yml` | Deployments | Performance audit (fails if < 90) |
-| `optimize-images.yml` | Image changes | Compress and convert images |
-| `scheduled-builds.yml` | Nightly (2 AM UTC) | Rebuild sites, regenerate sitemaps |
+### Client Template
+```bash
+npm run client:dev            # Development mode
+npm run client:build          # Build for production
+```
 
-## Multi-Environment Deployments
+## 🌐 CI/CD Pipeline
 
-| Environment | URL | Config |
-|-------------|-----|--------|
-| Development | `dev.yourdomain.com` | `infrastructure/netlify/dev.toml` |
-| Staging | `staging.yourdomain.com` | `infrastructure/netlify/staging.toml` |
-| Production | `yourdomain.com` | `infrastructure/netlify/production.toml` |
+### GitHub Actions Workflows
 
-## Image Handling
+1. **deploy.yml** - Production Deployment
+   - Triggers on push to `main`
+   - Builds and deploys to Netlify production
+   - Deploys both generator-app and client-template
 
-- **Upload:** Drag-and-drop + file picker with real-time preview
-- **Optimize Toggle:** Per-field toggle to run Sharp optimization pipeline
-- **Categories:** Foreground, background, template, logo, gallery
-- **Placeholder paths:** `/images/hvac-condenser.jpg`, `/images/mahogany.jpg`, `/images/template-bg-*.jpg`
-- **User Library:** Account-based image management (favorites, categories, reuse)
+2. **preview.yml** - Preview Deployments
+   - Triggers on pull requests and branches
+   - Deploys preview sites to Netlify
+   - Comments preview URLs on PRs
+
+3. **tests.yml** - Automated Testing
+   - Runs linting, type checking, unit tests
+   - Tests on Node.js 18 and 20
+   - Security scanning with npm audit
+   - Blocks deployment on failure
+
+4. **lighthouse.yml** - Performance Audits
+   - Runs Lighthouse CI on every deployment
+   - Enforces performance > 90%
+   - Comments scores on PRs
+   - Fails build if thresholds not met
+
+5. **optimize-images.yml** - Image Optimization
+   - Triggers on image file changes
+   - Automatically optimizes with Sharp
+   - Commits optimized images back to repo
+
+6. **scheduled-builds.yml** - Nightly Rebuilds
+   - Runs daily at midnight UTC
+   - Rebuilds all sites
+   - Regenerates sitemaps
+   - Syncs CMS content
+   - Performs health checks
+
+### Multi-Environment Setup
+
+Configure these secrets in GitHub:
+- `NETLIFY_AUTH_TOKEN` - Your Netlify auth token
+- `NETLIFY_SITE_ID` - Generator app site ID
+- `NETLIFY_SITE_ID_CLIENT` - Client template site ID
+
+### Netlify Environments
+
+- **Development**: `dev.yourdomain.com` (dev.toml)
+- **Staging**: `staging.yourdomain.com` (staging.toml)
+- **Production**: `yourdomain.com` (production.toml)
+
+Each environment has:
+- Separate environment variables
+- Separate build settings
+- Separate deployment triggers
+
+## 📸 Image Optimization
+
+Built-in Sharp-based optimization pipeline:
+
+```bash
+# Optimize specific directory
+node infrastructure/scripts/optimize-images.js apps/generator-app/public
+
+# Optimize all images
+npm run optimize-images
+```
+
+Features:
+- Automatic compression (80% quality)
+- WebP and AVIF conversion
+- Responsive variants (320w, 640w, 768w, 1024w, 1280w, 1920w)
+- Preserves original files
+- Comprehensive optimization reports
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+npm run test
+
+# Lint all code
+npm run lint
+
+# Type checking
+npx tsc --noEmit
+```
+
+## 🚢 Deployment
+
+### Manual Deployment
+```bash
+# Build production
+npm run build
+
+# Deploy to Netlify
+npm run deploy:production
+```
+
+### Automatic Deployment
+- Push to `main` → Auto-deploy to production
+- Create PR → Auto-deploy preview
+- Merge PR → Auto-deploy to production
+
+## 📋 Environment Variables
+
+Create `.env.local` in `apps/generator-app/`:
+
+```env
+NEXT_PUBLIC_SITE_NAME="HVAC Pro"
+NEXT_PUBLIC_API_URL=https://api.yourdomain.com
+NETLIFY_AUTH_TOKEN=your_token_here
+NETLIFY_SITE_ID=your_site_id_here
+```
+
+## 🎯 Technology Stack
+
+- **Framework**: Next.js 14 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **State Management**: Zustand
+- **Image Processing**: Sharp
+- **Package Manager**: npm workspaces
+- **CI/CD**: GitHub Actions
+- **Deployment**: Netlify
+- **Performance**: Lighthouse CI
+
+## 📖 Documentation
+
+- [Image Assets Guide](apps/generator-app/public/images/README.md)
+- [Upload System Guide](apps/generator-app/public/uploads/README.md)
+- [Image Optimizer API](packages/image-optimizer/src/index.ts)
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run tests: `npm run test`
+5. Submit a pull request
+
+## 📄 License
+
+Private - All Rights Reserved
+
+---
+
+**Built for Elite HVAC & Plumbing Professionals**
+
+Skip the learning curve. Build like a pro.
+3. Use in apps: `import { YourComponent } from '@platform-builder/ui'`
+
+### To the Generator App
+
+1. Create component in `apps/generator/src/components/`
+2. Import and use in pages or other components
+
+## 📚 Placeholder Images
+
+The project uses placeholder images from:
+- `via.placeholder.com` - For template previews and component defaults
+- Custom placeholders can be configured in `next.config.js`
+
+## 🤝 Contributing
+
+1. Create a new branch for your feature
+2. Make your changes
+3. Run linting and builds: `npm run lint && npm run build`
+4. Submit a pull request
+
+## 📄 License
+
+MIT
+
+## 🎯 Future Enhancements
+
+- [ ] Add testing infrastructure (Jest, React Testing Library)
+- [ ] Implement real cloud storage for image uploads (S3, Cloudinary)
+- [ ] Add database integration for saving projects
+- [ ] Implement user authentication
+- [ ] Add more component types to the library
+- [ ] Create more client site templates
+- [ ] Add export functionality for generated sites
+- [ ] Implement version control for projects
