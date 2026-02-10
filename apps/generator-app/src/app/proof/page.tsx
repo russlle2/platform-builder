@@ -32,6 +32,10 @@ function ProofCard({ number }: { number: number }) {
           alt={`Example ${number}`}
           className="w-full h-full object-cover"
         />
+    <main className="relative min-h-screen">
+      <div className="fixed inset-0 z-0">
+        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: 'url(/images/hvac-condenser.jpg)' }} />
+        <div className="absolute inset-0 bg-slate-50/80" />
       </div>
       <h3 className="text-xl font-bold text-bright-white">
         Elite HVAC Pro {number}

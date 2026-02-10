@@ -26,7 +26,7 @@ export function LiveDemoPreview() {
               <div className="w-3 h-3 rounded-full bg-green-500" />
             </div>
             <div className="flex-grow mx-4">
-              <div className="bg-gray-700 rounded-md px-3 py-1 text-gray-400 text-xs">
+              <div className="bg-gray-700 rounded-md px-3 py-1 text-gray-200 text-xs">
                 yoursite.com
               </div>
             </div>
@@ -65,7 +65,7 @@ export function LiveDemoPreview() {
                   <div key={service} className="bg-gray-800/60 rounded-xl p-4 backdrop-blur-sm border border-gray-700/30">
                     <div className="w-10 h-10 bg-amber-600/20 rounded-lg mb-3" />
                     <h4 className="text-white font-medium text-sm">{service}</h4>
-                    <p className="text-gray-400 text-xs mt-1">Expert service</p>
+                    <p className="text-gray-200 text-xs mt-1">Expert service</p>
                   </div>
                 ))}
               </div>

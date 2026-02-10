@@ -101,7 +101,7 @@ export function PricingSection() {
             </div>
 
             {tier.note && (
-              <p className="text-amber-300 text-sm mb-4 font-medium">{tier.note}</p>
+              <p className="text-amber-100 text-sm mb-4 font-medium">{tier.note}</p>
             )}
 
             <ul className="space-y-3 mb-8 flex-grow">

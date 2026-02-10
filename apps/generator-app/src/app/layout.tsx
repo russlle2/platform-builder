@@ -24,6 +24,8 @@ export default function RootLayout({
         <Navigation />
         {children}
         <Chatbot />
+      <body className="bg-slate-50 text-slate-900 antialiased">
+        <AppLayout>{children}</AppLayout>
       </body>
     </html>
   )

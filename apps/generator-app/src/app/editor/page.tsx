@@ -57,6 +57,15 @@ export default function EditorPage() {
           </div>
         </div>
       </main>
+    <main className="relative min-h-screen">
+      {/* Background */}
+      <div className="fixed inset-0 z-0">
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: 'url(/images/hvac-condenser.jpg)' }}
+        />
+        <div className="absolute inset-0 bg-slate-50/85" />
+      </div>
 
       {/* Right Sidebar - Properties */}
       <aside className="w-80 bg-white shadow-lg p-4 overflow-y-auto">

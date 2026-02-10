@@ -44,6 +44,10 @@ function TemplateCard({ template }: { template: typeof templates[0] }) {
           alt={template.name}
           className="w-full h-full object-cover"
         />
+    <main className="relative min-h-screen">
+      <div className="fixed inset-0 z-0">
+        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: 'url(/images/hvac-condenser.jpg)' }} />
+        <div className="absolute inset-0 bg-slate-50/80" />
       </div>
       <div className="space-y-2">
         <h3 className="text-xl font-bold text-bright-white">{template.name}</h3>
