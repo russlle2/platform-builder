@@ -1,7 +1,6 @@
 name: Tests
 
 on:
-<<<<<<< HEAD
   push:
     branches:
       - main
@@ -22,34 +21,16 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-=======
-  workflow_call:
-  pull_request:
-    branches: [main, develop]
-  push:
-    branches: [main, develop]
-
-jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
->>>>>>> origin/main
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-<<<<<<< HEAD
           node-version: ${{ env.NODE_VERSION }}
-=======
-          node-version: '20'
->>>>>>> origin/main
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-<<<<<<< HEAD
       - name: Run ESLint
         run: npm run lint
 
@@ -63,30 +44,16 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-=======
-      - name: Lint
-        run: npm run lint
-
-  typecheck:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
->>>>>>> origin/main
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-<<<<<<< HEAD
           node-version: ${{ env.NODE_VERSION }}
-=======
-          node-version: '20'
->>>>>>> origin/main
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-<<<<<<< HEAD
       - name: Run TypeScript compiler
         run: npx tsc --noEmit --project tsconfig.json
 
@@ -106,20 +73,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-=======
-      - name: Type check
-        run: npm run typecheck
-
-  unit-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
->>>>>>> origin/main
           cache: 'npm'
 
       - name: Install dependencies
@@ -127,7 +80,6 @@ jobs:
 
       - name: Run unit tests
         run: npm run test
-<<<<<<< HEAD
         env:
           CI: true
 
@@ -146,29 +98,16 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-=======
-
-  integration-tests:
-    runs-on: ubuntu-latest
-    needs: [lint, typecheck, unit-tests]
-    steps:
-      - uses: actions/checkout@v4
->>>>>>> origin/main
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-<<<<<<< HEAD
           node-version: ${{ env.NODE_VERSION }}
-=======
-          node-version: '20'
->>>>>>> origin/main
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-<<<<<<< HEAD
       - name: Run integration tests
         run: npm run test:integration --if-present
         env:
@@ -234,10 +173,3 @@ jobs:
           path: ./
           base: ${{ github.event.repository.default_branch }}
           head: HEAD
-=======
-      - name: Build
-        run: npm run build
-
-      - name: Run integration tests
-        run: npm run test
->>>>>>> origin/main

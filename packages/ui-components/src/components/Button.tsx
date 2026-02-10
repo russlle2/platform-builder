@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React from 'react'
 
 interface ButtonProps {
@@ -9,23 +8,11 @@ interface ButtonProps {
   onClick?: () => void
   disabled?: boolean
   className?: string
-=======
-import React from 'react';
-
-export interface ButtonProps {
-  children: React.ReactNode;
-  variant?: 'primary' | 'secondary' | 'outline';
-  size?: 'sm' | 'md' | 'lg';
-  onClick?: () => void;
-  className?: string;
-  disabled?: boolean;
->>>>>>> origin/main
 }
 
 export function Button({
   children,
   variant = 'primary',
-<<<<<<< HEAD
   size = 'medium',
   fullWidth = false,
   onClick,
@@ -49,42 +36,13 @@ export function Button({
   const widthStyles = fullWidth ? 'w-full' : ''
   const disabledStyles = disabled ? 'opacity-50 cursor-not-allowed' : ''
   
-=======
-  size = 'md',
-  onClick,
-  className = '',
-  disabled = false,
-}: ButtonProps) {
-  const baseStyles = 'inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2';
-
-  const variants: Record<string, string> = {
-    primary: 'bg-amber-600 hover:bg-amber-700 text-white focus:ring-amber-500 shadow-lg hover:shadow-xl',
-    secondary: 'bg-gray-800 hover:bg-gray-900 text-white focus:ring-gray-500',
-    outline: 'border-2 border-white text-white hover:bg-white hover:text-gray-900 focus:ring-white',
-  };
-
-  const sizes: Record<string, string> = {
-    sm: 'px-4 py-2 text-sm',
-    md: 'px-6 py-3 text-base',
-    lg: 'px-8 py-4 text-lg',
-  };
-
->>>>>>> origin/main
   return (
     <button
       onClick={onClick}
       disabled={disabled}
-<<<<<<< HEAD
       className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${widthStyles} ${disabledStyles} ${className}`}
     >
       {children}
     </button>
   )
-=======
-      className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
-    >
-      {children}
-    </button>
-  );
->>>>>>> origin/main
 }

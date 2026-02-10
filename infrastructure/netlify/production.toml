@@ -1,7 +1,6 @@
 # Production Environment Configuration
 [build]
   base = "apps/generator-app"
-<<<<<<< HEAD
   command = "npm ci && npm run build --workspace=apps/generator-app"
   publish = "apps/generator-app/.next"
   functions = "apps/generator-app/netlify/functions"
@@ -15,19 +14,6 @@
   from = "/*"
   to = "/index.html"
   status = 200
-=======
-  command = "npm run build"
-  publish = ".next"
-
-[build.environment]
-  NODE_VERSION = "20"
-  NEXT_PUBLIC_ENV = "production"
-  NEXT_PUBLIC_API_URL = "https://api.yourdomain.com"
-  NEXT_PUBLIC_SITE_URL = "https://yourdomain.com"
-
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
->>>>>>> origin/main
 
 [[headers]]
   for = "/*"
@@ -36,7 +22,6 @@
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-<<<<<<< HEAD
     Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:;"
     Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
     Permissions-Policy = "geolocation=(), microphone=(), camera=()"
@@ -50,16 +35,12 @@
   for = "/*.css"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
-=======
-    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
->>>>>>> origin/main
 
 [[headers]]
   for = "/images/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
-<<<<<<< HEAD
 [context.production]
   environment = { NODE_ENV = "production" }
 
@@ -81,9 +62,3 @@
     best-practices = 0.95
     seo = 0.95
     fail_deploy_on_score_thresholds = true
-=======
-[[headers]]
-  for = "/_next/static/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
->>>>>>> origin/main
