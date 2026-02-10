@@ -1,9 +1,8 @@
 # Staging Environment Configuration
 [build]
-  base = "apps/generator-app"
-  command = "npm ci && npm run build --workspace=apps/generator-app"
+  base = "."
+  command = "pnpm install --frozen-lockfile && pnpm --filter @platform-builder/generator-app build"
   publish = "apps/generator-app/.next"
-  functions = "apps/generator-app/netlify/functions"
 
 [build.environment]
   NODE_VERSION = "20"
@@ -14,6 +13,9 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+[context.deploy-preview]
+  command = "pnpm install --frozen-lockfile && pnpm --filter @platform-builder/generator-app build"
 
 [[headers]]
   for = "/*"

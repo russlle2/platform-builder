@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 
 interface ImageUploadProps {
   onUpload: (url: string) => void
@@ -85,10 +86,13 @@ export function ImageUploadWithOptimize({ onUpload, currentImage }: ImageUploadP
         <label htmlFor="image-upload" className="cursor-pointer">
           {preview ? (
             <div className="space-y-4">
-              <img
+              <Image
                 src={preview}
                 alt="Preview"
-                className="max-h-48 mx-auto rounded-lg"
+                width={320}
+                height={192}
+                className="max-h-48 w-auto mx-auto rounded-lg"
+                unoptimized
               />
               <p className="text-sm text-gray-400">
                 Click or drag to replace

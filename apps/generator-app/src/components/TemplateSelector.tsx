@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 
 interface Template {
   id: string
@@ -84,11 +85,13 @@ export function TemplateSelector({ selected, onSelect }: TemplateSelectorProps) 
     <div className="space-y-6">
       {/* Main Template Display */}
       <div className="relative">
-        <div className="aspect-video rounded-lg overflow-hidden bg-slate-800 border-2 border-white/10">
-          <img
+        <div className="relative aspect-video rounded-lg overflow-hidden bg-slate-800 border-2 border-white/10">
+          <Image
             src={currentTemplate.thumbnail}
             alt={currentTemplate.name}
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 60vw"
           />
         </div>
 
@@ -134,16 +137,18 @@ export function TemplateSelector({ selected, onSelect }: TemplateSelectorProps) 
               setCurrentIndex(index)
               onSelect(template.id)
             }}
-            className={`aspect-video rounded-lg overflow-hidden border-2 transition-all ${
+            className={`relative aspect-video rounded-lg overflow-hidden border-2 transition-all ${
               index === currentIndex
                 ? 'border-blue-500 ring-2 ring-blue-500/50'
                 : 'border-white/10 hover:border-white/30'
             }`}
           >
-            <img
+            <Image
               src={template.thumbnail}
               alt={template.name}
-              className="w-full h-full object-cover"
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 33vw, 160px"
             />
           </button>
         ))}
