@@ -1,5 +1,7 @@
 'use client'
 
+import Image from 'next/image'
+
 export default function ArchivePage() {
   return (
     <main className="min-h-screen pt-16">
@@ -38,16 +40,13 @@ const templates = [
 function TemplateCard({ template }: { template: typeof templates[0] }) {
   return (
     <div className="card-mahogany space-y-4 hover:scale-105 transition-transform">
-      <div className="aspect-video bg-slate-800 rounded-lg overflow-hidden">
-        <img 
+      <div className="aspect-video bg-slate-800 rounded-lg overflow-hidden relative">
+        <Image 
           src={`/images/template-${template.id}.jpg`} 
           alt={template.name}
-          className="w-full h-full object-cover"
+          fill
+          className="object-cover"
         />
-    <main className="relative min-h-screen">
-      <div className="fixed inset-0 z-0">
-        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: 'url(/images/hvac-condenser.jpg)' }} />
-        <div className="absolute inset-0 bg-slate-50/80" />
       </div>
       <div className="space-y-2">
         <h3 className="text-xl font-bold text-bright-white">{template.name}</h3>
