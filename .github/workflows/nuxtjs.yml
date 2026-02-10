@@ -57,19 +57,20 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            node_modules
-            .next
-          key: ${{ runner.os }}-nextjs-build-${{ hashFiles('package-lock.json') }}
+            .next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
           restore-keys: |
-            ${{ runner.os }}-nextjs-build-
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-
       - name: Install dependencies
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
-      - name: Static HTML export with Next.js
-        run: ${{ steps.detect-package-manager.outputs.manager }} run generate
+      - name: Build with Next.js
+        run: ${{ steps.detect-package-manager.outputs.manager }} run build --workspace=apps/generator-app
+        env:
+          NODE_ENV: production
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./out
+          path: ./apps/generator-app/out
 
   # Deployment job
   deploy:
