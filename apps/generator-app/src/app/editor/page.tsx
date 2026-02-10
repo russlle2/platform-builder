@@ -6,10 +6,10 @@ import { ImageUpload } from '@/components/ImageUpload'
 import { ComponentPanel } from '@/components/ComponentPanel'
 
 export default function EditorPage() {
-  const { components, addComponent, selectedComponent } = useEditorStore()
+  const { components, selectedComponent } = useEditorStore()
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-gray-100">
       {/* Left Sidebar - Component Library */}
       <aside className="w-64 bg-white shadow-lg p-4 overflow-y-auto">
         <h2 className="text-xl font-bold mb-4">Components</h2>
@@ -57,15 +57,6 @@ export default function EditorPage() {
           </div>
         </div>
       </main>
-    <main className="relative min-h-screen">
-      {/* Background */}
-      <div className="fixed inset-0 z-0">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: 'url(/images/hvac-condenser.jpg)' }}
-        />
-        <div className="absolute inset-0 bg-slate-50/85" />
-      </div>
 
       {/* Right Sidebar - Properties */}
       <aside className="w-80 bg-white shadow-lg p-4 overflow-y-auto">

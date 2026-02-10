@@ -1,22 +1,3 @@
-import Image from 'next/image';
-
-export default function ArchivePage() {
-  return (
-    <main className="relative min-h-screen">
-      <div className="fixed inset-0 z-0">
-        <Image
-          src="/images/hvac-condenser.jpg"
-          alt="HVAC condenser background"
-          fill
-          className="object-cover object-center"
-          priority
-        />
-        <div className="absolute inset-0 bg-slate-50/80" />
-      </div>
-      <div className="relative z-10 pt-24 pb-24 max-w-6xl mx-auto px-4">
-        <h1 className="text-4xl font-bold text-white mb-8">Archive</h1>
-        <p className="text-white text-lg">Browse previously built sites and saved configurations.</p>
-      </div>
 'use client'
 
 import Image from 'next/image'

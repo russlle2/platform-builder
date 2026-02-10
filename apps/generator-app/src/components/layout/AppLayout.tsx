@@ -14,9 +14,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               <Link href="/" className="text-xl font-bold text-white tracking-wide">
                 Platform<span className="text-amber-500">Builder</span>
               </Link>
-              <a href="/" className="text-xl font-bold text-slate-900 tracking-wide">
-                Platform<span className="text-amber-700">Builder</span>
-              </a>
             </div>
             <div className="flex space-x-1">
               {[
