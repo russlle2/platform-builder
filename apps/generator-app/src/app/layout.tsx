@@ -1,8 +1,8 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import Navigation from '@/components/Navigation'
 import Chatbot from '@/components/Chatbot'
+import { AppLayout } from '@/components/layout/AppLayout'
 import type { ReactNode } from 'react'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -20,12 +20,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <Navigation />
-        {children}
+      <body className={`${inter.className} bg-slate-50 text-slate-900 antialiased`}> 
+        <AppLayout>
+          {children}
+        </AppLayout>
         <Chatbot />
-      <body className="bg-slate-50 text-slate-900 antialiased">
-        <AppLayout>{children}</AppLayout>
       </body>
     </html>
   )
