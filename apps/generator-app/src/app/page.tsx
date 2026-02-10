@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function HomePage() {
   return (
@@ -69,11 +70,13 @@ export default function HomePage() {
               </div>
 
               {/* Placeholder for actual preview */}
-              <div className="opacity-20">
-                <img 
-                  src="/images/template-bg-1.jpg" 
-                  alt="Preview" 
-                  className="w-full h-full object-cover"
+              <div className="relative opacity-20">
+                <Image
+                  src="/images/template-bg-1.jpg"
+                  alt="Preview"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 70vw"
                 />
               </div>
             </div>

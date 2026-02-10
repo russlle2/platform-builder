@@ -1,5 +1,7 @@
 'use client'
 
+import Image from 'next/image'
+
 export default function ProofPage() {
   return (
     <main className="min-h-screen pt-16">
@@ -26,11 +28,13 @@ export default function ProofPage() {
 function ProofCard({ number }: { number: number }) {
   return (
     <div className="card-mahogany space-y-4">
-      <div className="aspect-video bg-slate-800 rounded-lg overflow-hidden">
-        <img 
-          src={`/images/proof-${number}.jpg`} 
+      <div className="relative aspect-video bg-slate-800 rounded-lg overflow-hidden">
+        <Image
+          src={`/images/proof-${number}.jpg`}
           alt={`Example ${number}`}
-          className="w-full h-full object-cover"
+          fill
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw, 33vw"
         />
       </div>
       <h3 className="text-xl font-bold text-bright-white">

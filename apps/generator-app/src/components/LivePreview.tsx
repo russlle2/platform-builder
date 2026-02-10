@@ -1,5 +1,7 @@
 'use client'
 
+import Image from 'next/image'
+
 interface LivePreviewProps {
   data: any
 }
@@ -35,10 +37,13 @@ export function LivePreview({ data }: LivePreviewProps) {
         }}>
           <div className="text-center space-y-6 max-w-3xl">
             {data.logo && (
-              <img 
-                src={data.logo} 
-                alt="Logo" 
-                className="h-16 mx-auto"
+              <Image
+                src={data.logo}
+                alt="Logo"
+                width={160}
+                height={64}
+                className="h-16 w-auto mx-auto"
+                unoptimized
               />
             )}
             <h1 className="text-4xl md:text-5xl font-bold text-white">
