@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
 
 const pricingTiers = [
   {
@@ -78,10 +77,18 @@ const pricingTiers = [
 ]
 
 export default function PricingPage() {
-  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'annual'>('monthly')
+  const billingPeriod: 'monthly' | 'annual' = 'monthly'
 
   return (
-    <main className="min-h-screen pt-16">
+    <main className="relative min-h-screen pt-16">
+      <div className="fixed inset-0 z-0">
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: 'url(/images/hvac-condenser.jpg)' }}
+        />
+        <div className="absolute inset-0 bg-slate-50/80" />
+      </div>
+      <div className="relative z-10">
       {/* Header */}
       <section className="container-hvac py-16">
         <div className="text-center space-y-6">
@@ -151,6 +158,7 @@ export default function PricingPage() {
           </Link>
         </div>
       </section>
+      </div>
     </main>
   )
 }

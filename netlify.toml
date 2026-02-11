@@ -1,6 +1,8 @@
 # Generator App Deployment
 [build]
   # Run from root to ensure workspace dependencies like ui-components are installed correctly
+  base = "/"
+  command = "pnpm install --frozen-lockfile && pnpm run generator:build"
   base = "."
   command = "pnpm install --frozen-lockfile && pnpm --filter @platform-builder/generator-app build"
   # Next.js runtime handles the publishing directory usually, but we point to the app folder
@@ -14,6 +16,13 @@
 
 # Build settings for specific contexts
 [context.production]
+  command = "pnpm install --frozen-lockfile && pnpm run generator:build"
+
+[context.deploy-preview]
+  command = "pnpm install --frozen-lockfile && pnpm run generator:build"
+
+[context.branch-deploy]
+  command = "pnpm install --frozen-lockfile && pnpm run generator:build"
   command = "pnpm install --frozen-lockfile && pnpm --filter @platform-builder/generator-app build"
 
 [context.deploy-preview]

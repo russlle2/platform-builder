@@ -3,7 +3,22 @@ import Image from 'next/image'
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen pt-16">
+    <main className="relative min-h-screen pt-16">
+      {/* Aerial HVAC condenser background */}
+      <div className="fixed inset-0 z-0">
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: 'url(/images/hvac-condenser.jpg)' }}
+        />
+        <div className="absolute inset-0 bg-slate-50/80" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 opacity-5">
+          <div
+            className="w-full h-full rounded-full border-4 border-gray-400 animate-spin"
+            style={{ animationDuration: '20s' }}
+          />
+        </div>
+      </div>
+      <div className="relative z-10">
       {/* Hero Section */}
       <section className="container-hvac py-20">
         <div className="mahogany-surface rounded-3xl p-12 md:p-16 lg:p-20">
@@ -142,6 +157,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      </div>
     </main>
   )
 }
