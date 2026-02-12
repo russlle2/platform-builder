@@ -9,7 +9,7 @@ if (!stripeSecretKey) {
 }
 
 const stripe = new Stripe(stripeSecretKey, {
-  apiVersion: '2024-04-10',
+  apiVersion: '2023-10-16',
 })
 
 const priceMap: Record<string, string | undefined> = {
