@@ -1,0 +1,295 @@
+'use client'
+
+import { useEffect, useMemo, useState } from 'react'
+import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
+import { track } from '@/lib/analytics'
+
+const onboardingSteps = [
+  {
+    title: 'Confirm business details',
+    description: 'Review your business name, services, and contact info.',
+    action: 'Review details',
+  },
+  {
+    title: 'Select your template',
+    description: 'Choose the layout that fits your market and positioning.',
+    action: 'Pick template',
+  },
+  {
+    title: 'Connect integrations',
+    description: 'Postmark, Supabase, and Stripe get connected after checkout.',
+    action: 'View integrations',
+  },
+  {
+    title: 'Review your launch',
+    description: 'Approve the final site and we publish to your subdomain.',
+    action: 'Approve launch',
+  },
+]
+
+const integrations = [
+  { name: 'Postmark', status: 'Pending' },
+  { name: 'Supabase', status: 'Pending' },
+  { name: 'Stripe', status: 'Pending' },
+]
+
+const normalizeSlug = (value: string) => {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+export default function PortalClient() {
+  const searchParams = useSearchParams()
+  const initialSlug = useMemo(() => searchParams.get('slug') || '', [searchParams])
+  const [slug, setSlug] = useState(initialSlug)
+  const [status, setStatus] = useState<'idle' | 'loading' | 'saving' | 'saved' | 'error'>(
+    'idle'
+  )
+  const [formData, setFormData] = useState({
+    businessName: '',
+    tagline: '',
+    phone: '',
+    email: '',
+    address: '',
+    services: '',
+  })
+
+  useEffect(() => {
+    if (!initialSlug) {
+      return
+    }
+    loadSite(initialSlug)
+  }, [initialSlug])
+
+  const loadSite = async (targetSlug: string) => {
+    const normalized = normalizeSlug(targetSlug)
+    if (!normalized) {
+      return
+    }
+    setStatus('loading')
+    try {
+      const response = await fetch(`/api/portal/site?slug=${encodeURIComponent(normalized)}`)
+      const data = await response.json()
+      if (response.ok && data?.site?.data) {
+        setFormData({
+          businessName: data.site.data.businessName || '',
+          tagline: data.site.data.tagline || '',
+          phone: data.site.data.phone || '',
+          email: data.site.data.email || '',
+          address: data.site.data.address || '',
+          services: data.site.data.services || '',
+        })
+      }
+      setStatus('idle')
+    } catch (error) {
+      setStatus('error')
+    }
+  }
+
+  const saveSite = async () => {
+    const normalized = normalizeSlug(slug)
+    if (!normalized) {
+      setStatus('error')
+      return
+    }
+    setStatus('saving')
+    try {
+      const response = await fetch('/api/portal/site', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          slug: normalized,
+          data: {
+            businessName: formData.businessName,
+            tagline: formData.tagline,
+            phone: formData.phone,
+            email: formData.email,
+            address: formData.address,
+            services: formData.services,
+          },
+        }),
+      })
+      if (!response.ok) {
+        throw new Error('Failed')
+      }
+      setStatus('saved')
+      track('portal_saved', { slug: normalized })
+    } catch (error) {
+      setStatus('error')
+    }
+  }
+
+  return (
+    <main className="min-h-screen pt-24 pb-20">
+      <div className="container-hvac space-y-10">
+        <header className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+          <div className="space-y-4">
+            <span className="signal-chip">Portal</span>
+            <h1 className="text-4xl md:text-5xl font-bold text-white">
+              Your platform command center
+            </h1>
+            <p className="text-slate-300 text-lg">
+              Track launch progress, manage updates, and keep your HVAC platform performing.
+            </p>
+            <div className="flex flex-wrap gap-4">
+              <Link href="/wizard" className="cta-button">
+                Continue intake
+              </Link>
+              <Link
+                href="/pricing"
+                className="px-6 py-3 text-base font-semibold text-white border border-white/20 rounded-lg hover:bg-white/10 transition-all"
+              >
+                View subscription
+              </Link>
+            </div>
+          </div>
+          <div className="glass-panel rounded-3xl p-8">
+            <h2 className="text-xl font-bold text-white">Launch status</h2>
+            <p className="text-slate-300 mt-2">Awaiting onboarding completion</p>
+            <div className="mt-6 grid grid-cols-2 gap-4">
+              <div className="stat-card">
+                <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Checklist</p>
+                <p className="text-3xl font-bold text-white">1/4</p>
+              </div>
+              <div className="stat-card">
+                <p className="text-xs uppercase tracking-[0.3em] text-slate-400">ETA</p>
+                <p className="text-3xl font-bold text-white">48 hrs</p>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <section className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-8">
+          <div className="glass-panel rounded-3xl p-8">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-white">Portal edits</h2>
+              <span className="text-xs uppercase tracking-[0.3em] text-slate-400">
+                {status === 'saved' ? 'Saved' : 'Draft'}
+              </span>
+            </div>
+            <div className="space-y-4 mb-8">
+              <label className="text-sm text-slate-300">Subdomain slug</label>
+              <div className="flex gap-3">
+                <input
+                  value={slug}
+                  onChange={(event) => setSlug(normalizeSlug(event.target.value))}
+                  placeholder="your-slug"
+                  className="flex-1 px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white"
+                />
+                <button
+                  type="button"
+                  onClick={() => loadSite(slug)}
+                  className="px-4 py-3 text-sm font-semibold text-white border border-white/20 rounded-lg hover:bg-white/10"
+                >
+                  Load
+                </button>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <input
+                value={formData.businessName}
+                onChange={(event) =>
+                  setFormData({ ...formData, businessName: event.target.value })
+                }
+                placeholder="Business name"
+                className="px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white"
+              />
+              <input
+                value={formData.tagline}
+                onChange={(event) => setFormData({ ...formData, tagline: event.target.value })}
+                placeholder="Tagline"
+                className="px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white"
+              />
+              <input
+                value={formData.phone}
+                onChange={(event) => setFormData({ ...formData, phone: event.target.value })}
+                placeholder="Phone"
+                className="px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white"
+              />
+              <input
+                value={formData.email}
+                onChange={(event) => setFormData({ ...formData, email: event.target.value })}
+                placeholder="Email"
+                className="px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white"
+              />
+              <input
+                value={formData.address}
+                onChange={(event) => setFormData({ ...formData, address: event.target.value })}
+                placeholder="Service area"
+                className="px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white md:col-span-2"
+              />
+              <textarea
+                value={formData.services}
+                onChange={(event) => setFormData({ ...formData, services: event.target.value })}
+                placeholder="Services (comma-separated)"
+                rows={3}
+                className="px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white md:col-span-2"
+              />
+            </div>
+            <div className="flex flex-wrap gap-4 mt-6">
+              <button
+                type="button"
+                onClick={saveSite}
+                disabled={status === 'saving'}
+                className="cta-button"
+              >
+                {status === 'saving' ? 'Saving...' : 'Save changes'}
+              </button>
+              {status === 'error' && (
+                <span className="text-sm text-red-200">Unable to save.</span>
+              )}
+            </div>
+
+            <h2 className="text-2xl font-bold text-white mt-10 mb-6">Onboarding checklist</h2>
+            <div className="space-y-4">
+              {onboardingSteps.map((step, index) => (
+                <div
+                  key={step.title}
+                  className="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/10"
+                >
+                  <div className="w-10 h-10 rounded-full bg-cyan-400/20 text-cyan-200 flex items-center justify-center font-bold">
+                    {index + 1}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-white">{step.title}</h3>
+                    <p className="text-slate-300 text-sm">{step.description}</p>
+                  </div>
+                  <button className="text-sm font-semibold text-cyan-200 hover:text-cyan-100">
+                    {step.action}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <aside className="space-y-6">
+            <div className="glass-panel rounded-2xl p-6">
+              <h3 className="text-xl font-bold text-white">Integrations</h3>
+              <div className="mt-4 space-y-3">
+                {integrations.map((item) => (
+                  <div key={item.name} className="flex items-center justify-between text-sm text-slate-200">
+                    <span>{item.name}</span>
+                    <span className="px-3 py-1 rounded-full bg-white/10 text-slate-200">
+                      {item.status}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="glass-panel rounded-2xl p-6">
+              <h3 className="text-xl font-bold text-white">Recent activity</h3>
+              <p className="text-slate-300 text-sm mt-2">
+                No activity yet. Complete onboarding to unlock your build timeline.
+              </p>
+            </div>
+          </aside>
+        </section>
+      </div>
+    </main>
+  )
+}
