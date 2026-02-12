@@ -1,16 +1,41 @@
 import './globals.css'
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Barlow_Condensed, Sora } from 'next/font/google'
 import Chatbot from '@/components/Chatbot'
 import { AppLayout } from '@/components/layout/AppLayout'
 import type { ReactNode } from 'react'
 
-const inter = Inter({ subsets: ['latin'] })
+const display = Barlow_Condensed({
+  subsets: ['latin'],
+  weight: ['400', '600', '700'],
+  variable: '--font-display',
+})
+const body = Sora({
+  subsets: ['latin'],
+  weight: ['300', '400', '600', '700'],
+  variable: '--font-body',
+})
 
 export const metadata: Metadata = {
-  title: 'HVAC & Plumbing Platform Builder - Build Like A Pro',
-  description: 'Skip the learning curve. Build your HVAC and Plumbing services presence instantly, without confusion, without learning tools.',
-  keywords: 'HVAC website builder, plumbing website, professional services, no-code platform',
+  title: {
+    default: 'Platform Builder for HVAC Pros',
+    template: '%s | Platform Builder',
+  },
+  description:
+    'Launch a premium HVAC platform with guided intake, instant templates, and managed integrations.',
+  keywords: [
+    'HVAC website builder',
+    'plumbing website',
+    'HVAC marketing platform',
+    'service business website',
+    'local service marketing',
+  ],
+  robots: 'index, follow',
+  category: 'business',
+}
+
+export const viewport = {
+  themeColor: '#0b1220',
 }
 
 export default function RootLayout({
@@ -20,7 +45,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-slate-50 text-slate-900 antialiased`}> 
+      <body className={`${body.variable} ${display.variable} bg-slate-950 text-white antialiased`}> 
         <AppLayout>
           {children}
         </AppLayout>

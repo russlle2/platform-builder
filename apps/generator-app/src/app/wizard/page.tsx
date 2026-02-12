@@ -1,9 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { ImageUploadWithOptimize } from '@/components/ImageUploadWithOptimize'
-import { LivePreview } from '@/components/LivePreview'
 import { TemplateSelector } from '@/components/TemplateSelector'
 
 interface WizardData {
@@ -24,6 +23,8 @@ interface WizardData {
   backgroundImage: string
   galleryImages: string[]
   autoFill: boolean
+  customInfo: { label: string; value: string }[]
+  subdomainSlug: string
 }
 
 const wizardSteps = [
@@ -33,6 +34,33 @@ const wizardSteps = [
   'Branding',
   'Media',
   'Review',
+]
+
+const stepMeta = [
+  {
+    title: 'Business Info',
+    description: 'Core identity, subdomain, and the details that set you apart.',
+  },
+  {
+    title: 'Services',
+    description: 'Select your service mix and contact details for the site.',
+  },
+  {
+    title: 'Template',
+    description: 'Pick the layout that matches your market and positioning.',
+  },
+  {
+    title: 'Branding',
+    description: 'Define color and tone so the build feels like you.',
+  },
+  {
+    title: 'Media',
+    description: 'Upload the hero, logo, and background imagery.',
+  },
+  {
+    title: 'Review',
+    description: 'Confirm your details before checkout and launch.',
+  },
 ]
 
 export default function WizardPage() {
@@ -55,7 +83,13 @@ export default function WizardPage() {
     backgroundImage: '/images/hvac-background.jpg',
     galleryImages: [],
     autoFill: false,
+    customInfo: [],
+    subdomainSlug: '',
   })
+
+  const stepInfo = stepMeta[currentStep]
+  const businessNameMissing = !wizardData.businessName.trim()
+  const canContinue = currentStep === 0 ? !businessNameMissing : true
 
   const updateData = (key: keyof WizardData, value: any) => {
     setWizardData((prev) => ({ ...prev, [key]: value }))
@@ -74,53 +108,73 @@ export default function WizardPage() {
   }
 
   return (
-    <main className="min-h-screen pt-16">
-      <div className="container-hvac py-8">
+    <main className="min-h-screen pt-24 pb-16">
+      <div className="container-hvac py-8 space-y-10">
+        <header className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+          <div className="space-y-4">
+            <span className="signal-chip">Build Wizard</span>
+            <h1 className="text-4xl md:text-5xl font-bold text-white">
+              Launch your HVAC platform in minutes
+            </h1>
+            <p className="text-slate-300 text-lg">
+              Every answer feeds your site, your subdomain, and your integrations. Only the
+              business name is required to move forward.
+            </p>
+          </div>
+          <div className="glass-panel rounded-2xl p-6">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Progress</p>
+              <p className="text-sm text-cyan-200">Step {currentStep + 1} of {wizardSteps.length}</p>
+            </div>
+            <div className="flex items-center gap-2">
+              {wizardSteps.map((_, index) => (
+                <div
+                  key={index}
+                  className={`h-2 flex-1 rounded-full ${
+                    index <= currentStep ? 'bg-cyan-400' : 'bg-white/10'
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+        </header>
         {/* Progress Bar */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
+        <div className="glass-panel rounded-2xl p-6">
+          <div className="flex flex-wrap gap-4">
             {wizardSteps.map((step, index) => (
               <div
                 key={step}
-                className={`flex items-center ${
-                  index < wizardSteps.length - 1 ? 'flex-1' : ''
-                }`}
+                className="flex items-center gap-3"
               >
                 <div
-                  className={`flex items-center justify-center w-10 h-10 rounded-full font-bold ${
-                    index <= currentStep
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-700 text-gray-400'
+                  className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-bold ${
+                    index === currentStep
+                      ? 'bg-cyan-400 text-slate-900'
+                      : index < currentStep
+                      ? 'bg-white/20 text-white'
+                      : 'bg-white/5 text-slate-400'
                   }`}
                 >
                   {index + 1}
                 </div>
-                <div
-                  className={`text-sm font-medium ml-2 ${
-                    index <= currentStep ? 'text-white' : 'text-gray-500'
-                  }`}
-                >
-                  {step}
-                </div>
-                {index < wizardSteps.length - 1 && (
-                  <div
-                    className={`h-1 flex-1 mx-4 rounded ${
-                      index < currentStep ? 'bg-blue-600' : 'bg-gray-700'
-                    }`}
-                  />
-                )}
+                <div className="text-sm font-semibold text-slate-200">{step}</div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Main Content: Split Panel */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left Panel: Questions */}
+        {/* Main Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-8">
           <div className="mahogany-surface rounded-2xl p-8 h-fit">
-            <h2 className="text-3xl font-bold text-bright-white mb-6">
-              {wizardSteps[currentStep]}
-            </h2>
+            <div className="mb-6">
+              <p className="text-sm uppercase tracking-[0.3em] text-cyan-200">Step {currentStep + 1}</p>
+              <h2 className="text-3xl font-bold text-bright-white mt-2">
+                {stepInfo.title}
+              </h2>
+              <p className="text-slate-200 mt-2">
+                {stepInfo.description}
+              </p>
+            </div>
 
             {currentStep === 0 && (
               <BusinessInfoStep data={wizardData} updateData={updateData} />
@@ -142,7 +196,7 @@ export default function WizardPage() {
             )}
 
             {/* Navigation Buttons */}
-            <div className="flex items-center justify-between mt-8 pt-6 border-t border-white/10">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-8 pt-6 border-t border-white/10 gap-4">
               <button
                 onClick={prevStep}
                 disabled={currentStep === 0}
@@ -151,41 +205,64 @@ export default function WizardPage() {
                 ← Back
               </button>
 
+              {businessNameMissing && currentStep === 0 && (
+                <span className="text-sm text-amber-200">
+                  Add your business name to continue.
+                </span>
+              )}
+
               {currentStep < wizardSteps.length - 1 ? (
                 <button
                   onClick={nextStep}
-                  className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all"
+                  disabled={!canContinue}
+                  className="px-8 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-bold rounded-lg shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Continue →
                 </button>
               ) : (
-                <Link
-                  href="/pricing"
-                  className="px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all inline-block"
-                >
-                  See Transparent Pricing & Reserve Your Spot
-                </Link>
+                  <Link
+                    href={
+                      data.subdomainSlug
+                        ? `/pricing?slug=${encodeURIComponent(data.subdomainSlug)}`
+                        : '/pricing'
+                    }
+                    className="px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all inline-block"
+                  >
+                    See Transparent Pricing & Reserve Your Spot
+                  </Link>
               )}
             </div>
           </div>
-
-          {/* Right Panel: Live Preview */}
-          <div className="preview-container p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-bright-white">
-                Live Preview
-              </h3>
-              <div className="flex gap-2">
-                <button className="px-3 py-1 bg-white/10 hover:bg-white/20 text-white text-sm rounded">
-                  Desktop
-                </button>
-                <button className="px-3 py-1 bg-white/10 hover:bg-white/20 text-white text-sm rounded">
-                  Mobile
-                </button>
+            <aside className="glass-panel rounded-2xl p-6 h-fit sticky top-24 space-y-6">
+              <div>
+                <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Build status</p>
+                <h3 className="text-2xl font-bold text-white mt-2">Ready to launch</h3>
+                <p className="text-slate-300 mt-2">
+                  Your inputs are shaping the final site and subdomain reservation.
+                </p>
               </div>
-            </div>
-            <LivePreview data={wizardData} />
-          </div>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between text-sm text-slate-200">
+                  <span>Business name</span>
+                  <span>{wizardData.businessName ? 'Added' : 'Missing'}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm text-slate-200">
+                  <span>Services selected</span>
+                  <span>{wizardData.services.length}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm text-slate-200">
+                  <span>Template</span>
+                  <span>{wizardData.template || 'Not set'}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm text-slate-200">
+                  <span>Subdomain</span>
+                  <span>{wizardData.subdomainSlug || 'Not set'}</span>
+                </div>
+              </div>
+              <div className="p-4 rounded-xl bg-white/5 border border-white/10 text-sm text-slate-200">
+                Checkout activates hosting, email, storage, and payments. You will have portal access to edit anytime.
+              </div>
+            </aside>
         </div>
       </div>
     </main>
@@ -200,6 +277,110 @@ function BusinessInfoStep({
   data: WizardData
   updateData: (key: keyof WizardData, value: any) => void
 }) {
+  const MIN_SLUG_LENGTH = 3
+  const MAX_SLUG_LENGTH = 30
+  const [slugStatus, setSlugStatus] = useState<{
+    state: 'idle' | 'checking' | 'available' | 'unavailable' | 'invalid' | 'error'
+    message?: string
+  }>({ state: 'idle' })
+
+  const normalizeSlug = (value: string) => {
+    return value
+      .toLowerCase()
+      .replace(/[^a-z0-9-]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-+|-+$/g, '')
+  }
+
+  const validateSlug = (value: string) => {
+    if (!value) {
+      return null
+    }
+    if (value.length < MIN_SLUG_LENGTH) {
+      return `Slug must be at least ${MIN_SLUG_LENGTH} characters.`
+    }
+    if (value.length > MAX_SLUG_LENGTH) {
+      return `Slug must be ${MAX_SLUG_LENGTH} characters or fewer.`
+    }
+    if (!/^[a-z0-9-]+$/.test(value)) {
+      return 'Use only lowercase letters, numbers, and hyphens.'
+    }
+    return null
+  }
+
+  const suggestSlug = () => {
+    const suggestion = normalizeSlug(data.businessName)
+    if (suggestion) {
+      updateData('subdomainSlug', suggestion)
+    }
+  }
+
+  const handleSlugChange = (value: string) => {
+    updateData('subdomainSlug', normalizeSlug(value))
+  }
+
+  useEffect(() => {
+    const slug = data.subdomainSlug
+    const validationError = validateSlug(slug)
+    if (!slug) {
+      setSlugStatus({ state: 'idle' })
+      return
+    }
+    if (validationError) {
+      setSlugStatus({ state: 'invalid', message: validationError })
+      return
+    }
+
+    let active = true
+    setSlugStatus({ state: 'checking' })
+
+    const timer = setTimeout(async () => {
+      try {
+        const response = await fetch('/api/slug/check', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ slug }),
+        })
+        if (!response.ok) {
+          throw new Error('Availability check failed')
+        }
+        const data = await response.json()
+        if (!active) {
+          return
+        }
+        if (data.available) {
+          setSlugStatus({ state: 'available', message: 'Available' })
+        } else {
+          setSlugStatus({ state: 'unavailable', message: data.reason || 'Unavailable' })
+        }
+      } catch (error) {
+        if (active) {
+          setSlugStatus({ state: 'error', message: 'Unable to check availability.' })
+        }
+      }
+    }, 500)
+
+    return () => {
+      active = false
+      clearTimeout(timer)
+    }
+  }, [data.subdomainSlug])
+
+  const addCustomInfo = () => {
+    updateData('customInfo', [...data.customInfo, { label: '', value: '' }])
+  }
+
+  const updateCustomInfo = (index: number, key: 'label' | 'value', value: string) => {
+    const next = data.customInfo.map((item, itemIndex) =>
+      itemIndex === index ? { ...item, [key]: value } : item
+    )
+    updateData('customInfo', next)
+  }
+
+  const removeCustomInfo = (index: number) => {
+    updateData('customInfo', data.customInfo.filter((_, itemIndex) => itemIndex !== index))
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -213,6 +394,44 @@ function BusinessInfoStep({
           placeholder="e.g., Elite HVAC Services"
           className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
+      </div>
+
+      <div>
+        <label className="block text-white font-semibold mb-2">
+          Preferred Subdomain (optional)
+        </label>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <input
+            type="text"
+            value={data.subdomainSlug}
+            onChange={(e) => handleSlugChange(e.target.value)}
+            placeholder="e.g., elite-heating"
+            className="flex-1 px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            type="button"
+            onClick={suggestSlug}
+            className="px-4 py-3 bg-white/10 hover:bg-white/20 text-white text-sm rounded-lg"
+          >
+            Suggest from name
+          </button>
+        </div>
+        <p className="text-sm text-gray-400 mt-2">
+          This becomes {`{your-slug}`}.platform.com. Availability updates live as you type.
+        </p>
+        {slugStatus.state !== 'idle' && (
+          <p
+            className={`text-sm mt-2 ${
+              slugStatus.state === 'available'
+                ? 'text-green-300'
+                : slugStatus.state === 'checking'
+                ? 'text-gray-300'
+                : 'text-red-300'
+            }`}
+          >
+            {slugStatus.state === 'checking' ? 'Checking availability...' : slugStatus.message}
+          </p>
+        )}
       </div>
 
       <div>
@@ -260,6 +479,51 @@ function BusinessInfoStep({
           rows={4}
           className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
+      </div>
+
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <label className="block text-white font-semibold">
+            Add any extra details you want shown on your site
+          </label>
+          <button
+            type="button"
+            onClick={addCustomInfo}
+            className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-sm rounded-lg"
+          >
+            + Add detail
+          </button>
+        </div>
+        {data.customInfo.length === 0 && (
+          <p className="text-sm text-gray-400">
+            Examples: hours, licensing, service guarantees, financing, certifications.
+          </p>
+        )}
+        {data.customInfo.map((item, index) => (
+          <div key={index} className="space-y-3 p-4 bg-white/5 rounded-lg">
+            <input
+              type="text"
+              value={item.label}
+              onChange={(e) => updateCustomInfo(index, 'label', e.target.value)}
+              placeholder="Label (e.g., Hours, License, Warranty)"
+              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <textarea
+              value={item.value}
+              onChange={(e) => updateCustomInfo(index, 'value', e.target.value)}
+              placeholder="Details to display on your site"
+              rows={3}
+              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+              type="button"
+              onClick={() => removeCustomInfo(index)}
+              className="text-sm text-red-300 hover:text-red-200"
+            >
+              Remove detail
+            </button>
+          </div>
+        ))}
       </div>
 
       <div className="flex items-center gap-3 p-4 bg-blue-600/20 border border-blue-500/30 rounded-lg">
@@ -503,8 +767,17 @@ function ReviewStep({ data }: { data: WizardData }) {
           🎉 Your Site is Ready!
         </h3>
         <p className="text-gray-300">
-          Take a look at the preview on the right. Make any final adjustments, then proceed to pricing to reserve your spot.
+          Review your details, then proceed to pricing to start your subscription and launch.
         </p>
+      </div>
+
+      <div className="glass-panel rounded-2xl p-6">
+        <h4 className="text-xl font-bold text-white mb-3">What happens next</h4>
+        <ul className="space-y-3 text-slate-200">
+          <li>We confirm your subdomain and connect Postmark, Supabase, and Stripe.</li>
+          <li>Your template is populated with your content and media.</li>
+          <li>You receive portal access to edit and launch updates any time.</li>
+        </ul>
       </div>
 
       <div className="space-y-4">
@@ -515,6 +788,8 @@ function ReviewStep({ data }: { data: WizardData }) {
           <SummaryItem label="Services" value={`${data.services.length} selected`} />
           <SummaryItem label="Template" value={data.template} />
           <SummaryItem label="Accent Color" value={data.accentColor} />
+          <SummaryItem label="Custom Details" value={`${data.customInfo.length} added`} />
+          <SummaryItem label="Preferred Subdomain" value={data.subdomainSlug || 'Not set'} />
         </div>
       </div>
     </div>
