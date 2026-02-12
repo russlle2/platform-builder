@@ -4,14 +4,6 @@ import Stripe from 'stripe'
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY
 
-if (!stripeSecretKey) {
-  throw new Error('Missing STRIPE_SECRET_KEY')
-}
-
-const stripe = new Stripe(stripeSecretKey, {
-  apiVersion: '2023-10-16',
-})
-
 const priceMap: Record<string, string | undefined> = {
   basic: process.env.STRIPE_PRICE_BASIC,
   growth: process.env.STRIPE_PRICE_GROWTH,
@@ -19,6 +11,17 @@ const priceMap: Record<string, string | undefined> = {
 
 export async function POST(req: Request) {
   try {
+    if (!stripeSecretKey) {
+      return NextResponse.json(
+        { error: 'Missing STRIPE_SECRET_KEY' },
+        { status: 500 }
+      )
+    }
+
+    const stripe = new Stripe(stripeSecretKey, {
+      apiVersion: '2023-10-16',
+    })
+
     const { planKey, slug } = await req.json()
     const priceId = priceMap[planKey]
 

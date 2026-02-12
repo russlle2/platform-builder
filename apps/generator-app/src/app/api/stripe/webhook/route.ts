@@ -8,45 +8,37 @@ const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
-if (!stripeSecretKey) {
-  throw new Error('Missing STRIPE_SECRET_KEY')
-}
-
-if (!webhookSecret) {
-  throw new Error('Missing STRIPE_WEBHOOK_SECRET')
-}
-
-const stripeWebhookSecret = webhookSecret as string
-
-if (!supabaseUrl || !supabaseServiceKey) {
-  throw new Error('Missing Supabase configuration')
-}
-
-const stripe = new Stripe(stripeSecretKey, {
-  apiVersion: '2023-10-16',
-})
-
-const supabase = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: { persistSession: false },
-})
-
-const reserveSlug = async (slug: string) => {
-  const normalized = slug
-    .toLowerCase()
-    .replace(/[^a-z0-9-]/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-+|-+$/g, '')
-
-  if (!normalized) {
-    return
+export async function POST(req: Request) {
+  if (!stripeSecretKey || !webhookSecret || !supabaseUrl || !supabaseServiceKey) {
+    return NextResponse.json(
+      { error: 'Missing Stripe or Supabase configuration.' },
+      { status: 500 }
+    )
   }
 
-  await supabase
-    .from('site_slugs')
-    .upsert({ slug: normalized, status: 'reserved' }, { onConflict: 'slug' })
-}
+  const stripeWebhookSecret = webhookSecret as string
+  const stripe = new Stripe(stripeSecretKey, {
+    apiVersion: '2023-10-16',
+  })
+  const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+    auth: { persistSession: false },
+  })
+  const reserveSlug = async (slug: string) => {
+    const normalized = slug
+      .toLowerCase()
+      .replace(/[^a-z0-9-]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-+|-+$/g, '')
 
-export async function POST(req: Request) {
+    if (!normalized) {
+      return
+    }
+
+    await supabase
+      .from('site_slugs')
+      .upsert({ slug: normalized, status: 'reserved' }, { onConflict: 'slug' })
+  }
+
   const signature = (await headers()).get('stripe-signature')
   if (!signature) {
     return NextResponse.json({ error: 'Missing signature' }, { status: 400 })
