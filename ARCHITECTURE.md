@@ -49,7 +49,7 @@ This document describes the architecture and design decisions for the Platform B
 
 ### Build & Development
 
-- **Package Manager**: npm workspaces
+- **Package Manager**: pnpm workspaces
 - **Bundler**: Next.js built-in (Turbopack in dev, Webpack in prod)
 - **Linter**: ESLint
 - **Type Checker**: TypeScript
@@ -260,7 +260,7 @@ Body: { file: File }
 ### Development
 
 ```bash
-npm run dev
+pnpm run dev
   ↓
 Next.js dev server (port 3000/3001)
   ↓
@@ -270,7 +270,7 @@ Hot module reloading
 ### Production
 
 ```bash
-npm run build
+pnpm run build
   ↓
 1. TypeScript compilation
   ↓

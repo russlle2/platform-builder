@@ -137,64 +137,64 @@ platform-builder/
 
 ```bash
 # Install all workspace dependencies
-npm install
+pnpm install
 
 # Install dependencies for specific workspace
-npm install --workspace=apps/generator-app
+pnpm install --filter ./apps/generator-app...
 ```
 
 ## 🛠️ Development
 
 ```bash
 # Start generator app
-npm run generator:dev
+pnpm run generator:dev
 # → http://localhost:3000
 
 # Start client template
-npm run client:dev
+pnpm run client:dev
 # → http://localhost:3001
 
 # Build all workspaces
-npm run build
+pnpm run build
 
 # Run tests
-npm run test
+pnpm run test
 
 # Lint all workspaces
-npm run lint
+pnpm run lint
 ```
 
 ## 🎨 Available Scripts
 
 ### Root Level
 ```bash
-npm run dev                  # Start generator-app
-npm run build                # Build all workspaces
-npm run lint                 # Lint all workspaces
-npm run test                 # Test all workspaces
-npm run clean                # Clean build artifacts
+pnpm run dev                  # Start generator-app
+pnpm run build                # Build all workspaces
+pnpm run lint                 # Lint all workspaces
+pnpm run test                 # Test all workspaces
+pnpm run clean                # Clean build artifacts
 
 # Client site management
-npm run create-client <name>  # Create new client site
-npm run sync-content          # Sync content to all sites
-npm run optimize-images       # Optimize all images
+pnpm run create-client <name>  # Create new client site
+pnpm run sync-content          # Sync content to all sites
+pnpm run optimize-images       # Optimize all images
 
 # Deployment
-npm run deploy:dev            # Deploy to dev
-npm run deploy:staging        # Deploy to staging
-npm run deploy:production     # Deploy to production
+pnpm run deploy:dev            # Deploy to dev
+pnpm run deploy:staging        # Deploy to staging
+pnpm run deploy:production     # Deploy to production
 ```
 
 ### Generator App
 ```bash
-npm run generator:dev         # Development mode
-npm run generator:build       # Build for production
+pnpm run generator:dev         # Development mode
+pnpm run generator:build       # Build for production
 ```
 
 ### Client Template
 ```bash
-npm run client:dev            # Development mode
-npm run client:build          # Build for production
+pnpm run client:dev            # Development mode
+pnpm run client:build          # Build for production
 ```
 
 ## 🌐 CI/CD Pipeline
@@ -214,7 +214,7 @@ npm run client:build          # Build for production
 3. **tests.yml** - Automated Testing
    - Runs linting, type checking, unit tests
    - Tests on Node.js 18 and 20
-   - Security scanning with npm audit
+   - Security scanning with pnpm audit
    - Blocks deployment on failure
 
 4. **lighthouse.yml** - Performance Audits
