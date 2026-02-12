@@ -220,16 +220,16 @@ export default function WizardPage() {
                   Continue →
                 </button>
               ) : (
-                  <Link
-                    href={
-                      data.subdomainSlug
-                        ? `/pricing?slug=${encodeURIComponent(data.subdomainSlug)}`
-                        : '/pricing'
-                    }
-                    className="px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all inline-block"
-                  >
-                    See Transparent Pricing & Reserve Your Spot
-                  </Link>
+                <Link
+                  href={
+                    wizardData.subdomainSlug
+                      ? `/pricing?slug=${encodeURIComponent(wizardData.subdomainSlug)}`
+                      : '/pricing'
+                  }
+                  className="px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all inline-block"
+                >
+                  See Transparent Pricing & Reserve Your Spot
+                </Link>
               )}
             </div>
           </div>
