@@ -29,7 +29,7 @@ export async function POST(req: Request) {
       )
     }
 
-    const origin = headers().get('origin') || 'http://localhost:3000'
+    const origin = (await headers()).get('origin') || 'http://localhost:3000'
 
     const metadata = {
       planKey,
