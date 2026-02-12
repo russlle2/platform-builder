@@ -212,7 +212,7 @@ export default function PricingPage() {
               },
             ].map((item) => (
               <div key={item.name} className="card-mahogany space-y-4">
-                <p className="text-slate-200">"{item.quote}"</p>
+                <p className="text-slate-200">&ldquo;{item.quote}&rdquo;</p>
                 <div>
                   <p className="text-white font-semibold">{item.name}</p>
                   <p className="text-sm text-slate-400">{item.company}</p>

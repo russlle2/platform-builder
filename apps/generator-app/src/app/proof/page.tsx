@@ -198,7 +198,7 @@ export default function ProofPage() {
             }}
           >
             <div className="card-mahogany space-y-4">
-              <p className="text-2xl text-slate-100 leading-relaxed">"{active.quote}"</p>
+              <p className="text-2xl text-slate-100 leading-relaxed">&ldquo;{active.quote}&rdquo;</p>
               <div>
                 <p className="text-white font-semibold text-lg">{active.name}</p>
                 <p className="text-sm text-slate-400">{active.company}</p>
