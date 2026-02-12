@@ -16,6 +16,8 @@ if (!webhookSecret) {
   throw new Error('Missing STRIPE_WEBHOOK_SECRET')
 }
 
+const stripeWebhookSecret = webhookSecret as string
+
 if (!supabaseUrl || !supabaseServiceKey) {
   throw new Error('Missing Supabase configuration')
 }
@@ -54,7 +56,7 @@ export async function POST(req: Request) {
   let event: Stripe.Event
 
   try {
-    event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
+    event = stripe.webhooks.constructEvent(body, signature, stripeWebhookSecret)
   } catch (error) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
   }
