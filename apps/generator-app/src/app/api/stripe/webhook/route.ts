@@ -21,7 +21,7 @@ if (!supabaseUrl || !supabaseServiceKey) {
 }
 
 const stripe = new Stripe(stripeSecretKey, {
-  apiVersion: '2024-04-10',
+  apiVersion: '2023-10-16',
 })
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey, {
@@ -45,7 +45,7 @@ const reserveSlug = async (slug: string) => {
 }
 
 export async function POST(req: Request) {
-  const signature = headers().get('stripe-signature')
+  const signature = (await headers()).get('stripe-signature')
   if (!signature) {
     return NextResponse.json({ error: 'Missing signature' }, { status: 400 })
   }
