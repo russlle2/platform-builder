@@ -35,10 +35,10 @@ const templates = [
   },
   {
     id: 5,
-    name: 'Plumbing Hybrid',
-    description: 'Dual-service layout for HVAC + plumbing providers.',
+    name: 'Seasonal Tune-Up',
+    description: 'Maintenance-first layout optimized for recurring HVAC service plans.',
     image: '/images/template-5.jpg',
-    category: 'Hybrid',
+    category: 'HVAC',
   },
   {
     id: 6,

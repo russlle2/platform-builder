@@ -3,11 +3,10 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { ImageUploadWithOptimize } from '@/components/ImageUploadWithOptimize'
-import { TemplateSelector } from '@/components/TemplateSelector'
 
 interface WizardData {
   businessName: string
-  businessType: 'hvac' | 'plumbing' | 'both'
+  businessType: 'hvac'
   tagline: string
   description: string
   services: string[]
@@ -30,9 +29,9 @@ interface WizardData {
 const wizardSteps = [
   'Business Info',
   'Services',
-  'Template',
   'Branding',
   'Media',
+  'Template',
   'Review',
 ]
 
@@ -46,10 +45,6 @@ const stepMeta = [
     description: 'Select your service mix and contact details for the site.',
   },
   {
-    title: 'Template',
-    description: 'Pick the layout that matches your market and positioning.',
-  },
-  {
     title: 'Branding',
     description: 'Define color and tone so the build feels like you.',
   },
@@ -58,10 +53,56 @@ const stepMeta = [
     description: 'Upload the hero, logo, and background imagery.',
   },
   {
+    title: 'Template',
+    description: 'Pick the structure and style that shapes your live site experience.',
+  },
+  {
     title: 'Review',
-    description: 'Confirm your details before checkout and launch.',
+    description: 'Review your full website preview before checkout and launch.',
   },
 ]
+
+const templatePresets = [
+  {
+    id: 'service-first',
+    name: 'Service First',
+    summary: 'Lead with emergency response and fast booking actions.',
+    structure: 'Hero with urgent CTA, then services and trust badges.',
+    purpose: 'Built to convert repair-intent visitors quickly.',
+    headingFont: 'Inter',
+    bodyFont: 'Inter',
+    heroImage: '/images/hvac-condenser.jpg',
+    backgroundImage: '/images/hvac-background.jpg',
+  },
+  {
+    id: 'premium-trust',
+    name: 'Premium Trust',
+    summary: 'Show authority, craftsmanship, and premium positioning.',
+    structure: 'Story-led hero, social proof, and financing highlights.',
+    purpose: 'Best for high-ticket installs and replacement projects.',
+    headingFont: 'Poppins',
+    bodyFont: 'Inter',
+    heroImage: '/images/hvac-condenser.jpg',
+    backgroundImage: '/images/hvac-condenser.jpg',
+  },
+  {
+    id: 'neighborhood-comfort',
+    name: 'Neighborhood Comfort',
+    summary: 'Friendly local look focused on seasonal maintenance plans.',
+    structure: 'Simple hero, maintenance plan section, and contact strip.',
+    purpose: 'Great for recurring tune-up and maintenance memberships.',
+    headingFont: 'Nunito',
+    bodyFont: 'Nunito',
+    heroImage: '/images/hvac-background.jpg',
+    backgroundImage: '/images/hvac-background.jpg',
+  },
+] as const
+
+type TemplatePreset = (typeof templatePresets)[number]
+
+const getTemplatePreset = (templateId: string): TemplatePreset => {
+  return templatePresets.find((preset) => preset.id === templateId) || templatePresets[0]
+}
 
 export default function WizardPage() {
   const [currentStep, setCurrentStep] = useState(0)
@@ -74,13 +115,13 @@ export default function WizardPage() {
     phoneNumber: '',
     email: '',
     address: '',
-    template: 'modern-hvac',
+    template: templatePresets[0].id,
     accentColor: '#2563eb',
-    headingFont: 'Inter',
-    bodyFont: 'Inter',
-    heroImage: '/images/hvac-condenser.jpg',
+    headingFont: templatePresets[0].headingFont,
+    bodyFont: templatePresets[0].bodyFont,
+    heroImage: templatePresets[0].heroImage,
     logo: '/images/logo-placeholder.png',
-    backgroundImage: '/images/hvac-background.jpg',
+    backgroundImage: templatePresets[0].backgroundImage,
     galleryImages: [],
     autoFill: false,
     customInfo: [],
@@ -183,13 +224,13 @@ export default function WizardPage() {
               <ServicesStep data={wizardData} updateData={updateData} />
             )}
             {currentStep === 2 && (
-              <TemplateStep data={wizardData} updateData={updateData} />
-            )}
-            {currentStep === 3 && (
               <BrandingStep data={wizardData} updateData={updateData} />
             )}
-            {currentStep === 4 && (
+            {currentStep === 3 && (
               <MediaStep data={wizardData} updateData={updateData} />
+            )}
+            {currentStep === 4 && (
+              <TemplateStep data={wizardData} updateData={updateData} />
             )}
             {currentStep === 5 && (
               <ReviewStep data={wizardData} />
@@ -417,7 +458,7 @@ function BusinessInfoStep({
           </button>
         </div>
         <p className="text-sm text-gray-400 mt-2">
-          This becomes {`{your-slug}`}.platform.com. Availability updates live as you type.
+          This becomes {`{your-slug}`}.mywebsite.com. Availability updates live as you type.
         </p>
         {slugStatus.state !== 'idle' && (
           <p
@@ -434,25 +475,9 @@ function BusinessInfoStep({
         )}
       </div>
 
-      <div>
-        <label className="block text-white font-semibold mb-2">
-          Business Type *
-        </label>
-        <div className="grid grid-cols-3 gap-3">
-          {['hvac', 'plumbing', 'both'].map((type) => (
-            <button
-              key={type}
-              onClick={() => updateData('businessType', type)}
-              className={`px-4 py-3 rounded-lg font-semibold capitalize transition-all ${
-                data.businessType === type
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-white/10 text-gray-300 hover:bg-white/20'
-              }`}
-            >
-              {type}
-            </button>
-          ))}
-        </div>
+      <div className="p-4 rounded-lg bg-blue-600/20 border border-blue-500/30">
+        <p className="text-sm uppercase tracking-[0.2em] text-cyan-200">Business Focus</p>
+        <p className="text-white font-semibold mt-1">HVAC builds only</p>
       </div>
 
       <div>
@@ -647,15 +672,55 @@ function TemplateStep({
   data: WizardData
   updateData: (key: keyof WizardData, value: any) => void
 }) {
+  const selectedTemplate = getTemplatePreset(data.template)
+
+  const applyTemplate = (template: TemplatePreset) => {
+    updateData('template', template.id)
+    updateData('headingFont', template.headingFont)
+    updateData('bodyFont', template.bodyFont)
+    updateData('heroImage', template.heroImage)
+    updateData('backgroundImage', template.backgroundImage)
+  }
+
   return (
     <div className="space-y-6">
       <p className="text-gray-300">
-        Choose a template. Don&apos;t worry—you can switch anytime without losing your content.
+        Pick a template to set layout structure, visual style, and font personality for your HVAC site.
       </p>
-      <TemplateSelector
-        selected={data.template}
-        onSelect={(template) => updateData('template', template)}
-      />
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {templatePresets.map((template) => (
+          <button
+            key={template.id}
+            type="button"
+            onClick={() => applyTemplate(template)}
+            className={`text-left p-5 rounded-xl border transition-all ${
+              data.template === template.id
+                ? 'border-cyan-400 bg-cyan-500/10'
+                : 'border-white/15 bg-white/5 hover:bg-white/10'
+            }`}
+          >
+            <p className="text-white font-semibold">{template.name}</p>
+            <p className="text-slate-300 text-sm mt-2">{template.summary}</p>
+            <div className="text-xs text-slate-300 mt-4 space-y-1">
+              <p><span className="text-cyan-200">Structure:</span> {template.structure}</p>
+              <p><span className="text-cyan-200">Purpose:</span> {template.purpose}</p>
+              <p><span className="text-cyan-200">Fonts:</span> {template.headingFont} + {template.bodyFont}</p>
+            </div>
+          </button>
+        ))}
+      </div>
+
+      <div className="glass-panel rounded-2xl p-5">
+        <p className="text-xs uppercase tracking-[0.25em] text-slate-400">Selected template effects</p>
+        <h4 className="text-xl font-bold text-white mt-2">{selectedTemplate.name}</h4>
+        <ul className="mt-3 space-y-2 text-slate-200 text-sm">
+          <li>Background image style updates to match this template.</li>
+          <li>Page section order shifts to this structure: {selectedTemplate.structure}</li>
+          <li>Messaging focus aligns to: {selectedTemplate.purpose}</li>
+          <li>Typography switches to {selectedTemplate.headingFont} headings and {selectedTemplate.bodyFont} body text.</li>
+        </ul>
+      </div>
     </div>
   )
 }
@@ -760,6 +825,8 @@ function MediaStep({
 }
 
 function ReviewStep({ data }: { data: WizardData }) {
+  const selectedTemplate = getTemplatePreset(data.template)
+
   return (
     <div className="space-y-6">
       <div className="p-6 bg-green-600/20 border border-green-500/30 rounded-lg">
@@ -767,8 +834,16 @@ function ReviewStep({ data }: { data: WizardData }) {
           🎉 Your Site is Ready!
         </h3>
         <p className="text-gray-300">
-          Review your details, then proceed to pricing to start your subscription and launch.
+          Review your details and live preview, then proceed to pricing to start your subscription and launch.
         </p>
+      </div>
+
+      <div className="glass-panel rounded-2xl p-6 space-y-4">
+        <h4 className="text-xl font-bold text-white">Live website preview</h4>
+        <p className="text-sm text-slate-300">
+          This preview reflects your selected template structure, fonts, and imagery.
+        </p>
+        <WebsitePreview data={data} />
       </div>
 
       <div className="glass-panel rounded-2xl p-6">
@@ -784,12 +859,66 @@ function ReviewStep({ data }: { data: WizardData }) {
         <h4 className="text-xl font-bold text-bright-white">Summary</h4>
         <div className="space-y-3">
           <SummaryItem label="Business Name" value={data.businessName} />
-          <SummaryItem label="Business Type" value={data.businessType} />
+          <SummaryItem label="Business Type" value="hvac" />
           <SummaryItem label="Services" value={`${data.services.length} selected`} />
-          <SummaryItem label="Template" value={data.template} />
+          <SummaryItem label="Template" value={selectedTemplate.name} />
           <SummaryItem label="Accent Color" value={data.accentColor} />
           <SummaryItem label="Custom Details" value={`${data.customInfo.length} added`} />
           <SummaryItem label="Preferred Subdomain" value={data.subdomainSlug || 'Not set'} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function WebsitePreview({ data }: { data: WizardData }) {
+  const selectedTemplate = getTemplatePreset(data.template)
+  const services = data.services.length ? data.services.slice(0, 4) : ['AC Repair', 'Heating Repair', 'Maintenance Plans', 'Emergency Service']
+  const previewName = data.businessName || 'Your HVAC Business'
+  const previewTagline = data.tagline || 'Reliable comfort for every season.'
+  const previewDescription = data.description || selectedTemplate.purpose
+
+  return (
+    <div className="overflow-hidden rounded-xl border border-white/10 bg-slate-900">
+      <div
+        className="p-6 border-b border-white/10"
+        style={{
+          backgroundImage: `linear-gradient(rgba(15,23,42,0.75), rgba(15,23,42,0.75)), url(${data.backgroundImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <p className="text-xs uppercase tracking-[0.2em] text-cyan-200">{selectedTemplate.name}</p>
+        <h5
+          className="text-2xl text-white mt-2"
+          style={{ fontFamily: data.headingFont }}
+        >
+          {previewName}
+        </h5>
+        <p className="text-slate-200 mt-2" style={{ fontFamily: data.bodyFont }}>
+          {previewTagline}
+        </p>
+        <button
+          type="button"
+          className="mt-4 px-4 py-2 rounded-lg text-sm font-semibold"
+          style={{ backgroundColor: data.accentColor, color: '#ffffff' }}
+        >
+          Book Service Now
+        </button>
+      </div>
+      <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4" style={{ fontFamily: data.bodyFont }}>
+        <div className="space-y-3">
+          <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Layout focus</p>
+          <p className="text-slate-100">{selectedTemplate.structure}</p>
+          <p className="text-slate-300 text-sm">{previewDescription}</p>
+        </div>
+        <div>
+          <p className="text-xs uppercase tracking-[0.2em] text-slate-400 mb-2">Featured services</p>
+          <ul className="space-y-2 text-slate-100 text-sm">
+            {services.map((service) => (
+              <li key={service}>• {service}</li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>

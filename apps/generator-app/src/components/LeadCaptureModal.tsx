@@ -18,7 +18,7 @@ export default function LeadCaptureModal() {
     const timer = setTimeout(() => {
       setIsOpen(true)
       sessionStorage.setItem('lead_modal_seen', 'true')
-    }, 20000)
+    }, 25000)
 
     const handleExit = (event: MouseEvent) => {
       if (event.clientY <= 0 && !sessionStorage.getItem('lead_modal_seen')) {
@@ -69,11 +69,8 @@ export default function LeadCaptureModal() {
         </button>
         <span className="signal-chip">Join the waitlist</span>
         <h3 className="text-3xl font-bold text-white mt-4">
-          Lock in your HVAC platform slot
+          Sign up to recieve notifications when new website builds drop and for %15 off any package
         </h3>
-        <p className="text-slate-300 mt-3">
-          Share your email or phone to get notified when your build is ready to launch.
-        </p>
         <div className="mt-6 space-y-4">
           <input
             type="email"

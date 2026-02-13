@@ -47,17 +47,17 @@ const AUTO_FILL_DATA: Partial<WizardData> = {
   phone: '(555) 123-4567',
   email: 'contact@prohvac.com',
   address: '123 Industrial Blvd, Suite 100',
-  services: 'AC Repair, Heating Installation, Duct Cleaning, Plumbing',
-  description: 'Professional HVAC and plumbing services with 20+ years of experience.',
+  services: 'AC Repair, Heating Installation, Duct Cleaning, Maintenance Plans',
+  description: 'Professional HVAC services with 20+ years of experience.',
 };
 
 const TEMPLATES = [
   { id: 'hvac-pro', name: 'HVAC Professional', bg: '/images/template-bg-1.jpg' },
   { id: 'hvac-modern', name: 'Modern HVAC', bg: '/images/template-bg-2.jpg' },
-  { id: 'plumbing-classic', name: 'Classic Plumbing', bg: '/images/template-bg-3.jpg' },
+  { id: 'comfort-classic', name: 'Comfort Classic', bg: '/images/template-bg-3.jpg' },
   { id: 'industrial', name: 'Industrial Pro', bg: '/images/template-bg-4.jpg' },
   { id: 'hvac-elite', name: 'Elite HVAC', bg: '/images/template-bg-5.jpg' },
-  { id: 'plumbing-modern', name: 'Modern Plumbing', bg: '/images/template-bg-6.jpg' },
+  { id: 'service-first', name: 'Service First HVAC', bg: '/images/template-bg-6.jpg' },
 ];
 
 const ACCENT_COLORS = [
@@ -164,7 +164,10 @@ export function EditorWizard() {
           {step === 1 && (
             <>
               <InputField label="Business Name" value={data.businessName} onChange={(v) => updateField('businessName', v)} placeholder="e.g. Pro HVAC Services" />
-              <SelectField label="Business Type" value={data.businessType} onChange={(v) => updateField('businessType', v)} options={[{ value: 'hvac', label: 'HVAC' }, { value: 'plumbing', label: 'Plumbing' }, { value: 'both', label: 'HVAC & Plumbing' }]} />
+              <div>
+                <label className="block text-white font-medium text-sm mb-2">Business Type</label>
+                <div className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/15 text-white">HVAC</div>
+              </div>
               <InputField label="Phone" value={data.phone} onChange={(v) => updateField('phone', v)} placeholder="(555) 123-4567" />
               <InputField label="Email" value={data.email} onChange={(v) => updateField('email', v)} placeholder="contact@yourbusiness.com" />
               <InputField label="Address" value={data.address} onChange={(v) => updateField('address', v)} placeholder="123 Main St, City, State" />

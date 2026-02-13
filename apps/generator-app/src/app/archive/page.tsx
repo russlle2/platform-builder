@@ -28,13 +28,12 @@ export default function ArchivePage() {
 const templates = [
   { id: 1, name: 'Modern HVAC', category: 'HVAC' },
   { id: 2, name: 'Industrial Pro', category: 'HVAC' },
-  { id: 3, name: 'Comfort Classic', category: 'Both' },
-  { id: 4, name: 'Plumbing Elite', category: 'Plumbing' },
-  { id: 5, name: 'Emergency Ready', category: 'Both' },
-  { id: 6, name: 'Residential Focus', category: 'Both' },
+  { id: 3, name: 'Comfort Classic', category: 'HVAC' },
+  { id: 4, name: 'Emergency Ready', category: 'HVAC' },
+  { id: 5, name: 'Residential Focus', category: 'HVAC' },
   { id: 7, name: 'Commercial Grade', category: 'HVAC' },
-  { id: 8, name: 'Service Pro', category: 'Both' },
-  { id: 9, name: 'Premium Plumbing', category: 'Plumbing' },
+  { id: 8, name: 'Service Pro', category: 'HVAC' },
+  { id: 9, name: 'Maintenance Pro', category: 'HVAC' },
 ]
 
 function TemplateCard({ template }: { template: typeof templates[0] }) {

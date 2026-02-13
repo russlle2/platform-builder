@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     'Launch a premium HVAC platform with guided intake, instant templates, and managed integrations.',
   keywords: [
     'HVAC website builder',
-    'plumbing website',
+    'HVAC contractor website',
     'HVAC marketing platform',
     'service business website',
     'local service marketing',

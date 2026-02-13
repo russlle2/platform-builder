@@ -8,7 +8,7 @@ interface Template {
   name: string
   description: string
   thumbnail: string
-  category: 'hvac' | 'plumbing' | 'both'
+  category: 'hvac'
 }
 
 const templates: Template[] = [
@@ -31,28 +31,28 @@ const templates: Template[] = [
     name: 'Comfort Classic',
     description: 'Warm, welcoming design that builds trust',
     thumbnail: '/images/template-comfort.jpg',
-    category: 'both',
+    category: 'hvac',
   },
   {
-    id: 'plumbing-elite',
-    name: 'Plumbing Elite',
-    description: 'Premium design for plumbing professionals',
-    thumbnail: '/images/template-plumbing.jpg',
-    category: 'plumbing',
+    id: 'service-first',
+    name: 'Service First',
+    description: 'High-visibility HVAC CTAs for fast booking conversions',
+    thumbnail: '/images/template-emergency.jpg',
+    category: 'hvac',
   },
   {
     id: 'emergency-ready',
     name: 'Emergency Ready',
     description: '24/7 service focus with high-visibility CTAs',
     thumbnail: '/images/template-emergency.jpg',
-    category: 'both',
+    category: 'hvac',
   },
   {
     id: 'residential-focus',
     name: 'Residential Focus',
     description: 'Family-friendly design for residential services',
     thumbnail: '/images/template-residential.jpg',
-    category: 'both',
+    category: 'hvac',
   },
 ]
 
