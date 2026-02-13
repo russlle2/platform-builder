@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { writeFile, mkdir, readdir, stat, unlink } from 'fs/promises'
 import { existsSync } from 'fs'
 import path from 'path'
+import sharp from 'sharp'
 
 // Maximum file size: 10MB
 const MAX_FILE_SIZE = 10 * 1024 * 1024
@@ -13,6 +14,11 @@ const ALLOWED_TYPES = [
   'image/png',
   'image/gif',
   'image/webp',
+  'image/avif',
+  'image/tiff',
+  'image/bmp',
+  'image/heic',
+  'image/heif',
 ]
 
 export async function POST(request: NextRequest) {
@@ -52,14 +58,35 @@ export async function POST(request: NextRequest) {
 
     // Generate unique filename
     const timestamp = Date.now()
-    const originalName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_')
-    const fileName = `${timestamp}-${originalName}`
+    const baseName = file.name.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9-]/g, '_')
+    const fileName = `${timestamp}-${baseName}.webp`
     const filePath = path.join(uploadDir, fileName)
 
     // Convert file to buffer
     const bytes = await file.arrayBuffer()
-    const buffer = Buffer.from(bytes)
-    const embeddedDataUrl = `data:${file.type};base64,${buffer.toString('base64')}`
+    const inputBuffer = Buffer.from(bytes)
+
+    let outputBuffer: Buffer
+    let outputMime = 'image/webp'
+
+    try {
+      outputBuffer = await sharp(inputBuffer, { animated: true })
+        .resize({ width: 1600, withoutEnlargement: true })
+        .webp({ quality: optimizeFlag ? 78 : 90 })
+        .toBuffer()
+    } catch {
+      if (['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'].includes(file.type)) {
+        outputBuffer = inputBuffer
+        outputMime = file.type
+      } else {
+        return NextResponse.json(
+          { error: 'Unsupported image format. Please upload JPG, PNG, WebP, GIF, AVIF, TIFF, BMP, HEIC, or HEIF.' },
+          { status: 400 }
+        )
+      }
+    }
+
+    const embeddedDataUrl = `data:${outputMime};base64,${outputBuffer.toString('base64')}`
 
     if (process.env.VERCEL === '1') {
       return NextResponse.json({
@@ -75,15 +102,15 @@ export async function POST(request: NextRequest) {
 
     // Save file
     try {
-      await writeFile(filePath, buffer)
+      await writeFile(filePath, outputBuffer)
     } catch {
       return NextResponse.json({
         success: true,
         url: embeddedDataUrl,
         filename: file.name,
-        size: file.size,
-        type: file.type,
-        optimized: false,
+        size: outputBuffer.length,
+        type: outputMime,
+        optimized: true,
         embedded: true,
       })
     }
@@ -94,9 +121,9 @@ export async function POST(request: NextRequest) {
       success: true,
       url: `/uploads/${fileName}`,
       filename: fileName,
-      size: file.size,
-      type: file.type,
-      optimized: false, // Will be true when Sharp optimization is implemented
+      size: outputBuffer.length,
+      type: outputMime,
+      optimized: true,
     })
 
   } catch (error) {

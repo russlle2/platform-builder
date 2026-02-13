@@ -1031,7 +1031,7 @@ function ReviewStep({ data }: { data: WizardData }) {
         }),
       })
 
-      setPreviewUrl(`/__site/${slug}/home`)
+      setPreviewUrl(`/preview/${slug}/home`)
       setGeneratedPreviewFingerprint(currentPreviewFingerprint)
       setPreviewState('ready')
       if (!response.ok) {

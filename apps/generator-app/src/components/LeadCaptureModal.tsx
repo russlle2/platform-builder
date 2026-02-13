@@ -2,14 +2,20 @@
 
 import { useEffect, useState } from 'react'
 import { track } from '@/lib/analytics'
+import { usePathname } from 'next/navigation'
 
 export default function LeadCaptureModal() {
+  const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
 
   useEffect(() => {
+    if (pathname?.startsWith('/preview') || pathname?.startsWith('/__site')) {
+      return
+    }
+
     const hasSeen = sessionStorage.getItem('lead_modal_seen')
     if (hasSeen) {
       return
@@ -33,7 +39,7 @@ export default function LeadCaptureModal() {
       clearTimeout(timer)
       window.removeEventListener('mouseout', handleExit)
     }
-  }, [])
+  }, [pathname])
 
   const submitLead = async () => {
     try {
