@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { ImageUploadWithOptimize } from '@/components/ImageUploadWithOptimize'
 
@@ -977,6 +977,12 @@ function ReviewStep({ data }: { data: WizardData }) {
   const selectedTemplate = getTemplatePreset(data.template)
   const [previewState, setPreviewState] = useState<'idle' | 'saving' | 'ready' | 'error'>('idle')
   const [previewUrl, setPreviewUrl] = useState('')
+  const [generatedPreviewFingerprint, setGeneratedPreviewFingerprint] = useState('')
+  const currentPreviewFingerprint = useMemo(() => JSON.stringify(buildPreviewData(data)), [data])
+  const isPreviewStale =
+    !!previewUrl &&
+    !!generatedPreviewFingerprint &&
+    generatedPreviewFingerprint !== currentPreviewFingerprint
 
   const getPreviewSlug = () => {
     const base = normalizeSlug(data.subdomainSlug || data.businessName || 'hvac-site') || 'hvac-site'
@@ -1002,7 +1008,7 @@ function ReviewStep({ data }: { data: WizardData }) {
         body: JSON.stringify({
           slug,
           status: 'preview',
-          data: buildPreviewData(data),
+          data: JSON.parse(currentPreviewFingerprint),
         }),
       })
 
@@ -1011,32 +1017,12 @@ function ReviewStep({ data }: { data: WizardData }) {
       }
 
       setPreviewUrl(`/__site/${slug}/home`)
+      setGeneratedPreviewFingerprint(currentPreviewFingerprint)
       setPreviewState('ready')
     } catch (error) {
       setPreviewState('error')
     }
   }
-
-  useEffect(() => {
-    setPreviewState('idle')
-    setPreviewUrl('')
-  }, [
-    data.businessName,
-    data.tagline,
-    data.description,
-    data.services,
-    data.phoneNumber,
-    data.email,
-    data.address,
-    data.template,
-    data.accentColor,
-    data.headingFont,
-    data.bodyFont,
-    data.heroImage,
-    data.backgroundImage,
-    data.autoFill,
-    data.customInfo,
-  ])
 
   return (
     <div className="space-y-6">
@@ -1062,8 +1048,17 @@ function ReviewStep({ data }: { data: WizardData }) {
             disabled={previewState === 'saving'}
             className="px-5 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-semibold rounded-lg disabled:opacity-60"
           >
-            {previewState === 'saving' ? 'Generating full website preview...' : 'Generate full website preview link'}
+            {previewState === 'saving'
+              ? 'Generating full website preview...'
+              : isPreviewStale
+              ? 'Regenerate full website preview'
+              : 'Generate full website preview link'}
           </button>
+          {isPreviewStale && (
+            <p className="text-sm text-amber-200">
+              Your wizard details changed after the last generation. Regenerate to update the live preview link.
+            </p>
+          )}
           {previewState === 'ready' && previewUrl && (
             <div className="text-sm text-slate-200">
               <p className="mb-2">Full preview ready. This opens a multi-page site with clickable navigation and demo-only buttons.</p>
