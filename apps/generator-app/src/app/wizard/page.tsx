@@ -26,6 +26,45 @@ interface WizardData {
   subdomainSlug: string
 }
 
+interface PreviewFaq {
+  question: string
+  answer: string
+}
+
+interface PreviewService {
+  name: string
+  summary: string
+}
+
+interface PreviewProject {
+  title: string
+  summary: string
+  outcome: string
+}
+
+interface PreviewSiteData {
+  businessName: string
+  tagline: string
+  description: string
+  phoneNumber: string
+  email: string
+  address: string
+  accentColor: string
+  headingFont: string
+  bodyFont: string
+  heroImage: string
+  backgroundImage: string
+  logo: string
+  templateName: string
+  structureSummary: string
+  services: PreviewService[]
+  faq: PreviewFaq[]
+  customInfo: { label: string; value: string }[]
+  includePastJobs: boolean
+  pastJobs: PreviewProject[]
+  generatedFromAutoFill: boolean
+}
+
 const wizardSteps = [
   'Business Info',
   'Services',
@@ -104,6 +143,110 @@ const getTemplatePreset = (templateId: string): TemplatePreset => {
   return templatePresets.find((preset) => preset.id === templateId) || templatePresets[0]
 }
 
+const normalizeSlug = (value: string) => {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+const applySuggestedAutoFill = (data: WizardData): WizardData => {
+  const businessName = data.businessName || 'Your HVAC Team'
+  const inferredArea = data.address || 'your local service area'
+  const nextServices =
+    data.services.length > 0
+      ? data.services
+      : ['AC Repair', 'Heating Repair', 'Maintenance Plans', 'Emergency Service']
+
+  return {
+    ...data,
+    tagline:
+      data.tagline ||
+      `Trusted comfort solutions from ${businessName}`,
+    description:
+      data.description ||
+      `${businessName} delivers responsive HVAC service, clear communication, and dependable workmanship across ${inferredArea}.`,
+    phoneNumber: data.phoneNumber || '(555) 123-4567',
+    email: data.email || `${normalizeSlug(businessName)}@example.com`,
+    services: nextServices,
+    customInfo:
+      data.customInfo.length > 0
+        ? data.customInfo
+        : [
+            { label: 'Hours', value: 'Mon-Sat: 7:00 AM - 7:00 PM' },
+            { label: 'Service Guarantee', value: 'Transparent pricing and quality-first workmanship' },
+          ],
+  }
+}
+
+const buildPreviewData = (data: WizardData): PreviewSiteData => {
+  const selectedTemplate = getTemplatePreset(data.template)
+  const hydrated = data.autoFill ? applySuggestedAutoFill(data) : data
+  const serviceNames =
+    hydrated.services.length > 0
+      ? hydrated.services
+      : ['AC Repair', 'Heating Repair', 'Maintenance Plans']
+  const serviceArea = hydrated.address || 'your local area'
+  const businessName = hydrated.businessName || 'Your HVAC Business'
+
+  const services: PreviewService[] = serviceNames.map((name) => ({
+    name,
+    summary: `${name} with fast response windows, clear communication, and professional follow-through for homeowners and businesses in ${serviceArea}.`,
+  }))
+
+  const faq: PreviewFaq[] = [
+    {
+      question: `How quickly can ${businessName} respond to service requests?`,
+      answer: `We prioritize urgent calls and provide clear arrival windows based on your location in ${serviceArea}.`,
+    },
+    {
+      question: 'Do you offer ongoing maintenance plans?',
+      answer: 'Yes. We provide plan options designed to reduce breakdowns, improve efficiency, and extend equipment life.',
+    },
+    {
+      question: 'Can you help with replacements and new installs?',
+      answer: 'Absolutely. We guide you through equipment options, sizing, and install timelines that fit your comfort goals.',
+    },
+    {
+      question: 'What areas do you service?',
+      answer: hydrated.address || 'We service nearby neighborhoods and surrounding metro areas.',
+    },
+  ]
+
+  const includePastJobs = hydrated.autoFill && services.length >= 2
+  const pastJobs: PreviewProject[] = includePastJobs
+    ? services.slice(0, 3).map((service, index) => ({
+        title: `${service.name} Project ${index + 1}`,
+        summary: `Representative ${service.name.toLowerCase()} project completed for a customer in ${serviceArea}.`,
+        outcome: 'Improved comfort, cleaner airflow, and better system reliability.',
+      }))
+    : []
+
+  return {
+    businessName,
+    tagline: hydrated.tagline || 'Reliable comfort for every season.',
+    description: hydrated.description || selectedTemplate.purpose,
+    phoneNumber: hydrated.phoneNumber || '(555) 123-4567',
+    email: hydrated.email || 'contact@example.com',
+    address: hydrated.address || 'Service area coming soon',
+    accentColor: hydrated.accentColor,
+    headingFont: hydrated.headingFont,
+    bodyFont: hydrated.bodyFont,
+    heroImage: hydrated.heroImage,
+    backgroundImage: hydrated.backgroundImage,
+    logo: hydrated.logo,
+    templateName: selectedTemplate.name,
+    structureSummary: selectedTemplate.structure,
+    services,
+    faq,
+    customInfo: hydrated.customInfo,
+    includePastJobs,
+    pastJobs,
+    generatedFromAutoFill: hydrated.autoFill,
+  }
+}
+
 export default function WizardPage() {
   const [currentStep, setCurrentStep] = useState(0)
   const [wizardData, setWizardData] = useState<WizardData>({
@@ -133,7 +276,13 @@ export default function WizardPage() {
   const canContinue = currentStep === 0 ? !businessNameMissing : true
 
   const updateData = (key: keyof WizardData, value: any) => {
-    setWizardData((prev) => ({ ...prev, [key]: value }))
+    setWizardData((prev) => {
+      const next = { ...prev, [key]: value }
+      if (key === 'autoFill' && value === true) {
+        return applySuggestedAutoFill(next)
+      }
+      return next
+    })
   }
 
   const nextStep = () => {
@@ -826,6 +975,68 @@ function MediaStep({
 
 function ReviewStep({ data }: { data: WizardData }) {
   const selectedTemplate = getTemplatePreset(data.template)
+  const [previewState, setPreviewState] = useState<'idle' | 'saving' | 'ready' | 'error'>('idle')
+  const [previewUrl, setPreviewUrl] = useState('')
+
+  const getPreviewSlug = () => {
+    const base = normalizeSlug(data.subdomainSlug || data.businessName || 'hvac-site') || 'hvac-site'
+    const storageKey = `wizard_preview_slug_${base}`
+    const existing = typeof window !== 'undefined' ? sessionStorage.getItem(storageKey) : null
+    if (existing) {
+      return existing
+    }
+    const created = `${base}-preview-${Math.random().toString(36).slice(2, 6)}`
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem(storageKey, created)
+    }
+    return created
+  }
+
+  const generateFullPreview = async () => {
+    setPreviewState('saving')
+    try {
+      const slug = getPreviewSlug()
+      const response = await fetch('/api/portal/site', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          slug,
+          status: 'preview',
+          data: buildPreviewData(data),
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to generate preview')
+      }
+
+      setPreviewUrl(`/__site/${slug}/home`)
+      setPreviewState('ready')
+    } catch (error) {
+      setPreviewState('error')
+    }
+  }
+
+  useEffect(() => {
+    setPreviewState('idle')
+    setPreviewUrl('')
+  }, [
+    data.businessName,
+    data.tagline,
+    data.description,
+    data.services,
+    data.phoneNumber,
+    data.email,
+    data.address,
+    data.template,
+    data.accentColor,
+    data.headingFont,
+    data.bodyFont,
+    data.heroImage,
+    data.backgroundImage,
+    data.autoFill,
+    data.customInfo,
+  ])
 
   return (
     <div className="space-y-6">
@@ -844,6 +1055,32 @@ function ReviewStep({ data }: { data: WizardData }) {
           This preview reflects your selected template structure, fonts, and imagery.
         </p>
         <WebsitePreview data={data} />
+        <div className="pt-2 space-y-3">
+          <button
+            type="button"
+            onClick={generateFullPreview}
+            disabled={previewState === 'saving'}
+            className="px-5 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-semibold rounded-lg disabled:opacity-60"
+          >
+            {previewState === 'saving' ? 'Generating full website preview...' : 'Generate full website preview link'}
+          </button>
+          {previewState === 'ready' && previewUrl && (
+            <div className="text-sm text-slate-200">
+              <p className="mb-2">Full preview ready. This opens a multi-page site with clickable navigation and demo-only buttons.</p>
+              <Link href={previewUrl} target="_blank" className="text-cyan-200 underline hover:text-cyan-100">
+                Open full preview website
+              </Link>
+            </div>
+          )}
+          {previewState === 'error' && (
+            <p className="text-sm text-red-300">Unable to generate preview link right now. Please try again.</p>
+          )}
+          {data.autoFill && (
+            <p className="text-xs text-slate-300">
+              Auto-fill is on: suggested FAQ and expanded service content will be included in the full preview. A Past Jobs page is also included because social-proof project content typically improves lead conversion.
+            </p>
+          )}
+        </div>
       </div>
 
       <div className="glass-panel rounded-2xl p-6">
