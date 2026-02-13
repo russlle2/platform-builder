@@ -168,7 +168,7 @@ const applySuggestedAutoFill = (data: WizardData): WizardData => {
       data.description ||
       `${businessName} delivers responsive HVAC service, clear communication, and dependable workmanship across ${inferredArea}.`,
     phoneNumber: data.phoneNumber || '(555) 123-4567',
-    email: data.email || `${normalizeSlug(businessName)}@example.com`,
+    email: data.email || 'business@example.com',
     services: nextServices,
     customInfo:
       data.customInfo.length > 0
@@ -296,6 +296,19 @@ export default function WizardPage() {
       setCurrentStep(currentStep - 1)
     }
   }
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return
+    }
+    const params = new URLSearchParams(window.location.search)
+    const stepParam = Number(params.get('step') || '')
+    if (!Number.isFinite(stepParam) || stepParam < 1) {
+      return
+    }
+    const targetStep = Math.min(Math.max(stepParam - 1, 0), wizardSteps.length - 1)
+    setCurrentStep(targetStep)
+  }, [])
 
   return (
     <main className="min-h-screen pt-24 pb-16">
@@ -1002,23 +1015,28 @@ function ReviewStep({ data }: { data: WizardData }) {
     setPreviewState('saving')
     try {
       const slug = getPreviewSlug()
+      const previewPayload = JSON.parse(currentPreviewFingerprint)
+
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem(`wizard_preview_site_${slug}`, JSON.stringify(previewPayload))
+      }
+
       const response = await fetch('/api/portal/site', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           slug,
           status: 'preview',
-          data: JSON.parse(currentPreviewFingerprint),
+          data: previewPayload,
         }),
       })
-
-      if (!response.ok) {
-        throw new Error('Failed to generate preview')
-      }
 
       setPreviewUrl(`/__site/${slug}/home`)
       setGeneratedPreviewFingerprint(currentPreviewFingerprint)
       setPreviewState('ready')
+      if (!response.ok) {
+        console.warn('Preview persistence unavailable; using session preview data only.')
+      }
     } catch (error) {
       setPreviewState('error')
     }

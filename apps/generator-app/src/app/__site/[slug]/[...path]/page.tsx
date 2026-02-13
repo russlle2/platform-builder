@@ -1,6 +1,9 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
+import path from 'path'
+import { readFile } from 'fs/promises'
+import { existsSync } from 'fs'
 
 interface PreviewFaq {
 	question: string
@@ -96,6 +99,25 @@ const fallbackSite: PreviewSiteData = {
 	generatedFromAutoFill: false,
 }
 
+const getLocalCacheFilePath = (slug: string) => {
+	return path.join('/tmp', 'platform-builder-portal-sites', `${slug}.json`)
+}
+
+const readLocalSiteData = async (slug: string): Promise<PreviewSiteData | null> => {
+	const filePath = getLocalCacheFilePath(slug)
+	if (!existsSync(filePath)) {
+		return null
+	}
+
+	try {
+		const raw = await readFile(filePath, 'utf-8')
+		const parsed = JSON.parse(raw)
+		return (parsed?.data as PreviewSiteData) || null
+	} catch {
+		return null
+	}
+}
+
 export default async function PreviewSitePage({
 	params,
 }: {
@@ -111,7 +133,8 @@ export default async function PreviewSitePage({
 
 	const supabase = getSupabase()
 	if (!supabase) {
-		return <PreviewLayout slug={slug} page={page} site={fallbackSite} />
+		const localSite = await readLocalSiteData(slug)
+		return <PreviewLayout slug={slug} page={page} site={localSite || fallbackSite} />
 	}
 
 	const { data } = await supabase
@@ -120,7 +143,8 @@ export default async function PreviewSitePage({
 		.eq('slug', slug)
 		.maybeSingle()
 
-	const site = (data?.data as PreviewSiteData | undefined) || fallbackSite
+	const localSite = await readLocalSiteData(slug)
+	const site = (data?.data as PreviewSiteData | undefined) || localSite || fallbackSite
 
 	return <PreviewLayout slug={slug} page={page} site={site} />
 }

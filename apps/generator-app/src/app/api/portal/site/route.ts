@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import path from 'path'
+import { mkdir, readFile, writeFile } from 'fs/promises'
+import { existsSync } from 'fs'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -21,6 +24,31 @@ const getSupabase = () => {
   })
 }
 
+const getLocalCacheFilePath = (slug: string) => {
+  return path.join('/tmp', 'platform-builder-portal-sites', `${slug}.json`)
+}
+
+const readLocalSite = async (slug: string) => {
+  const filePath = getLocalCacheFilePath(slug)
+  if (!existsSync(filePath)) {
+    return null
+  }
+
+  try {
+    const raw = await readFile(filePath, 'utf-8')
+    return JSON.parse(raw)
+  } catch {
+    return null
+  }
+}
+
+const writeLocalSite = async (slug: string, site: any) => {
+  const dirPath = path.join('/tmp', 'platform-builder-portal-sites')
+  await mkdir(dirPath, { recursive: true })
+  const filePath = getLocalCacheFilePath(slug)
+  await writeFile(filePath, JSON.stringify(site), 'utf-8')
+}
+
 export async function GET(req: NextRequest) {
   const slug = normalizeSlug(req.nextUrl.searchParams.get('slug') || '')
   if (!slug) {
@@ -29,7 +57,8 @@ export async function GET(req: NextRequest) {
 
   const supabase = getSupabase()
   if (!supabase) {
-    return NextResponse.json({ error: 'Portal not configured.' }, { status: 500 })
+    const localSite = await readLocalSite(slug)
+    return NextResponse.json({ site: localSite })
   }
 
   const { data, error } = await supabase
@@ -46,11 +75,6 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const supabase = getSupabase()
-  if (!supabase) {
-    return NextResponse.json({ error: 'Portal not configured.' }, { status: 500 })
-  }
-
   const body = await req.json()
   const slug = normalizeSlug(body.slug || '')
   if (!slug) {
@@ -58,12 +82,21 @@ export async function POST(req: NextRequest) {
   }
 
   const data = body.data || {}
-
-  const { error } = await supabase.from('portal_sites').upsert({
+  const sitePayload = {
     slug,
     data,
     status: body.status || 'draft',
     updated_at: new Date().toISOString(),
+  }
+
+  const supabase = getSupabase()
+  if (!supabase) {
+    await writeLocalSite(slug, sitePayload)
+    return NextResponse.json({ ok: true, fallback: 'local-cache' })
+  }
+
+  const { error } = await supabase.from('portal_sites').upsert({
+    ...sitePayload,
   })
 
   if (error) {

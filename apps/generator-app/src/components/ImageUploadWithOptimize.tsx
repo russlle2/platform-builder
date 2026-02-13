@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import Image from 'next/image'
 
 interface ImageUploadProps {
@@ -13,18 +13,27 @@ export function ImageUploadWithOptimize({ onUpload, currentImage }: ImageUploadP
   const [uploading, setUploading] = useState(false)
   const [preview, setPreview] = useState<string>(currentImage || '')
   const [error, setError] = useState<string | null>(null)
+  const inputId = useId()
+
+  useEffect(() => {
+    setPreview(currentImage || '')
+  }, [currentImage])
+
+  const toDataUrl = async (file: File) => {
+    return await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve((reader.result as string) || '')
+      reader.onerror = () => reject(new Error('Failed to read file'))
+      reader.readAsDataURL(file)
+    })
+  }
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
-    // Client-side preview
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      const result = e.target?.result as string
-      setPreview(result)
-    }
-    reader.readAsDataURL(file)
+    const localPreviewUrl = await toDataUrl(file)
+    setPreview(localPreviewUrl)
 
     setUploading(true)
     setError(null)
@@ -45,10 +54,14 @@ export function ImageUploadWithOptimize({ onUpload, currentImage }: ImageUploadP
         onUpload(data.url)
         setPreview(data.url)
       } else {
-        setError(data.error || 'Upload failed')
+        onUpload(localPreviewUrl)
+        setPreview(localPreviewUrl)
+        setError(data.error || 'Upload service unavailable. Using embedded image.')
       }
     } catch (err) {
-      setError('Upload failed')
+      onUpload(localPreviewUrl)
+      setPreview(localPreviewUrl)
+      setError('Upload service unavailable. Using embedded image.')
     } finally {
       setUploading(false)
     }
@@ -81,9 +94,9 @@ export function ImageUploadWithOptimize({ onUpload, currentImage }: ImageUploadP
           onChange={handleFileChange}
           disabled={uploading}
           className="hidden"
-          id="image-upload"
+          id={inputId}
         />
-        <label htmlFor="image-upload" className="cursor-pointer">
+        <label htmlFor={inputId} className="cursor-pointer">
           {preview ? (
             <div className="space-y-4">
               <Image

@@ -59,9 +59,34 @@ export async function POST(request: NextRequest) {
     // Convert file to buffer
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
+    const embeddedDataUrl = `data:${file.type};base64,${buffer.toString('base64')}`
+
+    if (process.env.VERCEL === '1') {
+      return NextResponse.json({
+        success: true,
+        url: embeddedDataUrl,
+        filename: file.name,
+        size: file.size,
+        type: file.type,
+        optimized: false,
+        embedded: true,
+      })
+    }
 
     // Save file
-    await writeFile(filePath, buffer)
+    try {
+      await writeFile(filePath, buffer)
+    } catch {
+      return NextResponse.json({
+        success: true,
+        url: embeddedDataUrl,
+        filename: file.name,
+        size: file.size,
+        type: file.type,
+        optimized: false,
+        embedded: true,
+      })
+    }
 
     // TODO: Integrate Sharp optimization when optimize flag is true
     // For now, optimization is not implemented

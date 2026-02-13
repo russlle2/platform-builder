@@ -10,21 +10,25 @@ const onboardingSteps = [
     title: 'Confirm business details',
     description: 'Review your business name, services, and contact info.',
     action: 'Review details',
+    href: '/wizard?step=1',
   },
   {
     title: 'Select your template',
     description: 'Choose the layout that fits your market and positioning.',
     action: 'Pick template',
+    href: '/wizard?step=5',
   },
   {
     title: 'Connect integrations',
     description: 'Postmark, Supabase, and Stripe get connected after checkout.',
     action: 'View integrations',
+    href: '/portal#integrations',
   },
   {
     title: 'Review your launch',
     description: 'Approve the final site and we publish to your subdomain.',
     action: 'Approve launch',
+    href: '/pricing',
   },
 ]
 
@@ -246,28 +250,35 @@ export default function PortalClient() {
 
             <h2 className="text-2xl font-bold text-white mt-10 mb-6">Onboarding checklist</h2>
             <div className="space-y-4">
-              {onboardingSteps.map((step, index) => (
-                <div
-                  key={step.title}
-                  className="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/10"
-                >
-                  <div className="w-10 h-10 rounded-full bg-cyan-400/20 text-cyan-200 flex items-center justify-center font-bold">
-                    {index + 1}
+              {onboardingSteps.map((step, index) => {
+                const stepHref =
+                  step.title === 'Review your launch' && normalizeSlug(slug)
+                    ? `/pricing?slug=${encodeURIComponent(normalizeSlug(slug))}`
+                    : step.href
+
+                return (
+                  <div
+                    key={step.title}
+                    className="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/10"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-cyan-400/20 text-cyan-200 flex items-center justify-center font-bold">
+                      {index + 1}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-white">{step.title}</h3>
+                      <p className="text-slate-300 text-sm">{step.description}</p>
+                    </div>
+                    <Link href={stepHref} className="text-sm font-semibold text-cyan-200 hover:text-cyan-100">
+                      {step.action}
+                    </Link>
                   </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-white">{step.title}</h3>
-                    <p className="text-slate-300 text-sm">{step.description}</p>
-                  </div>
-                  <button className="text-sm font-semibold text-cyan-200 hover:text-cyan-100">
-                    {step.action}
-                  </button>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
 
           <aside className="space-y-6">
-            <div className="glass-panel rounded-2xl p-6">
+            <div id="integrations" className="glass-panel rounded-2xl p-6">
               <h3 className="text-xl font-bold text-white">Integrations</h3>
               <div className="mt-4 space-y-3">
                 {integrations.map((item) => (
