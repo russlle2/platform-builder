@@ -16,10 +16,43 @@ export default function HomePage() {
 
   return (
     <main className="relative min-h-screen pt-24 pb-20 overflow-hidden">
-      <div className="absolute inset-0">
-        <div className="floating-orb w-40 h-40 bg-cyan-400/40 top-24 left-10" />
-        <div className="floating-orb w-56 h-56 bg-amber-400/20 top-40 right-16" />
-        <div className="floating-orb w-24 h-24 bg-orange-500/30 bottom-32 left-1/3" />
+      <div className="absolute inset-0 overflow-hidden">
+        {/* Multi-industry gradient mesh */}
+        <div className="absolute inset-0" style={{
+          background: [
+            'radial-gradient(ellipse 900px 700px at 8% 8%, rgba(34,211,238,0.14), transparent)',
+            'radial-gradient(ellipse 700px 900px at 92% 15%, rgba(139,92,246,0.11), transparent)',
+            'radial-gradient(ellipse 800px 500px at 50% 90%, rgba(244,63,94,0.08), transparent)',
+            'radial-gradient(ellipse 500px 700px at 75% 55%, rgba(245,158,11,0.07), transparent)',
+            'radial-gradient(ellipse 600px 600px at 25% 50%, rgba(16,185,129,0.07), transparent)',
+          ].join(', '),
+        }} />
+        {/* Subtle dot grid */}
+        <div className="absolute inset-0 opacity-30" style={{
+          backgroundImage: 'radial-gradient(circle, rgba(148,163,184,0.1) 1px, transparent 1px)',
+          backgroundSize: '32px 32px',
+        }} />
+        {/* Pentagon */}
+        <svg className="absolute -top-32 -left-24 w-[550px] h-[550px] text-cyan-400/[0.03]" viewBox="0 0 500 500" fill="none" stroke="currentColor" strokeWidth="1">
+          <polygon points="250,30 470,190 390,440 110,440 30,190" />
+          <polygon points="250,80 420,210 360,400 140,400 80,210" />
+        </svg>
+        {/* Concentric circles */}
+        <svg className="absolute top-[30%] -right-24 w-[400px] h-[400px] text-violet-400/[0.04]" viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="0.8">
+          <circle cx="100" cy="100" r="90" /><circle cx="100" cy="100" r="70" /><circle cx="100" cy="100" r="50" /><circle cx="100" cy="100" r="30" />
+        </svg>
+        {/* Star */}
+        <svg className="absolute bottom-24 left-[18%] w-[280px] h-[280px] text-amber-400/[0.04]" viewBox="0 0 200 200" fill="currentColor">
+          <polygon points="100,10 118,72 185,78 132,118 150,185 100,148 50,185 68,118 15,78 82,72" />
+        </svg>
+        {/* Diamond */}
+        <svg className="absolute top-[60%] right-[18%] w-[200px] h-[200px] text-rose-400/[0.04]" viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <rect x="45" y="45" width="110" height="110" rx="8" transform="rotate(45 100 100)" />
+        </svg>
+        {/* Leaf hint */}
+        <svg className="absolute bottom-[12%] right-[6%] w-[220px] h-[220px] text-emerald-400/[0.03]" viewBox="0 0 200 200" fill="currentColor">
+          <path d="M100 10 Q30 55 30 120 Q30 185 100 190 Q170 185 170 120 Q170 55 100 10Z"/>
+        </svg>
       </div>
       <div className="relative z-10">
         {/* Hero */}

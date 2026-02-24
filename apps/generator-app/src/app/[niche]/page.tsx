@@ -131,6 +131,161 @@ const nicheSalesCopy: Record<string, { headline: string; subheadline: string; be
   },
 }
 
+/* ---------- Niche background visuals ---------- */
+
+function NicheBackground({ niche }: { niche: string }) {
+  const gradients: Record<string, string> = {
+    aromatherapy: 'radial-gradient(ellipse 800px 600px at 20% 15%,rgba(16,185,129,0.15),transparent),radial-gradient(ellipse 600px 800px at 80% 70%,rgba(20,184,166,0.12),transparent),radial-gradient(ellipse 400px 400px at 50% 40%,rgba(52,211,153,0.06),transparent)',
+    holistic_medicine: 'radial-gradient(ellipse 800px 600px at 20% 15%,rgba(139,92,246,0.15),transparent),radial-gradient(ellipse 600px 800px at 80% 70%,rgba(167,139,250,0.10),transparent),radial-gradient(ellipse 400px 400px at 50% 40%,rgba(192,132,252,0.06),transparent)',
+    hvac: 'radial-gradient(ellipse 800px 600px at 20% 15%,rgba(34,211,238,0.15),transparent),radial-gradient(ellipse 600px 800px at 80% 70%,rgba(56,189,248,0.12),transparent),radial-gradient(ellipse 400px 400px at 50% 40%,rgba(14,165,233,0.06),transparent)',
+    private_practice_therapist: 'radial-gradient(ellipse 800px 600px at 20% 15%,rgba(245,158,11,0.12),transparent),radial-gradient(ellipse 600px 800px at 80% 70%,rgba(251,191,36,0.08),transparent),radial-gradient(ellipse 400px 400px at 50% 40%,rgba(252,211,77,0.05),transparent)',
+    sound_bath: 'radial-gradient(ellipse 800px 600px at 20% 15%,rgba(99,102,241,0.15),transparent),radial-gradient(ellipse 600px 800px at 80% 70%,rgba(129,140,248,0.10),transparent),radial-gradient(ellipse 400px 400px at 50% 40%,rgba(165,180,252,0.06),transparent)',
+    wellness_coach: 'radial-gradient(ellipse 800px 600px at 20% 15%,rgba(244,63,94,0.12),transparent),radial-gradient(ellipse 600px 800px at 80% 70%,rgba(251,113,133,0.08),transparent),radial-gradient(ellipse 400px 400px at 50% 40%,rgba(253,164,175,0.05),transparent)',
+  }
+  const orbColors: Record<string, string[]> = {
+    aromatherapy: ['bg-emerald-400/20','bg-teal-400/15','bg-green-400/10'],
+    holistic_medicine: ['bg-violet-400/20','bg-purple-400/15','bg-fuchsia-400/10'],
+    hvac: ['bg-cyan-400/20','bg-sky-400/15','bg-blue-400/10'],
+    private_practice_therapist: ['bg-amber-400/15','bg-yellow-400/10','bg-orange-300/8'],
+    sound_bath: ['bg-indigo-400/20','bg-blue-400/15','bg-violet-400/10'],
+    wellness_coach: ['bg-rose-400/15','bg-pink-400/10','bg-red-300/8'],
+  }
+  const gradient = gradients[niche]
+  const orbs = orbColors[niche]
+  if (!gradient || !orbs) return null
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <div className="absolute inset-0" style={{ background: gradient }} />
+      <div className={`floating-orb w-[320px] h-[320px] ${orbs[0]} top-20 left-[8%]`} />
+      <div className={`floating-orb w-[450px] h-[450px] ${orbs[1]} top-[35%] right-[10%]`} />
+      <div className={`floating-orb w-[250px] h-[250px] ${orbs[2]} bottom-[20%] left-[30%]`} />
+      <NicheSymbols niche={niche} />
+    </div>
+  )
+}
+
+function NicheSymbols({ niche }: { niche: string }) {
+  switch (niche) {
+    case 'aromatherapy': return (
+      <>
+        {/* Large leaf */}
+        <svg className="absolute -top-10 -right-20 w-[500px] h-[500px] text-emerald-400/[0.07] rotate-12" viewBox="0 0 200 200" fill="currentColor">
+          <path d="M100 10 Q30 55 30 120 Q30 185 100 190 Q170 185 170 120 Q170 55 100 10Z"/>
+          <path d="M100 30 L100 170" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.4"/>
+          <path d="M100 70 Q75 58 60 68" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.3"/>
+          <path d="M100 100 Q125 88 140 98" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.3"/>
+          <path d="M100 130 Q75 118 60 128" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.3"/>
+        </svg>
+        {/* Droplet */}
+        <svg className="absolute bottom-[15%] -left-10 w-[300px] h-[300px] text-teal-400/[0.06] -rotate-12" viewBox="0 0 200 200" fill="currentColor">
+          <path d="M100 15 C100 15 45 95 45 130 C45 165 70 185 100 185 C130 185 155 165 155 130 C155 95 100 15 100 15Z"/>
+        </svg>
+        {/* Flower cluster */}
+        <svg className="absolute top-[45%] right-[5%] w-[200px] h-[200px] text-emerald-300/[0.04]" viewBox="0 0 200 200" fill="currentColor">
+          <circle cx="100" cy="60" r="28"/><circle cx="137" cy="87" r="28"/><circle cx="123" cy="128" r="28"/>
+          <circle cx="77" cy="128" r="28"/><circle cx="63" cy="87" r="28"/><circle cx="100" cy="98" r="16"/>
+        </svg>
+      </>
+    )
+    case 'holistic_medicine': return (
+      <>
+        {/* Lotus */}
+        <svg className="absolute -top-5 -right-16 w-[500px] h-[500px] text-violet-400/[0.06]" viewBox="0 0 200 200" fill="currentColor">
+          <path d="M100 175 Q70 125 82 72 Q92 35 100 20 Q108 35 118 72 Q130 125 100 175Z"/>
+          <path d="M100 175 Q50 135 38 92 Q30 60 52 42 Q72 68 100 175Z" opacity="0.7"/>
+          <path d="M100 175 Q150 135 162 92 Q170 60 148 42 Q128 68 100 175Z" opacity="0.7"/>
+          <path d="M100 175 Q30 148 18 108 Q8 78 32 62 Q58 88 100 175Z" opacity="0.4"/>
+          <path d="M100 175 Q170 148 182 108 Q192 78 168 62 Q142 88 100 175Z" opacity="0.4"/>
+        </svg>
+        {/* Spiral */}
+        <svg className="absolute bottom-[10%] -left-8 w-[350px] h-[350px] text-purple-400/[0.05]" viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <path d="M100 90 Q112 90 112 102 Q112 118 93 118 Q72 118 72 95 Q72 68 107 68 Q142 68 142 105 Q142 148 93 148 Q48 148 48 95 Q48 42 107 42"/>
+        </svg>
+        {/* Healing rings */}
+        <svg className="absolute top-[40%] right-[3%] w-[250px] h-[250px] text-violet-300/[0.04]" viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <circle cx="100" cy="100" r="20"/><circle cx="100" cy="100" r="42"/><circle cx="100" cy="100" r="64"/><circle cx="100" cy="100" r="86"/>
+        </svg>
+      </>
+    )
+    case 'hvac': return (
+      <>
+        {/* Snowflake */}
+        <svg className="absolute -top-8 -right-12 w-[450px] h-[450px] text-cyan-400/[0.06]" viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+          <line x1="100" y1="15" x2="100" y2="185"/><line x1="26" y1="57" x2="174" y2="143"/><line x1="26" y1="143" x2="174" y2="57"/>
+          <line x1="100" y1="40" x2="82" y2="55"/><line x1="100" y1="40" x2="118" y2="55"/>
+          <line x1="100" y1="160" x2="82" y2="145"/><line x1="100" y1="160" x2="118" y2="145"/>
+          <line x1="50" y1="71" x2="48" y2="92"/><line x1="50" y1="71" x2="68" y2="62"/>
+          <line x1="150" y1="129" x2="152" y2="108"/><line x1="150" y1="129" x2="132" y2="138"/>
+        </svg>
+        {/* Gear */}
+        <svg className="absolute bottom-[12%] -left-12 w-[350px] h-[350px] text-cyan-400/[0.05]" viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="2">
+          <circle cx="100" cy="100" r="35"/><circle cx="100" cy="100" r="22"/>
+          <rect x="94" y="55" width="12" height="18" rx="2" fill="currentColor" opacity="0.5"/>
+          <rect x="94" y="127" width="12" height="18" rx="2" fill="currentColor" opacity="0.5"/>
+          <rect x="55" y="94" width="18" height="12" rx="2" fill="currentColor" opacity="0.5"/>
+          <rect x="127" y="94" width="18" height="12" rx="2" fill="currentColor" opacity="0.5"/>
+        </svg>
+        {/* Small snowflake */}
+        <svg className="absolute top-[50%] right-[8%] w-[180px] h-[180px] text-sky-300/[0.04]" viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+          <line x1="100" y1="25" x2="100" y2="175"/><line x1="35" y1="62" x2="165" y2="138"/><line x1="35" y1="138" x2="165" y2="62"/>
+        </svg>
+      </>
+    )
+    case 'private_practice_therapist': return (
+      <>
+        {/* Heart */}
+        <svg className="absolute -top-6 -right-16 w-[420px] h-[420px] text-amber-400/[0.05]" viewBox="0 0 200 200" fill="currentColor">
+          <path d="M100 175 C100 175 25 125 25 70 C25 30 55 15 100 55 C145 15 175 30 175 70 C175 125 100 175 100 175Z"/>
+        </svg>
+        {/* Abstract brain */}
+        <svg className="absolute bottom-[8%] -left-12 w-[380px] h-[380px] text-amber-300/[0.04]" viewBox="0 0 200 200" fill="currentColor">
+          <path d="M100 185 Q40 170 25 130 Q10 90 30 60 Q50 30 80 25 Q100 20 115 30 Q135 20 155 30 Q180 45 185 75 Q190 110 170 140 Q150 170 100 185Z" opacity="0.6"/>
+          <path d="M65 110 Q82 90 100 110 Q118 130 135 110" fill="none" stroke="currentColor" strokeWidth="2" opacity="0.3"/>
+        </svg>
+        {/* Ripple circles */}
+        <svg className="absolute top-[45%] right-[5%] w-[220px] h-[220px] text-amber-300/[0.04]" viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <circle cx="100" cy="100" r="20"/><circle cx="100" cy="100" r="45"/><circle cx="100" cy="100" r="70"/><circle cx="100" cy="100" r="90"/>
+        </svg>
+      </>
+    )
+    case 'sound_bath': return (
+      <>
+        {/* Concentric sound waves */}
+        <svg className="absolute -top-12 -right-16 w-[500px] h-[500px] text-indigo-400/[0.06]" viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <circle cx="100" cy="100" r="18"/><circle cx="100" cy="100" r="38"/><circle cx="100" cy="100" r="58"/><circle cx="100" cy="100" r="78"/><circle cx="100" cy="100" r="95"/>
+        </svg>
+        {/* Singing bowl */}
+        <svg className="absolute bottom-[10%] -left-8 w-[340px] h-[340px] text-indigo-400/[0.05]" viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <path d="M25 85 Q25 170 100 170 Q175 170 175 85"/><ellipse cx="100" cy="85" rx="75" ry="18"/>
+          <line x1="100" y1="67" x2="100" y2="35"/><circle cx="100" cy="30" r="8" fill="currentColor" opacity="0.3"/>
+        </svg>
+        {/* Sound wave line */}
+        <svg className="absolute bottom-[30%] left-0 w-full h-[80px] text-indigo-300/[0.04]" viewBox="0 0 800 100" fill="none" stroke="currentColor" strokeWidth="2" preserveAspectRatio="none">
+          <path d="M0 50 Q50 20 100 50 Q150 80 200 50 Q250 20 300 50 Q350 80 400 50 Q450 20 500 50 Q550 80 600 50 Q650 20 700 50 Q750 80 800 50"/>
+        </svg>
+      </>
+    )
+    case 'wellness_coach': return (
+      <>
+        {/* Star burst */}
+        <svg className="absolute -top-10 -right-14 w-[420px] h-[420px] text-rose-400/[0.06]" viewBox="0 0 200 200" fill="currentColor">
+          <polygon points="100,10 118,72 185,78 132,118 150,185 100,148 50,185 68,118 15,78 82,72"/>
+        </svg>
+        {/* Rising arrow */}
+        <svg className="absolute bottom-[12%] -left-8 w-[350px] h-[350px] text-rose-400/[0.05]" viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M30 170 Q80 140 100 80 Q120 20 170 20"/><polygon points="155,8 185,22 168,42" fill="currentColor" opacity="0.4"/>
+        </svg>
+        {/* Heartbeat line */}
+        <svg className="absolute top-[55%] left-0 w-full h-[60px] text-rose-300/[0.04]" viewBox="0 0 800 100" fill="none" stroke="currentColor" strokeWidth="2" preserveAspectRatio="none">
+          <path d="M0 50 L200 50 L250 50 L270 20 L290 80 L310 30 L330 70 L350 50 L600 50 L650 50 L670 15 L690 85 L710 25 L730 75 L750 50 L800 50"/>
+        </svg>
+      </>
+    )
+    default: return null
+  }
+}
+
 /* ---------- Static generation ---------- */
 
 export async function generateStaticParams() {
@@ -172,12 +327,7 @@ export default async function NicheLandingPage({
 
   return (
     <main className="relative min-h-screen pt-24 pb-20 overflow-hidden">
-      {/* Background orbs */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="floating-orb w-48 h-48 bg-white/5 top-24 left-10" />
-        <div className="floating-orb w-64 h-64 bg-white/5 top-40 right-16" />
-        <div className="floating-orb w-32 h-32 bg-white/5 bottom-32 left-1/3" />
-      </div>
+      <NicheBackground niche={niche} />
 
       <div className="relative z-10">
         {/* Hero */}
