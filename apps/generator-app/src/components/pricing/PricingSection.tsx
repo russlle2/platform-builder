@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 
 const PRICING_TIERS = [
   {
@@ -115,7 +116,7 @@ export function PricingSection() {
               ))}
             </ul>
 
-            <a
+            <Link
               href="/editor"
               className={`block w-full py-3 rounded-xl font-bold text-lg text-center transition-all duration-200 ${
                 tier.highlighted
@@ -124,7 +125,7 @@ export function PricingSection() {
               }`}
             >
               Get Started
-            </a>
+            </Link>
           </div>
         ))}
       </div>

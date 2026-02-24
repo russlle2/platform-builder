@@ -1,5 +1,7 @@
 'use client'
 
+import Link from 'next/link'
+
 export default function BuildsPage() {
   return (
     <main className="min-h-screen pt-16">
@@ -22,12 +24,12 @@ export default function BuildsPage() {
             <p className="text-gray-300 max-w-2xl mx-auto">
               Start building your first website with our Live Build Wizard. Your projects will appear here.
             </p>
-            <a 
+            <Link 
               href="/wizard"
               className="cta-button inline-block"
             >
               Create Your First Build
-            </a>
+            </Link>
           </div>
         </div>
       </section>

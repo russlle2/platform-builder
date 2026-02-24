@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
+import Link from 'next/link';
 
 interface WizardData {
   businessName: string;
@@ -259,18 +260,18 @@ export function EditorWizard() {
 
               {/* Finish CTAs */}
               <div className="space-y-4 text-center">
-                <a
+                <Link
                   href="/pricing"
                   className="block w-full py-4 bg-white text-amber-900 font-bold text-lg rounded-xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 text-center"
                 >
                   See Transparent Pricing &amp; Reserve Your Spot
-                </a>
-                <a
+                </Link>
+                <Link
                   href="/pricing"
                   className="inline-block text-amber-100 hover:text-amber-200 underline text-sm"
                 >
                   Continue → /pricing
-                </a>
+                </Link>
               </div>
             </div>
           )}

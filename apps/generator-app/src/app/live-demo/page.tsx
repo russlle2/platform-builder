@@ -1,5 +1,7 @@
 'use client'
 
+import Link from 'next/link'
+
 export default function LiveDemoPage() {
   return (
     <main className="min-h-screen pt-16">
@@ -41,12 +43,12 @@ export default function LiveDemoPage() {
                   text="No commitment until you're 100% satisfied"
                 />
               </ul>
-              <a 
+              <Link 
                 href="/wizard"
                 className="cta-button inline-block"
               >
                 Launch Live Build Wizard
-              </a>
+              </Link>
             </div>
 
             <div className="aspect-video bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl overflow-hidden relative border-4 border-blue-500/30">

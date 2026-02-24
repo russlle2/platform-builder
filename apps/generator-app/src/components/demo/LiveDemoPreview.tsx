@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 
 export function LiveDemoPreview() {
   return (
@@ -13,7 +14,7 @@ export function LiveDemoPreview() {
       </div>
 
       {/* Desktop-like zoomed-out preview — entire area is clickable */}
-      <a
+      <Link
         href="/editor"
         className="block group cursor-pointer"
       >
@@ -79,7 +80,7 @@ export function LiveDemoPreview() {
             </div>
           </div>
         </div>
-      </a>
+      </Link>
     </section>
   );
 }

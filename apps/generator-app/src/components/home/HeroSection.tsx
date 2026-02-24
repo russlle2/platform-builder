@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 
 export function HeroSection() {
   return (
@@ -28,12 +29,12 @@ export function HeroSection() {
 
           {/* Primary CTA */}
           <div className="space-y-3 pt-4">
-            <a
+            <Link
               href="/demo"
               className="inline-block px-10 py-4 bg-white text-amber-900 font-bold text-lg rounded-xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300"
             >
               Reserve your spot
-            </a>
+            </Link>
             <p className="text-white text-sm font-medium">
               Limited to 30 active monthly members nationwide
             </p>
