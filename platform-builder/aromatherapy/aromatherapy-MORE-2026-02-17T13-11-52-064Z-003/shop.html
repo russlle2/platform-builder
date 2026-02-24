@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Boutique — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--ink:#0f1720;--muted:#6b6b6b;--accent:#b4d9c2}
+    body{margin:0;font-family:system-ui,Arial;background:linear-gradient(180deg,#fff,#f8f9f8);color:var(--ink)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:14px 22px;border-bottom:1px solid #f1f1f1}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none}
+    main{max-width:980px;margin:26px auto;padding:0 20px}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .card{background:#fff;border:1px solid #eee;padding:14px;border-radius:12px}
+    .card h4{margin:6px 0}
+    .price{font-weight:700}
+    .btn{background:var(--accent);color:#083;display:inline-block;padding:8px 10px;border-radius:8px;text-decoration:none}
+    .mini-builder{margin-top:20px;display:flex;gap:12px;align-items:center}
+    select{padding:8px;border-radius:8px;border:1px solid #eaeaea}
+    .muted{color:var(--muted)}
+    @media(max-width:980px){.grid{grid-template-columns:repeat(2,1fr)} }
+    @media(max-width:640px){.grid{grid-template-columns:1fr} .mini-builder{flex-direction:column;align-items:stretch}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div style="width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,#c8b2d6,#b4d9c2);display:flex;align-items:center;justify-content:center;color:white;font-weight:700">S</div>
+      <div>
+        <div style="font-weight:700">Shop</div>
+        <div style="font-size:12px;color:var(--muted)">Tinctures, blends, and simple tools</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Boutique</a>
+      <a href="pricing.html">Value</a>
+      <a href="about.html">Story</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1 style="margin-bottom:8px">Boutique — curated, small-batch</h1>
+    <p class="muted">A selection of ready blends, refillable rollers, and carrier oils. Each product includes suggested use and dilution notes.</p>
+
+    <section style="margin-top:18px">
+      <div class="grid">
+        <div class="card">
+          <h4>Quiet — roll-on 10 ml</h4>
+          <div class="muted">Calming blend with lavender + cedarwood</div>
+          <div style="margin-top:8px" class="price">$24</div>
+          <div style="margin-top:10px"><a class="btn" href="book.html">Reserve</a></div>
+        </div>
+
+        <div class="card">
+          <h4>Crisp — diffuser blend 10 ml</h4>
+          <div class="muted">Bright citrus notes to lift the room</div>
+          <div style="margin-top:8px" class="price">$18</div>
+          <div style="margin-top:10px"><a class="btn" href="book.html">Reserve</a></div>
+        </div>
+
+        <div class="card">
+          <h4>Ground — carrier oil 100 ml</h4>
+          <div class="muted">Neutral fractionated coconut oil, high quality</div>
+          <div style="margin-top:8px" class="price">$12</div>
+          <div style="margin-top:10px"><a class="btn" href="book.html">Reserve</a></div>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:20px" class="panel">
+      <h3>Mini blend finder</h3>
+      <p class="muted">Not sure which ready blend to choose? Try this quick selector for a safe dilution suggestion based on bottle size.</p>
+      <div class="mini-builder">
+        <select id="sb_vibe">
+          <option value="calm">Calm</option>
+          <option value="focus">Focus</option>
+          <option value="uplift">Uplift</option>
+        </select>
+        <select id="sb_size">
+          <option value="10">10 ml</option>
+          <option value="30" selected>30 ml</option>
+          <option value="50">50 ml</option>
+        </select>
+        <select id="sb_strength">
+          <option value="1">1% — low</option>
+          <option value="2">2% — moderate</option>
+          <option value="3">3% — high</option>
+        </select>
+        <button id="sb_go" class="btn">Suggest</button>
+        <div id="sb_result" style="margin-left:8px;font-family:monospace"></div>
+      </div>
+      <div style="margin-top:12px" class="muted">This tool provides an approximate drop count for safe topical dilution. Patch-test before use; check pregnancy/pet notes.</div>
+    </section>
+
+    <section style="margin-top:18px" class="panel">
+      <h3>Pricing and frames</h3>
+      <div class="muted">Products are priced per small-batch unit. Services are available separately; blends can be made to order with a short consult.</div>
+      <ul style="color:var(--muted)">
+        <li>Made-to-order 30 ml personalized blend + consult: $36</li>
+        <li>Pre-made roll-ons and diffusers: $12–$30</li>
+        <li>Carrier oils and basics: $8–$15</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer style="max-width:980px;margin:28px auto;padding:14px;color:var(--muted)">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>{{BUSINESS_NAME}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+      <div><a href="book.html" class="btn">{{PRIMARY_CTA_LABEL}}</a></div>
+    </div>
+  </footer>
+
+  <script>
+    // Mini blend finder logic for shop
+    (function(){
+      const sb_go = document.getElementById('sb_go');
+      const sb_vibe = document.getElementById('sb_vibe');
+      const sb_size = document.getElementById('sb_size');
+      const sb_strength = document.getElementById('sb_strength');
+      const sb_result = document.getElementById('sb_result');
+
+      function dropsFor(ml,pct){
+        const dpm = 20;
+        return Math.round(ml * dpm * (pct/100));
+      }
+
+      sb_go.addEventListener('click', ()=>{
+        const ml = Number(sb_size.value);
+        const pct = Number(sb_strength.value);
+        const total = dropsFor(ml,pct);
+        const text = `${sb_vibe.value.toUpperCase()} — ${ml}ml @ ${pct}% => ${total} drops total`;
+        sb_result.textContent = text;
+      });
+
+    })();
+  </script>
+</body>
+</html>

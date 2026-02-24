@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reach out to {{BUSINESS_NAME}} for integrative consultations, questions, or booking. Supportive, educational guidance tailored for you." />
+  <style>
+    :root{
+      --bg:#0f1724;
+      --glass:rgba(255,255,255,0.06);
+      --glass-2:rgba(255,255,255,0.04);
+      --accent:#8bd3c7;
+      --muted:#9aa5b1;
+      --card-shadow: 0 6px 18px rgba(3,6,23,0.6);
+      --glass-border: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+    }
+    html,body{height:100%;}
+    body{
+      margin:0;
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(139,211,199,0.06), transparent),
+                  radial-gradient(900px 400px at 90% 90%, rgba(139,211,199,0.03), transparent),
+                  #071425;
+      color:#e6f2ef;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding:36px;
+      box-sizing:border-box;
+      background-image: url('assets/img/pattern.svg');
+      background-repeat:repeat;
+      background-size:260px;
+    }
+    .wrap{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:start;}
+    header{display:flex;justify-content:space-between;align-items:center;padding:14px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:var(--card-shadow);backdrop-filter: blur(8px);border:1px solid rgba(255,255,255,0.03)}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#5aa5eb);display:flex;align-items:center;justify-content:center;font-weight:700;color:#072026}
+    nav a{color:var(--muted);text-decoration:none;margin:0 8px;font-size:14px}
+    nav a.current{color:var(--accent);font-weight:600}
+    main{margin-top:20px}
+
+    /* Left column */
+    .panel{background:linear-gradient(180deg,var(--glass),var(--glass-2));padding:22px;border-radius:14px;box-shadow:var(--card-shadow);border:1px solid rgba(255,255,255,0.04)}
+    h1{margin:0 0 6px 0;font-size:24px}
+    .lead{color:var(--muted);margin-bottom:16px}
+    form .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input[type=text],input[type=email],textarea,select{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;font-size:14px}
+    textarea{min-height:120px;resize:vertical}
+    .actions{display:flex;gap:10px;align-items:center;margin-top:10px}
+    .btn{background:linear-gradient(90deg,var(--accent),#5aa5eb);color:#042b2a;padding:11px 14px;border-radius:10px;border:none;font-weight:700;cursor:pointer}
+    .ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:10px 12px;border-radius:10px;color:var(--muted)}
+
+    /* Right column */
+    .contact-card{position:sticky;top:36px}
+    .small{font-size:13px;color:var(--muted)}
+    .info{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+    .meta{display:flex;gap:10px;align-items:center}
+    .meta strong{color:var(--accent)}
+
+    /* Proof Gallery */
+    .proof{margin-top:18px}
+    .proof-display{padding:16px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid rgba(255,255,255,0.03)}
+    .quote{font-size:15px;line-height:1.4;color:#e6f2ef}
+    .who{margin-top:10px;font-size:13px;color:var(--muted)}
+    .badges{display:flex;gap:8px;margin-top:12px}
+    .badge{background:rgba(255,255,255,0.03);padding:8px 10px;border-radius:10px;font-size:13px;color:var(--muted);position:relative;cursor:default}
+    .badge:hover{transform:translateY(-3px)}
+    .tooltip{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 8px);background:rgba(2,6,23,0.9);padding:8px;border-radius:8px;font-size:12px;color:#cde6df;white-space:nowrap;display:none}
+    .badge:focus .tooltip,.badge:hover .tooltip{display:block}
+    .dots{display:flex;gap:6px;margin-top:12px}
+    .dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,0.08);cursor:pointer}
+    .dot.active{background:var(--accent)}
+
+    /* Pricing comparator */
+    .comparator{margin-top:20px;padding:14px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid rgba(255,255,255,0.03)}
+    .toggle{display:inline-flex;background:rgba(255,255,255,0.03);padding:6px;border-radius:999px;border:1px solid rgba(255,255,255,0.03);gap:6px}
+    .toggle button{background:transparent;border:none;padding:8px 12px;border-radius:999px;color:var(--muted);cursor:pointer}
+    .toggle button.active{background:linear-gradient(90deg,var(--accent),#5aa5eb);color:#042b2a;font-weight:700}
+    .plans{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+    .plan{padding:12px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)}
+    .price{font-size:22px;font-weight:800;color:var(--accent)}
+    .price small{font-size:12px;color:var(--muted);font-weight:600}
+    .plan p{margin:8px 0 0 0;color:var(--muted);font-size:13px}
+
+    footer{margin-top:30px;color:var(--muted);font-size:13px;text-align:center}
+
+    @media (max-width:980px){
+      .wrap{grid-template-columns:1fr;}
+      .contact-card{position:relative;top:auto}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="panel" style="grid-column:1/-1">
+      <div class="brand">
+        <div class="logo">HM</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div class="small">Holistic consultations that explore your life map</div>
+        </div>
+      </div>
+      <nav aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="services.html">Offerings</a>
+        <a href="conditions.html">Conditions</a>
+        <a href="approach.html">Philosophy</a>
+        <a href="pricing.html">Plans</a>
+        <a href="about.html">About</a>
+        <a href="book.html">Schedule</a>
+        <a href="contact.html" class="current">Connect</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="panel">
+        <h1>Connect with our team</h1>
+        <div class="lead">Use the form to tell us what matters most right now. We respond within two business days and will offer options for an initial conversation.</div>
+
+        <form id="contactForm" class="contact-form" onsubmit="return false;">
+          <div class="row">
+            <div>
+              <label for="name">Full name</label>
+              <input id="name" name="name" type="text" placeholder="Your full name" required />
+            </div>
+            <div>
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" placeholder="you@example.com" required />
+            </div>
+          </div>
+
+          <div style="margin-top:10px">
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" type="text" placeholder="Optional" />
+          </div>
+
+          <div style="margin-top:10px">
+            <label for="method">Preferred contact</label>
+            <select id="method" name="method">
+              <option>Phone</option>
+              <option selected>Email</option>
+              <option>Secure message</option>
+            </select>
+          </div>
+
+          <div style="margin-top:10px">
+            <label for="message">Message / What brings you here?</label>
+            <textarea id="message" name="message" placeholder="Brief notes about your priorities, symptoms, or goals"></textarea>
+          </div>
+
+          <div class="actions">
+            <button class="btn" id="primaryCta">{{PRIMARY_CTA_LABEL}}</button>
+            <button class="ghost" type="reset">Reset</button>
+            <div class="small" style="margin-left:auto;color:var(--muted)">Or call <strong style="color:var(--accent)">{{PHONE}}</strong></div>
+          </div>
+
+          <div class="small" style="margin-top:12px;color:var(--muted)">By contacting us you agree to receive scheduling and informational messages. This is not emergency care. If you are in crisis, call your local emergency services.</div>
+        </form>
+      </section>
+
+      <section class="panel" style="margin-top:18px">
+        <h2 style="margin:0 0 8px 0">Quick look — how we frame our plans</h2>
+        <div class="lead">A concise way to compare monthly support vs carefully bundled packages. Toggle to see animated pricing that helps you weigh options.</div>
+
+        <div class="comparator" id="comparator">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div style="font-weight:700">Price comparator</div>
+            <div class="toggle" role="tablist" aria-label="Billing toggle">
+              <button id="monthlyBtn" class="active" aria-pressed="true">Monthly</button>
+              <button id="packageBtn" aria-pressed="false">Package</button>
+            </div>
+          </div>
+
+          <div class="plans">
+            <div class="plan" data-monthly="120" data-package="320">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <div style="font-weight:700">Nurture Care</div>
+                <div class="price"><span class="num">120</span><small> / mo</small></div>
+              </div>
+              <p>Monthly check-in, personalized guidance, and a focused toolkit for daily balance.</p>
+            </div>
+            <div class="plan" data-monthly="220" data-package="580">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <div style="font-weight:700">Rhythm Reset</div>
+                <div class="price"><span class="num">220</span><small> / mo</small></div>
+              </div>
+              <p>Deeper collaboration: extended planning, two session types, and ongoing adjustments.</p>
+            </div>
+            <div class="plan" data-monthly="70" data-package="180">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <div style="font-weight:700">Spot Support</div>
+                <div class="price"><span class="num">70</span><small> / mo</small></div>
+              </div>
+              <p>Single-topic support for immediate needs and practical next steps.</p>
+            </div>
+            <div class="plan" data-monthly="360" data-package="980">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <div style="font-weight:700">Foundational Path</div>
+                <div class="price"><span class="num">360</span><small> / mo</small></div>
+              </div>
+              <p>Comprehensive planning, multi-month collaboration, and prioritized interventions.</p>
+            </div>
+          </div>
+          <div style="margin-top:10px;font-size:13px;color:var(--muted)">Switching to a package shows an estimated bundled rate for the program; monthly indicates a steady subscription-like option. Not all benefits included in every offering.</div>
+        </div>
+      </section>
+
+    </main>
+
+    <aside class="contact-card">
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-weight:800">Reach us</div>
+            <div class="small">We welcome questions about services and availability.</div>
+          </div>
+        </div>
+
+        <div class="info">
+          <div class="meta"><span class="small">Phone</span><strong>{{PHONE}}</strong></div>
+          <div class="meta"><span class="small">Email</span><strong>{{EMAIL}}</strong></div>
+          <div class="meta"><span class="small">Location</span><strong>{{CITY}}, {{STATE}}</strong></div>
+        </div>
+
+        <div class="proof">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div style="font-weight:800">Proof gallery</div>
+            <div class="small">Client impressions & credentials</div>
+          </div>
+
+          <div class="proof-display" id="proofDisplay">
+            <div class="quote" id="quoteText">Loading thoughtful reflections...</div>
+            <div class="who" id="quoteWho"></div>
+            <div class="badges" id="badges"></div>
+            <div class="dots" id="dots"></div>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+
+  </div>
+
+  <footer>
+    <div class="small">Questions? Call <strong style="color:var(--accent)">{{PHONE}}</strong> or email <strong style="color:var(--accent)">{{EMAIL}}</strong></div>
+    <div style="margin-top:6px">© <span id="year"></span> {{BUSINESS_NAME}} — Serving the {{CITY}} region</div>
+  </footer>
+
+  <script>
+    // Date
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Primary CTA wiring (example local action)
+    document.getElementById('primaryCta').addEventListener('click', function(){
+      // For privacy, we just collect minimal info and simulate a message send.
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      if(!name || !email){
+        alert('Please provide name and email so we can follow up.');
+        return;
+      }
+      // Simulate success response
+      this.textContent = 'Sending…';
+      setTimeout(()=>{
+        this.textContent = '{{PRIMARY_CTA_LABEL}}';
+        alert('Thank you — we received your message. We will follow up by ' + document.getElementById('method').value + '.');
+        document.getElementById('contactForm').reset();
+      },900);
+    });
+
+    /* Proof Gallery */
+    const testimonials = [
+      {text:"I felt genuinely heard — the plan was practical and fit into my week.", who:"A. — long-time client", badges:[{label:'Board Certified',desc:'Licensed clinician with board certification'}, {label:'Research-Based',desc:'Recommendations grounded in current evidence'}]},
+      {text:"The stepwise approach helped me make small shifts that added up.", who:"B. — busy parent", badges:[{label:'Community Partner',desc:'Works with local wellness partners'}, {label:'Continuing Ed',desc:'Regular professional development'}]},
+      {text:"Clear guidance, thoughtful pacing, and useful tools to try between visits.", who:"C. — educator", badges:[{label:'Trauma-Informed',desc:'Practice follows trauma-aware principles'}, {label:'Ethical Care',desc:'Upholds clear ethical standards'}]}
+    ];
+
+    const quoteText = document.getElementById('quoteText');
+    const quoteWho = document.getElementById('quoteWho');
+    const badgesEl = document.getElementById('badges');
+    const dotsEl = document.getElementById('dots');
+
+    let activeIndex = 0;
+    function renderProof(index){
+      const item = testimonials[index];
+      quoteText.textContent = item.text;
+      quoteWho.textContent = item.who;
+      badgesEl.innerHTML = '';
+      item.badges.forEach(b=>{
+        const bEl = document.createElement('div');
+        bEl.className = 'badge';
+        bEl.tabIndex = 0;
+        bEl.innerHTML = `<div>${b.label}</div><div class=\"tooltip\">${b.desc}</div>`;
+        badgesEl.appendChild(bEl);
+      });
+      // dots
+      dotsEl.innerHTML = '';
+      testimonials.forEach((_,i)=>{
+        const d = document.createElement('div');
+        d.className = 'dot' + (i===index? ' active':'');
+        d.addEventListener('click',()=>{ activeIndex = i; renderProof(i); resetRotation(); });
+        dotsEl.appendChild(d);
+      });
+    }
+
+    renderProof(0);
+    let rotation = setInterval(()=>{ activeIndex = (activeIndex+1) % testimonials.length; renderProof(activeIndex); },5000);
+    function resetRotation(){ clearInterval(rotation); rotation = setInterval(()=>{ activeIndex = (activeIndex+1) % testimonials.length; renderProof(activeIndex); },5000); }
+
+    /* Pricing Comparator with animated numbers */
+    const monthlyBtn = document.getElementById('monthlyBtn');
+    const packageBtn = document.getElementById('packageBtn');
+    const planEls = Array.from(document.querySelectorAll('.plan'));
+
+    function animateValue(el, start, end, duration){
+      const numEl = el.querySelector('.num');
+      let startTime = null;
+      function step(timestamp){
+        if(!startTime) startTime = timestamp;
+        const progress = Math.min((timestamp - startTime) / duration, 1);
+        const val = Math.round(start + (end - start) * progress);
+        numEl.textContent = val;
+        if(progress < 1) window.requestAnimationFrame(step);
+      }
+      window.requestAnimationFrame(step);
+    }
+
+    function setMode(mode){
+      planEls.forEach(pl => {
+        const monthly = parseFloat(pl.getAttribute('data-monthly'));
+        const pack = parseFloat(pl.getAttribute('data-package'));
+        const from = parseFloat(pl.querySelector('.num').textContent) || monthly;
+        const to = mode === 'monthly' ? monthly : Math.round(pack/1); // package shows bundle price
+        // small label change
+        const small = pl.querySelector('small');
+        small.textContent = mode === 'monthly' ? ' / mo' : ' / pkg';
+        animateValue(pl, from, to, 600);
+      });
+      // toggle classes
+      monthlyBtn.classList.toggle('active', mode==='monthly');
+      packageBtn.classList.toggle('active', mode==='package');
+      monthlyBtn.setAttribute('aria-pressed', mode==='monthly');
+      packageBtn.setAttribute('aria-pressed', mode==='package');
+    }
+
+    monthlyBtn.addEventListener('click', ()=> setMode('monthly'));
+    packageBtn.addEventListener('click', ()=> setMode('package'));
+
+    // Initialize numbers to monthly
+    setTimeout(()=> setMode('monthly'), 200);
+
+    // Accessibility: keyboard controls for badge tooltips
+    document.addEventListener('keyup', function(e){
+      if(e.key === 'Escape'){
+        const tips = document.querySelectorAll('.tooltip');
+        tips.forEach(t=> t.style.display = 'none');
+      }
+    });
+
+  </script>
+</body>
+</html>

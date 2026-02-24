@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Plans — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfbfb;--card:#ffffff;--muted:#6b7280;--accent:#2b6cb0;--accent-2:#16a34a;--glass:rgba(255,255,255,0.65)}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#0f172a;background:var(--bg);}
+    header{background:linear-gradient(180deg,rgba(43,108,176,0.07),transparent),url("assets/img/pattern.svg") center/1400px repeat;box-shadow:0 1px 0 rgba(15,23,42,0.04);}
+    .wrap{max-width:1100px;margin:0 auto;padding:28px}
+    .nav{display:flex;gap:16px;align-items:center;justify-content:space-between}
+    .brand{font-weight:600;color:#0f172a}
+    nav a{color:var(--muted);text-decoration:none;margin-right:14px;font-weight:500}
+    .cta{background:var(--accent);color:white;padding:8px 14px;border-radius:8px;text-decoration:none;font-weight:600}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:center;padding:28px}
+    .hero h1{margin:0;font-size:28px;color:#05263b}
+    .lead{color:var(--muted);margin-top:8px}
+    .features{display:flex;flex-direction:column;gap:12px;margin-top:18px}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:26px}
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(15,23,42,0.06)}
+    .price{font-weight:700;font-size:22px;color:#05263b}
+    .list{color:var(--muted);margin:10px 0 0 0;padding:0;list-style:none}
+    .pill{display:inline-block;background:var(--glass);padding:6px 10px;border-radius:999px;color:#0f172a;font-weight:600}
+    footer{padding:28px;text-align:center;color:var(--muted)}
+    .muted{color:var(--muted)}
+    .actions{display:flex;gap:8px;margin-top:14px}
+    .btn-ghost{background:transparent;border:1px solid rgba(15,23,42,0.06);padding:8px 12px;border-radius:8px}
+    /* Modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.45);display:none;align-items:center;justify-content:center;padding:20px}
+    .modal{width:720px;max-width:96%;background:white;border-radius:12px;padding:20px}
+    .modal h3{margin:0 0 8px 0}
+    .steps{margin-top:12px}
+    .timer{font-size:20px;font-weight:700;color:var(--accent-2)}
+    /* responsive */
+    @media (max-width:880px){.hero{grid-template-columns:1fr;}.grid{grid-template-columns:1fr}.wrap{padding:18px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap nav">
+      <div style="display:flex;align-items:center;gap:18px">
+        <div class="brand">{{BUSINESS_NAME}}</div>
+        <nav aria-label="Primary">
+          <a href="index.html">Home</a>
+          <a href="about.html">Story</a>
+          <a href="services.html">Practices</a>
+          <a href="programs.html">Plans</a>
+          <a href="pricing.html">Pricing</a>
+          <a href="testimonials.html">Praise</a>
+          <a href="book.html">Reserve</a>
+        </nav>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </div>
+    <div class="wrap hero">
+      <div>
+        <h1>Memberships framed for steady daily practice</h1>
+        <p class="lead">Sensible commitments that prioritize simple habits and measurable outcomes instead of busywork. Choose how you want to show up.</p>
+        <div class="features">
+          <div class="pill">Outcome-first routines</div>
+          <div class="pill">Weekly micro-lessons</div>
+          <div class="pill">Community accountability</div>
+        </div>
+        <div class="actions">
+          <button class="cta" id="open-try">Try a guided exercise</button>
+          <a class="btn-ghost" href="book.html">Reserve a discovery meeting</a>
+        </div>
+      </div>
+      <aside class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div class="muted">Next cohort starts</div>
+            <div style="font-weight:700">Monthly intake — rolling</div>
+          </div>
+          <div style="text-align:right">
+            <div class="pill">No long contracts</div>
+          </div>
+        </div>
+        <ul class="list">
+          <li class="muted">Plans include habit blueprints, checklists, and weekly group office hours.</li>
+        </ul>
+      </aside>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section>
+      <h2 style="margin-top:18px">Flexible plans — framed around practice</h2>
+      <p class="muted">We frame pricing by how much guidance you want to anchor into your week.</p>
+      <div class="grid" style="margin-top:12px">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center"><div>
+            <div style="font-size:16px;font-weight:700">Anchor Membership</div>
+            <div class="muted">Best for daily ritual builders</div>
+          </div>
+          <div class="price">$39 / month</div></div>
+          <ul class="list">
+            <li>Daily micro-practices (5–12 min)</li>
+            <li>Habit builder templates</li>
+            <li>Monthly 60-min workshop</li>
+          </ul>
+          <div style="margin-top:12px"><button class="cta" onclick="location.href='{{PRIMARY_CTA_URL}}'">Join Anchor</button></div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center"><div>
+            <div style="font-size:16px;font-weight:700">Pulse Plan</div>
+            <div class="muted">For people who want weekly structure</div>
+          </div>
+          <div class="price">$79 / month</div></div>
+          <ul class="list">
+            <li>Weekly guided themes</li>
+            <li>Habit check-ins & accountability</li>
+            <li>Printable 7-day challenges</li>
+          </ul>
+          <div style="margin-top:12px"><button class="cta" onclick="location.href='{{PRIMARY_CTA_URL}}'">Enroll in Pulse</button></div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center"><div>
+            <div style="font-size:16px;font-weight:700">Collective — Lumen</div>
+            <div class="muted">Deep support + small cohort learning</div>
+          </div>
+          <div class="price">$199 / month</div></div>
+          <ul class="list">
+            <li>Small cohort coaching</li>
+            <li>Personalized habit blueprint</li>
+            <li>Priority booking</li>
+          </ul>
+          <div style="margin-top:12px"><button class="cta" onclick="location.href='book.html'">Request an invite</button></div>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:24px;display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start">
+      <div style="flex:1;min-width:260px" class="card">
+        <h3 style="margin:0">What's included</h3>
+        <p class="muted">Every plan centers on habits, not hustle: short, repeatable practices with tracking and progress notes.</p>
+        <ul class="list">
+          <li>Templates for morning and evening micro-routines</li>
+          <li>Progress pages and simple metrics (time, streaks, notes)</li>
+          <li>Access to guided exercises you can use anywhere</li>
+        </ul>
+      </div>
+      <div style="width:320px" class="card">
+        <h4 style="margin:0">Need a sample?</h4>
+        <p class="muted">Try a 3-minute breathing cycle in the modal to feel the structure before you commit.</p>
+        <button class="cta" id="open-try-2">Try it now — breathing</button>
+      </div>
+    </section>
+
+    <section style="margin-top:22px"> 
+      <div class="card">
+        <h3 style="margin:0">Small print — big clarity</h3>
+        <p class="muted">No medical claims. Outcomes focus on daily habits, attention, and reliable routines that support clearer days.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap muted">Questions? Reach us at <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+  </footer>
+
+  <!-- Guided exercise modal (used on this page) -->
+  <div id="modal" class="modal-backdrop" role="dialog" aria-hidden="true">
+    <div class="modal" role="document">
+      <button aria-label="Close" style="float:right" id="close-modal">✕</button>
+      <h3 id="modal-title">Guided exercise</h3>
+      <div>
+        <label for="exercise-select">Choose exercise</label>
+        <select id="exercise-select" style="width:100%;margin-top:8px;padding:8px;border-radius:6px">
+          <option value="breath">Breathing cycle (3 min)</option>
+          <option value="journaling">Micro-journal (5 prompts)</option>
+          <option value="intention">Intention setting (2 min)</option>
+        </select>
+      </div>
+      <div class="steps" id="modal-steps"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px">
+        <div class="timer" id="modal-timer">00:00</div>
+        <div style="display:flex;gap:8px"><button class="btn-ghost" id="modal-reset">Reset</button><button class="cta" id="modal-start">Start</button></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Modal logic
+    const modal = document.getElementById('modal');
+    const openTry = document.getElementById('open-try');
+    const openTry2 = document.getElementById('open-try-2');
+    const closeModal = document.getElementById('close-modal');
+    const startBtn = document.getElementById('modal-start');
+    const resetBtn = document.getElementById('modal-reset');
+    const typeSelect = document.getElementById('exercise-select');
+    const stepsEl = document.getElementById('modal-steps');
+    const timerEl = document.getElementById('modal-timer');
+    let intervalId = null;
+    let remaining = 0;
+
+    function openModal(){
+      modal.style.display = 'flex';
+      modal.setAttribute('aria-hidden','false');
+      renderSteps();
+    }
+    function close(){
+      modal.style.display = 'none';
+      modal.setAttribute('aria-hidden','true');
+      stopTimer();
+    }
+    openTry.addEventListener('click', openModal);
+    openTry2.addEventListener('click', ()=>{ typeSelect.value='breath'; openModal(); });
+    closeModal.addEventListener('click', close);
+    typeSelect.addEventListener('change', renderSteps);
+
+    function renderSteps(){
+      const t = typeSelect.value;
+      stepsEl.innerHTML = '';
+      if(t==='breath'){
+        stepsEl.innerHTML = '<ol><li>Find a quiet seat.</li><li>Inhale for 4 counts, hold 2, exhale 6. Repeat.</li><li>Continue for three minutes.</li></ol>';
+        remaining = 180;
+      } else if(t==='journaling'){
+        stepsEl.innerHTML = '<ol><li>Write one sentence about what went well today.</li><li>Write one sentence about what you want less of.</li><li>Finish with a 15-second note of curiosity.</li></ol>';
+        remaining = 300;
+      } else {
+        stepsEl.innerHTML = '<ol><li>State one small intention for today.</li><li>Note one action to support it.</li></ol>';
+        remaining = 120;
+      }
+      updateTimerDisplay();
+    }
+
+    function updateTimerDisplay(){
+      const m = Math.floor(remaining/60).toString().padStart(2,'0');
+      const s = String(remaining%60).padStart(2,'0');
+      timerEl.textContent = `${m}:${s}`;
+    }
+
+    function startTimer(){
+      if(intervalId) return;
+      intervalId = setInterval(()=>{
+        if(remaining<=0){ stopTimer(); return; }
+        remaining -=1; updateTimerDisplay();
+      },1000);
+      startBtn.textContent = 'Pause';
+    }
+    function stopTimer(){
+      clearInterval(intervalId); intervalId=null; startBtn.textContent='Start';
+    }
+
+    startBtn.addEventListener('click', ()=>{
+      if(intervalId) stopTimer(); else startTimer();
+    });
+    resetBtn.addEventListener('click', ()=>{ renderSteps(); });
+
+    // Close on backdrop click
+    modal.addEventListener('click', (e)=>{ if(e.target===modal) close(); });
+  </script>
+</body>
+</html>

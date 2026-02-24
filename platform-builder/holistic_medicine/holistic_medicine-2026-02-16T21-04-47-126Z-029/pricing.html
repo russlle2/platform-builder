@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Investment — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg1:#f7fbf9;--accent:#6C63FF;--accent-2:#00C2A8;--muted:#6b7280;--card:#ffffff}
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial; color:#0f172a;background:linear-gradient(180deg,var(--bg1),#eef7f7);}
+    header{position:relative;z-index:10;padding:28px 40px;display:flex;align-items:center;justify-content:space-between}
+    .logo{font-weight:700;color:var(--accent)}
+    nav a{margin:0 10px;color:#0f172a;text-decoration:none;font-weight:600}
+    nav a:hover{color:var(--accent)}
+    .wrap{max-width:1100px;margin:30px auto;padding:36px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+
+    /* Hero */
+    .hero{background:linear-gradient(135deg,rgba(108,99,255,0.08),rgba(0,194,168,0.06));border-radius:18px;padding:36px;display:flex;gap:24px;align-items:center}
+    .hero-left h1{margin:0 0 8px 0;font-size:28px;color:#061124}
+    .hero-left p{margin:0;color:var(--muted)}
+    .badge{display:inline-block;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;padding:8px 12px;border-radius:999px;font-weight:700;margin-bottom:12px}
+    .hero-cta{margin-top:16px}
+    .btn{background:var(--accent);color:white;padding:12px 18px;border-radius:12px;text-decoration:none;font-weight:700}
+    .muted{color:var(--muted);font-size:14px}
+
+    /* Pricing cards */
+    .pricing-cards{display:flex;flex-direction:column;gap:16px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(12,18,30,0.06)}
+    .card h3{margin:0 0 8px 0}
+    .price{font-size:22px;font-weight:800;color:#051423}
+    .list{margin:12px 0 0 0;padding:0 0 0 16px}
+    .list li{margin:8px 0;list-style:disc;color:var(--muted)}
+
+    /* Sidebar */
+    .aside .note{background:linear-gradient(180deg,#fff,#f8feff);padding:16px;border-radius:10px;border:1px solid rgba(4,16,23,0.03)}
+    .small{font-size:13px;color:var(--muted)}
+
+    /* FAQ */
+    .faq{margin-top:22px}
+    .qa{background:linear-gradient(90deg,#ffffff,#fbffff);padding:14px;border-radius:10px;border:1px solid rgba(6,12,20,0.04);margin-bottom:10px}
+
+    footer{max-width:1100px;margin:40px auto;color:var(--muted);font-size:13px;padding:0 36px}
+
+    /* Decorative SVG */
+    .pattern{position:fixed;right:-120px;top:-120px;opacity:0.12;width:520px;height:520px;z-index:0}
+    @media(max-width:880px){.grid{grid-template-columns:1fr}.pattern{display:none}.wrap{padding:20px}}
+  </style>
+</head>
+<body>
+  <svg class="pattern" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <defs>
+      <linearGradient id="g" x1="0" x2="1">
+        <stop offset="0" stop-color="#6C63FF" stop-opacity="0.6"/>
+        <stop offset="1" stop-color="#00C2A8" stop-opacity="0.6"/>
+      </linearGradient>
+      <pattern id="p" patternUnits="userSpaceOnUse" width="20" height="20">
+        <rect width="10" height="10" fill="url(#g)" />
+        <circle cx="15" cy="15" r="2" fill="#fff" fill-opacity="0.12" />
+      </pattern>
+      <filter id="blur"><feGaussianBlur stdDeviation="8"/></filter>
+    </defs>
+    <rect width="200" height="200" fill="url(#p)" filter="url(#blur)" rx="18" />
+  </svg>
+
+  <header>
+    <div class="logo">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">What We Offer</a>
+      <a href="conditions.html">Conditions</a>
+      <a href="approach.html">Our Method</a>
+      <a href="pricing.html">Investment</a>
+      <a href="about.html">Who We Are</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <div class="grid">
+      <div>
+        <section class="hero">
+          <div class="hero-left">
+            <span class="badge">Intensive Program</span>
+            <h1>Personalized plans, one intensive path to whole-health</h1>
+            <p class="muted">Short, focused partnerships with {{PRACTITIONER_NAME}} ({{CREDENTIALS}}) for people ready to dive deep. Education-forward. Root-cause oriented. No promises — just thoughtful, whole-person care.</p>
+            <div class="hero-cta"><a class="btn" href="book.html">{{PRIMARY_CTA_LABEL}}</a></div>
+          </div>
+        </section>
+
+        <section style="margin-top:22px">
+          <h2>Packages for focused change</h2>
+          <p class="small">Choose an investment that fits your intensity and timeline. All programs include an educational intake and two follow-ups; optional labs are available as add-ons.</p>
+
+          <div class="pricing-cards">
+            <div class="card">
+              <h3>Sprint — 6 week intensive</h3>
+              <div class="price">$1,200</div>
+              <ul class="list">
+                <li>90-minute initial integrative intake</li>
+                <li>Two 45-minute follow-ups over six weeks</li>
+                <li>Personalized lifestyle & nutrition guide</li>
+                <li>Educational lab suggestions (optional)</li>
+              </ul>
+            </div>
+
+            <div class="card">
+              <h3>Deep Dive — 12 week program</h3>
+              <div class="price">$2,400</div>
+              <ul class="list">
+                <li>120-minute comprehensive intake</li>
+                <li>Four 45-minute follow-ups</li>
+                <li>Care pathway + small journaling curriculum</li>
+                <li>Discounted lab coordination</li>
+              </ul>
+            </div>
+
+            <div class="card">
+              <h3>Starter Consult — single session</h3>
+              <div class="price">$240</div>
+              <ul class="list">
+                <li>60-minute focused visit</li>
+                <li>Actionable recommendations & resources</li>
+                <li>Good for one-off questions or planning next steps</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="faq">
+          <h3>Common questions</h3>
+          <div class="qa">
+            <strong>Do you guarantee results?</strong>
+            <div class="small">No guarantees. We provide education, tools, and a personalized plan. Outcomes depend on many factors including adherence and underlying conditions.</div>
+          </div>
+          <div class="qa">
+            <strong>Are labs included?</strong>
+            <div class="small">Labs are educational and optional. We can recommend and coordinate testing; costs are separate and will be discussed during intake.</div>
+          </div>
+          <div class="qa">
+            <strong>Is insurance accepted?</strong>
+            <div class="small">We provide superbills for out-of-network reimbursement where applicable. Contact us at {{EMAIL}} for details.</div>
+          </div>
+        </section>
+      </div>
+
+      <aside class="aside">
+        <div class="note">
+          <strong>Ready for an intensive plan?</strong>
+          <p class="small">An intensive is best for people ready to commit to focused change. It combines clinical evaluation with lifestyle, nutrition, and mind-body strategies.</p>
+          <p style="margin-top:12px"><a class="btn" href="book.html">Book an Intake</a></p>
+        </div>
+
+        <div style="height:18px"></div>
+        <div class="note small">
+          <strong>Disclaimer</strong>
+          <p>No guaranteed cures. Our approach is educational and whole-person oriented. If you have urgent medical issues, please seek emergency care or your primary clinician.</p>
+        </div>
+
+        <div style="height:18px"></div>
+        <div class="note small">
+          <strong>Contact</strong>
+          <p>{{PHONE}} • {{EMAIL}}</p>
+          <p class="small">Serving {{CITY}}, {{STATE}} — Telehealth options available.</p>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>&copy; <strong>{{BUSINESS_NAME}}</strong> — Holistic, integrative care. No guarantees, only thoughtful partnership.</div>
+      <div class="small">Made with care • {{PRACTITIONER_NAME}}, {{CREDENTIALS}}</div>
+    </div>
+  </footer>
+</body>
+</html>

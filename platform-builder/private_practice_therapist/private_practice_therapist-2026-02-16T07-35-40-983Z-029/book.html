@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{BUSINESS_NAME}} — Book an Appointment</title>
+  <style>
+    :root{--accent:#ff6b6b;--muted:#6b7280;--bg:#fff}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:#111}
+    header{display:flex;justify-content:space-between;padding:22px 30px;border-bottom:1px solid #eee}
+    .nav a{margin-left:16px;text-decoration:none;color:#333;font-weight:600}
+    main{padding:28px 30px}
+    .step{background:#fff;padding:18px;border-radius:12px;margin-bottom:18px;box-shadow:0 10px 30px rgba(17,17,17,0.04)}
+    label{display:block;font-weight:700;margin-bottom:6px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e7eb;font-size:15px}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .btn{background:var(--accent);color:#fff;padding:12px 18px;border-radius:10px;border:none;font-weight:800;cursor:pointer}
+    footer{padding:22px 30px;border-top:1px solid #eee;color:var(--muted)}
+    @media(max-width:900px){.row{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+    <nav class="nav">
+      <a href="/index.html">Home</a>
+      <a href="/fees.html">Fees</a>
+      <a href="/faq.html">FAQ</a>
+      <a href="/contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section style="display:flex;gap:20px;align-items:center;margin-bottom:18px">
+      <div style="flex:1">
+        <h1 style="margin:0">Request a session with {{THERAPIST_NAME}}</h1>
+        <p style="margin:6px 0 0;color:var(--muted)">Fill out the form below and I will respond within 2–4 business days. If this is a safety concern, please use emergency resources — I do not provide emergency services.</p>
+      </div>
+      <img src="assets/img/pattern.svg" alt="decorative" style="width:96px;height:96px">
+    </section>
+
+    <form class="step" method="post" action="{{PRIMARY_CTA_URL}}" autocomplete="off">
+      <h2 style="margin-top:0">Contact & scheduling</h2>
+      <div class="row" style="margin-bottom:12px">
+        <div>
+          <label for="name">Full name</label>
+          <input id="name" name="name" required>
+        </div>
+        <div>
+          <label for="phone">Phone</label>
+          <input id="phone" name="phone">
+        </div>
+      </div>
+
+      <div style="margin-bottom:12px">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" required>
+      </div>
+
+      <div style="margin-bottom:12px">
+        <label for="type">Session type</label>
+        <select id="type" name="type" required>
+          <option>Initial intake (50 min)</option>
+          <option>Standard session (50 min)</option>
+          <option>Brief check-in (30 min)</option>
+          <option>Package inquiry</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom:12px">
+        <label for="reason">What would you like help with? (brief)</label>
+        <textarea id="reason" name="reason" rows="4" placeholder="e.g., anxiety, relationship stress, life transition"></textarea>
+      </div>
+
+      <div style="margin-bottom:12px">
+        <label for="availability">Preferred days/times</label>
+        <input id="availability" name="availability" placeholder="e.g., Tue mornings, Thu afternoons">
+      </div>
+
+      <div style="display:flex;gap:12px;align-items:center">
+        <button class="btn" type="submit">{PRIMARY_CTA_LABEL}</button>
+        <a href="/fees.html" style="color:var(--muted);text-decoration:none">See fees & options</a>
+      </div>
+
+      <div style="margin-top:12px;font-size:13px;color:var(--muted)">By submitting you consent to receive scheduling messages from {{BUSINESS_NAME}}. We will protect your information in accordance with confidentiality standards and applicable laws.</div>
+    </form>
+
+    <section class="step">
+      <h2 style="margin-top:0">Practical details</h2>
+      <p class="muted">Location: Sessions are offered by secure telehealth and by appointment in {{CITY}}, {{STATE}} when available. Fees and packages are described on the Fees page. I provide superbills for out-of-network reimbursement. I do not provide medication management.</p>
+      <p class="muted" style="margin-top:8px">Confidentiality & limits: Everything shared in therapy is confidential except in limited circumstances (risk of harm to self or others, abuse reporting, or court order). If you are in immediate danger call 911 or your local emergency number.</p>
+    </section>
+
+    <section class="step">
+      <h2 style="margin-top:0">Consent & boundaries</h2>
+      <p class="muted">Starting therapy means we will set goals and revisit them. You can end therapy at any time. For complex situations (legal matters, custody disputes), please disclose this up front so I can discuss suitability and potential conflicts.</p>
+    </section>
+
+    <section style="padding:18px;border-radius:12px;background:#fff7f7;margin-top:18px">
+      <h3 style="margin:0 0 8px">Need to talk now?</h3>
+      <p class="muted" style="margin:0">If you are experiencing an immediate safety crisis, call 911 or your local emergency services. For U.S. mental health crisis support, dial or text 988.</p>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 30px;color:var(--muted)">
+      <div>{{BUSINESS_NAME}} • {{THERAPIST_NAME}} • {{LICENSE}} • {{CITY}}, {{STATE}}</div>
+      <div>{{EMAIL}} • {{PHONE}}</div>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Help & FAQ — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbf8f4;--accent:#6a4b33;--muted:#616161}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;color:#222;background:var(--bg) url('assets/img/pattern.svg') repeat}
+    header{padding:18px;border-bottom:1px solid rgba(106,75,51,0.06)}
+    .nav{max-width:980px;margin:0 auto;display:flex;align-items:center}
+    .nav a{margin-right:10px;color:var(--accent);text-decoration:none}
+
+    main{max-width:980px;margin:26px auto;padding:0 18px}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:20px}
+    .panel{background:#fff;padding:16px;border-radius:12px;box-shadow:0 6px 20px rgba(20,16,12,0.03)}
+    h1{color:var(--accent);margin:0 0 8px 0}
+    .faq-list{list-style:none;padding:0;margin:0}
+    .faq-item{border-bottom:1px dashed #eee;padding:12px 0}
+    .faq-question{display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+    .faq-answer{display:none;color:var(--muted);margin-top:8px;font-size:14px}
+
+    .trybox{padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(106,75,51,0.02),transparent)}
+    .cta{background:var(--accent);color:#fff;padding:8px 10px;border-radius:8px;text-decoration:none}
+
+    .disclaimer{margin-top:12px;padding:12px;border-radius:8px;background:#fff3f0;border-left:4px solid rgba(106,75,51,0.12);font-size:13px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div style="font-weight:700;color:var(--accent)">{{BUSINESS_NAME}}</div>
+      <nav style="margin-left:16px">
+        <a href="index.html">Home</a>
+        <a href="events.html">Gatherings</a>
+        <a href="private-sessions.html">Solo Sessions</a>
+        <a href="pricing.html">Circle Plans</a>
+        <a href="about.html">About</a>
+        <a href="faq.html" aria-current="page">Help</a>
+        <a href="book.html">Reserve</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+      <div style="margin-left:auto"><a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+    </div>
+  </header>
+
+  <main>
+    <section class="grid">
+      <div>
+        <div class="panel">
+          <h1>Questions people ask</h1>
+          <ul class="faq-list" id="faqList">
+            <li class="faq-item">
+              <div class="faq-question"><strong>What should I bring?</strong><button class="toggleBtn">+</button></div>
+              <div class="faq-answer">A mat, blanket, a small cushion for comfort, water, and anything you use to stay warm. Avoid heavy fragrances; you may want a small notebook or pen for integration notes.</div>
+            </li>
+            <li class="faq-item">
+              <div class="faq-question"><strong>How long are gatherings?</strong><button class="toggleBtn">+</button></div>
+              <div class="faq-answer">Most group sessions run 60–75 minutes: a brief arrival, a sustained sound field, and a short closing to assist reorientation.</div>
+            </li>
+            <li class="faq-item">
+              <div class="faq-question"><strong>Are sessions suitable for nervousness or insomnia?</strong><button class="toggleBtn">+</button></div>
+              <div class="faq-answer">Many people find the practice calming; however, if you have severe panic disorder, trauma that may be triggered by sustained tones, or are undergoing certain kinds of therapy, discuss with us before booking.</div>
+            </li>
+            <li class="faq-item">
+              <div class="faq-question"><strong>Do you accept walk-ins?</strong><button class="toggleBtn">+</button></div>
+              <div class="faq-answer">We prioritize members and reservations. If space allows we may accept walk-ins; check the Gatherings page for the next event and capacity.</div>
+            </li>
+            <li class="faq-item">
+              <div class="faq-question"><strong>What is a membership ('Circle')?</strong><button class="toggleBtn">+</button></div>
+              <div class="faq-answer">Our Circle plans offer regular access at a reduced rate, priority bookings, and member-only sessions. Visit Circle Plans to see tiers.</div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="panel" style="margin-top:14px">
+          <h2 style="margin-top:0;color:var(--accent)">On safety</h2>
+          <div class="disclaimer">
+            Please consult a medical professional if you have epilepsy, recent concussion, are in early pregnancy, or have sound-sensitive conditions. If in doubt, contact us before registering.
+          </div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="panel trybox">
+          <h3 style="margin-top:0;color:var(--accent)">Mini practice — your attention anchor</h3>
+          <p style="color:var(--muted);font-size:14px">A brief exercise combining breath and a journaling prompt. Two minutes — for immediate steadiness.</p>
+          <button id="startShort" style="margin-top:10px;padding:10px;border-radius:8px;background:var(--accent);color:#fff;border:0">Try it now</button>
+        </div>
+
+        <div class="panel" style="margin-top:12px">
+          <h4 style="margin:0;color:var(--accent)">Need help booking?</h4>
+          <p style="margin-top:8px;color:var(--muted);font-size:14px">Call {{PHONE}} or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>. We can assist with accessibility requests and contraindication queries.</p>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <div id="miniModal" style="display:none;position:fixed;inset:0;background:rgba(10,10,10,0.45);align-items:center;justify-content:center;padding:20px">
+    <div style="background:#fff;padding:18px;border-radius:10px;max-width:520px;width:100%">
+      <h3 style="margin:0;color:var(--accent)">Two-minute anchor</h3>
+      <p id="miniText" style="color:var(--muted)">Press start to begin. Breathe with the prompt, then take a short note.</p>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button id="miniStart" style="padding:8px 10px;border-radius:8px;background:var(--accent);color:#fff;border:0">Start</button>
+        <button id="miniClose" style="padding:8px 10px;border-radius:8px;border:1px solid #ddd;background:#fff">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // FAQ toggles
+    document.querySelectorAll('.faq-item').forEach(item=>{
+      const btn = item.querySelector('.toggleBtn'); const ans = item.querySelector('.faq-answer');
+      btn.addEventListener('click', ()=>{ const open = ans.style.display==='block'; ans.style.display = open ? 'none' : 'block'; btn.textContent = open ? '+' : '−'; });
+    });
+
+    // mini practice (shorter guided exercise)
+    const miniModal = document.getElementById('miniModal');
+    const startShort = document.getElementById('startShort');
+    const miniStart = document.getElementById('miniStart');
+    const miniClose = document.getElementById('miniClose');
+    const miniText = document.getElementById('miniText');
+    let miniInterval=null;
+
+    startShort.addEventListener('click', ()=>{ miniModal.style.display='flex'; });
+    miniClose.addEventListener('click', ()=>{ miniModal.style.display='none'; clearInterval(miniInterval); miniText.textContent='Press start to begin. Breathe with the prompt, then take a short note.'; });
+
+    miniStart.addEventListener('click', ()=>{
+      let counts = [4,4,6]; let round=0; miniText.textContent='Round 1 — Inhale 4s / hold 4s / exhale 6s';
+      let phase=0; let t = counts[phase]; miniInterval = setInterval(()=>{
+        miniText.textContent = (phase===0? 'Inhale ' : phase===1 ? 'Hold ' : 'Exhale ') + t + 's'; t--; if(t<0){ phase++; if(phase>2){ round++; if(round>=1){ clearInterval(miniInterval); miniText.textContent='Write one sentence: How do you feel now?'; return; } else { phase=0; t=counts[phase]; } } else { t=counts[phase]; } } },1000);
+    });
+  </script>
+</body>
+</html>

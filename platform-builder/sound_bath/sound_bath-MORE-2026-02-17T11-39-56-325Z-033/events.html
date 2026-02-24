@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Gatherings — {{BUSINESS_NAME}} Events</title>
+  <style>
+    :root{--bg:#f6faf9;--card:#ffffff;--muted:#6b6f76;--accent:#2f847c;--accent-2:#80c9bf;--glass:rgba(255,255,255,0.6);--shadow:0 6px 18px rgba(30,40,41,0.08);font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial}
+    html,body{height:100%;margin:0;background:var(--bg);color:#0b1212}
+    body{display:flex;flex-direction:column;gap:28px}
+    header{background:linear-gradient(90deg,rgba(47,132,124,0.06),rgba(128,201,191,0.02));backdrop-filter:blur(4px);padding:18px 28px;border-bottom:1px solid rgba(12,20,20,0.04)}
+    .nav{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:46px;height:46px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    nav a{margin-left:18px;color:#0b1212;text-decoration:none;font-weight:600}
+    .cta{padding:8px 14px;border-radius:8px;background:var(--accent);color:#fff;text-decoration:none;font-weight:700}
+
+    main{max-width:1100px;margin:0 auto;padding:18px}
+    .hero{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start}
+    .hero-card{background:var(--card);padding:26px;border-radius:12px;box-shadow:var(--shadow)}
+    .hero h1{margin:0 0 8px 0;font-size:28px;color:#072524}
+    .hero p{margin:0;color:var(--muted)}
+
+    .next-event{border-left:4px solid var(--accent);padding:14px;background:linear-gradient(180deg,var(--glass),rgba(255,255,255,0.9));border-radius:10px}
+    .next-event time{display:block;font-weight:800;color:#063b38;font-size:18px}
+    .small{font-size:13px;color:var(--muted)}
+
+    .calendar{margin-top:18px;display:grid;gap:10px}
+    .cal-item{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-radius:10px;background:linear-gradient(90deg,#fff, #fbffff);box-shadow:0 4px 10px rgba(10,15,15,0.03)}
+    .cal-item .meta{display:flex;gap:12px;align-items:center}
+    .badge{background:rgba(47,132,124,0.08);color:var(--accent);padding:6px 8px;border-radius:8px;font-weight:700}
+
+    .section{display:grid;grid-template-columns:2fr 1fr;gap:20px}
+    .card{background:var(--card);padding:20px;border-radius:12px;box-shadow:var(--shadow)}
+
+    /* Proof gallery */
+    .proof{display:flex;flex-direction:column;gap:14px}
+    .testimonial{min-height:90px;transition:opacity .5s ease;opacity:0}
+    .testimonial.active{opacity:1}
+    .cred-list{display:flex;gap:14px;flex-wrap:wrap}
+    .cred{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;background:#f2faf9;border:1px solid rgba(47,132,124,0.06);cursor:default}
+    .cred svg{width:18px;height:18px}
+    .tooltip{position:relative}
+    .tooltip:hover::after{content:attr(data-tip);position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 8px);white-space:nowrap;background:#072524;color:#fff;padding:6px 8px;border-radius:6px;font-size:12px}
+
+    .muted{color:var(--muted);font-size:13px}
+
+    footer{max-width:1100px;margin:0 auto;padding:18px 0 60px;display:flex;justify-content:space-between;align-items:center}
+
+    /* responsive */
+    @media (max-width:900px){.hero{grid-template-columns:1fr}.section{grid-template-columns:1fr}.nav{padding:0 6px}.brand .logo{width:40px;height:40px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand">
+        <div class="logo">SB</div>
+        <div>
+          <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+          <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <div>
+        <a href="/index.html">Home</a>
+        <a href="/events.html">Gatherings</a>
+        <a href="/private-sessions.html">Solo Sessions</a>
+        <a href="/pricing.html">Rates</a>
+        <a href="/about.html">Why It Helps</a>
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div class="hero-card">
+        <h1>Shared sound events for focused ease</h1>
+        <p>Join carefully designed group offerings that use tuned instruments and paced breathing to help your nervous system shift. Sessions are held in calm, accessible spaces. Bring a mat, a light blanket, and an intention.</p>
+        <div style="margin-top:14px;display:flex;gap:10px;align-items:center">
+          <a class="cta" href="{{PRIMARY_CTA_URL}}">Reserve a spot</a>
+          <a href="/about.html" style="color:var(--muted);text-decoration:none">Read what to expect</a>
+        </div>
+      </div>
+
+      <aside class="next-event card">
+        <div style="display:flex;justify-content:space-between;align-items:start">
+          <div>
+            <div class="small">Next gathering</div>
+            <time id="nextDate">Loading…</time>
+            <div class="muted" id="nextLocation">—</div>
+          </div>
+          <div style="text-align:right">
+            <div class="badge">Drop-in</div>
+            <div style="margin-top:8px"><a href="/book.html" class="cta">Book this</a></div>
+          </div>
+        </div>
+
+        <div class="calendar" id="calendarList" style="margin-top:12px">
+          <!-- calendar items injected by JS -->
+        </div>
+      </aside>
+    </div>
+
+    <div class="section" style="margin-top:18px">
+      <div>
+        <div class="card">
+          <h3 style="margin-top:0">What to expect</h3>
+          <p class="muted">Sessions begin with a short orientation, a guided breath phase, then a sequence of tuned instruments. You lie or sit comfortably while a gentle sound field shifts in texture and volume to encourage ease and mental clarity.</p>
+
+          <ul style="margin-top:12px;color:var(--muted)">
+            <li>Doors open 15 minutes before start; doors close 10 minutes after start.</li>
+            <li>Wear comfortable layers; we provide bolsters on request.</li>
+            <li>Accessible entry and quiet rest area available.</li>
+          </ul>
+
+          <div style="margin-top:14px;padding:12px;border-radius:10px;background:#f8fffe;border:1px solid rgba(47,132,124,0.06)">
+            <strong>Contraindications</strong>
+            <p class="muted" style="margin:8px 0 0 0;">Not recommended during pregnancy without medical sign-off, for people with uncontrolled epilepsy, or if you use a pacemaker without clearance. If you have recent surgery or any condition where sound or lowered awareness could interfere with care, consult your clinician first.</p>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <h4 style="margin:0 0 8px 0">Proof Gallery</h4>
+          <div class="proof">
+            <div id="testimonials">
+              <!-- testimonials rotate -->
+              <div class="testimonial" data-index="0">
+                <p style="margin:0;font-weight:700">"A reliable evening that helps me come back to myself."</p>
+                <p class="muted" style="margin-top:6px">— L., regular attendee</p>
+              </div>
+              <div class="testimonial" data-index="1">
+                <p style="margin:0;font-weight:700">"The tones are precise; the room feels held and professional."</p>
+                <p class="muted" style="margin-top:6px">— M., first-timer</p>
+              </div>
+              <div class="testimonial" data-index="2">
+                <p style="margin:0;font-weight:700">"I sleep better on nights after I attend."</p>
+                <p class="muted" style="margin-top:6px">— R., member</p>
+              </div>
+            </div>
+
+            <div class="cred-list">
+              <div class="cred tooltip" data-tip="Peer-reviewed research base: cohort studies on low-frequency sound.">
+                <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#2f847c" stroke-width="1.6"/></svg>
+                <div style="font-weight:700">Clinical Collaborations</div>
+              </div>
+
+              <div class="cred tooltip" data-tip="Practitioners trained in sound modalities and trauma-aware facilitation.">
+                <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="4" stroke="#80c9bf" stroke-width="1.6"/></svg>
+                <div style="font-weight:700">Certified Facilitators</div>
+              </div>
+
+              <div class="cred tooltip" data-tip="Over 2,000 seats filled since program start in {{CITY}}, {{STATE}}.">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v18" stroke="#2f847c" stroke-width="1.6"/><path d="M3 12h18" stroke="#80c9bf" stroke-width="1.6"/></svg>
+                <div style="font-weight:700">Community Attendance</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="card">
+          <h4 style="margin:0 0 8px 0">Need help choosing?</h4>
+          <p class="muted">If this is your first group visit, start with a drop-in. Members and package holders receive preferred booking windows and reduced rates for guests.</p>
+          <div style="margin-top:12px"><a class="cta" href="/book.html">Sign up for an orientation</a></div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h5 style="margin:0 0 8px 0">Contact</h5>
+          <div class="muted">Phone: {{PHONE}}</div>
+          <div class="muted">Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+          <div style="margin-top:12px"><a href="/contact.html">Map & access</a></div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <div class="muted">© <span id="year"></span> {{BUSINESS_NAME}} • {{CITY}}, {{STATE}}</div>
+    <div><a href="/privacy.html" class="muted">Privacy</a></div>
+  </footer>
+
+  <script>
+    // sample event data (would be server-driven in production)
+    const events = [
+      {id:1,title:"Evening Collective — Deep Focus",date:"2026-03-01T19:00:00",location:"Studio A"},
+      {id:2,title:"Sunday Ease — Gentle Sound",date:"2026-03-08T10:30:00",location:"Studio B"},
+      {id:3,title:"Midweek Reset",date:"2026-03-11T18:30:00",location:"Studio A"},
+      {id:4,title:"New Moon Field",date:"2026-03-18T20:00:00",location:"Studio B"}
+    ];
+
+    function isoToLocal(d){const dt=new Date(d);return dt.toLocaleString(undefined,{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});} 
+
+    function renderCalendar(){
+      const list=document.getElementById('calendarList');
+      list.innerHTML='';
+      events.slice(0,6).forEach(ev=>{
+        const el=document.createElement('div');el.className='cal-item';
+        el.innerHTML=`<div class=meta><div style=font-weight:700>${ev.title}</div><div class=muted style=font-size:13px>${isoToLocal(ev.date)} • ${ev.location}</div></div><div><div class=badge>Open</div></div>`;
+        list.appendChild(el);
+      });
+    }
+
+    function nextEvent(){
+      const now=Date.now();
+      const next=events.find(e=>new Date(e.date).getTime()>now) || events[0];
+      document.getElementById('nextDate').textContent=isoToLocal(next.date);
+      document.getElementById('nextLocation').textContent=next.location + ' • ' + next.title;
+    }
+
+    // Testimonials rotation
+    const tItems = Array.from(document.querySelectorAll('#testimonials .testimonial'));
+    let tIndex = 0;
+    function showTestimonial(i){tItems.forEach(it=>it.classList.remove('active'));tItems[i].classList.add('active');}
+    showTestimonial(0);
+    setInterval(()=>{tIndex=(tIndex+1)%tItems.length;showTestimonial(tIndex);},4500);
+
+    // year
+    document.getElementById('year').textContent=new Date().getFullYear();
+
+    renderCalendar();nextEvent();
+  </script>
+</body>
+</html>

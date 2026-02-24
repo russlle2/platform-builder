@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Gatherings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1720;--card:#0b1320;--muted:#98a0ad;--accent:#9ee7e3;--glass:rgba(255,255,255,0.04);--glass2:rgba(255,255,255,0.02);--radius:12px;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;}
+    html,body{height:100%;margin:0;background:radial-gradient(1200px 600px at 10% 20%, rgba(14,19,26,0.7), transparent), linear-gradient(180deg,#071018 0%, #05121a 60%);color:#e6eef0}
+    body{padding:36px;box-sizing:border-box}
+    header{display:flex;align-items:center;justify-content:space-between;gap:18px;max-width:1100px;margin:0 auto}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:48px;height:48px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),#5bd0d2);color:#052023;font-weight:700}
+    nav{display:flex;gap:10px;align-items:center}
+    nav a{color:var(--accent);text-decoration:none;padding:8px 12px;border-radius:8px;font-weight:600}
+    nav a[href$="events.html"]{background:linear-gradient(90deg,rgba(158,231,227,0.06),transparent)}
+    main{max-width:1100px;margin:28px auto;display:grid;gap:20px}
+    .hero{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:28px;border-radius:16px;display:flex;gap:20px;align-items:center;box-shadow:0 6px 30px rgba(2,6,23,0.6)}
+    .hero h1{margin:0;font-size:22px}
+    .hero p{margin:6px 0 0;color:var(--muted)}
+    .next-event{background:linear-gradient(90deg,var(--glass),transparent);padding:18px;border-radius:12px;width:340px}
+    .time{font-size:13px;color:var(--muted)}
+    .title{font-weight:700;margin-top:8px}
+    .cta{display:inline-block;margin-top:12px;background:var(--accent);color:#042024;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+    .layout{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .card{background:var(--card);padding:18px;border-radius:14px}
+    .calendar-list{display:grid;gap:10px}
+    .event-row{display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:10px;background:linear-gradient(180deg,var(--glass2),transparent)}
+    .tag{padding:6px 8px;border-radius:999px;font-size:12px;background:rgba(255,255,255,0.03);color:var(--muted)}
+    .mixer{display:flex;gap:8px;align-items:center}
+    .mixer button{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);padding:8px 12px;border-radius:10px;cursor:pointer}
+    .mixer button.active{background:var(--accent);color:#052023;border:none}
+    .recommendations{margin-top:12px;display:grid;gap:8px}
+    .rec-item{padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent)}
+    .proof{display:flex;gap:12px;align-items:flex-start}
+    .testimony{flex:1;padding:14px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.015),transparent)}
+    .badges{display:flex;gap:8px;align-items:center}
+    .badge{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,#0a2b2a,#072628);color:var(--accent);font-weight:700;position:relative;cursor:default}
+    .badge::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#021215;color:#9ee7e3;padding:6px 8px;border-radius:8px;font-size:12px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .18s}
+    .badge:hover::after{opacity:1}
+    footer{max-width:1100px;margin:18px auto;color:var(--muted);font-size:13px}
+    /* subtle pattern */
+    body::before{content:'';position:fixed;inset:0;opacity:0.06;background:url('assets/img/pattern.svg') repeat;mix-blend-mode:overlay;pointer-events:none}
+    @media(max-width:880px){.layout{grid-template-columns:1fr}.next-event{width:auto}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo" aria-hidden>SB</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="events.html">Gatherings</a>
+      <a href="private-sessions.html">Sessions</a>
+      <a href="pricing.html">Plans</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div style="flex:1">
+        <h1>Community sound gatherings tuned to your pace</h1>
+        <p>Join flowing group sessions that are crafted around intention, not spectacle. Choose how you wish to arrive — soft, steady, or transformative.</p>
+        <div style="margin-top:12px">
+          <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </div>
+      <aside class="next-event card">
+        <div class="time" id="nextLabel">Next session</div>
+        <div class="title" id="nextTitle">— finding the next open gathering —</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:8px" id="nextExcerpt">Recommended setting: Gentle</div>
+        <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
+          <a class="cta" href="events.html#book">Reserve a spot</a>
+          <a style="color:var(--muted);text-decoration:none;font-size:13px" href="contact.html">Questions?</a>
+        </div>
+      </aside>
+    </section>
+
+    <div class="layout">
+      <section>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <div>
+              <strong>Sound preference mixer</strong>
+              <div style="font-size:13px;color:var(--muted)">Choose a listening intensity and we’ll highlight gatherings for you</div>
+            </div>
+            <div class="mixer" role="tablist" aria-label="Intensity chooser">
+              <button data-level="gentle" class="active" aria-pressed="true">Gentle</button>
+              <button data-level="medium" aria-pressed="false">Medium</button>
+              <button data-level="intense" aria-pressed="false">Intense</button>
+            </div>
+          </div>
+
+          <div class="recommendations" id="recs">
+            <!-- recommendations injected by JS -->
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <strong style="display:block;margin-bottom:8px">Upcoming gatherings — calendar</strong>
+          <div class="calendar-list" id="calendar">
+            <!-- calendar rows injected by JS -->
+          </div>
+          <div style="margin-top:12px;color:var(--muted);font-size:13px">Note: Sessions have limited capacity. Please reserve early.</div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <strong style="display:block;margin-bottom:8px">Proof gallery</strong>
+          <div class="proof">
+            <div class="testimony" id="testimonial">"Gentle waves of sound that actually let me lie down and rest. A true pause." — M.</div>
+            <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+              <div class="badges">
+                <div class="badge" data-tip="Featured in Local Calm Collective">LC</div>
+                <div class="badge" data-tip="Top-rated on Community Wellbeing">CW</div>
+                <div class="badge" data-tip="Partner studio: RiverWorks">RW</div>
+              </div>
+              <div style="font-size:13px;color:var(--muted)">Real testimonials rotate every few seconds.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside>
+        <div class="card">
+          <strong>Next sessions</strong>
+          <div style="margin-top:10px;color:var(--muted);font-size:13px">Filtered by your current preference</div>
+          <div style="margin-top:12px" id="sideList">
+            <!-- injected -->
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <strong>Accessibility & health</strong>
+          <div style="margin-top:8px;color:var(--muted);font-size:13px">
+            Please consult a medical professional prior to attending if you have epilepsy, severe cardiac conditions, are pregnant, or have sensitivity to vibration or sound. If you use implanted medical devices, check compatibility before booking.
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <div style="max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center">
+      <div>Questions? Call <strong>{{PHONE}}</strong> or email <a href="mailto:{{EMAIL}}" style="color:var(--accent)">{{EMAIL}}</a></div>
+      <div style="color:var(--muted)">© <span id="year"></span> {{BUSINESS_NAME}} — {{CITY}}, {{STATE}}</div>
+    </div>
+  </footer>
+
+  <script>
+    (function(){
+      // sample data (would come from a backend in a full app)
+      const events = [
+        {id:1,title:'Ripple Gathering — Breath & Bowls',date:'2026-03-02T19:00:00',excerpt:'Gentle lead with harmonic bowls',level:'gentle'},
+        {id:2,title:'Pulse Reset — Low-tone Immersion',date:'2026-03-05T18:30:00',excerpt:'Medium energy with rhythmic gongs',level:'medium'},
+        {id:3,title:'Deep Drift Intensive',date:'2026-03-12T20:00:00',excerpt:'Extended, deep vibration focus',level:'intense'},
+        {id:4,title:'Sunday Slow & Restore',date:'2026-03-08T10:00:00',excerpt:'Morning slow session',level:'gentle'},
+        {id:5,title:'Evening Alignment',date:'2026-03-10T19:30:00',excerpt:'Medium pace, grounding anchors',level:'medium'}
+      ];
+
+      const testimonials = [
+        '"A quietly potent hour — I left steadier." — A.',
+        '"The setting is kind and very intentional." — S.',
+        '"Different every time; always restorative." — L.'
+      ];
+
+      // UI refs
+      const recs = document.getElementById('recs');
+      const calendar = document.getElementById('calendar');
+      const sideList = document.getElementById('sideList');
+      const nextTitle = document.getElementById('nextTitle');
+      const nextLabel = document.getElementById('nextLabel');
+      const nextExcerpt = document.getElementById('nextExcerpt');
+
+      // sound preference mixer
+      const mixerButtons = document.querySelectorAll('.mixer button');
+      let level = 'gentle';
+      function setActive(btn){
+        mixerButtons.forEach(b=>{b.classList.remove('active');b.setAttribute('aria-pressed','false')});
+        btn.classList.add('active');btn.setAttribute('aria-pressed','true');
+        level = btn.getAttribute('data-level');
+        renderRecommendations();
+        renderSideList();
+        updateNextEventFocus();
+      }
+      mixerButtons.forEach(b=>b.addEventListener('click',()=>setActive(b)));
+
+      function formatDate(iso){
+        const d=new Date(iso);
+        return d.toLocaleString(undefined,{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'numeric'});
+      }
+
+      function renderCalendar(){
+        calendar.innerHTML = '';
+        events.sort((a,b)=>new Date(a.date)-new Date(b.date));
+        events.forEach(ev=>{
+          const el = document.createElement('div');
+          el.className='event-row';
+          el.innerHTML = '<div><div style="font-weight:700">'+ev.title+'</div><div style="font-size:13px;color:var(--muted)">'+formatDate(ev.date)+'</div></div><div style="text-align:right"><div class="tag">'+ev.level.toUpperCase()+'</div><div style="font-size:13px;margin-top:6px"><a href="#" style="color:var(--accent);text-decoration:none">Details</a></div></div>';
+          calendar.appendChild(el);
+        });
+      }
+
+      function renderRecommendations(){
+        recs.innerHTML = '';
+        const filtered = events.filter(e=>e.level===level).slice(0,3);
+        if(!filtered.length){
+          recs.innerHTML = '<div class="rec-item">No direct matches — try another intensity</div>';
+          return;
+        }
+        filtered.forEach(e=>{
+          const div = document.createElement('div');
+          div.className='rec-item';
+          div.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center"><div><strong>'+e.title+'</strong><div style="font-size:13px;color:var(--muted)">'+formatDate(e.date)+'</div></div><div class="tag">'+e.level+'</div></div><div style="margin-top:8px;color:var(--muted)">'+e.excerpt+'</div>';
+          recs.appendChild(div);
+        });
+      }
+
+      function renderSideList(){
+        sideList.innerHTML='';
+        const shortlist = events.filter(e=>e.level===level).slice(0,4);
+        shortlist.forEach(e=>{
+          const r = document.createElement('div');
+          r.style.padding='10px';r.style.borderRadius='10px';r.style.background='linear-gradient(180deg,rgba(255,255,255,0.01),transparent)';r.style.marginBottom='8px';
+          r.innerHTML='<div style="font-weight:700">'+e.title+'</div><div style="font-size:13px;color:var(--muted)">'+formatDate(e.date)+'</div>';
+          sideList.appendChild(r);
+        });
+      }
+
+      function updateNextEventFocus(){
+        // find next event with chosen level else next overall
+        const now = new Date();
+        let next = events.filter(e=>new Date(e.date)>now && e.level===level)[0];
+        if(!next) next = events.filter(e=>new Date(e.date)>now)[0] || events[0];
+        nextTitle.textContent = next.title;
+        nextLabel.textContent = 'Next session';
+        nextExcerpt.textContent = next.excerpt + ' • Suggested: '+level;
+      }
+
+      // testimonial rotation
+      let tIndex=0;
+      const tEl = document.getElementById('testimonial');
+      function rotateTestimonials(){
+        tEl.textContent = testimonials[tIndex];
+        tIndex = (tIndex+1) % testimonials.length;
+      }
+      setInterval(rotateTestimonials,6000);
+
+      // init
+      renderCalendar();
+      renderRecommendations();
+      renderSideList();
+      updateNextEventFocus();
+      rotateTestimonials();
+      document.getElementById('year').textContent = new Date().getFullYear();
+    })();
+  </script>
+</body>
+</html>

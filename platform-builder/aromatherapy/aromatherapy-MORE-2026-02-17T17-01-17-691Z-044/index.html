@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{{BUSINESS_NAME}} — Calm-forward aromatherapy membership</title>
+  <meta name="description" content="Membership and short practices that may support everyday balance through scent-led rituals. Safety-forward guidance included." />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body class="aura">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="/">{{BUSINESS_NAME}}</a>
+      <nav class="nav">
+        <a href="/">Sanctuary</a>
+        <a href="/services.html">Offerings</a>
+        <a href="/blends.html">Custom Blends</a>
+        <a href="/shop.html">Essentials</a>
+        <a href="/pricing.html">Memberships</a>
+        <a href="/about.html">Why This</a>
+        <a href="/book.html">Book</a>
+        <a href="/contact.html">Get in touch</a>
+      </nav>
+      <div class="header-actions">
+        <a class="btn primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="wrap grid">
+        <div class="hero-text">
+          <h1 id="hero-title">Scented micro-practices for steadier, gentler days</h1>
+          <p class="lead">Short, safe scent rituals and a membership that may support emotional ease. Guided micro-exercises, curated blends, and ongoing guidance in a calm, clinical tone.</p>
+          <div class="hero-ctas">
+            <a class="btn primary" href="{{PRIMARY_CTA_URL}}">Join the membership</a>
+            <button id="tryNowBtn" class="btn ghost">Try a 3-minute ritual</button>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <svg viewBox="0 0 300 200" class="pattern-hero" aria-hidden="true">
+            <defs>
+              <pattern id="p1" width="20" height="20" patternUnits="userSpaceOnUse">
+                <rect width="10" height="10" fill="#f6f9f7" />
+                <circle cx="15" cy="5" r="3" fill="#e6f0ea" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#p1)" />
+            <g fill="#cfe8df">
+              <ellipse cx="80" cy="130" rx="60" ry="35" />
+              <ellipse cx="200" cy="60" rx="40" ry="25" />
+            </g>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- DIAGNOSTIC (Blend Builder) -->
+    <section id="blend-builder" class="diagnostic wrap" aria-labelledby="blend-title">
+      <h2 id="blend-title">Blend Builder — choose your vibe</h2>
+      <p class="muted">Select a mood or intention below. The builder returns a safe dilution guide and a shareable blend card. Not a medical tool — informational only.</p>
+
+      <form id="blendForm" class="blend-form">
+        <label for="vibe">Desired vibe</label>
+        <select id="vibe" name="vibe">
+          <option value="calm">Calm / Soothing</option>
+          <option value="uplift">Uplift / Brighten</option>
+          <option value="focus">Focus / Clarity</option>
+          <option value="ground">Grounding / Rooted</option>
+        </select>
+
+        <label for="volume">Total carrier oil (mL)</label>
+        <input id="volume" name="volume" type="number" step="1" value="10" min="5" />
+
+        <label for="strength">Strength</label>
+        <select id="strength" name="strength">
+          <option value="0.5">Low (0.5%)*</option>
+          <option value="1">Moderate (1%)</option>
+          <option value="2">Elevated (2%)</option>
+        </select>
+
+        <label for="notes">Any safety notes we should honor?</label>
+        <select id="notes" name="notes">
+          <option value="none">None</option>
+          <option value="pets">I have pets</option>
+          <option value="pregnant">Pregnancy / nursing</option>
+          <option value="sensitive">Skin sensitive</option>
+        </select>
+
+        <div class="form-actions">
+          <button type="button" id="buildBlend" class="btn primary">Create blend</button>
+          <button type="button" id="clearBlend" class="btn ghost">Reset</button>
+        </div>
+      </form>
+
+      <section id="blendResult" class="blend-result" aria-live="polite">
+        <p class="muted">No blend yet — pick a vibe to begin.</p>
+      </section>
+
+      <p class="safety-note"><strong>Safety notes:</strong> This tool is informational only. Always patch test and consult your healthcare provider about pregnancy, nursing, medications, or serious conditions. Use pet-safe diffusing practices and low dilutions around animals. See FAQ for detailed guidance.</p>
+    </section>
+
+    <!-- PLAN (How membership works) -->
+    <section id="plan" class="plan wrap" aria-labelledby="plan-title">
+      <h2 id="plan-title">How the membership supports your routine</h2>
+      <ol class="plan-steps">
+        <li><strong>Monthly curation:</strong> One focused micro-ritual and a sample blend per month.</li>
+        <li><strong>Guided practices:</strong> Short breathing and reflection sessions you can do anywhere.</li>
+        <li><strong>Blend coaching:</strong> Members can request a one-off blend card and dilution guidance.</li>
+      </ol>
+      <p class="muted">Memberships are framed as ongoing support rather than therapy: our offerings may support steadier days through scent-led micro-habits.</p>
+    </section>
+
+    <!-- MICRO HABITS (Try it now modal trigger) -->
+    <section id="microHabits" class="micro wrap" aria-labelledby="micro-title">
+      <h2 id="micro-title">Micro-habits — 3 to 5 minutes</h2>
+      <p>Short, guided rituals you can fold into a break: breathing, intention-setting, and journaling prompts designed for scent accompaniment.</p>
+      <div class="micro-list">
+        <div class="micro-card">
+          <h3>Grounding breath</h3>
+          <p class="muted">3-minute paced breathing to steady the nervous system. Try it now.</p>
+          <button class="btn ghost startExercise" data-type="breath">Start breath</button>
+        </div>
+        <div class="micro-card">
+          <h3>Moment of clarity</h3>
+          <p class="muted">Two-minute reflection to note one intention.</p>
+          <button class="btn ghost startExercise" data-type="intention">Start intention</button>
+        </div>
+        <div class="micro-card">
+          <h3>Journal pause</h3>
+          <p class="muted">A short prompt for quick journaling.</p>
+          <button class="btn ghost startExercise" data-type="journal">Start journaling</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING (Membership framing) -->
+    <section id="pricing" class="pricing wrap" aria-labelledby="pricing-title">
+      <h2 id="pricing-title">Membership options</h2>
+      <div class="pricing-grid">
+        <article class="card">
+          <h3>Sampler</h3>
+          <p class="price">$9 / month</p>
+          <p class="muted">Digital rituals + one sample blend quarterly. Good for trying paced scent practices.</p>
+          <a class="btn" href="/pricing.html">Choose Sampler</a>
+        </article>
+        <article class="card featured">
+          <h3>Steady</h3>
+          <p class="price">$29 / month</p>
+          <p class="muted">Monthly curated blend oil (small), guided practices, and blend coaching credits. Best for daily micro-habits.</p>
+          <a class="btn primary" href="/pricing.html">Join Steady</a>
+        </article>
+        <article class="card">
+          <h3>Support</h3>
+          <p class="price">$79 / quarter</p>
+          <p class="muted">Quarterly deeper curation and a live group session for members.</p>
+          <a class="btn" href="/pricing.html">Select Support</a>
+        </article>
+      </div>
+      <p class="muted small">All plans emphasize safety and do not replace medical care. See FAQ for dilution, patch test, pregnancy, and pets guidance.</p>
+    </section>
+
+    <!-- CTA -->
+    <section class="final-cta wrap" aria-labelledby="final-cta-title">
+      <h2 id="final-cta-title">Begin a gentler day</h2>
+      <p>Ready to get started? Memberships make short, safe scent practices part of your week.</p>
+      <a class="btn large primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+    </section>
+
+    <!-- FAQ condensed safety info -->
+    <section id="faq" class="faq wrap" aria-labelledby="faq-title">
+      <h2 id="faq-title">Safety & FAQ</h2>
+      <details>
+        <summary>Are these remedies medical advice?</summary>
+        <p class="muted">No. Content here is informational and supportive. If you have health concerns, seek professional medical advice.</p>
+      </details>
+      <details>
+        <summary>Dilution and patch testing</summary>
+        <p class="muted">Recommended dilution depends on volume and purpose. Our builder suggests conservative dilutions (0.5–2%). Always perform a patch test: apply a small drop of diluted oil on the forearm and wait 24 hours for irritation.</p>
+      </details>
+      <details>
+        <summary>Pregnancy & nursing</summary>
+        <p class="muted">Certain essential oils are not recommended during pregnancy or nursing. Consult your provider before use. Use low dilutions and avoid internal ingestion.</p>
+      </details>
+      <details>
+        <summary>Pets</summary>
+        <p class="muted">Diffusing near animals requires care. Use low concentrations, ventilate the space, and observe your pet. Some oils are unsafe for pets; consult your veterinarian.</p>
+      </details>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="foot-left">
+        <strong>{{BUSINESS_NAME}}</strong>
+        <p class="muted">Serving {{CITY}}, {{STATE}} • <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+      </div>
+      <nav class="foot-nav">
+        <a href="/services.html">Offerings</a>
+        <a href="/blends.html">Custom</a>
+        <a href="/pricing.html">Plans</a>
+        <a href="/contact.html">Contact</a>
+      </nav>
+    </div>
+  </footer>
+
+  <!-- Try-it Modal / exercise UI -->
+  <div id="exerciseModal" class="modal" aria-hidden="true">
+    <div class="modal-inner" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button id="closeModal" class="modal-close" aria-label="Close">×</button>
+      <h3 id="modalTitle">Short guided practice</h3>
+      <div id="exerciseContent">
+        <p id="exerciseIntro" class="muted">Follow the prompts and breathe with the on-screen timer. Use scent if available.</p>
+        <div id="exerciseBody"></div>
+      </div>
+      <div class="modal-actions">
+        <button id="startExerciseBtn" class="btn primary">Start</button>
+        <button id="cancelExerciseBtn" class="btn ghost">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

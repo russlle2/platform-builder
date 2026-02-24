@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve a Session</title>
+  <style>
+    :root{--bg:#fbfbf9;--muted:#5b635f;--accent:#5b856b;--card:#fff}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;color:#12210f;background:var(--bg)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 24px}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#5b856b,#8fb69b);display:flex;align-items:center;justify-content:center;color:#fff}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none}
+    .cta{background:var(--accent);color:#fff;padding:8px 12px;border-radius:10px;text-decoration:none}
+    main{max-width:880px;margin:26px auto;padding:0 20px}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 10px 30px rgba(10,20,10,0.05)}
+    h1{margin:0 0 6px}
+    form{display:flex;flex-direction:column;gap:12px}
+    label{font-size:13px;color:var(--muted)}
+    input,select,textarea{padding:10px;border-radius:8px;border:1px solid #e9efe9;font-size:14px}
+    .row{display:flex;gap:10px}
+    .row > *{flex:1}
+    .btn{padding:10px 12px;border-radius:10px;border:0;background:var(--accent);color:#fff;font-weight:700;cursor:pointer}
+    .small{font-size:13px;color:var(--muted)}
+    .side-note{font-size:13px;color:var(--muted);margin-top:6px}
+    footer{max-width:880px;margin:20px auto;padding:0 20px;color:var(--muted);font-size:13px}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}.row{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo">A</div>
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+    </div>
+    <nav>
+      <a href="index.html">Welcome</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Blends Lab</a>
+      <a href="shop.html">Apothecary</a>
+      <a href="pricing.html">Invest</a>
+      <a href="about.html">About the Practice</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+      <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="grid">
+      <div class="card">
+        <h1>Reserve a session or planning call</h1>
+        <p class="small">Choose a service below. We'll confirm availability and send intake information. Please disclose pregnancy, allergies, and household pets when booking so we can make safe recommendations.</p>
+
+        <form id="bookingForm">
+          <label for="service">Service</label>
+          <select id="service" name="service" required>
+            <option value="Intro">Introductory Planning Call (30 min)</option>
+            <option value="Consult">One-on-one Consultation (60 min)</option>
+            <option value="Mini">Mini Follow-up (30 min)</option>
+            <option value="Course">Guided Course (6 sessions)</option>
+          </select>
+
+          <div class="row">
+            <div>
+              <label for="when">Preferred date & time</label>
+              <input id="when" name="when" type="datetime-local" required>
+            </div>
+            <div>
+              <label for="format">Format</label>
+              <select id="format" name="format">
+                <option>Remote (video)</option>
+                <option>In-person (studio)</option>
+              </select>
+            </div>
+          </div>
+
+          <label for="plan">If you selected a plan from pricing, it will prefill here</label>
+          <input id="plan" name="plan" type="text" placeholder="Plan (optional)">
+
+          <label for="notes">Concerns, allergies, pregnancy, or pets</label>
+          <textarea id="notes" name="notes" rows="4" placeholder="Any details to share? Be specific about pregnancy or pets."></textarea>
+
+          <div style="display:flex;gap:10px;align-items:center">
+            <input id="safety" name="safety" type="checkbox" required>
+            <label for="safety" class="small">I acknowledge that aromatherapy suggestions are supportive and not medical treatments; I will inform the practitioner of pregnancy, serious medical conditions, or pet sensitivities.</label>
+          </div>
+
+          <div style="display:flex;gap:10px;align-items:center">
+            <button class="btn" type="submit">Request reservation</button>
+            <a href="contact.html" style="padding:10px 12px;border-radius:10px;background:#eee;color:#333;text-decoration:none">Ask a question</a>
+          </div>
+
+          <div class="side-note">We follow safety-first protocols: suggested dilutions, patch testing, and adjustments for pregnancy or pet exposure will be provided in intake materials.</div>
+        </form>
+      </div>
+
+      <aside class="card">
+        <h3>What to expect</h3>
+        <p class="small">After you request a reservation we will reach out to confirm details and send a short intake form. Sessions include practical, safety-conscious recommendations and clear dilution instructions for any topical suggestions.</p>
+
+        <div style="margin-top:12px">
+          <strong>Need to change or cancel?</strong>
+          <p class="small">Please contact us at least 48 hours ahead for cancellations or to reschedule. For membership holders, see plan terms for priority booking and cancellation windows.</p>
+        </div>
+
+        <div style="margin-top:12px">
+          <strong>Prepare</strong>
+          <ul style="color:var(--muted);font-size:13px">
+            <li>List any medications/allergies and household pets</li>
+            <li>Have a quiet space for remote sessions</li>
+            <li>We will email safety notes and patch-test instructions if topical use is recommended</li>
+          </ul>
+        </div>
+
+        <a href="pricing.html" class="cta" style="display:inline-block;margin-top:12px">Review investment options</a>
+      </aside>
+    </div>
+
+  </main>
+
+  <footer>
+    <div style="max-width:880px;margin:18px auto;padding:0 20px;color:var(--muted);font-size:13px">Questions? Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a>. By booking you agree to provide accurate health and pregnancy information so recommendations are safe.</div>
+  </footer>
+
+  <script>
+    // Prefill plan if referred from pricing
+    (function(){
+      const params = new URLSearchParams(window.location.search);
+      const plan = params.get('plan');
+      if(plan){
+        document.getElementById('plan').value = plan;
+      }
+    })();
+
+    // Simple client-side submit simulation
+    document.getElementById('bookingForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      const data = new FormData(e.currentTarget);
+      const payload = {};
+      data.forEach((v,k)=>payload[k]=v);
+      // Basic validation (already enforced by required attrs)
+      alert('Request received. We will follow up to confirm availability.');
+      // In a real site, this would POST to a server endpoint
+      e.currentTarget.reset();
+      window.location.href = 'index.html';
+    });
+  </script>
+</body>
+</html>

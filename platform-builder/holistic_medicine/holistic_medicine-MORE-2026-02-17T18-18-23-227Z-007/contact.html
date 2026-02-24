@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contact — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7faf9;--card:#ffffff;--muted:#6b7280;--accent:#0f766e;--accent-2:#115e59;--glass:rgba(255,255,255,0.6)}
+    html,body{height:100%}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#0f172a;background:linear-gradient(180deg,var(--bg),#eef2f7);-webkit-font-smoothing:antialiased}
+    header{background:linear-gradient(90deg,rgba(15,118,110,0.06),rgba(17,94,89,0.02));backdrop-filter:blur(4px);border-bottom:1px solid rgba(15,118,110,0.06)}
+    .wrap{max-width:980px;margin:0 auto;padding:20px}
+    nav{display:flex;gap:18px;align-items:center}
+    nav a{color:var(--accent-2);text-decoration:none;font-weight:600}
+    .brand{font-weight:700;color:#08363a}
+    .hero{display:grid;gap:16px;padding:36px 0}
+    .hero h1{margin:0;font-size:clamp(20px,2.4vw,30px);color:#052b2a}
+    .hero p{margin:0;color:var(--muted)}
+    .cta{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:8px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;text-decoration:none;font-weight:700}
+
+    .card{background:var(--card);border-radius:12px;box-shadow:0 6px 18px rgba(12,40,43,0.06);padding:18px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    label{display:block;font-weight:600;margin-bottom:6px;color:#073033}
+    input[type=text],textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef0;background:transparent}
+    .fields{display:grid;gap:12px}
+    .check-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+    .small{font-size:13px;color:var(--muted)}
+    .muted{color:var(--muted);font-size:13px}
+    .output{white-space:pre-wrap;background:linear-gradient(180deg,rgba(15,118,110,0.03),transparent);padding:12px;border-radius:8px;border:1px dashed rgba(15,118,110,0.06);min-height:120px}
+    .btn{display:inline-block;padding:8px 12px;border-radius:8px;border:0;background:var(--accent);color:#fff;font-weight:700;cursor:pointer}
+    footer{padding:24px 0;color:var(--muted);text-align:center;font-size:13px}
+
+    /* subtle patterned header using local SVG (assets/img/pattern.svg) */
+    .hero-bg{background-image:url("assets/img/pattern.svg");background-repeat:repeat;background-size:220px 220px;border-radius:12px;padding:18px}
+
+    @media (max-width:880px){.grid{grid-template-columns:1fr}.hero{padding:20px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav>
+        <div class="brand">{{BUSINESS_NAME}}</div>
+        <div style="flex:1"></div>
+        <a href="index.html">Home</a>
+        <a href="services.html">Programs</a>
+        <a href="conditions.html">Conditions</a>
+        <a href="approach.html">Method</a>
+        <a href="pricing.html">Invest</a>
+        <a href="about.html">About</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html" aria-current="page" style="opacity:0.9">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="hero-bg card">
+        <h1>Connect and co-design your next steps</h1>
+        <p class="small">Use the session planner to shape a focused, practical plan you can bring to an initial consult. No promises—just clear options and a supportive road map.</p>
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </section>
+
+    <section class="card grid" aria-labelledby="planner-heading">
+      <div>
+        <h2 id="planner-heading">Session Planner — quick, personalized</h2>
+        <p class="small">Answer a few items and see a tailored session structure plus a recommended follow-up cadence. Export a plaintext summary to share or save.</p>
+
+        <div class="fields" style="margin-top:12px">
+          <div>
+            <label for="name">Your name</label>
+            <input id="name" type="text" placeholder="First name">
+          </div>
+
+          <div>
+            <label for="goal">Primary intent for the session</label>
+            <input id="goal" type="text" placeholder="e.g., improve sleep, reduce midday anxiety">
+          </div>
+
+          <div>
+            <label>Session length</label>
+            <select id="length">
+              <option value="30">30 minutes</option>
+              <option value="45" selected>45 minutes</option>
+              <option value="60">60 minutes</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Urgency / priority</label>
+            <input id="urgency" type="range" min="1" max="5" value="3">
+            <div class="small">1 = low priority, 5 = needs close attention</div>
+          </div>
+
+          <div>
+            <label>Whole-person inventory — focus areas</label>
+            <div class="check-grid" id="areas">
+              <label><input type="checkbox" value="Sleep"> Sleep</label>
+              <label><input type="checkbox" value="Mood"> Mood / Anxiety</label>
+              <label><input type="checkbox" value="Digestion"> Digestion</label>
+              <label><input type="checkbox" value="Movement"> Movement / Strength</label>
+              <label><input type="checkbox" value="Energy"> Energy / Fatigue</label>
+              <label><input type="checkbox" value="Immune"> Immune resilience</label>
+              <label><input type="checkbox" value="Relationships"> Relationships</label>
+              <label><input type="checkbox" value="Work"> Work-life rhythm</label>
+              <label><input type="checkbox" value="Breath"> Breathing / Stress tools</label>
+              <label><input type="checkbox" value="Nutrition"> Nutrition patterns</label>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="btn" id="build">Build plan</button>
+            <button class="btn" id="copy" style="background:#2a9d8f">Copy summary</button>
+            <div style="flex:1;text-align:right" class="muted">Contact: <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+          </div>
+
+          <div style="margin-top:8px">
+            <label>Plaintext summary</label>
+            <div id="summary" class="output" aria-live="polite">Complete the form and press "Build plan" to see your summary here.</div>
+          </div>
+        </div>
+      </div>
+
+      <aside>
+        <div>
+          <h3 style="margin-top:0">Consultation agenda & cadence</h3>
+          <p class="small">A clear agenda helps make the most of a first visit. This suggestion pairs session structure with practical follow-up checkpoints.</p>
+
+          <div style="margin-top:12px">
+            <label for="agendaOutput">Agenda preview</label>
+            <div id="agendaOutput" class="output">No plan yet — build one to see an agenda.</div>
+          </div>
+
+          <div style="margin-top:12px">
+            <label for="cadenceOutput">Suggested follow-up cadence</label>
+            <div id="cadenceOutput" class="output">No cadence yet — build one to see suggested check-ins.</div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Duplicate: a more detailed inventory for deeper intake (same mechanics, alternate copy) -->
+    <section class="card" style="margin-top:18px" aria-labelledby="deep-inventory">
+      <h2 id="deep-inventory">Extended whole-person inventory</h2>
+      <p class="small">A second pass to capture context that shapes care priorities. Select areas and describe one small change you could try this week.</p>
+
+      <div style="display:grid;grid-template-columns:1fr 260px;gap:12px;margin-top:12px">
+        <div>
+          <label for="note">One small change you might try (optional)</label>
+          <input id="note" type="text" placeholder="e.g., 10-minute walk after lunch">
+
+          <label style="margin-top:10px">Pick focal areas</label>
+          <div class="check-grid" id="areas2">
+            <label><input type="checkbox" value="Sleep"> Sleep</label>
+            <label><input type="checkbox" value="Anxiety"> Anxiety</label>
+            <label><input type="checkbox" value="Gut"> Gut health</label>
+            <label><input type="checkbox" value="Hormones"> Hormones</label>
+            <label><input type="checkbox" value="Pain"> Chronic pain</label>
+            <label><input type="checkbox" value="Energy"> Energy</label>
+            <label><input type="checkbox" value="Movement"> Movement</label>
+            <label><input type="checkbox" value="Cognition"> Focus / Cognition</label>
+          </div>
+
+          <div style="margin-top:12px;display:flex;gap:8px">
+            <button class="btn" id="build2">Generate agenda</button>
+            <button class="btn" id="copy2" style="background:#2a9d8f">Copy agenda</button>
+          </div>
+        </div>
+
+        <div>
+          <label>Consultation agenda</label>
+          <div id="agenda2" class="output">No agenda yet.</div>
+
+          <label style="margin-top:10px">Follow-up cadence</label>
+          <div id="cadence2" class="output">No cadence yet.</div>
+        </div>
+      </div>
+
+      <p class="muted" style="margin-top:12px">Note: this tool is educational. It is not a medical diagnosis or guaranteed treatment outcome. Use it to prepare for a consult.</p>
+    </section>
+
+    <section class="card" style="margin-top:18px">
+      <h3>Get in touch</h3>
+      <p class="small">Call or email to arrange a consult in {{CITY}}, {{STATE}}. Memberships and single sessions are available — see our "Invest" page for current offerings.</p>
+      <p class="small">Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a><br>Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+      <p class="muted">Educational information only. If you have an urgent health concern, contact local emergency services or your primary clinician.</p>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="small">© <span id="yr"></span> {{BUSINESS_NAME}} — Practical integrative guidance and membership-based support.</div>
+    </div>
+  </footer>
+
+  <script>
+    // small helpers
+    function q(sel, ctx){return (ctx||document).querySelector(sel)}
+    function qa(sel, ctx){return Array.from((ctx||document).querySelectorAll(sel))}
+
+    document.getElementById('yr').textContent = new Date().getFullYear();
+
+    function collectAreas(containerId){
+      return qa('#'+containerId+' input[type=checkbox]:checked').map(i=>i.value)
+    }
+
+    function recommendCadence(count, urgency){
+      if(urgency>=4) return 'Weekly visits for the first 6 weeks, then re-evaluate.'
+      if(count>=5) return 'Every 10–14 days for 2–3 sessions, then monthly check-ins.'
+      if(count>=3) return 'Every 2–3 weeks initially, with a 6–8 week review.'
+      return 'Every 3–4 weeks, with earlier check-ins as needed.'
+    }
+
+    function splitTimes(total, segments){
+      // simple split into intake, focus, education, home plan
+      var base = Math.max(5, Math.round(total*0.15));
+      var focus = Math.max(10, Math.round(total*0.55));
+      var edu = Math.max(5, Math.round(total*0.2));
+      var home = Math.max(5, total - (base+focus+edu));
+      return {intake:base, focus:focus, education:edu, home:home}
+    }
+
+    function buildTextPlan(name, goal, length, areas, urgency, note){
+      var count = areas.length
+      var cadence = recommendCadence(count, Number(urgency))
+      var times = splitTimes(Number(length))
+      var header = 'Personalized Session Plan for ' + (name||'Client') + '\nPrimary intent: ' + (goal||'Not specified') + '\n\n'
+      var focusList = areas.length? areas.join(', ') : 'No specific areas selected.'
+      var structure = 'Session format (approx):\n - Intake: ~' + times.intake + ' min\n - Focused work on selected areas: ~' + times.focus + ' min\n - Education / skill practice: ~' + times.education + ' min\n - Home micro-practices & review: ~' + times.home + ' min\n\n'
+      var agenda = 'Suggested consultation agenda:\n1) Brief intake and current status (objective + subjective)\n2) Prioritize 1–2 target areas from list\n3) Apply targeted modality and teach a skill\n4) Co-design 1–2 small home practices\n\n'
+      var follow = 'Suggested follow-up cadence:\n' + cadence + '\n\n'
+      var followupPlan = 'Checkpoints (examples):\n - 1–2 weeks: quick check-in on home practices and symptom change\n - 4–6 weeks: progress review and adjustments\n - 8–12 weeks: re-assessment and planning for maintenance\'
+      var noteBlock = note?('\nSmall change to try this week: ' + note + '\n') : ''
+      return header + 'Focus areas: ' + focusList + '\n\n' + structure + agenda + follow + followupPlan + noteBlock + '\nNotes: This is an educational plan to prepare for a consult. It is not a medical diagnosis.'
+    }
+
+    // planner 1
+    q('#build').addEventListener('click', function(){
+      var name = q('#name').value.trim()
+      var goal = q('#goal').value.trim()
+      var length = q('#length').value
+      var urgency = q('#urgency').value
+      var areas = collectAreas('areas')
+      var txt = buildTextPlan(name, goal, length, areas, urgency)
+      q('#summary').textContent = txt
+      q('#agendaOutput').textContent = txt.split('\n\n')[3] || 'Agenda not available.'
+      q('#cadenceOutput').textContent = txt.split('\n\n')[4] || 'Cadence not available.'
+    })
+
+    q('#copy').addEventListener('click', function(){
+      var t = q('#summary').textContent
+      if(!t) return alert('No summary to copy')
+      navigator.clipboard.writeText(t).then(function(){
+        alert('Summary copied to clipboard')
+      },function(){alert('Unable to copy — try copying manually')})
+    })
+
+    // planner 2 (extended inventory)
+    q('#build2').addEventListener('click', function(){
+      var note = q('#note').value.trim()
+      var areas = collectAreas('areas2')
+      var urgency = 3
+      var length = 45
+      var name = ''
+      var txt = buildTextPlan(name, note || 'Extended inventory notes', length, areas, urgency, note)
+      // split into agenda and cadence parts
+      var parts = txt.split('\n\n')
+      q('#agenda2').textContent = parts[2] || 'Agenda not available.'
+      q('#cadence2').textContent = parts[3] || 'Cadence not available.'
+    })
+
+    q('#copy2').addEventListener('click', function(){
+      var t = 'Agenda:\n' + q('#agenda2').textContent + '\n\nCadence:\n' + q('#cadence2').textContent
+      if(!t) return alert('Nothing to copy')
+      navigator.clipboard.writeText(t).then(function(){alert('Agenda copied')},function(){alert('Copy failed')})
+    })
+
+    // Be resilient: show placeholder text for first load
+    document.addEventListener('DOMContentLoaded', function(){
+      q('#summary').textContent = 'Complete the form and press "Build plan" to see your summary here.'
+    })
+  </script>
+</body>
+</html>

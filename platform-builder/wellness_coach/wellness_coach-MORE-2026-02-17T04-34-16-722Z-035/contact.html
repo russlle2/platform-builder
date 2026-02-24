@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f6fbf9;--card:#ffffff;--muted:#6b7280;--accent:#0f766e;--accent-2:#7c3aed;--glass:rgba(255,255,255,0.6);}
+    *{box-sizing:border-box}
+    body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin:0; color:#0f172a; background:linear-gradient(180deg,var(--bg),#eef7f5);}
+    header{background:linear-gradient(90deg,rgba(124,58,237,0.06),rgba(15,118,110,0.04));backdrop-filter:blur(6px);position:sticky;top:0;z-index:40}
+    .wrap{max-width:1100px;margin:0 auto;padding:22px}
+    nav{display:flex;gap:18px;align-items:center}
+    .brand{font-weight:700;color:var(--accent-2)}
+    .nav{margin-left:auto;display:flex;gap:12px}
+    .nav a{color:#07433a;text-decoration:none;padding:8px 12px;border-radius:8px;font-weight:600}
+    .nav a:hover{background:rgba(7,67,58,0.06)}
+    main{max-width:1100px;margin:30px auto;padding:28px}
+    .grid{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:start}
+    .hero-card{background:var(--card);border-radius:14px;padding:26px;box-shadow:0 6px 30px rgba(11,22,22,0.06);position:relative;overflow:hidden}
+    .pattern{position:absolute;right:-30px;top:-30px;width:260px;height:260px;opacity:0.12;filter:blur(0.5px)}
+    h1{margin:0 0 8px;font-size:22px}
+    p.lead{margin:0 0 18px;color:var(--muted)}
+    label{display:block;font-size:13px;margin:10px 0 6px;color:#0f172a}
+    input[type=text],input[type=email],textarea,select{width:100%;padding:10px;border-radius:10px;border:1px solid #e6eef0;font-size:14px}
+    textarea{min-height:120px}
+    .actions{display:flex;gap:12px;margin-top:14px}
+    .btn{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;border:none;font-weight:700;cursor:pointer}
+    .btn.secondary{background:transparent;border:1px solid rgba(7,67,58,0.12);color:var(--accent)}
+    .panel{background:linear-gradient(180deg,#ffffff, #fbfefe);padding:18px;border-radius:12px;border:1px solid rgba(13,21,21,0.03)}
+    .mood-grid{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .mood{padding:8px 10px;border-radius:10px;background:#f6fbf9;border:1px solid rgba(10,20,20,0.03);cursor:pointer;font-weight:600}
+    .mood.active{background:linear-gradient(90deg,var(--accent-2),var(--accent));color:#fff;box-shadow:0 8px 20px rgba(15,118,110,0.08)}
+    .method{margin-top:12px;padding:12px;border-radius:10px;background:rgba(15,118,110,0.04);color:var(--accent)}
+    .goals{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+    .goal{display:flex;gap:8px;align-items:center}
+    .pathmap{margin-top:12px;background:linear-gradient(180deg,#fff,#fbfffd);padding:12px;border-radius:10px;border:1px dashed rgba(7,67,58,0.06)}
+    .days{display:flex;gap:4px;flex-wrap:nowrap;overflow:auto;padding-bottom:6px}
+    .day{width:12px;height:12px;border-radius:3px;background:#eef6f4;border:1px solid rgba(7,67,58,0.03)}
+    .day.fill-1{background:#bdebec}
+    .day.fill-2{background:#c4b5fd}
+    .legend{display:flex;gap:12px;align-items:center;margin-top:10px}
+    .leg{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted)}
+    footer{max-width:1100px;margin:30px auto;padding:20px;text-align:center;color:var(--muted)}
+    /* small screens */
+    @media(max-width:880px){.grid{grid-template-columns:1fr;}.pattern{display:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav>
+        <div class="brand">{{BUSINESS_NAME}}</div>
+        <div class="nav">
+          <a href="index.html">Start Here</a>
+          <a href="about.html">Story</a>
+          <a href="services.html">Offerings</a>
+          <a href="programs.html">Cohorts</a>
+          <a href="pricing.html">Investment</a>
+          <a href="testimonials.html">Praise</a>
+          <a href="book.html">Reserve</a>
+          <a href="contact.html">Connect</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="grid">
+      <section class="hero-card">
+        <img class="pattern" src="assets/img/pattern.svg" alt="pattern" />
+        <h1>Find the next sensible step—let's make it stick</h1>
+        <p class="lead">Tell us where you are, and which tiny goals matter this month. We'll sketch a 30-day path and point you to the right cohort or micro-plan.</p>
+
+        <form id="contactForm" class="panel" onsubmit="event.preventDefault();submitForm()">
+          <label for="name">Name</label>
+          <input id="name" name="name" type="text" placeholder="Your name" />
+
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="you@domain.com" />
+
+          <label for="note">Quick note</label>
+          <textarea id="note" name="note" placeholder="Where do you want more ease?"></textarea>
+
+          <div class="actions">
+            <button id="primaryCta" class="btn" type="submit">{{PRIMARY_CTA_LABEL}}</button>
+            <button class="btn secondary" type="button" onclick="scrollToPanel('mood')">Pick a Mood & Method</button>
+          </div>
+        </form>
+
+        <div style="margin-top:12px;color:var(--muted);font-size:13px">Questions? Call <strong>{{PHONE}}</strong> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</div>
+      </section>
+
+      <aside>
+        <div id="mood" class="panel">
+          <strong style="display:block">Mood-to-Method</strong>
+          <div class="mood-grid" role="list">
+            <button class="mood" data-method="Micro-Rituals" data-cta="Try a week of Micro-Rituals">Overwhelmed</button>
+            <button class="mood" data-method="Anchor Days" data-cta="Join Anchor Days" >Drifting</button>
+            <button class="mood" data-method="Mini-Cohort" data-cta="Apply to a Mini-Cohort">Ready to Commit</button>
+            <button class="mood" data-method="Reset Sprint" data-cta="Start a Reset Sprint">Busy, but desperate</button>
+            <button class="mood" data-method="Maintenance Plan" data-cta="Choose Maintenance Plan">Stable, want to stay</button>
+          </div>
+
+          <div id="methodCard" class="method" aria-live="polite">Pick how you feel — I'll suggest a focused approach and update the button to match.</div>
+
+          <div style="margin-top:12px">
+            <strong style="display:block">Choose monthly focal goals</strong>
+            <div class="goals">
+              <label class="goal"><input type="checkbox" value="sleep" /> Better sleep rhythm</label>
+              <label class="goal"><input type="checkbox" value="move" /> Consistent movement (3x/wk)</label>
+              <label class="goal"><input type="checkbox" value="calm" /> Morning calm practice</label>
+              <label class="goal"><input type="checkbox" value="focus" /> Morning work launch ritual</label>
+              <label class="goal"><input type="checkbox" value="social" /> Weekly connection habit</label>
+            </div>
+
+            <div class="pathmap" id="pathmap">
+              <div style="font-size:13px;color:var(--muted)">30-day Path Map</div>
+              <div class="days" id="daysRow" aria-hidden="false" title="30-day path map"></div>
+
+              <div class="legend">
+                <div class="leg"><span style="display:inline-block;width:12px;height:12px;background:#bdebec;border-radius:3px"></span> Sleep</div>
+                <div class="leg"><span style="display:inline-block;width:12px;height:12px;background:#c4b5fd;border-radius:3px"></span> Movement</div>
+                <div class="leg"><span style="display:inline-block;width:12px;height:12px;background:#e6f2da;border-radius:3px;border:1px solid #d7ead6"></span> Calm</div>
+              </div>
+            </div>
+
+            <div style="margin-top:12px;display:flex;gap:8px">
+              <button class="btn secondary" onclick="previewPlan()">Preview 30-day micro-plan</button>
+              <button class="btn" id="applyCta" onclick="gotoCta()">{{PRIMARY_CTA_LABEL}}</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="height:18px"></div>
+
+        <div class="panel">
+          <strong>Local info</strong>
+          <div style="margin-top:8px;color:var(--muted)">{{CITY}}, {{STATE}} • Tailored cohorts, online & live</div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} — {{TAGLINE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • {{PHONE}}</div>
+  </footer>
+
+  <script>
+    // Mood-to-Method interactivity
+    const moods = document.querySelectorAll('.mood');
+    const methodCard = document.getElementById('methodCard');
+    const primaryCta = document.getElementById('primaryCta');
+    const applyCta = document.getElementById('applyCta');
+
+    moods.forEach(btn => btn.addEventListener('click', (e) => {
+      moods.forEach(b=>b.classList.remove('active'));
+      e.currentTarget.classList.add('active');
+      const m = e.currentTarget.getAttribute('data-method');
+      const ct = e.currentTarget.getAttribute('data-cta');
+      methodCard.textContent = methodBlurb(m);
+      // update CTA buttons with mood-aware phrasing
+      primaryCta.textContent = ct + ' — ' + '{{PRIMARY_CTA_LABEL}}';
+      applyCta.textContent = ct;
+      // attach dynamic URL behavior (example uses anchor param)
+      primaryCta.dataset.target = '{{PRIMARY_CTA_URL}}?method=' + encodeURIComponent(m);
+      applyCta.dataset.target = '{{PRIMARY_CTA_URL}}?method=' + encodeURIComponent(m);
+    }));
+
+    function methodBlurb(name){
+      const map = {
+        'Micro-Rituals':'Three tiny wins to carry you through the day: 5-min anchors you can repeat anywhere.',
+        'Anchor Days':'Design 2 reliable days each week that hold the rest of your schedule steady.',
+        'Mini-Cohort':'A focused 4-week group with accountability and quick habit structures.',
+        'Reset Sprint':'A concentrated week of simplified choices to clear overwhelm and restore energy.',
+        'Maintenance Plan':'Light, sustainable nudges to preserve gains without extra friction.'
+      };
+      return map[name] || 'A flexible approach built around how you actually live your day.';
+    }
+
+    // Form submit placeholder
+    function submitForm(){
+      const name = document.getElementById('name').value || 'Friend';
+      alert('Thanks, ' + name + '! We received your note and will reply to ' + (document.getElementById('email').value || 'your email') + '.');
+    }
+
+    function gotoCta(){
+      const t = applyCta.dataset.target || primaryCta.dataset.target || '{{PRIMARY_CTA_URL}}';
+      // local navigation to the target (simulate)
+      location.href = t;
+    }
+
+    function scrollToPanel(id){
+      document.getElementById(id).scrollIntoView({behavior:'smooth'});
+    }
+
+    // Progress meter / 30-day path map
+    const checkboxes = document.querySelectorAll('.goals input[type=checkbox]');
+    const daysRow = document.getElementById('daysRow');
+
+    // initial render
+    renderDays([]);
+
+    checkboxes.forEach(cb => cb.addEventListener('change', updatePath));
+
+    function updatePath(){
+      const active = Array.from(checkboxes).filter(c=>c.checked).map(c=>c.value);
+      renderDays(active);
+    }
+
+    function renderDays(activeGoals){
+      daysRow.innerHTML = '';
+      const days = 30;
+      for(let i=1;i<=days;i++){
+        const div = document.createElement('div');
+        div.className = 'day';
+        // simple scheduling logic: rotate goals by pattern
+        if(activeGoals.length>0){
+          // assign first goal to days where i % 2 === 0, second to i%3===0 etc. This is illustrative.
+          if(activeGoals.includes('sleep') && i%2===0){ div.className='day fill-1'; div.title='Sleep alignment day'; }
+          else if(activeGoals.includes('move') && i%3===0){ div.className='day fill-2'; div.title='Move day'; }
+          else if(activeGoals.includes('calm') && i%5===0){ div.className='day fill-3'; div.style.background='#e6f2da'; div.title='Calm practice'; }
+          else if(activeGoals.includes('focus') && i%7===0){ div.className='day'; div.style.background='#fff1c9'; div.title='Focus ritual'; }
+          else if(activeGoals.includes('social') && i%6===0){ div.className='day'; div.style.background='#ffd6e0'; div.title='Social touchpoint'; }
+        }
+        daysRow.appendChild(div);
+      }
+    }
+
+    function previewPlan(){
+      const active = Array.from(checkboxes).filter(c=>c.checked).map(c=>c.value);
+      if(active.length===0){
+        alert('Pick one or two focal goals to see a tailored 30-day map.');
+        return;
+      }
+      // create a tiny summary
+      const lines = active.map(g => {
+        switch(g){
+          case 'sleep': return 'Sleep: 3 bedtime anchors, progressive 15-min shifts.';
+          case 'move': return 'Move: 3 short sessions/week; 15–25 minutes.';
+          case 'calm': return 'Calm: 5–10 minute morning breath ritual.';
+          case 'focus': return 'Focus: a 10-minute launch to own your first hour.';
+          case 'social': return 'Social: schedule one weekly mini-check-in.';
+          default: return g;
+        }
+      });
+      alert('Preview micro-plan:\n\n' + lines.join('\n'));
+    }
+
+    // Accessibility: announce changes
+    const observer = new MutationObserver(() => {
+      // noop for now — placeholder for screen reader live region updates
+    });
+    observer.observe(methodCard, {childList:true});
+  </script>
+</body>
+</html>

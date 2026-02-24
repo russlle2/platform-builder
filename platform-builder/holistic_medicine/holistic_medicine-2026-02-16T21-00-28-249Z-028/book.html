@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reserve your spot in a series or schedule a one-on-one intake. Simple booking form with options and availability notes.">
+  <style>
+    :root{--bg:#fff;--ink:#151518;--accent:#7a5cff;--accent-2:#2ec4b6}
+    *{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    body{margin:0;background:linear-gradient(180deg,#fbfdff,#ffffff);color:var(--ink)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px}
+    .logo{width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;color:white;font-weight:700}
+    nav a{margin-left:12px;color:rgba(10,10,30,0.6);text-decoration:none}
+    main{max-width:920px;margin:24px auto;padding:0 18px}
+    .split{display:grid;grid-template-columns:1fr 420px;gap:22px;align-items:start}
+    .panel{background:#fff;padding:18px;border-radius:12px;box-shadow:0 6px 20px rgba(20,20,60,0.04)}
+    h1{margin:0 0 8px 0}
+    label{display:block;font-size:13px;margin-top:10px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(20,20,60,0.06);margin-top:6px}
+    button{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;padding:10px 14px;border-radius:10px;border:0;margin-top:12px;font-weight:700}
+    .note{font-size:13px;color:rgba(20,20,60,0.6)}
+    .small{font-size:13px;color:rgba(20,20,60,0.5)}
+    @media(max-width:860px){.split{grid-template-columns:1fr}}
+    .pattern-svg{width:100%;height:80px;display:block;margin-bottom:8px}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo">HM</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div class="small">Book a series seat or a private intake</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="about.html">About</a>
+      <a href="pricing.html">Fees</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="split">
+      <div>
+        <div class="panel">
+          <h1>Reserve your place</h1>
+          <p class="note">Choose a series or a private visit. We emphasize education and whole-person plans; lab work is optional and discussed if helpful.</p>
+
+          <form id="booking" method="post" action="{{PRIMARY_CTA_URL}}">
+            <label for="name">Full name</label>
+            <input id="name" name="name" required placeholder="Your name">
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required placeholder="you@example.com">
+
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" placeholder="(optional)" >
+
+            <label for="service">I am booking</label>
+            <select id="service" name="service">
+              <option>Seasonal series (group)</option>
+              <option>Initial intake — 60–75 min</option>
+              <option>Follow-up coaching — 30 min</option>
+              <option>Community evening (sliding scale)</option>
+            </select>
+
+            <label for="date">Preferred dates / notes</label>
+            <input id="date" name="date" placeholder="e.g. Weeknights in March or flexible">
+
+            <label for="message">Brief note — goals or concerns</label>
+            <textarea id="message" name="message" rows="4" placeholder="What would you like to focus on?"></textarea>
+
+            <div style="display:flex;align-items:center;gap:12px">
+              <button type="submit">Request booking</button>
+              <div class="small">We will confirm availability and any sliding-scale options.</div>
+            </div>
+          </form>
+
+          <div style="margin-top:12px" class="small">By booking you acknowledge that our approach is educational and supportive; we do not offer guaranteed cures. If you have urgent concerns, contact your primary provider.</div>
+        </div>
+
+        <section id="what_to_expect" style="margin-top:14px">
+          <div class="panel">
+            <h2>Before your first visit</h2>
+            <p class="small">You'll receive a short intake form and practical pre-visit notes to make our time focused on learning and next steps.</p>
+          </div>
+        </section>
+
+      </div>
+
+      <aside>
+        <div class="panel">
+          <svg class="pattern-svg" viewBox="0 0 400 80" aria-hidden>
+            <defs>
+              <linearGradient id="lg" x1="0" x2="1">
+                <stop offset="0" stop-color="#7a5cff" stop-opacity="0.9"/>
+                <stop offset="1" stop-color="#2ec4b6" stop-opacity="0.9"/>
+              </linearGradient>
+            </defs>
+            <rect width="400" height="80" rx="10" fill="url(#lg)"/>
+          </svg>
+
+          <div style="font-weight:700">Quick availability</div>
+          <ul style="margin-top:8px;padding-left:18px;color:rgba(20,20,60,0.65)">
+            <li>Weekly evening series — seats open</li>
+            <li>Next intake slots: mornings on Monday & Thursday</li>
+            <li>Follow-ups: flexible 30-minute windows</li>
+          </ul>
+
+          <div style="margin-top:12px" class="small">If you need immediate assistance, call <a href="tel:{{PHONE}}">{{PHONE}}</a>. For bookings by email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+
+          <div style="margin-top:12px" class="small"><strong>Pricing snapshot</strong><div style="margin-top:6px">Series: $240 • Intake: $150 • Follow-up: $65 • Community: pay-what-you-can</div></div>
+
+          <div style="margin-top:12px" class="small">Payments secure reservations. Cancellation policy: 48 hours for credit or partial refund.</div>
+        </div>
+
+        <div class="panel" style="margin-top:12px">
+          <h2>Need help choosing?</h2>
+          <p class="small">If you're unsure whether to join a series or book an intake, select whichever feels most useful. We will follow up and help you choose the right path.</p>
+          <a href="mailto:{{EMAIL}}" style="display:inline-block;margin-top:10px;padding:8px 12px;border-radius:8px;background:rgba(122,92,255,0.06);text-decoration:none;color:var(--ink)">Email us</a>
+        </div>
+      </aside>
+    </div>
+
+    <section id="faq" style="margin-top:20px">
+      <div class="panel">
+        <h2>Booking FAQ</h2>
+        <p class="small"><strong>What if I need to reschedule?</strong> Please notify us 48+ hours before the appointment when possible. We'll offer a credit or reschedule depending on timing.</p>
+        <p class="small" style="margin-top:8px"><strong>Are there discounts?</strong> Yes — multi-session packs and sliding-scale openings. Ask when you book.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer style="text-align:center;padding:20px;color:rgba(20,20,60,0.6)">
+    <div>{{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+  </footer>
+
+  <script>
+    // Minimal client-side form friendly behavior
+    document.getElementById('booking').addEventListener('submit', function(ev){
+      // allow default post to PRIMARY_CTA_URL, but provide validation
+      var name = document.getElementById('name').value.trim();
+      var email = document.getElementById('email').value.trim();
+      if(!name || !email){
+        ev.preventDefault();
+        alert('Please add your name and email to continue.');
+      }
+    });
+  </script>
+</body>
+</html>

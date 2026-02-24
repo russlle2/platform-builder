@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pricing — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff7f1;--accent:#6b4cff;--muted:#5b5b6a;--card:#ffffff;--glass:rgba(255,255,255,0.7)}
+    *{box-sizing:border-box;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#fff);color:#1b1b1f}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px}
+    .logo{font-weight:700;color:var(--accent);letter-spacing:0.6px}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none;font-size:14px}
+    .hero{padding:36px 28px 24px;display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+    .hero .intro{background:linear-gradient(180deg,#fff,rgba(107,76,255,0.04));padding:28px;border-radius:12px;box-shadow:0 6px 30px rgba(103,84,255,0.06)}
+    .kicker{font-size:13px;color:var(--accent);font-weight:600}
+    h1{margin:8px 0 10px;font-size:26px}
+    p.lead{color:var(--muted);margin:0 0 18px}
+    .cta{display:inline-block;padding:10px 14px;border-radius:10px;background:var(--accent);color:white;text-decoration:none;font-weight:600}
+    .aside{background:var(--card);padding:18px;border-radius:12px;border:1px solid #f0eefb}
+
+    /* Pricing comparator */
+    .toggle{display:flex;align-items:center;gap:10px;margin:18px 0}
+    .switch{width:56px;height:30px;border-radius:18px;background:#ece9ff;padding:3px;display:flex;align-items:center;cursor:pointer}
+    .knob{width:24px;height:24px;border-radius:12px;background:white;box-shadow:0 2px 6px rgba(16,16,22,0.08);transform:translateX(0);transition:transform 300ms cubic-bezier(.2,.9,.25,1)}
+    .switch.active{background:#dfe6ff}
+    .switch.active .knob{transform:translateX(26px)}
+
+    .plans{display:flex;flex-direction:column;gap:12px}
+    .plan{display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:10px;background:linear-gradient(180deg,#ffffff,#fbfbff);border:1px solid #f1efff}
+    .plan h3{margin:0;font-size:16px}
+    .price{font-weight:800;color:var(--accent);font-size:20px}
+    .muted{color:var(--muted);font-size:13px}
+
+    .features{padding:12px;margin-top:10px;border-radius:10px;background:#fff;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .feature{font-size:13px;color:#333}
+
+    .disclaimer{font-size:12px;color:#6b6b76;margin-top:10px}
+
+    footer{padding:24px 28px;color:var(--muted);font-size:13px}
+
+    /* small animation for numbers */
+    .num{font-variant-numeric:tabular-nums}
+
+    /* responsive */
+    @media(max-width:880px){.hero{grid-template-columns:1fr;}.aside{order:2}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Start</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Conditions</a>
+      <a href="approach.html">Method</a>
+      <a href="pricing.html">Investment</a>
+      <a href="about.html">Who We Are</a>
+      <a href="book.html">Enroll</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="intro">
+        <div class="kicker">Cohort model • Limited seats</div>
+        <h1>Transparent pricing for guided integrative care</h1>
+        <p class="lead">Pick the cadence that suits your rhythm: a month-to-month connection or a focused cohort package with clearly mapped support. No overpromises — just clear offers so you can decide.</p>
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+
+        <div style="margin-top:20px">
+          <div class="toggle" aria-hidden="false">
+            <div style="font-size:13px;color:var(--muted);">Monthly</div>
+            <div id="switch" class="switch" role="switch" aria-checked="false">
+              <div class="knob"></div>
+            </div>
+            <div style="font-size:13px;color:var(--muted);">Cohort Package</div>
+          </div>
+          <div style="font-size:13px;color:var(--muted)">Toggle to compare recurring support vs. time-boxed cohort pricing.</div>
+        </div>
+      </div>
+
+      <aside class="aside">
+        <div style="display:flex;justify-content:space-between;align-items:start">
+          <div>
+            <div class="muted">Plan snapshot</div>
+            <h2 style="margin:6px 0 0;font-size:18px">Choose your rhythm</h2>
+          </div>
+          <div style="font-size:12px;color:var(--muted);text-align:right">Questions? <br/><a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+        </div>
+
+        <div class="plans" id="plans">
+          <div class="plan">
+            <div>
+              <h3>Monthly Support</h3>
+              <div class="muted">Flexible, ongoing guidance</div>
+            </div>
+            <div class="price"><span class="num" id="monthlyPrice">$140</span><span class="muted" style="font-weight:600">/mo</span></div>
+          </div>
+
+          <div class="plan">
+            <div>
+              <h3>Cohort Cycle</h3>
+              <div class="muted">8-week guided cycle — small group</div>
+            </div>
+            <div class="price"><span class="num" id="packagePrice">$980</span><span class="muted" style="font-weight:600">/cycle</span></div>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature">✔ Group learning sessions</div>
+          <div class="feature">✔ Personalized action plan</div>
+          <div class="feature">✔ Integrative resource library</div>
+          <div class="feature">✔ Email check-ins between sessions</div>
+        </div>
+
+        <div class="disclaimer">Educational support and coaching. Not a substitute for medical care. If you have an urgent medical issue, please contact emergency services or your care team.</div>
+      </aside>
+    </section>
+
+    <section style="padding:18px 28px;">
+      <h3 style="margin:0 0 8px">Compare value</h3>
+      <p class="muted" style="margin:0 0 12px">Flip the switch above to animate numbers and see how the monthly option compares with the packaged cohort total.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <div style="flex:1;min-width:220px;padding:14px;border-radius:10px;background:#fff;border:1px solid #f2f1fb">
+          <div class="muted">Monthly — 6 months</div>
+          <div style="font-size:22px;font-weight:800;margin-top:8px">Total: <span class="num" id="totalSix">$840</span></div>
+          <div class="muted" style="margin-top:6px">Estimate if you keep monthly support for a half-year.</div>
+        </div>
+
+        <div style="flex:1;min-width:220px;padding:14px;border-radius:10px;background:#fff;border:1px solid #f2f1fb">
+          <div class="muted">Cohort — single cycle</div>
+          <div style="font-size:22px;font-weight:800;margin-top:8px">Upfront: <span class="num" id="cohortTotal">$980</span></div>
+          <div class="muted" style="margin-top:6px">Time-boxed program with group sessions and materials.</div>
+        </div>
+      </div>
+
+      <div style="margin-top:14px"><a class="cta" href="{{PRIMARY_CTA_URL}}">Reserve a Seat</a></div>
+    </section>
+  </main>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+      <div>{{BUSINESS_NAME}} — Serving {{CITY}}, {{STATE}} • <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      <div style="font-size:12px;color:var(--muted)">Payments handled securely. Refund policy available on request.</div>
+    </div>
+  </footer>
+
+  <script>
+    // Pricing comparator logic with animated numbers
+    function animateValue(el, start, end, duration) {
+      const range = end - start; const startTime = performance.now();
+      function step(now){
+        const progress = Math.min((now - startTime) / duration, 1);
+        const value = Math.round(start + range * easeOutQuad(progress));
+        el.textContent = '$' + value;
+        if(progress < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+    function easeOutQuad(t){return t*(2-t)}
+
+    const switchEl = document.getElementById('switch');
+    const monthlyEl = document.getElementById('monthlyPrice');
+    const packageEl = document.getElementById('packagePrice');
+    const totalSixEl = document.getElementById('totalSix');
+    const cohortTotalEl = document.getElementById('cohortTotal');
+
+    let active = false; // false = monthly view shown
+    function updatePrices(toggle){
+      // base figures
+      const monthly = toggle ? 140 : 140; // base monthly stays same
+      const packagePrice = toggle ? 980 : 980; // single package
+
+      // when showing package comparison, highlight totals differently
+      if(toggle){
+        switchEl.setAttribute('aria-checked','true'); switchEl.classList.add('active');
+      } else {
+        switchEl.setAttribute('aria-checked','false'); switchEl.classList.remove('active');
+      }
+      // animate
+      animateValue(monthlyEl, parseInt(monthlyEl.textContent.replace('$',''))||0, monthly, 450);
+      animateValue(packageEl, parseInt(packageEl.textContent.replace('$',''))||0, packagePrice, 450);
+
+      // compute 6-month total
+      const six = monthly * 6; const cohort = packagePrice;
+      animateValue(totalSixEl, parseInt(totalSixEl.textContent.replace('$',''))||0, six, 600);
+      animateValue(cohortTotalEl, parseInt(cohortTotalEl.textContent.replace('$',''))||0, cohort, 600);
+    }
+
+    // initial render
+    updatePrices(active);
+
+    switchEl.addEventListener('click', ()=>{active = !active; updatePrices(active);} );
+  </script>
+</body>
+</html>

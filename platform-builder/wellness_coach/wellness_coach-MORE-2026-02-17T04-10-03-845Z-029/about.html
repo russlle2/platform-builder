@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Origins — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfbf9;--card:#fff;--muted:#6b6b6b;--accent:#5aa47a;--accent-2:#4a90e2;--glass:rgba(255,255,255,0.7);font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#fbfbf9 0%, #f3f8f6 60%);color:#122;}
+    header{display:flex;align-items:center;justify-content:space-between;padding:22px 28px;background:transparent;position:sticky;top:0;backdrop-filter:blur(6px);z-index:10}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:46px;height:46px;border-radius:8px;background-image:url('assets/img/pattern.svg');background-size:56px;background-position:center;border:1px solid rgba(18,18,18,0.06)}
+    nav a{margin-left:14px;color:#1b2b2a;text-decoration:none;font-weight:600}
+    .hero{padding:48px 28px 26px;display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+    .hero h1{font-size:28px;margin:0 0 8px;color:#0f2b2a}
+    .hero p{margin:0 0 18px;color:var(--muted)}
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(14,15,16,0.06);}
+    .intro-list{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:linear-gradient(90deg,rgba(90,164,122,0.12),rgba(74,144,226,0.08));color:#083; font-weight:700}
+    .who{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:18px 0}
+    footer{padding:28px;color:var(--muted);font-size:13px}
+
+    /* Progress path map */
+    .path-wrap{margin-top:18px}
+    .goals{display:flex;flex-wrap:wrap;gap:8px}
+    .goal{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;border:1px solid rgba(6,6,6,0.04);cursor:pointer;background:linear-gradient(180deg,transparent,rgba(250,250,250,0.6))}
+    .goal input{accent-color:var(--accent)}
+    .timeline{margin-top:14px;padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.6),rgba(250,250,250,0.8));}
+    .days{display:flex;gap:6px;overflow:auto;padding-bottom:6px}
+    .day{min-width:18px;height:18px;border-radius:4px;background:#eee;flex:0 0 auto}
+    .day.small{width:12px;height:12px}
+    .legend{display:flex;gap:10px;margin-top:10px;font-size:13px;color:var(--muted)}
+
+    /* Proof gallery small */
+    .proof{display:flex;flex-direction:column;gap:12px}
+    .testimonial{font-size:15px;color:#122;padding:10px;border-radius:8px}
+    .badges{display:flex;gap:8px;align-items:center}
+    .badge{position:relative;padding:6px 8px;border-radius:6px;background:#f4f8f6;border:1px solid rgba(10,10,10,0.04);cursor:default}
+    .badge[data-tip]:hover::after{content:attr(data-tip);position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 8px);background:#122;color:#fff;padding:6px 8px;border-radius:6px;font-size:12px;white-space:nowrap}
+
+    /* CTA */
+    .cta{display:inline-block;margin-top:12px;padding:12px 16px;border-radius:10px;background:var(--accent);color:#fff;text-decoration:none;font-weight:700}
+
+    /* responsive */
+    @media(max-width:880px){.hero{grid-template-columns:1fr;}.who{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo" aria-hidden="true"></div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Nest</a>
+      <a href="about.html">Origins</a>
+      <a href="services.html">Offerings</a>
+      <a href="programs.html">Journeys</a>
+      <a href="pricing.html">Rates</a>
+      <a href="testimonials.html">Voices</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Reach Out</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h1>Careful adjustments that become steady practices</h1>
+        <p>Workable habits, simple frameworks, and clear outcomes—built so growth feels manageable. We shape your next month with small daily moves that add up.</p>
+        <div class="card">
+          <div class="who">
+            <div>
+              <strong>How we arrive</strong>
+              <p style="color:var(--muted);margin:6px 0 0">We begin by listening to routines, constraints, and what actually matters to your day. From that, we sketch a path for 30 days that fits your real life.</p>
+            </div>
+            <div>
+              <strong>What we track</strong>
+              <ul style="margin:8px 0 0;color:var(--muted)">
+                <li>Small, repeatable habits that foster momentum</li>
+                <li>Daily micro-checks to keep practice honest</li>
+                <li>Simple frameworks to re-orient when life changes</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="path-wrap">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <strong>Build your 30-day path</strong>
+              <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            </div>
+            <div style="margin-top:10px;color:var(--muted)">Select up to 4 priorities and see a suggested sequence you can start tomorrow.</div>
+            <div class="goals" id="goals">
+              <label class="goal"><input type="checkbox" value="sleep">Better sleep rhythm</label>
+              <label class="goal"><input type="checkbox" value="movement">Gentle daily movement</label>
+              <label class="goal"><input type="checkbox" value="focus">Clearer focus windows</label>
+              <label class="goal"><input type="checkbox" value="stress">Mini stress resets</label>
+              <label class="goal"><input type="checkbox" value="meals">Simpler meals</label>
+              <label class="goal"><input type="checkbox" value="rituals">Morning rituals</label>
+            </div>
+
+            <div class="timeline card" id="timeline">
+              <div style="font-size:13px;color:var(--muted)">30-day snapshot</div>
+              <div class="days" id="days" aria-hidden="false" style="margin-top:8px"></div>
+              <div class="legend" id="legend"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <aside>
+        <div class="card">
+          <strong>About the coach</strong>
+          <p style="color:var(--muted);margin-top:8px">Practical, compassionate coaching rooted in habit design and simple frames for daily life. We focus on what you can repeat, not what’s ideal.</p>
+
+          <div class="proof" style="margin-top:12px">
+            <div class="testimonial" id="mini-testimonial">“I finally had a plan I could try without feeling guilty. Small wins stacked up fast.” — M.</div>
+            <div class="badges">
+              <div class="badge" data-tip="Years coaching clients across workplaces">10+ years experience</div>
+              <div class="badge" data-tip="Practical frameworks used in everyday life">Practical frameworks</div>
+              <div class="badge" data-tip="Local workshops and seminars">Community workshops</div>
+            </div>
+            <a class="cta" href="book.html" style="display:inline-block">Schedule a short call</a>
+          </div>
+        </div>
+
+        <div style="margin-top:14px;text-align:center;color:var(--muted);font-size:13px">Questions? Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      </aside>
+    </section>
+  </main>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+      <div>{{BUSINESS_NAME}} — Serving {{CITY}}, {{STATE}}</div>
+      <div style="color:var(--muted)">© <span id="year"></span></div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Small path-map generator
+    const daysEl = document.getElementById('days');
+    const legendEl = document.getElementById('legend');
+    const miniTest = document.getElementById('mini-testimonial');
+    const goalInputs = Array.from(document.querySelectorAll('#goals input'));
+
+    const colorMap = {sleep:'#86c2a1',movement:'#f4b661',focus:'#7fb3d5',stress:'#d39bbf',meals:'#b7d7a8',rituals:'#b8b4f0'};
+    const labelMap = {sleep:'Sleep',movement:'Move',focus:'Focus',stress:'Reset',meals:'Meals',rituals:'Ritual'};
+
+    function renderPath(){
+      const chosen = goalInputs.filter(i=>i.checked).map(i=>i.value);
+      daysEl.innerHTML=''; legendEl.innerHTML='';
+      if(chosen.length===0){
+        // neutral 30 grey dots
+        for(let i=0;i<30;i++){ const d=document.createElement('div'); d.className='day'; daysEl.appendChild(d);} 
+        miniTest.textContent = 'Pick a few priorities and see a gentle 30-day rhythm.';
+        return;
+      }
+      // Create a rotating schedule: assign each day a primary micro-habit from chosen
+      for(let i=0;i<30;i++){
+        const pick = chosen[i % chosen.length];
+        const d = document.createElement('div'); d.className='day'; d.style.background=colorMap[pick] || '#ddd'; d.title = labelMap[pick];
+        daysEl.appendChild(d);
+      }
+      // legend
+      chosen.forEach(c=>{
+        const el = document.createElement('div'); el.style.display='flex'; el.style.alignItems='center'; el.style.gap='8px';
+        const sw = document.createElement('span'); sw.style.width='12px'; sw.style.height='12px'; sw.style.borderRadius='3px'; sw.style.background=colorMap[c];
+        const txt = document.createElement('span'); txt.textContent = labelMap[c]; txt.style.color='var(--muted)';
+        el.appendChild(sw); el.appendChild(txt); legendEl.appendChild(el);
+      });
+      miniTest.textContent = chosen.map(c=>labelMap[c]).join(' • ') + ' — a repeatable 30-day scaffold.';
+
+      // Save selection
+      localStorage.setItem('wc_goals', JSON.stringify(chosen));
+    }
+
+    // init from localStorage
+    try{
+      const stored = JSON.parse(localStorage.getItem('wc_goals')||'[]');
+      goalInputs.forEach(i=>{ if(stored.includes(i.value)) i.checked=true });
+    }catch(e){}
+
+    goalInputs.forEach(i=>i.addEventListener('change', renderPath));
+    renderPath();
+  </script>
+</body>
+</html>

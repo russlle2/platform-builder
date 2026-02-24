@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Rates — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg1:#0f1724;--bg2:#0b1220;--accent:#b78cff;--muted:#bfc7d6;--card:#111827}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:var(--muted);background:linear-gradient(180deg,var(--bg1),var(--bg2));-webkit-font-smoothing:antialiased}
+    header{display:flex;align-items:center;justify-content:space-between;padding:28px 36px;position:relative}
+    .logo{display:flex;gap:12px;align-items:center}
+    .brand{font-weight:700;color:#fff}
+    nav a{color:rgba(255,255,255,0.75);text-decoration:none;margin-left:18px;font-size:14px}
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;padding:48px 36px}
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:14px;padding:28px;box-shadow:0 6px 30px rgba(2,6,23,0.6)}
+    .intro h1{color:white;margin:0 0 8px;font-size:28px;letter-spacing:0.2px}
+    .intro p{margin:0 0 18px;color:var(--muted)}
+    .note{font-size:13px;color:#9aa4b6}
+    .pricing-grid{display:flex;gap:18px;margin-top:18px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.01),rgba(255,255,255,0.02));border-radius:12px;padding:18px;flex:1;border:1px solid rgba(255,255,255,0.04)}
+    .card h3{color:#fff;margin:0 0 6px}
+    .price{font-weight:700;color:var(--accent);font-size:20px}
+    .features{font-size:13px;color:#aab4c6;margin-top:8px}
+    .addon{display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:10px;margin-top:10px;background:linear-gradient(90deg,rgba(183,140,255,0.04),transparent)}
+    .cta{display:inline-block;margin-top:18px;padding:10px 16px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#7ad0ff);color:#04111b;font-weight:700;text-decoration:none}
+    footer{padding:28px 36px;color:#94a3b8;font-size:13px}
+    .micro{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px}
+    .habit{background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;font-size:13px}
+    .diagnostic{margin-top:18px}
+    .diagnostic textarea{width:100%;min-height:80px;border-radius:8px;padding:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--muted)}
+    /* decorative SVG mask */
+    .bg-svg{position:absolute;right:0;top:0;bottom:0;width:480px;opacity:0.14;pointer-events:none}
+    @media(max-width:880px){.hero{grid-template-columns:1fr;padding:24px}.bg-svg{display:none};nav{display:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo"><svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#b78cff"/><stop offset="1" stop-color="#7ad0ff"/></linearGradient></defs><rect x="2" y="2" width="40" height="40" rx="10" fill="url(#g1)"/></svg><div><div class="brand">{{BUSINESS_NAME}}</div><div style="font-size:12px;color:#9aa4b6">{{TAGLINE}}</div></div></div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Shop</a>
+      <a href="pricing.html">Rates</a>
+      <a href="about.html">About</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="panel intro">
+        <h1>Transparent pricing for mindful aromatherapy</h1>
+        <p>Gentle, safety-first sessions and retail add-ons. Pick a session that fits your rhythm — no promises, only supportive aromatic care and education.</p>
+        <div class="pricing-grid">
+          <div class="card">
+            <h3>Intro Consultation</h3>
+            <div class="price">$65 — 30 min</div>
+            <div class="features">A guided scent chat, safety overview, and bespoke blend suggestions.</div>
+            <div class="note">Perfect if you are new to aromatherapy or need a focused consult.</div>
+          </div>
+          <div class="card">
+            <h3>Full Session</h3>
+            <div class="price">$125 — 60 min</div>
+            <div class="features">In-depth intake, aromatic sampling, and a take-home blend formula.</div>
+            <div class="note">Includes written safety & dilution guidance. No medical claims.</div>
+          </div>
+        </div>
+        <div style="margin-top:16px">
+          <a class="cta" href="book.html">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+
+        <div class="diagnostic">
+          <label class="note">Quick pre-book note — any known sensitivities, pregnancy, or pet concerns?</label>
+          <textarea placeholder="Share anything relevant (e.g., pet species, sensitive skin, pregnancy stage, medication)."></textarea>
+          <div class="note" style="margin-top:8px">We prioritize safety: dilution, patch tests, and fragrance avoidance are standard parts of planning.</div>
+        </div>
+      </div>
+
+      <aside class="panel" style="position:relative;display:flex;flex-direction:column">
+        <h3 style="color:#fff;margin:0 0 8px">Retail add-ons</h3>
+        <div class="addon"><div><strong>Travel roll-on</strong><div style="font-size:12px;color:#9aa4b6">10 ml — pre-diluted</div></div><div style="color:var(--accent)">$18</div></div>
+        <div class="addon"><div><strong>Signature blend vial</strong><div style="font-size:12px;color:#9aa4b6">5 ml — custom</div></div><div style="color:var(--accent)">$24</div></div>
+        <div class="addon"><div><strong>Diffuser starter kit</strong><div style="font-size:12px;color:#9aa4b6">includes 3 sample oils</div></div><div style="color:var(--accent)">$48</div></div>
+
+        <div style="margin-top:auto">
+          <h4 style="color:#fff;margin:14px 0 6px">Why retail add-ons?</h4>
+          <p class="note">Add-ons are curated for safe home use and include dilution and storage notes. We avoid recommending anything unsafe for children, pets, or pregnancy without individual assessment.</p>
+        </div>
+      </aside>
+
+      <svg class="bg-svg" viewBox="0 0 600 800" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="pg1" x1="0" x2="1"><stop offset="0" stop-color="#b78cff"/><stop offset="1" stop-color="#7ad0ff"/></linearGradient>
+          <pattern id="p1" width="80" height="80" patternUnits="userSpaceOnUse">
+            <rect width="80" height="80" fill="transparent"/>
+            <path d="M0 40 L20 20 L40 40 L60 20 L80 40" stroke="rgba(255,255,255,0.06)" stroke-width="2" fill="none"/>
+          </pattern>
+        </defs>
+        <rect width="600" height="800" fill="url(#p1)"/>
+        <circle cx="480" cy="160" r="180" fill="url(#pg1)" opacity="0.15"/>
+      </svg>
+    </section>
+
+    <section style="padding:0 36px 36px">
+      <div class="panel">
+        <h3 style="color:#fff;margin-top:0">Planning your session</h3>
+        <p class="note">Sessions include a gentle intake, safety checklist, and a collaborative plan. Expect education on safe dilution and patch testing — we do not diagnose or treat conditions.</p>
+        <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap">
+          <div style="flex:1;min-width:220px" class="card">
+            <h4 style="color:#fff;margin:0 0 6px">What to bring</h4>
+            <div class="features">A list of scents you like/dislike, any known allergies, and questions about home use with pets or pregnancy.
+            </div>
+          </div>
+          <div style="flex:1;min-width:220px" class="card">
+            <h4 style="color:#fff;margin:0 0 6px">Safety first</h4>
+            <div class="features">We discuss dilution percentages, patch testing, safe storage, and child/pet-safe choices. If you are pregnant or have serious health concerns, please mention it — we will collaborate on safe aromatic options or recommend deferring to your care team if needed.
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <h4 style="color:#fff">Small daily rituals</h4>
+          <div class="micro">
+            <div class="habit">1–2 drops on a tissue for intentional breathing</div>
+            <div class="habit">A diluted roll-on for wrists before a mindful pause</div>
+            <div class="habit">Rotate a single scent for a week before pairing it with others</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
+      <div>Contact: <a href="tel:{{PHONE}}" style="color:#9aa4b6;text-decoration:none">{{PHONE}}</a> &#8226; <a href="mailto:{{EMAIL}}" style="color:#9aa4b6;text-decoration:none">{{EMAIL}}</a></div>
+      <div style="margin-top:8px">Serving {{CITY}}, {{STATE}} — Practitioner: {{PRACTITIONER_NAME}}</div>
+    </div>
+  </footer>
+
+</body>
+</html>

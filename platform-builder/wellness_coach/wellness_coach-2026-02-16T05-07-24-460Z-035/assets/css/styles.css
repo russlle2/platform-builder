@@ -1,0 +1,75 @@
+/* Clinic Modern — crisp grid, calm palette */
+:root{
+  --bg:#fbfcfd;
+  --card:#ffffff;
+  --muted:#6b7280;
+  --accent:#0f766e;
+  --accent-2:#0ea5a4;
+  --text:#0f172a;
+  --glass:rgba(15,23,42,0.04);
+  --radius:12px;
+  --max:1100px;
+  --gap:24px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;color:var(--text);background:var(--bg);line-height:1.45}
+.container{max-width:var(--max);margin:0 auto;padding:32px}
+.header-grid{display:flex;align-items:center;gap:16px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
+.brand-avatar{width:56px;height:56px}
+.brand-text strong{display:block;font-size:1.05rem}
+.brand-text .muted{font-size:0.8rem;color:var(--muted)}
+.nav ul{display:flex;gap:18px;list-style:none;padding:0;margin:0}
+.nav a{text-decoration:none;color:var(--text);padding:6px 8px;border-radius:8px}
+.nav a.cta{background:var(--accent);color:#fff;padding:8px 12px}
+.nav-toggle{display:none;background:none;border:1px solid var(--glass);padding:8px;border-radius:8px}
+.hero{padding:40px 0;background:linear-gradient(180deg, rgba(15,118,110,0.03), rgba(14,165,164,0.02));border-bottom:1px solid var(--glass)}
+.hero-grid{display:grid;grid-template-columns:1fr 420px;gap:32px;align-items:center}
+.hero-copy h1{font-size:2rem;margin:0 0 12px}
+.lead{color:var(--muted);margin:0 0 18px}
+.hero-cta{display:flex;gap:12px;margin-bottom:18px}
+.btn{display:inline-block;text-decoration:none;border-radius:10px;padding:10px 16px;border:1px solid transparent}
+.btn.primary{background:var(--accent);color:#fff}
+.btn.ghost{background:transparent;color:var(--accent);border-color:var(--glass)}
+.btn.large{padding:14px 18px;font-size:1.05rem}
+.hero-features{list-style:none;padding:0;margin:0;color:var(--muted)}
+.hero-art img{width:100%;height:auto}
+.section-header h2{margin:0 0 6px}
+.section-header .muted{color:var(--muted)}
+.card{background:var(--card);border-radius:var(--radius);padding:18px;box-shadow:0 6px 18px rgba(2,6,23,0.06)}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.grid-3.plans{grid-template-columns:repeat(3,1fr);align-items:start}
+.diagnostic .card{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;align-items:start}
+.field label{display:block;font-weight:600;margin-bottom:6px}
+.field input,.field select{width:100%;padding:10px;border-radius:8px;border:1px solid var(--glass)}
+.field.full{grid-column:1/-1}
+.actions{grid-column:1/-1;display:flex;gap:12px}
+.result{margin-top:12px;padding:12px;background:linear-gradient(180deg,var(--glass),transparent);border-radius:8px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.habits .habit{min-height:120px}
+.pricing .toggle-pricing{display:flex;align-items:center;gap:12px;margin:12px 0}
+.switch{position:relative;display:inline-block;width:44px;height:24px}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#ccc;border-radius:24px}
+.slider:before{position:absolute;content:"";height:20px;width:20px;left:2px;top:2px;background:white;border-radius:50%;transition:0.2s}
+.switch input:checked + .slider{background:var(--accent)}
+.switch input:checked + .slider:before{transform:translateX(20px)}
+.plans .plan-card{padding:20px;text-align:left}
+.plan-card.recommended{border:2px solid var(--accent-2)}
+.price{font-size:1.1rem;font-weight:700;margin:8px 0}
+.muted{color:var(--muted)}
+.small{font-size:0.85rem}
+.cta{padding:40px 0;border-top:1px solid var(--glass);background:linear-gradient(180deg,transparent,rgba(14,165,164,0.02))}
+.cta-grid{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.site-footer{border-top:1px solid var(--glass);padding:18px 0;margin-top:40px}
+.footer-grid{display:flex;justify-content:space-between;align-items:center}
+@media (max-width:900px){
+  .nav ul{display:none}
+  .nav-toggle{display:block}
+  .hero-grid{grid-template-columns:1fr;}
+  .grid-3{grid-template-columns:1fr}
+  .grid-4{grid-template-columns:1fr}
+  .header-grid{justify-content:space-between}
+}

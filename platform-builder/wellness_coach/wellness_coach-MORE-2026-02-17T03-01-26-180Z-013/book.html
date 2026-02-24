@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book a Session — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f8fff9;--muted:#55636b;--accent:#1f7f6a;--card:#ffffff}
+    body{font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,Arial;margin:0;background:var(--bg);color:#062626}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px}
+    .logo{font-weight:700}
+    nav a{margin:0 10px;text-decoration:none;color:var(--muted)}
+    main{max-width:980px;margin:28px auto;padding:0 20px}
+    .grid{display:grid;grid-template-columns:2fr 1fr;gap:18px}
+    .panel{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 10px 30px rgba(12,18,20,0.06)}
+    h1{margin:0 0 8px}
+    label{display:block;margin-top:12px;font-weight:600;color:#0b3b34}
+    input[type=text],textarea,select{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid rgba(11,14,16,0.06)}
+    button{background:var(--accent);color:white;padding:10px 12px;border-radius:8px;border:0;font-weight:700}
+    .muted{color:var(--muted);font-size:14px}
+    .tool-area{display:flex;flex-direction:column;gap:12px}
+    .session-output, .challenge-output{white-space:pre-wrap;background:#f7fffb;padding:12px;border-radius:8px;border:1px dashed rgba(11,14,16,0.04)}
+    .inline-row{display:flex;gap:8px}
+    .checkbox-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+    .chip{padding:8px 10px;border-radius:999px;background:#f0fff8;border:1px solid rgba(11,14,16,0.04);cursor:pointer}
+    .chip.active{background:var(--accent);color:white}
+    .printable{margin-top:8px}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Sessions</a>
+      <a href="programs.html">Offerings</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="testimonials.html">Stories</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="grid">
+      <section class="panel">
+        <h1>Book a discovery & co-create a plan</h1>
+        <p class="muted">Start with a short call. Use the Session Planner below during the meeting to capture a clear, exportable plan.</p>
+
+        <form id="bookingForm" onsubmit="return false" style="margin-top:12px">
+          <label>Name</label>
+          <input type="text" id="name" placeholder="Your name">
+
+          <label>Email</label>
+          <input type="text" id="email" placeholder="you@example.com">
+
+          <label>Preferred time / notes</label>
+          <textarea id="notes" rows="3" placeholder="Best times, a short context, or priorities"></textarea>
+
+          <div style="margin-top:12px;display:flex;gap:8px">
+            <button id="bookBtn">Request a slot</button>
+            <a href="tel:{{PHONE}}" style="align-self:center;color:var(--muted);text-decoration:none">Or call <strong>{{PHONE}}</strong></a>
+          </div>
+        </form>
+
+        <hr style="margin:18px 0;border:none;border-top:1px solid rgba(11,14,16,0.04)">
+
+        <h3 style="margin:0 0 8px">Session Planner (live)</h3>
+        <div class="tool-area">
+          <label>Primary outcome for the next 30 days</label>
+          <input type="text" id="outcome" placeholder="e.g., steady morning routine, clearer evening wind-down">
+
+          <label>Focus areas (pick up to 3)</label>
+          <div class="checkbox-grid" id="focusGrid">
+            <div class="chip" data-val="Movement">Movement</div>
+            <div class="chip" data-val="Sleep">Sleep</div>
+            <div class="chip" data-val="Nutrition">Nutrition</div>
+            <div class="chip" data-val="Mindfulness">Mindfulness</div>
+            <div class="chip" data-val="Boundaries">Boundaries</div>
+            <div class="chip" data-val="Energy">Energy management</div>
+          </div>
+
+          <label>Weekly commitment</label>
+          <div class="inline-row">
+            <select id="daysPerWeek" style="width:140px">
+              <option value="1">1 day / week</option>
+              <option value="2">2 days / week</option>
+              <option value="3" selected>3 days / week</option>
+              <option value="4">4 days / week</option>
+              <option value="5">5 days / week</option>
+            </select>
+            <select id="sessionLength" style="width:140px">
+              <option value="15">15 minutes</option>
+              <option value="30" selected>30 minutes</option>
+              <option value="45">45 minutes</option>
+              <option value="60">60 minutes</option>
+            </select>
+          </div>
+
+          <label>Concrete next steps (3 max)</label>
+          <textarea id="steps" rows="3" placeholder="List short, specific actions separated by line breaks"></textarea>
+
+          <div style="display:flex;gap:8px">
+            <button id="buildPlan">Build plan</button>
+            <button id="copyPlan" style="background:#333">Copy plan</button>
+            <button id="saveDraft" style="background:#e6f6ef;color:#064">Save locally</button>
+          </div>
+
+          <div style="margin-top:8px">
+            <div class="session-output" id="planOutput">Your session plan will appear here after you click "Build plan".</div>
+          </div>
+        </div>
+
+      </section>
+
+      <aside class="panel">
+        <h3 style="margin-top:0">7-day Habit Challenge builder</h3>
+        <p class="muted">Create a concise weekly habit and print a checklist you can use immediately.</p>
+
+        <label>Habit to test</label>
+        <input type="text" id="habitName" placeholder="e.g., 10 minutes movement before breakfast">
+
+        <label>Intensity</label>
+        <select id="habitIntensity">
+          <option value="easy">Easy (daily, low time commitment)</option>
+          <option value="moderate" selected>Moderate (more consistent attention)</option>
+          <option value="stretch">Stretch (challenge yourself)</option>
+        </select>
+
+        <label>Start day</label>
+        <select id="startDay">
+          <option>Monday</option>
+          <option>Tuesday</option>
+          <option>Wednesday</option>
+          <option>Thursday</option>
+          <option>Friday</option>
+          <option>Saturday</option>
+          <option>Sunday</option>
+        </select>
+
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <button id="generateChallenge">Generate checklist</button>
+          <button id="printChallenge" style="background:#fff;color:var(--accent);border:1px solid var(--accent)">Print</button>
+        </div>
+
+        <div class="printable" id="challengeBox" style="margin-top:12px">
+          <div style="font-weight:700;margin-bottom:6px" id="challengeTitle">No challenge generated yet</div>
+          <div id="checklistArea" style="color:var(--muted)">The checklist will appear here once you generate it.</div>
+        </div>
+
+        <hr style="margin:16px 0;border:none;border-top:1px solid rgba(11,14,16,0.04)">
+
+        <h4 style="margin:0 0 6px">Quick booking</h4>
+        <p class="muted" style="margin:0 0 6px">If you'd like to reserve a time now, share a preferred slot and we'll confirm.</p>
+        <label>Preferred time</label>
+        <input type="text" id="preferredSlot" placeholder="e.g., Tuesday AM">
+        <div style="margin-top:10px">
+          <button id="quickRequest">Send request</button>
+        </div>
+
+        <div style="margin-top:14px;color:var(--muted);font-size:13px">Or contact: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      </aside>
+    </div>
+
+    <section style="max-width:980px;margin:20px auto;padding:18px;background:#fff;border-radius:12px;box-shadow:0 10px 30px rgba(12,18,20,0.04)">
+      <h3 style="margin-top:0">Session record export</h3>
+      <p class="muted">Every session plan you build can be exported as plain text for notes, your calendar, or journaling.</p>
+      <div style="margin-top:10px">
+        <button id="exportAll" style="background:#0b6f55">Export last plan as text</button>
+        <button id="downloadTxt" style="background:#fff;color:var(--accent);border:1px solid var(--accent)">Download .txt</button>
+      </div>
+      <div id="exportArea" style="margin-top:12px;color:var(--muted)">No exported content yet.</div>
+    </section>
+  </main>
+
+  <script>
+    // Simple DOM helpers
+    const qs = s=>document.querySelector(s);
+    const qsa = s=>document.querySelectorAll(s);
+
+    // Focus chips logic (max 3)
+    const chips = qsa('.chip');
+    chips.forEach(c=>c.addEventListener('click',()=>{
+      const act = c.classList.toggle('active');
+      const active = [...qsa('.chip.active')];
+      if(active.length>3){ c.classList.remove('active'); }
+    }));
+
+    // Build Session Plan
+    const buildBtn = qs('#buildPlan');
+    const planOutput = qs('#planOutput');
+    const copyPlan = qs('#copyPlan');
+    const saveDraft = qs('#saveDraft');
+
+    function gatherPlan(){
+      const name = qs('#name').value || 'Client';
+      const outcome = qs('#outcome').value || 'Clarify a short-term aim';
+      const focus = [...qsa('.chip.active')].map(n=>n.dataset.val);
+      const days = qs('#daysPerWeek').value;
+      const length = qs('#sessionLength').value;
+      const steps = (qs('#steps').value||'').split('\n').map(s=>s.trim()).filter(s=>s);
+
+      const planLines = [];
+      planLines.push(`Plan for: ${name}`);
+      planLines.push(`Primary aim (30 days): ${outcome}`);
+      if(focus.length) planLines.push(`Focus areas: ${focus.join(', ')}`);
+      planLines.push(`Weekly commitment: ${days} days @ ${length} minutes`);
+      planLines.push('Next steps:');
+      if(steps.length){ steps.forEach((st,i)=>planLines.push(`${i+1}. ${st}`)); }
+      else { planLines.push('- Draft 3 tiny actions during session'); }
+      planLines.push('Accountability: short check-in next week');
+      planLines.push(`Built: ${new Date().toLocaleString()}`);
+      return planLines.join('\n');
+    }
+
+    buildBtn.addEventListener('click',()=>{
+      const text = gatherPlan();
+      planOutput.textContent = text;
+      qs('#exportArea').textContent = 'Last plan ready to export.';
+    });
+
+    // Copy plan text
+    copyPlan.addEventListener('click',async()=>{
+      try{
+        const text = planOutput.textContent || gatherPlan();
+        await navigator.clipboard.writeText(text);
+        copyPlan.textContent = 'Copied ✓';
+        setTimeout(()=>copyPlan.textContent='Copy plan',1200);
+      }catch(e){
+        alert('Unable to copy directly — select the text and copy.');
+      }
+    });
+
+    // Save draft locally (localStorage)
+    saveDraft.addEventListener('click',()=>{
+      const text = planOutput.textContent || gatherPlan();
+      localStorage.setItem('lastPlan',text);
+      saveDraft.textContent='Saved';
+      setTimeout(()=>saveDraft.textContent='Save locally',1200);
+    });
+
+    // Export / download simple txt
+    qs('#exportAll').addEventListener('click',()=>{
+      const text = planOutput.textContent || localStorage.getItem('lastPlan') || 'No plan available.';
+      qs('#exportArea').textContent = text;
+    });
+    qs('#downloadTxt').addEventListener('click',()=>{
+      const text = planOutput.textContent || localStorage.getItem('lastPlan') || 'No plan available.';
+      const blob = new Blob([text],{type:'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href=url;a.download='session-plan.txt';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+    });
+
+    // Quick request (simulated)
+    qs('#quickRequest').addEventListener('click',()=>{
+      const slot = qs('#preferredSlot').value || 'No preference';
+      alert('Request sent: ' + slot + '\nWe will confirm via email.');
+    });
+
+    // Habit challenge generator
+    const genBtn = qs('#generateChallenge');
+    const printBtn = qs('#printChallenge');
+    const challengeBox = qs('#challengeBox');
+    const challengeTitle = qs('#challengeTitle');
+    const checklistArea = qs('#checklistArea');
+
+    function weekdaySequence(start){
+      const days=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+      const idx = days.indexOf(start); if(idx<0) return days;
+      return days.slice(idx).concat(days.slice(0,idx));
+    }
+
+    genBtn.addEventListener('click',()=>{
+      const name = qs('#habitName').value || 'New habit';
+      const intensity = qs('#habitIntensity').value;
+      const start = qs('#startDay').value;
+      const seq = weekdaySequence(start);
+      const instructions = intensity==='easy'? 'Aim for consistency. Keep it short and friction-free.' : intensity==='moderate'? 'Keep the habit daily and notice cues. Adjust as needed.' : 'Push an extra step on days 4–6 to test capacity.';
+
+      challengeTitle.textContent = `${name} — 7-day checklist`;
+      const items = seq.slice(0,7).map((d,i)=>`${d}: [ ] ${name}`);
+      const html = `<div style=\"font-size:14px;color:#0b6f55;margin-bottom:8px\">${instructions}</div><ol>` + items.map(it=>`<li style=\"margin:6px 0;\">${it}</li>`).join('') + '</ol>';
+      checklistArea.innerHTML = html;
+      // Save the raw text for print
+      checklistArea.dataset.text = `${name}\n${instructions}\n\n` + items.join('\n');
+    });
+
+    printBtn.addEventListener('click',()=>{
+      const text = checklistArea.dataset.text || 'No challenge generated yet.';
+      const win = window.open('','PRINT','height=600,width=500');
+      win.document.write('<pre style="font-family:Inter,system-ui;white-space:pre-wrap">'+text+'</pre>');
+      win.document.close();
+      win.focus();
+      win.print();
+      win.close();
+    });
+
+    // Booking form simulated action
+    qs('#bookBtn').addEventListener('click',()=>{
+      const n = qs('#name').value || 'Guest';
+      const e = qs('#email').value || '{{EMAIL}}';
+      alert('Thank you, '+n+'. We received your request and will reach out at '+e+'.');
+    });
+
+  </script>
+</body>
+</html>

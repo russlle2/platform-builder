@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Areas of Focus — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff7f2;--card:#ffffff;--muted:#5b6770;--accent:#165a5a;--accent-2:#ff7a00}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui;background:linear-gradient(180deg,#fff 0%,#fff7f2 100%);color:#0b1220}
+    .wrap{max-width:980px;margin:0 auto;padding:22px}
+    header{display:flex;justify-content:space-between;align-items:center;padding:8px 0}
+    .nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    .hero{padding:18px 0;display:flex;gap:18px}
+    .hero .intro{flex:1}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 28px rgba(13,20,30,.04)}
+    h1{margin:0 0 8px;font-size:22px}
+    p.lead{margin:0;color:var(--muted)}
+    .list{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+    .item{padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,122,0,.03),transparent);border:1px solid rgba(13,20,30,.04)}
+    .priceRow{display:flex;align-items:center;justify-content:space-between;margin-top:14px}
+    .toggle{display:inline-flex;align-items:center;gap:8px;padding:6px;background:#fff;border-radius:999px;border:1px solid rgba(11,18,32,.06)}
+    .switch{width:44px;height:24px;border-radius:999px;background:#f3f4f6;position:relative;cursor:pointer}
+    .knob{position:absolute;left:4px;top:3px;width:18px;height:18px;border-radius:50%;background:white;box-shadow:0 1px 3px rgba(2,6,23,.12);transition:transform .28s}
+    .switch.on{background:linear-gradient(90deg,var(--accent),var(--accent-2));}
+    .switch.on .knob{transform:translateX(20px)}
+    .price{font-size:28px;font-weight:700;color:var(--accent)}
+    .muted{color:var(--muted)}
+    .cta{display:inline-block;padding:10px 12px;background:var(--accent);color:white;border-radius:10px;text-decoration:none}
+    @media(max-width:720px){.list{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <header>
+      <div style='font-weight:700'>{{BUSINESS_NAME}}</div>
+      <nav class='nav' aria-label='site'>
+        <a href='index.html'>Home</a>
+        <a href='about.html'>The Clinician</a>
+        <a href='specialties.html' aria-current='page'>Areas</a>
+        <a href='fees.html'>Investment</a>
+        <a href='book.html'>Book</a>
+      </nav>
+    </header>
+
+    <section class='hero'>
+      <div class='intro card'>
+        <h1>Areas of focus</h1>
+        <p class='lead'>I work with adults facing life transitions, anxiety that interferes with routines, relationship strain, and professional stress. Below are focused options for different rhythms of work.</p>
+
+        <div style='margin-top:12px' class='priceRow'>
+          <div style='display:flex;flex-direction:column'>
+            <div class='muted'>Pricing view</div>
+            <div class='toggle' aria-hidden='true'>
+              <div class='muted' style='font-size:13px'>Monthly</div>
+              <div id='switch' class='switch' role='switch' aria-checked='false' tabindex='0' style='margin-left:8px'>
+                <div class='knob'></div>
+              </div>
+              <div class='muted' style='font-size:13px;margin-left:8px'>Package</div>
+            </div>
+          </div>
+
+          <div style='text-align:right'>
+            <div class='muted' style='font-size:13px'>Current selection</div>
+            <div id='priceView' style='display:flex;align-items:end;gap:8px;justify-content:flex-end'>
+              <div class='price' id='priceAmount'>$195</div>
+              <div class='muted' id='priceNote'>/ session</div>
+            </div>
+          </div>
+        </div>
+
+        <div style='margin-top:12px'>
+          <a id='primaryCTA' class='cta' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </div>
+
+      <aside style='width:300px' class='card'>
+        <div style='font-weight:700'>Program frames</div>
+        <div class='small muted' style='margin-top:6px'>Different pacing for different needs — choose what fits your current tempo.</div>
+        <div style='margin-top:12px;display:flex;flex-direction:column;gap:8px'>
+          <div style='font-weight:600'>Continuity Care</div>
+          <div class='muted small'>Ongoing weekly or biweekly sessions for steady work and review.</div>
+          <div style='font-weight:600;margin-top:8px'>Focused Package</div>
+          <div class='muted small'>A short 6-session course for a targeted goal or problem.</div>
+        </div>
+      </aside>
+    </section>
+
+    <section style='margin-top:18px' class='card'>
+      <div style='display:flex;justify-content:space-between;align-items:center'>
+        <h2 style='margin:0'>Specialized areas</h2>
+        <div class='muted small'>Practical, goal-oriented work</div>
+      </div>
+
+      <div class='list' style='margin-top:12px'>
+        <div class='item'>
+          <strong>Transition & identity shifts</strong>
+          <div class='muted small' style='margin-top:6px'>Career changes, new parenting roles, relocation, and life-course transitions.</div>
+        </div>
+        <div class='item'>
+          <strong>Performance-related stress</strong>
+          <div class='muted small' style='margin-top:6px'>Burnout, decision fatigue, and workplace boundaries.</div>
+        </div>
+        <div class='item'>
+          <strong>Relationship clarity</strong>
+          <div class='muted small' style='margin-top:6px'>Communication patterns, attachment shifts, and separation planning.</div>
+        </div>
+        <div class='item'>
+          <strong>Persistent worry & tension</strong>
+          <div class='muted small' style='margin-top:6px'>Short-term coping strategies and longer skill development for chronic anxiety.</div>
+        </div>
+      </div>
+    </section>
+
+    <footer style='margin-top:16px;font-size:13px;color:var(--muted)'>
+      <div class='card'>
+        <strong>Important practice notes</strong>
+        <p style='margin-top:8px' class='small'>Sessions are confidential except where disclosure is required by law. This practice does not offer emergency services; if you are in immediate danger, contact emergency services or a crisis line. Scope of practice and informed consent will be discussed at intake.</p>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Pricing comparator with animated numbers
+    (function(){
+      const switchEl = document.getElementById('switch');
+      const priceAmount = document.getElementById('priceAmount');
+      const priceNote = document.getElementById('priceNote');
+      const primaryCTA = document.getElementById('primaryCTA');
+
+      // define packages (unique naming/pricing)
+      const pricing = {
+        monthly: {amount:195,note:'/ session',ctaText:'Book a session'},
+        package: {amount:1050,note:'/ 6-session package',ctaText:'Explore the 6-session package'}
+      };
+
+      let current = 'monthly';
+
+      function animateValue(el, start, end, duration){
+        const range = end - start;let startTime = null;
+        function step(time){
+          if(!startTime) startTime = time;
+          const progress = Math.min((time - startTime)/duration,1);
+          const val = Math.round(start + range * (1 - Math.pow(1-progress,3))); // ease-out
+          el.textContent = '$' + val.toLocaleString();
+          if(progress < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+
+      function update(to){
+        const prev = pricing[current];
+        const next = pricing[to];
+        switchEl.classList.toggle('on', to==='package');
+        switchEl.setAttribute('aria-checked', to==='package');
+        animateValue(priceAmount, prev.amount, next.amount, 550);
+        priceNote.textContent = next.note;
+        primaryCTA.textContent = next.ctaText;
+        current = to;
+      }
+
+      switchEl.addEventListener('click',()=> update(current==='monthly' ? 'package' : 'monthly'));
+      switchEl.addEventListener('keydown',e=>{if(e.key==='Enter' || e.key===' ') {e.preventDefault();switchEl.click();}});
+
+      // initial state
+      priceAmount.textContent = '$' + pricing.monthly.amount;
+      priceNote.textContent = pricing.monthly.note;
+      primaryCTA.textContent = pricing.monthly.ctaText;
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contact — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reach out to schedule, ask about the cohort program, or clarify how I work. Clear boundaries, compassionate care.">
+  <style>
+    :root{--bg:#fff7fb;--accent:#ff6b81;--muted:#6b7280;--card:#fff;--glass:rgba(255,255,255,0.7);--shadow:0 8px 24px rgba(15,23,42,0.08);font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#fff);color:#0f172a}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:linear-gradient(90deg,rgba(255,107,129,0.08),rgba(98,144,255,0.04));backdrop-filter:blur(6px)}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{width:56px;height:56px;border-radius:12px;background:radial-gradient(circle at 30% 30%,#ffb1c0, #ff6b81);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;box-shadow:var(--shadow)}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none;font-weight:600}
+    nav a:hover{color:var(--accent)}
+    main{max-width:980px;margin:28px auto;padding:22px}
+    .hero{display:flex;gap:22px;align-items:flex-start}
+    .left{flex:1}
+    h1{margin:0;font-size:28px;line-height:1.05}
+    p.lead{color:var(--muted);margin-top:8px}
+    .card{background:var(--card);border-radius:14px;padding:18px;box-shadow:var(--shadow);}
+    .contact-grid{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
+    form{display:flex;flex-direction:column;gap:10px}
+    label{font-size:13px;color:var(--muted)}
+    input,textarea,select{padding:10px;border-radius:8px;border:1px solid #e6e9ef;font-size:15px}
+    button.cta{background:linear-gradient(90deg,var(--accent),#7c9bff);color:white;padding:12px 16px;border-radius:10px;border:0;font-weight:700;cursor:pointer}
+    .meta{font-size:14px;color:#0f172a}
+    .proof{margin-top:18px}
+    .testimonial{display:flex;gap:14px;align-items:center}
+    .avatar{width:60px;height:60px;border-radius:10px;background:linear-gradient(135deg,#fff,#f7f7fb);display:flex;align-items:center;justify-content:center;font-weight:700;color:#0f172a}
+    .quote{font-size:15px;color:#0f172a}
+    .badges{display:flex;gap:8px;margin-top:12px;align-items:center}
+    .badge{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:999px;background:linear-gradient(90deg,#fff,#fafafe);border:1px solid #eef2ff;font-size:13px;cursor:default;position:relative}
+    .tooltip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#111827;color:white;padding:8px 10px;border-radius:8px;font-size:12px;white-space:nowrap;display:none}
+    .badge:focus .tooltip,.badge:hover .tooltip{display:block}
+    .accordion{margin-top:18px}
+    .acc-item{border-radius:10px;overflow:hidden;border:1px solid #eef2ff}
+    .acc-header{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:linear-gradient(90deg,rgba(255,255,255,0.6),rgba(250,250,255,0.6));cursor:pointer}
+    .acc-body{padding:14px;background:linear-gradient(180deg,#fff,#fbfbff);display:none}
+    .open .acc-body{display:block}
+    footer.crisis{margin-top:18px;padding:12px;border-radius:10px;background:#fff1f2;border:1px solid #ffdde0;color:#7f1d1d}
+    .pattern{position:fixed;right:0;bottom:0;opacity:0.08;width:320px;height:320px;pointer-events:none}
+    @media(max-width:880px){.contact-grid{grid-template-columns:1fr}.hero{flex-direction:column}.pattern{width:180px;height:180px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">TP</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Welcome</a>
+      <a href="about.html">Why I Work</a>
+      <a href="specialties.html">Focus Areas</a>
+      <a href="approach.html">Rhythm</a>
+      <a href="fees.html">Investment</a>
+      <a href="faq.html">Questions</a>
+      <a href="book.html">Start</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+  <main>
+    <section class="hero">
+      <div class="left">
+        <h1>Get in touch with a steady, pragmatic listener</h1>
+        <p class="lead">I work with adults in {{CITY}}, {{STATE}} and remote clients. If you’re wondering how the cohort offering differs from private sessions, or you want to check availability, this is a good place to start.</p>
+        <div class="card">
+          <div class="meta">Phone</div>
+          <div style="margin:6px 0;font-weight:700">{{PHONE}}</div>
+          <div class="meta">Email</div>
+          <div style="margin:6px 0;font-weight:700">{{EMAIL}}</div>
+          <div style="margin-top:10px"><a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+        </div>
+
+        <div class="proof card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <strong>Proof Gallery</strong>
+            <small style="color:var(--muted)">Real words from people who've worked here</small>
+          </div>
+
+          <div id="testimonial" style="margin-top:12px" class="testimonial">
+            <div class="avatar" id="t-avatar">A</div>
+            <div>
+              <div id="t-quote" class="quote">Loading testimonials…</div>
+              <div id="t-name" style="margin-top:8px;color:var(--muted);font-size:13px"></div>
+            </div>
+          </div>
+
+          <div class="badges" aria-hidden="false">
+            <div class="badge" tabindex="0">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="3" width="20" height="14" rx="2" fill="#7C9BFF"/><path d="M6 8h12" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Board Certified
+              <div class="tooltip">Licensed clinician, holds active state license</div>
+            </div>
+            <div class="badge" tabindex="0">
+              <svg width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3" fill="#FF6B81"></circle><path d="M5 20c2-4 6-6 7-6s5 2 7 6" stroke="#FF6B81" stroke-width="1.2" fill="none"/></svg>
+              Group Cohort Leader
+              <div class="tooltip">Facilitates evidence-informed cohorts for skills practice</div>
+            </div>
+            <div class="badge" tabindex="0">
+              <svg width="16" height="16" viewBox="0 0 24 24"><path d="M12 3l2 5 5 .5-4 3 1.2 5L12 14l-4.2 3.5L9 11 5 8l5-.5L12 3z" fill="#F6C85F"/></svg>
+              Integrity & Ethics
+              <div class="tooltip">Clear boundaries, documented informed consent practices</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <aside class="card" style="width:320px">
+        <strong>Quick connect</strong>
+        <p style="color:var(--muted);margin-top:8px">Use this short form to request a call or the cohort info packet. I aim to reply within 3 business days.</p>
+        <form id="contactForm" onsubmit="return handleSubmit(event)">
+          <label for="name">Your name</label>
+          <input id="name" name="name" required>
+          <label for="pref">Preferred contact</label>
+          <select id="pref" name="pref">
+            <option>Phone</option>
+            <option>Email</option>
+            <option>Either</option>
+          </select>
+          <label for="note">Short note (what's bringing you here?)</label>
+          <textarea id="note" rows="4" name="note" required></textarea>
+          <button class="cta" type="submit">Request a connection</button>
+        </form>
+        <div style="margin-top:12px;font-size:13px;color:var(--muted)">If this is an emergency or you are in crisis, please call local emergency services or your local crisis line immediately.</div>
+      </aside>
+    </section>
+
+    <section class="accordion card" aria-label="Session boundaries and confidentiality">
+      <div class="acc-item" id="acc-session">
+        <div class="acc-header" onclick="toggleAcc('acc-session')">
+          <div>
+            <strong>Session boundaries & logistics</strong>
+            <div style="font-size:13px;color:var(--muted)">What to expect for scheduling, cancellations, and timing</div>
+          </div>
+          <div>&#x25BE;</div>
+        </div>
+        <div class="acc-body">
+          <p style="margin-top:0;color:var(--muted)">Typical individual sessions run 45–60 minutes. For the cohort program, there is a clearly described start and finish with scheduled live calls and optional small-group exercises. I ask for 48 hours notice for cancellations when possible; late cancellations may be billed. Details are provided before you enroll or book.</p>
+        </div>
+      </div>
+
+      <div class="acc-item" id="acc-conf">
+        <div class="acc-header" onclick="toggleAcc('acc-conf')">
+          <div>
+            <strong>Confidentiality & limits</strong>
+            <div style="font-size:13px;color:var(--muted)">How I protect what you share and the exceptions</div>
+          </div>
+          <div>&#x25BE;</div>
+        </div>
+        <div class="acc-body">
+          <p style="margin-top:0;color:var(--muted)">Conversations are treated as confidential. Notes are kept securely and shared only with your consent, except where law or safety concerns require disclosure (for example: imminent risk of harm to self or others, suspected abuse of a minor or vulnerable adult, or as required by court order). We will discuss these boundaries clearly before we begin.</p>
+        </div>
+      </div>
+
+      <div class="acc-item" id="acc-scope">
+        <div class="acc-header" onclick="toggleAcc('acc-scope')">
+          <div>
+            <strong>Scope of practice</strong>
+            <div style="font-size:13px;color:var(--muted)">What I can and cannot offer in therapy</div>
+          </div>
+          <div>&#x25BE;</div>
+        </div>
+        <div class="acc-body">
+          <p style="margin-top:0;color:var(--muted)">My practice focuses on short-to-mid term psychotherapy and skills-based cohorts. I do not provide medical diagnoses, prescribe medication, or offer forensic evaluations. When appropriate, I will collaborate with or refer to medical providers, psychiatrists, or other specialists.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="crisis card">
+      <strong>If you are feeling unsafe</strong>
+      <p style="margin:6px 0;color:inherit">I am not available for crisis response. If you are in immediate danger, please call emergency services. For emotional support in the U.S., text or call 988 to reach the Suicide & Crisis Lifeline. For other locations, please use your local emergency numbers or crisis resources.</p>
+    </footer>
+  </main>
+
+  <svg class="pattern" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+      <linearGradient id="g" x1="0" x2="1">
+        <stop offset="0" stop-color="#ffb1c0" stop-opacity="0.9"/>
+        <stop offset="1" stop-color="#7c9bff" stop-opacity="0.9"/>
+      </linearGradient>
+    </defs>
+    <rect x="0" y="0" width="200" height="200" fill="url(#g)" opacity="0.06" rx="16"/>
+    <g fill="none" stroke="#fff" stroke-opacity="0.08" stroke-width="2">
+      <path d="M10 30c40-20 80 20 120 0"/>
+      <path d="M20 80c40-20 80 20 120 0"/>
+      <path d="M10 140c40-20 80 20 120 0"/>
+    </g>
+  </svg>
+
+  <script>
+    // Testimonials and Proof Gallery rotation
+    const testimonials = [
+      {name:"M., 34", quote:"I appreciated clear guidance and tools I could actually use between sessions.", avatar:"M"},
+      {name:"K., 41", quote:"The cohort helped me practice new ways of showing up with less self-criticism.", avatar:"K"},
+      {name:"S., 27", quote:"Thoughtful, steady support that respected my pace and boundaries.", avatar:"S"}
+    ];
+    let idx = 0;
+    const tQuote = document.getElementById('t-quote');
+    const tName = document.getElementById('t-name');
+    const tAvatar = document.getElementById('t-avatar');
+
+    function showTestimonial(i){
+      const t = testimonials[i % testimonials.length];
+      tQuote.textContent = '"' + t.quote + '"';
+      tName.textContent = t.name;
+      tAvatar.textContent = t.avatar;
+    }
+    showTestimonial(0);
+    let rot = setInterval(()=>{ idx = (idx+1)%testimonials.length; showTestimonial(idx); }, 5500);
+
+    const testEl = document.getElementById('testimonial');
+    testEl.addEventListener('mouseenter', ()=>clearInterval(rot));
+    testEl.addEventListener('mouseleave', ()=>{ rot = setInterval(()=>{ idx = (idx+1)%testimonials.length; showTestimonial(idx); }, 5500); });
+
+    // Simple accordion
+    function toggleAcc(id){
+      const el = document.getElementById(id);
+      if(el.classList.contains('open')) el.classList.remove('open'); else el.classList.add('open');
+    }
+
+    // Form handler (local-only: demonstrates validation and demo toast)
+    function handleSubmit(e){
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const pref = document.getElementById('pref').value;
+      const note = document.getElementById('note').value.trim();
+      if(!name || !note){
+        alert('Please provide your name and a short note so I can best respond.');
+        return false;
+      }
+      // Simulate sending; do NOT send sensitive data anywhere.
+      const summary = `Thanks, ${name}. I will follow up via ${pref.toLowerCase()} at the address you provided.`;
+      alert(summary);
+      document.getElementById('contactForm').reset();
+      return false;
+    }
+
+    // Accessibility: allow space/enter on badges to show tooltip
+    document.querySelectorAll('.badge').forEach(b=>{
+      b.addEventListener('keydown', e=>{ if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); const tip = b.querySelector('.tooltip'); if(tip.style.display==='block') tip.style.display='none'; else tip.style.display='block'; } });
+    });
+  </script>
+</body>
+</html>

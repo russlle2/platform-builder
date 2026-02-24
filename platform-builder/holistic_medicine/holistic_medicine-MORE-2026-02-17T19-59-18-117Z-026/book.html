@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book a Visit — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfefb;--muted:#55654e;--accent:#7aa36a;font-family:Inter, system-ui, -apple-system}
+    body{margin:0;background:var(--bg);color:#123}
+    header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none}
+    .main{max-width:920px;margin:26px auto;padding:0 18px}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
+    .card{background:#fff;padding:16px;border-radius:12px;box-shadow:0 10px 30px rgba(12,20,15,0.05)}
+    label{display:block;margin-top:10px}
+    input,select,textarea{width:100%;padding:8px;border-radius:8px;border:1px solid #e6efe6}
+    .small{font-size:13px;color:var(--muted)}
+    button{background:var(--accent);color:#fff;padding:10px 12px;border-radius:10px;border:0}
+    .note{margin-top:12px;color:var(--muted);font-size:13px}
+    footer{padding:20px;text-align:center;color:var(--muted)}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <svg width="44" height="44" viewBox="0 0 64 64"><circle cx="32" cy="32" r="28" fill="#dfead6"/></svg>
+      <div><strong>{{BUSINESS_NAME}}</strong><div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div></div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Services</a>
+      <a href="pricing.html">Plans</a>
+      <a href="about.html">About</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main class="main">
+    <div class="grid">
+      <div>
+        <div class="card">
+          <h2 style="margin-top:0">Schedule a conversation</h2>
+          <p class="small">Choose a visit length and share a couple of details so we can make the first appointment efficient and meaningful.</p>
+
+          <form id="bookingForm">
+            <label>Full name<input name="name" required></label>
+            <label>Email<input name="email" type="email" required></label>
+            <label>Phone<input name="phone"></label>
+            <label>Visit type
+              <select name="visit">
+                <option value="60">Intro visit — 60 min</option>
+                <option value="30">Focused visit — 30 min</option>
+                <option value="20">Follow-up — 20 min</option>
+              </select>
+            </label>
+            <label>Brief reason for visit (one or two sentences)<textarea name="reason" rows="3"></textarea></label>
+
+            <div style="margin-top:12px">
+              <strong>Optional: run a short inventory before booking</strong>
+              <div class="small">Selecting areas here helps speed the first session.</div>
+              <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:8px">
+                <label class="small"><input type="checkbox" name="areas" value="Sleep"> Sleep</label>
+                <label class="small"><input type="checkbox" name="areas" value="Stress"> Stress</label>
+                <label class="small"><input type="checkbox" name="areas" value="Food"> Food</label>
+                <label class="small"><input type="checkbox" name="areas" value="Movement"> Movement</label>
+                <label class="small"><input type="checkbox" name="areas" value="Relationships"> Relationships</label>
+                <label class="small"><input type="checkbox" name="areas" value="Medical"> Medical</label>
+              </div>
+            </div>
+
+            <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+              <button type="submit">Request appointment</button>
+              <button type="button" id="quickReset">6-minute reset</button>
+            </div>
+            <div id="bookingFeedback" class="note" aria-live="polite"></div>
+          </form>
+        </div>
+
+        <div style="margin-top:14px" class="card">
+          <h4 style="margin-top:0">What to expect next</h4>
+          <p class="small">After you request a time we'll propose a few slots. You'll get a short form to complete and a suggested pre-visit checklist tailored to the areas you flagged.</p>
+        </div>
+      </div>
+
+      <aside>
+        <div class="card">
+          <h4 style="margin-top:0">Need a quick plan?</h4>
+          <p class="small">If you want a single focused visit, choose the 30-minute option. For broader exploration, pick a 60-minute session — we'll leave time to collect context and outline a next-step plan.</p>
+          <div style="margin-top:12px">
+            <a href="pricing.html" class="small">View plans & add-ons</a>
+          </div>
+        </div>
+
+        <div style="margin-top:12px" class="card">
+          <h4 style="margin-top:0">Contact</h4>
+          <div class="small">Phone: {{PHONE}}<br>Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <div class="small">By requesting a time you agree to receive scheduling communications. Serving {{CITY}}, {{STATE}}.</div>
+  </footer>
+
+  <div id="miniModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;padding:20px">
+    <div style="background:#fff;padding:16px;border-radius:12px;max-width:520px;width:100%">
+      <strong>6-minute reset</strong>
+      <p class="small">A quick breathing and journaling exercise to help you arrive at the appointment calmer and clearer. Use the button below to download your intention note.</p>
+      <textarea id="miniText" rows="3" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6efe6" placeholder="One small intention..."></textarea>
+      <div style="display:flex;justify-content:space-between;margin-top:8px">
+        <button id="downloadMini">Download</button>
+        <button id="closeMini">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Booking form stub: validate and provide guidance
+    document.getElementById('bookingForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      const f = new FormData(e.target);
+      const name = f.get('name');
+      const email = f.get('email');
+      if(!name || !email){ document.getElementById('bookingFeedback').innerText = 'Please provide your name and an email address.'; return }
+      // Build a simple follow-up plan preview using checked areas
+      const areas = f.getAll('areas');
+      let preview = 'Request received. We will propose times via email.\n';
+      if(areas.length){ preview += 'Suggested pre-visit focus: ' + areas.join(', ') + '. Expect a short checklist tailored to these areas.' } else { preview += 'If you like, use the inventory on the Plans page to speed the first visit.' }
+      document.getElementById('bookingFeedback').innerText = preview;
+      e.target.reset();
+    });
+
+    // Mini modal interactions
+    document.getElementById('quickReset').addEventListener('click', ()=>document.getElementById('miniModal').style.display='flex');
+    document.getElementById('closeMini').addEventListener('click', ()=>document.getElementById('miniModal').style.display='none');
+    document.getElementById('downloadMini').addEventListener('click', ()=>{
+      const val = document.getElementById('miniText').value || 'No entry';
+      const blob = new Blob([val],{type:'text/plain;charset=utf-8'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'appointment-note.txt';
+      a.click();
+    });
+  </script>
+</body>
+</html>

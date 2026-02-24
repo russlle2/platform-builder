@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Professional aromatherapy services in {{CITY}}, {{STATE}}. Safety-forward sessions, bespoke rituals and clear guidance.">
+  <style>
+    :root{--glass-bg: rgba(255,255,255,0.06);--accent: linear-gradient(135deg,#7ad0ff66,#c7a9ff66);--glass-border: rgba(255,255,255,0.12);--muted:#cbd5df;--card-blur:10px}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#eef6fb;background:linear-gradient(180deg,#eaf7ff 0%, #f7fbff 55%);-webkit-font-smoothing:antialiased}
+    /* subtle unique SVG pattern for this page */
+    body::before{content:"";position:fixed;inset:0;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 100 100"><defs><linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="%237ad0ff" stop-opacity="0.08"/><stop offset="1" stop-color="%23c7a9ff" stop-opacity="0.03"/></linearGradient></defs><rect width="100" height="100" fill="url(%23g1)"/><circle cx="15" cy="15" r="3" fill="%2388e6ff" fill-opacity="0.06"/><circle cx="85" cy="85" r="3" fill="%23d6b3ff" fill-opacity="0.05"/><path d="M0 50 Q25 35 50 50 T100 50" stroke="%23ffffff" stroke-opacity="0.02" fill="none"/></svg>');opacity:1;z-index:0;pointer-events:none}
+    header{position:sticky;top:0;z-index:20;padding:18px 28px;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(6px);background:linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));border-bottom:1px solid var(--glass-border)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(145deg,#ffffff55,#ffffff22);box-shadow:0 6px 18px rgba(10,20,30,0.06);display:flex;align-items:center;justify-content:center;font-weight:700;color:#264653}
+    nav a{color:#033049;text-decoration:none;margin:0 10px;font-weight:600;font-size:14px}
+    nav a[href$="services.html"]{opacity:0.95}
+
+    main{max-width:1100px;margin:36px auto;padding:28px;position:relative;z-index:10}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:22px;align-items:start}
+    .panel{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:14px;padding:20px;box-shadow:0 8px 30px rgba(6,20,30,0.06);backdrop-filter:blur(var(--card-blur));color:#022032}
+    .hero .lead{padding:18px 10px}
+    h1{margin:0 0 8px;font-size:24px;color:#052234}
+    p.lead{color:var(--muted);line-height:1.5;margin:0}
+    .aside{padding:18px}
+    .pill{display:inline-block;background:linear-gradient(90deg,#ffffff22,#ffffff10);padding:8px 12px;border-radius:999px;font-weight:600;color:#063145;margin-bottom:8px}
+
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:18px}
+    .service-card{padding:16px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.06)}
+    .service-card h3{margin:0 0 6px;font-size:16px}
+    .meta{font-size:13px;color:var(--muted)}
+
+    .cta-row{display:flex;gap:12px;margin-top:14px}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;border:none;font-weight:700;cursor:pointer}
+    .btn-primary{background:linear-gradient(90deg,#7ad0ff,#c7a9ff);color:#053047}
+    .btn-ghost{background:transparent;border:1px solid rgba(5,48,55,0.06);color:#063145}
+
+    .faq{margin-top:22px}
+    .faq h4{margin:0 0 10px}
+    .qa{margin-bottom:12px}
+    footer{max-width:1100px;margin:28px auto;padding:18px;text-align:center;color:#0b3b46;opacity:0.9}
+
+    @media(max-width:880px){.hero{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.aside{order:2}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">AR</div>
+      <div style="line-height:1">
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">Aromatic care in {{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html" aria-current="page">Offerings</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Boutique</a>
+      <a href="book.html">Schedule</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <article class="panel lead">
+        <span class="pill">Practitioner: {{PRACTITIONER_NAME}}</span>
+        <h1>Personalized aromatherapy sessions & practitioner-led guidance</h1>
+        <p class="lead">Gentle, evidence-informed aromatherapy consultation and custom blend design. Sessions emphasize safety, fragrance education, and practical at-home ritual building tailored to your preferences.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <a class="btn btn-ghost" href="contact.html">Contact</a>
+        </div>
+      </article>
+
+      <aside class="panel aside">
+        <div style="font-size:13px;color:var(--muted);">Quick details</div>
+        <div style="margin-top:8px;font-weight:700">60–90 min consultations</div>
+        <div class="meta" style="margin-top:6px">Remote or in-person sessions available in {{CITY}}, {{STATE}}. Safety-first approach; no medical treatment provided.</div>
+        <div style="margin-top:12px;font-size:13px;color:var(--muted)">Phone: {{PHONE}}<br>Email: {{EMAIL}}</div>
+      </aside>
+    </section>
+
+    <section style="margin-top:22px">
+      <div class="grid">
+        <div class="service-card">
+          <h3>Intake & Sensitivity Review</h3>
+          <div class="meta">Understand preferences, allergies, medications, and any pregnancy/pet considerations.</div>
+        </div>
+        <div class="service-card">
+          <h3>Custom Blend Design</h3>
+          <div class="meta">Bespoke aromatic formulas with clear dilution and usage guidance.</div>
+        </div>
+        <div class="service-card">
+          <h3>Ritual Coaching</h3>
+          <div class="meta">Practical rituals for daily scent practice—diffusion, inhalers, and topical safety.</div>
+        </div>
+        <div class="service-card">
+          <h3>Follow-up & Adjustments</h3>
+          <div class="meta">Short follow-ups to refine blends and answer safety questions.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq">
+      <h4>Frequently asked safety questions</h4>
+      <div class="qa">
+        <strong>How do you handle dilution?</strong>
+        <div class="meta">All topical blends include specific dilution ratios; the practitioner will calculate a safe dilution for adults. For infants, children, pregnancy, or pets, guidance is conservative and restrictive.</div>
+      </div>
+      <div class="qa">
+        <strong>Do I need a patch test?</strong>
+        <div class="meta">Yes — patch testing is recommended for new topical blends. Instructions will be provided with each session.</div>
+      </div>
+      <div class="qa">
+        <strong>What about pets?</strong>
+        <div class="meta">We discuss household animals and advise on safe diffusion, ventilation, and placement to minimize exposure.</div>
+      </div>
+      <div class="qa">
+        <strong>Is this medical treatment?</strong>
+        <div class="meta">No. Sessions offer aromatic support, education, and rituals; they do not diagnose or treat medical conditions.</div>
+      </div>
+    </section>
+
+    <section style="margin-top:18px;display:flex;gap:12px;align-items:center">
+      <a class="btn btn-primary" href="{{PRIMARY_CTA_URL}}">Book a session</a>
+      <a class="btn btn-ghost" href="about.html">Meet the practitioner</a>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+  </footer>
+</body>
+</html>

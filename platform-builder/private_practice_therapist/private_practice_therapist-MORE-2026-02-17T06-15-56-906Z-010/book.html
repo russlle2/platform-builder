@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Schedule — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#071227;--card:rgba(255,255,255,0.03);--accent:#9be7ff;--muted:#bcd7e6}
+    body{margin:0;font-family:Inter, system-ui, -apple-system; background:linear-gradient(180deg,#061426,#071227);color:#e6f6fb}
+    .wrap{max-width:900px;margin:28px auto;padding:18px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;margin-left:12px}
+
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:18px;border-radius:12px}
+    form{display:grid;grid-template-columns:1fr 260px;gap:16px}
+    @media(max-width:820px){form{grid-template-columns:1fr}}
+    label{display:block;margin-bottom:6px;font-size:13px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit}
+    .btn{background:linear-gradient(90deg,var(--accent),#7ef1c7);color:#04212a;padding:10px 12px;border-radius:10px;border:none;cursor:pointer}
+    .note{color:var(--muted);font-size:13px;margin-top:10px}
+
+    .slot{padding:8px;border-radius:8px;background:rgba(255,255,255,0.01);margin-bottom:8px;cursor:pointer}
+    .slot.selected{outline:2px solid rgba(139,233,253,0.25)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div style="display:flex;gap:12px;align-items:center">
+        <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#06b6d4,#7c3aed);display:flex;align-items:center;justify-content:center;font-weight:700;color:#022">PP</div>
+        <div>
+          <div style="font-weight:700">Book a session</div>
+          <div class="muted">{{CITY}}, {{STATE}} • {{PHONE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Welcome</a>
+        <a href="fees.html">Rates & Plans</a>
+        <a href="contact.html">Get in Touch</a>
+      </nav>
+    </header>
+
+    <main style="margin-top:18px">
+      <div class="panel">
+        <h2 style="margin:0 0 8px 0">Arrange a first visit</h2>
+        <p class="note">Choose a preferred slot below, and tell me a bit about what brings you here. I will follow up to confirm and share intake details.</p>
+
+        <form id="bookingForm" onsubmit="return submitForm(event)">
+          <div>
+            <label for="name">Your name</label>
+            <input id="name" name="name" required>
+
+            <label for="email" style="margin-top:10px">Email</label>
+            <input id="email" name="email" type="email" required>
+
+            <label for="phone" style="margin-top:10px">Phone</label>
+            <input id="phone" name="phone" required>
+
+            <label for="note" style="margin-top:10px">What would you like to focus on?</label>
+            <textarea id="note" name="note" rows="5" placeholder="A few lines are fine"></textarea>
+
+            <div style="margin-top:12px"><button class="btn" type="submit">Request this slot</button></div>
+            <div class="note">By requesting, you agree to be contacted by email or phone about scheduling. This is not an appointment confirmation.</div>
+          </div>
+
+          <aside>
+            <div style="margin-bottom:12px">
+              <strong>Available slots</strong>
+              <div class="note">Times shown in local time. If nothing fits, include preferred days in your message.</div>
+            </div>
+
+            <div id="slots">
+              <div class="slot" data-slot="2026-03-02T09:00">Tue Mar 2 — 9:00 AM</div>
+              <div class="slot" data-slot="2026-03-02T14:00">Tue Mar 2 — 2:00 PM</div>
+              <div class="slot" data-slot="2026-03-03T11:00">Wed Mar 3 — 11:00 AM</div>
+              <div class="slot" data-slot="2026-03-04T16:00">Thu Mar 4 — 4:00 PM</div>
+            </div>
+
+            <div style="margin-top:12px;padding-top:12px;border-top:1px dashed rgba(255,255,255,0.03)">
+              <strong>Confidentiality & scope</strong>
+              <div class="note" style="margin-top:6px">Sessions are confidential within legal limits. This practice does not provide emergency services. If you are in crisis, call 911 or your local emergency services.</div>
+            </div>
+
+          </aside>
+        </form>
+      </div>
+
+      <div style="margin-top:12px;display:flex;gap:12px;flex-wrap:wrap">
+        <div class="panel" style="flex:1"> 
+          <strong>What to expect</strong>
+          <p class="muted" style="margin-top:8px">A brief intake to understand priorities, followed by collaborative planning. I aim for clear agreements about scope, frequency, and practical next steps.</p>
+        </div>
+        <div class="panel" style="width:300px">
+          <strong>Cancellation</strong>
+          <p class="muted" style="margin-top:8px">If you need to change the appointment, please notify me as soon as possible so I can offer the slot to others.</p>
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <script>
+    // Slot selection
+    const slots = document.getElementById('slots');
+    let selectedSlot = null;
+    slots.addEventListener('click', (e)=>{
+      const el = e.target.closest('.slot');
+      if(!el) return;
+      document.querySelectorAll('.slot').forEach(s=>s.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedSlot = el.dataset.slot;
+    });
+
+    function submitForm(e){
+      e.preventDefault();
+      const data = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        note: document.getElementById('note').value,
+        slot: selectedSlot
+      };
+      // Simulated submit — in real site replace with fetch
+      alert('Request sent. I will contact you to confirm.');
+      // For privacy: do not store here. This is a demo form.
+      return false;
+    }
+  </script>
+</body>
+</html>

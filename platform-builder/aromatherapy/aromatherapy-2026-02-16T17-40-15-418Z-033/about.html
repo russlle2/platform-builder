@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0b1120;--panel:#071428;--accent:#f6c1d1;--teal:#8dd3c7;--muted:#9aa4b2}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:var(--teal);background:radial-gradient(circle at 10% 10%, rgba(141,211,199,0.06), transparent 20%), linear-gradient(180deg,#050913 0%,#08101a 100%);}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px}
+    .nav a{color:var(--teal);text-decoration:none;margin-left:14px;font-weight:600}
+    main{max-width:980px;margin:28px auto;padding:28px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:14px}
+    .profile{display:grid;grid-template-columns:180px 1fr;gap:20px;align-items:center}
+    .avatar{width:160px;height:160px;border-radius:16px;background:linear-gradient(135deg,var(--teal),var(--accent));display:flex;align-items:center;justify-content:center;color:#041617;font-weight:800;font-size:36px}
+    h1{margin:0 0 12px 0;color:var(--accent)}
+    .tag{color:var(--muted);margin-bottom:18px}
+    .card{background:var(--panel);padding:16px;border-radius:12px;color:var(--teal)}
+    .section{margin-top:18px}
+    .faq{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+    .qa{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;color:var(--muted)}
+    footer{margin-top:18px;color:var(--muted);display:flex;justify-content:space-between}
+    .pattern{position:absolute;left:-80px;bottom:-80px;opacity:0.08;width:420px;height:420px}
+  </style>
+</head>
+<body>
+  <svg class="pattern" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="g2" x1="0" x2="1"><stop offset="0" stop-color="#8dd3c7"/><stop offset="1" stop-color="#f6c1d1"/></linearGradient>
+      <pattern id="p2" width="24" height="24" patternUnits="userSpaceOnUse">
+        <rect width="24" height="24" fill="transparent"/>
+        <circle cx="6" cy="6" r="2" fill="url(#g2)"/>
+        <circle cx="18" cy="18" r="2" fill="url(#g2)"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#p2)"/>
+  </svg>
+
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:50px;height:50px;border-radius:10px;background:linear-gradient(135deg,var(--teal),var(--accent));display:flex;align-items:center;justify-content:center;font-weight:800;color:#031010">A</div>
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+    </div>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="services.html">Services</a>
+      <a href="blends.html">Essences</a>
+      <a href="shop.html">Shop</a>
+      <a href="book.html">Schedule</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="profile">
+      <div class="avatar">{{PRACTITIONER_NAME}}</div>
+      <div>
+        <h1>Careful craft, modern mysticism</h1>
+        <div class="tag">I blend tradition and clarity to create approachable aromatherapy. Safety and joy first.</div>
+
+        <div class="card">
+          <strong>About {{PRACTITIONER_NAME}}</strong>
+          <p class="small" style="margin-top:8px;color:var(--muted)">An aromatherapist and plant-curious guide who creates simple, safe blends for daily ritual. Work emphasizes dilution guidance, patch-test education, and considerate use around pets and pregnancy. Not a substitute for medical care.</p>
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <a href="book.html" style="padding:8px 12px;background:linear-gradient(90deg,var(--teal),var(--accent));border-radius:8px;color:#041617;text-decoration:none;font-weight:700">Book a consult</a>
+            <a href="contact.html" style="padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);color:var(--teal);text-decoration:none">Ask a question</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="section">
+      <h2 style="color:var(--accent);margin:0 0 8px 0">Philosophy</h2>
+      <p class="small" style="color:var(--muted)">I approach scent as a subtle tool for presence. Blends emphasize low-risk dilution and clear instructions. Every recommendation includes how to patch-test, options for pet-safe substitutions, and notes for pregnancy or medical considerations.</p>
+    </section>
+
+    <section class="section">
+      <h2 style="color:var(--accent);margin:0 0 8px 0">How a typical consult works</h2>
+      <ol class="small" style="color:var(--muted)">
+        <li>We cover preferences, known sensitivities, pregnancy status, and household pets.</li>
+        <li>I suggest safe dilution, perform scent-mapping, and craft a simple blend if in-person.</li>
+        <li>You get written directions for use, patch-test steps, and gentle micro-habits to try at home.</li>
+      </ol>
+    </section>
+
+    <section class="section">
+      <h2 style="color:var(--accent);margin:0 0 8px 0">Frequently asked (safety-forward)</h2>
+      <div class="faq">
+        <div class="qa"><strong>How do I dilute oils?</strong><div class="small" style="margin-top:6px;color:var(--muted)">I provide dilution charts with every blend: typical ranges are 0.5–3% for topical adult use; less for children. We'll discuss specifics in your consult.</div></div>
+        <div class="qa"><strong>What about patch testing?</strong><div class="small" style="margin-top:6px;color:var(--muted)">Patch-test on a small area of inner forearm with your diluted blend for 24 hours. Avoid if irritation occurs.</div></div>
+        <div class="qa"><strong>Pets in the home?</strong><div class="small" style="margin-top:6px;color:var(--muted)">Some essential oils can affect animals. I always recommend pet-safe alternatives and diffusion practices that prioritize animal comfort.</div></div>
+        <div class="qa"><strong>Pregnancy or medication?</strong><div class="small" style="margin-top:6px;color:var(--muted)">Please mention pregnancy, nursing, or medications before booking. We avoid certain botanicals and focus on very low dilution or aromatic-only approaches when needed.</div></div>
+      </div>
+    </section>
+
+    <footer>
+      <div>Questions? <a href="mailto:{{EMAIL}}" style="color:var(--teal);text-decoration:none">{{EMAIL}}</a></div>
+      <div>Serving {{CITY}}, {{STATE}} • {{BUSINESS_NAME}}</div>
+    </footer>
+  </main>
+</body>
+</html>

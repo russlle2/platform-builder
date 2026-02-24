@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{BUSINESS_NAME}} — Gatherings & Events</title>
+  <meta name="description" content="A sequence of sound bath gatherings blending resonance and rest. Next event: {{NEXT_EVENT_DATE}}.">
+  <style>
+    :root{--bg1:#0f1724;--bg2:#071021;--accent:#e7c9ff;--muted:#94a3b8;--card:#0b1320}
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;color:#e6eef8;background:linear-gradient(180deg,var(--bg1),var(--bg2));-webkit-font-smoothing:antialiased}
+    a{color:var(--accent);text-decoration:none}
+    .wrap{max-width:980px;margin:48px auto;padding:32px}
+    nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}
+    .brand{font-weight:700;letter-spacing:0.6px}
+    .navlinks{display:flex;gap:18px;font-size:14px;color:var(--muted)}
+    header.hero{display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start;margin-bottom:34px}
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid rgba(255,255,255,0.04);padding:26px;border-radius:14px;backdrop-filter:blur(6px)}
+    .title{font-size:28px;margin:0 0 8px;color:#fff}
+    .subtitle{color:var(--muted);margin:0 0 18px}
+    .next{background:linear-gradient(90deg,#7b61ff33,#00d4ff22);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);display:flex;justify-content:space-between;align-items:center}
+    .calendar{margin-top:18px}
+    .event-item{display:flex;justify-content:space-between;padding:12px;border-radius:8px;background:rgba(255,255,255,0.015);margin-bottom:10px}
+    .small{font-size:13px;color:var(--muted)}
+    .social-proof{display:flex;gap:12px;align-items:center;margin:18px 0}
+    .avatars{display:flex;gap:8px}
+    .avatar{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#5eead4,#60a5fa);display:flex;align-items:center;justify-content:center;color:#04203a;font-weight:700}
+    .benefits{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0}
+    .benefit{padding:14px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);border:1px solid rgba(255,255,255,0.03)}
+    .process{margin:22px 0}
+    .step{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px}
+    .step .num{width:36px;height:36px;border-radius:8px;background:#0a1220;display:flex;align-items:center;justify-content:center;color:var(--accent);font-weight:700}
+    .faq{margin:22px 0}
+    .lead{display:flex;gap:12px;align-items:center;padding:18px;border-radius:12px;background:linear-gradient(90deg,#0b1220,rgba(124,58,237,0.06));border:1px solid rgba(124,58,237,0.12)}
+    .cta{display:flex;gap:12px;margin-top:18px}
+    .btn{padding:12px 16px;border-radius:10px;border:none;background:var(--accent);color:#071021;font-weight:700}
+    .ghost{padding:12px 16px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--accent)}
+    footer{margin:40px 0;color:var(--muted);font-size:13px}
+    /* floating svg background */
+    .bg-svg{position:fixed;inset:0;pointer-events:none;opacity:0.12}
+    @media(max-width:880px){header.hero{grid-template-columns:1fr;}
+      .benefits{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <svg class="bg-svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#7b61ff" stop-opacity="0.25"/><stop offset="1" stop-color="#00d4ff" stop-opacity="0.18"/></linearGradient>
+      <pattern id="p" width="120" height="120" patternUnits="userSpaceOnUse" patternTransform="rotate(20)">
+        <rect width="60" height="60" fill="#0f1724"/>
+        <circle cx="30" cy="30" r="10" fill="#7b61ff" fill-opacity="0.06"/>
+      </pattern>
+      <filter id="blur"><feGaussianBlur stdDeviation="30"/></filter>
+    </defs>
+    <rect width="1200" height="800" fill="url(#p)"/>
+    <g filter="url(#blur)">
+      <ellipse cx="920" cy="180" rx="420" ry="220" fill="url(#g1)"/>
+      <ellipse cx="240" cy="620" rx="360" ry="180" fill="#5eead4" fill-opacity="0.02"/>
+    </g>
+  </svg>
+  <div class="wrap">
+    <nav>
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <div class="navlinks">
+        <a href="index.html">Home</a>
+        <a href="events.html">Gatherings</a>
+        <a href="private-sessions.html">Private</a>
+        <a href="pricing.html">Invest</a>
+      </div>
+    </nav>
+
+    <header class="hero">
+      <div class="panel">
+        <h1 class="title">An evening of held sound — public sound baths</h1>
+        <p class="subtitle">Join a curated series where tone and breath create space for gentle change. We hold silence in good company.</p>
+        <div class="social-proof">
+          <div class="avatars">
+            <div class="avatar">A</div>
+            <div class="avatar">M</div>
+            <div class="avatar">S</div>
+          </div>
+          <div class="small">Rated 4.9 — community of seekers across {{CITY}}, {{STATE}}</div>
+        </div>
+        <div class="benefits">
+          <div class="benefit"><strong>Deep rest</strong><div class="small">Resonance helps nervous system regulation and restorative sleep.</div></div>
+          <div class="benefit"><strong>Centering</strong><div class="small">A simple practice: show up, lie down, receive.</div></div>
+          <div class="benefit"><strong>Shared ritual</strong><div class="small">Be seen by sound; leave with calm that lasts days.</div></div>
+        </div>
+
+        <div class="process">
+          <div class="step"><div class="num">1</div><div><strong>Arrive</strong><div class="small">Settle; tea and soft light.</div></div></div>
+          <div class="step"><div class="num">2</div><div><strong>Set intention</strong><div class="small">A brief guided centering to tune in.</div></div></div>
+          <div class="step"><div class="num">3</div><div><strong>Sound journey</strong><div class="small">Crystal bowls, gong, chimes weave a layered field.</div></div></div>
+          <div class="step"><div class="num">4</div><div><strong>Return</strong><div class="small">Slow emergence; water served; reflections invited.</div></div></div>
+        </div>
+
+        <div class="faq">
+          <details>
+            <summary class="small">What to bring</summary>
+            <div class="small" style="margin-top:8px">Yoga mat, blanket, pillow, eye mask. Dress warmly. We provide bolsters on request.</div>
+          </details>
+          <details style="margin-top:8px">
+            <summary class="small">Contraindications</summary>
+            <div class="small" style="margin-top:8px">Not recommended if you have photosensitive epilepsy, severe cardiovascular conditions, or are within 24 hours of stimulant medication without clinician approval. Always consult your healthcare provider.</div>
+          </details>
+        </div>
+
+        <div class="lead">
+          <div style="flex:1">
+            <strong>Next: {{NEXT_EVENT_DATE}}</strong>
+            <div class="small">Hosted at {{VENUE_NAME}} — doors open 30 minutes before.</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            <a class="ghost" href="contact.html">Questions? Call {{PHONE}}</a>
+          </div>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <div class="next">
+          <div>
+            <div style="font-size:13px;color:var(--muted)">Upcoming gathering</div>
+            <div style="font-weight:700">{{NEXT_EVENT_DATE}}</div>
+            <div class="small" style="margin-top:6px">A curated sound field: crystal bowls, gong, wind chimes.</div>
+          </div>
+          <div style="text-align:right"><div class="small">{{CITY}}, {{STATE}}</div><div style="margin-top:6px"><a class="btn" href="book.html">Reserve</a></div></div>
+        </div>
+
+        <div class="calendar" aria-hidden="false">
+          <div class="event-item"><div><strong>Feb 28</strong><div class="small">Full-spectrum sound journey</div></div><div class="small">Sold out</div></div>
+          <div class="event-item"><div><strong>Mar 14</strong><div class="small">Lunar sound bath</div></div><div class="small">Open</div></div>
+          <div class="event-item"><div><strong>Apr 4</strong><div class="small">Morning restorative session</div></div><div class="small">Tickets</div></div>
+        </div>
+
+        <div style="margin-top:14px;font-size:13px;color:var(--muted)">
+          Instruments: crystal singing bowls, gong, tuned chimes. Each gathering varies.
+        </div>
+      </aside>
+    </header>
+
+    <section>
+      <h3 style="margin:0 0 8px;color:#fff">A short note on craft</h3>
+      <p class="small">Every gathering is composed like a short movement: introduction, unfolding resonance, soft peak, and reverent return. Sound is our scaffolding; breath is yours.</p>
+    </section>
+
+    <section style="margin-top:22px">
+      <h3 style="color:#fff;margin:0 0 8px">Frequently asked</h3>
+      <div class="panel" style="margin-top:10px">
+        <strong>Is prior experience required?</strong>
+        <div class="small" style="margin-top:8px">No. These events are accessible. Lay down, soften, receive.</div>
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03);margin:12px 0">
+        <strong>How long does it last?</strong>
+        <div class="small" style="margin-top:8px">Typically 75–90 minutes including arrival and gentle return.</div>
+      </div>
+    </section>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:28px">
+      <div>
+        <div class="small">Ready to join the next sound field?</div>
+        <div style="font-weight:700">{{VENUE_NAME}} — limited mats available.</div>
+      </div>
+      <div class="cta">
+        <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        <a class="ghost" href="pricing.html">See rates</a>
+      </div>
+    </div>
+
+    <footer>
+      <div>{{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • {{PHONE}}</div>
+    </footer>
+  </div>
+</body>
+</html>

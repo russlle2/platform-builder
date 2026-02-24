@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f8fff5;--muted:#6a6f64;--accent:#7a9f59;--card:#ffffff;font-family:Inter, system-ui, -apple-system}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#ffffff);color:#233022}
+    header{padding:18px;background:url('assets/img/pattern.svg') no-repeat center/900px}
+    .container{max-width:980px;margin:20px auto;padding:0 18px}
+    h1{margin:0;font-size:26px}
+    p.lead{color:var(--muted);margin-top:8px}
+    .layout{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px}
+    .panel{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 10px 30px rgba(20,30,20,0.06)}
+    .goals{display:flex;flex-direction:column;gap:8px}
+    .goal input{margin-right:8px}
+    .meter{height:120px;display:flex;align-items:center;justify-content:center}
+    .pathmap{border-radius:10px;padding:12px;background:linear-gradient(180deg,#fff,#f7fff2)}
+    .day{width:12px;height:12px;border-radius:50%;background:#e6ede1;margin:4px}
+    .day.active{background:var(--accent)}
+    .days{display:flex;flex-wrap:wrap;width:100%}
+    .legend{display:flex;gap:8px;margin-top:8px;color:var(--muted);font-size:13px}
+    .btn{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;display:inline-block}
+    form{display:flex;flex-direction:column;gap:10px}
+    input[type=text],input[type=email],select{padding:10px;border-radius:8px;border:1px solid #eef2ea}
+    @media (max-width:900px){.layout{grid-template-columns:1fr} .meter{height:auto}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <nav style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="display:flex;gap:12px">
+          <a href="index.html" style="color:var(--muted);text-decoration:none">Welcome</a>
+          <a href="programs.html" style="color:var(--muted);text-decoration:none">Journeys</a>
+          <a href="pricing.html" style="color:var(--muted);text-decoration:none">Investment</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <h1>Reserve your exploratory call</h1>
+    <p class="lead">Choose what you want to shift. We'll show a 30-day path map that outlines a gentle, daily plan you can try before committing.</p>
+
+    <div class="layout">
+      <section class="panel">
+        <h3 style="margin-top:0">Pick goals</h3>
+        <div class="goals" id="goals">
+          <label class="goal"><input type="checkbox" value="sleep">Calmer sleep routine</label>
+          <label class="goal"><input type="checkbox" value="movement">Short daily movement</label>
+          <label class="goal"><input type="checkbox" value="focus">Clearer focused work windows</label>
+          <label class="goal"><input type="checkbox" value="stress">Micro-stress tools</label>
+          <label class="goal"><input type="checkbox" value="eating">Simpler meal cues</label>
+        </div>
+
+        <div style="margin-top:12px">
+          <h4 style="margin:0">Commitment meter</h4>
+          <div class="meter" id="meter" aria-hidden="false">
+            <svg id="ring" width="96" height="96" viewBox="0 0 36 36">
+              <path stroke="#e6efe6" stroke-width="4" fill="none" d="M18 2a16 16 0 1 0 0 32 16 16 0 1 0 0-32"/>
+              <path id="progressRing" stroke="#7a9f59" stroke-width="4" fill="none" stroke-linecap="round" d="M18 2a16 16 0 1 0 0 32 16 16 0 1 0 0-32" stroke-dasharray="0 100"/>
+              <text id="progressText" x="18" y="20" font-size="6" text-anchor="middle" fill="#274226">0%</text>
+            </svg>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <h4 style="margin:0">30-day path map</h4>
+          <div class="pathmap" id="pathmap">
+            <div class="days" id="days"></div>
+            <div class="legend"><div>● Active</div><div style="opacity:0.6">● Rest</div></div>
+          </div>
+        </div>
+
+      </section>
+
+      <aside class="panel">
+        <h3 style="margin-top:0">Book a time</h3>
+        <form id="bookForm">
+          <label>Name <input type="text" name="name" placeholder="Your name" required></label>
+          <label>Email <input type="email" name="email" placeholder="you@domain.com" required></label>
+          <label>Preferred plan
+            <select name="plan">
+              <option>Starter Ritual (4 weeks)</option>
+              <option>Momentum Plan (3 months)</option>
+              <option>Anchor Program (12 weeks)</option>
+            </select>
+          </label>
+          <label>Notes <input type="text" name="notes" placeholder="A little about what you need"></label>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn" type="submit">Reserve your slot</button>
+            <a href="contact.html" class="btn" style="background:#fff;color:var(--accent);border:1px solid #e6efe6;text-decoration:none;padding:10px 12px;border-radius:10px">Ask first</a>
+          </div>
+        </form>
+        <div style="color:var(--muted);font-size:13px;margin-top:12px">We'll send a short planning guide and a 30-day starter map ahead of the call.</div>
+      </aside>
+    </div>
+
+    <div style="margin-top:16px;color:var(--muted);font-size:13px">By reserving you agree to short pre-work that helps shape the first two weeks. We focus on routines, frameworks, and habit support — not medical advice.</div>
+  </main>
+
+  <script>
+    // Progress meter + 30-day path map
+    (function(){
+      const goalsEl=document.getElementById('goals');
+      const inputs=goalsEl.querySelectorAll('input[type=checkbox]');
+      const progressRing=document.getElementById('progressRing');
+      const progressText=document.getElementById('progressText');
+      const daysContainer=document.getElementById('days');
+
+      function renderDays(activeCount){
+        daysContainer.innerHTML='';
+        for(let i=1;i<=30;i++){
+          const d=document.createElement('div');d.className='day';
+          // Simple rule: active days depend on chosen goals and a gentle cadence
+          const intensity = Math.min(1, (activeCount/inputs.length) + (i%3===0?0.2:0));
+          if(Math.random() < intensity) d.classList.add('active');
+          daysContainer.appendChild(d);
+        }
+      }
+
+      function updateMeter(){
+        const checked=[...inputs].filter(i=>i.checked).length;
+        const pct=Math.round((checked/inputs.length)*100);
+        // Stroke dash uses circle circumference approx 100 for simplicity
+        progressRing.setAttribute('stroke-dasharray', pct + ' 100');
+        progressText.textContent = pct + '%';
+        renderDays(checked);
+      }
+
+      inputs.forEach(i=>i.addEventListener('change',updateMeter));
+      // seed: pick 1 default
+      inputs[0].checked=true;updateMeter();
+
+      // Form submit: gather chosen goals and produce a textual path summary then simulate booking
+      document.getElementById('bookForm').addEventListener('submit',function(e){
+        e.preventDefault();
+        const data=new FormData(e.target);
+        const chosen = [...inputs].filter(i=>i.checked).map(i=>i.value);
+        const summary = 'Goals: '+(chosen.length?chosen.join(', '):'None')+'\nWe will send a condensed 30-day map to ' + data.get('email') + '.';
+        alert('Reserved.\n\n'+summary);
+        e.target.reset(); inputs.forEach(i=>i.checked=false);updateMeter();
+      });
+    })();
+  </script>
+</body>
+</html>

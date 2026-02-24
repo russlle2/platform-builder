@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Story — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Our approach, credentials, and community proof.">
+  <style>
+    :root{--bg:#fffaf8;--muted:#6d6d6d;--accent:#7a9a78;--panel:#fff}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:var(--bg);color:#111}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 26px}
+    .logo{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#b4cbb3);display:grid;place-items:center;color:white;font-weight:700}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none}
+    main{padding:20px 26px}
+    .intro{display:flex;gap:18px;align-items:flex-start}
+    .intro .who{background:var(--panel);padding:18px;border-radius:12px;flex:1}
+    h1{margin:0 0 6px 0}
+    .mission{font-size:15px;color:var(--muted);line-height:1.6}
+    .team{margin-top:16px;display:flex;gap:12px}
+    .person{background:var(--panel);padding:12px;border-radius:10px;flex:1}
+    .gallery{margin-top:18px;padding:14px;background:linear-gradient(90deg,rgba(122,154,120,0.06),transparent);border-radius:10px}
+    .cred{display:flex;gap:10px;align-items:center}
+    .cred .seal{width:56px;height:56px;border-radius:8px;background:linear-gradient(135deg,#fff,#f4f7f3);display:grid;place-items:center;font-weight:700}
+    .cred .meta{font-size:13px;color:var(--muted)}
+    .proof{margin-top:12px;display:flex;gap:8px}
+    .proof .item{padding:10px;border-radius:8px;background:rgba(255,255,255,0.7)}
+    .tooltip{position:relative}
+    .tooltip .hint{position:absolute;bottom:110%;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:6px 8px;border-radius:6px;font-size:12px;opacity:0;pointer-events:none;transition:opacity .12s}
+    .tooltip:hover .hint{opacity:1}
+    footer{padding:18px 26px;color:var(--muted);display:flex;justify-content:space-between}
+    .pattern{position:fixed;left:10px;top:60px;opacity:0.12;width:280px;height:280px;background-image:url('assets/img/pattern.svg');background-size:cover;pointer-events:none}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="logo">HM</div>
+      <div>
+        <div style="font-weight:600">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">A quiet practice of integrative insight</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Conditions</a>
+      <a href="approach.html">Method</a>
+      <a href="pricing.html">Tariff</a>
+      <a href="about.html" style="color:var(--accent)">Story</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="intro">
+      <div class="who">
+        <h1>We map patterns, not just problems</h1>
+        <p class="mission">Care here is a gentle inquiry. We layer evidence, experience, and your lived rhythm to craft simple experiments you can run between sessions. No promises of cures—only clearer ways to test what works for you.</p>
+
+        <div class="team">
+          <div class="person">
+            <strong>Lead Guide</strong>
+            <div style="font-size:13px;color:var(--muted)">Clinician with cross-disciplinary training. Focused on translating evidence into small, trackable steps.</div>
+          </div>
+          <div class="person">
+            <strong>Community Liaison</strong>
+            <div style="font-size:13px;color:var(--muted)">Coordinates referrals, local resources, and group learning circles.</div>
+          </div>
+        </div>
+      </div>
+
+      <aside style="width:320px">
+        <div style="background:var(--panel);padding:14px;border-radius:12px">
+          <strong>Quick facts</strong>
+          <div style="margin-top:8px;color:var(--muted);font-size:13px">Serving {{CITY}}, offering remote and in-person touchpoints. Educational guidance and care planning; we coordinate but do not replace your primary providers.</div>
+          <div style="margin-top:12px"><a href="contact.html">Connect with us</a></div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="gallery">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <strong>Proof Gallery</strong>
+        <div style="font-size:13px;color:var(--muted)">Voices and credentials</div>
+      </div>
+      <div class="cred" style="margin-top:10px">
+        <div class="seal">CE</div>
+        <div class="meta">
+          <div style="font-weight:600">Continuing Education</div>
+          <div style="color:var(--muted);font-size:13px">Ongoing training in integrative methods and behavior change.</div>
+        </div>
+      </div>
+
+      <div class="proof" id="proof">
+        <div class="item">"I finally had a plan that fit my days." — A local parent</div>
+        <div class="item">"Practical ideas to manage evening anxiety." — Office worker</div>
+        <div class="item">"Coaching that respected my medical team." — Someone with chronic illness</div>
+      </div>
+
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <div class="tooltip"><div class="item">Local Partnership</div><div class="hint">We collaborate with clinics and therapists in {{CITY}} for integrated referrals.</div></div>
+        <div class="tooltip"><div class="item">Peer Resources</div><div class="hint">Curated reading lists and selective citations for each plan.</div></div>
+        <div class="tooltip"><div class="item">Community Groups</div><div class="hint">Optional small cohorts for skill practice and accountability.</div></div>
+      </div>
+
+    </section>
+
+    <section style="margin-top:18px">
+      <h3>Ethos</h3>
+      <p style="color:var(--muted)">We accept uncertainty. We create testable steps. We never promise cures; we support learning, coordination, and steadier days.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div>Reach: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    <div style="color:var(--muted)">© <span id="year"></span> {{BUSINESS_NAME}}</div>
+  </footer>
+
+  <div class="pattern" aria-hidden="true"></div>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Rotate proof items
+    (function(){
+      const wrap=document.getElementById('proof');
+      let idx=0; const nodes=Array.from(wrap.children);
+      setInterval(()=>{
+        nodes.forEach((n,i)=>{ n.style.display = (i===idx)?'block':'none'; });
+        idx = (idx+1)%nodes.length;
+      },3600);
+    })();
+  </script>
+</body>
+</html>

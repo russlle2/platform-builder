@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Start — Book a short intake • {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--muted:#6b7280;--accent:#0f766e}
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;margin:0;background:#fbfffd;color:#022b22}
+    header{display:flex;justify-content:space-between;align-items:center;padding:14px 26px}
+    nav a{margin-left:12px;color:#064e3b;text-decoration:none;font-weight:600}
+    main{max-width:720px;margin:20px auto;padding:20px}
+    .panel{background:#fff;padding:18px;border-radius:12px;box-shadow:0 8px 24px rgba(2,6,23,0.06)}
+    h1{margin-top:0}
+    form{display:grid;gap:12px}
+    label{font-size:13px;color:var(--muted)}
+    input[type=text],input[type=email],select,textarea{padding:10px;border-radius:10px;border:1px solid #e6eef0;width:100%;box-sizing:border-box}
+    .row{display:flex;gap:10px}
+    .row .col{flex:1}
+    .micro{font-size:12px;color:var(--muted)}
+    .submit{padding:10px 14px;background:var(--accent);color:#fff;border-radius:10px;border:0;cursor:pointer}
+    .preview{margin-top:12px;padding:12px;border-radius:10px;background:linear-gradient(180deg,#ffffff,#f1fffb)}
+    .path{margin-top:8px;font-size:13px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div style="width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,#059669,#0ea5a2);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">WC</div>
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Profile</a>
+      <a href="services.html">Nourishment</a>
+      <a href="programs.html">Memberships</a>
+      <a href="pricing.html">Investments</a>
+      <a href="testimonials.html">Voices</a>
+      <a href="book.html">Start</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+  <main>
+    <div class="panel">
+      <h1>Book a short intake</h1>
+      <p class="micro">A 25-minute conversation to map a 30-day plan tailored to your current rhythms. Outcomes focus on habits and practical steps.</p>
+
+      <form id="bookForm" action="{{PRIMARY_CTA_URL}}" method="POST">
+        <label>Your name <input type="text" name="name" required></label>
+        <label>Email <input type="email" name="email" required></label>
+        <div class="row">
+          <div class="col">
+            <label>Preferred day <select name="day"><option>Weekday morning</option><option>Weekday afternoon</option><option>Evening</option></select></label>
+          </div>
+          <div class="col">
+            <label>Timezone <select name="tz"><option>Local</option><option>EST</option><option>PST</option></select></label>
+          </div>
+        </div>
+        <label>What matters most right now? <small class="micro">Select up to three</small></label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px">
+          <label style="background:#fff;padding:8px;border-radius:10px;border:1px solid #e6eef0"><input type="checkbox" name="focus" value="sleep"> Better sleep</label>
+          <label style="background:#fff;padding:8px;border-radius:10px;border:1px solid #e6eef0"><input type="checkbox" name="focus" value="movement"> Movement</label>
+          <label style="background:#fff;padding:8px;border-radius:10px;border:1px solid #e6eef0"><input type="checkbox" name="focus" value="routine"> Simpler routine</label>
+          <label style="background:#fff;padding:8px;border-radius:10px;border:1px solid #e6eef0"><input type="checkbox" name="focus" value="meals"> Meal timing</label>
+        </div>
+        <label>In one line, what would success feel like? <textarea name="success" rows="3"></textarea></label>
+
+        <div style="display:flex;gap:10px;align-items:center;justify-content:space-between">
+          <div style="font-size:13px;color:var(--muted)">Or call us at <strong>{{PHONE}}</strong></div>
+          <button class="submit" type="submit" id="submitBtn">{{PRIMARY_CTA_LABEL}}</button>
+        </div>
+      </form>
+
+      <div class="preview" aria-live="polite">
+        <strong>Preview: your 30-day path</strong>
+        <div id="previewText" class="path">Select items above to preview the first 30 days.</div>
+      </div>
+    </div>
+  </main>
+  <script>
+    (function(){
+      // Live preview of 30-day path built from form selections
+      const form = document.getElementById('bookForm');
+      const preview = document.getElementById('previewText');
+      const submitBtn = document.getElementById('submitBtn');
+      // Mood-to-Method influence: if certain words in success field, alter CTA wording
+      function updatePreview(){
+        const checked = Array.from(form.querySelectorAll('input[type=checkbox]:checked')).map(i=>i.value);
+        const goalMap = {sleep:'Evening rituals',movement:'Short movement bursts',routine:'Simpler morning frame',meals:'Meal anchors'};
+        if(checked.length===0){
+          preview.textContent = 'No focus chosen — we will co-design a plan in the intake.';
+          submitBtn.textContent = '{{PRIMARY_CTA_LABEL}}';
+          return;
+        }
+        const parts = checked.map(g=>goalMap[g]||g);
+        // Simple allocation across 30 days
+        const per = Math.max(3,Math.round(30/parts.length));
+        const plan = parts.map(p=>`${per} days: ${p}`).join(' • ');
+        preview.textContent = 'Starter 30-day structure: ' + plan;
+        // CTA tweaks
+        if(checked.includes('sleep')) submitBtn.textContent = 'Reserve a sleep-focused intake';
+        else if(checked.includes('movement')) submitBtn.textContent = 'Reserve an energy intake';
+        else submitBtn.textContent = 'Reserve an intake';
+      }
+      form.addEventListener('input',updatePreview);
+      updatePreview();
+
+      // On submit, show lightweight confirmation (no actual submission here if action left as placeholder)
+      form.addEventListener('submit',function(e){
+        // allow real form if PRIMARY_CTA_URL is set; if it contains '#', prevent default and show modal
+        const action = form.getAttribute('action') || '';
+        if(action.indexOf('#')===0 || action.indexOf('mailto:')===0 || action.indexOf('http')===-1){
+          e.preventDefault();
+          preview.textContent = 'Thanks — a short intake is reserved. We will follow up via email to confirm time and next steps.';
+          submitBtn.textContent = 'Booked';
+          submitBtn.disabled = true;
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

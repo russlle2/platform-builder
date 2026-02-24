@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Plans & Blends — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7f6f4;--ink:#222;--muted:#6b6b6b;--accent:#7aa07a;--card:#fff}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;color:var(--ink);background:var(--bg);}
+    header{background:linear-gradient(180deg,rgba(255,255,255,0.6),transparent);backdrop-filter:blur(4px);border-bottom:1px solid rgba(0,0,0,0.04)}
+    .wrap{max-width:1100px;margin:0 auto;padding:28px}
+    nav{display:flex;gap:18px;align-items:center}
+    nav a{color:var(--ink);text-decoration:none;font-weight:600}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start;padding:40px 0}
+    .kicker{color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:1px}
+    h1{margin:8px 0 12px;font-size:28px}
+    .lead{color:var(--muted);line-height:1.5}
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(29,29,29,0.06)}
+    .plans{display:flex;gap:14px;margin-top:18px}
+    .plan{flex:1;padding:18px;border-radius:10px;border:1px solid rgba(0,0,0,0.04)}
+    .price{font-size:22px;font-weight:700;color:var(--accent)}
+    .btn{display:inline-block;padding:10px 14px;border-radius:8px;background:var(--accent);color:white;text-decoration:none;font-weight:700}
+    .small{font-size:13px;color:var(--muted)}
+    .blend-builder{margin-top:18px}
+    label{display:block;margin:8px 0;font-weight:600}
+    .vibes{display:flex;gap:8px;flex-wrap:wrap}
+    .vibe{padding:10px 12px;border-radius:8px;background:#fbfbfb;border:1px solid rgba(0,0,0,0.04);cursor:pointer}
+    .vibe input{display:none}
+    .vibe.selected{outline:2px solid rgba(122,160,122,0.18)}
+    .result{margin-top:12px}
+    textarea{width:100%;height:110px;padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);resize:vertical}
+    footer{padding:40px 0;color:var(--muted);font-size:13px}
+    .pattern{position:fixed;right:0;bottom:0;width:360px;height:360px;opacity:0.07;background-image:url('assets/img/pattern.svg');background-size:cover;pointer-events:none}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav>
+        <a href="index.html">Gather</a>
+        <a href="services.html">Offerings</a>
+        <a href="blends.html">Blends</a>
+        <a href="shop.html">Boutique</a>
+        <a href="pricing.html" aria-current="page">Plans</a>
+        <a href="about.html">Story</a>
+        <a href="book.html">Reserve</a>
+        <a href="contact.html">Reach</a>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <section class="hero">
+      <div>
+        <div class="kicker">Series & Events</div>
+        <h1>Monthly circles, multi-week series, and single-session intensives</h1>
+        <p class="lead">Small-group formats and short series designed around themes: restorative evenings, clarity sessions, and ritual labs. Each offering "may support" relaxation and focused pause with plant-derived aromatic blends. Choose what fits your rhythm.</p>
+
+        <div class="card plans" aria-hidden="false">
+          <div class="plan">
+            <div class="small">Seasonal Circle — subscription</div>
+            <div class="price">$35 / month</div>
+            <p class="small">Monthly gathering, recorded notes, and a seasonal sample blend for at-home use.</p>
+            <a class="btn" href="{{PRIMARY_CTA_URL}}">Join the Circle</a>
+          </div>
+          <div class="plan">
+            <div class="small">Short Series — 4 weeks</div>
+            <div class="price">$160 / series</div>
+            <p class="small">Four sessions with a focused theme and a guided home-practice blend card after each meeting.</p>
+            <a class="btn" href="{{PRIMARY_CTA_URL}}">Reserve Series</a>
+          </div>
+          <div class="plan">
+            <div class="small">One-off Intensive</div>
+            <div class="price">$80 / session</div>
+            <p class="small">A single deep-dive event (60–90 minutes) with a custom blend guide and takeaways.</p>
+            <a class="btn" href="{{PRIMARY_CTA_URL}}">Book an Intensive</a>
+          </div>
+        </div>
+
+        <div style="margin-top:20px" class="card">
+          <h3 style="margin:0 0 8px">Why series?</h3>
+          <p class="small">Rhythmic learning and repeated exposure to gentle aromatic practices can help you build a practical routine. These are not medical treatments — they "may support" wellbeing in a small-group learning context.</p>
+        </div>
+      </div>
+
+      <aside class="card">
+        <h3 style="margin:0 0 8px">Blend Builder</h3>
+        <p class="small">Pick a vibe. The builder returns a friendly blend card and a safe topical dilution guide (non-medical recommendations).</p>
+
+        <div class="blend-builder">
+          <label class="small">Select a vibe</label>
+          <div class="vibes" role="list">
+            <label class="vibe" data-vibe="calming"><input type="radio" name="vibe" value="calming">Calming</label>
+            <label class="vibe" data-vibe="clarity"><input type="radio" name="vibe" value="clarity">Clarity</label>
+            <label class="vibe" data-vibe="sleep"><input type="radio" name="vibe" value="sleep">Sleep-friendly</label>
+            <label class="vibe" data-vibe="uplift"><input type="radio" name="vibe" value="uplift">Uplifting</label>
+            <label class="vibe" data-vibe="ground"><input type="radio" name="vibe" value="ground">Grounding</label>
+          </div>
+
+          <label class="small" style="margin-top:8px">Choose container size</label>
+          <select id="containerSize" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)">
+            <option value="10">10 ml</option>
+            <option value="30">30 ml</option>
+            <option value="50">50 ml</option>
+          </select>
+
+          <div class="result card" id="blendResult" style="display:none">
+            <h4 style="margin:0 0 6px">Blend Card</h4>
+            <div id="blendCardText" class="small"></div>
+            <pre id="dilutionGuide" class="small" style="background:#f4f6f5;padding:10px;border-radius:6px;margin-top:8px;white-space:pre-wrap"></pre>
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button id="copyBlend" class="btn">Copy Blend</button>
+              <button id="newBlend" class="btn" style="background:#ddd;color:var(--ink)">Reset</button>
+            </div>
+          </div>
+        </div>
+
+        <p class="small" style="margin-top:12px">Safety note: These are educational dilution suggestions. Avoid if pregnant, breastfeeding, or for infants without consulting a qualified practitioner. Always patch test and consider pets' sensitivities.</p>
+      </aside>
+    </section>
+
+    <section style="margin-top:22px" class="card">
+      <h3 style="margin:0 0 8px">Quick FAQs</h3>
+      <div class="small">
+        <strong>Refunds:</strong> Small-group series may have limited refunds; contact us at {{EMAIL}}.
+        <br>
+        <strong>Materials:</strong> Blend recipes and notes are provided as plaintext cards for personal, non-commercial use.
+      </div>
+    </section>
+
+    <footer>
+      <div class="small">Questions? Call {{PHONE}} or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      <div class="pattern" aria-hidden="true"></div>
+    </footer>
+  </main>
+
+  <script>
+    // Vibe selection UI
+    document.querySelectorAll('.vibe').forEach(function(label){
+      label.addEventListener('click', function(){
+        document.querySelectorAll('.vibe').forEach(function(l){l.classList.remove('selected')});
+        label.classList.add('selected');
+        label.querySelector('input').checked = true;
+        buildBlend();
+      });
+    });
+
+    document.getElementById('containerSize').addEventListener('change', buildBlend);
+    document.getElementById('newBlend').addEventListener('click', function(){
+      document.querySelectorAll('.vibe').forEach(function(l){l.classList.remove('selected');l.querySelector('input').checked=false});
+      document.getElementById('blendResult').style.display='none';
+    });
+
+    function buildBlend(){
+      var selected = document.querySelector('.vibe.selected');
+      if(!selected) return;
+      var vibe = selected.getAttribute('data-vibe');
+      var size = parseInt(document.getElementById('containerSize').value,10);
+
+      var templates = {
+        calming:{name:'Calming Evening', oils:['Lavender (Lavandula angustifolia)','Sweet Orange (Citrus sinensis)','Frankincense (Boswellia carterii)'],notes:'A gentle, low-heat evening blend.'},
+        clarity:{name:'Clear Mind', oils:['Rosemary (Rosmarinus officinalis)','Lemon (Citrus limon)','Basil (Ocimum basilicum)'],notes:'For a crisp, focused aroma during work or study.'},
+        sleep:{name:'Soft Sleep', oils:['Lavender','Mandarin (Citrus reticulata)','Marjoram (Origanum majorana)'],notes:'A sleep-friendly aroma suggesting relaxation.'},
+        uplift:{name:'Bright Lift', oils:['Grapefruit (Citrus paradisi)','Bergamot (Citrus bergamia)','Sweet Orange'],notes:'A bubbly, cheerful blend for short boosts.'},
+        ground:{name:'Rooted Ground', oils:['Cedarwood (Cedrus atlantica)','Patchouli (Pogostemon cablin)','Vetiver (Vetiveria zizanoides)'],notes:'Warm and anchoring, best in small amounts.'}
+      };
+
+      var tmpl = templates[vibe];
+      // Dilution: guideline drops per 10ml for adult topical use (non-medical educational suggestion)
+      // 1% = ~6 drops/30ml, we'll scale by container size
+      function dropsForPercent(percent){
+        // Use 30ml base: 6 drops for 1% of 30ml. So drops = percent*6/1 * (size/30)
+        return Math.max(1, Math.round(percent * 6 * (size/30)));
+      }
+
+      var dilutionText = 'Suggested topical guidelines (educational):\n- 1% (daily, general): ~' + dropsForPercent(1) + ' drops total of essential oils in ' + size + 'ml carrier.\n- 2% (short-term, occasional): ~' + dropsForPercent(2) + ' drops total.\n- 0.25%–0.5% recommended for older adults or sensitive skin (use patch test).\nAlways perform a patch test and consult guidance for pregnancy, breastfeeding, children, and pets.';
+
+      var card = 'Blend: ' + tmpl.name + '\nOils: ' + tmpl.oils.join(', ') + '\nUse: ' + tmpl.notes + '\nContainer: ' + size + ' ml\n' + dilutionText + '\n\nNote: This is an educational blend card and not medical advice.';
+
+      document.getElementById('blendCardText').textContent = card.replace(/\n/g,'\n');
+      document.getElementById('dilutionGuide').textContent = dilutionText;
+      document.getElementById('blendResult').style.display = 'block';
+    }
+
+    document.getElementById('copyBlend').addEventListener('click', function(){
+      var txt = document.getElementById('blendCardText').textContent;
+      navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(txt).then(function(){
+        alert('Blend card copied to clipboard');
+      }).catch(function(){
+        fallbackCopy txt
+      }) : fallbackCopy(txt);
+      function fallbackCopy(t){
+        var ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy'); alert('Blend card copied') }catch(e){ alert('Copy not supported') } ta.remove();
+      }
+    });
+  </script>
+</body>
+</html>

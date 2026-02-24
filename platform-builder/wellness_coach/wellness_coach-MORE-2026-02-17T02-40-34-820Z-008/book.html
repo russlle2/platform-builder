@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book a VIP Day — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reserve a focused VIP Day to co-design routines and a clear action plan." />
+  <style>
+    :root{--bg:#ffffff;--accent:#2b7a62;--muted:#6b7280;--card:#fbfffb}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:#071127;background:var(--bg)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;border-bottom:1px solid #eef2f4}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#0b5e4b);display:flex;align-items:center;justify-content:center;color:#fff}
+    nav a{margin-left:14px;color:var(--muted);font-weight:700}
+
+    .wrap{max-width:880px;margin:30px auto;padding:20px}
+    .card{background:linear-gradient(180deg,rgba(247,255,250,1),#fff);padding:20px;border-radius:12px;box-shadow:0 24px 48px rgba(10,20,10,0.04)}
+    form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    label{font-weight:700;font-size:13px}
+    input,textarea,select{padding:10px;border-radius:8px;border:1px solid #e6eef0}
+    textarea{grid-column:1 / -1}
+    .full{grid-column:1 / -1}
+    .btn{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;border:none;font-weight:800}
+    .secondary{background:#f6f7f6;color:var(--muted)}
+
+    .info{margin-top:16px;color:var(--muted);font-size:14px}
+
+    .reveal{opacity:0;transform:translateY(12px);transition:opacity 560ms cubic-bezier(.2,.9,.3,1),transform 560ms cubic-bezier(.2,.9,.3,1)}
+    @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none!important}}
+    .reveal.revealed{opacity:1;transform:none}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand"><div class="logo">W</div><div>{{BUSINESS_NAME}}</div></div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Philosophy</a>
+      <a href="pricing.html">Invest</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="card reveal">
+      <h1>Reserve a Focused Renewal Day</h1>
+      <p class="muted">Complete the short form to request a date. We'll follow up to confirm details and send a brief prep guide.</p>
+
+      <form id="booking-form" class="reveal" onsubmit="return false;">
+        <div>
+          <label for="name">Full name</label>
+          <input id="name" name="name" required placeholder="Your name">
+        </div>
+        <div>
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required placeholder="you@example.com">
+        </div>
+
+        <div>
+          <label for="phone">Phone</label>
+          <input id="phone" name="phone" placeholder="{{PHONE}}">
+        </div>
+        <div>
+          <label for="date">Preferred date</label>
+          <input id="date" name="date" type="date">
+        </div>
+
+        <div class="full">
+          <label for="goals">Primary goals for the day</label>
+          <textarea id="goals" name="goals" placeholder="Two or three outcomes you'd like from the day"></textarea>
+        </div>
+
+        <div class="full" style="display:flex;gap:12px;align-items:center">
+          <button class="btn" id="submit">Request a booking</button>
+          <button class="btn secondary" id="contact-phone">Call to arrange</button>
+          <div style="margin-left:auto;color:var(--muted);font-size:13px">Deposit: $800 due on booking</div>
+        </div>
+      </form>
+
+      <div class="info">
+        <p><strong>What's included:</strong> pre-work intake, the full design day, and a 30-day follow-up check-in. No medical advice—only coaching focused on habits and practical frameworks.</p>
+        <p><strong>Need custom scheduling?</strong> Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</p>
+      </div>
+    </section>
+
+    <section class="card reveal" style="margin-top:18px">
+      <h2>Quick availability checker</h2>
+      <p class="muted">Select a rough month and we'll show likely availability. This is a simple scheduler to help start the conversation.</p>
+      <div style="display:flex;gap:12px;margin-top:12px;align-items:center">
+        <select id="month">
+          <option value="">Select month</option>
+          <option>Next 30 days</option>
+          <option>In 1–2 months</option>
+          <option>Later</option>
+        </select>
+        <button class="btn secondary" id="check">Check</button>
+        <div id="avail" style="margin-left:12px;color:var(--muted)"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer style="padding:14px 24px;border-top:1px solid #eef2f4;display:flex;justify-content:space-between">
+    <div class="muted">{{BUSINESS_NAME}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    <div class="muted">Serving {{CITY}}, {{STATE}}</div>
+  </footer>
+
+  <script>
+    // reveal
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if(prefersReduced){document.querySelectorAll('.reveal').forEach(el=>el.classList.add('revealed'));return}
+      const io = new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('revealed');io.unobserve(e.target)}}),{threshold:0.1});
+      document.querySelectorAll('.reveal').forEach(r=>io.observe(r));
+    })();
+
+    // booking interactions
+    (function(){
+      document.getElementById('contact-phone').addEventListener('click',(e)=>{e.preventDefault();window.location.href='tel:{{PHONE}}'});
+      document.getElementById('submit').addEventListener('click',()=>{
+        const name=document.getElementById('name').value.trim();const email=document.getElementById('email').value.trim();
+        if(!name||!email){alert('Please provide name and email to proceed.');return}
+        // simple local mock of submission
+        const payload={name, email, phone:document.getElementById('phone').value, date:document.getElementById('date').value, goals:document.getElementById('goals').value};
+        // store to localStorage as mock
+        const bookings = JSON.parse(localStorage.getItem('bookings'||'[]'))||[];bookings.push(payload);localStorage.setItem('bookings',JSON.stringify(bookings));
+        alert('Thanks — we received your request. We will email next steps to ' + email);
+        document.getElementById('booking-form').reset();
+      });
+
+      document.getElementById('check').addEventListener('click',()=>{
+        const m=document.getElementById('month').value;const el=document.getElementById('avail');
+        if(!m){el.textContent='Pick a month to check';return}
+        // naive availability suggestions
+        if(m.includes('30')){el.textContent='Likely available: 2–3 open days this month';}
+        else if(m.includes('1–2')){el.textContent='Good availability: multiple options';}
+        else{el.textContent='Availability may be limited — contact us to discuss';}
+      });
+    })();
+  </script>
+</body>
+</html>

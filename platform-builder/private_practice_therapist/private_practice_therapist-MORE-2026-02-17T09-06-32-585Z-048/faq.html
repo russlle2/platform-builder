@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FAQ — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--accent:#2f855a;--muted:#475569;--bg:#fffefc}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:#07203b;background:linear-gradient(180deg,#fbfdff,#f7f9fc)}
+    header{padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none;font-weight:600}
+    .container{max-width:900px;margin:20px auto;padding:18px}
+    h1{margin:0 0 10px}
+    .intro{color:var(--muted);margin-bottom:18px}
+    .accordion{border-radius:12px;overflow:hidden}
+    .item{background:white;border-bottom:1px solid #eef2f7}
+    .q{padding:14px 18px;display:flex;justify-content:space-between;cursor:pointer}
+    .a{padding:0 18px 14px;color:var(--muted);line-height:1.4;display:none}
+    .open .a{display:block}
+    .open .q{background:linear-gradient(90deg,rgba(47,133,90,0.06),transparent)}
+    .small{font-size:13px;color:var(--muted)}
+    .crisis{margin-top:18px;padding:12px;border-left:4px solid #f97316;background:#fff7ed;border-radius:6px}
+    .mood{margin:18px 0;display:flex;gap:10px;align-items:center}
+    select{padding:8px;border-radius:8px;border:1px solid #e6eef9}
+  </style>
+</head>
+<body>
+  <header>
+    <div><strong>{{BUSINESS_NAME}}</strong></div>
+    <nav>
+      <a href="index.html">Welcome</a>
+      <a href="about.html">About</a>
+      <a href="book.html">Schedule</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h1>Questions people often ask</h1>
+    <p class="intro">Below are practical answers about sessions, privacy, and what happens if you need urgent help. If you don’t see your question, email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</p>
+
+    <div class="mood">
+      <label for="moodFaq">How are you doing right now?</label>
+      <select id="moodFaq" aria-label="Mood selector for FAQ">
+        <option value="stuck">Stuck / uncertain</option>
+        <option value="overwhelmed">Overwhelmed / intense</option>
+        <option value="planning">Planning / transition</option>
+        <option value="maintenance">Keeping steady</option>
+      </select>
+      <div id="faqRec" class="small">Recommendation: Focused set of sessions</div>
+    </div>
+
+    <section class="accordion" id="faqAcc">
+      <div class="item open">
+        <div class="q" data-key="1"><span>What happens in a first visit?</span><span aria-hidden>▾</span></div>
+        <div class="a">The first visit is time to describe what brought you here, review practical goals, and consider options. We'll talk about scheduling, fees, and what to expect if you continue. You can ask about how I work and what paperwork is needed.</div>
+      </div>
+
+      <div class="item">
+        <div class="q" data-key="2"><span>How private are the sessions?</span><span aria-hidden>▾</span></div>
+        <div class="a">I keep your records and conversations confidential. Exceptions are limited and defined by law: immediate risk to yourself or others, credible suspicion of abuse of a minor or vulnerable person, or a court order. If you have concerns about privacy, we can review them before beginning.</div>
+      </div>
+
+      <div class="item">
+        <div class="q" data-key="3"><span>Am I required to continue?</span><span aria-hidden>▾</span></div>
+        <div class="a">No. Your care is voluntary. We review progress and goals periodically. If the fit isn’t right, I’ll offer referrals and help coordinate next steps.</div>
+      </div>
+
+      <div class="item">
+        <div class="q" data-key="4"><span>What if I’m in crisis between sessions?</span><span aria-hidden>▾</span></div>
+        <div class="a">I am not available as an emergency service. If you are at immediate risk or feel you might harm yourself or someone else, please call local emergency services or your local crisis line right away. If you’re unsure of resources in this area, contact <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> and I will help locate options.</div>
+      </div>
+
+      <div class="item">
+        <div class="q" data-key="5"><span>Billing and insurance?</span><span aria-hidden>▾</span></div>
+        <div class="a">I provide receipts that many clients submit to their insurers. Coverage varies, and I can provide the details you need to check with your plan. Payment questions can be discussed confidentially.</div>
+      </div>
+
+    </section>
+
+    <div class="crisis">
+      <strong style="display:block">If you are in immediate danger</strong>
+      <div class="small">Call local emergency services or the crisis line in your region. I cannot provide immediate crisis response via email or outside scheduled appointments. If you’re unsure who to call, include your current location when contacting local emergency services so they can respond appropriately.</div>
+    </div>
+
+    <p class="small" style="margin-top:12px">Clinical note: I work with adults on a range of concerns. I avoid definitive promises about outcomes — therapy is collaborative and results vary. If your needs are outside my scope, I will help connect you to appropriate care.</p>
+  </main>
+
+  <script>
+    (function(){
+      const acc = document.getElementById('faqAcc');
+      acc.addEventListener('click', (e)=>{
+        const q = e.target.closest('.q'); if(!q) return;
+        const item = q.parentElement; item.classList.toggle('open');
+      });
+
+      const map = {stuck:'Focus Series — a short sequence',overwhelmed:'Stabilization Visit — single session',planning:'Practical Planning — limited series',maintenance:'Care Continuity — regular check-ins'};
+      const sel = document.getElementById('moodFaq'); const rec = document.getElementById('faqRec');
+      function upd(){rec.textContent = 'Recommendation: ' + (map[sel.value]||'Focus Series');}
+      sel.addEventListener('change',upd); upd();
+    })();
+  </script>
+</body>
+</html>

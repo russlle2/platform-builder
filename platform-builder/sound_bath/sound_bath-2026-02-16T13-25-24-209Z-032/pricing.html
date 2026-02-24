@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Rates & Packages — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg1:#041722;--glass:rgba(255,255,255,0.04);--accent:#A8FFF9;--muted:#BEEFF6;--maxw:1000px}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg1),#021219);color:#e7fbff;font-family:Inter,system-ui,Arial}
+    .container{padding:40px;display:flex;flex-direction:column;align-items:center}
+    header{width:100%;max-width:var(--maxw);display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    nav a{color:var(--muted);text-decoration:none;margin-left:14px}
+    .glass{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid rgba(255,255,255,0.05);padding:18px;border-radius:12px}
+    .pack-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+    .pack{padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);border:1px solid rgba(255,255,255,0.03)}
+    .price{font-size:20px;color:#eaffff;font-weight:800}
+    .muted{color:#cfeefb}
+    .cta{margin-top:12px}
+    .btn{background:linear-gradient(90deg,var(--accent),#7EE0C3);color:#052428;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+    .pattern{position:fixed;right:20px;bottom:20px;width:420px;height:420px;opacity:0.08;pointer-events:none}
+    @media (max-width:900px){.pack-grid{grid-template-columns:1fr}.header-actions{display:none}}
+  </style>
+</head>
+<body>
+  <svg class="pattern" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <defs>
+      <linearGradient id="g3" x1="0" x2="1">
+        <stop offset="0" stop-color="#A8FFF9" stop-opacity="0.16"/>
+        <stop offset="1" stop-color="#9BD7FF" stop-opacity="0.06"/>
+      </linearGradient>
+      <pattern id="p3" width="80" height="80" patternUnits="userSpaceOnUse">
+        <rect width="80" height="80" fill="transparent"/>
+        <path d="M0 40 L80 40" stroke="#bff7ee" stroke-opacity="0.12" stroke-width="1"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#g3)"/>
+    <rect width="100%" height="100%" fill="url(#p3)" opacity="0.9"/>
+  </svg>
+
+  <div class="container">
+    <header class="glass" style="width:100%;max-width:var(--maxw)">
+      <div style="font-weight:700;color:var(--accent)">{{BUSINESS_NAME}}</div>
+      <div class="header-actions">
+        <nav>
+          <a href="index.html">Overview</a>
+          <a href="events.html">Sessions</a>
+          <a href="private-sessions.html">Private</a>
+        </nav>
+      </div>
+    </header>
+
+    <main style="width:100%;max-width:var(--maxw)">
+      <section class="glass">
+        <h1 style="margin:0;color:#eaffff">Investment & packages</h1>
+        <p class="muted">Transparent pricing for group and private offerings. Hybrid availability (in-studio and live remote) is indicated on each package.</p>
+      </section>
+
+      <section class="pack-grid">
+        <div class="pack glass">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-weight:700">Community session (drop-in)</div>
+              <div class="muted" style="font-size:13px">Group sound bath — hybrid</div>
+            </div>
+            <div class="price">$35</div>
+          </div>
+          <p class="muted">Single admission. Online stream available; recorded takeaways sent to attendees.</p>
+          <div class="cta"><a class="btn" href="book.html">Book a seat</a></div>
+        </div>
+
+        <div class="pack glass">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-weight:700">Course — four sessions</div>
+              <div class="muted" style="font-size:13px">Series package; recommended for deeper nervous system regulation</div>
+            </div>
+            <div class="price">$120</div>
+          </div>
+          <p class="muted">Includes short between-session support email and priority booking for private sessions.</p>
+          <div class="cta"><a class="btn" href="{{PRIMARY_CTA_URL}}">Reserve package</a></div>
+        </div>
+
+        <div class="pack glass">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-weight:700">Private 60 min (1:1)</div>
+              <div class="muted" style="font-size:13px">Tailored session — in-studio or remote</div>
+            </div>
+            <div class="price">$160</div>
+          </div>
+          <p class="muted">Focused work with instruments such as tuning forks and a wooden monochord, plus intake and integration guidance.</p>
+          <div class="cta"><a class="btn" href="{{PRIMARY_CTA_URL}}">Request private</a></div>
+        </div>
+      </section>
+
+      <section class="glass" style="margin-top:16px">
+        <h2 style="margin:0">Short-form & corporate</h2>
+        <p class="muted">Team resilience sessions (30–45 min) are priced per group. Contact for custom quotes and half-day workshop rates.</p>
+      </section>
+
+      <section class="glass" style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap">
+        <div style="flex:1;min-width:260px">
+          <h3 style="margin:0">Included in all private bookings</h3>
+          <ul class="muted">
+            <li>Pre-session intake and goals alignment.</li>
+            <li>Aftercare notes and practical breathing cues.</li>
+            <li>Option for hybrid connection and high-fidelity stream.</li>
+          </ul>
+        </div>
+        <div style="flex:1;min-width:260px">
+          <h3 style="margin:0">Safety & contraindications</h3>
+          <p class="muted">Please advise if pregnant, have implanted medical devices, are under psychiatric care, or have seizure history. We will adapt sessions or decline when clinically necessary for safety.</p>
+        </div>
+      </section>
+
+      <section class="glass" style="margin-top:16px">
+        <h2 style="margin:0">Instrument focus — curated palette</h2>
+        <p class="muted">Pricing emphasizes the curated sound palette. For example, private sessions commonly use tuning forks, mono-string instruments, and softly struck bowls to create a precise, low-frequency support field.</p>
+      </section>
+
+      <section class="glass" style="margin-top:16px">
+        <h2 style="margin:0">Questions or custom requests?</h2>
+        <p class="muted">Email <a href="mailto:{{EMAIL}}" style="color:#cfeefb;text-decoration:none">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}" style="color:#cfeefb;text-decoration:none">{{PHONE}}</a>. For corporate or site visits, please include expected headcount and desired outcomes.</p>
+        <a class="btn" href="contact.html" style="margin-top:10px;display:inline-block">Contact us</a>
+      </section>
+
+    </main>
+
+    <footer style="width:100%;max-width:var(--maxw);margin-top:18px;color:#bfeeff">
+      <div>{{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • {{PRIMARY_CTA_LABEL}}</div>
+    </footer>
+  </div>
+</body>
+</html>

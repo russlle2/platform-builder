@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Schedule your aromatherapy session with {{PRACTITIONER_NAME}}. Choose a time, share safety notes, and prepare for a calm ritual.">
+  <style>
+    :root{--bg:#fffaf8;--accent:#7a4bff;--muted:#5f5f6b;--card:#fff;--radius:12px;--shadow:0 12px 30px rgba(30,20,40,0.06)}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:linear-gradient(180deg,#fff 0%,#fffaf8 100%);color:#1f1730}
+    .container{max-width:980px;margin:18px auto;padding:20px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    header a{color:var(--muted);text-decoration:none;margin-left:10px;font-weight:600}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:18px;margin-top:18px}
+    .form-card{background:var(--card);padding:18px;border-radius:var(--radius);box-shadow:var(--shadow)}
+    label{display:block;font-weight:700;margin-top:10px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #eee;margin-top:8px;font-size:14px}
+    .btn{display:inline-block;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#ff7aa2);color:white;text-decoration:none;border:none;font-weight:800}
+    .sidebar{background:linear-gradient(180deg,#fff,#fff8ff);padding:16px;border-radius:12px}
+    .slots{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .slot{padding:8px 10px;border-radius:8px;background:#fff;border:1px solid rgba(0,0,0,0.04);font-weight:600;color:var(--muted);cursor:pointer}
+    .slot.selected{background:linear-gradient(90deg,var(--accent),#ff7aa2);color:white}
+    .note{font-size:13px;color:var(--muted);margin-top:8px}
+    footer{margin-top:18px;color:var(--muted);font-size:13px}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}.sidebar{order:-1}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,#7a4bff,#ff7aa2);display:grid;place-items:center;color:white;font-weight:800">A</div>
+        <div>
+          <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:var(--muted)">Schedule a session — {{PRACTITIONER_NAME}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="services.html">Offerings</a>
+        <a href="blends.html">Blends</a>
+        <a href="shop.html">Store</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="about.html">About</a>
+        <a href="book.html">Schedule</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <main class="grid">
+      <section class="form-card">
+        <h2 style="margin-top:0">Book your session</h2>
+        <p class="note">Choose a slot below, fill out your safety notes, and confirm. If you need assistance, call <a href="tel:{{PHONE}}">{{PHONE}}</a>.</p>
+
+        <form id="booking-form" onsubmit="return confirmBooking(event)">
+          <label for="name">Full name</label>
+          <input id="name" name="name" required placeholder="Your name">
+
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required placeholder="you@example.com">
+
+          <label for="phone">Phone</label>
+          <input id="phone" name="phone" placeholder="Optional">
+
+          <label for="service">Service</label>
+          <select id="service" name="service">
+            <option value="discovery">Discovery — 60 min</option>
+            <option value="intensive">Intensive — 5 sessions</option>
+            <option value="monthly">Monthly Ritual</option>
+          </select>
+
+          <label for="notes">Safety notes / allergies / pregnancy / pets</label>
+          <textarea id="notes" name="notes" rows="4" placeholder="Please list allergies, pregnancy or nursing, medications, or household pets. This helps us keep sessions safe."></textarea>
+
+          <input type="hidden" id="slot" name="slot">
+          <div style="margin-top:12px"><button class="btn" type="submit">Confirm Booking</button></div>
+        </form>
+
+        <section style="margin-top:16px">
+          <h4 style="margin:0 0 8px 0">What to expect</h4>
+          <p class="note">A short intake, a scent check, and a tailored blend. No medical advice will be given — sessions are supportive sensory experiences. If pregnant or nursing, please note that in the form so we can avoid contra-indicated oils.</p>
+        </section>
+      </section>
+
+      <aside class="sidebar">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <strong style="font-size:16px">Available times</strong>
+            <div style="font-size:13px;color:var(--muted)">Select one to populate the booking form</div>
+          </div>
+          <div style="font-size:12px;color:var(--muted)">Timezone: local</div>
+        </div>
+
+        <div class="slots" id="slots">
+          <button class="slot" data-slot="2026-02-18T10:00">Thu 10:00</button>
+          <button class="slot" data-slot="2026-02-18T13:00">Thu 13:00</button>
+          <button class="slot" data-slot="2026-02-19T09:30">Fri 09:30</button>
+          <button class="slot" data-slot="2026-02-19T14:00">Fri 14:00</button>
+          <button class="slot" data-slot="2026-02-20T11:00">Sat 11:00</button>
+          <button class="slot" data-slot="2026-02-20T15:00">Sat 15:00</button>
+        </div>
+
+        <div style="margin-top:12px">
+          <strong>Policies</strong>
+          <p class="note" style="margin:8px 0 0 0">Cancellations within 24 hours may forfeit a session. Please arrive fragrance-minimal for the comfort of others. If you have acute illness, please reschedule.</p>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      <div style="margin-top:18px;color:var(--muted)">Still unsure? Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a>.</div>
+    </footer>
+  </div>
+
+  <!-- decorative gradient orb (unique to booking page) -->
+  <svg style="position:fixed;left:-100px;bottom:-120px;opacity:0.12;pointer-events:none" width="420" height="420" viewBox="0 0 420 420" aria-hidden>
+    <defs>
+      <radialGradient id="rg"><stop offset="0" stop-color="#ffd9ec"/><stop offset="1" stop-color="#e9e6ff"/></radialGradient>
+      <filter id="b"><feGaussianBlur stdDeviation="40"/></filter>
+    </defs>
+    <g filter="url(#b)">
+      <circle cx="200" cy="200" r="160" fill="url(#rg)" />
+    </g>
+  </svg>
+
+  <script>
+    // Simple slot picker
+    const slots = document.querySelectorAll('.slot')
+    const slotInput = document.getElementById('slot')
+    slots.forEach(s => s.addEventListener('click', ()=>{
+      slots.forEach(x=>x.classList.remove('selected'))
+      s.classList.add('selected')
+      slotInput.value = s.getAttribute('data-slot')
+    }))
+
+    function confirmBooking(e){
+      e.preventDefault()
+      const form = e.target
+      if(!slotInput.value){alert('Please select a time slot.') ; return false}
+      // Basic confirmation (in a real app we'd POST)
+      alert('Thanks, '+form.name.value+'!\nA confirmation will be sent to '+form.email.value+'.')
+      // redirect to primary cta if provided
+      window.location.href = '{{PRIMARY_CTA_URL}}' || 'index.html'
+      return false
+    }
+  </script>
+</body>
+</html>

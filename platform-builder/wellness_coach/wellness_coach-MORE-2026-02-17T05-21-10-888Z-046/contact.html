@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <meta name='description' content='Reach out to plan your VIP Day or ask about a tailored 30-day roadmap.'>
+  <style>
+    :root{
+      --bg:#fbfbfb; --card:#ffffff; --muted:#6b6b6b; --accent:#1766a0; --accent-2:#1da77a; --glass: rgba(255,255,255,0.7);
+      --radius:14px; --gap:18px; --maxw:1100px;
+    }
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial; color:#222; background:var(--bg);}
+    body{display:flex;align-items:flex-start;justify-content:center;padding:36px 20px 80px;}
+    .wrap{width:100%;max-width:var(--maxw);} 
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none;font-weight:600}
+    nav a.active{color:var(--accent)}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:26px;align-items:start;margin-bottom:22px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.9), var(--card));padding:22px;border-radius:var(--radius);box-shadow:0 6px 30px rgba(20,30,30,0.06)}
+    .hero-left h1{margin:0 0 8px 0;font-size:22px;letter-spacing:-0.4px}
+    .hero-left p{margin:0 0 14px 0;color:var(--muted)}
+    .cta-row{display:flex;gap:10px;align-items:center}
+    .btn{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+    .btn.alt{background:transparent;color:var(--accent);border:2px solid rgba(23,102,160,0.12)}
+    .pattern-clip{background-image:url('assets/img/pattern.svg');background-size:320px;background-repeat:repeat; border-radius:12px;padding:14px}
+
+    /* Mood-to-Method */
+    .mood-section{display:flex;gap:18px;align-items:flex-start}
+    .mood-list{display:flex;flex-direction:column;gap:10px}
+    .mood-item{padding:10px 12px;border-radius:10px;border:1px solid rgba(16,24,32,0.06);cursor:pointer;background:#fff}
+    .mood-item.active{box-shadow:0 6px 20px rgba(16,24,32,0.06);border-color:var(--accent);transform:translateY(-3px)}
+    .method-box{flex:1;padding:14px;border-radius:12px;background:linear-gradient(180deg, rgba(29,167,122,0.06), rgba(23,102,160,0.02));}
+    .method-title{font-weight:800;margin:0 0 8px 0}
+    .method-copy{color:var(--muted);margin:0 0 12px 0}
+
+    /* Progress planner */
+    .planner{display:flex;flex-direction:column;gap:12px}
+    .goals{display:flex;flex-wrap:wrap;gap:10px}
+    .goal{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:#fff;border:1px solid rgba(16,24,32,0.04)}
+    .plan-actions{display:flex;gap:10px;align-items:center}
+    .map-wrap{padding:12px;border-radius:12px;background:linear-gradient(180deg, #fff, #fbfdff);overflow:auto}
+    svg{width:100%;height:120px}
+    .dot{fill:#e6eef7;stroke:#cfe7fb;stroke-width:1}
+    .dot.active{fill:var(--accent-2);stroke:transparent}
+    .path{fill:none;stroke:rgba(23,102,160,0.12);stroke-width:6;stroke-linecap:round}
+
+    /* contact form */
+    form{display:flex;flex-direction:column;gap:10px}
+    input,textarea{padding:10px;border-radius:8px;border:1px solid rgba(16,24,32,0.06)}
+    textarea{min-height:90px}
+    .small{font-size:13px;color:var(--muted)}
+
+    footer{margin-top:20px;color:var(--muted);font-size:13px}
+    @media(max-width:880px){.hero{grid-template-columns:1fr;}.hero-right{order:-1}}
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <header>
+      <div style='display:flex;align-items:center;gap:14px'>
+        <div style='width:52px;height:52px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800'>W</div>
+        <div>
+          <div style='font-weight:800'>{{BUSINESS_NAME}}</div>
+          <div class='small'>Wellbeing planning tailored for your schedule</div>
+        </div>
+      </div>
+      <nav aria-label='Primary navigation'>
+        <a href='index.html'>Home</a>
+        <a href='about.html'>How I Help</a>
+        <a href='services.html'>Offerings</a>
+        <a href='programs.html'>Roadmaps</a>
+        <a href='pricing.html'>Rates</a>
+        <a href='testimonials.html'>Stories</a>
+        <a href='book.html'>Book a Day</a>
+        <a href='contact.html' class='active'>Connect</a>
+      </nav>
+    </header>
+
+    <section class='hero'>
+      <div class='card hero-left'>
+        <h1>Let's turn your next 30 days into a clearer, calmer sequence</h1>
+        <p>{{TAGLINE}}</p>
+        <div class='cta-row'>
+          <a id='primaryCta' class='btn' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a>
+          <a class='btn alt' href='tel:{{PHONE}}'>Call {{PHONE}}</a>
+          <div style='margin-left:auto;color:var(--muted);font-size:13px'>Serving {{CITY}}, {{STATE}}</div>
+        </div>
+      </div>
+
+      <aside class='card hero-right pattern-clip'>
+        <div style='font-weight:800;margin-bottom:8px'>Quick connect</div>
+        <form id='contactForm' onsubmit='return false'>
+          <input id='name' placeholder='Your name' required>
+          <input id='email' placeholder='Email or phone' required>
+          <textarea id='message' placeholder='A quick note — goals, availability, or questions'></textarea>
+          <div style='display:flex;gap:8px;align-items:center'>
+            <button id='sendBtn' class='btn' onclick='fakeSend()'>Send message</button>
+            <button class='btn alt' onclick='fillVIP()' type='button'>Discuss a VIP Day</button>
+          </div>
+          <div class='small' style='margin-top:8px'>Prefer email? {{EMAIL}}</div>
+        </form>
+      </aside>
+    </section>
+
+    <section class='card'>
+      <h2 style='margin:0 0 8px 0'>Mood-to-Method: choose how you feel — get one clear starting approach</h2>
+      <p class='small' style='margin:0 0 12px 0'>Tap a state to see the recommended method and a tailored invite for next steps.</p>
+      <div class='mood-section'>
+        <div class='mood-list' role='list'>
+          <div class='mood-item' data-key='overwhelmed' tabindex='0'>Overwhelmed — slow the noise</div>
+          <div class='mood-item' data-key='stuck' tabindex='0'>Stuck — small momentum</div>
+          <div class='mood-item' data-key='energetic' tabindex='0'>Energetic — channel focus</div>
+          <div class='mood-item' data-key='curious' tabindex='0'>Curious — experiment lightly</div>
+        </div>
+        <div class='method-box'>
+          <div class='method-title' id='methodTitle'>Select a feeling to reveal an approach</div>
+          <div class='method-copy' id='methodCopy'>Try the Mood-to-Method selector to get an actionable micro-plan, plus a tailored booking invitation.</div>
+          <div style='display:flex;gap:10px;align-items:center'>
+            <a id='methodCta' class='btn' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a>
+            <div class='small' style='margin-left:auto' id='methodNote'>VIP Day available</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class='card' style='margin-top:18px'>
+      <h2 style='margin:0 0 8px 0'>Build a 30-day path map</h2>
+      <p class='small' style='margin:0 0 12px 0'>Choose up to 5 focus goals. We’ll sketch a simple, daily plan you can follow or adjust.</p>
+      <div class='planner'>
+        <div class='goals' id='goals'>
+          <label class='goal'><input type='checkbox' value='sleep'> Improved sleep</label>
+          <label class='goal'><input type='checkbox' value='movement'> Short daily movement</label>
+          <label class='goal'><input type='checkbox' value='mindfulness'> 5-min mindfulness</label>
+          <label class='goal'><input type='checkbox' value='nutrition'> Meal check-ins</label>
+          <label class='goal'><input type='checkbox' value='boundaries'> Evening shutdown</label>
+        </div>
+        <div class='plan-actions'>
+          <button class='btn' id='buildPlan' onclick='buildPlan()'>Sketch my 30 days</button>
+          <button class='btn alt' onclick='resetPlan()'>Reset</button>
+          <div class='small' style='margin-left:auto' id='goalCount'>0 selected</div>
+        </div>
+        <div class='map-wrap card'>
+          <svg id='pathMap' viewBox='0 0 1000 120' preserveAspectRatio='xMidYMid meet' aria-hidden='true'>
+            <path id='guidePath' class='path' d='M40 60 C200 10, 400 110, 600 60 C760 20, 920 80, 960 60'></path>
+            <!-- dots will be injected here -->
+          </svg>
+          <div class='small' style='margin-top:8px'>Tap a day to see the micro-habit for that day. Color intensity reflects how many goals touch that day.</div>
+          <div id='dayInfo' class='small' style='margin-top:8px'></div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class='small'>Questions? Call {{PHONE}} or email {{EMAIL}}. All plans emphasize outcomes, habits, and frameworks — not medical advice.</div>
+    </footer>
+  </div>
+
+  <script>
+    // Simple utilities
+    function $(sel){return document.querySelector(sel)}
+    function $all(sel){return Array.from(document.querySelectorAll(sel))}
+
+    // Mood-to-Method data
+    var methods = {
+      overwhelmed: {
+        title: 'Breathe-Map: compress the load',
+        copy: 'We pare tasks to a single, ten-minute micro-habit you can do daily. The aim is lower friction and consistent wins.',
+        cta: 'Book a 60-minute focus session',
+        url: '{{PRIMARY_CTA_URL}}?intent=focus-session'
+      },
+      stuck: {
+        title: 'Momentum Mosaic: tiny compound actions',
+        copy: 'Start three repeatable moves that build a sense of progress. Each day is intentionally tiny and trackable.',
+        cta: 'Start a 30-day map',
+        url: '{{PRIMARY_CTA_URL}}?intent=30-day'
+      },
+      energetic: {
+        title: 'Channel Plan: focus & amplify',
+        copy: 'Turn energy into a concentrated 2–3 week sprint with clear daily commitments and recovery anchors.',
+        cta: 'Claim a sprint outline',
+        url: '{{PRIMARY_CTA_URL}}?intent=sprint'
+      },
+      curious: {
+        title: 'Experiment Lab: low-stakes trials',
+        copy: 'Run short experiments on a few habits, measure subjective effects, and refine what feels sustainable.',
+        cta: 'Try a guided experiment',
+        url: '{{PRIMARY_CTA_URL}}?intent=experiment'
+      }
+    }
+
+    // Mood selection handlers
+    $all('.mood-item').forEach(function(el){
+      el.addEventListener('click',function(){selectMood(el)});
+      el.addEventListener('keypress',function(e){if(e.key==='Enter')selectMood(el)});
+    });
+    function selectMood(el){
+      $all('.mood-item').forEach(function(x){x.classList.remove('active')});
+      el.classList.add('active');
+      var key = el.getAttribute('data-key');
+      var data = methods[key];
+      if(!data) return;
+      $('#methodTitle').textContent = data.title;
+      $('#methodCopy').textContent = data.copy;
+      var cta = $('#methodCta');
+      cta.textContent = data.cta;
+      cta.href = data.url;
+      $('#methodNote').textContent = 'Suggested next step: ' + data.cta;
+      // Also update main primary CTA to feel contextual
+      $('#primaryCta').textContent = data.cta;
+      $('#primaryCta').href = data.url;
+    }
+
+    // Contact form fake send
+    function fakeSend(){
+      var name = $('#name').value || 'Friend';
+      $('#sendBtn').textContent = 'Sending…';
+      setTimeout(function(){
+        $('#sendBtn').textContent = 'Sent';
+        alert('Thanks, ' + name + '. We received your note. Expect a reply within 48 hours.');
+      },700);
+    }
+    function fillVIP(){
+      $('#message').value = 'I\'m interested in a VIP Day. Available dates and goals: \n\n';
+      $('#name').focus();
+    }
+
+    // Planner: build 30-day path map
+    var pathSvg = $('#pathMap');
+    function buildPlan(){
+      var checked = $all('#goals input:checked').map(function(i){return i.value});
+      $('#goalCount').textContent = checked.length + ' selected';
+      if(checked.length===0){alert('Pick at least one focus goal.'); return}
+      renderDots(30,checked);
+    }
+    function resetPlan(){
+      $all('#goals input').forEach(function(i){i.checked=false});
+      $('#goalCount').textContent = '0 selected';
+      clearDots();
+      $('#dayInfo').textContent = '';
+    }
+    // Render dots along the path
+    function renderDots(n,goals){
+      clearDots();
+      var path = document.getElementById('guidePath');
+      var length = path.getTotalLength();
+      for(var i=0;i<n;i++){
+        var pt = path.getPointAtLength((i/(n-1)) * length);
+        var cx = pt.x; var cy = pt.y;
+        var g = document.createElementNS('http://www.w3.org/2000/svg','g');
+        g.setAttribute('transform','translate(' + cx + ',' + cy + ')');
+        var circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        circle.setAttribute('r',8);
+        circle.setAttribute('class','dot');
+        // Color intensity based on how many goals are assigned to that day
+        var intensity = Math.round(goals.length * Math.abs(Math.sin(i/4)));
+        if(intensity>0){circle.classList.add('active')}
+        circle.dataset.day = (i+1);
+        circle.style.cursor = 'pointer';
+        circle.addEventListener('click',function(e){showDay(e.target)});
+        g.appendChild(circle);
+        var label = document.createElementNS('http://www.w3.org/2000/svg','text');
+        label.setAttribute('y',24); label.setAttribute('x',0); label.setAttribute('text-anchor','middle');
+        label.setAttribute('font-size',10); label.setAttribute('fill','#7a7a7a');
+        label.textContent = i+1;
+        g.appendChild(label);
+        pathSvg.appendChild(g);
+      }
+      // store a simple plan model
+      window._plan = makePlanModel(n,goals);
+    }
+    function clearDots(){
+      // remove all children except the guide path
+      var children = Array.from(pathSvg.childNodes);
+      children.forEach(function(node){if(node.id!=='guidePath') pathSvg.removeChild(node)});
+      window._plan = null;
+    }
+    function showDay(target){
+      var day = target.dataset.day;
+      if(!window._plan) return;
+      var note = window._plan[day-1];
+      $('#dayInfo').textContent = 'Day ' + day + ': ' + note.join(' • ');
+    }
+    // make a plan model: distribute goals across days with slight variety
+    function makePlanModel(days,goals){
+      var model = [];
+      for(var d=0;d<days;d++){
+        var row = [];
+        goals.forEach(function(g,idx){
+          // simple rule: schedule goal on days where (d + idx) mod spacing === 0
+          var spacing = Math.max(2, Math.round(7 - idx));
+          if(((d + idx) % spacing) === 0) row.push(habitForGoal(g));
+        });
+        if(row.length===0){ // ensure at least one micro-habit
+          row.push(habitForGoal(goals[d % goals.length]));
+        }
+        model.push(row);
+      }
+      return model;
+    }
+    function habitForGoal(key){
+      var map = {
+        sleep: 'Evening wind-down (15 min)',
+        movement: '10-min walk or stretch',
+        mindfulness: '5-min breathing check-in',
+        nutrition: 'Simple mindful meal habit',
+        boundaries: 'Device-free 30 mins before bed'
+      };
+      return map[key] || 'Micro action';
+    }
+
+    // wire up checkboxes to update count
+    $all('#goals input').forEach(function(ch){ch.addEventListener('change',function(){
+      var cnt = $all('#goals input:checked').length;
+      $('#goalCount').textContent = cnt + ' selected';
+    })});
+
+    // initial render: no plan
+    clearDots();
+  </script>
+</body>
+</html>

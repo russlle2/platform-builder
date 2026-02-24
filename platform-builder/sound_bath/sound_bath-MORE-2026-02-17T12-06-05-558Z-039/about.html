@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7efe6;--accent:#7a4b2b;--muted:#6b6b6b;--card:#fff;--glass:rgba(255,255,255,0.6)}
+    *{box-sizing:border-box}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;line-height:1.45;margin:0;background:linear-gradient(180deg,var(--bg),#efe6db);color:#222}
+    header{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 1.5rem;background:transparent}
+    .brand{display:flex;align-items:center;gap:.75rem}
+    .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#b06b48);display:grid;place-items:center;color:#fff;font-weight:700}
+    nav a{margin-left:1rem;color:var(--muted);text-decoration:none;font-weight:600}
+    .hero{padding:2rem 1.5rem;display:grid;gap:1rem;grid-template-columns:1fr;align-items:center}
+    .hero-inner{max-width:900px}
+    h1{font-size:1.85rem;margin:0;color:var(--accent)}
+    p.lead{margin:.5rem 0;color:var(--muted)}
+
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;padding:1rem}
+    .card{background:var(--card);padding:1rem;border-radius:12px;box-shadow:0 6px 18px rgba(30,20,10,0.06)}
+    .small{font-size:.95rem;color:var(--muted)}
+
+    .cta-row{display:flex;gap:.75rem;margin-top:1rem}
+    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem .9rem;border-radius:8px;border:0;cursor:pointer;font-weight:700}
+    .btn.primary{background:var(--accent);color:#fff}
+    .btn.ghost{background:transparent;border:2px solid rgba(0,0,0,0.05)}
+
+    footer{padding:2rem 1.5rem;color:var(--muted);font-size:.95rem}
+
+    /* guided exercise modal */
+    .modal-backdrop{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(0,0,0,0.35),rgba(0,0,0,0.45));z-index:60}
+    .modal{width:min(680px,94%);background:var(--card);border-radius:14px;padding:1.25rem;box-shadow:0 12px 40px rgba(20,10,0,0.25)}
+    .modal h2{margin:.25rem 0}
+    .steps{display:grid;gap:.75rem}
+    .step{padding:.75rem;border-radius:10px;background:var(--glass)}
+    .timer{display:flex;align-items:center;gap:.75rem}
+    .circle{width:56px;height:56px;border-radius:50%;background:conic-gradient(var(--accent) 0deg,var(--bg) 0deg);display:grid;place-items:center;color:#fff;font-weight:700}
+
+    /* animated reveal */
+    .reveal{opacity:0;transform:translateY(12px);transition:opacity .7s ease,transform .7s ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion: reduce){
+      .reveal{transition:none;opacity:1;transform:none}
+      .circle{transition:none}
+    }
+
+    /* small utilities */
+    .muted{color:var(--muted)}
+    .micro{font-size:.85rem;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">SB</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div class="micro">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav aria-label="Primary Navigation">
+      <a href="index.html">Start</a>
+      <a href="events.html">Gatherings</a>
+      <a href="private-sessions.html">Solo Sessions</a>
+      <a href="pricing.html">Invest</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQ</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-inner">
+        <h1 class="reveal">About the work</h1>
+        <p class="lead reveal">We shape simple frameworks for rest using sonic textures, guided attention, and practical rituals you can carry with you. Sessions are crafted to help you soften toward presence and leave with a clearer orientation.</p>
+        <div class="cta-row reveal">
+          <button class="btn primary" id="open-guided">Try a short exercise</button>
+          <a class="btn ghost" href="book.html">Reserve a space</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid" aria-label="Principles">
+      <article class="card reveal">
+        <h3>What we return to</h3>
+        <p class="small">Rhythm, texture, and steady attention. We use layered tones and light cues to support an inward arc—from settling, through release, to arrival.</p>
+      </article>
+
+      <article class="card reveal">
+        <h3>Where it fits</h3>
+        <p class="small">Evening gatherings, mid-day resets, and brief private sessions for specific intentions like sleep preparation or mental clarity.</p>
+      </article>
+
+      <article class="card reveal">
+        <h3>Who should check in</h3>
+        <p class="small">People looking for a focused container to practice letting go. Please review contraindications in our FAQ before attending.</p>
+      </article>
+    </section>
+
+    <section class="card" style="margin:1rem;padding:1rem;max-width:900px;margin-left:auto;margin-right:auto;" aria-labelledby="process-title">
+      <h2 id="process-title" class="reveal">Our approach</h2>
+      <ol class="small reveal">
+        <li>Arrival & grounding: brief orientation and intention-setting.</li>
+        <li>Layered sound: guided tones, breath cues, and rests.</li>
+        <li>Integration: journaling prompts and optional sharing.</li>
+      </ol>
+      <p class="micro reveal">Sessions run on a steady arc—you can step into the rhythm and step back out with tools to continue at home.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="small">Questions? Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</div>
+    <div class="micro">Serving {{CITY}}, {{STATE}} — <a href="book.html">{{PRIMARY_CTA_LABEL}}</a></div>
+  </footer>
+
+  <!-- Guided exercise modal -->
+  <div id="modal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <button id="close-modal" style="float:right;border:0;background:transparent;font-size:1.1rem;cursor:pointer">✕</button>
+      <h2 id="modal-title">Try a brief practice</h2>
+      <p class="micro">A guided three-part exercise: breathing, quick journaling, and an intention prompt. Designed for a 6–8 minute pocket reset.</p>
+      <div class="steps">
+        <div class="step" data-step="1">
+          <strong>Breath (2 minutes)</strong>
+          <div class="timer" style="margin-top:.5rem">
+            <div class="circle" id="breath-circle">2:00</div>
+            <div class="small">Follow the visual circle as it fills and empties. Inhale on the rise, exhale on the fall.</div>
+          </div>
+        </div>
+        <div class="step" data-step="2">
+          <strong>Journaling (3 minutes)</strong>
+          <div class="small" style="margin-top:.5rem">Write freely about how your body is right now. No judgments—two to three lines is plenty.</div>
+          <textarea id="journal" rows="4" style="width:100%;margin-top:.5rem;border-radius:8px;padding:.6rem;border:1px solid #e6e1dc"></textarea>
+        </div>
+        <div class="step" data-step="3">
+          <strong>Set an intention (30s)</strong>
+          <div class="small" style="margin-top:.5rem">Choose a word or short sentence you can repeat during the day.</div>
+          <div style="margin-top:.5rem">
+            <input id="intention" placeholder="e.g. steady, open, patient" style="width:100%;padding:.5rem;border-radius:8px;border:1px solid #e6e1dc">
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:.5rem;margin-top:.75rem;justify-content:flex-end">
+        <button class="btn" id="cancel">Close</button>
+        <button class="btn primary" id="start">Begin</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Modal flow and breathing timer
+    (function(){
+      const modal = document.getElementById('modal');
+      const open = document.getElementById('open-guided');
+      const close = document.getElementById('close-modal');
+      const cancel = document.getElementById('cancel');
+      const start = document.getElementById('start');
+      const breathCircle = document.getElementById('breath-circle');
+      const journal = document.getElementById('journal');
+      const intention = document.getElementById('intention');
+      let timerId=null;
+
+      function showModal(){ modal.style.display='flex'; modal.setAttribute('aria-hidden','false'); }
+      function hideModal(){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); clearInterval(timerId); breathCircle.style.background='conic-gradient(var(--accent) 0deg,var(--bg) 0deg)'; breathCircle.textContent='2:00'; }
+
+      open.addEventListener('click',showModal);
+      close.addEventListener('click',hideModal);
+      cancel.addEventListener('click',hideModal);
+
+      start.addEventListener('click',function(){
+        // three part timing: 120s breath, 180s journaling, 30s intention
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        // Breath timer
+        let t=120;
+        breathCircle.textContent = formatTime(t);
+        if(!reducedMotion){
+          const stepDeg = 360 / 120; // per second
+          breathCircle.style.background = `conic-gradient(var(--accent) ${0}deg, var(--bg) 0deg)`;
+          timerId = setInterval(()=>{
+            t--;
+            if(t<=0){ clearInterval(timerId); startJournal(); return; }
+            breathCircle.textContent = formatTime(t);
+            const deg = (120 - t) * stepDeg;
+            breathCircle.style.background = `conic-gradient(var(--accent) ${deg}deg, var(--bg) ${deg}deg)`;
+          },1000);
+        } else {
+          // reduced motion: skip visual timer, use setTimeout
+          breathCircle.style.background = 'none';
+          timerId = setTimeout(startJournal,120000);
+        }
+      });
+
+      function startJournal(){
+        // show journaling step and start 3-minute timer in textarea placeholder
+        const step2 = document.querySelector('[data-step="2"]');
+        step2.scrollIntoView({behavior:'smooth',block:'center'});
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        let t=180;
+        const origPlaceholder = journal.placeholder;
+        journal.focus();
+        journal.placeholder = 'Write for 3 minutes...';
+        if(!reducedMotion){
+          let id = setInterval(()=>{
+            t--;
+            if(t<=0){ clearInterval(id); startIntention(); return; }
+            journal.placeholder = `Time left: ${Math.ceil(t/60)}:${String(t%60).padStart(2,'0')}`;
+          },1000);
+        } else {
+          setTimeout(startIntention,180000);
+        }
+      }
+
+      function startIntention(){
+        const step3 = document.querySelector('[data-step="3"]');
+        step3.scrollIntoView({behavior:'smooth',block:'center'});
+        intention.focus();
+        setTimeout(()=>{
+          alert('Practice complete. Carry your intention gently through the day.');
+          hideModal();
+        },30000);
+      }
+
+      function formatTime(seconds){const m=Math.floor(seconds/60);const s=seconds%60;return `${m}:${String(s).padStart(2,'0')}`}
+    })();
+
+    // Scroll-trigger reveal with prefers-reduced-motion
+    (function(){
+      const prefersReduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const items = document.querySelectorAll('.reveal');
+      if(prefersReduce){ items.forEach(i=>i.classList.add('visible')); return; }
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{
+          if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); }
+        });
+      },{threshold:0.12});
+      items.forEach(i=>io.observe(i));
+    })();
+  </script>
+</body>
+</html>

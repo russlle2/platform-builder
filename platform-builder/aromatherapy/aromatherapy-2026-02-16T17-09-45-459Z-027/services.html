@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{BUSINESS_NAME}} — Offerings</title>
+  <style>
+    :root{--bg1:#0f1724;--bg2:#071026;--accent1:#9be3c2;--accent2:#ffd6a5;--muted:#cbd5e1;--card:#0b1720}
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:var(--muted);background:linear-gradient(180deg,var(--bg1),var(--bg2));}
+    header{display:flex;align-items:center;justify-content:space-between;padding:28px 40px;position:relative}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent1),#7bd3ff);display:grid;place-items:center;font-weight:700;color:#052023}
+    nav a{color:rgba(255,255,255,0.85);text-decoration:none;margin-left:18px;font-weight:600}
+    nav a:hover{text-decoration:underline}
+    main{padding:40px;max-width:1100px;margin:0 auto}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:center;margin-top:18px}
+    .hero .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:28px;border-radius:14px;box-shadow:0 6px 30px rgba(2,6,23,0.6)}
+    h1{color:#fff;margin:0 0 6px;font-size:28px;letter-spacing:0.2px}
+    p.lead{color:var(--muted);margin:0 0 12px}
+    .muted-sm{color:#9fb3b1;font-size:14px}
+    .pill{display:inline-block;padding:8px 12px;background:linear-gradient(90deg,rgba(155,227,194,0.12),rgba(255,214,165,0.06));border-radius:999px;color:var(--accent1);font-weight:700}
+    .ritual-list{display:grid;gap:12px;margin-top:18px}
+    .ritual{background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    footer.small{padding:28px;text-align:center;color:#9fb3b1}
+    /* product & pricing */
+    .pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}
+    .price-card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .price{font-size:20px;color:var(--accent2);font-weight:700}
+    .cta{display:inline-block;padding:12px 16px;background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#052023;border-radius:10px;text-decoration:none;font-weight:700}
+    .faq{margin-top:22px}
+    details{background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);margin-bottom:10px}
+    /* subtle pattern */
+    .pattern{position:fixed;right:-120px;top:-80px;opacity:0.08;width:520px;height:520px;pointer-events:none}
+    @media(max-width:880px){.hero{grid-template-columns:1fr;}.pricing-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <!-- inline SVG pattern (unique to services) -->
+  <svg class="pattern" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#7be3c2"/><stop offset="1" stop-color="#ffd6a5"/></linearGradient>
+      <pattern id="p1" width="20" height="20" patternUnits="userSpaceOnUse" patternTransform="rotate(22)">
+        <rect width="20" height="20" fill="rgba(255,255,255,0)"/>
+        <circle cx="4" cy="4" r="1.8" fill="url(#g1)"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#p1)"/>
+    <g transform="translate(30,30) rotate(18)">
+      <path d="M10 10 C40 20, 60 40, 90 10" stroke="url(#g1)" stroke-width="0.8" fill="none" opacity="0.9"/>
+    </g>
+  </svg>
+
+  <header>
+    <div class="brand">
+      <div class="logo">A</div>
+      <div>
+        <div style="font-weight:700;color:#fff">{{BUSINESS_NAME}}</div>
+        <div class="muted-sm">A modern apothecary for calm — {{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Essence Sessions</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Apothecary</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="card">
+        <span class="pill">Personalized Rituals</span>
+        <h1>Guided aromatherapy sessions with {{PRACTITIONER_NAME}}</h1>
+        <p class="lead">We design gentle scent journeys at {{BUSINESS_NAME}} — no medical promises, only careful, sensory-led support for daily wellbeing.</p>
+        <div class="ritual-list">
+          <div class="ritual">
+            <strong>Intake & Intention</strong>
+            <div class="muted-sm">A short conversation about scent history, sensitivities, and your intentions. Safety-first: we review dilution and patch-test protocol.</div>
+          </div>
+          <div class="ritual">
+            <strong>Custom Blend Creation</strong>
+            <div class="muted-sm">Hands-on mixing with clinical-grade carrier choices. Blends are created for aroma preference and situational support, not diagnosis.</div>
+          </div>
+          <div class="ritual">
+            <strong>Guided Inhalation Ritual</strong>
+            <div class="muted-sm">A calm 10–20 minute guided inhalation paired with breathwork. Soothing music, dim light, and grounding techniques included.</div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="card">
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div>
+            <div class="muted-sm">Quick booking</div>
+            <div style="font-weight:700;color:#fff">30–90 minute formats</div>
+          </div>
+          <div>
+            <div class="muted-sm">Phone</div>
+            <div>{{PHONE}}</div>
+          </div>
+          <div>
+            <div class="muted-sm">Email</div>
+            <div>{{EMAIL}}</div>
+          </div>
+          <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </aside>
+    </section>
+
+    <section class="two-col" style="margin-top:24px">
+      <div class="card">
+        <h2 style="color:#fff;margin-top:0">What a session feels like</h2>
+        <p class="muted-sm">A gentle blend of scent, breath, and attention. We'll always prioritize safety: allergens, pregnancy or pet concerns, and personal sensitivities are discussed.</p>
+
+        <div style="margin-top:12px">
+          <h3 style="margin:12px 0 6px;color:var(--accent1)">What to expect</h3>
+          <ul style="color:#9fb3b1;margin:0;padding-left:18px">
+            <li>Warm welcome and intake (5–10 minutes)</li>
+            <li>Patch-test and dilution review before topical use</li>
+            <li>Guided inhalation or roll-on application options</li>
+            <li>Aftercare notes and scent care for home</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="color:var(--accent2);margin-top:0">Scheduling</h3>
+        <p class="muted-sm">Online booking is best. Walk-ins considered by availability. If pregnant, nursing, or planning surgery, please notify us when booking.</p>
+        <div class="pricing-grid" style="margin-top:12px">
+          <div class="price-card">
+            <div style="font-weight:700">Intro — 30 min</div>
+            <div class="price">$65</div>
+            <div style="margin-top:8px;font-size:13px;color:#9fb3b1">Quick intake & single-focus blend</div>
+          </div>
+          <div class="price-card">
+            <div style="font-weight:700">Classic — 60 min</div>
+            <div class="price">$120</div>
+            <div style="margin-top:8px;font-size:13px;color:#9fb3b1">Custom blend + guided ritual</div>
+          </div>
+          <div class="price-card">
+            <div style="font-weight:700">Ritual — 90 min</div>
+            <div class="price">$170</div>
+            <div style="margin-top:8px;font-size:13px;color:#9fb3b1">Extended session and home-care kit</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq">
+      <h3 style="color:#fff">Frequently asked — safety first</h3>
+      <details>
+        <summary>How do you dilute essential oils?</summary>
+        <div class="muted-sm">We recommend conservative dilutions: typically 1–2% for adults for short-term topical use. We never advise home use at undiluted strengths. Specific dilution guidance provided in-session and on product labels.</div>
+      </details>
+      <details>
+        <summary>What is a patch test?</summary>
+        <div class="muted-sm">A patch test is a small topical test on the inner forearm using diluted oil to check for skin sensitivity prior to broader topical use.</div>
+      </details>
+      <details>
+        <summary>Are essential oils safe around pets?</summary>
+        <div class="muted-sm">Many oils can be irritating to animals. We provide guidance on pet-safe choices, ventilation, and avoidance strategies. If you have pets, tell us at booking.</div>
+      </details>
+      <details>
+        <summary>What about pregnancy or nursing?</summary>
+        <div class="muted-sm">Certain oils are avoided in pregnancy and nursing. If you are pregnant, nursing, or seeking fertility support, please inform us before booking. We will adapt or decline topical/aromatherapy approaches as needed to prioritize safety.</div>
+      </details>
+    </section>
+
+    <section style="margin-top:18px;text-align:center">
+      <a class="cta" href="{{PRIMARY_CTA_URL}}">Book a session with {{PRACTITIONER_NAME}}</a>
+      <div style="margin-top:8px;color:#9fb3b1;font-size:13px">Questions? Call {{PHONE}} or email <a href="mailto:{{EMAIL}}" style="color:inherit">{{EMAIL}}</a></div>
+    </section>
+
+  </main>
+
+  <footer class="small">© {{BUSINESS_NAME}} — A sensory practice in {{CITY}}, {{STATE}} · No medical claims, scent support only.</footer>
+</body>
+</html>

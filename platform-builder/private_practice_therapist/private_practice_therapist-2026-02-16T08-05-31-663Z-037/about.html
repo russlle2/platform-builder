@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f0f10;--card:#0e1112;--muted:#9aa3a6;--accent:#c9a76b;--glass:rgba(255,255,255,0.04);--radius:12px;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#e9efe8}
+    body{margin:0;background:linear-gradient(180deg,#071018 0%,#07161b 60%);}
+    .wrap{max-width:1100px;margin:48px auto;padding:36px;display:grid;grid-template-columns:320px 1fr;gap:32px}
+    nav{grid-column:1/3;display:flex;justify-content:space-between;align-items:center}
+    nav .brand{font-weight:700;letter-spacing:0.4px}
+    .nav-links a{color:var(--muted);margin-left:18px;text-decoration:none;font-size:14px}
+    .hero{background:var(--glass);padding:28px;border-radius:16px;display:flex;gap:22px;align-items:center}
+    .hero img{width:220px;height:220px;object-fit:cover;border-radius:12px;background:#07121a;padding:18px}
+    .hero h1{margin:0;font-size:22px}
+    .hero p{color:var(--muted);margin-top:8px}
+    .values,.methods,.objections,.testimonials,.lead{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:22px;border-radius:12px;margin-top:20px}
+    .section-title{font-weight:700;margin-bottom:10px}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.03);color:var(--muted);font-size:13px;margin-right:8px}
+    .cta{display:block;margin-top:18px;background:var(--accent);color:#071018;padding:12px 16px;border-radius:10px;text-decoration:none;font-weight:600;width:max-content}
+    footer{grid-column:1/3;margin-top:26px;color:var(--muted);font-size:13px}
+    .meta{font-size:13px;color:var(--muted);margin-top:8px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="book.html">Work With Me</a>
+        <a href="specialties.html">Specialties</a>
+        <a href="approach.html">Approach</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </nav>
+
+    <main>
+      <section class="hero">
+        <img src="assets/img/avatar.svg" alt="{{THERAPIST_NAME}} portrait" />
+        <div>
+          <h1>Clarity, steady pace — therapy tailored to high-achievers</h1>
+          <p>I’m {{THERAPIST_NAME}}, {{LICENSE}} practicing in {{CITY}}, {{STATE}}. I work with professionals navigating anxiety, transitions, and relationship strain. My practice combines focused, evidence-informed work with practical tools for everyday resilience.</p>
+          <div style="margin-top:12px">
+            <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          </div>
+          <div class="meta">Confidentiality: sessions are confidential within legal limits. For crisis support, call local emergency services or your regional hotline.</div>
+        </div>
+      </section>
+
+      <section class="values">
+        <div class="section-title">Core commitments</div>
+        <div>
+          <span class="pill">Safety</span>
+          <span class="pill">Practicality</span>
+          <span class="pill">Collaboration</span>
+        </div>
+        <p style="color:var(--muted);margin-top:12px">I hold curiosity and structure together: we set measurable goals, track small changes, and adapt as you learn more about what helps. My work is strengths-based and trauma-informed; I do not make medical claims about outcomes.</p>
+      </section>
+
+      <section class="testimonials">
+        <div class="section-title">What clients say</div>
+        <blockquote style="color:var(--muted);margin:12px 0">“Compassionate and direct — helped me find routines that finally stuck.” — Senior Manager</blockquote>
+        <blockquote style="color:var(--muted);margin:12px 0">“Practical frameworks for anxiety that didn’t feel clinical.” — Entrepreneur</blockquote>
+      </section>
+
+      <section class="methods">
+        <div class="section-title">How I work</div>
+        <ul style="color:var(--muted)">
+          <li>Brief, intentional assessments to identify patterns.</li>
+          <li>Integrative methods: cognitive-behavioral tools, somatic awareness, relational reflection.</li>
+          <li>Homework that aligns with your day-to-day constraints.</li>
+        </ul>
+      </section>
+
+      <section class="objections">
+        <div class="section-title">Common concerns</div>
+        <p style="color:var(--muted)">I know starting therapy feels risky. Many clients worry about time, cost, or whether therapy will feel relevant. I’ll talk frankly about scheduling, session length, and pacing so we can choose an approach that fits your life.</p>
+      </section>
+
+      <section class="lead">
+        <div class="section-title">Get a short guide</div>
+        <p style="color:var(--muted)">Download a free two-page guide: "Setting practical mental health goals" — a short companion you can use between sessions.</p>
+        <form action="{{PRIMARY_CTA_URL}}" method="get">
+          <input type="email" name="email" placeholder="Your email" style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit" required />
+          <button class="cta" style="margin-left:8px">Send the guide</button>
+        </form>
+      </section>
+
+      <a href="{{PRIMARY_CTA_URL}}" class="cta" style="display:inline-block;margin-top:18px">Book an initial consult</a>
+
+    </main>
+
+    <aside>
+      <div style="background:var(--card);padding:18px;border-radius:12px;">
+        <h3 style="margin-top:0">About {{THERAPIST_NAME}}</h3>
+        <p style="color:var(--muted);margin-top:8px">Licensed as {{LICENSE}}. Specialties: anxiety, trauma recovery, life transitions, relationship work. Modalities: {{MODALITIES}}.</p>
+        <p style="margin-top:12px"><strong>Availability</strong><br><span style="color:var(--muted)">Telehealth and limited in-person sessions in {{CITY}}, {{STATE}}</span></p>
+        <p style="margin-top:12px"><strong>Contact</strong><br><a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none">{{PHONE}}</a><br><a href="mailto:{{EMAIL}}" style="color:var(--muted);text-decoration:none">{{EMAIL}}</a></p>
+      </div>
+
+      <div style="margin-top:20px;background:linear-gradient(90deg,rgba(201,167,107,0.08),transparent);padding:14px;border-radius:12px">
+        <div style="font-weight:700">Practice approach</div>
+        <div style="color:var(--muted);margin-top:8px">Short-term, solution-focused work, or longer relational exploration — we design the scope together. I do not provide emergency services or medication management.</div>
+      </div>
+    </aside>
+
+    <footer>
+      <div>Privacy & confidentiality: Your information is kept private within legal limits. For immediate danger, please call emergency services or your local crisis line.</div>
+      <div style="margin-top:8px">Scope & boundaries: Therapy here is supportive and non-prescriptive. We do not guarantee outcomes.</div>
+    </footer>
+  </div>
+</body>
+</html>

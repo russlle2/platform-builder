@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Care — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--accent:#6b8e6a;--muted:#6f6f6f;--bg:#fbfbfa;--card:#ffffff}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#222;background:var(--bg)}
+    .nav{display:flex;justify-content:space-between;align-items:center;padding:18px 28px;background:linear-gradient(90deg,rgba(255,255,255,0.6),rgba(255,255,255,0.3));backdrop-filter:blur(6px)}
+    .brand{font-weight:700;color:var(--accent)}
+    .menu{display:flex;gap:14px}
+    .menu a{color:#333;text-decoration:none;padding:6px 10px;border-radius:6px;font-size:15px}
+    .menu a.primary{background:var(--accent);color:#fff}
+
+    .hero{display:grid;grid-template-columns:1fr 420px;align-items:center;gap:28px;padding:56px 48px;position:relative;overflow:hidden}
+    .hero::before{content:"";position:absolute;left:-20%;top:-40%;width:160%;height:120%;background:linear-gradient(135deg,rgba(107,142,106,0.06),rgba(107,142,106,0.02));transform:skewY(-8deg);pointer-events:none}
+    .hero .intro{max-width:60ch}
+    h1{margin:0 0 10px;font-size:28px}
+    p.lead{margin:0;color:var(--muted);line-height:1.5}
+    .cta{margin-top:18px;display:flex;gap:10px}
+    .btn{padding:10px 14px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:#fff;cursor:pointer}
+    .btn.primary{background:var(--accent);color:#fff;border:none}
+
+    /* card list */
+    .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;padding:28px 48px}
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(20,20,20,0.04);border:1px solid rgba(20,20,20,0.03)}
+    .card h3{margin:0 0 8px;font-size:16px}
+    .muted{color:var(--muted);font-size:14px}
+
+    /* planner */
+    .plannerWrap{display:flex;gap:18px;padding:28px 48px}
+    .planner{flex:1;background:linear-gradient(180deg,#fff, #fbfbfb);padding:18px;border-radius:12px;border:1px solid rgba(0,0,0,0.03)}
+    .planner label{display:block;font-weight:600;margin:10px 0 6px}
+    .small{font-size:13px;color:var(--muted)}
+    .toggles{display:flex;gap:8px;flex-wrap:wrap}
+    .toggles button{padding:8px 10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:#fff;cursor:pointer}
+    .toggles button.active{background:var(--accent);color:#fff;border-color:transparent}
+    .summary{white-space:pre-wrap;background:#f7f7f7;padding:12px;border-radius:8px;margin-top:12px;min-height:100px}
+    .actions{display:flex;gap:8px;margin-top:10px}
+
+    /* inventory */
+    .inventory{padding:28px 48px;display:flex;gap:20px}
+    .inventory form{flex:1;background:var(--card);padding:18px;border-radius:12px;border:1px solid rgba(0,0,0,0.03)}
+    .inventory .results{width:360px;background:linear-gradient(180deg,#fff,#fbfbfb);padding:18px;border-radius:12px;border:1px solid rgba(0,0,0,0.03)}
+    .areas{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+    .area label{display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;border:1px dashed rgba(0,0,0,0.03);cursor:pointer;background:#fff}
+    .area input{accent-color:var(--accent)}
+
+    footer{padding:36px 48px;color:var(--muted);font-size:14px}
+
+    /* responsive */
+    @media (max-width:880px){.hero{grid-template-columns:1fr;padding:24px}.cards,.plannerWrap,.inventory{padding:18px}.inventory{flex-direction:column}.inventory .results{width:100%}}
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <div class="menu">
+      <a href="index.html">Begin</a>
+      <a class="primary" href="services.html">Care</a>
+      <a href="conditions.html">Conditions</a>
+      <a href="approach.html">Method</a>
+      <a href="pricing.html">Investment</a>
+      <a href="about.html">Team</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Reach</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="intro">
+      <h1>Integrated sessions shaped around your daily rhythms</h1>
+      <p class="lead">We gather context — how you move, sleep, eat, and breathe — then design short, practical sessions that fit into the life you already lead. Expect guidance that is precise, adaptive, and rooted in curiosity.</p>
+      <div class="cta">
+        <a class="btn primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        <a class="btn" href="book.html">Reserve a discovery call</a>
+      </div>
+    </div>
+
+    <div class="card" aria-hidden="true">
+      <h3>Offer patterns</h3>
+      <p class="muted">Flexible pathways — single consults, short cycles, and ongoing care. Pricing framed as value steps, not rigid tiers.</p>
+      <ul class="muted" style="margin-top:12px;padding-left:18px">
+        <li>Focused Consult — 60–75 min, single-session plan</li>
+        <li>Short Series — 4 session arc: learn + practice</li>
+        <li>Continuity Support — monthly adapt & refine</li>
+      </ul>
+    </div>
+  </header>
+
+  <section class="cards" aria-label="services">
+    <div class="card">
+      <h3>Foundational Review</h3>
+      <p class="muted">A broad intake that surfaces patterns across sleep, digestion, movement, and daily stressors.</p>
+    </div>
+    <div class="card">
+      <h3>Rhythm Reset</h3>
+      <p class="muted">Short cycle focused on sleep and energy distribution across the day.</p>
+    </div>
+    <div class="card">
+      <h3>Digestive Clarity</h3>
+      <p class="muted">Stepwise approach to identify triggers and build sustainable habits.</p>
+    </div>
+    <div class="card">
+      <h3>Daily Balance Plan</h3>
+      <p class="muted">Small actionable experiments you can test in your week and adjust together.</p>
+    </div>
+  </section>
+
+  <section class="plannerWrap" aria-labelledby="plannerTitle">
+    <div class="planner" id="planner">
+      <h3 id="plannerTitle">Session Planner</h3>
+      <p class="small">Assemble a short plan: choose what matters today and how often you want touchpoints.</p>
+
+      <label>Primary focus</label>
+      <div class="toggles" id="focusChoices">
+        <button data-value="Sleep">Sleep</button>
+        <button data-value="Digestive">Digestion</button>
+        <button data-value="Movement">Movement</button>
+        <button data-value="Stress">Stress</button>
+        <button data-value="Energy">Energy</button>
+        <button data-value="Relationships">Relationships</button>
+      </div>
+
+      <label>Session length</label>
+      <div class="toggles" id="lengthChoices">
+        <button data-value="30">30 min</button>
+        <button data-value="60">60 min</button>
+        <button data-value="75">75 min</button>
+      </div>
+
+      <label>Frequency</label>
+      <div class="toggles" id="freqChoices">
+        <button data-value="Single">Single</button>
+        <button data-value="Weekly">Weekly</button>
+        <button data-value="Biweekly">Biweekly</button>
+        <button data-value="Monthly">Monthly</button>
+      </div>
+
+      <label>Modalities to include</label>
+      <div class="toggles" id="modChoices">
+        <button data-value="Functional Nutrition">Nutrition</button>
+        <button data-value="Movement Coaching">Movement</button>
+        <button data-value="Mind-Body Practices">Mind-Body</button>
+        <button data-value="Behavioral Strategies">Behavioral</button>
+      </div>
+
+      <div class="actions">
+        <button class="btn" id="buildBtn">Build plan</button>
+        <button class="btn" id="exportBtn">Copy summary</button>
+      </div>
+
+      <div class="summary" id="planSummary">Your tailored plan will appear here.</div>
+    </div>
+
+    <div class="card" style="width:360px">
+      <h3>How it works</h3>
+      <p class="muted">Use the planner to create a clear, transferable summary you can keep, share, or bring to a first meeting. The export is plaintext for easy notes or email.</p>
+      <hr style="margin:12px 0;border:none;border-top:1px solid #eee">
+      <p class="muted">No commitments here — just a way to translate questions into next steps. Book when ready.</p>
+      <div style="margin-top:12px"><a class="btn primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+    </div>
+  </section>
+
+  <section class="inventory" aria-labelledby="inventoryTitle">
+    <form id="inventoryForm">
+      <h3 id="inventoryTitle">Whole-person inventory</h3>
+      <p class="small">Check areas that feel relevant. We turn your selections into a consultation agenda and a suggested follow-up cadence.</p>
+      <div class="areas">
+        <div class="area"><label><input type="checkbox" value="Sleep"> Sleep quality & timing</label></div>
+        <div class="area"><label><input type="checkbox" value="Digestion"> Digestion & gut symptoms</label></div>
+        <div class="area"><label><input type="checkbox" value="Energy"> Daytime energy</label></div>
+        <div class="area"><label><input type="checkbox" value="Movement"> Movement & strength</label></div>
+        <div class="area"><label><input type="checkbox" value="Mood"> Mood & stress</label></div>
+        <div class="area"><label><input type="checkbox" value="Relationships"> Relationships & boundaries</label></div>
+        <div class="area"><label><input type="checkbox" value="Work"> Work rhythm & demands</label></div>
+        <div class="area"><label><input type="checkbox" value="Nutrition"> Eating patterns</label></div>
+      </div>
+
+      <div style="margin-top:12px"><button type="button" class="btn" id="mapBtn">Create consultation agenda</button></div>
+    </form>
+
+    <div class="results" id="inventoryResults">
+      <h4>Consultation agenda</h4>
+      <div class="summary" id="agenda">Select areas to generate an agenda.</div>
+      <h4 style="margin-top:12px">Suggested follow-up cadence</h4>
+      <div class="summary" id="cadence">Cadence will be suggested after you create agenda.</div>
+      <div style="margin-top:8px" class="actions"><button class="btn" id="copyAgenda">Copy agenda</button></div>
+    </div>
+  </section>
+
+  <section style="padding:28px 48px">
+    <div class="card">
+      <h3>Questions we often hear</h3>
+      <p class="muted">How quickly will I see change? Responses differ — we prioritize a steady plan over quick fixes. Is this evidence-based? We integrate clinical reasoning with habit design. Are supplements required? Not always — often small behavior shifts matter first.</p>
+    </div>
+  </section>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+      <div>© {{BUSINESS_NAME}} — {{CITY}}, {{STATE}}</div>
+      <div>{{PHONE}} · {{EMAIL}}</div>
+    </div>
+  </footer>
+
+<script>
+// Planner logic
+function toggleGroup(wrapper){wrapper.addEventListener('click', function(e){if(e.target.tagName==='BUTTON'){e.target.classList.toggle('active')}})}
+['focusChoices','lengthChoices','freqChoices','modChoices'].forEach(id=>{let el=document.getElementById(id);if(el)toggleGroup(el)})
+
+function collectActive(id){let el=document.getElementById(id);if(!el)return[];let butts=el.querySelectorAll('button.active');let vals=[];butts.forEach(b=>vals.push(b.dataset.value));return vals}
+
+document.getElementById('buildBtn').addEventListener('click', function(){
+  const focus = collectActive('focusChoices');
+  const length = collectActive('lengthChoices')[0] || '60';
+  const freq = collectActive('freqChoices')[0] || 'Single';
+  const mods = collectActive('modChoices');
+
+  const now = new Date();
+  const plan = [];
+  plan.push('Plan created: '+ now.toLocaleString());
+  plan.push('Primary focus: ' + (focus.length? focus.join(', ') : 'General review'));
+  plan.push('Session length: ' + length + ' min');
+  plan.push('Frequency: ' + freq);
+  plan.push('Modalities: ' + (mods.length? mods.join(', ') : 'Tailored selection during consult'));
+  plan.push('Suggested first-session aims:');
+  if(focus.includes('Sleep')) plan.push('- Map bedtime and wake timing; small timing experiments');
+  if(focus.includes('Digestive')) plan.push('- Brief food/symptom review; elimination steps');
+  if(focus.includes('Movement')) plan.push('- Movement baseline; 2 micro-practices for week');
+  if(focus.includes('Stress')) plan.push('- Identify daily triggers; 1 short regulation practice');
+  if(!focus.length) plan.push('- Broad intake and priorities');
+
+  plan.push('\nNotes for next steps:');
+  if(freq==='Single') plan.push('- Single-session summary with 2–3 experiments'); else plan.push('- Iterative adjustments over '+ freq.toLowerCase() + ' sessions');
+
+  document.getElementById('planSummary').textContent = plan.join('\n');
+});
+
+document.getElementById('exportBtn').addEventListener('click', function(){
+  const txt = document.getElementById('planSummary').textContent || '';
+  navigator.clipboard.writeText(txt).then(()=>{alert('Plan copied to clipboard');}, ()=>{alert('Copy failed — select and copy manually')});
+});
+
+// Inventory logic
+function buildAgenda(){
+  const checks = Array.from(document.querySelectorAll('#inventoryForm input[type=checkbox]'))
+    .filter(i=>i.checked).map(i=>i.value);
+  if(!checks.length){document.getElementById('agenda').textContent='No areas selected.';document.getElementById('cadence').textContent='Choose some areas for a recommended cadence.';return}
+
+  const agenda = [];
+  agenda.push('Intake priorities: ' + checks.join(', '));
+  agenda.push('\nTime allocation (60 min first visit):');
+  const per = Math.max(8, Math.floor(60 / checks.length));
+  checks.forEach(c=>agenda.push('- ' + c + ': ' + per + ' min (history, current patterns, one practical step)'));
+
+  agenda.push('\nAssessment steps:');
+  agenda.push('- Review medication & routines');
+  agenda.push('- Quick movement/sleep snapshot');
+  agenda.push('- Agree on 1–3 experiments for next 2 weeks');
+
+  // cadence logic
+  let cadence = '';
+  if(checks.includes('Mood') || checks.includes('Stress')) cadence = 'Weekly 30–60 min for 4–6 weeks recommended to build regulation skills.';
+  else if(checks.length >=4) cadence = 'Biweekly sessions to iterate tests and track patterns over 6–8 weeks.';
+  else cadence = 'One session followed by a 2-week check-in; then monthly adapt as needed.';
+
+  document.getElementById('agenda').textContent = agenda.join('\n');
+  document.getElementById('cadence').textContent = cadence;
+}
+
+document.getElementById('mapBtn').addEventListener('click', buildAgenda);
+
+document.getElementById('copyAgenda').addEventListener('click', function(){
+  const txt = document.getElementById('agenda').textContent + '\n\n' + document.getElementById('cadence').textContent;
+  navigator.clipboard.writeText(txt).then(()=>{alert('Agenda copied.')}, ()=>{alert('Copy failed')});
+});
+</script>
+</body>
+</html>

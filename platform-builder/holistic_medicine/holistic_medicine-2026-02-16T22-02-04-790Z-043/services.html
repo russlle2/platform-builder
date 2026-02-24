@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Services — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Integrative, whole-person services and a membership to support lasting wellbeing.">
+  <style>
+    :root{--accent:#6aa84f;--muted:#6b6b6b;--bg1:#f7fff2;--bg2:#ffffff;--ink:#1b1b1b}
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,Segoe UI,system-ui,Helvetica,Arial;color:var(--ink);background:linear-gradient(180deg,var(--bg1),var(--bg2));}
+    a{color:var(--accent);text-decoration:none}
+    header{position:relative;z-index:5;padding:28px 28px 0;display:flex;align-items:center;justify-content:space-between}
+    nav a{margin:0 12px;font-weight:600;color:rgba(0,0,0,0.65)}
+    .brand{font-weight:700;font-size:1.05rem}
+
+    /* split diagonal hero */
+    .hero-wrap{position:relative;overflow:hidden;margin:18px;border-radius:18px;display:grid;grid-template-columns:1fr 460px;align-items:stretch;min-height:420px}
+    .panel-left{padding:56px 48px;background:linear-gradient(135deg,rgba(106,168,79,0.08),transparent);clip-path:polygon(0 0,85% 0,100% 100%,0 100%)}
+    .panel-right{background:linear-gradient(180deg,rgba(106,168,79,0.06),rgba(106,168,79,0.03));padding:40px;border-left:1px solid rgba(0,0,0,0.03);display:flex;flex-direction:column;justify-content:center}
+
+    h1{margin:0 0 10px;font-size:2rem;line-height:1.05}
+    p.lead{margin:0 0 22px;color:var(--muted);max-width:56ch}
+    .cta{display:inline-block;background:var(--accent);color:#fff;padding:12px 18px;border-radius:10px;font-weight:700}
+
+    .card{background:rgba(255,255,255,0.9);border-radius:12px;padding:18px;box-shadow:0 6px 24px rgba(20,20,20,0.04)}
+    .services-list{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:18px}
+    .service{padding:12px;border-radius:10px;border:1px solid rgba(0,0,0,0.04)}
+    .benefits{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+    .chip{background:rgba(106,168,79,0.12);padding:8px 12px;border-radius:999px;font-weight:600}
+
+    .testimonials{display:flex;gap:12px;margin-top:22px}
+    .testimonials blockquote{margin:0;padding:12px;border-left:3px solid var(--accent);color:var(--muted);background:rgba(250,250,250,0.8);border-radius:8px}
+
+    footer{margin:28px;padding:24px;text-align:center;color:var(--muted);font-size:0.94rem}
+
+    /* decorative SVG */
+    .pattern{position:absolute;inset:0;opacity:0.12;pointer-events:none}
+    @media(max-width:900px){.hero-wrap{grid-template-columns:1fr;padding:18px}.panel-right{order:2}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="/index.html">Home</a>
+      <a href="/services.html">What We Offer</a>
+      <a href="/conditions.html">Care Areas</a>
+      <a href="/approach.html">How We Work</a>
+      <a href="/book.html">Book</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero-wrap" aria-labelledby="services-hero">
+      <svg class="pattern" viewBox="0 0 800 600" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="g1" x1="0" x2="1">
+            <stop offset="0" stop-color="#dff7d9"/>
+            <stop offset="1" stop-color="#ffffff"/>
+          </linearGradient>
+          <pattern id="patternService" width="120" height="120" patternUnits="userSpaceOnUse" patternTransform="rotate(22)">
+            <rect width="60" height="60" fill="rgba(106,168,79,0.05)"/>
+            <circle cx="90" cy="30" r="3" fill="rgba(106,168,79,0.16)"/>
+            <circle cx="30" cy="90" r="2.5" fill="rgba(106,168,79,0.12)"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#patternService)"/>
+      </svg>
+
+      <div class="panel-left">
+        <h1 id="services-hero">Whole-person services that meet you where you are</h1>
+        <p class="lead">At {{BUSINESS_NAME}}, we blend time-tested holistic practices with modern clinical knowledge to support lasting wellbeing. Our membership offers ongoing guidance so small changes compound into real transformation.</p>
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+
+        <div class="card">
+          <strong>Membership highlights</strong>
+          <div class="benefits">
+            <div class="chip">Monthly touchpoints</div>
+            <div class="chip">Personalized plans</div>
+            <div class="chip">Priority booking</div>
+            <div class="chip">Workshops &amp; resources</div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="panel-right">
+        <div class="card">
+          <h3 style="margin-top:0">Services (examples)</h3>
+          <div class="services-list">
+            <div class="service"><strong>Integrative Consults</strong><div style="color:var(--muted)">Comprehensive history, lifestyle, and targeted recommendations.</div></div>
+            <div class="service"><strong>Nutritional Guidance</strong><div style="color:var(--muted)">Food-focused strategies for digestion, energy, and recovery.</div></div>
+            <div class="service"><strong>Stress &amp; Sleep Support</strong><div style="color:var(--muted)">Behavioral tools, relaxation techniques, and sleep hygiene.</div></div>
+            <div class="service"><strong>Mind-Body Coaching</strong><div style="color:var(--muted)">Breath work, movement, and mental resilience practices.</div></div>
+          </div>
+
+          <div style="margin-top:14px;color:var(--muted);font-size:0.95rem">Membership members also receive access to small group sessions, a secure portal for messaging, and discounts on recommended lab work when educational testing is appropriate.</div>
+
+          <div style="margin-top:14px;display:flex;gap:8px">
+            <a class="cta" href="{{PRIMARY_CTA_URL}}">Join the membership</a>
+            <a href="/book.html" style="align-self:center;color:var(--muted);font-weight:700">Book a consult</a>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <strong>Quick testimonial</strong>
+          <blockquote>"Working with {{PRACTITIONER_NAME}} felt like finally being heard — the plan was practical and nourishing." — Satisfied member</blockquote>
+        </div>
+      </aside>
+    </section>
+
+    <section style="padding:28px;max-width:980px;margin:18px auto;">
+      <h2 style="margin-top:0">Why a membership?</h2>
+      <p style="color:var(--muted);">A membership supports momentum. Rather than one-off advice, we structure follow-ups, education, and accountability so adjustments stick. Members often report improved energy regulation, clearer sleep patterns, and better digestion over months.</p>
+
+      <div style="display:flex;gap:12px;margin-top:18px;flex-wrap:wrap;">
+        <div class="card" style="flex:1;min-width:220px">
+          <strong>Education first</strong>
+          <p style="color:var(--muted);margin:8px 0">You’ll learn the why behind each recommendation so you can apply it beyond the clinic.</p>
+        </div>
+        <div class="card" style="flex:1;min-width:220px">
+          <strong>Personalization</strong>
+          <p style="color:var(--muted);margin:8px 0">Plans consider your history, lifestyle, preferences and current evidence.</p>
+        </div>
+        <div class="card" style="flex:1;min-width:220px">
+          <strong>Continuity</strong>
+          <p style="color:var(--muted);margin:8px 0">Progress is tracked and plans evolve as you improve or as needs change.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} — Serving {{CITY}}, {{STATE}} • <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    <div style="margin-top:8px;color:var(--muted);font-size:0.86rem">All services are educational and supportive. We do not promise cures. Personalized recommendations may include evidence-based supplements, lifestyle adjustments, and optional lab education.</div>
+  </footer>
+</body>
+</html>

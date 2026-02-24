@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfdfa;--accent:#8bc8a4;--ink:#0b2b2a;--muted:#677;--card:#fff}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial;background:linear-gradient(180deg,var(--bg),#eef8f5);color:var(--ink);padding:28px}
+    header{display:flex;justify-content:space-between;align-items:center;max-width:1100px;margin:0 auto;padding-bottom:12px}
+    .logoSmall{width:48px;height:48px;border-radius:10px;background:linear-gradient(45deg,var(--accent),#b9e6cf);display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    nav a{margin-left:10px;color:var(--ink);text-decoration:none;padding:6px}
+    main{max-width:1000px;margin:18px auto;background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,255,255,0.95));border-radius:14px;padding:22px;box-shadow:0 8px 20px rgba(10,20,18,0.05)}
+    .lead{display:flex;gap:20px;align-items:flex-start}
+    .lead h1{margin:0;font-size:26px}
+    .bio{margin-top:12px;color:var(--muted)}
+    .framework{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:18px}
+    .pill{background:var(--card);padding:12px;border-radius:10px;box-shadow:0 6px 14px rgba(6,20,18,0.04)}
+    .testimonial{margin-top:18px;padding:14px;border-left:3px solid var(--accent);background:rgba(139,200,164,0.04);border-radius:8px}
+    .cta{display:inline-block;margin-top:14px;background:var(--accent);color:white;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}
+    footer{margin-top:22px;color:var(--muted);font-size:13px}
+    @media(max-width:760px){.framework{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logoSmall">A</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">A mindful aromatherapy practice</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Aromas</a>
+      <a href="shop.html">Store</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="lead">
+      <div style="flex:1">
+        <h1>About the practice</h1>
+        <p class="bio">Founded and led by {{PRACTITIONER_NAME}}, {{BUSINESS_NAME}} offers evidence-aware aromatherapy rooted in safety and person-centered care. We use essential oils thoughtfully: as sensory tools to enhance daily rituals and support wellbeing without medical claims.</p>
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">Book a consultation</a>
+      </div>
+      <aside style="width:260px;padding:12px;background:linear-gradient(180deg,#fff,rgba(255,255,255,0.9));border-radius:12px;box-shadow:0 6px 16px rgba(10,20,18,0.05)">
+        <strong>Location</strong>
+        <div class="small" style="margin-top:6px">{{CITY}}, {{STATE}}</div>
+        <div class="small" style="margin-top:8px">Contact: <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+        <div class="small">Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      </aside>
+    </section>
+
+    <section style="margin-top:18px">
+      <h2 style="margin:0 0 10px 0">An integrative framework</h2>
+      <p class="small">Our approach blends clinical attention and sensory practice. Each client receives a tailored plan that emphasizes safety, education, and practical use.</p>
+
+      <div class="framework">
+        <div class="pill">
+          <h4>1. Assess</h4>
+          <p class="small">Comprehensive intake covering history, household, pets, pregnancy, and sensitivities.</p>
+        </div>
+        <div class="pill">
+          <h4>2. Co‑create</h4>
+          <p class="small">Collaborative blend design with clear dilution and patch-test instructions.</p>
+        </div>
+        <div class="pill">
+          <h4>3. Integrate</h4>
+          <p class="small">Practical usage plans for daily routines, emotional regulation, and product selection.</p>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:20px">
+      <h2>Professional training &amp; ethics</h2>
+      <p class="small">{{PRACTITIONER_NAME}} trained in clinical aromatherapy, focusing on safety-forward education. Services avoid therapeutic claims and emphasize collaboration with healthcare providers when relevant.</p>
+    </section>
+
+    <section style="margin-top:18px">
+      <h2>Client perspectives</h2>
+      <div class="testimonial">
+        "Gentle, knowledgeable, and practical. I learned safe ways to use aromas in my home. The custom roller has become part of my evening routine." — L.R.
+      </div>
+      <div class="testimonial">
+        "Clear guidance on pets and patch tests saved me a lot of worry. The virtual consult was thorough and supportive." — M.T.
+      </div>
+    </section>
+
+    <section style="margin-top:18px">
+      <h2>What we offer</h2>
+      <p class="small">Sessions, custom blends, product guidance, and small-group workshops. We operate hybridly—both in-person appointments in {{CITY}} and remote consultations.</p>
+      <a class="cta" href="book.html">Schedule — {{PRIMARY_CTA_LABEL}}</a>
+    </section>
+
+    <footer>
+      <p class="small">If you have questions about suitability (pregnancy, medications, pets), call <strong>{{PHONE}}</strong> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</p>
+    </footer>
+  </main>
+</body>
+</html>

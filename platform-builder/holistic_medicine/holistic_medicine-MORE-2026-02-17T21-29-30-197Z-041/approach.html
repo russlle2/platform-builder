@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Philosophy & Approach — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f9fbfb;--accent:#3b6a5a;--muted:#5d5d5d}
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:#222}
+    .nav{display:flex;align-items:center;gap:12px;padding:16px;max-width:1100px;margin:0 auto}
+    .brand{font-weight:800;color:var(--accent)}
+    main{max-width:1100px;margin:28px auto;padding:18px}
+    .lead{color:var(--muted);margin-top:6px}
+    .row{display:flex;gap:18px;align-items:flex-start}
+    .col{flex:1}
+    .panel{background:white;padding:16px;border-radius:12px;box-shadow:0 8px 26px rgba(10,10,10,0.04)}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(59,106,90,0.08);color:var(--accent);font-weight:700}
+    .reveal{opacity:0;transform:translateY(14px);transition:all 420ms cubic-bezier(.2,.9,.2,1)}
+    .reveal.revealed{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none;opacity:1;transform:none}}
+    .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:14px}
+    .step{background:linear-gradient(180deg,#fff, #fbfbfb);padding:12px;border-radius:10px}
+    .cta{margin-top:18px}
+  </style>
+</head>
+<body>
+  <div class='nav'>
+    <div class='brand'>{{BUSINESS_NAME}}</div>
+    <nav style='margin-left:12px'>
+      <a href='index.html'>Home</a>
+      <a href='services.html'>Offerings</a>
+      <a href='conditions.html'>Conditions</a>
+      <a href='approach.html' aria-current='page'>Philosophy</a>
+      <a href='book.html'>Book</a>
+    </nav>
+    <div style='margin-left:auto'>
+      <a href='contact.html' style='text-decoration:none;color:var(--muted)'>Contact</a>
+    </div>
+  </div>
+
+  <main>
+    <section class='reveal' data-reveal>
+      <div class='panel'>
+        <span class='pill'>Thoughtful & practical</span>
+        <h1 style='margin:10px 0'>A human-centered way to combine practical therapies</h1>
+        <p class='lead'>We value clarity and small testable changes. Care is collaborative and keeps your life context at the center.</p>
+      </div>
+    </section>
+
+    <section class='row' style='margin-top:18px'>
+      <div class='col reveal' data-reveal>
+        <div class='panel'>
+          <h3>Assessment as a conversation</h3>
+          <p class='small'>Intake is an exploration of what already works for you, what makes things harder, and what fits your schedule. We ask about meds, labs, and life context before suggesting steps.</p>
+          <div class='steps' style='margin-top:12px'>
+            <div class='step'>Listen & map priorities</div>
+            <div class='step'>Review safety & interactions</div>
+            <div class='step'>Suggest small testable changes</div>
+          </div>
+        </div>
+      </div>
+
+      <div class='col reveal' data-reveal>
+        <div class='panel'>
+          <h3>Practical layering</h3>
+          <p class='small'>Rather than large overhauls, we layer modest, evidence-aligned supports—nutrition, movement, brief supplements, and nervous system work—sequenced to be manageable.</p>
+          <p class='small' style='margin-top:8px'>Each step is framed as a hypothesis: try it, track for a short period, and adjust.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class='reveal' data-reveal style='margin-top:18px'>
+      <div class='panel'>
+        <h3>Collaboration & coordination</h3>
+        <p class='small'>We work with your existing clinicians, sharing rationales and keeping safety central. If specialized care or urgent input is needed, we make clear referrals.</p>
+      </div>
+    </section>
+
+    <section class='panel reveal' data-reveal style='margin-top:18px'>
+      <h3>Try a lightweight plan</h3>
+      <p class='small'>If you want to see how the approach feels, start with a short Focus Pack (3 sessions) designed around a single problem. It keeps momentum while limiting commitment.</p>
+      <div class='cta'>
+        <a class='pill' href='services.html'>Explore Focus Packs</a>
+        <a class='pill' href='book.html' style='margin-left:8px;background:rgba(176,124,90,0.08);color:var(--accent)'>Book an intake</a>
+      </div>
+    </section>
+
+    <section class='panel reveal' data-reveal style='margin-top:18px'>
+      <h3>Session Planner</h3>
+      <p class='small'>Quickly draft a plan you can bring to a visit—useful for preparing questions and priorities.</p>
+      <div style='margin-top:8px'>
+        <form id='planner2'>
+          <label style='display:block'>What do you want to address?
+            <input id='p2-issue' type='text' placeholder='eg. Sleep, gut, stress' />
+          </label>
+          <label style='display:block;margin-top:8px'>Desired session cadence
+            <select id='p2-rhythm'><option value='one'>One-off</option><option value='short'>Short series</option><option value='ongoing'>Ongoing</option></select>
+          </label>
+          <div style='margin-top:10px;display:flex;gap:8px'>
+            <button class='pill' type='button' id='p2-build'>Draft</button>
+            <button class='pill' type='button' id='p2-copy' style='background:#888;color:#fff'>Copy</button>
+          </div>
+        </form>
+        <textarea id='p2-summary' readonly rows='5' style='width:100%;margin-top:8px;padding:8px;border-radius:8px;border:1px solid #e6e6e6'></textarea>
+      </div>
+    </section>
+
+    <footer style='margin-top:18px;color:var(--muted)'>
+      <div>Questions? <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a> • {{BUSINESS_NAME}}, {{CITY}} {{STATE}}</div>
+    </footer>
+  </main>
+
+  <script>
+    (function(){
+      // reveal
+      const prefers = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+      const els = document.querySelectorAll('[data-reveal]');
+      if(prefers){ els.forEach(e=>e.classList.add('revealed')); }
+      else{ const io=new IntersectionObserver((entries)=>{ entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('revealed'); io.unobserve(en.target) } }) },{threshold:0.12}); els.forEach(e=>io.observe(e)); }
+
+      // simple planner
+      const b = document.getElementById('p2-build');
+      const c = document.getElementById('p2-copy');
+      const out = document.getElementById('p2-summary');
+      b.addEventListener('click',()=>{
+        const issue = document.getElementById('p2-issue').value.trim()||'General check-in';
+        const r = document.getElementById('p2-rhythm').value;
+        const lines = [];
+        lines.push('{{BUSINESS_NAME}} — Planner');
+        lines.push('Focus: '+issue);
+        lines.push('Cadence: '+(r==='one'?'Single visit': r==='short'?'Short series (3)': 'Ongoing check-ins'));
+        lines.push('Suggested items: review meds & supplements; short, measurable self-tracking; 1–2 small changes to try');
+        out.value = lines.join('\n');
+      });
+      c.addEventListener('click',async()=>{
+        try{ await navigator.clipboard.writeText(out.value); c.textContent='Copied'; setTimeout(()=>c.textContent='Copy',1800) }
+        catch(e){ alert('Unable to copy — select and copy manually.') }
+      });
+    })();
+  </script>
+</body>
+</html>

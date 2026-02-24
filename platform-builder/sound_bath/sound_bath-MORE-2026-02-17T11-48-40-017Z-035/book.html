@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#071617;--card:#0b1312;--accent:#8ce1cc;--muted:#9dbdb2}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:#e8fdf6;background:var(--bg)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:16px 22px}
+    nav a{color:#cfeee6;margin:0 8px;text-decoration:none}
+    main{max-width:980px;margin:20px auto;padding:20px}
+    .columns{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:14px;border-radius:12px}
+    label{display:block;font-weight:700;margin-bottom:6px}
+    select,input[type=date]{width:100%;padding:8px;border-radius:8px;border:none;background:#071312;color:#e8fff7}
+    .seats{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .seat{width:44px;height:44px;border-radius:8px;display:grid;place-items:center;background:#092524;color:#7fd6c4;cursor:pointer}
+    .seat.taken{background:#1b2a2a;color:#3b5954;cursor:not-allowed;opacity:0.6}
+    .seat.selected{background:var(--accent);color:#052f2a}
+    .packing{margin-top:12px}
+    button.btn{background:var(--accent);border:none;padding:10px 12px;border-radius:8px;color:#042f2a;font-weight:700;cursor:pointer}
+    .price{font-size:18px;font-weight:800;color:#dff6ef;margin-top:8px}
+    .small{font-size:13px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div style="width:44px;height:44px;background:#082e2d;border-radius:8px"></div>
+      <div>
+        <div style="color:#fff;font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">Reserve a spot</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="events.html">Gather</a>
+      <a href="pricing.html">Costs</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Reach Out</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="columns">
+      <section>
+        <div class="card">
+          <h2 style="margin-top:0">Reserve your seat</h2>
+          <p class="small">Select a date, pick your seat, and build a quick packing list tailored to how you plan to use the session.</p>
+
+          <form id="bookForm" onsubmit="return false;">
+            <div style="margin-top:12px">
+              <label for="date">Choose a date</label>
+              <select id="date"></select>
+            </div>
+
+            <div style="margin-top:12px">
+              <label>Select seat(s)</label>
+              <div class="seats" id="seats"></div>
+              <div class="small" id="seatNotice">Select 1–4 seats. Availability is simulated locally.</div>
+            </div>
+
+            <div style="margin-top:12px">
+              <label for="intent">Primary intention</label>
+              <select id="intent">
+                <option value="rest">Rest &amp; un-tension</option>
+                <option value="focus">Release to focus</option>
+                <option value="reflect">Private reflection</option>
+                <option value="sleep">Pre-sleep unwind</option>
+              </select>
+            </div>
+
+            <div class="packing" id="packing">
+              <h4 style="margin:10px 0 6px 0">Packing list — suggested</h4>
+              <ul id="packingList" style="padding-left:18px;color:#dff7f0"></ul>
+            </div>
+
+            <div style="margin-top:12px;display:flex;align-items:center;justify-content:space-between">
+              <div>
+                <div class="price" id="total">Total: $0</div>
+                <div class="small">Price per seat is shown below.</div>
+              </div>
+              <div>
+                <button class="btn" id="proceed">{{PRIMARY_CTA_LABEL}}</button>
+              </div>
+            </div>
+
+            <div style="margin-top:10px" class="small">By reserving you agree to our safety guidelines. Contraindications: please consult your provider if pregnant, recently post-operative, have epilepsy, implanted devices, or conditions affected by vibration. See FAQ for more.</div>
+
+          </form>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0 0 8px 0">Simulated calendar</h4>
+          <div id="eventsList" class="small"></div>
+        </div>
+      </section>
+
+      <aside>
+        <div class="card">
+          <h4 style="margin-top:0">Quick details</h4>
+          <p class="small">Sessions run 60 minutes. Suggested price tiers below are framed as "Circle" access. Private sessions are listed on the private page.</p>
+          <ul style="padding-left:18px;color:#dff7f0">
+            <li>Circle Access — $28 / seat</li>
+            <li>Reserved Comfort (front rows) — +$6 / seat</li>
+            <li>Private — see private-sessions.html</li>
+          </ul>
+          <div style="margin-top:12px;font-size:13px;color:var(--muted)">Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • {{PHONE}}</div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    // Booking seat selector + packing list generator (local only)
+    (function(){
+      const seatContainer = document.getElementById('seats');
+      const dateSelect = document.getElementById('date');
+      const packingList = document.getElementById('packingList');
+      const intent = document.getElementById('intent');
+      const totalEl = document.getElementById('total');
+      const proceed = document.getElementById('proceed');
+      const eventsList = document.getElementById('eventsList');
+
+      // seed pseudo-random for deterministic behavior across loads
+      function mulberry32(a) { return function() { var t = a += 0x6D2B79F5; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; }}
+      const rng = mulberry32(2960292377 ^ 0x9e3779b9);
+
+      // create simulated dates
+      const dates = [];
+      for(let i=1;i<=6;i++){ const d=new Date(); d.setDate(d.getDate()+i*3); dates.push(d); }
+      dates.forEach(d=>{ const opt=document.createElement('option'); opt.value=d.toISOString().slice(0,10); opt.textContent=d.toDateString(); dateSelect.appendChild(opt); });
+
+      // simulate seat map (12 seats)
+      function renderSeats(){ seatContainer.innerHTML='';
+        const takenMask = Math.floor(rng()*0xFFF);
+        for(let i=1;i<=12;i++){
+          const btn=document.createElement('div'); btn.className='seat'; btn.textContent=i;
+          const taken = (takenMask >> i) & 1; if(taken){ btn.classList.add('taken'); }
+          btn.dataset.id=i; seatContainer.appendChild(btn);
+        }
+      }
+      renderSeats();
+
+      // pick seats
+      seatContainer.addEventListener('click', e=>{
+        const el = e.target.closest('.seat'); if(!el || el.classList.contains('taken')) return;
+        el.classList.toggle('selected'); computeTotal(); updatePacking();
+      });
+
+      function computeTotal(){
+        const base = 28; const comfortAdd = 6; // pricing model
+        const selected = seatContainer.querySelectorAll('.seat.selected').length;
+        let total = selected * base;
+        // small heuristic: seats 1-3 are 'front' and cost more
+        seatContainer.querySelectorAll('.seat.selected').forEach(s=>{ const id=Number(s.dataset.id); if(id<=3) total += comfortAdd; });
+        totalEl.textContent = 'Total: $' + (total);
+      }
+
+      // Packing list generator based on intention + seat choices
+      function updatePacking(){
+        packingList.innerHTML='';
+        const focus = intent.value;
+        const selected = seatContainer.querySelectorAll('.seat.selected').length;
+        const items = new Set();
+        // base items
+        items.add('Mat or yoga mat'); items.add('Blanket');
+        // adapt to intention
+        if(focus==='rest'){ items.add('Small pillow or neck roll'); items.add('Eye mask'); }
+        if(focus==='focus'){ items.add('Notebook & pen'); items.add('Water bottle'); }
+        if(focus==='reflect'){ items.add('Journal & pen'); items.add('Light sweater'); }
+        if(focus==='sleep'){ items.add('Cozy socks'); items.add('Lavender sachet (optional)'); }
+        // if multiple seats (bringing a friend), suggest extras
+        if(selected>1){ items.add('Shared blanket or extra cushion'); }
+        // if front seats selected, note ear sensitivity
+        Array.from(seatContainer.querySelectorAll('.seat.selected')).forEach(s=>{ if(Number(s.dataset.id)<=3) items.add('Ear-friendly earplugs (recommended for front seating)'); });
+
+        // render
+        items.forEach(it=>{ const li=document.createElement('li'); li.textContent=it; packingList.appendChild(li); });
+      }
+
+      // initial compute
+      computeTotal(); updatePacking();
+
+      // when intent changes
+      intent.addEventListener('change', updatePacking);
+
+      // populate a small events list (next-event module)
+      (function renderEvents(){
+        const next = dates.slice(0,4).map((d,i)=>({date:d, label:['Evening Circle','Midweek Gathering','Late Calm','Weekend Circle'][i%4], spots:Math.floor(rng()*12)}));
+        eventsList.innerHTML = next.map(e=>`<div style="margin-bottom:8px">${e.date.toDateString()} — <strong style="color:#dff7f0">${e.label}</strong> • spots (approx): ${12-e.spots}</div>`).join('');
+      })();
+
+      // proceed -> build a local confirmation and direct to PRIMARY_CTA_URL
+      proceed.addEventListener('click', ()=>{
+        const seats = Array.from(seatContainer.querySelectorAll('.seat.selected')).map(n=>n.dataset.id);
+        if(seats.length===0){ alert('Please select at least one seat.'); return; }
+        const summary = {date:dateSelect.value,seats:seats,intent:intent.value,total:totalEl.textContent};
+        // store locally and then redirect to placeholder URL
+        try{ localStorage.setItem('sb_reservation', JSON.stringify(summary)); }catch(e){ /* ignore */ }
+        // redirect to primary CTA URL placeholder
+        window.location.href = '{{PRIMARY_CTA_URL}}';
+      });
+
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Investment — {{BUSINESS_NAME}}</title>
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#7dd3fc;--muted:#9aa4b2;--glass:rgba(255,255,255,0.04)}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:radial-gradient(1200px 600px at 10% 10%,rgba(125,211,252,0.04),transparent),var(--bg);color:#e6eef6}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);backdrop-filter:blur(6px)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#60a5fa);display:grid;place-items:center;font-weight:700;color:#012;letter-spacing:0.6px}
+    nav a{color:#cfefff;margin-left:18px;text-decoration:none;font-weight:600;font-size:14px}
+    .container{max-width:1050px;margin:36px auto;padding:0 20px}
+    .hero{display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start}
+    .hero .left{padding:28px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:12px}
+    h1{margin:0 0 12px 0;font-size:28px;line-height:1.05}
+    p.lead{margin:0;color:var(--muted)}
+    .cta-row{margin-top:16px;display:flex;gap:12px}
+    .btn{background:var(--accent);color:#04263a;padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:700}
+    .btn.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#cfefff}
+    .price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px}
+    .card{background:linear-gradient(180deg,var(--card),rgba(255,255,255,0.01));padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+    .price{font-size:20px;font-weight:800;color:var(--accent)}
+    .muted{color:var(--muted);font-size:13px}
+    .features{margin-top:12px;font-size:14px}
+    .features li{margin:8px 0}
+    footer{margin-top:40px;padding:26px;border-top:1px solid rgba(255,255,255,0.02);display:flex;justify-content:space-between;align-items:center}
+    .pattern{position:fixed;right:0;top:0;width:320px;height:100%;opacity:0.06;pointer-events:none}
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.6);display:none;align-items:center;justify-content:center;padding:20px}
+    .modal{width:720px;max-width:96%;background:linear-gradient(180deg,#061322,rgba(255,255,255,0.02));border-radius:12px;padding:20px;color:#dff5ff}
+    .tabs{display:flex;gap:8px;margin-bottom:12px}
+    .tab{padding:8px 12px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.03);cursor:pointer}
+    .tab.active{background:rgba(125,211,252,0.08);border-color:rgba(125,211,252,0.25)}
+    .exercise{display:grid;grid-template-columns:220px 1fr;gap:16px}
+    .circle{width:180px;height:180px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 30% 20%,rgba(125,211,252,0.12),transparent)}
+    .timer{font-size:30px;font-weight:800}
+    .print-area{display:none}
+    @media(max-width:880px){.hero{grid-template-columns:1fr}.price-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">W</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">Guided wellbeing intensives for active lives</div>
+      </div>
+    </div>
+    <nav aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="about.html">Origin</a>
+      <a href="services.html">Offerings</a>
+      <a href="programs.html">Journeys</a>
+      <a href="pricing.html">Investment</a>
+      <a href="testimonials.html">Praise</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+      <button class="btn" id="open-exercise" style="margin-left:14px">Try a short practice</button>
+    </nav>
+  </header>
+
+  <img class="pattern" src="/assets/img/pattern.svg" alt="decorative pattern" />
+
+  <main class="container">
+    <section class="hero">
+      <div class="left">
+        <h1>Focused intensives that land clean habits fast</h1>
+        <p class="lead">Practical short-format coaching designed to create useful routines and measurable shifts. Pick the pace that suits your life and leave with a simple plan.</p>
+        <div class="cta-row">
+          <a class="btn" href="book.html">{{PRIMARY_CTA_LABEL}}</a>
+          <button class="btn secondary" id="open-exercise-2">Guided minute</button>
+        </div>
+
+        <div class="price-grid">
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div class="muted">Weekend Reset</div>
+                <div style="font-size:15px;font-weight:700">48-hour intensive</div>
+              </div>
+              <div class="price">$495</div>
+            </div>
+            <ul class="features">
+              <li>Remote deep session + follow-up</li>
+              <li>Clear habit trio with tracking plan</li>
+              <li>Printable checklist and micro-sprints</li>
+            </ul>
+            <div style="margin-top:12px"><button class="btn" onclick="location.href='book.html'">Reserve a weekend</button></div>
+          </div>
+
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div class="muted">Core Momentum</div>
+                <div style="font-size:15px;font-weight:700">4-session intensive</div>
+              </div>
+              <div class="price">$1180</div>
+            </div>
+            <ul class="features">
+              <li>Weekly skill sessions + progress checks</li>
+              <li>Systems for energy, focus, and ease</li>
+              <li>Small daily habits you can keep</li>
+            </ul>
+            <div style="margin-top:12px"><button class="btn" onclick="location.href='book.html'">Book the series</button></div>
+          </div>
+
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div class="muted">Rhythm Sustain</div>
+                <div style="font-size:15px;font-weight:700">8-week guided track</div>
+              </div>
+              <div class="price">$2,400</div>
+            </div>
+            <ul class="features">
+              <li>Weekly coaching + habit diagnostics</li>
+              <li>Templates for routine design and review</li>
+              <li>Accountability loops for steady change</li>
+            </ul>
+            <div style="margin-top:12px"><button class="btn" onclick="location.href='book.html'">Join the track</button></div>
+          </div>
+        </div>
+      </div>
+
+      <aside style="background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);padding:18px;border-radius:12px;align-self:start">
+        <h3 style="margin:0 0 6px 0">What you get</h3>
+        <p class="muted">A compact coaching arc: assessment, two tailored practices, and a 7-day starter you can print and follow.</p>
+        <ul class="features" style="margin-top:12px">
+          <li>Outcome-focused session notes</li>
+          <li>Daily micro-actions with tracking</li>
+          <li>Simple frameworks — not complexity</li>
+        </ul>
+        <div style="margin-top:16px">
+          <a class="btn" href="contact.html">Talk to a planner</a>
+        </div>
+      </aside>
+    </section>
+
+    <section style="margin-top:26px;display:flex;gap:18px;align-items:center">
+      <div style="flex:1;background:var(--glass);padding:14px;border-radius:10px">
+        <strong>Need a quick reset?</strong>
+        <div class="muted" style="margin-top:8px">Try a guided practice — breathing, journaling prompts, or a short intention-setting ritual.</div>
+      </div>
+      <div>
+        <button class="btn" id="open-exercise-3">Open practice</button>
+      </div>
+    </section>
+
+    <footer>
+      <div class="muted">Questions? Call {{PHONE}} • <a href="mailto:{{EMAIL}}" style="color:var(--accent)">{{EMAIL}}</a></div>
+      <div class="muted">Serving {{CITY}}, {{STATE}} — {{BUSINESS_NAME}}</div>
+    </footer>
+  </main>
+
+  <div id="modal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Guided practice">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="font-weight:800">Micro Practice</div>
+        <button id="close-modal" class="tab">Close</button>
+      </div>
+      <div class="tabs">
+        <button class="tab active" data-mode="breath">Breathing</button>
+        <button class="tab" data-mode="journaling">Journaling</button>
+        <button class="tab" data-mode="intention">Intention</button>
+      </div>
+      <div class="exercise">
+        <div>
+          <div class="circle" id="anim-circle"><div class="timer" id="timer-label">00:30</div></div>
+          <div style="margin-top:12px" id="exercise-controls">
+            <button class="btn" id="start-btn">Start</button>
+            <button class="btn secondary" id="stop-btn">Stop</button>
+          </div>
+        </div>
+        <div>
+          <div id="mode-content">
+            <div data-mode="breath">
+              <h4 style="margin:0 0 8px 0">Box breathing (1–2 minutes)</h4>
+              <p class="muted">Follow the circle: inhale, hold, exhale, hold. Adjust the pace to suit you.</p>
+              <div style="margin-top:10px" class="muted">Cycles: <select id="breath-cycles"><option>4 cycles</option><option>6 cycles</option><option>8 cycles</option></select></div>
+            </div>
+            <div data-mode="journaling" style="display:none">
+              <h4 style="margin:0 0 8px 0">Prompted journaling (3 minutes)</h4>
+              <p class="muted">Short timed prompts to surface what matters. Write for the prompt without editing.</p>
+              <ol class="muted" style="margin-top:8px">
+                <li>What matters most this week?</li>
+                <li>One small action that will move that forward?</li>
+                <li>How will I protect time for it?</li>
+              </ol>
+            </div>
+            <div data-mode="intention" style="display:none">
+              <h4 style="margin:0 0 8px 0">Set a short intention</h4>
+              <p class="muted">A 90-second ritual to frame your next block of work or rest.</p>
+              <label class="muted">Write one line intention</label>
+              <input id="intention-input" style="width:100%;padding:8px;margin-top:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#e6eef6" placeholder="I will..." />
+              <div style="margin-top:10px"><button class="btn" id="save-intention">Save intention</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Modal control
+    const modal = document.getElementById('modal');
+    const openBtns = document.querySelectorAll('#open-exercise, #open-exercise-2, #open-exercise-3');
+    openBtns.forEach(b=>b.addEventListener('click',()=>openModal()));
+    document.getElementById('close-modal').addEventListener('click',closeModal);
+    modal.addEventListener('click',(e)=>{ if(e.target===modal) closeModal(); });
+
+    function openModal(){ modal.style.display='flex'; modal.setAttribute('aria-hidden','false'); }
+    function closeModal(){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); stopBreathing(); }
+
+    // Tabs
+    const tabs = document.querySelectorAll('.tabs .tab');
+    const modeSections = document.querySelectorAll('[data-mode]');
+    let currentMode='breath';
+    tabs.forEach(t=>t.addEventListener('click',()=>{
+      tabs.forEach(x=>x.classList.remove('active'));
+      t.classList.add('active');
+      const m = t.getAttribute('data-mode');
+      currentMode=m;
+      modeSections.forEach(s=>{ if(s.getAttribute('data-mode')===m) s.style.display='block'; else s.style.display='none'; });
+      resetTimerForMode(m);
+    }));
+
+    // Breathing timer
+    let breathInterval=null; let breathStep=0; let breathTotal=0; let breathSeconds=0;
+    const timerLabel = document.getElementById('timer-label');
+    const animCircle = document.getElementById('anim-circle');
+    document.getElementById('start-btn').addEventListener('click',startHandler);
+    document.getElementById('stop-btn').addEventListener('click',stopBreathing);
+
+    function resetTimerForMode(mode){ stopBreathing(); if(mode==='breath'){ timerLabel.textContent='00:30'; } else if(mode==='journaling'){ timerLabel.textContent='03:00'; } else { timerLabel.textContent='01:30'; } }
+
+    function startHandler(){ if(currentMode==='breath') startBreathing(); else if(currentMode==='journaling') startJournaling(); else startIntention(); }
+
+    function startBreathing(){ stopBreathing(); const cyclesMap={ '4 cycles':4,'6 cycles':6,'8 cycles':8 };
+      const sel = document.getElementById('breath-cycles'); const cycles = cyclesMap[sel.value]||4; breathTotal=cycles*4; // 4 phases per cycle
+      breathStep=0; breathSeconds=4; timerLabel.textContent=formatTime((cycles*4)*4);
+      breathInterval=setInterval(()=>{
+        breathSeconds--; if(breathSeconds<=0){ breathStep++; if(breathStep>=(cycles*4)){ stopBreathing(); return; } // finished
+          // phases sequence durations: inhale 4, hold 4, exhale 4, hold 4
+          breathSeconds=4;
+        }
+        timerLabel.textContent=formatTime(((cycles*4*4)-(breathStep*4 + (4-breathSeconds))));
+        // animate circle scale
+        const phaseProgress = breathSeconds/4; const scale = 0.8 + (phaseProgress*0.4); animCircle.style.transform=`scale(${scale})`; animCircle.style.transition='transform 350ms linear';
+      },1000);
+    }
+    function stopBreathing(){ if(breathInterval){ clearInterval(breathInterval); breathInterval=null; } timerLabel.textContent='00:00'; animCircle.style.transform='scale(1)'; }
+
+    function startJournaling(){ // simple countdown for 3 minutes
+      stopBreathing(); let sec=180; timerLabel.textContent=formatTime(sec); const jInterval=setInterval(()=>{ sec--; timerLabel.textContent=formatTime(sec); animCircle.style.transform=`scale(${1+0.06*Math.sin(Date.now()/300)})`; if(sec<=0){ clearInterval(jInterval); }
+      },1000);
+    }
+
+    function startIntention(){ stopBreathing(); let sec=90; timerLabel.textContent=formatTime(sec); const iInterval=setInterval(()=>{ sec--; timerLabel.textContent=formatTime(sec); if(sec<=0){ clearInterval(iInterval); }
+      },1000);
+    }
+
+    function formatTime(s){ const mm=Math.floor(s/60); const ss=s%60; return String(mm).padStart(2,'0')+':'+String(ss).padStart(2,'0'); }
+
+    // Intentions
+    document.getElementById('save-intention').addEventListener('click',()=>{
+      const val=document.getElementById('intention-input').value.trim(); if(!val) return alert('Write one clear line for your intention.');
+      localStorage.setItem('latest_intention',val); alert('Saved — try repeating it aloud before you begin.');
+    });
+
+    // Initialize
+    resetTimerForMode('breath');
+  </script>
+</body>
+</html>

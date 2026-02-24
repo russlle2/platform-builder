@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Voices — Client Stories</title>
+  <meta name="description" content="Real accounts of steady habit changes, short and long arcs.">
+  <style>
+    :root{--bg:#fcfcfb;--ink:#101010;--muted:#606060;--accent:#8c6dfd}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;background:var(--bg);color:var(--ink)}
+    .site{max-width:960px;margin:22px auto;padding:18px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:14px;text-decoration:none;color:var(--muted);font-weight:600}
+    .hero{padding:18px 0}
+    h1{margin:0 0 6px 0}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+    .card{background:white;padding:14px;border-radius:12px;border:1px solid rgba(16,16,16,0.04)}
+    .quote{font-style:italic;color:var(--muted)}
+    .meta{font-size:13px;color:var(--muted);margin-top:8px}
+    .cta{margin-top:12px;display:inline-block;padding:8px 12px;background:var(--accent);color:white;border-radius:8px;text-decoration:none}
+    /* small layout changes */
+    @media(max-width:720px){.grid{grid-template-columns:1fr}}
+    /* Pattern header */
+    .pattern{height:56px;border-radius:10px;background:linear-gradient(90deg,#fff,#f7f6ff);display:flex;align-items:center;padding:10px}
+    .tiny{font-size:13px;color:var(--muted)}
+    /* Modal reused */
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(8,8,8,0.36);z-index:60}
+    .modal.open{display:flex}
+    .modal-card{width:520px;max-width:92%;background:#fff;padding:18px;border-radius:12px}
+    .controls{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+  </style>
+</head>
+<body>
+  <div class="site">
+    <header>
+      <div style="display:flex;gap:12px;align-items:center">
+        <div style="width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,#8c6dfd,#6fc3a6);display:grid;place-items:center;color:white;font-weight:700">W</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div class="tiny">Notes on steady practice</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="services.html">Offerings</a>
+        <a href="testimonials.html">Voices</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="pattern">
+        <strong style="margin-right:8px">Client Voices</strong>
+        <div style="color:var(--muted)">Short reports on habit shifts and new daily shapes.</div>
+      </div>
+    </section>
+
+    <section style="margin-top:16px">
+      <div class="grid">
+        <div class="card">
+          <div class="quote">"I stopped waiting for perfect time. The tiny sequence fit my messy mornings."</div>
+          <div class="meta">– L., 38, teacher. Joined a 6-week path focused on micro-routines.</div>
+        </div>
+        <div class="card">
+          <div class="quote">"My days feel steadier. I track three small practices and they pile into calm."</div>
+          <div class="meta">– R., 45, designer. Subscription member.</div>
+        </div>
+        <div class="card">
+          <div class="quote">"The checklist was a game-changer. I print and pin it. Small, visible wins."</div>
+          <div class="meta">– M., 29, student. Used the 7-day generator.</div>
+        </div>
+        <div class="card">
+          <div class="quote">"The coaching gave me a clear structure without heavy rules. Feels like an ongoing nudge."</div>
+          <div class="meta">– S., 52, freelancer. Orchard Intensive alumni.</div>
+        </div>
+      </div>
+
+      <div style="margin-top:18px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+        <a class="cta" href="book.html">Schedule a conversation</a>
+        <button id="openPractice" style="padding:8px 12px;border-radius:8px;border:0;background:#444;color:#fff">Try a micro-practice</button>
+        <a href="pricing.html" style="padding:8px 12px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);text-decoration:none;color:var(--muted)">See offers</a>
+      </div>
+    </section>
+
+    <section style="margin-top:20px">
+      <h3>Real notes, simple outcomes</h3>
+      <p class="tiny">Stories center on small habit adoption, clearer days, and reproducible frameworks. No medical claims — only practical, measurable practices.</p>
+
+      <!-- Habit builder compact -->
+      <div style="margin-top:12px;background:#fff;padding:12px;border-radius:10px;border:1px solid rgba(16,16,16,0.04);">
+        <strong>Create a 7-day checklist</strong>
+        <div style="margin-top:8px;display:flex;gap:8px">
+          <input id="t1" type="text" placeholder="Habit 1" style="padding:8px;border-radius:8px;border:1px solid #eee" />
+          <input id="t2" type="text" placeholder="Habit 2" style="padding:8px;border-radius:8px;border:1px solid #eee" />
+          <button id="tg">Make</button>
+          <button id="tp">Print</button>
+        </div>
+        <div id="tgArea" style="margin-top:10px;display:none;background:linear-gradient(180deg,#fbfff8,#fff);padding:8px;border-radius:8px">
+          <div id="tgGrid" style="display:grid;grid-template-columns:repeat(8,1fr);gap:6px"></div>
+        </div>
+      </div>
+
+    </section>
+
+    <footer style="margin-top:26px;color:var(--muted);font-size:13px">
+      Reach via <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or <a href="tel:{{PHONE}}">{{PHONE}}</a>
+    </footer>
+  </div>
+
+  <div id="modal" class="modal" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <h4 id="mTitle">Micro Practice</h4>
+      <div id="mBody">
+        <div style="margin-top:6px;color:#555">Choose a short guided exercise to reset and return to your day steadier.</div>
+        <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
+          <select id="mSel" style="padding:8px;border-radius:8px">
+            <option value="breath">Breathing — 2 min</option>
+            <option value="journal">Journaling prompt — 5 min</option>
+            <option value="intention">Intention setting — 3 min</option>
+          </select>
+          <button id="mStart">Start</button>
+        </div>
+        <div id="mText" style="margin-top:10px;color:var(--muted)">Press Start to begin a guided timer and prompt.</div>
+        <div class="controls"><button id="mClose">Close</button></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Testimonials: habit generator
+    function id(i){return document.getElementById(i)}
+    id('tg').addEventListener('click',()=>{
+      const a=id('t1').value.trim();
+      const b=id('t2').value.trim();
+      const arr=[a,b].filter(Boolean);
+      const grid=id('tgGrid');grid.innerHTML='';
+      if(arr.length===0){grid.innerHTML='<div style="grid-column:1/-1;padding:8px">Add a habit to build a checklist</div>'}
+      else{
+        grid.innerHTML='';
+        grid.innerHTML+='<div style="font-weight:700;">Day</div>';
+        ['M','T','W','Th','F','Sa','Su'].forEach(d=>grid.innerHTML+='<div style="font-weight:700">'+d+'</div>');
+        arr.forEach(h=>{grid.innerHTML+='<div style="padding:8px;font-weight:600">'+h+'</div>';for(let i=0;i<7;i++)grid.innerHTML+='<div style="display:flex;justify-content:center;align-items:center"><input type="checkbox"></div>';});
+        id('tgArea').style.display='block';
+      }
+    });
+    id('tp').addEventListener('click',()=>window.print());
+
+    // Guided modal logic (simple reuse)
+    const modal = id('modal');
+    const openMind = id('openPractice');
+    const mClose = id('mClose');
+    const mStart = id('mStart');
+    const mSel = id('mSel');
+    const mText = id('mText');
+    openMind.addEventListener('click',()=>{modal.classList.add('open');});
+    mClose.addEventListener('click',()=>{modal.classList.remove('open');});
+    mStart.addEventListener('click',()=>{
+      const sel = mSel.value;
+      const seconds = sel==='breath'?120: sel==='journal'?300:180;
+      mText.textContent = (sel==='breath')? 'Slow inhales and longer exhales. Breathe gently.' : (sel==='journal')? 'Write freely for the time. Prompt: What matters most now?' : 'Select an intention you can remember for the next hour.';
+      let start=Date.now();
+      mStart.disabled=true;
+      const iv = setInterval(()=>{
+        const rem = Math.max(0, seconds - Math.floor((Date.now()-start)/1000));
+        mText.textContent = mText.textContent.split('\n')[0] + ' (' + rem + 's left)';
+        if(rem<=0){clearInterval(iv);mStart.disabled=false;mText.textContent='Done — close when ready.'}
+      },500);
+    });
+    modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('open');});
+  </script>
+</body>
+</html>

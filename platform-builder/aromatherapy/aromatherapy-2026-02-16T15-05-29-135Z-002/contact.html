@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>{{BUSINESS_NAME}} — Get in Touch</title>
+  <meta name='description' content='Reach {{PRACTITIONER_NAME}} for aromatherapy consultations, blends, and VIP day experiences. Safety-first aromatherapy guidance.'>
+  <style>
+    :root{
+      --bg-1: #f6fbf8;
+      --accent: #4a6b54;
+      --muted: #7d8b7a;
+      --card: #ffffff;
+      --glass: rgba(255,255,255,0.7);
+      --cta: #2d8f6f;
+      --accent-2: #86c9a9;
+      --max-width: 1100px;
+      --radius: 14px;
+      --shadow: 0 10px 30px rgba(33,44,29,0.08);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      background: linear-gradient(180deg,var(--bg-1),#f0f7f2);
+      color: #1f2a23; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+      line-height:1.45; padding:32px;
+      display:flex; justify-content:center;
+    }
+    .shell{width:100%;max-width:var(--max-width);position:relative}
+
+    /* Decorative SVG pattern layered behind content */
+    .svg-bg{position:fixed;inset:0;z-index:-1;opacity:0.12;pointer-events:none}
+    .svg-bg svg{width:100%;height:100%}
+
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 8px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:54px;height:54px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;box-shadow:var(--shadow)}
+    nav a{margin-left:16px;color:var(--muted);text-decoration:none;font-weight:600;font-size:14px}
+    nav a.cta{background:var(--cta);color:white;padding:10px 14px;border-radius:10px;text-decoration:none}
+
+    main{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:start}
+    .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px}
+
+    /* HERO */
+    .hero{display:flex;flex-direction:column;gap:12px;padding:28px;background:linear-gradient(180deg,rgba(255,255,255,0.6),var(--glass));border-radius:18px}
+    .hero h1{margin:0;font-size:28px;color:var(--accent)}
+    .hero p{margin:0;color:var(--muted)}
+    .hero .actions{margin-top:12px}
+    .btn{display:inline-block;background:var(--cta);color:white;padding:12px 16px;border-radius:10px;text-decoration:none;font-weight:700}
+    .btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(34,52,38,0.06)}
+
+    /* SOCIAL PROOF */
+    .social{display:flex;gap:12px;margin-top:16px}
+    .social .pill{background:linear-gradient(90deg,rgba(134,201,169,0.12),rgba(74,107,84,0.06));padding:8px 12px;border-radius:999px;color:var(--accent);font-weight:600}
+
+    /* CONTACT FORM */
+    form{display:flex;flex-direction:column;gap:12px}
+    label{font-size:13px;color:var(--muted)}
+    input,textarea,select{padding:10px;border-radius:10px;border:1px solid #e6efe7;background:white}
+    textarea{min-height:120px;resize:vertical}
+    .meta{display:flex;gap:12px}
+    .meta > *{flex:1}
+
+    /* BENEFITS GRID */
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+    .tile{padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#fbfff9);border:1px solid rgba(33,44,29,0.03)}
+    .tile h4{margin:0 0 6px 0;color:var(--accent)}
+    .tile p{margin:0;color:var(--muted);font-size:14px}
+
+    /* PROCESS */
+    .steps{display:flex;gap:12px;margin-top:18px}
+    .step{flex:1;padding:12px;border-radius:10px;background:#fff}
+    .step h5{margin:0 0 6px 0;color:var(--accent)}
+
+    /* FAQ */
+    .faq{margin-top:18px}
+    .q{margin-bottom:10px}
+    .q summary{font-weight:700;color:var(--accent);cursor:pointer}
+    details{background:linear-gradient(180deg,rgba(255,255,255,0.7),transparent);padding:10px;border-radius:8px}
+
+    /* LEAD MAGNET */
+    .magnet{display:flex;gap:12px;align-items:center;margin-top:18px;padding:12px;border-radius:12px;background:linear-gradient(90deg,rgba(45,143,111,0.06),rgba(134,201,169,0.03))}
+
+    footer{margin-top:28px;padding:14px;color:var(--muted);font-size:13px}
+
+    @media (max-width:980px){
+      main{grid-template-columns:1fr;}
+      .grid{grid-template-columns:1fr 1fr}
+      header{padding:8px}
+    }
+    @media (max-width:560px){
+      .grid{grid-template-columns:1fr}
+      nav a{display:none}
+      nav a.cta{display:inline-block}
+    }
+  </style>
+</head>
+<body>
+  <div class='svg-bg' aria-hidden='true'>
+    <svg viewBox='0 0 1200 800' preserveAspectRatio='xMidYMid slice' xmlns='http://www.w3.org/2000/svg' role='img' aria-label='Background pattern'>
+      <defs>
+        <linearGradient id='g1' x1='0' x2='1'>
+          <stop offset='0' stop-color='#e8f7ee'/>
+          <stop offset='1' stop-color='#f4fbf7'/>
+        </linearGradient>
+        <pattern id='p1' width='120' height='120' patternUnits='userSpaceOnUse' patternTransform='rotate(22)'>
+          <rect width='120' height='120' fill='url(#g1)' />
+          <path d='M0 60 Q30 30 60 60 T120 60' stroke='#d7efe2' stroke-width='2' fill='none' opacity='0.9' />
+          <circle cx='30' cy='90' r='2.6' fill='#bfe3c9' />
+          <circle cx='90' cy='30' r='2.6' fill='#bfe3c9' />
+        </pattern>
+      </defs>
+      <rect width='100%' height='100%' fill='url(#p1)' />
+      <g transform='translate(980,120) rotate(16)'>
+        <ellipse cx='0' cy='0' rx='200' ry='80' fill='rgba(45,143,111,0.06)' />
+      </g>
+    </svg>
+  </div>
+
+  <div class='shell'>
+    <header>
+      <div class='brand'>
+        <div class='logo' aria-hidden='true'>A</div>
+        <div>
+          <div style='font-size:15px;font-weight:800;color:var(--accent)'>{{BUSINESS_NAME}}</div>
+          <div style='font-size:12px;color:var(--muted)'>{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav aria-label='Primary navigation'>
+        <a href='index.html'>Home</a>
+        <a href='services.html'>Offerings</a>
+        <a href='blends.html'>Blends</a>
+        <a href='shop.html'>Market</a>
+        <a href='pricing.html'>Fees</a>
+        <a href='about.html'>Meet</a>
+        <a href='book.html'>Reserve</a>
+        <a href='contact.html' class='cta'>Get in Touch</a>
+      </nav>
+    </header>
+
+    <main>
+      <section>
+        <div class='card hero' aria-labelledby='hero-heading'>
+          <h1 id='hero-heading'>Hello from {{PRACTITIONER_NAME}} — let's design your scent strategy</h1>
+          <p>For calm, clarity, and daily rituals that honor safety and scent. I offer tailored sessions and a VIP day to build personalized blends and routines. No medical diagnosis—education and supportive aromatherapy only.</p>
+          <div class='social' aria-hidden='false'>
+            <div class='pill'>Trusted across {{CITY}}, {{STATE}}</div>
+            <div class='pill'>Rated 5.0 by local clients</div>
+            <div class='pill'>Focused on safety & dilution best practices</div>
+          </div>
+
+          <div class='grid' role='list' aria-label='Core benefits'>
+            <div class='tile' role='listitem'>
+              <h4>Custom blends</h4>
+              <p>Formulations matched to preferences and lifestyle with safety-first dilution guidance.</p>
+            </div>
+            <div class='tile' role='listitem'>
+              <h4>Practical routines</h4>
+              <p>Easy, habit-friendly practices you can use at home or on the go.</p>
+            </div>
+            <div class='tile' role='listitem'>
+              <h4>VIP Day option</h4>
+              <p>Concentrated half- or full-day sessions for busy clients who want focused results.</p>
+            </div>
+          </div>
+
+          <div class='steps' aria-hidden='false'>
+            <div class='step'>
+              <h5>1) Reach out</h5>
+              <p class='muted'>Tell me a bit about you and your goals; I’ll suggest a pathway.</p>
+            </div>
+            <div class='step'>
+              <h5>2) Consult & test</h5>
+              <p class='muted'>We go through safety screening and a patch-test plan where appropriate.</p>
+            </div>
+            <div class='step'>
+              <h5>3) Blend & apply</h5>
+              <p class='muted'>Receive tailored blends and simple integration steps for everyday use.</p>
+            </div>
+          </div>
+
+          <div style='margin-top:14px'>
+            <a class='btn' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a>
+            <a class='btn ghost' href='book.html' style='margin-left:8px'>Book a consult</a>
+          </div>
+        </div>
+
+        <div class='card' style='margin-top:18px'>
+          <h3 style='margin-top:0;color:var(--accent)'>Frequently asked — safety highlights</h3>
+          <div class='faq'>
+            <details class='q'>
+              <summary>How should I dilute essential oils?</summary>
+              <div>
+                <p>Dilution depends on age, sensitivity, and application. Typical topical dilutions range from 0.5–5% for adults; children, elders, and sensitive skin require lower percentages. I will recommend exact ratios during consultation. Avoid undiluted application unless guided by a licensed professional.</p>
+              </div>
+            </details>
+
+            <details class='q'>
+              <summary>Do I need to patch test?</summary>
+              <div>
+                <p>Yes. A patch test helps identify skin sensitivity. We’ll go over a simple protocol during intake: apply a diluted amount to a small area, wait 24 hours, and observe for irritation.</p>
+              </div>
+            </details>
+
+            <details class='q'>
+              <summary>Are essential oils safe around pets?</summary>
+              <div>
+                <p>Some oils can affect animals. We follow pet-safe guidelines and will tailor recommendations to your household. If you have cats, birds, or other sensitive animals, mention them at booking so we can suggest safe alternatives and diffusion practices.</p>
+              </div>
+            </details>
+
+            <details class='q'>
+              <summary>What about pregnancy and nursing?</summary>
+              <div>
+                <p>Pregnancy and lactation require extra caution. Certain oils and practices are not recommended. I provide pregnancy-safe guidance and a referral path when appropriate; we never make medical claims.</p>
+              </div>
+            </details>
+          </div>
+        </div>
+
+      </section>
+
+      <aside>
+        <div class='card'>
+          <h3 style='margin-top:0;color:var(--accent)'>Contact & Quick Inquiry</h3>
+          <p style='margin-top:0;color:var(--muted)'>Prefer a tailored reply? Fill the form and include timing for a consult. Phone: <strong>{{PHONE}}</strong></p>
+
+          <form id='contactForm' autocomplete='on'>
+            <label for='name'>Your name</label>
+            <input id='name' name='name' type='text' placeholder='First & Last' required>
+
+            <label for='email'>Email</label>
+            <input id='email' name='email' type='email' placeholder='you@example.com' required>
+
+            <div class='meta'>
+              <div>
+                <label for='phone'>Phone</label>
+                <input id='phone' name='phone' type='tel' placeholder='Optional'>
+              </div>
+              <div>
+                <label for='visit'>Preferred contact</label>
+                <select id='visit' name='visit'>
+                  <option>Email</option>
+                  <option>Phone</option>
+                  <option>Video</option>
+                </select>
+              </div>
+            </div>
+
+            <label for='message'>How can I help?</label>
+            <textarea id='message' name='message' placeholder='Tell me about your goals, sensitivities, pets, or upcoming events.' required></textarea>
+
+            <label for='interest'>Service of interest</label>
+            <select id='interest' name='interest'>
+              <option>Intro consultation</option>
+              <option>Blends & protocol</option>
+              <option>VIP day</option>
+              <option>Wholesale / shop</option>
+            </select>
+
+            <div style='display:flex;gap:8px;margin-top:6px;align-items:center'>
+              <button type='submit' class='btn' style='flex:1'>Send inquiry</button>
+              <a class='btn ghost' href='{{PRIMARY_CTA_URL}}' style='padding:10px 12px;text-align:center'>{{PRIMARY_CTA_LABEL}}</a>
+            </div>
+
+            <p style='font-size:12px;color:var(--muted);margin-top:8px'>By submitting you consent to be contacted by {{BUSINESS_NAME}}. For urgent matters call <strong>{{PHONE}}</strong>. This service provides educational aromatherapy support only—not medical advice.</p>
+          </form>
+
+          <div id='formMsg' style='display:none;margin-top:12px;padding:10px;border-radius:8px;background:#eefaf0;color:var(--accent)'>Thanks — your message was received. We'll reply via the contact method you selected.</div>
+
+          <hr style='margin:14px 0;border:none;border-top:1px solid #eef6f1'>
+          <div style='font-size:13px;color:var(--muted)'>Office: {{CITY}}, {{STATE}}<br>Email: <a href='mailto:{{EMAIL}}' style='color:var(--accent)'>{{EMAIL}}</a></div>
+        </div>
+
+        <div class='card' style='margin-top:14px'>
+          <h4 style='margin-top:0;color:var(--accent)'>Free guide: Safe Home Diffusion</h4>
+          <p style='color:var(--muted)'>Download a concise checklist for safe diffusion at home, including timing, room sizes, and pet-conscious tips.</p>
+          <div class='magnet'>
+            <form id='magnetForm' style='display:flex;gap:8px;flex:1'>
+              <input id='magnetEmail' type='email' placeholder='your email' style='flex:1;padding:10px;border-radius:10px;border:1px solid #e6efe7' required>
+              <button class='btn' type='button' onclick='submitMagnet()'>Get guide</button>
+            </form>
+          </div>
+        </div>
+
+      </aside>
+    </main>
+
+    <footer>
+      <div style='display:flex;justify-content:space-between;align-items:center;gap:12px'>
+        <div>© <strong>{{BUSINESS_NAME}}</strong> • Aromatherapy services in {{CITY}}, {{STATE}}</div>
+        <div style='color:var(--muted)'>Built for clarity and safety • VIP day available</div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    (function(){
+      var form = document.getElementById('contactForm');
+      var msg = document.getElementById('formMsg');
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        var name = document.getElementById('name').value.trim();
+        var email = document.getElementById('email').value.trim();
+        if(!name || !email){
+          alert('Please include your name and email.');
+          return;
+        }
+        // This site is static. In production integrate with form endpoint or use mailto fallback.
+        // Simulate success for local preview.
+        form.style.display = 'none';
+        msg.style.display = 'block';
+        // Optionally open mail client as fallback
+        // window.location.href = 'mailto:{{EMAIL}}?subject=Inquiry from '+encodeURIComponent(name)+'&body='+encodeURIComponent(document.getElementById('message').value);
+      });
+    })();
+
+    function submitMagnet(){
+      var e = document.getElementById('magnetEmail');
+      if(!e.value){ alert('Please enter an email to receive the guide.'); return; }
+      alert('Thanks! The guide will be sent to ' + e.value + ' (demo).');
+      e.value = '';
+    }
+  </script>
+</body>
+</html>

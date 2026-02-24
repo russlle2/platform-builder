@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Plans & Memberships | {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#08121a;--card:rgba(255,255,255,0.03);--accent:#9fe4d9;--muted:#b7c9d2}
+    *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    body{margin:0;background:linear-gradient(180deg,#041219 0%,#071827 60%),var(--bg);color:#e6eef2;min-height:100vh}
+    header{backdrop-filter:blur(8px);position:sticky;top:0;padding:12px 20px;border-bottom:1px solid rgba(255,255,255,0.03)}
+    .nav{max-width:1100px;margin:0 auto;display:flex;gap:16px;align-items:center}
+    .nav a{color:var(--muted);text-decoration:none;padding:8px}
+    .nav .cta{margin-left:auto;background:var(--accent);color:#042;padding:8px 12px;border-radius:8px;text-decoration:none}
+
+    main{max-width:1100px;margin:28px auto;padding:0 20px}
+    .intro{display:flex;justify-content:space-between;align-items:center}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+
+    .plans{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:18px}
+    .plan{padding:14px;border-radius:10px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.02)}
+    .plan h3{margin:0 0 8px}
+    .price{font-weight:700;font-size:20px}
+    .features{color:var(--muted);font-size:13px;margin-top:8px}
+    .muted{color:var(--muted)}
+
+    .mixer{margin-top:14px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.01)}
+    .levels{display:flex;gap:8px}
+    .level{flex:1;padding:9px;text-align:center;border-radius:8px;cursor:pointer}
+    .level.active{background:linear-gradient(180deg,rgba(159,228,216,0.06),transparent)}
+
+    .cta-row{margin-top:18px;display:flex;gap:10px;align-items:center}
+
+    .disclaimer{margin-top:14px;padding:12px;border-radius:8px;border-left:3px solid #f19c9c;color:#ffdfe0;background:rgba(255,255,255,0.01)}
+
+    @media(max-width:880px){.plans{grid-template-columns:1fr}.intro{flex-direction:column;align-items:flex-start}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class='nav'>
+      <div style='font-weight:700'>{{BUSINESS_NAME}}</div>
+      <nav style='margin-left:14px'>
+        <a href='index.html'>Home</a>
+        <a href='events.html'>Gatherings</a>
+        <a href='private-sessions.html'>Sessions</a>
+        <a href='pricing.html' style='color:#fff'>Plans</a>
+        <a href='about.html'>Story</a>
+      </nav>
+      <a class='cta' href='book.html'>Join a Plan</a>
+    </div>
+  </header>
+
+  <main>
+    <section class='intro'>
+      <div>
+        <h1 style='margin:0'>Memberships and single visits</h1>
+        <div style='color:var(--muted);margin-top:6px'>Flexible access that rewards regular practice — receive booking priority and member-only pricing.</div>
+      </div>
+      <div style='text-align:right' class='card'>
+        <div style='font-weight:700'>Member perks</div>
+        <div class='muted' style='margin-top:6px'>Early booking • Discounted privates • Priority waitlist</div>
+      </div>
+    </section>
+
+    <section class='mixer card' style='margin-top:18px'>
+      <div style='font-weight:700'>How intense do you want the offering?</div>
+      <div style='color:var(--muted);font-size:13px'>Pick a comfort band — plan suggestions will update.</div>
+      <div class='levels' style='margin-top:10px'>
+        <div class='level active' data-level='gentle'>Gentle</div>
+        <div class='level' data-level='medium'>Medium</div>
+        <div class='level' data-level='intense'>Intense</div>
+      </div>
+    </section>
+
+    <section class='plans' id='plans'>
+      <div class='plan card' data-plan='calm'>
+        <h3>Ground Plan</h3>
+        <div class='price'>$28 / drop-in</div>
+        <div class='features'>Includes: entry to one public gathering. Discounted add-ons for private sessions.</div>
+        <div style='margin-top:12px'><a class='cta' href='book.html'>Book Drop-in</a></div>
+      </div>
+      <div class='plan card' data-plan='steady'>
+        <h3>Steady Membership</h3>
+        <div class='price'>$85 / month</div>
+        <div class='features'>Two gatherings per month, 10% off privates, booking priority.</div>
+        <div style='margin-top:12px'><a class='cta' href='book.html'>Join Steady</a></div>
+      </div>
+      <div class='plan card' data-plan='pulse'>
+        <h3>Pulse Membership</h3>
+        <div class='price'>$150 / month</div>
+        <div class='features'>Weekly gatherings, 20% off privates, one recorded takeaway each month.</div>
+        <div style='margin-top:12px'><a class='cta' href='book.html'>Join Pulse</a></div>
+      </div>
+    </section>
+
+    <section style='margin-top:14px'>
+      <div class='card'>
+        <div style='font-weight:700'>Flexible pricing frame</div>
+        <div style='color:var(--muted);margin-top:8px'>We frame membership as access to a practical rhythm rather than a commitment to intensity. If your needs change, you may pause or adjust the tier in your account area.</div>
+      </div>
+
+      <div class='disclaimer'>
+        Contraindications: This service is a supportive audio experience, not medical care. If you have epilepsy, pacemaker, recent head trauma, or cardiovascular instability, consult a health provider before attending.
+      </div>
+    </section>
+
+    <section style='margin-top:18px;display:flex;gap:10px;align-items:center'>
+      <a class='cta' href='book.html'>Start a membership</a>
+      <a href='contact.html' style='color:var(--muted)'>Contact us for group rates</a>
+    </section>
+
+  </main>
+
+  <script>
+    // Plan suggestions that adapt to selected intensity
+    const planEls=document.querySelectorAll('.plan');
+    const levelEls=document.querySelectorAll('.level');
+    const suggestions={
+      gentle:{highlight:'Ground Plan',note:'Best for newcomers and light practice.'},
+      medium:{highlight:'Steady Membership',note:'Balanced access for regular practice.'},
+      intense:{highlight:'Pulse Membership',note:'Frequent sessions and deeper access.'}
+    };
+    function applySuggestion(level){
+      planEls.forEach(p=>{p.style.borderColor='rgba(255,255,255,0.02)';p.style.boxShadow='none'});
+      const pick=suggestions[level].highlight;
+      const chosen=document.querySelector(`.plan[data-plan='${pick==='Ground Plan'?'calm':pick==='Steady Membership'?'steady':'pulse'}']`);
+      if(chosen){chosen.style.borderColor='rgba(159,228,216,0.18)';chosen.style.boxShadow='0 10px 40px rgba(14,30,36,0.6)'}
+    }
+    levelEls.forEach(l=>l.addEventListener('click',()=>{levelEls.forEach(x=>x.classList.remove('active'));l.classList.add('active');applySuggestion(l.dataset.level)}));
+    applySuggestion('gentle');
+  </script>
+
+  <footer style='margin-top:30px;text-align:center;color:var(--muted);padding:20px'>
+    <div>{{BUSINESS_NAME}} — <a href='mailto:{{EMAIL}}' style='color:var(--accent);text-decoration:none'>{{EMAIL}}</a> • {{CITY}}, {{STATE}}</div>
+  </footer>
+</body>
+</html>

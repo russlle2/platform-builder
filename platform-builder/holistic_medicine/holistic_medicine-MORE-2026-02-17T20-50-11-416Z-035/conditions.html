@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Symptoms & Topics — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#FFF8F3;--card:#FFF6F0;--ink:#2E2824;--accent:#7A4A2A;--muted:#6F5C55}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto;background:var(--bg);color:var(--ink)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 26px;border-bottom:1px solid rgba(46,40,36,0.06)}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none}
+    main{max-width:980px;margin:26px auto;padding:18px}
+    .hero{background:var(--card);padding:18px;border-radius:12px}
+    h1{margin:0 0 8px 0}
+    .disclaimer{margin-top:12px;padding:12px;border-left:4px solid rgba(122,74,42,0.12);background:#FFF;border-radius:8px}
+    .conditions{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px}
+    .cond{background:#fff;padding:12px;border-radius:10px;border:1px solid rgba(46,40,36,0.04)}
+    .try{margin-top:14px;display:flex;gap:10px;align-items:center}
+    .btn{padding:10px 12px;border-radius:9px;border:0;background:var(--accent);color:#fff}
+    footer{margin-top:26px;text-align:center;color:var(--muted)}
+    /* pattern - gentler swirls */
+    body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:0.04;background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22250%22 height=%22250%22><defs><pattern id=%22q%22 width=%2250%22 height=%2250%22 patternUnits=%22userSpaceOnUse%22><rect width=%2250%22 height=%2250%22 fill=%22%23FFF8F3%22/><g stroke=%22%237A4A2A%22 stroke-opacity=%220.06%22 stroke-width=%221%22><path d=%22M0 25 C12 10 38 40 50 25%22 fill=%22none%22/></g></pattern></defs><rect width=%22100%25%22 height=%22100%25%22 fill=%22url(%23q)%22/></svg>');mix-blend-mode:overlay}
+    @media(max-width:720px){.conditions{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center"><div style="width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,#EFDCC8,#FFF3E6);display:grid;place-items:center;color:var(--accent)">H</div><div><strong>{{BUSINESS_NAME}}</strong></div></div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Symptoms & Topics</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+  <main>
+    <section class="hero">
+      <h1>Topics people bring</h1>
+      <p class="small">Below are common areas we explore. This is educational and supportive content — not a substitute for medical diagnosis. If you have an urgent concern, please contact your healthcare provider or emergency services.</p>
+
+      <div class="disclaimer">
+        <strong>Disclaimer</strong>
+        <p class="small">We provide evidence-informed education and care coordination. Our recommendations are tailored and discussed collaboratively; no promises of cure are made. For serious or life-threatening symptoms (chest pain, severe shortness of breath, sudden neurological changes), seek immediate medical attention.</p>
+      </div>
+
+    </section>
+
+    <section style="margin-top:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h2 style="margin:0">Supportive topics</h2>
+        <div class="try"><button class="btn" id="openExercise">Try a short exercise</button><div class="small">Breathing • journaling • intention</div></div>
+      </div>
+      <div class="conditions">
+        <div class="cond"><strong>Sleep disruption</strong><div class="small">Practical, behavioral adjustments and rhythms to support consolidation and daytime energy.</div></div>
+        <div class="cond"><strong>Digestive concerns</strong><div class="small">Patterns around meals, stress, and movement that we often address before testing.</div></div>
+        <div class="cond"><strong>Mood & anxiety</strong><div class="small">Skill-building, pacing, and collaboration with mental health providers when needed.</div></div>
+        <div class="cond"><strong>Chronic pain & movement</strong><div class="small">Graded approaches, load management and contextual supports.</div></div>
+      </div>
+    </section>
+
+    <section style="margin-top:18px">
+      <h3>How we approach sensitive topics</h3>
+      <div class="cond" style="margin-top:8px">We center respect and safety. Conversations about trauma, identity, and long-standing symptoms are paced with consent and practical scaffolds.</div>
+    </section>
+
+    <section style="margin-top:18px">
+      <h3>Need to talk?</h3>
+      <div class="cond">If your situation needs immediate medical review, call local emergency services. For scheduling a supportive consult, <a href="book.html">book</a> or call {{PHONE}}.</div>
+    </section>
+
+    <section style="margin-top:18px;text-align:center">
+      <a class="btn" href="book.html">Start a support visit</a>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="text-align:center;color:var(--muted);padding:18px">Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • {{CITY}}, {{STATE}}</div>
+  </footer>
+
+  <!-- Guided exercise modal -->
+  <div id="exerciseModal" role="dialog" aria-hidden="true" style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);z-index:60">
+    <div style="width:92%;max-width:640px;background:#fff;padding:18px;border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,0.25)">
+      <h3 style="margin-top:0">Micro-practice</h3>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <button data-mode="breath" class="btnMode">Breathing</button>
+        <button data-mode="journal" class="btnMode">Journaling</button>
+        <button data-mode="intention" class="btnMode">Intention</button>
+      </div>
+      <div id="exerciseArea"></div>
+      <div style="text-align:right;margin-top:12px"><button id="closeEx" style="padding:10px 12px;border-radius:8px;border:0;background:#DDD">Close</button></div>
+    </div>
+  </div>
+
+  <script>
+    // Modal + simple guided exercises
+    (function(){
+      const modal = document.getElementById('exerciseModal');
+      const area = document.getElementById('exerciseArea');
+      document.getElementById('openExercise').addEventListener('click', ()=>{modal.style.display='flex';modal.setAttribute('aria-hidden','false');renderMode('breath')});
+      document.getElementById('closeEx').addEventListener('click', ()=>{modal.style.display='none';modal.setAttribute('aria-hidden','true');area.innerHTML=''});
+      document.querySelectorAll('.btnMode').forEach(b=>b.addEventListener('click', ()=>renderMode(b.dataset.mode)));
+
+      let breathTimer;
+      function renderMode(mode){
+        clearInterval(breathTimer);
+        if(mode==='breath'){
+          area.innerHTML=`<div style="padding:10px;background:#FFF7F2;border-radius:8px"><p class="small">Simple box breathing — 4 counts in, hold 4, out 4, hold 4. We’ll run 4 cycles.</p><div style="font-size:28px;margin:12px 0;text-align:center"><span id="count">4</span></div><div style="text-align:center"><button id="startBreath" class="btn">Start</button></div></div>`;
+          document.getElementById('startBreath').addEventListener('click', ()=>startBreathing());
+        } else if(mode==='journal'){
+          area.innerHTML=`<div style="padding:10px;background:#FFF7F2;border-radius:8px"><p class="small">Two-minute journaling: write non-stop for 2 minutes on this prompt:</p><blockquote style="margin:8px 0;padding:8px;background:#fff;border-radius:8px">What is one small, meaningful thing I can shift this week?</blockquote><textarea id="journalText" style="width:100%;height:120px;border-radius:8px;padding:8px"></textarea><div style="text-align:right;margin-top:8px"><button id="startJournal" class="btn">Start 2:00</button></div></div>`;
+          document.getElementById('startJournal').addEventListener('click', ()=>startJournal());
+        } else if(mode==='intention'){
+          area.innerHTML=`<div style="padding:10px;background:#FFF7F2;border-radius:8px"><p class="small">A brief intention practice: pick one word, then write one sentence commitment.</p><input id="intWord" placeholder="Your word" style="padding:8px;border-radius:8px;border:1px solid #EEE;width:100%"><textarea id="intSentence" placeholder="One-sentence commitment" style="width:100%;height:80px;margin-top:8px;padding:8px;border-radius:8px"></textarea><div style="text-align:right;margin-top:8px"><button id="saveInt" class="btn">Save intention</button></div></div>`;
+          document.getElementById('saveInt').addEventListener('click', ()=>{
+            const w = document.getElementById('intWord').value.trim();
+            const s = document.getElementById('intSentence').value.trim();
+            if(!w||!s){alert('Write a word and a short sentence.');return}
+            alert('Saved: '+w+' — '+s);
+          });
+        }
+      }
+      function startBreathing(){
+        const display = document.getElementById('count');
+        let phase = 0; // 0 in,1 hold,2 out,3 hold
+        let count = 4; // start at 4
+        let cycles = 0;
+        display.textContent = count;
+        breathTimer = setInterval(()=>{
+          count--;
+          if(count<0){
+            phase = (phase+1)%4;
+            count = 4;
+            if(phase===0) cycles++;
+          }
+          display.textContent = count;
+          if(cycles>=4){clearInterval(breathTimer);display.textContent='Done';}
+        },1000);
+      }
+      function startJournal(){
+        const btn = document.getElementById('startJournal');
+        const ta = document.getElementById('journalText');
+        let t = 120; btn.disabled=true; btn.textContent='Running...';
+        const timer = setInterval(()=>{
+          t--; if(t<=0){clearInterval(timer);btn.disabled=false;btn.textContent='Start 2:00';alert('Two minutes finished — you can review what you wrote.')}
+        },1000);
+      }
+    })();
+  </script>
+</body>
+</html>

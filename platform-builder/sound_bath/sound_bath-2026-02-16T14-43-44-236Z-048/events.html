@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gatherings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg1:#0f1724;--bg2:#09203f;--accent:#a78bfa;--muted:#cbd5e1;--glass:rgba(255,255,255,0.06)}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue';color:var(--muted);background:linear-gradient(180deg,var(--bg1) 0%,var(--bg2) 60%);}
+    .page{position:relative;min-height:100vh;overflow:hidden;padding-bottom:6rem}
+    /* decorative inline SVG behind content */
+    .bg-svg{position:absolute;inset:0;pointer-events:none;opacity:0.14}
+    header{display:flex;align-items:center;justify-content:space-between;padding:2rem 3rem;backdrop-filter:blur(6px)}
+    .brand{display:flex;gap:1rem;align-items:center}
+    .logo{width:54px;height:54px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#60a5fa);display:flex;align-items:center;justify-content:center;font-weight:600;color:#021024}
+    nav a{color:var(--muted);text-decoration:none;margin-left:1.25rem;font-weight:500}
+    .hero{max-width:980px;margin:3rem auto 1rem;padding:2.5rem;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.02));box-shadow:0 8px 40px rgba(2,6,23,0.6)}
+    .kicker{color:#dbeafe;font-size:13px;margin-bottom:.5rem}
+    h1{color:#f8fafc;margin:0;font-size:clamp(28px,4vw,44px);line-height:1.02}
+    p.lead{color:#c7d2fe;opacity:.95}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:1.5rem;margin-top:1.5rem}
+    .card{background:var(--glass);padding:1.2rem;border-radius:12px}
+    .cta{display:inline-block;padding:.8rem 1.1rem;border-radius:10px;background:linear-gradient(90deg,var(--accent),#60a5fa);color:#021024;font-weight:700;text-decoration:none}
+    .meta{font-size:13px;color:#a5b4fc;margin-top:.6rem}
+    .calendar{list-style:none;padding:0;margin:0}
+    .calendar li{padding:.6rem 0;border-bottom:1px dashed rgba(255,255,255,0.04);display:flex;justify-content:space-between}
+    .section{max-width:980px;margin:2rem auto;padding:1rem}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+    .faq-item{margin-bottom:.8rem}
+    footer{position:fixed;left:0;right:0;bottom:0;background:linear-gradient(180deg,rgba(2,6,23,0.6),rgba(2,6,23,0.9));padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center}
+    small{color:#98a8c6}
+    @media(max-width:880px){.grid{grid-template-columns:1fr;}.grid-3{grid-template-columns:1fr}.hero{margin:1.2rem;padding:1rem}}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- decorative SVG pattern (unique to this page) -->
+    <svg class="bg-svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#6ee7b7" stop-opacity="0.12"/><stop offset="1" stop-color="#a78bfa" stop-opacity="0.08"/></linearGradient>
+        <pattern id="p1" width="60" height="60" patternUnits="userSpaceOnUse">
+          <rect width="60" height="60" fill="transparent"/>
+          <circle cx="10" cy="10" r="2" fill="#e0f2fe" fill-opacity="0.06"/>
+          <circle cx="50" cy="50" r="2" fill="#f3e8ff" fill-opacity="0.06"/>
+          <path d="M30 0 L60 30 L30 60 L0 30 Z" fill="url(#g1)" fill-opacity="0.03"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#p1)"/>
+      <g transform="translate(50,80)">
+        <ellipse cx="700" cy="200" rx="420" ry="160" fill="#7c3aed" opacity="0.04" />
+        <ellipse cx="200" cy="420" rx="300" ry="120" fill="#06b6d4" opacity="0.03" />
+      </g>
+    </svg>
+
+    <header>
+      <div class="brand">
+        <div class="logo">SB</div>
+        <div>
+          <div style="font-weight:700;color:#fff">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:#93c5fd">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="events.html" style="font-weight:700;color:#fff">Gatherings</a>
+        <a href="private-sessions.html">Sessions</a>
+        <a href="pricing.html">Invest</a>
+        <a href="about.html">Our Story</a>
+        <a href="book.html">Reserve</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" id="hero">
+        <div class="kicker">Upcoming sound bath</div>
+        <h1>Baths in waves: an evening of deep listening and subtle vibration</h1>
+        <p class="lead">Join us for a curated hour where resonance meets comfort — a sensory, premium experience guided by {{FACILITATOR_NAME}} at {{VENUE_NAME}} in {{CITY}}, {{STATE}}.</p>
+
+        <div class="grid">
+          <div>
+            <div class="card">
+              <strong>Next event</strong>
+              <div class="meta">{{NEXT_EVENT_DATE}} • doors 6:30pm • starts 7pm</div>
+              <p style="margin-top:.8rem">A communal ceremony built around crystal bowls, gentle chimes and a suspended gong — crafted to reach that place between heartbeat and breath.</p>
+              <a href="book.html" class="cta">{{PRIMARY_CTA_LABEL}}</a>
+            </div>
+
+            <section style="margin-top:1rem">
+              <h3 style="color:#fff">What to bring</h3>
+              <ul style="color:#bcd4ff;margin:0;padding-left:1.1rem">
+                <li>Yoga mat or padded blanket</li>
+                <li>Light blanket and pillow for warmth</li>
+                <li>Water bottle and an open heart</li>
+              </ul>
+            </section>
+
+            <section style="margin-top:1rem">
+              <h3 style="color:#fff">Contraindications</h3>
+              <p style="color:#cbd5e1">Not suitable for people with severe sensitivity to sound, recent head trauma, or uncontrolled epilepsy. If pregnant, consult your healthcare provider. Contact us at {{EMAIL}} if you have concerns.</p>
+            </section>
+          </div>
+
+          <aside class="card">
+            <strong style="display:block;color:#fff">Calendar</strong>
+            <small class="meta">Monthly schedule — sign up early, spaces are intimate</small>
+            <ul class="calendar" aria-label="Upcoming events">
+              <li><span>• {{NEXT_EVENT_DATE}}</span><span style="color:#a7f3d0">Open</span></li>
+              <li><span>• 2026-03-20</span><span style="color:#fef9c3">Waitlist</span></li>
+              <li><span>• 2026-04-17</span><span style="color:#c7d2fe">Open</span></li>
+              <li><span>• 2026-05-15</span><span style="color:#c7d2fe">Open</span></li>
+            </ul>
+            <div style="margin-top:1rem">
+              <div style="font-size:13px;color:#9fb7e9">Instruments you may hear</div>
+              <div style="margin-top:.5rem;color:#dbeafe">Crystal singing bowls, Himalayan bowls, tuned gongs and a subtle monochord drone.</div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section" id="social-proof">
+        <h2 style="color:#fff">Stories from the cushion</h2>
+        <div class="grid-3">
+          <div class="card"><strong>"I slept so deeply."</strong><p style="margin:.5rem 0">— "A luminous pause in the week. The space felt held and warm."</p></div>
+          <div class="card"><strong>"I could feel the room breathe."</strong><p style="margin:.5rem 0">— "The tones moved through my chest like ocean tides."</p></div>
+          <div class="card"><strong>"Membership changed everything."</strong><p style="margin:.5rem 0">— "Monthly access helped me build a ritual."</p></div>
+        </div>
+      </section>
+
+      <section class="section" id="process">
+        <h2 style="color:#fff">How an evening unfolds</h2>
+        <ol style="color:#bcd4ff">
+          <li>Arrival + gentle check-in (15 min) — settle in, hydrate, and choose your spot.</li>
+          <li>Opening intention — brief guided centering to greet the soundscape.</li>
+          <li>Main sound immersion (40–50 min) — shifting textures of bowls, chimes, tuning forks; layers rise and fall.</li>
+          <li>Shelter & integration (10–15 min) — soft silence, tea, and reflection.</li>
+        </ol>
+      </section>
+
+      <section class="section" id="benefits">
+        <h2 style="color:#fff">Benefits you might notice</h2>
+        <ul style="color:#c7d2fe">
+          <li>Deep relaxation and slowed nervous system response</li>
+          <li>Heightened interoception — sense of inner bodily state</li>
+          <li>Better sleep and a calmer evening after the event</li>
+        </ul>
+      </section>
+
+      <section class="section" id="lead-magnet">
+        <div class="card">
+          <strong style="color:#fff">Enjoy a private preview</strong>
+          <p style="color:#c7d2fe">Sign up for our mailing list and receive a short guided audio to prepare for your first in-person sound bath.</p>
+          <form action="" onsubmit="alert('Thank you — this is a placeholder.');return false;">
+            <input type="email" placeholder="you@daylight.com" aria-label="email" style="padding:.6rem;border-radius:8px;border:1px solid rgba(255,255,255,0.06);width:60%;background:transparent;color:#fff" required />
+            <button class="cta" style="margin-left:.6rem">Get the audio</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="section" id="faq">
+        <h2 style="color:#fff">Questions we often hear</h2>
+        <div class="faq-item"><strong>Do I need experience?</strong><p style="color:#bcd4ff">No. Everyone is welcome. Instruction is gentle; simply arrive with curiosity.</p></div>
+        <div class="faq-item"><strong>How should I dress?</strong><p style="color:#bcd4ff">Layers, comfortable clothing — the room is kept slightly cool so bring a blanket.</p></div>
+      </section>
+
+      <section class="section" id="cta">
+        <div class="card" style="display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <strong style="color:#fff">Reserve your space</strong>
+            <div class="meta">Small gatherings. Consider membership for priority booking.</div>
+          </div>
+          <a href="{{PRIMARY_CTA_URL}}" class="cta">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </section>
+
+    </main>
+
+    <footer>
+      <div>
+        <strong style="color:#fff">{{BUSINESS_NAME}}</strong>
+        <div style="font-size:13px;color:#9fb7e9">{{PHONE}} • {{EMAIL}}</div>
+      </div>
+      <small>© {{BUSINESS_NAME}} — Crafted in {{CITY}}, {{STATE}}</small>
+    </footer>
+  </div>
+</body>
+</html>

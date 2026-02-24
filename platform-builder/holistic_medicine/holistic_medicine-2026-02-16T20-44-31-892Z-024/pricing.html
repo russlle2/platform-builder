@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Care & Pricing — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg1:#f6fbf9;--accent:#4b9f8a;--muted:#6b7280;--card:#ffffff;--glass:rgba(255,255,255,0.7);--shadow:0 8px 30px rgba(22,28,37,0.08)}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;line-height:1.45;color:#0f172a;background:linear-gradient(180deg,var(--bg1),#eef7f4);display:flex;flex-direction:column}
+    header{position:sticky;top:0;backdrop-filter:blur(6px);background:linear-gradient(180deg,rgba(255,255,255,0.6),rgba(255,255,255,0.45));border-bottom:1px solid rgba(15,23,42,0.04);z-index:10}
+    .container{max-width:1100px;margin:0 auto;padding:28px}
+    nav{display:flex;align-items:center;gap:20px}
+    .brand{font-weight:700;color:var(--accent)}
+    .nav-links{margin-left:auto;display:flex;gap:14px}
+    .nav-links a{color:#0f172a;text-decoration:none;padding:8px 12px;border-radius:8px;font-weight:600}
+    .nav-links a[href$="pricing.html"]{background:linear-gradient(90deg,var(--accent),#3d8f77);color:#fff}
+
+    /* hero */
+    .hero{display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:center;padding:48px 0}
+    .card{background:var(--card);padding:28px;border-radius:14px;box-shadow:var(--shadow)}
+    .kicker{display:inline-block;background:linear-gradient(90deg,var(--accent),#2d7f69);color:#fff;padding:6px 10px;border-radius:999px;font-size:13px;font-weight:700}
+    h1{margin:12px 0 6px;font-size:28px}
+    p.lead{margin:0;color:var(--muted)}
+
+    /* pricing grid */
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:20px}
+    .tier{padding:20px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.9),var(--glass));box-shadow:0 6px 24px rgba(16,24,40,0.06);border:1px solid rgba(15,23,42,0.04)}
+    .tier h3{margin:0 0 6px}
+    .price{font-size:20px;font-weight:800;color:var(--accent)}
+    .muted{color:var(--muted);font-size:14px}
+    .features{margin:12px 0 18px;line-height:1.5;color:#111827}
+    .cta{display:inline-block;background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+
+    /* sections */
+    section{margin:28px 0}
+    .two-col{display:grid;grid-template-columns:1fr 320px;gap:20px}
+    .micro-list{display:flex;flex-direction:column;gap:10px}
+    .micro{background:linear-gradient(180deg,#fff,rgba(255,255,255,0.98));padding:12px;border-radius:10px;border:1px solid rgba(15,23,42,0.03)}
+
+    footer{padding:28px 0;color:var(--muted)}
+
+    /* decorative SVG */
+    .pattern{position:fixed;right:-120px;top:-40px;opacity:0.12;transform:rotate(8deg);width:560px;height:560px;pointer-events:none}
+    @media (max-width:900px){.hero{grid-template-columns:1fr;}.two-col{grid-template-columns:1fr}.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <!-- embedded decorative svg pattern -->
+  <svg class="pattern" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1">
+        <stop offset="0" stop-color="#a7f3d0" stop-opacity="0.8"/>
+        <stop offset="1" stop-color="#60a5fa" stop-opacity="0.6"/>
+      </linearGradient>
+      <pattern id="p1" width="120" height="120" patternUnits="userSpaceOnUse" patternTransform="rotate(15)">
+        <rect width="120" height="120" fill="none"/>
+        <circle cx="10" cy="10" r="6" fill="#dff6ee"/>
+        <circle cx="60" cy="60" r="6" fill="#e6f0ff"/>
+        <path d="M0 120 L120 0" stroke="#cde" stroke-width="2"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#p1)"/>
+    <g fill="url(#g1)" opacity="0.5">
+      <ellipse cx="420" cy="120" rx="200" ry="80"/>
+      <ellipse cx="480" cy="260" rx="140" ry="60"/>
+    </g>
+  </svg>
+
+  <header>
+    <div class="container">
+      <nav>
+        <div class="brand">{{BUSINESS_NAME}}</div>
+        <div class="nav-links">
+          <a href="index.html">Home</a>
+          <a href="services.html">Services</a>
+          <a href="approach.html">Approach</a>
+          <a href="pricing.html">Fees</a>
+          <a href="book.html">Schedule</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="card">
+        <span class="kicker">Integrative visits</span>
+        <h1>Transparent care options, designed for whole-person results</h1>
+        <p class="lead">We combine evidence-informed diagnostics, personalized lifestyle plans, and gentle therapeutics. Pricing below is for common pathways; individualized recommendations and optional labs may change cost estimates.</p>
+        <div style="margin-top:18px">
+          <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <a style="margin-left:12px;color:var(--muted);text-decoration:none;font-weight:600" href="contact.html">Contact</a>
+        </div>
+      </div>
+      <aside class="card">
+        <h3>Quick snapshot</h3>
+        <p class="muted">Hybrid care: in-clinic and telehealth. You’ll get assessment, plan, and follow-ups tailored for your life.</p>
+        <dl style="margin-top:12px">
+          <dt style="font-weight:700">Phone</dt>
+          <dd class="muted">{{PHONE}}</dd>
+          <dt style="font-weight:700;margin-top:8px">Email</dt>
+          <dd class="muted">{{EMAIL}}</dd>
+        </dl>
+      </aside>
+    </section>
+
+    <section>
+      <h2>Our common care packages</h2>
+      <p class="muted">Choose a pathway; each includes education, goal-setting, and follow-up. Optional testing or supplements will be discussed when appropriate.</p>
+      <div class="grid" role="list">
+        <div class="tier" role="listitem">
+          <h3>Discovery Visit</h3>
+          <div class="price">$165 — 60 min</div>
+          <div class="muted">Initial intake + focused plan</div>
+          <p class="features">Comprehensive history, targeted exams, and an actionable 2–4 week starter plan. Ideal to explore drivers of symptoms and immediate strategies.</p>
+          <a class="cta" href="book.html">Book Discovery</a>
+        </div>
+
+        <div class="tier" role="listitem">
+          <h3>Integrative Path</h3>
+          <div class="price">$120 / follow-up</div>
+          <div class="muted">Short follow-ups & care coordination</div>
+          <p class="features">Ongoing support with stepwise adjustments, medication review, lifestyle coaching, and shared decision-making about labs or referrals.</p>
+          <a class="cta" href="book.html">Start a Path</a>
+        </div>
+
+        <div class="tier" role="listitem">
+          <h3>Comprehensive Annual</h3>
+          <div class="price">$985 / year</div>
+          <div class="muted">Bundled intake + follow-ups</div>
+          <p class="features">Yearly health plan with two detailed follow-ups, prevention-focused screening discussion, and priority access. Pricing excludes lab costs.</p>
+          <a class="cta" href="book.html">Enroll</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="two-col">
+      <div class="card">
+        <h2>How we choose tests and treatments</h2>
+        <p class="muted">We emphasize minimally invasive, evidence-aligned options. Labs are offered to clarify physiology when results will change management. Expect a clear explanation of benefit, risk, and cost before ordering.</p>
+        <ul style="margin-top:12px;color:#111827;line-height:1.6">
+          <li><strong>Clinical-first:</strong> decisions start with your history and symptoms.</li>
+          <li><strong>Stepwise testing:</strong> only when results will impact care.</li>
+          <li><strong>Education:</strong> we teach you what each measure means for daily choices.</li>
+        </ul>
+      </div>
+      <aside class="card">
+        <h3>Typical extras</h3>
+        <div class="micro-list">
+          <div class="micro"><strong>Functional labs:</strong> targeted hormone, nutrient, or stool testing (separate fee).</div>
+          <div class="micro"><strong>Supplement guidance:</strong> discussed only when clinically appropriate.</div>
+          <div class="micro"><strong>Referrals:</strong> coordinated with local specialists as needed.</div>
+        </div>
+      </aside>
+    </section>
+
+    <section>
+      <h2>Payment & insurance</h2>
+      <p class="muted">We operate on a hybrid fee model. Many insurers reimburse telehealth or specialist visits; we can provide superbills on request. Please confirm with your carrier. No guarantees of coverage are made here.</p>
+    </section>
+
+    <section>
+      <h2>Small, practical habits that compound</h2>
+      <div class="micro-list">
+        <div class="micro"><strong>Sleep anchor:</strong> consistent wake time + wind-down routine for 15 minutes each night.</div>
+        <div class="micro"><strong>Mindful pause:</strong> 3-minute breathing check twice daily to reduce stress signaling.</div>
+        <div class="micro"><strong>Gut reset:</strong> add a daily vegetable or fiber-rich food to support digestion.</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="card">
+        <h3>Ready to talk through options?</h3>
+        <p class="muted">We’ll review what matters most to you and outline clear next steps without pressure.</p>
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </section>
+
+    <footer>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
+        <div>{{BUSINESS_NAME}} — {{CITY}}, {{STATE}} · <span style="color:var(--muted)">{{PRACTITIONER_NAME}}, {{CREDENTIALS}}</span></div>
+        <div style="color:var(--muted)">Questions? <a href="contact.html">Reach out</a></div>
+      </div>
+    </footer>
+  </main>
+</body>
+</html>

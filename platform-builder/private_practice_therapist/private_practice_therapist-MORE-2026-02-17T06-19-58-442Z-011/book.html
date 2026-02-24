@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Schedule — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--accent:#b03a2e;--muted:#555;--bg:#fffdfa}
+    body{margin:0;font-family:Georgia,serif;color:#222;background:var(--bg)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid #f0e9e8}
+    nav a{margin-left:10px;text-decoration:none;color:var(--muted)}
+    .container{max-width:900px;margin:20px auto;padding:0 18px}
+    .wrap{display:grid;grid-template-columns:1fr 340px;gap:18px}
+    .card{background:#fff;padding:16px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.03)}
+    label{display:block;margin-top:10px;font-weight:700}
+    input[type=text],input[type=email],select,textarea{width:100%;padding:10px;margin-top:6px;border:1px solid #eee;border-radius:8px}
+    .submit{background:var(--accent);color:#fff;padding:10px 12px;border-radius:8px;border:0;margin-top:12px;cursor:pointer}
+    .summary{font-size:14px;color:var(--muted)}
+    .small{font-size:13px;color:var(--muted)}
+    .test-row{display:flex;gap:10px;align-items:center;margin-top:12px}
+    .testimonial{background:#fff6f4;border-left:4px solid #ffb3a7;padding:10px;border-radius:8px}
+    .acc{margin-top:12px}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div style="width:44px;height:44px;background:var(--accent);color:#fff;border-radius:8px;display:grid;place-items:center;font-weight:700">TP</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Intro</a>
+      <a href="about.html">Why I Work</a>
+      <a href="specialties.html">Focus Areas</a>
+      <a href="approach.html">Method</a>
+      <a href="fees.html">Rates</a>
+      <a href="faq.html">Questions</a>
+      <a href="book.html">Schedule</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="wrap">
+      <div>
+        <div class="card">
+          <h2 style="margin-top:0">Request an appointment</h2>
+          <p class="summary">Choose a session type and tell me a little about what brought you here. I will follow up by email to confirm time and next steps.</p>
+
+          <form id="bookingForm">
+            <label for="name">Full name</label>
+            <input id="name" name="name" type="text" required>
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required>
+
+            <label for="type">Session type</label>
+            <select id="type" name="type">
+              <option value="single">Single Session — 50 minutes</option>
+              <option value="shortcourse">Therapeutic Short Course — 6 sessions</option>
+              <option value="addon">Care Continuity Add-on — monthly</option>
+            </select>
+
+            <label for="notes">Brief note (what would you like to work on?)</label>
+            <textarea id="notes" name="notes" rows="4"></textarea>
+
+            <div style="display:flex;gap:12px;align-items:center">
+              <button class="submit" type="submit">Request time</button>
+              <div class="small">You will receive a confirmation and next steps by email.</div>
+            </div>
+          </form>
+
+          <div class="acc">
+            <h4 style="margin-bottom:8px">Session boundaries & confidentiality</h4>
+            <details>
+              <summary style="font-weight:700;cursor:pointer">What to expect about privacy</summary>
+              <p style="margin:8px 0 0;color:var(--muted)">Communications and notes are treated confidentially. I will talk with you about limits to confidentiality during intake—these are typically situations involving risk of harm or legal requirements.</p>
+            </details>
+            <details style="margin-top:8px">
+              <summary style="font-weight:700;cursor:pointer">If you need urgent help</summary>
+              <p style="margin:8px 0 0;color:var(--muted)">If you are in immediate danger, call emergency services. For urgent mental health crises, contact your local crisis hotline or national resources where available.</p>
+            </details>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <h4 style="margin-top:0">Quick fees summary</h4>
+          <div class="small">Single session: $160 • Short course (6): $900 • Continuity add-on: $120/month</div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="card">
+          <h4 style="margin:0">Proof Gallery</h4>
+          <div class="test-row">
+            <div style="width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,#ffd8d0,#fff)" aria-hidden></div>
+            <div>
+              <div style="font-weight:700">Client feedback on short courses</div>
+              <div class="small" id="bookingTest">"Concrete tools that fit my life." — P.</div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+            <div class="small" style="background:#fff6f8;padding:8px;border-radius:8px;color:var(--accent)" data-tip="Verified training">Licensed</div>
+            <div class="small" style="background:#f3fff7;padding:8px;border-radius:8px;color:#2b8a78" data-tip="Clinical specialties">Trauma & Life Transitions</div>
+          </div>
+
+          <div style="margin-top:12px">
+            <a href="fees.html" style="text-decoration:none;color:var(--accent);font-weight:700">View rates & options</a>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <h4 style="margin-top:0">Need to ask first?</h4>
+          <p class="small">Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> — I'll answer brief queries about fit and logistics before booking.</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    // Simple local booking handler
+    const form = document.getElementById('bookingForm');
+    form.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const data = new FormData(form);
+      const summary = Array.from(data.entries()).map(([k,v])=>`${k}: ${v}`).join('\n');
+      // Simulate sending and show friendly confirmation
+      alert('Request sent. I will follow up by email.\n\n' + summary);
+      form.reset();
+    });
+
+    // Tiny rotating testimonial on aside
+    const pool = [
+      '"Concrete tools that fit my week." — P.',
+      '"The short course gave structure while staying flexible." — G.',
+      '"Follow-up check-ins kept me on track." — H.'
+    ];
+    let i = 0; const el = document.getElementById('bookingTest');
+    setInterval(()=>{ i=(i+1)%pool.length; el.textContent = pool[i]; },5000);
+  </script>
+</body>
+</html>

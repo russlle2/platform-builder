@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Method & Approach — {{BUSINESS_NAME}}</title>
+    <style>
+      :root{--bg:#fffdfa;--card:#ffffff;--muted:#4a4f56;--accent:#3b6f75;--accent-2:#8b5fbf;--cta:#1f5b5b}
+      body{font-family:Inter, system-ui, -apple-system, Roboto, Arial;line-height:1.5;margin:0;background:var(--bg);color:#071127}
+      .wrap{max-width:980px;margin:0 auto;padding:20px}
+      header{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
+      nav a{margin-left:12px;text-decoration:none;color:#071127;font-weight:700}
+      .hero{padding:20px;border-radius:12px;background:linear-gradient(90deg,rgba(59,111,117,0.04),transparent);margin-bottom:18px}
+      h1{margin:0;font-size:24px}
+      .grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
+      .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 14px 40px rgba(12,24,56,0.06)}
+      .muted{color:var(--muted)}
+      .pill{display:inline-block;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;padding:6px 10px;border-radius:999px;font-weight:700}
+      .method-visual{height:160px;border-radius:10px;background:linear-gradient(180deg,rgba(59,111,117,0.06),transparent);display:flex;align-items:center;justify-content:center}
+      .mood{display:flex;gap:8px;flex-wrap:wrap}
+      .mood button{padding:8px 12px;border-radius:999px;border:1px solid rgba(12,24,56,0.06);background:#fff;cursor:pointer;font-weight:700}
+      .mood button.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff}
+      .method-detail{transition:all 300ms ease;border-radius:10px;padding:14px;margin-top:12px}
+      .fade-out{opacity:0;transform:translateY(6px)}
+      .cta{display:inline-block;background:var(--cta);color:#fff;padding:10px 12px;border-radius:10px;text-decoration:none;font-weight:800}
+      .small{font-size:13px;color:var(--muted)}
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent-2),var(--accent));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900">TP</div>
+          <div>
+            <div style="font-weight:900">{{BUSINESS_NAME}}</div>
+            <div class="small">Thoughtful therapy shaped to your life</div>
+          </div>
+        </div>
+        <nav>
+          <a href="index.html">Home</a>
+          <a href="about.html">Story</a>
+          <a href="specialties.html">Services</a>
+          <a href="approach.html" aria-current="page">Method</a>
+          <a href="contact.html">Reach</a>
+        </nav>
+      </header>
+
+      <section class="hero">
+        <h1>Method: a practical compass for change</h1>
+        <p class="muted">I blend skill-building with simple plans. We translate intents into daily moves so therapy fits your life—small experiments, honest checks, and steady review.</p>
+      </section>
+
+      <div class="grid">
+        <div>
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div class="pill">Evidence-informed</div>
+                <h3 style="margin:8px 0 0 0">What to expect in the first month</h3>
+                <p class="small">We clarify priorities, try manageable interventions, and create a short plan you can test between sessions. The goal is useful changes you can notice.</p>
+              </div>
+              <div class="method-visual" aria-hidden="true"> 
+                <svg width="140" height="100" viewBox="0 0 140 100" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <linearGradient id="g1" x1="0" x2="1">
+                      <stop offset="0" stop-color="#6a5aa6"/>
+                      <stop offset="1" stop-color="#3b6f75"/>
+                    </linearGradient>
+                  </defs>
+                  <rect x="6" y="10" width="128" height="78" rx="10" fill="#fff" stroke="url(#g1)" stroke-width="2"/>
+                  <circle cx="36" cy="44" r="10" fill="url(#g1)"/>
+                  <rect x="60" y="34" width="60" height="6" rx="3" fill="#dfe8e8"/>
+                  <rect x="60" y="48" width="42" height="6" rx="3" fill="#dfe8e8"/>
+                </svg>
+              </div>
+            </div>
+
+            <div style="margin-top:12px">
+              <h4 style="margin:0 0 8px 0">The tools I use</h4>
+              <ul class="small" style="padding-left:18px;margin:0">
+                <li>Behavioral strategies that create momentum</li>
+                <li>Practical cognitive techniques to shift patterns</li>
+                <li>Short, actionable experiments between sessions</li>
+              </ul>
+            </div>
+
+            <div style="margin-top:12px">
+              <h4 style="margin:0 0 8px 0">Mood-to-Method selector</h4>
+              <p class="small">Tell me how you feel; I’ll suggest a tailored first move and update the suggested next step button to match.</p>
+
+              <div class="mood" id="mood-app">
+                <button data-key="overwhelmed">Overwhelmed</button>
+                <button data-key="stuck">Stuck</button>
+                <button data-key="avoid">Avoidant</button>
+                <button data-key="anxious">Anxious</button>
+              </div>
+
+              <div id="method-card" class="method-detail card">
+                <h4 id="method-title" style="margin:0 0 6px 0">Pick a feeling to start</h4>
+                <p class="small" id="method-body">Selecting a mood will update this recommendation and change the next step button so it matches the focus.</p>
+                <div style="margin-top:10px"><a id="mood-cta" class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="card" style="margin-top:12px">
+            <h4 style="margin-top:0">Therapist perspective</h4>
+            <p class="small">I aim to be pragmatic and humane. Therapy is an experiment: we try things, see what shifts, and adjust together. There are no promises—only careful work and attention to what helps.</p>
+          </div>
+        </div>
+
+        <aside>
+          <div class="card">
+            <h4 style="margin-top:0">Session format</h4>
+            <p class="small">Typical meetings are 45–55 minutes. We focus on skills you can use between sessions and review what you tried, with edits based on your experience.</p>
+          </div>
+
+          <div class="card" style="margin-top:12px">
+            <h4 style="margin-top:0">Boundaries & crisis</h4>
+            <p class="small">I do not provide emergency services. If you are in immediate danger, call local emergency services. For urgent mental health support, please contact your local crisis resources.</p>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <script>
+      // Mood-to-Method (Approach page) - morphing content + CTA update
+      (function(){
+        const mapping = {
+          overwhelmed: {title: 'Short stabilization plan', body: 'A two-step stabilization plan: 1) a single daily anchor practice, 2) one priority pared down for the day. We test feasibility and adjust.', cta: 'Request a stabilization consult'},
+          stuck: {title: 'A focused experiment', body: 'We create a 7-day behavioral experiment—small, measurable, and time-limited—to test a change and gather useful feedback.', cta: 'Start a 7-day plan'},
+          avoid: {title: 'Gentle activation', body: 'We use graded exposure and values-based activation: small steps that reduce avoidance while honoring your pace.', cta: 'Plan a gentle series'},
+          anxious: {title: 'Pacing and regulation', body: 'Short regulation strategies paired with cognitive work to slow reactivity and build a sense of control in key moments.', cta: 'Book a calming session'}
+        };
+
+        const container = document.getElementById('mood-app');
+        const card = document.getElementById('method-card');
+        const title = document.getElementById('method-title');
+        const body = document.getElementById('method-body');
+        const cta = document.getElementById('mood-cta');
+
+        container.addEventListener('click', function(e){
+          const btn = e.target.closest('button');
+          if(!btn) return;
+          const key = btn.dataset.key;
+          Array.from(container.querySelectorAll('button')).forEach(b=>b.classList.remove('active'));
+          btn.classList.add('active');
+
+          // simple morph animation
+          card.classList.add('fade-out');
+          setTimeout(()=>{
+            title.textContent = mapping[key].title;
+            body.textContent = mapping[key].body;
+            cta.textContent = mapping[key].cta;
+            // keep CTA url flexible: point to booking with a query param
+            const url = new URL('{{PRIMARY_CTA_URL}}', window.location.href);
+            url.searchParams.set('focus', key);
+            cta.setAttribute('href', url.toString());
+            card.classList.remove('fade-out');
+          }, 220);
+        });
+      })();
+    </script>
+  </body>
+</html>

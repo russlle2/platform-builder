@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Investment — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfbf8;--card:#fff;--muted:#6b6b6b;--accent:#2c6f5a;--accent-2:#b25c7a;--glass:rgba(255,255,255,0.6);font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+    html,body{height:100%;margin:0;background:var(--bg) url('assets/img/pattern.svg');-webkit-font-smoothing:antialiased}
+    .wrap{max-width:1100px;margin:48px auto;padding:28px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .brand{font-weight:700;color:var(--accent);letter-spacing:0.2px}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none;font-weight:600}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:24px;margin-top:28px}
+    .panel{background:var(--card);border-radius:12px;padding:20px;box-shadow:0 6px 20px rgba(17,17,17,0.06)}
+    .lead{color:#243;line-height:1.35}
+    .packages{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-top:18px}
+    .package{padding:18px;border-radius:10px;background:linear-gradient(180deg, #ffffff, #fbfbfb);border:1px solid rgba(10,10,10,0.03)}
+    .title{font-weight:700;color:var(--accent);margin-bottom:8px}
+    .price{font-size:20px;font-weight:800;color:var(--accent-2)}
+    .list{margin:10px 0 16px;color:var(--muted);line-height:1.5}
+    .cta{display:inline-block;background:var(--accent);color:white;padding:10px 14px;border-radius:8px;text-decoration:none}
+    .small{font-size:13px;color:var(--muted)}
+    footer{margin-top:24px;color:var(--muted);font-size:13px}
+    /* reveal animation */
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s cubic-bezier(.2,.9,.2,1),transform .6s cubic-bezier(.2,.9,.2,1)}
+    .reveal.revealed{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none;opacity:1;transform:none}}
+    /* planner */
+    .planner{display:flex;flex-direction:column;gap:10px}
+    .row{display:flex;gap:8px}
+    input[type="text"],select,textarea{flex:1;padding:10px;border-radius:8px;border:1px solid #e3e3e3}
+    label{font-size:13px;color:var(--muted)}
+    .chips{display:flex;flex-wrap:wrap;gap:8px}
+    .chip{padding:8px 10px;border-radius:999px;border:1px solid #e9e9e9;background:#fff;cursor:pointer}
+    .chip.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff}
+    .summary{white-space:pre-wrap;background:#f7f7f7;padding:12px;border-radius:8px;border:1px dashed #e2e2e2}
+    .buttons{display:flex;gap:8px}
+    .btn{padding:10px 12px;border-radius:8px;border:none;background:var(--accent);color:#fff;cursor:pointer}
+    .btn.secondary{background:#6b6b6b}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="reveal">
+      <div class="brand">{{BUSINESS_NAME}} — Holistic Integrative Care</div>
+      <nav>
+        <a href="index.html">Care</a>
+        <a href="services.html">Offerings</a>
+        <a href="conditions.html">Health Notes</a>
+        <a href="approach.html">Perspective</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="about.html">Who We Are</a>
+        <a href="book.html">Reserve</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero reveal" aria-labelledby="pricing-hero">
+        <div class="panel">
+          <h1 id="pricing-hero">Investment for thoughtful, whole-life plans</h1>
+          <p class="lead">Choose a paced pathway that matches your priorities — care framed as a sequence of learning, habits, and clinical support rather than a single fix. Transparent tiers below help you choose the right scope for a short series of sessions or an immersive VIP day.</p>
+          <div class="packages" role="list">
+            <div class="package" role="listitem">
+              <div class="title">Foundational Session</div>
+              <div class="price">$160 — 60 min</div>
+              <div class="list">Review of health history, focused guidance, and 2–3 targeted practices to try at home. Educational and supportive; not a substitute for urgent care.</div>
+              <a class="cta" href="book.html">Schedule a 60-min</a>
+            </div>
+            <div class="package" role="listitem">
+              <div class="title">Rhythm Renewal (Series)</div>
+              <div class="price">$430 — 3 sessions</div>
+              <div class="list">Three-session package: assessment, plan refinement, and practical tools for daily integration. Best for steady progress and measurable shifts.</div>
+              <a class="cta" href="book.html">Reserve the series</a>
+            </div>
+            <div class="package" role="listitem">
+              <div class="title">Integrative VIP Day</div>
+              <div class="price">Custom — VIP Day</div>
+              <div class="list">A concentrated, collaborative day of assessment, multi-modal planning, and a detailed home protocol. Pricing varies; please inquire for a tailored proposal.</div>
+              <a class="cta" href="book.html">Inquire about VIP Day</a>
+            </div>
+          </div>
+
+          <p class="small">All packages emphasize learning and self-care practices. We do not offer guaranteed cures. For urgent concerns, contact local emergency services or your primary provider.</p>
+        </div>
+
+        <aside class="panel" aria-labelledby="planner-title">
+          <h3 id="planner-title">Session Planner</h3>
+          <p class="small">Build a compact plan and export a plain-text summary you can share with your provider or keep for yourself.</p>
+
+          <div class="planner" id="planner">
+            <label>Who is this for?</label>
+            <input type="text" id="p-name" placeholder="Your name (optional)">
+            <label>Primary goal</label>
+            <select id="p-goal">
+              <option>Improve sleep consistency</option>
+              <option>Reduce daily stress reactions</option>
+              <option>Support digestion and energy</option>
+              <option>Begin gentle movement practice</option>
+            </select>
+            <label>Session length</label>
+            <div class="chips" id="length-chips">
+              <div class="chip" data-val="30">30 min</div>
+              <div class="chip active" data-val="60">60 min</div>
+              <div class="chip" data-val="90">90 min</div>
+            </div>
+            <label>Modalities to consider</label>
+            <div class="chips" id="mods">
+              <div class="chip" data-val="nutrition">Nutrition</div>
+              <div class="chip" data-val="herbal">Herbal support</div>
+              <div class="chip" data-val="movement">Movement</div>
+              <div class="chip" data-val="breath">Breath practices</div>
+              <div class="chip" data-val="mindfulness">Mindfulness</div>
+            </div>
+            <label>Frequency</label>
+            <select id="p-freq">
+              <option>Single session / consult</option>
+              <option>Weekly</option>
+              <option>Biweekly</option>
+              <option>Monthly</option>
+            </select>
+
+            <div class="buttons">
+              <button class="btn" id="build">Create Plan</button>
+              <button class="btn secondary" id="clear">Reset</button>
+            </div>
+
+            <div id="output" class="summary" aria-live="polite">Your plan summary will appear here.</div>
+
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button class="btn" id="copy">Copy summary</button>
+              <button class="btn secondary" id="download">Download .txt</button>
+            </div>
+
+            <p class="small">Note: this planner offers suggested next steps for exploration and does not replace medical advice.</p>
+          </div>
+        </aside>
+      </section>
+
+      <section class="panel reveal" style="margin-top:18px">
+        <h3>Pricing transparency</h3>
+        <p class="small">If cost is a barrier, mention it on first contact; limited sliding options and shorter consults may be available. VIP Day proposals are scoped and priced after a brief intake discussion.</p>
+        <a class="cta" href="contact.html" style="margin-top:12px;display:inline-block">Request a pricing conversation</a>
+      </section>
+
+      <footer class="reveal">
+        <p class="small">Questions? Call {{PHONE}} or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    // reveal with prefers-reduced-motion support
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const els = document.querySelectorAll('.reveal');
+      if(prefersReduced){ els.forEach(e=>e.classList.add('revealed')); return; }
+      const obs = new IntersectionObserver((entries)=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting) { entry.target.classList.add('revealed'); obs.unobserve(entry.target); }
+        });
+      },{threshold:0.15});
+      els.forEach(el=>obs.observe(el));
+    })();
+
+    // planner logic
+    (function(){
+      const chips = (sel)=>Array.from(document.querySelectorAll(sel));
+      const lengthChips = chips('#length-chips .chip');
+      const modChips = chips('#mods .chip');
+      const buildBtn = document.getElementById('build');
+      const clearBtn = document.getElementById('clear');
+      const output = document.getElementById('output');
+      const copyBtn = document.getElementById('copy');
+      const downloadBtn = document.getElementById('download');
+
+      function toggleGroup(group, single){
+        group.forEach(ch=>ch.addEventListener('click',()=>{
+          if(single){ group.forEach(c=>c.classList.remove('active')); ch.classList.add('active'); }
+          else ch.classList.toggle('active');
+        }));
+      }
+      toggleGroup(lengthChips, true);
+      toggleGroup(modChips, false);
+
+      function readState(){
+        const name = document.getElementById('p-name').value.trim();
+        const goal = document.getElementById('p-goal').value;
+        const length = document.querySelector('#length-chips .chip.active')?.dataset.val || '60';
+        const freq = document.getElementById('p-freq').value;
+        const mods = Array.from(document.querySelectorAll('#mods .chip.active')).map(c=>c.dataset.val);
+        return {name,goal,length,freq,mods};
+      }
+
+      function makeSummary(){
+        const s = readState();
+        const lines = [];
+        lines.push('Plan summary — {{BUSINESS_NAME}}');
+        if(s.name) lines.push('Client: ' + s.name);
+        lines.push('Primary goal: ' + s.goal);
+        lines.push('Session length: ' + s.length + ' minutes');
+        lines.push('Suggested cadence: ' + s.freq);
+        if(s.mods.length) lines.push('Consider including: ' + s.mods.join(', '));
+        lines.push('Recommended next steps:');
+        lines.push('- Book an initial consult and prepare a short symptom list and questions.');
+        if(s.freq.toLowerCase().includes('weekly')) lines.push('- Begin with 3–6 sessions for sustained integration; adjust based on response.');
+        else if(s.freq.toLowerCase().includes('monthly')) lines.push('- Use monthly check-ins to iterate on practices and tools.');
+        else lines.push('- One consult may clarify priorities and indicate whether a short series is helpful.');
+        lines.push('Notes: This plan is educational and supportive. It does not replace emergency or specialist medical care.');
+        lines.push('Contact to book: ' + '{{PRIMARY_CTA_LABEL}}' + ' — ' + '{{PRIMARY_CTA_URL}}');
+        return lines.join('\n');
+      }
+
+      buildBtn.addEventListener('click',()=>{ output.textContent = makeSummary(); });
+      clearBtn.addEventListener('click',()=>{ document.getElementById('p-name').value=''; document.getElementById('p-freq').selectedIndex=0; document.getElementById('p-goal').selectedIndex=0; lengthChips.forEach(c=>c.classList.remove('active')); lengthChips[1].classList.add('active'); modChips.forEach(c=>c.classList.remove('active')); output.textContent='Your plan summary will appear here.'; });
+
+      copyBtn.addEventListener('click',async ()=>{
+        try{
+          await navigator.clipboard.writeText(output.textContent || '');
+          copyBtn.textContent='Copied'; setTimeout(()=>copyBtn.textContent='Copy summary',1500);
+        }catch(e){ copyBtn.textContent='Copy failed'; setTimeout(()=>copyBtn.textContent='Copy summary',1500); }
+      });
+
+      downloadBtn.addEventListener('click',()=>{
+        const blob = new Blob([output.textContent || ''],{type:'text/plain;charset=utf-8'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href=url; a.download='session-plan.txt'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Contact {{BUSINESS_NAME}} for membership, events, and private sound bath sessions in {{CITY}}, {{STATE}}." />
+  <style>
+    :root{
+      --bg1:#f7efe6; /* warm sand */
+      --bg2:#efe8df; /* soft clay */
+      --accent:#8a5a3b; /* warm terracotta */
+      --muted:#6b5a4a;
+      --glass: rgba(255,255,255,0.6);
+      --card: rgba(255,255,255,0.85);
+      --maxW:1100px;
+      --radius:18px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      color:var(--muted);
+      background: linear-gradient(180deg,var(--bg1),var(--bg2));
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    body{margin:0; padding:32px; display:flex; justify-content:center;}
+    .wrap{width:100%; max-width:var(--maxW);}
+    header{display:flex; align-items:center; justify-content:space-between; gap:24px; margin-bottom:28px}
+    .brand{display:flex; gap:16px; align-items:center}
+    .logo{width:64px;height:64px;border-radius:12px; background:linear-gradient(135deg,#ffe8d6,#f3d7c7); display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(138,90,59,0.12);}
+    .logo svg{width:44px;height:44px}
+    nav{display:flex; gap:14px; align-items:center; flex-wrap:wrap}
+    nav a{color:var(--muted); text-decoration:none; padding:8px 12px; border-radius:10px; font-weight:600}
+    nav a:hover{background:var(--glass)}
+    .hero{position:relative; padding:36px; border-radius:var(--radius); background:linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.75)); box-shadow:0 12px 40px rgba(120,80,60,0.08); overflow:hidden}
+    .hero .left{max-width:60%}
+    h1{margin:0 0 6px 0; font-size:28px; color:var(--accent)}
+    p.lead{margin:0 0 12px 0; font-size:15px; opacity:0.95}
+    .cta-row{margin-top:12px; display:flex; gap:12px; align-items:center}
+    .btn{background:var(--accent); color:white; padding:10px 16px; border-radius:12px; text-decoration:none; font-weight:700}
+    .btn.ghost{background:transparent; border:1px solid rgba(138,90,59,0.12); color:var(--accent)}
+    .card{background:var(--card); padding:18px; border-radius:14px; box-shadow:0 8px 22px rgba(60,30,20,0.06)}
+    main{display:grid; grid-template-columns:1fr 420px; gap:26px; margin-top:20px}
+    .story{padding:22px; border-radius:14px}
+    h2{margin:0 0 10px 0; font-size:20px; color:#5a3f2e}
+    .meta{font-size:13px; opacity:0.9}
+    ul.list{padding-left:18px}
+    .flow{display:flex; flex-direction:column; gap:12px}
+    .flow .step{display:flex; gap:10px; align-items:flex-start}
+    .step .dot{width:36px;height:36px;border-radius:10px;background:linear-gradient(180deg,#fff,#f6efe7);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent);box-shadow:0 6px 18px rgba(100,50,30,0.06)}
+    form{display:flex; flex-direction:column; gap:12px}
+    input,textarea,select{padding:10px 12px;border-radius:10px;border:1px solid rgba(100,70,60,0.08);font-size:14px}
+    textarea{min-height:120px; resize:vertical}
+    .aside{position:relative}
+    .pattern{position:absolute; inset:0; opacity:0.14; pointer-events:none; background-image: url('assets/img/pattern.svg'); background-size:420px; background-repeat:repeat; transform:translateY(-20px)}
+    .offers{display:grid; gap:12px}
+    .offer-item{padding:12px;border-radius:12px;background:linear-gradient(180deg,#fff,#fbf7f4)}
+    .price-grid{display:flex; gap:8px; margin-top:10px}
+    .pill{background:#f1e6df;padding:8px 10px;border-radius:999px;font-weight:700;color:var(--accent)}
+    footer{margin-top:28px;font-size:13px;color:rgba(90,70,60,0.7)}
+    @media (max-width:980px){main{grid-template-columns:1fr;}.hero .left{max-width:100%}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true">
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="24" cy="24" r="22" fill="#ffe9d9" stroke="#f3d7c7" stroke-width="2"/>
+            <path d="M12 30c6-12 18-12 24 0" stroke="#8a5a3b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M15 22c4-6 10-6 15 0" stroke="#b86b49" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <div style="font-weight:800;color:var(--accent)">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;opacity:0.85">A sanctuary for sound and presence</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Gather</a>
+        <a href="events.html">Gatherings</a>
+        <a href="private-sessions.html">Intimate Sessions</a>
+        <a href="pricing.html">Memberships</a>
+        <a href="about.html">Our Story</a>
+        <a href="faq.html">Notes</a>
+        <a href="book.html">Reserve</a>
+        <a href="contact.html" style="background:rgba(138,90,59,0.08);border-radius:10px;padding:8px 12px;color:var(--accent)">Connect</a>
+      </nav>
+    </header>
+
+    <section class="hero card" aria-labelledby="hero-title">
+      <div class="pattern" aria-hidden="true"></div>
+      <div class="left">
+        <h1 id="hero-title">Connect with {{BUSINESS_NAME}} — membership & bespoke sessions</h1>
+        <p class="lead">If you’ve been called to the sound, we make it easy to join, ask questions, or reserve a private experience. Tell us what you need — membership benefits, corporate sound baths, or a one-on-one restorative session.</p>
+        <div class="cta-row">
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <a class="btn ghost" href="book.html">Reserve a space</a>
+        </div>
+      </div>
+    </section>
+
+    <main>
+      <section>
+        <div class="story card">
+          <h2>Why reach out?</h2>
+          <p class="meta">We blend curated instruments with hospitality — think warm textiles, gentle lighting, and layers of harmonic sound. Whether you’re curious about membership or need a tailored private session, we can craft an offering that fits your life.</p>
+
+          <h2 style="margin-top:16px">The flow — what to expect</h2>
+          <div class="flow" aria-hidden="false">
+            <div class="step">
+              <div class="dot">1</div>
+              <div>
+                <strong>Arrival & settling.</strong> You’ll be welcomed into the space, offered a blanket and bolster. A brief check-in ensures we honor any sensitivities.
+              </div>
+            </div>
+            <div class="step">
+              <div class="dot">2</div>
+              <div>
+                <strong>Guided transition.</strong> Breath and gentle guidance lead you into the sound bath — soft chime, tuning fork harmonics, and a foundation of crystal bowls or monochord.
+              </div>
+            </div>
+            <div class="step">
+              <div class="dot">3</div>
+              <div>
+                <strong>Sound immersion.</strong> A 35–50 minute unfurling of textures (gongs, crystal bowls, chimes, kalimba) followed by a quiet integration and tea.
+              </div>
+            </div>
+            <div class="step">
+              <div class="dot">4</div>
+              <div>
+                <strong>Closing & takeaways.</strong> We re-enter movement slowly, share aftercare suggestions, and open a gentle space for reflection.
+              </div>
+            </div>
+          </div>
+
+          <h2 style="margin-top:14px">What to bring</h2>
+          <ul class="list">
+            <li>Comfortable layers, a yoga mat or cushion if you prefer your own, an eye pillow or small scarf.</li>
+            <li>Water bottle and curiosity — headphones not needed.</li>
+          </ul>
+
+          <h2 style="margin-top:14px">Contraindications & safety</h2>
+          <p class="meta">Sound baths are gentle, but please disclose if you are pregnant, have epilepsy, severe tinnitus, or any recent surgeries/traumas. We cannot, in good conscience, recommend intense gong work for those with certain cardiovascular or vestibular conditions — reach out and we will advise alternatives.</p>
+        </div>
+
+        <div style="margin-top:16px" class="card offers">
+          <h2>Membership & offers</h2>
+          <div class="offer-item">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <strong>Monthly Membership</strong>
+                <div class="meta">Unlimited community sound baths + early RSVP for specials</div>
+              </div>
+              <div class="pill">Member Rate</div>
+            </div>
+            <div class="price-grid">
+              <div style="font-weight:800;font-size:18px">From $49/mo</div>
+              <div style="opacity:0.85;margin-left:auto">Includes priority booking</div>
+            </div>
+          </div>
+
+          <div class="offer-item">
+            <div style="display:flex;justify-content:space-between">
+              <div>
+                <strong>Private & Bespoke</strong>
+                <div class="meta">1:1, couples, and corporate offerings crafted to your group</div>
+              </div>
+              <div class="pill">Bespoke</div>
+            </div>
+            <div style="margin-top:8px;font-size:13px">Request a quote — pricing varies by headcount and travel. Members receive discounted rates.</div>
+          </div>
+        </div>
+
+        <div style="margin-top:16px" class="card">
+          <h2>Testimonials</h2>
+          <div style="display:flex;flex-direction:column;gap:12px;margin-top:10px">
+            <blockquote style="margin:0;padding:12px;border-left:3px solid #f3d7c7;background:#fff8f2;border-radius:8px">"I slept like I hadn't in years — the layers of sound dissolved my busy mind." <br/><cite style="font-style:normal;opacity:0.8">— L., {{CITY}}</cite></blockquote>
+            <blockquote style="margin:0;padding:12px;border-left:3px solid #f3d7c7;background:#fff8f2;border-radius:8px">"The membership has become my monthly anchor. The facilitators are warm and precise." <br/><cite style="font-style:normal;opacity:0.8">— M., {{STATE}}</cite></blockquote>
+          </div>
+        </div>
+      </section>
+
+      <aside class="aside">
+        <div class="card">
+          <h2>Connect with us</h2>
+          <p class="meta">We reply within 48 hours. Prefer a phone chat? Call during business hours.</p>
+          <form action="/contact" method="post" aria-label="Contact form">
+            <input type="text" name="name" placeholder="Your full name" required />
+            <input type="email" name="email" placeholder="Email address" required />
+            <input type="tel" name="phone" placeholder="Phone (optional)" />
+            <select name="interest">
+              <option value="community">Community Sound Bath</option>
+              <option value="membership">Membership</option>
+              <option value="private">Private / Corporate</option>
+            </select>
+            <label style="font-size:13px;opacity:0.9"><input type="checkbox" name="updates"/> I'd like updates on events & new sessions</label>
+            <textarea name="message" placeholder="Brief note about what you're seeking — date preferences, group size, or questions." ></textarea>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="btn" type="submit">Send message</button>
+              <a class="btn ghost" href="tel:{{PHONE}}">Call: {{PHONE}}</a>
+            </div>
+          </form>
+
+          <div style="margin-top:12px;font-size:13px">
+            <strong>Email</strong>
+            <div><a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+          </div>
+
+          <div style="margin-top:12px;font-size:13px">
+            <strong>Location</strong>
+            <div>{{VENUE_NAME}} — {{CITY}}, {{STATE}}</div>
+          </div>
+        </div>
+
+        <div style="margin-top:16px" class="card">
+          <h2>Quick pricing glance</h2>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;justify-content:space-between"><div>Drop-in</div><div style="font-weight:700">$28</div></div>
+            <div style="display:flex;justify-content:space-between"><div>Five-pack</div><div style="font-weight:700">$120</div></div>
+            <div style="display:flex;justify-content:space-between"><div>Membership</div><div style="font-weight:700">From $49/mo</div></div>
+          </div>
+        </div>
+
+      </aside>
+    </main>
+
+    <footer>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div>{{BUSINESS_NAME}} — lovingly held by {{FACILITATOR_NAME}}. Next community gathering: {{NEXT_EVENT_DATE}}</div>
+        <div style="font-size:13px;opacity:0.9">Prefer to speak? <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Book a Session — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--accent:#2a7a6b;--muted:#666}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;color:#222}
+    header{padding:14px 20px;border-bottom:1px solid rgba(0,0,0,0.05);display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:14px;text-decoration:none;color:#333}
+    .wrap{max-width:900px;margin:28px auto;padding:0 18px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:20px}
+    .panel{background:#fff;padding:18px;border-radius:12px;box-shadow:0 10px 30px rgba(12,12,12,0.04)}
+    label{display:block;font-weight:700;margin-bottom:6px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e7e7e7;margin-bottom:12px}
+    button.primary{background:var(--accent);color:white;padding:10px 14px;border:0;border-radius:10px;font-weight:800;cursor:pointer}
+    .mini-note{color:var(--muted);font-size:13px}
+    .slot{padding:8px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);cursor:pointer;margin-bottom:8px}
+    .slot.selected{background:var(--accent);color:white}
+    .summary{font-weight:800}
+    footer{margin-top:28px;color:var(--muted);font-size:13px;text-align:center}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="about.html">About</a>
+      <a href="pricing.html">Pricing</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <div class="grid">
+      <section class="panel">
+        <h2 style="margin-top:0">Reserve your time</h2>
+        <p class="mini-note">Choose a session type and a convenient slot. We'll confirm details by email.</p>
+
+        <form id="bookingForm" action="{{PRIMARY_CTA_URL}}" method="POST">
+          <label for="name">Your name</label>
+          <input id="name" name="name" required />
+
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required />
+
+          <label for="phone">Phone</label>
+          <input id="phone" name="phone" type="tel" />
+
+          <label for="service">Session type</label>
+          <select id="service" name="service">
+            <option value="seed">Seed Session — 60 min</option>
+            <option value="renewal">Renewal Track — Monthly</option>
+            <option value="revive">Revive Intensive — 3-session</option>
+          </select>
+
+          <label>Choose a preferred time (we'll confirm)</label>
+          <div id="slots">
+            <div class="slot" data-slot="2026-03-02T10:00">Tue 10:00 AM</div>
+            <div class="slot" data-slot="2026-03-03T14:00">Wed 2:00 PM</div>
+            <div class="slot" data-slot="2026-03-05T09:00">Fri 9:00 AM</div>
+          </div>
+
+          <label for="notes">Anything you'd like us to know?</label>
+          <textarea id="notes" name="notes" rows="4" placeholder="Brief context, goals, or barriers"></textarea>
+
+          <div style="display:flex;gap:10px;align-items:center;margin-top:8px">
+            <button class="primary" type="submit">Request this time</button>
+            <div class="mini-note">We aim to reply within 48 hours</div>
+          </div>
+        </form>
+
+        <div style="margin-top:14px;color:var(--muted);font-size:13px">By submitting you agree to our respectful, educational approach. This is not emergency care. For urgent concerns, contact local emergency services.</div>
+      </section>
+
+      <aside class="panel">
+        <div style="margin-bottom:12px">
+          <div class="summary" id="selectedService">Seed Session</div>
+          <div class="mini-note" id="selectedPrice">$120 • 60 minutes</div>
+        </div>
+
+        <div style="margin-bottom:12px">
+          <div style="font-weight:800;margin-bottom:8px">Quick pricing comparator</div>
+          <div style="display:flex;gap:8px;margin-bottom:8px">
+            <button id="cmpMonthly" style="padding:8px;border-radius:8px;border:1px solid #e7e7e7;cursor:pointer;background:#fff">Monthly</button>
+            <button id="cmpPackage" style="padding:8px;border-radius:8px;border:1px solid #e7e7e7;cursor:pointer;background:#fff">Package</button>
+          </div>
+          <div style="font-size:20px;font-weight:800;color:var(--accent)" id="compPrice">$120</div>
+          <div class="mini-note">Prices update interactively</div>
+        </div>
+
+        <div>
+          <div style="font-weight:800;margin-bottom:8px">Why we ask about context</div>
+          <div class="mini-note">Short intake helps us align sessions with what you want to try between visits. Educational, not prescriptive.</div>
+        </div>
+
+        <div style="margin-top:16px">
+          <div style="font-weight:800;margin-bottom:8px">Proof & trust</div>
+          <div class="mini-note">Small snapshots from people who came with messy schedules and found clearer steps.</div>
+          <div style="margin-top:8px">
+            <div style="background:linear-gradient(135deg,#f7f0ea,#e8fff9);padding:10px;border-radius:12px">"I finally had a few tools I could use right away." — R</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <div style="padding:16px 20px;color:var(--muted);text-align:center">Questions? Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</div>
+  </footer>
+
+  <script>
+    // Slot selection
+    (function(){
+      const slots = document.querySelectorAll('.slot');
+      let selectedSlot = null;
+      slots.forEach(s => s.addEventListener('click', ()=>{
+        slots.forEach(x=>x.classList.remove('selected'));
+        s.classList.add('selected'); selectedSlot = s.dataset.slot;
+      }));
+
+      // Service and price live update
+      const serviceSel = document.getElementById('service');
+      const selectedService = document.getElementById('selectedService');
+      const selectedPrice = document.getElementById('selectedPrice');
+      const compPrice = document.getElementById('compPrice');
+
+      const priceMap = {seed:120, renewal:240, revive:800};
+      function updatePrice(mode){
+        const key = serviceSel.value;
+        let val = priceMap[key];
+        if(mode === 'monthly'){
+          compPrice.textContent = '$' + val;
+          selectedPrice.textContent = '$' + val + (key==='renewal'? ' • Monthly':' • 60 minutes');
+        } else {
+          // package pricing discounts
+          const pk = key==='revive' ? val : Math.round(val*2.8);
+          compPrice.textContent = '$' + pk;
+          selectedPrice.textContent = '$' + pk + ' • package';
+        }
+      }
+
+      document.getElementById('cmpMonthly').addEventListener('click', ()=> updatePrice('monthly'));
+      document.getElementById('cmpPackage').addEventListener('click', ()=> updatePrice('package'));
+      serviceSel.addEventListener('change', ()=>{ selectedService.textContent = serviceSel.options[serviceSel.selectedIndex].text; updatePrice('monthly'); });
+
+      // initialize
+      updatePrice('monthly');
+
+      // Form basic validation and attach selected slot value
+      const form = document.getElementById('bookingForm');
+      form.addEventListener('submit', function(e){
+        if(!selectedSlot){
+          e.preventDefault(); alert('Please pick a preferred time slot.'); return false;
+        }
+        const input = document.createElement('input'); input.type='hidden'; input.name='preferred_slot'; input.value = selectedSlot; form.appendChild(input);
+        // allow submit to proceed to server URL
+      });
+    })();
+  </script>
+</body>
+</html>

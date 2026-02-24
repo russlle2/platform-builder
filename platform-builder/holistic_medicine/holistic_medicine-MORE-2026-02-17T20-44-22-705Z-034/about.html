@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Learn about the team and the thoughtful approach to integrative care.">
+  <style>
+    :root{--bg:#fffefc;--muted:#6b655f;--accent:#7b6fb0;--card:#ffffff;--shadow:0 10px 30px rgba(16,14,14,0.06)}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Georgia,serif;color:#241f20;background:var(--bg)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#b9afd9);display:grid;place-items:center;color:white;font-weight:700}
+    nav a{color:var(--muted);text-decoration:none;margin-left:16px;font-weight:600}
+    .wrap{max-width:900px;margin:36px auto;padding:0 20px}
+    .intro{background:linear-gradient(180deg,rgba(255,255,255,0.9),transparent);padding:26px;border-radius:12px;box-shadow:var(--shadow)}
+    h1{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    .byline{color:var(--muted);margin-top:8px}
+    .team{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:20px}
+    .person{background:#fff;padding:14px;border-radius:10px;border:1px solid rgba(0,0,0,0.03)}
+    .person h4{margin:0}
+    .story{margin-top:16px;color:var(--muted)}
+
+    .reveal-on-scroll{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+    .reveal-on-scroll.revealed{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){.reveal-on-scroll{transition:none;opacity:1;transform:none}}
+
+    footer{max-width:900px;margin:40px auto;padding:20px;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo">HM</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav aria-label="Site navigation">
+      <a href="index.html">Welcome</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Conditions</a>
+      <a href="approach.html">Our Way</a>
+      <a href="pricing.html">Rates</a>
+      <a href="about.html" style="color:var(--accent)">Meet</a>
+      <a href="book.html">Schedule</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="intro reveal-on-scroll">
+      <h1>Who we are</h1>
+      <p class="byline">A small collective focused on practical, integrative support — blending evidence, lifestyle, and human stories to help people feel steadier in their days.</p>
+      <div style="margin-top:12px;display:flex;gap:10px">
+        <button class="btn" style="background:var(--accent);color:white;padding:10px 14px;border-radius:8px;border:0;cursor:pointer" id="open-modal">Try a mini practice</button>
+        <a href="book.html" style="text-decoration:none;color:var(--accent);padding:10px 12px;border-radius:8px;border:1px solid rgba(123,111,176,0.15);align-self:center">Schedule a visit</a>
+      </div>
+    </section>
+
+    <section class="story reveal-on-scroll" style="margin-top:22px">
+      <h2>Our approach</h2>
+      <p class="story">We begin with curiosity. Instead of checking boxes, we ask: how does this fit into the life you already live? From there we co-create modest experiments — small, measurable things you can try between visits. Over time those experiments become habits that reflect what matters most.</p>
+    </section>
+
+    <section class="reveal-on-scroll" style="margin-top:22px">
+      <h2>The team</h2>
+      <div class="team">
+        <div class="person">
+          <h4>Lead clinician</h4>
+          <div class="muted">A thoughtful clinician trained in integrative approaches, with a focus on practical plans for busy adults.</div>
+          <p class="story">They pair listening with a pragmatic checklist of small steps — dietary shifts, rhythm changes, and simple behavioral experiments — designed for real life.</p>
+        </div>
+        <div class="person">
+          <h4>Health coach</h4>
+          <div class="muted">A coach who helps translate plans into daily routines and reflections.</div>
+          <p class="story">Through gentle accountability and resource curating, they support progress between visits with short guidance and clear tools.</p>
+      </div>
+      </div>
+    </section>
+
+    <section style="margin-top:22px" class="reveal-on-scroll">
+      <h2>Why this matters</h2>
+      <p class="story">Many people find medical visits helpful for diagnosis but hard to translate into daily changes. We focus on translation: turning insight into a manageable sequence of moves that fit work, family, and rest.</p>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="max-width:900px;margin:0 auto;padding:20px;color:var(--muted);font-size:13px;display:flex;justify-content:space-between;align-items:center">
+      <div>Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      <div>{{BUSINESS_NAME}} — <span class="muted">Call</span> {{PHONE}}</div>
+    </div>
+  </footer>
+
+  <!-- Reuse modal (breathing/journaling) -->
+  <div id="modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true" style="display:none;align-items:center;justify-content:center;padding:20px;background:rgba(10,10,10,0.35)">
+    <div class="modal" style="max-width:640px;padding:18px">
+      <header style="display:flex;justify-content:space-between;align-items:center">
+        <strong>Try a mini practice</strong>
+        <button class="close" id="close-modal" aria-label="Close">✕</button>
+      </header>
+      <div style="margin-top:12px">
+        <p class="muted">Short techniques to notice and shift energy. Choose one below.</p>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="btn" data-practice="breath">Breathing</button>
+          <button class="btn ghost" data-practice="journ">Journaling</button>
+          <button class="btn ghost" data-practice="intend">Set intention</button>
+        </div>
+        <div id="practice-area" style="margin-top:12px;color:var(--muted)">Select a practice to begin.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      'use strict';
+      // Lightweight modal & practices (same behaviors as pricing to keep local JS only)
+      var modal = document.getElementById('modal');
+      var open = document.getElementById('open-modal');
+      var close = document.getElementById('close-modal');
+      var practiceArea = document.getElementById('practice-area');
+      function prefersReduced(){return window.matchMedia('(prefers-reduced-motion: reduce)').matches}
+      open.addEventListener('click', function(){ modal.style.display='flex'; modal.setAttribute('aria-hidden','false'); });
+      close.addEventListener('click', function(){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); stopTimers(); });
+      modal.addEventListener('click', function(e){ if(e.target===modal) { modal.style.display='none'; stopTimers(); } });
+      var timers=[]; function stopTimers(){ timers.forEach(clearInterval); timers=[] }
+      document.querySelectorAll('[data-practice]').forEach(function(btn){ btn.addEventListener('click', function(){ var which=btn.getAttribute('data-practice'); stopTimers(); if(which==='breath') startBreathing(); if(which==='journ') startJournaling(); if(which==='intend') startIntention(); }) });
+      function startBreathing(){ practiceArea.innerHTML=''; var p=document.createElement('p'); p.className='muted'; p.textContent='Slow breathing for one minute: inhale 4 / hold 2 / exhale 6.'; var timer=document.createElement('div'); timer.style.fontWeight='700'; timer.style.marginTop='8px'; var remaining=60; timer.textContent=remaining+'s'; practiceArea.appendChild(p); practiceArea.appendChild(timer); if(prefersReduced()){ timer.textContent='One minute suggested.'; return } timers.push(setInterval(function(){ remaining--; if(remaining<=0){ clearInterval(timers.pop()); timer.textContent='Done.'; return } timer.textContent=remaining+'s'; },1000)); }
+      function startJournaling(){ practiceArea.innerHTML=''; var p=document.createElement('p'); p.className='muted'; p.textContent='Two minutes: write briefly about something that went okay today.'; var ta=document.createElement('textarea'); ta.style.width='100%'; ta.style.height='110px'; ta.style.marginTop='8px'; practiceArea.appendChild(p); practiceArea.appendChild(ta); var remaining=120; var timer=document.createElement('div'); timer.style.fontWeight='700'; timer.style.marginTop='8px'; timer.textContent=remaining+'s'; practiceArea.appendChild(timer); if(prefersReduced()){ timer.textContent='Write for a short while.'; return } timers.push(setInterval(function(){ remaining--; if(remaining<=0){ clearInterval(timers.pop()); timer.textContent='Complete.'; return } timer.textContent=remaining+'s'; },1000)); }
+      function startIntention(){ practiceArea.innerHTML=''; var p=document.createElement('p'); p.className='muted'; p.textContent='Create a brief intention for the next hour.'; var input=document.createElement('input'); input.type='text'; input.style.width='100%'; input.style.marginTop='8px'; var save=document.createElement('button'); save.className='btn'; save.textContent='Save'; save.style.marginTop='8px'; save.addEventListener('click', function(){ if(input.value.trim()){ practiceArea.innerHTML='<div style="font-weight:700;color:var(--accent)">Saved: "'+escapeHtml(input.value.trim())+'"</div>'; } }); practiceArea.appendChild(p); practiceArea.appendChild(input); practiceArea.appendChild(save); }
+      function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') }
+
+      // Scroll reveal
+      var revealEls = Array.prototype.slice.call(document.querySelectorAll('.reveal-on-scroll'));
+      function onScroll(){ if(prefersReduced()){ revealEls.forEach(function(el){ el.classList.add('revealed') }); window.removeEventListener('scroll', onScroll); return } var h=window.innerHeight||document.documentElement.clientHeight; revealEls.forEach(function(el){ var r=el.getBoundingClientRect(); if(r.top < h - 80) el.classList.add('revealed'); }); }
+      window.addEventListener('load', onScroll); window.addEventListener('scroll', onScroll);
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1724;--glass:rgba(255,255,255,0.06);--glass-2:rgba(255,255,255,0.04);--accent:#a3e7d9;--muted:#9aa4b2;--card:#0b1220}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#e6eef3;background:linear-gradient(180deg,#071428 0%, #071022 60%);}
+    header{backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);position:sticky;top:0;padding:18px 28px;display:flex;align-items:center;justify-content:space-between;z-index:50}
+    nav a{color:var(--muted);text-decoration:none;margin:0 10px;font-size:14px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(163,231,217,0.12),rgba(163,231,217,0.04));box-shadow:inset 0 1px 0 rgba(255,255,255,0.02)}
+    .hero{max-width:1100px;margin:36px auto;padding:36px;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));box-shadow:0 8px 30px rgba(2,6,23,0.6);display:grid;grid-template-columns:1fr 380px;gap:28px}
+    .hero h1{margin:0;font-weight:600;letter-spacing:0.2px;color:#e8f6f1}
+    .hero p{color:var(--muted);margin-top:10px;line-height:1.5}
+    .card{background:linear-gradient(180deg,var(--glass),var(--glass-2));border-radius:12px;padding:16px;color:#eaf6f1}
+    .features{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:18px}
+    .feature{padding:12px;border-radius:10px;background:rgba(255,255,255,0.02)}
+    .cta{display:inline-block;margin-top:16px;padding:12px 18px;border-radius:10px;background:var(--accent);color:#052026;text-decoration:none;font-weight:600}
+    .muted{color:var(--muted);font-size:14px}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:22px}
+    .process{display:flex;flex-direction:column;gap:12px}
+    .step{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px}
+    footer{max-width:1100px;margin:28px auto;padding:18px;color:var(--muted);font-size:13px}
+
+    /* Aroma wheel */
+    .wheel-wrap{display:grid;place-items:center;padding:18px}
+    .wheel{width:300px;height:300px;border-radius:50%;background:conic-gradient(from 90deg,#f2e7d9 0 120deg,#dbeff0 120deg 240deg,#e7efd9 240deg 360deg);display:grid;place-items:center;position:relative;box-shadow:inset 0 -8px 24px rgba(2,6,23,0.45)}
+    .wheel .ring{position:absolute;border-radius:50%}
+    .ring.top{width:100%;height:100%;clip-path:circle(48% at 50% 50%)}
+    .ring.mid{width:70%;height:70%;background:rgba(255,255,255,0.02);display:grid;place-items:center}
+    .ring.base{width:40%;height:40%;background:rgba(255,255,255,0.03)}
+    .note{position:absolute;transform-origin:50% 150%;cursor:pointer;font-size:12px;color:#051b1a}
+    .note:hover{filter:brightness(1.06)}
+    .desc{margin-top:12px;padding:12px;border-radius:10px;background:rgba(2,6,23,0.4);color:#dff3ee}
+
+    /* Mood selector */
+    .mood{display:flex;flex-direction:column;gap:10px}
+    .select{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;color:#e6eef3}
+
+    @media (max-width:880px){.hero{grid-template-columns:1fr;}.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo" aria-hidden>
+        <svg width="30" height="30" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="4" y="4" width="40" height="40" rx="8" fill="url(#g)" />
+          <defs>
+            <linearGradient id="g" x1="0" x2="1">
+              <stop offset="0" stop-color="#a3e7d9" stop-opacity="0.9" />
+              <stop offset="1" stop-color="#8be7d0" stop-opacity="0.6" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <div>
+        <div style="font-weight:600;color:#eaf6f1">{{BUSINESS_NAME}}</div>
+        <div class="muted" style="margin-top:2px">A scent practice that may hold a small steadiness</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html" style="color:var(--accent)">Offerings</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Boutique</a>
+      <a href="pricing.html">Rates</a>
+      <a href="about.html">Story</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main style="max-width:1100px;margin:24px auto;padding:0 18px">
+    <section class="hero">
+      <div>
+        <h1>Practical scent guidance — in-person or remote</h1>
+        <p class="muted">Sessions and blends designed to gently shift attention, ease tension, and invite clearer moments. Choices blend clinical caution, scentcraft, and simple rituals. Safety-forward, always.</p>
+
+        <div class="features">
+          <div class="feature">
+            <strong>Hybrid sessions</strong>
+            <div class="muted">Carefully guided, whether we meet over video or at a short clinic visit.</div>
+          </div>
+          <div class="feature">
+            <strong>Custom blends</strong>
+            <div class="muted">Hand-formulated blends meant for brief daily use; dilution guidance included.</div>
+          </div>
+          <div class="feature">
+            <strong>Short practice plans</strong>
+            <div class="muted">Three-step scent supports you can keep with you.</div>
+          </div>
+          <div class="feature">
+            <strong>Safety & care</strong>
+            <div class="muted">Patch testing, pregnancy guidance, and pet-safe notes on every plan.</div>
+          </div>
+        </div>
+
+        <a id="primaryCta" class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        <div class="muted" style="margin-top:12px">Prefer a quick consult? Call <a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none">{{PHONE}}</a></div>
+      </div>
+
+      <aside>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div class="muted">Choose how you feel</div>
+              <h3 style="margin:6px 0 0 0;color:#e8f6f1">Mood-to-Method</h3>
+            </div>
+            <div class="muted" style="font-size:13px">Hybrid offers</div>
+          </div>
+
+          <div style="margin-top:12px" class="mood">
+            <select id="moodSelect" class="select" aria-label="Choose mood">
+              <option value="reflective">Reflective — tending inward</option>
+              <option value="flat">Flat — wanting lift</option>
+              <option value="tense">Tense — needing release</option>
+              <option value="restless">Restless — seeking focus</option>
+              <option value="tired">Tired — gentle revive</option>
+            </select>
+
+            <div id="methodCard" class="card" style="padding:12px">
+              <div class="muted">Suggested approach</div>
+              <div id="methodTitle" style="margin-top:8px;font-weight:600;color:#eaf6f1">Brief consult + tailored at-home plan</div>
+              <div id="methodDesc" class="muted" style="margin-top:8px">A 25-minute conversation followed by a simple scent routine you can use daily. Dilution and safety notes provided.</div>
+            </div>
+
+            <a id="moodCta" class="cta" href="{{PRIMARY_CTA_URL}}">Book a short consult</a>
+          </div>
+        </div>
+
+        <div style="height:18px"></div>
+
+        <div class="card">
+          <div style="font-weight:600">Aroma wheel</div>
+          <div class="wheel-wrap">
+            <div class="wheel" id="aromaWheel" aria-hidden>
+              <div class="ring top"></div>
+              <div class="ring mid">
+                <div style="font-size:12px;color:#052026">Explore notes</div>
+              </div>
+              <div class="ring base"></div>
+
+              <!-- top notes -->
+              <div class="note" style="left:50%;top:4%;transform:translate(-50%,0)" data-type="top" data-title="Bergamot" data-desc="Citrus top note; bright, may ease quiet tension.">Bergamot</div>
+              <div class="note" style="left:86%;top:28%;transform:translate(-50%,0)" data-type="top" data-title="Grapefruit" data-desc="Fresh, zesty; may invite alertness.">Grapefruit</div>
+              <div class="note" style="left:14%;top:28%;transform:translate(-50%,0)" data-type="top" data-title="Lemon" data-desc="Crisp citrus; often used for gentle clarity.">Lemon</div>
+
+              <!-- middle notes -->
+              <div class="note" style="left:80%;top:66%;transform:translate(-50%,0)" data-type="middle" data-title="Lavender" data-desc="Classic floral; often used for quieting the mind when comfortable." >Lavender</div>
+              <div class="note" style="left:50%;top:84%;transform:translate(-50%,0)" data-type="middle" data-title="Geranium" data-desc="Green-floral balance; may support emotional steadiness.">Geranium</div>
+              <div class="note" style="left:20%;top:66%;transform:translate(-50%,0)" data-type="middle" data-title="Chamomile" data-desc="Soft, tea-like; commonly used for easing tension at low doses.">Chamomile</div>
+
+              <!-- base notes -->
+              <div class="note" style="left:50%;top:48%;transform:translate(-50%,0)" data-type="base" data-title="Cedarwood" data-desc="Warm, woody base; used for grounding practices.">Cedarwood</div>
+
+            </div>
+            <div id="noteInfo" class="desc">Hover a note to see a short description. No medical claims — safety notes in FAQ.</div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="grid" style="margin-top:22px">
+      <div>
+        <div class="process card">
+          <div style="font-weight:600">How a hybrid visit flows</div>
+          <div class="step"><strong>1.</strong> Intake: short history and scent preferences. Patch-test plan reviewed.</div>
+          <div class="step"><strong>2.</strong> Method: aromatic exploration and choice of delivery (inhaler, diffuser, roll-on).</div>
+          <div class="step"><strong>3.</strong> Plan: a two-week micro-practice with dilution guidance and pet/pregnancy notes if applicable.</div>
+          <div class="step"><strong>4.</strong> Follow-up: a brief check-in to refine the blend and routine.</div>
+        </div>
+
+        <div style="margin-top:14px" class="card">
+          <div style="font-weight:600">Evidence & care</div>
+          <div class="muted" style="margin-top:8px">Scent prompts are offered as supportive practices and are not a substitute for medical or mental health care. I do not diagnose or treat conditions. Patch testing and proper dilution are part of every plan.</div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="card">
+          <div style="font-weight:600">Client notes</div>
+          <div class="muted" style="margin-top:8px">"A small habit that helps me settle before work." — local client</div>
+          <div class="muted" style="margin-top:8px">"Clear instructions and pet-safe options were helpful." — parent</div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="card">
+          <div style="font-weight:600">Quick rates</div>
+          <div class="muted" style="margin-top:8px">Initial consult (30m) — sliding scale</div>
+          <div class="muted">Short follow-up (15m) — add-on</div>
+          <div class="muted">Custom blend (30m prep) — by request</div>
+          <div style="margin-top:10px"><a class="cta" href="pricing.html">See full rates</a></div>
+        </div>
+      </aside>
+    </section>
+
+    <section style="margin-top:22px" class="card">
+      <div style="font-weight:600">FAQ — Safety highlights</div>
+      <div class="muted" style="margin-top:8px"><strong>Dilution:</strong> Every blend comes with a recommended dilution for topical use. Follow the plan; do not apply neat essentials to skin.</div>
+      <div class="muted" style="margin-top:8px"><strong>Patch test:</strong> A patch test is suggested before continued topical use. I will walk you through it.</div>
+      <div class="muted" style="margin-top:8px"><strong>Pets:</strong> Blends can be made with pet-safety in mind; some oils are inadvisable around animals — we will adapt.</div>
+      <div class="muted" style="margin-top:8px"><strong>Pregnancy & nursing:</strong> Certain oils are avoided; tell me if you are pregnant, trying, or breastfeeding so I can recommend safe choices.</div>
+      <div class="muted" style="margin-top:8px"><strong>Not medical care:</strong> Aromas and routines are offered as supportive practices and should not replace medical advice.</div>
+    </section>
+  </main>
+
+  <footer>
+    <div style="max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center">
+      <div class="muted">&copy; <span id="year"></span> {{BUSINESS_NAME}} • <span class="muted">{{CITY}}, {{STATE}}</span></div>
+      <div class="muted">Questions? <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a></div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Mood-to-Method logic
+    const moodSelect = document.getElementById('moodSelect');
+    const methodTitle = document.getElementById('methodTitle');
+    const methodDesc = document.getElementById('methodDesc');
+    const moodCta = document.getElementById('moodCta');
+    const primaryCta = document.getElementById('primaryCta');
+
+    const moodMap = {
+      'reflective':{
+        title:'Reflective plan — quiet tasting + home ritual',
+        desc:'A slow sensory sequence with grounding base notes and a short breath practice. Includes dilution instructions and a patch test plan.',
+        cta:'Schedule reflective visit'
+      },
+      'flat':{
+        title:'Lift plan — bright top notes + micro-ritual',
+        desc:'A brief consult to choose uplifting citrus and an easy inhaler routine for short boosts.',
+        cta:'Choose a lift session'
+      },
+      'tense':{
+        title:'Release plan — soothing middles and grounding base',
+        desc:'A focus on calming blends and pacing; recommended topical dilution and safe delivery methods provided.',
+        cta:'Book a gentle release'
+      },
+      'restless':{
+        title:'Focus plan — crisp accords for attention',
+        desc:'Notes chosen for clarity and anchoring; a 2-minute practice to center before a task.',
+        cta:'Claim a focus consult'
+      },
+      'tired':{
+        title:'Gentle revive — low-dose awakeners',
+        desc:'Soft citrus or herbaceous notes in low dilution to support brief alertness without jitter.',
+        cta:'Request a revive plan'
+      }
+    };
+
+    function updateMood(){
+      const v = moodSelect.value; const data = moodMap[v];
+      methodTitle.textContent = data.title;
+      methodDesc.textContent = data.desc;
+      moodCta.textContent = data.cta;
+      // keep CTA target flexible — add mood param
+      moodCta.href = '{{PRIMARY_CTA_URL}}' + '?mood=' + encodeURIComponent(v);
+      primaryCta.href = '{{PRIMARY_CTA_URL}}' + '?src=offerings';
+    }
+    moodSelect.addEventListener('change', updateMood);
+    updateMood();
+
+    // Aroma wheel interactivity
+    const notes = document.querySelectorAll('.note');
+    const noteInfo = document.getElementById('noteInfo');
+    notes.forEach(n=>{
+      n.addEventListener('mouseenter', e=>{
+        const t = n.dataset.title; const d = n.dataset.desc; const type = n.dataset.type;
+        noteInfo.textContent = t + ': ' + d + ' (note type: ' + type + ')';
+      });
+      n.addEventListener('mouseleave', e=>{ noteInfo.textContent = 'Hover a note to see a short description. No medical claims — safety notes in FAQ.'; });
+      n.addEventListener('click', e=>{ alert(n.dataset.title + '\n\n' + n.dataset.desc + '\n\nThis is informational and not medical advice.'); });
+    });
+  </script>
+</body>
+</html>

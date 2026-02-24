@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Explore signature coaching programs from Cedar & Sky Wellness—rooted in nature, backed by science. Gentle habits, nervous system care, and sustainable vitality." />
+  <meta name="theme-color" content="#16352a" />
+  <title>Programs | {{BUSINESS_NAME}} — Guided paths to sustainable wellbeing</title>
+  <style>
+    :root{
+      --forest-900:#0e2a20;
+      --forest-800:#16352a;
+      --forest-700:#1e4638;
+      --forest-500:#2f6b4e;
+      --moss-400:#5c8f6f;
+      --sky-300:#9fd5eb;
+      --sky-200:#cbeaf5;
+      --snow-50:#f7faf9;
+      --sand-100:#ebe7e1;
+      --clay-300:#b9836a;
+      --text-900:#142019;
+      --text-700:#284236;
+      --muted-600:#5a6c64;
+      --ring:#8ec5bb;
+      --shadow:0 10px 30px rgba(4,28,22,.15);
+      --radius-l:20px; --radius-m:14px; --radius-s:10px;
+      --max:1160px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;color:var(--text-900);background:linear-gradient(180deg,var(--snow-50),#fff)}
+    .container{max-width:var(--max);margin:0 auto;padding:0 20px}
+    .skip-link{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
+    .skip-link:focus{position:fixed;left:20px;top:20px;width:auto;height:auto;padding:10px 14px;background:#fff;border-radius:8px;box-shadow:var(--shadow);z-index:10000}
+    header.site-header{position:sticky;top:0;z-index:999;background:rgba(247,250,249,.7);backdrop-filter:saturate(140%) blur(10px);border-bottom:1px solid rgba(22,53,42,.08)}
+    .nav{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:72px}
+    .brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+    .brand-mark{width:36px;height:36px;border-radius:12px;background:radial-gradient(120px 80px at 30% 30%, var(--sky-200), transparent 60%),linear-gradient(135deg,var(--forest-700),var(--forest-800));box-shadow:inset 0 0 0 2px rgba(255,255,255,.3)}
+    .brand-name{font-weight:700;color:var(--forest-900);letter-spacing:.2px}
+    nav ul{display:flex;gap:16px;list-style:none;margin:0;padding:0}
+    nav a{color:var(--text-700);text-decoration:none;padding:10px 12px;border-radius:10px}
+    nav a[aria-current="page"], nav a:hover{background:rgba(46,93,59,.08);color:var(--forest-800)}
+    .cta{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(180deg,var(--forest-700),var(--forest-800));color:#fff !important;padding:10px 14px;border-radius:12px;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.15)}
+    .cta .dot{width:8px;height:8px;background:var(--sky-300);border-radius:99px}
+    .menu-toggle{display:none;background:#fff;border:1px solid rgba(22,53,42,.15);border-radius:12px;padding:10px 12px}
+    .menu-toggle[aria-expanded="true"]{background:var(--snow-50)}
+
+    .hero{position:relative;isolation:isolate}
+    .hero .bg{position:absolute;inset:0;z-index:-1;background:
+      radial-gradient(60% 60% at 85% -10%, rgba(159,213,235,.35), transparent 60%),
+      radial-gradient(80% 60% at -10% 20%, rgba(47,107,78,.12), transparent 60%),
+      linear-gradient(180deg,#fff, var(--snow-50))}
+    .hero-inner{display:grid;grid-template-columns:1.1fr .9fr;gap:36px;padding:72px 0}
+    .eyebrow{display:inline-flex;align-items:center;gap:8px;color:var(--moss-400);font-weight:600;background:rgba(159,213,235,.25);border:1px solid rgba(159,213,235,.5);padding:6px 10px;border-radius:999px}
+    .hero h1{font-size:clamp(28px,4.6vw,48px);line-height:1.1;margin:14px 0 10px;color:var(--forest-900)}
+    .hero p{color:var(--muted-600);font-size:1.05rem;max-width:56ch}
+    .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:18px}
+    .btn{display:inline-flex;align-items:center;gap:10px;padding:12px 16px;border-radius:14px;border:1px solid transparent;text-decoration:none;font-weight:600}
+    .btn-primary{background:linear-gradient(180deg,var(--forest-700),var(--forest-800));color:#fff;border-color:rgba(255,255,255,.12)}
+    .btn-secondary{background:#fff;color:var(--forest-800);border-color:rgba(22,53,42,.15)}
+    .hero-visual{position:relative}
+    .hero-visual img{width:100%;height:auto;display:block;border-radius:20px;border:1px solid rgba(22,53,42,.08);box-shadow:var(--shadow);background:#fff}
+    .badge{position:absolute;right:-8px;bottom:-8px;background:#fff;border:1px dashed rgba(22,53,42,.25);border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:8px;box-shadow:var(--shadow)}
+    .badge .pulse{width:10px;height:10px;border-radius:99px;background:var(--sky-300);box-shadow:0 0 0 0 rgba(159,213,235,.7);animation:pulse 2s infinite}
+    @keyframes pulse{to{box-shadow:0 0 0 18px rgba(159,213,235,0)}}
+
+    .section{padding:56px 0}
+    .section .hd{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:20px}
+    .section h2{margin:0;color:var(--forest-900);font-size:clamp(22px,3.2vw,34px)}
+    .muted{color:var(--muted-600)}
+
+    .benefits{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .benefit{background:#fff;border:1px solid rgba(22,53,42,.08);border-radius:var(--radius-m);padding:18px;display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;box-shadow:0 3px 16px rgba(4,28,22,.05)}
+    .icon{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(180deg,var(--sky-200),#fff);border:1px solid rgba(22,53,42,.08)}
+
+    .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:12px}
+    .card{background:#fff;border:1px solid rgba(22,53,42,.08);border-radius:var(--radius-l);padding:20px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px}
+    .card .label{display:inline-flex;align-items:center;gap:8px;font-size:.85rem;color:var(--forest-700);background:rgba(46,93,59,.08);padding:6px 10px;border-radius:999px;width:max-content}
+    .price{font-weight:800;color:var(--forest-800)}
+    .inc{font-size:.92rem;color:var(--muted-600);margin:0}
+    .features{margin:0;padding:0 0 0 20px;color:var(--text-700)}
+
+    .pattern{background-image:url('assets/img/pattern.svg');background-repeat:repeat;background-size:320px auto;mask-image:linear-gradient(#000, rgba(0,0,0,.3))}
+
+    .testimonials{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .quote{background:#fff;border:1px solid rgba(22,53,42,.08);border-radius:18px;padding:18px;box-shadow:0 6px 22px rgba(4,28,22,.06)}
+    .quote header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+    .quote img{width:42px;height:42px;border-radius:50%;border:1px solid rgba(22,53,42,.12)}
+    .stars{color:#f0b429;font-size:14px}
+
+    .faq{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .faq-item{background:#fff;border:1px solid rgba(22,53,42,.08);border-radius:16px;padding:12px}
+    .faq-item button{all:unset;display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;padding:10px;cursor:pointer}
+    .faq-q{font-weight:700;color:var(--forest-900)}
+    .faq-a{padding:0 10px 10px 10px;color:var(--muted-600)}
+    .chev{transition:transform .2s ease}
+
+    .lead{position:relative;border:1px solid rgba(22,53,42,.12);background:linear-gradient(180deg,#fff,var(--snow-50));border-radius:22px;padding:22px;display:grid;grid-template-columns:1.2fr .8fr;gap:14px;box-shadow:var(--shadow)}
+    .lead form{display:flex;flex-wrap:wrap;gap:10px}
+    .field{display:grid;gap:6px;flex:1 1 220px}
+    .field input{border:1px solid rgba(22,53,42,.18);border-radius:12px;padding:12px 14px}
+    .error{color:#b5473f;font-size:.9rem;display:none}
+    .success{display:none;color:var(--forest-700);font-weight:600}
+
+    .cta-band{background:linear-gradient(180deg,var(--forest-700),var(--forest-800));border-radius:22px;padding:24px;color:#fff;display:grid;grid-template-columns:1fr auto;align-items:center;gap:16px}
+    .cta-band .btn{background:#fff;color:var(--forest-800)}
+
+    footer{margin-top:56px;padding:36px 0;border-top:1px solid rgba(22,53,42,.1)}
+    .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:18px}
+    address{font-style:normal;color:var(--muted-600)}
+    .small{font-size:.92rem;color:var(--muted-600)}
+
+    @media (max-width: 960px){
+      .hero-inner{grid-template-columns:1fr;gap:18px;padding:42px 0}
+      .benefits{grid-template-columns:1fr 1fr}
+      .tiers{grid-template-columns:1fr}
+      .testimonials{grid-template-columns:1fr 1fr}
+      .faq{grid-template-columns:1fr}
+      .lead{grid-template-columns:1fr}
+      .cta-band{grid-template-columns:1fr}
+      .footer-grid{grid-template-columns:1fr 1fr}
+    }
+    @media (max-width: 720px){
+      .menu-toggle{display:inline-flex}
+      nav .links{position:fixed;inset:72px 16px auto 16px;background:#fff;border:1px solid rgba(22,53,42,.12);border-radius:16px;box-shadow:var(--shadow);padding:8px;display:none;flex-direction:column}
+      nav .links a{padding:12px;border-radius:10px}
+      nav .links[data-open="true"]{display:flex}
+      nav .desktop-only{display:none}
+      .benefits{grid-template-columns:1fr}
+      .testimonials{grid-template-columns:1fr}
+      .footer-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header" data-js="header">
+    <div class="container nav">
+      <a class="brand" href="index.html" aria-label="Home">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-name">{{BUSINESS_NAME}}</span>
+      </a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="menu">Menu</button>
+      <nav aria-label="Main navigation">
+        <ul id="menu" class="links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a aria-current="page" href="programs.html">Programs</a></li>
+          <li><a href="pricing.html">Pricing</a></li>
+          <li><a href="testimonials.html">Testimonials</a></li>
+          <li class="desktop-only"><a class="cta" href="{{PRIMARY_CTA_URL}}"><span class="dot"></span>{{PRIMARY_CTA_LABEL}}</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <div class="bg pattern" aria-hidden="true"></div>
+      <div class="container hero-inner">
+        <div>
+          <span class="eyebrow">Cedar & Sky Method • Gentle, effective change</span>
+          <h1>{{BUSINESS_NAME}}</h1>
+          <p class="muted">{{TAGLINE}} — Programs designed to restore your nervous system, rekindle energy, and build sustainable rituals that fit a full life. Rooted in nature. Backed by behavioral science.</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="#tiers">Explore Programs</a>
+            <a class="btn btn-secondary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <img src="assets/img/hero.svg" alt="A serene forest-to-sky illustration evoking calm and clarity" />
+          <div class="badge" aria-live="polite"><span class="pulse" aria-hidden="true"></span><span>Now enrolling Spring cohort</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="hd">
+          <h2>Why our programs work</h2>
+          <p class="muted">Nature-aligned rituals, small evidence-based steps, and compassionate accountability.</p>
+        </div>
+        <div class="benefits" role="list">
+          <article class="benefit" role="listitem">
+            <div class="icon" aria-hidden="true">🌲</div>
+            <div>
+              <h3 style="margin:0 0 6px 0">Regulate before you renovate</h3>
+              <p class="muted" style="margin:0">We start with nervous system care so change feels doable—not draining.</p>
+            </div>
+          </article>
+          <article class="benefit" role="listitem">
+            <div class="icon" aria-hidden="true">🧭</div>
+            <div>
+              <h3 style="margin:0 0 6px 0">Habit design that sticks</h3>
+              <p class="muted" style="margin:0">Science-backed microsteps stack into rituals you’ll actually keep.</p>
+            </div>
+          </article>
+          <article class="benefit" role="listitem">
+            <div class="icon" aria-hidden="true">🤝</div>
+            <div>
+              <h3 style="margin:0 0 6px 0">Care, not pressure</h3>
+              <p class="muted" style="margin:0">Gentle accountability and kind coaching—never hustle, always human.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="tiers" class="section">
+      <div class="container">
+        <div class="hd">
+          <h2>Choose your path</h2>
+          <p class="muted">Three curated journeys inspired by forest, sky, and snowlight.</p>
+        </div>
+        <div class="tiers">
+          <article class="card" aria-labelledby="p1-title">
+            <span class="label">Foundations • 6 weeks</span>
+            <h3 id="p1-title">Evergreen Basics</h3>
+            <p class="inc">For busy starters who want calm energy and core habits—without overwhelm.</p>
+            <ul class="features">
+              <li>Weekly 60-min 1:1 with {{COACH_NAME}}, {{CREDENTIALS}}</li>
+              <li>Personalized habit map + breathwork audio</li>
+              <li>Messaging support Tue–Thu</li>
+            </ul>
+            <div aria-hidden="true" class="muted">Ideal cadence: 1–2 hrs/week</div>
+            <div class="actions">
+              <a class="btn btn-secondary" href="pricing.html#evergreen">See pricing</a>
+              <a class="btn btn-primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            </div>
+          </article>
+          <article class="card" aria-labelledby="p2-title">
+            <span class="label">Deep Dive • 12 weeks</span>
+            <h3 id="p2-title">Moss & Morning Light</h3>
+            <p class="inc">Transform stress patterns, sleep, and nourishment with layered habit design.</p>
+            <ul class="features">
+              <li>Weekly 75-min 1:1 + two integration weeks</li>
+              <li>Custom protocol across sleep, nutrition, movement</li>
+              <li>Daily check-ins (Mon–Fri) + guided nature breaks</li>
+            </ul>
+            <div aria-hidden="true" class="muted">Ideal cadence: 2–3 hrs/week</div>
+            <div class="actions">
+              <a class="btn btn-secondary" href="pricing.html#moss">See pricing</a>
+              <a class="btn btn-primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            </div>
+          </article>
+          <article class="card" aria-labelledby="p3-title">
+            <span class="label">Intensive • 8 weeks</span>
+            <h3 id="p3-title">Skybound Reset</h3>
+            <p class="inc">High-touch reset for executives and founders needing focused restoration.</p>
+            <ul class="features">
+              <li>2x weekly 50-min + on-call text window</li>
+              <li>Lab-informed strategy (client-provided results)</li>
+              <li>White-glove calendar + recovery stack</li>
+            </ul>
+            <div aria-hidden="true" class="muted">Ideal cadence: 3–4 hrs/week</div>
+            <div class="actions">
+              <a class="btn btn-secondary" href="pricing.html#skybound">See pricing</a>
+              <a class="btn btn-primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section pattern" aria-labelledby="voices-title">
+      <div class="container">
+        <div class="hd">
+          <h2 id="voices-title">Client voices</h2>
+          <p class="muted">Quiet confidence. Brighter mornings. Sustainable clarity.</p>
+        </div>
+        <div class="testimonials">
+          <figure class="quote">
+            <header>
+              <img src="assets/img/avatar.svg" alt="Client portrait" />
+              <figcaption>
+                <strong>Aleena R.</strong><div class="small">Design Lead • Portland</div>
+              </figcaption>
+              <div class="stars" aria-label="5 out of 5">★★★★★</div>
+            </header>
+            <blockquote cite="#">
+              “The weekly rituals felt like exhaling. Six weeks in, I sleep through the night and don’t need the 3pm coffee.”
+            </blockquote>
+          </figure>
+          <figure class="quote">
+            <header>
+              <img src="assets/img/avatar.svg" alt="Client portrait" />
+              <figcaption>
+                <strong>Marcus D.</strong><div class="small">Founder • Denver</div>
+              </figcaption>
+              <div class="stars" aria-label="5 out of 5">★★★★★</div>
+            </header>
+            <blockquote cite="#">
+              “Skybound reset was a lifeline. Clear structure, kind accountability, and I feel human again.”
+            </blockquote>
+          </figure>
+          <figure class="quote">
+            <header>
+              <img src="assets/img/avatar.svg" alt="Client portrait" />
+              <figcaption>
+                <strong>Sofia M.</strong><div class="small">Nurse • Seattle</div>
+              </figcaption>
+              <div class="stars" aria-label="5 out of 5">★★★★★</div>
+            </header>
+            <blockquote cite="#">
+              “The ‘regulate before renovate’ approach changed everything. Habits finally feel easy.”
+            </blockquote>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="faq-title">
+      <div class="container">
+        <div class="hd">
+          <h2 id="faq-title">Program FAQs</h2>
+          <p class="muted">If you’re wondering it, someone else asked it too.</p>
+        </div>
+        <div class="faq" data-accordion>
+          <div class="faq-item">
+            <button aria-expanded="false" aria-controls="faq1"><span class="faq-q">How do I choose a program?</span><span class="chev" aria-hidden="true">▾</span></button>
+            <div id="faq1" class="faq-a" hidden>
+              Start with your bandwidth. If you have 1–2 hours weekly, Evergreen Basics. If you’re ready for a full reboot, Moss & Morning Light. For urgent, high-touch support, choose Skybound Reset.
+            </div>
+          </div>
+          <div class="faq-item">
+            <button aria-expanded="false" aria-controls="faq2"><span class="faq-q">Is this therapy?</span><span class="chev" aria-hidden="true">▾</span></button>
+            <div id="faq2" class="faq-a" hidden>
+              Coaching complements therapy but isn’t a substitute. We focus on skills, habits, and behavior change. We’ll happily coordinate with your clinician if helpful.
+            </div>
+          </div>
+          <div class="faq-item">
+            <button aria-expanded="false" aria-controls="faq3"><span class="faq-q">Do you offer sliding-scale options?</span><span class="chev" aria-hidden="true">▾</span></button>
+            <div id="faq3" class="faq-a" hidden>
+              We reserve a limited number of community-rate seats each quarter. If cost is a barrier, reach out—access matters.
+            </div>
+          </div>
+          <div class="faq-item">
+            <button aria-expanded="false" aria-controls="faq4"><span class="faq-q">What’s the time commitment?</span><span class="chev" aria-hidden="true">▾</span></button>
+            <div id="faq4" class="faq-a" hidden>
+              Sessions are 50–75 minutes weekly. You’ll add 15–30 minutes most days for micro-practices, reflection, or movement. Integration weeks reduce load.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="lead">
+          <div>
+            <h2 style="margin:0 0 8px 0">Free 3‑Day Calm Energy Reset</h2>
+            <p class="muted" style="margin:0 0 12px 0">A gentle mini-guide with breathwork, sunlight rituals, and sleep resets. Delivered to your inbox.</p>
+            <form id="lead-form" novalidate>
+              <div class="field">
+                <label for="lead-name">Name</label>
+                <input id="lead-name" name="name" type="text" autocomplete="name" placeholder="Your name" />
+                <div class="error" id="err-name">Please enter your name.</div>
+              </div>
+              <div class="field">
+                <label for="lead-email">Email</label>
+                <input id="lead-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required />
+                <div class="error" id="err-email">Please enter a valid email.</div>
+              </div>
+              <button class="btn btn-primary" type="submit">Get the guide</button>
+              <div class="success" id="lead-success" role="status" aria-live="polite">Check your inbox—your guide is on the way.</div>
+            </form>
+          </div>
+          <img src="assets/img/pattern.svg" alt="Decorative cedar & sky pattern" style="border-radius:16px;border:1px solid rgba(22,53,42,.1);width:100%;height:auto" />
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="cta-band">
+          <div>
+            <h2 style="margin:0 0 6px 0">Ready to begin?</h2>
+            <p style="margin:0">Book a free clarity call with {{COACH_NAME}} to map the next gentle step.</p>
+          </div>
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-grid">
+      <div>
+        <strong>{{BUSINESS_NAME}}</strong>
+        <div class="small">Guided wellness from Cedar & Sky—where calm meets clarity.</div>
+        <div class="small" style="margin-top:8px">Coach: {{COACH_NAME}}, {{CREDENTIALS}}</div>
+      </div>
+      <div>
+        <h3 style="margin:0 0 8px 0">Visit</h3>
+        <address>
+          {{ADDRESS}}<br />
+          {{CITY}}, {{STATE}} {{ZIP}}<br />
+          Hours: {{HOURS}}
+        </address>
+      </div>
+      <div>
+        <h3 style="margin:0 0 8px 0">Contact</h3>
+        <div class="small">Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+        <div class="small">Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+        <div class="small" style="margin-top:8px"><a class="cta" href="{{PRIMARY_CTA_URL}}"><span class="dot"></span>{{PRIMARY_CTA_LABEL}}</a></div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile nav toggle
+    (function(){
+      const btn = document.querySelector('.menu-toggle');
+      const links = document.getElementById('menu');
+      if(!btn || !links) return;
+      const close = () => { btn.setAttribute('aria-expanded','false'); links.dataset.open = 'false'; };
+      const open = () => { btn.setAttribute('aria-expanded','true'); links.dataset.open = 'true'; };
+      btn.addEventListener('click',()=>{ (btn.getAttribute('aria-expanded')==='true'?close:open)(); });
+      links.addEventListener('click',e=>{ if(e.target.closest('a')) close(); });
+      document.addEventListener('keydown',e=>{ if(e.key==='Escape') close(); });
+    })();
+
+    // Smooth scroll refine for older browsers
+    document.addEventListener('click',function(e){
+      const a = e.target.closest('a[href^="#"]');
+      if(!a || a.getAttribute('href')==='#') return;
+      const id = a.getAttribute('href').slice(1);
+      const el = document.getElementById(id);
+      if(el){ e.preventDefault(); el.scrollIntoView({behavior:'smooth',block:'start'}); el.focus?.({preventScroll:true}); }
+    });
+
+    // Accordion FAQ
+    (function(){
+      const root = document.querySelector('[data-accordion]');
+      if(!root) return;
+      const items = root.querySelectorAll('.faq-item');
+      items.forEach(item=>{
+        const btn = item.querySelector('button');
+        const panel = item.querySelector('.faq-a');
+        const chev = item.querySelector('.chev');
+        btn.addEventListener('click',()=>{
+          const openNow = btn.getAttribute('aria-expanded')==='true';
+          items.forEach(i=>{
+            const b=i.querySelector('button'); const p=i.querySelector('.faq-a'); const c=i.querySelector('.chev');
+            b.setAttribute('aria-expanded','false'); p.hidden=true; if(c) c.style.transform='rotate(0deg)';
+          });
+          if(!openNow){ btn.setAttribute('aria-expanded','true'); panel.hidden=false; chev.style.transform='rotate(180deg)'; }
+        });
+      });
+    })();
+
+    // Lead form validation hints
+    (function(){
+      const f = document.getElementById('lead-form');
+      if(!f) return;
+      const name = f.querySelector('#lead-name');
+      const email = f.querySelector('#lead-email');
+      const errName = f.querySelector('#err-name');
+      const errEmail = f.querySelector('#err-email');
+      const success = f.querySelector('#lead-success');
+      const emailValid = (v)=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+      const show = (el)=>{ el.style.display='block'; };
+      const hide = (el)=>{ el.style.display='none'; };
+      const mark = (input, bad)=>{ input.setAttribute('aria-invalid', bad?'true':'false'); input.style.outline = bad?'2px solid #b5473f':'none'; };
+      f.addEventListener('submit', e=>{
+        let ok = true;
+        if(name && name.value.trim().length<2){ ok=false; show(errName); mark(name,true); }
+        else { hide(errName); mark(name,false); }
+        if(!emailValid(email.value)){ ok=false; show(errEmail); mark(email,true); }
+        else { hide(errEmail); mark(email,false); }
+        if(!ok){ e.preventDefault(); success.style.display='none'; }
+        else { e.preventDefault(); success.style.display='block'; f.reset(); }
+      });
+      [name,email].forEach(i=> i&&i.addEventListener('input',()=>{ hide(i===name?errName:errEmail); mark(i,false); }));
+    })();
+  </script>
+</body>
+</html>

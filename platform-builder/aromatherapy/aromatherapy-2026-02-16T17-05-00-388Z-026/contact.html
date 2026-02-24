@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reach {{PRACTITIONER_NAME}} for bespoke aromatherapy blends, safe guidance, and retail add-ons.">
+  <style>
+    /* Layout family: lux_gallery | Voice: mystic_modern */
+    :root{--bg:#0f1720;--card:#0f1a26;--muted:#9aa8b3;--accent:#a3ffef;--accent-2:#8ec5ff;--glass:rgba(255,255,255,0.04);--radius:14px;--maxw:1100px}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,rgba(2,6,23,1) 0%, rgba(5,14,26,1) 70%);font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;color:#e6f7f6}
+    /* SVG pattern fallback */
+    body::before{content:'';position:fixed;inset:0;background-image:url('assets/img/pattern.svg');background-size:480px;background-repeat:repeat;opacity:0.06;mix-blend-mode:screen;pointer-events:none}
+    header{max-width:var(--maxw);margin:32px auto;padding:20px 28px;display:flex;align-items:center;gap:20px}
+    .brand{display:flex;flex-direction:column}
+    .brand h1{font-weight:600;letter-spacing:0.2px;margin:0;font-size:18px}
+    .brand p{margin:0;color:var(--muted);font-size:13px}
+    nav{margin-left:auto}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-size:14px}
+    nav a.primary{color:var(--bg);background:linear-gradient(90deg,var(--accent),var(--accent-2));padding:8px 12px;border-radius:10px;font-weight:600}
+
+    main{max-width:var(--maxw);margin:18px auto;padding:36px;border-radius:18px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);box-shadow:0 8px 40px rgba(2,6,23,0.6)}
+    .grid{display:grid;grid-template-columns:1fr 380px;gap:28px}
+
+    /* Hero */
+    .hero{padding:28px;border-radius:12px;background:linear-gradient(120deg, rgba(163,255,239,0.04), rgba(142,197,255,0.02));backdrop-filter:blur(6px)}
+    .kicker{color:var(--accent);font-weight:700;font-size:12px;display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(163,255,239,0.04)}
+    .title{font-size:28px;margin:12px 0 6px}
+    .lede{color:var(--muted);margin:0 0 18px}
+
+    /* diagnostic */
+    .card{background:var(--card);padding:18px;border-radius:12px}
+    .diag h3{margin:0 0 8px}
+    .diag p{color:var(--muted);margin:0 0 12px;font-size:14px}
+    .faq dt{font-weight:600;margin-top:12px}
+    .faq dd{margin:6px 0 0;color:var(--muted);font-size:14px}
+
+    /* plan */
+    .plan-list{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+    .plan-item{display:flex;gap:12px;align-items:flex-start}
+    .badge{min-width:44px;height:44px;border-radius:10px;background:linear-gradient(180deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:700;color:#032;}
+    .plan-meta{color:var(--muted);font-size:14px}
+
+    /* micro habits */
+    .habits{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px}
+    .habit{background:var(--glass);padding:12px;border-radius:10px;color:var(--muted)}
+
+    /* pricing (retail_addon) */
+    .pricing{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+    .price-card{display:flex;justify-content:space-between;padding:12px;border-radius:10px;background:linear-gradient(90deg, rgba(163,255,239,0.02), rgba(142,197,255,0.02))}
+    .price-card small{color:var(--muted)}
+
+    /* CTA */
+    .cta{margin-top:18px;display:flex;gap:12px}
+    .btn{display:inline-flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#002;box-shadow:0 6px 18px rgba(142,197,255,0.08);text-decoration:none;font-weight:700}
+    .ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);padding:10px 12px;border-radius:12px}
+
+    /* aside / form */
+    aside{position:relative}
+    .contact-box{position:sticky;top:28px;padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));}
+    label{display:block;font-size:13px;margin-top:10px;color:var(--muted)}
+    input[type=text],input[type=email],textarea,select{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#eafefb}
+    textarea{min-height:110px}
+    .muted{font-size:12px;color:var(--muted);margin-top:8px}
+
+    footer{max-width:var(--maxw);margin:28px auto;color:var(--muted);font-size:13px;padding:18px}
+    @media(max-width:880px){.grid{grid-template-columns:1fr}.habits{grid-template-columns:1fr}.contact-box{position:static;margin-top:18px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <h1>{{BUSINESS_NAME}}</h1>
+      <p>{{TAGLINE}}</p>
+    </div>
+    <nav>
+      <a href="index.html">Root</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Store</a>
+      <a href="pricing.html">Tariffs</a>
+      <a href="about.html">Story</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html" class="primary">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="grid">
+      <section>
+        <!-- HERO -->
+        <div class="hero">
+          <span class="kicker">Reach Out</span>
+          <h2 class="title">Find your scent language — speak with {{PRACTITIONER_NAME}}</h2>
+          <p class="lede">A calm, safety-first consultation to explore aroma preferences, sensitivity, and lifestyle so retail blends and add-ons feel crafted just for you.</p>
+          <div class="cta">
+            <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            <a class="ghost" href="mailto:{{EMAIL}}">Email a note</a>
+          </div>
+        </div>
+
+        <!-- DIAGNOSTIC -->
+        <div class="card diag" style="margin-top:18px">
+          <h3>Pre-visit snapshot</h3>
+          <p>Answering a few gentle questions helps me craft blends that align with safety and your personal scent story. I will not provide medical diagnoses — only aromatic support and retail guidance.</p>
+          <dl class="faq">
+            <dt>How long is a consult?</dt>
+            <dd>Typically 30–45 minutes. We discuss goals, sensitivities, and preferences.</dd>
+            <dt>Allergies & patch tests?</dt>
+            <dd>Always recommended. I’ll guide you through a safe dilution & patch test protocol before using new topical blends.</dd>
+            <dt>Pets & pregnancy?</dt>
+            <dd>Special precautions apply. I will offer pet-safe suggestions and pregnancy-safe options when relevant.</dd>
+          </dl>
+        </div>
+
+        <!-- PLAN -->
+        <div class="card" style="margin-top:18px">
+          <h3>How we’ll proceed</h3>
+          <div class="plan-list">
+            <div class="plan-item"><div class="badge">1</div><div><strong>Listen</strong><div class="plan-meta">Share lifestyle, scent memories, and any sensitivities.</div></div></div>
+            <div class="plan-item"><div class="badge">2</div><div><strong>Design</strong><div class="plan-meta">I propose safe single-note tests and a curated retail add-on plan.</div></div></div>
+            <div class="plan-item"><div class="badge">3</div><div><strong>Apply</strong><div class="plan-meta">Try diluted roll-ons, a diffuser blend, or a small kit with clear usage notes.</div></div></div>
+            <div class="plan-item"><div class="badge">4</div><div><strong>Adjust</strong><div class="plan-meta">We iterate gently to ensure comfort and desired aroma profile.</div></div></div>
+          </div>
+        </div>
+
+        <!-- MICRO_HABITS -->
+        <div style="margin-top:18px">
+          <h3>Small rituals to begin</h3>
+          <div class="habits">
+            <div class="habit"><strong>Morning inhale</strong><div class="muted">2–3 mindful breaths from a personal inhaler or diffuser for a gentle mood reset.</div></div>
+            <div class="habit"><strong>Patch test routine</strong><div class="muted">Try a 0.5–1% dilution on forearm for 24 hours—no itching or redness before topical use.</div></div>
+            <div class="habit"><strong>Diffuser etiquette</strong><div class="muted">Diffuse in short bursts (10–30 minutes) and ventilate the space; keep pets and people with sensitivities in mind.</div></div>
+            <div class="habit"><strong>Storage</strong><div class="muted">Keep blends cool, dark, and capped to preserve aroma and efficacy.</div></div>
+          </div>
+        </div>
+
+        <!-- PRICING (retail_addon) -->
+        <div class="card" style="margin-top:18px">
+          <h3>Retail add-ons</h3>
+          <p class="muted">Carefully curated roll-ons, sample kits, and diffusible blends. Prices below are indicative; consult for a bespoke pack.</p>
+          <div class="pricing">
+            <div class="price-card"><div><strong>Starter Sample Kit</strong><div><small>3x 2ml aroma trials</small></div></div><div><strong>$24</strong></div></div>
+            <div class="price-card"><div><strong>Personal Roll-On</strong><div><small>10ml diluted aroma, labeled</small></div></div><div><strong>$28</strong></div></div>
+            <div class="price-card"><div><strong>Diffuser Blend</strong><div><small>30ml for home diffusion</small></div></div><div><strong>$36</strong></div></div>
+            <div class="muted">All retail items include clear dilution & safety instructions. Consult before using near children, pregnant people, or pets.</div>
+          </div>
+        </div>
+
+        <!-- CTA -->
+        <div style="margin-top:18px" class="card">
+          <h3>Ready to connect?</h3>
+          <p class="muted">Choose a short discovery message or schedule a full consult. I’ll respond within 48 hours on weekdays.</p>
+          <div class="cta">
+            <a class="btn" href="{{PRIMARY_CTA_URL}}">Book a discovery</a>
+            <a class="ghost" href="mailto:{{EMAIL}}">Send a quick note</a>
+          </div>
+        </div>
+      </section>
+
+      <aside>
+        <div class="contact-box card">
+          <h3>Contact form</h3>
+          <form method="post" action="{{PRIMARY_CTA_URL}}" onsubmit="return validateForm(this)">
+            <label for="name">Your name</label>
+            <input id="name" name="name" type="text" placeholder="Your full name" required>
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="you@example.com" required>
+
+            <label for="phone">Phone (optional)</label>
+            <input id="phone" name="phone" type="text" placeholder="{{PHONE}}">
+
+            <label for="reason">How can I help?</label>
+            <select id="reason" name="reason">
+              <option>Consult / custom blend</option>
+              <option>Retail product inquiry</option>
+              <option>Patch test question</option>
+              <option>Booking & scheduling</option>
+            </select>
+
+            <label for="message">A brief note</label>
+            <textarea id="message" name="message" placeholder="Tell me about sensitivities, pets, pregnancy, or scent likes..."></textarea>
+
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <button class="btn" type="submit">Send message</button>
+              <a class="ghost" href="tel:{{PHONE}}">Call {{PHONE}}</a>
+            </div>
+
+            <p class="muted">By contacting me you acknowledge this is aromatic guidance and not medical treatment. If you have health concerns, consult a licensed practitioner.</p>
+          </form>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4>Studio</h4>
+          <p class="muted">Located in {{CITY}}, {{STATE}} — appointment only. For urgent matters, call {{PHONE}} or email <a href="mailto:{{EMAIL}}" style="color:var(--accent)">{{EMAIL}}</a></p>
+          <svg width="100%" height="80" viewBox="0 0 200 80" preserveAspectRatio="none" style="margin-top:10px;border-radius:8px;display:block;overflow:hidden">
+            <defs>
+              <linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#a3ffef" stop-opacity="0.2"/><stop offset="1" stop-color="#8ec5ff" stop-opacity="0.12"/></linearGradient>
+            </defs>
+            <rect width="200" height="80" fill="url(#g)"></rect>
+            <g fill="rgba(2,6,23,0.04)">
+              <circle cx="30" cy="20" r="10"></circle>
+              <circle cx="70" cy="50" r="18"></circle>
+              <circle cx="140" cy="30" r="12"></circle>
+            </g>
+          </svg>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <div style="max-width:var(--maxw);margin:0 auto;display:flex;justify-content:space-between;align-items:center">
+      <div>&copy; <strong>{{BUSINESS_NAME}}</strong> — crafted with care | {{PRACTITIONER_NAME}}</div>
+      <div class="muted">Questions? <a href="mailto:{{EMAIL}}" style="color:var(--accent)">{{EMAIL}}</a> • {{PHONE}}</div>
+    </div>
+  </footer>
+
+  <script>
+    function validateForm(form){
+      var email = form.email.value||''; if(!email.includes('@')){alert('Please enter a valid email.');return false}
+      // safety-first acknowledgement
+      var msg = form.message.value.toLowerCase(); if(msg.includes('medical') || msg.includes('diagnose')){
+        if(!confirm('I do not offer medical diagnoses. Do you want to continue sending this message?')) return false;
+      }
+      return true;
+    }
+  </script>
+</body>
+</html>

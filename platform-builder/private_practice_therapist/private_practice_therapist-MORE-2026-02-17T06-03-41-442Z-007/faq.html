@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FAQ — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7fffb;--accent:#2bbf9a;--muted:#556;--card:#fff}
+    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;margin:0;background:var(--bg);color:#123}
+    header{padding:16px 22px;background:linear-gradient(90deg,rgba(43,191,154,0.06),transparent);display:flex;align-items:center;justify-content:space-between}
+    .logo{width:44px;height:44;border-radius:10px;background:linear-gradient(135deg,var(--accent),#7fffd6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none;font-weight:700}
+    main{max-width:880px;margin:18px auto;padding:22px}
+    .lead{background:linear-gradient(180deg,#fff,#f8fffb);padding:18px;border-radius:12px;border:1px solid rgba(0,0,0,0.04)}
+    .lead h1{margin:0;font-size:24px}
+    .accordion{margin-top:16px}
+    .q{background:#fff;padding:14px;border-radius:10px;margin-bottom:10px;border:1px solid rgba(0,0,0,0.04)}
+    .q button{display:flex;justify-content:space-between;align-items:center;width:100%;border:0;background:transparent;padding:0;font-size:15px;cursor:pointer}
+    .a{margin-top:10px;color:var(--muted);font-size:14px;display:none}
+    .a.open{display:block}
+
+    .note{margin-top:14px;padding:12px;border-left:4px solid var(--accent);background:#fff;border-radius:6px}
+    footer{max-width:880px;margin:18px auto;padding:18px;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo">TP</div>
+      <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+    </div>
+    <nav>
+      <a href="index.html">Welcome</a>
+      <a href="about.html">Meet</a>
+      <a href="specialties.html">Focus Areas</a>
+      <a href="approach.html">How I work</a>
+      <a href="fees.html">Fees</a>
+      <a href="faq.html">Answers</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="lead">
+      <h1>Frequently asked questions</h1>
+      <p style="margin-top:8px;color:var(--muted)">Practical answers about sessions, confidentiality, and what happens if things feel out of scope. If you don't see what you need here, reach out — I aim to reply within 48 hours.</p>
+    </section>
+
+    <section class="accordion" aria-label="Frequently asked questions">
+      <div class="q">
+        <button aria-expanded="false"><span>How do I book an appointment?</span><span aria-hidden>▸</span></button>
+        <div class="a">You can reserve a time through the booking page. If you prefer, email {{EMAIL}} or call {{PHONE}} and we’ll find a time together. When you book, you’ll receive a confirmation and brief intake questions to help make our first meeting efficient and focused.</div>
+      </div>
+
+      <div class="q">
+        <button aria-expanded="false"><span>What will our first session involve?</span><span aria-hidden>▸</span></button>
+        <div class="a">The first session is an opportunity to describe your priorities and for me to explain how I work. We’ll clarify goals, discuss timeframes, and outline next steps. There’s no pressure to commit to anything more after that first meeting.</div>
+      </div>
+
+      <div class="q">
+        <button aria-expanded="false"><span>Do you take insurance?</span><span aria-hidden>▸</span></button>
+        <div class="a">This practice does not bill insurance directly. When requested, I can provide a detailed receipt (superbill) that you may submit to your insurance for potential reimbursement. Please check with your plan about out-of-network benefits.</div>
+      </div>
+
+      <div class="q">
+        <button aria-expanded="false"><span>Is therapy confidential?</span><span aria-hidden>▸</span></button>
+        <div class="a">Yes — sessions are confidential and records are maintained in line with professional standards. Exceptions include imminent risk of harm to yourself or others, suspicion of abuse of a minor or vulnerable adult, or if required by law. We review confidentiality at the start of care so you understand its boundaries.</div>
+      </div>
+
+      <div class="q">
+        <button aria-expanded="false"><span>What if I’m in crisis?</span><span aria-hidden>▸</span></button>
+        <div class="a">If you are in immediate danger or experiencing a medical emergency, call emergency services or go to the nearest emergency department. For urgent behavioral health needs, please contact your local crisis line. This practice does not provide emergency crisis services.</div>
+      </div>
+
+      <div class="q">
+        <button aria-expanded="false"><span>Can we pause or change frequency?</span><span aria-hidden>▸</span></button>
+        <div class="a">Yes — pacing is a collaborative decision. We can increase, reduce, or pause sessions as your life and needs change. If you’re on a prepaid package, we’ll review how remaining sessions are handled at the time of scheduling.</div>
+      </div>
+    </section>
+
+    <div class="note">
+      <strong style="display:block">Scope & limits:</strong>
+      <div class="muted">Therapy focuses on emotional, relational, and behavioral concerns. I do not provide legal, financial, or medical advice. If your needs extend beyond the scope of psychotherapy, I will support referrals to appropriate professionals.</div>
+    </div>
+
+  </main>
+
+  <footer>
+    <div style="color:var(--muted);font-size:13px">Confidentiality reminder: Information shared in sessions is private with standard exceptions. In a crisis, call emergency services or your local crisis hotline. Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a> • Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+  </footer>
+
+  <script>
+    (function(){
+      const items = document.querySelectorAll('.q');
+      items.forEach(item => {
+        const btn = item.querySelector('button');
+        const ans = item.querySelector('.a');
+        btn.addEventListener('click', function(){
+          const open = ans.classList.toggle('open');
+          btn.setAttribute('aria-expanded', open);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

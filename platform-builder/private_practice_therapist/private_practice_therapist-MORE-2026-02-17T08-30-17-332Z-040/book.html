@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Begin — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f3ece3;--accent:#5b3d2f;--muted:#7d665a;--card:#fffdfb}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;background:var(--bg);color:var(--accent)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:16px 22px}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    main{max-width:980px;margin:26px auto;padding:18px}
+    .panel{background:linear-gradient(180deg,#fffaf6, #fff7f3);padding:18px;border-radius:12px}
+    .split{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    label{display:block;margin-top:10px;color:var(--muted)}
+    input[type=text],select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e7dcd3;margin-top:6px}
+    button{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;border:0}
+    .small{font-size:13px;color:var(--muted)}
+    .planner{background:#fff;padding:12px;border-radius:10px;border:1px solid #efe1d8}
+    .result{margin-top:12px;padding:12px;border-radius:10px;background:#fff6f2;color:var(--muted);white-space:pre-wrap}
+    .pattern{position:fixed;right:12px;top:12px;width:120px;height:120px;opacity:0.06}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Who I Am</a>
+      <a href="specialties.html">Specialties</a>
+      <a href="approach.html">Method</a>
+      <a href="fees.html">Investment</a>
+      <a href="faq.html">Questions</a>
+      <a href="book.html" style="font-weight:700;color:var(--accent)">Start</a>
+      <a href="contact.html">Reach Out</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h1 style="margin:0;color:var(--accent)">Reserve a conversation</h1>
+      <p class="small" style="margin-top:8px">Use the planner and intake prompts to build a short plan and a set of questions you can copy into an intake note or bring to our first meeting.</p>
+
+      <div class="split" style="margin-top:16px">
+        <div>
+          <div style="font-weight:700">Contact & availability</div>
+          <label>Your name</label>
+          <input id="name" type="text" placeholder="Your name">
+          <label>Email</label>
+          <input id="email" type="text" placeholder="you@example.com">
+          <label>Phone (optional)</label>
+          <input id="phone" type="text" placeholder="(555) 555-5555">
+
+          <div style="margin-top:14px;font-weight:700">Why now?</div>
+          <label>Short note about what brought you here</label>
+          <textarea id="note" rows="4" placeholder="A brief note helps shape a focused first meeting"></textarea>
+
+          <div style="margin-top:14px;display:flex;gap:8px">
+            <button id="sendRequest">Send request</button>
+            <a href="mailto:{{EMAIL}}" style="align-self:center;color:var(--muted);text-decoration:none">Or email directly</a>
+          </div>
+
+          <div style="margin-top:10px;color:var(--muted);font-size:13px">I will respond to scheduling requests during business hours. If you are in crisis, call your local emergency services or crisis line.</div>
+        </div>
+
+        <aside>
+          <div class="planner">
+            <div style="font-weight:700">Session Planner</div>
+            <label>Goal focus</label>
+            <select id="goal">
+              <option value="clarity">Clarify priorities & decisions</option>
+              <option value="skills">Learn skills for stress or anxiety</option>
+              <option value="relationship">Work on relationship patterns</option>
+              <option value="transition">Navigate a transition</option>
+            </select>
+
+            <label>Format</label>
+            <select id="planFormat">
+              <option value="series">Short series (4–8)</option>
+              <option value="intensive">Intensive (1 extended)</option>
+              <option value="ongoing">Ongoing (weekly/biweekly)</option>
+            </select>
+
+            <label>Session length</label>
+            <select id="planLength">
+              <option value="50">50 minutes</option>
+              <option value="75">75 minutes</option>
+            </select>
+
+            <label>Preferred focus areas (comma separated)</label>
+            <input id="focusAreas" type="text" placeholder="e.g., boundaries, sleep, assertiveness">
+
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button id="buildPlan">Build plan</button>
+              <button id="copyPlan" style="background:#8f654f">Copy plan</button>
+            </div>
+
+            <div id="planOutput" class="result">Your tailored plan will appear here.</div>
+          </div>
+
+          <div style="margin-top:12px;padding:12px;background:#fff;border-radius:10px;border:1px solid #efe1d8">
+            <div style="font-weight:700">Quick intake (bring to consult)</div>
+            <label style="margin-top:8px">Primary area of concern</label>
+            <select id="quickConcern"><option value="mood">Mood or energy</option><option value="stress">Stress or anxiety</option><option value="life">Life transition</option><option value="relationship">Relationship</option></select>
+            <label style="margin-top:8px">One line note for the clinician</label>
+            <input id="oneLine" type="text" placeholder="I want help with...">
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button id="makeQuestions">Create questions</button>
+              <button id="copyQuestions" style="background:#8f654f">Copy</button>
+            </div>
+            <div id="questionsOut" class="result" style="margin-top:8px">Questions will appear here.</div>
+          </div>
+
+        </aside>
+      </div>
+
+    </section>
+  </main>
+
+  <img class="pattern" src="assets/img/pattern.svg" alt="pattern">
+
+  <script>
+    // Session Planner logic
+    (function(){
+      function summarizePlan(){
+        var goal=document.getElementById('goal').value;
+        var format=document.getElementById('planFormat').value;
+        var length=document.getElementById('planLength').value;
+        var areas=document.getElementById('focusAreas').value.trim();
+        var text='Session plan summary:\n';
+        text += '- Goal focus: ' + ({clarity:'Clarify priorities and decisions', skills:'Skill-building for stress or anxiety', relationship:'Work on relationship patterns', transition:'Navigate a transition'})[goal] + '\n';
+        text += '- Suggested format: ' + (format==='series' ? 'Short series (4–8 sessions)' : format==='intensive' ? 'One intensive session with follow-up' : 'Ongoing collaboration (weekly/biweekly)') + '\n';
+        text += '- Session length: ' + length + ' minutes\n';
+        if(areas) text += '- Focus areas: ' + areas + '\n';
+        text += '\nNotes: This is a suggested plan to discuss during intake. No clinical guarantees are made.';
+        return text;
+      }
+
+      document.getElementById('buildPlan').addEventListener('click',function(){
+        document.getElementById('planOutput').textContent = summarizePlan();
+      });
+
+      document.getElementById('copyPlan').addEventListener('click',function(){
+        var txt = summarizePlan();
+        navigator.clipboard && navigator.clipboard.writeText(txt).then(function(){
+          document.getElementById('planOutput').textContent = 'Plan copied to clipboard.\n\n' + txt;
+        }, function(){
+          alert('Unable to copy. You can select and copy the text manually.');
+        });
+      });
+
+      // Quick intake -> questions
+      function buildQuestions(){
+        var concern=document.getElementById('quickConcern').value;
+        var oneLine=document.getElementById('oneLine').value.trim();
+        var out='Brief intake note:\n';
+        out += '- Primary area: ' + ({mood:'Mood / energy', stress:'Stress / anxiety', life:'Life transition', relationship:'Relationship'})[concern] + '\n';
+        if(oneLine) out += '- Client note: ' + oneLine + '\n';
+        out += '\nSuggested questions to bring to the first session:\n';
+        out += '- What would helpful progress look like in the first 4 sessions?\n';
+        out += '- Which strategies are likely to be practical between sessions?\n';
+        if(concern==='relationship') out += '- If relevant, how might partners or family be involved safely?\n';
+        if(concern==='life') out += '- What concrete steps could support this transition while managing remaining obligations?\n';
+        out += '- What are reasonable next steps if we find the current approach is not helping?';
+        return out;
+      }
+
+      document.getElementById('makeQuestions').addEventListener('click',function(){
+        document.getElementById('questionsOut').textContent = buildQuestions();
+      });
+
+      document.getElementById('copyQuestions').addEventListener('click',function(){
+        var txt = buildQuestions();
+        navigator.clipboard && navigator.clipboard.writeText(txt).then(function(){
+          document.getElementById('questionsOut').textContent = 'Questions copied to clipboard.\n\n' + txt;
+        }, function(){
+          alert('Unable to copy. Select and copy manually.');
+        });
+      });
+
+      // Minimal send request behavior (no server)
+      document.getElementById('sendRequest').addEventListener('click',function(){
+        var name=document.getElementById('name').value.trim();
+        var email=document.getElementById('email').value.trim();
+        var note=document.getElementById('note').value.trim();
+        if(!name || !email){
+          alert('Please provide your name and email to request an appointment.');
+          return;
+        }
+        var summary='New request from: ' + name + '\nEmail: ' + email + '\nPhone: ' + document.getElementById('phone').value + '\nNote: ' + note + '\n\n' + summarizePlan();
+        // copy to clipboard as a lightweight local action to help the user paste into email
+        navigator.clipboard && navigator.clipboard.writeText(summary).then(function(){
+          alert('Request summary copied to clipboard. Paste it into an email to ' + '{{EMAIL}}' + ' or use the contact form.');
+        }, function(){
+          alert('Please copy the summary and email it to ' + '{{EMAIL}}');
+        });
+      });
+
+    })();
+  </script>
+</body>
+</html>

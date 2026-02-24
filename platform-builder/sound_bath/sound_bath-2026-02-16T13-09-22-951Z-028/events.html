@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Gatherings — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Monthly sound bath gatherings — gentle resonances, intentional rest.">
+  <style>
+    :root{--bg1:#f6efe8;--accent:#8a5a3b;--muted:#7a6a5f;--card:#fff;--accent-2:#c8875a}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial;line-height:1.45;color:var(--muted);background:linear-gradient(180deg,var(--bg1),#efe6dc);}
+    header{position:sticky;top:0;background:rgba(250,246,242,0.8);backdrop-filter:blur(6px);border-bottom:1px solid rgba(138,90,59,0.06)}
+    .nav{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 20px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;color:#fff;font-weight:700}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-size:0.95rem}
+    .hero{position:relative;overflow:hidden;padding:64px 20px 40px}
+    .hero .wrap{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:center}
+    .card{background:var(--card);border-radius:14px;padding:22px;box-shadow:0 8px 30px rgba(24,18,12,0.06)}
+    h1{margin:0 0 8px;font-size:clamp(1.6rem,3.4vw,2.4rem);color:#3c2b24}
+    p.lead{margin:0;color:#6b5550}
+    .next-event{background:linear-gradient(180deg,rgba(200,135,90,0.06),transparent);padding:18px;border-radius:12px}
+    .muted{color:#857166;font-size:0.95rem}
+    .calendar{margin-top:12px;display:flex;flex-direction:column;gap:10px}
+    .date{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:10px;background:rgba(138,90,59,0.04)}
+    .date .when{font-weight:600;color:#4b3a33}
+    .section{max-width:1100px;margin:26px auto;padding:0 20px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .pillars li{margin:10px 0}
+    .faq dt{font-weight:700;margin-top:12px}
+    .cta{display:flex;gap:12px;align-items:center}
+    .btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}
+    .muted-note{font-size:0.9rem;color:#846b5e}
+    footer{padding:36px 20px;text-align:center;color:#7a6a5f}
+    /* decorative SVG background */
+    .pattern{position:absolute;inset:0;pointer-events:none;opacity:0.16}
+    @media(max-width:880px){.hero .wrap{grid-template-columns:1fr;}.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand"><div class="logo">SB</div><div><div style="font-weight:700">{{BUSINESS_NAME}}</div><div style="font-size:0.85rem;color:var(--muted)">{{TAGLINE}}</div></div></div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="events.html">Gatherings</a>
+        <a href="private-sessions.html">Private</a>
+        <a href="pricing.html">Rates</a>
+        <a href="book.html">Reserve</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="hero">
+      <svg class="pattern" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#f7efe6"/><stop offset="1" stop-color="#efe1d3"/></linearGradient>
+          <pattern id="p1" x="0" y="0" width="160" height="160" patternUnits="userSpaceOnUse">
+            <rect width="160" height="160" fill="url(#g1)"/>
+            <circle cx="20" cy="20" r="2.5" fill="#c89" opacity="0.9" />
+            <circle cx="120" cy="120" r="2.5" fill="#c89" opacity="0.7" />
+            <path d="M0 80c40-30 80-30 160 0v80H0z" fill="#f3e5db" opacity="0.12"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#p1)"/>
+      </svg>
+
+      <div class="wrap">
+        <div class="card">
+          <h1>A gentle evening of resonance</h1>
+          <p class="lead">Join us for curated sound baths that coax attention inward — warm tones, careful pacing, and room for soft release. Each gathering is crafted for sensory presence and deep rest.</p>
+          <div style="margin-top:14px" class="muted">Facilitated by {{FACILITATOR_NAME}} at {{VENUE_NAME}}, {{CITY}}, {{STATE}}</div>
+          <div style="margin-top:14px" class="cta"><a class="btn-primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a><div class="muted-note">Or call <a href="tel:{{PHONE}}">{{PHONE}}</a></div></div>
+        </div>
+
+        <aside class="card next-event">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-size:0.9rem;color:#7a5f53">Next event</div>
+              <div style="font-weight:700;font-size:1.05rem;color:#42322b">{{NEXT_EVENT_DATE}}</div>
+            </div>
+            <div style="text-align:right;color:#8a6a59;font-size:0.9rem">Limited mats • RSVP recommended</div>
+          </div>
+
+          <div class="calendar">
+            <div class="date"><div class="when">{{NEXT_EVENT_DATE}}</div><div class="muted">Doors 6:30pm • Sound 7:00pm</div></div>
+            <div class="date"><div class="when">2026-03-14</div><div class="muted">Community series</div></div>
+            <div class="date"><div class="when">2026-04-11</div><div class="muted">Full moon set</div></div>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <section class="section">
+      <div class="grid">
+        <div class="card">
+          <h2>What to expect — flow of the evening</h2>
+          <p class="muted">Each evening follows a calm arc: arrival, gentle breathwork, a layered sound journey, and soft re-entry. We allow ample pause between pieces so the body can integrate the vibrations.</p>
+          <ol style="margin-top:12px" class="muted-note">
+            <li>Welcome & settling (10–15 min)</li>
+            <li>Guided breath + intention (5–10 min)</li>
+            <li>Main sound journey (30–45 min)</li>
+            <li>Soft closure + tea (10–15 min)</li>
+          </ol>
+        </div>
+
+        <div class="card">
+          <h2>Heard in the room</h2>
+          <p class="muted">We compose texture from chosen instruments — not a concert, but a shared field of resonance.</p>
+          <ul class="pillars muted-note">
+            <li>Crystal singing bowls tuned to harmonic intervals</li>
+            <li>Light tuning-fork work for focused tones</li>
+            <li>Soft wind chimes and subtle electronic drones</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="card">
+        <h2>Myths & truths</h2>
+        <p class="muted">We often meet myths about sound baths — let us invite clarity.</p>
+        <dl class="faq">
+          <dt>Myth: You must be silent and still.</dt>
+          <dd class="muted-note">Truth: Movement, tears, or sleep are all valid responses — the sound invites your body to speak.</dd>
+          <dt>Myth: Sound will fix everything.</dt>
+          <dd class="muted-note">Truth: It is a companion for restoration, not a replacement for medical care.</dd>
+        </dl>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="grid">
+        <div class="card">
+          <h2>Contraindications & safety</h2>
+          <p class="muted">Sound is generally safe, but please note:</p>
+          <ul class="muted-note">
+            <li>Not recommended during the first trimester of pregnancy — disclose if pregnant</li>
+            <li>Consult your physician if you have pacemakers or severe hearing conditions</li>
+            <li>If you are on medication for psychiatric conditions, contact us before booking</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h2>What to bring</h2>
+          <ul class="muted-note">
+            <li>A yoga mat and a soft blanket for warmth</li>
+            <li>An eye mask or scarf to gently dim light</li>
+            <li>Water bottle and an open heart</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="card">
+        <h2>Notes from the room</h2>
+        <blockquote style="margin:0;padding-left:12px;border-left:3px solid #e8d3c6;color:#61514b">"An hour of descending into my ribs — I left quieter and steadier." — L.R.</blockquote>
+        <p style="margin-top:10px;color:#7a6a5f">We keep group sizes intimate and acoustics tuned to the room for a premium sensory experience.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="card">
+        <h2>Questions</h2>
+        <div class="faq">
+          <div>
+            <div style="font-weight:700">How long is each session?</div>
+            <div class="muted-note">Doors open 30 minutes prior; the sound journey is usually 40–50 minutes.</div>
+          </div>
+          <div style="margin-top:10px">
+            <div style="font-weight:700">Can I arrive late?</div>
+            <div class="muted-note">Arrive early if possible; late entry is discouraged to preserve the space.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" style="text-align:center">
+      <div class="card" style="display:inline-block;padding:24px">
+        <h2 style="margin-top:0">Reserve your place</h2>
+        <p class="muted">Seats are limited. We hold a small number of spots for walk-ins but recommend booking.</p>
+        <a class="btn-primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} • <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    <div style="margin-top:8px;color:#9a8b80;font-size:0.9rem">© {{BUSINESS_NAME}} — {{CITY}}, {{STATE}}</div>
+  </footer>
+</body>
+</html>

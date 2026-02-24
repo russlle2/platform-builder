@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Boutique — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Small-batch aromatherapy goods and accessories with clear usage guidance.">
+  <style>
+    :root{--bg:#fbfbfb;--muted:#5a5a5a;--accent:#726b9a;--card:#fff}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:var(--bg);color:#111}
+    header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid rgba(0,0,0,0.04)}
+    nav a{margin-left:10px;color:var(--muted);text-decoration:none}
+    main{max-width:980px;margin:28px auto;padding:0 18px}
+
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+    .product{background:var(--card);padding:14px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.04)}
+    .product h3{margin:0 0 6px}
+    .price{font-weight:700;color:var(--accent)}
+    .small{font-size:0.9rem;color:var(--muted)}
+
+    .filters{display:flex;gap:8px;margin-bottom:16px}
+    select,button{padding:8px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)}
+
+    /* reveal */
+    section{opacity:0;transform:translateY(12px);transition:opacity .5s ease,transform .5s ease}
+    section.revealed{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){section{opacity:1;transform:none;transition:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,#e9dff3,#726b9a);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">B</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Essences</a>
+      <a href="shop.html" class="active">Boutique</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section aria-labelledby="shop-h">
+      <h1 id="shop-h">Boutique — small batches</h1>
+      <p class="small">Everything ships in recycled packaging. Product pages include dilution tips and pet/pregnancy notes. We do not make medical claims.</p>
+      <div class="filters" style="margin-top:12px">
+        <select id="category"><option value="all">All</option><option value="blend">Blends</option><option value="oil">Single oils</option><option value="kit">Kits</option></select>
+        <select id="sort"><option value="featured">Featured</option><option value="price">Price</option></select>
+        <button id="tryNowSmall" style="background:var(--accent);color:#fff;border:0;padding:8px 12px;border-radius:8px;cursor:pointer">Try guided practice</button>
+      </div>
+    </section>
+
+    <section aria-labelledby="list-h">
+      <h2 id="list-h">Available items</h2>
+      <div class="grid" id="catalog">
+        <div class="product" data-type="blend">
+          <h3>Evening Ease — 10ml</h3>
+          <div class="small">Blend bottle. Suggested dilution: 1% for adults. Patch test recommended. Not intended for pets.</div>
+          <div style="margin-top:8px"><span class="price">$18</span> <button style="float:right;padding:8px 12px;border-radius:8px;border:0;background:#e9e7ff;cursor:pointer" data-sku="EE10">Add</button></div>
+        </div>
+
+        <div class="product" data-type="oil">
+          <h3>Lavender (single) — 10ml</h3>
+          <div class="small">Use: calming support. Suggested topical dilution 0.5–2%. Patch test prior to use.</div>
+          <div style="margin-top:8px"><span class="price">$12</span> <button style="float:right;padding:8px 12px;border-radius:8px;border:0;background:#e9e7ff;cursor:pointer" data-sku="LV10">Add</button></div>
+        </div>
+
+        <div class="product" data-type="kit">
+          <h3>Starter roll-on kit</h3>
+          <div class="small">Includes carrier, roller, and two small blends. Instructions and dilution notes included.</div>
+          <div style="margin-top:8px"><span class="price">$34</span> <button style="float:right;padding:8px 12px;border-radius:8px;border:0;background:#e9e7ff;cursor:pointer" data-sku="KIT1">Add</button></div>
+        </div>
+      </div>
+    </section>
+
+    <section aria-label="Checkout note">
+      <div class="card" style="margin-top:22px;padding:12px;border-radius:10px;background:#fff">
+        <strong>Notes on safety</strong>
+        <p class="small">We include explicit dilution guidance on each product page. If you are pregnant, nursing, taking medication, or have pets (especially birds), please check product notes or consult a professional before use.</p>
+      </div>
+    </section>
+
+    <footer style="margin-top:40px;text-align:center;color:var(--muted)">Questions? Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call {{PHONE}}</footer>
+  </main>
+
+  <!-- Reuse small guided modal inline (same exercise as services) -->
+  <div id="miniBackdrop" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;padding:18px"> 
+    <div style="background:#fff;padding:18px;border-radius:12px;max-width:520px;width:100%">
+      <h3>Quick practice</h3>
+      <p class="small">A two-step breath and scent check.</p>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button id="miniStart" style="padding:8px 10px;border-radius:8px;border:0;background:var(--accent);color:#fff">Begin</button>
+        <button id="miniClose" style="padding:8px 10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)">Close</button>
+      </div>
+      <div id="miniStep" style="margin-top:12px;min-height:60px;display:flex;align-items:center;justify-content:center"></div>
+    </div>
+  </div>
+
+  <script>
+    // Reveal logic
+    (function(){
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if(reduced){ document.querySelectorAll('section').forEach(s=>s.classList.add('revealed')); } else { const obs = new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('revealed');obs.unobserve(e.target);}})},{threshold:0.12}); document.querySelectorAll('section').forEach(s=>obs.observe(s)); }
+    })();
+
+    // Mini guided practice
+    (function(){
+      const openBtn = document.getElementById('tryNowSmall');
+      const backdrop = document.getElementById('miniBackdrop');
+      const start = document.getElementById('miniStart');
+      const close = document.getElementById('miniClose');
+      const out = document.getElementById('miniStep');
+      let step=0;
+      const steps = ['Sit comfortably. Take three slow breaths.','Notice any scent nearby. Name it silently and let it be.'];
+      openBtn.addEventListener('click',()=>{backdrop.style.display='flex';});
+      close.addEventListener('click',()=>{backdrop.style.display='none';out.textContent='';step=0;});
+      start.addEventListener('click',()=>{ step=0; out.textContent=steps[step]; start.textContent='Next'; start.onclick = ()=>{ step++; if(step<steps.length){ out.textContent=steps[step]; } else { out.textContent='Practice complete. Thank you.'; start.textContent='Done'; start.disabled=true; } } });
+    })();
+
+    // Basic add-to-cart (local only)
+    (function(){
+      document.querySelectorAll('[data-sku]').forEach(btn=>{
+        btn.addEventListener('click',()=>{ alert('Added to cart: '+btn.getAttribute('data-sku')); });
+      });
+    })();
+  </script>
+</body>
+</html>

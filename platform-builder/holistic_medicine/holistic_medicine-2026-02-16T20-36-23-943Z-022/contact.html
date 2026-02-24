@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contact — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Contact {{BUSINESS_NAME}} for thoughtful, whole-person care. Hybrid appointments, education-forward, individualized plans.">
+  <style>
+    :root{
+      --bg1: #eaf2f7;
+      --bg2: #f6fbff;
+      --accent: #4b9fa5;
+      --muted: #6b7a83;
+      --glass: rgba(255,255,255,0.55);
+      --glass-2: rgba(255,255,255,0.30);
+      --card-shadow: 0 8px 30px rgba(30,40,50,0.08);
+      --radius: 14px;
+      --maxw: 1100px;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      color-scheme: light;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(160deg,var(--bg1),var(--bg2));}
+    /* Full-bleed SVG background for pattern + glassy overlay */
+    .canvas{position:relative;min-height:100vh;overflow-x:hidden}
+    svg.bg{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+
+    header{position:sticky;top:16px;z-index:30;display:flex;justify-content:center}
+    .navwrap{width:min(96%,var(--maxw));display:flex;align-items:center;gap:18px}
+    nav{display:flex;align-items:center;gap:14px;background:linear-gradient(90deg,rgba(255,255,255,0.35),rgba(255,255,255,0.18));backdrop-filter:blur(6px);padding:10px 16px;border-radius:12px;box-shadow:var(--card-shadow)}
+    nav a{color:var(--muted);text-decoration:none;font-weight:600;font-size:14px}
+    nav a:hover{color:var(--accent)}
+    .brand{font-weight:700;color:#18343a;margin-right:8px}
+
+    main{position:relative;z-index:10;padding:48px 20px 120px;display:flex;justify-content:center}
+    .wrap{width:min(96%,var(--maxw));display:grid;grid-template-columns:1fr;gap:28px}
+
+    /* hero */
+    .hero{display:grid;gap:18px;grid-template-columns:1fr;align-items:center}
+    .hero .panel{background:linear-gradient(180deg,rgba(255,255,255,0.65),rgba(255,255,255,0.45));border-radius:var(--radius);padding:28px;box-shadow:var(--card-shadow);backdrop-filter:blur(8px)}
+    .hero h1{margin:0;font-size:26px;color:#0f2b2c}
+    .hero p{margin:6px 0 0;color:var(--muted);line-height:1.5}
+    .hero .actions{display:flex;gap:12px;margin-top:16px}
+    .btn{display:inline-flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;border:0;background:var(--accent);color:white;font-weight:700;text-decoration:none}
+    .btn.secondary{background:transparent;color:var(--accent);border:1px solid rgba(75,159,165,0.12)}
+
+    /* two-column cards */
+    .grid-2{display:grid;grid-template-columns:1fr 380px;gap:20px}
+    .card{background:var(--glass);border-radius:12px;padding:18px;box-shadow:var(--card-shadow);}
+
+    /* form */
+    form label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    form input, form textarea, form select{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(20,30,35,0.06);font-size:14px;background:rgba(255,255,255,0.7)}
+    form textarea{min-height:110px;resize:vertical}
+    .small{font-size:13px;color:var(--muted)}
+
+    /* sections */
+    .section-title{font-weight:700;color:#123;letter-spacing:-0.2px}
+    .muted{color:var(--muted)}
+    .list{display:flex;flex-direction:column;gap:8px}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:linear-gradient(90deg,rgba(75,159,165,0.12),rgba(75,159,165,0.06));color:#164; font-weight:600}
+
+    footer{margin-top:28px;padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.45),rgba(255,255,255,0.28));box-shadow:var(--card-shadow);display:flex;justify-content:space-between;align-items:center}
+
+    /* responsive */
+    @media (max-width:880px){.grid-2{grid-template-columns:1fr}.navwrap{justify-content:space-between}.hero h1{font-size:20px}}
+  </style>
+</head>
+<body>
+  <div class="canvas">
+    <!-- Decorative SVG background pattern (unique to this template) -->
+    <svg class="bg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <defs>
+        <radialGradient id="g1" cx="20%" cy="20%" r="60%">
+          <stop offset="0%" stop-color="#bfe9ea" stop-opacity="0.95" />
+          <stop offset="100%" stop-color="#effafc" stop-opacity="0.35" />
+        </radialGradient>
+        <linearGradient id="g2" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#e2f6f7" />
+          <stop offset="100%" stop-color="#ffffff" />
+        </linearGradient>
+        <pattern id="dots" width="40" height="40" patternUnits="userSpaceOnUse">
+          <circle cx="6" cy="6" r="3" fill="#d7eef0" />
+          <circle cx="26" cy="26" r="2" fill="#f3fdfe" />
+        </pattern>
+        <filter id="wobble" x="-50%" y="-50%" width="200%" height="200%">
+          <feTurbulence baseFrequency="0.0025" numOctaves="2" seed="3" result="t" />
+          <feDisplacementMap in="SourceGraphic" in2="t" scale="18" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+      </defs>
+      <rect width="1200" height="800" fill="url(#g2)" />
+      <g opacity="0.9">
+        <ellipse cx="100" cy="120" rx="260" ry="120" fill="url(#g1)" transform="translate(-40,-10) rotate(-12)" />
+        <ellipse cx="1100" cy="560" rx="320" ry="160" fill="#f7ffff" opacity="0.8" transform="translate(20,20) rotate(18)" />
+        <rect x="0" y="0" width="1200" height="800" fill="url(#dots)" opacity="0.12" />
+      </g>
+      <g filter="url(#wobble)" opacity="0.22">
+        <path d="M-100,600 C200,400 500,800 1200,400 L1200,900 L-100,900 Z" fill="#bfe9ea"/>
+      </g>
+    </svg>
+
+    <header>
+      <div class="navwrap">
+        <div class="brand">{{BUSINESS_NAME}}</div>
+        <nav>
+          <a href="/index.html">Home</a>
+          <a href="/services.html">Care</a>
+          <a href="/conditions.html">Concerns</a>
+          <a href="/approach.html">Method</a>
+          <a href="/pricing.html">Plans</a>
+          <a href="/about.html">About</a>
+          <a href="/book.html">Book</a>
+          <a href="/contact.html">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <div class="wrap">
+        <section class="hero">
+          <div class="panel">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
+              <div>
+                <h1>Reach {{BUSINESS_NAME}} — collaborative whole-person care</h1>
+                <p class="muted">Practical, evidence-informed guidance that supports your body, sleep, digestion, and resilience. We partner with you to clarify priorities and craft a tailored plan — education-focused, not promise-driven.</p>
+                <div class="actions">
+                  <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+                  <a class="btn secondary" href="tel:{{PHONE}}">Call: {{PHONE}}</a>
+                </div>
+              </div>
+              <div style="min-width:220px;text-align:right">
+                <div class="pill">Hybrid care • Tele + In-person</div>
+                <div class="small" style="margin-top:10px">Practitioner: <strong>{{PRACTITIONER_NAME}}, {{CREDENTIALS}}</strong></div>
+                <div class="small muted">Serving {{CITY}}, {{STATE}}</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="grid-2">
+          <div class="card">
+            <h3 class="section-title">A brief note on our approach</h3>
+            <p class="muted">We emphasize learning and partnership. Initial visits concentrate on understanding history, priorities, and available data. Recommendations may include lifestyle interventions, guided supplements, and optional educational lab testing when helpful. We do not offer guarantees — our focus is on clear information and stepwise progress.</p>
+
+            <div style="margin-top:16px">
+              <h4 style="margin:0 0 8px 0">The care framework</h4>
+              <div class="list">
+                <div><strong>1. Intake & listening.</strong> Comprehensive review of symptoms, context, and goals.</div>
+                <div><strong>2. Clarify contributors.</strong> Sleep, stress responses, digestion, inflammation, movement, and nutrition.</div>
+                <div><strong>3. Shared plan.</strong> Practical next steps: habits, targeted interventions, optional educational labs.</div>
+                <div><strong>4. Follow-ups.</strong> Narrow-focused visits for progress checks and plan adjustments.</div>
+              </div>
+            </div>
+
+            <p class="small muted" style="margin-top:12px">Optional labs are offered for greater diagnostic clarity when clinically useful; they are educational and not required for treatment to begin.</p>
+          </div>
+
+          <aside class="card">
+            <h4 class="section-title">Contact & logistics</h4>
+            <p class="small muted">Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a><br>Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+            <p class="small muted">Hours: Mon–Fri 8:30am–5:00pm. Evening slots available by request.</p>
+
+            <div style="margin-top:12px">
+              <h5 style="margin:0 0 6px 0">Visit types</h5>
+              <div class="list">
+                <div>Initial comprehensive consult — 60–75 min</div>
+                <div>Focused follow-up — 30 min</div>
+                <div>Telehealth and limited in-person visits</div>
+              </div>
+            </div>
+
+            <p class="small muted" style="margin-top:12px">Insurance: We provide superbills. Pricing and packages are described on the Plans page.</p>
+          </aside>
+        </section>
+
+        <section class="card">
+          <h3 class="section-title">Contact form — schedule a consult or ask a question</h3>
+          <p class="muted">Use this form for general questions or to request availability. For urgent matters, please call <a href="tel:{{PHONE}}">{{PHONE}}</a>.</p>
+
+          <form id="contactForm" onsubmit="handleSubmit(event)">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+              <div>
+                <label for="name">Full name</label>
+                <input id="name" name="name" required>
+              </div>
+              <div>
+                <label for="phone">Phone</label>
+                <input id="phone" name="phone">
+              </div>
+            </div>
+
+            <div style="margin-top:12px">
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" required>
+            </div>
+
+            <div style="margin-top:12px">
+              <label for="topic">Reason for contact</label>
+              <select id="topic" name="topic">
+                <option>New patient inquiry</option>
+                <option>Follow-up / question</option>
+                <option>Billing / insurance</option>
+                <option>Other</option>
+              </select>
+            </div>
+
+            <div style="margin-top:12px">
+              <label for="message">Message</label>
+              <textarea id="message" name="message" placeholder="Briefly describe your main concern or goals"></textarea>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:10px;margin-top:12px">
+              <input id="consent" type="checkbox" required>
+              <label for="consent" class="small muted">I consent to a non-confidential message and understand this is not an urgent channel.</label>
+            </div>
+
+            <div style="margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+              <button class="btn" type="submit">Send message</button>
+              <a class="btn secondary" href="{{PRIMARY_CTA_URL}}">Schedule now</a>
+            </div>
+
+            <p class="small muted" style="margin-top:10px">By submitting you consent to contact by phone/email for scheduling. This site offers educational guidance; care is individualized and no outcomes are guaranteed.</p>
+          </form>
+        </section>
+
+        <section class="card">
+          <h3 class="section-title">What we offer — hybrid care model</h3>
+          <p class="muted">We blend in-person evaluations when indicated with secure telehealth follow-ups. Our hybrid offer includes targeted lifestyle coaching, supplement guidance when appropriate, and educational testing as needed. Options are tailored and discussed transparently.</p>
+
+          <div style="margin-top:12px;display:flex;gap:12px;flex-wrap:wrap">
+            <div style="flex:1;min-width:220px;background:linear-gradient(180deg,rgba(255,255,255,0.5),rgba(255,255,255,0.2));padding:12px;border-radius:10px">
+              <strong>Initial visit</strong>
+              <div class="muted">Comprehensive intake + personalized plan</div>
+            </div>
+            <div style="flex:1;min-width:220px;background:linear-gradient(180deg,rgba(255,255,255,0.5),rgba(255,255,255,0.2));padding:12px;border-radius:10px">
+              <strong>Focused follow-up</strong>
+              <div class="muted">Targeted adjustments and education</div>
+            </div>
+            <div style="flex:1;min-width:220px;background:linear-gradient(180deg,rgba(255,255,255,0.5),rgba(255,255,255,0.2));padding:12px;border-radius:10px">
+              <strong>Care bundles</strong>
+              <div class="muted">Series for sleep, digestive support, or energy</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h3 class="section-title">A few patient notes</h3>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <blockquote style="margin:0;padding:12px;border-left:3px solid rgba(75,159,165,0.14);background:rgba(255,255,255,0.55);border-radius:8px">
+              "I appreciated the focus on practical steps and clear rationale — it felt collaborative and realistic." <div class="small muted">— Recent patient</div>
+            </blockquote>
+
+            <blockquote style="margin:0;padding:12px;border-left:3px solid rgba(75,159,165,0.14);background:rgba(255,255,255,0.55);border-radius:8px">
+              "Helpful follow-ups and explanations. Labs were optional and only used when helpful." <div class="small muted">— Recent patient</div>
+            </blockquote>
+          </div>
+        </section>
+
+        <section class="card">
+          <h3 class="section-title">Quick pricing snapshot</h3>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px">
+            <div style="background:rgba(255,255,255,0.6);padding:12px;border-radius:10px;min-width:160px;text-align:center">
+              <strong>Initial</strong>
+              <div class="muted">60–75 min</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.6);padding:12px;border-radius:10px;min-width:160px;text-align:center">
+              <strong>Follow-up</strong>
+              <div class="muted">30 min</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.6);padding:12px;border-radius:10px;min-width:160px;text-align:center">
+              <strong>Packages</strong>
+              <div class="muted">Custom bundles available</div>
+            </div>
+          </div>
+          <p class="small muted" style="margin-top:10px">Full pricing and sliding scale options are on the Plans page. We provide superbills for insurance reimbursement.</p>
+        </section>
+
+        <section class="card" style="text-align:center">
+          <h3 class="section-title">Ready to talk?</h3>
+          <p class="muted">If you prefer to speak now, call <a href="tel:{{PHONE}}">{{PHONE}}</a>. Otherwise use the form above or schedule online.</p>
+          <div style="margin-top:12px">
+            <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            <a class="btn secondary" href="mailto:{{EMAIL}}">Email us</a>
+          </div>
+        </section>
+
+        <footer>
+          <div class="small muted">© <span id="year"></span> {{BUSINESS_NAME}} • Serving {{CITY}}, {{STATE}}</div>
+          <div style="display:flex;gap:12px;align-items:center">
+            <a class="small muted" href="/about.html">About</a>
+            <a class="small muted" href="/privacy.html">Privacy</a>
+            <a class="small muted" href="/terms.html">Terms</a>
+          </div>
+        </footer>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // small, privacy-minded form handler that composes an email for review
+    function handleSubmit(e){
+      e.preventDefault();
+      var name = document.getElementById('name').value.trim();
+      var email = document.getElementById('email').value.trim();
+      var phone = document.getElementById('phone').value.trim();
+      var topic = document.getElementById('topic').value;
+      var message = document.getElementById('message').value.trim();
+
+      // Basic validation
+      if(!name || !email){
+        alert('Please provide name and email.');
+        return;
+      }
+
+      var subject = encodeURIComponent('[Contact] ' + topic + ' — ' + name);
+      var body = encodeURIComponent('Name: ' + name + '\nEmail: ' + email + '\nPhone: ' + phone + '\nTopic: ' + topic + '\n\nMessage:\n' + message + '\n\n--\nThis message was sent from the contact form at {{BUSINESS_NAME}}');
+
+      var mailto = 'mailto:{{EMAIL}}?subject=' + subject + '&body=' + body;
+      // open mail client as a lightweight routing method; not an authoritative record
+      window.location.href = mailto;
+    }
+
+    // set year
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

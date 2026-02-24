@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>About — {{BUSINESS_NAME}}</title>
+  <meta name='description' content='A gentle, practical approach to sustainable wellbeing.'>
+  <style>
+    :root{--bg:#fbfbfb;--card:#ffffff;--muted:#6b6b6b;--accent:#6aa84f;--ink:#222}
+    *{box-sizing:border-box}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial; margin:0; color:var(--ink); background:linear-gradient(180deg,#fbfff7 0%,var(--bg) 60%);}
+    header{background:linear-gradient(90deg,rgba(106,168,79,0.08),rgba(34,34,34,0.02)); padding:22px 20px; position:sticky; top:0; backdrop-filter: blur(4px);}
+    .nav{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .brand{font-weight:700;letter-spacing:0.4px}
+    nav a{color:var(--ink); text-decoration:none; margin-left:14px; font-size:15px}
+    .container{max-width:1100px;margin:36px auto;padding:0 20px}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+    .card{background:var(--card);border-radius:12px;padding:22px;box-shadow:0 6px 18px rgba(22,22,22,0.06)}
+    h1{margin:6px 0 6px;font-size:28px}
+    p.lead{color:var(--muted);margin:0 0 14px}
+    .profile{display:flex;gap:16px;align-items:center}
+    .avatar{width:82px;height:82px;border-radius:14px;background:linear-gradient(135deg,var(--accent),#3a8a3a);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    .meta small{color:var(--muted)}
+    .flow{display:grid;gap:18px;margin-top:14px}
+
+    /* widgets */
+    .widget h3{margin:0 0 8px}
+    form{display:grid;gap:10px}
+    label{font-size:13px;color:var(--muted)}
+    input[type='text'], select, textarea{padding:10px;border-radius:8px;border:1px solid #e9e9e9}
+    textarea{min-height:84px}
+    .actions{display:flex;gap:10px;align-items:center}
+    button{background:var(--accent);border:none;color:#fff;padding:10px 12px;border-radius:10px;cursor:pointer}
+    button.ghost{background:transparent;border:1px solid #ddd;color:var(--ink)}
+    .muted{color:var(--muted);font-size:13px}
+    .summary{white-space:pre-wrap;background:#f7fff2;padding:12px;border-radius:8px;border:1px dashed #e6f3d5}
+    .small{font-size:13px}
+
+    /* checklist */
+    .checklist{display:grid;gap:8px}
+    .check{display:flex;gap:10px;align-items:center}
+    .check input{width:18px;height:18px}
+
+    footer{max-width:1100px;margin:28px auto;padding:18px 20px;color:var(--muted)}
+
+    /* subtle patterned accent using local asset */
+    .strip{height:96px;background-image:url('assets/img/pattern.svg');background-repeat:repeat-x;background-size:240px 96px;border-radius:10px}
+
+    @media (max-width:880px){.hero{grid-template-columns:1fr;}.brand{font-size:16px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class='nav'>
+      <div class='brand'>{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href='index.html'>Home</a>
+        <a href='programs.html'>Journeys</a>
+        <a href='services.html'>Offerings</a>
+        <a href='about.html'>About</a>
+        <a href='pricing.html'>Pricing</a>
+        <a href='book.html'>Book</a>
+        <a href='contact.html'>Connect</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class='container'>
+    <section class='hero'>
+      <div class='card'>
+        <div class='profile'>
+          <div class='avatar'>W</div>
+          <div class='meta'>
+            <div style='font-weight:700'>A guide for steady renewal</div>
+            <small class='muted'>Practical rituals, frameworks, and clear outcomes. Based in {{CITY}}, {{STATE}}.</small>
+          </div>
+        </div>
+
+        <div class='flow'>
+          <h1>Why this work matters</h1>
+          <p class='lead'>I craft small, repeatable steps that rebuild energy and focus. No miraculous promises; just designed systems that compound.</p>
+
+          <div>
+            <h3>Core approach</h3>
+            <p class='muted small'>We map outcomes, pick three starter habits, and design sessions you can actually keep. Tools: weekly rhythms, short rituals, reflection prompts.</p>
+          </div>
+
+          <div>
+            <h3>Book a conversation</h3>
+            <p class='muted small'>Start with a conversational session to clarify what matters. Choose a time and we’ll co-create a plan.</p>
+            <div class='actions' style='margin-top:8px'>
+              <a href='{{PRIMARY_CTA_URL}}' class='btn'><button>{{PRIMARY_CTA_LABEL}}</button></a>
+              <a href='contact.html'><button class='ghost'>Send a note</button></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside>
+        <div class='card'>
+          <div class='strip'></div>
+          <h3 style='margin-top:14px'>Session Planner</h3>
+          <p class='muted small'>Quickly sketch a bespoke session blueprint and copy a plain-text summary to your clipboard.</p>
+
+          <form id='session-planner' class='widget' onsubmit='return false;'>
+            <label class='small'>Name</label>
+            <input id='sp-name' type='text' placeholder='Your name or client'>
+
+            <label class='small'>Primary focus</label>
+            <input id='sp-focus' type='text' placeholder='E.g., sleep, energy, concentration'>
+
+            <label class='small'>Session length</label>
+            <select id='sp-length'>
+              <option>20 minutes</option>
+              <option selected>45 minutes</option>
+              <option>75 minutes</option>
+            </select>
+
+            <label class='small'>Frequency</label>
+            <select id='sp-frequency'>
+              <option>Weekly</option>
+              <option selected>Bi-weekly</option>
+              <option>Monthly</option>
+            </select>
+
+            <label class='small'>Desired outcomes (short)</label>
+            <input id='sp-outcomes' type='text' placeholder='One-line outcome'>
+
+            <div class='actions'>
+              <button id='sp-build'>Build plan</button>
+              <button id='sp-copy' class='ghost' type='button'>Copy summary</button>
+            </div>
+
+            <div id='sp-result' class='summary small' aria-live='polite'>Your plan will appear here after you press "Build plan".</div>
+          </form>
+        </div>
+
+        <div class='card' style='margin-top:16px'>
+          <h3>7-Day Habit Challenge</h3>
+          <p class='muted small'>Create a gentle 7-day practice and print a simple checklist.</p>
+
+          <form id='habit-builder' onsubmit='return false;'>
+            <label class='small'>Habit</label>
+            <input id='hb-habit' type='text' placeholder='E.g., morning stretch, 5-minute journaling' value='5-minute journaling'>
+            <label class='small'>Intensity</label>
+            <select id='hb-intensity'>
+              <option>Easy</option>
+              <option selected>Moderate</option>
+              <option>Daily deep focus</option>
+            </select>
+            <div class='actions'>
+              <button id='hb-generate'>Generate checklist</button>
+              <button id='hb-print' class='ghost' type='button'>Print</button>
+            </div>
+          </form>
+
+          <div id='hb-result' class='checklist small' style='margin-top:10px'>Your checklist will appear here.</div>
+        </div>
+      </aside>
+    </section>
+
+    <section style='margin-top:20px'>
+      <div class='card'>
+        <h3>Philosophy in three lines</h3>
+        <p class='muted small'>Choose clarity. Practice small acts. Reflect weekly. Over time, intention becomes a practical shape in daily life.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class='container'>
+      <div style='display:flex;justify-content:space-between;align-items:center'>
+        <div class='muted'>Questions? Call <strong>{{PHONE}}</strong> or email <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a></div>
+        <div class='muted'>Serving {{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Session Planner
+    (function(){
+      var build = document.getElementById('sp-build');
+      var copyBtn = document.getElementById('sp-copy');
+      var result = document.getElementById('sp-result');
+      function makePlan(){
+        var name = document.getElementById('sp-name').value.trim() || 'Client';
+        var focus = document.getElementById('sp-focus').value.trim() || 'general wellbeing';
+        var length = document.getElementById('sp-length').value;
+        var freq = document.getElementById('sp-frequency').value;
+        var outcomes = document.getElementById('sp-outcomes').value.trim() || 'clarify priorities and set three starter habits';
+        var lines = [];
+        lines.push(name + " — Session blueprint");
+        lines.push('Focus: ' + focus);
+        lines.push('Length: ' + length + ' | Frequency: ' + freq);
+        lines.push('Goals: ' + outcomes);
+        lines.push('Structure: 1) Check-in (5 min), 2) Focused work/skill ("micro-practice") (' + Math.max(10, (parseInt(length) || 45)-15) + ' min), 3) Habit anchor & homework (10 min)');
+        lines.push('Starter habits: pick 3 small acts to try for one week. Track daily. Reflect at next session.');
+        var text = lines.join('\n');
+        result.textContent = text;
+        return text;
+      }
+      build.addEventListener('click', function(e){ e.preventDefault(); makePlan(); });
+      copyBtn.addEventListener('click', function(){
+        var text = result.textContent || makePlan();
+        if(navigator && navigator.clipboard && navigator.clipboard.writeText){
+          navigator.clipboard.writeText(text).then(function(){ copyBtn.textContent = 'Copied'; setTimeout(function(){ copyBtn.textContent = 'Copy summary'; },1400); });
+        } else {
+          alert('Copy not supported in this browser.');
+        }
+      });
+    })();
+
+    // Habit builder: 7-day checklist and print
+    (function(){
+      var gen = document.getElementById('hb-generate');
+      var printBtn = document.getElementById('hb-print');
+      var out = document.getElementById('hb-result');
+      function generate(){
+        var habit = document.getElementById('hb-habit').value.trim() || 'Small practice';
+        var intensity = document.getElementById('hb-intensity').value;
+        var frag = document.createDocumentFragment();
+        var title = document.createElement('div');
+        title.style.fontWeight='700'; title.style.marginBottom='6px'; title.textContent = '7-day: ' + habit + ' — ' + intensity;
+        frag.appendChild(title);
+        for(var i=1;i<=7;i++){
+          var row = document.createElement('label'); row.className='check';
+          var cb = document.createElement('input'); cb.type='checkbox'; cb.id='day-'+i;
+          var txt = document.createElement('span'); txt.textContent = 'Day ' + i + ' — ' + (i===1? 'Start' : (i===7? 'Reflect' : 'Keep going'));
+          row.appendChild(cb); row.appendChild(txt);
+          frag.appendChild(row);
+        }
+        out.innerHTML=''; out.appendChild(frag);
+      }
+      gen.addEventListener('click', function(e){ e.preventDefault(); generate(); });
+      printBtn.addEventListener('click', function(){
+        var content = out.innerHTML || '<p>No checklist to print.</p>';
+        var win = window.open('', '_blank');
+        var html = '<!doctype html><html><head><meta charset="utf-8"><title>Checklist</title><style>body{font-family:Arial,Helvetica,sans-serif;padding:18px}label{display:block;margin:8px 0}input{margin-right:8px}</style></head><body>' + content + '</body></html>';
+        win.document.write(html); win.document.close(); win.print();
+      });
+    })();
+  </script>
+</body>
+</html>

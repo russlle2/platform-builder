@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"> 
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reserve a session or request a VIP Day with {{PRACTITIONER_NAME}} at {{BUSINESS_NAME}}.">
+  <style>
+    :root{--accent:#628B66;--bg:#FCFDFB;--muted:#6E6B63}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto;line-height:1.45;background:radial-gradient(800px 400px at 10% 10%, #EEF9F0 0%, transparent 20%),var(--bg);color:#22312B}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px}
+    .logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#F0FFF4,#F7FBF8);display:grid;place-items:center;color:var(--accent);font-weight:800}
+    nav a{margin-left:14px;color:#333;text-decoration:none}
+    main{max-width:960px;margin:20px auto;padding:12px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .panel{background:white;padding:18px;border-radius:12px;box-shadow:0 8px 26px rgba(34,49,43,0.06)}
+    h1{margin:0 0 8px}
+    .muted{color:var(--muted)}
+    .form-row{display:flex;gap:10px;margin-top:10px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #E6E6E4}
+    button{background:var(--accent);color:white;padding:10px 14px;border-radius:10px;border:none;font-weight:700}
+    .small{font-size:13px;color:var(--muted)}
+    .availability{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .slot{padding:8px 10px;border-radius:8px;background:#F6FBF7;border:1px solid #E6F0E8;color:#28402F}
+    .summary{font-size:14px;margin-top:12px}
+    footer{padding:18px;text-align:center;color:#6F6B66}
+    @media (max-width:920px){.grid{grid-template-columns:1fr}.panel{order:2}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo">A</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">Book an appointment in {{CITY}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Back</a>
+      <a href="services.html">Offerings</a>
+      <a href="pricing.html">Rates</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="grid">
+      <section class="panel">
+        <h1>Reserve time with {{PRACTITIONER_NAME}}</h1>
+        <p class="muted">Choose a session type, pick a slot, and share any safety notes. For VIP Day requests, select "VIP Day" and include preferred dates — a deposit is required.</p>
+
+        <form action="{{PRIMARY_CTA_URL}}" method="GET" style="margin-top:12px">
+          <label class="small">Service</label>
+          <select name="service">
+            <option value="single">Jumpstart — Single Session (60m)</option>
+            <option value="pack">Ritual Pack — 3 Sessions</option>
+            <option value="monthly">Monthly Ritual — Subscription</option>
+            <option value="vip">VIP Day — Immersive (Full day)</option>
+          </select>
+
+          <div class="form-row">
+            <div style="flex:1">
+              <label class="small">Preferred date</label>
+              <input type="date" name="date">
+            </div>
+            <div style="width:160px">
+              <label class="small">Time</label>
+              <select name="time">
+                <option>09:00</option>
+                <option>11:00</option>
+                <option>14:00</option>
+                <option>16:00</option>
+              </select>
+            </div>
+          </div>
+
+          <label class="small" style="margin-top:8px">Name</label>
+          <input type="text" name="name" required>
+
+          <label class="small" style="margin-top:8px">Email</label>
+          <input type="email" name="email" required>
+
+          <label class="small" style="margin-top:8px">Notes (allergies, pets, pregnancy, medications)</label>
+          <textarea name="notes" rows="4" placeholder="Please list any known botanical allergies, pets in the home, or if you are pregnant/nursing."></textarea>
+
+          <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
+            <button type="submit">Request booking</button>
+            <div class="small">Or call <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+          </div>
+        </form>
+
+        <div class="summary">
+          <h4 style="margin:8px 0">What to expect next</h4>
+          <p class="muted">You will get a confirmation with a short intake form. For VIP Day requests we will follow up about deposit and logistics. If you need to reschedule, notify us at least 48 hours in advance; different rules apply to VIP bookings.</p>
+        </div>
+
+        <div style="margin-top:12px" class="panel">
+          <h4 style="margin-top:0">Booking policies</h4>
+          <p class="small">Cancellations >48 hours: full refund. Cancellations <48 hours: partial credit. VIP Day: 25% non-refundable deposit required to hold date. All sessions include a safety briefing. We do not provide medical diagnosis or treatment.</p>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <h3 style="margin-top:0">Available slots</h3>
+        <div class="availability">
+          <div class="slot">Mon 10:00</div>
+          <div class="slot">Mon 14:00</div>
+          <div class="slot">Tue 09:00</div>
+          <div class="slot">Wed 11:00</div>
+          <div class="slot">Thu 15:00</div>
+          <div class="slot">Fri 09:00</div>
+        </div>
+
+        <h4 style="margin-top:14px">Quick reminders</h4>
+        <ul class="small" style="padding-left:18px">
+          <li>Bring notes about medications and allergies.</li>
+          <li>Patch test instructions will be provided for topical blends.</li>
+          <li>If you have pets or are pregnant, mention this so we can adapt suggestions.</li>
+        </ul>
+
+        <div style="margin-top:12px">
+          <h4 style="margin:6px 0">Pre-booking checklist</h4>
+          <div class="small">1) Confirm contact details. 2) Note any allergies or sensitivities. 3) Select at least two scent preferences (e.g., citrus, woody, herbal).</div>
+        </div>
+
+        <div style="margin-top:14px;font-size:13px;color:var(--muted)">
+          <strong>Need help?</strong> Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a>.
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} • Serving {{CITY}}, {{STATE}} • <a href="privacy.html">Privacy</a></div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Investment & Fees — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfbfb;--ink:#0f1720;--muted:#6b7280;--accent:#6b9f8b;--card:#ffffff;--glass:rgba(255,255,255,0.6)}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:linear-gradient(180deg, #f7faf9 0%, var(--bg) 100%);-webkit-font-smoothing:antialiased}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:transparent}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none;font-weight:600}
+    .brand{font-weight:700;color:var(--ink)}
+    .hero{padding:44px 28px 28px;display:grid;gap:18px}
+    .hero .kicker{color:var(--muted);font-size:13px}
+    .hero h1{margin:0;font-size:28px}
+    .lead{color:var(--muted);max-width:60ch}
+    .controls{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{background:var(--accent);color:white;padding:10px 14px;border-radius:8px;border:0;cursor:pointer;font-weight:600}
+    .btn.secondary{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+    main{padding:0 28px 80px}
+    .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:18px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(12,15,20,0.04);border:1px solid rgba(15,23,32,0.04)}
+    .card h3{margin:0 0 8px}
+    .muted{color:var(--muted);font-size:14px}
+    .price{font-weight:700;font-size:20px;margin-top:8px}
+    .note{font-size:13px;color:var(--muted);margin-top:10px}
+    .policies{margin-top:28px;padding:18px;border-radius:10px;background:linear-gradient(180deg, rgba(107,159,139,0.05), rgba(250,250,250,0.02));border:1px solid rgba(107,159,139,0.06)}
+    footer{padding:24px 28px;border-top:1px solid rgba(15,23,32,0.04);display:flex;justify-content:space-between;align-items:center}
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+    .reveal--visible{opacity:1;transform:none}
+    .try-btn{background:transparent;border:1px dashed var(--accent);padding:8px 12px;border-radius:10px;color:var(--accent);cursor:pointer}
+    .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(6,8,10,0.45);visibility:hidden;opacity:0;transition:opacity .2s ease,visibility .2s}
+    .modal[aria-hidden="false"]{visibility:visible;opacity:1}
+    .modal__panel{width:min(720px,94vw);background:var(--card);border-radius:12px;padding:20px;box-shadow:0 12px 40px rgba(2,6,10,0.2);max-height:86vh;overflow:auto}
+    .modal__head{display:flex;justify-content:space-between;align-items:center}
+    .exercise{display:grid;gap:12px;margin-top:12px}
+    .circle{width:120px;height:120px;border-radius:50%;border:6px solid rgba(107,159,139,0.14);display:flex;align-items:center;justify-content:center;margin:8px auto}
+    .circle .dot{width:24px;height:24px;border-radius:50%;background:var(--accent);transform:scale(1);transition:transform 600ms ease}
+    textarea{width:100%;height:120px;padding:10px;border-radius:8px;border:1px solid rgba(15,23,32,0.06);font-size:15px}
+    .small{font-size:13px;color:var(--muted)}
+    @media (prefers-reduced-motion:reduce){
+      .reveal{transition:none;opacity:1;transform:none}
+      .circle .dot{transition:none}
+    }
+    /* background pattern reference */
+    .hero{background-image:url('assets/img/pattern.svg');background-repeat:no-repeat;background-position:right top;background-size:360px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="approach.html">Approach</a>
+      <a href="specialties.html">Specialties</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="kicker">Practical structure for ongoing therapy</div>
+      <h1>Fees & membership options</h1>
+      <p class="lead">I offer a few predictable ways to work together so planning feels simple. If cost is a worry, sliding scale spots are available—email {{EMAIL}} to discuss confidentially.</p>
+      <div class="controls">
+        <button class="btn" id="primaryCta">{{PRIMARY_CTA_LABEL}}</button>
+        <button class="btn secondary" id="tryIt">Try a guided exercise</button>
+        <a class="small muted" href="faq.html">Payment questions →</a>
+      </div>
+    </section>
+
+    <section class="cards reveal" aria-label="Membership options">
+      <div class="card">
+        <h3>Foundation Track</h3>
+        <div class="muted">For those starting focused weekly work</div>
+        <div class="price">$160 / session</div>
+        <div class="note">Standard 50–60 minute sessions. Includes brief secure check-ins between appointments.</div>
+      </div>
+
+      <div class="card">
+        <h3>Continuity Circle</h3>
+        <div class="muted">Preferred for steady, ongoing support</div>
+        <div class="price">$130 / session (monthly plan)</div>
+        <div class="note">Monthly membership of 4 sessions billed as a single payment. Priority scheduling and one 15-minute messaging check-in per week.</div>
+      </div>
+
+      <div class="card">
+        <h3>Flex Care</h3>
+        <div class="muted">Occasional sessions without commitment</div>
+        <div class="price">$185 / session</div>
+        <div class="note">Pay-as-you-go; good for periodic review or short-term goals.</div>
+      </div>
+    </section>
+
+    <section class="card session-fees reveal">
+      <h3>Single session & add-ons</h3>
+      <p class="muted">50–60 minute psychotherapy session: listed per plan above. 25–30 minute brief visit: $95. Initial intake session (90 minutes) is $195.</p>
+      <p class="note">Payment accepted by card or invoice. Sliding scale available for a small number of clients; priority is given to those with financial need. Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> to inquire.</p>
+    </section>
+
+    <section class="policies reveal">
+      <h3>Confidentiality, boundaries, and safety</h3>
+      <p class="small">Sessions are confidential within legal and ethical limits. I will explain what confidentiality includes and any limits (such as concerns about safety). If you are experiencing a crisis or are in danger, please contact local emergency services or go to the nearest emergency department. This practice does not provide emergency services.</p>
+      <p class="small">Therapy is a collaborative process. I do not promise outcomes; instead we work together to clarify goals and try approaches that may help. If a different level of care would be more appropriate, I will discuss referrals.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div>
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+      <div class="muted">{{CITY}}, {{STATE}} • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    </div>
+    <div>
+      <button class="btn" id="footerBook">Book a time</button>
+    </div>
+  </footer>
+
+  <div class="modal" id="exerciseModal" role="dialog" aria-hidden="true" aria-labelledby="modalTitle">
+    <div class="modal__panel">
+      <div class="modal__head">
+        <h2 id="modalTitle">Guided micro-practice</h2>
+        <button id="closeModal" aria-label="Close">Close</button>
+      </div>
+      <p class="small">Choose a short practice to ground your attention. These are not therapy sessions; they are brief exercises you can try now.</p>
+
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="try-btn" data-type="breath">Breathing</button>
+        <button class="try-btn" data-type="journal">Journaling</button>
+        <button class="try-btn" data-type="intent">Intention</button>
+      </div>
+
+      <div class="exercise" id="exerciseArea" aria-live="polite" style="margin-top:12px"></div>
+    </div>
+  </div>
+
+  <script>
+    // Basic navigation CTAs
+    document.getElementById('primaryCta').addEventListener('click',function(){window.location.href='{{PRIMARY_CTA_URL}}'});
+    document.getElementById('footerBook').addEventListener('click',function(){window.location.href='book.html'});
+
+    // Modal + guided exercises
+    const modal = document.getElementById('exerciseModal');
+    const area = document.getElementById('exerciseArea');
+    function openModal(){modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden'}
+    function closeModal(){modal.setAttribute('aria-hidden','true');area.innerHTML='';document.body.style.overflow=''}
+    document.getElementById('tryIt').addEventListener('click',openModal);
+    document.getElementById('closeModal').addEventListener('click',closeModal);
+    modal.addEventListener('click',function(e){if(e.target===modal)closeModal()});
+
+    function buildBreathing(){
+      area.innerHTML = '';
+      const info = document.createElement('div');
+      info.innerHTML = '<div class="small">Box breathing: 4s inhale • hold 4s • 4s exhale • hold 4s. Do 3 cycles.</div>';
+      const circle = document.createElement('div'); circle.className='circle';
+      const dot = document.createElement('div'); dot.className='dot'; circle.appendChild(dot);
+      const ctr = document.createElement('div'); ctr.style.textAlign='center'; ctr.appendChild(circle);
+      area.appendChild(info); area.appendChild(ctr);
+      let step=0; const phases=['Inhale','Hold','Exhale','Hold'];
+      const durations=[4000,4000,4000,4000]; let cycles=0;
+      const label = document.createElement('div'); label.style.textAlign='center'; label.style.fontWeight='700'; label.style.marginTop='8px'; area.appendChild(label);
+      let t = setInterval(()=>{
+        label.textContent = phases[step] + ' — cycle ' + (cycles+1) + '/3';
+        if(phases[step]==='Inhale'){dot.style.transform='scale(1.4)'}
+        if(phases[step]==='Exhale'){dot.style.transform='scale(.6)'}
+        step++;
+        if(step>=phases.length){step=0;cycles++;}
+        if(cycles>=3){clearInterval(t);label.textContent='Finished — take a gentle breath.'}
+      },4000);
+      // respect prefers-reduced-motion
+      if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){dot.style.transform='none';clearInterval(t);label.textContent='Follow the text prompts slowly; skip animation.'}
+    }
+
+    function buildJournal(){
+      area.innerHTML = '';
+      const prompt = document.createElement('div'); prompt.className='small'; prompt.textContent='Write for 5 minutes: "Right now, I notice..."';
+      const ta = document.createElement('textarea'); ta.placeholder='Start with "Right now, I notice..."';
+      const done = document.createElement('button'); done.className='btn'; done.textContent='Finish';
+      done.addEventListener('click',()=>{area.innerHTML='<div class="small">If helpful, you can keep this note or copy it somewhere private. Close when ready.</div>'});
+      area.appendChild(prompt); area.appendChild(ta); area.appendChild(done);
+    }
+
+    function buildIntent(){
+      area.innerHTML = '';
+      const p = document.createElement('div'); p.className='small'; p.textContent='A short intention practice: choose one small, specific action for today.';
+      const input = document.createElement('input'); input.type='text'; input.placeholder='e.g., I will phone one friend'; input.style.width='100%'; input.style.padding='10px'; input.style.border='1px solid rgba(15,23,32,0.06)'; input.style.borderRadius='8px';
+      const save = document.createElement('button'); save.className='btn'; save.textContent='Lock this intention';
+      save.addEventListener('click',()=>{area.innerHTML='<div class="small">Intention saved for now. If you want, copy it into a journal or set a reminder.</div>'});
+      area.appendChild(p); area.appendChild(input); area.appendChild(save);
+    }
+
+    document.querySelectorAll('.try-btn[data-type]').forEach(btn=>{
+      btn.addEventListener('click',function(){
+        const type=this.getAttribute('data-type');
+        if(type==='breath')buildBreathing();
+        if(type==='journal')buildJournal();
+        if(type==='intent')buildIntent();
+      });
+    });
+
+    // Scroll reveal with prefers-reduced-motion support
+    (function(){
+      const prefersReduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const els = document.querySelectorAll('.reveal');
+      if(prefersReduce){els.forEach(e=>e.classList.add('reveal--visible'));return}
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('reveal--visible');io.unobserve(entry.target)}},{threshold:0.12});
+      els.forEach(e=>io.observe(e));
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Private sessions | {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#07111a;--glass:rgba(255,255,255,0.04);--card:rgba(255,255,255,0.03);--accent:#a0e7dd;--muted:#b8cbd6}
+    *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    body{margin:0;background:linear-gradient(180deg,#051119 0%,#071827 60%),var(--bg);color:#e6eef2;min-height:100vh}
+    header{backdrop-filter:blur(8px);position:sticky;top:0;border-bottom:1px solid rgba(255,255,255,0.03)}
+    .nav{display:flex;gap:18px;padding:16px 22px;align-items:center;max-width:1100px;margin:0 auto}
+    .logo{width:42px;height:42;border-radius:10px;background:linear-gradient(135deg,#9fe4d9,#67aebc);display:grid;place-items:center;color:#042;font-weight:700}
+    nav a{color:var(--muted);text-decoration:none;padding:7px 9px;border-radius:8px}
+    nav a:hover{color:#fff}
+    .nav .cta{margin-left:auto;background:var(--accent);color:#042;padding:8px 12px;border-radius:9px;text-decoration:none}
+
+    main{max-width:1100px;margin:26px auto;padding:0 18px}
+    .hero{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:20px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);display:flex;gap:20px}
+    .left{flex:1}
+    .right{width:320px}
+    h1{margin:0 0 8px;font-size:26px}
+    p{color:var(--muted);margin:0 0 12px}
+
+    .benefits{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+    .benefit{background:var(--card);padding:12px;border-radius:10px}
+
+    .process{margin-top:14px;display:flex;flex-direction:column;gap:8px}
+    .step{padding:10px;border-radius:9px;background:linear-gradient(90deg,rgba(255,255,255,0.01),transparent);border:1px solid rgba(255,255,255,0.02)}
+
+    .mixer{margin-top:12px;padding:12px;border-radius:9px;background:rgba(255,255,255,0.02)}
+    .levels{display:flex;gap:8px}
+    .level{flex:1;padding:9px;text-align:center;border-radius:8px;cursor:pointer}
+    .level.active{background:linear-gradient(180deg,rgba(160,231,221,0.08),rgba(160,231,221,0.03))}
+
+    .sessions{margin-top:12px;display:grid;gap:10px}
+    .session{padding:12px;border-radius:9px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.02)}
+
+    .proof{margin-top:18px;padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent)}
+    .testimonials{display:flex;gap:10px;overflow:hidden}
+    .t{min-width:200px;padding:10px;border-radius:8px;background:rgba(255,255,255,0.02)}
+
+    .contra{margin-top:12px;padding:10px;border-radius:8px;background:rgba(255,255,255,0.01);border-left:3px solid #f29e9e;color:#ffdfe0}
+
+    footer{max-width:1100px;margin:30px auto;padding:20px;color:var(--muted);text-align:center}
+
+    @media(max-width:760px){.hero{flex-direction:column}.sessions{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class='nav'>
+      <div class='logo'>PS</div>
+      <nav>
+        <a href='index.html'>Home</a>
+        <a href='events.html'>Gatherings</a>
+        <a href='private-sessions.html' style='color:#fff'>Sessions</a>
+        <a href='pricing.html'>Plans</a>
+        <a href='about.html'>Story</a>
+        <a href='faq.html'>Questions</a>
+      </nav>
+      <a class='cta' href='book.html'>Reserve a Private</a>
+    </div>
+  </header>
+
+  <main>
+    <section class='hero'>
+      <div class='left'>
+        <h1>Private sessions — tailored for one or a small group</h1>
+        <p>Customized sound work for specific objectives: sleep support, focus reset, or shared restorative time. Sessions are configured to your sensitivity and intention.</p>
+
+        <div class='benefits'>
+          <div class='benefit'><strong>Custom pacing</strong><div style='color:var(--muted);font-size:13px'>We map tone, duration, and vocal texture to your needs.</div></div>
+          <div class='benefit'><strong>Safe environment</strong><div style='color:var(--muted);font-size:13px'>Pre-session screening and focused facilitation.</div></div>
+          <div class='benefit'><strong>Flexible locations</strong><div style='color:var(--muted);font-size:13px'>Studio, home visits, or online audio-guided sessions.</div></div>
+          <div class='benefit'><strong>Follow-up notes</strong><div style='color:var(--muted);font-size:13px'>Short guidance to integrate practice at home.</div></div>
+        </div>
+
+        <div class='process'>
+          <div class='step'><strong>1.</strong> Initial consult — 20 minutes to clarify intent.</div>
+          <div class='step'><strong>2.</strong> Session design — length, instruments, and approach.</div>
+          <div class='step'><strong>3.</strong> Delivery — in-person or remote; recorded takeaways if desired.</div>
+        </div>
+
+      </div>
+
+      <aside class='right'>
+        <div style='font-weight:700'>Session starter</div>
+        <div style='color:var(--muted);font-size:13px;margin-bottom:8px'>Pick how robust you want the sound to be — recommendations will adapt.</div>
+        <div class='mixer'>
+          <div class='levels'>
+            <div class='level active' data-level='gentle'>Gentle</div>
+            <div class='level' data-level='medium'>Medium</div>
+            <div class='level' data-level='intense'>Intense</div>
+          </div>
+          <div class='sessions' id='sessionList'>
+            <!-- JS fills sessions -->
+          </div>
+          <div style='margin-top:12px'><a href='book.html' class='cta'>Book a Private</a></div>
+        </div>
+      </aside>
+    </section>
+
+    <section class='card' style='margin-top:18px;padding:14px;border-radius:10px'>
+      <div style='font-weight:700;margin-bottom:8px'>Proof & partnerships</div>
+      <div style='display:flex;gap:14px;align-items:flex-start'>
+        <div style='flex:1'>
+          <div style='color:var(--muted);font-size:13px'>Short rotating highlights from private clients</div>
+          <div class='testimonials' id='pTestimonials' style='margin-top:10px'>
+            <div class='t'>"I slept through the night for the first time in months." — L</div>
+            <div class='t'>"The session helped me finish a draft with calm focus." — M</div>
+            <div class='t'>"We booked a pair session and came out having a better conversation." — S</div>
+          </div>
+        </div>
+        <div style='width:220px'>
+          <div style='font-weight:700'>Cred markers</div>
+          <div style='display:flex;flex-direction:column;gap:8px;margin-top:8px'>
+            <div class='badge' data-tip='HIPAA-style care processes for recorded notes.' style='display:flex;gap:8px;align-items:center;padding:10px;border-radius:8px;background:rgba(255,255,255,0.02)'>
+              <svg viewBox='0 0 24 24' width='28' height='28' fill='none'><rect x='3' y='5' width='18' height='14' rx='2' stroke='rgba(160,231,221,0.14)'></rect><path d='M8 11h8' stroke='rgba(160,231,221,0.4)'></path></svg>
+              <div style='font-size:13px;color:var(--muted)'>Confidential practice</div>
+            </div>
+            <div class='badge' data-tip='Safety-first intake used before every private session.' style='display:flex;gap:8px;align-items:center;padding:10px;border-radius:8px;background:rgba(255,255,255,0.02)'>
+              <svg viewBox='0 0 24 24' width='28' height='28' fill='none'><circle cx='12' cy='12' r='9' stroke='rgba(160,231,221,0.14)'></circle><path d='M9 12l2 2 4-4' stroke='rgba(160,231,221,0.4)'></path></svg>
+              <div style='font-size:13px;color:var(--muted)'>Screened attendees</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class='card' style='margin-top:14px'>
+      <div style='font-weight:700'>Contraindications & notes</div>
+      <div class='contra' style='margin-top:8px'>
+        If you have epilepsy, a pacemaker, uncontrolled cardiovascular symptoms, or a recent head injury, please check with a medical professional before booking. Sessions may include strong vibrations and sustained tones.
+      </div>
+    </section>
+
+    <section style='margin-top:14px;display:flex;gap:12px;align-items:center'>
+      <a class='cta' href='book.html'>Start a Private Plan</a>
+      <a href='pricing.html' style='color:var(--muted)'>See membership options</a>
+    </section>
+
+  </main>
+
+  <div class='tooltip' id='ptool' style='position:fixed;display:none;background:#032022;padding:8px;border-radius:8px;color:#bfeee7;z-index:80'></div>
+
+  <footer>
+    <div style='color:var(--muted)'>Questions? <a href='faq.html' style='color:var(--accent);text-decoration:none'>Check our FAQs</a> — or <a href='contact.html' style='color:var(--accent);text-decoration:none'>get in touch</a>.</div>
+  </footer>
+
+  <script>
+    // Session recommendations based on mixer
+    const sessionList=document.getElementById('sessionList');
+    const lvlEls=document.querySelectorAll('.level');
+    const sessionOptions={
+      gentle:[{title:'Short Rest — 45m',price:'$95'},{title:'Calm Reset — 60m',price:'$140'}],
+      medium:[{title:'Focused Session — 60m',price:'$160'},{title:'Mid-Length — 90m',price:'$220'}],
+      intense:[{title:'Deep Private — 90m',price:'$300'},{title:'Extended Immersion — 120m',price:'$420'}]
+    };
+    function renderSessions(level){sessionList.innerHTML='';(sessionOptions[level]||[]).forEach(s=>{const d=document.createElement('div');d.className='session';d.innerHTML=`<div style='display:flex;justify-content:space-between;align-items:center'><div><strong>${s.title}</strong><div style='font-size:13px;color:${'var(--muted)'}'>${s.price}</div></div><div><a href='book.html' class='cta'>Request</a></div></div>`;sessionList.appendChild(d)})}
+    lvlEls.forEach(el=>el.addEventListener('click',()=>{lvlEls.forEach(x=>x.classList.remove('active'));el.classList.add('active');renderSessions(el.dataset.level)}));
+    renderSessions('gentle');
+
+    // Rotate private testimonials
+    const pt=document.getElementById('pTestimonials');let pIndex=0;
+    function rotatePrivate(){pIndex=(pIndex+1)%pt.children.length;pt.style.transform=`translateX(-${pIndex*220}px)`}
+    setInterval(rotatePrivate,4000);
+
+    // badge tooltip
+    const ptool=document.getElementById('ptool');document.querySelectorAll('.badge').forEach(b=>{
+      b.addEventListener('mouseenter',e=>{ptool.textContent=b.dataset.tip;ptool.style.display='block'});
+      b.addEventListener('mousemove',e=>{ptool.style.left=(e.pageX+10)+'px';ptool.style.top=(e.pageY+10)+'px'});
+      b.addEventListener('mouseleave',()=>{ptool.style.display='none'});
+    });
+  </script>
+</body>
+</html>

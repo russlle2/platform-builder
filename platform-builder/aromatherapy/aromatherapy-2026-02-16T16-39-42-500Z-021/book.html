@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book a Session — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7fbfa;--accent:#6db08d;--ink:#062b2a;--muted:#667}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:linear-gradient(180deg,var(--bg),#eef8f5);color:var(--ink);padding:28px}
+    header{display:flex;justify-content:space-between;align-items:center;max-width:1100px;margin:0 auto;padding-bottom:12px}
+    nav a{margin-left:10px;color:var(--ink);text-decoration:none}
+    main{max-width:980px;margin:18px auto;background:white;border-radius:12px;padding:18px;box-shadow:0 8px 22px rgba(6,18,14,0.05)}
+    h1{margin:0 0 6px 0}
+    .grid{display:grid;grid-template-columns:1fr 380px;gap:18px}
+    form{display:flex;flex-direction:column;gap:10px}
+    input,textarea,select{padding:10px;border-radius:8px;border:1px solid #e6efe9;font-size:15px}
+    label{font-size:13px;color:var(--muted)}
+    button{background:linear-gradient(90deg,var(--accent),#95d0b8);border:none;padding:12px;border-radius:10px;color:white;font-weight:700}
+    .policies{font-size:13px;color:var(--muted)}
+    .note{background:rgba(109,176,141,0.06);padding:10px;border-radius:8px;border-left:3px solid var(--accent)}
+    footer{margin-top:14px;font-size:13px;color:var(--muted)}
+    @media(max-width:880px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Start</a>
+      <a href="services.html">Treatments</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Boutique</a>
+      <a href="pricing.html">Rates</a>
+      <a href="about.html">Who We Are</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Book a session</h1>
+    <p class="policies">Choose an appointment type and share a few details. We'll confirm availability and any pre-visit screening. Sessions are educational and supportive; they do not replace medical advice.</p>
+
+    <div class="grid">
+      <section>
+        <form action="{{PRIMARY_CTA_URL}}" method="post">
+          <div>
+            <label for="name">Full name</label>
+            <input id="name" name="name" type="text" placeholder="First Last" required>
+          </div>
+
+          <div>
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="you@example.com" required>
+          </div>
+
+          <div>
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" type="tel" placeholder="(555) 555-5555">
+          </div>
+
+          <div>
+            <label for="service">Service</label>
+            <select id="service" name="service">
+              <option>Discovery Session — 30 min</option>
+              <option>Virtual Consultation — 60 min</option>
+              <option>In-person Session — 75 min</option>
+              <option>Custom Blend Design — 45 min</option>
+              <option>Wellness Plan — 3 sessions</option>
+              <option>Product Consult — 15 min</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="date">Preferred date &amp; time</label>
+            <input id="date" name="date" type="text" placeholder="e.g. 2026-03-15 morning">
+          </div>
+
+          <div>
+            <label for="notes">Notes (sensitivities, pets, pregnancy)</label>
+            <textarea id="notes" name="notes" rows="4" placeholder="Mention medications, pregnancies, pets, known sensitivities"></textarea>
+          </div>
+
+          <div style="display:flex;gap:10px;align-items:center">
+            <input id="consent" name="consent" type="checkbox" required>
+            <label for="consent" style="font-size:13px">I understand this service provides aromatherapy education and is not medical care.</label>
+          </div>
+
+          <button type="submit">Request appointment</button>
+        </form>
+      </section>
+
+      <aside>
+        <div class="note">
+          <strong>Before your visit</strong>
+          <p class="policies">We will send a short intake to screen for allergies, pregnancy, medication interactions, and pet exposure. If you are pregnant, breastfeeding, or have serious health conditions, please inform us so we can adapt safely.</p>
+        </div>
+
+        <div style="margin-top:12px">
+          <h4 style="margin:6px 0">Scheduling &amp; cancellation</h4>
+          <p class="policies">Please allow up to 48 hours for confirmations. Cancellations within 24 hours may incur a fee. Rescheduling depends on availability.</p>
+        </div>
+
+        <div style="margin-top:12px">
+          <h4 style="margin:6px 0">Safety reminders</h4>
+          <ul class="policies">
+            <li>Always dilute essential oils for topical use as instructed.</li>
+            <li>Perform a patch test before regular topical use.</li>
+            <li>Some oils are unsafe for pets and pregnancy — we will advise alternatives.</li>
+          </ul>
+        </div>
+
+        <div style="margin-top:12px">
+          <h4 style="margin:6px 0">Need help?</h4>
+          <p class="policies">Call <strong>{{PHONE}}</strong> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> for urgent scheduling questions.</p>
+        </div>
+
+        <div style="margin-top:14px;font-size:13px;color:var(--muted)">
+          <strong>Clinic hours</strong>
+          <div>Mon–Fri: 9am–5pm (appointments by arrangement)</div>
+          <div>Sessions offered in-person in {{CITY}} or virtually.</div>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      <p class="policies">If you have questions about suitability (pregnancy, medications, pets), include them in the "Notes" field or call <strong>{{PHONE}}</strong>. We will follow up with safety guidance and next steps.</p>
+    </footer>
+  </main>
+</body>
+</html>

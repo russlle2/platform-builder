@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Questions — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--accent:#0ea5a4;--muted:#64748b}
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;margin:0;background:#fbfcff;color:#0f172a}
+    header{padding:18px 26px;display:flex;justify-content:space-between;align-items:center}
+    .logo{background:linear-gradient(135deg,#06b6d4,#06b6d4);color:#fff;padding:10px;border-radius:8px;font-weight:700}
+    nav a{margin-left:16px;color:#0f172a;text-decoration:none;font-weight:600}
+
+    main{max-width:980px;margin:26px auto;padding:0 20px}
+    h1{font-size:30px;margin-bottom:6px}
+    p.lead{color:var(--muted);margin-top:0}
+
+    .faq-list{margin-top:20px}
+    .q{background:white;padding:14px;border-radius:10px;margin-bottom:12px;box-shadow:0 6px 18px rgba(2,6,23,0.04);border:1px solid rgba(2,6,23,0.03)}
+    .q summary{font-weight:700;cursor:pointer;list-style:none;outline:none}
+    .q details[open] summary{color:var(--accent)}
+    .q p{margin:12px 0 0;color:var(--muted)}
+
+    .proof{margin-top:22px;display:flex;gap:18px;align-items:flex-start}
+    .testimonials{flex:1;background:linear-gradient(180deg,#ffffff,#f8fbff);padding:14px;border-radius:10px}
+    .badge-column{width:180px;display:flex;flex-direction:column;gap:10px}
+    .badge{background:#fff;padding:10px;border-radius:8px;border:1px solid rgba(15,23,42,0.04);text-align:center;position:relative}
+    .tooltip{position:absolute;left:110%;top:50%;transform:translateY(-50%);min-width:160px;background:#0f172a;color:#fff;padding:8px;border-radius:8px;display:none;font-size:13px}
+    .badge:hover .tooltip{display:block}
+
+    .controls{display:flex;gap:8px;margin-top:10px}
+    .btn{background:var(--accent);color:white;padding:8px 10px;border-radius:8px;border:none;cursor:pointer}
+
+    footer{margin-top:26px;padding:18px 0;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:14px;align-items:center">
+      <div class="logo">PP</div>
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Meet</a>
+      <a href="specialties.html">Focus Areas</a>
+      <a href="approach.html">How I Work</a>
+      <a href="fees.html">Investment</a>
+      <a href="faq.html" aria-current="page">Questions</a>
+      <a href="book.html">Start</a>
+      <a href="contact.html">Reach Out</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Common questions</h1>
+    <p class="lead">Short answers from a clinical perspective. If your question isn't here, the booking page includes a short intake form to describe your concerns.</p>
+
+    <section class="faq-list">
+      <details class="q">
+        <summary>What should I expect at my first session?</summary>
+        <p>We will orient to your reason for coming, outline confidentiality and boundaries, and collaborate on initial goals. I usually finish with a clear next step. If you have paperwork from insurance or another clinician, bring it.</p>
+      </details>
+
+      <details class="q">
+        <summary>How long is a session and how often do people come?</summary>
+        <p>Standard individual sessions are 50 minutes. Frequency is collaborative — weekly is common to build momentum, but some people prefer biweekly or targeted series.</p>
+      </details>
+
+      <details class="q">
+        <summary>Do you accept insurance?</summary>
+        <p>I am out-of-network for most carriers and provide superbills you can submit for reimbursement. I accept card and bank transfer. Sliding scale is available in limited cases; please ask if cost is a barrier.</p>
+      </details>
+
+      <details class="q">
+        <summary>What if I need to cancel?</summary>
+        <p>Session cancellations are requested with at least 48 hours' notice when possible. Short-notice cancellations may incur a fee—this preserves the therapeutic container for everyone.</p>
+      </details>
+
+      <details class="q">
+        <summary>Is what I say confidential?</summary>
+        <p>Yes, within standard clinical limits. I keep clinical notes and will explain limits to confidentiality (e.g., imminent risk of harm, mandatory reporting) before we begin. We can also discuss how you prefer notes to be handled.</p>
+      </details>
+    </section>
+
+    <section class="proof">
+      <div class="testimonials" aria-live="polite">
+        <div id="testimonialContent">
+          <div style="font-weight:700">Client stories</div>
+          <div id="testimonialText" style="margin-top:10px;color:var(--muted)">"The sessions helped me slow down and make decisions without panic. Practical, warm, and realistic support." — A.
+          </div>
+        </div>
+        <div class="controls">
+          <button id="prev" class="btn">Prev</button>
+          <button id="next" class="btn">Next</button>
+        </div>
+      </div>
+
+      <div class="badge-column">
+        <div class="badge" tabindex="0">
+          Licensed Clinician
+          <div class="tooltip" role="tooltip">State-licensed clinician with active board credentials.</div>
+        </div>
+        <div class="badge" tabindex="0">
+          Trauma-informed
+          <div class="tooltip" role="tooltip">Training in trauma-responsive approaches and stabilizing skills.</div>
+        </div>
+        <div class="badge" tabindex="0">
+          Group Facilitation
+          <div class="tooltip" role="tooltip">Clinical experience leading therapeutic cohorts and skills groups.</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="max-width:980px;margin:0 auto;padding:0 20px">
+      <div style="font-weight:700">Confidentiality & boundaries</div>
+      <div style="color:var(--muted);margin-top:6px">I follow professional ethical standards. Please be aware that some situations (risk of harm, court orders, or mandatory reporting) require limits to confidentiality. We will review these limits during intake.</div>
+      <div style="margin-top:10px;color:#b00020">If you are in crisis or at immediate risk of harm, contact local emergency services or a crisis line. In the United States, dial or text 988 for the Suicide & Crisis Lifeline. For other countries, contact your local emergency services.</div>
+    </div>
+  </footer>
+
+  <script>
+    (function(){
+      const items = [
+        '"The sessions helped me slow down and make decisions without panic. Practical, warm, and realistic support." — A.',
+        '"I appreciated the clear structure and steady check-ins. It made progress feel tangible." — M.',
+        '"Group work felt held and precise — I learned skills and I wasn\'t alone in applying them." — R.'
+      ];
+      let i = 0;
+      const txt = document.getElementById('testimonialText');
+      document.getElementById('next').addEventListener('click',()=>{i=(i+1)%items.length;txt.textContent=items[i]});
+      document.getElementById('prev').addEventListener('click',()=>{i=(i-1+items.length)%items.length;txt.textContent=items[i]});
+      setInterval(()=>{i=(i+1)%items.length;txt.textContent=items[i];},6000);
+    })();
+  </script>
+</body>
+</html>

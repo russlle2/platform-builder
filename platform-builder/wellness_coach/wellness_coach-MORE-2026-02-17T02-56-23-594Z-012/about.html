@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1724;--card:#081022;--accent:#8bd3b3;--muted:#9aa6b2;--glass:rgba(255,255,255,0.03);font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+    html,body{height:100%;margin:0;background-color:var(--bg);color:#e6eef3}
+    .page{min-height:100%;display:flex;flex-direction:column}
+    header{backdrop-filter:blur(6px);background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-bottom:1px solid rgba(255,255,255,0.03)}
+    .wrap{max-width:980px;margin:0 auto;padding:28px}
+    nav{display:flex;gap:18px;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:10px}
+    nav a:hover{background:var(--glass);color:#fff}
+    .logo{font-weight:700;color:var(--accent)}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start;padding:48px 0}
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:14px;padding:28px;border:1px solid rgba(255,255,255,0.03)}
+    h1{margin:0 0 8px;font-weight:700;font-size:28px}
+    p.lead{margin:0 0 16px;color:var(--muted)}
+    .meta{font-size:13px;color:var(--muted);display:flex;gap:12px;align-items:center}
+    .pattern{height:100%;background-image:url('assets/img/pattern.svg');background-size:cover;border-radius:12px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+    .stat{background:rgba(255,255,255,0.02);padding:14px;border-radius:10px}
+    footer{margin-top:auto;padding:24px;text-align:center;color:var(--muted);font-size:13px}
+    .cta{display:inline-block;background:var(--accent);color:#042028;padding:10px 16px;border-radius:10px;text-decoration:none;font-weight:600}
+    /* Printable checklist small helpers */
+    .print-only{display:none}
+    @media print{body *{visibility:hidden} .print-only, .print-only *{visibility:visible} .print-only{position:fixed;left:0;top:0;width:100%}}
+    /* modal & widgets */
+    .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(3,6,12,0.6);z-index:60;opacity:0;pointer-events:none;transition:opacity .18s}
+    .modal.open{opacity:1;pointer-events:auto}
+    .modal-card{width:740px;max-width:92%;background:#071422;border-radius:12px;padding:20px;border:1px solid rgba(255,255,255,0.04)}
+    .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    button.btn{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);padding:8px 12px;border-radius:8px;cursor:pointer}
+    button.btn.primary{background:var(--accent);color:#042028;border:none}
+    .breath-ring{width:110px;height:110px;border-radius:999px;background:radial-gradient(circle at 30% 30%, rgba(139,211,179,0.18), rgba(14,35,38,0.02));display:flex;align-items:center;justify-content:center;font-weight:700}
+    .cols{display:flex;gap:16px}
+    .lead-small{color:var(--muted);font-size:14px}
+    .small{font-size:13px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class='page'>
+    <header>
+      <div class='wrap' style='display:flex;align-items:center;justify-content:space-between'>
+        <div style='display:flex;align-items:center;gap:18px'>
+          <div class='logo'>{{BUSINESS_NAME}}</div>
+          <nav>
+            <a href='index.html'>Home</a>
+            <a href='about.html' aria-current='page'>About</a>
+            <a href='services.html'>Offerings</a>
+            <a href='programs.html'>Pathways</a>
+            <a href='pricing.html'>Investment</a>
+            <a href='testimonials.html'>Voices</a>
+            <a href='book.html'>Reserve</a>
+            <a href='contact.html'>Reach</a>
+          </nav>
+        </div>
+        <div>
+          <a class='cta' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </div>
+    </header>
+
+    <main class='wrap' style='padding-top:18px;padding-bottom:48px'>
+      <section class='hero'>
+        <div class='panel'>
+          <h1>Who guides the steady changes</h1>
+          <p class='lead'>I work with driven people who want a subtle, sustainable shift—no dramatic overhauls, just a map for daily decisions. We build habits, rules of thumb, and tidy systems that keep energy and priorities aligned.</p>
+          <div class='meta'>
+            <div class='small'>Outcomes: clearer focus, calmer mornings, predictable energy blocks</div>
+          </div>
+
+          <div class='grid'>
+            <div class='stat'>
+              <strong>Framework</strong>
+              <div class='small'>We design a three-part flow: anchor, cadence, calibration.</div>
+            </div>
+            <div class='stat'>
+              <strong>Method</strong>
+              <div class='small'>Short rituals, decision rules, and a weekly review pattern you can keep.</div>
+            </div>
+          </div>
+
+          <div style='margin-top:18px;display:flex;gap:12px;align-items:center'>
+            <a class='cta' href='{{PRIMARY_CTA_URL}}'>Begin an intake</a>
+            <button class='btn' id='open-guide'>Try a short exercise</button>
+            <button class='btn' id='open-challenge'>Build a 7-day challenge</button>
+          </div>
+
+        </div>
+
+        <aside class='panel pattern'>
+          <div style='padding:12px'>
+            <h3 style='margin-top:0'>Guide profile</h3>
+            <p class='small'>I blend practical habit design with reflection prompts so change sits in your daily life, not in a planner drawer.</p>
+            <div style='margin-top:14px'>
+              <div class='small'><strong>Phone:</strong> {{PHONE}}</div>
+              <div class='small'><strong>Email:</strong> {{EMAIL}}</div>
+              <div class='small'><strong>Location:</strong> {{CITY}}, {{STATE}}</div>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section class='panel' style='margin-top:18px'>
+        <h2 style='margin-top:0'>Philosophy and promise</h2>
+        <p class='lead-small'>I don't promise perfection. I design scaffolding so small choices add up to real movement. We'll draft practical habits that are measurable and repeatable.</p>
+        <div class='cols' style='margin-top:12px'>
+          <div style='flex:1'>
+            <h4>How we work</h4>
+            <p class='small'>We define one primary outcome per month then create micro-habits and a weekly checkpoint to keep it alive.</p>
+          </div>
+          <div style='flex:1'>
+            <h4>What you'll get</h4>
+            <p class='small'>A bespoke weekly template, a short habit list, decision rules for busy days, and an end-of-week calibration ritual.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class='panel' style='margin-top:18px'>
+        <h3 style='margin-top:0'>Quick tools</h3>
+        <div style='display:flex;gap:12px;flex-wrap:wrap'>
+          <button class='btn' id='open-guide-2'>Try a guided exercise</button>
+          <button class='btn' id='open-challenge-2'>Generate a 7-day checklist</button>
+        </div>
+      </section>
+
+    </main>
+
+    <footer>
+      <div class='wrap'>
+        &copy; <span id='year'></span> {{BUSINESS_NAME}} — Reach: <a href='tel:{{PHONE}}' style='color:var(--accent)'>{{PHONE}}</a> • <a href='mailto:{{EMAIL}}' style='color:var(--accent)'>{{EMAIL}}</a>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Modal: guided exercise -->
+  <div id='modal' class='modal' role='dialog' aria-hidden='true'>
+    <div class='modal-card'>
+      <div style='display:flex;justify-content:space-between;align-items:center'>
+        <strong id='modal-title'>Guided practice</strong>
+        <button class='btn' id='close-modal'>Close</button>
+      </div>
+      <div style='display:flex;gap:16px;margin-top:12px;align-items:center'>
+        <div style='flex:1'>
+          <div class='controls'>
+            <button class='btn' data-mode='breathing'>Breathing</button>
+            <button class='btn' data-mode='journaling'>Journaling</button>
+            <button class='btn' data-mode='intention'>Intention</button>
+          </div>
+          <div id='modal-body' style='margin-top:12px'></div>
+        </div>
+        <div style='width:140px;display:flex;flex-direction:column;align-items:center;gap:10px'>
+          <div class='breath-ring' id='ring'>•</div>
+          <div class='small'>Follow the prompts or switch modes</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Print-only placeholder for checklist -->
+  <div id='print-area' class='print-only' style='padding:24px'></div>
+
+  <script>
+    // small helpers
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Modal logic (Guided exercise)
+    const modal = document.getElementById('modal');
+    const modalBody = document.getElementById('modal-body');
+    const modalTitle = document.getElementById('modal-title');
+    const ring = document.getElementById('ring');
+
+    function openModal(){ modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); }
+    function closeModal(){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); stopBreath(); }
+
+    document.getElementById('open-guide').addEventListener('click', openModal);
+    document.getElementById('open-guide-2').addEventListener('click', openModal);
+    document.getElementById('close-modal').addEventListener('click', closeModal);
+
+    // Mode switch
+    modal.querySelectorAll('button[data-mode]').forEach(btn=>btn.addEventListener('click',ev=>{
+      const mode = ev.currentTarget.getAttribute('data-mode');
+      showMode(mode);
+    }));
+
+    let breathInterval=null; let breathPhase=0; // 0 inhale,1 hold,2 exhale
+    function stopBreath(){ if(breathInterval){ clearInterval(breathInterval); breathInterval=null; ring.style.transform='scale(1)'; }}
+
+    function showMode(mode){ stopBreath(); modalTitle.textContent = mode.charAt(0).toUpperCase()+mode.slice(1)+' practice';
+      if(mode==='breathing'){
+        modalBody.innerHTML = "<div class='lead-small'>Follow a gentle 4-4-6 cycle. Use the ring as a visual guide.</div><div style='margin-top:12px'><button class='btn primary' id='start-breath'>Start 2 minutes</button></div>";
+        document.getElementById('start-breath').addEventListener('click',()=>startBreathing(120));
+      } else if(mode==='journaling'){
+        modalBody.innerHTML = "<div class='lead-small'>Set a timer and write without editing. Prompts:</div><ul class='small'><li>What went well today?</li><li>One tension you'd like to ease?</li><li>Next small step?</li></ul><div style='margin-top:12px'><button class='btn primary' id='start-journal'>Start 5-minute timer</button></div>";
+        document.getElementById('start-journal').addEventListener('click',()=>startTimer(300,'Write freely.'));
+      } else if(mode==='intention'){
+        modalBody.innerHTML = "<div class='lead-small'>A short intention-setting script to repeat silently.</div><ol class='small'><li>Set a one-word intention.</li><li>Imagine your day moving toward that word.</li><li>Anchor it with one concrete action.</li></ol><div style='margin-top:12px'><button class='btn primary' id='start-intent'>Begin 90s practice</button></div>";
+        document.getElementById('start-intent').addEventListener('click',()=>startTimer(90,'Breathe into your intention.'));
+      }
+    }
+
+    function startBreathing(seconds){ let remaining=seconds; const cycle=[4,4,6]; breathPhase=0; ring.textContent='';
+      breathInterval = setInterval(()=>{
+        remaining--; if(remaining<=0){ stopBreath(); ring.textContent='✓'; ring.style.transform='scale(1)'; return; }
+        // cycle phases: expand on inhale, hold, contract on exhale
+        const phaseTime = cycle[breathPhase % 3];
+        // compute fraction within current phase
+        const t = (seconds-remaining) % phaseTime;
+        const frac = (t/phaseTime);
+        if(breathPhase%3===0){ // inhale
+          ring.style.transform = 'scale('+(1 + 0.25*frac)+')';
+        } else if(breathPhase%3===1){ // hold
+          ring.style.transform = 'scale(1.25)';
+        } else { // exhale
+          ring.style.transform = 'scale('+(1.25 - 0.25*frac)+')';
+        }
+        // advance phase when t reaches phaseTime-1
+        if(Math.abs(frac-0.999)<0.02){ breathPhase++; }
+      },1000);
+    }
+
+    function startTimer(seconds,message){ let rem=seconds; modalBody.insertAdjacentHTML('beforeend','<div id="timer" class="small" style="margin-top:10px">'+formatTime(rem)+'</div>'); const elTimer=document.getElementById('timer');
+      const iv=setInterval(()=>{ rem--; if(rem<=0){ clearInterval(iv); elTimer.textContent='Done • '+message; } else elTimer.textContent=formatTime(rem); },1000);
+    }
+    function formatTime(s){ const m=Math.floor(s/60); const ss=s%60; return m+':'+(ss<10?'0':'')+ss; }
+
+    // Habit builder: 7-day challenge generator + printable checklist
+    function sampleHabits(){ return [
+      'Morning 5-minute intention',
+      'Two focused 45-minute work blocks',
+      'Midday walk or movement (10–20 min)',
+      'Evening quick review (5 minutes)',
+      'No screens 30 minutes before bed',
+      'One nourishing meal with mindful bites',
+      'Set next day top 3 priorities'
+    ]; }
+
+    function buildChallenge(seedTitle){
+      const base = sampleHabits();
+      // rotate list to create variation
+      const items = [];
+      for(let i=0;i<7;i++){ items.push(base[(i + (seedTitle?seedTitle.length:0)) % base.length]); }
+      return items;
+    }
+
+    function renderChecklist(title,items){
+      const container = document.getElementById('print-area');
+      container.innerHTML = '';
+      const header = document.createElement('div'); header.innerHTML = '<h2 style="margin:0 0 8px">'+escapeHtml(title)+'</h2><div class="small">A 7-day practice checklist</div>';
+      container.appendChild(header);
+      const ul = document.createElement('ol'); ul.style.marginTop='12px'; ul.style.fontSize='16px';
+      items.forEach(it=>{ const li=document.createElement('li'); li.style.marginBottom='10px'; li.textContent = it; ul.appendChild(li); });
+      container.appendChild(ul);
+      container.appendChild(document.createElement('hr'));
+      window.print();
+    }
+
+    function escapeHtml(s){ return s.replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+
+    document.getElementById('open-challenge').addEventListener('click',()=>{
+      const title = prompt('Name this 7-day focus (e.g., Calm mornings):','7-day focus');
+      if(title!==null){ const items=buildChallenge(title); renderChecklist(title,items); }
+    });
+    document.getElementById('open-challenge-2').addEventListener('click',()=>{
+      const title = prompt('What would you like to emphasize this week?','Weekly focus');
+      if(title!==null){ const items=buildChallenge(title); renderChecklist(title,items); }
+    });
+
+    // keyboard escape to close modal
+    window.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeModal(); }});
+  </script>
+</body>
+</html>

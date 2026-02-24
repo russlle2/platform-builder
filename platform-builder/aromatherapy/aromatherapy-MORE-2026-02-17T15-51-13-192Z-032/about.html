@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fffefb;--ink:#222;--muted:#666;--accent:#7aa27a}
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:var(--bg);color:var(--ink)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-bottom:1px solid #eee;background:linear-gradient(180deg,rgba(122,162,122,0.04),transparent)}
+    .logo{background:var(--accent);width:44px;height:44px;border-radius:8px;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
+    nav a{margin-left:14px;text-decoration:none;color:var(--ink);font-weight:600}
+    main{max-width:980px;margin:30px auto;padding:0 20px}
+    .intro{display:grid;grid-template-columns:1fr 320px;gap:18px;align-items:start}
+    .bio{background:#fff;padding:18px;border-radius:12px;box-shadow:0 10px 30px rgba(10,10,10,0.03)}
+    .pattern{height:120px;background-image:url('assets/img/pattern.svg');background-repeat:repeat;border-radius:10px}
+    .meta{color:var(--muted);font-size:14px}
+    .testimonials{margin-top:18px}
+    blockquote{background:#fff;padding:12px;border-left:4px solid rgba(122,162,122,0.16);margin:0 0 12px 0;border-radius:8px}
+    .builder{margin-top:18px;padding:14px;background:linear-gradient(180deg,rgba(122,162,122,0.03),transparent);border-radius:10px}
+    label{display:block;margin-top:8px;font-weight:600}
+    select,input{width:100%;padding:8px;border-radius:8px;border:1px solid #ddd;margin-top:6px}
+    button{margin-top:10px;padding:8px 12px;border-radius:8px;background:var(--accent);color:#fff;border:none}
+    .card-out{margin-top:12px;padding:12px;border-radius:8px;background:#fff;border:1px solid #eee}
+  </style>
+</head>
+<body>
+  <header>
+    <div style='display:flex;gap:12px;align-items:center'>
+      <div class='logo'>AR</div>
+      <div>
+        <div style='font-weight:700'>{{BUSINESS_NAME}}</div>
+        <div style='font-size:13px;color:var(--muted)'>Practitioner — small events & personal plans</div>
+      </div>
+    </div>
+    <nav>
+      <a href='index.html'>Start</a>
+      <a href='services.html'>Gatherings</a>
+      <a href='blends.html'>Blends</a>
+      <a href='shop.html'>Store</a>
+      <a href='pricing.html'>Rates</a>
+      <a href='about.html' style='opacity:0.7'>Our Story</a>
+      <a href='book.html'>Reserve</a>
+      <a href='contact.html'>Say Hello</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class='intro'>
+      <article class='bio'>
+        <h1 style='margin:0 0 6px 0'>A short note from the practitioner</h1>
+        <p class='meta'>Based in {{CITY}}, {{STATE}} — workshops, private sessions, and small-series support.</p>
+        <p style='margin-top:12px'>I make approachable, safety-minded scent plans for people who want clear steps rather than elaborate rituals. My practice focuses on simple inhalation routines and straightforward topical blends that come with clear dilution guidance and patch-test reminders. The tools I share are meant to be practical helpers that may support calm, focus, or restful evenings.</p>
+
+        <h3 style='margin-top:16px'>How I work</h3>
+        <ul>
+          <li>Short intake to map needs and context</li>
+          <li>Practical blend notes and a safe dilution guide for home use</li>
+          <li>Follow-ups to adjust scent plans over time</li>
+        </ul>
+
+        <div class='testimonials'>
+          <h4 style='margin-top:10px'>Kind words</h4>
+          <blockquote>"The session left me with a small, easy-to-use blend that actually fits my mornings." — L.</blockquote>
+          <blockquote>"Clear instructions and gentle guidance — I appreciated the emphasis on safety." — M.</blockquote>
+        </div>
+      </article>
+
+      <aside>
+        <div class='pattern' role='img' aria-label='decorative pattern'></div>
+        <div style='background:#fff;padding:12px;border-radius:10px;margin-top:12px'>
+          <div style='font-weight:700'>Facts</div>
+          <div class='meta' style='margin-top:6px'>I use classic essential oils but always frame them with clear cautions. No medical claims are made.</div>
+        </div>
+
+        <div class='builder'>
+          <h4 style='margin:0'>Try a quick blend</h4>
+          <p class='meta'>A tiny experiment to see how recipes are framed.</p>
+
+          <label for='vibeB'>Vibe</label>
+          <select id='vibeB'>
+            <option value='calm'>Calm & even</option>
+            <option value='focus'>Alert focus</option>
+            <option value='sleep'>Evening wind-down</option>
+            <option value='uplift'>Bright uplift</option>
+          </select>
+
+          <label for='bottleB'>Bottle size</label>
+          <select id='bottleB'>
+            <option value='10'>10 mL</option>
+            <option value='30'>30 mL</option>
+          </select>
+
+          <label for='dilB'>Dilution</label>
+          <select id='dilB'>
+            <option value='1'>1%</option>
+            <option value='2' selected>2%</option>
+            <option value='3'>3%</option>
+          </select>
+
+          <button id='buildB'>Make a tiny recipe</button>
+          <div id='outB' class='card-out'>Choose options and press the button to see a short card.</div>
+        </div>
+      </aside>
+    </section>
+
+    <section style='margin-top:22px'>
+      <h3>FAQ</h3>
+      <details>
+        <summary>Will this replace medical or veterinary care?</summary>
+        <p class='meta'>No. Our guidance is informational; it may support wellbeing but is not a substitute for professional medical or veterinary advice.</p>
+      </details>
+      <details>
+        <summary>How to do a patch test</summary>
+        <p class='meta'>Dilute the recommended recipe, apply a small amount to an inner forearm, and observe for 24 hours. Stop if any irritation occurs.</p>
+      </details>
+
+      <details>
+        <summary>Pregnancy, nursing, and pets</summary>
+        <p class='meta'>Certain oils are not advised during pregnancy or around pets. Please consult a relevant professional if you fall into these categories. Our suggested recipes come with notes about these considerations.</p>
+      </details>
+    </section>
+
+    <footer style='margin:40px 0;text-align:center;color:var(--muted)'>
+      <div style='font-weight:700'>Interested in a session?</div>
+      <div class='meta'>Email {{EMAIL}} or call {{PHONE}} — Book online via the Reserve page.</div>
+    </footer>
+  </main>
+
+<script>
+(function(){
+  // Duplicate of the builder used elsewhere — keeps experiences consistent
+  function oilsFor(v){
+    const map={
+      calm:['Lavender','Bergamot','Sweet Orange'],
+      focus:['Peppermint','Rosemary','Lemon'],
+      sleep:['Lavender','Cedarwood','Roman Chamomile'],
+      uplift:['Grapefruit','Bergamot','Sweet Orange']
+    };
+    return map[v]||['Lavender','Sweet Orange','Frankincense'];
+  }
+
+  document.getElementById('buildB').addEventListener('click', function(){
+    const vibe = document.getElementById('vibeB').value;
+    const bottle = Number(document.getElementById('bottleB').value);
+    const dil = Number(document.getElementById('dilB').value);
+    const oils = oilsFor(vibe);
+    const dpm = 20;
+    const total = Math.round(dpm*bottle);
+    const drops = Math.max(1, Math.round(total*(dil/100)));
+    const split = [Math.max(1,Math.round(drops*0.5)), Math.max(1,Math.round(drops*0.3)), Math.max(0, drops - Math.max(1,Math.round(drops*0.5)) - Math.max(1,Math.round(drops*0.3)))];
+    let s = 'Tiny blend note\nVibe: '+vibe+'\nBottle: '+bottle+' mL — '+dil+'%\n\nRecipe (drops):\n';
+    oils.forEach(function(o,i){ s += '- '+o+': '+(split[i]||0)+' drops\n'; });
+    s += '\nSafety: patch test recommended; avoid undiluted use; check pregnancy/pets warnings.';
+    document.getElementById('outB').textContent = s;
+  });
+})();
+</script>
+</body>
+</html>

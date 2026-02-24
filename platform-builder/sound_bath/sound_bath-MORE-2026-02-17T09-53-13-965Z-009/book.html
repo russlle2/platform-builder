@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#061017;--muted:#9fb3c0;--accent:#9ad1ff}
+    body{margin:0;background:var(--bg);color:#e9f5fb;font-family:Inter,system-ui, -apple-system, 'Segoe UI', Roboto}
+    .wrap{max-width:980px;margin:0 auto;padding:28px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    .form{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px;margin-top:18px}
+    label{display:block;margin-top:12px;font-weight:700}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .addons{display:flex;gap:8px;margin-top:12px}
+    .addon{padding:10px;border-radius:10px;background:rgba(255,255,255,0.02);cursor:pointer}
+    .addon.selected{outline:2px solid rgba(157,124,255,0.5)}
+    .price{font-weight:800}
+    .cta{background:linear-gradient(90deg,#bda5ff,#6fd3ff);padding:10px 14px;border-radius:10px;color:#061018;text-decoration:none;font-weight:700;border:none}
+    .secondary{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:10px;border-radius:10px;color:var(--muted)}
+
+    .calendar{margin-top:18px;background:rgba(255,255,255,0.02);padding:12px;border-radius:10px}
+    .slot{padding:8px;border-radius:8px;background:rgba(0,0,0,0.2);margin-bottom:8px}
+
+    .disclaimer{background:#13222a;padding:12px;border-left:4px solid #ffb37b;border-radius:6px;color:var(--muted);font-size:13px;margin-top:12px}
+
+    /* reveal */
+    .reveal{opacity:0;transform:translateY(12px);transition:opacity 480ms ease,transform 480ms ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion: reduce){ .reveal{transition:none;opacity:1;transform:none} }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <div style="font-weight:800">Reserve a spot</div>
+        <div style="color:var(--muted);font-size:13px">Choose a public gathering or book private support</div>
+      </div>
+      <div>
+        <a href="index.html" class="secondary">Back</a>
+      </div>
+    </header>
+
+    <main class="form reveal">
+      <form id="booking" autocomplete="off">
+        <label for="type">Service type</label>
+        <select id="type">
+          <option value="gathering">Community Gathering — $18</option>
+          <option value="intensive">Focused Session — $65</option>
+          <option value="private">Private Session — $120</option>
+        </select>
+
+        <div class="row">
+          <div>
+            <label for="name">Full name</label>
+            <input id="name" placeholder="Your name" required>
+          </div>
+          <div>
+            <label for="email">Email</label>
+            <input id="email" placeholder="you@example.com" required>
+          </div>
+        </div>
+
+        <label for="date">Preferred date</label>
+        <input id="date" type="date">
+
+        <label for="notes">Notes (accessibility, sensitivities)</label>
+        <textarea id="notes" rows="3" placeholder="Tell us about any needs or concerns"></textarea>
+
+        <div style="margin-top:12px">
+          <strong>Add-ons</strong>
+          <div class="addons">
+            <div class="addon" data-price="12">Eye pillow — $12</div>
+            <div class="addon" data-price="8">Ear protect pads — $8</div>
+            <div class="addon" data-price="4">Printed notes — $4</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;display:flex;align-items:center;gap:12px">
+          <div>Estimated total:</div>
+          <div class="price" id="total">$18</div>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button type="submit" class="cta">Complete booking</button>
+          <button type="button" id="trial" class="secondary">Try a short practice</button>
+        </div>
+
+        <div class="disclaimer">
+          <strong>Health note:</strong>
+          <div style="margin-top:6px;color:var(--muted)">If you have conditions sensitive to sustained vibration, implants, seizure conditions, or are pregnant, please consult a medical professional before attending. Our sessions are supportive but not clinical care.</div>
+        </div>
+      </form>
+    </main>
+
+    <aside class="calendar reveal">
+      <h4 style="margin:0 0 8px">Upcoming dates</h4>
+      <div class="slot"><strong>Next gathering:</strong> Friday, 7:00pm — Open seating</div>
+      <div class="slot">Sunday morning, 9:30am — Gentle focus</div>
+      <div class="slot">Next open private availability: Wed 10:00am</div>
+      <div style="color:var(--muted);font-size:13px;margin-top:8px">We update this list hourly—if you need a different time, request it in the form above.</div>
+    </aside>
+
+  </div>
+
+  <!-- Reusable small modal: guided exercise -->
+  <div id="modal" style="display:none;position:fixed;inset:0;align-items:center;justify-content:center;background:rgba(2,6,12,0.6);z-index:90">
+    <div style="background:linear-gradient(180deg,#071018,#08121a);padding:18px;border-radius:10px;max-width:640px;width:94%;color:#eaf1f8">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <strong id="mTitle">Quick practice</strong>
+        <button id="close" style="background:transparent;border:none;color:var(--muted)">Close</button>
+      </div>
+      <div id="mContent" style="margin-top:10px;color:var(--muted)">Choose breath, journaling, or intention from the controls (accessible via keyboard).</div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button id="mBreath" class="cta">Breath</button>
+        <button id="mJournal" class="secondary">Journal</button>
+        <button id="mIntent" class="secondary">Intend</button>
+        <div id="mTimer" style="margin-left:auto;color:var(--muted)">00:00</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // reveal
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const items = document.querySelectorAll('.reveal');
+      if(prefersReduced){ items.forEach(i=>i.classList.add('visible')); return; }
+      const obs = new IntersectionObserver((entries)=>{ entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); }); },{threshold:0.08});
+      items.forEach(i=>obs.observe(i));
+    })();
+
+    // pricing logic
+    (function(){
+      const type = document.getElementById('type');
+      const addons = Array.from(document.querySelectorAll('.addon'));
+      const totalEl = document.getElementById('total');
+      let base = 18;
+      const map = { 'gathering':18, 'intensive':65, 'private':120 };
+      function compute(){
+        base = map[type.value] || 18; let add = 0; addons.forEach(a=>{ if(a.classList.contains('selected')) add += Number(a.getAttribute('data-price')||0); });
+        totalEl.textContent = '$' + (base + add);
+      }
+      type.addEventListener('change',compute);
+      addons.forEach(a=>a.addEventListener('click',()=>{ a.classList.toggle('selected'); compute(); }));
+      compute();
+
+      document.getElementById('booking').addEventListener('submit', (e)=>{
+        e.preventDefault();
+        // lightweight validation and fake submit
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        if(!name || !email){ alert('Please provide name and email.'); return; }
+        alert('Thanks — your reservation request has been received. We will follow up by email.');
+        e.target.reset(); compute();
+      });
+    })();
+
+    // modal practice handlers
+    (function(){
+      const modal = document.getElementById('modal');
+      const close = document.getElementById('close');
+      const mb = document.getElementById('mBreath');
+      const mj = document.getElementById('mJournal');
+      const mi = document.getElementById('mIntent');
+      const mContent = document.getElementById('mContent');
+      const mTimer = document.getElementById('mTimer');
+      let interval=null, rem=0;
+
+      function open(){ modal.style.display='flex'; document.body.style.overflow='hidden'; }
+      function closeModal(){ modal.style.display='none'; document.body.style.overflow='auto'; stop(); }
+      function stop(){ if(interval) clearInterval(interval); interval=null; rem=0; mTimer.textContent='00:00'; }
+      function startCount(sec){ stop(); rem=sec; mTimer.textContent = ('0'+Math.floor(rem/60)).slice(-2)+':'+('0'+rem%60).slice(-2); interval = setInterval(()=>{ rem--; mTimer.textContent = ('0'+Math.floor(rem/60)).slice(-2)+':'+('0'+rem%60).slice(-2); if(rem<=0) clearInterval(interval); },1000); }
+
+      document.getElementById('trial').addEventListener('click', ()=>{ open(); mContent.textContent='Choose a practice.'; });
+      close.addEventListener('click', closeModal);
+      mb.addEventListener('click', ()=>{ mContent.textContent='Breath pattern: inhale 4, hold 4, exhale 6. Begin when you are settled.'; startCount(60); });
+      mj.addEventListener('click', ()=>{ mContent.textContent='Journal prompt: Where do you want your attention for the next hour? Write for three minutes.'; startCount(180); });
+      mi.addEventListener('click', ()=>{ mContent.textContent='State a short intention: one sentence. Keep it kind and actionable. Hold silently for two minutes.'; startCount(120); });
+    })();
+  </script>
+</body>
+</html>

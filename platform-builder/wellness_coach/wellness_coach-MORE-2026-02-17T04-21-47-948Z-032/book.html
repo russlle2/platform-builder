@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — Book a session</title>
+  <style>
+    :root{--bg:#f9fdfb;--card:#fff;--muted:#6b7280;--primary:#285e4d}
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial;background:var(--bg);color:#072022}
+    header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px}
+    .logo{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,#2b6cb0,#81e6d9);display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    nav a{margin-left:12px;text-decoration:none;color:var(--muted);font-weight:600}
+    main{max-width:880px;margin:18px auto;padding:18px}
+    .panel{background:var(--card);padding:18px;border-radius:12px;border:1px solid #e6f0ed}
+    h1{margin:0 0 8px 0}
+    form{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:12px}
+    .field{margin-bottom:12px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef0}
+    button{background:var(--primary);color:white;border:none;padding:10px 14px;border-radius:10px;cursor:pointer}
+
+    .summary{background:linear-gradient(180deg,#fff,#f7fffb);padding:12px;border-radius:10px;border:1px solid #e6f4ef}
+    .calendar{height:220px;border-radius:8px;border:1px dashed #dff0eb;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+
+    @media(max-width:920px){form{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo">WC</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Start</a>
+      <a href="pricing.html">Rates</a>
+      <a href="testimonials.html">Voices</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h1>Reserve a session</h1>
+      <p style="margin:6px 0;color:var(--muted)">Choose a session style that matches how you feel today. The booking experience adapts suggestions and the welcome checklist.</p>
+
+      <form id="bookForm">
+        <div>
+          <div class="field">
+            <label for="name">Full name</label>
+            <input id="name" name="name" placeholder="Your name" required>
+          </div>
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" name="email" placeholder="you@example.com" required>
+          </div>
+
+          <div class="field">
+            <label for="mood">How are you showing up?</label>
+            <select id="mood">
+              <option value="curious">Curious — want to learn</option>
+              <option value="overloaded">Overloaded — need fewer decisions</option>
+              <option value="stuck">Stuck — want new momentum</option>
+              <option value="quiet">Quiet — prefer gentle pacing</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="session">Suggested session</label>
+            <input id="session" readonly value="Short consult — 30 minutes">
+          </div>
+
+          <div class="field">
+            <label for="notes">A brief note — what matters right now</label>
+            <textarea id="notes" rows="4" placeholder="A sentence about what you want to change"></textarea>
+          </div>
+
+          <div style="display:flex;gap:8px;align-items:center">
+            <button type="button" id="confirm">Reserve slot</button>
+            <div style="color:var(--muted);font-size:13px">Or call <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+          </div>
+        </div>
+
+        <aside>
+          <div class="summary">
+            <strong>Session preview</strong>
+            <div id="preview" style="margin-top:8px;color:var(--muted)">Choose a mood to see a tailored session outline and a short checklist.</div>
+          </div>
+
+          <div style="margin-top:12px">
+            <div class="calendar" id="calendar">Calendar placeholder</div>
+          </div>
+        </aside>
+      </form>
+
+    </section>
+  </main>
+
+  <script>
+    (function(){
+      const mood = document.getElementById('mood');
+      const session = document.getElementById('session');
+      const preview = document.getElementById('preview');
+      const confirm = document.getElementById('confirm');
+
+      const map = {
+        curious:{session:'Exploratory consult — 30m',preview:'We will map current routines and set 2 micro-experiments for the next 7 days.'},
+        overloaded:{session:'Declutter session — 40m',preview:'We will reduce decision points: a nightly reset, two protected windows, and a weekly clear-out.'},
+        stuck:{session:'Momentum plan — 50m',preview:'Focused planning to create repeatable wins. We set weekly anchors and a recovery plan.'},
+        quiet:{session:'Gentle scaffold — 30m',preview:'Low-demand strategies: two anchor habits and a review rhythm with generous margins.'}
+      };
+
+      function update(){
+        const v = mood.value; const m = map[v] || map['curious'];
+        session.value = m.session;
+        preview.textContent = m.preview;
+        // change confirm button label
+        confirm.textContent = m.session.includes('30')? 'Reserve a 30m slot': 'Reserve a session';
+      }
+
+      mood.addEventListener('change', update);
+      update();
+
+      confirm.addEventListener('click', ()=>{
+        const name = document.getElementById('name').value || 'Guest';
+        const email = document.getElementById('email').value || '{{EMAIL}}';
+        // local simulated reservation
+        alert('Thanks, '+name+". A confirmation will be sent to " + email + ". We will follow up to schedule the exact time.");
+        // fallback navigate to PRIMARY_CTA_URL
+        window.location.href = '{{PRIMARY_CTA_URL}}';
+      });
+
+    })();
+  </script>
+</body>
+</html>

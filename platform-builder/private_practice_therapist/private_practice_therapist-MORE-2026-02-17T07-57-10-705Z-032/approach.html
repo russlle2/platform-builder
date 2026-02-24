@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>How I Work — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--accent:#ff7a59;--muted:#666;--bg:#f7fbff;--card:#fff}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#071029;background:var(--bg)}
+    .site{max-width:980px;margin:18px auto;padding:20px}
+    header{display:flex;align-items:center;justify-content:space-between}
+    .logo{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,#ff7a59,#ffc39e);display:grid;place-items:center;color:white;font-weight:700}
+    nav a{margin-left:12px;text-decoration:none;color:#071029}
+
+    .hero{padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,122,89,0.06),transparent);display:flex;gap:18px;align-items:center}
+    h1{margin:0}
+    .reveal{opacity:0;transform:translateY(12px);transition:opacity 420ms ease,transform 420ms ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion: reduce){.reveal{transition:none;opacity:1;transform:none}}
+
+    .process{display:flex;flex-direction:column;gap:12px;margin-top:16px}
+    .step{background:var(--card);padding:14px;border-radius:12px;box-shadow:0 8px 20px rgba(10,12,20,0.04)}
+    .meta{color:var(--muted);font-size:0.95rem;margin-top:8px}
+    .cta{background:var(--accent);color:white;padding:10px 14px;border-radius:10px;text-decoration:none}
+  </style>
+</head>
+<body>
+  <div class="site">
+    <header>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="logo">T</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div style="font-size:0.85rem;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav aria-label="Main navigation">
+        <a href="/index.html">Start</a>
+        <a href="/about.html">Who I Am</a>
+        <a href="/specialties.html">Offerings</a>
+        <a href="/approach.html" aria-current="page">How I Work</a>
+        <a href="/book.html">Schedule</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero reveal">
+        <div>
+          <h1>Practical, collaborative care</h1>
+          <p class="meta">I partner with you to develop clear steps and tools you can use between sessions. Therapy is a shared process: I bring clinical training and you bring lived experience.</p>
+        </div>
+        <div style="margin-left:auto">
+          <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </section>
+
+      <section class="reveal process" aria-label="Therapy process">
+        <div class="step">
+          <strong>1. Intake & priorities</strong>
+          <p>We map current concerns, health context, and what you hope to shift. This sets the scope and frequency that make sense for you.</p>
+        </div>
+        <div class="step">
+          <strong>2. Collaborative plan</strong>
+          <p>Together we identify achievable goals, short practices, and ways to notice progress even when change is gradual.</p>
+        </div>
+        <div class="step">
+          <strong>3. Review and adapt</strong>
+          <p>Every few sessions we check in on how the plan is working and adapt—no rigid timelines, only shared decisions about next steps.</p>
+        </div>
+      </section>
+
+      <section class="reveal" style="margin-top:18px">
+        <h2>Therapeutic orientation</h2>
+        <div class="step">
+          <p>I draw from cognitive-behavioral strategies, acceptance-based work, and relational insights—selecting what fits a person’s situation. My approach is collaborative, curious, and oriented toward practical change rather than labels.</p>
+        </div>
+      </section>
+
+      <section class="reveal" style="margin-top:18px">
+        <h2>Membership and access</h2>
+        <div class="step">
+          <p>Membership offers predictable access and a clear way to plan support over time. Options include regular weekly sessions, a focused short plan, or a lighter check-in arrangement for ongoing members.</p>
+          <p class="meta">Pricing and details are discussed during an initial consultation.</p>
+        </div>
+      </section>
+
+      <section class="reveal" style="margin-top:18px">
+        <h2>Safety and limits</h2>
+        <div class="step">
+          <p>I keep confidentiality except where law or safety requires disclosure. Therapy by appointment is not emergency care—if you are in immediate danger, please call emergency services or a crisis line in your area.</p>
+        </div>
+      </section>
+
+      <section class="reveal" style="margin-top:18px">
+        <h2>Try a short exercise</h2>
+        <div class="step">
+          <p>If you’re curious about the kinds of brief practices we might use, try the guided exercise—breathing, journaling, or an intention-setting prompt—available below.</p>
+          <button id="tryNowBtn" class="cta">Open exercise</button>
+        </div>
+      </section>
+
+    </main>
+
+    <footer style="margin-top:18px;color:var(--muted)">Licensed clinician • Confidential care • If you are in crisis, contact emergency services. Contact: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></footer>
+  </div>
+
+  <!-- Modal implementation reused here -->
+  <div id="modalBackdrop" style="display:none;position:fixed;inset:0;background:rgba(3,6,18,0.5);align-items:center;justify-content:center;padding:20px">
+    <div style="background:white;padding:18px;border-radius:12px;max-width:700px;width:100%">
+      <div style="display:flex;justify-content:space-between;align-items:center"><strong id="mTitle">Exercise</strong><button id="mClose">Close</button></div>
+      <div id="mBody" style="margin-top:12px"></div>
+    </div>
+  </div>
+
+  <script>
+    // reveal
+    (function(){
+      var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if(reduced){ document.querySelectorAll('.reveal').forEach(function(el){el.classList.add('visible')}); return; }
+      var observer = new IntersectionObserver(function(entries){ entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('visible'); observer.unobserve(e.target); } }); },{threshold:0.12});
+      document.querySelectorAll('.reveal').forEach(function(el){ observer.observe(el); });
+    })();
+
+    // Guided exercise modal
+    (function(){
+      var openBtn = document.getElementById('tryNowBtn');
+      var backdrop = document.getElementById('modalBackdrop');
+      var body = document.getElementById('mBody');
+      var close = document.getElementById('mClose');
+      openBtn.addEventListener('click',function(){ backdrop.style.display='flex'; showMenu(); });
+      close.addEventListener('click',function(){ backdrop.style.display='none'; body.innerHTML=''; });
+
+      function showMenu(){
+        body.innerHTML = '';
+        var d = document.createElement('div'); d.style.display='flex'; d.style.gap='8px';
+        var breath = document.createElement('button'); breath.textContent='Breathing'; breath.className='btn';
+        var journal = document.createElement('button'); journal.textContent='Journaling'; journal.className='btn';
+        var intent = document.createElement('button'); intent.textContent='Intention'; intent.className='btn';
+        d.appendChild(breath); d.appendChild(journal); d.appendChild(intent); body.appendChild(d);
+
+        breath.addEventListener('click',showBreath); journal.addEventListener('click',showJournal); intent.addEventListener('click',showIntent);
+      }
+      function showBreath(){ body.innerHTML = '<p>Slow breathing: inhale 4s — exhale 4s. Follow the visual if helpful.</p><div style="width:120px;height:120px;border-radius:50%;background:linear-gradient(180deg,#ff7a59,#ffd6c2);margin:10px auto;animation:expand-contract 4s ease-in-out infinite"></div><button id="bDone" class="btn">Done</button>'; document.getElementById('bDone').addEventListener('click',function(){ backdrop.style.display='none'; body.innerHTML=''; }); }
+      function showJournal(){ body.innerHTML = '<p>Write freely for three minutes about what you notice right now. No rules—observe and describe.</p><textarea style="width:100%;min-height:120px"></textarea><div style="margin-top:8px"><button id="jStart" class="btn">Start 3-min timer</button><span id="jCount" style="margin-left:8px"></span></div>';
+        document.getElementById('jStart').addEventListener('click',function(){ var t=180; var el=document.getElementById('jCount'); el.textContent = format(t); var id=setInterval(function(){t--; el.textContent=format(t); if(t<=0){clearInterval(id); el.textContent='Done.';} },1000); }); }
+      function showIntent(){ body.innerHTML = '<p>One brief intention you can practice today:</p><input style="width:100%;padding:8px;border-radius:8px"><div style="margin-top:8px"><button id="s" class="btn">Save</button></div>'; document.getElementById('s').addEventListener('click',function(){ backdrop.style.display='none'; body.innerHTML=''; }); }
+      function format(t){ var m=Math.floor(t/60); var s=t%60; return (m<10?'0'+m:m)+':'+(s<10?'0'+s:s); }
+    })();
+  </script>
+
+  <style>
+    @keyframes expand-contract{0%{transform:scale(0.75)}50%{transform:scale(1.08)}100%{transform:scale(0.75)}}
+    @media (prefers-reduced-motion: reduce){ @keyframes expand-contract{0%{transform:none}100%{transform:none}} }
+    .btn{background:#fff;border:1px solid rgba(7,16,41,0.06);padding:8px 10px;border-radius:8px;cursor:pointer}
+  </style>
+</body>
+</html>

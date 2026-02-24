@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Contact • {{BUSINESS_NAME}}</title>
+  <style>
+    :root{
+      --bg:#0f1724; --card:#0b1220; --accent:#ff6b6b; --muted:#9aa4b2; --glass:rgba(255,255,255,0.04); --joy:#ffd166;
+      --radius:14px; --maxw:1100px; font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#071025 0%,#07101a 60%);color:#e6eef6}
+    a{color:var(--accent);text-decoration:none}
+    header{display:flex;align-items:center;justify-content:space-between;padding:28px 32px;max-width:var(--maxw);margin:0 auto}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo-shell{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--joy),#ff9aa2);display:grid;place-items:center;color:#08101a;font-weight:700}
+    nav a{margin:0 10px;color:var(--muted);font-weight:600}
+    main{max-width:var(--maxw);margin:26px auto;padding:28px}
+    .layout{display:grid;grid-template-columns:1fr 420px;gap:28px}
+    .hero{background:linear-gradient(90deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:36px;border-radius:var(--radius);position:relative;overflow:hidden}
+    .hero h1{font-size:34px;margin:0 0 10px;color:#fff;line-height:1.03}
+    .hero p{margin:0 0 18px;color:var(--muted)}
+    .cta-row{display:flex;gap:12px;align-items:center}
+    .btn-primary{background:var(--accent);border:none;padding:12px 18px;border-radius:12px;color:#08101a;font-weight:700;cursor:pointer}
+    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:10px 14px;border-radius:10px;color:var(--muted);cursor:pointer}
+    .side-card{background:var(--card);border-radius:12px;padding:18px;position:sticky;top:28px}
+    form .row{display:flex;gap:8px}
+    input,textarea{width:100%;padding:12px;border-radius:10px;background:var(--glass);border:1px solid rgba(255,255,255,0.03);color:#eaf4ff}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    .meta{font-size:13px;color:var(--muted);margin-top:8px}
+    section{margin-top:20px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .chip{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:12px;border-radius:10px;text-align:center}
+    .methods{display:flex;flex-direction:column;gap:10px}
+    .method{padding:14px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent)}
+    .faq{background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);padding:16px;border-radius:10px}
+    footer{max-width:var(--maxw);margin:40px auto 80px;padding:12px;color:var(--muted);text-align:center}
+    .svg-hero{position:absolute;right:-40px;top:-20px;opacity:0.08;width:420px;height:420px}
+    @media(max-width:920px){.layout{grid-template-columns:1fr}.svg-hero{display:none}.side-card{position:relative;top:0}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class='brand'>
+      <div class='logo-shell'>WC</div>
+      <div>
+        <div style='font-weight:700'>{{BUSINESS_NAME}}</div>
+        <div style='font-size:13px;color:var(--muted)'>{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav aria-label='Main navigation'>
+      <a href='index.html'>Home</a>
+      <a href='about.html'>Who I Am</a>
+      <a href='programs.html'>Paths</a>
+      <a href='services.html'>Offering</a>
+      <a href='pricing.html'>Investment</a>
+      <a href='testimonials.html'>Stories</a>
+      <a href='book.html'>Book</a>
+      <a href='contact.html' style='color:#fff;font-weight:700'>Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class='layout'>
+      <div>
+        <section class='hero' id='reach-out'>
+          <img src='assets/img/hero.svg' alt='pattern' class='svg-hero'>
+          <h1>Ready to start an intensive shift?</h1>
+          <p>Hi, I’m {{COACH_NAME}} <span style='opacity:0.7'>({{CREDENTIALS}})</span>. I design short, focused coaching intensives that build sustainable habits and measurable outcomes — no fluff.</p>
+          <div class='cta-row'>
+            <a class='btn-primary' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a>
+            <a class='btn-ghost' href='#lead-magnet'>Get the 7-Day Reset</a>
+          </div>
+          <div class='meta'>Prefer a quick call? Reach me at <a href='tel:{{PHONE}}'>{{PHONE}}</a> or <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a></div>
+        </section>
+
+        <section id='values' aria-labelledby='values-heading'>
+          <h2 id='values-heading' style='margin:12px 0 10px;color:#fff'>Core values that shape every session</h2>
+          <div class='grid-3'>
+            <div class='chip'><strong>Outcome-first</strong><div style='font-size:13px;color:var(--muted)'>We map progress to tangible habits.</div></div>
+            <div class='chip'><strong>Evidence-aware</strong><div style='font-size:13px;color:var(--muted)'>Practical frameworks, not untested fads.</div></div>
+            <div class='chip'><strong>Human-centered</strong><div style='font-size:13px;color:var(--muted)'>Your context guides the plan.</div></div>
+          </div>
+        </section>
+
+        <section id='methods'>
+          <h2 style='margin:12px 0 8px;color:#fff'>How I work — frameworks I use</h2>
+          <div class='methods'>
+            <div class='method'><strong>Core Habit Loops</strong> — Break goals into tiny, repeatable actions tied to triggers and rewards.</div>
+            <div class='method'><strong>Micro-Intensives</strong> — 2–6 week focused sprints that reset patterns and build momentum.</div>
+            <div class='method'><strong>Accountability Architecture</strong> — Weekly checkpoints, quick wins, and a simple tracking system you keep.
+            </div>
+          </div>
+        </section>
+
+        <section id='objections' style='margin-top:18px'>
+          <h2 style='margin:12px 0 8px;color:#fff'>Common concerns I address early</h2>
+          <div class='faq'>
+            <details style='margin-bottom:8px'><summary style='cursor:pointer;font-weight:700'>I don’t have time for long programs — will this fit my schedule?</summary><div style='color:var(--muted);padding-top:8px'>Yes. My intensive model is focused on high-impact, low-time commitments that fit busy calendars.</div></details>
+            <details style='margin-bottom:8px'><summary style='cursor:pointer;font-weight:700'>Is this just motivation coaching?</summary><div style='color:var(--muted);padding-top:8px'>No. We design systems to change behavior — motivation helps, but structure sustains.</div></details>
+            <details><summary style='cursor:pointer;font-weight:700'>What if I’ve tried this before and it didn’t stick?</summary><div style='color:var(--muted);padding-top:8px'>We audit previous attempts, identify friction points, and rebuild with smaller experiments that scale.</div></details>
+          </div>
+        </section>
+
+        <section id='testimonials' style='margin-top:18px'>
+          <h2 style='margin:12px 0 8px;color:#fff'>Client notes</h2>
+          <div class='method'><strong>"Focused, practical, and faster than I expected."</strong> — A.M., {{CITY}}, {{STATE}}</div>
+          <div class='method' style='margin-top:8px'><strong>"I finally kept to a plan — measurable change in 3 weeks."</strong> — S.K., {{CITY}}</div>
+        </section>
+
+        <section id='lead-magnet' style='margin-top:18px'>
+          <h2 style='margin:12px 0 8px;color:#fff'>Free guide — 7-Day Reset</h2>
+          <p style='color:var(--muted)'>Actionable checklist and a simple daily routine to jumpstart momentum. Delivered immediately when you enter your email.</p>
+          <form id='magnet-form' onsubmit='return magnetSubmit(event)'>
+            <label for='magnet-email'>Email</label>
+            <input id='magnet-email' type='email' placeholder='you@work.com' required>
+            <div style='margin-top:8px'><button class='btn-primary' type='submit'>Send the Reset</button></div>
+            <div id='magnet-note' class='meta' aria-live='polite'></div>
+          </form>
+        </section>
+
+        <section id='cta-final' style='margin-top:22px'>
+          <h2 style='margin:0 0 8px;color:#fff'>Want to talk through options?</h2>
+          <p style='color:var(--muted)'>Pick a short consult and we’ll map the right intensive for your life and calendar.</p>
+          <a class='btn-primary' href='{{PRIMARY_CTA_URL}}'>Schedule consult</a>
+        </section>
+      </div>
+
+      <aside class='side-card' aria-label='Contact card'>
+        <img src='assets/img/avatar.svg' alt='{{COACH_NAME}}' style='width:72px;height:72px;border-radius:12px;display:block;margin-bottom:12px'>
+        <div style='font-weight:700'>{{COACH_NAME}} <span style='opacity:0.8'>{{CREDENTIALS}}</span></div>
+        <div style='color:var(--muted);margin-bottom:10px'>Based in {{CITY}}, {{STATE}}</div>
+
+        <form id='contact-form' onsubmit='return contactSubmit(event)'>
+          <label for='name'>Name</label>
+          <input id='name' name='name' placeholder='Your name' required>
+          <label for='email'>Email</label>
+          <input id='email' name='email' type='email' placeholder='you@domain.com' required>
+          <label for='phone'>Phone</label>
+          <input id='phone' name='phone' placeholder='Optional'>
+          <label for='message'>Message</label>
+          <textarea id='message' rows='4' placeholder='Tell me what you want to change' required></textarea>
+          <div style='margin-top:12px'><button class='btn-primary' type='submit'>Send message</button></div>
+          <div id='contact-note' class='meta' aria-live='polite' style='margin-top:10px'></div>
+        </form>
+
+        <div style='border-top:1px dashed rgba(255,255,255,0.03);margin-top:14px;padding-top:12px;color:var(--muted);font-size:13px'>
+          Or call <a href='tel:{{PHONE}}'>{{PHONE}}</a><br>
+          Email <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    © <span id='year'></span> {{BUSINESS_NAME}} • Designed for busy professionals who want sustainable change.
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    function contactSubmit(e){
+      e.preventDefault();
+      var note = document.getElementById('contact-note');
+      note.textContent = 'Thanks — I received your message. I will reply within 48 hours.';
+      // Simulate lightweight client-side action; form submission handled by site integrator or {{PRIMARY_CTA_URL}}
+      return false;
+    }
+
+    function magnetSubmit(e){
+      e.preventDefault();
+      var email = document.getElementById('magnet-email').value;
+      var note = document.getElementById('magnet-note');
+      if(!email){note.textContent='Please enter a valid email.';return false}
+      note.textContent = 'Guide is on its way to ' + email + ' — check your inbox.';
+      return false;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Contact — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0b0b0b;--accent:#ffd7a8;--muted:#cfcfcf;--glass:rgba(255,255,255,0.04);--max:1100px}
+    html,body{height:100%}
+    body{margin:0;font-family:Georgia, 'Times New Roman', serif;background:linear-gradient(180deg,#070707 0%,#0f0f0f 100%);color:var(--muted);-webkit-font-smoothing:antialiased}
+    .container{max-width:var(--max);margin:40px auto;padding:32px}
+    nav{display:flex;gap:20px;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:14px}
+    .brand h2{margin:0;color:#fff;letter-spacing:0.4px;font-size:18px}
+    .navlinks{display:flex;gap:14px}
+    .navlinks a{color:var(--muted);text-decoration:none;font-size:14px;padding:6px 10px;border-radius:6px}
+    .navlinks a.active, .navlinks a:hover{color:#fff;background:var(--glass)}
+    header.hero{background:linear-gradient(180deg,rgba(255,215,160,0.04),transparent),url('assets/img/pattern.svg');padding:48px;border-radius:12px;margin-top:20px}
+    .hero-grid{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+    .kicker{color:var(--accent);font-weight:600;font-size:13px;letter-spacing:0.06em}
+    h1{font-family:Georgia, 'Times New Roman', serif;font-size:40px;color:#fff;margin:8px 0 10px;line-height:1.02}
+    p.lead{color:var(--muted);margin:0 0 16px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:10px}
+    .contact-meta{display:flex;flex-direction:column;gap:10px}
+    .meta-row{display:flex;justify-content:space-between;align-items:center}
+    .meta-row .muted{font-size:13px;color:var(--muted)}
+
+    form.intake{display:flex;flex-direction:column;gap:10px}
+    input[type=text],input[type=email],textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--muted);font-size:14px}
+    textarea{min-height:120px;resize:vertical}
+    .row{display:flex;gap:10px}
+    .row > *{flex:1}
+    .btn-primary{display:inline-block;padding:10px 14px;border-radius:8px;background:var(--accent);color:#2b2b2b;font-weight:700;border:none;cursor:pointer}
+    .secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);padding:10px 12px;border-radius:8px}
+
+    section.grid{display:grid;grid-template-columns:1fr 320px;gap:22px;margin-top:22px}
+    .aside{position:relative}
+    .small-note{font-size:13px;color:var(--muted);line-height:1.4}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.02);color:var(--muted);font-size:13px}
+    footer{margin-top:36px;color:var(--muted);font-size:13px}
+    a.cta-link{color:var(--accent);text-decoration:none}
+    .micro-list{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:8px}
+    .micro-item{background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;font-size:14px}
+
+    @media (max-width:880px){
+      .hero-grid,.grid{grid-template-columns:1fr}
+      .container{padding:18px}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav>
+      <div class="brand">
+        <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect width="44" height="44" rx="10" fill="#111"/>
+          <path d="M11 28C15 20 20 16 28 13" stroke="#ffd7a8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <h2>{{BUSINESS_NAME}}</h2>
+      </div>
+      <div class="navlinks" aria-label="Primary navigation">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="specialties.html">Specialties</a>
+        <a href="approach.html">Approach</a>
+        <a href="fees.html">Fees</a>
+        <a href="faq.html">Insights</a>
+        <a href="book.html">Work</a>
+        <a href="contact.html" class="active">Connect</a>
+      </div>
+    </nav>
+
+    <header class="hero">
+      <div class="hero-grid">
+        <div>
+          <div class="kicker">Contact & Intake</div>
+          <h1>A Quiet Door — Reach Out When You’re Ready</h1>
+          <p class="lead">I’m {{THERAPIST_NAME}}. I offer thoughtful, confidential therapy for anxiety, trauma, relationships, and major life transitions. If you’d like to begin, this page helps you take the first steps.</p>
+          <div style="display:flex;gap:10px;margin-top:14px;align-items:center">
+            <a class="btn-primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            <a class="secondary" href="book.html">Schedule a consult</a>
+            <span style="color:var(--muted);font-size:13px">Or call <a class="cta-link" href="tel:{{PHONE}}">{{PHONE}}</a></span>
+          </div>
+        </div>
+
+        <aside class="card aside" aria-labelledby="contact-card">
+          <h3 id="contact-card" style="margin:0;color:#fff">Quick contact</h3>
+          <div style="height:12px"></div>
+          <div class="contact-meta">
+            <div class="meta-row"><div class="muted">Email</div><div><a class="cta-link" href="mailto:{{EMAIL}}">{{EMAIL}}</a></div></div>
+            <div class="meta-row"><div class="muted">Phone</div><div><a class="cta-link" href="tel:{{PHONE}}">{{PHONE}}</a></div></div>
+            <div class="meta-row"><div class="muted">Location</div><div>{{CITY}}, {{STATE}}</div></div>
+            <div class="meta-row"><div class="muted">License</div><div>{{LICENSE}}</div></div>
+            <div style="height:8px"></div>
+            <div class="pill">Modalities: {{MODALITIES}}</div>
+          </div>
+        </aside>
+      </div>
+    </header>
+
+    <main>
+      <section class="grid">
+        <div>
+          <article class="card">
+            <h3 style="margin-top:0;color:#fff">A short intake form</h3>
+            <p class="small-note">Complete what you can below. This is for initial connection only; it does not create a therapeutic relationship. If this is an emergency, please see the crisis notice at the bottom.</p>
+            <form class="intake" method="post" action="{{PRIMARY_CTA_URL}}">
+              <div class="row">
+                <input type="text" name="name" placeholder="Your full name" required />
+                <input type="email" name="email" placeholder="Email address" required />
+              </div>
+              <div class="row">
+                <input type="text" name="phone" placeholder="Phone (optional)" />
+                <select name="session_type">
+                  <option value="">Preferred session</option>
+                  <option>Individual therapy (50–60 min)</option>
+                  <option>Couples therapy</option>
+                  <option>Intake / Consultation (30 min)</option>
+                  <option>Group / Workshop</option>
+                </select>
+              </div>
+              <textarea name="message" placeholder="Briefly, what brings you here? (a few lines is fine)"></textarea>
+              <label style="font-size:13px;color:var(--muted)"><input type="checkbox" name="consent" required style="margin-right:8px"/>I consent to receiving email communication and understand privacy limits (see note below).</label>
+              <div style="display:flex;gap:10px;margin-top:8px">
+                <button class="btn-primary" type="submit">Request an intake</button>
+                <a class="secondary" href="mailto:{{EMAIL}}">Email directly</a>
+              </div>
+            </form>
+          </article>
+
+          <article class="card" style="margin-top:18px">
+            <h3 style="margin:0;color:#fff">Check-in Snapshot</h3>
+            <p class="small-note">A quick self-diagnostic to guide your message. These are prompts to consider; you do not need to answer them here.</p>
+            <ul style="margin:10px 0 0 16px;color:var(--muted);">
+              <li>Primary concern: anxiety, mood, relationships, identity, or other?</li>
+              <li>Duration: weeks, months, or years?</li>
+              <li>Current supports: partner, friends, prior therapy?</li>
+              <li>Any immediate safety concerns?</li>
+            </ul>
+          </article>
+
+          <article class="card" style="margin-top:18px">
+            <h3 style="margin:0;color:#fff">Pathway Outline</h3>
+            <p class="small-note">If we decide to work together, a typical beginning includes: an intake session (history & goals), a 6–12 session focused plan, and ongoing review. Therapy is collaborative—your goals and pace guide the work.</p>
+            <div style="height:10px"></div>
+            <a href="approach.html" class="cta-link">Learn about my approach →</a>
+          </article>
+
+          <article class="card" style="margin-top:18px">
+            <h3 style="margin:0;color:#fff">Daily anchors — Micro practices</h3>
+            <p class="small-note">Small habits that support therapy work. Try one for a week and note any difference.</p>
+            <div class="micro-list">
+              <div class="micro-item">2-minute breath pause each morning</div>
+              <div class="micro-item">A 5-minute reflection before bed</div>
+              <div class="micro-item">Name one feeling before reacting</div>
+              <div class="micro-item">Short walk without phone once daily</div>
+            </div>
+          </article>
+
+        </div>
+
+        <aside>
+          <div class="card">
+            <h4 style="margin:0;color:#fff">Investment view</h4>
+            <p class="small-note">Fees and sliding scale options are on the Fees page. I offer brief consultations to determine fit and scheduling. Insurance is not accepted directly; I provide superbills for out-of-network reimbursement.</p>
+            <div style="height:10px"></div>
+            <a class="cta-link" href="fees.html">View fees & options →</a>
+          </div>
+
+          <div class="card" style="margin-top:16px">
+            <h4 style="margin:0;color:#fff">Availability & booking</h4>
+            <p class="small-note">I hold a limited number of in-person and telehealth slots. New clients often wait 1–3 weeks. If you need sooner, note it in your message.</p>
+            <div style="height:10px"></div>
+            <a class="btn-primary" href="book.html">Request a time</a>
+          </div>
+
+          <div class="card" style="margin-top:16px">
+            <h4 style="margin:0;color:#fff">Privacy, scope & safety</h4>
+            <p class="small-note">All communications are treated confidentially within legal and ethical limits. Confidentiality has limits (e.g., imminent risk of harm, child/elder abuse). Sharing information via online forms or email has inherent privacy risks; for highly sensitive details, we arrange secure intake procedures.</p>
+          </div>
+
+        </aside>
+      </section>
+
+      <section style="margin-top:18px" class="card">
+        <h3 style="margin:0;color:#fff">Scope, boundaries, and practical notes</h3>
+        <p class="small-note">I provide psychotherapy as a licensed clinician. I do not provide emergency crisis services, legal advice, or medical treatment. If you are currently in crisis or feel you may harm yourself or others, call your local emergency number or go to your nearest emergency room. For immediate mental health support in the U.S., you can call or text 988. If you are outside the U.S., please contact local emergency services.</p>
+        <div style="height:8px"></div>
+        <p class="small-note">Before beginning therapy I will confirm licensing jurisdiction ({{STATE}}) and relevant consent forms. If therapy is not an appropriate fit, I will offer referrals to community or higher level care.</p>
+      </section>
+
+    </main>
+
+    <footer>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+        <div>
+          <strong style="color:#fff">{{THERAPIST_NAME}}</strong> — {{BUSINESS_NAME}}<br/>
+          <span class="small-note">License: {{LICENSE}} • {{CITY}}, {{STATE}}</span>
+        </div>
+        <div style="text-align:right">
+          <div><a class="cta-link" href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a class="cta-link" href="tel:{{PHONE}}">{{PHONE}}</a></div>
+          <div style="margin-top:6px;color:var(--muted);font-size:12px">Confidentiality note: communications here do not substitute for therapy intake. Completing a form does not create a client-provider relationship.</div>
+        </div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

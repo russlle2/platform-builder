@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{
+      --bg:#fbfbfc; --muted:#6b6f76; --accent:#2b6cb0; --card:#ffffff; --accent-2:#0f5132;
+      --glass: rgba(255,255,255,0.6);
+      --radius:14px; --shadow:0 6px 18px rgba(20,20,30,0.06);
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#f3f6f9);color:#162029}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:transparent}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;color:#fff;font-weight:700}
+    nav a{margin-left:18px;color:var(--muted);text-decoration:none;font-weight:600}
+    main{max-width:1100px;margin:18px auto;padding:24px}
+    .grid{display:grid;grid-template-columns:1fr 380px;gap:22px;align-items:start}
+    @media (max-width:920px){.grid{grid-template-columns:1fr}.sidebar{order:2}}
+    .hero{background:var(--card);padding:22px;border-radius:var(--radius);box-shadow:var(--shadow);position:relative;overflow:hidden}
+    .hero h1{margin:0 0 8px 0;font-size:20px}
+    .hero p{margin:0;color:var(--muted)}
+    .section{background:var(--card);padding:18px;border-radius:12px;box-shadow:var(--shadow)}
+    .muted{color:var(--muted);font-size:14px}
+    .pill{display:inline-block;background:linear-gradient(90deg,#eef7ff,#f0fff6);padding:6px 10px;border-radius:999px;font-weight:600;color:var(--accent)}
+    label{display:block;margin-top:12px;font-size:13px;color:#223}
+    input[type='text'],input[type='date'],select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6ebf0;margin-top:6px;font-size:14px}
+    button{background:var(--accent);color:#fff;padding:10px 14px;border-radius:8px;border:0;font-weight:700;cursor:pointer}
+    .small{font-size:13px;color:var(--muted)}
+    .controls{display:flex;gap:8px;align-items:center;margin-top:12px}
+    .summary{white-space:pre-wrap;background:#fbfdff;padding:12px;border-radius:8px;border:1px dashed #dfeaf6;margin-top:10px}
+    .sidebar{position:sticky;top:22px}
+    footer{max-width:1100px;margin:18px auto;padding:18px;color:var(--muted);font-size:13px}
+    .note{background:linear-gradient(180deg,#fff,#fcfcff);padding:12px;border-radius:10px;border-left:4px solid #e0e6f0}
+    .pattern{position:absolute;right:-120px;bottom:-80px;opacity:0.06;width:360px;height:360px}
+    details{margin-top:12px}
+    .qa{margin-top:10px}
+    .copy-btn{background:#1d6fb7;padding:8px 10px;border-radius:8px;color:white;border:0;cursor:pointer}
+    .download-link{display:inline-block;margin-left:8px;color:var(--accent)}
+    .tag{font-weight:700;color:var(--accent-2)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class='brand'>
+      <div class='logo' aria-hidden='true'>TP</div>
+      <div>
+        <div style='font-weight:800'>{{BUSINESS_NAME}}</div>
+        <div style='font-size:13px;color:var(--muted)'>{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav aria-label='Primary navigation'>
+      <a href='index.html'>Home</a>
+      <a href='about.html'>Who I Am</a>
+      <a href='specialties.html'>Areas</a>
+      <a href='approach.html'>Ways I Work</a>
+      <a href='fees.html'>Investment</a>
+      <a href='faq.html'>Questions</a>
+      <a href='book.html' style='color:var(--accent)'>Schedule</a>
+      <a href='contact.html'>Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class='grid'>
+      <div>
+        <section class='hero'>
+          <h1>Connect and prepare for our first conversation</h1>
+          <p class='muted'>Use the tools below to shape what you want from therapy, gather useful speaking points, and create a simple plan to bring to your intake.</p>
+          <svg class='pattern' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'>
+            <defs>
+              <linearGradient id='g' x1='0' x2='1'>
+                <stop offset='0' stop-color='#9ad1ff' stop-opacity='0.8'/>
+                <stop offset='1' stop-color='#bdeedd' stop-opacity='0.8'/>
+              </linearGradient>
+            </defs>
+            <rect x='0' y='0' width='200' height='200' rx='18' fill='url(#g)'/>
+            <g fill='rgba(255,255,255,0.12)'>
+              <circle cx='40' cy='40' r='10'/>
+              <circle cx='80' cy='90' r='6'/>
+              <circle cx='140' cy='60' r='14'/>
+            </g>
+          </svg>
+        </section>
+
+        <section class='section' aria-labelledby='intake-heading'>
+          <h2 id='intake-heading'>Self-screening intake wizard</h2>
+          <p class='muted'>This non-diagnostic questionnaire helps you notice patterns and creates a concise summary and suggested questions to bring to our first meeting.</p>
+
+          <form id='wizard' onsubmit='return false;'>
+            <label>Which area feels most pressing right now?</label>
+            <select id='focus'>
+              <option value='anxiety'>Worries, tension, or overwhelm</option>
+              <option value='mood'>Low mood, low energy, or numbness</option>
+              <option value='relationships'>Connections and communication</option>
+              <option value='grief'>Loss and bereavement</option>
+              <option value='transitions'>Life changes and decisions</option>
+              <option value='other'>Something else</option>
+            </select>
+
+            <label>How long have you noticed this pattern?</label>
+            <select id='duration'>
+              <option value='weeks'>A few weeks</option>
+              <option value='months'>Several months</option>
+              <option value='year'>A year or more</option>
+              <option value='variable'>It comes and goes</option>
+            </select>
+
+            <label>Intensity level</label>
+            <select id='intensity'>
+              <option value='mild'>Mild — manageable but tiring</option>
+              <option value='moderate'>Moderate — affects daily routine</option>
+              <option value='high'>High — hard to carry on as usual</option>
+            </select>
+
+            <label>Are there safety concerns or immediate risks we should know about?</label>
+            <select id='safety'>
+              <option value='no'>No</option>
+              <option value='unsure'>Not sure — want to discuss</option>
+              <option value='yes'>Yes — I need immediate help</option>
+            </select>
+
+            <label>What's already helped or felt stabilizing?</label>
+            <input id='helped' type='text' placeholder='Therapy before, routines, medication, support person...'>
+
+            <label>Anything you'd like me to know about your cultural identity, background, or context?</label>
+            <input id='context' type='text' placeholder='Culture, faith, family roles, accessibility needs...'>
+
+            <div class='controls'>
+              <button id='wizard-run' type='button'>Create intake summary</button>
+              <button id='wizard-questions' type='button'>Generate questions to bring</button>
+            </div>
+          </form>
+
+          <div id='wizard-output' class='summary' aria-live='polite' style='display:none'></div>
+        </section>
+
+        <section class='section' aria-labelledby='planner-heading'>
+          <h2 id='planner-heading'>Session Planner</h2>
+          <p class='muted'>Design a small plan that fits your time and budget. This creates a plain-text plan you can copy or download to bring to session.</p>
+
+          <div>
+            <label>Primary goal for the next 3 sessions</label>
+            <input id='goal' type='text' placeholder='E.g., reduce worry around work presentations'>
+
+            <label>Preferred cadence</label>
+            <select id='cadence'>
+              <option value='weekly'>Weekly</option>
+              <option value='biweekly'>Every other week</option>
+              <option value='monthly'>Monthly check-ins</option>
+            </select>
+
+            <label>Session length</label>
+            <select id='length'>
+              <option value='50min'>50 minutes</option>
+              <option value='75min'>75 minutes</option>
+              <option value='30min'>30 minutes (brief check-in)</option>
+            </select>
+
+            <label>Modality</label>
+            <select id='modality'>
+              <option value='telehealth'>Telehealth (video)</option>
+              <option value='inperson'>In person</option>
+              <option value='phone'>Phone</option>
+            </select>
+
+            <label>Estimated monthly budget (optional)</label>
+            <input id='budget' type='text' placeholder='E.g., $300 - $600'>
+
+            <label>Two likely obstacles and how to address them</label>
+            <input id='ob1' type='text' placeholder='Obstacle 1 and plan'>
+            <input id='ob2' type='text' placeholder='Obstacle 2 and plan'>
+
+            <div class='controls'>
+              <button id='plan-build' type='button'>Build plan</button>
+              <button id='plan-copy' class='copy-btn' type='button' style='display:none'>Copy summary</button>
+              <a id='plan-download' class='download-link' style='display:none' download='session-plan.txt'>Download</a>
+            </div>
+
+            <div id='plan-output' class='summary' style='display:none' aria-live='polite'></div>
+          </div>
+        </section>
+
+        <section class='section'>
+          <h3>Practical next steps</h3>
+          <ol class='muted'>
+            <li>Use the wizard to generate a short intake summary and questions.</li>
+            <li>Build a session plan you feel able to commit to for a few weeks.</li>
+            <li>When you are ready, use the Schedule page or reach out via phone or email below.</li>
+          </ol>
+        </section>
+
+      </div>
+
+      <aside class='sidebar'>
+        <div class='section'>
+          <div style='display:flex;justify-content:space-between;align-items:center'>
+            <div>
+              <div style='font-weight:800'>Get in touch</div>
+              <div class='muted' style='margin-top:6px'>Office: {{CITY}}, {{STATE}}</div>
+            </div>
+            <div style='text-align:right'>
+              <div style='font-weight:700;color:var(--accent)'>{{PHONE}}</div>
+              <div class='muted' style='font-size:13px'>{{EMAIL}}</div>
+            </div>
+          </div>
+
+          <hr style='border:none;border-top:1px solid #eef3f7;margin:12px 0'>
+
+          <div class='note'>
+            <strong>Confidentiality</strong>
+            <p class='small muted'>Conversations are confidential within clinical and legal limits. We will review scope, limits of confidentiality, and how records are maintained at our first visit.</p>
+          </div>
+
+          <details class='qa'>
+            <summary style='cursor:pointer;font-weight:700'>Scope and boundaries</summary>
+            <p class='muted small'>I provide psychotherapy and short-term consultation. I do not provide emergency services. If you are in crisis or at risk of harm, contact local emergency services or a crisis line immediately.</p>
+          </details>
+
+          <div style='margin-top:12px'>
+            <strong style='display:block;margin-bottom:6px'>Quick links</strong>
+            <a href='book.html' class='pill'>Book an intake</a>
+          </div>
+        </div>
+
+        <div class='section' style='margin-top:14px'>
+          <strong>Privacy & Crisis</strong>
+          <p class='muted small'>This site is for informational use and to prepare for care. If you are having thoughts of harming yourself or others, or you feel you may act on self-harm, call your local emergency number or a crisis line right away.</p>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <div style='max-width:1100px;margin:0 auto;'>
+      <div style='display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap'>
+        <div class='muted small'>© <span id='year'></span> {{BUSINESS_NAME}} — Private practice clinician. Not a crisis service.</div>
+        <div class='muted small'>Licensed clinician. Sessions are confidential within legal limits. For immediate crisis, contact local emergency services.</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Intake wizard logic
+    function synthesizeIntake(){
+      const focus = document.getElementById('focus').value;
+      const duration = document.getElementById('duration').value;
+      const intensity = document.getElementById('intensity').value;
+      const safety = document.getElementById('safety').value;
+      const helped = document.getElementById('helped').value.trim();
+      const context = document.getElementById('context').value.trim();
+
+      const focusMap = {
+        anxiety: 'Worries, tension, or feeling on edge',
+        mood: 'Low or changing mood and energy',
+        relationships: 'Difficulties in relationships or communication',
+        grief: 'Experiencing loss or bereavement',
+        transitions: 'Adapting to life changes and decisions',
+        other: 'A personalized concern'
+      };
+
+      const lines = [];
+      lines.push('Intake highlights');
+      lines.push('-----------------');
+      lines.push('Primary area: ' + focusMap[focus]);
+      lines.push('Duration: ' + duration.replace(/^[a-z]/, s => s));
+      lines.push('Intensity: ' + intensity);
+      if(helped) lines.push('What has helped: ' + helped);
+      if(context) lines.push('Context notes: ' + context);
+
+      if(safety === 'yes'){
+        lines.push('\nSafety note: The client reports immediate concerns. Recommend contacting emergency/crisis resources today.');
+      } else if(safety === 'unsure'){
+        lines.push('\nSafety note: The client is unsure about safety; discuss this early in session.');
+      }
+
+      return lines.join('\n');
+    }
+
+    function generateQuestions(){
+      const focus = document.getElementById('focus').value;
+      const duration = document.getElementById('duration').value;
+      const intensity = document.getElementById('intensity').value;
+      const helped = document.getElementById('helped').value.trim();
+
+      const q = [];
+      q.push('Questions to bring to consultation');
+      q.push('---------------------------------');
+
+      if(focus === 'anxiety'){
+        q.push('- When do the worries feel most intense, and what helps even a little?');
+        q.push('- How do physical symptoms show up for you when you feel anxious?');
+      } else if(focus === 'mood'){
+        q.push('- What routines support you on better days?');
+        q.push('- Have you noticed patterns in energy across the week?');
+      } else if(focus === 'relationships'){
+        q.push('- How would you describe the most important relationship you want to improve?');
+        q.push('- What communication changes would feel meaningful?');
+      } else if(focus === 'grief'){
+        q.push('- How has grief changed your daily life and roles?');
+        q.push('- Are there specific memories or events that feel particularly difficult?');
+      } else if(focus === 'transitions'){
+        q.push('- What decision points feel most pressing?');
+        q.push('- What practical constraints should we consider?');
+      } else {
+        q.push('- What outcome would make this feel worth addressing?');
+        q.push('- What has helped in the past when you felt similar?');
+      }
+
+      q.push('- What are realistic short-term steps you can try between sessions?');
+      if(helped) q.push('- Can we adapt elements of what has helped before? (' + helped + ')');
+      q.push('- What would you like me to notice first in our meeting?');
+
+      // gentle language about limits
+      q.push('\nNote: This is not a diagnostic tool. These questions are to help you and your clinician prepare for focused, practical conversation.');
+
+      return q.join('\n');
+    }
+
+    document.getElementById('wizard-run').addEventListener('click', function(){
+      const out = synthesizeIntake();
+      const el = document.getElementById('wizard-output');
+      el.style.display = 'block';
+      el.textContent = out;
+      el.scrollIntoView({behavior:'smooth',block:'center'});
+    });
+
+    document.getElementById('wizard-questions').addEventListener('click', function(){
+      const out = generateQuestions();
+      const el = document.getElementById('wizard-output');
+      el.style.display = 'block';
+      el.textContent = out;
+      el.scrollIntoView({behavior:'smooth',block:'center'});
+    });
+
+    // Session planner logic
+    function buildPlan(){
+      const goal = document.getElementById('goal').value.trim();
+      const cadence = document.getElementById('cadence').value;
+      const length = document.getElementById('length').value;
+      const modality = document.getElementById('modality').value;
+      const budget = document.getElementById('budget').value.trim();
+      const ob1 = document.getElementById('ob1').value.trim();
+      const ob2 = document.getElementById('ob2').value.trim();
+
+      const cadenceMap = {weekly:'Weekly',biweekly:'Every other week',monthly:'Monthly'};
+      const lengthMap = { '50min':'50 minutes', '75min':'75 minutes', '30min':'30 minutes' };
+      const modalityMap = {telehealth:'Telehealth (video)', inperson:'In person', phone:'Phone'};
+
+      const lines = [];
+      lines.push('Session Plan — a brief, shareable plan');
+      lines.push('------------------------------------');
+      lines.push('Primary goal: ' + (goal || 'To clarify goals and next steps'));
+      lines.push('Cadence: ' + cadenceMap[cadence]);
+      lines.push('Session length: ' + lengthMap[length]);
+      lines.push('Modality: ' + modalityMap[modality]);
+      if(budget) lines.push('Budget note: ' + budget);
+
+      const tasks = [];
+      tasks.push('Between-session focus: small experiments, one skill practice, or a reflection prompt');
+      if(ob1) tasks.push('Obstacle planning: ' + ob1);
+      if(ob2) tasks.push('Obstacle planning: ' + ob2);
+
+      lines.push('\nSuggested between-session steps:');
+      tasks.forEach(t => lines.push('- ' + t));
+
+      lines.push('\nHow to use this: Bring this plan to your clinician as a starting point for a short-term focus. It can be adjusted as you go.');
+
+      return lines.join('\n');
+    }
+
+    document.getElementById('plan-build').addEventListener('click', function(){
+      const out = buildPlan();
+      const el = document.getElementById('plan-output');
+      el.style.display = 'block';
+      el.textContent = out;
+      document.getElementById('plan-copy').style.display = 'inline-block';
+
+      // create download blob
+      const blob = new Blob([out], {type:'text/plain;charset=utf-8'});
+      const url = URL.createObjectURL(blob);
+      const a = document.getElementById('plan-download');
+      a.href = url;
+      a.style.display = 'inline-block';
+    });
+
+    document.getElementById('plan-copy').addEventListener('click', async function(){
+      const text = document.getElementById('plan-output').textContent;
+      try{
+        await navigator.clipboard.writeText(text);
+        const btn = document.getElementById('plan-copy');
+        const original = btn.textContent;
+        btn.textContent = 'Copied';
+        setTimeout(()=> btn.textContent = original,1600);
+      }catch(e){
+        alert('Copy not supported in this browser. Use Download instead.');
+      }
+    });
+
+    // Simple progressive enhancement: keyboard accessible details
+    document.querySelectorAll('details').forEach(d=>d.addEventListener('keydown',e=>{if(e.key==='Enter') d.open=!d.open}));
+  </script>
+</body>
+</html>

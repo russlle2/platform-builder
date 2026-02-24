@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfbfb;--muted:#6b6b6b;--accent:#6a8cff;--card:#ffffff;--glass:rgba(255,255,255,0.6);--warm:#f7f3ff}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#222;background:var(--bg)}
+    .page{min-height:100vh;display:flex;flex-direction:column}
+    header{background:linear-gradient(180deg,var(--warm),transparent);padding:28px 20px;border-bottom:1px solid #eee}
+    .wrap{max-width:980px;margin:0 auto;width:100%}
+    nav{display:flex;gap:12px;align-items:center}
+    .brand{font-weight:700;color:#222}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:8px}
+    nav a.primary{background:var(--accent);color:#fff}
+    .hero{display:grid;grid-template-columns:1fr;gap:18px;padding:34px 0}
+    .lead{background:linear-gradient(90deg,rgba(106,140,255,0.08),rgba(106,140,255,0.02));padding:18px;border-radius:12px}
+    h1{margin:0 0 8px 0;font-size:28px}
+    p.lede{margin:0;color:var(--muted)}
+    .two-col{display:grid;grid-template-columns:1fr 320px;gap:20px;margin-top:18px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(36,36,36,0.04)}
+    .small{font-size:14px;color:var(--muted)}
+    .mood-widget{display:flex;flex-direction:column;gap:10px}
+    .mood-grid{display:flex;flex-wrap:wrap;gap:8px}
+    .mood-btn{padding:10px 12px;border-radius:10px;border:1px solid #e6e6e6;background:#fff;cursor:pointer}
+    .mood-btn.active{border-color:var(--accent);background:linear-gradient(90deg,var(--accent),#8fb0ff);color:#fff}
+    .recommend{padding:12px;border-radius:10px;background:#f4f8ff}
+    .cta-row{display:flex;gap:10px;align-items:center;margin-top:12px}
+    .btn{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none}
+    .link{background:transparent;border:0;color:var(--muted);cursor:pointer}
+    footer{margin-top:auto;padding:20px;border-top:1px solid #eee;background:linear-gradient(180deg,transparent,rgba(250,250,250,0.8))}
+    .conf-acc{margin-top:14px}
+    .acc-item{border:1px solid #eee;border-radius:10px;padding:12px}
+    .acc-summary{display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+    .acc-detail{max-height:0;overflow:hidden;transition:max-height .28s ease,padding .28s}
+    .acc-item.open .acc-detail{max-height:400px;padding-top:10px}
+    .crisis{margin-top:12px;padding:10px;border-radius:8px;background:#fff0f0;color:#7a1b1b;border:1px solid #ffd6d6}
+    /* subtle patterned backdrop using local svg */
+    .pattern-hero{background-image:url('assets/img/pattern.svg');background-repeat:repeat;opacity:.12}
+    @media(max-width:880px){.two-col{grid-template-columns:1fr}nav{flex-wrap:wrap}}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="wrap nav">
+        <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
+          <div style="display:flex;gap:18px;align-items:center">
+            <div class="brand">{{BUSINESS_NAME}}</div>
+            <nav>
+              <a href="index.html">Home</a>
+              <a href="about.html" class="primary">About</a>
+              <a href="specialties.html">Areas</a>
+              <a href="approach.html">How I Work</a>
+              <a href="book.html">Book</a>
+            </nav>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center">
+            <a href="tel:{{PHONE}}" class="link">Call</a>
+            <a href="mailto:{{EMAIL}}" class="link">Email</a>
+            <a href="{{PRIMARY_CTA_URL}}" class="btn">{{PRIMARY_CTA_LABEL}}</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="hero pattern-hero" aria-labelledby="about-title">
+        <div class="lead card">
+          <h1 id="about-title">A little about the person behind the room</h1>
+          <p class="lede">I work with adults who are navigating crossroads—whether that's a shift in relationships, work, identity, or rhythm of life. My approach is rooted in practical reflection, steady curiosity, and a collaborative pace that respects your time and capacity.</p>
+        </div>
+
+        <div class="two-col">
+          <div>
+            <div class="card">
+              <h2 style="margin-top:0">A clinician's note</h2>
+              <p class="small">I'm a licensed clinician who draws from relational, narrative, and skills-based methods. In sessions we name what matters, test small shifts, and notice the effect. Therapy is a careful, unfolding conversation—not a rush to fix. Questions we often begin with: What needs holding? Where is a small experiment possible? What would indicate progress for you?</p>
+            </div>
+
+            <div class="card" style="margin-top:14px">
+              <h3 style="margin:0 0 8px 0">Mood-to-Method</h3>
+              <div class="mood-widget">
+                <div class="small">Choose how you feel now — the page will surface an approach that fits.</div>
+                <div class="mood-grid" id="moodGrid">
+                  <button class="mood-btn" data-key="stressed">Stressed, foggy</button>
+                  <button class="mood-btn" data-key="stuck">Stuck in a loop</button>
+                  <button class="mood-btn" data-key="grieving">Grieving a loss</button>
+                  <button class="mood-btn" data-key="transition">Entering a transition</button>
+                  <button class="mood-btn" data-key="uncertain">Unsure what I need</button>
+                </div>
+                <div class="recommend card" id="recommendArea">
+                  <strong>Try this:</strong>
+                  <div id="methodText">Select a state above to see a suggested way to begin.</div>
+                  <div class="cta-row">
+                    <a id="moodCTA" class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+                    <button class="link" id="saveMood">Remember my pick</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <aside>
+            <div class="card">
+              <h4>Session basics</h4>
+              <p class="small">Sessions are 50 minutes unless otherwise arranged. We can plan a short series or continue as long as it's helpful. I offer remote and limited in-person slots.</p>
+              <p style="margin:10px 0 0 0"><a href="book.html" class="btn">Schedule a time</a></p>
+            </div>
+
+            <div class="card conf-acc">
+              <div class="acc-item" id="accConf">
+                <div class="acc-summary" tabindex="0">
+                  <div><strong>Confidentiality & Limits</strong></div>
+                  <div class="small">click to expand</div>
+                </div>
+                <div class="acc-detail small">
+                  <p>Conversations in sessions are confidential with certain legal exceptions: imminent risk of harm to yourself or others, suspected abuse of a vulnerable person, or court-ordered disclosures. We will talk clearly about how these boundaries apply if they arise.</p>
+                </div>
+              </div>
+
+              <div class="acc-item" id="accBound">
+                <div class="acc-summary" tabindex="0">
+                  <div><strong>Session boundaries</strong></div>
+                  <div class="small">click to expand</div>
+                </div>
+                <div class="acc-detail small">
+                  <p>Appointment time is reserved for our work together. Cancellations are best made at least 48 hours in advance when possible; we'll discuss logistics so it feels fair and clear.</p>
+                </div>
+              </div>
+
+              <div class="crisis small">
+                If you are in immediate danger or a medical emergency, please call your local emergency number or visit the nearest emergency department. If you are experiencing acute distress and need support now, consider your local crisis line or national resources in your area.
+              </div>
+            </div>
+
+          </aside>
+        </div>
+
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap small">&copy; <span id="year"></span> {{BUSINESS_NAME}} • Serving {{CITY}}, {{STATE}} • <a href="contact.html">Contact</a></div>
+    </footer>
+  </div>
+
+  <script>
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Mood-to-Method map
+    const methods = {
+      stressed: {title:'Grounding & micro-structures',desc:'Short, practical steps to reduce overwhelm this week: we’ll map a tiny routine you can keep to steady the day and practice a brief grounding exercise during session.',cta:'Try a short consultation'},
+      stuck: {title:'Narrative mapping',desc:'We trace recurring patterns together, name the story you’re telling about the difficulty, and open a different chapter with small behavioral experiments.',cta:'Explore pattern work'},
+      grieving: {title:'Companioning grief',desc:'A gentle, paced approach that acknowledges loss and makes space for memory, ritual, and gradual rebuilding of safety.',cta:'Start companioning'},
+      transition: {title:'Decision-focused practice',desc:'When things shift, we create a decision map: clarify values, test options, and set manageable trials so choices feel less abstract.',cta:'Map next steps'},
+      uncertain: {title:'Clarifying session',desc:'A focused first meeting to pinpoint priorities and identify one or two practical next steps you can try before our next meeting.',cta:'Book a clarifying session'}
+    };
+
+    const moodGrid = document.getElementById('moodGrid');
+    const recommend = document.getElementById('methodText');
+    const moodCTA = document.getElementById('moodCTA');
+    const buttons = moodGrid.querySelectorAll('.mood-btn');
+
+    function setActive(key, btn){
+      buttons.forEach(b=>b.classList.remove('active'));
+      if(btn) btn.classList.add('active');
+      const item = methods[key];
+      recommend.innerHTML = '<strong>'+item.title+'</strong><div style="margin-top:6px">'+item.desc+'</div>';
+      moodCTA.textContent = item.cta + ' — ' + '{{PRIMARY_CTA_LABEL}}';
+      moodCTA.href = '{{PRIMARY_CTA_URL}}' + '?mood='+encodeURIComponent(key);
+      localStorage.setItem('preferredMood',key);
+    }
+
+    moodGrid.addEventListener('click',e=>{
+      const btn = e.target.closest('.mood-btn');
+      if(!btn) return;
+      const key = btn.getAttribute('data-key');
+      setActive(key,btn);
+    });
+
+    document.getElementById('saveMood').addEventListener('click',()=>{
+      const m = localStorage.getItem('preferredMood');
+      if(m) alert('Preference saved: '+m);
+      else alert('Pick a state first');
+    });
+
+    // Restore preference
+    const pref = localStorage.getItem('preferredMood');
+    if(pref && methods[pref]){
+      const b = [...buttons].find(x=>x.getAttribute('data-key')===pref);
+      if(b) setActive(pref,b);
+    }
+
+    // Accordion behavior
+    document.querySelectorAll('.acc-item').forEach(item=>{
+      const summary = item.querySelector('.acc-summary');
+      summary.addEventListener('click',()=>item.classList.toggle('open'));
+      summary.addEventListener('keypress',e=>{ if(e.key==='Enter' || e.key===' ') item.classList.toggle('open'); });
+    });
+  </script>
+</body>
+</html>

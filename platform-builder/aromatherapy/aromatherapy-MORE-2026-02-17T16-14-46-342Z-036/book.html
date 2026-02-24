@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Book a session — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#04121a;--card:#071821;--accent:#80ead8;--muted:#9bc0bd}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:linear-gradient(180deg,var(--bg),#021217);color:#eafffb}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 26px}
+    .logo{font-weight:800;color:var(--accent)}
+    nav a{color:var(--muted);margin-left:10px;text-decoration:none;font-weight:700}
+    main{max-width:980px;margin:20px auto;padding:24px}
+    .hero{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px}
+    .widget{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:16px}
+    .panel{background:rgba(255,255,255,0.02);padding:14px;border-radius:10px}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:#eafffb}
+    .btn{background:var(--accent);color:#032;display:inline-block;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:800;border:none;cursor:pointer}
+    .small{font-size:13px;color:var(--muted)}
+    .plan-output{white-space:pre-wrap;background:linear-gradient(180deg,rgba(0,0,0,0.12),rgba(255,255,255,0.01));padding:12px;border-radius:8px;margin-top:8px;color:#d8fffb}
+    .copy-btn{margin-top:8px;padding:8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted);cursor:pointer}
+    .faq{margin-top:14px}
+    .faq-item{background:rgba(255,255,255,0.01);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02);color:var(--muted)}
+    footer{max-width:980px;margin:24px auto;padding:18px;text-align:center;color:var(--muted)}
+    .pattern{position:fixed;right:6%;bottom:0;opacity:0.06;width:30%;pointer-events:none}
+  </style>
+</head>
+<body>
+  <svg class='pattern' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 200'>
+    <defs>
+      <linearGradient id='pg' x1='0' x2='1'>
+        <stop offset='0' stop-color='#7ce6d4'/>
+        <stop offset='1' stop-color='#3bc8b6'/>
+      </linearGradient>
+    </defs>
+    <g fill='url(#pg)' transform='rotate(-10 200 80)'>
+      <rect x='10' y='10' width='200' height='180' rx='40' fill-opacity='0.14'/>
+      <circle cx='420' cy='60' r='80' fill-opacity='0.12'/>
+      <ellipse cx='300' cy='140' rx='140' ry='40' fill-opacity='0.1'/>
+    </g>
+  </svg>
+
+  <header>
+    <div class='logo'>{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href='index.html'>Home</a>
+      <a href='services.html'>Offerings</a>
+      <a href='blends.html'>Blends</a>
+      <a href='shop.html'>Shop</a>
+      <a href='pricing.html'>Packages</a>
+      <a href='about.html'>About</a>
+      <a href='book.html'>Book</a>
+      <a href='contact.html'>Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class='hero'>
+      <h1 style='margin:0'>Book a personalized session or build your plan</h1>
+      <p class='small'>Start with a short diagnostic below — the Session Planner helps shape a simple plan you can copy and bring to your booking.</p>
+    </section>
+
+    <section class='widget'>
+      <div class='panel'>
+        <h3 style='margin-top:0'>Session Planner</h3>
+        <label for='goal'>What would you like to invite with scent?</label>
+        <select id='goal'>
+          <option value='focus'>Focus / clarity</option>
+          <option value='sleep'>Evening ease / sleep</option>
+          <option value='mood'>Lift mood / reduce fog</option>
+          <option value='transition'>Routines & transitions</option>
+        </select>
+
+        <label for='frequency' style='margin-top:10px'>How often can you practice?</label>
+        <select id='frequency'>
+          <option value='daily'>Daily (5+ days/week)</option>
+          <option value='few'>A few times a week</option>
+          <option value='monthly'>Weekly or monthly focus</option>
+        </select>
+
+        <label for='delivery' style='margin-top:10px'>Preferred delivery</label>
+        <select id='delivery'>
+          <option value='diffuser'>Diffuser at home</option>
+          <option value='roller'>Topical roll-on sample</option>
+          <option value='spray'>Room mist</option>
+        </select>
+
+        <label for='constraints' style='margin-top:10px'>Household notes (pets, kids, sensitivities)</label>
+        <input id='constraints' placeholder='e.g. cat in home, sensitive nose, pregnancy' />
+
+        <label for='length' style='margin-top:10px'>Session length preference</label>
+        <select id='length'>
+          <option value='short'>30 minutes</option>
+          <option value='standard' selected>60 minutes</option>
+          <option value='deep'>90 minutes</option>
+        </select>
+
+        <div style='height:10px'></div>
+        <button id='planBtn' class='btn'>Create plan summary</button>
+        <div id='planOutput' class='plan-output' style='display:none;margin-top:12px'></div>
+        <button id='copyPlan' class='copy-btn' style='display:none'>Copy plan text</button>
+      </div>
+
+      <aside class='panel'>
+        <h3 style='margin-top:0'>What to expect</h3>
+        <p class='small'>Your plan includes a recommended session rhythm, a sample-safe blend suggestion with dilution notes, and two simple micro-habits to try at home.</p>
+
+        <h4 style='margin-top:12px'>Micro-habit examples</h4>
+        <ul style='color:var(--muted)'>
+          <li>One-minute scent pause after lunch to re-ground attention.</li>
+          <li>Evening roll-on ritual before bedtime for a gentle transition.</li>
+        </ul>
+
+        <h4 style='margin-top:12px'>Need faster help?</h4>
+        <p class='small'>Book a single "Aromatic Compass" session from Pricing to get immediate blend notes and a sample.</p>
+        <div style='height:8px'></div>
+        <a href='pricing.html' class='btn'>See packages</a>
+      </aside>
+    </section>
+
+    <section style='margin-top:18px'>
+      <h3>Planner details & safety</h3>
+      <div class='panel'>
+        <p class='small'>The planner creates a plain-text summary you can copy into an email or include with your booking. It is not medical advice. For pregnancy, nursing, children, or pets we will recommend conservative or alternative scent choices and lower dilutions.</p>
+
+        <div class='faq' style='margin-top:10px'>
+          <div class='faq-item'>
+            <strong>Patch test</strong>
+            <p class='small'>We always recommend patch testing any new diluted topical product for 24 hours before regular use.</p>
+          </div>
+          <div class='faq-item'>
+            <strong>Labeling and storage</strong>
+            <p class='small'>Label blends with contents, dilution, and date. Store out of sunlight and away from heat sources.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} — To book call {{PHONE}} or email <a href='mailto:{{EMAIL}}' style='color:var(--muted)'>{{EMAIL}}</a></div>
+  </footer>
+
+  <script>
+    (function(){
+      function summaryText(data){
+        var s = [];
+        s.push('Session Planner Summary');
+        s.push('Goal: '+data.goalLabel);
+        s.push('Frequency: '+data.frequencyLabel);
+        s.push('Delivery: '+data.deliveryLabel);
+        s.push('Session length: '+data.lengthLabel);
+        if(data.constraints) s.push('Household notes: '+data.constraints);
+        s.push('\nSuggested micro-habits:');
+        data.habits.forEach(function(h,i){s.push((i+1)+'. '+h)});
+        s.push('\nSuggested safe starter blend (non-medical):');
+        s.push(data.blend);
+        s.push('\nSafety notes: Patch test diluted mixture on inner forearm for 24 hours. Reduce dilution for pregnancy, nursing, children, or pets. This is not medical advice.');
+        return s.join('\n');
+      }
+
+      var planBtn=document.getElementById('planBtn');
+      var copyPlan=document.getElementById('copyPlan');
+      var planOutput=document.getElementById('planOutput');
+
+      function pickHabits(goal,frequency){
+        var map={
+          focus:['One-minute inhale at desk before a task','Diffuser on low for focused windows'],
+          sleep:['Evening roll-on 10 minutes before bed','Dim lights and 2-minute breathing with scent'],
+          mood:['10-second scent pause when feeling low','Carry a small roller for quick uplift'],
+          transition:['Scent cue when changing work to home','Five-breath mini-ritual between meetings']
+        };
+        var base=map[goal]||map['focus'];
+        if(frequency==='daily') return base.slice(0,2);
+        return base.slice(0,2);
+      }
+
+      function proposeBlend(goal){
+        var blends={
+          focus:'Lemon 30%, Rosemary 40%, Basil 30% — bright-herb; diffuser-friendly; suggested ~1-3% for diffuser blends.',
+          sleep:'Lavender 50%, Chamomile 30%, Cedarwood 20% — soft-wood; consider 0.5-2% diffuser; topical roll-on lower.',
+          mood:'Sweet Orange 50%, Bergamot 30%, Grapefruit 20% — citrus uplift; citrus oils may be phototoxic; use care topically.',
+          transition:'Frankincense 40%, Lavender 30%, Vetiver 30% — grounding resin-wood; suitable for low-intensity diffuser use.'
+        };
+        return blends[goal]||blends['focus'];
+      }
+
+      planBtn.addEventListener('click', function(){
+        var goal = document.getElementById('goal').value;
+        var goalLabel = document.getElementById('goal').options[document.getElementById('goal').selectedIndex].text;
+        var frequency = document.getElementById('frequency').value;
+        var frequencyLabel = document.getElementById('frequency').options[document.getElementById('frequency').selectedIndex].text;
+        var delivery = document.getElementById('delivery').value;
+        var deliveryLabel = document.getElementById('delivery').options[document.getElementById('delivery').selectedIndex].text;
+        var constraints = document.getElementById('constraints').value.trim();
+        var length = document.getElementById('length').value;
+        var lengthLabel = document.getElementById('length').options[document.getElementById('length').selectedIndex].text;
+
+        var habits = pickHabits(goal,frequency);
+        var blend = proposeBlend(goal);
+
+        var data = {goalLabel:goalLabel,frequencyLabel:frequencyLabel,deliveryLabel:deliveryLabel,constraints:constraints,lengthLabel:lengthLabel,habits:habits,blend:blend};
+        var txt = summaryText(data);
+        planOutput.style.display='block';
+        planOutput.textContent = txt;
+        copyPlan.style.display='inline-block';
+      });
+
+      copyPlan.addEventListener('click', function(){
+        var text = planOutput.textContent || '';
+        navigator.clipboard && navigator.clipboard.writeText(text).then(function(){
+          copyPlan.textContent='Copied';
+          setTimeout(function(){copyPlan.textContent='Copy plan text'},1200);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

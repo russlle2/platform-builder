@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Concerns & Common Patterns — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Common health concerns we support with education and whole-person plans.">
+  <style>
+    :root{--bg:#FFFDF9;--ink:#092A33;--soft:#7E8A8F;--accent:#9D5CFF}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;color:var(--ink);background:linear-gradient(180deg,var(--bg),#F4FBFF)}
+    header{padding:22px 32px;display:flex;justify-content:space-between;align-items:center}
+    .logo{font-weight:800;padding:10px 12px;border-radius:8px;background:linear-gradient(90deg,#fff,#FAF7FF);box-shadow:0 4px 14px rgba(22,18,52,0.04)}
+    nav{display:flex;gap:14px}
+    nav a{color:var(--soft);font-size:13px}
+    nav a[aria-current="page"]{color:var(--ink);font-weight:600}
+    .container{max-width:1000px;margin:18px auto;padding:18px}
+
+    .hero{display:flex;gap:18px;align-items:center}
+    .hero .text{flex:1;padding:18px}
+    h1{margin:0;font-size:26px}
+    .sub{color:var(--soft);margin-top:8px}
+
+    /* content tiles */
+    .tiles{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}
+    .tile{background:white;padding:16px;border-radius:12px;box-shadow:0 6px 26px rgba(8,18,20,0.04)}
+    .tile h3{margin:0 0 6px}
+    .tile p{margin:0;color:var(--soft);font-size:14px}
+    .disclaimer{margin-top:14px;color:var(--soft);font-size:13px}
+
+    .cta{margin-top:18px}
+    .btn{padding:10px 14px;border-radius:10px;background:var(--accent);color:white;font-weight:600}
+
+    /* subtle SVG corner */
+    .corner{width:160px;height:160px}
+
+    @media (max-width:760px){.tiles{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html" aria-current="page">Concerns</a>
+      <a href="approach.html">Our Method</a>
+      <a href="book.html">Schedule</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="text card">
+        <h1>Common concerns we help people explore</h1>
+        <div class="sub">We pair evidence-informed education with lifestyle-centered planning. These are areas where people frequently seek guidance.</div>
+      </div>
+      <div class="corner">
+        <!-- small decorative svg pattern -->
+        <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid">
+          <defs>
+            <linearGradient id="c1" x1="0" x2="1">
+              <stop offset="0" stop-color="#9D5CFF" stop-opacity="0.16"/>
+              <stop offset="1" stop-color="#FFB86C" stop-opacity="0.12"/>
+            </linearGradient>
+          </defs>
+          <rect width="160" height="160" rx="12" fill="url(#c1)"/>
+          <g fill-opacity="0.08">
+            <circle cx="30" cy="40" r="22" fill="#fff"/>
+            <circle cx="120" cy="110" r="36" fill="#fff"/>
+          </g>
+        </svg>
+      </div>
+    </section>
+
+    <section class="tiles">
+      <div class="tile">
+        <h3>Stress & Resilience</h3>
+        <p>Patterns of tension, overwhelm, and burnout. We explore nervous-system practices, pacing, and daily rituals to shift reactivity.</p>
+      </div>
+      <div class="tile">
+        <h3>Sleep Difficulty</h3>
+        <p>Trouble falling or staying asleep often reflects routines, light exposure, and stress. Educational tools and sleep-friendly habits are central.</p>
+      </div>
+      <div class="tile">
+        <h3>Digestive Disturbance</h3>
+        <p>Bloating, irregularity, and discomfort are approached through diet patterns, timing, mindful eating, and gentle lifestyle change.</p>
+      </div>
+      <div class="tile">
+        <h3>Pain & Inflammation</h3>
+        <p>Chronic discomfort invites a combined look at movement, anti-inflammatory patterns, sleep, and stress modulation as parts of a plan.</p>
+      </div>
+      <div class="tile">
+        <h3>Low Energy & Fatigue</h3>
+        <p>Energy is shaped by sleep, nutrition, activity, and meaning. We prioritize measurement, pacing, and reproducible micro-habits.</p>
+      </div>
+      <div class="tile">
+        <h3>Emotional Upset</h3>
+        <p>Anxiety, low mood, or shifts in appetite and motivation are treated by education, breathing, consistent routines, and recommended supports.</p>
+      </div>
+    </section>
+
+    <div class="disclaimer card">
+      <strong>Note:</strong> These descriptions are educational. Individual responses vary. Our work emphasizes symptom understanding, risk-reduction, and sustainable habits, not guaranteed cures. Serious or acute conditions may require urgent medical care.
+    </div>
+
+    <div class="cta">
+      <a class="btn" href="{{PRIMARY_CTA_URL}}">Explore programs &amp; book</a>
+    </div>
+
+    <footer style="margin-top:28px;color:var(--soft);font-size:13px">Contact: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • {{CITY}}, {{STATE}}</footer>
+  </main>
+</body>
+</html>

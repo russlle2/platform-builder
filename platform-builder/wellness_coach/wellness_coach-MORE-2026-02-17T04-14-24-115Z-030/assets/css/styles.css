@@ -1,0 +1,65 @@
+/* Reset & base */
+:root{--bg:#fbfbfa;--muted:#6b6b6b;--brand:#2b8f7a;--accent:#f2b880;--card:#ffffff;--glass:rgba(255,255,255,0.6)}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Noto Sans",sans-serif;color:#1b1b1b;background:var(--bg)}
+.wrap{max-width:1080px;margin:0 auto;padding:40px 20px}
+.site-header{background:linear-gradient(180deg,rgba(255,255,255,0.9),transparent);position:sticky;top:0;backdrop-filter:blur(6px);z-index:20;border-bottom:1px solid rgba(0,0,0,0.04)}
+.site-header .wrap{display:flex;align-items:center;justify-content:space-between;padding:14px 20px}
+.logo{font-weight:700;text-decoration:none;color:var(--brand);letter-spacing:0.6px}
+.nav a{margin-left:14px;text-decoration:none;color:#333;font-size:14px}
+.nav a.cta{background:var(--brand);color:#fff;padding:8px 12px;border-radius:8px}
+.hero{padding:80px 0;background-image:url('assets/img/pattern.svg');background-repeat:repeat;background-size:260px}
+.hero-grid{display:grid;grid-template-columns:1fr 360px;gap:32px;align-items:center}
+.hero-copy h1{margin:0 0 12px;font-size:36px;line-height:1.05}
+.lead{color:var(--muted);margin:0 0 18px}
+.hero-actions .btn{margin-right:10px}
+.btn{display:inline-block;padding:10px 16px;border-radius:10px;text-decoration:none;font-weight:600}
+.btn.primary{background:var(--brand);color:#fff}
+.btn.ghost{background:transparent;border:1px solid rgba(0,0,0,0.06);color:#333}
+.meta{display:flex;gap:24px;margin-top:18px}
+.meta dt{font-size:12px;color:var(--muted)}
+.meta dd{margin:0;font-weight:600}
+.hero-art .orb{width:100%;height:auto}
+.diagnostic{background:linear-gradient(180deg,rgba(255,255,255,0.8),transparent);border-radius:12px;padding:28px;margin-top:18px}
+.mood-grid{display:flex;gap:12px;margin:18px 0}
+.mood{background:var(--card);border:1px solid rgba(0,0,0,0.04);padding:12px;border-radius:10px;flex:1;text-align:left}
+.mood strong{display:block}
+.mood .hint{font-size:12px;color:var(--muted)}
+.mood:focus{outline:3px solid rgba(43,143,122,0.12)}
+.mood-result{display:flex;align-items:center;justify-content:space-between;padding-top:12px}
+.mood-result .recommendation h3{margin:0}
+.mood-actions .btn{min-width:160px}
+.micro-habits ul.habits{list-style:none;padding:0;margin:12px 0}
+.habits li{background:var(--card);padding:10px;border-radius:8px;margin-bottom:8px}
+.plan-grid{display:grid;grid-template-columns:1fr 220px;gap:20px;align-items:start}
+.plan-side .pattern{width:180px;height:180px}
+.pricing .toggle{display:flex;align-items:center;gap:12px;margin:10px 0}
+.switch{position:relative;width:48px;height:28px}
+.switch input{display:none}
+.slider{position:absolute;inset:0;background:#e9e9e9;border-radius:999px}
+.slider:after{content:"";position:absolute;width:22px;height:22px;background:#fff;border-radius:50%;top:3px;left:3px;transition:transform 0.28s ease}
+.switch input:checked + .slider{background:var(--brand)}
+.switch input:checked + .slider:after{transform:translateX(20px)}
+.toggle-label{font-weight:600;color:var(--muted)}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:14px}
+.tier{background:var(--card);padding:18px;border-radius:12px;border:1px solid rgba(0,0,0,0.04);text-align:center}
+.tier.featured{box-shadow:0 8px 24px rgba(43,143,122,0.08);transform:translateY(-6px)}
+.price{font-size:28px;font-weight:700;margin:12px 0}
+.price small{font-size:12px;color:var(--muted);font-weight:600}
+.cta{padding:40px 20px;text-align:center}
+.cta-inner h2{margin:0 0 8px}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.site-footer{border-top:1px solid rgba(0,0,0,0.04);margin-top:40px;padding:18px 0}
+.site-footer .wrap{display:flex;justify-content:space-between;align-items:center}
+@media(max-width:880px){
+  .hero-grid{grid-template-columns:1fr}
+  .plan-grid{grid-template-columns:1fr}
+  .pricing-grid{grid-template-columns:1fr}
+  .nav a{display:none}
+}
+/* subtle focus */
+button, .btn{transition:transform 160ms ease,box-shadow 160ms ease}
+button:active, .btn:active{transform:translateY(1px)}
+/* small utilities */
+.hidden{display:none}

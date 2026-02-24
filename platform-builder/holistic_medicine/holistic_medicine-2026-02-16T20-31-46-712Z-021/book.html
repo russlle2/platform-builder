@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Book — {{BUSINESS_NAME}}</title>
+<style>
+:root{--accent:#d97b5f;--muted:#5b4a46}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;color:#222;background:linear-gradient(180deg,#fff7f4,#fffdfd);min-height:100vh}
+.header{display:flex;justify-content:space-between;align-items:center;padding:20px 36px}
+.logo{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#b86a52);display:grid;place-items:center;color:#fff;font-weight:800}
+nav a{margin-left:14px;color:var(--muted);text-decoration:none}
+.container{max-width:980px;margin:18px auto;padding:0 18px}
+.hero{padding:30px;background:linear-gradient(90deg,rgba(217,123,95,0.06),transparent);border-radius:12px}
+.form-card{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
+.form{background:#fff;padding:18px;border-radius:12px;border:1px solid rgba(0,0,0,0.04)}
+.side{background:linear-gradient(180deg,#fff,#fff8f6);padding:18px;border-radius:12px}
+.input{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid #e6e2e0}
+.button{background:linear-gradient(90deg,var(--accent),#b86a52);color:#fff;padding:12px 16px;border-radius:10px;border:none;font-weight:700}
+.note{font-size:13px;color:var(--muted)}
+.schedule{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.item{background:#fff;padding:12px;border-radius:10px;border:1px solid rgba(0,0,0,0.04)}
+</style>
+</head>
+<body>
+<header class="header"><div style="display:flex;align-items:center;gap:12px"><div class="logo">HM</div><div><strong>{{BUSINESS_NAME}}</strong><div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div></div></div><nav><a href="index.html">Back</a><a href="services.html">Care</a><a href="approach.html">Method</a><a href="contact.html">Contact</a></nav></header>
+<div class="container">
+<section class="hero">
+<h1 style="margin:0">Reserve time that respects your needs</h1>
+<p class="note" style="margin-top:8px">Select an option below to request availability. For urgent matters, call {{PHONE}}.</p>
+</section>
+<form class="form-card" action="{{PRIMARY_CTA_URL}}" method="post">
+<section class="form">
+<h3>Request an appointment</h3>
+<label class="note">Full name<input class="input" name="name" required></label>
+<label class="note" style="display:block;margin-top:8px">Phone<input class="input" name="phone" value="{{PHONE}}"></label>
+<label class="note" style="display:block;margin-top:8px">Email<input class="input" name="email" value="{{EMAIL}}" required></label>
+<label class="note" style="display:block;margin-top:8px">Preferred date<input class="input" name="date" type="date"></label>
+<label class="note" style="display:block;margin-top:8px">Type<select class="input" name="type"><option>Single visit</option><option>3-visit package</option><option>VIP Day</option></select></label>
+<label class="note" style="display:block;margin-top:8px">Message<textarea class="input" name="message" rows="4"></textarea></label>
+<div style="margin-top:12px;display:flex;gap:10px"><button class="button" type="submit">{{PRIMARY_CTA_LABEL}}</button><a style="padding:10px 14px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);text-decoration:none;color:var(--muted)" href="contact.html">Ask first</a></div>
+<p class="note" style="margin-top:10px">By submitting you consent to messaging for scheduling. We do not promise cures; care emphasizes education and whole-person plans.</p>
+</section>
+<aside class="side">
+<h4>Available offerings</h4>
+<div class="schedule">
+<div class="item"><strong>VIP Day — $2400</strong><div class="note">Full-day intensive, intake + protocols + plan.</div></div>
+<div class="item"><strong>Short Package — $850</strong><div class="note">3 visits focused on plan and follow-up.</div></div>
+<div class="item"><strong>Single Visit — $225</strong><div class="note">45-minute focused follow-up.</div></div>
+</div>
+<h4 style="margin-top:12px">What to expect</h4>
+<p class="note">After you request a slot we confirm details, review medications, and suggest whether labs might help clarify care. Tests are optional and discussed transparently.</p>
+<div style="margin-top:12px"><a class="button" href="book.html">{{PRIMARY_CTA_LABEL}}</a></div>
+</aside>
+</form>
+<section style="margin-top:18px">
+<h3>VIP Day outline</h3>
+<p class="note">A structured day with education, movement, practical meal planning, and a written roadmap. Labs may be offered to add clarity, always with discussion of costs and limits.</p>
+<ul class="note">
+<li>Comprehensive intake</li><li>Real-time assessments and coaching</li><li>Take-home plan and resources</li></ul>
+</section>
+<section style="margin-top:18px">
+<h3>Testimonials</h3>
+<div class="item" style="border-left:4px solid rgba(217,123,95,0.12)"><strong>Actionable and kind</strong><div class="note">"The schedule gave me tools and momentum." — R.</div></div>
+</section>
+</div>
+<footer style="padding:28px;text-align:center;color:var(--muted)">© {{BUSINESS_NAME}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • {{PHONE}}</footer>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0b0b0c;--card:#0f1720;--accent:#ffd7b5;--muted:#a8b3bd;--glass:rgba(255,255,255,0.04);--max:1100px}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;background:linear-gradient(180deg,#070708 0%,#0b0b0c 60%);color:#fff}
+    .container{max-width:var(--max);margin:48px auto;padding:40px}
+    nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}
+    .brand{font-weight:700;letter-spacing:.6px}
+    .nav-links a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:0.95rem}
+    header{display:grid;grid-template-columns:1fr 360px;gap:36px;align-items:start}
+    .hero-card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:12px;padding:32px;box-shadow:0 6px 30px rgba(3,6,12,0.6)}
+    h1{font-size:clamp(28px,4.6vw,44px);margin:0 0 10px 0;line-height:1.02}
+    p.lead{color:var(--muted);margin:0 0 18px 0}
+    .meta{display:flex;gap:12px;color:var(--muted);font-size:0.95rem}
+    .avatar{background:var(--glass);padding:18px;border-radius:12px;display:flex;flex-direction:column;align-items:center}
+    .avatar svg{width:140px;height:140px}
+    section{margin-top:28px}
+    .card{background:var(--card);padding:22px;border-radius:10px}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}
+    .micro{background:linear-gradient(90deg,#0f1720,#0b1115);padding:16px;border-radius:8px}
+    .cta{display:inline-block;margin-top:18px;background:var(--accent);color:#0b0b0c;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:700}
+    footer{margin-top:40px;color:var(--muted);font-size:0.9rem}
+    .muted{color:var(--muted)}
+    /* subtle editorial pattern */
+    .pattern{position:absolute;right:10px;top:120px;opacity:0.06}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav>
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="about.html" aria-current="page">About &amp; Philosophy</a>
+        <a href="programs.html">Paths</a>
+        <a href="services.html">Offerings</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="contact.html">Connect</a>
+      </div>
+    </nav>
+
+    <header>
+      <div class="hero-card">
+        <h1>How gentle shifts create lasting vitality</h1>
+        <p class="lead">I’m {{COACH_NAME}} {{CREDENTIALS}}. I guide people in {{CITY}}, {{STATE}} to reclaim daily energy with a rooted, spiritual approach to habits and rest.</p>
+        <div class="meta">
+          <div>Philosophy: Embodied clarity</div>
+          <div>Method: Tiny consistent changes</div>
+        </div>
+
+        <section style="margin-top:20px">
+          <div class="card">
+            <h3 style="margin:0 0 8px 0">Reflective check: a short diagnostic</h3>
+            <p class="muted" style="margin:0 0 12px 0">Answer these silently as you read — they reveal where to begin.</p>
+            <ul class="muted">
+              <li>Which three evenings in the last week felt restorative?</li>
+              <li>What small ritual helps you feel present in the morning?</li>
+              <li>Where do you notice friction in your daily rhythm?</li>
+            </ul>
+            <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          </div>
+        </section>
+
+      </div>
+
+      <aside class="avatar">
+        <!-- unique avatar SVG for about page -->
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="avatar illustration">
+          <defs>
+            <linearGradient id="gA" x1="0" x2="1">
+              <stop offset="0" stop-color="#ffd7b5"/>
+              <stop offset="1" stop-color="#ffb199"/>
+            </linearGradient>
+          </defs>
+          <rect width="200" height="200" rx="18" fill="#071016" />
+          <g transform="translate(20,20)">
+            <circle cx="60" cy="50" r="34" fill="url(#gA)" opacity="0.94" />
+            <rect x="6" y="96" width="108" height="58" rx="10" fill="#0d1418" stroke="#132028" />
+            <path d="M12 100c14-8 40-8 52 0" stroke="#ffcfa8" stroke-width="3" fill="none" stroke-linecap="round" />
+            <circle cx="40" cy="46" r="4" fill="#072" opacity="0.06" />
+          </g>
+        </svg>
+        <strong style="margin-top:12px">{{COACH_NAME}}</strong>
+        <div class="muted" style="font-size:0.9rem">{{CREDENTIALS}} • {{CITY}}, {{STATE}}</div>
+      </aside>
+    </header>
+
+    <section>
+      <h2 style="margin-bottom:8px">My coaching thread</h2>
+      <p class="muted">I blend somatic awareness, habit design, and soulful inquiry. The work centers on three commitments: noticing, choosing, repeating. Each commitment is taught through a framework I call the "Anchor-Action-After" loop.</p>
+
+      <div class="grid" style="margin-top:18px">
+        <div class="micro card">
+          <h4 style="margin-top:0">Anchor</h4>
+          <p class="muted">A short daily ritual that roots you to the present (2–5 minutes).</p>
+        </div>
+        <div class="micro card">
+          <h4 style="margin-top:0">Action</h4>
+          <p class="muted">A focused micro-habit chosen to build capacity and momentum.</p>
+        </div>
+        <div class="micro card">
+          <h4 style="margin-top:0">After</h4>
+          <p class="muted">A reflective prompt to seal learning and ease integration.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 style="margin-bottom:8px">Micro-habits I teach</h2>
+      <div style="display:flex;gap:12px;margin-top:12px">
+        <div class="card" style="flex:1">
+          <strong>2-minute breath reset</strong>
+          <div class="muted">Pause and lengthen the exhale; restores vagal tone.</div>
+        </div>
+        <div class="card" style="flex:1">
+          <strong>Evening triage</strong>
+          <div class="muted">A three-question wind-down to protect sleep quality.</div>
+        </div>
+        <div class="card" style="flex:1">
+          <strong>Micro-walk mapping</strong>
+          <div class="muted">A short intentional walk to shift thinking and posture.</div>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:28px">
+      <div class="card">
+        <h3 style="margin-top:0">Investment snapshot</h3>
+        <p class="muted" style="margin-bottom:12px">I offer short intensives, monthly coaching, and cohort programs. Each pathway prioritizes sustainable habits over quick fixes.</p>
+        <div style="display:flex;gap:12px">
+          <div style="flex:1">
+            <strong>Intro Session</strong>
+            <div class="muted">60 min discovery — ideal for clarity and next steps.</div>
+          </div>
+          <div style="flex:1">
+            <strong>Monthly 1:1</strong>
+            <div class="muted">Ongoing support with weekly micro-habit check-ins.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div class="muted">Ready to begin? <a href="{{PRIMARY_CTA_URL}}" class="cta" style="background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 12px;border-radius:8px;text-decoration:none">{{PRIMARY_CTA_LABEL}}</a></div>
+        <div class="muted">Contact: <a href="tel:{{PHONE}}" style="color:var(--muted);text-decoration:none">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}" style="color:var(--muted);text-decoration:none">{{EMAIL}}</a></div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- subtle pattern graphic (unique to about) -->
+  <svg class="pattern" width="240" height="240" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <rect x="0" y="0" width="240" height="240" rx="28" fill="#ffd7b5" opacity="0.06"/>
+    <path d="M20 160c40-80 160-80 200 0" stroke="#fff" stroke-opacity="0.04" stroke-width="18" stroke-linecap="round"/>
+  </svg>
+</body>
+</html>

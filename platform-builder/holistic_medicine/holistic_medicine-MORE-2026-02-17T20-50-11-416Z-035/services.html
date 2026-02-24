@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#FEF7F0;--card:#FFF9F4;--ink:#2F2B28;--accent:#9A5A2A;--muted:#7B6A60;--meta:#D9B99C}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;line-height:1.4;color:var(--ink);background:linear-gradient(180deg,var(--bg),#FFFDFB);min-height:100vh}
+    header{display:flex;align-items:center;justify-content:space-between;padding:22px 28px;border-bottom:1px solid rgba(47,43,40,0.06);backdrop-filter:blur(2px)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--meta),#F1E0CF);display:grid;place-items:center;font-weight:700;color:var(--accent)}
+    nav a{margin-left:18px;color:var(--muted);text-decoration:none;font-weight:600}
+    main{max-width:980px;margin:28px auto;padding:22px}
+    .hero{display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:center}
+    .heroCard{background:var(--card);padding:28px;border-radius:14px;box-shadow:0 6px 24px rgba(46,36,28,0.06)}
+    h1{margin:0 0 8px 0;font-size:22px}
+    p.lead{margin:0;color:var(--muted)}
+    .cta{display:inline-block;margin-top:12px;background:var(--accent);color:#fff;padding:10px 14px;border-radius:8px;text-decoration:none}
+    .inventory{margin-top:18px;background:linear-gradient(180deg,#fff, #FFFDF9);padding:18px;border-radius:12px;border:1px dashed rgba(154,90,42,0.12)}
+    .areas{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
+    label.area{display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;background:#FFF;box-shadow:0 2px 8px rgba(47,43,40,0.03);cursor:pointer}
+    .area input{accent-color:var(--accent)}
+    .results{margin-top:16px;padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#FBF8F5);border:1px solid rgba(154,90,42,0.06)}
+    .small{font-size:13px;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:20px}
+    .card{padding:16px;background:var(--card);border-radius:12px}
+    footer{margin-top:28px;padding:18px;text-align:center;color:var(--muted);font-size:13px}
+    /* subtle SVG pattern background via data-uri */
+    body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:0.06;background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22><defs><pattern id=%22p%22 width=%2240%22 height=%2240%22 patternUnits=%22userSpaceOnUse%22><rect width=%2240%22 height=%2240%22 fill=%22%23FFF9F4%22/><path d=%22M0,20 L20,0 M20,40 L40,20%22 stroke=%22%239A5A2A%22 stroke-opacity=%220.05%22 stroke-width=%222%22/></pattern></defs><rect width=%22100%25%22 height=%22100%25%22 fill=%22url(%23p)%22/></svg>');mix-blend-mode:multiply}
+    /* responsive */
+    @media(max-width:860px){.hero{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.areas{grid-template-columns:1fr}.brand span{display:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand"><div class="logo">HM</div><div><strong>{{BUSINESS_NAME}}</strong><div class="small">A modern integrative practice</div></div></div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Symptoms & Topics</a>
+      <a href="approach.html">Method</a>
+      <a href="book.html">Schedule</a>
+    </nav>
+  </header>
+  <main>
+    <section class="hero">
+      <div class="heroCard">
+        <h1>Structured consultations for complex lives</h1>
+        <p class="lead">We design short intensives that prioritize what matters now — mind, body, environment and daily rhythms — then give a measurable follow-up plan.</p>
+        <a class="cta" href="#inventory">Try the guided inventory</a>
+        <div class="small" style="margin-top:8px">Call us: {{PHONE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      </div>
+      <aside style="padding:10px 2px;display:flex;flex-direction:column;gap:12px;align-items:stretch">
+        <div class="card">
+          <strong>Quick intensive</strong>
+          <div class="small">60–75 minute focused session + written agenda</div>
+        </div>
+        <div class="card">
+          <strong>Deep intake</strong>
+          <div class="small">90–120 minute whole-context evaluation and plan</div>
+        </div>
+      </aside>
+    </section>
+
+    <section id="inventory" class="inventory">
+      <strong>Whole-person inventory (try it)</strong>
+      <div class="small">Tick areas that feel most pressing or tangled. We’ll sketch a session agenda and follow-up cadence you can bring to your first visit.</div>
+      <div class="areas">
+        <label class="area"><input type="checkbox" value="Sleep"/>Sleep & energy</label>
+        <label class="area"><input type="checkbox" value="Digestion"/>Digestion & appetite</label>
+        <label class="area"><input type="checkbox" value="Mood"/>Mood, motivation, anxiety</label>
+        <label class="area"><input type="checkbox" value="Stress"/>Stress & resilience</label>
+        <label class="area"><input type="checkbox" value="Movement"/>Movement & pain</label>
+        <label class="area"><input type="checkbox" value="Relationships"/>Relationships & support</label>
+        <label class="area"><input type="checkbox" value="Work"/>Work patterns</label>
+        <label class="area"><input type="checkbox" value="Environment"/>Home & environmental factors</label>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:10px">
+        <button id="makePlan" style="padding:9px 12px;border-radius:8px;background:var(--accent);color:#fff;border:0">Create agenda</button>
+        <button id="clearPlan" style="padding:9px 12px;border-radius:8px;border:1px solid rgba(47,43,40,0.06);background:#fff">Reset</button>
+      </div>
+      <div id="plan" class="results" aria-live="polite" style="display:none"></div>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h3 style="margin-top:0">How an intensive unfolds</h3>
+        <ol>
+          <li>Focused mapping of concerns (30–45m)</li>
+          <li>Evidence-aligned priorities and simple first steps</li>
+          <li>Personalized resources and a cadence for follow-up</li>
+        </ol>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0">Client notes</h3>
+        <div class="small">Short written agendas after each intensive help you keep momentum. We do not promise cure; we offer structured, learnable steps and monitoring.</div>
+      </div>
+    </section>
+
+    <section style="margin-top:18px">
+      <h3>Pricing frames</h3>
+      <div class="grid">
+        <div class="card"><strong>Starter Intensive</strong><div class="small">60–75 min intake + written agenda — clear, actionable first steps</div></div>
+        <div class="card"><strong>Foundations Cycle</strong><div class="small">Three visits over 8–12 weeks for deeper shifts and tracking</div></div>
+      </div>
+    </section>
+
+    <section style="margin-top:18px">
+      <h3>FAQs</h3>
+      <div class="card">
+        <strong>Do I need tests?</strong>
+        <p class="small">We discuss when testing adds value. Many improvements begin with behavioral, sleep and dietary adjustments.</p>
+      </div>
+    </section>
+
+    <section style="margin-top:20px;text-align:center">
+      <a class="cta" href="book.html">Reserve an intensive</a>
+      <div class="small" style="margin-top:8px">Prefer to talk? Call {{PHONE}}</div>
+    </section>
+
+  </main>
+  <footer>
+    <div>{{CITY}}, {{STATE}} • <a href="contact.html">Contact</a></div>
+  </footer>
+
+  <script>
+    (function(){
+      const make = document.getElementById('makePlan');
+      const clear = document.getElementById('clearPlan');
+      const plan = document.getElementById('plan');
+      make.addEventListener('click', ()=>{
+        const checks = Array.from(document.querySelectorAll('.areas input:checked')).map(n=>n.value);
+        if(!checks.length){
+          plan.style.display='block';
+          plan.innerHTML='<strong>Pick a few areas</strong><div class="small">Select the domains you want this session to address.</div>';
+          return;
+        }
+        // Build agenda: allocate time by priority
+        const slots = [];
+        const base = 10 + Math.floor(40 / Math.max(1,checks.length));
+        checks.forEach((c,i)=>{
+          const minutes = Math.max(10, Math.round(base - i*4));
+          slots.push({topic:c,minutes});
+        });
+        // follow-up cadence heuristic
+        let cadence = 'Check-in in 2–3 weeks by message to review immediate responses.';
+        if(checks.length>5) cadence = 'Short check-in at 1 week, then a 3-week follow-up; consider a 2–3 visit Foundations Cycle.';
+        if(checks.includes('Mood')||checks.includes('Stress')) cadence = 'Plan for a 1–2 week phone check, then 4-week follow-up to adjust coping supports.';
+
+        const agendaHtml = ['<strong>Suggested session agenda</strong>','<ul>'].concat(slots.map(s=>`<li>${s.topic}: ${s.minutes} min</li>`)).concat(['</ul>']);
+        const cadenceHtml = `<div style="margin-top:8px"><strong>Follow-up cadence</strong><div class="small">${cadence}</div></div>`;
+        plan.style.display='block';
+        plan.innerHTML = agendaHtml.join('') + cadenceHtml + '<div style="margin-top:8px"><button id="copyPlan" style="padding:8px 10px;border-radius:8px;background:var(--accent);color:#fff;border:0">Copy agenda</button></div>';
+        document.getElementById('copyPlan').addEventListener('click', ()=>{
+          const text = ['Session agenda:'].concat(slots.map(s=>`${s.topic}: ${s.minutes} min`),['Cadence: '+cadence]).join('\n');
+          navigator.clipboard?.writeText(text).then(()=>{alert('Agenda copied to clipboard')},()=>{alert('Copy failed — highlight to copy manually')});
+        });
+      });
+      clear.addEventListener('click', ()=>{
+        document.querySelectorAll('.areas input').forEach(i=>i.checked=false);
+        plan.style.display='none';
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+/* Earthy warm theme — self-contained */
+:root{
+  --bg:#fbf7f3;
+  --muted:#6b5b4a;
+  --accent:#8a5a3b;
+  --accent-2:#c7a77a;
+  --panel:#fff6ee;
+  --radius:12px;
+  --max-width:1100px;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--muted);line-height:1.5}
+.container{max-width:var(--max-width);margin:0 auto;padding:28px}
+.site-header{background:linear-gradient(180deg, rgba(138,90,59,0.08), rgba(199,167,122,0));backdrop-filter: blur(3px);}
+.site-header .container{display:flex;align-items:center;justify-content:space-between}
+.brand{font-weight:700;color:var(--accent);text-decoration:none;font-size:1.15rem}
+.main-nav a{margin-left:18px;color:var(--muted);text-decoration:none}
+.main-nav .cta{background:var(--accent);color:#fff;padding:8px 12px;border-radius:8px}
+.grid{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:center}
+@media(max-width:880px){.grid{grid-template-columns:1fr} .pattern-panel{display:none} .main-nav{display:none}}
+.kicker{font-size:1rem;color:var(--accent-2);text-transform:uppercase;letter-spacing:0.08em;margin:0 0 8px}
+.lead{font-size:1.25rem;color:var(--muted);margin:0 0 18px}
+.hero-actions{display:flex;gap:12px;align-items:center}
+.btn{padding:10px 16px;border-radius:10px;border:0;cursor:pointer}
+.btn.primary{background:var(--accent);color:white}
+.btn.ghost{background:transparent;border:1px solid rgba(107,91,74,0.12);color:var(--muted)}
+.pattern-panel{height:220px;border-radius:var(--radius);background-image:url('/assets/img/pattern.svg');background-size:cover;background-position:center}
+.pattern-fallback{width:100%;height:100%}
+.testimonials{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:12px}
+blockquote{background:var(--panel);padding:16px;border-radius:10px;margin:0;color:var(--muted)}
+.benefit-list{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;list-style:none;padding:0;margin:12px 0}
+.benefit-list li{background:linear-gradient(180deg,#fff8f1, #fff6ee);padding:16px;border-radius:10px}
+.process-steps{counter-reset:step;list-style:none;padding:0}
+.process-steps li{position:relative;padding-left:40px;margin-bottom:12px}
+.process-steps li:before{counter-increment:step;content:counter(step);position:absolute;left:0;top:0;width:32px;height:32px;border-radius:8px;background:var(--accent-2);color:#fff;display:flex;align-items:center;justify-content:center}
+.faq details{background:#fff;padding:12px;border-radius:10px;margin-bottom:12px}
+.disclaimer{color:#6b3f2a;font-weight:600}
+.cta{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;padding:18px;border-radius:12px;text-align:center}
+.site-footer{border-top:1px solid rgba(107,91,74,0.06);padding:28px 0;margin-top:40px}
+.footer-nav a{margin-right:12px;color:var(--muted);text-decoration:none}
+.contact{margin-top:10px}
+.muted{color:rgba(107,91,74,0.65)}
+/* Modal */
+.modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(11,10,8,0.35);opacity:0;pointer-events:none;transition:opacity 220ms ease}
+.modal[aria-hidden="false"]{opacity:1;pointer-events:auto}
+.modal-panel{background:white;border-radius:14px;padding:20px;max-width:640px;width:94%;position:relative}
+.modal-close{position:absolute;right:12px;top:12px;background:transparent;border:0;font-size:18px}
+.exercise .visual{height:100px;border-radius:10px;background:linear-gradient(90deg,#fff4e8,#f7efe6);margin:12px 0;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent)}
+.exercise-controls{display:flex;gap:12px}
+.journal{margin-top:12px}
+.journal.hidden{display:none}
+textarea{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(107,91,74,0.12)}
+/* Reveal animations */
+.reveal{opacity:0;transform:translateY(18px);transition:opacity 520ms ease,transform 520ms ease}
+.reveal.visible{opacity:1;transform:none}
+body.reduced-motion .reveal{transition:none;transform:none;opacity:1}
+/* Utility */
+.hidden{display:none}

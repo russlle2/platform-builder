@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>My Approach — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f2f6f6;--accent:#254c4c;--muted:#5f6d6d}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:#0f2a2a}
+    .shell{max-width:980px;margin:32px auto;padding:26px;background:#fff;border-radius:12px;box-shadow:0 12px 40px rgba(18,30,30,0.06)}
+    header{display:flex;justify-content:space-between;align-items:center}
+    h1{margin:0;color:var(--accent);font-size:18px}
+    nav a{margin-left:12px;color:var(--accent);text-decoration:none}
+    .columns{display:grid;grid-template-columns:1fr 380px;gap:20px;margin-top:18px}
+    .section{padding:14px;border-radius:10px;background:linear-gradient(180deg,#fff,#fbffff)}
+    .lead{color:var(--muted);line-height:1.5}
+    .planner{margin-top:10px}
+    label{display:block;font-size:13px;margin-top:8px}
+    select,input[type="number"],input[type="text"]{width:100%;padding:8px;border-radius:6px;border:1px solid #e1efef}
+    textarea{width:100%;padding:8px;border-radius:6px;border:1px solid #e1efef}
+    .btn{margin-top:10px;padding:9px 12px;border-radius:8px;border:0;background:var(--accent);color:#fff;cursor:pointer}
+    .summary{margin-top:10px;background:#f7fffe;border-radius:8px;padding:10px;border:1px dashed #d7efee;white-space:pre-wrap}
+    .note{font-size:13px;color:var(--muted);margin-top:10px}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div>
+        <h1>{{BUSINESS_NAME}} — My approach</h1>
+        <div class="lead">A practical, collaborative framework: small, testable changes that fit your life and priorities.</div>
+      </div>
+      <nav>
+        <a href="index.html">Welcome</a>
+        <a href="about.html">About</a>
+        <a href="specialties.html">Focus</a>
+        <a href="approach.html">My Approach</a>
+      </nav>
+    </header>
+
+    <div class="columns">
+      <main>
+        <section class="section">
+          <h2 style="margin-top:0">The work, in plain terms</h2>
+          <p class="lead">I view therapy like a workbench: we set a small number of measurable projects, try interventions that look feasible for your week-to-week life, and check what helps. The process is collaborative and paced to what you can realistically maintain.</p>
+
+          <h3 style="margin-top:14px">What to expect in the first month</h3>
+          <ul class="lead">
+            <li>One intake to map immediate concerns and practical barriers.</li>
+            <li>Two-to-three focused sessions to try a strategy and refine it.</li>
+            <li>Short, agreed-upon steps between sessions (experiments, scheduling, brief exercises).</li>
+          </ul>
+
+          <div class="note">This is outpatient psychotherapy and not an emergency service. If you are in immediate danger, please contact local emergency services. Confidentiality is maintained within legal and ethical limits; I will review these limits with you.</div>
+        </section>
+
+        <section class="section" style="margin-top:14px">
+          <h3 style="margin-top:0">Self-screening intake — exploratory version</h3>
+          <p class="lead">A different intake wizard to highlight situations, supports, and practical questions you may want to bring to an initial visit.</p>
+
+          <div id="wizard2">
+            <label for="situation">Briefly, describe a recent situation that felt difficult</label>
+            <textarea id="situation" rows="3"></textarea>
+
+            <label for="frequency">How often does this happen?</label>
+            <select id="frequency"><option>Daily</option><option>Several times a week</option><option>Weekly</option><option>Less often</option></select>
+
+            <label for="impact">What area of life is most affected?</label>
+            <select id="impact"><option>Work/study</option><option>Relationships</option><option>Sleep/energy</option><option>Other</option></select>
+
+            <button class="btn" id="createBringList">Generate a bring-list</button>
+
+            <div id="bringOutput" class="summary" style="display:none"></div>
+            <button id="copyBring" class="btn" style="display:none;background:#3b6b6b">Copy to clipboard</button>
+          </div>
+
+          <script>
+            (function(){
+              document.getElementById('createBringList').addEventListener('click',function(){
+                var s=document.getElementById('situation').value.trim();
+                var f=document.getElementById('frequency').value;
+                var i=document.getElementById('impact').value;
+                if(!s){alert('A short example helps us make useful questions.');return}
+                var lines=[];
+                lines.push('Bring-list for an initial meeting:');
+                lines.push('- Short description: '+s);
+                lines.push('- Frequency: '+f);
+                lines.push('- Area affected: '+i);
+                lines.push('\nQuestions you might ask:');
+                lines.push('• What pattern of steps would you suggest for the first 4 weeks?');
+                lines.push('• What practical skills or routines could fit my current schedule?');
+                lines.push('• How will we notice small improvement?');
+                var out=lines.join('\n');
+                var el=document.getElementById('bringOutput');el.textContent=out;el.style.display='block';
+                document.getElementById('copyBring').style.display='inline-block';
+              });
+              document.getElementById('copyBring').addEventListener('click',function(){
+                var t=document.getElementById('bringOutput').textContent;navigator.clipboard&&navigator.clipboard.writeText(t).then(function(){alert('Copied')},function(){alert('Copy failed')});
+              });
+            })();
+          </script>
+
+        </section>
+      </main>
+
+      <aside>
+        <section class="section">
+          <h3 style="margin-top:0">Session Planner</h3>
+          <p class="lead">Quickly sketch a small plan that fits your time and goals. You can copy a plaintext summary to bring to our first call.</p>
+
+          <div class="planner">
+            <label for="goalText">Primary goal (one short sentence)</label>
+            <input id="goalText" type="text" placeholder="e.g., reduce evening worry to sleep better">
+
+            <label for="frequencyChoice">Session rhythm</label>
+            <select id="frequencyChoice"><option>Weekly</option><option>Every other week</option><option>Monthly check-in</option></select>
+
+            <label for="sessionFocus">Early session focus</label>
+            <select id="sessionFocus"><option>Skill building (practical strategies)</option><option>Relationships & boundaries</option><option>Behavioral activation & routines</option><option>Short-term planning for transitions</option></select>
+
+            <label for="timeAvailable">Weekly time you can commit</label>
+            <input id="timeAvailable" type="text" placeholder="e.g., 45 minutes, or two 20-minute check-ins">
+
+            <button class="btn" id="buildPlan">Build my plan</button>
+
+            <div id="planSummary" class="summary" style="display:none"></div>
+            <button id="copyPlan" class="btn" style="display:none;background:#3b6b6b">Copy plan</button>
+          </div>
+
+          <script>
+            (function(){
+              function safe(v){return (v||'—')}
+              document.getElementById('buildPlan').addEventListener('click',function(){
+                var goal=document.getElementById('goalText').value.trim();
+                var freq=document.getElementById('frequencyChoice').value;
+                var focus=document.getElementById('sessionFocus').value;
+                var time=document.getElementById('timeAvailable').value.trim();
+                if(!goal){alert('A short goal helps make a clearer plan.');return}
+                var lines=[];
+                lines.push('Personal session plan');
+                lines.push('Goal: '+safe(goal));
+                lines.push('Planned rhythm: '+safe(freq));
+                lines.push('Early focus: '+safe(focus));
+                lines.push('Weekly time available: '+safe(time));
+                lines.push('\nSuggested first steps:');
+                lines.push('1) Intake & problem mapping (one session) — identify 2 concrete targets.');
+                lines.push('2) Skill-focused work (1–3 sessions) — brief exercises tailored to your week.');
+                lines.push('3) Check-in and adjust (ongoing) — short review of what changed and next priorities.');
+                var out=lines.join('\n');
+                var el=document.getElementById('planSummary');el.textContent=out;el.style.display='block';
+                document.getElementById('copyPlan').style.display='inline-block';
+              });
+              document.getElementById('copyPlan').addEventListener('click',function(){
+                var t=document.getElementById('planSummary').textContent;navigator.clipboard&&navigator.clipboard.writeText(t).then(function(){alert('Plan copied')},function(){alert('Copy failed')});
+              });
+            })();
+          </script>
+
+          <div class="note">If you have questions about whether this approach fits your needs, call or email to arrange a short consultation. For urgent safety concerns, contact emergency services.</div>
+
+        </section>
+      </aside>
+    </div>
+
+    <footer style="margin-top:18px;color:var(--muted)">
+      <div>For questions about access, sliding scale options, or paperwork, reach out at <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a>.</div>
+    </footer>
+  </div>
+</body>
+</html>

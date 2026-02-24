@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Journeys — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7fbfb;--ink:#122023;--muted:#516366;--accent:#4a7c74;--card:#ffffff}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto;background:var(--bg);color:var(--ink)}
+    .container{max-width:980px;margin:36px auto;padding:20px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    .hero{padding:18px;background:linear-gradient(180deg,rgba(74,124,116,0.06),transparent);border-radius:10px}
+    .programs{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
+    .list{display:flex;flex-direction:column;gap:12px}
+    .prog{background:var(--card);padding:14px;border-radius:10px;box-shadow:0 10px 22px rgba(18,32,35,0.04)}
+    .prog h3{margin:0}
+    .meta{color:var(--muted);font-size:13px}
+    .selector{display:flex;gap:8px;margin-top:10px}
+    .mood{padding:10px;border-radius:8px;border:1px solid #eef3f3;cursor:pointer}
+    .mood.selected{background:linear-gradient(90deg,rgba(74,124,116,0.12),transparent);border-color:rgba(74,124,116,0.18)}
+    .cta{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:8px;background:var(--accent);color:white;text-decoration:none;font-weight:700}
+    @media(max-width:900px){.programs{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+  <div class='container'>
+    <header>
+      <div><strong>{{BUSINESS_NAME}}</strong></div>
+      <nav>
+        <a href='index.html'>Practice</a>
+        <a href='about.html'>About</a>
+        <a href='services.html'>Offerings</a>
+        <a href='contact.html'>Reach</a>
+      </nav>
+    </header>
+
+    <section class='hero'>
+      <h1>Programs shaped to living life</h1>
+      <p style='color:var(--muted)'>Programs are named for the change they shepherd—each is a compact architecture of habits and checkpoints.</p>
+    </section>
+
+    <div class='programs'>
+      <div class='list'>
+        <div class='prog'>
+          <h3>Alignment Course</h3>
+          <div class='meta'>10 weeks of pacing, tools, and measurable checkpoints for steadier days.</div>
+          <div style='margin-top:10px'>
+            <strong>Includes:</strong>
+            <ul style='margin:6px 0 0 18px;color:var(--muted)'>
+              <li>Weekly coaching</li>
+              <li>Custom habit map</li>
+              <li>Mid-course review</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class='prog'>
+          <h3>Momentum Mini</h3>
+          <div class='meta'>Six focused weeks—pairing a single outcome with daily micro-habits.</div>
+          <div style='margin-top:10px'>
+            <strong>Includes:</strong>
+            <ul style='margin:6px 0 0 18px;color:var(--muted)'>
+              <li>Bi-weekly check-ins</li>
+              <li>Daily micro-prompts</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <aside>
+        <section class='card prog' style='padding:14px'>
+          <h4>Choose how you feel</h4>
+          <p style='color:var(--muted)'>Select a current state to reveal the program rhythm I suggest and a tailored next step.</p>
+
+          <div class='selector' id='moodPane'>
+            <div class='mood' data-title='Anchor & Shorten' data-desc='Daily 10-minute anchors and a weekly check to shore up constant pressure.' data-cta='Join a Momentum Mini'>Busy</div>
+            <div class='mood' data-title='Pace & Build' data-desc='Stretch across six to ten weeks: gentle increases, paired cues, and an easy tracking habit.' data-cta='Start an Alignment Course'>Depleted</div>
+            <div class='mood' data-title='Tidy Reset' data-desc='A tight 2–3 week reset—clear practices and defined endpoints to regain clarity.' data-cta='Begin a Tidy Reset'>Unfocused</div>
+          </div>
+
+          <div style='margin-top:12px'>
+            <h4 id='progTitle'>Suggested path</h4>
+            <p id='progDesc' style='color:var(--muted)'>Select a state to see the recommended program rhythm.</p>
+            <a id='progCta' class='cta' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a>
+          </div>
+        </section>
+
+        <section class='prog' style='margin-top:12px'>
+          <h4>Simple commitments</h4>
+          <p style='color:var(--muted)'>Programs pair outcome-driven targets with three repeatable cues. They are coaching plus a living plan.</p>
+          <div style='margin-top:8px'><a class='cta' href='{{PRIMARY_CTA_URL}}'>Talk about a program</a></div>
+        </section>
+      </aside>
+    </div>
+
+    <footer style='margin-top:20px;color:var(--muted)'>
+      <div>Reach out at <a href='mailto:{{EMAIL}}' style='color:inherit;text-decoration:none'>{{EMAIL}}</a></div>
+    </footer>
+  </div>
+
+  <script>
+    // Mood-to-Method selector (programs)
+    (function(){
+      const items = document.querySelectorAll('#moodPane .mood');
+      const title = document.getElementById('progTitle');
+      const desc = document.getElementById('progDesc');
+      const cta = document.getElementById('progCta');
+
+      items.forEach(it => {
+        it.addEventListener('click', ()=>{
+          items.forEach(i=>i.classList.remove('selected'));
+          it.classList.add('selected');
+          title.textContent = it.getAttribute('data-title');
+          desc.textContent = it.getAttribute('data-desc');
+          cta.textContent = it.getAttribute('data-cta');
+          cta.href = '{{PRIMARY_CTA_URL}}';
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

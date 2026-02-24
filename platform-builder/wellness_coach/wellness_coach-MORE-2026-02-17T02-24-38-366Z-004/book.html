@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Book an Event — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#ffffff;--card:#0b2130;--accent:#2aa6ad;--sun:#ffb86b}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:linear-gradient(180deg,#f8feff,#eefefe);color:#073046}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 26px}
+    nav a{margin-left:14px;color:#0a4953;text-decoration:none}
+    main{max-width:980px;margin:20px auto;padding:18px}
+    .wrap{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .card{background:#ffffff;border-radius:12px;padding:16px;box-shadow:0 8px 30px rgba(10,40,50,0.06)}
+    h1{margin-top:0}
+    .mood-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .mood-pill{padding:8px 10px;border-radius:999px;border:1px solid #d4f1f0;background:#eaf8f8;cursor:pointer;font-weight:700}
+    .mood-pill.active{background:var(--accent);color:#fff}
+    .suggestion{margin-top:12px;padding:12px;border-radius:10px;background:linear-gradient(90deg,#e9fffb,#fff);border:1px solid #d8f3f2}
+    label{display:block;margin-top:10px;font-weight:700}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #dceff0;margin-top:6px}
+    .btn{display:inline-block;padding:10px 14px;border-radius:9px;background:var(--sun);color:#052026;text-decoration:none;font-weight:800;margin-top:12px}
+    .events{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+    .event{padding:10px;border-radius:8px;background:#fffef8;border:1px solid #fff1d6}
+    @media(max-width:880px){.wrap{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style='font-weight:800'>{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href='index.html'>Home</a>
+      <a href='programs.html'>Series</a>
+      <a href='services.html'>Guides</a>
+      <a href='contact.html'>Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class='wrap'>
+      <div class='card'>
+        <h1>Book a session or a series</h1>
+        <p style='color:#4f7b7b'>Choose the format that fits your current momentum. We'll adapt the flow to focus on outcomes, habits, and a repeatable routine.</p>
+
+        <div style='margin-top:12px'>
+          <div style='font-weight:800'>Mood-to-Method</div>
+          <div style='font-size:13px;color:#6b9b9b'>Pick the state that best describes you — the booking call-to-action will adapt to reflect a recommended approach.</div>
+          <div class='mood-row' id='moods'>
+            <button class='mood-pill' data-key='shelter'>Drained</button>
+            <button class='mood-pill' data-key='ready'>Ready to Build</button>
+            <button class='mood-pill' data-key='burst'>High Energy</button>
+            <button class='mood-pill' data-key='seek'>Exploring</button>
+          </div>
+
+          <div class='suggestion' id='methodSuggest'>No mood selected yet — pick one to see a tailored suggestion.</div>
+        </div>
+
+        <form id='bookForm' action='{{PRIMARY_CTA_URL}}' method='get' style='margin-top:14px'>
+          <label for='name'>Name</label>
+          <input id='name' name='name' placeholder='Your name' required>
+
+          <label for='email'>Email</label>
+          <input id='email' name='email' type='email' placeholder='you@example.com' required>
+
+          <label for='offering'>Preferred offering</label>
+          <select id='offering' name='offering'>
+            <option value='starter'>Starter Rhythm — 1:1 monthly</option>
+            <option value='series'>Signature Series — 12-week</option>
+            <option value='workshop'>Focused Workshop — event series</option>
+          </select>
+
+          <label for='notes'>Notes (goals or constraints)</label>
+          <textarea id='notes' name='notes' rows='4' placeholder='A few lines about what you want to focus on'></textarea>
+
+          <input type='hidden' id='moodField' name='mood' value=''>
+
+          <button class='btn' id='bookCta' type='submit'>{{PRIMARY_CTA_LABEL}}</button>
+        </form>
+      </div>
+
+      <aside class='card'>
+        <div style='font-weight:800'>Upcoming event-style series</div>
+        <div class='events'>
+          <div class='event'>
+            <div style='font-weight:700'>Weekend Reset — Mini Retreat</div>
+            <div style='font-size:13px;color:#4f7b7b'>Two-day guided practices + 6-week follow-up</div>
+          </div>
+          <div class='event'>
+            <div style='font-weight:700'>Sprint: Habit & Measure (6 weeks)</div>
+            <div style='font-size:13px;color:#4f7b7b'>Small experiments, quick feedback loops</div>
+          </div>
+          <div class='event'>
+            <div style='font-weight:700'>Energy Mapping Workshop</div>
+            <div style='font-size:13px;color:#4f7b7b'>Align tasks to natural rhythms</div>
+          </div>
+        </div>
+
+        <div style='margin-top:14px'>
+          <div style='font-weight:800'>Need help?</div>
+          <div style='font-size:13px;color:#4f7b7b;margin-top:6px'>Call <strong>{{PHONE}}</strong> or email <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a></div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    // Mood-to-Method: update suggestion and CTA text
+    (function(){
+      const map = {
+        shelter: {
+          title: 'Recovery First',
+          text: 'Short weekly check-ins, emphasis on small recoveries and sleep hygiene. Pace the work, build a 3-step evening anchor.',
+          cta: 'Book a Recovery Call',
+          moodVal: 'drained'
+        },
+        ready: {
+          title: 'Block & Build',
+          text: 'Structured weekly blocks, habit tracking, and an accountability rhythm that scales. Great for steady builders.',
+          cta: 'Start a Weekly Plan',
+          moodVal: 'ready_to_build'
+        },
+        burst: {
+          title: 'High-Intensity Sprint',
+          text: 'Intensive 6–12 week plan with clear milestones and focused measurement — good for ambitious short-term goals.',
+          cta: 'Launch a Sprint',
+          moodVal: 'high_energy'
+        },
+        seek: {
+          title: 'Discovery Sessions',
+          text: 'Exploratory calls to identify leverage points and design quick experiments to try over two weeks.',
+          cta: 'Schedule Discovery',
+          moodVal: 'exploring'
+        }
+      };
+
+      const pills = document.querySelectorAll('.mood-pill');
+      const suggest = document.getElementById('methodSuggest');
+      const cta = document.getElementById('bookCta');
+      const moodField = document.getElementById('moodField');
+
+      function setMood(key){
+        pills.forEach(p=>p.classList.toggle('active', p.getAttribute('data-key')===key));
+        const data = map[key];
+        // animate simple fade
+        suggest.style.opacity = 0;
+        setTimeout(()=>{
+          suggest.innerHTML = '<strong>'+data.title+'</strong><div style="margin-top:8px;color:#17595a">'+data.text+'</div>';
+          cta.textContent = data.cta;
+          moodField.value = data.moodVal;
+          suggest.style.opacity = 1;
+        },160);
+      }
+
+      pills.forEach(p=>p.addEventListener('click', function(){ setMood(this.getAttribute('data-key')); }));
+
+      // default choose 'ready' for a slightly proactive starting state
+      setTimeout(()=>setMood('ready'),200);
+    })();
+  </script>
+</body>
+</html>

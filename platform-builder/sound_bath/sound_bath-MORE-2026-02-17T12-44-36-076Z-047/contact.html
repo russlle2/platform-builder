@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Connect • {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1720;--card:#0b1220;--accent:#9be7ff;--muted:#9aa6b2;--glass:rgba(255,255,255,0.04);--radius:14px}
+    *{box-sizing:border-box;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#08101a 0%,#08131a 50%,#061018 100%);color:#e6f6fb}
+    /* unique SVG pattern as data URI for background texture */
+    body::before{content:"";position:fixed;inset:0;opacity:0.06;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240"><defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="%239be7ff" stop-opacity="0.3"/><stop offset="1" stop-color="%2300b4ff" stop-opacity="0.05"/></linearGradient></defs><rect width="240" height="240" fill="none"/><g stroke="url(%23g)" stroke-width="0.75"><path d="M0 24c24 0 24 24 48 24s24-24 48-24 24 24 48 24 24-24 48-24" fill="none" stroke-opacity="0.6"/></g></svg>');background-size:420px 420px;mix-blend-mode:screen}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;position:relative;z-index:10}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#5dd0ff);display:flex;align-items:center;justify-content:center;color:#042;box-shadow:0 6px 20px rgba(0,0,0,0.6)}
+    nav a{color:var(--muted);text-decoration:none;margin:0 10px;font-weight:600}
+    nav a:hover{color:var(--accent)}
+    .wrap{max-width:980px;margin:24px auto;padding:28px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:18px;box-shadow:0 10px 30px rgba(2,6,23,0.7)}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+    .eyebrow{color:var(--accent);font-weight:700;letter-spacing:0.06em}
+    h1{margin:8px 0 12px;font-size:34px;line-height:1.05}
+    p.lead{color:var(--muted);margin:0 0 18px}
+    .cta-row{display:flex;gap:12px;align-items:center}
+    .btn{padding:12px 16px;border-radius:12px;background:linear-gradient(90deg,var(--accent),#5dd0ff);color:#042;font-weight:800;border:none;cursor:pointer}
+    .outline{background:transparent;border:1px solid rgba(155,231,255,0.12);padding:10px 14px;border-radius:12px;color:var(--muted)}
+
+    /* panel */
+    .panel{background:var(--card);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .mixer{display:flex;flex-direction:column;gap:10px}
+    .levels{display:flex;gap:8px}
+    .level{flex:1;padding:10px;border-radius:10px;text-align:center;background:var(--glass);cursor:pointer;color:var(--muted);font-weight:700}
+    .level.active{background:linear-gradient(180deg,rgba(155,231,255,0.12),rgba(91,192,255,0.06));color:var(--accent);box-shadow:0 6px 22px rgba(9,29,38,0.5)}
+    .rooms{margin-top:8px;display:grid;grid-template-columns:1fr;gap:8px}
+    .room{padding:10px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02)}
+
+    /* proof gallery */
+    .proof{display:flex;gap:12px;align-items:center}
+    .testimonials{flex:1;min-height:120px;position:relative}
+    .testimonial{position:absolute;inset:0;padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);display:none}
+    .testimonial.active{display:block}
+    .badges{width:132px;display:flex;flex-direction:column;gap:10px}
+    .badge{background:var(--glass);padding:10px;border-radius:10px;text-align:center;cursor:default;position:relative}
+    .badge:hover{transform:translateY(-4px);box-shadow:0 8px 22px rgba(0,0,0,0.6)}
+    .tooltip{position:absolute;left:110%;top:50%;transform:translateY(-50%);white-space:nowrap;background:#02283a;padding:8px;border-radius:8px;color:var(--accent);font-size:13px;display:none}
+    .badge:hover .tooltip{display:block}
+
+    form.contact{display:grid;gap:8px}
+    input,textarea,select{padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+    textarea{min-height:120px;resize:vertical}
+    .muted{color:var(--muted);font-size:13px}
+    footer{margin-top:18px;color:var(--muted);font-size:13px;text-align:center}
+
+    @media (max-width:860px){.hero{grid-template-columns:1fr;}.badges{flex-direction:row;width:auto}.panel{margin-top:12px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo" aria-hidden>♪</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="events.html">Gatherings</a>
+      <a href="private-sessions.html">Intimate Sessions</a>
+      <a href="pricing.html">Rates</a>
+      <a href="about.html">Story</a>
+      <a href="faq.html">Answers</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html" style="color:var(--accent)">Connect</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div>
+        <div class="eyebrow">A cohort rhythm for attentive rest</div>
+        <h1>Reach out — we’ll match you to a session that fits your tempo</h1>
+        <p class="lead">Tell us a little about your sound appetite, and we’ll recommend the cohort cycle that best supports the kind of unwind you want. From soft wrap-arounds to deeply textured resonance, we design an hour you can actually arrive in.</p>
+        <div class="cta-row">
+          <button class="btn" onclick="document.getElementById('contact-form').scrollIntoView({behavior:'smooth'})">{{PRIMARY_CTA_LABEL}}</button>
+          <a class="outline" href="{{PRIMARY_CTA_URL}}">Reserve a spot</a>
+        </div>
+
+        <div style="margin-top:18px;display:flex;gap:12px">
+          <div class="panel" style="flex:1">
+            <strong>Quick connect</strong>
+            <div class="muted" style="margin-top:6px">Prefer a call? Reach us at</div>
+            <div style="margin-top:8px;font-weight:700">{{PHONE}}</div>
+          </div>
+          <div class="panel" style="width:220px">
+            <strong>Hours</strong>
+            <div class="muted" style="margin-top:6px">Sessions run across evenings and weekend afternoons. Cohort cycles change monthly.</div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <div style="font-weight:800;margin-bottom:8px">Sound Preference Mixer</div>
+        <div class="mixer">
+          <div class="levels" role="tablist" aria-label="sound intensity choices">
+            <div class="level" data-level="gentle">Gentle</div>
+            <div class="level active" data-level="medium">Balanced</div>
+            <div class="level" data-level="intense">Deep</div>
+          </div>
+          <div class="rooms" id="recommendations">
+            <!-- generated recommendations -->
+            <div class="room"><strong>Balanced Drift</strong>
+              <div class="muted">A curated cohort hour with singing bowls, ambient drones, and invited silence. Perfect for a mid-week reset.</div>
+            </div>
+          </div>
+          <div style="margin-top:10px" class="muted">Tips: choose "Gentle" for soft touchpoints and guided breath; "Deep" if you want denser harmonic layers. We match the cohort and instruments accordingly.</div>
+        </div>
+      </aside>
+    </section>
+
+    <section style="margin-top:22px;display:grid;grid-template-columns:2fr 1fr;gap:16px">
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <strong style="font-size:16px">Proof Gallery</strong>
+            <div class="muted" style="font-size:13px">Rotating experiences from recent cohorts</div>
+          </div>
+          <div class="muted">Credibility badges with context</div>
+        </div>
+
+        <div style="margin-top:12px" class="proof">
+          <div class="testimonials" id="testimonials">
+            <div class="testimonial active" data-id="0">
+              <div style="font-weight:700">"A soft, exacting hour — I slept better the same night."</div>
+              <div class="muted" style="margin-top:6px">— Q, designer</div>
+            </div>
+            <div class="testimonial" data-id="1">
+              <div style="font-weight:700">"The cohort rhythm made the practice stick — small habits, big change."</div>
+              <div class="muted" style="margin-top:6px">— R, teacher</div>
+            </div>
+            <div class="testimonial" data-id="2">
+              <div style="font-weight:700">"Layered tones that felt intentional, not random. Deeply held space."</div>
+              <div class="muted" style="margin-top:6px">— S, nurse</div>
+            </div>
+          </div>
+
+          <div class="badges">
+            <div class="badge" data-tip="Featured in a local wellness guide">
+              Local Pick
+              <div class="tooltip">Curated by the city wellness list — recommended gatherings</div>
+            </div>
+            <div class="badge" data-tip="Practitioner-led cohorts, background-checked">
+              Practitioner Vetted
+              <div class="tooltip">Facilitators are trained and insured; safe container practice.</div>
+            </div>
+            <div class="badge" data-tip="Cohort format with rotating facilitators">
+              Cohort Model
+              <div class="tooltip">Small groups (10–16) that cycle monthly for steady practice.</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button class="outline" id="prev">Previous</button>
+          <button class="outline" id="next">Next</button>
+        </div>
+
+      </div>
+
+      <aside class="panel">
+        <strong>Quick inquiries</strong>
+        <div class="muted" style="margin-top:8px">Drop a note — we reply within 48 hours for cohort sign-ups and private session requests.</div>
+        <div style="margin-top:12px;font-size:13px">
+          <div style="font-weight:700">Email</div>
+          <div class="muted">{{EMAIL}}</div>
+        </div>
+        <div style="margin-top:12px;font-size:13px">
+          <div style="font-weight:700">Phone</div>
+          <div class="muted">{{PHONE}}</div>
+        </div>
+        <div style="margin-top:12px">
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </aside>
+    </section>
+
+    <section style="margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="panel">
+        <strong>Contact form</strong>
+        <form id="contact-form" class="contact" onsubmit="submitForm(event)">
+          <input name="name" placeholder="Your name" required>
+          <input name="email" placeholder="Email" required>
+          <input name="phone" placeholder="Phone (optional)">
+          <select name="interest">
+            <option value="cohort">Join the cohort</option>
+            <option value="private">Private session</option>
+            <option value="collab">Collaboration / partner event</option>
+          </select>
+          <textarea name="message" placeholder="How can we help? Tell us a bit about your timing and sound preference."></textarea>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button type="submit" class="btn">Send inquiry</button>
+            <div class="muted" style="font-size:13px">Or email us at <a href="mailto:{{EMAIL}}" style="color:var(--accent)">{{EMAIL}}</a></div>
+          </div>
+        </form>
+        <div class="muted" style="margin-top:10px">After you reach out, we’ll invite you to the next cohort intake and suggest the session suited to your preference level.</div>
+      </div>
+
+      <div class="panel">
+        <strong>Health & safety — important</strong>
+        <div class="muted" style="margin-top:8px">Contraindications: If you are pregnant, have epilepsy, a history of seizures, a recent concussion, or are under the influence of mind-altering substances, please consult your healthcare provider before attending. Sound experiences can be intense for some bodies; let us know about significant medical or psychiatric history when you register so we can recommend appropriately tailored sessions or a private appointment.</div>
+
+        <div style="margin-top:12px">
+          <strong>Cohort pricing</strong>
+          <div class="muted" style="margin-top:6px">We use a cohort-cycle model rather than per-class tickets. This supports a shared practice and fair pricing across the month. Ask for current cycle rates when you contact us.</div>
+        </div>
+
+        <div style="margin-top:12px">
+          <strong>Accessibility</strong>
+          <div class="muted" style="margin-top:6px">Most venues are wheelchair accessible; if you need specific accommodations, note it in your message and we’ll do our best to support you.</div>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:18px" class="panel">
+      <strong>Common questions</strong>
+      <div style="margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div>
+          <div style="font-weight:700">What should I bring?</div>
+          <div class="muted">A mat, a blanket, and an eye pillow if you like; we have extras for first-timers.</div>
+        </div>
+        <div>
+          <div style="font-weight:700">Is there a refund policy?</div>
+          <div class="muted">Cohort cycles are prepaid; partial refunds depend on timing. We will discuss specifics on contact.</div>
+        </div>
+        <div>
+          <div style="font-weight:700">Are sessions suitable for beginners?</div>
+          <div class="muted">Yes. Cohort formats include orientation moments and gentle options for first-time attendees.</div>
+        </div>
+        <div>
+          <div style="font-weight:700">Can I schedule a private session?</div>
+          <div class="muted">Absolutely — select "Private session" in the form and we’ll propose openings and bespoke pricing.</div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="muted">© {{BUSINESS_NAME}} — <a href="privacy.html" style="color:var(--muted)">Privacy</a> • <a href="terms.html" style="color:var(--muted)">Terms</a></div>
+    </footer>
+  </main>
+
+  <script>
+    // Mixer logic — changes recommendations based on chosen intensity
+    (function(){
+      const levels = document.querySelectorAll('.level');
+      const rec = document.getElementById('recommendations');
+      const programs = {
+        gentle: [{title:'Moonbridge Soften',desc:'A contact-oriented cohort with guided breath and high-ratio bowl wash. Soft dynamic range, ample guided moments.'}],
+        medium: [{title:'Balanced Drift',desc:'Mixed harmonic bowls and live, short-form vocal drones. Cohort discussion optional; designed for steady unwinding.'}],
+        intense: [{title:'Resonant Deepcycle',desc:'Denser metal and gong layers, extended sustain, longer silent windows. Best for those seeking layered immersion.'}]
+      };
+
+      function render(level){
+        rec.innerHTML = '';
+        programs[level].forEach(p => {
+          const d = document.createElement('div');
+          d.className = 'room';
+          d.innerHTML = '<strong>'+p.title+'</strong><div class="muted" style="margin-top:6px">'+p.desc+'</div>';
+          rec.appendChild(d);
+        });
+      }
+
+      levels.forEach(el=>el.addEventListener('click',e=>{
+        levels.forEach(l=>l.classList.remove('active'));
+        el.classList.add('active');
+        render(el.dataset.level);
+      }));
+
+      // initial
+      render('medium');
+    })();
+
+    // Proof gallery rotation and controls
+    (function(){
+      const items = document.querySelectorAll('.testimonial');
+      let idx = 0; let timer;
+      const nextBtn = document.getElementById('next');
+      const prevBtn = document.getElementById('prev');
+
+      function show(i){
+        items.forEach(it=>it.classList.remove('active'));
+        items[i].classList.add('active');
+      }
+
+      function advance(dir=1){
+        idx = (idx + dir + items.length) % items.length;
+        show(idx);
+      }
+
+      nextBtn.addEventListener('click',()=>{advance(1); resetTimer();});
+      prevBtn.addEventListener('click',()=>{advance(-1); resetTimer();});
+
+      function startTimer(){ timer = setInterval(()=>advance(1),6000); }
+      function resetTimer(){ clearInterval(timer); startTimer(); }
+      startTimer();
+    })();
+
+    // Simple contact submission handler (mock)
+    function submitForm(e){
+      e.preventDefault();
+      const data = new FormData(e.target);
+      const payload = {};
+      data.forEach((v,k)=>payload[k]=v);
+      // Since this is a static demo, we'll open mailto as a helpful fallback
+      const subject = encodeURIComponent('Inquiry from '+(payload.name||'Web')+' — '+payload.interest);
+      const body = encodeURIComponent('Message:\n'+(payload.message||'')+'\n\nPhone: '+(payload.phone||'') );
+      window.location.href = 'mailto:{{EMAIL}}?subject='+subject+'&body='+body;
+    }
+  </script>
+</body>
+</html>

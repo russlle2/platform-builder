@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book a Session — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Schedule a clarity call or coaching session with {{COACH_NAME}} — evidence-informed, habit-first coaching.">
+  <style>
+    :root{--bg:#f6fbfb;--ink:#0b1a1a;--muted:#476161;--accent:#7de3c7;--card:#ffffff;--glass:rgba(11,26,26,0.04);font-family:Inter,system-ui,Segoe UI,Roboto,Arial}
+    body{margin:0;background:linear-gradient(180deg,var(--bg) 0%, #eef9f8 70%);color:var(--ink)}
+    .wrap{max-width:920px;margin:0 auto;padding:28px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{color:var(--muted);margin-left:14px;text-decoration:none}
+    .hero{display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:center;margin-top:18px}
+    h1{margin:0;font-size:32px}
+    p{margin:8px 0;color:var(--muted)}
+    .form{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 12px 40px rgba(3,18,18,0.06)}
+    label{display:block;margin-top:10px;font-weight:600}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6f0ee;margin-top:6px}
+    button{background:var(--accent);border:none;padding:10px 14px;border-radius:10px;font-weight:700;margin-top:12px}
+    .info{background:var(--glass);padding:12px;border-radius:10px;color:var(--muted);margin-top:12px}
+    .svg-fig{display:block}
+    .faq dt{font-weight:700;margin-top:10px}
+    footer{margin-top:36px;color:var(--muted);font-size:13px;text-align:center}
+    @media(max-width:880px){.hero{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="services.html">Offerings</a>
+        <a href="testimonials.html">Testimonials</a>
+        <a href="pricing.html">Packages</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <!-- HERO: Reserve a Session (booking-focused) -->
+    <section class="hero">
+      <div>
+        <h1>Reserve a session — clarity calls & coaching blocks</h1>
+        <p>Book a 20-minute clarity call to map a next step, or schedule a full-length session. Calls focus on rapid diagnosis and a practical first experiment.</p>
+        <div style="display:flex;gap:12px;margin-top:12px">
+          <a href="{{PRIMARY_CTA_URL}}" style="background:var(--accent);padding:10px 14px;border-radius:10px;color:#042522;font-weight:700;text-decoration:none">{{PRIMARY_CTA_LABEL}}</a>
+          <a href="pricing.html" style="align-self:center;color:var(--muted);text-decoration:underline">See packages</a>
+        </div>
+
+        <div class="info">
+          <strong>Lead magnet:</strong> Receive the 7-question reflection worksheet after your clarity call to accelerate your first week.
+        </div>
+      </div>
+
+      <div class="svg-fig form" aria-hidden="true">
+        <!-- assets/img/hero.svg (unique to book page) -->
+        <svg viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="booking abstract">
+          <rect width="300" height="220" rx="16" fill="#e8f9f3"/>
+          <g fill="#7de3c7" opacity="0.95">
+            <rect x="18" y="26" width="120" height="18" rx="6"/>
+            <rect x="18" y="56" width="240" height="12" rx="6"/>
+            <rect x="18" y="86" width="180" height="12" rx="6"/>
+            <circle cx="240" cy="160" r="28"/>
+          </g>
+        </svg>
+      </div>
+    </section>
+
+    <!-- BOOKING FORM (primary CTA here) -->
+    <section style="margin-top:18px" class="form">
+      <h2 style="margin:0 0 8px">Book now — clarity call (20 min) or full session</h2>
+      <form action="{{PRIMARY_CTA_URL}}" method="get">
+        <label for="name">Your name</label>
+        <input id="name" name="name" placeholder="First & last" required>
+
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" placeholder="you@example.com" required>
+
+        <label for="type">I am interested in</label>
+        <select id="type" name="type">
+          <option>20-minute clarity call</option>
+          <option>60-minute coaching session</option>
+          <option>Program inquiry (Starter / Momentum / Transformation)</option>
+        </select>
+
+        <label for="note">Brief note</label>
+        <textarea id="note" name="note" rows="4" placeholder="What brings you here?"> </textarea>
+
+        <button type="submit">Request booking</button>
+      </form>
+
+      <div class="info" style="margin-top:12px">Prefer to reach out directly? Call <a href="tel:{{PHONE}}" style="color:inherit;text-decoration:underline">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}" style="color:inherit;text-decoration:underline">{{EMAIL}}</a>.</div>
+    </section>
+
+    <!-- PILLARS (reordered here) -->
+    <section style="margin-top:18px">
+      <h3 style="margin:0 0 8px">What to expect from a session</h3>
+      <ul style="color:var(--muted);margin:0 0 12px;padding-left:18px">
+        <li>Clear behavioral objective for the next week</li>
+        <li>A compact experiment with precise measurement</li>
+        <li>Coaching notes and a short follow-up plan</li>
+      </ul>
+    </section>
+
+    <!-- MYTH VS TRUTH (booking-centric) -->
+    <section style="margin-top:12px" class="form">
+      <h3 style="margin:0 0 6px">Common booking questions</h3>
+      <dl class="faq">
+        <dt>Is a clarity call free?</dt>
+        <dd style="color:var(--muted)">Yes — the 20-minute clarity call is complementary and helps determine the most efficient next step.</dd>
+        <dt>Can I switch session types after booking?</dt>
+        <dd style="color:var(--muted)">Yes — adjustments are possible with advance notice; we aim to match session intensity to your needs.</dd>
+      </dl>
+    </section>
+
+    <!-- CASE STUDIES (short wins) -->
+    <section style="margin-top:14px">
+      <h3 style="margin:0 0 8px">Short wins you can expect</h3>
+      <div style="display:flex;gap:12px">
+        <div style="background:var(--card);padding:12px;border-radius:10px;box-shadow:0 6px 18px rgba(3,18,18,0.04);flex:1">
+          <strong>One-week schedule clarity</strong>
+          <div style="color:var(--muted);font-size:14px">A single experiment to reclaim 90 minutes per week.</div>
+        </div>
+        <div style="background:var(--card);padding:12px;border-radius:10px;box-shadow:0 6px 18px rgba(3,18,18,0.04);flex:1">
+          <strong>Daily micro-habit</strong>
+          <div style="color:var(--muted);font-size:14px">A repeatable practice that anchors your day without friction.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <section style="margin-top:18px;display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <strong>Not sure where to start?</strong>
+        <div style="color:var(--muted);font-size:14px">Book a free clarity call — we'll sketch a focused experiment you can start immediately.</div>
+      </div>
+      <div>
+        <a href="{{PRIMARY_CTA_URL}}" style="background:var(--accent);padding:10px 14px;border-radius:10px;color:#042522;font-weight:700;text-decoration:none">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </section>
+
+    <footer>
+      <div style="color:var(--muted);margin-top:28px">© {{BUSINESS_NAME}} • {{COACH_NAME}}, {{CREDENTIALS}} • {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}" style="color:var(--muted);text-decoration:none">{{EMAIL}}</a></div>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About • {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--ink:#0b2332;--accent:#ff6b6b;--muted:#6b7a86;--card:#fff6f6}
+    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; color:var(--ink); margin:0; background:linear-gradient(180deg,#fff 0%, #fffdfc 100%);} 
+    header{display:flex;align-items:center;justify-content:space-between;padding:22px 28px;border-bottom:1px solid #f1e9e9}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    nav a{margin-left:18px;text-decoration:none;color:var(--muted);font-weight:600}
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;padding:48px 28px;align-items:center}
+    .hero h1{font-size:28px;margin:0 0 8px}
+    .hero p.lead{margin:0;color:var(--muted);line-height:1.5}
+    .hero .cta{margin-top:18px;display:inline-block;background:var(--accent);color:white;padding:12px 18px;border-radius:10px;text-decoration:none;font-weight:700}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 20px rgba(15,20,25,0.04)}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
+    section{padding:28px}
+    h2{margin:0 0 12px;font-size:20px}
+    .pill{display:inline-block;background:#fff;border:1px dashed #ffecec;padding:6px 10px;border-radius:999px;color:var(--accent);font-weight:700}
+    ul{margin:0;padding-left:18px;color:var(--muted)}
+    .testimonial{background:#fff;border-radius:10px;padding:12px;border-left:4px solid #ffdede}
+    footer{padding:22px 28px;color:var(--muted);font-size:13px;border-top:1px solid #f1e9e9}
+    .small{font-size:13px;color:var(--muted)}
+    .lead-magnet{display:flex;gap:14px;align-items:center}
+    .avatar{width:92px;height:92px;border-radius:12px;background:linear-gradient(135deg,#ffdede,#fff)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">{{BUSINESS_NAME}}</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="specialties.html">Services</a>
+      <a href="approach.html">Methods</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- HERO: About the therapist, slightly narrative -->
+    <section class="hero">
+      <div>
+        <div class="pill">Meet your guide</div>
+        <h1>I'm {{THERAPIST_NAME}} — practical, direct, supportive</h1>
+        <p class="lead">I work with people navigating anxiety, transitions, relationship strains and burnout. My style combines clear structure, collaborative goals and practical tools so you leave sessions with a small, actionable change to try before we meet again.</p>
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+
+        <div class="grid-3" style="margin-top:22px">
+          <div class="card">
+            <strong>Experience</strong>
+            <div class="small">10+ years with adults in private practice</div>
+          </div>
+          <div class="card">
+            <strong>License</strong>
+            <div class="small">{{LICENSE}}</div>
+          </div>
+          <div class="card">
+            <strong>Modality</strong>
+            <div class="small">{{MODALITIES}}</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <img src="assets/img/hero.svg" alt="abstract hero" style="width:100%;border-radius:12px;box-shadow:0 10px 30px rgba(15,20,25,0.06)">
+      </div>
+    </section>
+
+    <!-- VALUES: Principles that guide the work -->
+    <section>
+      <h2>Practice pillars — what I prioritize</h2>
+      <div style="display:flex;gap:12px;margin-top:12px">
+        <div class="card" style="flex:1">
+          <strong>Clarity over jargon</strong>
+          <p class="small">You’ll get plain language and concrete steps — not buzzwords. Therapy should feel logical and understandable.</p>
+        </div>
+        <div class="card" style="flex:1">
+          <strong>Collaboration</strong>
+          <p class="small">We set shared goals and track progress. Your values direct the pace and focus.</p>
+        </div>
+        <div class="card" style="flex:1">
+          <strong>Practical change</strong>
+          <p class="small">Each session includes a small experiment to try between meetings — useful and measurable.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- METHODS: Tools and modalities -->
+    <section>
+      <h2>Tools I draw on</h2>
+      <p class="small">I tailor approaches to what you need in-session and between sessions. Typical elements include:</p>
+      <ul>
+        <li>Cognitive Behavioral techniques for shifting unhelpful patterns</li>
+        <li>Trauma-informed grounding and pacing</li>
+        <li>Interpersonal work for communication and boundaries</li>
+        <li>Executive coaching-style planning for life transitions and career stress</li>
+      </ul>
+      <p class="small" style="margin-top:8px">Modality note: {{MODALITIES}}</p>
+    </section>
+
+    <!-- OBJECTIONS: Common hesitations addressed -->
+    <section>
+      <h2>Hesitations I hear — and how we handle them</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="card">
+          <strong>"I don't know if therapy will help me."</strong>
+          <p class="small">We start with a brief roadmap and small, measurable tasks. If you don’t feel benefit in an agreed period, we revisit the plan together.</p>
+        </div>
+        <div class="card">
+          <strong>"I’m worried about confidentiality."</strong>
+          <p class="small">Confidentiality is fundamental. I’ll explain limits to confidentiality, record-keeping, and how I protect your privacy in our first meeting.</p>
+        </div>
+        <div class="card">
+          <strong>"I’m too busy for weekly sessions."</strong>
+          <p class="small">We can design shorter check-ins, a limited series, or a hybrid of in-person and remote meetings to fit your schedule.</p>
+        </div>
+        <div class="card">
+          <strong>"Will you judge me?"</strong>
+          <p class="small">My work is nonjudgmental and pragmatic. We focus on what’s effective for you, not on blame.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TESTIMONIALS: Client voices -->
+    <section>
+      <h2>Client reflections</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+        <div class="testimonial">
+          "I left each session with something concrete to practice. After three months I felt more grounded in my work and relationships."
+        </div>
+        <div class="testimonial">
+          "The clarity and structure made it easier to take risks. I appreciated the direct but warm approach."
+        </div>
+      </div>
+    </section>
+
+    <!-- LEAD MAGNET: Download or resource -->
+    <section>
+      <h2>Free resource — Start with one small step</h2>
+      <div class="lead-magnet card" style="justify-content:space-between">
+        <div style="display:flex;gap:12px;align-items:center">
+          <div class="avatar">{{THERAPIST_NAME}}</div>
+          <div>
+            <strong>Guide: A 5-minute reset for high-anxiety moments</strong>
+            <div class="small">A short, practical tool you can use between sessions.</div>
+          </div>
+        </div>
+        <div>
+          <a class="cta" href="#">Download PDF</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA: Next step -->
+    <section style="padding-bottom:40px">
+      <h2>Ready to begin?</h2>
+      <p class="small">If you’re in {{CITY}}, {{STATE}} or joining remotely, I offer a 20-minute clarity call to see if we’re a fit.</p>
+      <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+    </section>
+  </main>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-weight:700">{{THERAPIST_NAME}} • {{LICENSE}}</div>
+        <div class="small">Private practice — {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • {{PHONE}}</div>
+      </div>
+      <div class="small">Confidentiality: Records are kept private except where disclosure is required by law. Not a substitute for crisis services. If you are in crisis, call emergency services or your local crisis line.</div>
+    </div>
+    <div style="margin-top:8px;font-size:12px;color:#9aa6ad">Scope & boundaries: I provide outpatient psychotherapy for adults. I do not provide forensic evaluations, court testimony, or inpatient care.</div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fffaf8;--accent:#6a493a;--muted:#7a6b64}
+    body{margin:0;font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial;color:var(--accent);background:var(--bg)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid #f0e0d9}
+    nav a{margin-left:10px;color:var(--accent);text-decoration:none}
+    .wrap{max-width:960px;margin:20px auto;padding:0 18px}
+    .intro{display:flex;gap:18px;align-items:center}
+    .panel{background:#fff;padding:16px;border-radius:12px;border:1px solid #efe7e1}
+    .wheel-wrapper{width:360px;height:360px;display:flex;align-items:center;justify-content:center}
+    svg{max-width:100%;height:auto}
+    .note-info{margin-top:12px;color:var(--muted);font-size:14px}
+    form{margin-top:14px;display:grid;gap:10px}
+    input,select,textarea{padding:10px;border:1px solid #efe0d6;border-radius:8px}
+    .btn{background:var(--accent);color:#fff;padding:10px 12px;border-radius:10px;border:none}
+    .small{font-size:13px;color:var(--muted)}
+    .faq{margin-top:14px}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Formulas</a>
+      <a href="shop.html">Apothecary</a>
+      <a href="pricing.html">Plans</a>
+      <a href="about.html">Studio</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="intro">
+      <div style="flex:1">
+        <div class="kicker small">Reserve</div>
+        <h1 style="margin:6px 0">Book a consult & explore the aroma wheel</h1>
+        <p class="small">A short consult helps select safe botanicals and suggests a low-concentration use. Below is an interactive aroma wheel to explore top/mid/base notes.</p>
+      </div>
+      <div class="panel" style="width:320px;text-align:right">
+        <div class="small">Need help?</div>
+        <div style="font-weight:700;margin-top:6px">Call: {{PHONE}}</div>
+        <div class="small" style="margin-top:8px">Or <a href="mailto:{{EMAIL}}">email</a> to ask about pregnancy, meds, or pets before booking.</div>
+      </div>
+    </section>
+
+    <section style="display:flex;gap:18px;margin-top:18px;flex-wrap:wrap">
+      <div class="panel wheel-wrapper" aria-hidden="false">
+        <!-- Aroma wheel: three rings for top/middle/base -->
+        <svg id="aromawheel" viewBox="0 0 360 360" role="img" aria-label="Aroma wheel interactive">
+          <defs>
+            <filter id="glow"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+          <g transform="translate(180,180)">
+            <!-- base ring -->
+            <g id="base">
+              <circle r="120" fill="#f7efe9" stroke="#e7d8cf" stroke-width="2"/>
+              <g id="baseNotes"></g>
+            </g>
+            <!-- middle ring -->
+            <g id="middle">
+              <circle r="80" fill="#fff5f0" stroke="#ecdcd2" stroke-width="2"/>
+              <g id="midNotes"></g>
+            </g>
+            <!-- top ring -->
+            <g id="top">
+              <circle r="40" fill="#fffaf7" stroke="#f0e1da" stroke-width="2"/>
+              <g id="topNotes"></g>
+            </g>
+            <circle r="12" fill="#6a493a"/>
+          </g>
+        </svg>
+      </div>
+
+      <div style="flex:1;min-width:300px">
+        <div class="panel">
+          <div class="kicker small">Notes</div>
+          <div id="noteTitle" style="font-weight:700;margin-top:6px">Hover a note</div>
+          <div id="noteDesc" class="note-info">Top notes tend to evaporate first; base notes linger. Use conservatively.</div>
+          <div style="margin-top:12px" class="small">Selected blend preview:</div>
+          <div id="blendPreview" style="margin-top:8px;padding:10px;border-radius:8px;background:#fff;border:1px solid #efe7e1">No selection</div>
+
+          <form id="bookForm" style="margin-top:12px">
+            <input name="name" placeholder="Your name" required />
+            <input name="email" placeholder="Email" required />
+            <select name="service">
+              <option>20-min consult — $30</option>
+              <option>Rhythm Session — $75</option>
+              <option>Seasonal Path — $210</option>
+            </select>
+            <textarea name="notes" rows="3" placeholder="Any sensitivities, pregnancy, pets, or notes"></textarea>
+            <button class="btn" type="submit">Request a time</button>
+          </form>
+        </div>
+
+        <div class="panel faq">
+          <div class="kicker small">FAQ & Safety</div>
+          <p class="small">Patch testing is recommended for topical use. Dilutions we provide are conservative and labelled. If you are pregnant, nursing, or have respiratory conditions or pets in your home, mention this when booking.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer style="padding:20px;text-align:center;color:var(--muted);font-size:13px">{{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></footer>
+
+  <script>
+    (function(){
+      // Define notes
+      const topNotes=[{name:'Bergamot',desc:'Fresh citrus top—bright and immediate.'},{name:'Grapefruit',desc:'Zesty, uplifting lift.'},{name:'Lavender',desc:'Light floral-herbal opening.'}];
+      const midNotes=[{name:'Rosemary',desc:'Herbaceous, clarifying presence.'},{name:'Geranium',desc:'Green floral heart.'},{name:'Chamomile',desc:'Soft, warm middle note.'}];
+      const baseNotes=[{name:'Cedarwood',desc:'Dry woody base—grounding.'},{name:'Vetiver',desc:'Deep, earthy lingering note.'},{name:'Vanilla',desc:'Sweet, smoothing anchor.'}];
+
+      function placeNotes(list,groupId,radius){
+        const g=document.getElementById(groupId);
+        g.innerHTML='';
+        const step=360/list.length;let a=-90;
+        list.forEach((n,i)=>{
+          const rad=a*(Math.PI/180);
+          const x=Math.cos(rad)*radius;const y=Math.sin(rad)*radius;
+          const node=document.createElementNS('http://www.w3.org/2000/svg','g');
+          node.setAttribute('transform',`translate(${x},${y})`);
+          const circ=document.createElementNS('http://www.w3.org/2000/svg','circle');circ.setAttribute('r',14);circ.setAttribute('fill','#fff');circ.setAttribute('stroke','#e6d2c9');circ.setAttribute('stroke-width',1);
+          const txt=document.createElementNS('http://www.w3.org/2000/svg','text');txt.setAttribute('x',20);txt.setAttribute('y',6);txt.setAttribute('font-size',10);txt.setAttribute('fill','#6a493a');txt.textContent=n.name;
+          node.appendChild(circ);node.appendChild(txt);
+          node.style.cursor='pointer';
+          node.addEventListener('mouseenter',()=>showNote(n));
+          node.addEventListener('focus',()=>showNote(n));
+          node.addEventListener('click',()=>addToBlend(n));
+          g.appendChild(node);
+          a+=step;
+        });
+      }
+
+      const selected=[];
+      function showNote(n){
+        document.getElementById('noteTitle').textContent=n.name;
+        document.getElementById('noteDesc').textContent=n.desc + ' — Always consider dilution and a patch test.';
+      }
+      function addToBlend(n){
+        if(selected.find(s=>s.name===n.name)) return;
+        selected.push(n);
+        const names=selected.map(s=>s.name).join(', ');
+        document.getElementById('blendPreview').textContent=names || 'No selection';
+      }
+
+      placeNotes(topNotes,'topNotes',40);
+      placeNotes(midNotes,'midNotes',80);
+      placeNotes(baseNotes,'baseNotes',120);
+
+      // Simple booking handler: no external calls
+      document.getElementById('bookForm').addEventListener('submit',function(e){
+        e.preventDefault();
+        const name=this.name.value||'Guest';
+        alert('Thank you, '+name+". We'll follow up to schedule. Please mention pregnancy, pets, or medication when booking.");
+        this.reset();selected.length=0;document.getElementById('blendPreview').textContent='No selection';
+      });
+    })();
+  </script>
+</body>
+</html>

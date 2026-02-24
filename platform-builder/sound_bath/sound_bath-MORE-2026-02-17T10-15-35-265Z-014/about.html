@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff7f3;--accent:#6b3dff;--muted:#6b6b6b;--card:#fff;--glass:rgba(255,255,255,0.6)}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg);color:#222}
+    .page{min-height:100%;display:flex;flex-direction:column}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#ff7ab6);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:18px}
+    nav a{margin-left:14px;color:#333;text-decoration:none;font-weight:600}
+    nav a:hover{opacity:.8}
+    .hero{display:flex;gap:28px;align-items:center;padding:28px;position:relative;background-image:url('assets/img/pattern.svg');background-repeat:repeat;}
+    .hero .left{max-width:620px}
+    .eyebrow{font-weight:700;color:var(--accent);letter-spacing:.6px}
+    h1{margin:8px 0 6px;font-size:34px}
+    p.lead{color:var(--muted);font-size:16px;line-height:1.5}
+    .cta{margin-top:16px}
+    .btn{background:var(--accent);color:white;padding:12px 18px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
+    .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:28px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(20,20,20,.06)}
+    .muted{color:var(--muted);font-size:14px}
+    .framework{display:flex;gap:12px;flex-wrap:wrap;padding:0 28px}
+    .pill{background:var(--glass);padding:10px;border-radius:10px;font-weight:600}
+    footer{margin-top:auto;padding:28px;border-top:1px solid #eee;color:var(--muted);font-size:14px}
+    blockquote{margin:20px 0;padding:12px 18px;border-left:4px solid var(--accent);background:#fff}
+    /* small interactive preview */
+    .mini-explore{display:flex;gap:12px;align-items:center;margin-top:18px}
+    .mood-select button{padding:8px 12px;border-radius:8px;border:1px solid #ddd;background:white;cursor:pointer}
+    .mood-select button.active{border-color:var(--accent);box-shadow:0 6px 16px rgba(107,61,255,0.12)}
+    .program-suggestions{margin-top:12px}
+    .tag{font-size:13px;color:var(--muted);background:#fff;padding:6px 10px;border-radius:8px;border:1px solid #f0f0f0}
+    @media(max-width:720px){h1{font-size:26px}.hero{flex-direction:column;align-items:flex-start}}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="brand">
+        <div class="logo">SB</div>
+        <div>
+          <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+          <div class="muted" style="font-size:13px">Bespoke sessions • {{CITY}}, {{STATE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="events.html">Gatherings</a>
+        <a href="private-sessions.html">Private</a>
+        <a href="pricing.html">Plan & Price</a>
+        <a href="about.html">About</a>
+        <a href="faq.html">FAQ</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="left">
+        <div class="eyebrow">A practice for careful listening</div>
+        <h1>We craft sound to meet your present</h1>
+        <p class="lead">Our gatherings and private sessions fold simple instruments, attentive guidance, and intentional rests into a short, clear arc. We favor steady textures over theatrical crescendos so you leave grounded rather than undone.</p>
+        <div class="cta">
+          <button class="btn" onclick="location.href='{{PRIMARY_CTA_URL}}'">{{PRIMARY_CTA_LABEL}}</button>
+        </div>
+
+        <div class="mini-explore" aria-hidden="false">
+          <div class="mood-select" role="radiogroup" aria-label="Mood selector">
+            <button data-mood="tired" class="active">Tired</button>
+            <button data-mood="anxious">Anxious</button>
+            <button data-mood="curious">Curious</button>
+          </div>
+          <div style="margin-left:8px">
+            <div class="tag" id="miniMethod">Gentle drift</div>
+            <div class="muted" style="font-size:13px">Try the preview or book to expand</div>
+          </div>
+        </div>
+
+      </div>
+      <div style="flex:1">
+        <div class="cards">
+          <div class="card">
+            <strong>Lumen Drift</strong>
+            <div class="muted">A 40-minute group session with soft gongs and chimes — led breath prompts.</div>
+          </div>
+          <div class="card">
+            <strong>Harbor Private</strong>
+            <div class="muted">One-to-one tuning for a short restorative reset; tailored waveform choices.</div>
+          </div>
+          <div class="card">
+            <strong>Arc Evening</strong>
+            <div class="muted">Community sound evenings that begin with grounding and end with mindful silence.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section style="padding:0 28px">
+      <h2>Our thread: clarity, shape, return</h2>
+      <div class="framework">
+        <div class="pill">Clear entry: 6–8 min grounding</div>
+        <div class="pill">Sonic textures layered, not piled</div>
+        <div class="pill">Short reflective close</div>
+      </div>
+      <p class="muted" style="max-width:70ch;margin-top:12px">We keep sessions readable. That means predictable arcs so your nervous system finds its balance within the hour. Sound is a tool: not for performance, but for simple, practical realignment.</p>
+    </section>
+
+    <section style="padding:18px 28px">
+      <h3>Offerings</h3>
+      <div class="cards">
+        <div class="card">
+          <strong>Lumen Drift — Group</strong>
+          <div class="muted">45 min • $28 per person • Open decks with cushioned seating</div>
+        </div>
+        <div class="card">
+          <strong>Harbor Private — One-on-one</strong>
+          <div class="muted">50 min • $98 • Focused tuning & short integration</div>
+        </div>
+        <div class="card">
+          <strong>Arc Evening — Community</strong>
+          <div class="muted">90 min • $45 • Longer ritual with shared tea</div>
+        </div>
+      </div>
+    </section>
+
+    <section style="padding:18px 28px">
+      <h3>Voices</h3>
+      <blockquote>
+        "Simple, held, and precise—each session felt like a small map back to myself." — M.
+      </blockquote>
+      <blockquote>
+        "I sleep deeper after one of their evenings. Clear, practical tools are shared." — A.
+      </blockquote>
+    </section>
+
+    <section style="padding:18px 28px">
+      <h3>Ready to find a form that fits your day?</h3>
+      <p class="muted">If you want a quick consult about which session is right, we can tailor a short private slot.</p>
+      <button class="btn" onclick="location.href='{{PRIMARY_CTA_URL}}'">Start a brief plan</button>
+    </section>
+
+    <footer>
+      <div>Questions? Call {{PHONE}} or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      <div style="margin-top:8px">Please note: Sound sessions are not a substitute for medical care. See FAQ for health considerations.</div>
+    </footer>
+  </div>
+
+  <script>
+    // Mini mood preview (non-persistent)
+    (function(){
+      const buttons = document.querySelectorAll('.mood-select button');
+      const mini = document.getElementById('miniMethod');
+      const map = {tired:'Gentle drift', anxious:'Anchoring method', curious:'Exploratory tone'};
+      buttons.forEach(b=>b.addEventListener('click',()=>{
+        buttons.forEach(x=>x.classList.remove('active'));
+        b.classList.add('active');
+        mini.textContent = map[b.dataset.mood] || 'Balanced approach';
+      }));
+    })();
+  </script>
+</body>
+</html>

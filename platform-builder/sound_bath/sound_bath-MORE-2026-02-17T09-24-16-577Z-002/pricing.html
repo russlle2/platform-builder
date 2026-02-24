@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Invest — Plans & rates</title>
+  <style>
+    :root{--bg:#07121a;--card:#071722;--accent:#9dd1ff;--muted:#9ab0b9}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,#051017 0%,#07141a 100%);color:#eaf8ff}
+    header{display:flex;justify-content:space-between;padding:14px 22px}
+    nav a{color:var(--muted);text-decoration:none;margin:0 10px;font-weight:700}
+    nav a:hover{color:var(--accent)}
+    main{max-width:1100px;margin:26px auto;padding:20px}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .plan{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+    .plan h3{margin:0 0 6px 0}
+    .price{font-weight:800;font-size:20px;color:var(--accent)}
+    .muted{color:var(--muted)}
+    .cta{display:inline-block;padding:8px 12px;border-radius:10px;background:var(--accent);color:#001428;text-decoration:none;font-weight:800}
+    .recommend{border:2px solid rgba(157,209,255,0.12);box-shadow:0 6px 30px rgba(7,18,26,0.6)}
+    .finder{margin:20px 0;padding:16px;background:linear-gradient(180deg,#05212a,#07131a);border-radius:12px}
+    .small{font-size:13px;color:var(--muted)}
+    .disclaimer{font-size:12px;color:#cbeaf8;margin-top:12px}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div style="width:44px;height:44px;background:linear-gradient(135deg,#07314b,#092a37);border-radius:10px"></div>
+      <div>
+        <div style="font-weight:900">Plans</div>
+        <div class="small muted">Choose a rhythm that fits your life</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="events.html">Gatherings</a>
+      <a href="private-sessions.html">Close Sessions</a>
+      <a href="pricing.html">Invest</a>
+      <a href="about.html">Story</a>
+      <a href="faq.html">Q&A</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Talk</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1 style="margin:0 0 6px 0">Plans and rates</h1>
+    <p class="small muted">We frame offerings as pathways rather than fixed templates. Pick one and we’ll help tailor it.</p>
+
+    <section class="finder">
+      <strong>Which plan fits your rhythm?</strong>
+      <div style="margin-top:8px;display:flex;gap:10px;align-items:center">
+        <label class="small muted">How often would you like sessions?</label>
+        <select id="freq">
+          <option value="once">One-off</option>
+          <option value="monthly">Monthly</option>
+          <option value="weekly">Weekly</option>
+          <option value="cohort">Multi-week cohort</option>
+        </select>
+        <button class="cta" id="findPlan">Find best fit</button>
+        <div id="finderOut" class="small muted" style="margin-left:auto"></div>
+      </div>
+    </section>
+
+    <div class="grid">
+      <div class="plan">
+        <h3>Moon Entry</h3>
+        <div class="price">$45 — drop-in</div>
+        <p class="small muted">A single evening: 60-minute group session. Gentle, accessible, and easy to try.</p>
+        <div style="margin-top:10px"><a class="cta" href="book.html?plan=moon">Book a drop-in</a></div>
+      </div>
+
+      <div class="plan recommend">
+        <h3>Deep Drift (Series)</h3>
+        <div class="price">$160 — 4 sessions</div>
+        <p class="small muted">A short run across 4 weekly sessions. Best for those who want momentum and integration between meetings.</p>
+        <div style="margin-top:10px"><a class="cta" href="book.html?plan=deeper">Reserve a series</a></div>
+      </div>
+
+      <div class="plan">
+        <h3>Private Ease</h3>
+        <div class="price">From $120</div>
+        <p class="small muted">One-on-one sessions are tailored to need. Pricing varies with length and location; use the planner to ask for a quote.</p>
+        <div style="margin-top:10px"><a class="cta" href="private-sessions.html">Plan a private</a></div>
+      </div>
+    </div>
+
+    <section style="margin-top:18px" class="plan">
+      <h3 style="margin-top:0">Cohort path — guided continuity</h3>
+      <p class="small muted">A cohort is a small, intentional group (4–8 people) who meet weekly across a short series. Price is per person and often lower per session than private work. Cohorts emphasize integration: short practices between sessions and a shared reflection space.</p>
+      <div style="margin-top:10px"><a class="cta" href="private-sessions.html?template=cohort">Start a cohort</a></div>
+    </section>
+
+    <div class="disclaimer">Health & safety: Sessions include vibrating sound and tones. Contraindications include pregnancy, pacemakers, serious cardiovascular conditions, epilepsy, and recent surgeries. This is not medical care. If you have major health concerns, seek medical clearance before attending.</div>
+
+    <div style="margin-top:16px" class="small muted">Need a custom invoice or sliding scale? Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a>.</div>
+  </main>
+
+  <script>
+    document.getElementById('findPlan').addEventListener('click',()=>{
+      const v=document.getElementById('freq').value;
+      const out=document.getElementById('finderOut');
+      if(v==='once') out.textContent='Try Moon Entry — a single drop-in fits most first-timers.';
+      else if(v==='monthly') out.textContent='Monthly subscriptions work well for steady maintenance.';
+      else if(v==='weekly') out.textContent='Deep Drift 4-week series is a good place to start for weekly practice.';
+      else if(v==='cohort') out.textContent='Cohort path recommended — see Private Ease for custom cohort pricing.';
+    });
+  </script>
+</body>
+</html>

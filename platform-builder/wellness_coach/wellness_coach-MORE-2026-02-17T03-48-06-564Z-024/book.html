@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f8fffd;--panel:#fff;--muted:#5b6a6a;--accent:#00806f;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#f3fbfa)}
+    .wrap{max-width:980px;margin:28px auto;padding:22px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px}
+    .panel{background:var(--panel);padding:16px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.04)}
+    .goals{display:flex;flex-direction:column;gap:8px}
+    .goal{display:flex;align-items:center;gap:10px}
+    .goal input{width:18px;height:18px}
+    .map{margin-top:14px}
+    .timeline{display:flex;gap:8px;align-items:center}
+    .day{width:6px;height:20px;border-radius:3px;background:#e7f6f4}
+    .day.active{background:var(--accent)}
+    .legend{display:flex;gap:8px;margin-top:12px}
+    .legend .item{display:flex;gap:6px;align-items:center;color:var(--muted)}
+    .slot{width:14px;height:14px;border-radius:3px;background:var(--accent);opacity:0.2}
+    .bookBtn{display:inline-block;margin-top:12px;padding:10px 14px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none}
+    .method{margin-top:12px;padding:10px;border-radius:10px;background:#f0fffa;color:#043b39}
+    .moodRow{display:flex;gap:8px;flex-wrap:wrap}
+    .mood{padding:8px 10px;border-radius:8px;background:#fff;border:1px solid rgba(3,40,38,0.06);cursor:pointer}
+    .mood.active{background:var(--accent);color:#fff}
+    @media(max-width:880px){.grid{grid-template-columns:1fr}.side{order:2}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div style="display:flex;gap:12px;align-items:center">
+        <div style="width:44px;height:44px;background:var(--accent);border-radius:8px;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">W</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:var(--muted)">Schedule a session</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">Why work</a>
+        <a href="services.html">Sessions</a>
+        <a href="programs.html">Plans</a>
+        <a href="pricing.html">Membership</a>
+        <a href="testimonials.html">Stories</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <div class="grid">
+      <main>
+        <div class="panel">
+          <h2 style="margin:0">Book an orientation</h2>
+          <p style="color:var(--muted);margin-top:8px">Tell us what you want to prioritize. We’ll show a clear 30-day path map and recommend a session type.</p>
+
+          <div style="margin-top:12px">
+            <strong>Choose your top goals</strong>
+            <div class="goals" id="goals">
+              <label class="goal"><input type="checkbox" value="sleep"> Improved sleep consistency</label>
+              <label class="goal"><input type="checkbox" value="focus"> Better focus blocks</label>
+              <label class="goal"><input type="checkbox" value="energy"> More steady midday energy</label>
+              <label class="goal"><input type="checkbox" value="routine"> Simpler daily routines</label>
+              <label class="goal"><input type="checkbox" value="movement"> Regular movement habits</label>
+            </div>
+          </div>
+
+          <div class="map panel" id="mapPanel" style="margin-top:12px">
+            <strong>30-day path map</strong>
+            <div style="color:var(--muted);margin-top:6px">Selected goals will shape a simple phase plan for the next month.</div>
+            <div class="timeline" id="timeline" aria-hidden="false" style="margin-top:10px"></div>
+            <div class="legend" id="legend"></div>
+          </div>
+
+          <div style="margin-top:12px">
+            <strong>How you feel now</strong>
+            <div class="moodRow" id="moodRow">
+              <div class="mood" data-mode="steady">Steady</div>
+              <div class="mood" data-mode="tense">Tense</div>
+              <div class="mood" data-mode="drained">Drained</div>
+              <div class="mood" data-mode="bouncy">Bouncy</div>
+            </div>
+            <div id="methodRec" class="method">Pick a mood to surface a recommended session style.</div>
+          </div>
+
+          <a id="bookCta" class="bookBtn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </main>
+
+      <aside class="panel side">
+        <strong>Quick info</strong>
+        <p style="color:var(--muted);margin-top:8px">Sessions are coaching-focused and habit-driven. They focus on outcomes, not treatment. Choose a 20 or 45 minute slot.</p>
+        <div style="margin-top:12px">
+          <label style="display:block;margin-bottom:6px">Preferred session length</label>
+          <select id="lengthSelect" style="padding:8px;border-radius:8px;border:1px solid #e6f4f1">
+            <option>20 minutes</option>
+            <option>45 minutes</option>
+          </select>
+        </div>
+
+        <div style="margin-top:12px">
+          <label style="display:block;margin-bottom:6px">Contact</label>
+          <input id="contactName" placeholder="Your name" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6f4f1;margin-bottom:8px">
+          <input id="contactEmail" placeholder="Email" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6f4f1">
+        </div>
+
+        <div style="margin-top:12px;color:var(--muted)">Questions? Call {{PHONE}} or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      // Progress map generator: maps selected goals into a 30-day timeline with three phases
+      const goalInputs = Array.from(document.querySelectorAll('#goals input'));
+      const timelineEl = document.getElementById('timeline');
+      const legendEl = document.getElementById('legend');
+      const mapPanel = document.getElementById('mapPanel');
+      const bookCta = document.getElementById('bookCta');
+      const moodRow = document.getElementById('moodRow');
+      const methodRec = document.getElementById('methodRec');
+
+      const palette = {
+        sleep:'#8ed1c7',
+        focus:'#ffd29e',
+        energy:'#9be7ff',
+        routine:'#c6f6d5',
+        movement:'#ffd6e0'
+      };
+
+      function buildTimeline(){
+        const selected = goalInputs.filter(i=>i.checked).map(i=>i.value);
+        timelineEl.innerHTML = '';
+        legendEl.innerHTML = '';
+        if(selected.length===0){
+          // blank state
+          for(let i=0;i<30;i++){
+            const d = document.createElement('div'); d.className='day'; timelineEl.appendChild(d);
+          }
+          legendEl.textContent = 'Select goals to shape the map.';
+          return;
+        }
+
+        // allocate days: primary (days 1-10), experiment (11-20), embed (21-30)
+        const phases = {primary:10,experiment:10,embed:10};
+        const colorMap = {};
+        selected.forEach((g,idx)=>colorMap[g] = palette[g] || '#e6eefb');
+
+        // build visual bar: each day shows one or two active goals (if multiple selected, weight by index)
+        for(let i=0;i<30;i++){
+          const day = document.createElement('div');
+          day.className = 'day';
+          const phaseIndex = i<phases.primary?0:(i<phases.primary+phases.experiment?1:2);
+          // determine which goal to show: rotate through selected, bias first in primary, second in experiment, third in embed
+          const goalIndex = Math.min(phaseIndex, selected.length-1);
+          const goalKey = selected[goalIndex];
+          day.style.background = colorMap[goalKey];
+          day.setAttribute('title', 'Day ' + (i+1) + ' — ' + goalKey);
+          timelineEl.appendChild(day);
+        }
+
+        // legend
+        selected.forEach(g=>{
+          const item = document.createElement('div'); item.className='item';
+          const sw = document.createElement('div'); sw.className='slot'; sw.style.background = palette[g] || '#ddd'; sw.style.opacity = 1;
+          item.appendChild(sw);
+          const label = document.createElement('div'); label.textContent = (g.charAt(0).toUpperCase()+g.slice(1)) ;
+          item.appendChild(label);
+          legendEl.appendChild(item);
+        });
+      }
+
+      goalInputs.forEach(i=>i.addEventListener('change',buildTimeline));
+      buildTimeline();
+
+      // Mood-to-Method selector: change booking CTA text and recommendation
+      const methods = {
+        steady:{label:'Guided check-in',desc:'A short session focused on stabilizing a daily anchor and simple habits.'},
+        tense:{label:'Load-reduction session',desc:'Targeted methods to lower task friction and create breathing room.'},
+        drained:{label:'Momentum session',desc:'Micro-habits to build small wins and restore momentum.'},
+        bouncy:{label:'Anchor & pacing',desc:'Practices that create reliable recovery windows and predictable energy.'}
+      };
+
+      moodRow.querySelectorAll('.mood').forEach(el=>el.addEventListener('click',()=>{
+        moodRow.querySelectorAll('.mood').forEach(m=>m.classList.remove('active'));
+        el.classList.add('active');
+        const mode = el.getAttribute('data-mode');
+        const m = methods[mode] || methods.steady;
+        methodRec.textContent = m.desc;
+        bookCta.textContent = m.label + ' — ' + (document.getElementById('lengthSelect')?.value || '20 minutes');
+      }));
+
+      // update CTA when length changes
+      document.getElementById('lengthSelect').addEventListener('change',()=>{
+        const activeMood = moodRow.querySelector('.mood.active');
+        if(activeMood){
+          const mode = activeMood.getAttribute('data-mode');
+          const m = methods[mode] || methods.steady;
+          bookCta.textContent = m.label + ' — ' + document.getElementById('lengthSelect').value;
+        }
+      });
+
+      // simple CTA click: collect selected info and open mailto as demo (local-only)
+      bookCta.addEventListener('click',function(e){
+        e.preventDefault();
+        const name = document.getElementById('contactName').value || 'Anonymous';
+        const email = document.getElementById('contactEmail').value || '{{EMAIL}}';
+        const goals = goalInputs.filter(i=>i.checked).map(i=>i.value).join(', ') || 'none';
+        const mood = (moodRow.querySelector('.mood.active')?.getAttribute('data-mode')) || 'unspecified';
+        const length = document.getElementById('lengthSelect').value;
+        const subject = encodeURIComponent('Booking: ' + name + ' — ' + length);
+        const body = encodeURIComponent('Name: '+name + '\nEmail: '+email + '\nGoals: '+goals + '\nMood: '+mood + '\nPreferred length: '+length + '\n\nPlease reply with available slots.');
+        window.location.href = 'mailto:{{EMAIL}}?subject=' + subject + '&body=' + body;
+      });
+
+    })();
+  </script>
+</body>
+</html>

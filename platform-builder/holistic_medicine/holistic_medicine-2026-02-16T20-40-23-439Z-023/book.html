@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f8f4ef;--accent:#5a3b2d;--muted:#7a6353}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial;background:linear-gradient(180deg,var(--bg),#fff);color:#2b2724}
+    header{display:flex;align-items:center;gap:16px;padding:20px}
+    .brand{font-weight:800;color:var(--accent)}
+    nav{margin-left:auto}
+    nav a{margin-left:10px;color:var(--muted);text-decoration:none}
+    main{max-width:980px;margin:20px auto;padding:0 20px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .card{background:#fff;padding:16px;border-radius:12px;box-shadow:0 8px 28px rgba(31,23,18,0.06)}
+    h1{margin:0;color:var(--accent)}
+    .cal{height:340px;border-radius:8px;background:linear-gradient(180deg,#fbf7f3,#fff)}
+    label{display:block;font-weight:600;margin-top:10px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #eee;margin-top:6px}
+    .btn{background:var(--accent);color:#fff;padding:10px 12px;border-radius:8px;border:0;margin-top:12px}
+    .steps{display:flex;gap:10px;justify-content:space-between;margin-top:12px}
+    .step{flex:1;background:linear-gradient(180deg,#fff,#faf6f3);padding:10px;border-radius:8px;text-align:center}
+    .small{font-size:13px;color:var(--muted)}
+    .pattern{position:fixed;left:6%;top:10%;width:360px;height:360px;opacity:0.08}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}.pattern{display:none}}
+  </style>
+</head>
+<body>
+  <svg class="pattern" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <defs>
+      <linearGradient id="g3"><stop offset="0" stop-color="#ffeedd"/><stop offset="1" stop-color="#e6c9b0"/></linearGradient>
+    </defs>
+    <rect width="200" height="200" rx="24" fill="url(#g3)"/>
+    <g fill="#5a3b2d" fill-opacity="0.06">
+      <path d="M20 140c30-40 80-40 120 0v20H20z"/>
+      <circle cx="140" cy="50" r="28"/>
+    </g>
+  </svg>
+
+  <header>
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Welcome</a>
+      <a href="services.html">Programs</a>
+      <a href="pricing.html">Fees</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="grid">
+      <div>
+        <div class="card">
+          <h1>Reserve your place</h1>
+          <p class="small">Select an event and tell us a little about what brings you. This helps shape the session focus. We do not offer medical guarantees—workshops are educational.</p>
+
+          <form action="/reserve" method="post" style="margin-top:12px">
+            <label for="event">Choose an event</label>
+            <select id="event" name="event">
+              <option value="intro">Intro Workshop — 2.5 hours</option>
+              <option value="series">Foundations Series — 4 sessions</option>
+              <option value="retreat">Weekend Retreat</option>
+            </select>
+
+            <label for="name">Your name</label>
+            <input id="name" name="name" required />
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required />
+
+            <label for="notes">Brief notes (what you'd like to learn)</label>
+            <textarea id="notes" name="notes" rows="4" placeholder="e.g., better sleep, less tension, digestive clarity"></textarea>
+
+            <div style="display:flex;gap:8px">
+              <label style="flex:1">
+                <input type="checkbox" name="followup" /> I may want a brief follow-up conversation
+              </label>
+            </div>
+
+            <button class="btn" type="submit">Book — {{PRIMARY_CTA_LABEL}}</button>
+          </form>
+
+          <div class="steps">
+            <div class="step">
+              <strong>Confirmation</strong>
+              <div class="small">You receive an email with event details and pre-session notes.</div>
+            </div>
+            <div class="step">
+              <strong>Attend</strong>
+              <div class="small">Participate in the group session and gather practical tools.</div>
+            </div>
+            <div class="step">
+              <strong>Follow-up</strong>
+              <div class="small">Optional check-in offered after the series or workshop.</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="card">
+          <h4>Policies & notes</h4>
+          <p class="small">If you need to cancel, please contact us at least 7 days before the event for a refund or credit. Sliding scale options are considered on request. Workshops are educational and not a substitute for medical care.</p>
+        </div>
+
+      </div>
+
+      <aside>
+        <div class="card cal">
+          <h4 style="margin-top:0">Upcoming dates</h4>
+          <ul style="margin-top:10px;color:var(--muted)">
+            <li>Intro Workshop — Sat, March 6</li>
+            <li>Foundations Series starts — Apr 2</li>
+            <li>Weekend Retreat — June 12–13</li>
+          </ul>
+          <p class="small" style="margin-top:10px">Exact location shared with registrants. Reach out to ask about travel assistance or accessibility needs.</p>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="card">
+          <h4>Need guidance?</h4>
+          <p class="small">If you are unsure which option fits, request a short consult. Topics commonly addressed in workshops: stress regulation, sleep practices, digestion-friendly rhythms, inflammation education, and steady energy.</p>
+          <a class="btn" href="contact.html" style="display:inline-block;margin-top:10px">Ask a question</a>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="card">
+          <h4>Privacy</h4>
+          <p class="small">Information you share is used only to tailor sessions and will not be shared without consent. For clinical care, separate informed consent and privacy arrangements apply.</p>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer style="padding:18px;text-align:center;color:var(--muted)">
+    <div>{{BUSINESS_NAME}} • Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • Phone: {{PHONE}}</div>
+    <small style="display:block;margin-top:8px">Workshops are educational; not medical treatment. For urgent medical matters please consult your clinician.</small>
+  </footer>
+</body>
+</html>

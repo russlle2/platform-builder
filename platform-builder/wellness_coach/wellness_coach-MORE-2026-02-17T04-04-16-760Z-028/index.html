@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{BUSINESS_NAME}} — Resilient Routines</title>
+  <meta name="description" content="Practical habits, clear outcomes, and a membership that helps you assemble a personal wellness framework.">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script src="assets/js/main.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/">{{BUSINESS_NAME}}</a>
+      <nav class="primary-nav" aria-label="Main navigation">
+        <a href="/about.html">Who I Am</a>
+        <a href="/programs.html">Programs</a>
+        <a href="/services.html">Sessions</a>
+        <a href="/pricing.html">Membership</a>
+        <a href="/testimonials.html">Stories</a>
+        <a href="/contact.html">Contact</a>
+      </nav>
+      <div class="nav-actions">
+        <a class="btn btn-primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero reveal" id="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <h1>A plan you can keep — built from what matters now.</h1>
+          <p class="lead">We map small, repeatable practices to measurable outcomes so your days add up to real change. Join a membership that supports steady progress without extra friction.</p>
+          <p class="hero-cta">
+            <a class="btn btn-strong" href="{{PRIMARY_CTA_URL}}">Join the Support Circle</a>
+            <a class="btn btn-ghost" href="#planner">Try a quick planner</a>
+          </p>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <svg class="pattern" width="360" height="240" viewBox="0 0 360 240" xmlns="http://www.w3.org/2000/svg">
+            <rect width="100%" height="100%" fill="url(#p)" />
+            <defs>
+              <pattern id="p" width="40" height="40" patternUnits="userSpaceOnUse">
+                <rect width="40" height="40" fill="#fff" />
+                <circle cx="6" cy="6" r="2" fill="#dfe7e2" />
+                <circle cx="34" cy="34" r="2" fill="#dfe7e2" />
+                <path d="M0 20 L40 20" stroke="#e7f0ec" stroke-width="1" />
+              </pattern>
+            </defs>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- Practical Habits (micro_habits) -->
+    <section class="micro-habits reveal" id="habits">
+      <div class="container">
+        <h2>Small moves that compound into steadiness</h2>
+        <p class="muted">No gimmicks — just brief actions you can repeat. Each habit is linked to one explicit outcome so progress is visible.</p>
+        <ul class="habit-list">
+          <li>
+            <h3>Anchor Moments</h3>
+            <p class="small">Two short rituals to center your morning and evening energy (3–7 minutes each).</p>
+          </li>
+          <li>
+            <h3>Micro-checks</h3>
+            <p class="small">A 60-second reflection you can use mid-day to shift priority or pace.</p>
+          </li>
+          <li>
+            <h3>Energy Pacing</h3>
+            <p class="small">A simple cycle of work and rest that respects how you feel across the day.</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Diagnostic -->
+    <section class="diagnostic reveal" id="diagnostic">
+      <div class="container">
+        <h2>Quick check: where would change matter most?</h2>
+        <form id="quick-check" class="diagnostic-form" aria-label="Quick diagnostic">
+          <label>
+            What outcome feels most urgent?
+            <select name="focus" id="focus">
+              <option value="energy">More steady energy</option>
+              <option value="clarity">Clearer focus and decision-making</option>
+              <option value="sleep">Smoother evenings and sleep</option>
+              <option value="boundaries">Cleaner work-life boundaries</option>
+            </select>
+          </label>
+          <label>
+            Typical time you can commit daily
+            <select name="time" id="time">
+              <option value="5">5 minutes</option>
+              <option value="10">10 minutes</option>
+              <option value="20">20 minutes</option>
+            </select>
+          </label>
+          <button type="button" class="btn" id="to-planner">Build a plan</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Plan: Session Planner widget -->
+    <section class="plan reveal" id="planner">
+      <div class="container">
+        <h2>Session Planner</h2>
+        <p class="muted">Create a short, realistic session plan you can try this week. Export or copy the summary and bring it to your next meeting — or keep it as your daily note.</p>
+        <div class="planner-grid">
+          <form id="planner-form" class="planner-form" aria-label="Session planner">
+            <label>
+              Name this session
+              <input type="text" name="title" id="sp-title" placeholder="E.g., Midweek Reset" required>
+            </label>
+            <label>
+              Primary outcome
+              <input type="text" name="outcome" id="sp-outcome" placeholder="What will be different after this?" required>
+            </label>
+            <label>
+              Time available each day
+              <select name="duration" id="sp-duration">
+                <option value="5">5 min</option>
+                <option value="10">10 min</option>
+                <option value="15">15 min</option>
+                <option value="20">20 min</option>
+              </select>
+            </label>
+            <label>
+              Frequency this week
+              <select name="freq" id="sp-freq">
+                <option value="3">3 times</option>
+                <option value="4">4 times</option>
+                <option value="5">5 times</option>
+              </select>
+            </label>
+            <label>
+              One practical habit to include
+              <input type="text" name="habit" id="sp-habit" placeholder="E.g., 3-min breathing exercise" required>
+            </label>
+            <label>
+              Constraints or accessibility notes
+              <input type="text" name="constraint" id="sp-constraint" placeholder="E.g., standing desk, bright lights bother me">
+            </label>
+            <div class="planner-actions">
+              <button type="button" class="btn btn-primary" id="build-plan">Generate plan</button>
+              <button type="button" class="btn" id="clear-plan">Reset</button>
+            </div>
+          </form>
+
+          <div class="planner-output" aria-live="polite">
+            <h3>Plan summary</h3>
+            <textarea id="plan-summary" readonly rows="10" aria-label="Generated plan summary"></textarea>
+            <div class="output-actions">
+              <button id="copy-plan" class="btn">Copy text</button>
+              <a id="download-plan" class="btn btn-ghost" href="#" download="session-plan.txt">Download .txt</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="pricing reveal" id="pricing">
+      <div class="container">
+        <h2>Membership tiers reframed</h2>
+        <p class="muted">Membership is framed around the kind of support you need — tools, coaching check-ins, and a gentle accountability loop.</p>
+        <div class="pricing-grid">
+          <div class="tier">
+            <h3>Foundation</h3>
+            <p class="price">$12<span>/mo</span></p>
+            <ul>
+              <li>Weekly micro-practice prompts</li>
+              <li>Access to the habit library</li>
+            </ul>
+            <a class="btn" href="/pricing.html#foundation">Choose</a>
+          </div>
+          <div class="tier featured">
+            <h3>Momentum</h3>
+            <p class="price">$39<span>/mo</span></p>
+            <ul>
+              <li>Everything in Foundation</li>
+              <li>Monthly 1:1 session</li>
+              <li>Personal plan review</li>
+            </ul>
+            <a class="btn btn-primary" href="/pricing.html#momentum">Get Momentum</a>
+          </div>
+          <div class="tier">
+            <h3>Steward</h3>
+            <p class="price">$85<span>/mo</span></p>
+            <ul>
+              <li>Weekly short coaching</li>
+              <li>Priority planning calls</li>
+              <li>Session notes & checklists</li>
+            </ul>
+            <a class="btn" href="/pricing.html#steward">Apply</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="final-cta reveal" id="final">
+      <div class="container cta-inner">
+        <h2>Ready for a practical structure that grows with you?</h2>
+        <p class="muted">Start with one short session plan and step into a habit that lasts.</p>
+        <p><a class="btn btn-strong" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <strong>{{BUSINESS_NAME}}</strong>
+        <p class="muted">{{CITY}}, {{STATE}} — <a href="tel:{{PHONE}}">{{PHONE}}</a></p>
+      </div>
+      <nav class="footer-nav" aria-label="Footer navigation">
+        <a href="/about.html">About</a>
+        <a href="/programs.html">Programs</a>
+        <a href="/contact.html">Contact</a>
+      </nav>
+      <div>
+        <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>
+      </div>
+    </div>
+    <div class="attribution">© <span id="year">2026</span> {{BUSINESS_NAME}}. All rights reserved.</div>
+  </footer>
+</body>
+</html>

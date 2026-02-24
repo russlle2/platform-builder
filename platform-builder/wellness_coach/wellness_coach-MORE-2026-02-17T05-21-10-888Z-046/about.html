@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--accent:#0b6b58;--muted:#6b7280;--bg:#fbfdfb;--card:#ffffff;--glass:rgba(255,255,255,0.6)}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#0f172a;background:var(--bg);}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 28px;background:linear-gradient(180deg,rgba(11,107,88,0.06),transparent)}
+    .brand{font-weight:700;color:var(--accent)}
+    nav a{margin-left:18px;color:#0f172a;text-decoration:none;font-weight:600}
+    .container{max-width:980px;margin:28px auto;padding:28px}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+    .card{background:var(--card);padding:22px;border-radius:12px;box-shadow:0 6px 18px rgba(15,23,42,0.06)}
+    h1{margin:0 0 10px 0;font-size:28px}
+    p.lead{margin:0 0 12px;color:var(--muted)}
+    .stats{display:flex;gap:12px;margin-top:18px}
+    .stat{background:linear-gradient(180deg,rgba(11,107,88,0.04),transparent);padding:12px;border-radius:10px;text-align:center;width:110px}
+    .pattern{position:fixed;right:0;top:0;bottom:0;width:320px;background-image:url("assets/img/pattern.svg");background-repeat:no-repeat;background-size:contain;opacity:0.12;pointer-events:none}
+    /* Mood-to-Method */
+    .mood-select{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+    .mood-btn{padding:10px 12px;border-radius:10px;border:1px solid #e6eef0;background:transparent;cursor:pointer}
+    .mood-btn.active{border-color:var(--accent);background:linear-gradient(90deg,rgba(11,107,88,0.06),transparent)}
+    .method{margin-top:14px;padding:14px;border-radius:10px;background:linear-gradient(180deg,rgba(11,107,88,0.04),transparent)}
+    .cta{display:inline-block;margin-top:14px;padding:10px 14px;border-radius:10px;background:var(--accent);color:#fff;text-decoration:none;font-weight:700}
+    /* Path map */
+    .goals{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+    .goal{display:flex;align-items:center;gap:8px}
+    .path{margin-top:16px}
+    .days{display:grid;grid-template-columns:repeat(10,1fr);gap:6px}
+    .day{height:14px;border-radius:6px;background:#eef2f1}
+    .day.fill-sleep{background:linear-gradient(90deg,#cfeee4,#b6f0db)}
+    .day.fill-move{background:linear-gradient(90deg,#e7f7f2,#c9f2e4)}
+    .day.fill-mind{background:linear-gradient(90deg,#f0f7ff,#d8edff)}
+    .footer-cta{display:flex;justify-content:space-between;align-items:center;margin-top:18px}
+    .micro{font-size:13px;color:var(--muted)}
+    @media(max-width:880px){.hero{grid-template-columns:1fr}
+      .pattern{display:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">What We Do</a>
+      <a href="programs.html">Programs</a>
+      <a href="services.html">Offers</a>
+      <a href="pricing.html">Investment</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Reach Out</a>
+    </nav>
+  </header>
+
+  <div class="pattern" aria-hidden="true"></div>
+
+  <main class="container">
+    <section class="hero">
+      <div>
+        <div class="card">
+          <h1>About our approach</h1>
+          <p class="lead">We guide leaders and busy professionals through short, structured shifts that create resilient daily rhythms — not quick fixes. Our playbook focuses on clear outcomes, repeatable habits, and a practical plan for 30 days of momentum.</p>
+
+          <div class="stats">
+            <div class="stat"><div style="font-weight:700">30+</div><div class="micro">Focused checkpoints</div></div>
+            <div class="stat"><div style="font-weight:700">3</div><div class="micro">Core frameworks</div></div>
+            <div class="stat"><div style="font-weight:700">1</div><div class="micro">VIP day offering</div></div>
+          </div>
+
+          <div style="margin-top:16px">
+            <strong>Lead facilitator</strong>
+            <p class="micro" style="margin:6px 0 0">Experienced coach, systems thinker, practical designer for everyday wellbeing.</p>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <h3>Contact & scheduling</h3>
+          <p class="micro">Phone: {{PHONE}} • Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+          <a id="aboutPrimaryCta" class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </div>
+
+      <aside>
+        <div class="card">
+          <h3>Find your current state</h3>
+          <p class="micro">Pick one word; we’ll suggest a method and a quick next step.</p>
+          <div class="mood-select" role="list">
+            <button class="mood-btn" data-key="overwhelmed">Overwhelmed</button>
+            <button class="mood-btn" data-key="drained">Drained</button>
+            <button class="mood-btn" data-key="stuck">Stuck</button>
+            <button class="mood-btn" data-key="energized">Energized</button>
+            <button class="mood-btn" data-key="curious">Curious</button>
+          </div>
+          <div class="method" id="methodBox">
+            <strong>Recommended method</strong>
+            <p id="methodText" class="micro">Select a state to see the recommended approach.</p>
+            <a id="methodCta" class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <h4>30-day path estimator</h4>
+          <p class="micro">Choose 1–3 goals to generate a simple path map for the next month.</p>
+          <div class="goals">
+            <label class="goal"><input type="checkbox" value="sleep"> Better sleep</label>
+            <label class="goal"><input type="checkbox" value="move"> Daily movement</label>
+            <label class="goal"><input type="checkbox" value="mind"> Focus & calm</label>
+            <label class="goal"><input type="checkbox" value="bound"> Clear boundaries</label>
+            <label class="goal"><input type="checkbox" value="food"> Stabilize meals</label>
+          </div>
+          <div class="path card" id="pathCard">
+            <div style="font-weight:700">30-day map</div>
+            <div style="font-size:13px;color:var(--muted);margin-top:6px">Visual preview of small daily steps based on selected goals.</div>
+            <div class="days" id="daysGrid" style="margin-top:10px"></div>
+            <div style="margin-top:10px" class="micro">Completion estimate: <span id="estimate">0%</span></div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section style="margin-top:22px" class="card">
+      <h3>Philosophy & frameworks</h3>
+      <p class="micro">Three guiding lenses: outcome clarity, habit scaffolding, and time-limited experiments. Each engagement begins with measurable targets and a 30-day check-in so progress is visible and adaptable.</p>
+      <div style="margin-top:12px;display:flex;gap:12px;flex-wrap:wrap">
+        <div style="flex:1;min-width:220px" class="card" aria-hidden>
+          <strong>Outcome clarity</strong>
+          <p class="micro">We translate the goal into 2–4 daily actions that move the needle.</p>
+        </div>
+        <div style="flex:1;min-width:220px" class="card">
+          <strong>Habit scaffolding</strong>
+          <p class="micro">Signals and anchors that reduce friction and make practice automatic.</p>
+        </div>
+        <div style="flex:1;min-width:220px" class="card">
+          <strong>Time-limited experiments</strong>
+          <p class="micro">Short trials to learn fast and lock in what works.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // Mood-to-Method data
+    const methods = {
+      overwhelmed: {title: 'Micro-priorities', text: 'Cut your list to the top two daily priorities and create a 20-minute focused block. We call this a micro-priority sprint.', cta: 'Book a Micro Audit'},
+      drained: {title: 'Energy Parceling', text: 'Shift energy in parcels: 3 x 25-minute restorative moments and one short, quality movement set. Small, scheduled refuels.', cta: 'Try an Energy Plan'},
+      stuck: {title: 'Constraint Reset', text: 'Apply a boundary experiment: 48-hour constraint on one habit (e.g., no screens 60 minutes before bed) and track response.', cta: 'Start a Reset'},
+      energized: {title: 'Amplify', text: 'Build on wins with short habit stacks to scale momentum while keeping load light.', cta: 'Amplify your Wins'},
+      curious: {title: 'Exploration Lab', text: 'Try a 7-day micro-experiment with clear metrics and a single reflection question each day.', cta: 'Launch an Experiment'}
+    };
+
+    document.querySelectorAll('.mood-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        const key = btn.getAttribute('data-key');
+        const m = methods[key];
+        document.getElementById('methodText').textContent = m.title + ' — ' + m.text;
+        const methodCta = document.getElementById('methodCta');
+        methodCta.textContent = m.cta;
+        // keep link but add query state
+        methodCta.href = '{{PRIMARY_CTA_URL}}?method=' + encodeURIComponent(m.title.toLowerCase().replace(/\s+/g,'-'));
+      });
+    });
+
+    // Path map generator
+    const goalInputs = document.querySelectorAll('.goals input');
+    const daysGrid = document.getElementById('daysGrid');
+    const estimate = document.getElementById('estimate');
+
+    function renderDays(selected){
+      daysGrid.innerHTML = '';
+      if(selected.length===0){
+        for(let i=0;i<30;i++){
+          const d = document.createElement('div');d.className='day';daysGrid.appendChild(d);
+        }
+        estimate.textContent='0%';
+        return;
+      }
+      // assign styles to days based on goal mix
+      const map = {sleep:'fill-sleep',move:'fill-move',mind:'fill-mind',bound:'fill-move',food:'fill-sleep'};
+      for(let i=0;i<30;i++){
+        const d = document.createElement('div');
+        // pattern: every week assign priority to a goal
+        const week = Math.floor(i/7)%selected.length;
+        const goal = selected[week];
+        d.className = 'day ' + (map[goal] || '');
+        daysGrid.appendChild(d);
+      }
+      // simple estimate: 20% per selected goal capped at 90
+      let val = Math.min(90, selected.length * 28);
+      estimate.textContent = val + '%';
+    }
+
+    goalInputs.forEach(inp => inp.addEventListener('change',()=>{
+      const checked = Array.from(goalInputs).filter(i=>i.checked).map(i=>i.value);
+      renderDays(checked);
+    }));
+
+    // initial render
+    renderDays([]);
+
+    // ensure primary CTA label match can be updated if query param exists
+    (function(){
+      const params = new URLSearchParams(location.search);
+      const q = params.get('cta');
+      if(q){document.getElementById('aboutPrimaryCta').textContent = q}
+    })();
+  </script>
+</body>
+</html>

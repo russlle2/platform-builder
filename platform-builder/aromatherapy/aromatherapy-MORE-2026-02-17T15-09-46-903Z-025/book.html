@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Plan a Session — {{BUSINESS_NAME}}</title>
+  <style>
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#111;background:#fbfdfb}
+    header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #f0f0ee}
+    .logo{font-weight:700;color:#5d6f52}
+    nav a{margin-left:10px;text-decoration:none;color:#111}
+    main{width:min(980px,94%);margin:26px auto}
+    .card{background:#fff;padding:18px;border-radius:12px;border:1px solid #eff1ea}
+    h1{margin:0 0 6px 0}
+    .planner{display:grid;grid-template-columns:1fr 300px;gap:18px;margin-top:12px}
+    label{display:block;margin-top:10px;font-weight:600}
+    input[type='text'],select,textarea{width:100%;padding:8px;border-radius:8px;border:1px solid #e7e8e3}
+    .summary{white-space:pre-wrap;background:linear-gradient(180deg,#fff,#fbfdf8);padding:12px;border-radius:8px;border:1px solid #eef0ee}
+    .btn{padding:9px 12px;border-radius:8px;border:none;background:#5d6f52;color:#fff}
+    .muted{color:#6d6d6d;font-size:13px}
+
+    body::before{content:'';position:fixed;left:0;top:0;width:160px;height:160px;opacity:0.05;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160"><g fill="%235d6f52"><circle cx="30" cy="30" r="8"/><circle cx="90" cy="90" r="8"/><path d="M0 120c30-15 60-15 90 0-30 15-60 15-90 0z"/></g></svg>')}
+    @media(max-width:900px){.planner{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class='logo'>{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href='index.html'>Home</a>
+      <a href='services.html'>Offerings</a>
+      <a href='blends.html'>Blends Lab</a>
+      <a href='shop.html'>Boutique</a>
+      <a href='pricing.html'>Investment</a>
+      <a href='about.html'>About</a>
+      <a href='book.html'>Plan a Session</a>
+      <a href='contact.html'>Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class='card'>
+      <h1>Session Planner</h1>
+      <p class='muted'>Build a short plan to bring to your first session. The summary can be copied and included in an email to {{EMAIL}} or shared during booking.</p>
+
+      <div class='planner'>
+        <form id='plannerForm'>
+          <label for='name'>Your name</label>
+          <input id='name' type='text' placeholder='First and last name'>
+
+          <label for='format'>Preferred format</label>
+          <select id='format'>
+            <option value='virtual'>Virtual</option>
+            <option value='inperson'>In person</option>
+            <option value='group'>Small group</option>
+          </select>
+
+          <label for='goal'>Primary aim for sessions</label>
+          <select id='goal'>
+            <option value='stress'>Manage stress</option>
+            <option value='sleep'>Improve sleep ritual</option>
+            <option value='work'>Support focus at work</option>
+            <option value='custom'>Custom blend & routine</option>
+          </select>
+
+          <label for='sessions'>Number of sessions desired</label>
+          <select id='sessions'><option>1</option><option>2</option><option selected>3</option></select>
+
+          <label for='when'>Best times</label>
+          <input id='when' type='text' placeholder='e.g., weekday mornings, evenings'>
+
+          <label for='notes'>Other notes (sensitivities, pets, pregnancy)</label>
+          <textarea id='notes' rows='4' placeholder='Tell us about scent preferences or cautions'></textarea>
+
+          <div style='margin-top:12px'>
+            <button type='button' id='buildPlan' class='btn'>Compose plan</button>
+            <button type='button' id='copyPlan' class='btn' style='background:#49644a;margin-left:8px'>Copy summary</button>
+            <a class='btn' href='{{PRIMARY_CTA_URL}}' style='margin-left:8px;text-decoration:none'>{{PRIMARY_CTA_LABEL}}</a>
+          </div>
+        </form>
+
+        <aside>
+          <div class='summary' id='planSummary'>No plan yet. Use the form to compose a short session plan you can copy and send.</div>
+          <div class='muted' style='margin-top:10px'>We keep sessions practical and safety-focused. We do not provide medical advice; sessions may support wellbeing and habit changes.</div>
+        </aside>
+      </div>
+    </section>
+
+    <section class='card' style='margin-top:14px'>
+      <h3 style='margin-top:0'>Preparing for your first meeting</h3>
+      <ol class='muted'>
+        <li>Complete the planner and copy the summary into your booking or email to {{EMAIL}}.</li>
+        <li>Note any skin sensitivities, pregnancy, or pets — these shape safe choices.</li>
+        <li>Expect a blend card after the session with suggested dilution and usage guidance.</li>
+      </ol>
+    </section>
+
+    <section class='card' style='margin-top:14px'>
+      <h3 style='margin-top:0'>Quick safety reminders</h3>
+      <ul class='muted'>
+        <li>Patch test topical blends before wider use.</li>
+        <li>Keep essential oils away from eyes and mucous membranes.</li>
+        <li>When diffusing, give pets an exit and avoid prolonged exposure.</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer style='text-align:center;padding:18px;color:#6d6d6d'>
+    <div>{{BUSINESS_NAME}} — {{CITY}}, {{STATE}} • <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a></div>
+  </footer>
+
+  <script>
+    // Session Planner interactivity
+    function compose(){
+      const name = document.getElementById('name').value.trim() || '[Name]';
+      const format = document.getElementById('format').value;
+      const goal = document.getElementById('goal').value;
+      const sessions = document.getElementById('sessions').value;
+      const when = document.getElementById('when').value.trim() || 'No preference stated';
+      const notes = document.getElementById('notes').value.trim() || 'No additional notes.';
+
+      let text = 'Session plan for: '+name+'\n';
+      text += 'Preferred format: '+format+'\n';
+      text += 'Primary aim: '+goal+'\n';
+      text += 'Requested sessions: '+sessions+'\n';
+      text += 'Availability: '+when+'\n\n';
+      text += 'Notes:\n'+notes+'\n\n';
+      text += 'Safety: Please list any sensitivities, pregnancy, or pets in the notes. This plan is for scheduling and educational guidance; it is not medical advice.';
+
+      document.getElementById('planSummary').textContent = text;
+    }
+
+    document.getElementById('buildPlan').addEventListener('click',compose);
+    document.getElementById('copyPlan').addEventListener('click',()=>{
+      const text = document.getElementById('planSummary').textContent;
+      if(!text) return;
+      navigator.clipboard.writeText(text).then(()=>{
+        const b = document.getElementById('copyPlan'); const old = b.textContent; b.textContent = 'Copied'; setTimeout(()=>b.textContent = old,1200);
+      });
+    });
+
+    // Build a default quick plan on load for convenience
+    window.addEventListener('load',()=>{
+      document.getElementById('name').value = '';
+      compose();
+    });
+  </script>
+</body>
+</html>

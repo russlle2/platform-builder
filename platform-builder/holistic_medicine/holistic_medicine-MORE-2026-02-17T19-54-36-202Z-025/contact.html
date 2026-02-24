@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contact — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Connect with {{BUSINESS_NAME}} — integrative consultations, practical session planning, and a clear contact route.">
+  <style>
+    :root{
+      --bg:#f6efe6; /* warm cream */
+      --accent:#7a5a37; /* deep terracotta */
+      --muted:#a99784; /* sand */
+      --accent-2:#557a5a; /* muted green */
+      --card:#fffaf6;
+      --glass:rgba(255,255,255,0.6);
+      --radius:12px;
+      --max-width:980px;
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      color:var(--accent);
+    }
+    html,body{height:100%;background:var(--bg);margin:0}
+    body{display:flex;flex-direction:column;align-items:center;padding:28px 20px 80px}
+    .site{width:100%;max-width:var(--max-width);}
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .mark{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent-2),var(--accent));display:grid;place-items:center;color:#fff;font-weight:700}
+    .title{font-size:15px;line-height:1;margin:0}
+    .tag{font-size:12px;color:var(--muted);margin:0}
+    nav{display:flex;gap:10px;flex-wrap:wrap}
+    nav a{font-size:13px;color:var(--accent);text-decoration:none;padding:8px 10px;border-radius:8px}
+    nav a[href$="contact.html"]{background:var(--glass);backdrop-filter: blur(4px)}
+
+    main{background:transparent}
+    .hero{display:grid;grid-template-columns:1fr;gap:18px;padding:20px;background:linear-gradient(180deg,rgba(255,255,255,0.6),rgba(255,255,255,0.3));border-radius:var(--radius);box-shadow:0 6px 20px rgba(120,90,60,0.06);margin-bottom:18px}
+    .hero h1{margin:0;font-size:22px}
+    .hero p{margin:6px 0 0;color:var(--muted)}
+
+    .grid{display:grid;grid-template-columns:1fr;gap:18px}
+    @media(min-width:880px){.grid{grid-template-columns:1fr 360px}}
+
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(110,70,40,0.06)}
+    .muted{color:var(--muted);font-size:14px}
+    .contact-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+    .contact-item{display:flex;gap:10px;align-items:center}
+    .btn{background:var(--accent);color:white;padding:10px 14px;border-radius:10px;border:none;font-weight:600;cursor:pointer}
+    .secondary{background:transparent;border:1px solid var(--muted);color:var(--accent);padding:8px 12px;border-radius:10px}
+
+    form .row{display:flex;flex-direction:column;margin-bottom:10px}
+    input,textarea,select{padding:10px;border-radius:8px;border:1px solid #e4d9cf;font-size:14px}
+    textarea{min-height:110px;resize:vertical}
+
+    .planner h3{margin:0 0 6px 0}
+    .plan-output{white-space:pre-wrap;background:#fff7f2;border-radius:8px;padding:12px;border:1px dashed rgba(122,90,55,0.12);font-family:ui-monospace,Menlo,monospace;color:#5b3f2a}
+    .planner-grid{display:grid;grid-template-columns:1fr;gap:8px}
+    @media(min-width:680px){.planner-grid{grid-template-columns:1fr 1fr}}
+
+    .faq{display:grid;gap:10px}
+    .faq-item{padding:12px;border-radius:8px;border:1px solid rgba(86,64,48,0.06)}
+
+    .cta-row{display:flex;gap:10px;align-items:center;margin-top:10px}
+
+    /* reveal animation */
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity 520ms cubic-bezier(.2,.9,.2,1),transform 520ms cubic-bezier(.2,.9,.2,1)}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion: reduce){
+      .reveal{transition:none;opacity:1;transform:none}
+    }
+
+    footer{margin-top:28px;text-align:center;color:var(--muted);font-size:13px}
+
+    /* pattern background */
+    .pattern-wrap{background-image:url('assets/img/pattern.svg');background-repeat:repeat;padding:14px;border-radius:14px}
+
+    .copy-btn{background:var(--accent-2);color:white;border:none;padding:8px 10px;border-radius:8px;cursor:pointer}
+    .small{font-size:13px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="site">
+    <header>
+      <div class="brand">
+        <div class="mark">HM</div>
+        <div>
+          <p class="title">{{BUSINESS_NAME}}</p>
+          <p class="tag">{{TAGLINE}}</p>
+        </div>
+      </div>
+      <nav aria-label="Primary navigation">
+        <a href="index.html">Welcome</a>
+        <a href="services.html">Offerings</a>
+        <a href="conditions.html">Questions</a>
+        <a href="approach.html">Method</a>
+        <a href="pricing.html">Rates</a>
+        <a href="about.html">Team</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html" aria-current="page">Connect</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero reveal" id="hero">
+        <h1>Connect with a pragmatic, integrative guide</h1>
+        <p>Reach out to arrange an initial conversation or to ask a quick question. Use the Session Planner below to sketch a clear path before you book.</p>
+      </section>
+
+      <div class="grid">
+        <aside class="card reveal" id="contact-card">
+          <h2 style="margin-top:0">Contact</h2>
+          <p class="muted">Prefer to connect directly? Phone or email are fastest for scheduling.</p>
+          <div class="contact-list">
+            <div class="contact-item"><strong>Phone:</strong>&nbsp;<a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+            <div class="contact-item"><strong>Email:</strong>&nbsp;<a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+            <div class="contact-item"><strong>Location:</strong>&nbsp;<span>{{CITY}}, {{STATE}}</span></div>
+          </div>
+
+          <div style="margin-top:12px">
+            <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            <a class="secondary" href="book.html">Schedule a consult</a>
+          </div>
+
+          <div class="pattern-wrap" style="margin-top:12px">
+            <p class="small">You can also message with a short summary below. We review requests during business hours and respond within 48 hours.</p>
+          </div>
+        </aside>
+
+        <section class="card reveal" id="planner">
+          <div class="planner">
+            <h2 style="margin-top:0">Session Planner — build a succinct plan</h2>
+            <p class="muted">Draft a personalized approach you can bring to a first session. This creates a compact summary you can copy or save.</p>
+
+            <div class="planner-grid" style="margin-top:12px">
+              <div>
+                <label for="concern">Primary focus or concern</label>
+                <input id="concern" placeholder="e.g., sleep fragmentation, low energy, digestive shifts">
+              </div>
+              <div>
+                <label for="format">Preferred format</label>
+                <select id="format">
+                  <option>Hybrid (initial virtual)</option>
+                  <option>Virtual only</option>
+                  <option>In-person</option>
+                </select>
+              </div>
+              <div>
+                <label for="time">Time you can commit weekly</label>
+                <select id="time">
+                  <option>1–2 hours</option>
+                  <option>3–5 hours</option>
+                  <option>6+ hours</option>
+                </select>
+              </div>
+              <div>
+                <label for="cadence">Desired contact cadence</label>
+                <select id="cadence">
+                  <option>Single focused session (VIP-style)</option>
+                  <option>Short series (4–6 weeks)</option>
+                  <option>Ongoing monthly support</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="margin-top:8px">
+              <label for="goals">Top goals (comma separated)</label>
+              <input id="goals" placeholder="e.g., regular sleep, steady energy, fewer GI flares">
+            </div>
+
+            <div style="margin-top:8px">
+              <label for="notes">Additional context (optional)</label>
+              <textarea id="notes" placeholder="Any constraints, preferences, previous approaches tried"></textarea>
+            </div>
+
+            <div class="cta-row" style="margin-top:12px">
+              <button class="btn" id="build">Build Plan</button>
+              <button class="secondary" id="clear">Clear</button>
+              <button class="copy-btn" id="copy" aria-label="Copy plan">Copy</button>
+              <button class="secondary" id="download">Download</button>
+            </div>
+
+            <div style="margin-top:12px">
+              <div class="plan-output" id="output" aria-live="polite">Your plan summary will appear here.</div>
+            </div>
+
+            <p class="small" style="margin-top:8px">This summary is for planning and conversation. It does not replace personalized medical advice.</p>
+          </div>
+        </section>
+
+        <section class="card reveal" id="message-form" style="grid-column:1/-1">
+          <h2 style="margin-top:0">Send a quick message</h2>
+          <form id="contactForm" action="mailto:{{EMAIL}}" method="post" enctype="text/plain">
+            <div class="row">
+              <label for="name">Your name</label>
+              <input id="name" name="Name" required>
+            </div>
+            <div class="row">
+              <label for="email">Email</label>
+              <input id="email" name="Email" type="email" required>
+            </div>
+            <div class="row">
+              <label for="message">Message</label>
+              <textarea id="message" name="Message" placeholder="Briefly describe what you hope to address"></textarea>
+            </div>
+            <div style="display:flex;gap:10px;align-items:center">
+              <button type="submit" class="btn">Send message</button>
+              <button type="button" id="prefill" class="secondary">Prefill with planner</button>
+              <div class="small" style="margin-left:auto">We do not sell contact details.</div>
+            </div>
+          </form>
+        </section>
+
+        <section class="card faq reveal" id="faq" style="grid-column:1/-1">
+          <h3 style="margin:0">FAQs</h3>
+          <div class="faq-item">
+            <strong>How quickly can I book?</strong>
+            <div class="muted">Typical wait is 1–3 weeks for new clients. If you select a VIP single session, we prioritize a sooner slot.</div>
+          </div>
+          <div class="faq-item">
+            <strong>Do you accept insurance?</strong>
+            <div class="muted">We are primarily a private-pay practice; receipts and codes are provided on request for out-of-network reimbursement where applicable.</div>
+          </div>
+        </section>
+      </div>
+
+    </main>
+
+    <footer class="reveal" id="footer">
+      <div>© <span id="year"></span> {{BUSINESS_NAME}} — Practical integrative guidance in {{CITY}}, {{STATE}}</div>
+    </footer>
+  </div>
+
+  <script>
+    // Small utility: escape for text download
+    function downloadText(filename, text){
+      const blob = new Blob([text], {type: 'text/plain'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(a.href);
+    }
+
+    // Session Planner logic
+    (function(){
+      const buildBtn = document.getElementById('build');
+      const copyBtn = document.getElementById('copy');
+      const downloadBtn = document.getElementById('download');
+      const clearBtn = document.getElementById('clear');
+      const output = document.getElementById('output');
+
+      function gather(){
+        return {
+          concern: document.getElementById('concern').value.trim(),
+          format: document.getElementById('format').value,
+          time: document.getElementById('time').value,
+          cadence: document.getElementById('cadence').value,
+          goals: document.getElementById('goals').value.trim(),
+          notes: document.getElementById('notes').value.trim(),
+          generatedAt: new Date().toLocaleString()
+        };
+      }
+
+      function synthesize(data){
+        // Gentle, educational framing; no guarantees
+        const lines = [];
+        lines.push('Session Planner summary — ' + data.generatedAt);
+        lines.push('Primary focus: ' + (data.concern || '[not specified]'));
+        lines.push('Preferred format: ' + data.format);
+        lines.push('Weekly time budget: ' + data.time);
+        lines.push('Contact cadence preference: ' + data.cadence);
+        if(data.goals) lines.push('Top stated goals: ' + data.goals);
+        if(data.notes) lines.push('Context / constraints: ' + data.notes);
+
+        // Simple reasoning engine for suggestions
+        lines.push('\nSuggested approach:');
+        if(/sleep|insomn|rest/i.test(data.concern)){
+          lines.push('- Focused sleep hygiene + evening routine review in first session. Consider 2–3 short follow-ups over 4 weeks to adjust habits.');
+        } else if(/digest|gut|stomach|bowel/i.test(data.concern)){
+          lines.push('- Gather brief food & symptom log for 1–2 weeks. Initial consultation to prioritize testing and simple trials.');
+        } else if(/energy|fatigue/i.test(data.concern)){
+          lines.push('- Start with baseline activity & nutrition review, then a targeted 4-week plan of manageable adjustments.');
+        } else {
+          lines.push('- Begin with a focused intake to map priorities; we often set 2–3 achievable steps and reassess at 2–6 weeks.');
+        }
+
+        lines.push('\nHow this plan fits your inputs:');
+        lines.push('- Format & cadence chosen: ' + data.format + ', ' + data.cadence + '.');
+        lines.push('- Estimated commitment matches your weekly availability: ' + data.time + '.');
+
+        lines.push('\nNext steps to bring to a first session:');
+        lines.push('- Share this summary at first contact.');
+        lines.push('- If you have any recent labs or notes, bring them or attach to your booking confirmation.');
+        lines.push('\nNote: This is planning guidance for discussion, not a medical diagnosis or replacement for direct medical care.');
+
+        return lines.join('\n');
+      }
+
+      buildBtn.addEventListener('click', function(){
+        const data = gather();
+        const text = synthesize(data);
+        output.textContent = text;
+      });
+
+      copyBtn.addEventListener('click', async function(){
+        try{
+          const text = output.textContent || '';
+          await navigator.clipboard.writeText(text);
+          copyBtn.textContent = 'Copied';
+          setTimeout(()=>copyBtn.textContent = 'Copy',1200);
+        }catch(e){
+          // fallback: select + exec
+          const ta = document.createElement('textarea');
+          ta.value = output.textContent || '';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          ta.remove();
+          copyBtn.textContent = 'Copied';
+          setTimeout(()=>copyBtn.textContent = 'Copy',1200);
+        }
+      });
+
+      downloadBtn.addEventListener('click', function(){
+        const text = output.textContent || '';
+        downloadText('session-plan.txt', text);
+      });
+
+      clearBtn.addEventListener('click', function(){
+        ['concern','goals','notes'].forEach(id=>document.getElementById(id).value='');
+        output.textContent = 'Your plan summary will appear here.';
+      });
+
+      // Prefill contact form from planner
+      document.getElementById('prefill').addEventListener('click', function(){
+        const data = gather();
+        const summary = synthesize(data);
+        const messageField = document.getElementById('message');
+        messageField.value = summary;
+        messageField.focus();
+      });
+
+    })();
+
+    // Scroll reveal with prefers-reduced-motion support
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const reveals = document.querySelectorAll('.reveal');
+      if(prefersReduced){
+        reveals.forEach(el=>el.classList.add('visible'));
+        return;
+      }
+
+      const observer = new IntersectionObserver((entries)=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting){
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },{threshold:0.12});
+
+      reveals.forEach(el => observer.observe(el));
+    })();
+
+    // small nicety: current year
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Programs — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Programs: VIP Day, Rhythm Reset and ongoing containers that create habits and frameworks.">
+  <style>
+    :root{--accent:#d946ef;--bg:#fff;--muted:#334155}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;color:#071124;background:linear-gradient(180deg,#fff 0%,#fff8ff 100%)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px}
+    .brand{font-weight:800}
+    nav a{margin-left:14px;color:#071124;text-decoration:none}
+
+    .banner{padding:28px 24px;background:linear-gradient(90deg,#fff 0%,#fff5fb 100%);border-bottom:1px solid #f3e8f8}
+    .banner h1{margin:0}
+    .banner p{margin:6px 0 0;color:var(--muted)}
+
+    main{padding:24px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .prog{background:#fff;padding:18px;border-radius:12px;border:1px solid #f3e3f6}
+    .prog h3{margin:0 0 8px}
+    .tag{display:inline-block;background:linear-gradient(90deg,#ffffff,#fff1fb);padding:6px 10px;border-radius:999px;font-weight:700;color:var(--accent);font-size:13px}
+
+    .reveal{opacity:0;transform:translateY(16px);transition:opacity 520ms ease,transform 520ms cubic-bezier(.2,.9,.3,1)}
+    .reveal.visible{opacity:1;transform:none}
+
+    .cta-row{grid-column:1/-1;padding-top:8px;text-align:center}
+    .small{color:var(--muted);font-size:14px}
+
+    footer{padding:22px;text-align:center;color:var(--muted)}
+
+    @media (max-width:980px){ main{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Start</a>
+      <a href="about.html">Why</a>
+      <a href="services.html">Work</a>
+      <a href="programs.html">Plans</a>
+      <a href="pricing.html">Rates</a>
+      <a href="testimonials.html">Stories</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <div class="banner">
+    <h1>Programs and price framing</h1>
+    <p>Flexible pathways built around impact—choose a quick reset, a focused VIP day or a practice-focused container.</p>
+  </div>
+
+  <main>
+    <article class="prog reveal">
+      <div class="tag">Signature</div>
+      <h3>Anchor Day (VIP Day)</h3>
+      <p>A structured, immersive day to map rhythms, set priorities and craft a 7-day pilot you can use immediately. Best if you need a fast, high-leverage reset.</p>
+      <p class="small">Includes pre-work, a full day together and a short follow-up to assess implementation.</p>
+      <p style="margin-top:12px;font-weight:800">Price: Custom VIP pricing — starts at $1,950</p>
+      <p style="margin-top:10px"><a href="{{PRIMARY_CTA_URL}}" class="tag">Reserve VIP Day</a></p>
+    </article>
+
+    <article class="prog reveal">
+      <div class="tag">6 weeks</div>
+      <h3>Rhythm Reset — 6 weeks</h3>
+      <p>Weekly 40-minute sessions where we co-design small habits, test them and build a tracking method so the practices become automatic.</p>
+      <p class="small">Ideal for steady, measurable gains and embedding new routines.</p>
+      <p style="margin-top:12px;font-weight:800">Price: $1,800 (full program)</p>
+      <p style="margin-top:10px"><a href="{{PRIMARY_CTA_URL}}" class="tag">Start a Reset</a></p>
+    </article>
+
+    <article class="prog reveal">
+      <div class="tag">Short</div>
+      <h3>Focus Capsule — 4 sessions</h3>
+      <p>Short series for a tight focus on one priority—pick a single domain (workload, mornings, evenings) and systematize change quickly.</p>
+      <p class="small">Works well as follow-up to a VIP day or as a stand-alone sprint.</p>
+      <p style="margin-top:12px;font-weight:800">Price: $650 (4 sessions)</p>
+      <p style="margin-top:10px"><a href="{{PRIMARY_CTA_URL}}" class="tag">Book a Capsule</a></p>
+    </article>
+
+    <article class="prog reveal">
+      <div class="tag">Single</div>
+      <h3>Strategy Consult</h3>
+      <p>60-minute session to map a tight action plan. Useful before a transition, meeting a big deadline, or when you need a quick plan.</p>
+      <p class="small">No ongoing commitment required.</p>
+      <p style="margin-top:12px;font-weight:800">Price: $185</p>
+      <p style="margin-top:10px"><a href="{{PRIMARY_CTA_URL}}" class="tag">Reserve consult</a></p>
+    </article>
+
+    <div class="cta-row reveal">
+      <p class="small">Not sure which path fits? Start with a short exploratory call so we can choose the right program for your priorities.</p>
+      <p style="margin-top:8px"><a href="{{PRIMARY_CTA_URL}}" style="background:var(--accent);color:#fff;padding:10px 14px;border-radius:8px;text-decoration:none;font-weight:700">{{PRIMARY_CTA_LABEL}}</a></p>
+    </div>
+  </main>
+
+  <footer>
+    <div>Questions? Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • {{PHONE}} • {{CITY}}, {{STATE}}</div>
+  </footer>
+
+  <script>
+    // Scroll reveal with reduced motion
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const items = document.querySelectorAll('.reveal');
+      if(prefersReduced){ items.forEach(i=>i.classList.add('visible')); return; }
+      const io = new IntersectionObserver((entries, obs)=>{
+        entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); } });
+      },{threshold:0.08});
+      items.forEach(i=>io.observe(i));
+    })();
+  </script>
+</body>
+</html>

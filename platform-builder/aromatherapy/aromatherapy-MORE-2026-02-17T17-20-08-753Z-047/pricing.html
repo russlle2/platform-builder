@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Rates & Offerings — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Transparent pricing and approachable aromatherapy offerings that may support wellbeing.">
+  <style>
+    :root{--bg:#0f1724;--card:rgba(255,255,255,0.06);--glass:rgba(255,255,255,0.08);--accent:#b886ff;--muted:#cbd5e1;--glass-border:rgba(255,255,255,0.12);--glass-blur:10px}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;color:var(--muted);background:linear-gradient(180deg,#071022 0%,#0b1020 60%);background-image:radial-gradient(circle at 10% 10%, rgba(184,134,255,0.06) 0%, transparent 20%), radial-gradient(circle at 90% 90%, rgba(34,197,94,0.02) 0%, transparent 15%);}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));box-shadow:0 6px 18px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center;color:var(--accent);font-weight:700}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-size:14px}
+    .container{max-width:1100px;margin:28px auto;padding:28px}
+    .hero{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));border-radius:14px;padding:22px;border:1px solid var(--glass-border);backdrop-filter:blur(var(--glass-blur));box-shadow:0 8px 30px rgba(2,6,23,0.6)}
+    h1{color:#fff;margin:0 0 8px;font-weight:600}
+    p.lead{margin:0 0 16px;color:#dbeafe}
+    .mood{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .mood button{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);padding:8px 12px;border-radius:999px;cursor:pointer}
+    .mood button.active{background:linear-gradient(90deg,var(--accent),#6ee7b7);color:#0b1020;border:0}
+    .sidebar .wheel{height:300px;width:300px;margin:0 auto}
+    .pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}
+    .price{padding:18px;border-radius:12px;background:var(--card);border:1px solid rgba(255,255,255,0.04);}
+    .price h3{color:#fff;margin:0 0 6px}
+    .price .cost{font-weight:700;color:var(--accent);font-size:20px}
+    .price p{font-size:13px;color:#cbd5e1}
+    .cta{display:flex;gap:12px;margin-top:18px}
+    .btn{padding:10px 14px;border-radius:10px;border:0;cursor:pointer}
+    .btn.primary{background:linear-gradient(90deg,var(--accent),#7dd3fc);color:#061122;font-weight:600}
+    .faq{margin-top:22px}
+    details summary{cursor:pointer;padding:12px;border-radius:10px;background:rgba(255,255,255,0.02);list-style:none}
+    footer{padding:28px;text-align:center;color:#7c8797}
+    /* Aroma wheel styles */
+    .wheel-svg{width:100%;height:100%}
+    .note{cursor:pointer;transition:transform .18s}
+    .note:hover{transform:scale(1.06)}
+    .note-label{fill:#fff;font-size:11px}
+    @media (max-width:920px){.hero{grid-template-columns:1fr}.pricing-grid{grid-template-columns:1fr}.sidebar{order:-1}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">A</div>
+      <div>
+        <div style="color:#fff;font-weight:600">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Library</a>
+      <a href="shop.html">Shop</a>
+      <a href="pricing.html">Rates</a>
+      <a href="about.html">Story</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="hero card">
+      <div>
+        <h1>Clear options. Gentle support.</h1>
+        <p class="lead">Transparent plans and adaptable sessions that may support emotional balance and daily ease. Choose a mood; we shape a method that may fit.</p>
+        <div class="mood" role="list" aria-label="Mood selector" id="moodSelector">
+          <button data-mood="calm">Calm</button>
+          <button data-mood="focus">Focus</button>
+          <button data-mood="sleep">Wind-down</button>
+          <button data-mood="energize">Energize</button>
+          <button data-mood="ground">Ground</button>
+        </div>
+
+        <div style="margin-top:14px">
+          <strong style="color:#fff">Method suggested:</strong>
+          <div id="methodView" style="margin-top:6px;color:#cbd5e1">Select how you feel and we’ll suggest a format: quick roll, in-person consult, or guided inhalation session.</div>
+        </div>
+
+        <div class="cta">
+          <a id="primaryCta" class="btn primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <a class="btn" href="contact.html">Ask a question</a>
+        </div>
+
+        <div class="pricing-grid">
+          <div class="price card">
+            <h3>Moment Tending</h3>
+            <div class="cost">$25</div>
+            <p>Single short blend + usage notes. A pocket-sized practice that may support a small shift.</p>
+            <div style="margin-top:8px"><button class="btn" onclick="prefill('Moment Tending')">Choose</button></div>
+          </div>
+
+          <div class="price card">
+            <h3>Pocket Series — 3</h3>
+            <div class="cost">$68</div>
+            <p>Three brief consultations for routine tending and short-form blends. Practice-friendly.</p>
+            <div style="margin-top:8px"><button class="btn" onclick="prefill('Pocket Series — 3')">Choose</button></div>
+          </div>
+
+          <div class="price card">
+            <h3>Anchor Session</h3>
+            <div class="cost">$115</div>
+            <p>45-minute guided session with custom blend notes and follow-up. Crafted support that may last beyond the hour.</p>
+            <div style="margin-top:8px"><button class="btn" onclick="prefill('Anchor Session')">Choose</button></div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;font-size:13px;color:#9aa6b2">Hybrid booking available: choose remote, in-studio, or scent-kit delivery at checkout.</div>
+
+        <div class="faq">
+          <details>
+            <summary>Safety & dosing</summary>
+            <div style="padding:12px 6px;color:#cbd5e1">We recommend dilution guidance, patch testing new blends, and avoiding direct undiluted skin contact. For pregnancy, pets, or medical conditions, consult healthcare or veterinarian guidance before use. Our guidance may support comfort but is not medical advice.</div>
+          </details>
+          <details>
+            <summary>How to use a short session</summary>
+            <div style="padding:12px 6px;color:#cbd5e1">Short sessions include a focused scent practice, breathing prompts, and notes for safe at-home repetition. Expect practical steps and a single follow-up message.</div>
+          </details>
+        </div>
+      </div>
+
+      <aside class="sidebar card">
+        <div style="text-align:center;color:#fff;font-weight:600">Aroma Wheel — notes at a glance</div>
+        <div class="wheel" aria-hidden="false">
+          <!-- Inline SVG aroma wheel -->
+          <svg class="wheel-svg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#b886ff"/><stop offset="1" stop-color="#7dd3fc"/></linearGradient>
+            </defs>
+            <circle cx="150" cy="150" r="120" fill="url(#g1)" opacity="0.06"/>
+            <!-- top notes -->
+            <g id="topNotes">
+              <path class="note" data-note="bergamot" d="M150 30 L210 70 A90 90 0 0 1 150 60 Z" fill="#FFDCA8" stroke="rgba(255,255,255,0.06)"/>
+              <path class="note" data-note="lime" d="M150 30 L210 70 A30 30 0 0 1 150 30 Z" fill="#E6FFCC" stroke="rgba(255,255,255,0.06)"/>
+            </g>
+            <!-- middle notes -->
+            <g id="middleNotes">
+              <path class="note" data-note="lavender" d="M150 60 L210 150 A90 90 0 0 1 150 150 Z" fill="#D7C7FF" stroke="rgba(255,255,255,0.06)"/>
+              <path class="note" data-note="geranium" d="M150 60 L150 150 A40 40 0 0 1 150 60 Z" fill="#FFD1E6" stroke="rgba(255,255,255,0.06)"/>
+            </g>
+            <!-- base notes -->
+            <g id="baseNotes">
+              <path class="note" data-note="vetiver" d="M150 150 L210 230 A90 90 0 0 1 150 270 Z" fill="#BEE7D7" stroke="rgba(255,255,255,0.06)"/>
+              <path class="note" data-note="amber" d="M150 150 L90 230 A90 90 0 0 1 150 270 Z" fill="#FFDDC2" stroke="rgba(255,255,255,0.06)"/>
+            </g>
+            <circle cx="150" cy="150" r="50" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.04)"/>
+            <text x="150" y="156" text-anchor="middle" class="note-label">hover notes</text>
+          </svg>
+        </div>
+        <div id="noteInfo" style="margin-top:12px;color:#cbd5e1;font-size:13px">Hover a note to read a short description.</div>
+      </aside>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>&copy; <span id="year"></span> {{BUSINESS_NAME}} — Gentle scent practices that may support everyday balance.</div>
+  </footer>
+
+  <script>
+    // year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Mood-to-Method mappings
+    const moodMap = {
+      calm: {method:'Short inhalation practice + diluted roll-on suggestion',cta:'Book a Calm Moment'},
+      focus: {method:'Focused blend + breath pattern for clarity',cta:'Reserve a Focus Session'},
+      sleep: {method:'Wind-down ritual with gentle inhalation and bedtime notes',cta:'Book a Wind-down'},
+      energize: {method:'Bright top-note blend with energizing prompts',cta:'Book an Energize Mini'},
+      ground: {method:'Grounding blend with grounding breathing',cta:'Book Grounding Support'}
+    };
+
+    const moodButtons = document.querySelectorAll('#moodSelector button');
+    const methodView = document.getElementById('methodView');
+    const primaryCta = document.getElementById('primaryCta');
+
+    moodButtons.forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        moodButtons.forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        const mood = btn.dataset.mood;
+        const entry = moodMap[mood];
+        methodView.textContent = entry.method + ' — recommended format: hybrid or remote.';
+        primaryCta.textContent = entry.cta;
+      });
+    });
+
+    // Aroma wheel interactions
+    const notes = document.querySelectorAll('.note');
+    const noteInfo = document.getElementById('noteInfo');
+    const noteData = {
+      bergamot: 'Bright and citrusy; top note for gentle lift. Best diluted for skin use.',
+      lime: 'A sharp citrus accent; use sparingly in blends to avoid phototoxicity.',
+      lavender: 'A middle note often used for settling routines; dilute for skin and patch test.',
+      geranium: 'Green-floral middle; may support emotional balance when used safely.',
+      vetiver: 'Earthy base note; grounding when used in low dilution near bedtime.',
+      amber: 'Warm base accord; aligns well with vetiver and safe dilution ratios.'
+    };
+
+    notes.forEach(n=>{
+      n.addEventListener('mouseenter',()=>{
+        const key = n.dataset.note;
+        noteInfo.textContent = noteData[key] || 'Note description not available.';
+      });
+      n.addEventListener('mouseleave',()=>{
+        noteInfo.textContent = 'Hover a note to read a short description.';
+      });
+    });
+
+    function prefill(plan){
+      // quick redirect to booking with prefilled query
+      const url = new URL('book.html', window.location.href);
+      url.searchParams.set('plan', plan);
+      window.location.href = url.toString();
+    }
+  </script>
+</body>
+</html>

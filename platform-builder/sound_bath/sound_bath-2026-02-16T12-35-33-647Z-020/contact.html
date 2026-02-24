@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contact • {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reach out to book a sound bath, ask about private sessions, or learn more about our sensory-guided events.">
+  <style>
+    :root{--bg1:#0f1724;--bg2:#071028;--accent:#8be4d4;--muted:#98a8b9;--card:#0b1116;--glass:rgba(255,255,255,0.04);--radius:14px}
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; color:#e6f7f3;background:linear-gradient(180deg,var(--bg1),var(--bg2));-webkit-font-smoothing:antialiased}
+    header{display:flex;align-items:center;justify-content:space-between;padding:22px 28px}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#0ff1ce22,#7af0e933);display:grid;place-items:center;font-weight:700;color:var(--accent);font-size:18px}
+    nav a{color:#cfeee6;text-decoration:none;margin-left:18px;font-weight:600}
+    nav a:hover{text-decoration:underline}
+    main{max-width:1100px;margin:28px auto;padding:36px;border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);backdrop-filter: blur(6px);box-shadow:0 10px 40px rgba(3,6,14,0.6)}
+    .grid{display:grid;grid-template-columns:1fr 380px;gap:28px}
+    .hero{padding:28px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));display:flex;flex-direction:column;gap:18px}
+    .eyebrow{font-size:13px;color:var(--accent);font-weight:700;padding:6px 10px;border-radius:999px;background:linear-gradient(90deg,#06223133,#082b3922);width:max-content}
+    h1{margin:0;font-size:34px;line-height:1.05;color:#e9fff9}
+    p.lead{margin:0;color:var(--muted);font-size:15px}
+    .contact-card{padding:18px;border-radius:12px;background:linear-gradient(135deg,#06111a66,#0b172022);box-shadow:inset 0 1px 0 rgba(255,255,255,0.02)}
+    form{display:flex;flex-direction:column;gap:12px}
+    label{font-size:13px;color:#bfeee2}
+    input[type=text],input[type=email],textarea,select{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:var(--card);color:#e8fbf6}
+    textarea{min-height:120px;resize:vertical}
+    .btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;background:linear-gradient(90deg,var(--accent),#66d8ff);color:#042026;border-radius:12px;font-weight:700;border:none;cursor:pointer}
+    .small{font-size:13px;color:var(--muted)}
+    .meta{display:flex;flex-direction:column;gap:10px}
+    .meta .row{display:flex;gap:10px;align-items:center}
+    .pill{padding:8px 12px;border-radius:999px;background:var(--glass);color:#bfeee2;font-weight:700}
+    .section{margin-top:18px;padding:16px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent)}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    ul{margin:10px 0;padding-left:20px;color:var(--muted)}
+    details{background:transparent;padding:10px;border-radius:10px}
+    footer{margin-top:22px;padding:18px;border-radius:12px;text-align:center;color:var(--muted)}
+    /* Playful accents */
+    .sparkles{width:100%;height:120px;pointer-events:none;margin-top:-24px}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}.small-hide{display:none}.sparkles{height:72px}}
+    /* SVG background mask */
+    .bg-svg{position:fixed;right:-8%;top:-6%;opacity:0.08;transform:rotate(12deg);width:50rem;height:50rem;pointer-events:none}
+  </style>
+</head>
+<body>
+  <svg class="bg-svg" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1">
+        <stop offset="0" stop-color="#5ef3db" stop-opacity="0.6"/>
+        <stop offset="1" stop-color="#7ad0ff" stop-opacity="0.5"/>
+      </linearGradient>
+      <pattern id="p" width="80" height="80" patternUnits="userSpaceOnUse" patternTransform="rotate(22)">
+        <rect width="80" height="80" fill="none"/>
+        <circle cx="10" cy="10" r="3" fill="#ffffff" fill-opacity="0.08"/>
+        <path d="M0 40 L80 40" stroke="#ffffff" stroke-opacity="0.02"/>
+      </pattern>
+      <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="18" result="b"/>
+        <feBlend in="SourceGraphic" in2="b"/>
+      </filter>
+    </defs>
+    <g filter="url(#soft)">
+      <rect x="0" y="0" width="800" height="800" fill="url(#g1)"/>
+      <rect x="0" y="0" width="800" height="800" fill="url(#p)"/>
+    </g>
+  </svg>
+  <header>
+    <div class="brand">
+      <div class="logo">SB</div>
+      <div>
+        <div style="font-weight:800;color:#e6fff9">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">Sound baths • {{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="events.html">Upcoming</a>
+      <a href="private-sessions.html">Private</a>
+      <a href="about.html">The Team</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+  <main>
+    <div class="grid">
+      <section class="hero">
+        <div class="eyebrow">Connect • Book • Ask</div>
+        <h1>Contact {{BUSINESS_NAME}} — we design sensory sound sessions with clinical attention</h1>
+        <p class="lead">Whether you’re curious about our next group immersion, want a private session, or need accessibility information, reach out. We respond within 48 hours.</p>
+
+        <div class="grid-2">
+          <div class="contact-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+              <div style="font-weight:800;color:#dffbf5">Drop us a note</div>
+              <div class="pill">Hybrid model</div>
+            </div>
+            <form method="post" action="{{PRIMARY_CTA_URL}}/contact-submit">
+              <label for="name">Full name</label>
+              <input id="name" name="name" type="text" placeholder="Your name" required>
+
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" placeholder="you@domain.com" required>
+
+              <label for="phone">Phone</label>
+              <input id="phone" name="phone" type="text" placeholder="{{PHONE}} or mobile">
+
+              <label for="session">Interested in</label>
+              <select id="session" name="session">
+                <option>Group event (next event: {{NEXT_EVENT_DATE}})</option>
+                <option>1:1 private session with {{FACILITATOR_NAME}}</option>
+                <option>Couples session</option>
+                <option>Corporate or wellness program</option>
+              </select>
+
+              <label for="msg">Message / Accessibility requests</label>
+              <textarea id="msg" name="message" placeholder="Tell us about goals, accessibility needs, preferred days or times"></textarea>
+
+              <label class="small"><input type="checkbox" name="consent"> I consent to be contacted about bookings and events.</label>
+              <div style="display:flex;gap:10px;align-items:center">
+                <button type="submit" class="btn">{{PRIMARY_CTA_LABEL}}</button>
+                <div class="small small-hide">or call <a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none">{{PHONE}}</a></div>
+              </div>
+            </form>
+          </div>
+
+          <aside class="contact-card meta">
+            <div class="row"><strong style="color:#dffbf5">Location</strong><span class="small">{{VENUE_NAME}} • {{CITY}}, {{STATE}}</span></div>
+            <div class="row"><strong style="color:#dffbf5">Email</strong><a class="small" href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+            <div class="row"><strong style="color:#dffbf5">Phone</strong><a class="small" href="tel:{{PHONE}}">{{PHONE}}</a></div>
+            <div class="section">
+              <div style="font-weight:700;color:#dffbf5;margin-bottom:6px">What to bring</div>
+              <ul>
+                <li>Yoga mat or blanket for comfort</li>
+                <li>Small pillow or eye cushion</li>
+                <li>Water bottle and light layers</li>
+              </ul>
+            </div>
+            <div class="section">
+              <div style="font-weight:700;color:#dffbf5;margin-bottom:6px">Quick note on contraindications</div>
+              <p class="small">Sound baths are deeply sensory. If you are pregnant, have epilepsy, recent concussion, uncontrolled high blood pressure, or severe psychiatric conditions, please consult your healthcare provider and notify us before booking. We may tailor or decline modalities to prioritize safety.</p>
+            </div>
+          </aside>
+        </div>
+
+        <div class="section">
+          <div style="font-weight:800;color:#dffbf5">Session flow — what to expect</div>
+          <ol style="color:var(--muted);margin-top:8px">
+            <li>Arrival & brief intake: 10–15 minutes for goals and any contraindications</li>
+            <li>Set-up: settle into comfortable space; facilitator calibrates instruments</li>
+            <li>Immersion: 30–50 minutes of guided sound, breath prompts and gentle transitions using tuned instruments</li>
+            <li>Closure: slow reorientation, journaling prompts, and optional check-in</li>
+          </ol>
+        </div>
+      </section>
+
+      <aside>
+        <div class="contact-card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-weight:800;color:#dffbf5">Trusted by locals</div>
+              <div class="small">A clinical approach with sensory luxury</div>
+            </div>
+            <div class="pill">Established</div>
+          </div>
+
+          <div class="section">
+            <div style="font-weight:700;color:#dffbf5">Testimonials</div>
+            <div style="margin-top:10px;color:var(--muted)">
+              "A precision-led session that balanced depth and safety. I left clear-headed and relaxed." — S.
+            </div>
+            <div style="margin-top:8px;color:var(--muted)">
+              "The hybrid offering made it easy for our team retreat to include remote members." — HR Lead
+            </div>
+          </div>
+
+          <div class="section">
+            <div style="font-weight:700;color:#dffbf5">Benefits</div>
+            <ul>
+              <li>Improved sleep and stress regulation</li>
+              <li>Reduced muscle tension and heightened interoception</li>
+              <li>Structured, clinical intake + tailored soundscape</li>
+            </ul>
+          </div>
+
+          <div class="section">
+            <div style="font-weight:700;color:#dffbf5">Process to book</div>
+            <ol style="color:var(--muted);margin-top:8px">
+              <li>Contact via form or call</li>
+              <li>Quick intake to confirm suitability</li>
+              <li>Schedule, pay deposit, and receive pre-session guidance</li>
+            </ol>
+          </div>
+        </div>
+
+        <div style="margin-top:14px" class="contact-card">
+          <div style="font-weight:700;color:#dffbf5">Lead magnet — calming primer</div>
+          <p class="small">Sign up to receive our one-page pre-session primer: tips for sleep support, breath anchors, and how to create a restful environment at home.</p>
+          <form method="post" action="{{PRIMARY_CTA_URL}}/subscribe">
+            <input type="email" name="subscribe_email" placeholder="Email" required>
+            <div style="margin-top:8px"><button class="btn">Get the primer</button></div>
+          </form>
+        </div>
+
+        <div class="contact-card" style="margin-top:14px">
+          <div style="font-weight:700;color:#dffbf5">FAQ</div>
+          <details style="margin-top:8px"><summary style="cursor:pointer;color:var(--muted)">How long are sessions?</summary><p class="small" style="margin:8px 0">Group immersions are typically 60–70 minutes including arrival and closure. Private sessions range 45–90 minutes depending on format.</p></details>
+          <details style="margin-top:6px"><summary style="cursor:pointer;color:var(--muted)">Are instruments loud?</summary><p class="small" style="margin:8px 0">Instruments like crystal bowls and chimes are delivered with careful dynamics; facilitator adjusts volume for comfort.</p></details>
+        </div>
+      </aside>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:12px;flex-wrap:wrap">
+      <div>
+        <div style="font-weight:800;color:#dffbf5">Still unsure?</div>
+        <div class="small">Call, email, or use the form — we’ll guide you to the right offering.</div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:center">
+        <a href="book.html" class="btn">Book a session</a>
+        <a href="faq.html" class="small" style="color:var(--muted);text-decoration:none">More frequently asked</a>
+      </div>
+    </div>
+
+    <footer>
+      <div>{{BUSINESS_NAME}} — sensory-guided sound baths • Facilitated by {{FACILITATOR_NAME}} at {{VENUE_NAME}}</div>
+      <div style="margin-top:6px" class="small">If you experience dizziness, seizures, or sudden distress during a session, stop and notify the facilitator immediately.</div>
+    </footer>
+  </main>
+</body>
+</html>

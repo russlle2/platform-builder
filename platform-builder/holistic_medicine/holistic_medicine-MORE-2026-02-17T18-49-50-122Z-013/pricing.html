@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Rates — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbf7f2;--muted:#6b6258;--accent:#7a4b2f;--card:#fff6f1;--glass:rgba(122,75,47,0.06);font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; color:var(--muted)}
+    html,body{height:100%}body{margin:0;background:linear-gradient(180deg,var(--bg),#fff);-webkit-font-smoothing:antialiased}
+    header{display:flex;align-items:center;justify-content:space-between;padding:28px 36px;background:var(--card);box-shadow:0 1px 0 var(--glass);position:sticky;top:0;z-index:10}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:48px;height:48px;border-radius:8px;background:linear-gradient(135deg,#e9dace,#f7efe8);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent);box-shadow:inset 0 -6px 10px rgba(122,75,47,0.06)}
+    nav a{margin-left:18px;color:var(--muted);text-decoration:none;font-size:15px}
+    .cta{background:var(--accent);color:white;padding:10px 14px;border-radius:8px;text-decoration:none;font-weight:600}
+    main{max-width:980px;margin:36px auto;padding:20px}
+    .hero{display:grid;grid-template-columns:1fr;gap:18px;padding:28px;border-radius:14px;background-image:url('assets/img/pattern.svg');background-repeat:no-repeat;background-position:right 12px top 12px}
+    .hero h1{margin:0;font-size:28px;color:var(--accent)}
+    .lead{margin:0;color:var(--muted);line-height:1.5}
+    .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:20px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(100,80,60,0.06)}
+    .price{font-weight:700;color:var(--accent);font-size:20px}
+    .muted{color:#8b8076;font-size:14px}
+    .plan-list{margin:12px 0 0;padding:0 0 0 16px;color:var(--muted)}
+    .small{font-size:13px;color:#7b7169}
+    .grid-2{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:22px}
+    .faq{margin-top:24px}
+    footer{margin-top:36px;padding:20px;text-align:center;color:#8b8076}
+    /* Session planner */
+    .planner{background:#fff;padding:16px;border-radius:12px;border:1px solid rgba(122,75,47,0.06)}
+    label{display:block;font-size:13px;margin-top:12px;color:var(--muted)}
+    input[type=text],select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(122,75,47,0.08);margin-top:6px;font-size:14px}
+    .actions{display:flex;gap:10px;margin-top:12px}
+    button{background:var(--accent);color:white;padding:10px;border-radius:8px;border:0;cursor:pointer}
+    button.secondary{background:#fff;border:1px solid rgba(122,75,47,0.12);color:var(--accent)}
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none!important;transform:none;opacity:1}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">HM</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:2px">A thoughtful approach to whole-person health</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Root</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Health Notes</a>
+      <a href="approach.html">Way</a>
+      <a href="pricing.html" style="font-weight:700;color:var(--accent)">Rates</a>
+      <a href="about.html">Our Story</a>
+      <a href="book.html" class="cta">{{PRIMARY_CTA_LABEL}}</a>
+    </nav>
+  </header>
+  <main>
+    <section class="hero reveal">
+      <h1>Practical pathways, arranged around your life</h1>
+      <p class="lead">Choose from single sessions, guided blocks, or a seasonal subscription. Each option is framed to help you translate insights into steady, manageable steps.</p>
+      <div class="cards">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div class="small">Single Session</div>
+              <div class="price">$140</div>
+            </div>
+            <div class="muted">60 min</div>
+          </div>
+          <ul class="plan-list">
+            <li>Focused assessment</li>
+            <li>Personalized takeaways</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div class="small">Harmony Block</div>
+              <div class="price">3 sessions — $380</div>
+            </div>
+            <div class="muted">best for early momentum</div>
+          </div>
+          <ul class="plan-list">
+            <li>Three-session arc</li>
+            <li>Home practices and notes</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div class="small">Seasonal Tune</div>
+              <div class="price">$95 / mo</div>
+            </div>
+            <div class="muted">Monthly check-ins</div>
+          </div>
+          <ul class="plan-list">
+            <li>Regular tuning</li>
+            <li>Priority scheduling</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid-2" style="margin-top:26px">
+      <div>
+        <section class="reveal">
+          <h2 style="color:var(--accent);margin:0">How I frame care</h2>
+          <p class="small" style="margin-top:10px">We build plans that consider rhythm, resources, and readiness. No magic promises — just clear options, honest timelines, and tools you can use at home.</p>
+          <ul style="margin-top:12px;color:var(--muted)">
+            <li>Mapping: a short assessment to orient the first session</li>
+            <li>Phases: focus, stabilize, maintain</li>
+            <li>Practice: small, doable steps with clear rationale</li>
+          </ul>
+        </section>
+
+        <section class="faq reveal faq">
+          <h3 style="margin:0;color:var(--accent)">Questions</h3>
+          <details style="margin-top:10px"><summary class="small">What does a session include?</summary><div class="small muted" style="margin-top:8px">A conversation informed by integrative perspectives, optional hands-on guidance or supportive modalities, practical takeaways. Educational in tone — not a cure promise.</div></details>
+          <details style="margin-top:8px"><summary class="small">Insurance?</summary><div class="small muted" style="margin-top:8px">We provide receipts for out-of-network reimbursement where possible. Contact {{EMAIL}} for details.</div></details>
+        </section>
+      </div>
+
+      <aside class="reveal" aria-labelledby="planner-title">
+        <div class="planner">
+          <h3 id="planner-title" style="margin:0;color:var(--accent)">Session Planner</h3>
+          <p class="small" style="margin-top:8px">Quickly sketch a personalized plan. Copy the summary and bring it to your booking.</p>
+          <label>Primary concern</label>
+          <input type="text" id="concern" placeholder="Sleep, digestion, stress, energy...">
+          <label>Time you can commit weekly</label>
+          <select id="time">
+            <option value="15">15 min</option>
+            <option value="30">30 min</option>
+            <option value="60">60 min</option>
+          </select>
+          <label>Frequency</label>
+          <select id="freq">
+            <option value="single">Single session</option>
+            <option value="block">3-session block</option>
+            <option value="monthly">Monthly tune</option>
+          </select>
+          <label>Preferences (brief)</label>
+          <input type="text" id="prefs" placeholder="Herbal, movement, breath work, nutrition notes">
+          <div class="actions">
+            <button id="build">Build plan</button>
+            <button class="secondary" id="clear">Clear</button>
+          </div>
+          <pre id="planOut" style="white-space:pre-wrap;margin-top:12px;background:#fff6f8;padding:10px;border-radius:8px;border:1px solid rgba(122,75,47,0.04);min-height:72px"></pre>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button id="copy">Copy summary</button>
+            <a href="{{PRIMARY_CTA_URL}}" class="secondary" style="display:inline-flex;align-items:center;padding:8px 10px;text-decoration:none;color:var(--accent);border-radius:8px">Book now</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <section class="reveal" style="margin-top:20px">
+      <h3 style="margin:0;color:var(--accent)">Notes on pricing</h3>
+      <p class="small" style="margin-top:8px">Prices are designed to balance depth with accessibility. If cost is a barrier, ask about sliding options — our goal is usable care, not exclusion.</p>
+    </section>
+
+  </main>
+  <footer>
+    <div class="small">Call {{PHONE}} • {{EMAIL}} • Serving {{CITY}}, {{STATE}}</div>
+  </footer>
+
+  <script>
+    (function(){
+      // Scroll reveal
+      function reveal(){
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if(prefersReduced){document.querySelectorAll('.reveal').forEach(el=>el.classList.add('visible')); return}
+        const items = document.querySelectorAll('.reveal');
+        const obs = new IntersectionObserver((entries)=>{
+          entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}},{threshold:0.08});
+        items.forEach(i=>obs.observe(i));
+      }
+      document.addEventListener('DOMContentLoaded',reveal);
+
+      // Session Planner logic
+      function summarize(data){
+        const lines=[];
+        lines.push('Personal Plan — '+(new Date()).toLocaleDateString());
+        lines.push('Primary concern: '+data.concern);
+        lines.push('Weekly time: '+data.time+' minutes');
+        lines.push('Frequency: '+(data.freqText));
+        if(data.prefs) lines.push('Preferences: '+data.prefs);
+        lines.push('\nSuggested arc:');
+        if(data.freq==='single'){
+          lines.push('- One focused session (60 min) to map needs and hand off 2–3 practical steps.');
+        } else if(data.freq==='block'){
+          lines.push('- Block of 3 sessions: session 1 assessment, session 2 practice/stabilize, session 3 review + next steps.');
+        } else {
+          lines.push('- Ongoing monthly check-ins to tune practices and maintain progress.');
+        }
+        lines.push('\nPractical starters:');
+        if(data.concern.match(/sleep|rest/i)){
+          lines.push('- Evening wind-down: 15 minutes of breathing, light stretch, reduce screens.');
+        } else if(data.concern.match(/digest/i)){
+          lines.push('- Simple meal rhythm: light proteins, chewing, paced meals, mindful 10-min post-meal pause.');
+        } else {
+          lines.push('- Begin with a 5–10 minute daily practice tailored to your routine.');
+        }
+        lines.push('\nEstimated cost: '+data.estimate);
+        lines.push('\nBring this summary to booking or copy it into a message.');
+        return lines.join('\n');
+      }
+
+      function costEstimate(freq){
+        if(freq==='single') return '$140';
+        if(freq==='block') return '$380';
+        return '$95 / month';
+      }
+
+      document.addEventListener('DOMContentLoaded',function(){
+        const elBuild=document.getElementById('build');
+        const elClear=document.getElementById('clear');
+        const elCopy=document.getElementById('copy');
+        const out=document.getElementById('planOut');
+        elBuild.addEventListener('click',()=>{
+          const concern=document.getElementById('concern').value.trim()||'General well-being';
+          const time=document.getElementById('time').value;
+          const freq=document.getElementById('freq').value;
+          const prefs=document.getElementById('prefs').value.trim();
+          const freqText = freq==='single'? 'Single session' : freq==='block'? '3-session block' : 'Monthly tune';
+          const data={concern,time,freq,prefs,freqText,estimate:costEstimate(freq)};
+          out.textContent = summarize(data);
+        });
+        elClear.addEventListener('click',()=>{document.getElementById('concern').value='';document.getElementById('prefs').value='';out.textContent='';});
+        elCopy.addEventListener('click',async()=>{
+          try{await navigator.clipboard.writeText(out.textContent||'');
+            elCopy.textContent='Copied';setTimeout(()=>elCopy.textContent='Copy summary',1600);
+          }catch(e){alert('Copy failed — select and copy manually.');}
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

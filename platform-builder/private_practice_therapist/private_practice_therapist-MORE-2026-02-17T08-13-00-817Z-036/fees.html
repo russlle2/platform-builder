@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Rates — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Transparent rates and service choices for individual therapy and blended support in {{CITY}}, {{STATE}}.">
+  <style>
+    :root{--bg:#fbfbfb;--muted:#6b6b6b;--accent:#8aa6a3;--ink:#222;--card:#fff;--glass:rgba(255,255,255,0.7)}
+    html,body{height:100%}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+    /* patterned sky using inline svg data-uri */
+    body::before{content:"";position:fixed;inset:0;z-index:-1;opacity:0.12;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="%238aa6a3"/><stop offset="1" stop-color="%23f0f7f6"/></linearGradient></defs><rect width="200" height="200" fill="url(%23g)"/><g opacity="0.08" fill="none" stroke="%23000000" stroke-width="1"><path d="M10 40c20-20 60-20 80 0s60 20 80 0"/><path d="M10 100c20-20 60-20 80 0s60 20 80 0"/></g></svg>');background-size:cover}
+    header{display:flex;justify-content:space-between;align-items:center;padding:28px 36px}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-weight:600}
+    .wrap{max-width:960px;margin:28px auto;padding:0 20px}
+    .hero{background:linear-gradient(180deg,#fff 0%,#f7f9f8 100%);padding:36px;border-radius:12px;box-shadow:0 6px 24px rgba(20,30,30,0.06);display:grid;grid-template-columns:1fr 240px;gap:20px}
+    .hero h1{margin:0 0 8px;font-size:22px}
+    .hero p{margin:0;color:var(--muted)}
+    .cta{display:flex;flex-direction:column;gap:10px}
+    .button{background:var(--accent);color:#fff;border:none;padding:12px;border-radius:8px;font-weight:700;cursor:pointer}
+    .soft{background:transparent;border:1px solid rgba(0,0,0,0.06);padding:10px;border-radius:8px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-top:22px}
+    .card{background:var(--card);padding:18px;border-radius:10px;box-shadow:0 6px 18px rgba(20,30,30,0.04);min-height:140px;display:flex;flex-direction:column;justify-content:space-between;opacity:0;transform:translateY(18px)}
+    .price{font-size:20px;font-weight:800}
+    small{color:var(--muted)}
+    footer{margin:40px 0 120px;color:var(--muted);font-size:13px}
+    .note{background:linear-gradient(90deg,rgba(138,166,163,0.06),transparent);padding:12px;border-radius:8px;margin-top:14px}
+    /* reveal visible */
+    .reveal.is-visible{opacity:1;transform:none;transition:opacity 600ms ease,transform 600ms ease}
+    /* reduced motion preferences */
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none !important;transform:none !important;opacity:1 !important}}
+    /* small */
+    @media (max-width:640px){.hero{grid-template-columns:1fr;padding:20px}}
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(5,6,7,0.5);display:none;align-items:center;justify-content:center;padding:20px}
+    .modal{background:var(--card);max-width:720px;width:100%;border-radius:12px;padding:18px;box-shadow:0 10px 40px rgba(10,20,20,0.2)}
+    .modal .row{display:flex;gap:12px}
+    .meter{height:8px;background:rgba(0,0,0,0.06);border-radius:8px;overflow:hidden}
+    .meter > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#b7d3d0);width:0}
+    .close{background:transparent;border:0;font-weight:700;padding:10px;cursor:pointer}
+    .faq-toggle{background:transparent;border:0;padding:12px 0;width:100%;text-align:left}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center"><strong>{{BUSINESS_NAME}}</strong><span style="color:var(--muted)">— thoughtful clinical support</span></div>
+    <nav aria-label="Primary">
+      <a href="index.html">Gather</a>
+      <a href="about.html">Who I Am</a>
+      <a href="specialties.html">Focus Areas</a>
+      <a href="approach.html">Method</a>
+      <a href="fees.html">Rates</a>
+      <a href="faq.html">Questions</a>
+      <a href="book.html">Schedule</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="hero reveal" data-reveal>
+      <div>
+        <h1>Rates & arrangements</h1>
+        <p>Practical choices for individual therapy and blended plans that combine sessions with short-touch support between meetings. Fees are intended to be straightforward; adjustments may be discussed when needed.</p>
+        <div class="note">
+          <small>I offer both single sessions and curated paths for people wanting steadier support. No promises are made about outcomes — therapy is a collaborative, uncertain process.</small>
+        </div>
+      </div>
+      <aside class="cta">
+        <button class="button" onclick="location.href='{{PRIMARY_CTA_URL}}'">{{PRIMARY_CTA_LABEL}}</button>
+        <button class="soft" id="try-now">Try a short practice</button>
+        <div style="color:var(--muted);font-size:13px;padding-top:6px">Phone: {{PHONE}} · {{EMAIL}}</div>
+      </aside>
+    </section>
+
+    <section style="margin-top:24px">
+      <div class="grid">
+        <article class="card reveal" data-reveal>
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center"><strong>Single session</strong><span class="price">$185</span></div>
+            <p style="margin:8px 0;color:var(--muted)">50-minute focused meeting. Good for intake, medication consultation is not provided here.</p>
+          </div>
+          <div><small>Sliding scale may be available; ask about limited slots.</small></div>
+        </article>
+
+        <article class="card reveal" data-reveal>
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center"><strong>Monthly continuity</strong><span class="price">$600 / mo</span></div>
+            <p style="margin:8px 0;color:var(--muted)">Four weekly sessions with brief check-ins by message in-between. Blended care to support momentum.</p>
+          </div>
+          <div><small>Billed monthly. Cancellation policy applies.</small></div>
+        </article>
+
+        <article class="card reveal" data-reveal>
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center"><strong>Short course</strong><span class="price">$1,050</span></div>
+            <p style="margin:8px 0;color:var(--muted)">Six-session focused plan (recommended cadence: weekly). Good for targeted concerns or skill-building.</p>
+          </div>
+          <div><small>Includes brief orientation and a structured closing check-in.</small></div>
+        </article>
+
+        <article class="card reveal" data-reveal>
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center"><strong>Session bundle</strong><span class="price">$540 / 3</span></div>
+            <p style="margin:8px 0;color:var(--muted)">Three sessions paid up front; useful for people who want short-term review and planning.</p>
+          </div>
+          <div><small>Bundle refunds handled case-by-case; contact to discuss.</small></div>
+        </article>
+      </div>
+
+      <div style="margin-top:18px;color:var(--muted)">
+        <p><strong>Notes on scope</strong></p>
+        <p>Therapy here is a confidential clinical service. I do not provide emergency care; if you are in crisis or danger, please call local emergency services or your nearest crisis line. Sessions are not a substitute for medical or psychiatric treatment when those are needed. We will discuss boundaries, confidentiality limits, and record-keeping during our first meeting.</p>
+      </div>
+    </section>
+
+    <footer>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
+        <div>
+          <strong>{{BUSINESS_NAME}}</strong><div style="color:var(--muted)">Serving {{CITY}}, {{STATE}}</div>
+        </div>
+        <div style="color:var(--muted);font-size:13px">Confidentiality and professional boundaries explained at intake. Payments processed directly; insurance reimbursement is client's responsibility.</div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- Try-it-now modal -->
+  <div id="modal" class="modal-backdrop" role="dialog" aria-hidden="true">
+    <div class="modal" role="document">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <strong id="modal-title">A brief guided practice</strong>
+        <button class="close" id="close-modal">✕</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 220px;gap:12px">
+        <div>
+          <p id="modal-desc" style="margin-top:0;color:var(--muted)">Choose a short guided option to steady attention: breathing, journaling, or intention setting.</p>
+          <div style="display:flex;gap:8px;margin-bottom:8px">
+            <button class="soft" data-mode="breath">Breathing</button>
+            <button class="soft" data-mode="journal">Journaling</button>
+            <button class="soft" data-mode="intent">Intention</button>
+          </div>
+
+          <div id="breath-ui" style="display:none">
+            <div class="meter" aria-hidden><i id="breath-bar"></i></div>
+            <div style="margin-top:10px;color:var(--muted)" id="breath-status">Ready</div>
+            <div style="display:flex;gap:8px;margin-top:12px"><button class="button" id="start-breath">Start 1 min</button><button class="soft" id="stop-breath">Stop</button></div>
+          </div>
+
+          <div id="journal-ui" style="display:none">
+            <textarea id="journal-text" rows="6" style="width:100%;padding:10px;border-radius:8px;border:1px solid #e6e6e6" placeholder="Write for 5 minutes — freeform."></textarea>
+            <div style="display:flex;gap:8px;margin-top:8px"><button class="button" id="save-journal">Save</button><button class="soft" id="clear-journal">Clear</button></div>
+            <div style="color:var(--muted);font-size:13px;margin-top:6px">Saved locally to your device only.</div>
+          </div>
+
+          <div id="intent-ui" style="display:none">
+            <input id="intent-input" placeholder="A short intention for today" style="width:100%;padding:10px;border-radius:8px;border:1px solid #e6e6e6" />
+            <div style="display:flex;gap:8px;margin-top:8px"><button class="button" id="save-intent">Set intention</button><button class="soft" id="clear-intent">Clear</button></div>
+            <div id="intent-confirm" style="color:var(--muted);font-size:13px;margin-top:6px"></div>
+          </div>
+        </div>
+        <aside style="padding-left:6px">
+          <svg width="180" height="160" viewBox="0 0 180 160" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+            <defs>
+              <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#e8f3f2"/><stop offset="1" stop-color="#ffffff"/></linearGradient>
+            </defs>
+            <rect width="180" height="160" rx="12" fill="url(#g1)"/>
+            <circle id="pulse" cx="90" cy="70" r="28" fill="#8aa6a3" opacity="0.9"></circle>
+          </svg>
+          <p style="color:var(--muted);font-size:13px;margin-top:8px">A short practice may help focus attention before a session. This is a self-guided exercise and not clinical treatment.</p>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Modal controls
+    const modal = document.getElementById('modal');
+    const tryBtn = document.getElementById('try-now');
+    const closeBtn = document.getElementById('close-modal');
+    tryBtn.addEventListener('click', ()=>{modal.style.display='flex';modal.setAttribute('aria-hidden','false')});
+    closeBtn.addEventListener('click', ()=>{modal.style.display='none';modal.setAttribute('aria-hidden','true')});
+    modal.addEventListener('click',(e)=>{if(e.target===modal){modal.style.display='none';modal.setAttribute('aria-hidden','true')}});
+
+    // mode switch
+    document.querySelectorAll('[data-mode]').forEach(btn=>btn.addEventListener('click',()=>{
+      document.getElementById('breath-ui').style.display='none';
+      document.getElementById('journal-ui').style.display='none';
+      document.getElementById('intent-ui').style.display='none';
+      const mode = btn.getAttribute('data-mode');
+      if(mode==='breath') document.getElementById('breath-ui').style.display='block';
+      if(mode==='journal') document.getElementById('journal-ui').style.display='block';
+      if(mode==='intent') document.getElementById('intent-ui').style.display='block';
+    }))
+
+    // breathing practice: simple timing and bar animation
+    let breathTimer=null; const bar = document.getElementById('breath-bar');
+    document.getElementById('start-breath').addEventListener('click', ()=>{
+      let t=0; const total=60; document.getElementById('breath-status').textContent='Breathing — follow the pace';
+      if(breathTimer) clearInterval(breathTimer);
+      bar.style.width='0%';
+      breathTimer=setInterval(()=>{
+        t++;
+        bar.style.width=((t/total)*100)+'%';
+        if(t>=total){clearInterval(breathTimer);breathTimer=null;document.getElementById('breath-status').textContent='Complete — when ready, close this.'}
+      },1000);
+    });
+    document.getElementById('stop-breath').addEventListener('click',()=>{if(breathTimer)clearInterval(breathTimer);breathTimer=null;bar.style.width='0%';document.getElementById('breath-status').textContent='Stopped';});
+
+    // journaling saves locally
+    const jt = document.getElementById('journal-text');
+    document.getElementById('save-journal').addEventListener('click',()=>{localStorage.setItem('mini-journal',jt.value);alert('Saved locally.');});
+    document.getElementById('clear-journal').addEventListener('click',()=>{jt.value='';localStorage.removeItem('mini-journal');});
+    // intention
+    const intentInput = document.getElementById('intent-input');
+    const intentConfirm = document.getElementById('intent-confirm');
+    document.getElementById('save-intent').addEventListener('click',()=>{localStorage.setItem('mini-intent',intentInput.value);intentConfirm.textContent='Set: '+intentInput.value});
+    document.getElementById('clear-intent').addEventListener('click',()=>{intentInput.value='';localStorage.removeItem('mini-intent');intentConfirm.textContent=''});
+    // load saved
+    jt.value = localStorage.getItem('mini-journal') || '';
+    intentInput.value = localStorage.getItem('mini-intent') || '';
+
+    // scroll reveal with prefers-reduced-motion support
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const items = document.querySelectorAll('[data-reveal]');
+      if(prefersReduced){items.forEach(i=>i.classList.add('is-visible'));return}
+      const io = new IntersectionObserver((entries,obs)=>{
+        entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('is-visible');obs.unobserve(e.target)}},{rootMargin:'-10%'})
+      );
+      items.forEach(i=>io.observe(i));
+    })();
+  </script>
+</body>
+</html>

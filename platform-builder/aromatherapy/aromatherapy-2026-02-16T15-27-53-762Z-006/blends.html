@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Blends — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfffe;--accent:#4aa78a;--muted:#556b62;--card:#fff}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:linear-gradient(180deg,#f7fffb,#fbfffe);color:#083a31}
+    .pattern{position:fixed;inset:0;z-index:0;opacity:0.12;pointer-events:none}
+    header{position:relative;z-index:6;padding:20px 28px;display:flex;align-items:center;justify-content:space-between}
+    .nav a{margin-left:16px;color:#0b453b;text-decoration:none}
+    main{max-width:1100px;margin:0 auto;padding:30px;position:relative;z-index:2}
+    .hero{background:linear-gradient(90deg,#ffffff,#eefcf4);padding:20px;border-radius:12px;display:flex;align-items:center;gap:18px}
+    .hero h1{margin:0;font-size:1.6rem}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:18px}
+    .blend-card{background:var(--card);padding:14px;border-radius:12px;border:1px solid rgba(6,37,32,0.05)}
+    .blend-name{display:flex;justify-content:space-between;align-items:center}
+    .notes{font-size:0.95rem;color:var(--muted);margin-top:8px}
+    .supports{margin-top:10px;color:#0b463c;font-weight:600}
+    .legend{font-size:0.9rem;color:var(--muted);margin-top:8px}
+    .myth{margin-top:18px;padding:12px;border-radius:10px;background:#fffefc;border-left:4px solid var(--accent)}
+    .faq{margin-top:20px;background:linear-gradient(180deg,#ffffff,#f7fffb);padding:14px;border-radius:10px}
+    .cta{margin-top:22px;display:flex;justify-content:space-between;align-items:center}
+    .btn{background:linear-gradient(90deg,var(--accent),#8adfb4);padding:10px 14px;border-radius:10px;color:#fff;text-decoration:none;font-weight:700}
+
+    @media (max-width:800px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <!-- unique pattern for blends page -->
+  <svg class="pattern" viewBox="0 0 1200 700" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="b1" x1="0" x2="1"><stop offset="0" stop-color="#f0fff8"/><stop offset="1" stop-color="#ffffff"/></linearGradient>
+    </defs>
+    <rect width="1200" height="700" fill="url(#b1)" />
+    <g opacity="0.08" fill="#0a3b33">
+      <circle cx="140" cy="80" r="60" />
+      <circle cx="320" cy="600" r="120" />
+      <circle cx="980" cy="140" r="90" />
+    </g>
+  </svg>
+
+  <header>
+    <div style="display:flex;align-items:center;gap:14px">
+      <div style="width:44px;height:44px;border-radius:8px;background:linear-gradient(90deg,#e1fbf1,#d2f7e7);display:flex;align-items:center;justify-content:center;font-weight:800;color:#0b4d42">B</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:0.85rem;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="services.html">Sessions</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Shop</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h1>Signature blends — crafted with clarity and safety</h1>
+        <p style="margin:8px 0 0 0;color:var(--muted)">Below are curated blends with aromatic notes (top/mid/base) and gentle, non-medical "supports" statements to guide use.</p>
+      </div>
+      <div style="margin-left:auto;text-align:right">
+        <div style="font-weight:700">Prepared by {{PRACTITIONER_NAME}}</div>
+        <div style="font-size:0.9rem;color:var(--muted)">Includes dilution & patch-test suggestions at time of purchase.</div>
+      </div>
+    </section>
+
+    <section style="margin-top:16px">
+      <div class="legend">Top / Middle / Base — aroma profile — supports (non-medical).</div>
+      <div class="grid">
+
+        <div class="blend-card">
+          <div class="blend-name"><div><strong>Lavender Calm</strong></div><div style="font-size:0.9rem;color:var(--muted)">Roll-on</div></div>
+          <div class="notes">Top: Lavender | Mid: Roman chamomile | Base: Vetiver — Soft floral-herbal.</div>
+          <div class="supports">Supports: evening routine, sensory relaxation.</div>
+        </div>
+
+        <div class="blend-card">
+          <div class="blend-name"><div><strong>Citrus Focus</strong></div><div style="font-size:0.9rem;color:var(--muted)">Diffuser</div></div>
+          <div class="notes">Top: Sweet orange | Mid: Rosemary | Base: Petitgrain — Bright, herbaceous.</div>
+          <div class="supports">Supports: short-term alertness and mental clarity during tasks.</div>
+        </div>
+
+        <div class="blend-card">
+          <div class="blend-name"><div><strong>Grounding Cedar</strong></div><div style="font-size:0.9rem;color:var(--muted)">Roller / Bottle</div></div>
+          <div class="notes">Top: Bergamot | Mid: Cedarwood | Base: Patchouli — Warm, woody.</div>
+          <div class="supports">Supports: creating calm transitions and centering at day's end.</div>
+        </div>
+
+        <div class="blend-card">
+          <div class="blend-name"><div><strong>Mild Respiratory Ease</strong></div><div style="font-size:0.9rem;color:var(--muted)">Steam blend (diffuse with care)</div></div>
+          <div class="notes">Top: Eucalyptus (low amount) | Mid: Lemon | Base: Fir — Fresh, cooling.</div>
+          <div class="supports">Supports: short-term clearing of ambient air for comfort; avoid direct application to skin and consult for respiratory conditions.</div>
+        </div>
+
+        <div class="blend-card">
+          <div class="blend-name"><div><strong>Floral Serenity</strong></div><div style="font-size:0.9rem;color:var(--muted)">Perfume blend</div></div>
+          <div class="notes">Top: Neroli | Mid: Ylang ylang | Base: Sandalwood — Lush floral-sweet.</div>
+          <div class="supports">Supports: sensory uplift and ritual self-care; use low dilution for sensitive skin.</div>
+        </div>
+
+        <div class="blend-card">
+          <div class="blend-name"><div><strong>Pacific Breeze</strong></div><div style="font-size:0.9rem;color:var(--muted)">Diffuser</div></div>
+          <div class="notes">Top: Lime | Mid: Neroli | Base: Sea mineral accord — Bright, ozonic.</div>
+          <div class="supports">Supports: a feeling of freshness in shared spaces; keep concentrations moderate.</div>
+        </div>
+
+        <div class="blend-card">
+          <div class="blend-name"><div><strong>Warm Comfort</strong></div><div style="font-size:0.9rem;color:var(--muted)">Roll-on</div></div>
+          <div class="notes">Top: Cinnamon (trace) | Mid: Clove | Base: Vanilla — Spicy, cozy.</div>
+          <div class="supports">Supports: ritual comfort in short, supervised use; not recommended for children or sensitive skin without reduced dilution.</div>
+        </div>
+
+        <div class="blend-card">
+          <div class="blend-name"><div><strong>Meditation Drift</strong></div><div style="font-size:0.9rem;color:var(--muted)">Diffuse / personal inhaler</div></div>
+          <div class="notes">Top: Frankincense | Mid: Myrrh | Base: Sandalwood — Resinous, contemplative.</div>
+          <div class="supports">Supports: focus for breathing practices and mindful pauses.</div>
+        </div>
+
+        <div class="blend-card">
+          <div class="blend-name"><div><strong>Sweet Slumber</strong></div><div style="font-size:0.9rem;color:var(--muted)">Room mist</div></div>
+          <div class="notes">Top: Mandarin | Mid: Lavender | Base: Chamomile — Gentle citrus-floral.</div>
+          <div class="supports">Supports: bedtime ritual and a calm atmosphere when used in low concentrations.</div>
+        </div>
+
+        <div class="blend-card">
+          <div class="blend-name"><div><strong>Morning Clarity</strong></div><div style="font-size:0.9rem;color:var(--muted)">Roller</div></div>
+          <div class="notes">Top: Grapefruit | Mid: Peppermint | Base: Cypress — Crisp, minty.</div>
+          <div class="supports">Supports: brief sensory wakefulness to start the day; avoid peppermint near small children and nursing infants.</div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="myth" aria-labelledby="safety-title">
+      <h4 id="safety-title">Safety reminder</h4>
+      <p style="margin:8px 0 0 0;color:var(--muted)">Blends are tailored to preferences and safety. Always share pregnancy status, medications, and pet ownership before a custom formulation. I provide dilution guidance and recommend patch testing.</p>
+    </section>
+
+    <section class="faq" aria-labelledby="fq">
+      <h4 id="fq">Common questions</h4>
+      <div style="margin-top:8px">
+        <strong>What does “supports” mean?</strong>
+        <div style="color:var(--muted)">A non-medical term indicating that a blend may help foster a sensory state (e.g., relaxation, focus) as part of a larger routine.</div>
+        <strong style="display:block;margin-top:10px">Are these safe for children?</strong>
+        <div style="color:var(--muted)">Conservative dilutions and child-safe alternatives are available; avoid certain oils and strong concentrations. Always consult before applying to children.</div>
+      </div>
+    </section>
+
+    <section class="cta">
+      <div>
+        <strong>Interested in a custom blend?</strong>
+        <div style="color:var(--muted)">I will tailor notes and dilution to your needs and provide step-by-step safety guidance.</div>
+      </div>
+      <a class="btn" href="{{PRIMARY_CTA_URL}}">Request a custom blend</a>
+    </section>
+
+    <footer style="margin-top:28px;color:var(--muted);text-align:center">{{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Gentle scent programs and practical rituals that may support everyday calm. Safety-forward aromatherapy offerings." />
+  <style>
+    :root{--bg:#FBFAF7;--ink:#2b2b2b;--muted:#6b6b6b;--accent:#6b8a6f;--card:#ffffff;--glass:rgba(255,255,255,0.6)}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+    .pattern{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><defs><linearGradient id='g' x1='0' x2='1'><stop offset='0' stop-color='%236b8a6f' stop-opacity='0.08'/><stop offset='1' stop-color='%23b6d3b8' stop-opacity='0.04'/></linearGradient></defs><rect width='200' height='200' fill='url(%23g)'/><g fill='%236b8a6f' fill-opacity='0.06'><circle cx='20' cy='20' r='6'/><circle cx='100' cy='100' r='10'/><circle cx='180' cy='60' r='5'/><rect x='60' y='140' width='10' height='10' rx='2'/></g></svg>");background-size:400px}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:linear-gradient(180deg,rgba(255,255,255,0.9),transparent);position:sticky;top:0;backdrop-filter:blur(4px);z-index:30}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44;border-radius:8px;background:linear-gradient(135deg,var(--accent),#9fbf9c);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none;font-weight:600}
+    .hero{padding:48px 28px;display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+    .card{background:var(--card);border-radius:12px;padding:22px;box-shadow:0 6px 22px rgba(20,30,20,0.05)}
+    h1{margin:0 0 10px;font-size:28px}
+    p.lead{margin:0 0 16px;color:var(--muted)}
+    .cta{display:inline-block;padding:10px 16px;border-radius:8px;background:var(--accent);color:#fff;text-decoration:none;font-weight:700}
+    .small{font-size:13px;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:18px}
+    .package{padding:18px;border-radius:10px;background:linear-gradient(180deg,var(--glass),transparent);border:1px solid rgba(0,0,0,0.03)}
+    .price{font-weight:800;font-size:18px;color:var(--ink)}
+    footer{padding:24px 28px;color:var(--muted);font-size:13px}
+    .micro{display:flex;flex-direction:column;gap:10px}
+    .micro li{background:#fff;padding:10px;border-radius:8px}
+    .testimonials{margin-top:18px;display:flex;gap:16px;align-items:center}
+    .test-card{flex:1;padding:14px;border-radius:8px;background:linear-gradient(180deg,#fff, #fbfdf9);border:1px solid rgba(0,0,0,0.04)}
+    .badges{display:flex;gap:10px;align-items:center}
+    .badge{display:inline-flex;padding:8px;border-radius:8px;background:rgba(107,138,111,0.08);cursor:default}
+    .tooltip{position:relative}
+    .tooltip:hover::after{content:attr(data-tip);position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 8px);background:#222;color:#fff;padding:8px;border-radius:6px;font-size:12px;white-space:nowrap}
+    .controls{display:flex;gap:8px;align-items:center}
+    @media(max-width:880px){.hero{grid-template-columns:1fr;}.brand{gap:8px}}
+  </style>
+</head>
+<body class="pattern">
+  <header class="card">
+    <div class="brand">
+      <div class="logo">A</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Formulas</a>
+      <a href="shop.html">Boutique</a>
+      <a href="pricing.html">Rates</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <div class="card">
+          <h1>Thoughtful scent services that may support daily ease</h1>
+          <p class="lead">Work with a scent practitioner to build simple rituals and blends that fit your days. Sessions emphasize safety, dilution guidance, and practical tools to use at home.</p>
+          <div style="display:flex;gap:12px;align-items:center">
+            <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            <div class="small">Or call <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+          </div>
+
+          <div class="grid" style="margin-top:18px">
+            <div class="package">
+              <div style="font-weight:700">Signature Guidance</div>
+              <div class="small">60 min virtual or in-person consult. Personalized ecost\n-friendly blends and an at-home plan.</div>
+              <div style="margin-top:12px" class="price">$120</div>
+              <div style="margin-top:10px" class="small">Includes written dilution and patch-test guide.</div>
+            </div>
+            <div class="package">
+              <div style="font-weight:700">Mini Reset</div>
+              <div class="small">30 min focused session for a specific routine or event.</div>
+              <div style="margin-top:12px" class="price">$65</div>
+            </div>
+            <div class="package">
+              <div style="font-weight:700">Care Kit Add-On</div>
+              <div class="small">Pre-blended vial set and ritual notes shipped to your door.</div>
+              <div style="margin-top:12px" class="price">$48</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:18px">
+          <h3 style="margin:0 0 8px">A quick scent check (diagnostic)</h3>
+          <p class="small">Short intake to understand scent preferences, sensitivities, and household considerations (pets, pregnancy, skin sensitivity). This shapes safe suggestions you can try at home.</p>
+          <ul style="margin:12px 0 0;padding-left:18px;color:var(--muted)">
+            <li>We use "may support" language — not medical claims.</li>
+            <li>Every plan includes dilution ratios and patch testing steps.</li>
+            <li>Recommendations take pets and pregnancy into account.</li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top:18px">
+          <h3 style="margin:0 0 10px">Small practices you can try</h3>
+          <ol class="micro" style="margin:0;padding-left:18px">
+            <li><strong>Two-breath pause</strong> — a 2 inhale/2 exhale scent cue at transition points.</li>
+            <li><strong>Shift bottle</strong> — a 5% roll-on to keep in a bag for moments you want gentle focus.</li>
+            <li><strong>Evening veil</strong> — a diluted mist in the bedroom (avoid near infants and pets).</li>
+          </ol>
+        </div>
+
+      </div>
+
+      <aside class="card">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div>
+            <div style="font-size:13px;color:var(--muted)">Next step</div>
+            <div style="font-weight:700;margin-top:6px">Schedule a scent consult</div>
+            <div class="small" style="margin-top:8px">A single consult can leave you with a wearable formula and a short routine to try for 2 weeks.</div>
+            <div style="margin-top:12px"><a class="cta" href="book.html">Reserve a session</a></div>
+          </div>
+
+          <div>
+            <div style="font-size:13px;color:var(--muted)">Proof gallery</div>
+            <div class="testimonials">
+              <div class="test-card" id="testimonial">"Short, practical guidance — I actually used it every day." <div style="font-size:12px;color:var(--muted);margin-top:8px">— Nora, client</div></div>
+              <div style="width:86px;display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+                <div class="badges">
+                  <div class="badge tooltip" data-tip="Local small-business award 2024">🏆</div>
+                  <div class="badge tooltip" data-tip="Certified safety checklist applied">✔️</div>
+                </div>
+                <div class="controls">
+                  <button id="prev" style="padding:8px;border-radius:8px">◀</button>
+                  <button id="next" style="padding:8px;border-radius:8px">▶</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-size:13px;color:var(--muted)">Contact</div>
+            <div style="font-weight:700;margin-top:6px">Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+            <div class="small">Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section style="padding:18px 28px">
+      <div class="card">
+        <h3 style="margin:0 0 10px">Pricing & framing</h3>
+        <p class="small">Pricing is listed per session. Craft items and kits are presented as add-ons when appropriate. Subscriptions are not required — think of each booking as a focused, practical meeting that leaves you with usable formulas.</p>
+        <div style="margin-top:14px;display:flex;gap:12px;align-items:center">
+          <a href="shop.html" class="cta">Explore care kits</a>
+          <div class="small">or <a href="contact.html">ask a question</a></div>
+        </div>
+      </div>
+    </section>
+
+    <section style="padding:18px 28px">
+      <div class="card">
+        <h3>Frequently asked safety notes</h3>
+        <ul style="margin:12px 0 0;padding-left:18px;color:var(--muted)">
+          <li><strong>Dilution:</strong> We recommend carrier oils and dilution percentages appropriate for topical or aromatic use. Typical roll-ons are 3–5% for adults unless otherwise advised.</li>
+          <li><strong>Patch test:</strong> Always perform a patch test on forearm skin when using a new blend; discontinue if irritation occurs.</li>
+          <li><strong>Pets:</strong> Some essential oils can affect animals. Tell us about household pets so we can give pet-safe suggestions.</li>
+          <li><strong>Pregnancy & nursing:</strong> If pregnant or nursing, consult your healthcare provider. We avoid certain botanicals and offer alternatives.</li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+      <div>&copy; <span id="year"></span> {{BUSINESS_NAME}} — gentle, practical scent guidance</div>
+      <div class="small">Made with care in {{CITY}}, {{STATE}}</div>
+    </div>
+  </footer>
+
+  <script>
+    (function(){
+      document.getElementById('year').textContent=new Date().getFullYear();
+      const testimonials=[
+        {text:'"Short, practical guidance — I actually used it every day." — Nora'},
+        {text:'"A clear plan and a small kit I could start the same week." — Amir'},
+        {text:'"Thoughtful about pets and kids — that mattered." — Lucia'}
+      ];
+      let idx=0, el=document.getElementById('testimonial');
+      function show(){ el.textContent=testimonials[idx].text + (testimonials[idx].text.includes('—')? '':''); }
+      function next(){ idx=(idx+1)%testimonials.length; show(); }
+      function prev(){ idx=(idx-1+testimonials.length)%testimonials.length; show(); }
+      document.getElementById('next').addEventListener('click',next);
+      document.getElementById('prev').addEventListener('click',prev);
+      show();
+      setInterval(next,5000);
+    })();
+  </script>
+</body>
+</html>

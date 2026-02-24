@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Book — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#071021;--card:#0b1220;--accent:#60a5fa;--muted:#9fb0c6}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial;background:linear-gradient(180deg,#061026 0%,#071427 60%);color:#e9f7ff}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 26px}
+    nav a{margin-left:16px;color:var(--muted);text-decoration:none}
+    .wrap{max-width:980px;margin:28px auto;padding:0 16px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px}
+    h1{margin:0 0 8px 0}
+    .muted{color:var(--muted)}
+    form{display:grid;grid-template-columns:1fr 320px;gap:16px;margin-top:16px}
+    label{display:block;margin-bottom:8px}
+    input,textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:rgba(255,255,255,0.02);color:#e6eef8}
+    button.cta{background:linear-gradient(90deg,var(--accent),#7dd3fc);border:none;padding:10px 14px;border-radius:8px;color:#042231;font-weight:700;cursor:pointer}
+    .inventory{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px}
+    .agenda{margin-top:12px;background:#041826;padding:12px;border-radius:8px}
+    .small{font-size:13px;color:var(--muted)}
+    @media(max-width:880px){form{grid-template-columns:1fr} .aside{order:-1}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:10px"><div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(180deg,#bfe9ff,#7dd3fc);display:flex;align-items:center;justify-content:center;font-weight:800;color:#052126">H</div><div style="font-weight:700">{{BUSINESS_NAME}}</div></div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Conditions</a>
+      <a href="approach.html">Philosophy</a>
+      <a href="pricing.html">Investment</a>
+      <a href="about.html">Who</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <div class="wrap">
+    <div class="card">
+      <h1>Schedule orientation or a VIP Day</h1>
+      <div class="muted">Pick a path: a short orientation to explore options, a multi-week cycle, or an immersive VIP day for concentrated planning.</div>
+      <form id="bookingForm">
+        <div>
+          <label>Full name<input type="text" name="name" required></label>
+          <label>Email<input type="email" name="email" required></label>
+          <label>Phone<input type="tel" name="phone"></label>
+          <label>Preferred session type
+            <select name="type">
+              <option>Orientation — 45 minutes</option>
+              <option>Integration Cycle — 12 weeks</option>
+              <option>Concierge VIP Day — full day</option>
+            </select>
+          </label>
+
+          <label>Brief note (what feels most urgent?)<textarea name="notes" rows="4" placeholder="A few lines about what brings you here..."></textarea></label>
+
+          <div style="margin-top:10px;display:flex;gap:8px;align-items:center"><button class="cta" type="submit">Request booking</button><div class="small">Or call <a href="tel:{{PHONE}}" style="color:var(--accent)">{{PHONE}}</a></div></div>
+        </div>
+
+        <aside class="aside">
+          <div class="inventory">
+            <div style="display:flex;justify-content:space-between;align-items:center"><div><strong>Whole-person inventory</strong><div class="small">Check areas that matter now to auto-generate an agenda for your session.</div></div><button class="cta" id="openInv">Open</button></div>
+            <div style="margin-top:8px" id="invShort">
+              <div class="small">Quick select:</div>
+              <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:6px">
+                <label><input type="checkbox" value="Sleep"/> Sleep</label>
+                <label><input type="checkbox" value="Stress"/> Stress</label>
+                <label><input type="checkbox" value="Energy"/> Energy</label>
+                <label><input type="checkbox" value="Mood"/> Mood</label>
+                <label><input type="checkbox" value="Digestion"/> Digestion</label>
+                <label><input type="checkbox" value="Pain"/> Pain</label>
+              </div>
+              <div style="margin-top:8px;display:flex;gap:8px"><button type="button" class="cta" id="genShort">Generate</button><button type="button" class="small" id="resetShort">Reset</button></div>
+              <div id="agendaBox" class="agenda" style="display:none"></div>
+            </div>
+          </div>
+
+          <div style="height:12px"></div>
+          <div class="card small">
+            By submitting a booking request you agree to a brief intake and the provisional agenda we generate. This is an educational consultation and not a medical guarantee.
+          </div>
+        </aside>
+      </form>
+    </div>
+  </div>
+
+  <!-- Full inventory modal -->
+  <div class="modal-backdrop" id="fullInv" style="display:none;align-items:center;justify-content:center">
+    <div class="modal card" style="max-width:760px;width:92%">
+      <h3>Full whole-person inventory</h3>
+      <p class="small">Select the areas you want us to focus on during the orientation.</p>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-height:320px;overflow:auto;margin-top:8px">
+        <label><input type="checkbox" value="Sleep"/> Sleep</label>
+        <label><input type="checkbox" value="Energy"/> Energy</label>
+        <label><input type="checkbox" value="Stress"/> Stress</label>
+        <label><input type="checkbox" value="Digestion"/> Digestion</label>
+        <label><input type="checkbox" value="Movement"/> Movement</label>
+        <label><input type="checkbox" value="Mood"/> Mood</label>
+        <label><input type="checkbox" value="Relationships"/> Relationships</label>
+        <label><input type="checkbox" value="Work"/> Work</label>
+        <label><input type="checkbox" value="Purpose"/> Purpose</label>
+        <label><input type="checkbox" value="Environment"/> Environment</label>
+        <label><input type="checkbox" value="Immunity"/> Immunity</label>
+        <label><input type="checkbox" value="Pain"/> Pain</label>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
+        <div class="small">We will use this to shape your first session and suggest a follow-up schedule.</div>
+        <div style="display:flex;gap:8px"><button class="try" id="closeFull">Close</button><button class="cta" id="generateFull">Generate agenda</button></div>
+      </div>
+      <div id="fullAgenda" style="display:none;margin-top:10px"></div>
+    </div>
+  </div>
+
+  <script>
+    // Quick inventory on booking page
+    function gather(root){ return Array.from(root.querySelectorAll('input[type=checkbox]')).filter(c=>c.checked).map(c=>c.value); }
+    function simpleAgenda(sel){ if(sel.length===0) return {agenda:['Intake and broad review'],'cadence':'1 intake + 1 follow-up'}; const agenda = sel.map(s=>s+': focused review & immediate tools'); let cadence = sel.length>4? 'Weekly or biweekly follow-ups' : '2–4 check-ins over 8–12 weeks'; return {agenda,cadence}; }
+
+    document.getElementById('genShort').addEventListener('click',()=>{ const box=document.getElementById('invShort'); const sel=gather(box); const o=simpleAgenda(sel); const el=document.getElementById('agendaBox'); el.style.display='block'; el.innerHTML='<strong>Agenda</strong><ul>'+o.agenda.map(i=>'\n<li>'+i+'</li>').join('')+'</ul><div style="margin-top:8px"><strong>Suggested cadence:</strong> '+o.cadence+'</div>'; });
+    document.getElementById('resetShort').addEventListener('click',()=>{ const box=document.getElementById('invShort'); Array.from(box.querySelectorAll('input[type=checkbox]')).forEach(c=>c.checked=false); document.getElementById('agendaBox').style.display='none'; });
+
+    // Full inventory modal
+    document.getElementById('openInv').addEventListener('click',()=>{ document.getElementById('fullInv').style.display='flex'; });
+    document.getElementById('closeFull').addEventListener('click',()=>{ document.getElementById('fullInv').style.display='none'; document.getElementById('fullAgenda').style.display='none'; });
+    document.getElementById('generateFull').addEventListener('click',()=>{ const modal=document.getElementById('fullInv'); const sel=gather(modal); const out=simpleAgenda(sel); const el=document.getElementById('fullAgenda'); el.style.display='block'; el.innerHTML='<strong>Suggested agenda</strong><ul>'+out.agenda.map(i=>'\n<li>'+i+'</li>').join('')+'</ul><div style="margin-top:8px"><strong>Suggested cadence:</strong> '+out.cadence+'</div>'; });
+
+    // Booking submit
+    document.getElementById('bookingForm').addEventListener('submit',function(e){ e.preventDefault(); const form=new FormData(e.target); const payload={name:form.get('name'),email:form.get('email'),phone:form.get('phone'),type:form.get('type'),notes:form.get('notes')}; // include quick inventory
+      const quick = gather(document.getElementById('invShort'));
+      payload['inventory'] = quick;
+      // simulate submission
+      console.log('Booking request',payload);
+      alert('Thanks — your request is received. We will follow up via email to confirm a time and share a provisional agenda.');
+      e.target.reset(); document.getElementById('agendaBox').style.display='none';
+    });
+
+    // backdrop clicks
+    document.querySelectorAll('.modal-backdrop').forEach(b=>{ b.addEventListener('click',e=>{ if(e.target===b){ b.style.display='none'; } }); });
+  </script>
+</body>
+</html>

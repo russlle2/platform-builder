@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfbfc;--card:#fff;--muted:#6b7280;--accent:#0f766e;--accent-2:#9f7aea;--glass:rgba(255,255,255,0.6)}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;color:#0b1220;background:linear-gradient(180deg,var(--bg),#f4f7f9)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo-sq{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none;font-weight:600}
+    .container{max-width:1100px;margin:18px auto;padding:0 20px}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:center}
+    .panel{background:var(--card);border-radius:12px;padding:28px;box-shadow:0 6px 20px rgba(16,24,40,0.06)}
+    h1{margin:0 0 8px;font-size:28px;letter-spacing:-0.02em}
+    p.lead{margin:0;color:var(--muted);line-height:1.5}
+    .svg-wrap{position:relative;height:220px;border-radius:12px;overflow:hidden}
+    .pattern-svg{position:absolute;inset:0;width:100%;height:100%}
+    .mood{display:flex;gap:10px;margin-top:16px}
+    .mood button{flex:1;padding:10px;border-radius:8px;border:1px solid #e6eef0;background:transparent;font-weight:600;color:#073642;cursor:pointer}
+    .mood button.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;border:none;box-shadow:0 6px 18px rgba(15,118,110,0.12)}
+    .approach{margin-top:18px;padding:14px;border-radius:8px;background:linear-gradient(180deg,rgba(159,122,234,0.06),rgba(15,118,110,0.03))}
+    .cta{display:inline-flex;align-items:center;gap:10px;padding:12px 16px;border-radius:10px;background:var(--accent);color:#fff;text-decoration:none;font-weight:700}
+    .meta{font-size:13px;color:var(--muted);margin-top:12px}
+    .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:20px}
+    .card{padding:14px;border-radius:10px;background:linear-gradient(180deg,#fff,#fbfeff);border:1px solid rgba(12,31,33,0.04)}
+    footer{margin:40px 0 80px;text-align:center;color:var(--muted)}
+    @media (max-width:900px){.hero{grid-template-columns:1fr;border-radius:0}.svg-wrap{height:160px}.grid-2{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo-sq">WC</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Who I Am</a>
+      <a href="services.html">Offerings</a>
+      <a href="programs.html">Programs</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="panel">
+        <h1>Clarity for your day-to-day practice</h1>
+        <p class="lead">I design simple routines and small commitments that change how you move through work and home — outcomes, not tests. My work is built for people who need practical systems that actually fit their life.</p>
+
+        <div class="mood" role="tablist" aria-label="Mood to method selector">
+          <button data-key="overwhelmed" class="active">Overwhelmed</button>
+          <button data-key="flat">Flat</button>
+          <button data-key="energized">Energized</button>
+          <button data-key="curious">Curious</button>
+        </div>
+
+        <div class="approach" id="approach">
+          <strong>Recommended approach:</strong>
+          <div id="approachText">A concise VIP Day to map your current demands and leave with a 7-step rhythm for steady mornings and calm transitions.</div>
+          <div class="meta">Includes session notes, a clear daily checklist, and one 30-minute follow-up.</div>
+        </div>
+
+        <div style="margin-top:16px">
+          <a id="primaryCta" class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <span style="margin-left:12px;color:var(--muted);font-weight:600">or call <a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none">{{PHONE}}</a></span>
+        </div>
+
+        <div class="grid-2">
+          <div class="card"><strong>What you can expect</strong><div style="color:var(--muted);margin-top:8px">Concrete habit anchors, a one-page weekly layout, and time-capped practices to protect energy.</div></div>
+          <div class="card"><strong>Who it’s for</strong><div style="color:var(--muted);margin-top:8px">Professionals balancing demanding work, caregiving, or both — people who want frameworks not fads.</div></div>
+        </div>
+      </div>
+
+      <aside class="svg-wrap panel" aria-hidden="true">
+        <!-- Unique decorative SVG pattern (inline, not external) -->
+        <svg class="pattern-svg" viewBox="0 0 600 380" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="g1" x1="0" x2="1">
+              <stop offset="0" stop-color="#e6fffa" />
+              <stop offset="1" stop-color="#f5f3ff" />
+            </linearGradient>
+            <pattern id="p1" width="40" height="40" patternUnits="userSpaceOnUse">
+              <rect width="40" height="40" fill="rgba(255,255,255,0)" />
+              <path d="M0 30 L20 0 L40 30" stroke="#dff6f3" stroke-width="1.5" fill="none" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#g1)" />
+          <rect width="100%" height="100%" fill="url(#p1)" opacity="0.9" />
+          <g transform="translate(60,220) rotate(-12)" opacity="0.9">
+            <rect x="0" y="0" width="160" height="100" rx="12" fill="#ffffff" opacity="0.6" />
+            <circle cx="32" cy="50" r="26" fill="#9f7aea" opacity="0.12" />
+            <circle cx="120" cy="30" r="18" fill="#0f766e" opacity="0.08" />
+          </g>
+        </svg>
+      </aside>
+    </section>
+
+    <section style="margin-top:20px" class="panel">
+      <h3 style="margin:0 0 8px">How I work — a short note</h3>
+      <p style="color:var(--muted);margin:0">I focus on three outcomes: fewer decision moments, reliable micro-habits, and a weekly pattern you can actually keep. That means we measure time, not willpower, and design practice around your real constraints.</p>
+    </section>
+
+    <section style="margin-top:18px;display:flex;gap:14px;flex-wrap:wrap">
+      <div class="panel" style="flex:1;min-width:260px">
+        <h4 style="margin:0 0 6px">Short VIP Day</h4>
+        <p style="color:var(--muted);margin:0">A focused design day to map a workable rhythm and leave with a prioritized sequence of micro-commitments.</p>
+      </div>
+
+      <div class="panel" style="flex:1;min-width:260px">
+        <h4 style="margin:0 0 6px">Weekly Tune-up</h4>
+        <p style="color:var(--muted);margin:0">A 60-minute session to recalibrate commitments, swap tactics, and strengthen habits in a single pass.</p>
+      </div>
+    </section>
+
+    <section style="margin-top:18px" class="panel">
+      <h4 style="margin:0 0 8px">Questions people ask</h4>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div style="padding:10px;border-radius:8px;background:#fff">Will this fit my week?<div style="color:var(--muted);margin-top:8px">Yes—plans are scaled to your rhythms and time blocks you already use.</div></div>
+        <div style="padding:10px;border-radius:8px;background:#fff">Is this clinical care?<div style="color:var(--muted);margin-top:8px">No. This is coaching focused on habits, routines, and accountability frameworks.</div></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="font-weight:700">Ready to turn a restless week into a focused one?</div>
+    <div style="margin-top:8px;color:var(--muted)"><a href="{{PRIMARY_CTA_URL}}" style="color:var(--accent);text-decoration:none;font-weight:700">{{PRIMARY_CTA_LABEL}}</a> — or email <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a></div>
+    <div style="margin-top:14px;color:var(--muted);font-size:13px">Serving {{CITY}}, {{STATE}} • <a href="tel:{{PHONE}}" style="color:var(--muted);text-decoration:none">{{PHONE}}</a></div>
+  </footer>
+
+  <script>
+    // Mood-to-Method: updates recommended approach and CTA subtly
+    (function(){
+      const mapping = {
+        overwhelmed: {
+          title: 'A single-day reset',
+          text: 'A VIP Day focused on clearing friction: we map critical drains and establish a short daily sequence to protect attention and energy.',
+          ctaSuffix: ' — Start the Day'
+        },
+        flat: {
+          title: 'Small wins rhythm',
+          text: 'A two-session arc to introduce micro-practices and a compact weekly layout that lifts baseline energy without extra appointments.',
+          ctaSuffix: ' — Raise the Baseline'
+        },
+        energized: {
+          title: 'Amplify what works',
+          text: 'We channel existing momentum into sustainable habits and protect pockets of time so gains stick beyond the short term.',
+          ctaSuffix: ' — Amplify Momentum'
+        },
+        curious: {
+          title: 'Experiment & lock',
+          text: 'A modular series to test lightweight practices and lock the ones that deliver consistent returns for your life and work.',
+          ctaSuffix: ' — Try a Module'
+        }
+      };
+
+      const buttons = document.querySelectorAll('.mood button');
+      const approachText = document.getElementById('approachText');
+      const primary = document.getElementById('primaryCta');
+      buttons.forEach(btn=>btn.addEventListener('click',function(){
+        buttons.forEach(b=>b.classList.remove('active'));
+        this.classList.add('active');
+        const key = this.dataset.key;
+        const m = mapping[key];
+        approachText.innerHTML = '<strong>'+m.title+':</strong> '+m.text;
+        // animate CTA text change
+        const base = '{{PRIMARY_CTA_LABEL}}';
+        primary.textContent = base + m.ctaSuffix;
+        // gentle emphasis pulse
+        primary.animate([{transform:'scale(1)'},{transform:'scale(1.02)'},{transform:'scale(1)'}],{duration:420,iterations:1});
+      }));
+    })();
+  </script>
+</body>
+</html>

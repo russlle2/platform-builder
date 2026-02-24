@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bgA:#061628;--accent:#84fab0;--accent2:#8fd3f4;--card:#07102a;--muted:#e6eef1}
+    body{margin:0;background:radial-gradient(circle at 10% 10%,#063b6b 0%,var(--bgA) 40%,#030414 100%);color:var(--muted);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto}
+    .container{max-width:980px;margin:36px auto;padding:28px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:18px}
+    .brand{font-weight:800;color:var(--accent);letter-spacing:0.6px}
+    nav a{color:var(--muted);text-decoration:none;margin-left:12px;padding:6px 10px;border-radius:8px}
+    nav a:hover{background:rgba(255,255,255,0.02)}
+    .intro{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    h1{margin:0 0 8px;color:var(--accent2)}
+    .muted{color:rgba(230,238,241,0.9)}
+    .svg-orn{position:absolute;left:-60px;bottom:-40px;width:420px;height:420px;opacity:0.08}
+    .list{display:flex;gap:12px;margin-top:12px}
+    .stat{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;min-width:120px}
+    section{margin-top:18px}
+    .faq summary{cursor:pointer;padding:8px}
+    footer{margin-top:28px;padding:14px;border-radius:12px;background:rgba(255,255,255,0.02);display:flex;justify-content:space-between;align-items:center}
+    @media(max-width:880px){.intro{grid-template-columns:1fr}.svg-orn{display:none}}
+  </style>
+</head>
+<body>
+  <svg class="svg-orn" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <defs>
+      <linearGradient id="a2" x1="0" x2="1">
+        <stop offset="0" stop-color="#84fab0"/>
+        <stop offset="1" stop-color="#8fd3f4"/>
+      </linearGradient>
+      <pattern id="dots" width="16" height="16" patternUnits="userSpaceOnUse">
+        <rect width="8" height="8" fill="#042033" />
+        <rect x="8" y="8" width="8" height="8" fill="#081726" />
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#dots)"/>
+    <g fill="url(#a2)" opacity="0.7">
+      <circle cx="60" cy="60" r="50" />
+      <circle cx="140" cy="140" r="40" />
+    </g>
+  </svg>
+
+  <div class="container">
+    <header>
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="services.html">What We Do</a>
+        <a href="blends.html">Blends</a>
+        <a href="shop.html">Boutique</a>
+        <a href="pricing.html">Fees</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html">Get in Touch</a>
+      </nav>
+    </header>
+
+    <div class="intro">
+      <div class="card">
+        <h1>About {{PRACTITIONER_NAME}}</h1>
+        <p class="muted">I combine botanical literacy with evidence-aware sourcing to design aromatic experiences that prioritise safety and clarity. My approach is clinical-calm: measured recommendations, clear dilution guidance, and ongoing client education — no unsupported health claims.</p>
+
+        <div class="list" aria-hidden>
+          <div class="stat"><strong>Years</strong><div class="muted">8 in practice</div></div>
+          <div class="stat"><strong>Clients</strong><div class="muted">250+ consultations</div></div>
+          <div class="stat"><strong>Blends</strong><div class="muted">Custom & seasonal</div></div>
+        </div>
+      </div>
+
+      <aside class="card">
+        <h3 style="margin:0 0 8px;color:var(--accent)">Practice ethos</h3>
+        <p class="muted">We do not diagnose or treat medical conditions. We provide sensory supports and safe-handling guidance. Intake forms and clear consent are standard.</p>
+        <div style="margin-top:12px"><a class="muted" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+      </aside>
+    </div>
+
+    <section>
+      <h2>Common misconceptions</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+        <div class="card">
+          <strong>Myth</strong>
+          <p class="muted">Scent is purely pleasant — no safety concerns.</p>
+          <strong>Truth</strong>
+          <p class="muted">Volatility, concentration and route of exposure influence risk. We tailor use-cases and concentrations accordingly.</p>
+        </div>
+        <div class="card">
+          <strong>Myth</strong>
+          <p class="muted">Essential oils are "natural = harmless".</p>
+          <strong>Truth</strong>
+          <p class="muted">Natural substances can be potent; we emphasise conservative dilutions and safe storage.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Foundational pillars</h2>
+      <ol style="margin-top:12px;color:var(--muted)">
+        <li>Source with traceability and lab data when possible.</li>
+        <li>Educate every client with written safety notes.</li>
+        <li>Conservative, practical dilutions and testing steps.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Confidential case notes (example)</h2>
+      <p class="muted">Intake summary: client prefers woody base-notes, reports seasonal nasal sensitivity. Recommended inhalation and ambient diffusion at low duration; topical use limited to pre-diluted roll-ons with patch test. Follow-up check scheduled two weeks later.</p>
+    </section>
+
+    <section class="faq">
+      <h2>FAQ — safety essentials</h2>
+      <details open>
+        <summary>How do you recommend dilutions?</summary>
+        <p class="muted">Dilution depends on age, skin sensitivity, and intended application. Standard adult topical ranges are conservative; we never advise medical dosing.</p>
+      </details>
+      <details>
+        <summary>Should I do a patch test?</summary>
+        <p class="muted">Yes. Apply a small amount of the diluted product to a discreet area and observe for 24–48 hours.</p>
+      </details>
+      <details>
+        <summary>What about pets?</summary>
+        <p class="muted">Avoid leaving strong diffusions in poorly ventilated spaces with pets; some compounds can irritate. We provide pet-safety notes and recommend veterinary advice for concerns.</p>
+      </details>
+      <details>
+        <summary>Pregnancy guidance</summary>
+        <p class="muted">Many oils are best avoided in pregnancy or used with modified dilutions. Please disclose pregnancy during intake so we can adapt recommendations.</p>
+      </details>
+    </section>
+
+    <footer>
+      <div>
+        <strong style="color:var(--accent)">{{PRACTITIONER_NAME}}</strong>
+        <div class="muted">Clinical, calm, and safety-first aromatherapy in {{CITY}}, {{STATE}}</div>
+      </div>
+      <div>
+        <a href="book.html" style="background:linear-gradient(90deg,var(--accent),var(--accent2));padding:10px 14px;border-radius:10px;color:#001; font-weight:700;text-decoration:none">Schedule a consult</a>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

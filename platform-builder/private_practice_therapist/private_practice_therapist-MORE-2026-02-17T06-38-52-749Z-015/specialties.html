@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Focus Areas — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfbfe;--card:#fff;--accent:#ff8a65;--muted:#5b5b5b;--radius:12px;--glass:rgba(255,255,255,.6)}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;background:linear-gradient(180deg,#fbfbfe,#f5f7ff);color:#222}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 26px}
+    nav a{margin:0 10px;color:#222;text-decoration:none;font-weight:600}
+    .container{max-width:1060px;margin:26px auto;padding:20px}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:20px}
+    .card{background:var(--card);border-radius:var(--radius);padding:18px;box-shadow:0 8px 24px rgba(15,23,42,.06)}
+    h1{margin:0 0 8px}
+    .lead{color:var(--muted);margin:0 0 14px}
+    .list{display:flex;flex-direction:column;gap:12px}
+    .spec{padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,138,101,.04),rgba(255,138,101,.01))}
+    .spec h3{margin:0 0 6px}
+    .spec p{margin:0;color:#444}
+    .price-row{display:flex;align-items:center;gap:12px;margin-top:12px}
+    .toggle{display:inline-flex;background:#eee;padding:6px;border-radius:999px}
+    .toggle button{border:0;background:transparent;padding:6px 12px;border-radius:999px;cursor:pointer}
+    .toggle button.active{background:linear-gradient(90deg,#ff8a65,#ffb085);color:white;font-weight:700}
+    .price{font-weight:800;font-size:20px}
+    .muted{color:var(--muted)}
+    .cta{margin-top:14px}
+    .btn{background:#4b6cff;color:white;padding:10px 14px;border-radius:10px;border:0;cursor:pointer}
+    .small{font-size:13px;color:#666}
+    .aside h4{margin:0 0 8px}
+    .anim{transition:all .45s cubic-bezier(.2,.9,.3,1)}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}.aside{order:2}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Who I Am</a>
+      <a href="specialties.html">Focus Areas</a>
+      <a href="approach.html">Method & Flow</a>
+      <a href="fees.html">Fees</a>
+      <a href="faq.html">Answers</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+  <main class="container">
+    <div class="grid">
+      <div>
+        <div class="card">
+          <h1>Areas I commonly work with</h1>
+          <p class="lead">Short-term work and ongoing check-ins to help you tolerate uncertainty, decide with clarity, and practice different ways of responding.</p>
+
+          <div class="list">
+            <div class="spec">
+              <h3>Life transitions</h3>
+              <p>Shifts like career moves, relationship changes, or relocation. We make sense of choices and build realistic next steps.</p>
+            </div>
+            <div class="spec">
+              <h3>Persistent worry & overthinking</h3>
+              <p>Tools to reduce the hold of repetitive thoughts and regain decision flexibility.</p>
+            </div>
+            <div class="spec">
+              <h3>Relationship patterns</h3>
+              <p>Explore repeating dynamics and practice small experiments that change how you relate.</p>
+            </div>
+            <div class="spec">
+              <h3>Low mood & motivation dips</h3>
+              <p>Gentle activation strategies that fit your life rhythms, not an all-or-nothing plan.</p>
+            </div>
+          </div>
+
+          <section style="margin-top:16px">
+            <h3>Programs & pricing</h3>
+            <p class="small">Choose the cadence that works for you. Toggle to compare monthly ongoing appointments versus focused packages.</p>
+            <div style="display:flex;align-items:center;gap:12px;margin-top:12px">
+              <div class="toggle" role="tablist" aria-label="Pricing toggle">
+                <button id="monthlyBtn" class="active" onclick="setPricing('monthly')">Monthly</button>
+                <button id="packageBtn" onclick="setPricing('package')">Package</button>
+              </div>
+              <div style="margin-left:auto;font-size:13px;color:var(--muted)">Animated numbers reflect the chosen billing frame</div>
+            </div>
+
+            <div style="margin-top:12px;display:grid;gap:10px">
+              <div class="card anim">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div>
+                    <strong>Bridge Plan</strong>
+                    <div class="small">Short course — 6 sessions</div>
+                  </div>
+                  <div style="text-align:right">
+                    <div class="price" data-month="140" data-package="780">$140</div>
+                    <div class="small muted">per session / or $780 package</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card anim">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div>
+                    <strong>Stability Plan</strong>
+                    <div class="small">Ongoing check-ins — weekly or biweekly</div>
+                  </div>
+                  <div style="text-align:right">
+                    <div class="price" data-month="155" data-package="0">$155</div>
+                    <div class="small muted">per session or billed monthly</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card anim">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div>
+                    <strong>Focus Intensive</strong>
+                    <div class="small">3-session concentrated work</div>
+                  </div>
+                  <div style="text-align:right">
+                    <div class="price" data-month="180" data-package="480">$180</div>
+                    <div class="small muted">per session / or $480 for 3</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top:14px;font-size:13px;color:var(--muted)">Prices shown are examples and subject to change. Insurance may not be accepted; contact to discuss options.</div>
+          </section>
+
+          <div style="margin-top:16px" class="small">
+            <strong>Note on care</strong>
+            <p style="margin:6px 0 0;color:#444">Therapy is collaborative. If concerns fall outside my practice or require urgent support, I will help refer to appropriate services. If you are in crisis, contact emergency services or a crisis line immediately.</p>
+          </div>
+        </div>
+      </div>
+
+      <aside class="aside">
+        <div class="card">
+          <h4>Quick booking</h4>
+          <p class="small">If you’re ready to try a short consult, I keep a few slots for introductions. These are a good way to decide which path feels right.</p>
+          <div style="margin-top:12px">
+            <a class="btn" href="book.html">Book a consult</a>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4>How I work</h4>
+          <p class="small">I favor clear goals, small experiments between sessions, and moments of reflection that anchor insight into daily life.</p>
+        </div>
+      </aside>
+    </div>
+  </main>
+  <script>
+    // Pricing comparator: toggles monthly/package and animates numbers
+    const monthlyBtn = document.getElementById('monthlyBtn');
+    const packageBtn = document.getElementById('packageBtn');
+    let mode = 'monthly';
+
+    function setPricing(newMode){
+      if(mode === newMode) return;
+      mode = newMode;
+      monthlyBtn.classList.toggle('active', mode==='monthly');
+      packageBtn.classList.toggle('active', mode==='package');
+      document.querySelectorAll('.price').forEach(el => {
+        const target = parseInt(el.getAttribute(mode==='monthly'? 'data-month':'data-package')) || 0;
+        animateNumber(el, target);
+      });
+    }
+
+    function animateNumber(el, to){
+      const start = parseInt(el.textContent.replace(/[^0-9]/g,'')) || 0;
+      const duration = 520;
+      const startTime = performance.now();
+      function step(now){
+        const t = Math.min(1, (now - startTime)/duration);
+        const eased = 1 - Math.pow(1 - t, 3);
+        const val = Math.round(start + (to - start) * eased);
+        el.textContent = '$' + val;
+        if(t < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    // Initialize with monthly values
+    document.querySelectorAll('.price').forEach(el => {
+      const v = el.getAttribute('data-month') || '0';
+      el.textContent = '$' + v;
+    });
+  </script>
+</body>
+</html>

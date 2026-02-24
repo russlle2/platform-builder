@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Schedule — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#081018;--glass:#0d2a28cc;--accent:#54b286;--muted:#9fb7b1}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;color:#e8faf0;background:linear-gradient(180deg,#041018,#081218);min-height:100vh}
+    header{position:sticky;top:0;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);backdrop-filter:blur(6px);padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.03)}
+    .nav{max-width:1100px;margin:0 auto;padding:6px 22px;display:flex;align-items:center}
+    .brand{font-weight:700;color:#e9fff7}
+    nav{margin-left:auto;display:flex;gap:12px}
+    nav a{color:#cbeee2;text-decoration:none;padding:8px 10px;border-radius:8px}
+    main{max-width:1100px;margin:22px auto;padding:0 22px}
+    .hero{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.04)}
+    h1{margin:0;color:#eafff5}
+    .muted{color:var(--muted)}
+    .planner{margin-top:16px;display:grid;grid-template-columns:1fr 340px;gap:14px}
+    .plan-card{background:rgba(255,255,255,0.02);padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
+    .phase{margin-bottom:12px}
+    .phase label{display:block;color:#dff7ef;font-weight:700;margin-bottom:6px}
+    input[type="range"]{width:100%}
+    .timeline-visual{height:120px;position:relative;border-radius:8px;background:linear-gradient(90deg,#062728, #072021);overflow:hidden}
+    .bar{position:absolute;height:34px;border-radius:6px;top:18px;display:flex;align-items:center;padding-left:10px;color:#052018;font-weight:700}
+    .bar.phase1{background:#73d9a1}
+    .bar.phase2{background:#4fbf8b}
+    .bar.phase3{background:#2f9670}
+    .legend{display:flex;gap:8px;align-items:center;margin-top:10px}
+    .legend span{display:inline-block;width:12px;height:12px;border-radius:3px}
+    .note{margin-top:12px;color:var(--muted)}
+    .actions{margin-top:14px;display:flex;gap:8px}
+    .btn{padding:10px 12px;border-radius:8px;border:0;cursor:pointer}
+    .btn.primary{background:var(--accent);color:#022319;font-weight:700}
+    .disclaimer{margin-top:12px;color:var(--muted);font-size:13px}
+    @media(max-width:920px){.planner{grid-template-columns:1fr}.timeline-visual{height:140px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html">Explore</a>
+        <a href="services.html">Offerings</a>
+        <a href="conditions.html">Conditions</a>
+        <a href="approach.html">Philosophy</a>
+        <a href="pricing.html">Investment</a>
+        <a href="about.html">About</a>
+        <a href="book.html" class="active">Schedule</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Book a conversation or a VIP day</h1>
+      <p class="muted">Select a format below — orientation visit, multi-session program, or an immersive VIP Day. Use the planner to sketch a phased timeline before you request a date.</p>
+
+      <div class="planner">
+        <div class="plan-card">
+          <h3 style="margin-top:0;color:#eafff5">Timeline planner</h3>
+          <p class="muted">Map out three phases. Use as a proposal to bring to the session; we'll refine together. No guarantees; educational guidance only.</p>
+
+          <div class="phase">
+            <label for="p1">Phase 1 — Foundation (weeks)</label>
+            <input id="p1" type="range" min="1" max="8" value="2" oninput="updatePlanner()" />
+            <div class="muted" id="p1v">2 weeks</div>
+          </div>
+
+          <div class="phase">
+            <label for="p2">Phase 2 — Adjustment (weeks)</label>
+            <input id="p2" type="range" min="2" max="12" value="6" oninput="updatePlanner()" />
+            <div class="muted" id="p2v">6 weeks</div>
+          </div>
+
+          <div class="phase">
+            <label for="p3">Phase 3 — Integration (weeks)</label>
+            <input id="p3" type="range" min="2" max="20" value="8" oninput="updatePlanner()" />
+            <div class="muted" id="p3v">8 weeks</div>
+          </div>
+
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <input id="start" type="date" value="" style="padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04)" />
+            <button class="btn primary" onclick="applyProposal()">Save proposal</button>
+          </div>
+
+          <div class="note" id="proposal-note">No start date chosen</div>
+          <div class="disclaimer">This planner is an organizational tool — not a treatment schedule. Always confirm medical steps with your clinician.</div>
+        </div>
+
+        <aside class="plan-card">
+          <h3 style="margin-top:0;color:#eafff5">Visual timeline</h3>
+          <div class="timeline-visual" id="timeline">
+            <div class="bar phase1" id="bar1" style="left:6%;width:12%">Phase 1</div>
+            <div class="bar phase2" id="bar2" style="left:20%;width:36%">Phase 2</div>
+            <div class="bar phase3" id="bar3" style="left:56%;width:44%">Phase 3</div>
+          </div>
+
+          <div class="legend">
+            <div style="display:flex;gap:8px;align-items:center"><span style="background:#73d9a1"></span><div class="muted">Foundation</div></div>
+            <div style="display:flex;gap:8px;align-items:center"><span style="background:#4fbf8b"></span><div class="muted">Adjustment</div></div>
+            <div style="display:flex;gap:8px;align-items:center"><span style="background:#2f9670"></span><div class="muted">Integration</div></div>
+          </div>
+
+          <div style="margin-top:10px">
+            <strong style="color:#eafff5">Estimated timeline</strong>
+            <div class="muted" id="est-range">—</div>
+          </div>
+
+          <div style="margin-top:12px">
+            <button class="btn" onclick="location.href='pricing.html'" style="background:transparent;border:1px solid rgba(255,255,255,0.04);color:#cfeee0">Compare packages</button>
+            <button class="btn primary" style="margin-left:6px" onclick="proposeAndContact()">Request a slot</button>
+          </div>
+        </aside>
+
+      </div>
+
+      <div style="margin-top:16px" class="plan-card">
+        <h3 style="margin-top:0;color:#eafff5">Booking notes</h3>
+        <ul class="muted" style="margin-top:8px">
+          <li>VIP Day requests are reviewed for availability; we prioritize clinical fit and preparation time.
+          <li>Orientation visits are the quickest path to get started; multi-session packages are scheduled per mutual agreement.
+          <li>All scheduling communications are confirmed by email to {{EMAIL}} or by phone at {{PHONE}}.
+        </ul>
+        <div class="disclaimer" style="margin-top:10px">Educational approach. Not an emergency service. If you have urgent medical needs, please contact local emergency services or your primary care provider.</div>
+      </div>
+
+    </section>
+  </main>
+
+  <script>
+    // planner logic
+    function weeksToPercent(n, total){ return Math.max(4, Math.round((n/total)*86)); }
+    function updatePlanner(){
+      const p1 = +document.getElementById('p1').value;
+      const p2 = +document.getElementById('p2').value;
+      const p3 = +document.getElementById('p3').value;
+      document.getElementById('p1v').textContent = p1 + ' weeks';
+      document.getElementById('p2v').textContent = p2 + ' weeks';
+      document.getElementById('p3v').textContent = p3 + ' weeks';
+      const total = p1 + p2 + p3;
+      // layout bars based on relative widths
+      const minLeft = 6; // percent left padding
+      const available = 88; // percent available for bars
+      const p1w = Math.max(6, Math.round((p1/total)*available));
+      const p2w = Math.max(6, Math.round((p2/total)*available));
+      const p3w = Math.max(6, available - p1w - p2w);
+      const b1Left = minLeft;
+      const b2Left = b1Left + p1w;
+      const b3Left = b2Left + p2w;
+      document.getElementById('bar1').style.left = b1Left + '%';
+      document.getElementById('bar1').style.width = p1w + '%';
+      document.getElementById('bar2').style.left = b2Left + '%';
+      document.getElementById('bar2').style.width = p2w + '%';
+      document.getElementById('bar3').style.left = b3Left + '%';
+      document.getElementById('bar3').style.width = p3w + '%';
+
+      // estimate range text
+      let est = total + ' weeks total';
+      document.getElementById('est-range').textContent = est;
+    }
+    updatePlanner();
+
+    function applyProposal(){
+      const start = document.getElementById('start').value;
+      if(!start){
+        document.getElementById('proposal-note').textContent = 'Select a start date to see exact phase dates.';
+        return;
+      }
+      const p1 = +document.getElementById('p1').value;
+      const p2 = +document.getElementById('p2').value;
+      const p3 = +document.getElementById('p3').value;
+      const s = new Date(start);
+      const off = (d, w)=>{ const nd = new Date(d); nd.setDate(nd.getDate()+7*w); return nd; };
+      const end1 = off(s, p1);
+      const end2 = off(end1, p2);
+      const end3 = off(end2, p3);
+      function fmt(d){ return d.toISOString().slice(0,10); }
+      document.getElementById('proposal-note').textContent = 'Phase dates: ' + fmt(s) + ' → ' + fmt(end1) + ' (P1), ' + fmt(end1) + ' → ' + fmt(end2) + ' (P2), ' + fmt(end2) + ' → ' + fmt(end3) + ' (P3)';
+    }
+
+    function proposeAndContact(){
+      // collect summary then open mailto
+      const start = document.getElementById('start').value || '(no start)';
+      const p1 = document.getElementById('p1').value;
+      const p2 = document.getElementById('p2').value;
+      const p3 = document.getElementById('p3').value;
+      const subj = encodeURIComponent('Booking request — ' + '{{BUSINESS_NAME}}');
+      const body = encodeURIComponent('I would like to request a booking. Proposed start: ' + start + '\nPhases (weeks): P1=' + p1 + ', P2=' + p2 + ', P3=' + p3 + '\nPlease advise on next steps and availability.\n\n— Sent from booking tool');
+      location.href = 'mailto:' + '{{EMAIL}}' + '?subject=' + subj + '&body=' + body;
+    }
+  </script>
+</body>
+</html>

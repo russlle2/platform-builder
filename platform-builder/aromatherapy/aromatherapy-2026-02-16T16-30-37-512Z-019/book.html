@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Book a Session — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--tan:#f6ebe1;--brown:#6f4a2a;--accent:#8fbf8f;--muted:#6b5a4a}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto;background:linear-gradient(180deg,#fff,var(--tan));color:var(--brown)}
+    .wrap{max-width:820px;margin:28px auto;padding:18px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:18px;margin-top:18px}
+    .panel{background:#fff;padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.04)}
+    label{display:block;margin-top:10px;font-weight:600}
+    input,select,textarea{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)}
+    .services li{margin:10px 0}
+    .btn-primary{display:inline-block;padding:10px 14px;background:linear-gradient(90deg,var(--brown),var(--accent));color:#fff;border-radius:10px;text-decoration:none;font-weight:700}
+    .safety{margin-top:12px;font-size:0.95rem;color:var(--muted)}
+    .checkbox{display:flex;gap:8px;align-items:center;margin-top:12px}
+    footer{margin-top:22px;color:var(--muted);font-size:0.9rem}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <header>
+      <div style='font-weight:800'>{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href='index.html'>Home</a>
+        <a href='services.html'>My Services</a>
+        <a href='blends.html'>Blends</a>
+        <a href='pricing.html'>Membership</a>
+        <a href='about.html'>About</a>
+      </nav>
+    </header>
+
+    <div class='grid'>
+      <section class='panel'>
+        <h2 style='margin-top:0'>Book an appointment</h2>
+        <p class='safety'>Choose a session type and provide a few details. We will follow up to confirm availability. By booking you acknowledge you have read our safety notes below.</p>
+
+        <form action='{{PRIMARY_CTA_URL}}' method='post' id='booking-form'>
+          <label for='name'>Your name</label>
+          <input id='name' name='name' placeholder='First & Last' required>
+
+          <label for='email'>Email</label>
+          <input id='email' name='email' type='email' placeholder='you@example.com' required>
+
+          <label for='phone'>Phone</label>
+          <input id='phone' name='phone' placeholder='Optional'>
+
+          <label for='service'>Service</label>
+          <select id='service' name='service'>
+            <option>30-min Discovery (virtual)</option>
+            <option>60-min Consultation & Blend (in-person or virtual)</option>
+            <option>90-min Deep Craft Session (custom blend + ritual)</option>
+            <option>Product Pickup / Consultation</option>
+          </select>
+
+          <label for='notes'>Notes (allergies/sensitivities / pets / pregnancy)</label>
+          <textarea id='notes' name='notes' rows='4' placeholder='Tell us if you are pregnant, nursing, have pets that are sensitive to essential oils, or any known allergies.'></textarea>
+
+          <div class='checkbox'>
+            <input type='checkbox' id='consent' name='consent' required>
+            <label for='consent' style='font-weight:600'>I confirm I have read the safety guidance and understand this is not medical care.</label>
+          </div>
+
+          <div style='margin-top:12px'><button class='btn-primary' type='submit'>{{PRIMARY_CTA_LABEL}}</button></div>
+        </form>
+
+        <div class='safety' style='margin-top:14px'>
+          <strong>Safety notes (please read)</strong>
+          <ul style='color:var(--muted)'>
+            <li><strong>Dilution:</strong> We provide clear dilution guidance for topical use. Never apply undiluted essential oils to skin.</li>
+            <li><strong>Patch test:</strong> Test new blends on a small skin area and wait 24 hours to check for reactions.</li>
+            <li><strong>Pets:</strong> Some oils are unsafe for pets. Mention pets in your notes so we can recommend pet-safe blends.</li>
+            <li><strong>Pregnancy & children:</strong> Certain oils are contraindicated. If you are pregnant, nursing, or planning for pregnancy, consult your healthcare provider before use and note this in your booking.</li>
+            <li><strong>Interactions:</strong> If you are taking medications or have serious health conditions, please check with your clinician before aromatherapy routines.</li>
+          </ul>
+        </div>
+      </section>
+
+      <aside class='panel'>
+        <h3 style='margin-top:0'>Session guide & prices</h3>
+        <ul class='services'>
+          <li><strong>30-min Discovery</strong> — $45 • Short consultation to explore preferences</li>
+          <li><strong>60-min Consultation & Blend</strong> — $120 • Personalized blend and guidance</li>
+          <li><strong>90-min Deep Craft</strong> — $190 • Extended session with bespoke ritual</li>
+        </ul>
+
+        <div style='margin-top:12px'>
+          <strong>Membership discount:</strong>
+          <div style='color:var(--muted);margin-top:6px'>Members receive booking discounts and priority scheduling. See the Membership page for details.</div>
+        </div>
+
+        <div style='margin-top:14px'>
+          <strong>Need help?</strong>
+          <div style='color:var(--muted);margin-top:8px'>Call <a href='tel:{{PHONE}}' style='color:inherit;text-decoration:underline'>{{PHONE}}</a> or email <a href='mailto:{{EMAIL}}' style='color:inherit;text-decoration:underline'>{{EMAIL}}</a></div>
+        </div>
+
+        <div style='margin-top:18px;background:linear-gradient(180deg,#fff,var(--tan));padding:10px;border-radius:10px;color:var(--muted)'>
+          <strong>Arrival & in-session comfort</strong>
+          <div style='margin-top:8px'>If in-person, arrive a few minutes early. We keep the environment sensory-considerate — minimal pre-scenting and clear labeling of all oils.</div>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      <div style='color:var(--muted)'>By booking you agree to receive communications about your appointment from {{BUSINESS_NAME}}. This practice offers educational aromatherapy and is not a substitute for medical care.</div>
+    </footer>
+  </div>
+
+  <script>
+    (function(){
+      var form=document.getElementById('booking-form');
+      form.addEventListener('submit',function(e){
+        // lightweight UX: show a quick confirmation and allow server to handle real booking
+        e.preventDefault();
+        alert('Thanks — we received your request. We will follow up to confirm your appointment.');
+        form.reset();
+      });
+    })();
+  </script>
+</body>
+</html>

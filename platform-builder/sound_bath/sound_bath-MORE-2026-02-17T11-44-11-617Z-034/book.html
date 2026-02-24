@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f3eee6;--accent:#8a5831;--muted:#7a6a60;--panel:#fffdf9}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto;background:var(--bg);color:#3b2b22}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;background:linear-gradient(180deg,rgba(255,255,255,0.6),transparent)}
+    nav a{margin:0 8px;color:#392920;text-decoration:none}
+    main{max-width:980px;margin:18px auto;padding:0 20px}
+    .hero{background:linear-gradient(180deg,rgba(255,255,255,0.8),var(--panel));padding:18px;border-radius:12px}
+    .split{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:14px}
+    .panel{background:var(--panel);padding:16px;border-radius:10px}
+    label{display:block;font-weight:700;margin-bottom:6px}
+    input,textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid #e8dfd6;background:#fff}
+    .note{font-size:13px;color:var(--muted)}
+    .btn{display:inline-block;padding:10px 14px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-weight:700}
+
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity .5s ease,transform .5s ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none;opacity:1;transform:none}}
+
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center"><div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#c07b4b);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800">SB</div><div style="font-weight:800">{{BUSINESS_NAME}}</div></div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="events.html">Gatherings</a>
+      <a href="pricing.html">Rates</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero reveal" data-reveal>
+      <h1 style="margin:0">Reserve a gathering or VIP Day</h1>
+      <p class="note" style="margin-top:6px">Choose a public seat, a private session, or claim a VIP Day immersion for deeper work.</p>
+    </section>
+
+    <div class="split">
+      <div>
+        <div class="panel reveal" data-reveal>
+          <h3 style="margin-top:0">Booking form</h3>
+          <form id="bookingForm">
+            <label for="name">Full name</label>
+            <input id="name" name="name" required>
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required>
+
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" type="tel">
+
+            <label for="service">Choose service</label>
+            <select id="service" name="service">
+              <option value="public">Public Gathering — $25</option>
+              <option value="private">Private Session — $120</option>
+              <option value="vip">VIP Day Immersion — custom pricing</option>
+            </select>
+
+            <label for="date">Preferred date</label>
+            <input id="date" name="date" type="date">
+
+            <label for="notes">Notes / accessibility needs</label>
+            <textarea id="notes" name="notes" rows="3"></textarea>
+
+            <div style="margin-top:12px;font-size:13px;color:var(--muted)"><label><input type="checkbox" id="contraCheck"> I have read the safety notes and contraindications</label></div>
+
+            <div style="margin-top:12px"><button type="submit" class="btn">Claim this spot</button></div>
+            <div id="result" style="margin-top:12px;color:var(--muted)"></div>
+          </form>
+        </div>
+
+        <div class="panel reveal" data-reveal style="margin-top:12px">
+          <h4 style="margin-top:0">Why a VIP Day?</h4>
+          <p class="note">Our VIP Day is an extended, personalized immersion for clients who want a curated, multi-frame session with intake, multiple sound passages, and written follow-up. Pricing is tailored; the day includes pre-session planning and post-session notes.</p>
+          <div style="margin-top:10px"><a href="mailto:{{EMAIL}}" class="btn" style="background:#4b6a44">Inquire about a VIP Day</a></div>
+        </div>
+      </div>
+
+      <aside class="panel reveal" data-reveal>
+        <h3 style="margin-top:0">Next events</h3>
+        <div id="nextEvent" style="margin-top:8px"></div>
+        <h4 style="margin-top:12px">Calendar</h4>
+        <ul id="calendarList" style="padding-left:18px;color:var(--muted)"></ul>
+        <p class="note" style="margin-top:12px">Contraindications: Not suitable for people with pacemakers, uncontrolled epilepsy, or active psychotic states. If pregnant, please check with your provider.</p>
+      </aside>
+    </div>
+  </main>
+
+  <footer style="padding:18px;text-align:center;color:var(--muted)">Questions: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></footer>
+
+  <script>
+    // reveal
+    (function(){
+      const reduced = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+      const els = document.querySelectorAll('[data-reveal]');
+      if(reduced){ els.forEach(e=>e.classList.add('visible')); return; }
+      const io=new IntersectionObserver((entries)=>{ entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('visible'); io.unobserve(en.target); } }); },{threshold:0.08});
+      els.forEach(el=>io.observe(el));
+    })();
+
+    // mock events module
+    (function(){
+      const next = {title:'Evening Resonance',date:addDays(3),time:'6:30 PM',location:'Studio'};
+      const list = [addDays(3), addDays(10), addDays(17)];
+      function addDays(n){ const d=new Date(); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10); }
+      document.getElementById('nextEvent').innerHTML = '<strong>'+next.title+'</strong><div style="color:var(--muted)">'+next.date+' • '+next.time+' • '+next.location+'</div><div style="margin-top:8px"><a href="events.html" class="btn" style="background:#6a4b2d">See all events</a></div>';
+      const ul=document.getElementById('calendarList'); list.forEach(date=>{ const li=document.createElement('li'); li.textContent = date + ' — Public seat'; ul.appendChild(li); });
+    })();
+
+    // booking form handler (local demo)
+    (function(){
+      const form=document.getElementById('bookingForm');
+      form.addEventListener('submit',(e)=>{
+        e.preventDefault();
+        const name=form.name.value.trim();
+        const email=form.email.value.trim();
+        const service=form.service.value;
+        const contra = document.getElementById('contraCheck').checked;
+        const res=document.getElementById('result');
+        if(!name||!email){ res.textContent='Please provide name and email.'; return; }
+        if(!contra){ res.textContent='Please acknowledge the contraindications to continue.'; return; }
+        // mock response
+        if(service==='vip'){
+          res.innerHTML = 'Thanks, '+name+'. We received your VIP Day inquiry. We will follow up at '+email+' to coordinate dates and pricing.';
+        } else {
+          res.innerHTML = 'Thanks, '+name+'. Your request is noted. We will confirm availability via email within 48 hours.';
+        }
+        form.reset();
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contact — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{
+      --bg:#0f1724;
+      --glass-1:rgba(255,255,255,0.06);
+      --glass-2:rgba(255,255,255,0.04);
+      --accent:#77d1c6;
+      --muted:#cbd5e1;
+      --card-radius:16px;
+      --fw-regular:400;
+      --fw-medium:600;
+      --max-width:1100px;
+    }
+    html,body{height:100%;}
+    body{
+      margin:0;padding:0;min-height:100%;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background: radial-gradient(1200px 600px at 10% 10%, rgba(119,209,198,0.06), transparent 6%), radial-gradient(1000px 500px at 90% 90%, rgba(119,209,198,0.03), transparent 8%), var(--bg); color:var(--muted); -webkit-font-smoothing:antialiased;
+      background-image: url('assets/img/pattern.svg'), radial-gradient(1200px 600px at 10% 10%, rgba(119,209,198,0.06), transparent 6%), radial-gradient(1000px 500px at 90% 90%, rgba(119,209,198,0.03), transparent 8%), linear-gradient(180deg, #071021 0%, #0f1724 100%);
+      background-size: 420px 420px, cover, cover, cover;
+    }
+    .wrap{max-width:var(--max-width);margin:48px auto;padding:28px;display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start}
+    nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .brand{font-weight:700;color:var(--accent)}
+    .navlinks{display:flex;gap:12px}
+    .navlinks a{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:10px;font-size:14px}
+    .navlinks a[href$="contact.html"]{background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));backdrop-filter: blur(6px)}
+    header.hero{grid-column:1 / -1;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:var(--card-radius);padding:20px;display:flex;gap:18px;align-items:center}
+    .hero-left{flex:1}
+    h1{margin:0 0 6px 0;color:#e6f7f4;font-size:22px}
+    p.lead{margin:0;color:var(--muted);opacity:0.95}
+    .hero-right{display:flex;flex-direction:column;gap:8px}
+    .cta{background:linear-gradient(90deg,var(--accent),#69b8ff);color:#032023;padding:10px 14px;border-radius:12px;text-decoration:none;font-weight:700}
+    /* Card style */
+    .card{background:linear-gradient(180deg,var(--glass-1),var(--glass-2));border-radius:14px;padding:18px;box-shadow:0 6px 20px rgba(2,6,23,0.6);}
+    form .row{display:flex;gap:8px}
+    input,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--muted);font-size:14px}
+    label{display:block;font-size:13px;color:#a7bcc0;margin-bottom:6px}
+    .muted{font-size:13px;color:#9fb4b2}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);font-size:13px}
+    .aside{position:sticky;top:28px}
+    .mixer{display:flex;gap:8px;align-items:center}
+    .mixer button{flex:1;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--muted);cursor:pointer}
+    .mixer button.active{background:linear-gradient(90deg,var(--accent),#69b8ff);color:#022;box-shadow:0 8px 30px rgba(103,183,166,0.12);}
+    .recommendations{margin-top:12px}
+    .recommendations li{margin:10px 0;padding:10px;border-radius:10px;background:rgba(255,255,255,0.02);}
+    /* Proof gallery */
+    .proof{margin-top:18px}
+    .testimonial{min-height:84px;display:flex;flex-direction:column;justify-content:center;padding:12px}
+    .testimonial blockquote{margin:0;color:#e6f7f4;font-size:15px}
+    .testimonial cite{display:block;margin-top:8px;color:#9fb4b2;font-size:13px}
+    .badges{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+    .badge{padding:8px 10px;border-radius:10px;background:rgba(255,255,255,0.02);cursor:default;position:relative}
+    .badge .tip{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 8px);background:#062021;color:#bfece6;padding:8px;border-radius:8px;white-space:nowrap;display:none;font-size:12px}
+    .badge:hover .tip{display:block}
+    .controls{display:flex;gap:8px;margin-top:10px}
+    .controls button{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:6px 10px;border-radius:8px;color:var(--muted);cursor:pointer}
+    footer{grid-column:1 / -1;margin-top:20px;text-align:center;color:#8aa3a0;font-size:13px}
+    .disclaimer{margin-top:12px;font-size:13px;color:#9fb4b2}
+    @media (max-width:880px){
+      .wrap{grid-template-columns:1fr;padding:18px}
+      header.hero{flex-direction:column;align-items:flex-start}
+      .aside{position:static}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <div class="navlinks">
+        <a href="index.html">Gatherings</a>
+        <a href="events.html">Calendar</a>
+        <a href="private-sessions.html">Private</a>
+        <a href="pricing.html">Membership</a>
+        <a href="about.html">Our Space</a>
+        <a href="faq.html">Help</a>
+        <a href="book.html">Reserve</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </nav>
+
+    <header class="hero card">
+      <div class="hero-left">
+        <h1>Reach out about gatherings, membership, or a private session</h1>
+        <p class="lead">We reply personally to inquiries about scheduling and accessibility. If you'd like a membership trial, choose "Membership" in the form.</p>
+      </div>
+      <div class="hero-right">
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        <div class="pill">Serving {{CITY}}, {{STATE}}</div>
+      </div>
+    </header>
+
+    <main>
+      <section class="card">
+        <form id="contactForm">
+          <div class="row">
+            <div style="flex:1">
+              <label for="name">Name</label>
+              <input id="name" name="name" type="text" placeholder="Your full name" required>
+            </div>
+            <div style="width:160px">
+              <label for="phone">Phone</label>
+              <input id="phone" name="phone" type="tel" placeholder="{{PHONE}}">
+            </div>
+          </div>
+          <div style="margin-top:10px">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="{{EMAIL}}" required>
+          </div>
+
+          <div style="margin-top:10px">
+            <label for="inquiry">I am reaching out about</label>
+            <select id="inquiry" name="inquiry">
+              <option>Public gathering / Events</option>
+              <option>Private session</option>
+              <option>Membership</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div style="margin-top:10px">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" rows="5" placeholder="Tell us about timing, accessibility needs, or questions"></textarea>
+          </div>
+
+          <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+            <div>
+              <label class="muted">Preferred field of resonance</label>
+              <div class="mixer" role="tablist" aria-label="Sound preference mixer">
+                <button type="button" data-level="gentle" class="mixer-btn active">Gentle</button>
+                <button type="button" data-level="medium" class="mixer-btn">Medium</button>
+                <button type="button" data-level="intense" class="mixer-btn">Intense</button>
+              </div>
+            </div>
+            <div style="flex:1">
+              <label class="muted">Interested in membership?</label>
+              <div style="display:flex;gap:8px;margin-top:6px">
+                <label style="display:flex;align-items:center;gap:8px"><input type="radio" name="interest" value="none" checked> Not now</label>
+                <label style="display:flex;align-items:center;gap:8px"><input type="radio" name="interest" value="trial"> Trial</label>
+                <label style="display:flex;align-items:center;gap:8px"><input type="radio" name="interest" value="member"> Membership</label>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:14px;display:flex;gap:10px;align-items:center">
+            <button type="submit" class="cta">Send message</button>
+            <div class="muted">Or call: <a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none">{{PHONE}}</a></div>
+          </div>
+
+          <div id="formStatus" class="muted" style="margin-top:8px"></div>
+        </form>
+
+        <div class="disclaimer">
+          Medical & safety note: Sound experiences are generally low-risk. Please tell us if you are pregnant, have epilepsy or seizure history, recent head/neck surgery, severe psychiatric conditions, or are using implanted medical devices. We will advise modifications or alternatives to ensure safety.
+        </div>
+      </section>
+
+      <section class="card" style="margin-top:18px">
+        <h3 style="margin:0 0 8px 0;color:#e6f7f4">How we help</h3>
+        <div class="muted">Memberships are framed around frequency, not duration: choose a cadence that supports your week. Below are common pathways members take; the sound mixer to the right adjusts suggestions in real time.</div>
+        <ul style="margin-top:12px;line-height:1.55">
+          <li><strong>Community Cycle</strong> — Weekly group gatherings with guided resonance and gentle instruments.</li>
+          <li><strong>Focused Session</strong> — Small-group intensives with an emphasis on breath and embodied listening.</li>
+          <li><strong>Personal Resonance</strong> — One-on-one sessions tailored to nervous-system needs and goals.</li>
+        </ul>
+      </section>
+
+      <section class="card proof" style="margin-top:18px">
+        <h3 style="margin:0 0 8px 0;color:#e6f7f4">Proof Gallery</h3>
+        <div class="muted">Rotating reflections from recent guests and credentials that matter to our community.</div>
+        <div id="testimonialWrap" style="margin-top:12px">
+          <div class="testimonial" id="testimonial">
+            <blockquote id="quote">"An unexpected clarity — simple, steady, and realigned my evening rhythm."</blockquote>
+            <cite id="who">— S. from {{CITY}}</cite>
+          </div>
+          <div class="controls">
+            <button id="prev">Prev</button>
+            <button id="next">Next</button>
+            <div style="flex:1"></div>
+            <div class="muted">Auto-rotates every 6s</div>
+          </div>
+
+          <div class="badges" aria-hidden="false">
+            <div class="badge" tabindex="0">Local Arts Council<span class="tip" role="tooltip">Supported community programming 2024</span></div>
+            <div class="badge" tabindex="0">Wellness Guild<span class="tip" role="tooltip">Practitioner code verified</span></div>
+            <div class="badge" tabindex="0">Member Trust<span class="tip" role="tooltip">Verified reviews & safety checks</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" style="margin-top:18px">
+        <h3 style="margin:0 0 8px 0;color:#e6f7f4">Frequently asked</h3>
+        <details style="margin-top:8px"><summary style="cursor:pointer;color:var(--muted)">Is sound safe if I have tinnitus?</summary><div class="muted" style="margin-top:8px">We adapt tone and proximity. Please note tinnitus in your message and we will plan a tailored session.</div></details>
+        <details style="margin-top:8px"><summary style="cursor:pointer;color:var(--muted)">Can I try before joining?</summary><div class="muted" style="margin-top:8px">Yes. We offer a trial visit option for prospective members; select "Trial" when contacting.</div></details>
+      </section>
+    </main>
+
+    <aside class="aside">
+      <div class="card">
+        <h4 style="margin:0 0 8px 0;color:#e6f7f4">Program suggestions</h4>
+        <div class="muted">The sound preference mixer above changes these recommendations.</div>
+        <ul class="recommendations" id="recs">
+          <li data-level="gentle"><strong>Evening Ease</strong> — Slow bells, breath-led hour.
+          </li>
+          <li data-level="medium" style="display:none"><strong>Midweek Reset</strong> — Layered gongs, guided centering.
+          </li>
+          <li data-level="intense" style="display:none"><strong>Resonant Deep</strong> — Immersive sonic focus with intentional intensity.</li>
+        </ul>
+
+        <div style="margin-top:12px">
+          <div class="muted">Membership framing</div>
+          <div style="margin-top:8px">
+            <div style="display:flex;gap:8px;align-items:center"><div class="pill">Cadence</div><div class="muted">— Access aligned to how often you come</div></div>
+            <div style="margin-top:8px;display:flex;gap:8px">
+              <div style="flex:1;background:rgba(255,255,255,0.02);padding:10px;border-radius:10px">Community — best for weekly presence</div>
+              <div style="width:120px;background:rgba(255,255,255,0.02);padding:10px;border-radius:10px;text-align:center">Private — one-off sessions</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <h4 style="margin:0 0 6px 0;color:#e6f7f4">Contact details</h4>
+        <div class="muted">Phone: <a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none">{{PHONE}}</a></div>
+        <div class="muted">Email: <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a></div>
+      </div>
+    </aside>
+
+    <footer>
+      <div>{{BUSINESS_NAME}} — Gentle membership and guided sessions in {{CITY}}, {{STATE}}. All rights reserved.</div>
+    </footer>
+  </div>
+
+  <script>
+    // Mixer logic
+    (function(){
+      const buttons = document.querySelectorAll('.mixer-btn');
+      const recs = document.querySelectorAll('.recommendations li');
+      let active = 'gentle';
+      function setActive(level){
+        active = level;
+        buttons.forEach(b => b.classList.toggle('active', b.dataset.level === level));
+        recs.forEach(r => r.style.display = (r.dataset.level === level) ? '' : 'none');
+      }
+      buttons.forEach(btn => btn.addEventListener('click', ()=> setActive(btn.dataset.level)));
+      // Expose to form so selected level sent
+      const form = document.getElementById('contactForm');
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        const data = new FormData(form);
+        data.append('pref_level', active);
+        // Minimal UX: simulate sending then show link to email for manual copy
+        const status = document.getElementById('formStatus');
+        status.textContent = 'Preparing message…';
+        setTimeout(()=>{
+          status.innerHTML = 'Message prepared. We will reply within 48 hours. If you prefer, send an email to <a href="mailto:'+encodeURIComponent('{{EMAIL}}')+'">{{EMAIL}}</a>.';
+          form.reset();
+          setActive('gentle');
+        },700);
+      });
+      // init
+      setActive(active);
+    })();
+
+    // Testimonial rotation & badges
+    (function(){
+      const data = [
+        {quote:'"Left calmer than expected; the sound supported a steady breath."', who:'— A. (member)'},
+        {quote:'"A thoughtful pause that shifted my week toward rest."', who:'— R. (guest)'},
+        {quote:'"Careful, warm facilitation; the membership cadence keeps me consistent."', who:'— M. (member)'}
+      ];
+      let idx = 0;
+      const quoteEl = document.getElementById('quote');
+      const whoEl = document.getElementById('who');
+      const next = document.getElementById('next');
+      const prev = document.getElementById('prev');
+      function render(i){
+        quoteEl.textContent = data[i].quote;
+        whoEl.textContent = data[i].who;
+      }
+      next.addEventListener('click', ()=>{ idx = (idx+1)%data.length; render(idx); });
+      prev.addEventListener('click', ()=>{ idx = (idx-1+data.length)%data.length; render(idx); });
+      // auto rotate
+      setInterval(()=>{ idx=(idx+1)%data.length; render(idx); },6000);
+      render(idx);
+    })();
+
+    // Badge tooltips accessible toggles for keyboard
+    (function(){
+      document.querySelectorAll('.badge').forEach(b=>{
+        b.addEventListener('focus', ()=>{
+          const tip = b.querySelector('.tip'); if(tip) tip.style.display='block';
+        });
+        b.addEventListener('blur', ()=>{
+          const tip = b.querySelector('.tip'); if(tip) tip.style.display='none';
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

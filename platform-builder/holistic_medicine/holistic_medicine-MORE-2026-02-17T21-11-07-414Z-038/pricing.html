@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Investments — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1720;--card:#0b1115;--accent:#9de1c8;--muted:#9aa9b0;--glass:rgba(255,255,255,0.03);font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,#071018 0%,#07161c 60%);color:#e6f8f1;line-height:1.45}
+    header{padding:28px 24px;display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,#08363f 0%,#13403a 100%);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(0,0,0,0.6)}
+    .logo svg{width:30px;height:30px;opacity:.95}
+    nav a{color:var(--muted);margin-left:18px;text-decoration:none;font-size:15px}
+    nav a.cta{background:var(--accent);color:#05241e;padding:10px 14px;border-radius:10px;margin-left:22px;font-weight:700}
+    main{max-width:1100px;margin:18px auto;padding:22px}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:22px;align-items:start}
+    .panel{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:22px;border-radius:14px;box-shadow:0 8px 30px rgba(2,8,12,0.6)}
+    h1{margin:0 0 8px 0;font-size:22px;color:#f0fff8}
+    p.lead{margin:0;color:var(--muted)}
+    .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+    .tier{background:var(--card);padding:16px;border-radius:12px}
+    .tier h3{margin:0;color:var(--accent)}
+    .price{font-size:20px;margin:12px 0;color:#e8fdf4}
+    ul{margin:8px 0 0 18px;color:var(--muted)}
+    .small{font-size:13px;color:var(--muted)}
+    .session-planner{margin-top:10px}
+    label{display:block;margin:10px 0 6px;font-size:14px}
+    select,input[type=number],textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+    .btn{display:inline-block;padding:10px 12px;background:var(--accent);color:#05241e;border-radius:10px;border:none;cursor:pointer;font-weight:700}
+    .muted{color:var(--muted);font-size:13px}
+    .inventory{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:10px}
+    .inv-option{background:var(--glass);padding:10px;border-radius:8px;display:flex;align-items:center;gap:8px;cursor:pointer}
+    .inv-option input{accent-color:var(--accent)}
+    pre#plan{white-space:pre-wrap;background:rgba(0,0,0,0.25);padding:12px;border-radius:8px;color:#e6fff7;margin-top:12px}
+    footer{margin-top:26px;padding:18px;text-align:center;color:var(--muted);font-size:13px}
+    /* decorative svg */
+    .pattern{position:fixed;right:-80px;top:-80px;opacity:0.14;transform:rotate(8deg);pointer-events:none}
+    @media(max-width:880px){.hero{grid-template-columns:1fr;}.tiers{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+  <svg class="pattern" width="520" height="520" viewBox="0 0 520 520" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1">
+        <stop offset="0" stop-color="#8fe6cd"/>
+        <stop offset="1" stop-color="#66c3a5"/>
+      </linearGradient>
+    </defs>
+    <rect x="0" y="0" width="520" height="520" rx="52" fill="url(#g1)"/>
+    <g opacity="0.08" fill="#012522">
+      <circle cx="120" cy="80" r="48"/>
+      <circle cx="220" cy="180" r="64"/>
+      <circle cx="360" cy="300" r="40"/>
+    </g>
+  </svg>
+
+  <header>
+    <div class="brand">
+      <div class="logo" aria-hidden>
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 12c4-6 8-8 12-8" stroke="#dff7ee" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 12c4 6 8 8 12 8" stroke="#dff7ee" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div class="small">Portions of care arranged with depth and context</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Hearth</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Concerns</a>
+      <a href="approach.html">Method</a>
+      <a href="pricing.html" class="cta">Invest</a>
+      <a href="about.html">Story</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="panel">
+        <h1>Investment pathways for concentrated care</h1>
+        <p class="lead">Practical cycles crafted for focused change: choose an entrance point and we build the next few steps together. No guarantees — clear learning, measurable steps.</p>
+
+        <div class="tiers" role="list">
+          <div class="tier" role="listitem">
+            <h3>Deep Root Intensive</h3>
+            <div class="price">$1,850 — 6 weeks</div>
+            <ul>
+              <li>Initial 90-min intake + two 60-min follow-ups</li>
+              <li>Targeted labs & integrative plan sketch</li>
+              <li>Weekly check-ins (messaging)</li>
+            </ul>
+          </div>
+
+          <div class="tier">
+            <h3>Renewal Sprint</h3>
+            <div class="price">$720 — 4 weeks</div>
+            <ul>
+              <li>60-min intake + one 45-min coaching visit</li>
+              <li>Focused nutrition & stress sequencing</li>
+              <li>Two short message check-ins</li>
+            </ul>
+          </div>
+
+          <div class="tier">
+            <h3>Care Continuum Subscription</h3>
+            <div class="price">$145/month — ongoing</div>
+            <ul>
+              <li>Rolling 30-min visits, flexible scheduling</li>
+              <li>Priority booking and care coordination</li>
+              <li>Quarterly planning review</li>
+            </ul>
+          </div>
+        </div>
+
+        <div style="margin-top:18px;display:flex;gap:8px;align-items:center">
+          <button class="btn" id="primaryCTA">{{PRIMARY_CTA_LABEL}}</button>
+          <div class="muted">Prefer a tailored schedule? Build a plan below and copy it into your booking note.</div>
+        </div>
+
+      </div>
+
+      <aside class="panel">
+        <h3 style="margin-top:0">Session Planner</h3>
+        <div class="session-planner">
+          <label for="program">Choose an entrance:</label>
+          <select id="program">
+            <option value="Deep Root Intensive">Deep Root Intensive — 6 weeks</option>
+            <option value="Renewal Sprint">Renewal Sprint — 4 weeks</option>
+            <option value="Care Continuum Subscription">Care Continuum Subscription — ongoing</option>
+            <option value="Custom Single">Custom Single Visit</option>
+          </select>
+
+          <label for="sessions">Number of sessions:</label>
+          <input id="sessions" type="number" min="1" max="12" value="3">
+
+          <label>Whole-person inventory</label>
+          <div class="inventory" id="inventory">
+            <label class="inv-option"><input type="checkbox" value="Sleep"> Sleep</label>
+            <label class="inv-option"><input type="checkbox" value="Nutrition"> Nutrition</label>
+            <label class="inv-option"><input type="checkbox" value="Movement"> Movement</label>
+            <label class="inv-option"><input type="checkbox" value="Stress"> Stress & Resilience</label>
+            <label class="inv-option"><input type="checkbox" value="Relationships"> Relationships</label>
+            <label class="inv-option"><input type="checkbox" value="Work-Life"> Work-life Rhythm</label>
+            <label class="inv-option"><input type="checkbox" value="Environment"> Environment</label>
+            <label class="inv-option"><input type="checkbox" value="Mindset"> Mindset & Meaning</label>
+          </div>
+
+          <label for="priority">Top priority for this plan (one line):</label>
+          <input id="priority" placeholder="e.g. sleep consolidation and energy" />
+
+          <div style="margin-top:10px;display:flex;gap:10px">
+            <button class="btn" id="buildPlan">Assemble plan</button>
+            <button class="btn" id="copyPlan">Copy summary</button>
+          </div>
+
+          <pre id="plan" aria-live="polite">No plan yet. Check areas and press "Assemble plan".</pre>
+        </div>
+      </aside>
+    </section>
+
+    <section class="panel" style="margin-top:18px">
+      <h3 style="margin:0 0 8px 0">How the inventory shapes care</h3>
+      <p class="muted">Pick the domains that feel most salient. The planner converts selections into a consultation agenda and a follow-up cadence: what to cover first, what to monitor, and when we'll re-evaluate.</p>
+      <div id="agendaOutput" style="margin-top:12px;color:#dffbf1"></div>
+    </section>
+
+    <footer>
+      <div>{{BUSINESS_NAME}} — {{CITY}}, {{STATE}} • <a href="tel:{{PHONE}}" style="color:var(--muted);text-decoration:none">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}" style="color:var(--muted);text-decoration:none">{{EMAIL}}</a></div>
+    </footer>
+  </main>
+
+  <script>
+    // Session planner logic
+    function collectInventory(root){
+      const checked = Array.from(root.querySelectorAll('input[type=checkbox]'))
+        .filter(i=>i.checked)
+        .map(i=>i.value);
+      return checked;
+    }
+
+    function buildAgenda(areas){
+      if(!areas.length) return 'Agenda: Brief intake (medical history, priorities). Establish 1-2 short-term goals.';
+      const lines = ['Agenda:'];
+      areas.forEach((a, idx)=>{
+        lines.push((idx+1)+'. '+a+': quick assessment, 2–3 tangible actions.');
+      });
+      lines.push('\nShared decisions: chosen measurements, immediate priorities.');
+      return lines.join('\n');
+    }
+
+    function buildCadence(areas, sessions){
+      // base cadence rules
+      const cadence = [];
+      if(areas.includes('Sleep')) cadence.push('Sleep: nightly sleep diary for 2–4 weeks; review at first follow-up.');
+      if(areas.includes('Nutrition')) cadence.push('Nutrition: 1–2 week food log; brief adjustments at each visit.');
+      if(areas.includes('Stress')) cadence.push('Stress: daily micro-practices; weekly check-ins.');
+      if(areas.includes('Mindset')) cadence.push('Mindset: reflective exercises; 2-week reflective note and coaching.');
+      if(areas.includes('Movement')) cadence.push('Movement: progressive plan with 1 review at week 2.');
+      if(!cadence.length) cadence.push('General: check-in at 1–2 weeks, reassess at next scheduled session.');
+      // sessions influence
+      cadence.push('\nSuggested session cadence: approx '+Math.max(1,sessions)+' sessions across the program with a mid-point review.');
+      cadence.push('Follow-up rhythm: quick messaging check-ins between sessions; formal revisit 3–6 weeks after program end for most people.');
+      return cadence.join('\n');
+    }
+
+    function assembleSummary(){
+      const program = document.getElementById('program').value;
+      const sessions = parseInt(document.getElementById('sessions').value,10)||1;
+      const priority = document.getElementById('priority').value.trim();
+      const areas = collectInventory(document.getElementById('inventory'));
+      const agenda = buildAgenda(areas);
+      const cadence = buildCadence(areas,sessions);
+
+      const lines = [];
+      lines.push('{{BUSINESS_NAME}} — session plan');
+      lines.push('Program: '+program+' ('+sessions+' session(s))');
+      if(priority) lines.push('Priority: '+priority);
+      lines.push('');
+      lines.push(agenda);
+      lines.push('');
+      lines.push('Follow-up cadence:');
+      lines.push(cadence);
+      lines.push('');
+      lines.push('Contact: '+{{PRIMARY_CTA_LABEL}}+' at {{PHONE}} — or bring this summary into your booking note.');
+      return lines.join('\n');
+    }
+
+    document.getElementById('buildPlan').addEventListener('click', ()=>{
+      const text = assembleSummary();
+      document.getElementById('plan').textContent = text;
+
+      // also populate agendaOutput in main section
+      const areas = collectInventory(document.getElementById('inventory'));
+      document.getElementById('agendaOutput').textContent = buildAgenda(areas)+'\n\n'+buildCadence(areas, parseInt(document.getElementById('sessions').value,10)||1);
+    });
+
+    document.getElementById('copyPlan').addEventListener('click', async ()=>{
+      const txt = document.getElementById('plan').textContent;
+      if(!txt) return;
+      try{
+        await navigator.clipboard.writeText(txt);
+        alert('Summary copied to clipboard. Paste into booking or email.');
+      }catch(e){
+        alert('Copying failed. You can select and copy the text manually.');
+      }
+    });
+
+    // CTA -> booking
+    document.getElementById('primaryCTA').addEventListener('click', ()=>{
+      window.location.href='book.html';
+    });
+  </script>
+</body>
+</html>

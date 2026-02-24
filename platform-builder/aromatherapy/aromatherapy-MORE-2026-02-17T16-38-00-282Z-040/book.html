@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Book a Session</title>
+  <style>
+    :root{--bg:#fbfff9;--panel:#ffffff;--accent:#7da77d;--muted:#5f6b57}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:#172}
+    header{padding:14px 20px;background:var(--panel);display:flex;justify-content:space-between;align-items:center}
+    nav a{margin:0 8px;text-decoration:none;color:#172;font-weight:600}
+    .wrap{max-width:980px;margin:22px auto;padding:18px}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:20px}
+    .card{background:var(--panel);padding:16px;border-radius:12px;box-shadow:0 8px 20px rgba(12,18,12,0.04)}
+    h1{margin:0}
+    .service{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px dashed #eee}
+    .muted{color:var(--muted)}
+    .bookNow{display:inline-block;padding:10px 12px;border-radius:10px;background:var(--accent);color:white;text-decoration:none;font-weight:700}
+
+    /* compact comparator for booking add-on pricing */
+    .mini-toggle{display:flex;gap:8px;background:#fff;border-radius:999px;padding:6px}
+    .mini-toggle button{border:0;background:transparent;padding:6px 10px;border-radius:999px;cursor:pointer;font-weight:700}
+    .mini-toggle button.active{background:linear-gradient(90deg,#eaf6eb,#fff);color:#145}
+
+    form label{display:block;margin-top:9px;font-weight:700}
+    input,select,textarea{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid #e6e6e6}
+    button[type=submit]{margin-top:12px;padding:10px 14px;border-radius:10px;border:0;background:#2f7f3f;color:white;font-weight:700}
+
+    @media (max-width:880px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:800;color:#1a3">Aromatic Care & Craft</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Services</a>
+      <a href="book.html" aria-current="page">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h1>Reserve a session</h1>
+      <div class="muted">Questions? Call {{PHONE}} or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </div>
+
+    <div class="grid">
+      <div>
+        <div class="card">
+          <strong>Available session types</strong>
+
+          <div class="service">
+            <div>
+              <div style="font-weight:700">Intro Session</div>
+              <div class="muted">45 minutes — first visit</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-weight:800">$95</div>
+              <div class="muted">single</div>
+            </div>
+          </div>
+
+          <div class="service">
+            <div>
+              <div style="font-weight:700">Care Session</div>
+              <div class="muted">60 minutes — review & blend</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-weight:800">$120</div>
+              <div class="muted">single</div>
+            </div>
+          </div>
+
+          <div class="service">
+            <div>
+              <div style="font-weight:700">Mini Follow-up</div>
+              <div class="muted">20 minutes — check-in</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-weight:800">$55</div>
+              <div class="muted">single</div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px" class="muted">Choose a session and then use the form to suggest days. We will confirm by email.</div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <strong>Add-on blends & homecare</strong>
+          <div style="margin-top:10px">Select how to price add-ons:</div>
+          <div style="margin-top:8px;display:flex;align-items:center;justify-content:space-between">
+            <div class="mini-toggle" role="tablist" aria-label="Add-on pricing">
+              <button class="active" data-mode="single">Single price</button>
+              <button data-mode="bulk">Bundle price</button>
+            </div>
+            <div style="font-weight:800" id="addOnPrice">$18</div>
+          </div>
+
+          <div style="margin-top:10px;color:var(--muted)">Roll-ons and sample blends available at booking.</div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="card">
+          <strong>Request a time</strong>
+          <form id="bookingForm">
+            <label for="service">Service</label>
+            <select id="service" name="service">
+              <option>Intro Session — $95</option>
+              <option>Care Session — $120</option>
+              <option>Mini Follow-up — $55</option>
+            </select>
+
+            <label for="date">Preferred date(s)</label>
+            <input id="date" name="date" placeholder="e.g. Weekdays after 2pm" />
+
+            <label for="notes">Notes (allergies, pregnancy, pets)</label>
+            <textarea id="notes" rows="4" placeholder="Let us know about sensitivities, pregnancy status, or pets at home"></textarea>
+
+            <label for="contact">Your contact email or phone</label>
+            <input id="contact" name="contact" placeholder="{{EMAIL}} or {{PHONE}}" />
+
+            <button type="submit">Send request</button>
+          </form>
+
+          <div style="margin-top:12px;color:var(--muted)">
+            <strong>Safety reminders</strong>
+            <div style="margin-top:6px">We recommend a patch test and clear dilution guidance for topical use. Some oils are unsafe in pregnancy or around certain pets; note these in your booking.</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px" class="card">
+          <strong>Need help?</strong>
+          <div style="color:var(--muted);margin-top:8px">Call {{PHONE}} or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> for scheduling or questions about safety.</div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    // Mini add-on pricing toggle
+    (function(){
+      const buttons = document.querySelectorAll('.mini-toggle button');
+      const priceEl = document.getElementById('addOnPrice');
+      const prices = {single:18, bulk:14};
+
+      function setMode(mode){
+        buttons.forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
+        // animate count
+        const start = parseInt(priceEl.textContent.replace(/[^0-9]/g,'')) || prices[mode];
+        const end = prices[mode];
+        const startTime = performance.now();
+        function tick(t){
+          const p = Math.min(1,(t-startTime)/420);
+          const cur = Math.round(start + (end-start)*p);
+          priceEl.textContent = '$' + cur;
+          if(p<1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      }
+
+      buttons.forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.mode)));
+      setMode('single');
+
+      // simple form handler (no network)
+      document.getElementById('bookingForm').addEventListener('submit',function(e){
+        e.preventDefault();
+        alert('Thanks — your request is queued. We will reply to the contact you provide.');
+      });
+    })();
+  </script>
+</body>
+</html>

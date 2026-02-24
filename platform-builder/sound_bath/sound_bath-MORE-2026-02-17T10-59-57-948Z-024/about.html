@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1720;--card:#0b1220;--accent:#9be7d6;--muted:#94a3b8;--glass:rgba(255,255,255,0.03);--radius:14px}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;color:#e6eef3;background:linear-gradient(180deg,#071021 0%,#071826 40%),var(--bg);min-height:100vh;line-height:1.4}
+    header{position:sticky;top:0;backdrop-filter:blur(6px);background:linear-gradient(180deg,rgba(7,16,33,0.6),rgba(7,16,33,0.4));border-bottom:1px solid rgba(255,255,255,0.02);z-index:40}
+    .nav{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:18px;padding:18px}
+    .logo{font-weight:700;color:var(--accent);font-size:18px}
+    nav{margin-left:auto;display:flex;gap:12px}
+    a{color:#dff4ee;text-decoration:none;padding:8px 12px;border-radius:10px}
+    a:hover{background:rgba(155,231,214,0.06)}
+    .hero{max-width:1100px;margin:36px auto;padding:46px;border-radius:20px;background:linear-gradient(135deg, rgba(20,30,40,0.5), rgba(10,16,24,0.7));position:relative;overflow:hidden}
+    .pattern{position:absolute;inset:0;opacity:0.12;mix-blend-mode:overlay}
+    h1{margin:0 0 10px;font-size:34px;color:#fff}
+    p.lead{margin:0;color:var(--muted);max-width:64ch}
+    .grid{display:grid;grid-template-columns:1fr 380px;gap:28px;margin-top:26px}
+    .card{background:var(--card);padding:18px;border-radius:14px;border:1px solid rgba(255,255,255,0.02)}
+    .muted{color:var(--muted);font-size:14px}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:var(--glass);color:var(--accent);font-weight:600}
+    section{opacity:0;transform:translateY(12px);transition:opacity 560ms cubic-bezier(.2,.9,.2,1),transform 560ms cubic-bezier(.2,.9,.2,1);will-change:opacity,transform}
+    section.revealed{opacity:1;transform:none}
+    .team{display:flex;gap:12px;align-items:center}
+    .avatar{width:54px;height:54px;border-radius:12px;background:linear-gradient(135deg,#173b45,#0f2430);display:flex;align-items:center;justify-content:center;color:var(--accent);font-weight:700}
+    footer{max-width:1100px;margin:40px auto;padding:18px;color:var(--muted)}
+    /* small screens */
+    @media (max-width:880px){.grid{grid-template-columns:1fr;}.nav{padding:12px}.hero{margin:18px;padding:22px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="logo">{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html">Gather</a>
+        <a href="events.html">Schedule</a>
+        <a href="private-sessions.html">One-on-One</a>
+        <a href="pricing.html">Value</a>
+        <a href="about.html">Our Story</a>
+        <a href="faq.html">Questions</a>
+        <a href="book.html" style="background:linear-gradient(90deg,var(--accent),#7ad8c6);color:#042129">Reserve</a>
+        <a href="contact.html">Reach</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <article class="hero">
+      <svg class="pattern" viewBox="0 0 800 400" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="p1" width="20" height="20" patternUnits="userSpaceOnUse" patternTransform="rotate(12)">
+            <rect width="10" height="10" fill="#08313a"/>
+            <circle cx="15" cy="5" r="3" fill="#0f3b35" />
+          </pattern>
+        </defs>
+        <rect width="800" height="400" fill="url(#p1)" />
+        <g fill="none" stroke="#9be7d6" stroke-opacity="0.06">
+          <path d="M0 100 C200 40 600 160 800 100" stroke-width="2"/>
+          <path d="M0 200 C250 140 550 260 800 200" stroke-width="1.2"/>
+        </g>
+      </svg>
+
+      <div style="position:relative;z-index:2">
+        <h1>Sound gatherings that invite ease</h1>
+        <p class="lead">We craft sessions where layered tones and gentle pacing help people unwind and reorient. Small groups, attentive pacing, and instruments curated for warmth.</p>
+        <div style="margin-top:16px"><span class="pill">Cohort sessions</span> <span style="margin-left:8px;color:var(--muted);font-size:14px">Reserve spots across town: {{CITY}}, {{STATE}}</span></div>
+      </div>
+
+      <div class="grid" aria-hidden="false">
+        <div>
+          <section class="card reveal">
+            <h3 style="margin-top:0">Our method</h3>
+            <p class="muted">We blend sustained tones, textural chimes, and breath-friendly pacing to create a steady frame for rest. Sessions are taught with clear cues, so people of all ranges settle without pressure.</p>
+            <p style="margin-top:10px" class="muted">We call our program sessions "Cohorts"—small, scheduled groups with a facilitator and guided re-entry time.</p>
+          </section>
+
+          <section class="card reveal" style="margin-top:14px">
+            <h3 style="margin-top:0">Contraindications & safety</h3>
+            <p class="muted">Sound sessions are gentle, but may not suit everyone. Please avoid participation or consult a clinician if you have:
+            <ul style="color:var(--muted)"><li>recent head/ear surgery or perforated eardrum</li><li>epilepsy triggered by sensory input</li><li>severe psychiatric conditions without clinician approval</li></ul>
+            If in doubt, contact us at <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</p>
+          </section>
+        </div>
+
+        <aside>
+          <section class="card reveal">
+            <h4 style="margin:0 0 10px 0">Meet the guides</h4>
+            <div class="team">
+              <div class="avatar">AS</div>
+              <div>
+                <div style="font-weight:700;color:#fff">Asha Silva</div>
+                <div class="muted">Lead facilitator — sonic pacing & breath cues</div>
+              </div>
+            </div>
+            <div style="height:10px"></div>
+            <div class="team">
+              <div class="avatar">RM</div>
+              <div>
+                <div style="font-weight:700;color:#fff">Ravi Menon</div>
+                <div class="muted">Resonance design & instrument craft</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="card reveal" style="margin-top:12px">
+            <h4 style="margin:0 0 10px 0">Quick details</h4>
+            <div class="muted"><strong>Format:</strong> Cohort drop-in / 60–90 min</div>
+            <div class="muted"><strong>Bring:</strong> mat, light blanket, water</div>
+            <div style="margin-top:10px"><a href="events.html">See upcoming dates</a></div>
+          </section>
+        </aside>
+      </div>
+
+    </article>
+
+    <section class="card" style="max-width:1100px;margin:26px auto;padding:18px">
+      <h3 style="margin:0 0 8px 0">Try the Session Planner</h3>
+      <p class="muted">Draft a short plan for a session — choose tone, length, and intention. Copy a plaintext summary to share when you reserve.</p>
+
+      <div id="planner" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+        <form id="plannerForm" style="flex:1;min-width:260px;display:grid;gap:8px">
+          <label class="muted">Your name <input name="name" placeholder="Your name" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#fff"></label>
+          <label class="muted">Primary intention <input name="intention" placeholder="e.g. unwind, focus, rest" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#fff"></label>
+          <label class="muted">Duration
+            <select name="duration" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#fff">
+              <option>30 min</option>
+              <option selected>60 min</option>
+              <option>90 min</option>
+            </select>
+          </label>
+          <label class="muted">Preferred textures
+            <select name="textures" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#fff">
+              <option>Warm drones</option>
+              <option>Bell overtones</option>
+              <option>Soft metallic shimmer</option>
+              <option>Mixed</option>
+            </select>
+          </label>
+          <label class="muted">Group or solo?
+            <select name="groupSolo" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#fff">
+              <option>Group (cohort)</option>
+              <option>Private</option>
+            </select>
+          </label>
+          <div style="display:flex;gap:8px;margin-top:6px">
+            <button type="button" id="buildPlan" style="flex:1;padding:10px;border-radius:10px;background:var(--accent);border:none;color:#042129;font-weight:700">Build summary</button>
+            <button type="button" id="clearPlan" style="padding:10px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)">Clear</button>
+          </div>
+        </form>
+
+        <div style="width:360px;min-width:260px;">
+          <div class="card" style="height:100%">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <div style="font-weight:700">Plan preview</div>
+              <div style="color:var(--muted);font-size:13px">Plaintext ready</div>
+            </div>
+            <textarea id="planOutput" readonly style="width:100%;height:160px;background:transparent;color:#e7fbf1;border-radius:10px;border:1px solid rgba(255,255,255,0.03);padding:10px;resize:none"></textarea>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button id="copyPlan" style="flex:1;padding:10px;border-radius:10px;background:#173b34;border:none;color:#dff4ee">Copy</button>
+              <button id="downloadPlan" style="padding:10px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)">Download</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center">
+      <div class="muted">Questions? Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      <div class="muted">© <span id="year"></span> {{BUSINESS_NAME}}</div>
+    </div>
+  </footer>
+
+  <script>
+    // pref-reduced-motion aware reveal
+    (function(){
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var sections = document.querySelectorAll('.reveal');
+      if(prefersReduced){sections.forEach(function(s){s.classList.add('revealed')});return}
+      var io = new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('revealed');io.unobserve(e.target)}}),{threshold:0.12});
+      sections.forEach(function(s){io.observe(s)});
+    })();
+
+    // Planner logic
+    (function(){
+      var form = document.getElementById('plannerForm');
+      var build = document.getElementById('buildPlan');
+      var clear = document.getElementById('clearPlan');
+      var output = document.getElementById('planOutput');
+      var copyBtn = document.getElementById('copyPlan');
+      var downloadBtn = document.getElementById('downloadPlan');
+
+      function buildSummary(){
+        var data = new FormData(form);
+        var name = data.get('name') || 'Guest';
+        var intention = data.get('intention') || 'rest';
+        var duration = data.get('duration');
+        var textures = data.get('textures');
+        var groupSolo = data.get('groupSolo');
+        var lines = [];
+        lines.push('Session plan — ' + name);
+        lines.push('Intention: ' + intention);
+        lines.push('Format: ' + groupSolo);
+        lines.push('Duration: ' + duration);
+        lines.push('Textures: ' + textures);
+        lines.push('Notes: Prefer gentle entries and a 5–10 minute re-orientation at the end. Please include light seating and low lights.');
+        var txt = lines.join('\n');
+        output.value = txt;
+        // store latest plan
+        try{localStorage.setItem('lastPlan', txt)}catch(e){}
+      }
+
+      build.addEventListener('click', buildSummary);
+      clear.addEventListener('click', function(){form.reset();output.value=''});
+
+      copyBtn.addEventListener('click', function(){
+        var txt = output.value; if(!txt) return;
+        if(navigator.clipboard && navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(function(){copyBtn.textContent='Copied';setTimeout(function(){copyBtn.textContent='Copy'},1200)})}else{var ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);copyBtn.textContent='Copied';setTimeout(function(){copyBtn.textContent='Copy'},1200)}
+      });
+
+      downloadBtn.addEventListener('click', function(){var txt=output.value||''; if(!txt) return; var blob=new Blob([txt],{type:'text/plain'}); var url=URL.createObjectURL(blob); var a=document.createElement('a'); a.href=url; a.download='session-plan.txt'; document.body.appendChild(a); a.click(); setTimeout(function(){URL.revokeObjectURL(url);document.body.removeChild(a)},600);
+      });
+
+      // restore last
+      try{var last=localStorage.getItem('lastPlan'); if(last){output.value=last}}catch(e){}
+
+      // set year
+      document.getElementById('year').textContent = new Date().getFullYear();
+    })();
+  </script>
+</body>
+</html>

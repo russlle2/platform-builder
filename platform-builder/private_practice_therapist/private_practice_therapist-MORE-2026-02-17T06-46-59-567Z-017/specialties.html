@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Areas I Help — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--muted:#606672;--accent:#2a9d8f;--card:#ffffff}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#071124;background:var(--bg)}
+    header{padding:14px 20px;border-bottom:1px solid rgba(10,15,25,0.04);position:sticky;top:0;background:rgba(255,255,255,0.95);z-index:30}
+    .nav{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:14px}
+    .brand{font-weight:700;margin-right:auto}
+    nav a{color:#071124;text-decoration:none;padding:8px 9px;border-radius:8px}
+    nav a:hover{background:rgba(42,157,143,0.06)}
+    .container{max-width:1100px;margin:34px auto;padding:0 20px}
+    h1{font-size:26px;margin:6px 0}
+    p.lead{color:var(--muted);margin:0 0 16px}
+    .list{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+    .item{background:var(--card);border-radius:10px;padding:14px;box-shadow:0 8px 16px rgba(10,15,25,0.03)}
+    .item h3{margin:0 0 6px}
+    .muted{color:var(--muted)}
+    .price{font-weight:700;color:var(--accent)}
+    .reveal{opacity:0;transform:translateY(10px);transition:opacity .55s ease,transform .55s cubic-bezier(.2,.9,.3,1)}
+    .reveal.visible{opacity:1;transform:none}
+    footer{max-width:1100px;margin:36px auto;padding:18px 20px;color:var(--muted);font-size:13px}
+    @media (max-width:760px){.list{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <nav aria-label="Primary">
+        <a href="index.html">Start</a>
+        <a href="about.html">My Story</a>
+        <a href="specialties.html" aria-current="page">Areas I Help</a>
+        <a href="approach.html">How I Work</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html">Reach Out</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="reveal">
+      <h1>Ways I commonly help people</h1>
+      <p class="lead">Below are focused offerings and topic areas I work with. We can shape these into a short series or an ongoing plan depending on what you need.</p>
+    </section>
+
+    <section class="list">
+      <article class="item reveal">
+        <h3>Short Clarity Series</h3>
+        <p class="muted">A structured 4-6 session package designed to address one immediate issue — decision-making, a relationship concern, or managing burnout. We set a clear question and practical next steps each week.</p>
+        <p class="price">Package pricing — discussed at booking</p>
+      </article>
+
+      <article class="item reveal">
+        <h3>Transition Support</h3>
+        <p class="muted">Planning and coping through life changes: career moves, relationship shifts, relocation, or parenting transitions. Practical planning and emotion regulation strategies.</p>
+        <p class="price">Available as single sessions or ongoing work</p>
+      </article>
+
+      <article class="item reveal">
+        <h3>Stress and Work Strain</h3>
+        <p class="muted">Tools for managing chronic stress, setting boundaries at work, and preventing burnout. Skill-building that you can use between sessions.</p>
+        <p class="price">Tailored short series or open scheduling</p>
+      </article>
+
+      <article class="item reveal">
+        <h3>Low-level Anxiety & Mood</h3>
+        <p class="muted">For persistent tension or low mood that affects daily life. Collaborative goal-setting and small experiments to shift patterns over time.</p>
+        <p class="price">Starting points discussed during intake</p>
+      </article>
+    </section>
+
+    <section class="reveal" style="margin-top:18px">
+      <h2>How offerings are framed</h2>
+      <p class="muted">I describe work in terms of focused series versus continuity. Focused series are time-limited and goal-oriented. Continuity is for people who want ongoing collaboration and a space to work through evolving issues.</p>
+      <p class="muted">If something here sounds relevant, the next step is an initial conversation to match fit and clarify limitations of care.</p>
+    </section>
+
+    <section class="reveal" style="margin-top:18px">
+      <h2>Practical notes</h2>
+      <ul class="muted">
+        <li>Sessions are confidential within ethical/legal limits.</li>
+        <li>I do not provide crisis services; contact emergency services in immediate risk.</li>
+        <li>Insurance, sliding scale, and payment details are discussed at booking.</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="container">Contact: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> — Phone: {{PHONE}}</div>
+  </footer>
+
+  <script>
+    // Scroll reveal with reduced motion support
+    (function(){
+      const prefersReduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const elements = document.querySelectorAll('.reveal');
+      if(prefersReduce){ elements.forEach(e=>e.classList.add('visible')); return; }
+      const obs = new IntersectionObserver((items)=>{
+        items.forEach(it=>{ if(it.isIntersecting) it.target.classList.add('visible'); });
+      },{threshold:0.12});
+      elements.forEach(e=>obs.observe(e));
+    })();
+  </script>
+</body>
+</html>

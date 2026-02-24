@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Services and specialties. Short intensives and regular sessions for adults in {{CITY}}, {{STATE}}.">
+  <style>
+    :root{--bg:#061018;--panel:#112a2e;--accent:#b8ffd6;--muted:#9fcbbf}
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;background:radial-gradient(circle at 10% 20%,#08323a 0%,#061018 40%);color:#dff7f3;min-height:100vh}
+    header{padding:14px 24px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent)}
+    .nav{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:18px}
+    .nav a{color:#cfeee7;text-decoration:none;padding:8px;border-radius:6px}
+    .nav a.active{background:rgba(184,255,214,0.07);color:var(--accent)}
+    .wrap{max-width:1100px;margin:28px auto;padding:16px}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:22px}
+    .panel{background:var(--panel);border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,0.03)}
+    h1{margin:0 0 8px}
+    .offer{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:14px;border-radius:10px;margin-bottom:12px}
+    ul{margin:8px 0 0;padding-left:18px;color:var(--muted)}
+    .package{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+    .cta{background:var(--accent);color:#042b28;padding:10px 12px;border-radius:8px;text-decoration:none;font-weight:700}
+    .mood{margin-top:10px}
+    .small{font-size:13px;color:#9fcbbf}
+    @media(max-width:880px){.grid{grid-template-columns:1fr}}
+    .pattern{position:fixed;inset:0;pointer-events:none;opacity:0.06;background-image:url('assets/img/pattern.svg');background-repeat:repeat}
+  </style>
+</head>
+<body>
+  <div class="pattern" aria-hidden="true"></div>
+  <header>
+    <nav class="nav" aria-label="Primary">
+      <div style="font-weight:700;color:var(--accent)">{{BUSINESS_NAME}}</div>
+      <a href="index.html">Practice</a>
+      <a href="about.html">Profile</a>
+      <a href="specialties.html" class="active">Offerings</a>
+      <a href="approach.html">Method</a>
+      <a href="fees.html">Investment</a>
+      <a href="faq.html">Questions</a>
+      <a href="book.html">Begin</a>
+      <a href="contact.html">Reach Out</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <div class="grid">
+      <section class="panel">
+        <h1>What I work with</h1>
+        <p class="small">Common themes people bring: relationship transitions, burnout and overwhelm, decision crossroads, grief and identity shifts, and patterns that keep repeating.</p>
+
+        <div class="offer">
+          <strong>Focused Intensives</strong>
+          <p class="small">1–3 extended sessions designed to map the issue and try immediate, practical shifts. Good when you need momentum in a limited time.</p>
+        </div>
+
+        <div class="offer">
+          <strong>Short Series</strong>
+          <p class="small">4–8 weekly meetings with clear goals and small between-session experiments. Intended for problem-focused work with measurable steps.</p>
+        </div>
+
+        <div class="offer">
+          <strong>Maintenance & Care</strong>
+          <p class="small">Less frequent, ongoing sessions for people who want professional reflection and steady support without weekly scheduling pressure.</p>
+        </div>
+
+        <h3 style="margin-top:14px">Techniques I blend</h3>
+        <ul>
+          <li>Practical cognitive strategies for clearer choices</li>
+          <li>Behavioral experiments and gentle exposure to reduce avoidance</li>
+          <li>Emotion-focused noticing and somatic grounding</li>
+          <li>Interpersonal pattern work focused on communication and boundaries</li>
+        </ul>
+
+        <div class="package">
+          <div>
+            <div style="font-weight:700">Tailored plan</div>
+            <div class="small">We design a plan together—no one-size-fits-all pricing language here.</div>
+          </div>
+          <a id="offer-cta" class="cta" href="{{PRIMARY_CTA_URL}}">Talk about fit</a>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <div>
+          <label for="mood2" style="display:block;color:var(--muted);margin-bottom:8px">How are you feeling right now?</label>
+          <select id="mood2" aria-describedby="mood2-desc" style="width:100%;padding:10px;border-radius:8px;background:#081b1c;color:#dff7f3;border:1px solid rgba(255,255,255,0.03)">
+            <option value="anxious">Anxious — tight, racing</option>
+            <option value="confused">Confused — unsure where to turn</option>
+            <option value="resentful">Resentful — stuck in a relationship loop</option>
+            <option value="exhausted">Exhausted — low energy, worn down</option>
+            <option value="planning">Planning — need help shaping choices</option>
+          </select>
+
+          <div id="mood2-desc" style="margin-top:12px;color:var(--muted);font-size:14px">Pick a state to see a recommended offering and next step.</div>
+          <a id="mood2-cta" class="cta" style="display:inline-block;margin-top:12px">Find a good starting point</a>
+        </div>
+
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,0.02);margin:16px 0">
+
+        <div style="font-size:13px;color:var(--muted)">
+          <strong>Confidentiality & limits</strong>
+          <p style="margin:8px 0 0">Conversations are confidential with exceptions required by law (e.g., imminent harm). We will review these boundaries before work begins.</p>
+        </div>
+
+        <p style="margin-top:12px;font-size:13px;color:var(--muted)">If you are in immediate danger, call local emergency services or a crisis line (for U.S. dial 988). I am not an emergency responder.</p>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    (function(){
+      const sel = document.getElementById('mood2');
+      const desc = document.getElementById('mood2-desc');
+      const cta = document.getElementById('mood2-cta');
+      const map = {
+        anxious:{text:'Short intensives with grounding and pacing can help reduce acute distress and create breathing room.',cta:'Book a grounding intensive'},
+        confused:{text:'A short series to map options and try concrete decision tools tends to be helpful here.',cta:'Begin option-mapping'},
+        resentful:{text:'Interpersonal-focused work and practical boundary testing in real life can shift persistent cycles.',cta:'Explore relational work'},
+        exhausted:{text:'Maintenance or very short, practical sessions to reduce load and recover energy are often useful.',cta:'Arrange an energy-focused check-in'},
+        planning:{text:'Decision-clarifying sessions with values-focused exercises support practical next steps and timelines.',cta:'Schedule decision support'}
+      };
+      function update(){
+        const v = sel.value;
+        desc.textContent = map[v].text;
+        cta.textContent = map[v].cta;
+        cta.href = '{{PRIMARY_CTA_URL}}';
+      }
+      sel.addEventListener('change',update);
+      update();
+    })();
+  </script>
+</body>
+</html>

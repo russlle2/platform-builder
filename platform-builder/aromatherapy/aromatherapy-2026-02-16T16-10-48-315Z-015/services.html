@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Services — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--glass-bg:rgba(255,255,255,0.06);--glass-border:rgba(255,255,255,0.12);--accent1:linear-gradient(135deg,#9ad3c9,#7fc7f2);--accent2:linear-gradient(135deg,#b8ffd1,#d0f0ff);--muted:#dbe7ea;--card:rgba(255,255,255,0.04);}
+    html,body{height:100%;margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:#0f1720;color:var(--muted);-webkit-font-smoothing:antialiased}
+    /* Pattern canvas */
+    .canvas{position:fixed;inset:0;z-index:-1;opacity:0.85}
+    svg.pattern{width:100%;height:100%;display:block}
+    header.nav{display:flex;justify-content:space-between;align-items:center;padding:18px 28px}
+    .brand{font-weight:600;color:#fff;letter-spacing:0.3px}
+    nav a{color:rgba(255,255,255,0.85);text-decoration:none;margin-left:18px;font-size:14px}
+    .wrap{max-width:1100px;margin:36px auto;padding:28px}
+    .hero{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid var(--glass-border);backdrop-filter:blur(8px);border-radius:14px;padding:28px;display:grid;grid-template-columns:1fr 360px;gap:20px;align-items:center}
+    .hero h1{margin:0;font-size:28px;color:#f7fbfb}
+    .hero p{color:rgba(255,255,255,0.72);margin-top:10px;line-height:1.5}
+    .cta{display:inline-block;padding:10px 16px;border-radius:10px;background:var(--accent1);color:#072227;font-weight:600;text-decoration:none;margin-top:14px}
+    .card{background:var(--card);border-radius:12px;padding:16px;border:1px solid var(--glass-border)}
+    .stack{display:flex;flex-direction:column;gap:14px}
+    .diag-list{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .plan-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:10px}
+    .plan-item{padding:16px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.06)}
+    .micro{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px}
+    .micro li{list-style:none;background:rgba(255,255,255,0.02);padding:10px;border-radius:10px}
+    .pricing{display:flex;gap:12px;margin-top:14px}
+    .price-card{flex:1;padding:16px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid rgba(255,255,255,0.05)}
+    .muted{color:rgba(255,255,255,0.6);font-size:13px}
+    footer.cta{margin-top:18px;padding:18px;border-radius:12px;background:linear-gradient(90deg,rgba(124,209,199,0.06),rgba(127,199,242,0.03));border:1px solid rgba(255,255,255,0.04);display:flex;justify-content:space-between;align-items:center}
+    .faq{margin-top:20px}
+    details{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);}
+    @media (max-width:880px){.hero{grid-template-columns:1fr;}.diag-list{grid-template-columns:1fr}.plan-grid{grid-template-columns:1fr}.micro{grid-template-columns:1fr}.wrap{margin:18px;padding:18px}}
+  </style>
+</head>
+<body>
+  <div class="canvas" aria-hidden>
+    <!-- Unique inline SVG pattern for services page -->
+    <svg class="pattern" viewBox="0 0 1200 600" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g1" x1="0" x2="1">
+          <stop offset="0" stop-color="#082226" stop-opacity="1"/>
+          <stop offset="1" stop-color="#0e2a3b" stop-opacity="1"/>
+        </linearGradient>
+        <linearGradient id="g2" x1="0" x2="1">
+          <stop offset="0" stop-color="#7fc7f2" stop-opacity="0.12"/>
+          <stop offset="1" stop-color="#9ad3c9" stop-opacity="0.08"/>
+        </linearGradient>
+        <pattern id="hex" width="60" height="52" patternUnits="userSpaceOnUse">
+          <path d="M30 0 L60 15 L60 37 L30 52 L0 37 L0 15 Z" fill="url(#g2)" />
+        </pattern>
+      </defs>
+      <rect width="1200" height="600" fill="url(#g1)" />
+      <rect width="1200" height="600" fill="url(#hex)" opacity="0.12" />
+      <g transform="translate(80,40) rotate(-8)" opacity="0.08">
+        <circle cx="300" cy="160" r="160" fill="#b8ffd1" />
+        <circle cx="640" cy="80" r="220" fill="#d0f0ff" />
+      </g>
+    </svg>
+  </div>
+
+  <header class="nav wrap">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#9ad3c9,#7fc7f2);display:flex;align-items:center;justify-content:center;font-weight:700;color:#023">A</div>
+      <div>
+        <div class="brand">{{BUSINESS_NAME}}</div>
+        <div class="muted" style="font-size:12px">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Boutique</a>
+      <a href="book.html">Book</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div>
+        <h1>Personalized aromatherapy sessions and blended plans</h1>
+        <p>Clinical, safety-first aromatherapy consulting for your everyday rituals. We combine practitioner-led intake with practical at-home protocols — a hybrid offering tailored to {{CITY}}, {{STATE}} clients and remote consultations.</p>
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        <div class="muted" style="margin-top:12px">Phone: <a href="tel:{{PHONE}}" style="color:inherit;text-decoration:underline">{{PHONE}}</a> • Email: <a href="mailto:{{EMAIL}}" style="color:inherit;text-decoration:underline">{{EMAIL}}</a></div>
+      </div>
+      <aside class="card">
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="font-weight:600">What's included</div>
+          <ul style="margin:0;padding-left:18px;color:rgba(255,255,255,0.75)">
+            <li>Intake + safety screening</li>
+            <li>Tailored blend & instructions</li>
+            <li>Micro-habit toolkit</li>
+          </ul>
+          <a href="book.html" class="cta" style="margin-top:10px;align-self:flex-start">Schedule a consult</a>
+        </div>
+      </aside>
+    </section>
+
+    <section id="diagnostic" class="card" style="margin-top:18px">
+      <h2 style="margin-top:0">Intake & safety diagnostic</h2>
+      <p class="muted">Before any recommendations we perform a structured safety screening: medications, pregnancy, pets, and patch-test history. Our approach is conservative and evidence-aware — not a substitute for medical care.</p>
+      <div class="diag-list" style="margin-top:12px">
+        <div class="card">
+          <strong>Clinical intake</strong>
+          <div class="muted">Brief questionnaire, health context, goals.</div>
+        </div>
+        <div class="card">
+          <strong>Contraindication review</strong>
+          <div class="muted">Drug interactions, pregnancy considerations, age-specific precautions.</div>
+        </div>
+        <div class="card">
+          <strong>Allergy & patch-test plan</strong>
+          <div class="muted">Stepwise patch testing guidance to reduce risk.</div>
+        </div>
+        <div class="card">
+          <strong>Home environment review</strong>
+          <div class="muted">Pets, HVAC, and scent-sensitivity checks.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="plan" style="margin-top:18px">
+      <h2>Plan options — flexible, hybrid</h2>
+      <p class="muted">We offer single consults, multi-session starter plans, and subscription support. Each plan includes written notes, dilution ratios, and micro-habit steps to integrate aromatherapy safely.</p>
+      <div class="plan-grid">
+        <div class="plan-item">
+          <strong>Starter Consult</strong>
+          <div class="muted">1-hour intake + blend guide</div>
+          <div style="margin-top:10px;font-weight:700">$95</div>
+        </div>
+        <div class="plan-item">
+          <strong>Essential Plan</strong>
+          <div class="muted">Two sessions with follow-up notes</div>
+          <div style="margin-top:10px;font-weight:700">$175</div>
+        </div>
+        <div class="plan-item">
+          <strong>Support Package</strong>
+          <div class="muted">Monthly check-ins + mix refresh</div>
+          <div style="margin-top:10px;font-weight:700">$320 / month</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="micro_habits" style="margin-top:18px">
+      <h2>Micro-habits — small daily practices</h2>
+      <p class="muted">Short, replicable actions that integrate aromatherapy into routine without overwhelming senses.</p>
+      <ul class="micro">
+        <li>2–3 inhalations of a roll-on on the wrist before a stressful task.</li>
+        <li>1–2 drops in a personal inhaler for commute moments.</li>
+        <li>Diffuse during a 15-minute wind-down ritual (low intensity).</li>
+        <li>Weekly blend review: note reactions and adjust dilution.</li>
+      </ul>
+    </section>
+
+    <section id="pricing" style="margin-top:18px">
+      <h2>Transparent fees</h2>
+      <div class="pricing">
+        <div class="price-card">
+          <div style="font-weight:700">Consult (60m)</div>
+          <div class="muted">Includes intake, safety review</div>
+          <div style="font-weight:700;margin-top:8px">$95</div>
+        </div>
+        <div class="price-card">
+          <div style="font-weight:700">Custom blend (hand-delivered)</div>
+          <div class="muted">Costs vary by oils & size</div>
+          <div style="font-weight:700;margin-top:8px">From $28</div>
+        </div>
+        <div class="price-card">
+          <div style="font-weight:700">Subscription</div>
+          <div class="muted">Monthly check-ins + 10% shop credit</div>
+          <div style="font-weight:700;margin-top:8px">$320 /mo</div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="cta">
+      <div>
+        <div style="font-weight:700">Ready to begin?</div>
+        <div class="muted">Book a safety-first consult with {{PRACTITIONER_NAME}} — hybrid remote + in-person options.</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        <a href="contact.html" class="muted" style="text-decoration:underline;color:inherit">Contact</a>
+      </div>
+    </footer>
+
+    <div class="faq" style="margin-top:18px">
+      <h3 style="margin-bottom:6px">Common safety questions</h3>
+      <details open>
+        <summary style="cursor:pointer">How do you recommend dilutions?</summary>
+        <div class="muted" style="margin-top:8px">We recommend conservative dilutions by age and sensitivity. Typical topical dilutions are 0.5–2% for adults for acute use; we provide precise ratios in each plan. Always perform a patch test before regular topical use.</div>
+      </details>
+      <details>
+        <summary style="cursor:pointer">What is a patch test?</summary>
+        <div class="muted" style="margin-top:8px">A patch test uses a small diluted amount applied to forearm skin for 24–48 hours to check for irritation or reaction. We supply step-by-step guidance when recommending topical blends.</div>
+      </details>
+      <details>
+        <summary style="cursor:pointer">Are essential oils safe around pets?</summary>
+        <div class="muted" style="margin-top:8px">Many oils can affect animals differently. We assess pet exposure during intake and recommend pet-safe alternatives and diffusion practices to minimize risk.</div>
+      </details>
+      <details>
+        <summary style="cursor:pointer">Pregnancy & oils — what to know?</summary>
+        <div class="muted" style="margin-top:8px">Pregnancy requires extra caution. We avoid recommending certain botanicals and will default to the safest inhalation or non-use when appropriate. Consult your healthcare provider for any clinical questions.</div>
+      </details>
+    </div>
+
+  </main>
+
+  <script>
+    // Small accessibility enhancement for details toggles
+    document.querySelectorAll('details').forEach(d=>{
+      d.addEventListener('toggle',()=>{/* no-op for future analytics */});
+    });
+  </script>
+</body>
+</html>

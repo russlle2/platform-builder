@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book a Visit — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f4efe9;--primary:#7a5d45;--muted:#5b4a40}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:var(--bg);color:var(--muted)}
+    .wrap{max-width:880px;margin:1rem auto;padding:1rem}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin:0 .4rem;text-decoration:none;color:var(--muted);font-weight:600}
+    .hero{background:#fff;padding:1rem;border-radius:12px;box-shadow:0 8px 24px rgba(30,20,15,0.05)}
+    .hero h1{margin:0}
+    .content{display:grid;grid-template-columns:1fr 320px;gap:1rem;margin-top:1rem}
+    .card{background:#fff;padding:1rem;border-radius:10px}
+    .planner{border-radius:8px;padding:.8rem;background:linear-gradient(180deg,#fff,#fbf9f8)}
+    label{display:block;margin-top:.5rem;color:#3e3128}
+    input,select,textarea{width:100%;padding:.5rem;border-radius:8px;border:1px solid #efe6df}
+    button.primary{margin-top:.6rem;padding:.6rem .8rem;border-radius:8px;background:var(--primary);color:white;border:none}
+    .plan-output{white-space:pre-wrap;margin-top:.6rem;padding:.8rem;background:#f9f6f3;border-radius:8px;border:1px solid #efe6df;font-family:monospace}
+    .reveal{opacity:0;transform:translateY(12px);transition:opacity .5s ease,transform .5s ease}
+    .reveal.is-visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div style="font-weight:700;color:var(--primary)">{{BUSINESS_NAME}}</div>
+      <nav aria-label="Primary">
+        <a href="index.html">Welcome</a>
+        <a href="about.html">About</a>
+        <a href="specialties.html">Focus</a>
+        <a href="fees.html">Plans</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero reveal">
+        <h1>Plan & request a visit</h1>
+        <p style="margin:.4rem 0 .6rem;color:#6e5f56">Use the planner to shape a short plan, then send a booking request. I’ll follow up to confirm timing and administrative details.</p>
+      </section>
+
+      <div class="content">
+        <div class="card reveal">
+          <h2 style="margin-top:0">Booking request</h2>
+          <form id="booking-form" aria-label="Booking form">
+            <label for="name">Your name</label>
+            <input id="name" name="name" required />
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required />
+
+            <label for="phone">Phone (optional)</label>
+            <input id="phone" name="phone" />
+
+            <label for="when">Preferred days/times</label>
+            <input id="when" name="when" placeholder="Weekdays morning, evenings, etc." />
+
+            <label for="message">Message / Brief reason for seeking support</label>
+            <textarea id="message" name="message" rows="4"></textarea>
+
+            <button class="primary" type="submit">Send booking request</button>
+            <p class="small" style="margin-top:.6rem">I will reply to scheduling and intake steps via email. If you need immediate support, please use local emergency resources.</p>
+          </form>
+        </div>
+
+        <aside class="card reveal">
+          <h3 style="margin-top:0">Session Planner</h3>
+          <div class="planner" id="planner-book">
+            <label for="focus-b">Primary focus</label>
+            <select id="focus-b">
+              <option>Anxiety and stress</option>
+              <option>Relationships</option>
+              <option>Work-life balance</option>
+              <option>Transitions</option>
+              <option>Trauma recovery</option>
+              <option>Other</option>
+            </select>
+
+            <label for="freq-b">Suggested rhythm</label>
+            <select id="freq-b">
+              <option>Weekly</option>
+              <option>Biweekly</option>
+              <option>Monthly</option>
+              <option>Short series (6 sessions)</option>
+            </select>
+
+            <label for="goal-b">Short-term objective</label>
+            <input id="goal-b" placeholder="One-line goal" />
+
+            <label for="notes-b">Notes</label>
+            <textarea id="notes-b" rows="3"></textarea>
+
+            <button id="build-book-plan" style="margin-top:.6rem;padding:.5rem .7rem;border-radius:8px;background:var(--primary);color:white;border:none">Build plan</button>
+            <div class="plan-output" id="plan-output-book" aria-live="polite"></div>
+            <div style="display:flex;gap:.5rem;margin-top:.5rem">
+              <button id="copy-book" style="padding:.5rem .7rem;border-radius:8px;border:1px solid #efe6df;background:white">Copy</button>
+              <button id="paste-into-form" style="padding:.5rem .7rem;border-radius:8px;background:#e8dfd6;border:none">Paste to message</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <section class="reveal" style="margin-top:1rem">
+        <div class="card">
+          <h3 style="margin-top:0">What happens after you request</h3>
+          <p class="small">I will review your request and reply with available times and intake paperwork. Scheduling is confirmed after intake paperwork and a brief administrative check. If we determine a different level of care would be more helpful, I will discuss referrals.</p>
+        </div>
+      </section>
+
+      <footer style="margin-top:1rem">
+        <div class="card">
+          <strong>Confidentiality & crisis guidance</strong>
+          <p class="small">Communication about scheduling and intake is confidential. Outpatient therapy does not replace emergency services. If you are at immediate risk, contact emergency services or the nearest emergency room. For non-urgent availability questions, reach me at {{EMAIL}} or call {{PHONE}}.</p>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    (function(){
+      // Reveal
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const revealEls = document.querySelectorAll('.reveal');
+      function show(el){el.classList.add('is-visible')}
+      if(prefersReduced){ revealEls.forEach(show); }
+      else{
+        const obs = new IntersectionObserver((entries)=>{ entries.forEach(e=>{ if(e.isIntersecting){ show(e.target); obs.unobserve(e.target);} }); },{threshold:0.12});
+        revealEls.forEach(el=>obs.observe(el));
+      }
+
+      // Planner logic for booking page
+      const build = document.getElementById('build-book-plan');
+      const out = document.getElementById('plan-output-book');
+      const copy = document.getElementById('copy-book');
+      const pasteBtn = document.getElementById('paste-into-form');
+      function make(){
+        const focus = document.getElementById('focus-b').value;
+        const freq = document.getElementById('freq-b').value;
+        const goal = document.getElementById('goal-b').value.trim() || 'Not specified';
+        const notes = document.getElementById('notes-b').value.trim() || 'None';
+        const summary = ['Session Plan Request — '+new Date().toLocaleDateString(),
+          'Focus: '+focus,
+          'Rhythm: '+freq,
+          'Short goal: '+goal,
+          'Notes: '+notes,
+          '',
+          'Preferred contact: '+('Email: {{EMAIL}} | Phone: {{PHONE}}'),
+        ].join('\n');
+        return summary;
+      }
+      build.addEventListener('click',()=>{ out.textContent = make(); });
+      copy.addEventListener('click',async ()=>{
+        try{ await navigator.clipboard.writeText(out.textContent); copy.textContent='Copied'; setTimeout(()=>copy.textContent='Copy',1400); }
+        catch(e){ alert('Unable to copy. Select the text and copy manually.'); }
+      });
+      pasteBtn.addEventListener('click',()=>{
+        const formMsg = document.getElementById('message');
+        formMsg.value = out.textContent || '';
+        formMsg.focus();
+      });
+
+      // Booking form submit (placeholder - local only)
+      const form = document.getElementById('booking-form');
+      form.addEventListener('submit',(e)=>{
+        e.preventDefault();
+        const name = document.getElementById('name').value.trim() || 'Unknown';
+        alert('Thank you, '+name+'. Your request has been noted. I will respond by email regarding next steps.');
+        form.reset();
+      });
+    })();
+  </script>
+</body>
+</html>

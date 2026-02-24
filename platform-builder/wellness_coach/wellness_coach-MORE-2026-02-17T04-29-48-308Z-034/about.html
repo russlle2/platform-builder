@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About the Method — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#faf8f6;--accent:#6b4eff;--muted:#6b7280;--card:#ffffff;--glass:rgba(255,255,255,0.6)}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#1f2937;background:var(--bg);line-height:1.45}
+    header{position:sticky;top:0;backdrop-filter:saturate(120%) blur(6px);background:linear-gradient(180deg,rgba(255,255,255,0.7),rgba(255,255,255,0.5));border-bottom:1px solid rgba(15,23,42,0.04);z-index:40}
+    .nav{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#b794ff);display:grid;place-items:center;color:#fff;font-weight:700}
+    .brand h1{font-size:15px;margin:0}
+    nav a{color:var(--muted);text-decoration:none;margin:0 10px;font-size:14px}
+    .nav-right{display:flex;gap:12px;align-items:center}
+    .cta{background:var(--accent);color:white;padding:8px 12px;border-radius:8px;text-decoration:none;font-weight:600}
+
+    /* split diagonal hero */
+    .hero{display:grid;grid-template-columns:1fr;align-items:center;gap:24px;max-width:1100px;margin:36px auto;padding:48px;position:relative}
+    .split{position:relative;padding:28px;border-radius:18px;overflow:hidden;background:linear-gradient(180deg,#fff, var(--card));box-shadow:0 8px 30px rgba(16,24,40,0.06)}
+    .split:before{content:'';position:absolute;left:-30%;top:-30%;width:160%;height:160%;transform:rotate(-12deg);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><defs><linearGradient id='g' x1='0' x2='1'><stop offset='0' stop-color='%236b4eff'/><stop offset='1' stop-color='%23b794ff' stop-opacity='0.25'/></linearGradient></defs><rect width='100%' height='100%' fill='none'/><g fill='none' stroke='%236b4eff' stroke-opacity='0.08' stroke-width='8'><path d='M0 40 q80 30 160 0 t160 0' /><path d='M0 120 q80 30 160 0 t160 0' /></g></svg>");opacity:0.18;mix-blend-mode:screen}
+    .hero-grid{display:grid;grid-template-columns:1fr 380px;gap:28px}
+    .hero h2{margin:0 0 12px 0;font-size:28px;color:#0f172a}
+    .lead{color:var(--muted);margin-bottom:18px}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(107,78,255,0.08);color:var(--accent);font-weight:600;font-size:13px}
+    .meta{display:flex;gap:10px;flex-wrap:wrap}
+
+    /* sections */
+    main{max-width:1100px;margin:18px auto;padding:0 20px}
+    .card{background:var(--card);border-radius:12px;padding:18px;margin:18px 0;box-shadow:0 6px 18px rgba(15,23,42,0.04)}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:20px}
+
+    /* gallery */
+    .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .tile{background:linear-gradient(180deg,rgba(107,78,255,0.08),rgba(183,147,255,0.04));padding:18px;border-radius:10px;color:#111}
+
+    /* objections */
+    .faq{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .faq-item{padding:12px;border-radius:8px;background:rgba(15,23,42,0.02)}
+
+    /* reveal animations */
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity 520ms cubic-bezier(.2,.9,.2,1),transform 520ms cubic-bezier(.2,.9,.2,1)}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion: reduce){.reveal{transition:none;opacity:1;transform:none}}
+
+    footer{max-width:1100px;margin:40px auto;padding:18px;color:var(--muted);font-size:14px}
+
+    @media (max-width:880px){.hero-grid{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.gallery{grid-template-columns:repeat(2,1fr)}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand">
+        <div class="logo">W</div>
+        <div>
+          <h1>{{BUSINESS_NAME}}</h1>
+          <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <div class="nav-right">
+        <nav>
+          <a href="index.html">Welcome</a>
+          <a href="about.html">About the Method</a>
+          <a href="services.html">Offerings</a>
+          <a href="programs.html">Journeys</a>
+          <a href="pricing.html">Investment</a>
+          <a href="testimonials.html">Stories</a>
+          <a href="book.html">Reserve</a>
+          <a href="contact.html">Connect</a>
+        </nav>
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero split reveal" data-reveal>
+      <div class="hero-grid">
+        <div>
+          <span class="pill">Cohort-based support</span>
+          <h2>Design steady habits that actually fit your life</h2>
+          <p class="lead">I guide small groups through simple, repeatable frameworks — no jargon, just practical moves you can keep. This is for people who want structure that feels human, not rigid.</p>
+          <div class="meta">
+            <div style="font-size:13px;color:var(--muted)">Next cohort starts: <strong>coming soon</strong></div>
+            <div style="font-size:13px;color:var(--muted)">Location: {{CITY}}, {{STATE}}</div>
+          </div>
+        </div>
+        <aside>
+          <div style="padding:18px;border-radius:12px;background:linear-gradient(180deg,#fff,rgba(107,78,255,0.03));">
+            <div style="font-size:12px;color:var(--muted);margin-bottom:8px">A snapshot of the approach</div>
+            <ul style="margin:0;padding-left:18px;color:#111">
+              <li>Simple habits that anchor the week</li>
+              <li>Practical frameworks for recurring challenges</li>
+              <li>Group check-ins to refine what works</li>
+            </ul>
+            <div style="margin-top:12px">
+              <a class="cta" href="{{PRIMARY_CTA_URL}}">Join the next cohort</a>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="card reveal" data-reveal>
+      <h3>Why a cohort?</h3>
+      <p style="color:var(--muted)">A cohort is a small, scheduled container where you test a practice for a few weeks and share what changes. The point is momentum: you get guided structure plus peer feedback so adjustments happen faster than going it alone.</p>
+    </section>
+
+    <section class="card grid reveal" data-reveal>
+      <div>
+        <h3>What to expect in a session</h3>
+        <ul style="color:var(--muted);padding-left:18px">
+          <li>Actionable habit to try for the coming week</li>
+          <li>A short reflection framework you can repeat on your own</li>
+          <li>A focused group review to refine the habit</li>
+        </ul>
+      </div>
+      <aside style="align-self:start">
+        <h4 style="margin-top:0">Meet your guide</h4>
+        <p style="color:var(--muted);margin-bottom:12px">I pair practical frameworks with clear checkpoints so you know if something is helping. My work centers on outcomes, small repeatable habits, and frameworks you can keep.</p>
+        <div style="font-size:13px;color:var(--muted)">Contact: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      </aside>
+    </section>
+
+    <section class="card reveal" data-reveal>
+      <h3>Snapshots from the practice</h3>
+      <div class="gallery" style="margin-top:12px">
+        <div class="tile">Micro-routine: 10-minute anchor each morning</div>
+        <div class="tile">Weekly checkpoint: a focused 20-min review</div>
+        <div class="tile">Peer pulse: quick feedback to adjust next week</div>
+      </div>
+    </section>
+
+    <section class="card reveal" data-reveal>
+      <h3>Common questions</h3>
+      <div class="faq">
+        <div class="faq-item"><strong>Is this therapy?</strong><div style="color:var(--muted);margin-top:6px">No — this is coaching and systems for habits and routines, not clinical care.</div></div>
+        <div class="faq-item"><strong>How long is a cohort?</strong><div style="color:var(--muted);margin-top:6px">Most run for 6 weeks: a rhythm that lets you test practices and iterate.</div></div>
+        <div class="faq-item"><strong>Can I join mid-cycle?</strong><div style="color:var(--muted);margin-top:6px">Sometimes — reach out and we'll see which step-in options fit the current group.</div></div>
+        <div class="faq-item"><strong>What kind of time commitment?</strong><div style="color:var(--muted);margin-top:6px">Weekly sessions plus short daily micro-practices. Designed to fit busy lives.</div></div>
+      </div>
+    </section>
+
+    <section class="card reveal" data-reveal>
+      <h3>Ready to take a practical step?</h3>
+      <p style="color:var(--muted)">If you like hands-on structure and community nudges, the cohort format could be your best way forward. Spaces are limited so we keep groups focused and supportive.</p>
+      <div style="margin-top:12px"><a class="cta" href="{{PRIMARY_CTA_URL}}">Reserve a cohort seat</a></div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+      <div>Questions? Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      <div style="color:var(--muted)">© <span id="year"></span> {{BUSINESS_NAME}}</div>
+    </div>
+  </footer>
+
+  <script>
+    // year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // reveal on scroll with prefers-reduced-motion support
+    (function(){
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var items = document.querySelectorAll('[data-reveal]');
+      if(prefersReduced){items.forEach(function(i){i.classList.add('visible')});return}
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); }});
+      },{threshold:0.12});
+      items.forEach(function(i){io.observe(i)});
+    })();
+  </script>
+</body>
+</html>

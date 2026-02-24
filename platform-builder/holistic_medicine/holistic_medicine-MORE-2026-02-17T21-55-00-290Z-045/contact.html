@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reach out for an integrative intake, schedule a VIP Day, or craft a personalized session plan with our on-page planner.">
+  <style>
+    :root{
+      --bg:#fbf8f2; --card:#fff; --accent:#6b5b3a; --muted:#7a6a57; --accent-2:#8aa29e;
+      --glass: rgba(255,255,255,0.6);
+      --radius:14px; --gap:20px; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%;margin:0;background:var(--bg);color:#222}
+    /* subtle textured backdrop via SVG tile */
+    body::before{content:"";position:fixed;inset:0;pointer-events:none;background-image:url('assets/img/pattern.svg');opacity:0.06;background-repeat:repeat;mix-blend-mode:normal}
+    .container{max-width:980px;margin:32px auto;padding:28px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(180deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    nav a{color:var(--muted);text-decoration:none;margin:0 8px;font-weight:600}
+    nav a.cta{background:var(--accent);color:white;padding:8px 12px;border-radius:10px}
+
+    main{margin-top:22px}
+    .hero{display:grid;grid-template-columns:1fr;gap:18px;padding:22px;border-radius:var(--radius);background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(250,248,244,0.9));box-shadow:0 6px 24px rgba(50,40,30,0.06)}
+    .hero h1{margin:0;font-size:clamp(20px,3.6vw,34px);color:var(--accent)}
+    .hero p{margin:6px 0 0;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:22px;margin-top:18px}
+
+    /* cards */
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(20,18,16,0.04)}
+    form label{display:block;font-size:13px;color:var(--muted);margin-top:12px}
+    form input, form textarea, form select{width:100%;padding:10px;border-radius:8px;border:1px solid #e7e3df;margin-top:6px;font-size:14px}
+    .btn{display:inline-block;background:var(--accent);color:white;padding:10px 14px;border-radius:10px;text-decoration:none;border:none;font-weight:700;cursor:pointer}
+    .btn.secondary{background:transparent;color:var(--accent);border:1px solid #e3ded7}
+
+    /* reveal animation */
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity 420ms cubic-bezier(.2,.9,.2,1), transform 420ms cubic-bezier(.2,.9,.2,1)}
+    .reveal--visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion: reduce){
+      .reveal{transition:none;transform:none;opacity:1}
+    }
+
+    /* planner styles */
+    .planner{display:flex;flex-direction:column;gap:10px}
+    .planner .row{display:flex;gap:8px}
+    .summary{white-space:pre-wrap;background:#f9f7f4;padding:12px;border-radius:8px;border:1px dashed #e9e4df;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, monospace}
+    .tools{display:flex;gap:8px;align-items:center}
+
+    footer{margin-top:28px;padding:18px;color:var(--muted);font-size:13px}
+    .muted{color:var(--muted);font-size:13px}
+
+    /* small screens */
+    @media (max-width:880px){
+      .grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">HM</div>
+        <div>
+          <div style="font-weight:800;color:var(--accent)">{{BUSINESS_NAME}}</div>
+          <div class="muted" style="margin-top:2px;font-size:13px">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="services.html">Offerings</a>
+        <a href="conditions.html">Focus Areas</a>
+        <a href="approach.html">Method</a>
+        <a href="pricing.html">Fees</a>
+        <a href="about.html">Team</a>
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero reveal" data-reveal>
+        <h1>Reach a clearer, connected plan — start here</h1>
+        <p>Use this page to ask a question, request the VIP Day, or build a short-session plan with our interactive planner. No promises of cures — just practical integrative guidance.</p>
+        <div style="margin-top:12px;display:flex;gap:10px;align-items:center">
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <a class="btn secondary" href="book.html">Request a VIP Day</a>
+        </div>
+      </section>
+
+      <div class="grid">
+        <section class="card reveal" data-reveal>
+          <h3 style="margin:0 0 8px 0;color:var(--accent)">Contact & Intake</h3>
+          <p class="muted">Prefer email? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> — or call <a href="tel:{{PHONE}}">{{PHONE}}</a>.</p>
+
+          <form id="contactForm" aria-label="Contact form">
+            <label for="name">Full name</label>
+            <input id="name" name="name" type="text" required>
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required>
+
+            <label for="phone">Phone (optional)</label>
+            <input id="phone" name="phone" type="tel">
+
+            <label for="message">Message / Brief reason for contact</label>
+            <textarea id="message" name="message" rows="5"></textarea>
+
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <button class="btn" type="submit">Send request</button>
+              <button class="btn secondary" type="reset">Clear</button>
+            </div>
+            <p class="muted" style="margin-top:10px;font-size:12px">We aim to respond within 48 business hours. This is educational guidance and not medical emergency care. For urgent concerns call local emergency services.</p>
+          </form>
+        </section>
+
+        <aside class="card reveal" data-reveal>
+          <h4 style="margin:0 0 8px 0;color:var(--accent)">Session Planner — Quick</h4>
+          <p class="muted">A fast sketch to frame a first session or a single-focus visit.</p>
+          <div class="planner" id="quickPlanner">
+            <label for="q_goal">Primary goal</label>
+            <input id="q_goal" placeholder="e.g., Sleep, energy, gut, worry">
+
+            <label for="q_time">Available session length</label>
+            <select id="q_time">
+              <option>30 minutes</option>
+              <option>45 minutes</option>
+              <option selected>60 minutes</option>
+            </select>
+
+            <label for="q_modal">Preferred approaches</label>
+            <select id="q_modal" multiple size="4" aria-label="Preferred modalities">
+              <option>Herbal support</option>
+              <option>Nutritional guidance</option>
+              <option>Mind-body tools</option>
+              <option>Movement & lifestyle</option>
+            </select>
+
+            <div class="tools">
+              <button class="btn" id="q_build">Create plan</button>
+              <button class="btn secondary" id="q_copy">Copy</button>
+              <button class="btn secondary" id="q_dl">Download</button>
+            </div>
+            <div id="q_summary" class="summary" aria-live="polite">Your quick plan will appear here.</div>
+          </div>
+        </aside>
+      </div>
+
+      <section class="card reveal" data-reveal style="margin-top:18px">
+        <h3 style="color:var(--accent);margin-top:0">Session Planner — Detailed</h3>
+        <p class="muted">A deeper intake-style planner to structure a VIP Day or multi-part program. Fill what you can — it becomes a plaintext summary you can copy or save.</p>
+
+        <div class="planner" id="fullPlanner" style="margin-top:10px">
+          <div class="row">
+            <div style="flex:1">
+              <label for="f_name">Name</label>
+              <input id="f_name" placeholder="Your full name">
+            </div>
+            <div style="width:170px">
+              <label for="f_city">City</label>
+              <input id="f_city" placeholder="{{CITY}}">
+            </div>
+          </div>
+
+          <label for="f_goals">Top 3 goals (comma separated)</label>
+          <input id="f_goals" placeholder="e.g., sleep consistency, reduce reflux, calm afternoons">
+
+          <label for="f_priority">What matters most to address first?</label>
+          <textarea id="f_priority" rows="3"></textarea>
+
+          <label for="f_constraints">Constraints (time, budget, access, allergies)</label>
+          <input id="f_constraints" placeholder="e.g., no gluten, limited supplement budget">
+
+          <label for="f_modalities">Open to these approaches</label>
+          <select id="f_modalities" multiple size="5">
+            <option>Diet & digestion</option>
+            <option>Herbal & supplement strategy</option>
+            <option>Mindfulness & breathing</option>
+            <option>Movement prescription</option>
+            <option>Sleep architecture</option>
+          </select>
+
+          <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+            <button class="btn" id="f_build">Build detailed plan</button>
+            <button class="btn secondary" id="f_copy">Copy text</button>
+            <button class="btn secondary" id="f_dl">Download</button>
+          </div>
+
+          <div id="f_summary" class="summary" style="margin-top:12px" aria-live="polite">Your detailed plan will appear here.</div>
+
+          <p class="muted" style="margin-top:10px">Use this summary to share ahead of your visit or to keep as a working plan. This is educational input, not a substitution for diagnosis.</p>
+        </div>
+      </section>
+
+      <section class="card reveal" data-reveal style="margin-top:18px">
+        <h4 style="margin:0 0 6px 0;color:var(--accent)">Helpful notes</h4>
+        <ul style="margin:0 0 0 18px;color:var(--muted)">
+          <li>No emergency care here. If you are experiencing acute symptoms call emergency services.</li>
+          <li>We respect confidentiality; information submitted is used to prepare your session.</li>
+          <li>For billing and scheduling see <a href="pricing.html">Fees</a> and <a href="book.html">Booking</a>.</li>
+        </ul>
+      </section>
+
+    </main>
+
+    <footer>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+        <div class="muted">Serving {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+        <div class="muted">© <span id="year"></span> All rights reserved.</div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // set year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Scroll-triggered reveal with respects prefers-reduced-motion
+    (function(){
+      const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const reveals = Array.from(document.querySelectorAll('[data-reveal]'));
+      if(prefersReduced){
+        reveals.forEach(el=>el.classList.add('reveal--visible'));
+        return;
+      }
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting){
+            entry.target.classList.add('reveal--visible');
+            io.unobserve(entry.target);
+          }
+        });
+      },{threshold:0.12});
+      reveals.forEach(el=>io.observe(el));
+    })();
+
+    // Quick Planner
+    (function(){
+      const qBuild = document.getElementById('q_build');
+      const qCopy = document.getElementById('q_copy');
+      const qDl = document.getElementById('q_dl');
+      const qSummary = document.getElementById('q_summary');
+
+      function buildQuick(){
+        const goal = document.getElementById('q_goal').value.trim() || '[no goal entered]';
+        const time = document.getElementById('q_time').value;
+        const mod = Array.from(document.getElementById('q_modal').selectedOptions).map(o=>o.value).join(', ') || '[no preferences]';
+        const text = [
+          'Quick Session Sketch',
+          '---------------------',
+          'Goal: ' + goal,
+          'Session length: ' + time,
+          'Preferred approaches: ' + mod,
+          '',
+          'Suggested focus (starter):',
+          '- Intake questions tailored to goal',
+          '- One prioritized tool to try immediately (breathing, sleep hygiene, small dietary change)',
+          '- Plan 2 follow-up items and measurable check-in'
+        ].join('\n');
+        qSummary.textContent = text;
+        return text;
+      }
+
+      qBuild.addEventListener('click',function(e){e.preventDefault(); buildQuick();});
+      qCopy.addEventListener('click',async function(e){e.preventDefault(); const text = buildQuick(); try{await navigator.clipboard.writeText(text); qCopy.textContent='Copied'; setTimeout(()=>qCopy.textContent='Copy',1200);}catch(err){alert('Copy failed — you can select and copy the summary.');}});
+      qDl.addEventListener('click',function(e){e.preventDefault(); const text = buildQuick(); const blob = new Blob([text],{type:'text/plain'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='quick-session-plan.txt'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);});
+    })();
+
+    // Detailed Planner
+    (function(){
+      const fBuild = document.getElementById('f_build');
+      const fCopy = document.getElementById('f_copy');
+      const fDl = document.getElementById('f_dl');
+      const fSummary = document.getElementById('f_summary');
+
+      function buildFull(){
+        const name = document.getElementById('f_name').value.trim() || '[name]';
+        const city = document.getElementById('f_city').value.trim() || '{{CITY}}';
+        const goals = document.getElementById('f_goals').value.trim() || '[no goals entered]';
+        const priority = document.getElementById('f_priority').value.trim() || '[no priority noted]';
+        const constraints = document.getElementById('f_constraints').value.trim() || '[no constraints noted]';
+        const modalities = Array.from(document.getElementById('f_modalities').selectedOptions).map(o=>o.value).join(', ') || '[no modalities selected]';
+
+        const items = [
+          'Detailed Session Plan',
+          '=====================',
+          'Client: ' + name,
+          'Location: ' + city,
+          '',
+          'Top goals: ' + goals,
+          'Immediate priority: ' + priority,
+          'Constraints: ' + constraints,
+          'Open approaches: ' + modalities,
+          '',
+          'Proposed structure for first visit:',
+          '1) Brief history & focused intake (30 minutes) — key markers and constraints',
+          '2) Targeted education + 1 evidence-informed tool (20 minutes)',
+          '3) Practical plan: 3 concrete steps with metrics and simple timeline',
+          '',
+          'Follow-up framework:',
+          '- Week 1 check-in: quick message to review tolerability
+- Week 4 review: evaluate outcomes and adapt plan
+',
+          'Notes:',
+          '- This plan is educational in intent. For urgent medical concerns seek immediate care.'
+        ].join('\n');
+
+        fSummary.textContent = items;
+        return items;
+      }
+
+      fBuild.addEventListener('click',function(e){e.preventDefault(); buildFull();});
+      fCopy.addEventListener('click',async function(e){e.preventDefault(); const text = buildFull(); try{await navigator.clipboard.writeText(text); fCopy.textContent='Copied'; setTimeout(()=>fCopy.textContent='Copy text',1200);}catch(err){alert('Copy failed — please select the summary and copy.')};});
+      fDl.addEventListener('click',function(e){e.preventDefault(); const text = buildFull(); const blob = new Blob([text],{type:'text/plain'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='detailed-session-plan.txt'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);});
+    })();
+
+    // Basic form handler (local-only placeholder)
+    document.getElementById('contactForm').addEventListener('submit',function(e){
+      e.preventDefault();
+      const data = {
+        name: this.name.value,
+        email: this.email.value,
+        phone: this.phone.value,
+        message: this.message.value
+      };
+      // In a real site this would POST to a server; here we simulate success
+      alert('Thanks! Your request has been captured locally. In production this would be sent to our intake system.');
+      this.reset();
+    });
+  </script>
+</body>
+</html>

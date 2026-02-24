@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--accent:#e07a5f;--muted:#6b6b6b}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;background:#fffaf8}
+    header{display:flex;justify-content:space-between;padding:18px 26px}
+    nav a{margin:0 8px;text-decoration:none;color:var(--muted);font-weight:600}
+    .brand{font-weight:800;color:var(--accent)}
+    .wrap{max-width:980px;margin:18px auto;padding:18px}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:18px}
+    .panel{background:white;border-radius:12px;padding:14px;box-shadow:0 10px 28px rgba(10,10,10,0.05)}
+    h1{margin-top:0}
+    .inventory{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+    .inv-item{display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;border:1px solid #f0e9e7}
+    .actions{display:flex;gap:10px;margin-top:12px}
+    .btn{padding:8px 12px;border-radius:10px;border:none;background:var(--accent);color:white;font-weight:700}
+    .secondary{background:transparent;border:1px solid #eee;color:var(--muted)}
+    #agenda{margin-top:12px;background:#fff8f4;padding:12px;border-radius:10px;border:1px dashed #f4d6c8}
+    label{font-weight:600;color:#3e3e3e}
+    input[type="text"],input[type="email"],input[type="tel"]{width:100%;padding:8px;border-radius:8px;border:1px solid #eee}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offers</a>
+      <a href="conditions.html">Ailments</a>
+      <a href="approach.html">Method</a>
+      <a href="pricing.html">Investment</a>
+      <a href="about.html">Our Story</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <div class="grid">
+      <section class="panel">
+        <h1>Reserve a short consult</h1>
+        <p style="color:var(--muted)">Start with a 30-minute intake to map priorities and create an agenda. Complete the inventory below to speed the process.</p>
+
+        <form id="book-form" action="{{PRIMARY_CTA_URL}}" method="get">
+          <label for="name">Name</label>
+          <input id="name" name="name" type="text" placeholder="Your name" required />
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <div style="flex:1"><label for="phone">Phone</label><input id="phone" name="phone" type="tel" placeholder="{{PHONE}}" required /></div>
+            <div style="flex:1"><label for="email">Email</label><input id="email" name="email" type="email" placeholder="{{EMAIL}}" required /></div>
+          </div>
+
+          <h3 style="margin-top:12px">Whole-person inventory</h3>
+          <p style="margin:0 0 8px;color:var(--muted)">Check areas you’d like to address. This helps craft the first session agenda and a follow-up rhythm suggestion.</p>
+
+          <div class="inventory" id="inventory">
+            <label class="inv-item"><input type="checkbox" value="Sleep"> Sleep</label>
+            <label class="inv-item"><input type="checkbox" value="Stress"> Stress & resilience</label>
+            <label class="inv-item"><input type="checkbox" value="Energy"> Energy & fatigue</label>
+            <label class="inv-item"><input type="checkbox" value="Gut"> Digestion</label>
+            <label class="inv-item"><input type="checkbox" value="Movement"> Movement & mobility</label>
+            <label class="inv-item"><input type="checkbox" value="Nutrition"> Nutrition patterns</label>
+            <label class="inv-item"><input type="checkbox" value="Hormones"> Hormonal balance</label>
+            <label class="inv-item"><input type="checkbox" value="Mindset"> Mood & mindset</label>
+            <label class="inv-item"><input type="checkbox" value="Relationships"> Relationships</label>
+            <label class="inv-item"><input type="checkbox" value="Work"> Work-life rhythm</label>
+          </div>
+
+          <div class="actions">
+            <button type="button" id="generate" class="btn">Generate agenda</button>
+            <button type="submit" class="secondary">Continue to booking</button>
+          </div>
+
+          <div id="agenda" aria-live="polite" style="display:none"></div>
+        </form>
+      </section>
+
+      <aside class="panel">
+        <h3 style="margin-top:0">What to expect</h3>
+        <p style="color:var(--muted)">The intake is structured: brief history, priority mapping, and one clear agenda for the next 4–8 weeks. Follow-up cadence is proposed and can be adjusted together.</p>
+
+        <div style="margin-top:12px">
+          <div style="font-weight:700">Need a guide now?</div>
+          <div style="margin-top:8px;color:var(--muted)">Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+        </div>
+      </aside>
+    </div>
+
+    <div style="max-width:980px;margin:18px auto;padding:14px;text-align:center;color:var(--muted);font-size:14px">All consultations are educational. This site offers guidance and support — not medical guarantees. If you have a medical emergency, contact your provider.</div>
+  </main>
+
+  <footer style="text-align:center;padding:18px;color:var(--muted)">Serving {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></footer>
+
+  <script>
+    // Inventory -> agenda and cadence
+    const generateBtn=document.getElementById('generate');
+    const agendaBox=document.getElementById('agenda');
+    const mapping={
+      'Sleep':'Review bedtime routine, light exposure, and a simple evening rhythm to reduce awakenings.',
+      'Stress':'Map current stressors and introduce two practical regulation tools to apply daily.',
+      'Energy':'Daily pacing, targeted small activity bursts, and a feeding window check.',
+      'Gut':'A short food pattern review and simple elimination steps to observe reactions.',
+      'Movement':'Micro-movement plan: 10–15 minute daily mobility routine tailored to needs.',
+      'Nutrition':'One food habit to tweak, and a 1-week tracking plan to notice trends.',
+      'Hormones':'Symptom mapping and timing adjustments to support balance and sleep alignment.',
+      'Mindset':'Short reflective practices and a micro-goal structure to shift thinking patterns.',
+      'Relationships':'Boundary-setting experiments and communication practice suggestions.',
+      'Work':'Work rhythm audit and practical rules for energy-preserving transitions.'
+    };
+
+    function suggestCadence(count){
+      if(count<=2) return 'Suggested cadence: single focused 6-week plan with 1–2 brief check-ins (weeks 2 and 5).';
+      if(count<=5) return 'Suggested cadence: 12-week plan with monthly check-ins and a mid-point review.';
+      return 'Suggested cadence: extended 16-week program with bi-weekly check-ins and measurable milestones.';
+    }
+
+    generateBtn.addEventListener('click',()=>{
+      const checked=[...document.querySelectorAll('#inventory input:checked')].map(i=>i.value);
+      if(checked.length===0){agendaBox.style.display='block';agendaBox.innerHTML='<strong>No areas selected</strong><div style="color:var(--muted);margin-top:6px">Select a few areas you care about and we will create a short agenda.</div>';return}
+
+      const top3=checked.slice(0,6);
+      let html='<strong>Suggested first-session agenda</strong><ol style="margin:8px 0 0;padding-left:18px">';
+      top3.forEach(item=>{html+='<li style="margin-bottom:6px"><strong>'+item+':</strong> '+(mapping[item]||'Review & basic steps')+'</li>'});
+      html+='</ol>';
+      html+='<div style="margin-top:10px;color:var(--muted)">'+suggestCadence(checked.length)+'</div>';
+      html+='<div style="margin-top:10px"><button id="send-summary" class="btn">Copy agenda to clipboard</button> <button id="email-summary" class="btn secondary">Email me a copy</button></div>';
+      agendaBox.style.display='block';agendaBox.innerHTML=html;
+
+      document.getElementById('send-summary').addEventListener('click',()=>{
+        navigator.clipboard.writeText(stripTags(agendaBox.innerText||agendaBox.textContent)).then(()=>{alert('Agenda copied to clipboard')});
+      });
+
+      document.getElementById('email-summary').addEventListener('click',()=>{
+        const subject=encodeURIComponent('Consultation agenda');
+        const body=encodeURIComponent(stripTags(agendaBox.innerText||agendaBox.textContent));
+        window.location.href='mailto:{{EMAIL}}?subject='+subject+'&body='+body;
+      });
+    });
+
+    function stripTags(s){return s.replace(/\n\s+/g,'\n').trim();}
+  </script>
+</body>
+</html>

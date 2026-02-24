@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Investment — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg1:#f3fbf7;--accent:#6aa84f;--muted:#5b6b6b;--card:#ffffff;--glass:rgba(255,255,255,0.7)}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    body{background:linear-gradient(180deg,var(--bg1) 0%, #eaf6f0 100%);color:#21363b;line-height:1.45}
+    .canvas{position:fixed;inset:0;pointer-events:none;opacity:0.12}
+    /* Unique SVG motif (gentle waves + dots) */
+    .canvas svg{width:100%;height:100%}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#2a9d8f);box-shadow:0 6px 20px rgba(42,157,143,0.18);display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none;font-weight:600}
+    .container{max-width:1100px;margin:36px auto;padding:28px}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:center;margin-bottom:20px}
+    .hero .lead{background:var(--card);padding:28px;border-radius:14px;box-shadow:0 10px 30px rgba(34,60,50,0.06)}
+    h1{margin:0 0 8px 0;font-size:28px}
+    p.lead{margin:0;color:var(--muted)}
+    .cta-btn{display:inline-block;margin-top:16px;padding:12px 16px;background:linear-gradient(90deg,var(--accent),#3bb08f);color:white;border-radius:10px;text-decoration:none;font-weight:700}
+    .summary-card{background:linear-gradient(180deg,var(--glass),rgba(255,255,255,0.5));padding:18px;border-radius:12px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.4)}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px}
+    .price{background:var(--card);padding:20px;border-radius:12px;border:1px solid rgba(33,54,59,0.04)}
+    .price h3{margin:0 0 6px 0}
+    .price .amount{font-size:22px;color:#0b5d4b;font-weight:800;margin:8px 0}
+    .note{font-size:13px;color:var(--muted)}
+    .testimonials{margin-top:28px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .quote{background:linear-gradient(180deg,#fff 0%,#fbfffd 100%);padding:16px;border-radius:12px;border-left:4px solid var(--accent)}
+    footer{margin:40px 0 80px;color:var(--muted);font-size:14px}
+    @media (max-width:900px){.hero{grid-template-columns:1fr;}.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="canvas" aria-hidden="true">
+    <!-- unique SVG background pattern for pricing -->
+    <svg viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g1" x1="0" x2="1">
+          <stop offset="0" stop-color="#e8fbf2" />
+          <stop offset="1" stop-color="#dff9ee" />
+        </linearGradient>
+        <pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse">
+          <circle cx="2" cy="2" r="1.5" fill="#cfeee0" />
+        </pattern>
+      </defs>
+      <rect width="1200" height="800" fill="url(#g1)" />
+      <path d="M0 220 C200 100,400 340,600 220 C800 100,1000 340,1200 220 L1200 800 L0 800 Z" fill="#f5fffb" opacity="0.9" />
+      <rect x="0" y="0" width="1200" height="800" fill="url(#dots)" opacity="0.06" />
+    </svg>
+  </div>
+
+  <header>
+    <div class="brand">
+      <div class="logo">HM</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Concerns</a>
+      <a href="approach.html">How We Work</a>
+      <a href="pricing.html" style="color:#0b5d4b">Investment</a>
+      <a href="about.html">Our Story</a>
+      <a href="book.html">Schedule</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="lead">
+        <h1>Investment in Whole-Person Health</h1>
+        <p class="lead">Practical, integrative care tailored to your life. Transparent pricing for sessions and VIP experiences designed to jump-start sustainable change.</p>
+        <a class="cta-btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+      <aside class="summary-card">
+        <strong style="display:block">Quick at-a-glance</strong>
+        <div style="margin-top:8px" class="note">Sessions available in-person in {{CITY}}, {{STATE}} or via secure telehealth. Insurance may apply to some follow-ups.</div>
+        <div style="margin-top:12px;font-weight:700">Contact</div>
+        <div class="note">Phone: {{PHONE}} • Email: {{EMAIL}}</div>
+      </aside>
+    </section>
+
+    <section>
+      <h2 style="margin-bottom:8px">Packages & Rates</h2>
+      <p class="note">Options below reflect common pathways. We craft a personalized plan during intake. Pricing is for guidance and may be adjusted to fit your plan.</p>
+      <div class="grid">
+        <div class="price">
+          <h3>VIP Day — Deep Reset</h3>
+          <div class="amount">$1,600</div>
+          <div class="note">A focused, immersive 6-hour session: comprehensive intake, individualized plan, targeted lifestyle coaching, and prioritized follow-up scheduling. Best for people looking for a concentrated start.</div>
+          <a class="cta-btn" href="{{PRIMARY_CTA_URL}}" style="margin-top:12px;display:inline-block">Book VIP Day</a>
+        </div>
+
+        <div class="price">
+          <h3>Initial Comprehensive Visit</h3>
+          <div class="amount">$340</div>
+          <div class="note">A 90-minute integrative intake: clinical history, focused exam, and a clear set of next steps. Labs discussed as educational options, not required.</div>
+          <a class="cta-btn" href="{{PRIMARY_CTA_URL}}" style="background:#4a8b6e">Schedule</a>
+        </div>
+
+        <div class="price">
+          <h3>Follow-up & Coaching</h3>
+          <div class="amount">$120</div>
+          <div class="note">30–45 minute sessions to review progress, adjust plans, and support behavior change. Packages are available for recurring support.</div>
+          <a class="cta-btn" href="{{PRIMARY_CTA_URL}}" style="background:#2f8b6f">Reserve</a>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:26px">
+      <h2>Why a VIP Day?</h2>
+      <p class="note">A concentrated experience helps identify patterns, start therapies, and set clear next steps in one collaborative visit. It is an educational, whole-person approach — results vary and are not guaranteed.</p>
+      <ul style="color:var(--muted)">
+        <li>Full intake + prioritized plan</li>
+        <li>Nutrition and lifestyle mapping</li>
+        <li>Time for meaningful goals and coaching</li>
+      </ul>
+    </section>
+
+    <section class="testimonials">
+      <div class="quote">
+        “I left with clear steps and felt supported during the VIP Day. The plan fit my routine.” — A.S.
+      </div>
+      <div class="quote">
+        “Follow-ups kept me accountable. Education and small changes added up.” — M.R.
+      </div>
+    </section>
+
+    <section style="margin-top:28px">
+      <h2 style="margin-bottom:8px">Notes & Practicalities</h2>
+      <p class="note">We prioritize education, safety, and personalized plans. Optional labs and supplements are discussed as tools; no promises of cures are made. Payment is due at booking for VIP Day; standard cancellation policy applies.</p>
+    </section>
+
+    <section style="margin-top:22px;display:flex;gap:12px;align-items:center">
+      <a class="cta-btn" href="{{PRIMARY_CTA_URL}}">Book Your Session</a>
+      <div class="note">Prefer a call? Reach us at {{PHONE}}</div>
+    </section>
+
+    <footer>
+      <div>{{PRACTITIONER_NAME}}, {{CREDENTIALS}} — {{BUSINESS_NAME}} • {{CITY}}, {{STATE}}</div>
+      <div style="margin-top:6px">Email: {{EMAIL}} • Phone: {{PHONE}}</div>
+    </footer>
+  </main>
+</body>
+</html>

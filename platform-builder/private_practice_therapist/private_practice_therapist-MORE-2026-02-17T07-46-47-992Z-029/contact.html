@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contact — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reach out to schedule a consultation or learn about membership options. Confidential, clinically grounded support.">
+  <style>
+    :root{--bg:#f6f7f8;--card:#ffffff;--muted:#6b7280;--accent:#2c6fb6;--accent-2:#0b5a7a;--glass:rgba(255,255,255,0.6);--shadow:0 6px 24px rgba(15,23,42,0.08)}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#0f172a;background:var(--bg);}
+    .site{min-height:100%;display:flex;flex-direction:column}
+    header{background:linear-gradient(180deg,rgba(255,255,255,0.6),transparent),url('assets/img/pattern.svg');background-size:450px 450px;padding:28px 20px;border-bottom:1px solid rgba(15,23,42,0.04)}
+    nav{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;flex-direction:column}
+    .brand h1{margin:0;font-size:20px;letter-spacing:-0.2px;color:#07213a}
+    .brand p{margin:0;font-size:13px;color:var(--muted)}
+    .navlinks{display:flex;gap:10px}
+    .navlinks a{font-size:14px;color:#0b3b57;text-decoration:none;padding:8px 10px;border-radius:8px}
+    .navlinks a:hover{background:rgba(11,59,87,0.06)}
+
+    main{max-width:1100px;margin:28px auto;padding:24px;width:100%;display:grid;grid-template-columns:1fr 380px;gap:24px}
+
+    .hero-card{background:var(--card);padding:20px;border-radius:12px;box-shadow:var(--shadow)}
+    .hero-card h2{margin:0 0 6px 0;font-size:20px;color:#07324a}
+    .hero-card p{margin:0;color:var(--muted);font-size:14px}
+
+    form{margin-top:16px;display:grid;gap:10px}
+    label{font-size:13px;color:#0f172a}
+    input[type="text"],input[type="email"],textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(15,23,42,0.08);font-size:14px}
+    textarea{min-height:110px;resize:vertical}
+    .actions{display:flex;gap:10px;align-items:center}
+    .btn{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;border:0;cursor:pointer}
+    .btn.secondary{background:transparent;color:var(--accent);border:1px solid rgba(44,111,182,0.12)}
+
+    .side{position:relative}
+    .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:var(--shadow);margin-bottom:16px}
+    .small{font-size:13px;color:var(--muted)}
+
+    /* Proof Gallery */
+    .proof{display:flex;flex-direction:column;gap:12px}
+    .testimony{padding:12px;border-radius:10px;background:linear-gradient(180deg,#ffffff,#fbfdff);min-height:96px;display:flex;flex-direction:column;justify-content:space-between}
+    .quote{font-size:14px;color:#072133}
+    .who{font-size:13px;color:var(--muted);margin-top:8px}
+    .controls{display:flex;gap:8px;align-items:center}
+
+    .badges{display:flex;gap:8px;flex-wrap:wrap}
+    .badge{background:rgba(11,91,141,0.06);padding:6px 8px;border-radius:8px;font-size:13px;color:#083a60;position:relative}
+    .badge .tip{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 8px);background:#0b3b57;color:#fff;padding:6px 8px;border-radius:6px;font-size:12px;white-space:nowrap;display:none}
+    .badge:focus .tip,.badge:hover .tip{display:block}
+
+    /* Pricing comparator */
+    .pricing{display:flex;flex-direction:column;gap:8px}
+    .toggle{display:flex;align-items:center;gap:8px;background:rgba(10,35,50,0.04);padding:8px;border-radius:12px;width:fit-content}
+    .switch{display:inline-flex;align-items:center;padding:4px;background:white;border-radius:8px;box-shadow:0 2px 8px rgba(2,6,23,0.06)}
+    .plan-row{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:8px}
+    .price{font-size:20px;color:#083a60;font-weight:600}
+    .pkg-note{font-size:12px;color:var(--muted)}
+
+    footer{max-width:1100px;margin:24px auto;padding:18px;color:var(--muted);font-size:13px}
+
+    @media (max-width:880px){main{grid-template-columns:1fr;padding:12px} .side{order:-1}}
+  </style>
+</head>
+<body>
+  <div class="site">
+    <header>
+      <nav>
+        <div class="brand">
+          <h1>{{BUSINESS_NAME}}</h1>
+          <p class="small">A membership approach to steady clinical care</p>
+        </div>
+        <div class="navlinks" role="navigation" aria-label="Primary">
+          <a href="index.html">Home</a>
+          <a href="about.html">Your Story</a>
+          <a href="specialties.html">Focus Areas</a>
+          <a href="approach.html">How I Work</a>
+          <a href="fees.html">Investment</a>
+          <a href="contact.html" aria-current="page">Connect</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section>
+        <div class="hero-card">
+          <h2>Connect confidentially to explore membership or a consultation</h2>
+          <p>I offer an ongoing membership frame as well as short-term focused packages. Use this form to ask about availability, membership details, or if a short consultation would be a better fit. Responses within 3–5 business days.</p>
+
+          <form id="contactForm" onsubmit="return false;">
+            <label for="name">Full name</label>
+            <input id="name" name="name" type="text" placeholder="Your name">
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="you@example.com">
+
+            <label for="phone">Phone (optional)</label>
+            <input id="phone" name="phone" type="text" placeholder="(555) 555-5555">
+
+            <label for="reason">How can I help right now?</label>
+            <textarea id="reason" name="reason" placeholder="A few lines is fine — what would you like time for?"></textarea>
+
+            <div class="actions">
+              <button class="btn" id="sendBtn">Request a callback</button>
+              <button class="btn secondary" id="ctaBtn">{{PRIMARY_CTA_LABEL}}</button>
+            </div>
+
+            <p class="small" style="margin-top:8px">By submitting you agree I may use the information to respond and schedule. I maintain clinical boundaries, confidentiality within practice limits, and am not available for crisis services. If you are in immediate danger, call local emergency services or the crisis line in your area.</p>
+          </form>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <h3 style="margin:0 0 8px 0">Quick membership note</h3>
+          <p class="small">Membership offers regular, predictable time with clinical continuity and a level of scheduling priority. It is not a medical program or a crisis service. Costs and terms are described on the Investment page; use the form to ask for a membership summary tailored to your needs.</p>
+        </div>
+
+        <div class="card">
+          <h3 style="margin:0 0 8px 0">Confidentiality & scope</h3>
+          <p class="small">Clinical notes are kept private and secure according to professional and legal standards. I will outline privacy practices, limits (e.g., imminent safety concerns), and billing arrangements before clinical work begins.</p>
+        </div>
+      </section>
+
+      <aside class="side">
+        <div class="card">
+          <h4 style="margin:0 0 8px 0">Proof Gallery</h4>
+          <div class="proof">
+            <div id="testimony" class="testimony" aria-live="polite">
+              <div class="quote" id="quoteText">"I started with a short package and stayed because the steady check-ins helped me organize what mattered most."</div>
+              <div class="who" id="quoteBy">— Community member, mid-30s</div>
+            </div>
+
+            <div class="controls">
+              <div style="display:flex;gap:8px">
+                <button id="prev" class="btn secondary">Prev</button>
+                <button id="next" class="btn">Next</button>
+              </div>
+              <div style="margin-left:auto" class="badges" aria-hidden="false">
+                <div tabindex="0" class="badge">Licensed Clinician
+                  <div class="tip">State-licensed therapist</div>
+                </div>
+                <div tabindex="0" class="badge">Verified Reviews
+                  <div class="tip">Collected from private feedback</div>
+                </div>
+                <div tabindex="0" class="badge">Continuing Education
+                  <div class="tip">Ongoing training and supervision</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h4 style="margin:0 0 8px 0">Pricing comparator</h4>
+          <div class="pricing">
+            <div class="toggle" role="tablist" aria-label="Pricing toggle">
+              <span class="small">Show</span>
+              <div class="switch" role="switch" id="priceToggle" aria-checked="false" tabindex="0">Monthly</div>
+              <span class="small">Package</span>
+            </div>
+
+            <div class="plan-row" style="background:linear-gradient(90deg,#ffffff,#fbfdff);">
+              <div>
+                <div style="font-weight:600">Steady Practice</div>
+                <div class="pkg-note">Membership — regular sessions, continuity</div>
+              </div>
+              <div class="price" data-month="160" data-package="900" id="priceA">$160</div>
+            </div>
+
+            <div class="plan-row" style="background:linear-gradient(90deg,#ffffff,#fbfdff);">
+              <div>
+                <div style="font-weight:600">Focused Package</div>
+                <div class="pkg-note">4-session focused course for a specific concern</div>
+              </div>
+              <div class="price" data-month="185" data-package="680" id="priceB">$185</div>
+            </div>
+
+            <div class="small">Toggle between ongoing monthly membership and a pre-paid package to compare monthly-equivalent cost.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h4 style="margin:0 0 8px 0">Contact details</h4>
+          <div class="small">Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a><br>Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a><br>{{CITY}}, {{STATE}}</div>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      <div style="max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div class="small">&copy; <span id="year"></span> {{BUSINESS_NAME}} — Clinical membership and time-limited packages. Confidential notes kept in secure records.</div>
+        <div class="small">Designed with care. <a href="faq.html">FAQ</a> · <a href="book.html">Book</a></div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Footer year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Contact form simple behavior (local only)
+    var form = document.getElementById('contactForm');
+    var sendBtn = document.getElementById('sendBtn');
+    var ctaBtn = document.getElementById('ctaBtn');
+    sendBtn.addEventListener('click', function(){
+      sendBtn.disabled = true; sendBtn.textContent = 'Sending...';
+      setTimeout(function(){
+        sendBtn.textContent = 'Request sent'; sendBtn.disabled = false; 
+        alert('Thank you — your message is queued. We will respond by email.');
+      },900);
+    });
+    ctaBtn.addEventListener('click', function(){
+      // Primary CTA uses placeholder URL
+      window.location.href = '{{PRIMARY_CTA_URL}}';
+    });
+
+    // Proof gallery rotation
+    (function(){
+      var quotes = [
+        {text:'"I started with a short package and stayed because the steady check-ins helped me organize what mattered most."',by:'— Community member, mid-30s'},
+        {text:'"Regular sessions made it possible to keep perspective during a busy season of life."',by:'— Parent, early 40s'},
+        {text:'"The membership felt like a hold on the day-to-day so I could think clearly about decisions."',by:'— Graduate student'}
+      ];
+      var idx=0;var qEl=document.getElementById('quoteText');var bEl=document.getElementById('quoteBy');
+      function show(i){
+        qEl.style.opacity=0; bEl.style.opacity=0;
+        setTimeout(function(){ qEl.textContent=quotes[i].text; bEl.textContent=quotes[i].by; qEl.style.opacity=1; bEl.style.opacity=1; },220);
+      }
+      document.getElementById('next').addEventListener('click',function(){ idx=(idx+1)%quotes.length; show(idx); });
+      document.getElementById('prev').addEventListener('click',function(){ idx=(idx-1+quotes.length)%quotes.length; show(idx); });
+      setInterval(function(){ idx=(idx+1)%quotes.length; show(idx); },5000);
+    })();
+
+    // Pricing comparator animation
+    (function(){
+      var toggle = document.getElementById('priceToggle');
+      var isPackage = false; // false = monthly
+      var animables = [document.getElementById('priceA'), document.getElementById('priceB')];
+
+      function animateValue(el, start, end, duration){
+        var startTime = null;
+        function step(timestamp){
+          if(!startTime) startTime = timestamp;
+          var progress = Math.min((timestamp - startTime) / duration, 1);
+          var eased = 1 - Math.pow(1 - progress, 3);
+          var value = Math.round(start + (end - start) * eased);
+          el.textContent = '$' + value;
+          if(progress < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+
+      function updatePrices(){
+        animables.forEach(function(el){
+          var from = parseInt(el.textContent.replace('$',''),10) || 0;
+          var to = parseInt(el.getAttribute(isPackage ? 'data-package' : 'data-month'),10);
+          animateValue(el, from, to, 450);
+        });
+      }
+
+      toggle.addEventListener('click',function(){ isPackage = !isPackage; toggle.textContent = isPackage ? 'Package' : 'Monthly'; toggle.setAttribute('aria-checked', String(isPackage)); updatePrices(); });
+      toggle.addEventListener('keypress',function(e){ if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle.click(); } });
+
+      // init
+      animables.forEach(function(el){ var v = el.getAttribute('data-month'); el.textContent = '$' + v; });
+    })();
+  </script>
+</body>
+</html>

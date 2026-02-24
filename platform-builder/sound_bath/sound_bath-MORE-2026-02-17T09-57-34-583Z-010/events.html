@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gatherings — {{BUSINESS_NAME}} Events</title>
+  <style>
+    :root{--bg:#0f1113;--card:#0f1720;--muted:#9aa4ad;--accent:#c7f0e0;--accent-2:#7bd6ff}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;color:#e6eef2;background:linear-gradient(180deg,#050607 0%,var(--bg) 60%);line-height:1.4}
+    header{position:relative;padding:28px 24px 18px;display:flex;align-items:center;justify-content:space-between}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-size:14px}
+    .brand{font-weight:700;color:var(--accent);letter-spacing:0.6px}
+    .hero{position:relative;padding:40px 24px 64px;overflow:hidden}
+    .hero-inner{max-width:980px;margin:0 auto;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:12px;padding:36px;display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start}
+    .title{color:#ffffff;font-size:28px;margin:0 0 6px}
+    .tag{color:var(--muted);margin:0 0 18px}
+    .controls{display:flex;gap:12px;align-items:center}
+    select, .mixer{background:#071019;border:1px solid rgba(255,255,255,0.04);color:var(--accent);padding:10px 12px;border-radius:8px}
+    .mixer{display:flex;gap:6px}
+    .mixer button{padding:8px 12px;background:transparent;border-radius:8px;border:1px solid rgba(255,255,255,0.03);color:var(--muted);cursor:pointer}
+    .mixer button.active{background:linear-gradient(90deg,var(--accent) 0%,var(--accent-2) 100%);color:#062024;border:1px solid rgba(0,0,0,0.15)}
+    .recommend{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:10px;padding:16px;color:var(--muted)}
+    .method{font-weight:700;color:#fff;margin:0 0 6px}
+    .method-desc{font-size:14px;margin:0}
+    .cta{display:inline-block;margin-top:12px;padding:12px 16px;border-radius:10px;background:linear-gradient(90deg,var(--accent) 0%,var(--accent-2)100%);color:#062024;text-decoration:none;font-weight:700}
+    aside.card{background:#071018;border-radius:10px;padding:18px;color:var(--muted);border:1px solid rgba(255,255,255,0.02)}
+    .next h4{margin:0 0 8px;color:var(--accent)}
+    .next .when{font-weight:700;color:#fff}
+    .events-list{margin-top:18px}
+    .event-row{display:flex;justify-content:space-between;padding:10px 0;border-top:1px dashed rgba(255,255,255,0.02);color:var(--muted);font-size:14px}
+    footer{padding:32px 24px;color:var(--muted);font-size:13px;text-align:center}
+    .pattern-svg{position:absolute;inset:0;opacity:0.06;pointer-events:none}
+    .disclaimer{font-size:12px;color:#b4bfc6;margin-top:18px}
+    @media (max-width:880px){.hero-inner{grid-template-columns:1fr;}.brand{font-size:14px}nav a{display:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <nav aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="events.html">Gatherings</a>
+      <a href="private-sessions.html">Private</a>
+      <a href="pricing.html">Fees</a>
+      <a href="about.html">Practice</a>
+      <a href="faq.html">Questions</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <!-- decorative pattern -->
+    <svg class="pattern-svg" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0" stop-color="#7bd6ff"/>
+          <stop offset="1" stop-color="#c7f0e0"/>
+        </linearGradient>
+        <pattern id="p1" width="60" height="60" patternUnits="userSpaceOnUse" patternTransform="rotate(15)">
+          <rect width="60" height="60" fill="transparent" />
+          <circle cx="30" cy="30" r="6" fill="url(#g1)" opacity="0.6" />
+          <path d="M0 60 L60 0" stroke="#7bd6ff" stroke-width="0.5" opacity="0.08"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#p1)" />
+    </svg>
+
+    <div class="hero-inner">
+      <div>
+        <h1 class="title">Gatherings in tone and hush</h1>
+        <p class="tag">Small-format evenings of layered resonance in {{CITY}}, {{STATE}} — available in person and remotely.</p>
+
+        <div class="controls">
+          <label for="mood-select" style="color:var(--muted);font-size:13px">Choose how you are now</label>
+          <select id="mood-select" aria-label="Mood to Method selector">
+            <option value="frayed">Frayed, scattered</option>
+            <option value="tired">Worn, low energy</option>
+            <option value="restless">Restless, buzzing</option>
+            <option value="curious">Curious, open</option>
+            <option value="celebration">Celebratory, radiant</option>
+            <option value="grief">Grieving, tender</option>
+          </select>
+
+          <div class="mixer" role="radiogroup" aria-label="Sound intensity">
+            <button data-level="gentle" class="active">Gentle</button>
+            <button data-level="medium">Medium</button>
+            <button data-level="intense">Intense</button>
+          </div>
+        </div>
+
+        <div class="recommend" id="recommend">
+          <p class="method" id="method-title">Layered Bowls & Quiet</p>
+          <p class="method-desc" id="method-desc">A slow, enveloping field of harmonic bowls with long space between tones — supports deep inhalations and soft release.</p>
+          <a id="primary-cta" class="cta" href="{{PRIMARY_CTA_URL}}" data-base-label="{{PRIMARY_CTA_LABEL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+
+        <p class="disclaimer">Note: Sound sessions are supportive practices, not substitutes for medical or psychiatric care. Please consult your clinician about suitability. See contraindications below.</p>
+      </div>
+
+      <aside class="card">
+        <div class="next">
+          <h4>Next gathering</h4>
+          <div class="when">Sat • Feb 28 • 6:00 pm</div>
+          <div class="where" style="margin-top:8px">Studio in {{CITY}} — exact address after booking</div>
+          <div style="margin-top:12px">
+            <a class="cta" href="{{PRIMARY_CTA_URL}}" id="quick-book">Reserve a spot</a>
+          </div>
+        </div>
+
+        <div class="events-list">
+          <h5 style="color:var(--accent);margin:12px 0 6px">Upcoming calendar</h5>
+          <div class="event-row"><div>Mar 5 • Drift Circle</div><div>7:00 pm</div></div>
+          <div class="event-row"><div>Mar 19 • Evening Lull</div><div>6:30 pm</div></div>
+          <div class="event-row"><div>Apr 2 • Resonant Morning</div><div>9:30 am</div></div>
+          <div class="event-row"><div>Apr 16 • Full-Body Sound</div><div>6:00 pm</div></div>
+        </div>
+
+        <div style="margin-top:12px;font-size:12px;color:#9fb0b9">Add an event to your calendar: <a href="mailto:?subject=Add%20Event&body=Join%20the%20next%20session%20on%20Sat%20Feb%2028%20at%206pm" style="color:var(--accent)">email reminder</a></div>
+      </aside>
+    </div>
+  </section>
+
+  <main style="max-width:980px;margin:20px auto;padding:0 24px">
+    <section>
+      <h3 style="color:var(--accent);margin:0 0 8px">How we choose the sound</h3>
+      <p style="color:var(--muted);margin:0 0 12px">We mix tones, breath cues, and silence to match where you are. Use the mood selector and intensity buttons above to see the suggested format and adjust the booking label in real time.</p>
+
+      <h4 style="color:#fff;margin-top:18px">Contraindications and safety</h4>
+      <p class="disclaimer">If you have a history of seizures, recent head injury, uncontrolled psychiatric conditions, are pregnant and advised to avoid certain stimuli, or have implanted medical devices sensitive to vibration, please consult a medical professional before attending. Contact us at {{EMAIL}} or {{PHONE}} to discuss accommodations.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div>Questions or group requests — <a href="mailto:{{EMAIL}}" style="color:var(--accent)">{{EMAIL}}</a> · {{PHONE}}</div>
+  </footer>
+
+  <script>
+    (function(){
+      var moodSelect = document.getElementById('mood-select');
+      var mixerButtons = document.querySelectorAll('.mixer button');
+      var methodTitle = document.getElementById('method-title');
+      var methodDesc = document.getElementById('method-desc');
+      var cta = document.getElementById('primary-cta');
+      var quick = document.getElementById('quick-book');
+      var baseLabel = cta.getAttribute('data-base-label') || '{{PRIMARY_CTA_LABEL}}';
+
+      var moodMap = {
+        'frayed':{method:'Soft-Field Bowls',desc:'Slow harmonics and generous silence to steady the nervous system, designed for scattered attention.'},
+        'tired':{method:'Resting Resonance',desc:'Long, low tones that support quiet rest and minimal movement for deep recovery.'},
+        'restless':{method:'Rhythmic Threads',desc:'Gentle pulse under higher overtones to organize energy and return focus.'},
+        'curious':{method:'Explorative Layers',desc:'A varied palette of bowls, chimes, and voice to invite gentle discovery.'},
+        'celebration':{method:'Bloom Session',desc:'Brighter timbres and dynamic swells for shared uplift and clear-hearted release.'},
+        'grief':{method:'Tender Ground',desc:'Slower, held tones with extra pauses for careful presence and containment.'}
+      };
+
+      var intensityMap = {
+        'gentle':function(m){return {suffix:'(gentle wave)',tweak:'Lower volumes, softer attack — best for deep release.'};},
+        'medium':function(m){return {suffix:'(balanced)',tweak:'Moderate dynamics with more layers — supports integration.'};},
+        'intense':function(m){return {suffix:'(full-bodied)',tweak:'Denser overtone presence and stronger low end — for energetic processing.'};}
+      };
+
+      function update(){
+        var mood = moodSelect.value;
+        var active = document.querySelector('.mixer button.active').getAttribute('data-level');
+        var m = moodMap[mood] || moodMap['curious'];
+        var i = intensityMap[active](m);
+        methodTitle.textContent = m.method + ' ' + i.suffix;
+        methodDesc.textContent = m.desc + ' ' + i.tweak;
+        var newLabel = m.method + ' — ' + baseLabel;
+        cta.textContent = newLabel;
+        quick.textContent = 'Reserve — ' + m.method;
+      }
+
+      moodSelect.addEventListener('change', update);
+      mixerButtons.forEach(function(b){
+        b.addEventListener('click',function(){
+          mixerButtons.forEach(function(x){x.classList.remove('active')});
+          this.classList.add('active');
+          update();
+        });
+      });
+
+      // initialize
+      update();
+    })();
+  </script>
+</body>
+</html>

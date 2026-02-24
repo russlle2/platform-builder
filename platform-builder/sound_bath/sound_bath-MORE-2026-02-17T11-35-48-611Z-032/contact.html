@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reach out to book an immersive sound session, schedule a private gathering, or build a custom plan with our Session Planner.">
+  <style>
+    :root{
+      --bg:#0b0f12; --panel:#0f1720; --muted:#98a4ad; --accent:#7ad3c6; --accent-2:#6b8cff; --glass:rgba(255,255,255,0.04);
+      --radius:14px; --shadow:0 6px 30px rgba(2,6,23,0.6);
+      --maxw:1100px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial;color:#e6eef1;background:linear-gradient(180deg,var(--bg) 0%, #071018 100%);-webkit-font-smoothing:antialiased;}
+    /* diagonal hero split */
+    .hero{min-height:44vh;display:grid;grid-template-columns:1fr;align-items:center;position:relative;overflow:hidden;padding:48px 20px}
+    .hero .split{position:relative;display:grid;grid-template-columns:1fr 460px;gap:28px;align-items:center;max-width:var(--maxw);margin:0 auto;width:100%}
+    .panel{background:linear-gradient(145deg, rgba(255,255,255,0.02), transparent);border-radius:var(--radius);padding:34px;box-shadow:var(--shadow);backdrop-filter:blur(6px);}
+    .left h1{font-size:clamp(20px,3.6vw,36px);margin:0 0 10px;color:#ecf6f5}
+    .left p.lead{margin:0 0 18px;color:var(--muted);line-height:1.45}
+    .cta-row{display:flex;gap:12px;flex-wrap:wrap}
+    .btn{appearance:none;border:0;padding:12px 16px;border-radius:10px;cursor:pointer;font-weight:600}
+    .btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#04232f}
+    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+    .right{padding:8px}
+
+    /* navigation */
+    nav{position:relative;max-width:var(--maxw);margin:18px auto 0;padding:0 20px;display:flex;justify-content:space-between;align-items:center}
+    .brand{color:#cfeee8;font-weight:700;letter-spacing:0.6px}
+    .navlinks{display:flex;gap:14px}
+    .navlinks a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:8px}
+    .navlinks a.active, .navlinks a:hover{background:var(--glass);color:#eaf8f6}
+
+    /* pattern overlay */
+    .bg-pattern{position:absolute;right:-10%;top:-8%;width:70vmin;height:70vmin;background-image:url('assets/img/pattern.svg');background-size:cover;opacity:0.12;filter:grayscale(1);transform:rotate(12deg)}
+
+    /* content sections */
+    .container{max-width:var(--maxw);margin:28px auto;padding:0 20px}
+    .grid{display:grid;grid-template-columns:1fr 380px;gap:28px}
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity 520ms cubic-bezier(.2,.9,.2,1),transform 520ms cubic-bezier(.2,.9,.2,1)}
+    .reveal.visible{opacity:1;transform:none}
+
+    /* session planner */
+    .planner{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:18px;border-radius:12px}
+    .field{display:flex;flex-direction:column;margin-bottom:12px}
+    label{font-size:13px;color:var(--muted);margin-bottom:6px}
+    input[type="text"],select,textarea{padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#e6eef1}
+    input[type="range"]{width:100%}
+    .row{display:flex;gap:10px}
+    .summary{white-space:pre-wrap;background:rgba(0,0,0,0.25);padding:12px;border-radius:10px;color:#e6eef1;border:1px dashed rgba(255,255,255,0.03)}
+    .small{font-size:13px;color:var(--muted)}
+
+    /* contact card */
+    .card{padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 8px 30px rgba(4,12,20,0.6)}
+    form{display:grid;gap:10px}
+    input[type="email"],input[type="tel"]{padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#e6eef1}
+    .fineprint{font-size:12px;color:var(--muted)}
+
+    /* responsive */
+    @media (max-width:880px){.grid{grid-template-columns:1fr}.hero .split{grid-template-columns:1fr;}.bg-pattern{right:-30%;top:-40%;width:120vmin}}
+
+    /* respect reduced motion */
+    @media (prefers-reduced-motion: reduce){.reveal{transition:none;opacity:1;transform:none}}
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <div class="navlinks">
+      <a href="index.html">Home</a>
+      <a href="events.html">Gatherings</a>
+      <a href="private-sessions.html">Bespoke</a>
+      <a href="pricing.html">Invest</a>
+      <a href="about.html">Story</a>
+      <a href="faq.html">Learn</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html" class="active">Connect</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="bg-pattern" aria-hidden="true"></div>
+    <div class="split">
+      <div class="panel left reveal" data-reveal>
+        <h1>Reach out. Shape a session that fits the moment.</h1>
+        <p class="lead">Whether you want a public gathering, a private session for a group, or a tailored plan to take home, use the Session Planner below or send us a note. We'll craft a focused sound experience for the time you have.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <a class="btn btn-ghost" href="#planner">Build my plan</a>
+        </div>
+      </div>
+      <aside class="panel right reveal" data-reveal>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div style="font-size:13px;color:var(--muted)">Phone</div>
+            <a href="tel:{{PHONE}}" style="color:#e6eef1;text-decoration:none">{{PHONE}}</a>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div style="font-size:13px;color:var(--muted)">Email</div>
+            <a href="mailto:{{EMAIL}}" style="color:#e6eef1;text-decoration:none">{{EMAIL}}</a>
+          </div>
+          <div style="padding-top:6px;border-top:1px dashed rgba(255,255,255,0.02);font-size:13px;color:var(--muted);">Serving {{CITY}}, {{STATE}} — private travel quotes available.</div>
+        </div>
+      </aside>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="grid">
+      <section class="reveal" data-reveal>
+        <div class="card">
+          <h2 style="margin:0 0 8px;color:#eaf8f6">Session Planner</h2>
+          <p class="small" style="margin:0 0 12px">Design a focused sound session and export a plaintext summary to keep or share. This tool is private in your browser — nothing is sent unless you submit the contact form below.</p>
+
+          <div id="planner" class="planner" aria-live="polite">
+            <div class="field">
+              <label for="session-title">Session name (optional)</label>
+              <input id="session-title" type="text" placeholder="Calm Evening / Team Reset">
+            </div>
+            <div class="field">
+              <label>Session length (minutes): <span id="length-value">45</span></label>
+              <input id="length" type="range" min="10" max="120" value="45">
+            </div>
+            <div class="field">
+              <label for="focus">Primary focus</label>
+              <select id="focus">
+                <option>Gentle grounding</option>
+                <option>Energetic reset</option>
+                <option>Sleep support</option>
+                <option>Trauma-informed containment</option>
+                <option>Group cohesion</option>
+              </select>
+            </div>
+            <div class="row">
+              <div style="flex:1">
+                <div class="field">
+                  <label for="instruments">Preferred instruments</label>
+                  <select id="instruments" multiple size="3" aria-label="Preferred instruments">
+                    <option value="singing bowls">Singing bowls</option>
+                    <option value="gongs">Gongs</option>
+                    <option value="chimes">Chimes</option>
+                    <option value="voice">Vocal toning</option>
+                    <option value="electronics">Warm electronics</option>
+                  </select>
+                  <div class="small" style="margin-top:6px">(hold Ctrl / Cmd to pick multiple)</div>
+                </div>
+              </div>
+              <div style="width:120px">
+                <div class="field">
+                  <label for="participants">People</label>
+                  <input id="participants" type="text" value="6">
+                </div>
+              </div>
+            </div>
+            <div class="field">
+              <label for="intensity">Intensity</label>
+              <select id="intensity">
+                <option>Low — gentle, slow tones</option>
+                <option selected>Moderate — clear, shaping layers</option>
+                <option>High — deep resonant sonics</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="notes">Custom notes for the facilitator</label>
+              <textarea id="notes" rows="3" placeholder="Any needs, accessibility notes, or intentions"></textarea>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:6px">
+              <button id="build" class="btn btn-primary">Compose plan</button>
+              <button id="download" class="btn btn-ghost" type="button">Download .txt</button>
+              <button id="copy" class="btn btn-ghost" type="button">Copy summary</button>
+            </div>
+
+            <div style="margin-top:12px">
+              <div class="small" style="margin-bottom:6px">Summary</div>
+              <div id="summary" class="summary" aria-live="polite">No plan yet — press "Compose plan" to build a clear plaintext summary you can copy or download.</div>
+            </div>
+          </div>
+
+          <hr style="margin:18px 0;border:none;border-top:1px dashed rgba(255,255,255,0.03)">
+          <div class="small">Note on safety: Sound sessions can be powerful — if any participant has a pacemaker, is pregnant, has epilepsy, is prone to seizures, or has serious psychiatric conditions, consult their medical professional before booking. If you need a trauma-informed approach, indicate that in notes and we will adapt the session to prioritize containment and grounding.</div>
+        </div>
+      </section>
+
+      <aside class="reveal" data-reveal>
+        <div class="card">
+          <h3 style="margin-top:0;color:#eaf8f6">Contact & Booking</h3>
+          <form id="contact-form">
+            <label class="small">Name</label>
+            <input id="name" type="text" required>
+            <label class="small">Email</label>
+            <input id="email" type="email" required>
+            <label class="small">Phone</label>
+            <input id="phone" type="tel">
+            <label class="small">Message</label>
+            <textarea id="message" rows="4" placeholder="Tell us what you're looking for, or paste the planner summary here"></textarea>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button type="submit" class="btn btn-primary">Send request</button>
+              <a href="{{PRIMARY_CTA_URL}}" class="btn btn-ghost">Quick book</a>
+            </div>
+            <p class="fineprint" style="margin-top:10px">We reply within 48 hours on weekdays. If this is urgent, call <a href="tel:{{PHONE}}">{{PHONE}}</a>.</p>
+          </form>
+        </div>
+
+        <div style="height:18px"></div>
+
+        <div class="card">
+          <h4 style="margin:4px 0;color:#eaf8f6">Accessibility & respect</h4>
+          <p class="small">If you need ear protection, limited lighting, or seated options, note it in your booking. We design each gathering to be accessible and held with care.</p>
+        </div>
+      </aside>
+    </div>
+
+    <section class="reveal" data-reveal style="margin-top:28px">
+      <div class="card">
+        <h3 style="margin-top:0;color:#eaf8f6">Contraindications & safety</h3>
+        <p class="small">We maintain a safety-first practice. People with the following should consult a medical professional before attending: individuals with implanted electronic devices (pacemakers), recent major surgery, pregnancy (first-trimester consult recommended), serious psychiatric conditions, active substance intoxication, or photosensitive epilepsy. If in doubt, contact us — we will offer alternatives or adapt session elements.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer style="padding:28px 20px;text-align:center;color:var(--muted);font-size:13px">
+    <div style="max-width:var(--maxw);margin:0 auto">© <span id="year"></span> {{BUSINESS_NAME}} — creating soundful moments in {{CITY}}, {{STATE}}. <a href="privacy.html" style="color:var(--muted)">Privacy</a></div>
+  </footer>
+
+  <script>
+    // set year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // reveal on scroll with reduced-motion support
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const items = document.querySelectorAll('[data-reveal]');
+      if(prefersReduced){items.forEach(i=>i.classList.add('visible')); return}
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{ if(e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+      },{threshold:0.08});
+      items.forEach(i=>io.observe(i));
+    })();
+
+    // Planner logic
+    (function(){
+      const el = id => document.getElementById(id);
+      const length = el('length');
+      const lengthVal = el('length-value');
+      const build = el('build');
+      const copyBtn = el('copy');
+      const download = el('download');
+      const summary = el('summary');
+
+      function collect(){
+        const title = el('session-title').value.trim();
+        const mins = +length.value;
+        const focus = el('focus').value;
+        const instruments = Array.from(el('instruments').selectedOptions).map(o=>o.value);
+        const participants = el('participants').value.trim() || 'N/A';
+        const intensity = el('intensity').value;
+        const notes = el('notes').value.trim();
+        return {title,mins,focus,instruments,participants,intensity,notes};
+      }
+
+      function buildText(data){
+        const header = data.title ? `Session: ${data.title}\n` : '';
+        const lines = [];
+        lines.push(header + `Length: ${data.mins} minutes`);
+        lines.push(`Focus: ${data.focus}`);
+        lines.push(`Intensity: ${data.intensity}`);
+        lines.push(`Participants: ${data.participants}`);
+        lines.push(`Instruments: ${data.instruments.length? data.instruments.join(', '): 'facilitator chooses'}`);
+        lines.push('---');
+        lines.push('Suggested flow:');
+        // simple flow builder
+        if(data.mins <= 20){
+          lines.push('- Gentle opening (breath awareness) — 3–5 min');
+          lines.push('- Central sound layer — 10–12 min');
+          lines.push('- Soft close & integration — 3–5 min');
+        } else if(data.mins <= 45){
+          lines.push('- Grounding entry — 5–8 min');
+          lines.push('- Building layers & focused motif — ' + Math.max(10, data.mins-20) + ' min');
+          lines.push('- Restful decay & integration — 8–12 min');
+        } else {
+          lines.push('- Settling landing — 8–12 min');
+          lines.push('- Extended layered journey — ' + Math.max(25, data.mins-40) + ' min');
+          lines.push('- Emerging ritual & sharing (optional) — 8–15 min');
+        }
+        if(data.notes) lines.push('\nFacilitator notes: ' + data.notes);
+        lines.push('\nContact: ' + '{{EMAIL}}' + ' | ' + '{{PHONE}}');
+        return lines.join('\n');
+      }
+
+      length.addEventListener('input',()=>{lengthVal.textContent = length.value});
+
+      build.addEventListener('click',()=>{
+        const data = collect();
+        const txt = buildText(data);
+        summary.textContent = txt;
+        summary.focus();
+      });
+
+      copyBtn.addEventListener('click', async ()=>{
+        try{
+          await navigator.clipboard.writeText(summary.textContent);
+          copyBtn.textContent = 'Copied';
+          setTimeout(()=>copyBtn.textContent = 'Copy summary',1600);
+        }catch(e){
+          copyBtn.textContent = 'Copy failed';
+          setTimeout(()=>copyBtn.textContent = 'Copy summary',1600);
+        }
+      });
+
+      download.addEventListener('click',()=>{
+        const txt = summary.textContent || '';
+        const blob = new Blob([txt],{type:'text/plain;charset=utf-8'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = (el('session-title').value.trim() || 'session-plan') + '.txt';
+        document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+      });
+
+      // seed a helpful default
+      document.addEventListener('DOMContentLoaded',()=>{
+        el('notes').placeholder = 'e.g. dim lighting, people seated in a circle, one mic for sharing';
+      });
+    })();
+
+    // contact form basic handling (local only)
+    (function(){
+      const form = document.getElementById('contact-form');
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        const msg = document.getElementById('message');
+        // attach current planner summary if present
+        const plannerSummary = document.getElementById('summary').textContent;
+        if(plannerSummary && !msg.value.includes(plannerSummary)){
+          msg.value = msg.value + '\n\nPlanner summary:\n' + plannerSummary;
+        }
+        // simulate send
+        alert('Your request is prepared. Replace placeholders with live contact backend when ready.');
+        form.reset();
+      });
+    })();
+  </script>
+</body>
+</html>

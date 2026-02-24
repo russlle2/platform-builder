@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Gathering — {{BUSINESS_NAME}} • Sound Baths</title>
+  <meta name="description" content="A sensory evening of resonant rest. Next event: {{NEXT_EVENT_DATE}} at {{VENUE_NAME}}.">
+  <style>
+    :root{--bg:#f7efe6;--panel:#fff7f0;--accent:#b86b2e;--muted:#6b5a4a;--gold:#d9b97a;--shadow:0 8px 30px rgba(33,22,10,0.07);--radius:14px}
+    html,body{height:100%}
+    body{margin:0;font-family:Georgia, 'Times New Roman', serif;background:linear-gradient(180deg,var(--bg),#efe7dd);color:var(--muted);-webkit-font-smoothing:antialiased;line-height:1.5}
+    .wrap{max-width:980px;margin:48px auto;padding:40px}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+    .brand{display:flex;gap:14px;align-items:center}
+    .mark{width:56px;height:56px;border-radius:12px;background:radial-gradient(circle at 30% 30%,var(--gold),var(--accent));box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    nav a{margin-left:18px;text-decoration:none;color:var(--muted);font-weight:600}
+    main{position:relative}
+    /* SVG backdrop */
+    .pattern{position:absolute;inset:0;pointer-events:none;opacity:0.14}
+    .card{background:var(--panel);border-radius:var(--radius);padding:28px;box-shadow:var(--shadow);margin-bottom:22px}
+    h1{margin:0 0 8px 0;font-size:36px;color:#332619}
+    h2{margin:0 0 12px 0;color:#453528}
+    .meta{color:#7a6858;font-size:14px}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:22px}
+    .list{list-style:none;padding:0;margin:0}
+    .pill{display:inline-block;background:rgba(184,107,46,0.09);color:var(--accent);padding:6px 10px;border-radius:999px;font-weight:700;font-size:13px}
+    .btn{display:inline-block;background:var(--accent);color:white;padding:10px 16px;border-radius:10px;text-decoration:none;font-weight:700}
+    .small{font-size:14px;color:#6f5e50}
+    footer{margin-top:28px;text-align:center;color:#7b6b5e;font-size:13px}
+    /* details */
+    .steps{display:flex;gap:12px;flex-direction:column}
+    .step{background:linear-gradient(180deg,rgba(217,185,122,0.06),transparent);padding:12px;border-radius:10px}
+    .calendar{display:flex;flex-direction:column;gap:8px}
+    .calendar a{display:flex;justify-content:space-between;padding:10px;border-radius:8px;text-decoration:none;color:inherit;background:rgba(0,0,0,0.02)}
+    .highlight{border-left:4px solid var(--gold);padding-left:10px}
+    blockquote{margin:0;padding:12px 16px;background:linear-gradient(90deg,rgba(184,107,46,0.06),transparent);border-radius:8px;color:#553f31}
+    @media(max-width:880px){.grid{grid-template-columns:1fr}} 
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="mark">SB</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="events.html">Gatherings</a>
+        <a href="private-sessions.html">Private Rest</a>
+        <a href="pricing.html">Rates</a>
+        <a href="contact.html">Reach</a>
+      </nav>
+    </header>
+
+    <main>
+      <!-- SVG pattern backdrop (unique) -->
+      <svg class="pattern" width="100%" height="100%" viewBox="0 0 1000 700" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#d9b97a" stop-opacity="0.38"/><stop offset="1" stop-color="#b86b2e" stop-opacity="0.12"/></linearGradient>
+          <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="30" result="b"/>
+            <feBlend in="SourceGraphic" in2="b"/>
+          </filter>
+        </defs>
+        <g filter="url(#soft)">
+          <circle cx="120" cy="80" r="160" fill="url(#g1)"/>
+          <ellipse cx="860" cy="420" rx="270" ry="130" fill="#e9dccb"/>
+          <path d="M0,520 C220,400 420,620 1000,420 L1000,700 L0,700 Z" fill="#efe2d2" opacity="0.9"/>
+        </g>
+      </svg>
+
+      <section class="card" id="hero">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+          <div>
+            <h1>Evening Sound Bath — {{NEXT_EVENT_DATE}}</h1>
+            <div class="meta">An intimate evening at {{VENUE_NAME}} • {{CITY}}, {{STATE}}</div>
+          </div>
+          <div style="text-align:right">
+            <div class="pill">Next event</div>
+            <div style="margin-top:10px"><a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+          </div>
+        </div>
+      </section>
+
+      <div class="grid">
+        <div>
+          <section class="card" id="story">
+            <h2>Why we gather</h2>
+            <p class="small">We build a warm room — a place where sound moves the body and softens the mind. Each gathering is crafted to be sensory and precise: slow pacing, attentive space, and instruments tuned to the room. The evening is ceremonial without formality; think of it as a quiet, layered tide of tone.</p>
+          </section>
+
+          <section class="card" id="framework">
+            <h2>What to expect — the flow</h2>
+            <div class="steps">
+              <div class="step"><strong>Arrival & settling (15 min)</strong><div class="small">Mats, cushions, and blankets arranged. Low light. Gentle orientation.</div></div>
+              <div class="step"><strong>Opening breath & intention (10 min)</strong><div class="small">A guided breath and brief invitation to rest the attention.</div></div>
+              <div class="step"><strong>Resonant soundscape (45–50 min)</strong><div class="small">Layered bowls and gong gradually shift the tonal field; soft chimes appear like light.</div></div>
+              <div class="step"><strong>Return & integration (10–15 min)</strong><div class="small">Slow reorientation, a cup of tea, and space for notes.</div></div>
+            </div>
+            <p style="margin-top:12px"><strong>Instruments:</strong> crystal singing bowls, gong, alpine chimes, tingsha bells — balanced to linger, not overwhelm.</p>
+          </section>
+
+          <section class="card" id="offers">
+            <h2>Offer & calendar</h2>
+            <p class="small">An ongoing series. Drop-in or book a series subscription. Capacity is limited to preserve intimacy.</p>
+            <div class="calendar" style="margin-top:10px">
+              <a href="events.html#" class="highlight"><span>{{NEXT_EVENT_DATE}}</span><span class="small">Evening Sound Bath — {{VENUE_NAME}}</span></a>
+              <a href="events.html#">Mar 12 — Quiet Tide</a>
+              <a href="events.html#">Apr 09 — Spring Resonance</a>
+              <a href="events.html#">May 14 — Long Night</a>
+            </div>
+          </section>
+
+          <section class="card" id="testimonials">
+            <h2>Voices</h2>
+            <blockquote>"I left feeling like the hard edges of the week had been sanded down — luminous and calm." — S.A.</blockquote>
+            <div style="height:10px"></div>
+            <blockquote>"A rare, gentle reset. The sound folded around my chest in the best way." — M.R.</blockquote>
+          </section>
+        </div>
+
+        <aside>
+          <section class="card">
+            <h2>Practical — what to bring</h2>
+            <ul class="list small">
+              <li>Yoga mat or padded mat</li>
+              <li>Warm blanket and light pillow</li>
+              <li>Water bottle (silenced)</li>
+              <li>Eye mask (optional)</li>
+            </ul>
+          </section>
+
+          <section class="card">
+            <h2>Contraindications</h2>
+            <p class="small">If you are pregnant, have epilepsy, an implanted medical device, or a history of severe mental health episodes, please consult the facilitator or your physician before attending. Sound is supportive but not a substitute for medical care.</p>
+          </section>
+
+          <section class="card">
+            <h2>Reserve</h2>
+            <div class="small">Seats are limited. Call <strong>{{PHONE}}</strong> or <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+            <div style="margin-top:12px"><a class="btn" href="{{PRIMARY_CTA_URL}}">Reserve a seat</a></div>
+            <div style="margin-top:8px;font-size:13px;color:#7b6b5e">Tickets also sold at the door when available.</div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="card" id="pricing">
+        <h2>Rates & passes</h2>
+        <p class="small">Single drop-in, multi-visit passes, and a small student/low-income tier. See the full pricing page for details.</p>
+        <div style="margin-top:12px"><a class="btn" href="pricing.html">View rates</a></div>
+      </section>
+
+      <section class="card" id="cta">
+        <h2>Join the next sound evening</h2>
+        <p class="small">A place that values quiet attention and careful timing. Bring softness; we’ll bring the tone.</p>
+        <div style="margin-top:12px"><a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+      </section>
+
+      <footer>
+        <div class="small">Facilitated by {{FACILITATOR_NAME}} • {{VENUE_NAME}} • {{CITY}}, {{STATE}}</div>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

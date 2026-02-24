@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Investment — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f0f10;--card:#0b0b0c;--muted:#9aa5ab;--accent:#caa77b;--glass:rgba(255,255,255,0.04);--radius:12px;--max:1100px}
+    html,body{height:100%}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#eef0ef;background:linear-gradient(180deg,#070708 0%,#0e0e0f 60%);-webkit-font-smoothing:antialiased}
+    .wrap{max-width:var(--max);margin:36px auto;padding:28px}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+    .brand{display:flex;gap:14px;align-items:center}
+    .brand h1{color:#fff;font-size:18px;margin:0;letter-spacing:0.4px}
+    nav a{color:var(--muted);text-decoration:none;margin:0 10px;font-size:14px}
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:start;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:28px;border-radius:var(--radius);} 
+    .hero .copy h2{color:#fff;margin:0 0 8px;font-size:28px;line-height:1.05}
+    .hero .copy p{color:var(--muted);margin:0 0 18px}
+    .price-card{background:var(--card);padding:20px;border-radius:12px;color:#fff}
+    .price-row{display:flex;align-items:center;justify-content:space-between;margin:6px 0}
+    .muted{color:var(--muted);font-size:14px}
+    .cta{display:inline-block;background:var(--accent);color:#071014;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:26px}
+    .card{background:var(--glass);padding:16px;border-radius:10px;color:#fff}
+    .process, .faq, .lead{margin-top:28px;background:transparent;padding:18px;border-radius:12px}
+    .testimonial{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:12px;border-radius:10px;color:var(--muted)}
+    footer{margin-top:30px;color:var(--muted);font-size:13px}
+    .notice{font-size:13px;color:var(--muted);margin-top:12px}
+    @media(max-width:900px){.hero{grid-template-columns:1fr;}.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <header>
+      <div class='brand'>
+        <img src='assets/img/avatar.svg' alt='avatar' style='width:56px;height:56px;border-radius:10px;background:#111;padding:6px'>
+        <div>
+          <h1>{{BUSINESS_NAME}}</h1>
+          <div class='muted'>{{TAGLINE}} — {{CITY}}, {{STATE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href='index.html'>Home</a>
+        <a href='about.html'>About</a>
+        <a href='specialties.html'>Specialties</a>
+        <a href='book.html'>Work With Me</a>
+        <a href='faq.html'>Questions</a>
+      </nav>
+    </header>
+
+    <!-- HERO (Investment-focused) -->
+    <section class='hero' aria-label='Investment'>
+      <div class='copy'>
+        <h2>Investment in care — clear options, gentle structure</h2>
+        <p>I offer a small set of thoughtfully designed session formats so we can focus on what matters: your progress. If you have questions about fees or need a flexible arrangement, I welcome that conversation.</p>
+        <div class='muted'>Sessions are confidential. See notes below about scope, privacy, and crisis support.</div>
+        <div style='margin-top:14px'>
+          <a class='cta' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </div>
+
+      <aside class='price-card' aria-hidden='false'>
+        <h3 style='margin:0 0 8px'>Current offerings</h3>
+        <div class='price-row'><div class='muted'>Single session (50 min)</div><div style='font-weight:700'>$160</div></div>
+        <div class='price-row'><div class='muted'>Pathway Package — 6 sessions</div><div style='font-weight:700'>$900 (save $60)</div></div>
+        <div class='price-row'><div class='muted'>Brief check-in (25 min)</div><div style='font-weight:700'>$95</div></div>
+        <div class='muted' style='margin-top:10px;font-size:13px'>Sliding scale availability for limited slots — please call or email to discuss.</div>
+      </aside>
+    </section>
+
+    <!-- SOCIAL PROOF -->
+    <section class='social' style='margin-top:20px;display:flex;gap:16px;align-items:start'>
+      <div style='flex:1'>
+        <div class='testimonial'>
+          &ldquo;Warm, perceptive, and clear. {{THERAPIST_NAME}} helped me make steady changes without pressure.&rdquo;
+          <div class='muted' style='margin-top:8px'>— client, mid-career</div>
+        </div>
+      </div>
+      <div style='width:260px'>
+        <div class='testimonial'>
+          &ldquo;I appreciated the structure of the package — it made committing easier.&rdquo;
+          <div class='muted' style='margin-top:8px'>— client, parent</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BENEFITS (what you get) -->
+    <section class='grid' aria-label='What people gain'>
+      <div class='card'>
+        <strong>Intentional time</strong>
+        <p class='muted'>Sessions held with focus on your priorities and measurable next steps.</p>
+      </div>
+      <div class='card'>
+        <strong>Flexible pacing</strong>
+        <p class='muted'>Options for brief check-ins, ongoing weekly work, or concentrated packages.</p>
+      </div>
+      <div class='card'>
+        <strong>Transparent costs</strong>
+        <p class='muted'>Clear session and package pricing; no surprise fees. Insurance details listed on Contact.</p>
+      </div>
+    </section>
+
+    <!-- PROCESS (how payment & scheduling work) -->
+    <section class='process'>
+      <h4 style='color:#fff;margin:0 0 8px'>How scheduling and payment typically work</h4>
+      <ol class='muted' style='margin:0 0 8px;padding-left:18px'>
+        <li>Reach out via the booking page or phone to request an initial 15-minute consult.</li>
+        <li>We confirm the session type and available times; you select what fits.</li>
+        <li>Payment is collected securely prior to or at the time of the first session (cards accepted).</li>
+        <li>If we agree on a package, sessions are scheduled to create momentum and continuity.</li>
+      </ol>
+      <div class='muted'>If you need documentation for insurance reimbursement, I provide a receipt (superbill) on request; please check with your carrier first.</div>
+    </section>
+
+    <!-- FAQ (brief, fees-focused) -->
+    <section class='faq' aria-label='Fees FAQ'>
+      <h4 style='color:#fff;margin:0 0 8px'>Common questions about fees</h4>
+      <div class='muted'>
+        <strong>Do you accept insurance?</strong>
+        <div style='margin-bottom:8px'>I am not in-network with most carriers. I can provide a superbill for out-of-network reimbursement; policies vary by plan.</div>
+        <strong>What if I can't afford the listed rate?</strong>
+        <div style='margin-bottom:8px'>There are limited sliding scale slots. If finances are a barrier, please reach out and we can discuss options.</div>
+        <strong>Are there cancellations fees?</strong>
+        <div style='margin-bottom:8px'>I ask for 48 hours' notice for cancellations. Late cancellations or missed sessions are billed at the session rate except in emergencies.</div>
+      </div>
+    </section>
+
+    <!-- LEAD MAGNET -->
+    <section class='lead' style='display:flex;gap:14px;align-items:center'>
+      <div style='flex:1'>
+        <strong style='color:#fff'>Free guide: Navigating Life Transitions</strong>
+        <div class='muted' style='margin-top:6px'>A short, practical workbook with gentle reflections and prompts to help you prepare for our first sessions.</div>
+      </div>
+      <div>
+        <a class='cta' href='{{PRIMARY_CTA_URL}}?lead=transitions' style='display:inline-block'>Download the guide</a>
+      </div>
+    </section>
+
+    <!-- CTA (book) -->
+    <div style='margin-top:22px'>
+      <a class='cta' href='book.html'>Book a consult — 15 min</a>
+    </div>
+
+    <footer>
+      <div class='notice'>Licensed clinician: {{THERAPIST_NAME}}, {{LICENSE}}. Scope of practice: supportive psychotherapy for adults with anxiety, trauma, relationship concerns, life transitions, and burnout. Sessions are confidential within legal limits. Not a crisis service — if you are in danger or require immediate assistance, call local emergency services or the crisis lines in your area.</div>
+      <div style='margin-top:8px' class='muted'>&copy; {{BUSINESS_NAME}}</div>
+    </footer>
+  </div>
+</body>
+</html>

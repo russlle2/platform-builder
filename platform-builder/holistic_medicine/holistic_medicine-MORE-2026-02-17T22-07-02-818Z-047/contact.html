@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Connect — Contact • Holistic Membership</title>
+  <style>
+    :root{--bg:#fbfcfd;--muted:#6b7280;--accent:#2a6f6f;--accent-2:#8aa29a;--card:#ffffff;--glass:rgba(255,255,255,0.6)}
+    *{box-sizing:border-box;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial}
+    body{margin:0;background:var(--bg);color:#0b1220;line-height:1.45}
+    header{background:linear-gradient(135deg,var(--accent-2) 0%, rgba(42,111,111,0.9) 100%);color:#fff;padding:28px 20px 36px}
+    .nav{display:flex;gap:18px;align-items:center;max-width:1100px;margin:0 auto}
+    .brand{font-weight:700;font-size:18px}
+    nav a{color:rgba(255,255,255,0.95);text-decoration:none;padding:8px 10px;border-radius:8px}
+    nav a:hover{background:rgba(255,255,255,0.06)}
+    .wrap{max-width:1100px;margin:28px auto;padding:0 20px}
+    .hero{display:grid;grid-template-columns:1fr;gap:18px;align-items:center}
+    .hero-card{background:linear-gradient(180deg,rgba(255,255,255,0.05),transparent);padding:22px;border-radius:12px;backdrop-filter: blur(6px);box-shadow:0 6px 18px rgba(10,20,30,0.08);border:1px solid rgba(255,255,255,0.06)}
+    h1{margin:0 0 6px;font-size:22px}
+    p.lead{margin:0;color:var(--muted)}
+
+    /* two-column layout */
+    .grid{display:grid;grid-template-columns:1fr 380px;gap:22px;margin-top:22px}
+    .panel{background:var(--card);padding:20px;border-radius:12px;box-shadow:0 6px 24px rgba(12,16,20,0.04)}
+    .muted{color:var(--muted);font-size:14px}
+
+    /* Mood-to-Method */
+    .mood{display:flex;flex-direction:column;gap:10px}
+    .mood .choices{display:flex;gap:8px;flex-wrap:wrap}
+    .choice{border:1px solid #e8eceb;padding:10px 12px;border-radius:10px;background:#fff;cursor:pointer}
+    .choice.active{border-color:var(--accent);box-shadow:0 6px 18px rgba(42,111,111,0.06)}
+    .method{margin-top:12px;padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(138,162,154,0.06),transparent);border:1px dashed rgba(42,111,111,0.08)}
+    .cta{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:10px;background:var(--accent);color:#fff;text-decoration:none}
+
+    /* timeline */
+    .timeline{display:flex;flex-direction:column;gap:12px}
+    .phase{padding:12px;border-radius:10px;border:1px solid #eef3f2;background:#fff}
+    .phase h4{margin:0 0 6px}
+    .phase .note{color:var(--muted);font-size:13px}
+    .phase .actions{display:flex;gap:8px;margin-top:8px}
+    .small{font-size:13px;color:var(--muted)}
+
+    form.contact-form{display:flex;flex-direction:column;gap:10px}
+    input,textarea,select{padding:10px;border-radius:8px;border:1px solid #e6ebe8}
+    button{background:var(--accent);color:#fff;border:none;padding:10px 12px;border-radius:8px;cursor:pointer}
+
+    footer{max-width:1100px;margin:40px auto;padding:0 20px 60px;color:var(--muted);font-size:14px}
+
+    /* responsive */
+    @media (max-width:880px){.grid{grid-template-columns:1fr}.nav{flex-wrap:wrap}.hero{padding-bottom:12px}}
+
+    /* subtle svg pattern background via file */
+    body::before{content:"";position:fixed;inset:0;background-image:url('assets/img/pattern.svg');opacity:0.06;pointer-events:none}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand">Holistic Membership</div>
+      <nav style="margin-left:20px">
+        <a href="index.html">Home</a>
+        <a href="services.html">Offerings</a>
+        <a href="conditions.html">Conditions</a>
+        <a href="approach.html">Method</a>
+        <a href="pricing.html">Programs</a>
+        <a href="about.html">About</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html" style="opacity:0.95;text-decoration:underline">Connect</a>
+      </nav>
+      <div style="margin-left:auto;display:flex;gap:10px;align-items:center">
+        <a href="mailto:{{EMAIL}}" style="color:#fff;text-decoration:none;font-size:14px">{{EMAIL}}</a>
+        <a href="#join" class="cta">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="hero-card panel">
+        <h1>Connect, clarify, and choose a steady path forward</h1>
+        <p class="lead">A membership for people who want practical, layered support for daily balance—guided with transparency and time-bound steps.</p>
+        <div style="margin-top:12px;color:var(--muted);font-size:14px">Phone: <strong>{{PHONE}}</strong> • Location: <strong>{{CITY}}, {{STATE}}</strong></div>
+      </div>
+    </section>
+
+    <div class="grid">
+      <div>
+        <section class="panel">
+          <h3 style="margin-top:0">Mood-to-Method selector</h3>
+          <p class="small">Choose how you are right now. We’ll map a suggested first step and tailor the join prompt to that need. This is educational — not clinical advice.</p>
+
+          <div class="mood" id="moodModule">
+            <div class="choices" role="list">
+              <div class="choice" data-key="overwhelmed">Overwhelmed</div>
+              <div class="choice" data-key="low_energy">Low energy</div>
+              <div class="choice" data-key="curious">Curious / Exploring</div>
+              <div class="choice" data-key="steady">Stable / Maintenance</div>
+            </div>
+
+            <div class="method" aria-live="polite">
+              <strong id="methodTitle">Choose a state above</strong>
+              <div id="methodCopy" class="muted" style="margin-top:8px">Select an option to see a suggested first approach and a membership action that fits that immediate priority.</div>
+              <a href="{{PRIMARY_CTA_URL}}" id="moodCta" class="cta" style="display:inline-block">{{PRIMARY_CTA_LABEL}}</a>
+            </div>
+          </div>
+
+          <script>
+            (function(){
+              const choices = document.querySelectorAll('.choice');
+              const title = document.getElementById('methodTitle');
+              const copy = document.getElementById('methodCopy');
+              const cta = document.getElementById('moodCta');
+              const mapping = {
+                overwhelmed: {
+                  title: 'Short-stay stabilization',
+                  copy: 'A focused three-week intake with stress-mitigation micro-routines and a twice-weekly check-in. Ideal when your daily load feels unmanageable.',
+                  cta: 'Start Stabilization Path'
+                },
+                low_energy: {
+                  title: 'Energy rebalancing',
+                  copy: 'A phased plan that layers restorative routines, nutrition-focused guidance, and light movement to rebuild baseline energy safely.',
+                  cta: 'Begin Energy Plan'
+                },
+                curious: {
+                  title: 'Exploratory membership',
+                  copy: 'A flexible, learning-first track: monthly workshops, an evaluation session, and access to community micro-practices for gradual change.',
+                  cta: 'Explore the Intro Tier'
+                },
+                steady: {
+                  title: 'Maintenance & tuning',
+                  copy: 'Quarterly reviews and a set of micro-habits to keep gains in place—recommended if you already have routines but want support retaining progress.',
+                  cta: 'Join Maintenance Circle'
+                }
+              };
+
+              choices.forEach(el=>el.addEventListener('click', ()=>{
+                choices.forEach(c=>c.classList.remove('active'));
+                el.classList.add('active');
+                const key = el.getAttribute('data-key');
+                const m = mapping[key];
+                title.textContent = m.title;
+                copy.textContent = m.copy;
+                cta.textContent = m.cta;
+                // append URL fragment to carry mood state when user follows CTA
+                cta.href = '{{PRIMARY_CTA_URL}}' + ({{true}} ? ('#mood='+encodeURIComponent(key)) : '');
+              }));
+            })();
+          </script>
+        </section>
+
+        <section class="panel" style="margin-top:18px">
+          <h3 style="margin-top:0">Timeline planner — three phases</h3>
+          <p class="small">A transparent roadmap with suggested focus areas. Not a diagnosis or guaranteed outcome; adapt with your clinician.</p>
+
+          <div class="timeline" id="timeline">
+            <div class="phase" data-phase="1">
+              <h4>Phase 1 — Stabilize (Weeks 0–4)</h4>
+              <div class="note">Primary aim: reduce immediate strain and create predictable rest. Typical elements: focused intake, sleep consistency, and two micro-habits.</div>
+              <div class="actions">
+                <label class="small">Start: <input type="date" class="startDate"></label>
+                <label class="small"><input type="checkbox"> Include short coaching calls</label>
+              </div>
+            </div>
+
+            <div class="phase" data-phase="2">
+              <h4>Phase 2 — Rebuild (Weeks 5–12)</h4>
+              <div class="note">Build resilience via gradual behavior layering: nutrition adjustments, movement, and weekly check-ins.</div>
+              <div class="actions">
+                <label class="small">Start: <input type="date" class="startDate"></label>
+                <label class="small"><input type="checkbox"> Add group workshop</label>
+              </div>
+            </div>
+
+            <div class="phase" data-phase="3">
+              <h4>Phase 3 — Tune & Maintain (Months 3+)</h4>
+              <div class="note">A lighter rhythm of review, habit maintenance, and quarterly adjustments to protect gains.</div>
+              <div class="actions">
+                <label class="small">Review: <input type="date" class="startDate"></label>
+                <label class="small"><input type="checkbox"> Quarterly review included</label>
+              </div>
+            </div>
+
+            <div class="small" style="margin-top:8px">Disclaimer: Plans are educational and personalised through clinical consultation. No guaranteed cures; results vary based on many factors.</div>
+
+            <div style="margin-top:12px;display:flex;gap:10px;align-items:center">
+              <button id="exportTimeline">Export plan summary</button>
+              <div id="exportNote" class="small muted" style="margin-left:6px">Generate a short summary for your records.</div>
+            </div>
+          </div>
+
+          <script>
+            document.getElementById('exportTimeline').addEventListener('click',()=>{
+              const phases = Array.from(document.querySelectorAll('.phase')).map(p=>{
+                const title = p.querySelector('h4').textContent;
+                const note = p.querySelector('.note').textContent;
+                const date = p.querySelector('.startDate').value || '—';
+                const checked = Array.from(p.querySelectorAll('input[type=checkbox]')).map(cb=>cb.checked).some(Boolean);
+                return title + '\n' + note + '\nStart: ' + date + (checked ? ' • Extras included' : '');
+              }).join('\n\n');
+              const blob = new Blob([phases],{type:'text/plain'});
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url; a.download = 'plan-summary.txt'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+            });
+          </script>
+        </section>
+
+        <section class="panel" style="margin-top:18px">
+          <h3 style="margin-top:0">Quick contact</h3>
+          <p class="small">Prefer a direct note? We respond to membership enquiries within three business days.</p>
+
+          <form class="contact-form" action="mailto:{{EMAIL}}" method="post" enctype="text/plain">
+            <input name="name" placeholder="Your name" required>
+            <input name="email" type="email" placeholder="Your email" required>
+            <textarea name="message" rows="4" placeholder="Tell us briefly what you need"></textarea>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button type="submit">Send inquiry</button>
+              <a href="tel:{{PHONE}}" style="display:inline-block;padding:10px 12px;background:#eef7f6;border-radius:8px;color:var(--accent)">Call: {{PHONE}}</a>
+            </div>
+          </form>
+        </section>
+      </div>
+
+      <aside>
+        <div class="panel">
+          <h4 style="margin-top:0">Membership snapshot</h4>
+          <div class="muted">A monthly membership with staged tracks: Starter, Rebalance, & Steward. Pricing shown on the Programs page.</div>
+
+          <ul style="margin-top:12px;color:var(--muted);padding-left:16px">
+            <li>Community micro-practices and monthly workshops</li>
+            <li>Personalized 30–60 minute monthly sessions</li>
+            <li>Flexible add-ons: focused intensives</li>
+          </ul>
+
+          <div style="margin-top:12px">
+            <a id="join" href="{{PRIMARY_CTA_URL}}" class="cta" style="display:inline-block">{{PRIMARY_CTA_LABEL}}</a>
+          </div>
+
+          <div style="margin-top:12px;color:var(--muted);font-size:13px">Questions? Reach us at <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+        </div>
+
+        <div class="panel" style="margin-top:18px">
+          <h4 style="margin-top:0">Privacy & consent</h4>
+          <div class="muted">We store contact details only to reply and to administer membership services. By contacting us you agree to be contacted about services; clinical care requires an initial intake and consent.</div>
+        </div>
+      </aside>
+
+    </div>
+  </main>
+
+  <footer>
+    <div style="max-width:1100px;margin:0 auto;padding:0 20px">© <span id="year">2026</span> • Membership programs for whole-life balance • <span class="muted">No guarantees; educational resources and guided support only.</span></div>
+  </footer>
+
+  <script>
+    // small script to set current year
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

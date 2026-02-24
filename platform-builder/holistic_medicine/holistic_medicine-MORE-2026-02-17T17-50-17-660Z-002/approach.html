@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Our Approach — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#04131a;--panel:#0b1720;--accent:#9fd6cf;--muted:#9fb6bc}
+    body{margin:0;font-family:Inter,system-ui,Arial;color:#e9fbff;background:linear-gradient(180deg,var(--bg),#021018)}
+    header{padding:14px 20px;display:flex;align-items:center;justify-content:space-between}
+    nav a{color:#cfe8ef;margin-left:10px;text-decoration:none}
+    .wrap{padding:24px}
+    .flow{display:flex;gap:14px;align-items:center}
+    .step{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:16px;border-radius:10px;border:1px solid rgba(255,255,255,0.02);width:220px}
+    h1{margin:0 0 10px 0}
+    .muted{color:var(--muted)}
+    .reveal{opacity:0;transform:translateY(12px);transition:opacity .55s ease,transform .55s ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+    .cta{margin-top:18px}
+    .micro{display:flex;gap:8px;flex-wrap:wrap}
+    .micro .mini{background:rgba(255,255,255,0.02);padding:10px;border-radius:8px}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center"><div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#8bd0c7,#66b4a8);display:grid;place-items:center;font-weight:700">HM</div><div style="font-weight:700">Our Method</div></div>
+    <nav aria-label="top nav"><a href="/index.html">Home</a><a href="/services.html">Therapies</a><a href="/conditions.html">Conditions</a><a href="/pricing.html">Pricing</a><a href="/book.html">Book</a></nav>
+  </header>
+
+  <main class="wrap">
+    <section class="reveal">
+      <h1>How we work with you</h1>
+      <p class="muted">A practical, rhythm-focused approach that blends short practices with periodic guided sessions. We think in small experiments rather than one-size-fits-all prescriptions.</p>
+    </section>
+
+    <section style="margin-top:18px" class="reveal">
+      <div class="flow">
+        <div class="step">
+          <strong>1 • Map</strong>
+          <div class="muted" style="margin-top:8px">We gather context: history, patterns, and realistic constraints. Mapping creates the starting line.</div>
+        </div>
+        <div style="font-size:20px;color:var(--muted)">→</div>
+        <div class="step">
+          <strong>2 • Plan</strong>
+          <div class="muted" style="margin-top:8px">Design short, testable steps — a weekly rhythm you can commit to and adapt.</div>
+        </div>
+        <div style="font-size:20px;color:var(--muted)">→</div>
+        <div class="step">
+          <strong>3 • Practice</strong>
+          <div class="muted" style="margin-top:8px">Small daily moments that nudge systems (sleep, digestion, stress) toward steadier function.</div>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:22px" class="reveal">
+      <h3>Practical micro-habits</h3>
+      <p class="muted">Micro-habits are bite-sized, low-friction actions that create cumulative change.</p>
+      <div class="micro" style="margin-top:10px">
+        <div class="mini"><strong>2-minute check-in</strong><div class="muted">Pause and name one sensation before a practice.</div></div>
+        <div class="mini"><strong>Morning anchor</strong><div class="muted">One short movement sequence to cue alertness.</div></div>
+        <div class="mini"><strong>Pre-bed ritual</strong><div class="muted">A 6–8 minute routine to wind down screens and attention.</div></div>
+        <div class="mini"><strong>Snack timing</strong><div class="muted">Small planning to stabilize energy between meals.</div></div>
+      </div>
+    </section>
+
+    <section style="margin-top:22px;padding:14px;background:linear-gradient(180deg,transparent,rgba(255,255,255,0.02))" class="reveal">
+      <h3>Session Planner</h3>
+      <p class="muted">Sketch a short experiment you can run for 2–4 weeks. Copy the summary to bring to a session.</p>
+
+      <div style="margin-top:10px;padding:12px;background:var(--panel);border-radius:10px;border:1px solid rgba(255,255,255,0.02)">
+        <div class="planner" id="planner-approach">
+          <label for="goal-a">One-sentence experiment</label>
+          <input id="goal-a" type="text" placeholder="e.g., 10-min morning movement 5x/wk">
+
+          <label style="margin-top:8px">Choose emphasis</label>
+          <div class="chips" id="emph">
+            <button class="chip" data-value="Mobility" type="button">Mobility</button>
+            <button class="chip" data-value="Breath" type="button">Breath</button>
+            <button class="chip" data-value="Nourish" type="button">Nourish</button>
+            <button class="chip" data-value="Rest" type="button">Rest</button>
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:10px">
+            <button class="btn" id="build-a">Create</button>
+            <button class="secondary small" id="clear-a">Reset</button>
+          </div>
+
+          <div style="margin-top:10px">
+            <div class="output" id="plan-output-a">Your experiment summary will appear here.</div>
+            <div style="display:flex;gap:8px;margin-top:6px"><button class="btn small" id="copy-a">Copy</button><button class="secondary small" id="dl-a">Download</button></div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <section style="margin-top:22px" class="reveal">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+        <div>
+          <div style="font-weight:700;color:#e6fbff">Ready to shape a small, steady experiment?</div>
+          <div class="muted">Start with one micro-habit and track it for two weeks.</div>
+        </div>
+        <div>
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // reveal
+    (function(){
+      const prefersReduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const elems = document.querySelectorAll('.reveal');
+      if(prefersReduce){ elems.forEach(e=>e.classList.add('visible')); return; }
+      const obs = new IntersectionObserver((entries)=>{ entries.forEach(en=>{ if(en.isIntersecting) en.target.classList.add('visible'); }); },{threshold:0.08});
+      elems.forEach(e=>obs.observe(e));
+    })();
+
+    // planner (approach)
+    (function(){
+      const chips = document.querySelectorAll('#emph .chip');
+      chips.forEach(c=>c.addEventListener('click', ()=>c.classList.toggle('selected')));
+      const build = document.getElementById('build-a');
+      const clear = document.getElementById('clear-a');
+      const out = document.getElementById('plan-output-a');
+      const copy = document.getElementById('copy-a');
+      const dl = document.getElementById('dl-a');
+
+      build.addEventListener('click', ()=>{
+        const goal = document.getElementById('goal-a').value.trim() || '(no experiment)';
+        const emph = Array.from(document.querySelectorAll('#emph .chip.selected')).map(n=>n.getAttribute('data-value'));
+        const summary = ['Experiment summary','------------------','Experiment: '+goal,'Emphasis: '+(emph.length?emph.join(', '):'General'),'Duration: 2 weeks suggested','Check-in: brief note after each practice','Generated: '+new Date().toLocaleString()].join('\n');
+        out.textContent = summary;
+      });
+
+      clear.addEventListener('click', ()=>{ document.getElementById('goal-a').value=''; document.querySelectorAll('#emph .chip.selected').forEach(c=>c.classList.remove('selected')); out.textContent='Your experiment summary will appear here.'; });
+
+      copy.addEventListener('click', async ()=>{ try{ await navigator.clipboard.writeText(out.textContent); copy.textContent='Copied'; setTimeout(()=>copy.textContent='Copy',1200);}catch(e){ const ta=document.createElement('textarea'); ta.value=out.textContent; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); copy.textContent='Copied'; setTimeout(()=>copy.textContent='Copy',1200);} });
+
+      dl.addEventListener('click', ()=>{ const blob=new Blob([out.textContent],{type:'text/plain'}); const u=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=u; a.download='experiment.txt'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(u); });
+    })();
+  </script>
+</body>
+</html>

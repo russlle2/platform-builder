@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Pricing & Packages — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--ink:#0e1720;--muted:#6b7280;--accent:#7b9c83}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:var(--bg);color:var(--ink)}
+    .wrap{max-width:980px;margin:36px auto;padding:28px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:20px;margin-top:18px}
+    .card{background:#fff;padding:18px;border-radius:12px;border:1px solid rgba(12,15,20,0.04);box-shadow:0 6px 22px rgba(12,15,20,0.03)}
+    .plan{padding:12px;border-radius:10px;margin-bottom:12px}
+    .muted{color:var(--muted);font-size:14px}
+    .btn{background:var(--accent);color:white;padding:10px 12px;border-radius:8px;border:none;cursor:pointer}
+    .calc{display:flex;gap:8px;align-items:center;margin-top:10px}
+    input,select{padding:8px;border-radius:8px;border:1px solid rgba(12,15,20,0.06)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div style="font-weight:700">Investment & Offerings</div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="events.html">Events</a>
+        <a href="private-sessions.html">Sessions</a>
+        <a href="book.html">Book</a>
+      </nav>
+    </header>
+
+    <main class="grid">
+      <section class="card">
+        <h2 style="margin-top:0">Packages framed as pathways</h2>
+        <p class="muted">Rates are shown as starting investments. Sliding scale and bespoke proposals are available for multi-session commitments.</p>
+
+        <div class="plan" style="background:linear-gradient(180deg,#fbfdfb,#fff);border:1px solid rgba(11,15,14,0.03)">
+          <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-weight:700">Hushed One-off</div><div style="font-weight:700">$85</div></div>
+          <div class="muted" style="margin-top:8px">A single session for an immediate reset — recommended for first-time visitors.</div>
+        </div>
+
+        <div class="plan" style="background:linear-gradient(180deg,#fffefb,#fff);border:1px solid rgba(11,15,14,0.03)">
+          <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-weight:700">Resonant Pair</div><div style="font-weight:700">$160</div></div>
+          <div class="muted" style="margin-top:8px">Two-session bundle to build continuity and actionable next steps.</div>
+        </div>
+
+        <div class="plan" style="background:linear-gradient(180deg,#fbfbff,#fff);border:1px solid rgba(11,15,14,0.03)">
+          <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-weight:700">Deep Arc (3-session)</div><div style="font-weight:700">$240</div></div>
+          <div class="muted" style="margin-top:8px">An intensive arc for a focused shift. Includes integration notes and short follow-up email.</div>
+        </div>
+
+        <div style="margin-top:14px" class="card">
+          <div style="font-weight:700">Custom engagements</div>
+          <div class="muted" style="margin-top:8px">If you need a tailored package for movement therapists, corporate retreat, or a private residency, contact us for a proposal.</div>
+          <div style="margin-top:10px"><a class="btn" href="contact.html">Request a proposal</a></div>
+        </div>
+
+        <div style="margin-top:14px;color:var(--muted);font-size:13px">Note on safety: If you have significant medical concerns, implants, or pregnancy, please consult your provider before booking. For clarity reach out to <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</div>
+      </section>
+
+      <aside class="card">
+        <div style="font-weight:700">Quick calculator</div>
+        <div class="muted" style="margin-top:8px">Select a package and quantity to see an immediate subtotal. Use this to prepare a booking conversation.</div>
+
+        <div style="margin-top:12px">
+          <label class="muted">Package</label>
+          <select id="pkg">
+            <option value="85">Hushed One-off — $85</option>
+            <option value="160">Resonant Pair — $160</option>
+            <option value="240">Deep Arc (3) — $240</option>
+          </select>
+        </div>
+
+        <div style="margin-top:12px">
+          <label class="muted">Quantity</label>
+          <input id="qty" type="number" min="1" value="1">
+        </div>
+
+        <div class="calc">
+          <button id="calcBtn" class="btn">Calculate</button>
+          <div id="result" style="font-weight:700;margin-left:6px">$0</div>
+        </div>
+
+        <div style="margin-top:12px">
+          <a id="bookBtn" class="btn" href="book.html">Prepare booking</a>
+        </div>
+
+        <div style="margin-top:18px;font-size:13px;color:var(--muted)">We accept payment via card or bank transfer. For group rates or sliding scale, email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</div>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    (function(){
+      const calcBtn=document.getElementById('calcBtn');
+      const result=document.getElementById('result');
+      const pkg=document.getElementById('pkg');
+      const qty=document.getElementById('qty');
+      const bookBtn=document.getElementById('bookBtn');
+
+      function compute(){
+        const unit=parseFloat(pkg.value);
+        const n=parseInt(qty.value,10)||1;
+        const subtotal = unit*n;
+        result.textContent = '$'+subtotal.toFixed(2);
+        bookBtn.href = 'book.html?amount='+encodeURIComponent(subtotal)+'&package='+encodeURIComponent(pkg.options[pkg.selectedIndex].text);
+      }
+
+      calcBtn.addEventListener('click',compute);
+      // compute on change
+      pkg.addEventListener('change',compute);
+      qty.addEventListener('input',compute);
+
+      compute();
+    })();
+  </script>
+</body>
+</html>

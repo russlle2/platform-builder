@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Courses — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Programs and the 7-day habit challenge generator.">
+  <style>
+    :root{--bg:#f7fbfc;--ink:#07263b;--muted:#6b7280;--accent:#0b74b6}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--ink)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 20px}
+    .mark{width:48px;height:48;border-radius:10px;background:linear-gradient(135deg,#0b74b6,#0ea5a0);display:flex;align-items:center;justify-content:center;color:white;font-weight:800}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none;font-weight:700}
+    .intro{padding:24px 20px;display:flex;justify-content:space-between;gap:18px}
+    .panel{background:white;padding:16px;border-radius:12px;box-shadow:0 8px 26px rgba(2,6,23,0.05)}
+    .grid{display:grid;grid-template-columns:2fr 1fr;gap:18px;padding:20px}
+    .program-list{display:grid;gap:12px}
+    .program{background:white;padding:14px;border-radius:10px;border:1px solid #eaf3fb}
+    .muted{color:var(--muted)}
+    .btn{padding:8px 12px;border-radius:10px;border:0;background:var(--accent);color:white;font-weight:700;cursor:pointer}
+    /* habit builder */
+    .habit-builder{background:white;padding:16px;border-radius:12px;border:1px solid #e7f2fb}
+    .day-list{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:12px}
+    .day{background:#f7fdff;border-radius:8px;padding:10px;text-align:center;border:1px dashed #e0f2ff}
+    .print-area{display:none}
+    @media print{body *{visibility:hidden} .print-area, .print-area *{visibility:visible} .print-area{position:fixed;left:0;top:0;width:100%}}
+    @media (max-width:980px){.grid{grid-template-columns:1fr} .day-list{grid-template-columns:repeat(4,1fr)}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center"><div class="mark">W</div><div><div style="font-weight:800">{{BUSINESS_NAME}}</div><div class="muted">Practical program tracks</div></div></div>
+    <nav>
+      <a href="index.html">Anchor</a>
+      <a href="services.html">Offerings</a>
+      <a href="programs.html">Courses</a>
+      <a href="pricing.html">Rates</a>
+      <a href="testimonials.html">Stories</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="intro">
+      <div class="panel" style="flex:1">
+        <h2 style="margin:0">Program tracks</h2>
+        <p class="muted" style="margin-top:8px">Short cycles and membership opportunities that follow a stepwise habit roadmap.</p>
+      </div>
+      <div style="width:320px" class="panel">
+        <div style="font-weight:700">Membership framing</div>
+        <p class="muted" style="margin-top:8px">Transparent deliverables: weekly plans, monthly checkpoints, and a living habit map.</p>
+        <div style="margin-top:12px"><a class="btn" href="{{PRIMARY_CTA_URL}}">Start a plan</a></div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div>
+        <div class="program-list">
+          <div class="program">
+            <h3 style="margin:0">Starter Cycle — 6 weeks</h3>
+            <p class="muted" style="margin-top:8px">Choose one behavior. We reduce it to a prompt + tiny action + nightly log.</p>
+            <div style="margin-top:10px;display:flex;gap:8px"><a class="btn" href="book.html">Plan cycle</a><button class="btn" id="gen-challenge">Create 7-day challenge</button></div>
+          </div>
+
+          <div class="program">
+            <h3 style="margin:0">Micro-Lab Series</h3>
+            <p class="muted" style="margin-top:8px">Weekly short practices and templates you can use immediately.</p>
+            <div style="margin-top:10px"><a class="btn" href="services.html">Explore practices</a></div>
+          </div>
+
+          <div class="program">
+            <h3 style="margin:0">Reflect & Adjust</h3>
+            <p class="muted" style="margin-top:8px">A monthly data review and adjustments session for your habit map.</p>
+            <div style="margin-top:10px"><a class="btn" href="contact.html">Request review</a></div>
+          </div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="habit-builder panel">
+          <h4 style="margin:0">7-day habit challenge</h4>
+          <p class="muted" style="margin-top:8px">Generate a compact 7-day challenge tied to one tiny habit. Print or save the checklist.</p>
+          <div style="margin-top:10px">
+            <label class="muted">Enter a tiny habit (example: 2 mindful breaths after coffee)</label>
+            <input id="habit-input" placeholder="I will..." style="width:100%;padding:8px;margin-top:8px;border-radius:8px;border:1px solid #eaf3fb" />
+            <div style="display:flex;gap:8px;margin-top:10px"><button class="btn" id="create-challenge">Generate</button><button class="btn outline" id="print-challenge">Print</button></div>
+          </div>
+
+          <div id="challenge-output" style="margin-top:12px">
+            <div class="day-list" id="day-list"></div>
+          </div>
+        </div>
+
+        <div style="margin-top:14px" class="panel">
+          <h4 style="margin:0">Quick resources</h4>
+          <p class="muted" style="margin-top:8px">Short tools and templates to support the challenge.</p>
+          <ul class="muted" style="margin-top:8px"><li>Micro-reflection template</li><li>Prompt library</li><li>Weekly check-in form</li></ul>
+        </div>
+      </aside>
+    </section>
+
+    <div class="print-area" id="print-area"></div>
+
+  </main>
+
+  <footer style="padding:18px 20px;color:var(--muted)">Not medical advice. Programs emphasize habits, outcomes, and simple frameworks only. Contact: {{EMAIL}}</footer>
+
+  <script>
+    (function(){
+      // 7-day generator logic
+      const defaultPrompts = [
+        'Day 1: Try it — notice one detail while doing the habit.',
+        'Day 2: Repeat with focus; mark whether it felt easier.',
+        'Day 3: Link the habit to a clear cue in your day.',
+        'Day 4: Short reflection: what felt different?',
+        'Day 5: Keep the action tiny; notice resistance and adjust.',
+        'Day 6: Invite a small accountability check or note.',
+        'Day 7: Review: what will you keep next week?'
+      ];
+
+      const createBtn = document.getElementById('create-challenge');
+      const printBtn = document.getElementById('print-challenge');
+      const input = document.getElementById('habit-input');
+      const dayList = document.getElementById('day-list');
+      const printArea = document.getElementById('print-area');
+
+      function buildChallenge(habitText){
+        dayList.innerHTML='';
+        const habit = habitText || 'Perform the tiny habit';
+        for(let i=0;i<7;i++){
+          const d = document.createElement('div');
+          d.className='day';
+          d.innerHTML = '<div style="font-weight:700">Day '+(i+1)+'</div><div style="font-size:13px;color:#475569;margin-top:6px">'+defaultPrompts[i].replace(/Day \d+: /,'')+'</div><div style="margin-top:6px;font-size:13px;color:#0b74b6">Habit: '+escapeHtml(habit)+'</div><label style="margin-top:8px;display:block;font-size:13px;"><input type="checkbox" style="margin-right:8px">Done</label>';
+          dayList.appendChild(d);
+        }
+        // prepare print area
+        renderPrint(habit);
+      }
+
+      function renderPrint(habit){
+        printArea.innerHTML='';
+        const title = document.createElement('div');
+        title.innerHTML = '<h2 style="margin:0">7-day challenge</h2><div style="margin-top:6px;color:#475569">Habit: '+escapeHtml(habit)+'</div>';
+        printArea.appendChild(title);
+        const ul = document.createElement('ol');
+        ul.style.marginTop='12px';
+        defaultPrompts.forEach((t,i)=>{const li=document.createElement('li');li.style.marginBottom='8px';li.textContent = t.replace(/^Day \d+: /,'') + ' — Habit: ' + habit;ul.appendChild(li)});
+        printArea.appendChild(ul);
+      }
+
+      function escapeHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;').replace(/>/g,'&gt;');}
+
+      createBtn.addEventListener('click',()=>{const v=input.value.trim()||'Perform the tiny habit';buildChallenge(v)});
+      printBtn.addEventListener('click',()=>{const v=input.value.trim()||'Perform the tiny habit';renderPrint(v);window.print();});
+
+      // small UX: prefill with helpful example
+      input.placeholder = 'Example: 2 mindful breaths after coffee';
+
+      // initial build
+      buildChallenge('2 mindful breaths after coffee');
+    })();
+  </script>
+</body>
+</html>

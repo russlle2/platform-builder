@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>FAQ — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#07121a;--card:#081620;--muted:#95a7ad;--accent:#66d9c7}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:#e8fbf9;background:linear-gradient(180deg,var(--bg),#021018);-webkit-font-smoothing:antialiased}
+    header{display:flex;align-items:center;gap:18px;padding:14px 20px;position:sticky;top:0;background:rgba(2,6,10,0.5);backdrop-filter:blur(6px);z-index:12}
+    .logo{width:44px;height:44px;background:linear-gradient(135deg,#66d9c7,#2ab5a1);border-radius:10px;display:grid;place-items:center;font-weight:700;color:#012423}
+    nav{margin-left:auto}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    main{max-width:880px;margin:24px auto;padding:0 20px}
+    .grid{display:grid;grid-template-columns:1fr 300px;gap:18px}
+    .card{background:var(--card);padding:16px;border-radius:12px}
+    h1{margin:0 0 8px 0;color:#eafffb}
+    .faq-item{margin-bottom:12px}
+    .q{font-weight:700;color:#dffbf4}
+    .a{color:var(--muted);margin-top:6px}
+    .cta-row{margin-top:18px;display:flex;gap:10px}
+    button{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#e6fbf8;padding:8px 12px;border-radius:10px;cursor:pointer}
+    button.primary{background:var(--accent);color:#012423;border:none}
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity 480ms ease,transform 480ms ease}
+    .reveal.in{opacity:1;transform:none}
+    /* small pattern */
+    .pattern{width:100%;height:84px;overflow:hidden;border-radius:10px}
+    .pattern svg{width:100%;height:100%;display:block}
+
+    /* modal as in about */
+    .modal-backdrop{position:fixed;inset:0;background:linear-gradient(0deg,rgba(2,6,11,0.6),rgba(2,6,11,0.85));display:none;align-items:center;justify-content:center;padding:28px;z-index:60}
+    .modal{width:100%;max-width:560px;background:#061518;border-radius:12px;padding:18px;color:#eaf6f5}
+    .meter{height:8px;background:rgba(255,255,255,0.06);border-radius:8px;overflow:hidden}
+    .meter > i{display:block;height:100%;width:0;background:linear-gradient(90deg,#a7fff4,#4fd9c9);}
+  </style>
+</head>
+<body>
+  <header>
+    <div class='logo' aria-hidden='true'>SB</div>
+    <div style='font-weight:700;color:#eaf6f5'>{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href='index.html'>Home</a>
+      <a href='events.html'>Gatherings</a>
+      <a href='about.html'>About</a>
+      <a href='book.html'>Reserve</a>
+      <a href='contact.html'>Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class='card reveal'>
+      <div style='display:flex;align-items:center;justify-content:space-between'>
+        <div>
+          <h1>Frequently asked questions</h1>
+          <div style='color:var(--muted)'>Practical answers for attending, accessibility, and safety.</div>
+        </div>
+        <div style='width:220px;text-align:right'>
+          <div style='font-size:12px;color:var(--muted)'>Prefer to try a short focus first?</div>
+          <div style='margin-top:8px'><button class='primary' id='tryNow'>Try it now</button></div>
+        </div>
+      </div>
+    </section>
+
+    <div class='grid' style='margin-top:18px'>
+      <div>
+        <section class='card reveal' aria-labelledby='q1'>
+          <div class='faq-item'>
+            <div class='q' id='q1'>Do I need experience?</div>
+            <div class='a'>No. Sessions are designed to support beginners and experienced listeners. Each gathering begins with a brief orientation and clear cues so you can participate at your comfort level.</div>
+          </div>
+
+          <div class='faq-item'>
+            <div class='q'>What should I bring?</div>
+            <div class='a'>Comfortable clothing, a cushion or yoga mat, and a light blanket if you tend to get cold. We provide mats on request but recommend bringing your own for hygiene.</div>
+          </div>
+
+          <div class='faq-item'>
+            <div class='q'>How loud are sessions?</div>
+            <div class='a'>Sound is intentionally balanced and not overpowering. We emphasize sustain and low frequencies with clear guidance on when to open and close quiet windows.</div>
+          </div>
+
+          <div class='faq-item'>
+            <div class='q'>Are there contraindications?</div>
+            <div class='a'>Yes. If you are pregnant, have epilepsy, uncontrolled hypertension, recent surgery, or severe vestibular disorders, please consult your medical provider before attending. Inform us when booking so we can advise alternatives such as a private consultation.</div>
+          </div>
+
+          <div class='faq-item'>
+            <div class='q'>Can I bring a friend?</div>
+            <div class='a'>Yes. We encourage friends to join. Group sizes are limited for quality and attention to safety.</div>
+          </div>
+        </section>
+
+        <section class='card reveal' style='margin-top:14px'>
+          <h3 style='margin-top:0;color:#eafffb'>Cancellation and refunds</h3>
+          <div style='color:var(--muted)'>Cancellations made more than 48 hours before a session receive a full refund. Within 48 hours, transfers to another date may be considered depending on availability.</div>
+        </section>
+      </div>
+
+      <aside class='card reveal'>
+        <div class='pattern' aria-hidden='true'>
+          <svg viewBox='0 0 300 84' xmlns='http://www.w3.org/2000/svg'>
+            <defs>
+              <linearGradient id='g1' x1='0' x2='1'>
+                <stop offset='0' stop-color='#66d9c7'/>
+                <stop offset='1' stop-color='#9ef2e4'/>
+              </linearGradient>
+            </defs>
+            <rect width='300' height='84' fill='#04161a'/>
+            <g fill='none' stroke='url(#g1)' stroke-opacity='0.14' stroke-width='2'>
+              <path d='M0 40 Q50 10 100 40 T200 40 T300 40'/>
+              <path d='M0 60 Q60 30 120 60 T240 60 T300 60'/>
+            </g>
+          </svg>
+        </div>
+
+        <div style='margin-top:12px'>
+          <div style='font-weight:700;color:#eafffb'>Connect with us</div>
+          <div style='color:var(--muted);margin-top:8px'>Call {{PHONE}} or email {{EMAIL}} for accessibility needs, private sessions, or partnership inquiries.</div>
+          <div class='cta-row'>
+            <button onclick='location.href="book.html"'>Reserve</button>
+            <button onclick='location.href="contact.html"' class='primary'>Message us</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <section style='margin-top:18px'>
+      <div class='card reveal'>
+        <h3 style='margin-top:0;color:#eafffb'>Short guide: arriving to a session</h3>
+        <ol style='color:var(--muted)'>
+          <li>Arrive 10 minutes early to settle into the space.</li>
+          <li>We dim lights and ask for phones in silent mode. Wear what is comfortable.</li>
+          <li>After the session there is time for notes and gentle reorientation.</li>
+        </ol>
+      </div>
+    </section>
+
+  </main>
+
+  <div id='modalBackdrop' class='modal-backdrop' role='dialog' aria-modal='true' aria-hidden='true'>
+    <div class='modal' role='document'>
+      <button class='close' id='closeModal' aria-label='Close'>✕</button>
+      <h3 style='margin-top:0'>A short guided focus</h3>
+      <p style='color:var(--muted)'>Three short phases to try now. Designed to be gentle and accessible.</p>
+      <div style='margin-top:10px'>
+        <div class='meter' aria-hidden='true'><i id='progressBar' style='width:0%'></i></div>
+        <div id='stepText' style='margin-top:8px;color:var(--muted)'>Ready</div>
+      </div>
+      <div style='margin-top:12px;display:flex;gap:8px'>
+        <button id='startExercise' class='primary'>Start</button>
+        <button id='cancelExercise'>Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // reveal
+    (function(){
+      const prefers = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const nodes = document.querySelectorAll('.reveal');
+      if(prefers){nodes.forEach(n=>n.classList.add('in'));return}
+      const obs = new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');obs.unobserve(e.target)}})},{threshold:0.12});
+      nodes.forEach(n=>obs.observe(n));
+    })();
+
+    // modal logic similar to about
+    (function(){
+      const tryBtn = document.getElementById('tryNow');
+      const backdrop = document.getElementById('modalBackdrop');
+      const close = document.getElementById('closeModal');
+      const start = document.getElementById('startExercise');
+      const cancel = document.getElementById('cancelExercise');
+      const text = document.getElementById('stepText');
+      const bar = document.getElementById('progressBar');
+      let timer;
+      const steps = [
+        {label:'3 breaths — inhale for 4, hold 2, exhale 6', dur:30},
+        {label:'One minute: jot a single line about how you feel', dur:60},
+        {label:'30 seconds: create a short intention for the hour', dur:30}
+      ];
+      function open(){backdrop.style.display='flex';backdrop.setAttribute('aria-hidden','false')}
+      function closeModal(){backdrop.style.display='none';backdrop.setAttribute('aria-hidden','true');clearInterval(timer);bar.style.width='0%';text.textContent='Ready'}
+      tryBtn.addEventListener('click',open);
+      close.addEventListener('click',closeModal);
+      cancel.addEventListener('click',closeModal);
+      backdrop.addEventListener('click',e=>{if(e.target===backdrop)closeModal()});
+      start.addEventListener('click',()=>{let i=0;open();run(i);function run(idx){const s=steps[idx];let t=0;bar.style.width='0%';text.textContent=s.label;timer=setInterval(()=>{t++;bar.style.width=Math.round(100*(t/s.dur))+'%';if(t>=s.dur){clearInterval(timer);if(idx+1<steps.length)setTimeout(()=>run(idx+1),300);else{setTimeout(()=>{text.textContent='Complete';setTimeout(closeModal,900)},200)}}},1000)}});
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Signature Blends — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#071026;--glass:rgba(255,255,255,0.04);--accent:#ffa8d6;--muted:#cbd5e1}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto;color:#f6f8ff;background:linear-gradient(180deg,#05101a,#071026);background-image:url('assets/img/pattern.svg')}
+    .nav{display:flex;justify-content:space-between;padding:18px 28px}
+    .nav a{color:var(--muted);margin-left:14px;text-decoration:none}
+    .container{max-width:1100px;margin:26px auto;padding:20px}
+    .glass{background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));backdrop-filter:blur(10px);border-radius:14px;padding:18px;border:1px solid rgba(255,255,255,0.03)}
+    h1{margin:0 0 8px 0}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:14px}
+    .blend{padding:14px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid rgba(255,255,255,0.03)}
+    .blend h4{margin:0}
+    .price{font-weight:700;margin-top:8px}
+    .add{margin-top:10px;display:inline-block;padding:8px 12px;border-radius:10px;background:var(--accent);color:#07203a;text-decoration:none}
+    .wheelbox{margin-top:12px;padding:12px}
+    .search{margin-top:10px}
+    input[type=text]{width:100%;padding:10px;border-radius:10px;border:none;background:rgba(255,255,255,0.02);color:#fff}
+    .note{font-size:13px;color:var(--muted)}
+    footer{margin-top:18px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <nav class="nav container">
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <div>
+      <a href="index.html">Welcome</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Potions</a>
+      <a href="shop.html">Boutique</a>
+      <a href="pricing.html">Fees</a>
+      <a href="about.html">Our Story</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <section class="glass">
+      <h1>Small-batch blends crafted for moments</h1>
+      <p class="note">Choose a blend type and we’ll suggest formats and usage notes. All bottles include dilution guidance and patch test reminders.</p>
+
+      <div class="search">
+        <label class="note">Mood-to-Method</label>
+        <select id="moodPick" style="width:100%;padding:10px;border-radius:10px;background:rgba(255,255,255,0.02);color:#fff;border:none">
+          <option>Calm</option>
+          <option>Focus</option>
+          <option>Energize</option>
+          <option>Rest</option>
+          <option>Reset</option>
+        </select>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-top:12px;align-items:center">
+        <div style="flex:1">
+          <div id="moodNote" class="note">Selected mood: Calm — curated suggestions will appear below.</div>
+        </div>
+        <a id="blendCta" class="add" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+
+      <div class="grid" id="blendList">
+        <div class="blend">
+          <h4>Morning Bright</h4>
+          <div class="note">Top: lemon, bergamot. Middle: rosemary. Base: soft cedar.</div>
+          <div class="price">$18 — 10 mL</div>
+          <a class="add" href="shop.html?item=morning-bright">Add</a>
+        </div>
+
+        <div class="blend">
+          <h4>Quiet Hearth</h4>
+          <div class="note">Top: orange. Middle: lavender. Base: benzoin & sandalwood.</div>
+          <div class="price">$20 — 10 mL</div>
+          <a class="add" href="shop.html?item=quiet-hearth">Add</a>
+        </div>
+
+        <div class="blend">
+          <h4>Green Pause</h4>
+          <div class="note">Top: basil. Middle: geranium. Base: vetiver.</div>
+          <div class="price">$19 — 10 mL</div>
+          <a class="add" href="shop.html?item=green-pause">Add</a>
+        </div>
+
+        <div class="blend">
+          <h4>Evening Silk</h4>
+          <div class="note">Top: mandarin. Middle: clary sage. Base: patchouli.</div>
+          <div class="price">$22 — 10 mL</div>
+          <a class="add" href="shop.html?item=evening-silk">Add</a>
+        </div>
+      </div>
+
+      <div class="wheelbox">
+        <h4 style="margin:0">Explore the wheel</h4>
+        <div style="display:flex;gap:12px;align-items:center;margin-top:8px">
+          <svg id="blendWheel" viewBox="0 0 210 210" width="160" height="160" role="img" aria-label="Blend aroma wheel">
+            <circle cx="105" cy="105" r="90" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.03)"/>
+            <g id="segments">
+              <path data-note="Top" d="M105 15 A90 90 0 0 1 195 105 L105 105 Z" fill="#ffd6b8"/>
+              <path data-note="Middle" d="M195 105 A90 90 0 0 1 105 195 L105 105 Z" fill="#d2ffd8"/>
+              <path data-note="Base" d="M105 195 A90 90 0 0 1 15 105 L105 105 Z" fill="#e7d2ff"/>
+              <path data-note="Fixative" d="M15 105 A90 90 0 0 1 105 15 L105 105 Z" fill="#ffd2e8"/>
+            </g>
+            <circle cx="105" cy="105" r="40" fill="rgba(10,14,20,0.6)"/>
+            <text x="105" y="111" text-anchor="middle" fill="#fff" font-size="12">Aroma Wheel</text>
+          </svg>
+          <div id="wheelDesc" class="note">Hover for note descriptions.</div>
+        </div>
+      </div>
+    </section>
+
+    <footer style="margin-top:14px;color:var(--muted)">Questions? <a href="mailto:{{EMAIL}}" style="color:var(--muted)">{{EMAIL}}</a> • Pickup in {{CITY}}, {{STATE}}</footer>
+  </main>
+
+  <script>
+    (function(){
+      const pick = document.getElementById('moodPick');
+      const moodNote = document.getElementById('moodNote');
+      const cta = document.getElementById('blendCta');
+
+      const suggestions = {
+        Calm:'Quiet Hearth or Evening Silk; recommend a 1.5–2% dilution for topical use.',
+        Focus:'Morning Bright or Green Pause; great as an inhaler or light mist for short focus periods.',
+        Energize:'Morning Bright highlighted; use brief bursts of diffused scent.',
+        Rest:'Evening Silk recommended; use diluted topically or in a bedside diffuser.',
+        Reset:'Green Pause or Morning Bright for clarity and transition support.'
+      };
+
+      function update(){
+        const m = pick.value;
+        moodNote.textContent = 'Selected mood: ' + m + ' — ' + (suggestions[m]||suggestions.Calm);
+        cta.textContent = m + ' ' + '{{PRIMARY_CTA_LABEL}}';
+        cta.href = '{{PRIMARY_CTA_URL}}' + '?mood=' + encodeURIComponent(m);
+      }
+      pick.addEventListener('change', update);
+      update();
+
+      // wheel hover
+      const segments = document.querySelectorAll('#segments path');
+      const desc = document.getElementById('wheelDesc');
+      segments.forEach(s =>{
+        s.addEventListener('mouseenter', ()=>{
+          const note = s.getAttribute('data-note');
+          if(note==='Top') desc.textContent = 'Top notes: citrus & bright herbs — first impression and lift.';
+          if(note==='Middle') desc.textContent = 'Middle notes: florals & herbals — body of the blend.';
+          if(note==='Base') desc.textContent = 'Base notes: woods & resins — longevity and grounding.';
+          if(note==='Fixative') desc.textContent = 'Fixative notes: small anchoring resins that help sustain the scent.';
+        });
+        s.addEventListener('mouseleave', ()=>{ desc.textContent = 'Hover for note descriptions.' });
+      });
+    })();
+  </script>
+</body>
+</html>

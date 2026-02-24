@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Begin — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--max:820px;--ink:#0a0a0a;--muted:#6d6d6d;--accent:#84b39a}
+    body{margin:0;padding:40px;font-family:system-ui,Segoe UI,Roboto,Arial;background:#fff;color:var(--ink)}
+    .wrap{max-width:var(--max);margin:0 auto}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none}
+    .hero{padding:28px;border-radius:10px;background:#fbfbfb;border:1px solid #f2f2f2;display:flex;gap:20px;align-items:center}
+    .hero h1{margin:0;font-size:22px}
+    .hero p{margin-top:8px;color:var(--muted)}
+    form{margin-top:18px;display:grid;gap:10px}
+    input,select,textarea{padding:10px;border-radius:8px;border:1px solid #e6e6e6}
+    label{font-size:13px;color:var(--muted)}
+    .btn{background:var(--accent);color:#fff;padding:10px 12px;border-radius:8px;border:none;cursor:pointer}
+    .plan{margin-top:18px;padding:16px;border-radius:10px;background:#fff;border:1px solid #f0f0f0}
+    .micro{font-size:14px;color:var(--muted);margin-top:10px}
+    footer{margin-top:20px;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div><strong>{{BUSINESS_NAME}}</strong></div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="specialties.html">Focus</a>
+        <a href="approach.html">Method</a>
+        <a href="fees.html">Rates</a>
+        <a href="faq.html">Guides</a>
+        <a href="book.html">Begin</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div style="flex:1">
+        <h1>Begin the first step</h1>
+        <p>I offer a short diagnostic conversation for new clients — a calm 20-minute call to map needs and next steps. If we decide to work together, we’ll co-design a plan aligned with your life.</p>
+        <p class="micro">Please note: this booking form is for scheduling; clinical intake paperwork follows.</p>
+      </div>
+      <div aria-hidden="true">
+        <!-- unique avatar-style SVG -->
+        <svg width="120" height="120" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <rect width="100" height="100" rx="14" fill="#f8fbfa" />
+          <circle cx="50" cy="36" r="16" fill="#6a9f8f" />
+          <rect x="22" y="60" width="56" height="18" rx="8" fill="#dff2ea" />
+          <path d="M30 74c6-4 16-6 28 0" stroke="#b7e0cf" stroke-width="2" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </section>
+
+    <main>
+      <form action="{{PRIMARY_CTA_URL}}" method="post" class="card" style="margin-top:18px">
+        <input type="hidden" name="source" value="diagnostic_booking" />
+        <label for="name">Your name</label>
+        <input id="name" name="name" required />
+
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" required />
+
+        <label for="phone">Phone (optional)</label>
+        <input id="phone" name="phone" />
+
+        <label for="modalities">What brings you here?</label>
+        <select id="modalities" name="modalities">
+          <option>{{MODALITIES}}</option>
+          <option>Anxiety</option>
+          <option>Relationship concerns</option>
+          <option>Trauma</option>
+          <option>Burnout / Work stress</option>
+          <option>Life transition / Grief</option>
+        </select>
+
+        <label for="notes">A few words about what you'd like help with</label>
+        <textarea id="notes" name="notes" rows="4"></textarea>
+
+        <div style="display:flex;gap:10px;align-items:center;margin-top:8px">
+          <button class="btn" type="submit">{{PRIMARY_CTA_LABEL}}</button>
+          <a href="fees.html" style="color:var(--muted);text-decoration:none;font-size:14px">See investment details</a>
+        </div>
+      </form>
+
+      <section class="plan">
+        <h3 style="margin:0">What the diagnostic looks like</h3>
+        <p class="micro">The diagnostic call is a listening conversation: I’ll check in about safety, immediate needs, past therapy, and what change would look like for you. We usually end with a clear next step — single session, short series, or an invitation to a cohort.</p>
+
+        <div style="margin-top:12px">
+          <strong>Typical flow</strong>
+          <ul style="color:var(--muted)">
+            <li>10 minutes — present concerns & safety</li>
+            <li>6 minutes — history & supports</li>
+            <li>4 minutes — proposed plan and next steps</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="plan" style="margin-top:12px">
+        <h3 style="margin:0">Micro-practices to try before our call</h3>
+        <p class="micro">If it feels helpful, try these brief practices to build grounding: a 3-minute breath practice (inhale 4, exhale 6), a short body scan, or a single-line journaling prompt each evening. These are gentle experiments — not requirements.</p>
+      </section>
+
+      <section class="plan" style="margin-top:12px">
+        <h3 style="margin:0">Booking & fees at a glance</h3>
+        <p class="micro">Diagnostic calls are complimentary or discounted depending on programs. For full session rates and packages, please see the Investment page. I offer limited sliding-scale spaces.</p>
+        <a class="btn" href="fees.html" style="margin-top:10px;display:inline-block">View rates</a>
+      </section>
+
+    </main>
+
+    <footer>
+      <div class="micro">Confidentiality & limits: Communications through this form are not emergency services. If you are in immediate danger, call emergency services. This practice maintains confidentiality within legal and ethical limits. By submitting, you consent to be contacted by {{THERAPIST_NAME}} regarding scheduling. Contact: {{PHONE}} • {{EMAIL}}</div>
+    </footer>
+  </div>
+</body>
+</html>

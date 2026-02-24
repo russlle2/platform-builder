@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book a Session — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#07121a;--card:#081726;--accent:#fbcfe8;--muted:#9fb0b8}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, Roboto, 'Segoe UI', Arial;background:linear-gradient(180deg,#03101a 0%, #071428 60%);color:#f6f9fb}
+    .wrap{max-width:920px;margin:28px auto;padding:20px}
+    header{display:flex;align-items:center;justify-content:space-between}
+    .brand{font-weight:700}
+    nav a{color:var(--muted);margin-left:12px;text-decoration:none}
+    main{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:16px}
+    .card{background:rgba(255,255,255,0.02);padding:18px;border-radius:12px}
+    label{display:block;margin-top:10px;font-size:13px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+    .mood-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .mood-row button{padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--muted);cursor:pointer}
+    .mood-row button.active{background:var(--accent);color:#2b0a14;border:0}
+    .book-cta{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:8px;background:var(--accent);color:#2b0a14;text-decoration:none;font-weight:700}
+    .side-note{color:var(--muted);font-size:14px}
+    .conf{margin-top:16px;background:rgba(255,255,255,0.01);padding:12px;border-radius:8px}
+    .acc{margin-top:10px}
+    .acc button{background:none;border:0;color:var(--accent);font-weight:700;cursor:pointer}
+    .acc .body{display:none;color:var(--muted);margin-top:8px}
+    .acc .body.show{display:block}
+    @media(max-width:880px){main{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">Book — {{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="fees.html">Fees</a>
+        <a href="faq.html">FAQ</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="card" aria-labelledby="book-title">
+        <h2 id="book-title">Start here</h2>
+        <p class="side-note">Choose a meeting shape that fits what feels most pressing. Use the mood selector — the page will suggest a path and adjust the booking call-to-action.</p>
+
+        <label for="name">Your name</label>
+        <input id="name" placeholder="Full name" />
+
+        <label for="email">Email</label>
+        <input id="email" placeholder="you@example.com" />
+
+        <label>How are you feeling right now?</label>
+        <div class="mood-row" role="radiogroup" aria-label="Mood to Method">
+          <button data-key="overwhelmed" class="active">Overwhelmed</button>
+          <button data-key="stuck">Stuck</button>
+          <button data-key="relational">Relationship strain</button>
+          <button data-key="transition">Transitioning</button>
+          <button data-key="low">Low energy</button>
+        </div>
+
+        <label for="notes">Brief note for the session (optional)</label>
+        <textarea id="notes" rows="4" placeholder="If you like, say what you'd most want to address in the first session."></textarea>
+
+        <a id="bookBtn" class="book-cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+
+        <div class="conf">
+          <strong>Before we meet</strong>
+          <div class="side-note">I will follow up with scheduling options and a short intake form. In our first meeting we'll discuss goals, consent, and privacy. You may decline any element of care at any time.</div>
+        </div>
+
+      </section>
+
+      <aside class="card">
+        <h3>What to expect</h3>
+        <div class="side-note">Therapy is personal and collaborative. Initial sessions are often for assessment and planning. We’ll set shared goals and practical steps together — no promises, just steady collaborative work.</div>
+
+        <div style="margin-top:12px">
+          <strong>Contact</strong>
+          <div class="side-note">Phone: {{PHONE}}<br>Email: <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a></div>
+        </div>
+
+        <div class="acc">
+          <button id="acc-toggle">Session boundaries & confidentiality</button>
+          <div class="body" id="acc-body">
+            <div class="side-note">Conversations are confidential except where disclosure is mandated by law (imminent risk, abuse, court order). If urgent safety concerns arise, I will take appropriate steps to ensure safety, which may involve contacting emergency services or other parties.</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;color:var(--muted);font-size:13px">
+          If you are in immediate danger, call emergency services. In the U.S., dial or text 988 for crisis support. For non-U.S. locations, please contact local emergency resources.
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    (function(){
+      const map = {
+        overwhelmed: {ctaText:'Request a Bridge Session',ctaUrl:'{{PRIMARY_CTA_URL}}?pref=bridge'},
+        stuck: {ctaText:'Request a Short-Focus Sprint',ctaUrl:'{{PRIMARY_CTA_URL}}?pref=sprint'},
+        relational: {ctaText:'Request a Connect Consultation',ctaUrl:'{{PRIMARY_CTA_URL}}?pref=connect'},
+        transition: {ctaText:'Request an Intensive Pathway',ctaUrl:'{{PRIMARY_CTA_URL}}?pref=intensive'},
+        low: {ctaText:'Request a Gentle Check-In',ctaUrl:'{{PRIMARY_CTA_URL}}?pref=checkin'}
+      };
+
+      const buttons = document.querySelectorAll('.mood-row button');
+      const bookBtn = document.getElementById('bookBtn');
+
+      function setActive(key, btn){
+        buttons.forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        const m = map[key];
+        bookBtn.textContent = m.ctaText;
+        bookBtn.href = m.ctaUrl;
+      }
+
+      buttons.forEach(btn=>btn.addEventListener('click', ()=>{
+        setActive(btn.getAttribute('data-key'), btn);
+      }));
+
+      // init
+      setActive('overwhelmed', document.querySelector('.mood-row button[data-key="overwhelmed"]'));
+
+      // Accordion
+      document.getElementById('acc-toggle').addEventListener('click', ()=>{
+        document.getElementById('acc-body').classList.toggle('show');
+      });
+
+      // Simple client-side form behavior: copy info into booking url as params (non-auth)
+      bookBtn.addEventListener('click', function(e){
+        const url = new URL(bookBtn.href, window.location.href);
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const notes = document.getElementById('notes').value.trim();
+        if(name) url.searchParams.set('name', name);
+        if(email) url.searchParams.set('email', email);
+        if(notes) url.searchParams.set('notes', notes);
+        // navigate to assembled url
+        e.preventDefault();
+        window.location.href = url.toString();
+      });
+    })();
+  </script>
+</body>
+</html>

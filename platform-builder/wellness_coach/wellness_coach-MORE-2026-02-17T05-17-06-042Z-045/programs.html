@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pathways — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f6fff9;--card:#ffffff;--accent:#0f6c57;--muted:#5e6763;font-family:Inter,Segoe UI,Arial}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#f0fbf6);color:#12332b}
+    .shell{max-width:980px;margin:28px auto;padding:20px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    .nav a{margin-left:10px;text-decoration:none;color:var(--muted)}
+    .hero{margin-top:18px;padding:18px;background:var(--card);border-radius:12px;box-shadow:0 8px 26px rgba(16,34,28,0.06)}
+
+    /* Progress meter / path map */
+    .path-area{display:flex;gap:18px;margin-top:14px}
+    .controls{width:320px;background:linear-gradient(180deg,#fff,#f8fffb);padding:14px;border-radius:12px}
+    .map{flex:1;background:linear-gradient(180deg,#fff,#fbfffb);padding:12px;border-radius:12px;display:grid;align-items:center}
+    .goals{display:flex;flex-direction:column;gap:8px}
+    .badge{display:inline-block;padding:6px 10px;border-radius:999px;background:#f0f9f6;color:var(--accent);font-weight:700}
+    .timeline{width:100%;height:120px}
+    .legend{display:flex;gap:8px;margin-top:8px}
+    .micro-list{margin-top:12px}
+
+    .programs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+    .card{background:#fff;padding:14px;border-radius:10px;box-shadow:0 6px 18px rgba(16,34,28,0.04)}
+    .card .muted{color:var(--muted)}
+
+    footer{margin-top:20px;text-align:center;color:var(--muted)}
+
+    @media (max-width:900px){.path-area{flex-direction:column}.programs{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div style="display:flex;gap:12px;align-items:center">
+        <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#1f7a63,#0f5c47);display:grid;place-items:center;color:#fff;font-weight:700">W</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <div class="nav">
+        <a href="index.html">Start</a>
+        <a href="services.html">Offerings</a>
+        <a href="programs.html">Pathways</a>
+        <a href="about.html">About</a>
+      </div>
+    </header>
+
+    <section class="hero">
+      <h2>Choose a pathway and see your 30-day map</h2>
+      <p class="muted">Pick a few goals and the path map suggests a paced sequence of micro-habits for the next 30 days. The idea: gradual increase, weekly checkpoints, and visual feedback.</p>
+    </section>
+
+    <div class="path-area">
+      <aside class="controls">
+        <div style="font-weight:700">Select goals</div>
+        <div class="goals" style="margin-top:10px">
+          <label><input type="checkbox" name="goal" value="sleep"> Reset sleep window</label>
+          <label><input type="checkbox" name="goal" value="energy"> Steady midday energy</label>
+          <label><input type="checkbox" name="goal" value="focus"> Build focus anchors</label>
+          <label><input type="checkbox" name="goal" value="move"> Gentle daily movement</label>
+        </div>
+
+        <div style="margin-top:12px">
+          <div style="font-weight:700">Plan intensity</div>
+          <select id="intensity" style="margin-top:8px;padding:8px;border-radius:8px">
+            <option value="light">Light — 2 micro-habits / day</option>
+            <option value="steady" selected>Steady — 3 micro-habits / day</option>
+            <option value="full">Full — 4+ micro-habits / day</option>
+          </select>
+        </div>
+
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button id="build" style="padding:10px;border-radius:8px;background:var(--accent);color:#fff;border:none">Build my 30-day map</button>
+          <button id="reset" style="padding:10px;border-radius:8px;border:1px solid rgba(15,108,87,0.12);background:transparent">Reset</button>
+        </div>
+
+        <div style="margin-top:12px">
+          <div class="badge">Week-by-week checkpoints</div>
+          <div class="muted" style="margin-top:8px;font-size:13px">Each week includes a reflection prompt and two flexible swaps to adapt the load.</div>
+        </div>
+      </aside>
+
+      <main class="map">
+        <svg class="timeline" viewBox="0 0 1000 120" preserveAspectRatio="none" id="svg-timeline" style="width:100%;height:120px"></svg>
+        <div class="legend" id="legend"></div>
+
+        <div class="micro-list" id="micro-list">
+          <div style="font-weight:700">Suggested micro-habits</div>
+          <ul id="habit-list" class="muted" style="margin-top:8px"></ul>
+        </div>
+      </main>
+    </div>
+
+    <section class="programs">
+      <div class="card">
+        <div style="font-weight:700">Starter Path</div>
+        <div class="muted">Self-directed plan, weekly email prompts</div>
+        <div style="margin-top:12px;font-weight:800;color:var(--accent)">$39 / week</div>
+      </div>
+      <div class="card">
+        <div style="font-weight:700">Guided Path</div>
+        <div class="muted">Cohort facilitation + live reflections</div>
+        <div style="margin-top:12px;font-weight:800;color:var(--accent)">$99 / week</div>
+      </div>
+      <div class="card">
+        <div style="font-weight:700">Companion Path</div>
+        <div class="muted">Pairing + monthly check-in call</div>
+        <div style="margin-top:12px;font-weight:800;color:var(--accent)">$179 / week</div>
+      </div>
+    </section>
+
+    <footer>
+      <div style="margin-top:18px;color:var(--muted);text-align:center">Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • Call <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    </footer>
+  </div>
+
+  <script>
+    // Utilities
+    function range(n){return Array.from({length:n},(_,i)=>i)}
+    const habitsByGoal = {
+      sleep:[{k:'Evening wind-down',t:'5–10 min gentle routine'}, {k:'Fixed wake window',t:'Consistent wake time'}, {k:'Screen curfew',t:'30–60 min before bed'}],
+      energy:[{k:'Midday walk',t:'10–15 min'}, {k:'Snack pause',t:'protein+fruit'}, {k:'Hydration check',t:'250ml each 2–3 hrs'}],
+      focus:[{k:'Start anchor',t:'2 min breathing'}, {k:'Single-task block',t:'25–40 min'}, {k:'Micro-review',t:'2 min end-of-block log'}],
+      move:[{k:'Stretch set',t:'5 min'}, {k:'Standing break',t:'3 min every hour'}, {k:'Easy strength',t:'5–8 min bodyweight'}]
+    };
+
+    // Build timeline visualization: 30 days as circles connected by path
+    function drawTimeline(selGoals,intensity){
+      const svg = document.getElementById('svg-timeline');
+      while(svg.firstChild) svg.removeChild(svg.firstChild);
+      const width=1000, height=120, days=30; svg.setAttribute('viewBox','0 0 '+width+' '+height);
+      const margin=40; const usable=width-margin*2; const step=usable/(days-1);
+      // create path points
+      const pts = range(days).map(i=>({x:margin + i*step, y:height/2 + Math.sin(i/3)*12}));
+      // draw connector
+      const pathD = pts.map((p,i)=> (i===0? 'M'+p.x+','+p.y : 'L'+p.x+','+p.y)).join(' ');
+      const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+      path.setAttribute('d',pathD); path.setAttribute('stroke','#d8f2e9'); path.setAttribute('stroke-width','8'); path.setAttribute('fill','none'); path.setAttribute('stroke-linecap','round'); path.setAttribute('stroke-linejoin','round');
+      svg.appendChild(path);
+
+      // based on intensity, decide active slots per day
+      const intensityMap = {light:2,steady:3,full:4};
+      const perDay = intensityMap[intensity]||3;
+
+      // determine habit assignment across days
+      // create a pool of micro-habits based on selected goals
+      let pool=[];
+      selGoals.forEach(g=>{ if(habitsByGoal[g]) pool = pool.concat(habitsByGoal[g]); });
+      if(pool.length===0){ pool = [].concat(...Object.values(habitsByGoal)); }
+      // rotate assignments
+      const schedule = range(days).map(d=>{
+        const list = range(perDay).map(i=> pool[(d+ i)%pool.length]);
+        return list;
+      });
+
+      // draw circles and hover tooltips
+      schedule.forEach((arr,day)=>{
+        const p = pts[day];
+        const group = document.createElementNS('http://www.w3.org/2000/svg','g');
+        group.setAttribute('transform','translate('+p.x+','+p.y+')');
+        // outer ring size by number of habits
+        const ring = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        ring.setAttribute('r',8 + arr.length*2); ring.setAttribute('fill','#fff'); ring.setAttribute('stroke','#cdeee0'); ring.setAttribute('stroke-width','2');
+        group.appendChild(ring);
+        arr.forEach((h,idx)=>{
+          const angle = (idx/arr.length)*Math.PI*2 - Math.PI/2;
+          const sx = Math.cos(angle)*(12 + idx*4);
+          const sy = Math.sin(angle)*(12 + idx*4);
+          const dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+          dot.setAttribute('cx',sx); dot.setAttribute('cy',sy); dot.setAttribute('r',4); dot.setAttribute('fill','#1f7a63');
+          dot.setAttribute('data-title',h.k + ' — ' + h.t);
+          dot.style.cursor='pointer';
+          group.appendChild(dot);
+        });
+        svg.appendChild(group);
+      });
+
+      // interactivity: tooltip
+      const tooltip = document.createElement('div');
+      tooltip.style.position='absolute'; tooltip.style.padding='8px 10px'; tooltip.style.background='rgba(12,20,16,0.95)'; tooltip.style.color='#fff'; tooltip.style.borderRadius='8px'; tooltip.style.fontSize='13px'; tooltip.style.pointerEvents='none'; tooltip.style.opacity=0; tooltip.style.transition='all .14s';
+      tooltip.id='tt'; document.body.appendChild(tooltip);
+
+      svg.querySelectorAll('circle[data-title]').forEach(c=>{
+        c.addEventListener('mouseenter', (e)=>{
+          tooltip.textContent = e.target.getAttribute('data-title'); tooltip.style.opacity=1;
+        });
+        c.addEventListener('mousemove', (e)=>{
+          tooltip.style.left = (e.pageX+12)+'px'; tooltip.style.top = (e.pageY+12)+'px';
+        });
+        c.addEventListener('mouseleave', ()=>{ tooltip.style.opacity=0; });
+      });
+
+      // build legend and micro-list
+      const legend = document.getElementById('legend'); while(legend.firstChild) legend.removeChild(legend.firstChild);
+      const used = {};
+      selGoals.forEach(g=>{ const el = document.createElement('div'); el.textContent = g; el.className='badge'; el.style.padding='6px 10px'; legend.appendChild(el); used[g]=true; });
+      if(!selGoals.length){ const el = document.createElement('div'); el.textContent='General habits'; el.className='badge'; legend.appendChild(el); }
+
+      const listEl = document.getElementById('habit-list'); while(listEl.firstChild) listEl.removeChild(listEl.firstChild);
+      // show unique habits from pool
+      const unique = []; pool.forEach(h=>{ if(!unique.some(u=>u.k===h.k)) unique.push(h); });
+      unique.slice(0,9).forEach(h=>{ const li = document.createElement('li'); li.textContent = h.k + ' — ' + h.t; listEl.appendChild(li); });
+    }
+
+    // Wire up controls
+    document.getElementById('build').addEventListener('click', function(){
+      const checked = Array.from(document.querySelectorAll('input[name=goal]:checked')).map(i=>i.value);
+      const intensity = document.getElementById('intensity').value;
+      // remove old tooltip if present
+      const old = document.getElementById('tt'); if(old) old.remove();
+      drawTimeline(checked,intensity);
+    });
+
+    document.getElementById('reset').addEventListener('click', function(){
+      document.querySelectorAll('input[name=goal]').forEach(i=>i.checked=false);
+      document.getElementById('intensity').value='steady';
+      const old = document.getElementById('tt'); if(old) old.remove();
+      drawTimeline([], 'steady');
+    });
+
+    // initial draw
+    drawTimeline(['focus','move'],'steady');
+  </script>
+</body>
+</html>

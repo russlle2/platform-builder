@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Fees & Plans — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfdfe;--muted:#6b7280;--accent:#2b6cb0;--card:#ffffff;--glass:rgba(255,255,255,0.6)}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    body{background:linear-gradient(180deg,#f8fbfd 0%,#ffffff 60%);color:#0f1724;line-height:1.45}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--accent),#1d4ed8);color:white;font-weight:700}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none;font-size:15px}
+    .hero{padding:40px 28px 22px;display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+    .hero .copy h1{margin:0 0 10px;font-size:28px}
+    .hero .copy p{margin:0 0 18px;color:var(--muted)}
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(13,23,45,0.06)}
+    .pricing-grid{display:flex;gap:14px;margin-top:18px}
+    .plan{flex:1;padding:18px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.9),var(--glass));border:1px solid rgba(15,23,36,0.04)}
+    .plan h3{margin:0 0 8px}
+    .price{font-weight:700;font-size:20px;color:var(--accent)}
+    .cta{display:inline-block;margin-top:12px;padding:10px 14px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none}
+    .small{font-size:13px;color:var(--muted)}
+    .note{font-size:13px;color:var(--muted);margin-top:10px}
+    footer{padding:22px 28px;color:var(--muted);font-size:13px}
+
+    /* pattern accent */
+    .pattern{position:absolute;right:20px;top:110px;width:260px;height:260px;opacity:0.12}
+
+    /* Modal / widgets */
+    .overlay{position:fixed;inset:0;background:rgba(4,6,10,0.45);display:none;align-items:center;justify-content:center;padding:20px}
+    .modal{width:760px;max-width:100%;background:#fff;border-radius:12px;padding:18px;box-shadow:0 20px 40px rgba(2,6,23,0.4);}
+    .modal header{display:flex;justify-content:space-between;align-items:center}
+    .modal .content{margin-top:12px}
+    .steps{display:flex;gap:8px;margin:12px 0}
+    .step{flex:1;height:8px;background:#eef2f7;border-radius:6px}
+    .step.active{background:linear-gradient(90deg,var(--accent),#1d4ed8)}
+    .field{margin:10px 0}
+    .field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    .field input[type=text],.field textarea,.field select{width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef7;font-size:14px}
+    .buttons{display:flex;gap:10px;justify-content:flex-end;margin-top:12px}
+    button{cursor:pointer}
+    .btn-secondary{background:#f1f5f9;border:1px solid #e2e8f0;padding:9px 12px;border-radius:8px}
+    .btn-primary{background:var(--accent);color:white;padding:9px 12px;border-radius:8px;border:none}
+
+    /* breathing */
+    .breath-circle{width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,#c7e3ff,#e6f0ff);display:flex;align-items:center;justify-content:center;margin:0 auto}
+    .breath-controls{display:flex;gap:10px;justify-content:center;margin-top:12px}
+
+    @media (max-width:880px){
+      .hero{grid-template-columns:1fr;}
+      .pattern{display:none}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">TP</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div class="small">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Who I Am</a>
+      <a href="specialties.html">Focus Areas</a>
+      <a href="approach.html">Approach</a>
+      <a href="fees.html">Fees & Plans</a>
+      <a href="faq.html">Questions</a>
+      <a href="book.html">Book a Visit</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="copy">
+        <div class="card">
+          <h1>Practical options for steady therapeutic work</h1>
+          <p class="small">Clear choices for different needs — ongoing support, a short focused series, or single appointments. If you're unsure which fits, use the self-check to prepare for a consultation.</p>
+
+          <div class="pricing-grid">
+            <div class="plan">
+              <h3>Care Membership</h3>
+              <div class="price">$295 / month</div>
+              <div class="small">Ideal for regular, flexible check-ins — two 45-minute sessions/month and messaging support.</div>
+              <a class="cta" href="book.html">Start with a consult</a>
+            </div>
+            <div class="plan">
+              <h3>Focused Series</h3>
+              <div class="price">$780 / 8 sessions</div>
+              <div class="small">A structured course for a particular concern — eight sessions over 12 weeks, with written session goals.</div>
+              <a class="cta" href="book.html">Request series details</a>
+            </div>
+            <div class="plan">
+              <h3>Single Session</h3>
+              <div class="price">$150 / 50 min</div>
+              <div class="small">A one-off visit for immediate planning or a specific concern.</div>
+              <a class="cta" href="book.html">Book a session</a>
+            </div>
+          </div>
+
+          <div class="note">All plans are private, confidential, and shaped collaboratively. Insurance billing is not handled here; receipts provided on request. For urgent safety concerns, see the note at the end of the page.</div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="card">
+          <h4 style="margin-top:0">Prepare for an initial consult</h4>
+          <p class="small">A short self-check can help you and I use meeting time effectively. You’ll get a concise brief you can bring to the consultation.</p>
+          <div style="margin-top:12px;display:flex;gap:10px">
+            <button class="btn-secondary" id="start-check">Start self-check</button>
+            <button class="btn-secondary" id="try-breath">Try a quick exercise</button>
+          </div>
+          <div style="margin-top:14px" class="small">Prefer calling? <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+        </div>
+      </aside>
+
+      <svg class="pattern" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#dbeafe"/><stop offset="1" stop-color="#e0f2fe"/></linearGradient>
+        </defs>
+        <rect width="200" height="200" fill="url(#g1)" rx="20"/>
+        <g fill="#c7e3ff" opacity="0.9">
+          <circle cx="40" cy="45" r="6"/>
+          <circle cx="86" cy="22" r="4"/>
+          <circle cx="160" cy="80" r="10"/>
+          <circle cx="130" cy="150" r="6"/>
+          <rect x="20" y="110" width="16" height="16" rx="3"/>
+        </g>
+      </svg>
+    </section>
+
+    <section style="padding:20px 28px;">
+      <div class="card">
+        <h3 style="margin-top:0">What’s included</h3>
+        <ul>
+          <li class="small">Session planning that is collaborative, evidence-aware, and tailored to your priorities.</li>
+          <li class="small">Clear boundaries about communication, scheduling, and scope of care.</li>
+          <li class="small">Confidential clinical notes retained for treatment continuity.</li>
+        </ul>
+        <p class="note">Confidentiality: Communications are protected except in situations defined by law (risk of harm, court order). I will clarify scope, limits, and expected response times before we begin. This is not a replacement for emergency services. If you are in immediate danger, call local emergency services or your crisis line.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} — {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    <div style="margin-top:8px">Scope: therapy provided here is outpatient behavioral health for adults. If you have questions about fit or scope, mention them in the self-check or at booking.</div>
+  </footer>
+
+  <!-- overlay for modals -->
+  <div class="overlay" id="overlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <header>
+        <div id="modalTitle">Self-check: brief intake</div>
+        <div><button id="closeModal" class="btn-secondary">Close</button></div>
+      </header>
+      <div class="content">
+        <div class="steps" id="stepsBar">
+          <div class="step active"></div>
+          <div class="step"></div>
+          <div class="step"></div>
+          <div class="step"></div>
+        </div>
+        <div id="stepContent">
+          <!-- dynamic content -->
+        </div>
+        <div class="buttons">
+          <button id="backBtn" class="btn-secondary">Back</button>
+          <button id="nextBtn" class="btn-primary">Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- breathing / guided exercise overlay -->
+  <div class="overlay" id="exerciseOverlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="exerciseTitle">
+      <header>
+        <div id="exerciseTitle">Guided Exercise</div>
+        <div><button id="closeExercise" class="btn-secondary">Close</button></div>
+      </header>
+      <div class="content">
+        <div style="display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap">
+          <div style="min-width:220px">
+            <label class="small">Choose an exercise</label>
+            <select id="exerciseSelect" style="padding:10px;border-radius:8px;border:1px solid #e6eef7">
+              <option value="breath">Breathing rhythm</option>
+              <option value="journal">Quick journaling</option>
+              <option value="intention">Set an intention</option>
+            </select>
+          </div>
+          <div style="flex:1"></div>
+        </div>
+
+        <div id="exerciseArea" style="margin-top:14px">
+          <!-- content inserted by JS -->
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Modal utilities
+    const overlay = document.getElementById('overlay');
+    const exerciseOverlay = document.getElementById('exerciseOverlay');
+    const startBtn = document.getElementById('start-check');
+    const tryBtn = document.getElementById('try-breath');
+    const closeModal = document.getElementById('closeModal');
+    const closeExercise = document.getElementById('closeExercise');
+
+    startBtn.addEventListener('click', ()=>{openSelfCheck()});
+    closeModal.addEventListener('click', ()=>{overlay.style.display='none'});
+    tryBtn.addEventListener('click', ()=>{openExercise();});
+    closeExercise.addEventListener('click', ()=>{exerciseOverlay.style.display='none'});
+
+    // Self-check wizard
+    const stepsBar = document.getElementById('stepsBar').children;
+    const stepContent = document.getElementById('stepContent');
+    const backBtn = document.getElementById('backBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    const state = {step:0, answers:{}}
+
+    const steps = [
+      {
+        title: 'Main reason for seeking support',
+        render: ()=>{
+          return `\n            <div class=\"field\">\n              <label>In a sentence, what brought you here?</label>\n              <input id=\"q1\" type=\"text\" placeholder=\"e.g. sleeplessness, relationship strain, navigating a life change\" />\n            </div>\n            <div class=\"field\">\n              <label>How long has this been a concern?</label>\n              <select id=\"q1b\">\n                <option value=\"weeks\">A few weeks</option>\n                <option value=\"months\">Months</option>\n                <option value=\"years\">Years</option>\n              </select>\n            </div>\n          `;
+        }
+      },
+      {
+        title: 'Impact & context',
+        render: ()=>{
+          return `\n            <div class=\"field\">\n              <label>Which areas of life are affected?</label>\n              <div><label><input type=\"checkbox\" value=\"work\"> Work</label></div>\n              <div><label><input type=\"checkbox\" value=\"sleep\"> Sleep</label></div>\n              <div><label><input type=\"checkbox\" value=\"relationships\"> Relationships</label></div>\n              <div><label><input type=\"checkbox\" value=\"mood\"> Mood / energy</label></div>\n            </div>\n            <div class=\"field\">\n              <label>Are there recent events that seem connected?</label>\n              <input id=\"q2b\" type=\"text\" placeholder=\"optional: brief note\" />\n            </div>\n          `;
+        }
+      },
+      {
+        title: 'What has helped (or not)',
+        render: ()=>{
+          return `\n            <div class=\"field\">\n              <label>Have you tried anything already? (strategies, supports)</label>\n              <textarea id=\"q3\" rows=\"3\" placeholder=\"brief note\"></textarea>\n            </div>\n            <div class=\"field\">\n              <label>What would you like to get from therapy in the next 3 months?</label>\n              <input id=\"q3b\" type=\"text\" placeholder=\"example: calmer evenings, clearer boundaries, a plan\" />\n            </div>\n          `;
+        }
+      },
+      {
+        title: 'Summary & prompts',
+        render: ()=>{return `<div id=\"summary\"></div>`}
+      }
+    ];
+
+    function openSelfCheck(){
+      state.step = 0; state.answers = {};
+      overlay.style.display='flex';
+      renderStep();
+    }
+
+    function renderStep(){
+      // update steps indicator
+      for(let i=0;i<stepsBar.length;i++){
+        stepsBar[i].className = i<=state.step? 'step active':'step';
+      }
+      stepContent.innerHTML = `<h4 style=\"margin:6px 0 8px\">${steps[state.step].title}</h4>` + steps[state.step].render();
+      backBtn.style.display = state.step? 'inline-block':'none';
+      nextBtn.textContent = state.step === steps.length-1? 'Finish & copy brief':'Next';
+
+      if(state.step===steps.length-1){
+        // generate summary
+        const s = state.answers;
+        const bullets = [];
+        bullets.push(s.q1? `<li><strong>Presenting:</strong> ${escapeHtml(s.q1)} (${s.q1b||'duration not specified'})</li>` : '<li><strong>Presenting:</strong> not provided</li>');
+        const impact = s.q2 ? s.q2.join(', ') : 'not specified';
+        bullets.push(`<li><strong>Areas affected:</strong> ${escapeHtml(impact)}</li>`);
+        bullets.push(s.q3? `<li><strong>Previous steps:</strong> ${escapeHtml(s.q3)}</li>` : '<li><strong>Previous steps:</strong> none noted</li>');
+        bullets.push(s.q3b? `<li><strong>Goals (3 months):</strong> ${escapeHtml(s.q3b)}</li>` : '<li><strong>Goals:</strong> not specified</li>');
+
+        const promptList = ['What has helped or been difficult about past approaches?','What would a helpful next step look like to you?','Are there scheduling or accessibility needs I should know about?'];
+        const prompts = promptList.map(p=>`<li>${p}</li>`).join('');
+
+        document.getElementById('summary').innerHTML = `\n          <p class=\"small\">Below is a brief you can copy into your booking note or bring to the first meeting.</p>\n          <div style=\"background:#f8fafc;padding:12px;border-radius:8px;border:1px solid #e6eef7\">\n            <ul>\n              ${bullets.join('\n')}\n            </ul>\n            <div class=\"small\"><strong>Suggested prompts to discuss:</strong></div>\n            <ul class=\"small\">${prompts}</ul>\n          </div>\n          <div style=\"margin-top:8px;display:flex;gap:8px;justify-content:flex-end\">\n            <button id=\"copyBrief\" class=\"btn-primary\">Copy brief</button>\n          </div>\n        `;
+
+        document.getElementById('copyBrief').addEventListener('click', ()=>{
+          const text = document.querySelector('#summary').innerText;
+          navigator.clipboard && navigator.clipboard.writeText(text).then(()=>{alert('Brief copied to clipboard.');}).catch(()=>{alert('Copy not supported.');});
+        });
+      }
+    }
+
+    nextBtn.addEventListener('click', ()=>{
+      if(state.step < steps.length-1){
+        // save current inputs
+        saveInputs(state.step);
+        state.step++;
+        renderStep();
+      } else {
+        // finish
+        overlay.style.display='none';
+      }
+    });
+
+    backBtn.addEventListener('click', ()=>{
+      if(state.step>0){ state.step--; renderStep(); }
+    });
+
+    function saveInputs(step){
+      if(step===0){
+        state.answers.q1 = (document.getElementById('q1')||{}).value || '';
+        state.answers.q1b = (document.getElementById('q1b')||{}).value || '';
+      }
+      if(step===1){
+        const checks = Array.from(document.querySelectorAll('#stepContent input[type=checkbox]:checked')).map(n=>n.value);
+        state.answers.q2 = checks;
+        state.answers.q2b = (document.getElementById('q2b')||{}).value || '';
+      }
+      if(step===2){
+        state.answers.q3 = (document.getElementById('q3')||{}).value || '';
+        state.answers.q3b = (document.getElementById('q3b')||{}).value || '';
+      }
+    }
+
+    function escapeHtml(s){ return (s||'').replace(/[&<>\"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'":"'"})[c] || c); }
+
+    // Guided exercise
+    const exerciseSelect = document.getElementById('exerciseSelect');
+    const exerciseArea = document.getElementById('exerciseArea');
+
+    function openExercise(){
+      exerciseOverlay.style.display='flex';
+      renderExercise();
+    }
+    exerciseSelect.addEventListener('change', renderExercise);
+
+    function renderExercise(){
+      const t = exerciseSelect.value;
+      if(t==='breath'){
+        exerciseArea.innerHTML = `\n          <div style=\"text-align:center\">\n            <div class=\"breath-circle\" id=\"breathCircle\">\n              <div id=\"breathText\" style=\"font-weight:600;color:#0b2546\">Ready</div>\n            </div>\n            <div class=\"breath-controls\">\n              <button class=\"btn-secondary\" id=\"breathStart\">Start 1-min</button>\n              <button class=\"btn-secondary\" id=\"breathStop\">Stop</button>\n            </div>\n            <div class=\"small\" style=\"margin-top:8px\">A simple 4-4-6 breathing pattern. Not a substitute for medical care.</div>\n          </div>\n        `;
+        let running=false, tId=null, phase=0;
+        const circle = null;
+        document.getElementById('breathStart').addEventListener('click', ()=>{
+          if(running) return; running=true; phase=0; const bc = document.getElementById('breathCircle'); const bt = document.getElementById('breathText');
+          let step=0; let seconds=60; bt.textContent='Start';
+          tId = setInterval(()=>{
+            // cycle phases: inhale(4s) hold(4s) exhale(6s)
+            const cycle = step % 14; // 4+4+6
+            let scale = 1;
+            if(cycle<4){ // inhale
+              const p = (cycle+1)/4; scale = 1 + p*0.35; bt.textContent='Inhale';
+            } else if(cycle<8){ bt.textContent='Hold'; scale = 1.35; }
+            else { const p = (cycle-8+1)/6; scale = 1.35 - p*0.35; bt.textContent='Exhale'; }
+            bc.style.transform = `scale(${scale})`;
+            seconds--; step++; if(seconds<=0){ clearInterval(tId); running=false; bt.textContent='Done'; }
+          },1000);
+        });
+        document.getElementById('breathStop').addEventListener('click', ()=>{ clearInterval(tId); document.getElementById('breathText').textContent='Stopped'; });
+      } else if(t==='journal'){
+        exerciseArea.innerHTML = `\n          <div>\n            <label class=\"small\">Prompt</label>\n            <div style=\"background:#f8fafc;padding:10px;border-radius:8px;border:1px solid #e6eef7\">\n              "Write for five minutes about a recent moment that felt important — what happened, how you felt, and one small next step."\n            </div>\n            <div class=\"field\" style=\"margin-top:12px\">\n              <textarea id=\"journalText\" rows=\"6\" placeholder=\"Begin writing...\"></textarea>\n            </div>\n            <div style=\"display:flex;gap:8px;justify-content:flex-end\">\n              <button id=\"saveJournal\" class=\"btn-primary\">Save</button>\n              <button id=\"clearJournal\" class=\"btn-secondary\">Clear</button>\n            </div>\n          </div>\n        `;
+        document.getElementById('saveJournal').addEventListener('click', ()=>{
+          const t = document.getElementById('journalText').value;
+          if(t.trim()){ localStorage.setItem('journal-last', t); alert('Saved locally to this browser.'); } else alert('No text to save.');
+        });
+        document.getElementById('clearJournal').addEventListener('click', ()=>{ document.getElementById('journalText').value=''; });
+      } else if(t==='intention'){
+        exerciseArea.innerHTML = `\n          <div>\n            <label class=\"small\">Set a short intention for today</label>\n            <div class=\"field\">\n              <input id=\"intentText\" type=\"text\" placeholder=\"e.g. I will take a 10-minute break at lunch\" />\n            </div>\n            <div style=\"display:flex;gap:8px;justify-content:flex-end\">\n              <button id=\"setIntent\" class=\"btn-primary\">Set intention</button>\n            </div>\n          </div>\n        `;
+        document.getElementById('setIntent').addEventListener('click', ()=>{
+          const it = document.getElementById('intentText').value;
+          if(!it.trim()) return alert('Please type a brief intention.');
+          localStorage.setItem('intention-today', it);
+          alert('Intention saved for today.');
+        });
+      }
+    }
+
+  </script>
+</body>
+</html>

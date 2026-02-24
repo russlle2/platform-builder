@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Start — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--muted:#666;--accent:#1b6b5a;--max:800px}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;color:#111;margin:0;background:var(--bg)}
+    .shell{max-width:var(--max);margin:40px auto;padding:20px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none}
+    .hero{padding:20px;border-radius:10px;background:#fbfbfb;margin-top:18px}
+    h1{margin:0;font-size:1.4rem}
+    .muted{color:var(--muted)}
+    .steps{margin-top:18px}
+    .step{padding:12px;border-left:3px solid #eef7f1;margin-bottom:10px;border-radius:6px;background:#fff}
+    form{margin-top:18px;display:grid;gap:10px}
+    input,textarea,select{padding:10px;border-radius:8px;border:1px solid #e6e6e6}
+    .btn{background:var(--accent);color:white;padding:10px 12px;border-radius:8px;border:none}
+    .policies{margin-top:14px;font-size:0.9rem;color:var(--muted)}
+    footer{margin-top:22px;color:var(--muted)}
+    @media(max-width:600px){.shell{padding:16px}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div>
+        <strong>{{BUSINESS_NAME}}</strong>
+        <div class="muted">Warm, steady clinical support</div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="specialties.html">Specialties</a>
+        <a href="approach.html">Approach</a>
+        <a href="fees.html">Pricing</a>
+        <a href="faq.html">Help</a>
+        <a href="book.html">Start</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <section class="hero" aria-labelledby="start-heading">
+      <h1 id="start-heading">Begin with a brief consult</h1>
+      <p class="muted">A 15-minute call helps us clarify needs, confirm fit, and choose a pathway. There’s no pressure — just practical next steps.</p>
+    </section>
+
+    <section class="social_proof" style="margin-top:16px;display:flex;gap:12px;align-items:center">
+      <svg width="52" height="52" viewBox="0 0 24 24" fill="none" aria-hidden>
+        <circle cx="12" cy="8" r="3" fill="#f7fffb" stroke="#e6f6ee"/>
+        <path d="M4 20c1.5-4 6-6 8-6s6.5 2 8 6" stroke="#1b6b5a" stroke-width="1.5" fill="none"/>
+      </svg>
+      <div>
+        <div style="font-weight:600">A steady first step</div>
+        <div class="muted">We focus on fit and clear next steps, not immediate change.</div>
+      </div>
+    </section>
+
+    <section class="steps">
+      <div class="step">
+        <strong>Step 1 — Quick connect</strong>
+        <div class="muted">Choose a 15-minute consult via the form below or call {{PHONE}}. We’ll confirm availability and logistics.</div>
+      </div>
+      <div class="step">
+        <strong>Step 2 — Intake</strong>
+        <div class="muted">If we decide to proceed, we schedule an intake session to set goals, review privacy, and discuss scope.</div>
+      </div>
+      <div class="step">
+        <strong>Step 3 — Ongoing care</strong>
+        <div class="muted">We choose a rhythm that supports your needs; payment and cancellation policies are reviewed before the first session.</div>
+      </div>
+    </section>
+
+    <section style="margin-top:18px">
+      <form action="{{PRIMARY_CTA_URL}}" method="post">
+        <input name="name" type="text" placeholder="Your full name" required />
+        <input name="email" type="email" placeholder="Email" required />
+        <input name="phone" type="tel" placeholder="Phone (optional)" />
+        <label for="reason" class="muted">Primary reason for seeking support</label>
+        <select id="reason" name="reason" required>
+          <option value="">Choose one</option>
+          <option>Anxiety or stress</option>
+          <option>Relationship concerns</option>
+          <option>Life transition</option>
+          <option>Trauma-related recovery</option>
+          <option>Burnout / workplace stress</option>
+        </select>
+        <label class="muted">Preferred contact</label>
+        <div style="display:flex;gap:8px">
+          <label style="font-size:0.95rem"><input type="radio" name="contact_pref" value="email" checked /> Email</label>
+          <label style="font-size:0.95rem"><input type="radio" name="contact_pref" value="phone" /> Phone</label>
+        </div>
+        <label class="muted">Anything else you’d like me to know?</label>
+        <textarea name="notes" rows="4" placeholder="Optional notes" style="min-height:80px"></textarea>
+
+        <button class="btn" type="submit">Request a consult</button>
+      </form>
+    </section>
+
+    <section class="policies" style="margin-top:16px">
+      <div class="muted">Privacy & confidentiality: I maintain confidential records in secure systems. Exceptions to confidentiality (e.g., risk of harm) will be reviewed at intake.</div>
+      <div class="muted" style="margin-top:8px">Informed consent & scope: Therapy topics may include anxiety, relationship patterns, trauma-informed processing, and life transitions. I am happy to discuss therapeutic approaches: {{MODALITIES}}.</div>
+      <div class="muted" style="margin-top:8px">Crisis disclaimer: I do not provide emergency services. If you are in immediate danger, please call emergency services or your local crisis line.</div>
+      <div class="muted" style="margin-top:8px">Licensing and contact: {{THERAPIST_NAME}}, {{LICENSE}} • {{PHONE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </section>
+
+    <section style="margin-top:18px">
+      <div class="muted">If a faster option is needed, ask about a focused single-session consultation or the "Clarity Session" during booking. Availability is limited.</div>
+      <a class="btn" href="{{PRIMARY_CTA_URL}}" style="display:inline-block;margin-top:10px">Proceed to scheduling</a>
+    </section>
+
+    <footer>
+      <div style="margin-top:20px;color:var(--muted)">© {{BUSINESS_NAME}} • Serving {{CITY}}, {{STATE}} • Licensed: {{LICENSE}}</div>
+    </footer>
+  </div>
+</body>
+</html>

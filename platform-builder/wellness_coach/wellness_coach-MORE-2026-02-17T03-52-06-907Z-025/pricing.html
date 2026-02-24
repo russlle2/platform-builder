@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Investment — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{
+      --bg:#f6efe6; /* warm parchment */
+      --accent:#8b5e3c; /* clay */
+      --muted:#7a6a5a;
+      --card:#fffaf3;
+      --glass:rgba(139,94,60,0.06);
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:#2b2b2b;line-height:1.45}
+    header{background:linear-gradient(180deg,rgba(139,94,60,0.06),transparent);backdrop-filter:blur(2px);padding:20px 24px;position:sticky;top:0;z-index:10}
+    .wrap{max-width:980px;margin:0 auto}
+    nav{display:flex;align-items:center;justify-content:space-between}
+    .brand{font-weight:700;color:var(--accent);letter-spacing:0.6px}
+    .nav-links{display:flex;gap:14px}
+    .nav-links a{color:var(--muted);text-decoration:none;font-size:0.95rem}
+    main{padding:36px 24px}
+
+    .hero{display:grid;grid-template-columns:1fr;gap:18px;padding:28px;background:linear-gradient(180deg,rgba(255,255,255,0.6),transparent);border-radius:12px}
+    h1{margin:0;font-size:1.9rem;color:var(--accent)}
+    p.lead{margin:6px 0 0;color:var(--muted)}
+
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:20px;margin-top:22px}
+    .card{background:var(--card);padding:18px;border-radius:10px;box-shadow:0 6px 18px rgba(41,22,10,0.04)}
+    .plan{display:flex;flex-direction:column;gap:12px}
+    .plan h3{margin:0;color:#4e3526}
+    .price{font-weight:800;color:var(--accent);font-size:1.4rem}
+    .muted{color:var(--muted);font-size:0.95rem}
+
+    .tiers{display:flex;flex-direction:column;gap:12px}
+    .tier{border:1px dashed var(--glass);padding:14px;border-radius:8px}
+    .tier strong{font-size:1.05rem}
+    .cta{display:inline-block;margin-top:10px;background:var(--accent);color:#fff;padding:10px 14px;border-radius:8px;text-decoration:none}
+
+    .reveal{opacity:0;transform:translateY(14px);transition:opacity 520ms cubic-bezier(.2,.9,.2,1),transform 520ms cubic-bezier(.2,.9,.2,1)}
+    .reveal.is-visible{opacity:1;transform:none}
+
+    footer{padding:20px 24px;color:var(--muted)}
+
+    /* Session Planner (compact) */
+    .planner{display:flex;flex-direction:column;gap:10px}
+    .planner label{font-size:0.9rem;color:#4a3a33}
+    .planner input[type='text'],.planner select,.planner textarea{width:100%;padding:8px;border-radius:6px;border:1px solid rgba(80,60,48,0.08);background:#fff}
+    .chips{display:flex;gap:8px;flex-wrap:wrap}
+    .chip{padding:6px 8px;background:transparent;border:1px solid var(--glass);border-radius:999px;font-size:0.85rem;color:var(--muted);cursor:pointer}
+    .chip.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+    .actions{display:flex;gap:8px}
+    .btn{background:var(--accent);color:#fff;padding:8px 10px;border-radius:8px;border:none;cursor:pointer}
+    .copy{background:#ffffff;border:1px solid rgba(0,0,0,0.06);color:var(--accent)}
+
+    /* decorative pattern */
+    .pattern{position:fixed;right:8%;top:10%;width:420px;height:420px;opacity:0.06;pointer-events:none}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}.pattern{display:none}}
+
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav>
+        <div class="brand">Quiet Grove</div>
+        <div class="nav-links">
+          <a href="index.html">Home</a>
+          <a href="about.html">Philosophy</a>
+          <a href="services.html">Offerings</a>
+          <a href="programs.html">Journeys</a>
+          <a href="pricing.html">Investment</a>
+          <a href="testimonials.html">Voices</a>
+          <a href="book.html">Reserve</a>
+          <a href="contact.html">Reach</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero reveal" aria-labelledby="title">
+      <div>
+        <h1 id="title">Investment that maps to your life rhythm</h1>
+        <p class="lead">Choose a format that fits your tempo — thoughtful, measurable steps that strengthen daily habits and steady energy.</p>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div>
+        <div class="card reveal">
+          <h3>Practical Pathways</h3>
+          <p class="muted">Frameworks and short practices to build sustainable routines. No medical promises — just clear habits and aligned outcomes.</p>
+
+          <div style="margin-top:12px" class="tiers">
+            <div class="tier">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <strong>Foundations — 4 weeks</strong>
+                <div class="price">$550</div>
+              </div>
+              <div class="muted">Weekly check-ins, habit micro-systems, and a focused 30-minute session each week.</div>
+              <a class="cta" href="book.html">Reserve a Foundations Slot</a>
+            </div>
+
+            <div class="tier">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <strong>Steady Course — 8 weeks</strong>
+                <div class="price">$1,050</div>
+              </div>
+              <div class="muted">Deeper habit scaffolding, bi-weekly reflections, and practical templates to repeat.</div>
+              <a class="cta" href="book.html">Start the Steady Course</a>
+            </div>
+
+            <div class="tier">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <strong>Hands-On Support — Monthly</strong>
+                <div class="price">$360 / month</div>
+              </div>
+              <div class="muted">Ongoing support with a stable weekly check-in cadence and quick micro-tasks between sessions.</div>
+              <a class="cta" href="book.html">Inquire About Ongoing Support</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card reveal" style="margin-top:14px">
+          <h3>Flexible Add-ons</h3>
+          <ul class="muted">
+            <li>Single deep-dive session — $140</li>
+            <li>Custom template pack — $80</li>
+            <li>Group pulse check (per person) — $55</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <aside class="card reveal" aria-labelledby="planner-title">
+        <h3 id="planner-title">Session Planner</h3>
+        <p class="muted">Quickly sketch a personal plan and copy a ready-to-send summary for booking.</p>
+        <form id="planner" class="planner" onsubmit="return false;">
+          <label>Primary aim</label>
+          <input type="text" id="aim" placeholder="What outcome would you like in 6 weeks?" />
+
+          <label>Weekly time available</label>
+          <select id="time">
+            <option value="30">30 mins / week</option>
+            <option value="60">1 hour / week</option>
+            <option value="120">2 hours / week</option>
+            <option value="240">4+ hours / week</option>
+          </select>
+
+          <label>Focus areas</label>
+          <div class="chips" id="areas">
+            <button type="button" class="chip" data-val="Sleep">Sleep</button>
+            <button type="button" class="chip" data-val="Movement">Movement</button>
+            <button type="button" class="chip" data-val="Meals">Meals</button>
+            <button type="button" class="chip" data-val="Mindfulness">Mindfulness</button>
+            <button type="button" class="chip" data-val="Habits">Habits</button>
+          </div>
+
+          <label>Preferred session style</label>
+          <div class="chips">
+            <button type="button" class="chip" data-val="Guided conversation">Guided conversation</button>
+            <button type="button" class="chip" data-val="Structured checklist">Structured checklist</button>
+          </div>
+
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="btn" id="build">Build plan</button>
+            <button class="btn copy" id="copy" type="button">Copy summary</button>
+          </div>
+
+          <label>Plan summary</label>
+          <textarea id="summary" rows="6" readonly style="font-family:inherit"></textarea>
+        </form>
+      </aside>
+    </section>
+
+    <section class="card reveal" style="margin-top:18px">
+      <h3>How pricing is framed</h3>
+      <p class="muted">Each option is oriented around time, repeatability, and the habit scaffolds you'll keep. Pick a short module to start, or choose ongoing support for steady progress.</p>
+    </section>
+
+  </main>
+
+  <svg class="pattern" viewBox="0 0 200 200" aria-hidden="true">
+    <defs>
+      <pattern id="p1" width="20" height="20" patternUnits="userSpaceOnUse">
+        <rect width="20" height="20" fill="#fff" />
+        <path d="M0 10 Q5 6 10 10 T20 10" stroke="#8b5e3c" stroke-opacity="0.18" fill="none" stroke-width="1.6"/>
+        <circle cx="6" cy="6" r="1.4" fill="#8b5e3c" opacity="0.12" />
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#p1)" />
+  </svg>
+
+  <footer>
+    <div class="wrap"><small>Contact: {{EMAIL}} • {{PHONE}} • {{CITY}}, {{STATE}}</small></div>
+  </footer>
+
+  <script>
+    // Scroll reveal with prefers-reduced-motion support
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if(prefersReduced) return document.querySelectorAll('.reveal').forEach(el=>el.classList.add('is-visible'));
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{
+          if(e.isIntersecting) { e.target.classList.add('is-visible'); io.unobserve(e.target); }
+        });
+      },{rootMargin:'-10% 0px',threshold:0.08});
+      document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+    })();
+
+    // Session Planner (compact) logic
+    (function(){
+      const chips = document.querySelectorAll('.chip');
+      chips.forEach(c=>{
+        c.addEventListener('click',()=> c.classList.toggle('active'));
+      });
+      const build = document.getElementById('build');
+      const copy = document.getElementById('copy');
+      const summary = document.getElementById('summary');
+
+      function gather(){
+        const aim = document.getElementById('aim').value.trim() || '[no aim entered]';
+        const time = document.getElementById('time').value;
+        const active = Array.from(document.querySelectorAll('.chip.active')).map(b=>b.dataset.val);
+        const style = active.find(s=>/(Guided conversation|Structured checklist)/.test(s)) || '';
+        const areas = active.filter(a=>!/(Guided conversation|Structured checklist)/.test(a));
+        const lines = [];
+        lines.push('Session Planner — quick summary');
+        lines.push('Primary aim: ' + aim);
+        lines.push('Weekly time: ' + (time/60 >=1 ? (time/60) + " hour(s)" : time + ' mins'));
+        if(areas.length) lines.push('Focus: ' + areas.join(', '));
+        if(style) lines.push('Preferred style: ' + style);
+        lines.push('Suggested start: a short diagnostic session, then a 4-week practical path with weekly micro-tasks.');
+        lines.push('Next step: ' + '{{PRIMARY_CTA_LABEL}}' + ' — ' + '{{PRIMARY_CTA_URL}}');
+        return lines.join('\n');
+      }
+
+      build.addEventListener('click',()=>{
+        summary.value = gather();
+        summary.focus();
+      });
+
+      copy.addEventListener('click',()=>{
+        if(!summary.value) summary.value = gather();
+        navigator.clipboard && navigator.clipboard.writeText(summary.value).then(()=>{
+          const orig = copy.textContent; copy.textContent = 'Copied'; setTimeout(()=>copy.textContent = orig,1200);
+        }).catch(()=>{
+          try{document.execCommand('copy');}catch(e){}
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

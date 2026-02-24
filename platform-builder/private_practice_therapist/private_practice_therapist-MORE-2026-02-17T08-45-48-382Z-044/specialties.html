@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Focus Areas — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f9fbfb;--accent:#2c5d5d;--muted:#627173;--card:#ffffff}
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;background:#f9fbfb;color:#142424}
+    .wrap{max-width:980px;margin:30px auto;padding:24px;background:var(--card);border-radius:12px;box-shadow:0 8px 30px rgba(20,30,30,0.05)}
+    header{display:flex;justify-content:space-between;align-items:center}
+    header h1{margin:0;font-size:18px;color:var(--accent)}
+    nav a{margin-left:12px;color:var(--accent);text-decoration:none}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:20px}
+    .list{display:flex;flex-direction:column;gap:12px}
+    .card{padding:14px;border-radius:8px;background:linear-gradient(180deg,#fff,#fbffff);border:1px solid #eef6f6}
+    .card h3{margin:0 0 6px}
+    .pale{color:var(--muted);font-size:14px}
+    .cta{display:inline-block;margin-top:10px;background:var(--accent);color:#fff;padding:9px 12px;border-radius:8px;text-decoration:none}
+    .wizard{margin-top:12px}
+    label{display:block;font-size:13px;margin-top:10px}
+    input[type="text"], select, textarea{width:100%;padding:8px;border-radius:6px;border:1px solid #d7e7e7;margin-top:6px}
+    button{background:#2c5d5d;color:#fff;padding:8px 10px;border:0;border-radius:6px;margin-top:10px;cursor:pointer}
+    .output{white-space:pre-wrap;background:#f3faf9;border:1px dashed #d8efee;padding:10px;border-radius:6px;margin-top:10px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>{{BUSINESS_NAME}} — Areas of focus</h1>
+        <div class="pale">Evidence-informed care for adults navigating common life challenges</div>
+      </div>
+      <nav>
+        <a href="index.html">Welcome</a>
+        <a href="about.html">About</a>
+        <a href="specialties.html">Focus</a>
+        <a href="approach.html">My Approach</a>
+      </nav>
+    </header>
+
+    <div class="grid">
+      <section>
+        <div class="list">
+          <div class="card">
+            <h3>Transition & adjustment</h3>
+            <div class="pale">Work around career moves, life-stage changes, returning to work, or relocating — with practical coping strategies and planning.</div>
+          </div>
+
+          <div class="card">
+            <h3>Relationship patterns</h3>
+            <div class="pale">Explore recurring dynamics in attachment, communication, and boundaries to shift how connections feel day-to-day.</div>
+          </div>
+
+          <div class="card">
+            <h3>Persistent worry & low energy</h3>
+            <div class="pale">Tools for managing chronic worry, low mood, and concentration concerns that interfere with functioning.</div>
+          </div>
+
+          <div class="card">
+            <h3>Parenting stress & role demands</h3>
+            <div class="pale">Support in making space for self-care, planning around family responsibilities, and building sustainable routines.</div>
+          </div>
+
+          <div class="card">
+            <h3>Performance anxiety & self-expectations</h3>
+            <div class="pale">Practical ways to adjust high self-expectations and reduce anxiety that looks like perfectionism or burnout.</div>
+          </div>
+        </div>
+      </section>
+
+      <aside>
+        <div class="card">
+          <h3 style="margin-top:0">A brief self-check</h3>
+          <div class="pale">Try this short non-diagnostic intake to gather notes for an initial meeting. It helps you notice patterns and come prepared with questions.</div>
+
+          <div class="wizard" id="wizard1">
+            <div id="step1">
+              <label for="concern">What brings you in right now? (2–3 short sentences)</label>
+              <textarea id="concern" rows="3"></textarea>
+              <button id="toStep2">Next</button>
+            </div>
+
+            <div id="step2" style="display:none">
+              <label for="triggers">Are there common triggers or situations when you notice this most?</label>
+              <input id="triggers" type="text" placeholder="e.g., evenings, work meetings, parenting moments">
+              <label for="strengths">What helps you cope even a little? (people, activities, routines)</label>
+              <input id="strengths" type="text" placeholder="e.g., walking, a friend, a morning routine">
+              <button id="toStep3">Next</button>
+            </div>
+
+            <div id="step3" style="display:none">
+              <label for="goal">What would you hope is different in three months?</label>
+              <input id="goal" type="text" placeholder="A small, realistic change">
+              <button id="buildQuestions">Create questions to bring to a consultation</button>
+            </div>
+
+            <div id="result" style="display:none">
+              <div class="output" id="questionsOutput"></div>
+              <button id="copyQuestions">Copy questions</button>
+              <button id="restartWizard">Start over</button>
+            </div>
+          </div>
+
+          <script>
+            (function(){
+              var step1 = document.getElementById('step1');
+              var step2 = document.getElementById('step2');
+              var step3 = document.getElementById('step3');
+              var result = document.getElementById('result');
+              document.getElementById('toStep2').addEventListener('click',function(){
+                if(document.getElementById('concern').value.trim()===''){alert('A short note helps.');return}
+                step1.style.display='none';step2.style.display='block';
+              });
+              document.getElementById('toStep3').addEventListener('click',function(){
+                step2.style.display='none';step3.style.display='block';
+              });
+              document.getElementById('buildQuestions').addEventListener('click',function(){
+                var c=document.getElementById('concern').value.trim();
+                var t=document.getElementById('triggers').value.trim();
+                var s=document.getElementById('strengths').value.trim();
+                var g=document.getElementById('goal').value.trim();
+                var lines=[];
+                lines.push('Notes to bring to a consultation:');
+                lines.push('• Presenting concern: '+(c||'—'));
+                lines.push('• Typical triggers/situations: '+(t||'—'));
+                lines.push('• What helps at the moment: '+(s||'—'));
+                lines.push('• Short goal (3 months): '+(g||'—'));
+                lines.push('\nSuggested questions to ask in an initial meeting:');
+                lines.push('1) Given these concerns, what would a first 3-session focus look like?');
+                lines.push('2) Which practical skills or strategies might be useful early on?');
+                lines.push('3) What would you recommend for measuring small gains between sessions?');
+                var out=lines.join('\n');
+                document.getElementById('questionsOutput').textContent=out;
+                step3.style.display='none';result.style.display='block';
+              });
+              document.getElementById('copyQuestions').addEventListener('click',function(){
+                var t=document.getElementById('questionsOutput').textContent;navigator.clipboard&&navigator.clipboard.writeText(t).then(function(){alert('Copied to clipboard')},function(){alert('Copy failed')});
+              });
+              document.getElementById('restartWizard').addEventListener('click',function(){
+                document.getElementById('concern').value='';document.getElementById('triggers').value='';document.getElementById('strengths').value='';document.getElementById('goal').value='';result.style.display='none';step1.style.display='block';
+              });
+            })();
+          </script>
+
+        </div>
+
+        <div style="margin-top:12px" class="pale">This is not a diagnosis or a substitute for clinical assessment. It’s a structured way to notice patterns and prepare for a conversation.</div>
+      </aside>
+    </div>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Connect | {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reach {{PRACTITIONER_NAME}} — whole-person care, thoughtful listening, and events to deepen wellness." />
+  <style>
+    :root{
+      --bg:#0f1724; --card:#0b1220; --muted:#9aa4b2; --accent:#88c7a5; --glass: rgba(255,255,255,0.04);
+      --radius:14px; --maxw:980px; --gap:20px; font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    html,body{height:100%;}
+    body{
+      margin:0; background:linear-gradient(180deg, rgba(12,16,22,1) 0%, rgba(6,10,14,1) 100%); color:#e6eef3; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+      display:flex; align-items:flex-start; justify-content:center; padding:36px 18px; box-sizing:border-box;
+    }
+    .wrap{width:100%; max-width:var(--maxw);}
+    nav{display:flex; gap:12px; align-items:center; justify-content:space-between; margin-bottom:20px}
+    .brand{display:flex; gap:12px; align-items:center}
+    .logo{width:56px;height:56px;border-radius:10px; background:linear-gradient(135deg,var(--accent),#6aa3e8); display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(0,0,0,0.5)}
+    .logo svg{width:36px;height:36px; fill:#08262a}
+    .brand h1{font-size:14px;margin:0;letter-spacing:0.6px}
+    .brand p{margin:0;font-size:12px;color:var(--muted)}
+    .links{display:flex;gap:10px;align-items:center}
+    .links a{color:var(--muted);text-decoration:none;font-size:13px;padding:8px 12px;border-radius:10px}
+    .links a.active{background:rgba(255,255,255,0.03);color:#fff}
+
+    header.hero{position:relative;padding:28px;border-radius:var(--radius);overflow:hidden;background:linear-gradient(135deg, rgba(12,18,24,0.6), rgba(6,10,14,0.6));box-shadow:inset 0 1px 0 rgba(255,255,255,0.02), 0 8px 30px rgba(2,6,10,0.6);margin-bottom:18px}
+    header.hero .grid{display:grid;grid-template-columns:1fr 360px;gap:22px;align-items:start}
+    .hero-copy h2{margin:0;font-size:22px;letter-spacing:0.2px}
+    .hero-copy p{color:var(--muted);margin-top:10px;font-size:14px;line-height:1.5}
+    .cta-row{display:flex;gap:10px;margin-top:18px}
+    .btn{background:linear-gradient(90deg,var(--accent),#6aa3e8);border:none;color:#05221c;padding:10px 14px;border-radius:12px;font-weight:600;cursor:pointer;text-decoration:none}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:12px;padding:14px;backdrop-filter: blur(6px);box-shadow:0 6px 20px rgba(0,0,0,0.45)}
+    form.field-grid{display:flex;flex-direction:column;gap:10px}
+    input, textarea, select{border-radius:10px;padding:10px;border:1px solid rgba(255,255,255,0.04);background:var(--glass);color:var(--muted);font-size:14px}
+    textarea{min-height:96px;resize:vertical}
+    .small{font-size:13px;color:var(--muted)}
+
+    section.split{display:grid;grid-template-columns:1fr 340px;gap:22px;margin-bottom:18px}
+    .card{padding:16px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);}
+    h3{margin-top:0}
+    ul.pillars{list-style:none;padding:0;margin:10px 0 0 0;display:grid;gap:8px}
+    ul.pillars li{background:rgba(255,255,255,0.02);padding:10px;border-radius:10px;color:var(--muted);font-size:14px}
+
+    .myth-truth{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .mt{padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,0,80,0.02), transparent);}
+    .mt h4{margin:0 0 6px 0;font-size:13px}
+    .mt p{margin:0;color:var(--muted);font-size:13px}
+
+    .cases{display:grid;gap:10px}
+    .case{display:flex;gap:12px;align-items:flex-start}
+    .case .dot{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,#3a8fb0,#8bd6b6);display:flex;align-items:center;justify-content:center;font-weight:700}
+    .case p{margin:0;color:var(--muted);font-size:14px}
+
+    .faq{display:grid;gap:8px}
+    .faq details{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;color:var(--muted)}
+    footer.cta{margin-top:18px;padding:18px;border-radius:var(--radius);display:flex;align-items:center;justify-content:space-between;background:linear-gradient(90deg, rgba(13,18,22,0.4), rgba(6,10,14,0.4));}
+
+    /* responsive */
+    @media (max-width:880px){
+      header.hero .grid, section.split{grid-template-columns:1fr;}
+      .links{display:none}
+    }
+
+    /* background pattern: inline SVG fallback if external asset missing */
+    .bg-pattern{position:fixed;inset:0;z-index:-1;opacity:0.12;pointer-events:none}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+  </style>
+</head>
+<body>
+  <svg class="bg-pattern" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" preserveAspectRatio="none" aria-hidden="true">
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#073642" stop-opacity="0.8"/><stop offset="1" stop-color="#073a28" stop-opacity="0.6"/></linearGradient>
+      <pattern id="p1" width="40" height="40" patternUnits="userSpaceOnUse">
+        <rect width="40" height="40" fill="url(#g1)" />
+        <path d="M0 20 L20 0 M20 40 L40 20" stroke="#0b2f2a" stroke-width="0.6"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#p1)" />
+  </svg>
+
+  <div class="wrap" role="main">
+    <nav aria-label="Primary navigation">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M3 12C3 7 7 3 12 3s9 4 9 9-4 9-9 9S3 17 3 12z"></path></svg>
+        </div>
+        <div>
+          <h1>{{BUSINESS_NAME}}</h1>
+          <p>{{TAGLINE}}</p>
+        </div>
+      </div>
+      <div class="links">
+        <a href="index.html">Home</a>
+        <a href="services.html">Offerings</a>
+        <a href="conditions.html">Concerns</a>
+        <a href="approach.html">Flow</a>
+        <a href="pricing.html">Investment</a>
+        <a href="about.html">About</a>
+        <a href="book.html">Plan</a>
+        <a class="active" href="contact.html">Connect</a>
+      </div>
+    </nav>
+
+    <header class="hero">
+      <div class="grid">
+        <div class="hero-copy">
+          <h2>Let’s meet the whole you — curious, careful, and kind.</h2>
+          <p>Reach out to inquire about appointments, workshops, or a monthly series of guided sessions. Conversations begin with listening; care grows in rhythm. Use the form to share a little about what brings you here.</p>
+          <div class="cta-row">
+            <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            <a class="btn ghost" href="book.html">Schedule a visit</a>
+          </div>
+          <p class="small" style="margin-top:12px">Phone: <a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none">{{PHONE}}</a> • Email: <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a></p>
+        </div>
+
+        <aside>
+          <div class="panel">
+            <strong style="display:block">Quick connect</strong>
+            <p class="small">A short note is fine — share your priority, availability, and whether you'd like to be considered for an upcoming series or workshop.</p>
+            <form id="contactForm" class="field-grid" novalidate>
+              <label class="small">Name<input name="name" type="text" placeholder="Your name" required></label>
+              <label class="small">Email<input name="email" type="email" placeholder="you@domain.com" required></label>
+              <label class="small">Phone<input name="phone" type="tel" placeholder="Optional"></label>
+              <label class="small">Interested in<select name="interest"><option value="consult">Consult & care</option><option value="series">Series / workshops</option><option value="lab">Educational labs</option></select></label>
+              <label class="small">Message<textarea name="message" placeholder="A few sentences about what's brought you here"></textarea></label>
+              <label style="font-size:12px;color:var(--muted)"><input type="checkbox" name="consent"> I consent to receive replies and occasional event updates.</label>
+              <div style="display:flex;gap:8px">
+                <button class="btn" type="submit">Send</button>
+                <button class="btn ghost" type="button" id="clearBtn">Clear</button>
+              </div>
+              <p id="formMsg" class="small" style="margin:6px 0 0 0;color:var(--muted)"></p>
+            </form>
+          </div>
+        </aside>
+      </div>
+    </header>
+
+    <section class="split">
+      <div>
+        <div class="card">
+          <h3>Myth and truth</h3>
+          <p class="small">Holistic care is sometimes mistaken for quick fixes. Below are common misunderstandings and what to really expect.</p>
+          <div class="myth-truth" style="margin-top:12px">
+            <div class="mt">
+              <h4>Myth</h4>
+              <p>No single pill or ritual will ‘fix’ everything instantly.</p>
+            </div>
+            <div class="mt">
+              <h4>Truth</h4>
+              <p>Care is an unfolding conversation. We focus on education, lifestyle supports, and coordinated plans tailored to you — with respect for evidence and limits.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h3>Pillars of our approach</h3>
+          <ul class="pillars">
+            <li>Listening first: your story guides the plan.</li>
+            <li>Whole-systems thinking: mind, body, environment.</li>
+            <li>Evidence-informed options and gentle experimentation.</li>
+            <li>Practical tools: sleep, stress, digestion support.</li>
+            <li>Community learning: workshops & series to deepen skills.</li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h3>Case notes — illustrated in brief</h3>
+          <div class="cases" aria-hidden="false">
+            <div class="case">
+              <div class="dot">A</div>
+              <div>
+                <p class="small"><strong>Anonymous</strong> — Began with chronic sleep disruption. Through paced adjustments, evening routines, and a short coaching series, sleep stabilized. This is educational, not guaranteed.</p>
+              </div>
+            </div>
+
+            <div class="case">
+              <div class="dot">B</div>
+              <div>
+                <p class="small"><strong>Anonymous</strong> — A client with digestive sensitivity learned small dietary experiments, breath work, and pacing. Symptoms reduced and quality of life improved with consistent steps and follow-up.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="card">
+          <h3>Upcoming series & events</h3>
+          <p class="small">Join a focused 6-week series on stress resilience or a community evening on mindful digestion. Space is limited; registering helps us plan meaningfully.</p>
+          <ul class="pillars" style="margin-top:10px">
+            <li><strong>Resilience Series</strong> — 6 weekly sessions. Practical tools + group reflection.</li>
+            <li><strong>Evening Workshop</strong> — Micro-lab on sleep rhythms, hands-on practice.</li>
+            <li><strong>Open Q&amp;A</strong> — Monthly community conversation.</li>
+          </ul>
+          <p class="small" style="margin-top:10px;color:var(--muted)">Note: workshops are educational. They are not a substitute for medical care. If you have urgent medical needs, contact your provider.</p>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h3>FAQ</h3>
+          <div class="faq">
+            <details>
+              <summary>What should I expect in a first visit?</summary>
+              <p class="small">An intake focused on history, current concerns, and priorities. We discuss options, timelines, and whether labs or collaborations are educationally appropriate.</p>
+            </details>
+
+            <details>
+              <summary>Do you order labs?</summary>
+              <p class="small">Occasionally — as educational tools to help understand patterns. Labs are optional and discussed transparently.</p>
+            </details>
+
+            <details>
+              <summary>Is this a substitute for medical care?</summary>
+              <p class="small">No. We collaborate with your clinicians when appropriate and will refer when specialized medical care is needed.</p>
+            </details>
+
+            <details>
+              <summary>Payment and insurance?</summary>
+              <p class="small">We offer clear pricing and can provide superbills for insurance reimbursement when relevant.</p>
+            </details>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <footer class="cta" role="contentinfo">
+      <div>
+        <strong style="display:block">Ready to connect?</strong>
+        <p class="small">Send a note, ask about a series, or request a consult. {{PRACTITIONER_NAME}}, {{CREDENTIALS}} — serving {{CITY}}, {{STATE}}.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+        <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        <a class="small" href="mailto:{{EMAIL}}" style="color:var(--muted);text-decoration:none">Or email: {{EMAIL}}</a>
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    (function(){
+      var form = document.getElementById('contactForm');
+      var msg = document.getElementById('formMsg');
+      var clearBtn = document.getElementById('clearBtn');
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        // lightweight client-side validation
+        var name = form.name.value.trim();
+        var email = form.email.value.trim();
+        if(!name || !email){ msg.textContent = 'Please include your name and email.'; return; }
+        msg.textContent = 'Thanks — your message is noted. We typically reply within 3 business days.';
+        form.reset();
+      });
+      clearBtn.addEventListener('click', function(){ form.reset(); msg.textContent=''; });
+    })();
+  </script>
+</body>
+</html>

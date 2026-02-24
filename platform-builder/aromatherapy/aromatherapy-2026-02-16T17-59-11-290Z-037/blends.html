@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Blends — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--ink:#071026;--muted:#556270;--accent:#FF8DA1;--accent-2:#7BE6FF}
+    *{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,-apple-system,"Helvetica Neue",Arial;background:linear-gradient(180deg,#f7fbff 0%,#ffffff 100%);color:var(--ink)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px}
+    nav a{color:var(--muted);text-decoration:none;margin:0 10px}
+    nav a.active{color:var(--ink);font-weight:700}
+    .brand{display:flex;gap:12px;align-items:center}
+    .brand svg{width:42px;height:42px}
+    main{padding:18px}
+    .hero{padding:18px;background:linear-gradient(90deg,rgba(255,141,161,0.06),rgba(123,230,255,0.04));border-radius:12px;display:flex;gap:18px;align-items:center}
+    h1{margin:0;font-size:24px}
+    .blends-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:18px}
+    .blend{background:#fff;border-radius:12px;padding:14px;border:1px solid rgba(7,16,38,0.04);box-shadow:0 6px 18px rgba(7,16,38,0.04)}
+    .notes{font-size:13px;color:var(--muted);margin:8px 0}
+    .supports{font-weight:700;color:var(--ink);margin-top:8px}
+    .disclaimer{font-size:13px;color:var(--muted);margin-top:12px}
+    .faq{background:linear-gradient(180deg,rgba(123,230,255,0.03),transparent);padding:12px;border-radius:10px;margin-top:18px}
+    footer{padding:18px;color:var(--muted);display:flex;justify-content:space-between}
+    /* unique pattern */
+    .pattern{position:absolute;left:10px;top:60px;opacity:0.08}
+    @media (max-width:700px){.hero{flex-direction:column;align-items:flex-start}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+        <defs>
+          <linearGradient id="b1" x1="0" x2="1"><stop offset="0" stop-color="#FF8DA1"/><stop offset="1" stop-color="#7BE6FF"/></linearGradient>
+        </defs>
+        <rect width="48" height="48" rx="10" fill="url(#b1)"/>
+        <path d="M24 14c4 0 7 3 7 7s-3 7-7 7-7-3-7-7 3-7 7-7z" fill="#fff" opacity="0.18"/>
+      </svg>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">Handcrafted botanical blends</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Start</a>
+      <a href="services.html">Sessions</a>
+      <a href="blends.html" class="active">Blends</a>
+      <a href="shop.html">Shop</a>
+      <a href="contact.html">Contact</a>
+      <a href="{{PRIMARY_CTA_URL}}" style="margin-left:8px;font-weight:800;color:var(--ink)">{{PRIMARY_CTA_LABEL}}</a>
+    </nav>
+  </header>
+
+  <!-- decorative SVG pattern unique to blends page -->
+  <div class="pattern" aria-hidden>
+    <svg width="220" height="220" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="bg1"><stop offset="0" stop-color="#FF8DA1"/><stop offset="1" stop-color="#7BE6FF"/></radialGradient>
+      </defs>
+      <rect width="220" height="220" rx="20" fill="url(#bg1)" opacity="0.06"/>
+      <g fill="#fff" opacity="0.06"><rect x="20" y="20" width="40" height="40" rx="8"/><rect x="80" y="80" width="40" height="40" rx="8"/></g>
+    </svg>
+  </div>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h1>Signature blends — crafted notes and safe usage</h1>
+        <p style="color:var(--muted);margin-top:6px">Explore curated blends with clear top/middle/base notes, aroma profiles, and purpose-minded "supports" statements. All formulations are safety-forward and non-medical.</p>
+      </div>
+      <div style="margin-left:auto;text-align:right">
+        <div style="font-weight:800">Prefer a custom mix?</div>
+        <div style="color:var(--muted)">Book a session and we'll tailor a blend for your home or workplace.</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="blends-grid">
+        <div class="blend">
+          <h3>Calm Harbor</h3>
+          <div class="notes">Top: Bergamot, Lemon • Middle: Lavender, Roman Chamomile • Base: Vetiver</div>
+          <div>Aroma profile: soft citrus with a floral-herbal heart and grounding base.</div>
+          <div class="supports">Supports: evening wind-down, gentle focus for reflective moments.</div>
+        </div>
+
+        <div class="blend">
+          <h3>Sunrise Clarity</h3>
+          <div class="notes">Top: Sweet Orange, Grapefruit • Middle: Basil, Rosemary • Base: Cedarwood</div>
+          <div>Aroma profile: bright citrus with green herbal clarity and warm wood undernotes.</div>
+          <div class="supports">Supports: morning routines and clear-headed task starts.</div>
+        </div>
+
+        <div class="blend">
+          <h3>Cozy Hearth</h3>
+          <div class="notes">Top: Cinnamon Leaf, Clove • Middle: Orange, Ginger • Base: Patchouli</div>
+          <div>Aroma profile: spicy-warm, comforting, with a sweet citrus lift.</div>
+          <div class="supports">Supports: creating a welcoming atmosphere and seasonal rituals.</div>
+        </div>
+
+        <div class="blend">
+          <h3>Forest Whisper</h3>
+          <div class="notes">Top: Pine, Eucalyptus • Middle: Fir Needle • Base: Sandalwood</div>
+          <div>Aroma profile: crisp evergreen with balsamic depth.</div>
+          <div class="supports">Supports: indoor freshness and grounding transitions.</div>
+        </div>
+
+        <div class="blend">
+          <h3>Petal Pause</h3>
+          <div class="notes">Top: Neroli, Bergamot • Middle: Jasmine, Rose • Base: Ambrette</div>
+          <div>Aroma profile: luminous floral with a soft musky finish.</div>
+          <div class="supports">Supports: mindful moments and gentle emotional reset.</div>
+        </div>
+
+        <div class="blend">
+          <h3>Quiet Study</h3>
+          <div class="notes">Top: Lemon, Lime • Middle: Clary Sage, Lavender • Base: Atlas Cedar</div>
+          <div>Aroma profile: bright citrus anchored by herbal-lavender calm.</div>
+          <div class="supports">Supports: focused reading and calm concentration.</div>
+        </div>
+
+        <div class="blend">
+          <h3>Coastal Breeze</h3>
+          <div class="notes">Top: Grapefruit, Mint • Middle: Geranium • Base: Driftwood accord</div>
+          <div>Aroma profile: airy, mineral-like citrus with a gentle marine herbal heart.</div>
+          <div class="supports">Supports: refreshing indoor air and uplifting mood.</div>
+        </div>
+
+        <div class="blend">
+          <h3>Night Root</h3>
+          <div class="notes">Top: Mandarin • Middle: Ylang Ylang • Base: Vanilla & Benzoin</div>
+          <div>Aroma profile: soft-sweet floral wrapped in warm balsamic vanilla.</div>
+          <div class="supports">Supports: cozy evening rituals and calming bedtime ambiance.</div>
+        </div>
+
+        <div class="blend">
+          <h3>Mint & Mend</h3>
+          <div class="notes">Top: Spearmint, Peppermint • Middle: Lavender • Base: Rosemary</div>
+          <div>Aroma profile: crisp mint with herbal-lavender balance.</div>
+          <div class="supports">Supports: quick refresh when you need an energetic, steadying scent.</div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="faq">
+      <h4 style="margin:0 0 8px">Practical FAQ — blending safety</h4>
+      <div style="color:var(--muted);font-size:14px">
+        <strong>Dilution:</strong> Every blend has recommended dilution ranges. For adult topical use, we typically suggest conservative dilutions (1–2% for daily use) unless otherwise advised.
+        <br/>
+        <strong>Patch test:</strong> Before using a new topical blend, apply a small amount of diluted oil to an inner forearm and wait 24 hours to check for sensitivity.
+        <br/>
+        <strong>Pets:</strong> Not all oils are pet-safe. If you share your home with animals, we will create blends with that in mind and recommend cautious diffusion practices.
+        <br/>
+        <strong>Pregnancy & nursing:</strong> Some oils are not recommended. If pregnant or breastfeeding, please mention this during consults so blends can be tailored to safer alternatives.
+      </div>
+      <div class="disclaimer">Note: These blends are not medical treatments. They are sensory tools and lifestyle supports; consult healthcare professionals for medical concerns.</div>
+    </section>
+  </main>
+
+  <footer>
+    <div style="font-weight:700">Curious to try a sample? Book a bespoke session with {{PRACTITIONER_NAME}}.</div>
+    <div style="color:var(--muted)">Email: {{EMAIL}} • Phone: {{PHONE}}</div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Profile — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="About the clinician — thoughtful, private therapy for adults in {{CITY}}, {{STATE}}.">
+  <style>
+    :root{--bg:#08121a;--card:#0f2730;--accent:#8fd3c7;--muted:#b3c7c1;--glass:rgba(255,255,255,0.03);}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#e6f3f0;background:linear-gradient(180deg,var(--bg),#061018);min-height:100vh}
+    header{position:sticky;top:0;backdrop-filter:blur(6px);background:linear-gradient(90deg,rgba(2,8,12,0.6),rgba(6,14,18,0.4));border-bottom:1px solid rgba(255,255,255,0.02);}
+    .nav{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:18px;padding:14px}
+    .brand{font-weight:600;color:var(--accent)}
+    .nav a{color:#cfe9e3;text-decoration:none;padding:8px 10px;border-radius:6px;font-size:14px}
+    .nav a.active{background:rgba(143,211,199,0.08);color:var(--accent)}
+    main{max-width:1100px;margin:36px auto;padding:24px;display:grid;grid-template-columns:1fr 360px;gap:28px}
+    .hero{background:linear-gradient(160deg,rgba(143,211,199,0.04),transparent);border-radius:12px;padding:28px;color:#eaf6f3;box-shadow:0 6px 24px rgba(2,6,8,0.4);border:1px solid rgba(255,255,255,0.03)}
+    h1{margin:0 0 8px;font-size:26px}
+    p.lead{margin:0 0 16px;color:var(--muted)}
+    .cta{display:inline-block;background:var(--accent);color:#03343a;padding:10px 14px;border-radius:8px;text-decoration:none;font-weight:600}
+    .aside{align-self:start;background:var(--card);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+    .mood-card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:14px;border-radius:10px}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:8px}
+    select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#dff7f3}
+    .method{margin-top:12px;padding:12px;border-radius:8px;background:var(--glass);font-size:14px;color:var(--muted)}
+    .accordion{margin-top:18px}
+    .acc-item{background:transparent;border-top:1px solid rgba(255,255,255,0.02)}
+    .acc-title{display:flex;justify-content:space-between;align-items:center;padding:12px;cursor:pointer;color:#cfe9e3}
+    .acc-content{padding:0 12px 12px;color:var(--muted);display:none}
+    .acc-content.open{display:block}
+    footer{max-width:1100px;margin:28px auto;color:var(--muted);font-size:13px}
+    .pattern{position:fixed;inset:0;pointer-events:none;opacity:0.08;background-image:url('assets/img/pattern.svg');background-repeat:repeat;}
+    @media(max-width:880px){main{grid-template-columns:1fr;padding:16px} .nav{overflow:auto}}
+  </style>
+</head>
+<body>
+  <div class="pattern" aria-hidden="true"></div>
+  <header>
+    <nav class="nav" aria-label="Primary">
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <a href="index.html">Practice</a>
+      <a href="about.html" class="active">Profile</a>
+      <a href="specialties.html">Offerings</a>
+      <a href="approach.html">Method</a>
+      <a href="fees.html">Investment</a>
+      <a href="faq.html">Questions</a>
+      <a href="book.html">Begin</a>
+      <a href="contact.html">Reach Out</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="about-heading">
+      <h1 id="about-heading">Who I am and the frame I bring</h1>
+      <p class="lead">I’m a licensed clinician offering focused, private therapy for adults. I draw on several evidence-informed practices and a straightforward, humane stance to help you notice patterns and try different moves in life’s complicated moments.</p>
+
+      <div>
+        <strong style="display:block;margin-bottom:8px">Private formats</strong>
+        <p style="margin:0 0 12px;color:var(--muted)">Short, intensive sessions or a regular weekly rhythm — we choose what fits your goals and capacity. Everything is confidential within clinical and legal boundaries.</p>
+        <a id="primary-cta" class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+
+      <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03);margin:18px 0">
+
+      <h3 style="margin:0 0 8px">A brief clinical note</h3>
+      <p style="margin:0;color:var(--muted)">My work is grounded in curiosity, respect, and specific strategies—aimed at strengthening your decision-making, relationships, and emotion-management without quick fixes or promises. We clarify goals together and agree on how to measure progress that matters to you.</p>
+    </section>
+
+    <aside class="aside">
+      <div class="mood-card">
+        <label for="mood">Choose your current state</label>
+        <select id="mood" aria-describedby="mood-desc">
+          <option value="overwhelmed">Overwhelmed — too much to hold</option>
+          <option value="stuck">Stuck — noticing the same loop</option>
+          <option value="numb">Numb — disconnected or flat</option>
+          <option value="transition">Transitioning — big life change</option>
+          <option value="clarify">Seeking clarity — want decision support</option>
+        </select>
+        <div id="mood-desc" class="method" aria-live="polite">Select a state to see a recommended session shape and a suggested next step.</div>
+        <a id="mood-cta" class="cta" style="margin-top:10px;display:inline-block">Get matched session</a>
+      </div>
+
+      <div class="accordion" id="policyAccordion">
+        <div class="acc-item">
+          <button class="acc-title" aria-expanded="false">Session boundaries<span aria-hidden="true">▾</span></button>
+          <div class="acc-content">Sessions typically last 45–60 minutes. We’ll set the schedule together and discuss attendance and cancellation policies up front. In time-limited intensives we clarify pacing and focus at the start.</div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-title" aria-expanded="false">Confidentiality & limits<span aria-hidden="true">▾</span></button>
+          <div class="acc-content">Notes and communications are kept private within legal and ethical limits (e.g., imminent risk to self or others, court orders). I will always try to be transparent about confidentiality and the information I record.</div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-title" aria-expanded="false">Technology, records & contact<span aria-hidden="true">▾</span></button>
+          <div class="acc-content">Telehealth and secure messaging are available. I maintain minimal clinical records that summarize sessions and care planning. For non-urgent questions, email {{EMAIL}}; for scheduling call {{PHONE}}.</div>
+        </div>
+      </div>
+
+      <p style="margin-top:12px;font-size:13px;color:var(--muted)">If you are in immediate danger or are experiencing a life-threatening emergency, call your local emergency number or a crisis line (e.g., dial 988 in the U.S.). I am not an emergency service.</p>
+    </aside>
+  </main>
+
+  <footer>
+    <div>Licensed clinician serving {{CITY}}, {{STATE}}. Appointments by private pay or selected insurers. No guarantees are made about outcomes.</div>
+  </footer>
+
+  <script>
+    (function(){
+      const moodSelect = document.getElementById('mood');
+      const moodDesc = document.getElementById('mood-desc');
+      const moodCta = document.getElementById('mood-cta');
+
+      const map = {
+        overwhelmed:{text:'Short, focused sessions to stabilize and make practical shifts — we prioritize what reduces immediate load.',cta:'Book a stabilizing session'},
+        stuck:{text:'A small series of sessions to identify recurring patterns and try specific experiments between meetings.',cta:'Start a focused series'},
+        numb:{text:'Gentle pacing with attention to bodily sensing and reconnection; pacing is collaborative and slow is fine.',cta:'Request gentle pacing'},
+        transition:{text:'An intensive check-in to set priorities and practical next steps for a life change; we can design one or two extended sessions.',cta:'Discuss a transition plan'},
+        clarify:{text:'Decision-focused sessions with structured tools for weighing options and clarifying values.',cta:'Begin decision support'}
+      };
+
+      function update(){
+        const val = moodSelect.value;
+        moodDesc.textContent = map[val].text;
+        moodCta.textContent = map[val].cta;
+        moodCta.href = '{{PRIMARY_CTA_URL}}';
+      }
+
+      moodSelect.addEventListener('change',update);
+      update();
+
+      // Accordion behavior
+      document.querySelectorAll('.acc-title').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          const expanded = btn.getAttribute('aria-expanded') === 'true';
+          btn.setAttribute('aria-expanded', String(!expanded));
+          const content = btn.nextElementSibling;
+          content.classList.toggle('open');
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

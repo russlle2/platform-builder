@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Book a Session — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fcfdfa;--ink:#082425;--muted:#4f5d5b;--accent:#7db299}
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none}
+    main{max-width:960px;margin:12px auto;padding:0 20px}
+    .panel{background:#fff;padding:18px;border-radius:12px;border:1px solid rgba(6,12,10,0.04)}
+    h1{margin-top:4px}
+    form{display:grid;gap:12px;margin-top:12px}
+    label{font-weight:700}
+    input,select,textarea{padding:10px;border-radius:8px;border:1px solid rgba(6,12,10,0.06);font-size:15px}
+    .row{display:flex;gap:12px}
+    .small{font-size:13px;color:var(--muted)}
+    .btn{background:var(--accent);color:white;padding:10px 14px;border-radius:8px;border:0;cursor:pointer}
+    .types{display:flex;gap:8px;flex-wrap:wrap}
+    .type{border:1px solid rgba(6,12,10,0.06);padding:10px;border-radius:8px;cursor:pointer}
+    .type.active{outline:2px solid rgba(125,178,153,0.18)}
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity .5s ease,transform .5s ease}
+    .reveal--visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none;opacity:1;transform:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="fees.html">Fees</a>
+      <a href="faq.html">FAQ</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="panel reveal">
+      <h1>Schedule a session</h1>
+      <p class="small">Select a session type and share a few details. Booking here initiates scheduling — you will receive a confirmation by email.</p>
+
+      <form id="bookingForm" autocomplete="off">
+        <div>
+          <label for="name">Full name</label>
+          <input id="name" name="name" required />
+        </div>
+
+        <div>
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required />
+        </div>
+
+        <div>
+          <label>Session type</label>
+          <div class="types" role="list">
+            <div class="type active" data-type="intake" role="listitem">90 min intake — $195</div>
+            <div class="type" data-type="standard" role="listitem">50–60 min — $160</div>
+            <div class="type" data-type="brief" role="listitem">25–30 min brief — $95</div>
+          </div>
+        </div>
+
+        <div>
+          <label for="when">Preferred days / times</label>
+          <input id="when" name="when" placeholder="e.g., Tuesdays morning, or weekday evenings" />
+        </div>
+
+        <div>
+          <label for="note">Short note about goals (optional)</label>
+          <textarea id="note" name="note" placeholder="A few words about what you'd like to focus on"></textarea>
+        </div>
+
+        <div class="row">
+          <button class="btn" type="submit">Request booking</button>
+          <button type="button" id="tryNow" class="btn" style="background:#fff;color:var(--accent);border:1px solid rgba(125,178,153,0.18)">Try a micro-practice</button>
+        </div>
+
+        <div class="small">By requesting a booking you agree to a brief intake conversation by email or phone. For urgent safety concerns call local emergency services—this practice is not an emergency service.</div>
+      </form>
+    </section>
+
+    <section style="margin-top:14px" class="panel reveal">
+      <h2 style="margin:0">What happens after you request a booking</h2>
+      <ol class="small">
+        <li>We will reply to schedule a mutually available time and confirm platform details.</li>
+        <li>If you choose a membership plan we will outline billing and scheduling terms in writing.</li>
+        <li>Any questions about confidentiality or documentation will be addressed before or during the first session.</li>
+      </ol>
+    </section>
+  </main>
+
+  <script>
+    // session type selector
+    document.querySelectorAll('.type').forEach(t=>{
+      t.addEventListener('click',()=>{
+        document.querySelectorAll('.type').forEach(x=>x.classList.remove('active'));
+        t.classList.add('active');
+      });
+    });
+
+    // simple booking handler — opens client email using mailto (no server)
+    document.getElementById('bookingForm').addEventListener('submit',function(e){
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const when = document.getElementById('when').value.trim();
+      const note = document.getElementById('note').value.trim();
+      const type = document.querySelector('.type.active').getAttribute('data-type');
+      const subject = encodeURIComponent('Booking request from ' + name);
+      const body = encodeURIComponent('Name: '+name+'%0AEmail: '+email+'%0APreferred: '+when+'%0ASession: '+type+'%0ANotes: '+note);
+      const mailto = 'mailto:{{EMAIL}}?subject='+subject+'&body='+body;
+      window.location.href = mailto;
+    });
+
+    // Micro-practice modal similar to other pages
+    document.getElementById('tryNow').addEventListener('click',()=>{
+      const m = document.createElement('div'); m.style.position='fixed';m.style.inset='0';m.style.background='rgba(6,12,10,0.45)';m.style.display='flex';m.style.alignItems='center';m.style.justifyContent='center';
+      const panel = document.createElement('div'); panel.style.background='#fff';panel.style.padding='18px';panel.style.borderRadius='10px';panel.style.maxWidth='520px';panel.style.width='92%';
+      panel.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center"><strong>Micro-practice</strong><button id="closeMicro">Close</button></div><p class="small">A 1-minute anchor: breathe, name one thing you feel, set one small intention.</p>';
+      const b = document.createElement('button'); b.className='btn'; b.textContent='Start simple breath'; b.style.marginTop='8px';
+      panel.appendChild(b); m.appendChild(panel); document.body.appendChild(m);
+      document.getElementById('closeMicro').addEventListener('click',()=>m.remove());
+      b.addEventListener('click',()=>{alert('Try: Close your eyes, inhale 4s, exhale 6s, repeat 3 times. Open gently.');});
+    });
+
+    // Scroll reveal
+    (function(){
+      const prefersReduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const els = document.querySelectorAll('.reveal');
+      if(prefersReduce){els.forEach(e=>e.classList.add('reveal--visible'));return}
+      const io = new IntersectionObserver((entries)=>{entries.forEach(en=>{if(en.isIntersecting){en.target.classList.add('reveal--visible');io.unobserve(en.target)}})},{threshold:0.12});
+      els.forEach(e=>io.observe(e));
+    })();
+  </script>
+</body>
+</html>

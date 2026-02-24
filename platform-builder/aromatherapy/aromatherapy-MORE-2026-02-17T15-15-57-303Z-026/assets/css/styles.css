@@ -1,0 +1,86 @@
+/* Minimalistic mystic-modern palette */
+:root{
+  --bg:#0f1316;
+  --card:#0e1a1a;
+  --muted:#9fb2a0;
+  --accent:#b59bd6;
+  --accent-2:#7bd2c6;
+  --text:#edf7f3;
+  --glass:rgba(255,255,255,0.03);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased}
+.container{max-width:1100px;margin:0 auto;padding:2rem}
+.site-header{background:linear-gradient(180deg, rgba(20,22,23,0.6), transparent);backdrop-filter:blur(4px);position:sticky;top:0;z-index:40}
+.site-header .container{display:flex;align-items:center;gap:1rem}
+.brand{font-weight:700;color:var(--accent);text-decoration:none}
+.main-nav{margin-left:auto;display:flex;gap:1rem}
+.main-nav a{color:var(--muted);text-decoration:none;padding:.5rem .6rem;border-radius:6px}
+.main-nav a.cta{background:var(--accent);color:#071018}
+.mobile-toggle{display:none}
+
+/* Hero */
+.hero{position:relative;padding:4rem 0;overflow:hidden}
+.hero-pattern{position:absolute;right:-10%;top:-10%;width:60%;height:60%;opacity:0.15;pointer-events:none}
+.hero-inner{display:grid;grid-template-columns:1fr 320px;gap:2rem;align-items:center}
+.hero .eyebrow{color:var(--accent-2);text-transform:uppercase;letter-spacing:1px}
+.title{font-size:clamp(1.4rem,2.8vw,2rem);margin:.4rem 0}
+.subtitle{color:var(--muted);margin-bottom:1rem}
+.btn{display:inline-block;padding:.6rem 1rem;border-radius:8px;text-decoration:none}
+.btn.primary{background:var(--accent);color:#071018;font-weight:600}
+.btn.ghost{border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+.hero-aside{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:1rem;border-radius:12px}
+.quick-info dl{display:flex;flex-direction:column;color:var(--muted)}
+.quick-info dt{font-weight:600}
+
+/* Myth/truth */
+.myth-truth{padding:2rem 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}
+.card{background:var(--glass);padding:1rem;border-radius:10px}
+.card.highlight{border:1px solid rgba(255,255,255,0.04)}
+
+/* Pillars */
+.pillars-list{list-style:none;padding:0;display:flex;gap:1rem}
+.pillars-list li{background:rgba(255,255,255,0.02);padding:1rem;border-radius:10px;flex:1}
+
+/* Case notes / Gallery */
+.case-notes{padding:2rem 0}
+.gallery{display:flex;gap:2rem;align-items:flex-start}
+.testimonials{flex:1;min-height:8rem;position:relative}
+.testimonial{position:absolute;opacity:0;transform:translateY(8px);transition:all .45s ease;max-width:54ch;padding:1rem}
+.testimonial.active{opacity:1;transform:none}
+.quote{font-style:italic;color:var(--text)}
+.meta{color:var(--muted);font-size:.9rem}
+.credibility{width:220px}
+.badges{display:flex;flex-direction:column;gap:.6rem}
+.badge{background:linear-gradient(90deg,var(--accent-2),var(--accent));color:#071018;padding:.6rem;border-radius:8px;border:none;cursor:pointer}
+.tooltip{margin-top:.8rem;background:rgba(0,0,0,0.5);padding:.6rem;border-radius:6px;color:var(--text);min-height:38px}
+
+/* FAQ */
+.faq-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}
+.faq-item{background:var(--glass);padding:1rem;border-radius:8px}
+
+/* CTA band */
+.cta.band{background:linear-gradient(90deg,rgba(181,155,214,0.08),rgba(123,210,198,0.04));padding:2rem;border-radius:12px;margin:2rem 0}
+
+/* Footer */
+.site-footer{padding:2rem 0;border-top:1px solid rgba(255,255,255,0.03);margin-top:2rem}
+.site-footer .container{display:flex;gap:2rem;justify-content:space-between}
+.footer-col nav a{display:block;color:var(--muted);text-decoration:none}
+
+/* Responsive */
+@media (max-width:900px){
+  .hero-inner{grid-template-columns:1fr}
+  .main-nav{display:none}
+  .mobile-toggle{display:block;margin-left:auto;background:none;border:1px solid rgba(255,255,255,0.04);color:var(--muted);padding:.4rem .6rem;border-radius:6px}
+}
+
+/* Pricing comparator widget styling (micro) */
+.pricing-widget{background:rgba(255,255,255,0.02);padding:1rem;border-radius:12px;margin-top:1rem}
+.switch{display:flex;gap:.5rem;align-items:center}
+.switch button{padding:.4rem .6rem;border-radius:8px;border:none;background:transparent;color:var(--muted);cursor:pointer}
+.switch button.active{background:var(--accent);color:#071018}
+.prices{display:flex;gap:1rem;margin-top:1rem}
+.price-card{background:rgba(0,0,0,0.15);padding:.8rem;border-radius:8px;min-width:120px}
+.price-amount{font-weight:700;font-size:1.3rem}

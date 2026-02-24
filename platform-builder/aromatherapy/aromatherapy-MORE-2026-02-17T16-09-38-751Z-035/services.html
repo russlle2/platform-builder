@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Professional aromatherapy offerings designed for practical, daily use that may support well-being.">
+  <style>
+    :root{--bg:#fbf8f3;--card:#fff6ec;--accent:#6b3f2b;--muted:#7a6b61;--glass:rgba(255,255,255,0.6);--shadow:0 6px 18px rgba(107,63,43,0.12);font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;color:#3a2b22}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#fff) fixed;}
+    /* pattern */
+    .site-pattern{position:fixed;inset:0;opacity:0.06;background-image:url('assets/img/pattern.svg');background-repeat:repeat;pointer-events:none}
+    header{display:flex;align-items:center;justify-content:space-between;padding:22px 28px;background:transparent}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,#f6e6db,#f0d5c0);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent);box-shadow:var(--shadow)}
+    nav a{margin-left:18px;color:var(--muted);text-decoration:none;font-weight:600}
+    .container{max-width:980px;margin:28px auto;padding:0 26px}
+    .hero{background:var(--card);padding:36px;border-radius:12px;box-shadow:var(--shadow);display:grid;grid-template-columns:1fr 320px;gap:28px;align-items:center}
+    .hero h1{margin:0;color:var(--accent);font-size:28px}
+    .hero p{margin:10px 0 0;color:var(--muted)}
+    .hero .cta{display:inline-block;margin-top:16px;background:var(--accent);color:#fff;padding:10px 14px;border-radius:8px;text-decoration:none}
+    .social-proof{display:flex;gap:12px;margin-top:18px}
+    .chip{background:var(--glass);padding:10px 12px;border-radius:10px;font-size:13px;color:var(--muted);box-shadow:0 4px 10px rgba(0,0,0,0.04)}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px}
+    .card{background:#fff;border-radius:10px;padding:18px;box-shadow:0 8px 20px rgba(0,0,0,0.04)}
+    h2.section-title{margin:0 0 10px;color:var(--accent)}
+    .muted{color:var(--muted);font-size:14px}
+    .process{display:flex;flex-direction:column;gap:12px;margin-top:20px}
+    .step{display:flex;gap:12px;align-items:flex-start}
+    .badge{width:42px;height:42px;border-radius:10px;background:linear-gradient(180deg,#f8efe6,#f0d6c7);display:flex;align-items:center;justify-content:center;color:var(--accent);font-weight:700}
+    footer{margin:40px 0 80px;color:var(--muted);font-size:13px;text-align:center}
+    /* reveal animation */
+    .reveal{opacity:0;transform:translateY(12px);transition:opacity 520ms cubic-bezier(.2,.9,.3,1),transform 520ms cubic-bezier(.2,.9,.3,1)}
+    .reveal.visible{opacity:1;transform:none}
+    /* session planner */
+    .planner{background:#fff;border-radius:12px;padding:18px;box-shadow:var(--shadow)}
+    .form-row{display:flex;gap:10px;margin-bottom:10px}
+    label{font-size:13px;color:var(--muted);min-width:110px}
+    select,input[type="range"],input[type="text"]{flex:1;padding:8px;border-radius:8px;border:1px solid #eee}
+    textarea{width:100%;height:110px;padding:10px;border-radius:10px;border:1px solid #eee}
+    .actions{display:flex;gap:10px;margin-top:12px}
+    .btn{padding:10px 12px;border-radius:8px;border:none;cursor:pointer}
+    .btn.primary{background:var(--accent);color:#fff}
+    .btn.ghost{background:transparent;border:1px solid #dcc6b9;color:var(--accent)}
+    .summary{white-space:pre-wrap;background:#fbf7f3;padding:12px;border-radius:8px;border:1px dashed #ecd7c6;margin-top:10px;color:#3f2e26}
+    @media(max-width:880px){.hero{grid-template-columns:1fr;}.grid{grid-template-columns:1fr}} 
+  </style>
+</head>
+<body>
+  <div class="site-pattern" aria-hidden="true"></div>
+  <header>
+    <div class="brand">
+      <div class="logo">A</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Custom Blends</a>
+      <a href="shop.html">Boutique</a>
+      <a href="pricing.html">Investment</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="hero reveal" data-reveal>
+      <div>
+        <h1>Personalized sessions for daily clarity and calm</h1>
+        <p>Short, practical aromatherapy sessions and focused blend work that may support restful nights, sharpened focus, and calmer transitions—guided in a single VIP-style day or through focused short visits.</p>
+        <a class="cta" href="book.html">Plan a focused day</a>
+        <div class="social-proof" style="margin-top:14px">
+          <div class="chip">Trusted by local therapists</div>
+          <div class="chip">Client-rated 4.9</div>
+          <div class="chip">Safe-use resources included</div>
+        </div>
+      </div>
+      <aside>
+        <div class="planner" aria-labelledby="planner-heading">
+          <h3 id="planner-heading" style="margin:0 0 8px;color:var(--accent)">Session Planner</h3>
+          <div class="muted" style="margin-bottom:12px">Build a short plan and copy a plaintext summary to share or save.</div>
+          <div class="form-row">
+            <label for="goal">Goal</label>
+            <select id="goal">
+              <option value="calm">Calm & unwind</option>
+              <option value="focus">Focus & clarity</option>
+              <option value="sleep">Better sleep</option>
+              <option value="mood">Lift mood</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label for="method">Preferred method</label>
+            <select id="method">
+              <option value="diffuse">Diffuse</option>
+              <option value="topical">Topical (diluted)</option>
+              <option value="inhaler">Personal inhaler</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label for="length">Session length</label>
+            <select id="length">
+              <option>10 minutes</option>
+              <option>20 minutes</option>
+              <option>45 minutes</option>
+              <option>90 minutes (VIP day)</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label for="sensitivity">Skin sensitivity</label>
+            <select id="sensitivity">
+              <option value="normal">Normal</option>
+              <option value="sensitive">Sensitive</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label for="notes">Notes</label>
+            <input id="notes" type="text" placeholder="allergies, pets, pregnancy?">
+          </div>
+          <div class="actions">
+            <button class="btn primary" id="build">Create plan</button>
+            <button class="btn ghost" id="reset">Reset</button>
+          </div>
+          <div id="summary" class="summary" aria-live="polite">Your session summary will appear here.</div>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button class="btn" id="copy">Copy summary</button>
+            <a class="btn" href="book.html">Book now</a>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="social-proof reveal" data-reveal style="margin-top:18px">
+      <h2 class="section-title">What clients notice</h2>
+      <p class="muted">Many clients report easier transitions and small shifts in daily rhythm; our work is safety-forward and designed to be practical and repeatable.</p>
+      <div class="grid" style="margin-top:12px">
+        <div class="card">Short, guided sessions to explore scent choices and methods that may support sleep and routine.</div>
+        <div class="card">A private mix and take-home vial (full safety label and dilution notes).</div>
+        <div class="card">A VIP Day option for deep focus: blend creation, coaching, and ritual design.</div>
+      </div>
+    </section>
+
+    <section class="process reveal" data-reveal>
+      <h2 class="section-title">How we work</h2>
+      <div class="step"><div class="badge">1</div><div><strong>Consult</strong><div class="muted">An intake to identify goals and sensitivities. Always safety-first.</div></div></div>
+      <div class="step"><div class="badge">2</div><div><strong>Blend & trial</strong><div class="muted">Hands-on blending and short trials to find what fits your routine. No pressure to keep anything you don't like.</div></div></div>
+      <div class="step"><div class="badge">3</div><div><strong>Plan & take-home</strong><div class="muted">A simple, written plan, dilution guidance, and a labeled take-home sample.</div></div></div>
+    </section>
+
+    <section class="faq reveal" data-reveal style="margin-top:20px">
+      <h2 class="section-title">Frequently asked — safety, pets, pregnancy</h2>
+      <div style="margin-top:10px">
+        <div style="margin-bottom:8px"><strong>Is aromatherapy safe?</strong>
+        <div class="muted">We prioritize safety. Recommendations will include dilution rates and patch-test steps. Statements are not medical advice; aromatherapy may support comfort but is not a substitute for medical care.</div></div>
+        <div style="margin-bottom:8px"><strong>What about pets?</strong>
+        <div class="muted">Some essential oils can affect animals. We will provide pet-safe alternatives and room-specific guidance if you have pets at home.</div></div>
+        <div style="margin-bottom:8px"><strong>Pregnancy and breastfeeding</strong>
+        <div class="muted">Certain oils are not recommended in pregnancy or breastfeeding. Disclose pregnancy or lactation at intake so we can adapt plans and blends.</div></div>
+        <div><strong>Patch test & dilution</strong>
+        <div class="muted">Every topical suggestion includes dilution percentages and a simple patch-test protocol before wider use.</div></div>
+      </div>
+    </section>
+
+    <section class="cta reveal" data-reveal style="margin-top:22px">
+      <div class="card">
+        <h2 style="margin:0 0 8px">Ready for a curated session?</h2>
+        <p class="muted">Choose a short consult or book a VIP Day for focused blend development and ritual design.</p>
+        <div style="margin-top:12px"><a class="cta" href="book.html">Reserve a discovery day</a></div>
+      </div>
+    </section>
+
+  </main>
+  <footer>
+    <div>Questions? Call {{PHONE}} or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    <div style="margin-top:6px">© <span id="year"></span> {{BUSINESS_NAME}}</div>
+  </footer>
+
+  <script>
+    // reveal on scroll with prefers-reduced-motion support
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const revealTargets = document.querySelectorAll('[data-reveal]');
+      if(prefersReduced){ revealTargets.forEach(el=>el.classList.add('visible')); return; }
+      const obs = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); } });
+      },{threshold:0.12});
+      revealTargets.forEach(t=>obs.observe(t));
+    })();
+
+    // Session Planner
+    (function(){
+      const buildBtn = document.getElementById('build');
+      const copyBtn = document.getElementById('copy');
+      const resetBtn = document.getElementById('reset');
+      const summaryEl = document.getElementById('summary');
+
+      function suggestOils(goal){
+        const map = {
+          calm: ['Lavender','Sweet Marjoram','Chamomile'],
+          focus: ['Rosemary','Basil','Lemon'],
+          sleep: ['Lavender','Cedarwood','Mandarin'],
+          mood: ['Bergamot','Grapefruit','Ylang Ylang']
+        };
+        return map[goal] || ['Lavender','Mandarin'];
+      }
+
+      function buildPlan(){
+        const goal = document.getElementById('goal').value;
+        const method = document.getElementById('method').value;
+        const length = document.getElementById('length').value;
+        const sensitivity = document.getElementById('sensitivity').value;
+        const notes = document.getElementById('notes').value.trim() || 'None';
+        const oils = suggestOils(goal);
+        const dilution = (method==='topical') ? (sensitivity==='sensitive' ? '0.5-1%' : '1-2%') : 'N/A (diffuse/inhaler)';
+        const plan = [];
+        plan.push('Plan for: '+goal.charAt(0).toUpperCase()+goal.slice(1));
+        plan.push('Method: '+method);
+        plan.push('Session length: '+length);
+        plan.push('Suggested oils: '+oils.join(', '));
+        plan.push('Topical dilution guidance: '+dilution);
+        plan.push('Safety notes: Always patch-test before topical use. Avoid use with small children without guidance. Some oils are not recommended in pregnancy or around certain pets.');
+        plan.push('Client notes: '+notes);
+        plan.push('Created by: {{BUSINESS_NAME}} — {{PHONE}} | {{EMAIL}}');
+        return plan.join('\n');
+      }
+
+      buildBtn.addEventListener('click',()=>{
+        summaryEl.textContent = buildPlan();
+      });
+
+      copyBtn.addEventListener('click',async()=>{
+        try{ await navigator.clipboard.writeText(summaryEl.textContent); copyBtn.textContent='Copied'; setTimeout(()=>copyBtn.textContent='Copy summary',1400);}catch(e){ alert('Copy is not supported in this browser.'); }
+      });
+
+      resetBtn.addEventListener('click',()=>{ document.getElementById('goal').selectedIndex=0; document.getElementById('method').selectedIndex=0; document.getElementById('length').selectedIndex=0; document.getElementById('sensitivity').selectedIndex=0; document.getElementById('notes').value=''; summaryEl.textContent='Your session summary will appear here.'; });
+
+      document.getElementById('year').textContent = new Date().getFullYear();
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Book — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Schedule with {{PRACTITIONER_NAME}} at {{BUSINESS_NAME}}. Find session types, scheduling notes, and contact details for booking." />
+  <style>
+    :root{--bg:#ffffff;--teal:#2b7a6f;--teal2:#7fd3c8;--muted:#6c7b78}
+    *{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,Segoe UI,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,#fbfffe,#ffffff);color:#072422}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px}
+    .logo{font-weight:800}
+    nav{display:flex;gap:10px}
+    a.nav{color:inherit;text-decoration:none;padding:8px;border-radius:8px}
+    a.nav:hover{background:rgba(43,122,111,0.06)}
+    main{max-width:960px;margin:20px auto;padding:18px}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:18px}
+    .card{background:white;padding:18px;border-radius:12px;box-shadow:0 10px 30px rgba(8,20,18,0.06)}
+    h1{margin:0 0 6px}
+    .note{color:var(--muted);font-size:13px}
+    label{display:block;font-weight:700;margin-top:8px;font-size:13px}
+    input,select,textarea{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid #e6efeb}
+    button.book{background:linear-gradient(90deg,var(--teal),var(--teal2));color:white;padding:10px 14px;border-radius:10px;border:0;font-weight:700;margin-top:12px}
+    .slots{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .slot{background:linear-gradient(180deg,#fff,#f6fffb);padding:8px 12px;border-radius:10px;border:1px solid rgba(12,40,36,0.04);cursor:pointer}
+    .slot:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(11,38,36,0.06)}
+    footer{max-width:960px;margin:26px auto;padding:18px;text-align:center;color:var(--muted)}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}.slot{flex:1 1 46%}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a class="nav" href="index.html">Welcome</a>
+      <a class="nav" href="services.html">Programs</a>
+      <a class="nav" href="conditions.html">Concerns</a>
+      <a class="nav" href="approach.html">Philosophy</a>
+      <a class="nav" href="pricing.html">Rates</a>
+      <a class="nav" href="about.html">Who</a>
+      <a class="nav" href="book.html">Reserve</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="grid">
+      <div>
+        <div class="card">
+          <h1>Reserve your first visit</h1>
+          <p class="note">Select a visit type, pick a time, and tell us a bit so we can prepare. We’ll reply with confirmation and pre-visit info. If this is urgent, please call {{PHONE}}.</p>
+
+          <form id="booking" onsubmit="return handleSubmit(event)">
+            <label for="type">Visit type</label>
+            <select id="type" required>
+              <option value="intro">Intro Visit — 75 min</option>
+              <option value="follow">Follow-up — 30-45 min</option>
+              <option value="plan">Comprehensive Plan — consult</option>
+            </select>
+
+            <label for="date">Preferred date</label>
+            <input id="date" type="date" required />
+
+            <label for="time">Preferred time</label>
+            <input id="time" type="time" required />
+
+            <label for="notes">Brief notes (goals, main concerns)</label>
+            <textarea id="notes" rows="4" placeholder="e.g., sleep trouble, digestion, stress" ></textarea>
+
+            <label for="contact">Best contact email or phone</label>
+            <input id="contact" type="text" placeholder="{{EMAIL}} or {{PHONE}}" required />
+
+            <div style="display:flex;gap:10px;align-items:center;margin-top:12px">
+              <button class="book" type="submit">Request booking</button>
+              <a href="tel:{{PHONE}}" style="color:var(--teal);text-decoration:none;font-weight:700">Or call: {{PHONE}}</a>
+            </div>
+
+            <p class="note" style="margin-top:10px">We prioritize safety: if you are experiencing a medical emergency, seek local urgent care. Our bookings focus on education and whole-person support; outcomes vary by individual.</p>
+          </form>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <h3 style="margin:0 0 8px">Quick availability</h3>
+          <div class="slots">
+            <div class="slot">Mon 10:30am</div>
+            <div class="slot">Tue 2:00pm</div>
+            <div class="slot">Wed 9:00am</div>
+            <div class="slot">Thu 4:15pm</div>
+            <div class="slot">Fri 11:00am</div>
+          </div>
+          <p class="note" style="margin-top:10px">Slots shown as a sampling — final confirmation depends on availability.</p>
+        </div>
+      </div>
+
+      <aside class="card">
+        <h3 style="margin-top:0">What to expect</h3>
+        <p class="note">Your Intro Visit is 75 minutes: a guided history, symptom mapping, and tangible next steps. Follow-ups are concise and focused on adjustments and progress.</p>
+
+        <h4 style="margin-top:12px">Before your visit</h4>
+        <ul style="padding-left:18px;color:#3f5d57">
+          <li>Complete any intake forms emailed to you</li>
+          <li>Gather recent labs or medication lists if available</li>
+          <li>Have a comfortable, quiet space for telehealth visits</li>
+        </ul>
+
+        <h4 style="margin-top:12px">Payment</h4>
+        <p class="note">Payment is collected at the time of service. We provide superbills for insurance claims on request.</p>
+
+        <div style="margin-top:12px">
+          <a href="pricing.html" class="book" style="display:inline-block;background:linear-gradient(90deg,#2f6b5f,#4fbdae);text-decoration:none">View pricing</a>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <div style="color:var(--muted)">{{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • {{PHONE}}</div>
+  </footer>
+
+  <script>
+    function handleSubmit(e){
+      e.preventDefault();
+      const type=document.getElementById('type').value;
+      const date=document.getElementById('date').value;
+      const time=document.getElementById('time').value;
+      const contact=document.getElementById('contact').value;
+      alert('Thanks! Your request for '+type+' on '+date+' at '+time+' has been sent. We will contact '+contact+' to confirm.');
+      return false;
+    }
+  </script>
+</body>
+</html>

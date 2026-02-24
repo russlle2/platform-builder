@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Membership — {{BUSINESS_NAME}}</title>
+  <meta name='description' content='Membership tiers for recurring sound gatherings, discounts, and member-only evenings.'>
+  <style>
+    :root{--bg:#f4efe5;--card:#fff8f3;--accent:#6b3f25;--muted:#7f6452}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,var(--bg),#efe6dc);color:var(--accent)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;background:rgba(255,250,246,0.65)}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    .wrap{max-width:980px;margin:26px auto;padding:0 18px}
+    .intro{background:var(--card);padding:20px;border-radius:12px}
+    .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+    .tier{background:#fff;padding:14px;border-radius:10px;box-shadow:0 8px 20px rgba(26,20,16,0.04)}
+    .tier h4{margin:0}
+    .price{font-weight:800;margin-top:8px}
+    .muted{color:var(--muted)}
+    .cta{margin-top:12px}
+    .btn{background:var(--accent);color:#fff;padding:8px 12px;border-radius:8px;border:none}
+    .process{background:#fff;padding:14px;border-radius:10px;margin-top:14px}
+    .faq{margin-top:14px}
+  </style>
+</head>
+<body>
+  <header>
+    <div style='display:flex;gap:12px;align-items:center'>
+      <div style='width:44px;height:44px;border-radius:8px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700'>M</div>
+      <div>
+        <div style='font-weight:700'>{{BUSINESS_NAME}}</div>
+        <div style='font-size:13px;color:var(--muted)'>Membership and recurring access</div>
+      </div>
+    </div>
+    <nav>
+      <a href='index.html'>Home</a>
+      <a href='events.html'>Gatherings</a>
+      <a href='private-sessions.html'>Private</a>
+      <a href='pricing.html'>Membership</a>
+      <a href='contact.html'>Contact</a>
+    </nav>
+  </header>
+
+  <main class='wrap'>
+    <section class='intro'>
+      <h1 style='margin:0'>Memberships — steady access, modest commitments</h1>
+      <p style='margin:8px 0;color:var(--muted)'>A membership is framed as a gentle support for regular practice: lower per-session cost, priority booking, and member evenings.</p>
+      <div style='display:flex;gap:8px;margin-top:12px'>
+        <button class='btn' id='joinNow'>Join</button>
+        <button class='btn' id='learnMore' style='background:transparent;color:var(--accent);border:1px solid rgba(107,63,37,0.08)'>Compare</button>
+      </div>
+    </section>
+
+    <section class='tiers'>
+      <div class='tier'>
+        <h4>Hearth</h4>
+        <div class='price'>$22 / month</div>
+        <div class='muted'>Two gatherings per month, standard booking window</div>
+        <div class='cta'><button class='btn' onclick="location.href='book.html'">Select Hearth</button></div>
+      </div>
+      <div class='tier'>
+        <h4>Drift</h4>
+        <div class='price'>$44 / month</div>
+        <div class='muted'>Weekly access plus one guest pass per month</div>
+        <div class='cta'><button class='btn' onclick="location.href='book.html'">Select Drift</button></div>
+      </div>
+      <div class='tier'>
+        <h4>Anchor</h4>
+        <div class='price'>$95 / month</div>
+        <div class='muted'>Unlimited standard gatherings and priority event seating</div>
+        <div class='cta'><button class='btn' onclick="location.href='book.html'">Select Anchor</button></div>
+      </div>
+    </section>
+
+    <section class='process'>
+      <h3 style='margin:0'>How membership works</h3>
+      <ol style='margin:8px 0 0 18px;color:var(--muted)'>
+        <li>Choose a tier and enter basic details.</li>
+        <li>Membership begins on the next billing date; cancel any time.</li>
+        <li>Use the member link for priority booking and discounts.</li>
+      </ol>
+    </section>
+
+    <section class='faq'>
+      <h3 style='margin:0'>Common questions</h3>
+      <div style='margin-top:8px;color:var(--muted)'>
+        <strong>Are there contraindications?</strong>
+        <div style='margin-top:6px'>People with epilepsy, recent cochlear surgery, or strong sound sensitivity should consult a clinician. If you have medical concerns please reach out before attending.</div>
+      </div>
+      <div style='margin-top:10px;color:var(--muted)'>
+        <strong>Can I pause my membership?</strong>
+        <div style='margin-top:6px'>Yes — you can pause or cancel through your account settings or contact us directly.</div>
+      </div>
+    </section>
+
+    <section style='margin-top:18px;background:#fff;padding:14px;border-radius:10px'>
+      <h4 style='margin:0 0 6px'>Member-only evening</h4>
+      <p style='margin:0;color:var(--muted)'>A low-capacity monthly session reserved for members. Members are notified first and offered a limited number of guest spots.</p>
+    </section>
+
+  </main>
+
+  <footer style='text-align:center;padding:28px;color:var(--muted)'>
+    <div>Contact <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a> • <a href='tel:{{PHONE}}'>{{PHONE}}</a></div>
+  </footer>
+
+  <script>
+    document.getElementById('joinNow').addEventListener('click',()=>{location.href='book.html'});
+    document.getElementById('learnMore').addEventListener('click',()=>{alert('Hearth: light commitment. Drift: regular. Anchor: full access. Contact us for corporate or family plans.');});
+  </script>
+</body>
+</html>

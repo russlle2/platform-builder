@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Contact — {{BUSINESS_NAME}}</title>
+  <meta name='description' content='Reach out to schedule a session, plan an experience, or ask questions about gatherings and private work.'>
+  <style>
+    :root{
+      --bg:#0f1513; --card:#0f1716; --muted:#95a89a; --accent:#b9f0df; --glass:rgba(255,255,255,0.04); --maxw:950px;
+      --round:12px; --mono:ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; color: #e9f6f0; background: radial-gradient(1200px 600px at 10% 10%, rgba(185,240,223,0.04), transparent), linear-gradient(180deg,#071211 0%, #071917 100%);
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; padding:32px;
+    }
+    header{max-width:var(--maxw); margin:0 auto 28px; display:flex; align-items:center; justify-content:space-between}
+    .brand{display:flex; gap:14px; align-items:center}
+    .logo{width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg, rgba(185,240,223,0.08), rgba(255,255,255,0.02));display:grid;place-items:center; font-weight:700; color:var(--accent); font-family:var(--mono)}
+    nav a{color:var(--muted); text-decoration:none; margin-left:18px; font-size:14px}
+    main{max-width:var(--maxw); margin:0 auto; display:grid; grid-template-columns:1fr 420px; gap:28px}
+    @media (max-width:980px){main{grid-template-columns:1fr; padding:0 8px}}
+    .hero{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent); padding:28px; border-radius:var(--round); box-shadow:0 6px 24px rgba(0,0,0,0.6)}
+    .hero h1{margin:0 0 6px; font-weight:600; letter-spacing:-0.02em}
+    .hero p{margin:0 0 14px; color:var(--muted)}
+    .card{background:var(--card); padding:18px; border-radius:12px; box-shadow:0 6px 28px rgba(0,0,0,0.55)}
+    label{display:block; font-size:13px; color:var(--muted); margin-bottom:8px}
+    input[type='text'], input[type='email'], select, textarea, input[type='number']{width:100%; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.04); background:var(--glass); color:inherit; outline:none}
+    .muted{color:var(--muted); font-size:13px}
+    .flex{display:flex; gap:12px}
+    .btn{background:linear-gradient(90deg, rgba(185,240,223,0.14), rgba(185,240,223,0.06)); color:var(--accent); padding:10px 14px; border-radius:10px; border:0; cursor:pointer}
+    .ghost{background:transparent; border:1px solid rgba(255,255,255,0.04)}
+    .widget{display:grid; gap:12px}
+    .small{font-size:13px}
+    .events-list{display:grid; gap:12px}
+    .event-row{display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px; border-radius:10px; background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent)}
+    .pill{background:rgba(255,255,255,0.02); padding:6px 10px; border-radius:999px; font-size:13px}
+    footer{max-width:var(--maxw); margin:28px auto 0; color:var(--muted); font-size:13px}
+    .disclaimer{font-size:13px; color:#e6cfcf; background:linear-gradient(180deg, rgba(255,100,80,0.03), transparent); padding:12px; border-radius:10px}
+    .copy-area{background:#071716;padding:12px;border-radius:8px;font-family:var(--mono);font-size:13px;color:var(--accent);white-space:pre-wrap}
+    .linkish{color:var(--accent); text-decoration:none}
+    .packing-list{display:grid; gap:8px}
+    .count-badge{font-weight:600; color:var(--accent)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class='brand'>
+      <div class='logo'>SB</div>
+      <div>
+        <div style='font-weight:700'>{{BUSINESS_NAME}}</div>
+        <div class='muted' style='margin-top:4px'>Contact & planning</div>
+      </div>
+    </div>
+    <nav aria-label='Main navigation'>
+      <a href='index.html'>Journey</a>
+      <a href='events.html'>Gatherings</a>
+      <a href='private-sessions.html'>Private</a>
+      <a href='pricing.html'>Investment</a>
+      <a href='about.html'>Stories</a>
+      <a href='faq.html'>FAQs</a>
+      <a href='book.html'>Book</a>
+      <a href='contact.html' style='color:var(--accent)'>Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <div class='hero card'>
+        <h1>Let's plan something resonant</h1>
+        <p>Use the Session Planner to craft a focused practice, or pick a gathering and get a tailored packing list. We keep the tools lightweight — you keep the results.</p>
+        <div style='display:flex; gap:10px; margin-top:12px'>
+          <a class='btn' href='book.html'>{{PRIMARY_CTA_LABEL}}</a>
+          <a class='btn ghost' href='faq.html'>Questions?</a>
+        </div>
+      </div>
+
+      <div style='margin-top:18px' class='card'>
+        <h3 style='margin:0 0 8px'>Session Planner</h3>
+        <div class='widget'>
+          <div>
+            <label class='small'>Your name (optional)</label>
+            <input type='text' id='planner-name' placeholder='E.g., Rowan'>
+          </div>
+          <div>
+            <label class='small'>Primary intention</label>
+            <select id='planner-intent'>
+              <option value='Relaxation'>Relaxation</option>
+              <option value='Focus'>Clarity & Focus</option>
+              <option value='Sleep'>Evening wind-down</option>
+              <option value='Release'>Emotional release</option>
+              <option value='Custom'>Custom</option>
+            </select>
+          </div>
+          <div class='flex'>
+            <div style='flex:1'>
+              <label class='small'>Duration (minutes)</label>
+              <input type='number' id='planner-duration' min='10' max='120' value='30'>
+            </div>
+            <div style='width:150px'>
+              <label class='small'>Frequency / week</label>
+              <input type='number' id='planner-frequency' min='1' max='7' value='2'>
+            </div>
+          </div>
+          <div>
+            <label class='small'>Sounds you'd like</label>
+            <div style='display:flex; gap:8px; flex-wrap:wrap'>
+              <button type='button' class='btn ghost sound-toggle' data-sound='Gongs'>Gongs</button>
+              <button type='button' class='btn ghost sound-toggle' data-sound='Singing Bowls'>Singing Bowls</button>
+              <button type='button' class='btn ghost sound-toggle' data-sound='Chimes'>Chimes</button>
+              <button type='button' class='btn ghost sound-toggle' data-sound='Voice'>Voice</button>
+              <button type='button' class='btn ghost sound-toggle' data-sound='Silence'>Silence'>Silence</button>
+            </div>
+          </div>
+
+          <div>
+            <label class='small'>Notes / accessibility needs</label>
+            <textarea id='planner-notes' rows='3' placeholder='Any sensitivities, hearing preferences, physical needs...'></textarea>
+          </div>
+
+          <div style='display:flex; gap:8px; align-items:center'>
+            <button id='planner-build' class='btn'>Create plan</button>
+            <button id='planner-clear' class='btn ghost'>Reset</button>
+          </div>
+
+          <div id='planner-output' style='display:none'>
+            <h4 style='margin:8px 0 6px'>Your session plan</h4>
+            <div id='planner-text' class='copy-area' aria-live='polite'></div>
+            <div style='display:flex; gap:8px; margin-top:8px'>
+              <button id='planner-copy' class='btn'>Copy text</button>
+              <button id='planner-download' class='btn ghost'>Download .txt</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style='margin-top:18px' class='card'>
+        <h3 style='margin:0 0 8px'>Contact form</h3>
+        <form id='contact-form'>
+          <div style='display:grid; gap:8px'>
+            <label class='small'>Name</label>
+            <input type='text' id='cf-name' placeholder='Your full name'>
+            <label class='small'>Email</label>
+            <input type='email' id='cf-email' placeholder='{{EMAIL}}'>
+            <label class='small'>Phone (optional)</label>
+            <input type='text' id='cf-phone' placeholder='{{PHONE}}'>
+            <label class='small'>Message</label>
+            <textarea id='cf-message' rows='4' placeholder='Tell us about what you want to create'></textarea>
+            <div style='display:flex; gap:8px'>
+              <button type='submit' class='btn'>Send</button>
+              <button type='reset' class='btn ghost'>Reset</button>
+            </div>
+            <div id='cf-status' class='muted' aria-live='polite'></div>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <aside>
+      <div class='card'>
+        <h4 style='margin:0 0 8px'>Upcoming gatherings</h4>
+        <p class='muted' style='margin-top:0'>Select seats to reserve locally (demo), then review a custom packing list.</p>
+
+        <div id='events' class='events-list' style='margin-top:8px'></div>
+
+        <div style='margin-top:12px'>
+          <label class='small'>Selected seats</label>
+          <div class='pill' id='selection-summary'>0 seats</div>
+        </div>
+
+        <div style='margin-top:12px' class='card'>
+          <h5 style='margin:0 0 8px'>Packing list</h5>
+          <div id='packing' class='packing-list muted'>No event selected.</div>
+          <div style='display:flex; gap:8px; margin-top:8px'>
+            <button id='packing-copy' class='btn ghost'>Copy list</button>
+            <button id='packing-reset' class='btn'>Clear</button>
+          </div>
+        </div>
+
+      </div>
+
+      <div style='margin-top:14px' class='card'>
+        <h5 style='margin:0 0 8px'>Quick contact</h5>
+        <div class='muted'>Phone: <a class='linkish' href='tel:{{PHONE}}'>{{PHONE}}</a></div>
+        <div class='muted'>Email: <a class='linkish' href='mailto:{{EMAIL}}'>{{EMAIL}}</a></div>
+        <div class='muted' style='margin-top:8px'>Location: {{CITY}}, {{STATE}}</div>
+      </div>
+
+      <div style='margin-top:14px' class='card disclaimer'>
+        <strong>Contraindications & notes</strong>
+        <p style='margin:8px 0 0' class='small'>Sound sessions may not be appropriate if you have uncontrolled epilepsy, recent concussion, certain implanted devices, or active psychiatric crises. If you have a medical condition, pregnancy, or concerns, consult your healthcare provider before attending. Reach out and we will advise adaptations or alternative formats.</p>
+      </div>
+    </aside>
+  </main>
+
+  <footer>
+    <div style='max-width:var(--maxw); margin:0 auto; display:flex; justify-content:space-between; align-items:center'>
+      <div class='muted'>&copy; <span id='year'></span> {{BUSINESS_NAME}} — A practical, subtle craft for rest and clarity.</div>
+      <div class='muted'>Built for gentle planning • Seed: 2775808003 • Slug: sound_bath-MORE-2026-02-17T10-06-28-222Z-012</div>
+    </div>
+  </footer>
+
+  <script>
+    // small helper
+    function el(q){return document.querySelector(q)}
+    function elAll(q){return Array.from(document.querySelectorAll(q))}
+
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Session Planner
+    const sounds = new Set();
+    elAll('.sound-toggle').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        const s = b.dataset.sound;
+        if(sounds.has(s)){ sounds.delete(s); b.classList.remove('active'); b.classList.add('ghost'); } else { sounds.add(s); b.classList.remove('ghost'); }
+      });
+    });
+
+    function buildPlan(){
+      const name = el('#planner-name').value.trim();
+      const intent = el('#planner-intent').value;
+      const dur = parseInt(el('#planner-duration').value,10) || 30;
+      const freq = parseInt(el('#planner-frequency').value,10) || 1;
+      const notes = el('#planner-notes').value.trim();
+      const chosen = Array.from(sounds);
+
+      const header = name ? `Session plan for ${name}` : 'Personal session plan';
+      let text = `${header}\n`;
+      text += `Intention: ${intent} \nDuration: ${dur} minutes • ${freq}x per week\n`;
+      text += `Preferred sounds: ${chosen.length?chosen.join(', '):'Mixed / guided silence'}\n\n`;
+      text += 'Suggested structure:\n';
+
+      // structure algorithm
+      const warm = Math.max(3, Math.round(dur * 0.12));
+      const main = Math.max(10, Math.round(dur * 0.72));
+      const close = dur - warm - main;
+
+      text += `- Arrival & centering (${warm} min): breathwork and posture checks.\n`;
+      text += `- Immersion (${main} min): gentle sound field focused on ${intent.toLowerCase()}.\n`;
+      text += `- Integration (${close} min): silence, simple reflection, slow return.\n\n`;
+
+      if(notes){ text += `Notes: ${notes}\n\n`; }
+
+      text += 'Recommendations:\n';
+      if(chosen.includes('Gongs')) text += '- Place a soft cushion for spatial listening; be ready for low-frequency presence.\n';
+      if(chosen.includes('Singing Bowls')) text += '- Comfortable reclining surface and eye-cover encouraged.\n';
+      if(chosen.includes('Chimes')) text += '- Keep a light blanket handy; chimes favor lighter attention.\n';
+      if(chosen.includes('Voice')) text += '- Expect guided phrases and invitations; allow for vocal rest after.\n';
+      if(!chosen.length) text += '- Aim for a single anchor (breath or a soft tone).\n';
+
+      text += `\nPractical: bring water, light layers, and anything that helps you rest.\n`;
+      text += `If you have any implants, pacemakers, or are pregnant, consult the contraindications noted on the site.\n`;
+
+      return text;
+    }
+
+    el('#planner-build').addEventListener('click', ()=>{
+      const out = buildPlan();
+      el('#planner-text').textContent = out;
+      el('#planner-output').style.display = 'block';
+    });
+
+    el('#planner-clear').addEventListener('click', ()=>{
+      el('#planner-name').value=''; el('#planner-duration').value='30'; el('#planner-frequency').value='2'; el('#planner-notes').value=''; sounds.clear(); elAll('.sound-toggle').forEach(b=>{b.classList.add('ghost')}); el('#planner-output').style.display='none';
+    });
+
+    el('#planner-copy').addEventListener('click', async ()=>{
+      const text = el('#planner-text').textContent;
+      try{ await navigator.clipboard.writeText(text); el('#planner-copy').textContent='Copied'; setTimeout(()=>el('#planner-copy').textContent='Copy text',1200);}catch(e){ alert('Copy failed — select and copy manually.'); }
+    });
+
+    el('#planner-download').addEventListener('click', ()=>{
+      const text = el('#planner-text').textContent;
+      const blob = new Blob([text],{type:'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href=url; a.download='session-plan.txt'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    });
+
+    // Events + seat selector + packing list
+    const EVENTS = [
+      {id:1,title:'Resonant Wave',date:'2026-03-02',time:'18:30',capacity:18,style:'gongs'},
+      {id:2,title:'Quiet Chime Evening',date:'2026-03-10',time:'19:00',capacity:12,style:'chimes'},
+      {id:3,title:'Bowl & Breath: Short Intensive',date:'2026-03-17',time:'10:00',capacity:10,style:'bowls'}
+    ];
+
+    const state = { selections: {} };
+
+    function renderEvents(){
+      const container = el('#events'); container.innerHTML='';
+      EVENTS.forEach(ev=>{
+        const taken = state.selections[ev.id] || 0;
+        const avail = Math.max(0, ev.capacity - (ev._reserved||0) - taken);
+        const row = document.createElement('div'); row.className='event-row';
+        row.innerHTML = `
+          <div style='min-width:0'>
+            <div style='font-weight:600'>${ev.title}</div>
+            <div class='muted small'>${ev.date} • ${ev.time}</div>
+          </div>
+          <div style='display:flex; align-items:center; gap:8px'>
+            <div class='muted small'>Seats</div>
+            <input type='number' min='0' max='${avail}' value='${taken}' data-eid='${ev.id}' style='width:68px; padding:8px; border-radius:8px; background:transparent; border:1px solid rgba(255,255,255,0.04)'>
+            <div class='pill'>${avail} left</div>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+
+      // attach
+      elAll('#events input[type=number]').forEach(i=>{
+        i.addEventListener('input', ()=>{
+          const id = parseInt(i.dataset.eid,10); const val = Math.max(0, Math.floor(Number(i.value)||0));
+          const ev = EVENTS.find(e=>e.id===id);
+          const max = Math.max(0, ev.capacity - (ev._reserved||0));
+          if(val > max){ i.value = max; state.selections[id]=max; } else { state.selections[id]=val; }
+          updateSelectionSummary();
+          renderPacking();
+          renderEvents();
+        });
+      });
+    }
+
+    function updateSelectionSummary(){
+      const total = Object.values(state.selections).reduce((s,n)=>s+(Number(n)||0),0);
+      el('#selection-summary').textContent = `${total} seat${total===1?'':'s'}`;
+    }
+
+    function renderPacking(){
+      const selectedIds = Object.keys(state.selections).filter(k=>state.selections[k]>0).map(Number);
+      if(selectedIds.length===0){ el('#packing').textContent='No event selected.'; return; }
+      const lines = [];
+      selectedIds.forEach(id=>{
+        const ev = EVENTS.find(e=>e.id===id);
+        const count = state.selections[id] || 0;
+        lines.push(`${ev.title} (${ev.date} ${ev.time}) — ${count} seat${count===1?'':'s'}`);
+        // base items
+        lines.push('- Comfortable mat or cushion');
+        lines.push('- Light blanket or shawl');
+        lines.push('- Water bottle');
+        // style adjustments
+        if(ev.style==='gongs'){ lines.push('- Ear-aware earplugs (if sensitive to low frequencies)'); lines.push('- Soft pillow for head support'); }
+        if(ev.style==='chimes'){ lines.push('- Eye-cover to soften attention'); }
+        if(ev.style==='bowls'){ lines.push('- Thin neck pillow for extra support'); }
+        lines.push('');
+      });
+      el('#packing').innerHTML = lines.map(l=>`<div>${l}</div>`).join('');
+    }
+
+    el('#packing-copy').addEventListener('click', async ()=>{
+      const text = Array.from(el('#packing').querySelectorAll('div')).map(d=>d.textContent).join('\n');
+      try{ await navigator.clipboard.writeText(text); el('#packing-copy').textContent='Copied'; setTimeout(()=>el('#packing-copy').textContent='Copy list',1200);}catch(e){ alert('Copy failed — select and copy manually.'); }
+    });
+    el('#packing-reset').addEventListener('click', ()=>{ state.selections = {}; updateSelectionSummary(); renderEvents(); renderPacking(); });
+
+    // Seed some reserved numbers to illustrate availability
+    EVENTS[0]._reserved = 4; EVENTS[1]._reserved = 2; EVENTS[2]._reserved = 0;
+    renderEvents(); updateSelectionSummary(); renderPacking();
+
+    // Contact form (demo local only)
+    el('#contact-form').addEventListener('submit', (ev)=>{
+      ev.preventDefault();
+      const name = el('#cf-name').value; const email = el('#cf-email').value; const phone = el('#cf-phone').value; const message = el('#cf-message').value;
+      el('#cf-status').textContent = 'Sending... (demo)';
+      setTimeout(()=>{ el('#cf-status').textContent = 'Message noted — we will reply at ' + (email||'your email'); el('#contact-form').reset(); }, 800);
+    });
+
+  </script>
+</body>
+</html>

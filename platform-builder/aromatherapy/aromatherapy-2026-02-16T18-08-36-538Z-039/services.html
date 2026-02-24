@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{{BUSINESS_NAME}} — Services</title>
+  <style>
+    :root{--bg:#f6f7f9;--card:#ffffff;--accent:#6aa6a3;--muted:#6b7280;--glass:rgba(255,255,255,0.6);--shadow:0 6px 18px rgba(15,23,42,0.08)}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,#fbfdfd 0%,#f6f7f9 60%);color:#102028;line-height:1.45}
+    header{position:sticky;top:0;background:linear-gradient(180deg,rgba(255,255,255,0.8),rgba(255,255,255,0.6));backdrop-filter:blur(6px);border-bottom:1px solid rgba(15,23,42,0.04)}
+    .nav{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 20px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#8ec6c0);display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none;font-weight:600;font-size:15px}
+    .cta{background:linear-gradient(90deg,var(--accent),#72b39a);color:white;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+
+    main{max-width:1100px;margin:28px auto;padding:20px}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:center}
+    .hero__card{background:var(--card);padding:28px;border-radius:14px;box-shadow:var(--shadow)}
+    h1{font-size:28px;margin:0 0 8px}
+    p.lead{color:var(--muted);margin:0 0 18px}
+    .hero__aside{position:relative;padding:22px;border-radius:12px;color:white;overflow:hidden}
+    .hero__aside .svgbg{position:absolute;inset:0;opacity:0.12}
+    .pillars{display:flex;gap:14px;margin-top:18px}
+    .pillar{flex:1;background:linear-gradient(180deg,rgba(255,255,255,0.8),var(--glass));padding:14px;border-radius:10px}
+    .small{font-size:13px;color:var(--muted)}
+
+    section{margin-top:28px}
+    .two-col{display:grid;grid-template-columns:1fr 360px;gap:22px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:var(--shadow)}
+
+    dl.myths{display:grid;gap:12px}
+    dt{font-weight:700}
+    dd{margin:6px 0 12px;color:var(--muted)}
+
+    .case-list{display:flex;flex-direction:column;gap:12px}
+    .case{padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#fbfdfe);border:1px solid rgba(10,20,30,0.03)}
+
+    footer.cta{margin:36px 0;padding:18px;border-radius:12px;background:linear-gradient(90deg,rgba(106,166,163,0.08),rgba(114,179,154,0.04));display:flex;align-items:center;justify-content:space-between}
+    .btn-primary{background:linear-gradient(90deg,var(--accent),#6fb2a8);color:white;padding:12px 16px;border-radius:10px;text-decoration:none;font-weight:700}
+
+    /* subtle pattern via inline SVG data */
+    .hero__aside{background:linear-gradient(135deg,#6aa6a3,#8fc7c0)}
+    .hero__aside svg{width:100%;height:100%}
+
+    @media(max-width:900px){.hero,.two-col{grid-template-columns:1fr}.hero__aside{order:2}.nav{padding:12px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand">
+        <div class="logo">A</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="/index.html">Home</a>
+        <a href="/services.html">Offerings</a>
+        <a href="/blends.html">Blend Library</a>
+        <a href="/shop.html">Boutique</a>
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <div class="hero">
+      <div class="hero__card">
+        <h1>Clinical aromatherapy services with safety at the core</h1>
+        <p class="lead">We blend sensory care with evidence-aware guidance. Consultations combine client history, scent preferences, and safety planning to craft usable, supported aromatherapy routines.</p>
+        <div class="pillars">
+          <div class="pillar">
+            <div style="font-weight:700">Intake & Assessment</div>
+            <div class="small">Comprehensive intake including sensitivities, medications, pregnancy and pet considerations.</div>
+          </div>
+          <div class="pillar">
+            <div style="font-weight:700">Personalized Blends</div>
+            <div class="small">Blends tailored by aroma, volatility, and safe dilution practices.</div>
+          </div>
+          <div class="pillar">
+            <div style="font-weight:700">Practical Education</div>
+            <div class="small">Home-use guidelines, patch test walk-throughs, and storage advice.</div>
+          </div>
+        </div>
+        <div style="margin-top:18px;display:flex;gap:10px">
+          <a class="btn-primary" href="{{PRIMARY_CTA_URL}}">Book a consultation</a>
+          <a href="/contact.html" style="color:var(--muted);align-self:center;text-decoration:none">Contact {{PRACTITIONER_NAME}}</a>
+        </div>
+      </div>
+      <aside class="hero__aside">
+        <!-- unique inline SVG pattern for services.html -->
+        <svg class="svgbg" viewBox="0 0 560 380" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#ffffff" stop-opacity="0.12"/><stop offset="1" stop-color="#ffffff" stop-opacity="0.02"/></linearGradient>
+            <pattern id="p1" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(18)">
+              <rect width="40" height="40" fill="none"/>
+              <circle cx="4" cy="4" r="2" fill="#ffffff" fill-opacity="0.06"/>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#g1)"/>
+          <rect width="100%" height="100%" fill="url(#p1)"/>
+          <g fill="white" fill-opacity="0.06">
+            <ellipse cx="420" cy="40" rx="160" ry="60" />
+            <ellipse cx="60" cy="320" rx="120" ry="40" />
+          </g>
+        </svg>
+        <div style="position:relative;z-index:2">
+          <div style="font-weight:700;font-size:18px">Clinical + Caring</div>
+          <div class="small">Safety-first aromatherapy for everyday wellbeing.</div>
+          <div style="margin-top:12px;font-size:13px">Call us: <a href="tel:{{PHONE}}" style="color:white;text-decoration:underline">{{PHONE}}</a></div>
+        </div>
+      </aside>
+    </div>
+
+    <section class="two-col">
+      <div class="card">
+        <h2>Common myths and clear realities</h2>
+        <dl class="myths">
+          <div>
+            <dt>Myth: Essential oils are harmless natural fixes.</dt>
+            <dd>Truth: Natural does not equal risk-free. Essential oils can cause irritation, sensitization and interactions. We prioritize dilution and testing.</dd>
+          </div>
+          <div>
+            <dt>Myth: More scent equals better results.</dt>
+            <dd>Truth: Optimal dosing is often subtle. Excessive exposure increases risk of adverse effects and reduces therapeutic usefulness.</dd>
+          </div>
+          <div>
+            <dt>Myth: Any oil is safe around pets.</dt>
+            <dd>Truth: Many oils are toxic to animals at certain doses or via inhalation. We give specific pet-safe guidance when relevant.</dd>
+          </div>
+        </dl>
+      </div>
+      <aside class="card">
+        <h3>How we work</h3>
+        <p class="small">Initial consultation includes safety screening, scent preferences, goals and a written plan with dilution tables and patch test steps.</p>
+        <div style="margin-top:12px"><strong>Session length:</strong> 45–75 minutes</div>
+        <div style="margin-top:6px"><strong>Format:</strong> In-person or remote</div>
+      </aside>
+    </section>
+
+    <section>
+      <h2>Representative case notes (anonymized)</h2>
+      <div class="case-list">
+        <div class="case">
+          <div style="font-weight:700">Client A — Sleep support plan</div>
+          <div class="small">Assessment: mild insomnia, no pregnancy, dog at home. Plan: 0.5–1% lavender/cedar bedside blend; diffuser intervals; patch test on forearm. Reviewed dilution and storage.</div>
+        </div>
+        <div class="case">
+          <div style="font-weight:700">Client B — Migraines, scent sensitivity</div>
+          <div class="small">Assessment: scent-triggered headaches. Plan: scent avoidance strategy, very low-dose inhaler with personal preference oils, daily logging and medical liaison recommended. No claims of cure, focus on symptom support planning.</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>FAQ — practical safety notes</h2>
+      <div class="card">
+        <h4>How should I dilute essential oils?</h4>
+        <p class="small">Dilution depends on age, condition and application. Typical adult topical dilutions range 0.5–3% for most daily-use blends. We always provide a dilution chart in your plan.</p>
+        <h4>What is a patch test?</h4>
+        <p class="small">A patch test is applying a small diluted sample to an area of skin and observing for 24–48 hours for irritation or sensitivity before regular use.</p>
+        <h4>Are essential oils safe around pets?</h4>
+        <p class="small">Some oils are not safe for animals. We ask about household pets during assessment and will tailor advice or recommend pet-free zones and ventilation plans.</p>
+        <h4>Pregnancy and breastfeeding precautions</h4>
+        <p class="small">During pregnancy or breastfeeding, certain oils and dosages are contraindicated. We will use pregnancy-safe guidance and coordinate with your healthcare provider as needed.</p>
+      </div>
+    </section>
+
+    <footer class="cta">
+      <div>
+        <div style="font-weight:700">Ready to begin?</div>
+        <div class="small">Schedule a safety-first consult with {{PRACTITIONER_NAME}} in {{CITY}}, {{STATE}}.</div>
+      </div>
+      <div>
+        <a class="btn-primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </footer>
+  </main>
+</body>
+</html>

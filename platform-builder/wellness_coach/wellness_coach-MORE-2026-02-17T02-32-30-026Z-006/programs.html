@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pathways — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f8fffd;--accent:#1f6f58;--muted:#5b6462}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:#0b2a23}
+    header{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid rgba(0,0,0,0.04)}
+    .nav a{margin-left:12px;color:var(--muted);font-weight:600;text-decoration:none}
+    .wrap{max-width:1000px;margin:28px auto;padding:0 20px}
+    .hero{padding:20px;border-radius:12px;background:linear-gradient(180deg,rgba(31,111,88,0.06),transparent)}
+    .grid{display:grid;grid-template-columns:1fr 300px;gap:18px;margin-top:18px}
+    .card{background:#fff;padding:16px;border-radius:10px;box-shadow:0 10px 24px rgba(12,20,18,0.03)}
+    .program{border-left:4px solid rgba(31,111,88,0.06);padding:12px;border-radius:6px}
+    .program h4{margin:0}
+    .muted{color:var(--muted);font-size:13px}
+
+    /* comparator - different style */
+    .chooser{display:flex;gap:12px;align-items:center;margin-top:12px}
+    .seg{display:flex;background:#eef7f3;border-radius:999px;padding:6px}
+    .seg button{background:transparent;border:0;padding:8px 12px;border-radius:999px;font-weight:700;cursor:pointer}
+    .seg button.active{background:var(--accent);color:#fff}
+    .priceBig{font-size:28px;color:var(--accent);font-weight:800}
+    .small{font-size:13px;color:var(--muted)}
+
+    .cta{display:inline-block;margin-top:14px;padding:9px 12px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none;font-weight:700}
+
+    @media(max-width:880px){.grid{grid-template-columns:1fr}.seg{justify-content:center}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:44px;height:44px;background:var(--accent);color:#fff;border-radius:8px;display:grid;place-items:center;font-weight:700">W</div>
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+    </div>
+    <nav class="nav">
+      <a href="index.html">Begin</a>
+      <a href="about.html">About</a>
+      <a href="services.html">Offerings</a>
+      <a href="programs.html">Pathways</a>
+      <a href="pricing.html">Fees</a>
+      <a href="testimonials.html">Praise</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="hero card">
+      <h1 style="margin:0">Structured pathways for predictable progress</h1>
+      <p class="muted" style="margin-top:8px">Choose a pathway based on the time you have and the focus you want: rhythm, resilience, or reset. Each pathway can be taken as membership or a packaged program.</p>
+
+      <div class="chooser">
+        <div style="font-size:13px;color:var(--muted)">View:</div>
+        <div class="seg" role="tablist" aria-label="Pricing view">
+          <button class="active" data-mode="membership">Membership</button>
+          <button data-mode="package">Package</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid">
+      <div>
+        <section class="card">
+          <div class="program">
+            <h4>Rhythm Pathway</h4>
+            <div class="muted" style="margin-top:6px">Focus: steady daily rhythms for energy and rest.</div>
+            <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div class="small muted">Included: 1 coaching check-in / week, habit micro-tasks</div>
+              </div>
+              <div style="text-align:right">
+                <div class="priceBig" id="p1Price">$67</div>
+                <div class="small muted" id="p1Suffix">/ month</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="program" style="margin-top:12px">
+            <h4>Resilience Pathway</h4>
+            <div class="muted" style="margin-top:6px">Focus: improve day-to-day coping and planning tools.</div>
+            <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center">
+              <div><div class="small muted">Included: 2 coaching checkpoints per month, reflection prompts</div></div>
+              <div style="text-align:right">
+                <div class="priceBig" id="p2Price">$89</div>
+                <div class="small muted" id="p2Suffix">/ month</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="program" style="margin-top:12px">
+            <h4>Reset Pathway</h4>
+            <div class="muted" style="margin-top:6px">Focus: short intensive work to re-establish routines.</div>
+            <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center">
+              <div><div class="small muted">Included: 4 focused sessions over 6 weeks</div></div>
+              <div style="text-align:right">
+                <div class="priceBig" id="p3Price">$299</div>
+                <div class="small muted" id="p3Suffix">one-time</div>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+        <section class="card" style="margin-top:12px">
+          <h4 style="margin:0">Ready to explore?</h4>
+          <p class="muted" style="margin-top:8px">Book a short clarity call to see which pathway suits your week-to-week life.</p>
+          <a class="cta" href="book.html">Schedule a clarity call</a>
+        </section>
+      </div>
+
+      <aside class="card">
+        <h4 style="margin:0">How to choose</h4>
+        <p class="muted" style="margin-top:10px">Prefer ongoing adjustments? Choose membership. Want a focused reset with a clear end? Choose a package. Toggle above to see the investment shift.</p>
+        <div style="margin-top:12px">
+          <div style="font-weight:700">Need help deciding?</div>
+          <div class="muted" style="margin-top:6px">Call <strong>{{PHONE}}</strong> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+        </div>
+      </aside>
+
+    </div>
+  </main>
+
+  <script>
+    (function(){
+      // Different comparator UI but similar animated numbers
+      var buttons = document.querySelectorAll('.seg button');
+      var state = 'membership';
+      var prices = {
+        membership:{p1:67,p2:89,p3:299,s1:'/ month',s2:'/ month',s3:'one-time'},
+        package:{p1:199,p2:249,p3:299,s1:'one-time',s2:'one-time',s3:'one-time'}
+      };
+
+      function animate(elId, start, end){
+        var el = document.getElementById(elId);
+        var startTime = null;
+        function tick(ts){
+          if(!startTime) startTime = ts;
+          var t = Math.min((ts - startTime)/420,1);
+          var val = Math.round(start + (end - start) * t);
+          el.textContent = val < 1000 ? '$' + val : '$' + val;
+          if(t < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      }
+
+      function setState(mode){
+        state = mode;
+        buttons.forEach(function(b){b.classList.toggle('active', b.getAttribute('data-mode')===mode)});
+        // Animate prices
+        var cur1 = parseInt(document.getElementById('p1Price').textContent.replace(/[^0-9]/g,'')) || 0;
+        var cur2 = parseInt(document.getElementById('p2Price').textContent.replace(/[^0-9]/g,'')) || 0;
+        var cur3 = parseInt(document.getElementById('p3Price').textContent.replace(/[^0-9]/g,'')) || 0;
+        animate('p1Price', cur1, prices[mode].p1);
+        animate('p2Price', cur2, prices[mode].p2);
+        animate('p3Price', cur3, prices[mode].p3);
+        document.getElementById('p1Suffix').textContent = prices[mode].s1;
+        document.getElementById('p2Suffix').textContent = prices[mode].s2;
+        document.getElementById('p3Suffix').textContent = prices[mode].s3;
+      }
+
+      buttons.forEach(function(b){
+        b.addEventListener('click', function(){
+          setState(b.getAttribute('data-mode'));
+        });
+      });
+
+      // initialize
+      setState('membership');
+    })();
+  </script>
+</body>
+</html>

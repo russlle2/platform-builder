@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Care Investment — Pricing | {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#faf7f2;--accent:#5b8a72;--muted:#7a7a7a;--card:#fff;--glass:rgba(255,255,255,0.6)}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:linear-gradient(180deg,var(--bg),#f4f2ee);color:#272727}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:rgba(255,255,255,0.6);backdrop-filter:blur(6px);border-bottom:1px solid rgba(0,0,0,0.04)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#3f6f5b);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    nav a{margin-left:18px;color:#333;text-decoration:none;font-weight:600}
+    .wrap{max-width:1100px;margin:28px auto;padding:20px}
+
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:start}
+    .lead{background:var(--card);padding:28px;border-radius:14px;box-shadow:0 8px 24px rgba(50,50,50,0.06)}
+    .lead h1{margin:0 0 8px;font-size:22px;color:var(--accent)}
+    .lead p{margin:0 0 18px;color:var(--muted)}
+
+    .toggle-card{background:linear-gradient(180deg,#fff, #fbfbfb);padding:18px;border-radius:12px;border:1px solid rgba(0,0,0,0.04)}
+    .billing-toggle{display:flex;align-items:center;gap:12px}
+    .switch{width:56px;height:30px;background:#e9ece9;border-radius:20px;padding:4px;display:flex;align-items:center;cursor:pointer}
+    .knob{width:22px;height:22px;background:#fff;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.12);transition:transform .28s}
+    .knob.pack{transform:translateX(26px)}
+
+    .plans{display:flex;gap:18px;margin-top:18px}
+    .plan{flex:1;background:var(--card);padding:18px;border-radius:12px;border:1px solid rgba(0,0,0,0.04);display:flex;flex-direction:column;gap:12px}
+    .plan h3{margin:0;font-size:16px;color:#2f513f}
+    .price{font-size:28px;font-weight:700;color:var(--accent)}
+    .meta{color:var(--muted);font-size:13px}
+    .features{flex:1;margin-top:6px}
+    .cta{margin-top:12px}
+    .btn{display:inline-block;padding:10px 14px;border-radius:9px;background:var(--accent);color:#fff;text-decoration:none;font-weight:700}
+
+    .savings{display:inline-block;background:#fff6ea;padding:6px 8px;border-radius:999px;color:#b86a1b;font-weight:700;font-size:13px;border:1px solid rgba(184,106,27,0.08)}
+
+    footer{margin-top:28px;text-align:center;color:var(--muted);font-size:13px}
+
+    /* small responsive */
+    @media(max-width:880px){.hero{grid-template-columns:1fr;}.plans{flex-direction:column}.lead{order:2}.toggle-card{order:1}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">HM</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="approach.html">Method</a>
+      <a href="pricing.html" style="text-decoration:underline">Investment</a>
+      <a href="about.html">Story</a>
+      <a href="book.html">Reserve</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="lead">
+        <h1>Transparent care, framed around your life</h1>
+        <p>Choose a cadence that suits you — a light monthly touch or a focused package to reset patterns. All choices include educational guidance and hand-tailored next steps.</p>
+        <div style="display:flex;gap:10px;align-items:center">
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <div style="font-size:13px;color:var(--muted)">or call <strong>{{PHONE}}</strong></div>
+        </div>
+      </div>
+
+      <aside class="toggle-card" aria-hidden="false">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-weight:800">Billing view</div>
+            <div class="meta">Toggle between monthly and package pricing</div>
+          </div>
+          <div class="billing-toggle" title="Switch billing view">
+            <div id="switch" class="switch" role="button" aria-pressed="false">
+              <div id="knob" class="knob"></div>
+            </div>
+            <div style="font-size:13px;color:var(--muted);">View: <span id="billingLabel">Monthly</span></div>
+          </div>
+        </div>
+
+        <div class="plans">
+          <div class="plan">
+            <h3>Rhythm Intro</h3>
+            <div class="price" data-month="79" data-pack="225">$<span class="num">79</span></div>
+            <div class="meta">A single-month pathway for habits & basics</div>
+            <div class="features">
+              <ul style="margin:8px 0 0;padding-left:18px;color:var(--muted)">
+                <li>2 focused consults</li>
+                <li>Practical home plan</li>
+                <li>Email follow-up</li>
+              </ul>
+            </div>
+            <div class="cta"><a class="btn" href="book.html?plan=intro">Reserve a slot</a></div>
+          </div>
+
+          <div class="plan">
+            <h3>Foundations Plan</h3>
+            <div class="price" data-month="149" data-pack="420">$<span class="num">149</span></div>
+            <div class="meta">Steadier support with learning modules and follow-through</div>
+            <div class="features">
+              <ul style="margin:8px 0 0;padding-left:18px;color:var(--muted)">
+                <li>4 sessions across 12 weeks</li>
+                <li>Custom toolkit</li>
+                <li>Priority messages</li>
+              </ul>
+            </div>
+            <div class="cta"><a class="btn" href="book.html?plan=foundations">Start this plan</a></div>
+          </div>
+
+          <div class="plan">
+            <h3>Reset Package</h3>
+            <div class="price" data-month="260" data-pack="975">$<span class="num">260</span></div>
+            <div class="meta">Concentrated support to reframe rhythms with hands-on guidance</div>
+            <div class="features">
+              <ul style="margin:8px 0 0;padding-left:18px;color:var(--muted)">
+                <li>8 sessions + care plan</li>
+                <li>Deep educational packet</li>
+                <li>Direct messaging access</li>
+              </ul>
+            </div>
+            <div class="cta"><span class="savings">Save when paid up-front</span>
+              <div style="margin-top:8px"><a class="btn" href="book.html?plan=reset">Claim this package</a></div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section style="margin-top:22px;background:linear-gradient(0deg,#fff, #fff8f2);padding:16px;border-radius:12px;border:1px solid rgba(0,0,0,0.03)">
+      <strong>Notes:</strong>
+      <p style="margin:8px 0 0;color:var(--muted)">Prices listed are for consultative services and educational care. They are meant to guide planning; we will tailor any program to your needs. No promises of cures are made.</p>
+      <div style="margin-top:10px;color:var(--muted)">Questions? Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <strong>{{PHONE}}</strong>.</div>
+    </section>
+
+    <footer>
+      <div>Still unsure? Book a short discovery call to find the right fit — <a href="book.html">Reserve time</a></div>
+      <div style="margin-top:6px">© <span>{{BUSINESS_NAME}}</span> • <span>{{CITY}}, {{STATE}}</span></div>
+    </footer>
+  </main>
+
+  <script>
+    (function(){
+      const switchEl = document.getElementById('switch');
+      const knob = document.getElementById('knob');
+      const label = document.getElementById('billingLabel');
+      let pack = false; // monthly view initially
+
+      function animateValue(el, start, end, duration){
+        const span = el.querySelector('.num');
+        let startTime = null;
+        function step(ts){
+          if(!startTime) startTime = ts;
+          const progress = Math.min((ts - startTime)/duration,1);
+          const val = Math.round(start + (end - start) * progress);
+          span.textContent = val;
+          if(progress < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+
+      function updatePrices(){
+        document.querySelectorAll('.price').forEach(el=>{
+          const from = parseInt(el.querySelector('.num').textContent,10);
+          const to = pack ? parseInt(el.getAttribute('data-pack'),10) : parseInt(el.getAttribute('data-month'),10);
+          animateValue(el, from, to, 450);
+        });
+      }
+
+      switchEl.addEventListener('click', ()=>{
+        pack = !pack;
+        switchEl.setAttribute('aria-pressed', String(pack));
+        if(pack) { knob.classList.add('pack'); label.textContent = 'Package'; }
+        else { knob.classList.remove('pack'); label.textContent = 'Monthly'; }
+        updatePrices();
+      });
+
+      // initialize numbers from attributes
+      document.querySelectorAll('.price').forEach(el=>{
+        const v = parseInt(el.getAttribute('data-month'),10);
+        el.querySelector('.num').textContent = v;
+      });
+    })();
+  </script>
+</body>
+</html>

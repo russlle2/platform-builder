@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Plans & Fees — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfbfc;--muted:#6b7280;--accent:#6b4cff;--card:#ffffff;--glass:rgba(255,255,255,0.6)}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;color:#111827;background:linear-gradient(180deg,#fbfbfd 0%,#f7f8fb 100%);}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:transparent}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:48px;height:48px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),#a06bff);color:white;font-weight:700}
+    nav a{margin-left:18px;text-decoration:none;color:var(--muted);font-weight:600}
+    .hero{padding:40px 28px 32px;display:grid;grid-template-columns:1fr 360px;gap:32px;align-items:start}
+    .hero-card{background:var(--card);border-radius:12px;padding:28px;box-shadow:0 6px 20px rgba(15,23,42,0.06)}
+    .kicker{font-size:13px;color:var(--accent);font-weight:700}
+    h1{margin:8px 0 6px;font-size:24px}
+    p.lead{color:var(--muted);margin:0 0 16px}
+    .plans{display:flex;flex-direction:column;gap:12px}
+    .plan{display:flex;justify-content:space-between;align-items:center;padding:14px;border-radius:10px;border:1px solid #eef2ff}
+    .plan .meta{display:flex;flex-direction:column}
+    .price{font-weight:800;color:#0f172a}
+    .note{font-size:12px;color:var(--muted)}
+
+    /* Session Planner */
+    .planner{padding:18px;border-radius:10px;background:linear-gradient(180deg,rgba(107,76,255,0.06),rgba(167,127,255,0.02));border:1px dashed rgba(107,76,255,0.12)}
+    label{font-weight:600;font-size:13px;color:#0f172a}
+    select,input[type="number"],textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9ef;margin-top:6px}
+    .row{display:flex;gap:8px}
+    button{background:var(--accent);color:white;padding:10px 12px;border-radius:8px;border:0;cursor:pointer}
+    .secondary{background:#eef2ff;color:var(--accent);font-weight:700}
+    footer{padding:28px;color:var(--muted);font-size:13px}
+    .small{font-size:13px;color:var(--muted)}
+
+    /* subtle decorative pattern using inline SVG as CSS background */
+    .bg-pattern{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='200' viewBox='0 0 400 200'><defs><linearGradient id='g' x1='0' x2='1'><stop offset='0' stop-color='%236b4cff' stop-opacity='0.05'/><stop offset='1' stop-color='%23a06bff' stop-opacity='0.02'/></linearGradient></defs><rect width='100%' height='100%' fill='url(%23g)'/><g fill='none' stroke='%236b4cff' stroke-opacity='0.06' stroke-width='1'><path d='M0 40c40 20 80-20 120 0s80 60 120 40 80-40 120-20' /></g></svg>");background-repeat:no-repeat;background-position:right top;background-size:contain}
+
+    @media (max-width:880px){.hero{grid-template-columns:1fr;}.hero-card{order:2}.brand .logo{width:40px;height:40px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">TP</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Nest</a>
+      <a href="about.html">Who I Am</a>
+      <a href="specialties.html">Focus Areas</a>
+      <a href="approach.html">Method Lab</a>
+      <a href="fees.html" style="color:var(--accent)">Plans</a>
+      <a href="faq.html">Learn</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-card bg-pattern">
+        <div class="kicker">Plans & practical options</div>
+        <h1>Flexible ways to work together</h1>
+        <p class="lead">Choose a rhythm that fits your life. Below are typical options and an interactive planner to help you map a short-term aim or a softer ongoing rhythm.</p>
+
+        <div style="margin-top:18px" class="plans">
+          <div class="plan" aria-hidden>
+            <div class="meta">
+              <div style="font-weight:700">Intro Conversation</div>
+              <div class="note">One 45-minute session to set focus and questions.</div>
+            </div>
+            <div style="text-align:right">
+              <div class="price">$160</div>
+              <div class="note">Sliding scale available on request</div>
+            </div>
+          </div>
+
+          <div class="plan">
+            <div class="meta">
+              <div style="font-weight:700">Focused Series (6 sessions)</div>
+              <div class="note">A short, focused set for a specific concern or decision.</div>
+            </div>
+            <div style="text-align:right">
+              <div class="price">$900 (6 × 45min)</div>
+              <div class="note">Session length options: 30 / 45 / 60 min</div>
+            </div>
+          </div>
+
+          <div class="plan">
+            <div class="meta">
+              <div style="font-weight:700">Support Rhythm</div>
+              <div class="note">Ongoing sessions tailored to steady support and practice.</div>
+            </div>
+            <div style="text-align:right">
+              <div class="price">From $150/session</div>
+              <div class="note">Custom package and frequency available</div>
+            </div>
+          </div>
+        </div>
+
+        <p class="small" style="margin-top:14px">I offer a limited number of lower-fee openings. If cost is a barrier, ask about a fee adjustment when you reach out.</p>
+      </div>
+
+      <aside class="hero-card">
+        <div style="font-weight:700;margin-bottom:8px">Session Planner</div>
+        <p class="note">Build a short plan to share in your first visit — estimate rhythm, session length, and key focus. This is a planning tool, not a diagnosis.</p>
+
+        <form id="planner" class="planner" onsubmit="return false;">
+          <label>Primary intention</label>
+          <select id="intent">
+            <option>Manage daily stress & overwhelm</option>
+            <option>Navigate a transition (work, move, relationship)</option>
+            <option>Improve communication or relationships</option>
+            <option>Support parenting or caregiving</option>
+            <option>Clarify priorities & balance</option>
+            <option>Other</option>
+          </select>
+
+          <div style="margin-top:10px" class="row">
+            <div style="flex:1">
+              <label>Session length</label>
+              <select id="length"><option value="30">30 min</option><option value="45" selected>45 min</option><option value="60">60 min</option></select>
+            </div>
+            <div style="flex:1">
+              <label>Cadence</label>
+              <select id="cadence"><option value="weekly">Weekly</option><option value="biweekly">Every other week</option><option value="monthly">Monthly check-in</option></select>
+            </div>
+          </div>
+
+          <div style="margin-top:10px">
+            <label>Number of sessions you expect to start with</label>
+            <input id="count" type="number" value="6" min="1" />
+          </div>
+
+          <div style="margin-top:10px">
+            <label>Anything else to share (optional)</label>
+            <textarea id="notes" rows="3" placeholder="A few words about what matters to you..."></textarea>
+          </div>
+
+          <div style="margin-top:12px;display:flex;gap:8px">
+            <button id="build">Create plan</button>
+            <button id="copy" class="secondary" type="button">Copy summary</button>
+          </div>
+
+          <div id="summary" style="margin-top:12px;background:rgba(255,255,255,0.9);padding:10px;border-radius:8px;border:1px solid #f1f5f9;font-family:monospace;white-space:pre-wrap;min-height:62px"></div>
+        </form>
+      </aside>
+    </section>
+
+    <section style="padding:0 28px">
+      <div class="hero-card" style="margin-bottom:12px">
+        <div style="font-weight:700">How I think about fees</div>
+        <p class="note">I try to be clear and flexible: listed fees are typical starting points. During our first conversation we can explore what might work for you, including a different session length or an alternative cadence.</p>
+      </div>
+
+      <div class="hero-card">
+        <div style="font-weight:700">Boundaries & confidentiality</div>
+        <p class="note">Sessions are confidential within the limits of the law. I will explain what those limits are and how I handle records. I do not provide emergency services. If you are in crisis or feel unsafe, please call your local emergency number or a crisis line immediately.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+      <div>Questions? Call <strong>{{PHONE}}</strong> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      <div><a href="book.html" style="text-decoration:none"><button style="background:transparent;border:1px solid #e6e9ef;padding:8px 12px;border-radius:8px">{{PRIMARY_CTA_LABEL}}</button></a></div>
+    </div>
+  </footer>
+
+  <script>
+    // Session Planner logic
+    function pricePerSession(len){
+      // approximate values from page: 30=>150, 45=>160, 60=>190
+      if(len==30) return 140;
+      if(len==45) return 160;
+      return 190;
+    }
+
+    function buildText(){
+      const intent=document.getElementById('intent').value;
+      const length=+document.getElementById('length').value;
+      const cadence=document.getElementById('cadence').value;
+      const count=+document.getElementById('count').value;
+      const notes=document.getElementById('notes').value.trim();
+      const rate=pricePerSession(length);
+      const estTotal=(rate*count).toFixed(0);
+
+      const lines=[];
+      lines.push('{{BUSINESS_NAME}} — Session Plan');
+      lines.push('Intention: '+intent);
+      lines.push('Session length: '+length+' min');
+      lines.push('Cadence: '+cadence);
+      lines.push('Planned sessions: '+count);
+      lines.push('Estimated per-session fee: $'+rate+' (typical starting point)');
+      lines.push('Estimated total for initial block: $'+estTotal);
+      if(notes) lines.push('Notes: '+notes);
+      lines.push('Bring this summary to your first conversation to help set focus.');
+      lines.push('Contact: {{PHONE}} | {{EMAIL}}');
+      return lines.join('\n');
+    }
+
+    document.getElementById('build').addEventListener('click',function(e){
+      e.preventDefault();
+      document.getElementById('summary').textContent=buildText();
+    });
+
+    document.getElementById('copy').addEventListener('click',function(){
+      const txt=document.getElementById('summary').textContent || buildText();
+      navigator.clipboard && navigator.clipboard.writeText(txt).then(()=>{
+        const orig=this.textContent; this.textContent='Copied'; setTimeout(()=>this.textContent=orig,1500);
+      },()=>{alert('Could not copy. You can select and copy the summary.')});
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Book Appointment | {{BUSINESS_NAME}} — {{TAGLINE}}</title>
+  <meta name="description" content="Request an appointment at {{BUSINESS_NAME}} in {{CITY}}, {{STATE}}. Submit the form and our team will confirm your visit by phone or email.">
+  <link rel="canonical" href="book.html">
+  <meta name="robots" content="index,follow">
+  <meta name="theme-color" content="#0f766e">
+  <meta property="og:title" content="Book Appointment | {{BUSINESS_NAME}}">
+  <meta property="og:description" content="Send an appointment request and we’ll confirm shortly.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="book.html">
+  <meta property="og:image" content="assets/img/hero-abstract.svg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Book Appointment | {{BUSINESS_NAME}}">
+  <meta name="twitter:description" content="Easy, quick appointment requests.">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ReserveAction",
+    "agent": {"@type":"Person","name":"Patient"},
+    "provider": {"@type":"Dentist","name":"{{BUSINESS_NAME}}"},
+    "target": {"@type":"EntryPoint","urlTemplate":"book.html","actionPlatform":["http://schema.org/DesktopWebPlatform","http://schema.org/MobileWebPlatform"]}
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header" role="banner">
+    <div class="container header-inner">
+      <a class="brand" href="index.html" aria-label="{{BUSINESS_NAME}} home">
+        <span class="brand-logo" aria-hidden="true"><img src="assets/img/avatar-01.svg" alt=""></span>
+        <span>
+          <span class="brand-name">{{BUSINESS_NAME}}</span><br>
+          <span class="brand-tagline">{{TAGLINE}}</span>
+        </span>
+      </a>
+      <nav class="nav" data-nav aria-label="Primary Navigation">
+        <a href="services.html">Services</a>
+        <a href="insurance.html">Insurance</a>
+        <a href="new-patient.html">New Patients</a>
+        <a href="about.html">About</a>
+        <a href="reviews.html">Reviews</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <div class="header-cta">
+        <a class="header-phone hide-mobile" href="tel:{{PHONE}}">{{PHONE}}</a>
+        <a class="btn btn-primary" href="{{PRIMARY_CTA_URL}}" aria-current="page">{{PRIMARY_CTA_LABEL}}</a>
+        <button class="nav-toggle" data-nav-toggle aria-expanded="false" aria-label="Toggle menu"><span></span></button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-hero">
+      <div class="container">
+        <nav class="breadcrumbs" aria-label="Breadcrumbs"><a href="index.html">Home</a> › Book</nav>
+        <h1>Request an appointment</h1>
+        <p class="lead">Send your preferred times and we’ll confirm by phone or email within one business day.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container grid-2">
+        <div>
+          <form class="form" data-enhance data-demo="true" aria-label="Appointment request form">
+            <div class="alert alert-danger" data-alert hidden role="alert"></div>
+            <div class="form-row">
+              <div class="field">
+                <label class="required" for="first">First name</label>
+                <input id="first" name="first" type="text" autocomplete="given-name" data-required>
+              </div>
+              <div class="field">
+                <label class="required" for="last">Last name</label>
+                <input id="last" name="last" type="text" autocomplete="family-name" data-required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="field">
+                <label class="required" for="phone">Phone</label>
+                <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" data-required>
+              </div>
+              <div class="field">
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" autocomplete="email">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="field">
+                <label for="date">Preferred date</label>
+                <input id="date" name="date" type="date">
+              </div>
+              <div class="field">
+                <label for="time">Preferred time</label>
+                <input id="time" name="time" type="time">
+              </div>
+            </div>
+            <div class="field">
+              <label for="service">Type of visit</label>
+              <select id="service" name="service">
+                <option value="Cleaning">Cleaning & Exam</option>
+                <option value="Whitening">Whitening</option>
+                <option value="Filling">Filling</option>
+                <option value="Crown">Crown</option>
+                <option value="Consult">Consultation</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="message">Notes</label>
+              <textarea id="message" name="message" placeholder="Tell us anything we should know (pain, sensitivity, goals)"></textarea>
+              <div class="input-help">Submitting this form does not confirm an appointment. We will contact you to finalize.</div>
+            </div>
+            <button class="btn btn-primary" type="submit">Send Request</button>
+            <a class="btn btn-secondary" href="tel:{{PHONE}}">Or call {{PHONE}}</a>
+          </form>
+        </div>
+        <div>
+          <div class="card">
+            <h2>What happens next</h2>
+            <ol>
+              <li>Our coordinator reviews your request.</li>
+              <li>We contact you to confirm the date and time.</li>
+              <li>You’ll receive forms to complete ahead of your visit.</li>
+            </ol>
+          </div>
+          <div class="divider"></div>
+          <div class="card">
+            <h2>Visit us</h2>
+            <p>{{ADDRESS}}<br>{{CITY}}, {{STATE}} {{ZIP}}</p>
+            <p class="small muted">Hours: {{HOURS}}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="container footer-inner footer">
+      <div class="footer-brand">
+        <div class="brand">
+          <span class="brand-logo" aria-hidden="true"><img src="assets/img/avatar-01.svg" alt=""></span>
+          <div>
+            <div class="brand-name">{{BUSINESS_NAME}}</div>
+            <div class="small">{{TAGLINE}}</div>
+          </div>
+        </div>
+        <div class="small">{{ADDRESS}} • {{CITY}}, {{STATE}} {{ZIP}}</div>
+        <div class="small">Hours: {{HOURS}}</div>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul class="list-check">
+          <li><a href="services.html">Services</a></li>
+          <li><a href="insurance.html">Insurance</a></li>
+          <li><a href="new-patient.html">New Patients</a></li>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="reviews.html">Reviews</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <p class="small">Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a><br>Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+        <a class="btn btn-secondary" href="contact.html">Contact Page</a>
+      </div>
+      <div>
+        <h4>Appointments</h4>
+        <p class="small">Prefer to call? We’re at <a href="tel:{{PHONE}}">{{PHONE}}</a>.</p>
+        <a class="btn btn-primary btn-full" href="{{PRIMARY_CTA_URL}}" aria-current="page">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <div>© <span id="year"></span> {{BUSINESS_NAME}}.</div>
+      <div class="small">We look forward to meeting you.</div>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js" defer></script>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>

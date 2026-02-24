@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="A calm practice-based approach to steady habits and clearer wellbeing.">
+  <style>
+    :root{--bg:#fbfcfb;--muted:#6b7280;--accent:#2b6cb0;--card:#ffffff;--glass:rgba(255,255,255,0.6);font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,var(--bg) 0%, #ffffff 100%);color:#0f172a;line-height:1.45}
+    header{padding:28px 22px;display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:52px;height:52px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--accent),#0ea5a0);color:white;font-weight:700}
+    nav a{margin-left:18px;text-decoration:none;color:var(--muted);font-weight:600}
+    .hero{padding:40px 22px 28px;display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+    .hero .lead{background:var(--card);padding:22px;border-radius:12px;box-shadow:0 6px 18px rgba(15,23,42,0.06)}
+    h1{margin:0 0 8px;font-size:22px}
+    p.lead{margin:0;color:var(--muted)}
+    .side-card{background:linear-gradient(180deg, rgba(43,108,176,0.06), rgba(14,165,160,0.02));padding:18px;border-radius:12px}
+    .pill{display:inline-block;background:var(--glass);padding:6px 10px;border-radius:999px;font-weight:600;color:var(--accent);font-size:13px}
+    section.content{padding:22px}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 20px rgba(12,17,28,0.04)}
+    footer{padding:22px;color:var(--muted);font-size:14px;border-top:1px solid #eef2f7}
+    .cta{display:inline-block;background:var(--accent);color:white;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+    /* pattern header */
+    .pattern{position:absolute;left:0;top:0;opacity:0.08;width:320px;height:160px}
+    /* Modal */
+    .modal-backdrop{position:fixed;inset:0;display:none;background:rgba(2,6,23,0.45);align-items:center;justify-content:center;padding:22px}
+    .modal{background:white;border-radius:12px;max-width:720px;width:100%;padding:18px;box-shadow:0 12px 40px rgba(2,6,23,0.36)}
+    .modal header{display:flex;justify-content:space-between;align-items:center}
+    .exercise-row{display:flex;gap:12px;margin-top:12px}
+    .exercise-col{flex:1}
+    .breath-circle{width:160px;height:160px;border-radius:50%;background:linear-gradient(180deg,#ebf8ff,#dbeafe);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent);margin:0 auto}
+    .hidden{display:none}
+    .btn{display:inline-block;padding:8px 12px;border-radius:10px;border:0;background:#f3f4f6;color:#0f172a;font-weight:700;cursor:pointer}
+    .outline{background:transparent;border:1px solid #e6edf3}
+    .muted{color:var(--muted)}
+    @media (max-width:880px){.hero{grid-template-columns:1fr}.grid{grid-template-columns:1fr}}
+    /* small print layout for saved notes */
+    .note{white-space:pre-wrap;background:#f8fafc;padding:12px;border-radius:8px;border:1px dashed #e6eef8}
+  </style>
+</head>
+<body>
+  <svg class="pattern" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+      <pattern id="p1" width="20" height="20" patternUnits="userSpaceOnUse">
+        <rect width="10" height="10" fill="#e6f2fb"/>
+        <rect x="10" y="10" width="10" height="10" fill="#f0fbf9"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#p1)"/>
+  </svg>
+
+  <header>
+    <div class="brand">
+      <div class="logo">W</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Anchor</a>
+      <a href="services.html">Offerings</a>
+      <a href="programs.html">Courses</a>
+      <a href="pricing.html">Rates</a>
+      <a href="testimonials.html">Stories</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="lead card">
+        <span class="pill">Frameworks • Habits • Outcomes</span>
+        <h1>How we steady daily wellbeing</h1>
+        <p class="lead">We translate meaningful outcomes into simple, repeatable actions you can do with the time you have. No medical claims — only practical, evidence-informed routines and tracking systems so you can notice change.</p>
+        <div style="margin-top:14px;display:flex;gap:10px;align-items:center">
+          <a class="cta" href="{{PRIMARY_CTA_URL}}">Begin steady practice</a>
+          <button class="btn" id="try-now-about">Try it now</button>
+        </div>
+      </div>
+      <aside class="side-card">
+        <div style="font-weight:700;margin-bottom:8px">Membership snapshot</div>
+        <div style="font-size:14px;color:var(--muted);margin-bottom:12px">A rolling membership of guided plans, weekly check-ins, and a library of micro-practices.</div>
+        <div style="display:flex;gap:8px">
+          <div style="flex:1">
+            <div style="font-weight:700">Weekly rhythm</div>
+            <div class="muted">Short, proven exercises to build momentum</div>
+          </div>
+          <div style="flex:1">
+            <div style="font-weight:700">Personal map</div>
+            <div class="muted">Aim-based habit scaffolding you can follow</div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="content">
+      <div class="grid">
+        <div class="card">
+          <h3>Outcomes we support</h3>
+          <p class="muted">Clearer energy, calmer responses, and consistent self-regulation achieved through micro-habits and reflection cycles.</p>
+          <ul style="margin-top:10px;color:var(--muted)">
+            <li>Daily micro-checks to reduce decision fatigue</li>
+            <li>Simple evening reflections to reframe the day</li>
+            <li>Short, guided breathing practices for acute calming</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>How we design change</h3>
+          <p class="muted">We map an outcome to a 3-step habit scaffold: prompt, tiny action, reflection. Each scaffold is tested and adjusted during weekly check-ins.</p>
+          <ol style="margin-top:10px;color:var(--muted)">
+            <li>Clarify one meaningful daily target</li>
+            <li>Design a tiny anchor habit tied to an existing routine</li>
+            <li>Reflect for 3 minutes and log for pattern recognition</li>
+          </ol>
+        </div>
+
+        <div class="card">
+          <h3>Clinical calm support</h3>
+          <p class="muted">Sessions focus on habit framing and skills practice. We avoid clinical diagnosis and center skillful, observable behaviors you can repeat.</p>
+          <p style="margin-top:12px"><strong>Contact</strong> <span class="muted">{{EMAIL}} • {{PHONE}}</span></p>
+        </div>
+        <div class="card">
+          <h3>Notes from practice</h3>
+          <p class="muted">You receive compact, actionable notes after each check-in so implementation is clear and habits stay small and sustainable.</p>
+          <div style="margin-top:8px"><a class="btn outline" href="testimonials.html">Read member stories</a></div>
+        </div>
+      </div>
+    </section>
+
+    <section style="padding:22px">
+      <div class="card">
+        <h3>Try a guided micro-practice</h3>
+        <p class="muted">Pick a 3–6 minute micro-practice. The guided module runs in your browser — breathing pacing, a short journaling prompt, or an intention-setting cue to center your next hour.</p>
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button class="btn" id="try-now-about-2">Try a breathing exercise</button>
+          <button class="btn outline" id="try-journal-about">Try a journaling prompt</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
+      <div>© <span style="font-weight:700">{{BUSINESS_NAME}}</span> — Practical plans for steady days</div>
+      <div style="margin-top:8px">Not medical advice. Outcomes, habits, frameworks only.</div>
+    </div>
+  </footer>
+
+  <!-- Modal: guided practice (shared logic) -->
+  <div id="modal-backdrop" class="modal-backdrop" role="dialog" aria-hidden="true">
+    <div class="modal" role="document" aria-modal="true">
+      <header>
+        <div>
+          <strong id="modal-title">Guided practice</strong>
+          <div id="modal-sub" class="muted" style="font-size:13px">Choose a short practice and follow the pacing</div>
+        </div>
+        <button class="btn" id="modal-close">Close</button>
+      </header>
+
+      <div id="modal-body">
+        <div style="margin-top:12px;display:flex;gap:12px;flex-wrap:wrap">
+          <button class="btn" data-ex="breathing" aria-pressed="false">Breathing</button>
+          <button class="btn" data-ex="journaling" aria-pressed="false">Journaling</button>
+          <button class="btn" data-ex="intention" aria-pressed="false">Intention</button>
+        </div>
+
+        <div id="exercise-area" style="margin-top:14px"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      // Modal utility
+      const backdrop = document.getElementById('modal-backdrop');
+      const bodyArea = document.getElementById('exercise-area');
+      const modalTitle = document.getElementById('modal-title');
+      const modalSub = document.getElementById('modal-sub');
+      function openModal(){backdrop.style.display='flex';backdrop.setAttribute('aria-hidden','false');document.body.style.overflow='hidden'}
+      function closeModal(){backdrop.style.display='none';backdrop.setAttribute('aria-hidden','true');document.body.style.overflow='auto';stopBreathing()}
+      document.getElementById('modal-close').addEventListener('click',closeModal);
+      document.getElementById('try-now-about').addEventListener('click',openModal);
+      document.getElementById('try-now-about-2').addEventListener('click',openModal);
+      document.getElementById('try-journal-about').addEventListener('click',openModal);
+
+      // select exercise buttons
+      backdrop.addEventListener('click',function(e){if(e.target===backdrop) closeModal();});
+      const exButtons = Array.from(document.querySelectorAll('[data-ex]'));
+      exButtons.forEach(btn=>btn.addEventListener('click',()=>selectExercise(btn.getAttribute('data-ex'))));
+
+      // breathing UI
+      let breathTimer=null; let breathPhase=0; let breathCount=0;
+      function selectExercise(type){
+        bodyArea.innerHTML='';
+        if(type==='breathing') renderBreathing();
+        if(type==='journaling') renderJournaling();
+        if(type==='intention') renderIntention();
+      }
+
+      function renderBreathing(){
+        modalTitle.textContent='Paced Breathing (3 minutes)';
+        modalSub.textContent='Follow the circle: inhale, hold, exhale.';
+        const el = document.createElement('div');
+        el.innerHTML = '<div style="text-align:center"><div class="breath-circle" id="breath-circle">Breathe</div><div style="margin-top:12px"><button class="btn" id="breath-start">Start 3-min</button><button class="btn outline" id="breath-stop" style="margin-left:8px">Stop</button></div><div id="breath-info" class="muted" style="margin-top:10px">Phase: —</div></div>';
+        bodyArea.appendChild(el);
+        document.getElementById('breath-start').addEventListener('click',startBreathing);
+        document.getElementById('breath-stop').addEventListener('click',stopBreathing);
+      }
+      function startBreathing(){
+        stopBreathing(); breathPhase=0; breathCount=0;
+        const cb = document.getElementById('breath-circle');
+        const info = document.getElementById('breath-info');
+        const phases = [ {label:'Inhale',secs:4,scale:1.2},{label:'Hold',secs:4,scale:1.0},{label:'Exhale',secs:6,scale:0.6} ];
+        let totalSecs = 180; // 3 minutes
+        breathTimer = setInterval(()=>{
+          const p = phases[breathPhase%phases.length];
+          info.textContent = 'Phase: '+p.label+' — seconds left: '+(totalSecs);
+          cb.style.transform = 'scale('+p.scale+')';
+          cb.textContent = p.label;
+          breathPhase++; totalSecs--; breathCount++;
+          if(totalSecs<=0){stopBreathing(); info.textContent='Completed — well done.'}
+        },1000);
+      }
+      function stopBreathing(){ if(breathTimer){clearInterval(breathTimer);breathTimer=null;const cb=document.getElementById('breath-circle'); if(cb) {cb.style.transform='scale(1)';cb.textContent='Breathe'} }}
+
+      // journaling UI
+      function renderJournaling(){
+        modalTitle.textContent='Micro-Journal (5 prompts)';
+        modalSub.textContent='Write briefly — 2 minutes per prompt.';
+        const container = document.createElement('div');
+        container.innerHTML = '<div><div class="muted">Prompt</div><div id="prompt" style="font-weight:700;margin-top:8px">What went well today?</div><textarea id="journal-text" style="width:100%;height:120px;margin-top:10px;padding:10px;border-radius:8px;border:1px solid #e6eef8"></textarea><div style="margin-top:8px;display:flex;gap:8px"><button class="btn" id="journal-next">Next prompt</button><button class="btn outline" id="journal-save">Save note</button></div><pre id="journal-saved" class="note hidden" style="margin-top:10px"></pre></div>';
+        bodyArea.appendChild(container);
+        const prompts = ['What went well today?','One small win I noticed','One short step I will take tomorrow','A moment I can be kinder to myself','One thing I can simplify this week'];
+        let idx=0; const promptEl=document.getElementById('prompt');
+        document.getElementById('journal-next').addEventListener('click',()=>{idx=(idx+1)%prompts.length;promptEl.textContent=prompts[idx];document.getElementById('journal-text').focus();});
+        document.getElementById('journal-save').addEventListener('click',()=>{const v=document.getElementById('journal-text').value.trim();const out=document.getElementById('journal-saved');out.textContent = 'Saved note:\n'+v;out.classList.remove('hidden');});
+      }
+
+      // intention UI
+      function renderIntention(){
+        modalTitle.textContent='Set an Intention';
+        modalSub.textContent='A short, specific sentence to orient your next hour.';
+        const el = document.createElement('div');
+        el.innerHTML = '<div><input id="intent-text" placeholder="I will..." style="width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef8"/><div style="margin-top:8px"><button class="btn" id="intent-save">Set intention</button></div><div id="intent-out" class="muted" style="margin-top:10px"></div></div>';
+        bodyArea.appendChild(el);
+        document.getElementById('intent-save').addEventListener('click',()=>{const v=document.getElementById('intent-text').value.trim();document.getElementById('intent-out').textContent = v?('Intention set: "'+v+'"'):'Please enter a short intention.'});
+      }
+
+      // Expose to other triggers if needed
+      window.openPractice = openModal;
+    })();
+  </script>
+</body>
+</html>

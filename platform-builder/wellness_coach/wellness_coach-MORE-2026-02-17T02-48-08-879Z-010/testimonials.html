@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Stories — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Client stories and outcomes from coaching journeys." />
+  <style>
+    :root{--bg:#081118;--card:#07121a;--accent:#8ee7c8;--muted:#9fb7c3;--maxw:1040px}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:#e7f8f4;background:linear-gradient(180deg,#03131a 0%,#071728 100%)}
+    header{max-width:var(--maxw);margin:20px auto;padding:16px;display:flex;align-items:center;justify-content:space-between}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#6bd3ff);display:flex;align-items:center;justify-content:center;color:#052}
+    nav a{color:#cfe9e0;text-decoration:none;margin:0 8px;font-weight:600}
+    main{max-width:var(--maxw);margin:12px auto;padding:18px}
+    h1{color:#e9fff6;margin:8px 0}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .quote{font-style:italic;color:#dff7ef}
+    .by{font-weight:700;color:var(--muted);margin-top:8px}
+    .muted{color:var(--muted)}
+
+    .ctaArea{margin-top:28px;padding:18px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);border-radius:12px;display:flex;justify-content:space-between;align-items:center}
+    .primary{background:var(--accent);color:#022;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+
+    .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+    @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+
+    @media (max-width:920px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo">W</div>
+      <div>
+        <div style="font-weight:800;color:#e6fff4">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Philosophy</a>
+      <a href="services.html">Offerings</a>
+      <a href="programs.html">Paths</a>
+      <a href="pricing.html">Invest</a>
+      <a href="testimonials.html">Stories</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Voices from the work</h1>
+    <p class="muted">Real progress described in client words — focused on habits, clarity, and practical routine changes.</p>
+
+    <section class="grid">
+      <article class="card reveal">
+        <div class="quote">"The mapping session made the noise fall away. I left with a one-page plan that actually fit into my week."</div>
+        <div class="by">— Sara, product lead</div>
+        <div class="muted" style="margin-top:8px">Outcome: A simple weekly review that reclaimed two hours of creative work per week.</div>
+      </article>
+
+      <article class="card reveal">
+        <div class="quote">"We built three tiny cues that changed how I start my day. Small, immediate wins that stacked into a new rhythm."</div>
+        <div class="by">— Omar, small business owner</div>
+        <div class="muted" style="margin-top:8px">Outcome: Built habit loops to support a morning writing practice.</div>
+      </article>
+
+      <article class="card reveal">
+        <div class="quote">"Coaching helped me translate stress into actions. Not therapy — practical steps I could test the next week."</div>
+        <div class="by">— Nia, designer</div>
+        <div class="muted" style="margin-top:8px">Outcome: A three-step nightly reset to improve sleep onset without medications.</div>
+      </article>
+
+      <article class="card reveal">
+        <div class="quote">"The daily prompts kept me honest. In three months I could see how tiny shifts changed the shape of my month."</div>
+        <div class="by">— Raj, engineer</div>
+        <div class="muted" style="margin-top:8px">Outcome: Increased predictable focus blocks for deep work.</div>
+      </article>
+
+      <article class="card reveal">
+        <div class="quote">"We designed a simple handoff to my partner that reduced weekend friction. Practical and fast."</div>
+        <div class="by">— Lea, parent & consultant</div>
+        <div class="muted" style="margin-top:8px">Outcome: Shared routines for household flow.</div>
+      </article>
+
+      <article class="card reveal">
+        <div class="quote">"I expected pep talks. Instead I got frameworks, checklists, and a tiny system that actually stuck."</div>
+        <div class="by">— Tom, startup founder</div>
+        <div class="muted" style="margin-top:8px">Outcome: Improved meeting cadence and clearer priorities each week.</div>
+      </article>
+    </section>
+
+    <section class="ctaArea reveal" style="margin-top:22px">
+      <div>
+        <div style="font-weight:800;color:#e6fff4">Ready to try a short practice?</div>
+        <div class="muted">Open a guided exercise or reserve a short planning call to see what fits.</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <button id="tryNow2" class="primary">Try a short exercise</button>
+        <a class="primary" href="book.html">Reserve a planning call</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer style="max-width:var(--maxw);margin:28px auto 60px;padding:18px;color:var(--muted);text-align:center">{{BUSINESS_NAME}} • <a href="mailto:{{EMAIL}}" style="color:var(--muted)">{{EMAIL}}</a> • <a href="tel:{{PHONE}}" style="color:var(--muted)">{{PHONE}}</a></footer>
+
+  <!-- Modal component reused -->
+  <div id="modal" style="display:none;position:fixed;inset:0;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);z-index:60">
+    <div style="background:#021220;color:#e8f7f2;width:92%;max-width:700px;border-radius:12px;padding:18px">
+      <header style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <h3 style="margin:0;color:#012">Short guided practice</h3>
+          <div class="muted">Choose a 2–5 minute anchor</div>
+        </div>
+        <button id="closeModal2" style="background:transparent;border:0;color:var(--muted);font-weight:700">Close</button>
+      </header>
+      <div style="margin-top:10px;display:flex;gap:8px">
+        <select id="exerciseSelect2" style="flex:1;padding:8px;border-radius:8px;border:1px solid rgba(1,6,10,.08)">
+          <option value="breath">Breathing — 2 minutes</option>
+          <option value="journal">Mini journal — 3 prompts</option>
+          <option value="intent">Intention — 3 steps</option>
+        </select>
+        <button id="startBtn2" style="background:var(--accent);border-radius:10px;padding:8px 12px;border:0;color:#012;font-weight:700">Start</button>
+      </div>
+      <div id="exercise2" style="margin-top:12px"></div>
+    </div>
+  </div>
+
+  <script>
+    // Reveal
+    (function(){
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if(reduced){document.querySelectorAll('.reveal').forEach(e=>e.classList.add('visible'));return}
+      const obs = new IntersectionObserver((entries)=>{entries.forEach(en=>{if(en.isIntersecting){en.target.classList.add('visible');obs.unobserve(en.target)}}),{threshold:0.12});
+      document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+    })();
+
+    // Modal logic
+    (function(){
+      const modal = document.getElementById('modal');
+      const tryBtn = document.getElementById('tryNow2');
+      const close = document.getElementById('closeModal2');
+      const start = document.getElementById('startBtn2');
+      const select = document.getElementById('exerciseSelect2');
+      const out = document.getElementById('exercise2');
+      let t=null, idx=0, steps=[];
+      function open(){modal.style.display='flex';select.focus();out.innerHTML=''}
+      function closeModal(){modal.style.display='none';clearInterval(t)}
+      tryBtn.addEventListener('click',open);close.addEventListener('click',closeModal);
+      modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
+      start.addEventListener('click',()=>{
+        clearInterval(t);out.innerHTML='';idx=0;const v=select.value;
+        if(v==='breath'){steps=['Sit tall.','Inhale 4s.','Hold 2s.','Exhale 6s.','Repeat.'];t=setInterval(()=>{if(idx<steps.length){out.innerHTML+='<div>'+steps[idx]+'</div>';idx++}else{clearInterval(t);out.innerHTML+='<div class="muted">Done.</div>'}},1800)}
+        if(v==='journal'){steps=['One small win.','One tension to note.','One next step.'];t=setInterval(()=>{if(idx<steps.length){out.innerHTML+='<div>• '+steps[idx]+'</div>';idx++}else{clearInterval(t);out.innerHTML+='<div class="muted">Write for 3 minutes.</div>'}},1700)}
+        if(v==='intent'){steps=['Name the focus.','Pick your first action.','Set a reminder.'];t=setInterval(()=>{if(idx<steps.length){out.innerHTML+='<div>'+steps[idx]+'</div>';idx++}else{clearInterval(t);out.innerHTML+='<div class="muted">Carry this into the next hour.</div>'}},1900)}
+      });
+    })();
+  </script>
+</body>
+</html>

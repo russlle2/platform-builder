@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Contact — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Get in touch for consultations, blends, and a focused aromatherapy studio day in {{CITY}}, {{STATE}}."> 
+  <style>
+    :root{
+      --bg:#fff8f2; --card:#fff; --muted:#6b5a4a; --accent:#a65b2a; --accent-2:#d9905a; --glass:rgba(255,255,255,0.6); --shadow:0 6px 24px rgba(102,77,56,0.12); --radius:14px; font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; color:var(--muted);
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#fff8f2 0%, #fff3ea 100%);}
+    .pattern{position:fixed;inset:0;pointer-events:none;opacity:0.35;background-image:url('assets/img/pattern.svg');background-repeat:repeat;background-size:320px;mix-blend-mode:multiply}
+    header{display:flex;align-items:center;justify-content:space-between;padding:28px 36px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:var(--shadow);display:grid;place-items:center;color:#fff;font-weight:700}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none;font-weight:600}
+    main{max-width:1100px;margin:28px auto;padding:28px}
+
+    .hero{display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start}
+    .hero .card{background:var(--card);border-radius:var(--radius);padding:28px;box-shadow:var(--shadow)}
+    h1{margin:0 0 8px 0;color:#4a382e;font-size:26px}
+    p.lead{margin:0 0 14px 0;color:var(--muted);line-height:1.5}
+    .contact-form label{display:block;font-size:13px;margin-top:12px;color:#604b3f}
+    .contact-form input,.contact-form textarea,.contact-form select{width:100%;padding:10px;border-radius:10px;border:1px solid #ead6c8;background:#fff}
+    .row{display:flex;gap:12px}
+    .small{font-size:13px;color:#8a6f60;margin-top:8px}
+    .cta{display:inline-block;background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+
+    /* right column modules */
+    .aside .module{background:linear-gradient(180deg,rgba(255,255,255,0.7),rgba(255,250,247,0.9));padding:16px;border-radius:12px;margin-bottom:14px}
+    .s-proof{display:flex;flex-direction:column;gap:8px}
+    .s-proof .item{display:flex;gap:12px;align-items:center}
+    .dot{width:44px;height:44px;border-radius:10px;background:#fff3ec;border:1px solid #f1d6c8;display:grid;place-items:center;font-weight:700;color:var(--accent)}
+
+    /* blend builder */
+    .builder{margin-top:18px;background:#fff;padding:14px;border-radius:12px;border:1px dashed #f0d2c1}
+    .vibes{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .vibe{padding:8px 10px;border-radius:10px;background:#fff3ec;border:1px solid transparent;cursor:pointer}
+    .vibe.active{background:var(--accent);color:#fff;border-color:rgba(0,0,0,0.04)}
+    .blend-card{margin-top:12px;padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#fff8f4);border:1px solid #f0d6c8}
+    .dilution{font-size:13px;color:#7a5f4f}
+
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(33,22,16,0.45);display:none;align-items:center;justify-content:center}
+    .modal{background:var(--card);border-radius:12px;padding:20px;max-width:680px;width:92%;box-shadow:0 18px 60px rgba(45,28,17,0.4)}
+    .steps{display:flex;flex-direction:column;gap:12px;margin-top:12px}
+    .step{padding:12px;border-radius:8px;background:#fff8f6;border:1px solid #f3e2d6}
+    .controls{display:flex;gap:8px;align-items:center;margin-top:12px}
+
+    /* FAQ & process */
+    .faq{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+    .faq .q{background:#fff;padding:12px;border-radius:10px;border-left:4px solid #f1d0bf}
+
+    footer{padding:22px 36px;text-align:center;color:#8a6f60}
+    @media(max-width:900px){.hero{grid-template-columns:1fr;}.pattern{background-size:220px}}
+  </style>
+</head>
+<body>
+  <div class="pattern" aria-hidden="true"></div>
+  <header>
+    <div class="brand">
+      <div class="logo" aria-hidden="true">A</div>
+      <div>
+        <div style="font-weight:700;color:#4a382e">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:#9a7e6b">Founder-led aromatherapy in {{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav aria-label="Primary">
+      <a href="/index.html">Home</a>
+      <a href="/services.html">How I Work</a>
+      <a href="/blends.html">Blends</a>
+      <a href="/shop.html">Shop</a>
+      <a href="/pricing.html">Investment</a>
+      <a href="/about.html">About</a>
+      <a href="/book.html">Book</a>
+      <a href="/contact.html" style="font-weight:800;color:var(--accent)">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="card">
+        <h1>Reach out for consultations, bespoke blends, or a focused studio day</h1>
+        <p class="lead">Whether you’re curious about a single ritual, looking for a one-day intensive to map scent into your routine, or need a custom blend, we’ll design something discreet, safe, and tailored. Fill in a few details and I’ll reply within 48 hours.</p>
+
+        <form class="contact-form" id="contactForm" aria-label="Contact form">
+          <label for="name">Full name</label>
+          <input id="name" name="name" type="text" placeholder="Your name" required />
+
+          <div class="row">
+            <div style="flex:1">
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" placeholder="you@example.com" required />
+            </div>
+            <div style="width:160px">
+              <label for="phone">Phone</label>
+              <input id="phone" name="phone" type="tel" placeholder="{{PHONE}}" />
+            </div>
+          </div>
+
+          <label for="interest">I'm interested in</label>
+          <select id="interest" name="interest">
+            <option>Quick consult (30 min)</option>
+            <option>Custom blend</option>
+            <option>Focused studio day (Intensive)</option>
+            <option>Wholesale / stockist</option>
+            <option>General question</option>
+          </select>
+
+          <label for="message">Tell me a little — goals, scent likes/dislikes, timeline</label>
+          <textarea id="message" name="message" rows="4" placeholder="A short note about what you'd like" required></textarea>
+
+          <div style="display:flex;gap:12px;margin-top:14px;align-items:center">
+            <button type="submit" class="cta">{{PRIMARY_CTA_LABEL}}</button>
+            <a href="#try" id="tryNow" class="cta" style="background:#fff;color:var(--accent);border:1px solid #f0d0bd">Try a brief exercise</a>
+          </div>
+
+          <div class="small">By sending, you consent to be contacted about your request. For urgent matters, call <a href="tel:{{PHONE}}">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</div>
+        </form>
+
+        <div style="margin-top:18px;font-size:14px;color:#7a5f4f">
+          Prefer to book directly? <a href="{{PRIMARY_CTA_URL}}" style="font-weight:700;color:var(--accent)">Schedule a conversation</a>.
+        </div>
+
+        <div style="margin-top:18px;display:flex;gap:12px;align-items:center">
+          <div style="width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2))"></div>
+          <div>
+            <div style="font-weight:700;color:#4a382e">Intensive Scent Studio Day</div>
+            <div style="font-size:13px;color:#8a6f60">A single-session deep design for a tailored at-home ritual and blended kit.</div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="aside">
+        <div class="module">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div style="font-weight:700;color:#4a382e">Quick blend builder</div>
+            <div style="font-size:13px;color:#8a6f60">Create a safe starter</div>
+          </div>
+
+          <div class="builder" id="builder" aria-live="polite">
+            <div style="font-size:13px;color:#6b5a4a">Pick a vibe</div>
+            <div class="vibes" id="vibeList">
+              <button class="vibe" data-vibe="calm">Calm</button>
+              <button class="vibe" data-vibe="focus">Focus</button>
+              <button class="vibe" data-vibe="sleep">Sleep</button>
+              <button class="vibe" data-vibe="clarity">Clarity</button>
+              <button class="vibe" data-vibe="lift">Lift</button>
+            </div>
+
+            <div style="margin-top:10px">
+              <label for="dilutionTarget" style="font-size:13px;color:#6b5a4a">Intended use</label>
+              <select id="dilutionTarget">
+                <option value="topical">Topical (roll-on / skin)</option>
+                <option value="diffuse">Diffusion / inhalation</option>
+                <option value="linen">Linen / pillow spray</option>
+              </select>
+            </div>
+
+            <div style="margin-top:10px">
+              <label for="sensitivity" style="font-size:13px;color:#6b5a4a">Sensitivity</label>
+              <select id="sensitivity">
+                <option value="adult">Adult (standard)</option>
+                <option value="sensitive">Sensitive skin</option>
+                <option value="child">Children (2+)</option>
+              </select>
+            </div>
+
+            <div id="blendResult" class="blend-card" role="region" aria-label="Blend result">
+              <div style="font-weight:700;color:#4a382e">No selection yet</div>
+              <div style="font-size:13px;color:#7a5f4f;margin-top:6px">Choose a vibe to see a suggested blend, dilution guide, and a printable blend card.</div>
+              <div style="margin-top:10px">
+                <button id="buildBtn" class="cta" style="background:#fff;color:var(--accent);border:1px solid #f0d0bd">Build it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="module s-proof" aria-hidden="false">
+          <div style="font-weight:700;color:#4a382e">Client notes</div>
+          <div class="item"><div class="dot">S</div>
+            <div>
+              <div style="font-weight:700">Studio owner, NYC</div>
+              <div style="font-size:13px;color:#8a6f60">"A precise, calm process — the blend fit my routine."</div>
+            </div>
+          </div>
+          <div class="item"><div class="dot">C</div>
+            <div>
+              <div style="font-weight:700">Community wellness hub</div>
+              <div style="font-size:13px;color:#8a6f60">"Rapid onboarding for group sessions and clear safety notes."</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="module">
+          <div style="font-weight:700;color:#4a382e">Fast process</div>
+          <ol style="margin:8px 0 0 18px;color:#7a5f4f">
+            <li>Intro note and goals</li>
+            <li>Design session or custom kit</li>
+            <li>Follow-up and safe-use guide</li>
+          </ol>
+        </div>
+      </aside>
+    </section>
+
+    <section class="faq" aria-label="FAQ and safety">
+      <div class="q">
+        <div style="font-weight:700;color:#4a382e">Dilution & patch test</div>
+        <div style="margin-top:8px;color:#6b5a4a">Suggested dilutions are provided as safe-start guidance only. For adults, typical topical dilutions range from 1%–3% for daily use; for sensitive skin or older adults consider 0.5%–1%. For children and babies, reduce more substantially or avoid topical use; always consult a qualified provider. A patch test (small amount on inner forearm) is recommended before extended topical use.</div>
+      </div>
+      <div class="q">
+        <div style="font-weight:700;color:#4a382e">Pregnancy, medications, and pets</div>
+        <div style="margin-top:8px;color:#6b5a4a">Aromas can be powerful. If pregnant, breastfeeding, or on regular medications, we recommend consulting your healthcare provider before using essential oils. Some oils are not safe for pets; do not diffuse heavily around small animals and always research individual oil safety.</div>
+      </div>
+
+      <div class="q">
+        <div style="font-weight:700;color:#4a382e">Non-medical advisory</div>
+        <div style="margin-top:8px;color:#6b5a4a">Information provided here and in consultations is educational and not medical advice. Essential oils may support feelings like calm or focus for some people; results vary. For health concerns, seek professional medical guidance.</div>
+      </div>
+      <div class="q">
+        <div style="font-weight:700;color:#4a382e">Turnaround & shipping</div>
+        <div style="margin-top:8px;color:#6b5a4a">Custom blends and kits are quoted individually. Local pickup in {{CITY}}, {{STATE}} available; shipping timelines vary by location.</div>
+      </div>
+    </section>
+
+    <section style="margin-top:22px">
+      <div style="display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap">
+        <div>
+          <div style="font-weight:700;color:#4a382e">Ready to shape a ritual?</div>
+          <div style="color:#7a5f4f">Start with a short note or request a detailed intake call.</div>
+        </div>
+        <div>
+          <a href="{{PRIMARY_CTA_URL}}" class="cta" style="background:var(--accent)">Request an intake</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div style="max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+      <div style="font-size:13px;color:#8a6f60">© <span id="year"></span> {{BUSINESS_NAME}} — Aromatherapy services & bespoke blends in {{CITY}}, {{STATE}}</div>
+      <div style="font-size:13px;color:#8a6f60">Contact: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    </div>
+  </footer>
+
+  <!-- Guided exercise modal -->
+  <div class="modal-backdrop" id="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-weight:700;color:#4a382e">A brief guided practice</div>
+          <div style="font-size:13px;color:#7a5f4f">A short 6-minute breathing, journaling, and intention-setting for a quiet reset.</div>
+        </div>
+        <button id="closeModal" aria-label="Close" style="background:transparent;border:0;font-weight:700;color:#8a6f60">Close</button>
+      </div>
+
+      <div class="steps" id="steps">
+        <div class="step" data-minutes="0.5">
+          <div style="font-weight:700">Ground — 30 seconds</div>
+          <div style="font-size:13px;color:#7a5f4f;margin-top:6px">Find a comfortable seated position. Sense your feet and the seat beneath you.</div>
+        </div>
+        <div class="step" data-minutes="2">
+          <div style="font-weight:700">Breathing — 2 minutes</div>
+          <div style="font-size:13px;color:#7a5f4f;margin-top:6px">Follow the on-screen cycle: inhale 4s, hold 2s, exhale 6s. A gentle rhythm to slow the nervous system.</div>
+        </div>
+        <div class="step" data-minutes="1.5">
+          <div style="font-weight:700">Journal — 90 seconds</div>
+          <div style="font-size:13px;color:#7a5f4f;margin-top:6px">Write one sentence: what would make today feel lighter? Keep it short.</div>
+        </div>
+        <div class="step" data-minutes="2">
+          <div style="font-weight:700">Set intention — 2 minutes</div>
+          <div style="font-size:13px;color:#7a5f4f;margin-top:6px">Choose a single, clear intention. Repeat it silently on the out-breath.</div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button id="startBtn" class="cta">Start practice</button>
+        <button id="pauseBtn" style="background:#fff;border:1px solid #f0d0bd;border-radius:10px;padding:8px 10px">Pause</button>
+        <div id="timer" style="margin-left:10px;color:#7a5f4f;font-weight:700">00:00</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // small helper functions
+    function $(sel, root=document) { return root.querySelector(sel); }
+    function $$(sel, root=document) { return Array.from(root.querySelectorAll(sel)); }
+
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Modal and guided practice logic
+    const modal = $('#modal');
+    const startBtn = $('#startBtn');
+    const pauseBtn = $('#pauseBtn');
+    const timerEl = $('#timer');
+    const tryNow = $('#tryNow');
+    const closeModal = $('#closeModal');
+
+    let sequence = Array.from($$('.step')).map(s=>({el:s,duration:parseFloat(s.dataset.minutes)*60, text:s.innerText.trim()}));
+    let currentIndex = 0; let remaining = 0; let running=false; let intervalId=null;
+
+    function openModal(){ modal.style.display='flex'; modal.setAttribute('aria-hidden','false'); }
+    function close(){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); stop(); }
+
+    tryNow.addEventListener('click', function(e){ e.preventDefault(); openModal(); });
+    closeModal.addEventListener('click', close);
+
+    function formatTime(s){ const mm=Math.floor(s/60); const ss=Math.floor(s%60); return String(mm).padStart(2,'0')+':'+String(ss).padStart(2,'0'); }
+
+    function start(){
+      if(running) return; running=true; if(currentIndex>=sequence.length) currentIndex=0;
+      if(remaining<=0) remaining = sequence[currentIndex].duration;
+      intervalId = setInterval(tick, 250);
+    }
+    function pause(){ running=false; if(intervalId) clearInterval(intervalId); intervalId=null; }
+    function stop(){ pause(); currentIndex=0; remaining=0; timerEl.textContent='00:00'; }
+
+    function tick(){ if(!running) return; remaining -= 0.25; if(remaining <= 0){ currentIndex++; if(currentIndex >= sequence.length){ stop(); modal.setAttribute('aria-hidden','true'); modal.style.display='none'; return; } remaining = sequence[currentIndex].duration; }
+      timerEl.textContent = formatTime(Math.max(0, Math.ceil(remaining)));
+      // simple visual cue: highlight current step
+      sequence.forEach((s,i)=> s.el.style.opacity = i===currentIndex? '1' : '0.6');
+    }
+
+    startBtn.addEventListener('click', start);
+    pauseBtn.addEventListener('click', ()=>{ if(running) pause(); else start(); });
+
+    // Blend builder logic
+    const vibes = $$('#vibeList .vibe');
+    let chosenVibe = null;
+    const buildBtn = $('#buildBtn');
+    const blendResult = $('#blendResult');
+
+    const recipes = {
+      calm: { oils:[['Lavender','3 drops'],['Sweet Orange','2 drops'],['Cedarwood','1 drop']], rationale:'A soft floral-wood balance that many find gently calming.' },
+      focus: { oils:[['Rosemary','2 drops'],['Lemon','3 drops'],['Peppermint','1 drop']], rationale:'Bright, clear top notes that may support alertness.' },
+      sleep: { oils:[['Lavender','3 drops'],['Chamomile','2 drops'],['Marjoram','1 drop']], rationale:'A warm, grounding profile often used in evening blends.' },
+      clarity: { oils:[['Bergamot','2 drops'],['Frankincense','1 drop'],['Lemon','2 drops']], rationale:'Crisp citrus with resinous depth for a focused pause.' },
+      lift: { oils:[['Grapefruit','3 drops'],['Geranium','1 drop'],['Black Spruce','1 drop']], rationale:'An uplifting bright blend with gentle grounding.' }
+    };
+
+    vibes.forEach(v=> v.addEventListener('click', ()=>{
+      vibes.forEach(b=>b.classList.remove('active'));
+      v.classList.add('active');
+      chosenVibe = v.dataset.vibe;
+      blendResult.querySelector('div').textContent = (recipes[chosenVibe] ? chosenVibe.charAt(0).toUpperCase()+chosenVibe.slice(1) : 'No selection') + ' suggestion';
+      const details = blendResult.querySelector('.details');
+      if(details) details.remove();
+      const d = document.createElement('div'); d.className='details';
+      d.style.marginTop='8px'; d.style.fontSize='13px'; d.style.color='#7a5f4f';
+      d.textContent = recipes[chosenVibe].rationale;
+      blendResult.appendChild(d);
+    }));
+
+    function safeDilution(target, sensitivity){
+      // returns dilution percentage
+      if(target==='diffuse') return {percent:null,text:'Diffusion: use 3-6 drops per 100 mL of water or per diffuser instructions.'};
+      if(target==='linen') return {percent:0.5,text:'Linen spray: 0.5%–1% in a spray base (1% ≈ 6 drops per 30 mL).'};
+      // topical
+      let pct = 2; if(sensitivity==='sensitive') pct=1; if(sensitivity==='child') pct=0.5; return {percent:pct,text: pct + '% topical dilution suggested as a starting point.'};
+    }
+
+    buildBtn.addEventListener('click', ()=>{
+      if(!chosenVibe) return alert('Please choose a vibe.');
+      const target = $('#dilutionTarget').value;
+      const sensitivity = $('#sensitivity').value;
+      const guide = safeDilution(target,sensitivity);
+
+      // build card content
+      const rec = recipes[chosenVibe];
+      let html = '<div style="font-weight:700;color:#4a382e">'+chosenVibe.charAt(0).toUpperCase()+chosenVibe.slice(1)+' — starter blend</div>';
+      html += '<div style="margin-top:8px;font-size:13px;color:#7a5f4f">Ingredients:</div><ul style="margin:6px 0 0 18px;color:#7a5f4f">';
+      rec.oils.forEach(o=> html += '<li>'+o[0]+' — '+o[1]+'</li>');
+      html += '</ul>';
+      html += '<div style="margin-top:8px;font-weight:700;color:#4a382e">Dilution guide</div>';
+      html += '<div style="font-size:13px;color:#7a5f4f;margin-top:6px">'+guide.text+'</div>';
+      html += '<div style="margin-top:8px;font-size:13px;color:#8a6f60">Notes: patch test a small area before wider topical use. Avoid if pregnant or breastfeeding unless cleared by your clinician. Some oils are not safe with pets — research each ingredient if you have animals.</div>';
+      html += '<div style="margin-top:10px"><button id="exportBtn" class="cta" style="background:#fff;color:var(--accent);border:1px solid #f0d0bd">Copy blend card</button></div>';
+
+      blendResult.innerHTML = html;
+
+      // attach copy
+      $('#exportBtn').addEventListener('click', ()=>{
+        const text = chosenVibe.toUpperCase()+" starter\n" + rec.oils.map(o=>o[0]+" — "+o[1]).join('\n') + '\n' + guide.text + '\nPatch test and follow safety notes.';
+        navigator.clipboard && navigator.clipboard.writeText(text).then(()=> alert('Blend copied to clipboard.'));
+      });
+    });
+
+    // Contact form minimal behavior
+    $('#contactForm').addEventListener('submit', function(e){ e.preventDefault(); const data = new FormData(this); const name = data.get('name'); alert('Thanks, '+name+'. We\'ll be in touch within 48 hours.'); this.reset(); });
+
+    // Accessibility: close modal on ESC
+    document.addEventListener('keydown', e=>{ if(e.key==='Escape' && modal.style.display==='flex') close(); });
+
+    // Basic focus trap for modal (lightweight)
+    modal.addEventListener('keydown', function(e){ if(e.key==='Tab'){ const focusable = modal.querySelectorAll('button,a,select,textarea,input'); if(focusable.length===0) return; const first = focusable[0]; const last = focusable[focusable.length-1]; if(e.shiftKey && document.activeElement===first){ last.focus(); e.preventDefault(); } else if(!e.shiftKey && document.activeElement===last){ first.focus(); e.preventDefault(); } } });
+
+  </script>
+</body>
+</html>

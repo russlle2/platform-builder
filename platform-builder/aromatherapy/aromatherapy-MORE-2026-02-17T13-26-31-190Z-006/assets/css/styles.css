@@ -1,0 +1,53 @@
+/* Minimal, calm styling tuned for reading and slow interaction */
+:root{
+  --bg:#fbfbf9;--panel:#fff;--muted:#6b6b6b;--accent:#7a9a6f;--accent-2:#6b8090;--radius:12px;
+  --max-width:980px;--pad:24px;--accent-contrast:#ffffff;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#222;background:var(--bg);line-height:1.45}
+.site-header{display:flex;align-items:center;justify-content:space-between;padding:18px var(--pad);background:linear-gradient(180deg,rgba(122,154,111,0.05),transparent);position:sticky;top:0;z-index:20}
+.brand .logo{font-weight:700;color:#111;text-decoration:none;font-size:1.1rem}
+.brand .tagline{margin:0;font-size:0.85rem;color:var(--muted)}
+.main-nav ul{list-style:none;margin:0;padding:0;display:flex;gap:12px}
+.main-nav a{color:#2b2b2b;text-decoration:none;font-size:0.95rem}
+.header-cta .btn{margin-left:12px}
+.btn{display:inline-block;padding:10px 16px;border-radius:8px;border:1px solid transparent;background:transparent;cursor:pointer}
+.btn.primary{background:var(--accent);color:var(--accent-contrast);border-color:var(--accent)}
+.btn.secondary{background:var(--accent-2);color:#fff}
+.btn.outline{border-color:var(--accent-2);color:var(--accent-2);background:transparent}
+.panel{max-width:var(--max-width);margin:36px auto;padding:28px;background:var(--panel);border-radius:var(--radius);box-shadow:0 6px 20px rgba(20,20,20,0.04)}
+.hero{display:flex;align-items:center;justify-content:center;padding:48px;background-image:url('/assets/img/pattern.svg');background-repeat:repeat;background-size:200px 200px}
+.hero-inner{text-align:left}
+.hero h1{margin:0 0 12px;font-size:1.8rem}
+.lead{color:var(--muted);margin:0 0 18px}
+.hero-actions{display:flex;gap:12px}
+.cards{display:flex;gap:14px;flex-wrap:wrap}
+.card{flex:1;min-width:180px;padding:14px;border-radius:10px;background:linear-gradient(180deg,rgba(122,154,111,0.05),transparent)}
+.mt-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mt-item{padding:12px;background:#f8f9f7;border-radius:8px}
+.notes{margin:0;padding-left:18px;color:var(--muted)}
+.faq dl{margin:0}
+.faq dt{font-weight:700;margin-top:12px}
+.faq dd{margin:6px 0 12px;color:var(--muted)}
+.site-footer{border-top:1px solid rgba(0,0,0,0.04);padding:18px var(--pad);margin-top:20px}
+.footer-inner{max-width:var(--max-width);margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(12,12,12,0.35);padding:24px}
+.modal[aria-hidden="false"]{display:flex}
+.modal-panel{background:var(--panel);padding:18px;border-radius:12px;max-width:680px;width:100%;box-shadow:0 18px 40px rgba(0,0,0,0.15)}
+.modal-close{position:absolute;right:24px;top:18px;background:none;border:none;font-size:20px}
+.steps{display:flex;gap:8px;margin:12px 0}
+.step{padding:8px 12px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:#fff}
+.exercise-area{min-height:140px;display:flex;align-items:center;justify-content:center}
+/* Breathing circle */
+.breathing-circle{width:160px;height:160px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600}
+/* reveal */
+.reveal-on-scroll{opacity:0;transform:translateY(20px);transition:opacity 600ms ease,transform 600ms ease}
+.reveal-on-scroll.revealed{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  .reveal-on-scroll{transition:none}
+}
+@media (max-width:720px){
+  .mt-grid{grid-template-columns:1fr}
+  .cards{flex-direction:column}
+}

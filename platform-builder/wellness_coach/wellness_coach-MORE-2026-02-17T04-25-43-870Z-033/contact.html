@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contact — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Connect with {{BUSINESS_NAME}} — focused wellness coaching, VIP Day offers, and guided micro-practices to build reliable habits.">
+  <style>
+    :root{
+      --bg:#fbfbfb;
+      --muted:#6b6b6b;
+      --brand:#1f5a4a;
+      --accent:#ff9f6b;
+      --card:#ffffff;
+      --glass:rgba(255,255,255,0.6);
+      --shadow: 0 6px 18px rgba(18, 24, 30, 0.08);
+      --radius:14px;
+      --max:1100px;
+      --pad:24px;
+      --nav-h:64px;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    html,body{height:100%;}
+    body{
+      margin:0;
+      background:linear-gradient(180deg,var(--bg),#f6fbf8 60%);
+      color:#10231b;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.45;
+    }
+    /* Pattern background using local asset */
+    .pattern-wrap{
+      background-image:url('assets/img/pattern.svg');
+      background-repeat:repeat;
+      background-size:220px;
+      position:fixed;inset:0;opacity:0.06;pointer-events:none;z-index:0;
+    }
+    header{position:sticky;top:0;z-index:30;background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,255,255,0.7));backdrop-filter:blur(6px);box-shadow:var(--shadow)}
+    .nav{max-width:var(--max);margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:var(--nav-h);padding:0 var(--pad)}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:700}
+    .brand .mark{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--brand),#2a8f6f);display:inline-block}
+    nav ul{list-style:none;margin:0;padding:0;display:flex;gap:18px;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;font-weight:600;font-size:15px}
+    nav a.active{color:var(--brand)}
+    .cta-btn{background:var(--brand);color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+
+    main{max-width:var(--max);margin:32px auto;padding:0 var(--pad);position:relative;z-index:5}
+    /* Split diagonal hero */
+    .hero{display:grid;grid-template-columns:1fr 480px;gap:32px;align-items:center;padding:36px;border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,0.9),#fff);box-shadow:var(--shadow);overflow:hidden}
+    .hero-left{padding:18px}
+    h1{margin:0 0 12px 0;font-size:28px}
+    p.lead{margin:0;color:var(--muted)}
+    .hero-card{background:linear-gradient(180deg,#fff, var(--glass));padding:18px;border-radius:12px;box-shadow:0 8px 20px rgba(16,35,27,0.06);}
+    .diag{position:relative;height:100%;}
+    .diag::before{content:"";position:absolute;inset:auto 0 0 -40px;transform:skewX(-12deg);height:120%;width:120%;background:linear-gradient(135deg,#e9fff5,rgba(255,255,255,0));z-index:0}
+    .hero-right{position:relative;padding:18px;z-index:2}
+
+    /* gallery */
+    .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:28px}
+    .card{background:var(--card);padding:14px;border-radius:12px;box-shadow:var(--shadow);border:1px solid rgba(0,0,0,0.03)}
+    .card h4{margin:0 0 8px 0;font-size:15px}
+    .card p{margin:0;color:var(--muted);font-size:14px}
+
+    /* contact form */
+    .split{display:grid;grid-template-columns:1fr 420px;gap:20px;margin-top:28px}
+    form{background:linear-gradient(180deg,#fff,#fcfffb);padding:18px;border-radius:12px;box-shadow:var(--shadow)}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input[type=text],input[type=email],select,textarea{width:100%;padding:12px;border-radius:10px;border:1px solid #e7eee9;font-size:14px;background:transparent}
+    textarea{min-height:140px;resize:vertical}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .meta{font-size:13px;color:var(--muted);margin-top:10px}
+    .send{display:inline-block;background:var(--brand);color:#fff;padding:12px 16px;border-radius:10px;border:none;font-weight:700;margin-top:12px}
+
+    /* expectation and objections */
+    .aside{background:linear-gradient(180deg,#fff,#fbfffb);padding:18px;border-radius:12px;box-shadow:var(--shadow)}
+    .aside h3{margin-top:0}
+
+    /* Try-it modal */
+    .overlay{position:fixed;inset:0;background:rgba(7,13,10,0.55);display:none;align-items:center;justify-content:center;padding:22px;z-index:60}
+    .overlay.open{display:flex}
+    .modal{background:#fff;border-radius:14px;max-width:720px;width:100%;box-shadow:0 20px 50px rgba(11,18,15,0.6);display:grid;grid-template-columns:1fr 320px;overflow:hidden}
+    .modal .left{padding:20px}
+    .modal .right{background:linear-gradient(180deg,#f7fff8,#ffffff);padding:20px;border-left:1px solid rgba(0,0,0,0.04)}
+    .tabs{display:flex;gap:8px;margin-bottom:10px}
+    .tabs button{background:transparent;border:1px solid rgba(0,0,0,0.06);padding:8px 10px;border-radius:8px;font-weight:700}
+    .tabs button.active{background:var(--brand);color:#fff;border-color:transparent}
+    .exercise{min-height:220px;display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center}
+    .breath-circle{width:180px;height:180px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 30% 30%,#fff,#f0fff7);box-shadow:0 8px 30px rgba(31,90,74,0.08)}
+    .timer{font-weight:800;color:var(--brand);font-size:28px}
+    .prompt{font-size:15px;color:var(--muted);text-align:center;padding:0 10px}
+    .small{font-size:13px;color:var(--muted)}
+
+    footer{max-width:var(--max);margin:44px auto;padding:0 var(--pad);color:var(--muted);font-size:13px}
+
+    /* reveal animation */
+    .reveal-on-scroll{opacity:0;transform:translateY(12px);transition:opacity 520ms cubic-bezier(.2,.8,.2,1),transform 520ms cubic-bezier(.2,.8,.2,1)}
+    .reveal-on-scroll.revealed{opacity:1;transform:none}
+    /* reduced motion */
+    @media (prefers-reduced-motion:reduce){
+      .reveal-on-scroll{transition:none;opacity:1;transform:none}
+    }
+
+    @media (max-width:960px){
+      .hero{grid-template-columns:1fr;}
+      .split{grid-template-columns:1fr}
+      .modal{grid-template-columns:1fr}
+      .gallery{grid-template-columns:repeat(2,1fr)}
+    }
+    @media (max-width:520px){
+      .gallery{grid-template-columns:1fr}
+      nav ul{display:none}
+    }
+  </style>
+</head>
+<body>
+  <div class="pattern-wrap" aria-hidden="true"></div>
+  <header>
+    <div class="nav">
+      <div class="brand"><span class="mark" aria-hidden="true"></span><div>{{BUSINESS_NAME}}</div></div>
+      <nav aria-label="Primary navigation">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">Who I Serve</a></li>
+          <li><a href="services.html">Offerings</a></li>
+          <li><a href="programs.html">Journeys</a></li>
+          <li><a href="pricing.html">Invest</a></li>
+          <li><a href="testimonials.html">Voices</a></li>
+          <li><a href="book.html">Reserve</a></li>
+          <li><a class="active" href="contact.html">Connect</a></li>
+        </ul>
+      </nav>
+      <div style="display:flex;gap:12px;align-items:center">
+        <a class="cta-btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </div>
+  </header>
+  <main>
+    <section class="hero reveal-on-scroll">
+      <div class="hero-left">
+        <div class="hero-card">
+          <h1>Reach out and start the day reimagined</h1>
+          <p class="lead">I build habit-first frameworks that turn intentions into reliable rhythms. Book a focused VIP Day or ask about tailored journeys to set a steady baseline for energy, focus, and momentum.</p>
+          <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">
+            <button class="send" id="openBook">Reserve a VIP Day</button>
+            <button class="send" id="openTry" style="background:#fff;color:var(--brand);border:1px solid rgba(31,90,74,0.08)">Try a guided exercise</button>
+          </div>
+          <p class="meta">Prefer a quick note? Call <strong>{{PHONE}}</strong> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="diag" style="padding:18px;border-radius:12px;height:100%">
+          <h3 style="margin-top:0">Connect details</h3>
+          <p style="color:var(--muted)">Clinic-style intensity built for real life. Whether you want a single intensive day or a short sequence of sessions, we design tools that become your day-to-day supports.</p>
+          <ul style="margin-top:10px;color:var(--muted);padding-left:18px">
+            <li>VIP Day: concentrated strategy + practice</li>
+            <li>Follow-up plan: simple, measurable habits</li>
+            <li>Tools for energy and daily momentum</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="gallery reveal-on-scroll" aria-label="snapshots">
+      <div class="card"><h4>Quick win session</h4><p>30-minute tactical call to implement one habit this week.</p></div>
+      <div class="card"><h4>VIP Day</h4><p>A day focused on practice, templates, and a take-away playbook you can use immediately.</p></div>
+      <div class="card"><h4>Short series</h4><p>Three focused sessions to reset a daily loop and test simple shifts.</p></div>
+    </section>
+
+    <section class="split" style="margin-top:28px">
+      <form class="reveal-on-scroll" id="contactForm" aria-labelledby="contactTitle">
+        <h3 id="contactTitle">Send a note</h3>
+        <p class="small">Tell us what you'd like to focus on. We'll reply with availability and a short plan for next steps.</p>
+        <div style="height:12px"></div>
+        <div class="form-row">
+          <div>
+            <label for="name">Name</label>
+            <input id="name" name="name" type="text" placeholder="Your name">
+          </div>
+          <div>
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="you@example.com">
+          </div>
+        </div>
+        <div style="height:12px"></div>
+        <label for="phone">Phone</label>
+        <input id="phone" name="phone" type="text" placeholder="{{PHONE}}">
+        <div style="height:12px"></div>
+        <label for="interest">Interested in</label>
+        <select id="interest" name="interest">
+          <option>VIP Day</option>
+          <option>Mini Series</option>
+          <option>Quick Win Call</option>
+          <option>Custom program</option>
+        </select>
+        <div style="height:12px"></div>
+        <label for="message">Message</label>
+        <textarea id="message" name="message" placeholder="Tell me briefly what matters now..."></textarea>
+        <button type="submit" class="send">Send message</button>
+        <p class="meta">By contacting you agree to be contacted by {{BUSINESS_NAME}}. We do not provide medical advice; our work focuses on sustainable habits and frameworks.</p>
+      </form>
+
+      <aside class="aside reveal-on-scroll">
+        <h3>What to expect</h3>
+        <p class="small">A short reply with next steps, session options, and a space to choose time. If you booked a VIP Day, you'll get a pre-work checklist and a clear morning and evening framework to try.</p>
+        <div style="height:12px"></div>
+        <h4 style="margin-bottom:6px">Common questions</h4>
+        <details style="margin-bottom:8px"><summary>How long is a VIP Day?</summary><div style="padding-top:8px;color:var(--muted)">Typically a 6-hour focused session with prep and a takeaway plan to test for 2 weeks.</div></details>
+        <details style="margin-bottom:8px"><summary>What if I can't commit to a day?</summary><div style="padding-top:8px;color:var(--muted)">We also offer short intensives and 1:1 sessions that fit smaller calendars.</div></details>
+        <details><summary>Do you take remote clients?</summary><div style="padding-top:8px;color:var(--muted)">Yes — most work is remote, with materials and short practice templates delivered for immediate use.</div></details>
+      </aside>
+    </section>
+
+    <section style="margin-top:28px" class="reveal-on-scroll">
+      <div class="hero-card">
+        <h3>Still unsure?</h3>
+        <p class="small">Try a brief guided exercise here — no sign-up needed. It’s a simple way to notice a small shift and see how focused moments can be repeated across a day.</p>
+        <div style="margin-top:12px">
+          <button class="send" id="openTry2">Open guided exercise</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document">
+      <div class="left">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div style="font-weight:800">Guided practice</div>
+          <button id="closeModal" aria-label="Close" style="background:transparent;border:none;font-weight:700;color:var(--muted)">✕</button>
+        </div>
+        <div class="tabs" role="tablist">
+          <button role="tab" class="tab-btn active" data-tab="breath">Breathing</button>
+          <button role="tab" class="tab-btn" data-tab="journal">Journaling</button>
+          <button role="tab" class="tab-btn" data-tab="intention">Set an intention</button>
+        </div>
+        <div id="breath" class="exercise" data-active="true">
+          <div class="breath-circle" aria-hidden="true"><div class="timer" id="breathTimer">3</div></div>
+          <div class="prompt" id="breathPrompt">Follow the circle and breathe with the timer. Inhale for 4 — hold 2 — exhale 6. Repeat for the set.</div>
+          <div style="display:flex;gap:8px"><button id="startBreath" class="send">Start</button><button id="stopBreath" class="send" style="background:#fff;color:var(--brand);border:1px solid rgba(31,90,74,0.08)">Stop</button></div>
+        </div>
+        <div id="journal" class="exercise" data-active="false" hidden>
+          <div class="prompt">Write for 3 minutes without editing. Focus on what matters this week, then pick one small next action.</div>
+          <textarea id="journalText" placeholder="Start writing..." style="width:100%;min-height:100px;border-radius:8px;padding:10px;border:1px solid #e6efe9"></textarea>
+          <div style="display:flex;gap:8px;align-items:center"><button id="startJournal" class="send">Start 3-min timer</button><div id="journalTimer" class="small" style="margin-left:auto">Ready</div></div>
+        </div>
+        <div id="intention" class="exercise" data-active="false" hidden>
+          <div class="prompt">Choose a concise intention. It should be specific, brief, and repeatable. Example: "Move with purpose for 10 minutes after lunch."</div>
+          <input id="intentionInput" placeholder="My short intention" style="width:100%;padding:10px;border-radius:8px;border:1px solid #e6efe9">
+          <div style="display:flex;gap:8px"><button id="saveIntent" class="send">Save intention</button><button id="copyIntent" class="send" style="background:#fff;color:var(--brand);border:1px solid rgba(31,90,74,0.08)">Copy</button></div>
+          <div id="intentStatus" class="small" style="margin-top:8px;color:var(--muted)"></div>
+        </div>
+      </div>
+      <div class="right">
+        <h4 style="margin-top:0">How this helps</h4>
+        <p class="small">Short, repeatable practices make building momentum practical. Use the breathing pattern to reset, journaling to clarify next steps, and intentions to anchor a single action.</p>
+        <div style="height:12px"></div>
+        <h4 style="margin-bottom:6px">Tips</h4>
+        <ul style="color:var(--muted);padding-left:18px">
+          <li>Start small — success compounds.</li>
+          <li>Note one quick change and test it for two days.</li>
+          <li>Sync intention to an existing habit (after coffee, after lunch).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;align-items:center;max-width:var(--max);margin:0 auto;padding:0 var(--pad)">
+      <div>{{BUSINESS_NAME}} • {{CITY}}, {{STATE}}</div>
+      <div>Contact: <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </div>
+  </footer>
+
+  <script>
+  // Scroll-triggered reveal with prefers-reduced-motion support
+  (function(){
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const items = document.querySelectorAll('.reveal-on-scroll');
+    if(prefersReduced){
+      items.forEach(el=>el.classList.add('revealed'));
+      return;
+    }
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          entry.target.classList.add('revealed');
+          io.unobserve(entry.target);
+        }
+      });
+    },{threshold:0.12});
+    items.forEach(el=>io.observe(el));
+  })();
+
+  // Modal + guided practice logic
+  (function(){
+    const overlay = document.getElementById('overlay');
+    const openTry = document.getElementById('openTry');
+    const openTry2 = document.getElementById('openTry2');
+    const closeModal = document.getElementById('closeModal');
+    const openBook = document.getElementById('openBook');
+
+    function open(){
+      overlay.classList.add('open');
+      overlay.setAttribute('aria-hidden','false');
+    }
+    function close(){
+      overlay.classList.remove('open');
+      overlay.setAttribute('aria-hidden','true');
+      stopBreathing();stopJournal();
+    }
+    openTry.addEventListener('click',open);
+    openTry2.addEventListener('click',open);
+    closeModal.addEventListener('click',close);
+    overlay.addEventListener('click',(e)=>{if(e.target===overlay) close();});
+
+    // Tabs
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    tabBtns.forEach(btn=>btn.addEventListener('click',()=>{
+      tabBtns.forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const tab = btn.dataset.tab;
+      ['breath','journal','intention'].forEach(id=>{
+        const el = document.getElementById(id);
+        if(id===tab){el.hidden=false;el.dataset.active='true'}else{el.hidden=true;el.dataset.active='false'}
+      });
+    }));
+
+    // Breathing exercise
+    let breathInterval=null;let breathPhase=0;let breathTotal=0;let breathSeq=[];
+    const breathTimer = document.getElementById('breathTimer');
+    const startBreath = document.getElementById('startBreath');
+    const stopBreathBtn = document.getElementById('stopBreath');
+    const breathPrompt = document.getElementById('breathPrompt');
+
+    function startBreathing(){
+      // pattern: inhale 4, hold 2, exhale 6 (adjustable) -> total 12s cycles, repeat 3 cycles
+      breathSeq = [{label:'Inhale',secs:4},{label:'Hold',secs:2},{label:'Exhale',secs:6}];
+      breathPhase=0; breathTotal=breathSeq[0].secs;
+      let phaseSec = breathSeq[0].secs;
+      breathTimer.textContent = phaseSec;
+      breathPrompt.textContent = breathSeq[0].label + ' — ' + phaseSec + 's';
+      breathInterval = setInterval(()=>{
+        phaseSec--;
+        breathTimer.textContent = Math.max(0,phaseSec);
+        if(phaseSec<=0){
+          breathPhase = (breathPhase+1)%breathSeq.length;
+          phaseSec = breathSeq[breathPhase].secs;
+          breathPrompt.textContent = breathSeq[breathPhase].label + ' — ' + phaseSec + 's';
+          breathTimer.textContent = phaseSec;
+        }
+      },1000);
+    }
+    function stopBreathing(){
+      if(breathInterval){clearInterval(breathInterval);breathInterval=null;breathTimer.textContent='—';breathPrompt.textContent='Breathing stopped.'}
+    }
+    startBreath.addEventListener('click',startBreathing);
+    stopBreathBtn.addEventListener('click',stopBreathing);
+
+    // Journaling timer
+    let journalTimerRef=null;let journalSeconds=0;
+    const startJournal = document.getElementById('startJournal');
+    const journalTimer = document.getElementById('journalTimer');
+    const journalText = document.getElementById('journalText');
+    function startJournalTimer(){
+      if(journalTimerRef) return;
+      journalSeconds = 180; // 3 minutes
+      journalTimer.textContent = formatTime(journalSeconds);
+      journalText.focus();
+      journalTimerRef = setInterval(()=>{
+        journalSeconds--;
+        journalTimer.textContent = formatTime(journalSeconds);
+        if(journalSeconds<=0){stopJournal();journalTimer.textContent='Done';}
+      },1000);
+    }
+    function stopJournal(){
+      if(journalTimerRef){clearInterval(journalTimerRef);journalTimerRef=null;}
+    }
+    function formatTime(s){const m=Math.floor(s/60);const sec=s%60;return m+':'+String(sec).padStart(2,'0')}
+    startJournal.addEventListener('click',startJournalTimer);
+
+    // Intention save/copy
+    const saveIntent = document.getElementById('saveIntent');
+    const copyIntent = document.getElementById('copyIntent');
+    const intentionInput = document.getElementById('intentionInput');
+    const intentStatus = document.getElementById('intentStatus');
+    saveIntent.addEventListener('click',()=>{
+      const v = intentionInput.value.trim();
+      if(!v){intentStatus.textContent='Please enter a short intention first.';return}
+      intentStatus.textContent='Saved locally for this session.';
+      try{sessionStorage.setItem('wc_intent',v);}catch(e){}
+    });
+    copyIntent.addEventListener('click',()=>{
+      const v = intentionInput.value.trim();
+      if(!v){intentStatus.textContent='Enter something to copy.';return}
+      navigator.clipboard?.writeText(v).then(()=>{intentStatus.textContent='Copied to clipboard.'},()=>{intentStatus.textContent='Could not copy.'});
+    });
+
+    // Load saved intention
+    try{const saved=sessionStorage.getItem('wc_intent'); if(saved) intentionInput.value=saved}catch(e){}
+
+    // Book button leads to book page
+    openBook.addEventListener('click',()=>{window.location.href='book.html'});
+
+    // Stop timers on close
+    window.addEventListener('beforeunload',()=>{stopBreathing();stopJournal();});
+
+    // Contact form simple UX
+    const contactForm=document.getElementById('contactForm');
+    contactForm.addEventListener('submit',function(e){
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      if(!name || !email){alert('Please include your name and email.');return}
+      // simulated send
+      alert('Thanks — we will follow up soon.');
+      contactForm.reset();
+    });
+  })();
+  </script>
+</body>
+</html>

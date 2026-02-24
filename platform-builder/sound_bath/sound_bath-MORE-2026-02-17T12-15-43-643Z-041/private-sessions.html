@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Privates — {{BUSINESS_NAME}}</title>
+  <meta name='description' content='Private and tailored sound sessions. Session planner to build your personalized session.'>
+  <style>
+    :root{--bg:#071018;--muted:#9fb0bf;--accent:#bfa678}
+    *{box-sizing:border-box;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto}
+    body{margin:0;background:linear-gradient(180deg,#071018,#08131a);color:#eaf2f8}
+    .wrap{max-width:960px;margin:26px auto;padding:22px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,#bfa678,#7a5d3f);display:grid;place-items:center;font-weight:800}
+    nav a{color:var(--muted);margin-left:12px;text-decoration:none}
+    h1{margin:18px 0 8px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .card{background:rgba(255,255,255,0.02);padding:18px;border-radius:12px}
+
+    /* session planner */
+    .planner .row{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+    label{width:130px;color:var(--muted)}
+    select,input[type='text']{flex:1;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:#041319;color:#eaf2f8}
+    .intentions{display:flex;gap:6px;flex-wrap:wrap}
+    .chip{padding:8px 10px;border-radius:999px;background:rgba(255,255,255,0.02);cursor:pointer}
+    .chip.active{background:linear-gradient(90deg,var(--accent),#a78b5e);color:#07202a}
+    .summary{white-space:pre-wrap;background:#031419;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.02);height:160px;overflow:auto}
+    .actions{display:flex;gap:8px;margin-top:8px}
+    .btn{background:var(--accent);padding:10px 12px;border-radius:8px;color:#07202a;text-decoration:none;font-weight:700}
+    .muted{color:var(--muted);font-size:13px}
+
+    .disclaimer{margin-top:12px;padding:10px;border-left:3px solid #c45d5d;background:rgba(196,93,93,0.03);color:#ffdede;border-radius:6px}
+
+    @media(max-width:900px){.grid{grid-template-columns:1fr}} 
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <header>
+      <div style='display:flex;gap:12px;align-items:center'>
+        <div class='logo'>PS</div>
+        <div>
+          <div style='font-weight:800'>Private Sessions</div>
+          <div style='color:var(--muted);font-size:13px'>Book a focused, one-on-one sound session</div>
+        </div>
+      </div>
+      <nav>
+        <a href='index.html'>Home</a>
+        <a href='events.html'>Gatherings</a>
+        <a href='private-sessions.html' style='color:var(--muted);margin-left:12px'>Privates</a>
+        <a href='pricing.html' style='margin-left:12px'>Rates</a>
+      </nav>
+    </header>
+
+    <main style='margin-top:16px'>
+      <h1>Design your private sound session</h1>
+      <p class='muted'>Use the planner to shape a session that matches your rhythm. Export a plain-text summary to paste into an email or your calendar.</p>
+
+      <div class='grid'>
+        <section class='card planner'>
+          <div class='row'>
+            <label>Session length</label>
+            <select id='length'>
+              <option value='30'>30 minutes</option>
+              <option value='60' selected>60 minutes</option>
+              <option value='90'>90 minutes</option>
+            </select>
+          </div>
+
+          <div class='row'>
+            <label>Setting</label>
+            <select id='setting'>
+              <option value='in_person' selected>In-person (studio)</option>
+              <option value='home'>On-site (home visit)</option>
+              <option value='remote'>Remote — guided from afar</option>
+            </select>
+          </div>
+
+          <div class='row' style='align-items:flex-start'>
+            <label>Primary focus</label>
+            <div style='flex:1'>
+              <div class='intentions' id='intentions'>
+                <div class='chip' data-key='sleep'>Better sleep</div>
+                <div class='chip' data-key='stress'>Release stress</div>
+                <div class='chip' data-key='clarity'>Mental clarity</div>
+                <div class='chip' data-key='body'>Body tension</div>
+                <div class='chip' data-key='creative'>Creative opening</div>
+              </div>
+            </div>
+          </div>
+
+          <div class='row'>
+            <label>Ambiance</label>
+            <select id='ambiance'>
+              <option value='minimal'>Minimal — dry room</option>
+              <option value='reverb' selected>Rich — soft reverb</option>
+              <option value='guided'>Narration led</option>
+            </select>
+          </div>
+
+          <div class='row'>
+            <label>Add-ons</label>
+            <div style='flex:1'>
+              <label style='display:flex;gap:8px;align-items:center'><input type='checkbox' id='addonPillow'> Cushion + support</label>
+              <label style='display:flex;gap:8px;align-items:center'><input type='checkbox' id='addonCrystals'> Warm stones / crystals</label>
+            </div>
+          </div>
+
+          <div style='margin-top:10px'>
+            <div style='font-size:13px;color:var(--muted)'>Brief note for the practitioner (optional)</div>
+            <input type='text' id='note' placeholder='Anything we should know?' />
+          </div>
+
+          <div class='actions'>
+            <button class='btn' id='buildPlan'>Build my plan</button>
+            <button id='copyPlan' class='icon' style='padding:10px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.03);color:var(--muted)'>Copy text</button>
+            <a href='book.html' class='btn' style='background:#8f7a5a;margin-left:auto'>Request session</a>
+          </div>
+
+        </section>
+
+        <aside class='card'>
+          <h3 style='margin-top:0'>Your session outline</h3>
+          <div id='summary' class='summary'>No plan yet — press "Build my plan" to create a tailored outline.</div>
+
+          <div class='disclaimer' style='margin-top:12px'>
+            <strong>Contraindications:</strong> Private sessions involve vibrations and low-frequency sound. If you are pregnant, have a pacemaker, recent head trauma, or diagnosed epilepsy, please consult your clinician and contact us before booking.
+          </div>
+
+          <div style='margin-top:12px;color:var(--muted);font-size:13px'>Need a custom duration or group private? Email <a href='mailto:{{EMAIL}}' style='color:var(--accent)'>{{EMAIL}}</a> or call <a href='tel:{{PHONE}}' style='color:var(--accent)'>{{PHONE}}</a>.</div>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // session planner logic
+    const chips = document.querySelectorAll('.chip');
+    const selected = new Set();
+    chips.forEach(c=>{
+      c.addEventListener('click',()=>{
+        const k = c.dataset.key;
+        if(selected.has(k)){ selected.delete(k); c.classList.remove('active'); }
+        else { selected.add(k); c.classList.add('active'); }
+      });
+    });
+
+    function buildOutline(){
+      const length = document.getElementById('length').value;
+      const setting = document.getElementById('setting').value;
+      const ambiance = document.getElementById('ambiance').value;
+      const note = document.getElementById('note').value || '—';
+      const addons = [];
+      if(document.getElementById('addonPillow').checked) addons.push('Support cushion');
+      if(document.getElementById('addonCrystals').checked) addons.push('Warm stones / crystals');
+      const intents = Array.from(selected);
+
+      let text = '';
+      text += 'Private sound session — '+length+' minutes\n';
+      text += 'Setting: '+(setting==='in_person'?'Studio in person': setting==='home'?'On-site home visit':'Remote guidance')+'\n';
+      text += 'Ambiance: '+(ambiance==='minimal'?'Minimal':'Rich reverb / warm pads')+'\n';
+      text += 'Primary focus: '+(intents.length?intents.map(s=>s.charAt(0).toUpperCase()+s.slice(1)).join(', '):'General calm')+'\n';
+      text += 'Add-ons: '+(addons.length?addons.join(', '):'None')+'\n';
+      text += 'Note: '+note+'\n\n';
+      text += 'Outline:\n';
+      text += '- Arrival and settling (5–10 min)\n';
+      text += '- Gentle tuning and breathable cues (5–10 min)\n';
+      text += '- Layered sound immersion (remaining time)\n';
+      text += '- Soft re-entry and time for questions\n\n';
+      text += 'Contact: '+{{EMAIL}}+' or '+{{PHONE}}+' to confirm scheduling.';
+
+      return text;
+    }
+
+    const summaryEl = document.getElementById('summary');
+    document.getElementById('buildPlan').addEventListener('click',()=>{
+      const t = buildOutline();
+      summaryEl.textContent = t;
+    });
+
+    document.getElementById('copyPlan').addEventListener('click',()=>{
+      const t = summaryEl.textContent;
+      if(!t || t.includes('No plan')){ alert('Build a plan first.'); return; }
+      navigator.clipboard && navigator.clipboard.writeText(t).then(()=>{ alert('Plan copied.'); },()=>{ alert('Copy not available.'); });
+    });
+  </script>
+</body>
+</html>

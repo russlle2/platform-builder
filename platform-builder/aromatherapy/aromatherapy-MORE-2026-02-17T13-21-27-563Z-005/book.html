@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve a Session | {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff7f1;--accent:#8a4b2f;--muted:#6b5347}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto; background:linear-gradient(180deg,var(--bg),#fff);color:#3d2b27}
+    header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid rgba(61,43,34,0.04)}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    main{max-width:940px;margin:28px auto;padding:18px}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:20px}
+    .panel{background:#fff;padding:18px;border-radius:12px;border:1px solid rgba(61,43,34,0.04)}
+    h1{color:var(--accent);margin:0}
+    label{display:block;margin-top:10px;color:#5d4738}
+    input,select,textarea{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(61,43,34,0.06);margin-top:6px}
+    button.primary{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;border:0;font-weight:800;margin-top:12px}
+    .planner{margin-top:12px;padding:12px;background:linear-gradient(180deg,#fff,#fff6f3);border-radius:10px}
+    .summary{background:#fff;padding:10px;border-radius:8px;margin-top:10px;border-left:4px solid #d9a58e}
+    .copy{margin-top:8px;padding:8px;border-radius:8px;background:#fff;border:1px solid rgba(61,43,34,0.06)}
+    .pattern{position:fixed;right:0;bottom:0;opacity:0.06;width:360px;height:360px;background-image:url('assets/img/pattern.svg');background-repeat:no-repeat;background-size:contain}
+    @media(max-width:880px){.grid{grid-template-columns:1fr}.pattern{display:none}}
+  </style>
+</head>
+<body>
+  <div class="pattern" aria-hidden="true"></div>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center"><div style="width:44px;height:44px;border-radius:9px;background:linear-gradient(135deg,#8a4b2f,#b26a4b);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800">A</div><div><strong>{{BUSINESS_NAME}}</strong><div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div></div></div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Elixirs</a>
+      <a href="shop.html">Boutique</a>
+      <a href="pricing.html">Invest</a>
+      <a href="about.html">Origin</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="grid">
+      <div>
+        <div class="panel">
+          <h1>Reserve a session</h1>
+          <p style="color:#6b5347">Use this form to request a spot. After submission you will receive next steps to confirm time and prepare.</p>
+
+          <form id="bookingForm">
+            <label for="name">Full name</label>
+            <input id="name" required>
+            <label for="email">Email</label>
+            <input id="email" type="email" required>
+            <label for="phone">Phone</label>
+            <input id="phone" type="tel">
+            <label for="service">Preferred offering</label>
+            <select id="service">
+              <option value="single">Single Aromatic Consultation</option>
+              <option value="path">Essence Path — 3 sessions</option>
+              <option value="intensive">Intensive Deep-Craft</option>
+            </select>
+            <label for="when">Preferred days / times</label>
+            <input id="when" placeholder="e.g., weekday mornings or evenings">
+
+            <div style="margin-top:10px">Ready to book?</div>
+            <button class="primary" type="submit">Request this slot</button>
+          </form>
+
+          <div style="font-size:13px;color:#6b5347;margin-top:12px">A quick reply will include questionnaire and guidance for a safe, tailored session. Payment details are shared after confirmation.</div>
+        </div>
+
+        <div class="panel" style="margin-top:18px">
+          <h3 style="margin:0;color:var(--accent)">Session Planner</h3>
+          <p style="color:#6b5347;margin-top:8px">Build a short plan to make the session actionable. Export a plaintext summary to paste into notes or emails.</p>
+
+          <div class="planner">
+            <label for="goal">Primary goal</label>
+            <select id="goal">
+              <option value="sleep">Support sleep routine</option>
+              <option value="focus">Support focus</option>
+              <option value="calm">Reduce daily tension</option>
+              <option value="ritual">Create a simple ritual</option>
+            </select>
+            <label for="length">Session length (minutes)</label>
+            <input id="length" type="number" value="60" min="20" max="180">
+            <label for="method">Preferred method</label>
+            <select id="method">
+              <option value="topical">Topical (with dilution)</option>
+              <option value="diffuse">Diffusion guided</option>
+              <option value="inhaler">Personal inhaler</option>
+              <option value="education">Blend education & notes</option>
+            </select>
+            <label for="frequency">Follow-up rhythm</label>
+            <select id="frequency">
+              <option value="one">One-off</option>
+              <option value="weekly">Weekly for 3 sessions</option>
+              <option value="monthly">Monthly check-ins</option>
+            </select>
+            <button id="planBtn">Create plan</button>
+            <div id="planSummary" class="summary" style="display:none" aria-live="polite"></div>
+            <button id="copyPlan" class="copy" style="display:none">Copy plan text</button>
+          </div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="panel">
+          <h3 style="margin:0;color:var(--accent)">Preparation notes</h3>
+          <p style="color:#6b5347">Before your session: avoid heavy fragrances on the day, list medications or skin sensitivities, and note any pets or pregnancy. We'll cover patch testing and dilution standards during the appointment.</p>
+
+          <h4 style="margin-top:12px;color:var(--accent)">Need immediate assistance?</h4>
+          <div style="color:#6b5347">Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+
+          <a href="{{PRIMARY_CTA_URL}}" style="display:inline-block;margin-top:12px;background:var(--accent);color:#fff;padding:10px 12px;border-radius:8px;text-decoration:none;font-weight:700">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+
+        <div class="panel" style="margin-top:14px">
+          <h4 style="margin:0;color:var(--accent)">Short policy</h4>
+          <p style="color:#6b5347">Cancellations within 48 hours may be subject to a fee. Sessions are supportive and not a substitute for medical care.</p>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer style="max-width:940px;margin:28px auto;padding:16px;color:#6e5750;border-top:1px solid rgba(61,43,34,0.04)">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>{{BUSINESS_NAME}} — {{CITY}}, {{STATE}}</div>
+      <div style="font-size:13px">&copy; <span id="y"></span></div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('y').textContent=new Date().getFullYear();
+
+    // Booking form mock
+    document.getElementById('bookingForm').addEventListener('submit',function(e){
+      e.preventDefault();
+      alert('Request sent. You will receive next steps by email.');
+      // In a real site, submit to server; here we just simulate.
+    });
+
+    // Session Planner
+    document.getElementById('planBtn').addEventListener('click',function(){
+      const goal = document.getElementById('goal').value;
+      const length = document.getElementById('length').value;
+      const method = document.getElementById('method').value;
+      const freq = document.getElementById('frequency').value;
+
+      const text = 'Session Planner Summary:\n' +
+        '- Goal: ' + goal + '\n' +
+        '- Length: ' + length + ' minutes\n' +
+        '- Method: ' + method + '\n' +
+        '- Follow-up rhythm: ' + freq + '\n\n' +
+        'Suggested focuses to bring to the session:\n' +
+        '1. Recent routines or triggers\n' +
+        '2. Any skin sensitivities or pets in the home\n' +
+        '3. What success looks like after 2–3 weeks\n\n' +
+        'Safety reminders: patch test topical blends; disclose pregnancy or medications. This plan is supportive and non-medical.';
+
+      const out = document.getElementById('planSummary'); out.style.display='block'; out.textContent=text;
+      const cbtn = document.getElementById('copyPlan'); cbtn.style.display='inline-block'; cbtn.onclick=()=>{
+        navigator.clipboard.writeText(text).then(()=>{cbtn.textContent='Copied'}).catch(()=>{cbtn.textContent='Copy failed'})
+      };
+    });
+  </script>
+</body>
+</html>

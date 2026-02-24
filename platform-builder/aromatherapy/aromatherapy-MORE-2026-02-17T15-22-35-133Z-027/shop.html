@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{BUSINESS_NAME}} — Shop</title>
+  <style>
+    :root{--bg:#fff9f4;--accent:#5f8a72;--muted:#6b635b}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;background:var(--bg);color:var(--muted)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid rgba(90,80,70,0.06)}
+    nav a{margin:0 10px;text-decoration:none;color:var(--muted);font-weight:600}
+    main{max-width:1100px;margin:28px auto;padding:0 20px}
+
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .products{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .product{background:white;padding:14px;border-radius:12px;border:1px solid rgba(90,80,70,0.04)}
+    .product h4{margin:0}
+    .product .meta{font-size:13px;color:#7e776f;margin-top:8px}
+    .buy{margin-top:12px}
+
+    .sidebar{padding:12px;border-radius:12px;background:linear-gradient(180deg,#fff,#fffbf8);border:1px solid rgba(90,80,70,0.04)}
+
+    .comparator{display:flex;align-items:center;gap:12px;margin-top:8px}
+    .switch{width:46px;height:26px;background:white;border-radius:20px;position:relative}
+    .knob{width:20px;height:20px;background:var(--accent);border-radius:50%;position:absolute;top:3px;left:3px;transition:transform 300ms}
+    .switch.on .knob{transform:translateX(20px)}
+
+    .testimonials{margin-top:20px}
+    .testimony{padding:12px;border-radius:10px;background:white;border:1px solid rgba(90,80,70,0.04)}
+
+    footer{margin-top:40px;text-align:center;color:#7b7268}
+
+    @media(max-width:900px){.grid{grid-template-columns:1fr}.products{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#c0845a);display:flex;align-items:center;justify-content:center;color:white;font-weight:800">S</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Welcome</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Shop</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="grid">
+      <section>
+        <h2>Available now</h2>
+        <p style="color:#6e665e">Small-batch, safety-noted bottles and inhalers. Choose single purchases or a packaged set for gifting or regular top-ups.</p>
+
+        <div style="margin-top:12px" class="comparator">
+          <div style="font-weight:700">View</div>
+          <div style="background:#f0e9e2;padding:6px;border-radius:20px;display:flex;align-items:center;width:140px">
+            <div style="font-size:13px">Single</div>
+            <div class="switch" id="shopToggle" role="button" tabindex="0"><div class="knob"></div></div>
+            <div style="font-size:13px">Pack</div>
+          </div>
+        </div>
+
+        <div class="products" id="products">
+          <div class="product">
+            <h4>Morning Lift — 10 ml</h4>
+            <div class="meta">Notes: bergamot, orange. Suggested: diffuser or inhaler. Patch-test recommended.</div>
+            <div style="margin-top:10px;font-weight:800" data-single="18" data-pack="45">$18</div>
+            <div class="buy"><button data-name="Morning Lift 10ml" data-single="18" data-pack="45" class="add">Add to cart</button></div>
+          </div>
+
+          <div class="product">
+            <h4>Evening Soft — 10 ml</h4>
+            <div class="meta">Notes: lavender, neroli. Not for direct inhalation near pets.</div>
+            <div style="margin-top:10px;font-weight:800" data-single="22" data-pack="56">$22</div>
+            <div class="buy"><button data-name="Evening Soft 10ml" data-single="22" data-pack="56" class="add">Add to cart</button></div>
+          </div>
+
+          <div class="product">
+            <h4>Focus Thread — 10 ml</h4>
+            <div class="meta">Notes: rosemary, lemon. Use short diffusions; avoid undiluted skin contact.</div>
+            <div style="margin-top:10px;font-weight:800" data-single="16" data-pack="40">$16</div>
+            <div class="buy"><button data-name="Focus Thread 10ml" data-single="16" data-pack="40" class="add">Add to cart</button></div>
+          </div>
+
+          <div class="product">
+            <h4>Travel Calm — Inhaler</h4>
+            <div class="meta">Compact inhaler with travel-friendly guidance. Keep out of reach of pets when in use.</div>
+            <div style="margin-top:10px;font-weight:800" data-single="12" data-pack="30">$12</div>
+            <div class="buy"><button data-name="Travel Calm Inhaler" data-single="12" data-pack="30" class="add">Add to cart</button></div>
+          </div>
+
+        </div>
+
+        <div style="margin-top:20px">
+          <div class="testimonials">
+            <div class="testimony" id="shopTestimony">"Thoughtful notes and clear safety instructions made it easy to use." — K., {{CITY}}</div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="sidebar">
+        <div style="font-weight:800">Your cart</div>
+        <div id="cartItems" style="margin-top:10px"></div>
+        <div style="display:flex;justify-content:space-between;margin-top:12px"><strong>Total</strong><strong id="cartTotal">$0</strong></div>
+        <div style="margin-top:12px;text-align:right"><a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+
+        <div style="margin-top:18px">
+          <strong>Trust markers</strong>
+          <div style="margin-top:8px">Each product includes dilution guidance and a patch-test suggestion. We provide pet-safe alternatives where appropriate.</div>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      <div style="margin-top:20px">Questions? Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+      <div style="margin-top:8px">Serving {{CITY}}, {{STATE}}</div>
+    </footer>
+  </main>
+
+  <script>
+    // Toggle pack vs single with animated numbers
+    (function(){
+      const toggle = document.getElementById('shopToggle');
+      const productEls = document.querySelectorAll('[data-single]');
+      let pack=false;
+      function anim(el,from,to){
+        const start = performance.now();
+        const dur = 350;
+        function frame(now){
+          const p = Math.min((now-start)/dur,1);
+          const v = Math.round(from + (to-from)*p);
+          el.textContent = '$'+v;
+          if(p<1) requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+      }
+      toggle.addEventListener('click',()=>{
+        pack=!pack; toggle.classList.toggle('on',pack);
+        productEls.forEach(el=>{
+          const single = Number(el.getAttribute('data-single'));
+          const packPrice = Number(el.getAttribute('data-pack'));
+          const cur = Number(el.textContent.replace('$',''))||0;
+          anim(el,cur,pack?packPrice:single);
+        });
+      });
+      toggle.addEventListener('keydown',(e)=>{ if(e.key==='Enter' || e.key===' ') { e.preventDefault(); toggle.click(); }});
+    })();
+
+    // Simple cart behavior
+    (function(){
+      const addBtns = document.querySelectorAll('.add');
+      const cartItems = document.getElementById('cartItems');
+      const cartTotal = document.getElementById('cartTotal');
+      const products = [];
+      function render(){
+        cartItems.innerHTML=''; let total=0;
+        products.forEach(p=>{
+          const div = document.createElement('div'); div.style.display='flex'; div.style.justifyContent='space-between'; div.style.marginBottom='6px';
+          div.innerHTML = '<div>'+p.name+'</div><div>$'+p.price+'</div>';
+          cartItems.appendChild(div); total+=p.price;
+        });
+        cartTotal.textContent = '$'+total;
+      }
+      addBtns.forEach(b=>b.addEventListener('click',()=>{
+        const name = b.getAttribute('data-name');
+        // determine current displayed price
+        const parent = b.closest('.product');
+        const priceEl = parent.querySelector('[data-single]');
+        const price = Number(priceEl.textContent.replace('$','')) || Number(b.getAttribute('data-single'));
+        products.push({name, price}); render();
+      }));
+    })();
+
+    // Rotating testimonial and badge tooltips (proof gallery)
+    (function(){
+      const items = [
+        '"Clear instructions — I appreciated the attention to dilution." — A., {{CITY}}',
+        '"The inhaler is perfect for travel. Notes are balanced." — S., {{CITY}}',
+        '"I liked the alternative suggestions because I have a dog." — T., {{CITY}}'
+      ];
+      let i=0; const el = document.getElementById('shopTestimony');
+      setInterval(()=>{ i=(i+1)%items.length; el.style.opacity=0; setTimeout(()=>{ el.textContent = items[i]; el.style.opacity=1; },220); },4300);
+    })();
+  </script>
+</body>
+</html>

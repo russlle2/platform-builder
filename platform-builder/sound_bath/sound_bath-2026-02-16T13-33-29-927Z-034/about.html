@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="A sensory-led, premium sound bath experience in {{CITY}}, {{STATE}}.">
+  <style>
+    :root{--glass:#ffffff22;--accent1:#6EE7B7;--accent2:#7C83FD;--text:#07203C;--muted:#4D6D86}
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;color:var(--text);background:linear-gradient(180deg,#081428 0%,#05223a 60%);}
+    .page{min-height:100%;position:relative;overflow:hidden;padding-bottom:6rem}
+    /* inline SVG background layer */
+    .bg-svg{position:fixed;inset:0;pointer-events:none;mix-blend-mode:screen;opacity:.12}
+    header{display:flex;justify-content:space-between;align-items:center;padding:28px 40px}
+    nav a{color:#E9F7F0;text-decoration:none;margin-left:18px;font-size:14px;opacity:.95}
+    .container{max-width:1100px;margin:40px auto;padding:28px}
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:center}
+    .card{background:linear-gradient(135deg,rgba(255,255,255,0.06),rgba(255,255,255,0.03));border:1px solid rgba(255,255,255,0.08);backdrop-filter:blur(8px);box-shadow:0 6px 40px rgba(3,10,18,0.6);border-radius:16px;padding:28px}
+    h1{margin:0 0 8px 0;font-size:32px;letter-spacing:-0.02em}
+    p.lead{color:var(--muted);margin-top:0}
+    .who{font-size:14px;color:var(--muted);margin-top:6px}
+    .stats{display:flex;gap:12px;margin-top:18px}
+    .stat{padding:8px 12px;border-radius:10px;background:linear-gradient(90deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));font-size:13px}
+    .about-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:22px}
+    .muted{color:var(--muted);font-size:14px}
+    footer{position:fixed;left:0;right:0;bottom:0;padding:14px 24px;background:linear-gradient(180deg,transparent,rgba(2,6,23,0.6));display:flex;justify-content:center}
+    .cta{background:linear-gradient(90deg,var(--accent1),var(--accent2));padding:12px 20px;border-radius:999px;color:#042233;text-decoration:none;font-weight:700}
+    /* testimonials */
+    .testimonials{margin-top:28px;display:flex;flex-direction:column;gap:12px}
+    .quote{background:rgba(255,255,255,0.02);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    /* responsive */
+    @media (max-width:900px){.hero{grid-template-columns:1fr}.container{padding:16px}.card{padding:18px}}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- decorative svg pattern -->
+    <svg class="bg-svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#5EEAD4" stop-opacity="0.18"/><stop offset="1" stop-color="#A78BFA" stop-opacity="0.12"/></linearGradient>
+        <pattern id="p" width="120" height="120" patternUnits="userSpaceOnUse" patternTransform="rotate(25)">
+          <rect width="60" height="120" fill="url(#g1)"/>
+          <circle cx="30" cy="60" r="10" fill="#ffffff" fill-opacity="0.04"/>
+        </pattern>
+        <filter id="blur"><feGaussianBlur stdDeviation="30"/></filter>
+      </defs>
+      <rect x="-200" y="-200" width="1600" height="1200" fill="url(#p)" filter="url(#blur)"/>
+      <g fill="#fff" fill-opacity="0.02">
+        <circle cx="300" cy="150" r="220"/>
+        <circle cx="950" cy="420" r="280"/>
+      </g>
+    </svg>
+
+    <header>
+      <div style="display:flex;align-items:center;gap:14px;color:#e7fbf6">
+        <div style="width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent1),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:800;color:#052233">SB</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="events.html">Events</a>
+        <a href="private-sessions.html">Private</a>
+        <a href="pricing.html">Rates</a>
+        <a href="book.html">Reserve</a>
+      </nav>
+    </header>
+
+    <main class="container">
+      <section class="hero card">
+        <div>
+          <h1>We craft intentional sound — a sanctuary for deep rest</h1>
+          <p class="lead">A premium sensory sound bath series hosted in {{CITY}}, led by {{FACILITATOR_NAME}}. Our sessions combine tone-based instruments and intentional staging to create slow, restorative journeys. Practical, welcoming, and deeply anchored.</p>
+          <div class="who">What to expect: guided transitions, curated instruments, time for integration.</div>
+
+          <div class="stats" aria-hidden>
+            <div class="stat">Small groups • 12–18</div>
+            <div class="stat">Sessions 75–90 min</div>
+            <div class="stat">Accessible venue — {{VENUE_NAME}}</div>
+          </div>
+
+          <div class="about-grid">
+            <div class="muted card" style="padding:14px">
+              <strong>Our approach</strong>
+              <p class="muted">We favor a slow arc: arrival and grounding, progressive resonance, a restful core, and gentle re-entry. The facilitator guides breathwork and intention-setting; sound is the container.</p>
+            </div>
+            <div class="muted card" style="padding:14px">
+              <strong>Instruments we use</strong>
+              <p class="muted">Crystal singing bowls, shamanic drum, Himalayan bowls, and chime accents tuned for meditative registers.</p>
+            </div>
+          </div>
+
+          <div class="testimonials">
+            <div class="quote"><strong>"A luminous, centering experience."</strong> — guest, downtown series</div>
+            <div class="quote"><strong>"I slept like I hadn't in years."</strong> — attendee, weekend retreat</div>
+          </div>
+        </div>
+
+        <aside style="display:flex;flex-direction:column;gap:12px">
+          <div class="card">
+            <strong style="display:block">VIP Day offering</strong>
+            <p class="muted">Private full-day immersion: bespoke sound, intention coaching, integration practices — ideal for smaller groups or personal renewal. Inquire to design a VIP Day with {{FACILITATOR_NAME}}.</p>
+            <a class="cta" href="book.html">Book a VIP Day</a>
+          </div>
+
+          <div class="card" style="text-align:center">
+            <div style="font-size:13px;color:var(--muted)">Questions?</div>
+            <div style="margin-top:8px"><a href="mailto:{{EMAIL}}" style="color:#dffbf2;text-decoration:none">{{EMAIL}}</a></div>
+            <div style="margin-top:6px;color:var(--muted);font-size:13px">or call <a href="tel:{{PHONE}}" style="color:#dffbf2;text-decoration:none">{{PHONE}}</a></div>
+          </div>
+        </aside>
+      </section>
+
+      <section style="margin-top:26px" class="card">
+        <h2 style="margin:0 0 6px 0">Our story — designed for calm</h2>
+        <p class="muted">Founded to bring a practical, elegant approach to sound healing, we center sensory design — lighting, texture, and curated timbre — along with intentional cues to make deeper states more reachable. {{FACILITATOR_NAME}} trained in somatic practices and decades of sound work, blending research-backed methods and live, crafted sound.
+        </p>
+      </section>
+
+    </main>
+
+    <footer>
+      <a class="cta" href="contact.html">Contact to inquire</a>
+    </footer>
+  </div>
+</body>
+</html>

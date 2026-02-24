@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="A warm, safety-first aromatherapy practice offering consultations, membership care, bespoke blends, and workshops." />
+  <style>
+    :root{--bg1:#F6ECE2;--bg2:#EAD6BF;--accent:#A76B47;--muted:#6B5846;--card:#FFFFFF;--glass:rgba(255,255,255,0.7)}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--muted);background:linear-gradient(180deg,var(--bg1),var(--bg2));}
+    .nav{display:flex;gap:18px;align-items:center;padding:20px 28px;background:transparent}
+    .logo{font-weight:700;color:var(--accent)}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:8px}
+    nav a.primary{background:var(--accent);color:white}
+    .wrap{max-width:1100px;margin:28px auto;padding:28px}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:center}
+    .card{background:var(--card);padding:20px;border-radius:14px;box-shadow:0 6px 18px rgba(92,66,46,0.08)}
+    h1{margin:0 0 8px 0;color:var(--accent);font-size:28px}
+    p.lead{margin:0 0 14px 0;color:#5b4b3d}
+    .membership{border-left:4px solid var(--accent);padding-left:14px}
+    .pillars{display:flex;flex-wrap:wrap;gap:12px;margin-top:18px}
+    .pillar{flex:1 1 30%;min-width:180px;padding:14px;background:linear-gradient(180deg,rgba(167,107,71,0.06),transparent);border-radius:10px}
+    .case-list{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+    .case{padding:12px;border-radius:10px;background:var(--glass)}
+    .myth{margin-top:22px}
+    .faq{margin-top:20px}
+    .cta{display:flex;gap:12px;align-items:center;margin-top:18px}
+    .btn{padding:10px 16px;border-radius:10px;border:0;cursor:pointer}
+    .btn.primary{background:var(--accent);color:white}
+    .btn.ghost{background:transparent;border:1px solid rgba(107,82,62,0.12)}
+    footer{margin-top:36px;padding:18px;text-align:center;color:#7a6854}
+    /* Background SVG subtle pattern */
+    .bg-svg{position:fixed;inset:0;z-index:-1;opacity:0.12}
+    @media (max-width:880px){.hero{grid-template-columns:1fr;}.case-list{grid-template-columns:1fr}.pillars{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <svg class="bg-svg" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1">
+        <stop offset="0" stop-color="#EAD6BF" />
+        <stop offset="1" stop-color="#F6ECE2" />
+      </linearGradient>
+      <pattern id="p1" width="120" height="120" patternUnits="userSpaceOnUse" patternTransform="rotate(12)">
+        <rect width="120" height="120" fill="url(#g1)" />
+        <circle cx="18" cy="18" r="10" fill="#A76B47" opacity="0.06" />
+        <circle cx="90" cy="60" r="6" fill="#6B5846" opacity="0.04" />
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#p1)" />
+  </svg>
+
+  <header class="nav wrap">
+    <div class="logo">{{BUSINESS_NAME}}</div>
+    <nav style="margin-left:18px">
+      <a href="index.html">Home</a>
+      <a href="services.html" class="primary">Offerings</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Boutique</a>
+      <a href="book.html">Book</a>
+    </nav>
+    <div style="margin-left:auto;display:flex;gap:10px">
+      <a href="contact.html" class="btn ghost">Contact</a>
+      <a href="{{PRIMARY_CTA_URL}}" class="btn primary">{{PRIMARY_CTA_LABEL}}</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="card">
+        <h1>Aromatherapy offerings rooted in safety and story</h1>
+        <p class="lead">I’m {{PRACTITIONER_NAME}} — I craft memberships and sessions that meet you where you are. No quick fixes, only thoughtful, evidence-aware aromatherapy to support daily rituals.</p>
+        <div class="membership">
+          <strong>Membership model</strong>
+          <p style="margin:6px 0 0 0">Members receive bespoke blends, quarterly check-ins, and a living library of aromatherapy rituals. Gentle guidance, steady support.</p>
+        </div>
+        <div class="cta">
+          <a class="btn primary" href="{{PRIMARY_CTA_URL}}">Join the Circle</a>
+          <a class="btn ghost" href="book.html">Book a Consult</a>
+        </div>
+      </div>
+
+      <aside class="card">
+        <h3 style="margin:0 0 6px 0;color:var(--accent)">Quick services</h3>
+        <ul style="margin:0;padding-left:18px;color:#5a4837">
+          <li>Intro Consultation (45 min) — bespoke suggestions</li>
+          <li>Blend Design — personalized 10ml roll or 15ml bottle</li>
+          <li>Membership Packages — recurring blends & care</li>
+          <li>Workshops — small-group aromatic skill-building</li>
+        </ul>
+        <p style="margin-top:10px;font-size:13px;color:#7b6653">Pricing and details available on the Pricing page. Safety consult included with first bespoke blend.</p>
+      </aside>
+    </section>
+
+    <section class="myth card" aria-labelledby="mythTitle">
+      <h2 id="mythTitle">Myth vs. truth — gentle clarity</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px">
+        <div>
+          <strong>Myth</strong>
+          <p style="margin:6px 0 0 0">Essential oils are a cure-all.</p>
+        </div>
+        <div>
+          <strong>Truth</strong>
+          <p style="margin:6px 0 0 0">Aromas can support comfort, mood, and ritual. They should be used thoughtfully, safely, and as part of a broader wellness practice.</p>
+        </div>
+        <div>
+          <strong>Myth</strong>
+          <p style="margin:6px 0 0 0">More is better.</p>
+        </div>
+        <div>
+          <strong>Truth</strong>
+          <p style="margin:6px 0 0 0">Dilution and context matter — high concentration can irritate skin or overwhelm the senses.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="pillars card" aria-labelledby="pillarsTitle">
+      <h2 id="pillarsTitle">Foundations of the practice</h2>
+      <div class="pillars">
+        <div class="pillar"><strong>Safety-first</strong><p style="margin:6px 0 0 0">Dilution guidance and patch testing are integral to every recommendation.</p></div>
+        <div class="pillar"><strong>Personalized blends</strong><p style="margin:6px 0 0 0">Your history, preferences, and context shape each blend.</p></div>
+        <div class="pillar"><strong>Ongoing care</strong><p style="margin:6px 0 0 0">Memberships prioritize ongoing adjustments over one-off products.</p></div>
+      </div>
+    </section>
+
+    <section class="case_notes card">
+      <h2>Stories from sessions</h2>
+      <div class="case-list">
+        <div class="case"><strong>Rest ritual</strong><p style="margin:6px 0 0 0">A traveler found a nightly roll-on that eased evening transition. We tweaked dilution and delivery for bedtime comfort.</p></div>
+        <div class="case"><strong>Focus blend</strong><p style="margin:6px 0 0 0">A student used a mid-day inhaler to create a calm focus ritual during exams; small, repeatable acts built confidence.</p></div>
+        <div class="case"><strong>Home reset</strong><p style="margin:6px 0 0 0">A family introduced a room mist for ritualized debriefs at dinner; scent cues supported gentle transitions.</p></div>
+        <div class="case"><strong>Gift membership</strong><p style="margin:6px 0 0 0">A thoughtful membership helped a friend establish daily self-care with curated blends shipped quarterly.</p></div>
+      </div>
+    </section>
+
+    <section class="faq card">
+      <h2>Frequently asked — practice safety</h2>
+      <details style="margin-top:8px"><summary style="cursor:pointer">How do you handle dilution?</summary><p style="margin:8px 0 0 0">I provide dilution tables and prep guidance for each blend. For topical blends I typically recommend 1–3% for adults unless otherwise discussed.</p></details>
+      <details style="margin-top:8px"><summary style="cursor:pointer">Do I need a patch test?</summary><p style="margin:8px 0 0 0">Yes — patch testing is recommended for new blends. Instructions are provided with every bespoke order.</p></details>
+      <details style="margin-top:8px"><summary style="cursor:pointer">What about pets and pregnancy?</summary><p style="margin:8px 0 0 0">I offer pet-aware and pregnancy-aware alternatives. We avoid certain notes and delivery methods; full safety guidance given in consults.</p></details>
+    </section>
+
+    <section class="card" style="margin-top:18px">
+      <h2>Ready to begin?</h2>
+      <p style="margin:6px 0 0 0">Become a member for gentle, ongoing aromatic care — blends delivered, support on hand, rituals that evolve with you.</p>
+      <div style="margin-top:12px" class="cta">
+        <a href="{{PRIMARY_CTA_URL}}" class="btn primary">{{PRIMARY_CTA_LABEL}}</a>
+        <a href="pricing.html" class="btn ghost">See pricing</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} — {{TAGLINE}} • {{CITY}}, {{STATE}} • <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    <div style="font-size:12px;margin-top:6px;color:#8b7a68">Memberships emphasize safety and are not medical treatment. All content is informational.</div>
+  </footer>
+</body>
+</html>

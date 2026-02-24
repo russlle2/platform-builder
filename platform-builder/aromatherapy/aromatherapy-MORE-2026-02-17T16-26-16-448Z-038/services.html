@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Services — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfbfa;--muted:#6b7280;--accent:#2f6f61;--glass:rgba(255,255,255,0.6);--card:#ffffff}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial,sans-serif;color:#08202a;background:var(--bg)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:linear-gradient(180deg,rgba(47,111,97,0.06),transparent);backdrop-filter:blur(6px)}
+    .logo{display:flex;align-items:center;gap:12px}
+    .logo svg{width:44px;height:44px}
+    nav{display:flex;gap:14px;align-items:center}
+    nav a{color:#08363a;text-decoration:none;font-weight:600;font-size:14px;padding:8px 10px;border-radius:8px}
+    nav a:hover{background:rgba(47,111,97,0.06)}
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;padding:46px 28px;align-items:center}
+    .hero .lead{background:linear-gradient(180deg,rgba(47,111,97,0.06),transparent);padding:28px;border-radius:12px}
+    h1{margin:0 0 8px 0;font-weight:700;color:#053235}
+    p.lead-desc{margin:0;color:var(--muted)}
+    .cta{margin-top:18px}
+    .btn{background:var(--accent);color:white;padding:12px 16px;border-radius:10px;border:0;font-weight:700;cursor:pointer}
+    .secondary{background:transparent;border:1px solid rgba(3,41,37,0.06);padding:10px 14px;border-radius:10px}
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(11,23,22,0.04)}
+    /* services grid */
+    .services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:22px}
+    .service{padding:14px;border-radius:12px;background:linear-gradient(180deg,#fff, #fbfdfc);border:1px solid rgba(8,50,46,0.04)}
+    .service h3{margin:0 0 8px 0;font-size:16px}
+    .service p{margin:0;color:var(--muted);font-size:14px}
+    .meta{display:flex;gap:10px;align-items:center;margin-top:12px}
+    .meta small{color:var(--muted)}
+
+    /* Proof gallery */
+    .proof{display:flex;gap:18px;align-items:flex-start;margin-top:28px}
+    .testimony{flex:1;background:linear-gradient(180deg,rgba(47,111,97,0.03),transparent);padding:18px;border-radius:12px;position:relative}
+    .quote{font-style:italic;color:#09363a;margin:0 0 8px 0}
+    .who{color:var(--muted);font-size:13px}
+    .badges{display:flex;gap:10px;flex-direction:column}
+    .badge{background:var(--card);border-radius:10px;padding:8px;width:92px;text-align:center;border:1px solid rgba(8,50,46,0.04);cursor:help;position:relative}
+    .badge svg{display:block;margin:0 auto 6px auto}
+    .badge .tip{position:absolute;left:110%;top:50%;transform:translateY(-50%);background:#0b322f;color:white;padding:8px 10px;border-radius:8px;white-space:nowrap;display:none;font-size:13px}
+    .badge:hover .tip{display:block}
+
+    /* pricing comparator */
+    .pricing-compact{display:flex;gap:16px;align-items:center;margin-top:26px}
+    .toggle{background:rgba(8,50,46,0.06);padding:6px;border-radius:999px;display:flex;align-items:center}
+    .toggle button{background:transparent;border:0;padding:8px 12px;border-radius:999px;cursor:pointer;font-weight:700}
+    .toggle button.active{background:var(--accent);color:white}
+    .price-display{padding:14px;border-radius:12px;background:linear-gradient(180deg,#fff,#fcfffd);border:1px solid rgba(8,50,46,0.04);min-width:140px;text-align:center}
+    .price{font-size:22px;font-weight:800;color:#073a36}
+    .tiny{font-size:12px;color:var(--muted)}
+
+    /* FAQ */
+    .faq{margin-top:26px;display:grid;gap:12px}
+    .faq .q{background:var(--card);padding:14px;border-radius:10px}
+
+    footer{padding:20px 28px;color:var(--muted);font-size:13px}
+    a.cta-link{color:var(--accent);font-weight:700;text-decoration:none}
+
+    /* subtle pattern */
+    main{background-image:url('assets/img/pattern.svg');background-repeat:repeat;background-size:220px 220px}
+  </style>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <svg viewBox="0 0 48 48" role="img" aria-hidden="true"><circle cx="24" cy="24" r="20" fill="#e6f4f0"/><path d="M12 28c3-6 10-7 12-14 2 7 9 8 12 14" stroke="#2f6f61" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>
+    <div>
+      <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+      <div style="font-size:12px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+    </div>
+  </div>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="services.html">Offerings</a>
+    <a href="blends.html">Blends</a>
+    <a href="shop.html">Apothecary</a>
+    <a href="pricing.html">Plans</a>
+    <a href="about.html">About</a>
+    <a href="book.html">Reserve</a>
+    <a href="contact.html">Connect</a>
+  </nav>
+</header>
+<main>
+  <section class="hero card" aria-labelledby="services-title">
+    <div>
+      <h1 id="services-title">Practical aromatherapy sessions and ongoing care</h1>
+      <p class="lead-desc">Short consultations and ongoing care frameworks that may support calm, sleep rhythm, and focused moments. Safety-forward guidance and clear home use plans.</p>
+      <div class="cta">
+        <button class="btn" onclick="location.href='book.html'">Schedule a session</button>
+        <button class="secondary" style="margin-left:8px" onclick="location.href='pricing.html'">See program options</button>
+      </div>
+      <div style="margin-top:16px;color:var(--muted);font-size:14px">Questions? Call <a class="cta-link" href="tel:{{PHONE}}">{{PHONE}}</a> or email <a class="cta-link" href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </div>
+    <aside class="card">
+      <h3 style="margin:0 0 8px 0">Service quick guide</h3>
+      <div class="services-grid">
+        <div class="service">
+          <h3>Intro Consult (30m)</h3>
+          <p>Brief intake, safety review, and scent suggestion to try at home. May support clearer sleep or stress ease.</p>
+          <div class="meta"><small>From</small><strong>$45</strong></div>
+        </div>
+        <div class="service">
+          <h3>Focused Session (60m)</h3>
+          <p>Guided scent work and a simple home plan with dilution and patch test instructions.</p>
+          <div class="meta"><small>From</small><strong>$95</strong></div>
+        </div>
+        <div class="service">
+          <h3>Care Membership</h3>
+          <p>Monthly check-ins, seasonal blend refreshes, and priority booking for regular support.</p>
+          <div class="meta"><small>From</small><strong>$35/mo</strong></div>
+        </div>
+      </div>
+    </aside>
+  </section>
+
+  <section class="card" aria-labelledby="diagnostic-title" style="margin:28px">
+    <h2 id="diagnostic-title">Personal Scent Map (Diagnostic)</h2>
+    <p style="color:var(--muted)">A short intake process we use to match aroma profiles to your routine and sensitivities. No medical promises — just practical, safety-minded guidance that may support day-to-day balance.</p>
+    <div style="display:flex;gap:12px;margin-top:12px">
+      <button class="btn" onclick="openDiagnostic()">Start the mini-diagnostic</button>
+      <button class="secondary" onclick="location.href='book.html'">Book a guided session</button>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="proof-title" style="margin:28px">
+    <h2 id="proof-title">Proof & credentials</h2>
+    <div class="proof">
+      <div class="testimony" id="testimonial">
+        <p class="quote" id="quote">"Subtle shifts—easier mornings without feeling like I changed my routine."</p>
+        <p class="who" id="who">— T. (local)</p>
+      </div>
+      <div class="badges">
+        <div class="badge" tabindex="0" aria-describedby="badge1"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.6 5.3L20 9l-4 3.7L17 20l-5-2.6L7 20l1-7.3L4 9l5.4-1.7L12 2z" fill="#2f6f61"/></svg><div class="tip" id="badge1">Certified aromatherapist — training and safety-focused practice</div><div style="font-size:12px;color:#083a35">Training</div></div>
+        <div class="badge" tabindex="0" aria-describedby="badge2"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#2f6f61" stroke-width="1.6"/><path d="M9 12l2 2 4-4" stroke="#2f6f61" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="tip" id="badge2">Client-reviewed practices with attention to dilution and patch testing</div><div style="font-size:12px;color:#083a35">Review</div></div>
+        <div class="badge" tabindex="0" aria-describedby="badge3"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="4" stroke="#2f6f61" stroke-width="1.6"/><path d="M8 12h8" stroke="#2f6f61" stroke-width="1.6" stroke-linecap="round"/></svg><div class="tip" id="badge3">Evidence-informed safety approach; non-medical guidance only</div><div style="font-size:12px;color:#083a35">Safety</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" style="margin:28px" aria-labelledby="pricing-title">
+    <h2 id="pricing-title">Compact pricing comparator</h2>
+    <p style="color:var(--muted)">Toggle between monthly care and single-session packages. Numbers animate to show relative value.</p>
+    <div class="pricing-compact">
+      <div class="toggle" role="tablist" aria-label="Pricing type">
+        <button id="opt-month" class="active" aria-pressed="true">Monthly</button>
+        <button id="opt-package" aria-pressed="false">Package</button>
+      </div>
+      <div class="price-display">
+        <div class="tiny">Membership</div>
+        <div class="price" id="price-1">$35</div>
+        <div class="tiny">billed monthly</div>
+      </div>
+      <div class="price-display">
+        <div class="tiny">Single session</div>
+        <div class="price" id="price-2">$95</div>
+        <div class="tiny">one-time</div>
+      </div>
+      <div style="margin-left:auto">
+        <button class="btn" onclick="location.href='pricing.html'">Explore plans</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" style="margin:28px" aria-labelledby="faq-title">
+    <h2 id="faq-title">Safety & FAQ</h2>
+    <div class="faq">
+      <div class="q"><strong>Do I need to dilute oils?</strong><div style="color:var(--muted);margin-top:6px">Yes. All topical suggestions include dilution guidance by weight/volume. We recommend a patch test before regular topical use.</div></div>
+      <div class="q"><strong>Are your sessions medical?</strong><div style="color:var(--muted);margin-top:6px">No. Guidance is wellness-focused and may support everyday comfort. We avoid medical claims and refer to appropriate care when needed.</div></div>
+      <div class="q"><strong>Pregnancy, pets, or children?</strong><div style="color:var(--muted);margin-top:6px">Special considerations apply. Please disclose pregnancy, breastfeeding, or animal companions during intake so we can adjust suggestions. Safety is prioritized.</div></div>
+      <div class="q"><strong>Patch testing</strong><div style="color:var(--muted);margin-top:6px">We include simple patch test steps with topical recommendations. Stop use if irritation occurs and consult a clinician.</div></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <div>© <span id="year"></span> {{BUSINESS_NAME}} — Based in {{CITY}}, {{STATE}}</div>
+    <div><a href="book.html" class="cta-link">{{PRIMARY_CTA_LABEL}}</a> &middot; <a href="mailto:{{EMAIL}}" class="cta-link">{{EMAIL}}</a></div>
+  </div>
+</footer>
+
+<script>
+  // year
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Mini diagnostic open (placeholder)
+  function openDiagnostic(){ alert('This mini diagnostic will help identify scent directions.'); }
+
+  // Proof gallery rotation
+  const testimonials = [
+    {q: 'Sustainable small changes — a scent I actually use every morning.', who: 'M., nearby'},
+    {q: 'Clear instructions and safe dilution guidance made all the difference.', who: 'A., remote'},
+    {q: 'Helpful check-ins that felt like steady maintenance rather than hype.', who: 'R., local'}
+  ];
+  let tIndex = 0;
+  function rotateTestimony(){
+    tIndex = (tIndex + 1) % testimonials.length;
+    const elQ = document.getElementById('quote');
+    const elW = document.getElementById('who');
+    // fade out/in
+    elQ.style.opacity = 0; elW.style.opacity = 0;
+    setTimeout(()=>{
+      elQ.textContent = '"' + testimonials[tIndex].q + '"';
+      elW.textContent = '— ' + testimonials[tIndex].who;
+      elQ.style.opacity = 1; elW.style.opacity = 1;
+    },300);
+  }
+  setInterval(rotateTestimony,5000);
+
+  // Pricing comparator with animated numbers
+  const optMonth = document.getElementById('opt-month');
+  const optPackage = document.getElementById('opt-package');
+  const price1 = document.getElementById('price-1');
+  const price2 = document.getElementById('price-2');
+
+  const vals = {
+    month: [35,95],
+    package: [120,320]
+  };
+
+  function animateNumber(el, from, to, duration=600){
+    const start = performance.now();
+    function frame(now){
+      const progress = Math.min((now - start)/duration,1);
+      const value = Math.round(from + (to - from) * ease(progress));
+      el.textContent = '$' + value;
+      if(progress < 1) requestAnimationFrame(frame);
+    }
+    function ease(t){ return 1 - Math.pow(1-t,3); }
+    requestAnimationFrame(frame);
+  }
+
+  function setPricing(mode){
+    const [a,b] = vals[mode];
+    animateNumber(price1, parseInt(price1.textContent.replace(/[^0-9]/g,'')) || 0, a);
+    animateNumber(price2, parseInt(price2.textContent.replace(/[^0-9]/g,'')) || 0, b);
+  }
+
+  optMonth.addEventListener('click',()=>{
+    optMonth.classList.add('active'); optPackage.classList.remove('active');
+    optMonth.setAttribute('aria-pressed','true'); optPackage.setAttribute('aria-pressed','false');
+    setPricing('month');
+  });
+  optPackage.addEventListener('click',()=>{
+    optPackage.classList.add('active'); optMonth.classList.remove('active');
+    optPackage.setAttribute('aria-pressed','true'); optMonth.setAttribute('aria-pressed','false');
+    setPricing('package');
+  });
+
+  // init
+  setPricing('month');
+</script>
+</body>
+</html>

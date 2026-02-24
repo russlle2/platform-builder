@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1720;--card:#0b1220;--muted:#9aa8b0;--accent:#8ad3b5;--glass:rgba(255,255,255,0.04)}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#e6f0ef;background:linear-gradient(180deg,var(--bg),#071018)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:linear-gradient(90deg,rgba(255,255,255,0.02),transparent);backdrop-filter:blur(6px);position:sticky;top:0;z-index:20}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;background:linear-gradient(135deg,var(--accent),#5fb3d9);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#052225}
+    nav{display:flex;gap:16px;align-items:center}
+    nav a{color:#d8eef0;text-decoration:none;padding:8px 10px;border-radius:8px;font-size:14px}
+    nav a.cta{background:var(--accent);color:#04221e}
+
+    main{max-width:1100px;margin:28px auto;padding:28px;position:relative}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:center;padding:28px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:14px}
+    .hero h1{margin:0 0 10px;font-size:28px;line-height:1.05}
+    .hero p{color:var(--muted);margin:0 0 18px}
+    .actions{display:flex;gap:12px}
+    .btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:10px 14px;border-radius:10px;color:#dbeeea;text-decoration:none}
+    .btn.primary{background:var(--accent);color:#03221c;border:none}
+
+    /* pattern pane */
+    .patternBox{height:220px;border-radius:12px;background-image:url('assets/img/pattern.svg');background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center}
+    .programs{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:22px}
+    .card{background:var(--card);padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+    .card h3{margin:0 0 8px}
+    .price{font-weight:700;font-size:22px;color:var(--accent)}
+    .muted{color:var(--muted);font-size:13px}
+
+    /* Pricing toggle */
+    .toggleWrap{margin-top:10px;display:flex;gap:10px;align-items:center}
+    .toggle{background:var(--glass);padding:6px;border-radius:999px;display:inline-flex;border:1px solid rgba(255,255,255,0.03)}
+    .option{padding:6px 12px;cursor:pointer;border-radius:999px;color:var(--muted)}
+    .option.active{background:#052a26;color:#dff7ef}
+
+    /* Proof Gallery */
+    .proof{margin-top:22px;padding:14px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);display:flex;gap:14px;align-items:center}
+    .testimony{flex:1}
+    .quote{font-style:italic;color:#dff7ef;margin:0 0 10px}
+    .by{font-size:13px;color:var(--muted)}
+    .badges{display:flex;gap:10px;align-items:center}
+    .badge{background:#091e21;padding:8px;border-radius:8px;position:relative}
+    .badge img{height:22px;width:auto;display:block}
+    .tooltip{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 8px);background:#001817;color:#bfece1;padding:6px 8px;border-radius:6px;font-size:12px;white-space:nowrap;display:none}
+    .badge:hover .tooltip{display:block}
+
+    footer{margin-top:28px;padding:18px;color:var(--muted);font-size:13px;text-align:center}
+
+    @media (max-width:880px){.hero{grid-template-columns:1fr;}.programs{grid-template-columns:1fr}} 
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">HM</div>
+      <div style="line-height:1">
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:#9db1ad">Integrative practice — guided intensives</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html" class="cta">Offerings</a>
+      <a href="conditions.html">Conditions</a>
+      <a href="approach.html">Method</a>
+      <a href="pricing.html">Invest</a>
+      <a href="about.html">Story</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h1>Tailored integrative intensives — clear entry, steady progress</h1>
+        <p>Short-course programs that combine clinical insight, lifestyle strategy, and ritual-friendly micro-practices. Designed for people who want practical alignment without long trial-and-error.</p>
+        <div class="actions">
+          <a class="btn primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <a class="btn" href="book.html">Schedule consult</a>
+        </div>
+
+        <div class="toggleWrap">
+          <div style="color:var(--muted);font-size:13px">View prices:</div>
+          <div class="toggle" id="priceToggle">
+            <div class="option active" data-mode="monthly">Monthly</div>
+            <div class="option" data-mode="package">Package</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="patternBox" role="img" aria-label="decorative pattern">
+        <div style="text-align:center;color:#052225">
+          <div style="font-weight:700;font-size:18px">Root Resonance</div>
+          <div style="font-size:13px;color:rgba(3,34,30,0.8)">A focused 6-week program</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="programs" aria-label="Programs">
+      <div class="card">
+        <h3>Root Resonance</h3>
+        <div class="muted">6 weeks · guided plan</div>
+        <div style="height:12px"></div>
+        <div class="price" data-monthly="120" data-package="600">$120</div>
+        <div class="muted">per month • or $600 package</div>
+        <div style="height:10px"></div>
+        <a class="btn" href="book.html">Book Intro</a>
+      </div>
+
+      <div class="card">
+        <h3>Seasonal Alignment</h3>
+        <div class="muted">12-week course · measurable steps</div>
+        <div style="height:12px"></div>
+        <div class="price" data-monthly="190" data-package="950">$190</div>
+        <div class="muted">per month • or $950 package</div>
+        <div style="height:10px"></div>
+        <a class="btn" href="book.html">Reserve spot</a>
+      </div>
+
+      <div class="card">
+        <h3>Maintenance Path</h3>
+        <div class="muted">Ongoing monthly check-ins</div>
+        <div style="height:12px"></div>
+        <div class="price" data-monthly="85" data-package="420">$85</div>
+        <div class="muted">per month • or $420 package</div>
+        <div style="height:10px"></div>
+        <a class="btn" href="book.html">Join cohort</a>
+      </div>
+    </section>
+
+    <section class="proof" aria-label="Testimonials and credentials">
+      <div class="testimony">
+        <div class="quote" id="quoteText">"An approachable plan that actually fit my week. The check-ins kept me honest and the small steps added up."</div>
+        <div class="by" id="quoteAuthor">— Mara, Seattle</div>
+      </div>
+      <div class="badges" aria-hidden="false">
+        <div class="badge" tabindex="0">
+          <div class="tooltip">Board-certified in Integrative Medicine</div>
+          <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='86' height='22'><rect rx='4' width='86' height='22' fill='%23092224'/><text x='10' y='15' font-size='11' fill='%238ad3b5' font-family='Arial'>Board</text></svg>" alt="cred-1">
+        </div>
+        <div class="badge" tabindex="0">
+          <div class="tooltip">Published case studies in integrative care</div>
+          <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='86' height='22'><rect rx='4' width='86' height='22' fill='%23092224'/><text x='10' y='15' font-size='11' fill='%23bfece1' font-family='Arial'>Case Notes</text></svg>" alt="cred-2">
+        </div>
+        <div class="badge" tabindex="0">
+          <div class="tooltip">Community referrals and practitioner network</div>
+          <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='86' height='22'><rect rx='4' width='86' height='22' fill='%23092224'/><text x='10' y='15' font-size='11' fill='%239db1ad' font-family='Arial'>Network</text></svg>" alt="cred-3">
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div style="margin-bottom:8px">Questions? Call <a href="tel:{{PHONE}}" style="color:#cfe9de">{{PHONE}}</a> or <a href="mailto:{{EMAIL}}" style="color:#cfe9de">email us</a>.</div>
+      <div class="muted">Content is educational and supportive; not a substitute for medical advice.</div>
+    </footer>
+  </main>
+
+  <script>
+    // Pricing Comparator
+    (function(){
+      const toggle = document.getElementById('priceToggle');
+      const options = toggle.querySelectorAll('.option');
+      let mode = 'monthly';
+      function animateNumber(el, start, end, duration){
+        let startTime = null;
+        function step(ts){
+          if(!startTime) startTime = ts;
+          const progress = Math.min((ts - startTime)/duration,1);
+          const value = Math.round(start + (end - start)*progress);
+          el.textContent = '$' + value;
+          if(progress < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+      function updatePrices(newMode){
+        document.querySelectorAll('.price').forEach(p=>{
+          const monthly = parseInt(p.getAttribute('data-monthly'),10);
+          const pack = parseInt(p.getAttribute('data-package'),10);
+          const current = parseInt(p.textContent.replace(/[^0-9]/g,''),10) || (newMode==='monthly'?pack:monthly);
+          const target = newMode==='monthly'?monthly:pack;
+          animateNumber(p,current,target,420);
+        });
+      }
+      toggle.addEventListener('click',e=>{
+        const opt = e.target.closest('.option');
+        if(!opt) return;
+        options.forEach(o=>o.classList.toggle('active', o===opt));
+        mode = opt.getAttribute('data-mode');
+        updatePrices(mode);
+      });
+    })();
+
+    // Proof Gallery rotation
+    (function(){
+      const quotes = [
+        {q:'"An approachable plan that actually fit my week. The check-ins kept me honest and the small steps added up."',a:'— Mara, Seattle'},
+        {q:'"I found realistic tools and the guidance felt both clinical and compassionate."',a:'— Daniel, OR'},
+        {q:'"We mapped clear goals and I could feel momentum after the second call."',a:'— Priya, NY'},
+      ];
+      let idx = 0;
+      const qEl = document.getElementById('quoteText');
+      const aEl = document.getElementById('quoteAuthor');
+      setInterval(()=>{
+        idx = (idx + 1) % quotes.length;
+        qEl.style.opacity = 0; aEl.style.opacity = 0;
+        setTimeout(()=>{
+          qEl.textContent = quotes[idx].q;
+          aEl.textContent = quotes[idx].a;
+          qEl.style.opacity = 1; aEl.style.opacity = 1;
+        },300);
+      },5200);
+    })();
+  </script>
+</body>
+</html>

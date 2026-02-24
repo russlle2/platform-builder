@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfbfa;--card:#ffffff;--muted:#6b6b6b;--accent:#6b8e7f;--accent-2:#9fbfae;--glass:rgba(255,255,255,0.6);--radius:12px;--mono:Menlo,monospace}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:#222;background:linear-gradient(180deg,var(--bg),#f3f6f2);min-height:100vh}
+    header{display:flex;align-items:center;justify-content:space-between;padding:24px 28px;background:linear-gradient(90deg, rgba(107,142,127,0.06), rgba(159,191,174,0.03));backdrop-filter:blur(2px);border-bottom:1px solid rgba(0,0,0,0.04)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    nav a{margin-left:18px;color:#1f3d2a;text-decoration:none;font-weight:600}
+    main{max-width:1100px;margin:28px auto;padding:20px}
+    .grid{display:grid;grid-template-columns:1fr 420px;gap:22px}
+    .panel{background:var(--card);border-radius:var(--radius);padding:18px;box-shadow:0 8px 20px rgba(25,30,20,0.06)}
+    h1{margin:0 0 8px 0;font-size:22px}
+    p.lead{margin:0 0 14px;color:var(--muted)}
+    .muted{color:var(--muted);font-size:13px}
+
+    /* Session Planner */
+    .field{display:flex;flex-direction:column;margin-bottom:12px}
+    label{font-size:13px;margin-bottom:6px}
+    select,input,textarea{padding:10px;border-radius:8px;border:1px solid #e6e6e6;font-size:14px}
+    textarea{min-height:84px}
+    .btn{background:var(--accent);border:none;color:white;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer}
+    .btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(107,142,127,0.16)}
+
+    /* Blend builder */
+    .chips{display:flex;gap:8px;flex-wrap:wrap}
+    .chip{padding:8px 10px;border-radius:999px;background:#f4f7f4;border:1px dashed rgba(107,142,127,0.1);cursor:pointer}
+    .chip.active{background:linear-gradient(90deg,var(--accent-2),var(--accent));color:white}
+
+    .result{margin-top:12px;padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(107,142,127,0.04),rgba(159,191,174,0.02));border:1px solid rgba(107,142,127,0.06)}
+    .result pre{white-space:pre-wrap;font-family:var(--mono);font-size:13px;margin:0}
+
+    footer{max-width:1100px;margin:22px auto;padding:20px;color:var(--muted);font-size:13px}
+
+    .faq dt{font-weight:700;margin-top:10px}
+    .faq dd{margin:6px 0 12px 0}
+
+    @media(max-width:920px){.grid{grid-template-columns:1fr;}.brand .logo{width:44px;height:44px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">A</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">Careful scent experiences in {{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Blends Lab</a>
+      <a href="shop.html">Boutique</a>
+      <a href="pricing.html">Rates</a>
+      <a href="about.html">Our Story</a>
+      <a href="book.html">Book a Session</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <div style="display:flex;gap:18px;align-items:center;justify-content:space-between;margin-bottom:18px">
+      <div>
+        <h1>Connect & Design a Simple Plan</h1>
+        <p class="lead">Use the mini tools below to shape a personalized scent plan or assemble a gentle blend. Both tools produce a plaintext summary you can copy and paste — handy for booking or sharing with a friend.</p>
+      </div>
+      <div style="text-align:right">
+        <div class="muted">Prefer to talk? Reach us at</div>
+        <div style="font-weight:700;margin-top:6px">{{PHONE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <section class="panel">
+        <h2 style="margin-top:0">Session Planner</h2>
+        <p class="muted">Build a short-session plan that outlines goals, frequency, and a suggested scent approach.</p>
+
+        <div class="field">
+          <label for="goal">Primary intention</label>
+          <select id="goal">
+            <option value="reset">Reset & Ground</option>
+            <option value="focus">Sharpen focus</option>
+            <option value="sleep">Support restful evenings</option>
+            <option value="lift">Uplift mood</option>
+            <option value="calm">Ease nervous energy</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="length">Session length</label>
+          <select id="length">
+            <option>20 minutes</option>
+            <option>45 minutes</option>
+            <option>60 minutes</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="freq">Suggested rhythm</label>
+          <select id="freq">
+            <option>Single exploratory session</option>
+            <option>Weekly for 4 weeks</option>
+            <option>Bi-weekly maintenance</option>
+            <option>Monthly tune-up</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="sensitivity">Known sensitivities or notes</label>
+          <input id="sensitivity" placeholder="e.g., skin sensitivity, seasonal allergies" />
+        </div>
+
+        <div class="field">
+          <label for="favorite">Preferred aromas (optional)</label>
+          <input id="favorite" placeholder="e.g., citrus, floral, herbal, woody" />
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:6px">
+          <button class="btn" id="buildPlan">Create plan</button>
+          <button class="btn ghost" id="resetPlan">Clear</button>
+        </div>
+
+        <div id="planResult" class="result" aria-live="polite" style="display:none;margin-top:12px">
+          <strong>Personalized plan</strong>
+          <pre id="planText"></pre>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button class="btn" id="copyPlan">Copy summary</button>
+            <a id="bookLink" class="btn ghost" href="{{PRIMARY_CTA_URL}}">Reserve a consultation</a>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <h2 style="margin-top:0">Blend Builder</h2>
+        <p class="muted">Choose a vibe and bottle size — the tool will suggest a gentle, safety-minded dilution and a simple blend card you can copy.</p>
+
+        <div class="field">
+          <label>Vibe</label>
+          <div class="chips" id="vibeChips">
+            <div class="chip active" data-vibe="Relax">Relax</div>
+            <div class="chip" data-vibe="Focus">Focus</div>
+            <div class="chip" data-vibe="Sleep">Sleep</div>
+            <div class="chip" data-vibe="Uplift">Uplift</div>
+            <div class="chip" data-vibe="Soothe">Soothe</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="bottle">Bottle size</label>
+          <select id="bottle">
+            <option value="10">10 ml</option>
+            <option value="30">30 ml</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="strength">Strength (topical dilution)</label>
+          <select id="strength">
+            <option value="0.5">Low — 0.5% (extra gentle)</option>
+            <option value="1">Gentle — 1%</option>
+            <option value="2">Standard — 2%</option>
+          </select>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-top:6px">
+          <button class="btn" id="buildBlend">Make blend</button>
+          <button class="btn ghost" id="clearBlend">Reset</button>
+        </div>
+
+        <div id="blendResult" class="result" style="display:none">
+          <strong>Blend card</strong>
+          <div id="blendCard" style="margin-top:8px"></div>
+          <pre id="dilutionText" style="margin-top:8px"></pre>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button class="btn" id="copyBlend">Copy blend</button>
+            <button class="btn ghost" id="saveBlend">Save to note</button>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+
+    <section class="panel" style="margin-top:18px">
+      <h2 style="margin-top:0">Quick contact</h2>
+      <p class="muted">Send a short message and we’ll reply within two business days. Prefer to call? Use the number above.</p>
+      <form id="contactForm" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+        <input name="name" placeholder="Your name" required />
+        <input name="email" placeholder="Email" required />
+        <input name="phone" placeholder="Phone (optional)" />
+        <input name="city" placeholder="City" />
+        <textarea name="message" placeholder="How can we help? Tell us about what you want to feel."></textarea>
+        <div style="grid-column:1/-1;display:flex;gap:10px;align-items:center">
+          <button class="btn" type="submit">Send message</button>
+          <div class="muted">Or schedule: <a href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" style="margin-top:18px">
+      <h2 style="margin-top:0">FAQ — safety & common questions</h2>
+      <dl class="faq">
+        <dt>How do you calculate dilution?</dt>
+        <dd>We use percent-based dilution (volume percent). The calculator above converts that into approximate drops for 10 ml and 30 ml bottles using a standard drop estimate. These are general aromatherapy guidelines and not medical directions.</dd>
+
+        <dt>Is a patch test necessary?</dt>
+        <dd>Yes. Apply a small diluted drop to an inner forearm, cover for 24 hours, and watch for redness, itching, or irritation. Stop use if you notice a reaction. Patch testing is a simple precaution.</dd>
+
+        <dt>What about pregnancy and nursing?</dt>
+        <dd>Some essential oils can be more active during pregnancy. If you are pregnant, breastfeeding, or have underlying conditions, please consult a qualified healthcare provider before topical or concentrated use.</dd>
+
+        <dt>Are essential oils safe around pets?</dt>
+        <dd>Many pets, especially cats and some small animals, are sensitive to essential oils. Keep oils out of reach, avoid diffusing in enclosed spaces without ventilation, and consult a veterinarian if you have concerns.</dd>
+      </dl>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center">
+      <div>{{BUSINESS_NAME}} • <span class="muted">Serving {{CITY}}, {{STATE}}</span></div>
+      <div style="text-align:right" class="muted">Phone: {{PHONE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </div>
+  </footer>
+
+  <script>
+    // Utility: copy to clipboard
+    async function copyText(text){
+      try{await navigator.clipboard.writeText(text);alert('Copied to clipboard');}
+      catch(e){console.log(e);alert('Copy failed — select and copy manually.');}
+    }
+
+    // Session Planner logic
+    document.getElementById('buildPlan').addEventListener('click', ()=>{
+      const goal = document.getElementById('goal').value;
+      const length = document.getElementById('length').value;
+      const freq = document.getElementById('freq').value;
+      const sensitivity = document.getElementById('sensitivity').value || 'None noted';
+      const fav = document.getElementById('favorite').value || 'No preference';
+
+      const lines = [];
+      lines.push('Personalized session plan — ' + new Date().toLocaleDateString());
+      lines.push('Intention: ' + goal);
+      lines.push('Session length: ' + length);
+      lines.push('Suggested rhythm: ' + freq);
+      lines.push('Sensitivities/notes: ' + sensitivity);
+      lines.push('Preferred aromas: ' + fav);
+      lines.push('Suggested approach: Use 1–2 focused scent moments; start mild and test on skin (patch test). Follow up with a short check-in after the first session.');
+
+      const summary = lines.join('\n');
+      document.getElementById('planText').textContent = summary;
+      document.getElementById('planResult').style.display = 'block';
+    });
+    document.getElementById('resetPlan').addEventListener('click', ()=>{
+      document.getElementById('goal').selectedIndex=0;document.getElementById('length').selectedIndex=0;document.getElementById('freq').selectedIndex=0;document.getElementById('sensitivity').value='';document.getElementById('favorite').value='';document.getElementById('planResult').style.display='none';
+    });
+    document.getElementById('copyPlan').addEventListener('click', ()=>{
+      const txt = document.getElementById('planText').textContent; if(txt) copyText(txt);
+    });
+
+    // Vibe chips
+    document.querySelectorAll('#vibeChips .chip').forEach(c=>c.addEventListener('click', ()=>{
+      document.querySelectorAll('#vibeChips .chip').forEach(x=>x.classList.remove('active'));
+      c.classList.add('active');
+    }));
+
+    // Blend builder logic
+    function suggestionsForVibe(vibe){
+      const map = {
+        'Relax':['Lavender','Sweet Marjoram','Chamomile (Roman)'],
+        'Focus':['Rosemary','Basil','Lemon'],
+        'Sleep':['Lavender','Cedarwood','Marshmallow (carrier hint)'],
+        'Uplift':['Bergamot','Sweet Orange','Grapefruit'],
+        'Soothe':['Frankincense','Ylang Ylang','Geranium']
+      };
+      return map[vibe] || ['Lavender','Sweet Orange'];
+    }
+
+    function calculateDrops(sizeMl,strPercent){
+      // Assumes ~20 drops per ml
+      const dropsPerMl = 20;
+      const totalDrops = sizeMl * dropsPerMl;
+      const needed = Math.round(totalDrops * (strPercent/100));
+      return {totalDrops,needed};
+    }
+
+    document.getElementById('buildBlend').addEventListener('click', ()=>{
+      const vibe = document.querySelector('#vibeChips .chip.active').dataset.vibe;
+      const size = parseInt(document.getElementById('bottle').value,10);
+      const strength = parseFloat(document.getElementById('strength').value); // percent
+
+      const oils = suggestionsForVibe(vibe);
+      const calc = calculateDrops(size,strength);
+
+      const steps = [];
+      steps.push('Blend card — ' + new Date().toLocaleDateString());
+      steps.push('Vibe: ' + vibe);
+      steps.push('Bottle: ' + size + ' ml');
+      steps.push('Target dilution: ' + strength + '%');
+      steps.push('Approx total drops in bottle: ' + calc.totalDrops);
+      steps.push('Total essential oil drops to add: ' + calc.needed);
+      steps.push('Suggested oil combination (total drops allocated among these): ' + oils.join(', '));
+      steps.push('Example allocation: ' + Math.max(1,Math.round(calc.needed*0.5)) + ' drops ' + oils[0] + ', ' + Math.max(0,Math.round(calc.needed*0.3)) + ' drops ' + (oils[1]||'') + ', rest ' + (oils[2]||''));
+      steps.push('Notes: Use carrier oil for topical application. Perform a patch test. Keep away from eyes and mucous membranes. If pregnant, nursing, or caring for pets, consult a professional before use.');
+
+      document.getElementById('blendCard').innerHTML = '<div style="font-weight:700">' + vibe + ' — ' + size + ' ml — ' + strength + '%</div>' +
+        '<div style="margin-top:8px;color:var(--muted)">Suggested oils: ' + oils.join(', ') + '</div>';
+      document.getElementById('dilutionText').textContent = steps.join('\n');
+      document.getElementById('blendResult').style.display = 'block';
+    });
+
+    document.getElementById('clearBlend').addEventListener('click', ()=>{
+      document.getElementById('bottle').selectedIndex=0;document.getElementById('strength').selectedIndex=1;document.querySelectorAll('#vibeChips .chip').forEach((x,i)=>x.classList.toggle('active',i===0));document.getElementById('blendResult').style.display='none';
+    });
+
+    document.getElementById('copyBlend').addEventListener('click', ()=>{
+      const txt = document.getElementById('dilutionText').textContent; if(txt) copyText(txt);
+    });
+
+    document.getElementById('saveBlend').addEventListener('click', ()=>{
+      const txt = document.getElementById('dilutionText').textContent; if(!txt) return alert('No blend to save');
+      const blob = new Blob([txt],{type:'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href=url; a.download='blend-card.txt'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    });
+
+    // Contact form — mock submit
+    document.getElementById('contactForm').addEventListener('submit',(e)=>{
+      e.preventDefault();
+      alert('Thank you! Your message has been received. We will respond to ' + (e.target.email.value || 'your email') + ' soon.');
+      e.target.reset();
+    });
+  </script>
+</body>
+</html>

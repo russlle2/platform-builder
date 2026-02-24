@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Rates & Options — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1724;--glass:rgba(255,255,255,0.06);--accent:#76c7c0;--muted:#cbd5e1;--glass-2:rgba(255,255,255,0.04)}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--muted);background:linear-gradient(180deg,#071027 0%, #0b1630 100%);}
+    body::after{content:"";position:fixed;inset:0;background:url('assets/img/pattern.svg');opacity:0.06;filter:blur(0.6px);mix-blend-mode:soft-light}
+    header{backdrop-filter:blur(8px);background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 6px 18px rgba(2,6,23,0.6);padding:18px 28px;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20}
+    .brand{font-weight:600;color:#fff;letter-spacing:0.2px}
+    nav a{color:var(--muted);margin-left:18px;text-decoration:none;font-size:0.95rem}
+    .container{max-width:980px;margin:36px auto;padding:28px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 10px 30px rgba(2,6,23,0.6);backdrop-filter:blur(10px)}
+    .hero{display:flex;gap:20px;align-items:center}
+    .hero h1{color:#fff;margin:0;font-size:1.6rem}
+    .hero p{margin:6px 0 0;color:var(--muted)}
+
+    /* Pricing comparator */
+    .comparator{margin-top:22px;padding:18px;border-radius:12px;background:linear-gradient(180deg, var(--glass), var(--glass-2));display:grid;grid-template-columns:1fr 220px;gap:18px;align-items:center}
+    .plans{display:flex;gap:14px;flex-wrap:wrap}
+    .plan{flex:1;min-width:220px;padding:14px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)}
+    .plan h3{margin:0 0 8px;color:#fff;font-size:1.05rem}
+    .price{font-weight:700;color:var(--accent);font-size:1.4rem}
+    .meta{font-size:0.86rem;color:var(--muted);margin-top:6px}
+    .toggle{display:flex;align-items:center;gap:8px;justify-self:end}
+    .switch{background:#081226;padding:6px;border-radius:999px;border:1px solid rgba(255,255,255,0.04);display:flex;align-items:center;gap:4px}
+    .switch button{background:transparent;border:0;color:var(--muted);padding:8px 12px;border-radius:8px;cursor:pointer}
+    .switch button.active{background:linear-gradient(90deg,#074b45,#0b6a62);color:white}
+    .note{font-size:0.86rem;color:var(--muted);margin-top:12px}
+
+    /* Proof gallery */
+    .proof{margin-top:22px;padding:14px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));display:flex;align-items:center;gap:16px}
+    .testimonials{flex:1;position:relative;min-height:84px}
+    .testimonial{position:absolute;left:0;right:0;opacity:0;transform:translateY(6px);transition:opacity .6s ease,transform .6s ease;color:var(--muted)}
+    .testimonial.active{opacity:1;transform:none}
+    .badges{display:flex;gap:10px}
+    .badge{background:rgba(255,255,255,0.02);padding:8px 10px;border-radius:8px;font-size:0.82rem;border:1px solid rgba(255,255,255,0.03);position:relative;cursor:default}
+    .badge[data-tooltip]:hover::after{content:attr(data-tooltip);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#081226;color:var(--muted);padding:8px;border-radius:6px;font-size:0.8rem;white-space:nowrap;border:1px solid rgba(255,255,255,0.04)}
+
+    /* CTA */
+    .cta-row{display:flex;gap:12px;margin-top:18px}
+    .btn{background:linear-gradient(180deg,#0c6b5f,#0b5d52);color:white;padding:10px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:600}
+    .btn.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+
+    footer{margin-top:28px;padding-top:12px;border-top:1px dashed rgba(255,255,255,0.03);font-size:0.85rem;color:var(--muted)}
+    .legal{margin-top:10px;font-size:0.78rem;color:#9fb1bd}
+
+    @media (max-width:720px){.comparator{grid-template-columns:1fr;}.hero{flex-direction:column;align-items:flex-start}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="specialties.html">Areas</a>
+      <a href="approach.html">Method</a>
+      <a href="fees.html">Rates</a>
+      <a href="faq.html">Help</a>
+      <a href="book.html">Schedule</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div>
+        <h1>Transparent options to fit how you like to work</h1>
+        <p>I offer ongoing member support as well as compact packages for focused goals. Choose the rhythm that suits your needs.</p>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:0.9rem;color:var(--muted)">Phone</div>
+        <div style="font-weight:700;color:#fff">{{PHONE}}</div>
+      </div>
+    </section>
+
+    <section class="comparator" aria-label="Pricing comparator">
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="font-weight:700;color:#fff">Options</div>
+          <div style="font-size:0.9rem;color:var(--muted)">Compare monthly vs packaged sessions</div>
+        </div>
+
+        <div class="plans" id="plans">
+          <div class="plan">
+            <h3>Intro Pack — Short Focus</h3>
+            <div class="price" data-month="120" data-package="330" id="price-intro">$120</div>
+            <div class="meta">3 sessions designed for assessment and short-term planning.</div>
+          </div>
+
+          <div class="plan">
+            <h3>Support Membership</h3>
+            <div class="price" data-month="240" data-package="900" id="price-membership">$240</div>
+            <div class="meta">A monthly option for ongoing weekly or biweekly sessions and check-ins.</div>
+          </div>
+
+          <div class="plan">
+            <h3>Focused Package</h3>
+            <div class="price" data-month="170" data-package="480" id="price-focused">$170</div>
+            <div class="meta">4-session package for concentrated work on a single concern.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="toggle">
+        <div style="font-size:0.86rem;color:var(--muted)">Display</div>
+        <div class="switch" role="tablist" aria-label="Toggle pricing">
+          <button id="btn-monthly" class="active">Monthly</button>
+          <button id="btn-package">Package</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="note">Numbers are typical session fees and package totals. Exact fees and membership terms are discussed when we meet; insurance billing is not handled here.</div>
+
+    <section class="proof" aria-hidden="false">
+      <div class="testimonials" id="testimonials">
+        <div class="testimonial active">"Working together helped me make steady progress without pressure. The check-in rhythm felt manageable." — A client in {{CITY}}</div>
+        <div class="testimonial">"A clear, calm approach that helped me decide next steps for my family situation." — B, {{STATE}}</div>
+        <div class="testimonial">"Short, focused sessions allowed me to try a different way of handling overwhelm." — C</div>
+      </div>
+      <div class="badges">
+        <div class="badge" data-tooltip="Licensed clinician with ongoing supervision">Licensed clinician</div>
+        <div class="badge" data-tooltip="Years in practice supporting adults in life transitions">Years in practice</div>
+        <div class="badge" data-tooltip="Regular peer consultation and adherence to professional ethics">Professional oversight</div>
+      </div>
+    </section>
+
+    <div class="cta-row">
+      <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      <a class="btn secondary" href="book.html">Request an orientation</a>
+    </div>
+
+    <footer>
+      <div>Confidentiality & scope: Sessions are confidential within legal and ethical limits. I provide psychotherapy and coaching within my licensed scope. I do not provide emergency services.</div>
+      <div class="legal">If you are in crisis or at immediate risk, contact local emergency services or the crisis resources available in your area.</div>
+    </footer>
+  </main>
+
+  <script>
+    // Pricing comparator logic with animated numbers
+    function animateNumber(el, start, end, duration){
+      let startTime = null;
+      function step(ts){
+        if(!startTime) startTime = ts;
+        const progress = Math.min((ts - startTime) / duration, 1);
+        const value = Math.round(start + (end - start) * progress);
+        el.textContent = '$' + value;
+        if(progress < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    const monthlyBtn = document.getElementById('btn-monthly');
+    const packageBtn = document.getElementById('btn-package');
+    const priceEls = [
+      document.getElementById('price-intro'),
+      document.getElementById('price-membership'),
+      document.getElementById('price-focused')
+    ];
+
+    function setPrices(kind){
+      priceEls.forEach(el => {
+        const from = parseInt(el.textContent.replace('$','')) || 0;
+        const to = parseInt(el.dataset[kind]);
+        animateNumber(el, from, to, 600);
+      });
+    }
+
+    monthlyBtn.addEventListener('click', ()=>{
+      monthlyBtn.classList.add('active'); packageBtn.classList.remove('active');
+      setPrices('month');
+    });
+    packageBtn.addEventListener('click', ()=>{
+      packageBtn.classList.add('active'); monthlyBtn.classList.remove('active');
+      setPrices('package');
+    });
+
+    // Proof gallery rotation
+    (function(){
+      const items = document.querySelectorAll('.testimonial');
+      let idx = 0;
+      setInterval(()=>{
+        items[idx].classList.remove('active');
+        idx = (idx + 1) % items.length;
+        items[idx].classList.add('active');
+      },6000);
+    })();
+
+  </script>
+</body>
+</html>

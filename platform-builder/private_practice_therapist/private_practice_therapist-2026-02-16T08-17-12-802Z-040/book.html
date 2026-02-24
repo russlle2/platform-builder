@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--muted:#57606a;--accent:#ff6b6b;--accent-2:#5b8cff;font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto}
+    body{margin:0;background:linear-gradient(180deg,#fff,#fbfdff);color:#031728}
+    header{display:flex;justify-content:space-between;align-items:center;padding:20px 30px}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    .container{max-width:960px;margin:18px auto;padding:0 18px}
+    .hero{background:linear-gradient(90deg,rgba(255,107,107,0.04),rgba(91,140,255,0.04));padding:22px;border-radius:12px}
+    .hero h1{margin:0;font-size:26px}
+    .split{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:16px}
+    .card{background:#fff;padding:18px;border-radius:12px;box-shadow:0 10px 30px rgba(10,20,30,0.04)}
+    form label{display:block;font-weight:700;margin-top:10px}
+    form input, form select, form textarea{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid rgba(9,14,20,0.06)}
+    .btn{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:10px;background:var(--accent);color:#fff;text-decoration:none;font-weight:700;border:none}
+    .muted{color:var(--muted);font-size:13px}
+    footer{margin-top:18px;padding:18px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="specialties.html">Services</a>
+      <a href="approach.html">Method</a>
+      <a href="fees.html">Fees</a>
+      <a href="faq.html">Help</a>
+      <a href="book.html">Book</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <h1>Schedule your first session</h1>
+      <p class="muted" style="margin-top:8px">We’ll find a time for a thoughtful intake — an extended meeting that helps us set goals and get you started. If you prefer, email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a>.</p>
+    </section>
+
+    <div class="split">
+      <div>
+        <div class="card">
+          <h3 style="margin:0">Book an intake</h3>
+          <p class="muted" style="margin-top:8px">Intake appointments are 75 minutes. Ongoing sessions are 50 minutes. Please provide the information below and I will respond to confirm within 48 business hours.</p>
+
+          <form action="/submit" method="post" style="margin-top:12px">
+            <label for="name">Full name</label>
+            <input id="name" name="name" type="text" placeholder="Your name" required>
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="you@domain.com" required>
+
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" type="tel" placeholder="(555) 555-5555">
+
+            <label for="when">Preferred days/times</label>
+            <input id="when" name="when" type="text" placeholder="Weekday mornings, evenings, etc.">
+
+            <label for="reason">Brief reason for seeking therapy</label>
+            <textarea id="reason" name="reason" rows="4" placeholder="What brings you in?" required></textarea>
+
+            <label for="telehealth">Session type</label>
+            <select id="telehealth" name="telehealth">
+              <option>Telehealth (secure video)</option>
+              <option>In-person — {{CITY}}, {{STATE}}</option>
+            </select>
+
+            <button class="btn" type="submit">Request an intake</button>
+          </form>
+
+          <div class="muted" style="margin-top:12px">After you request, you will receive a message with next steps, intake forms and a secure link for telehealth if needed.</div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0">What happens next?</h4>
+          <p class="muted" style="margin-top:8px">I will reach out to confirm a time and send intake paperwork. On the day of the session we’ll review informed consent, confidentiality, and collaboratively outline goals. If I am not the best fit, I’ll help with referral options.</p>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0">Privacy & safety</h4>
+          <p class="muted" style="margin-top:8px">Your information is kept confidential in line with ethical and legal standards. Communications via email are not fully encrypted; for sensitive information I will provide secure intake forms and telehealth links. For emergency or crisis needs, call local emergency services.</p>
+        </div>
+
+      </div>
+
+      <aside>
+        <div class="card">
+          <h4 style="margin:0">Quick facts</h4>
+          <p class="muted" style="margin-top:8px">Therapist: {{THERAPIST_NAME}}</p>
+          <p class="muted">License: {{LICENSE}}</p>
+          <p class="muted">Modalities: {{MODALITIES}}</p>
+          <p style="margin-top:10px"><a class="btn" href="fees.html">View fees & policies</a></p>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0">Before our first meeting</h4>
+          <ul style="margin-top:8px;color:var(--muted);padding-left:18px">
+            <li>Complete intake paperwork (emailed ahead of time)</li>
+            <li>Have a quiet, private space for telehealth</li>
+            <li>Bring a list of current medications if relevant</li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0">Cancellation & no-show</h4>
+          <p class="muted" style="margin-top:8px">Please give 48 hours notice to avoid a cancellation fee. Exceptions are considered for emergencies.</p>
+        </div>
+      </aside>
+    </div>
+
+    <section style="margin-top:18px">
+      <div class="card">
+        <h3 style="margin:0">Boundaries and scope</h3>
+        <p class="muted" style="margin-top:8px">I provide psychotherapy for adults focusing on anxiety, trauma, relationship difficulties, life transitions and burnout. I do not provide medication management; when appropriate, I’ll coordinate with prescribers. I do not provide emergency services.</p>
+      </div>
+
+      <div style="margin-top:12px;text-align:center">
+        <a class="btn" href="mailto:{{EMAIL}}?subject=Appointment%20request">Email to request</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="max-width:960px;margin:18px auto;padding:0 18px;color:var(--muted);font-size:13px">
+      <div style="display:flex;justify-content:space-between">
+        <div>&copy; {{BUSINESS_NAME}} • {{CITY}}, {{STATE}}</div>
+        <div>Questions: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+      </div>
+      <div style="margin-top:8px">Confidentiality note: Information shared in therapy is private except in cases of imminent harm, abuse disclosures, or legal orders. Crisis disclaimer: If you are in immediate danger, call 911 or your local emergency services.</div>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Schedule — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfffd;--accent:#2f8f73;--muted:#6d7782}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:linear-gradient(180deg,var(--bg),#f6fbf8);color:#082b27}
+    .shell{max-width:920px;margin:28px auto;padding:26px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none}
+    .top{display:flex;gap:20px;align-items:center}
+    h1{margin:0}
+    .steps{display:flex;gap:12px;margin-top:18px}
+    .step{flex:1;padding:14px;border-radius:12px;background:white;box-shadow:0 8px 20px rgba(12,20,16,0.04)}
+    form{margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6efea}
+    textarea{grid-column:1/3;min-height:120px}
+    .controls{grid-column:1/3;display:flex;gap:12px;align-items:center}
+    .btn{background:linear-gradient(90deg,var(--accent),#246f57);color:white;padding:10px 14px;border-radius:9px;border:none;font-weight:700}
+    .alt{background:transparent;border:1px solid #dbeee6;padding:10px 12px;border-radius:9px}
+    .meta{margin-top:12px;color:var(--muted);font-size:13px}
+    @media (max-width:760px){form{grid-template-columns:1fr}textarea{grid-column:1/1}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+      <nav>
+        <a href="index.html">Return</a>
+        <a href="services.html">Care</a>
+        <a href="about.html">Team</a>
+        <a href="contact.html">Reach</a>
+      </nav>
+    </header>
+
+    <main>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:18px">
+        <h1>Book an appointment</h1>
+        <div style="color:var(--muted)">Need help? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <strong>1. Choose visit type</strong>
+          <div style="margin-top:8px;color:var(--muted)">Initial, follow-up, or focused visit. Initial visits include comprehensive intake and planning.</div>
+        </div>
+        <div class="step">
+          <strong>2. Select time</strong>
+          <div style="margin-top:8px;color:var(--muted)">We offer in-person and telehealth slots. If you prefer an evening or weekend, note it in the comments.</div>
+        </div>
+        <div class="step">
+          <strong>3. Prepare</strong>
+          <div style="margin-top:8px;color:var(--muted)">You'll receive an intake form and pre-visit guidance to make our time together efficient and focused.</div>
+        </div>
+      </div>
+
+      <form id="booking" action="#" onsubmit="return submitForm(event)">
+        <input name="first" placeholder="First name" required />
+        <input name="last" placeholder="Last name" required />
+        <input name="email" placeholder="Email" type="email" required />
+        <input name="phone" placeholder="Phone" />
+        <select name="visit" required>
+          <option value="">Choose visit type</option>
+          <option value="initial">Initial comprehensive (90 min)</option>
+          <option value="follow">Follow-up (50 min)</option>
+          <option value="brief">Focused check-in (25 min)</option>
+        </select>
+        <select name="mode" required>
+          <option value="">Visit mode</option>
+          <option value="tele">Telehealth</option>
+          <option value="inperson">In-person</option>
+        </select>
+        <textarea name="notes" placeholder="Briefly describe your main concerns or goals"></textarea>
+
+        <div class="controls">
+          <button class="btn" type="submit">{{PRIMARY_CTA_LABEL}}</button>
+          <button type="button" class="alt" onclick="window.location='{{PRIMARY_CTA_URL}}'">Alternate booking</button>
+          <div style="margin-left:auto;color:var(--muted)">Or call <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+        </div>
+      </form>
+
+      <div class="meta">
+        <strong>Scheduling notes:</strong> Initial availability varies. We send a confirmation email with pre-visit intake and secure telehealth link when applicable. If you have urgent issues, seek immediate care. Our visits are educational and collaborative; we do not promise cures.
+      </div>
+    </main>
+
+    <footer style="margin-top:18px;color:var(--muted)">
+      <div>{{BUSINESS_NAME}} — Serving {{CITY}}, {{STATE}}. Questions: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    </footer>
+  </div>
+
+  <script>
+    function submitForm(e){
+      e.preventDefault();
+      const f = new FormData(e.target);
+      const name = f.get('first') + ' ' + f.get('last');
+      // lightweight client feedback; in production this would POST to a scheduling backend
+      alert('Thanks, ' + name + '. We received your request and will reach out to confirm availability.');
+      // optionally redirect to a confirmation page or the primary CTA
+      window.location = '{{PRIMARY_CTA_URL}}';
+      return false;
+    }
+  </script>
+</body>
+</html>

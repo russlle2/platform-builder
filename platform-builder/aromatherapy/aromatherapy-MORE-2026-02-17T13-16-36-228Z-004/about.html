@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — Practitioner Story</title>
+  <style>
+    :root{--bg:#fffefb;--ink:#17202a;--accent:#ff7aa2;--muted:#6a6a6a;--card:#ffffff;--radius:12px}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;color:var(--ink);background:var(--bg)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,255,255,0.85));border-bottom:1px solid rgba(10,10,10,0.04);position:sticky;top:0}
+    .nav a{margin:0 8px;text-decoration:none;color:var(--muted);font-weight:600}
+    .cta{padding:8px 12px;border-radius:10px;background:var(--accent);color:white;text-decoration:none}
+    main{max-width:980px;margin:28px auto;padding:0 20px}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
+    .bio{padding:18px;background:var(--card);border-radius:var(--radius);box-shadow:0 6px 22px rgba(20,20,60,0.04)}
+    .side{padding:18px;background:linear-gradient(180deg,rgba(255,255,255,0.95),rgba(255,255,255,0.9));border-radius:var(--radius);border:1px solid rgba(10,10,10,0.03)}
+    h1{margin:0 0 8px}
+    p.lead{color:var(--muted)}
+    .timeline{margin-top:14px}
+    .step{padding:12px;border-radius:10px;background:rgba(255,122,162,0.04);margin-bottom:10px}
+
+    .reveal{opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+
+    .modal-backdrop{position:fixed;inset:0;background:rgba(12,12,18,0.5);display:none;align-items:center;justify-content:center;z-index:80}
+    .modal-backdrop.open{display:flex}
+    .modal{width:92%;max-width:600px;background:var(--card);padding:18px;border-radius:12px}
+
+    footer{max-width:980px;margin:40px auto;padding:0 20px;color:var(--muted)}
+    @media (max-width:860px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:10px;align-items:center">
+      <div style="width:44px;height:44px;border-radius:9px;background:linear-gradient(135deg,#ff7aa2,#ffd36b);display:grid;place-items:center;color:white;font-weight:800">AP</div>
+      <div>
+        <div style="font-weight:800">Practitioner</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Blends</a>
+      <a href="pricing.html">Plans</a>
+      <a class="cta" href="book.html">Book a seat</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="bio panel reveal" data-reveal>
+      <h1>About the guide</h1>
+      <p class="lead">I work with scent as a way to organize attention and to invite a small, repeatable ritual into busy days. My teaching centers on safety, simple practices, and group learning where people can try things and reflect together.</p>
+
+      <div class="timeline">
+        <div class="step reveal" data-reveal><strong>Roots:</strong> Years of studying aromatic plants and safe use, with an emphasis on dilution and sensible application.</div>
+        <div class="step reveal" data-reveal><strong>Practice:</strong> A mix of small-group workshops and private consultations — practical tools you can take home.</div>
+        <div class="step reveal" data-reveal><strong>Approach:</strong> Experimentation without pressure; practices that may support steadiness and clearer noticing.</div>
+      </div>
+
+      <p style="margin-top:12px" class="muted">My work is not medical care. We stay within safety guidelines and offer resources for patch tests, dilution, and pet/pregnancy considerations. If you have specific health conditions, please consult a licensed healthcare provider.</p>
+    </section>
+
+    <div class="grid">
+      <div class="panel reveal" data-reveal>
+        <h3>How I structure cohorts</h3>
+        <p class="muted">Groups are small. Sessions combine a short teaching, a guided practice, and time for sharing. Each cohort gets a workbook and a clear safety brief. There is space to adapt: you never need to perform an exercise you’re not comfortable with.</p>
+        <p style="margin-top:10px"><strong>Sample session</strong></p>
+        <ol class="muted">
+          <li>Opening check-in</li>
+          <li>10-minute scent exploration</li>
+          <li>Shared practice + journaling prompt</li>
+          <li>Group reflection (15 minutes)</li>
+        </ol>
+        <div style="margin-top:12px"><a class="btn primary" href="book.html">See upcoming cohorts</a></div>
+      </div>
+
+      <aside class="side reveal" data-reveal>
+        <h4>Quick facts</h4>
+        <p class="muted"><strong>Format:</strong> Cohorts, small-group circles, and private sessions</p>
+        <p class="muted"><strong>Session length:</strong> 60 minutes typical</p>
+        <p class="muted"><strong>Location:</strong> Online & occasional in-person in {{CITY}}, {{STATE}}</p>
+        <div style="margin-top:12px"><button id="openTry2" class="btn">Try a short practice</button></div>
+      </aside>
+    </div>
+
+  </main>
+
+  <div class="modal-backdrop" id="modal2">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-weight:800">Try a two-minute breath</div>
+        <button class="btn" id="close2">Close</button>
+      </div>
+      <div style="margin-top:12px">
+        <div id="miniCircle" style="width:120px;height:120px;border-radius:50%;margin:12px auto;background:radial-gradient(circle,#fff1f6,#fff);display:grid;place-items:center;color:var(--accent);font-weight:700">Breathe</div>
+        <div style="text-align:center;color:var(--muted);font-size:13px">Follow the circle for a gentle four-count inhale and exhale.</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div style="max-width:980px;margin:28px auto;padding:0 20px;color:var(--muted)">Contact: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="contact.html">Connect</a></div>
+  </footer>
+
+  <script>
+    // Reveal on scroll
+    (function(){
+      const prefersReduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const items = document.querySelectorAll('[data-reveal]');
+      if(prefersReduce){ items.forEach(i=>i.classList.add('visible')); return; }
+      const ob = new IntersectionObserver((entries)=>{ entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); ob.unobserve(e.target); } }); },{threshold:0.1});
+      items.forEach(i=>ob.observe(i));
+    })();
+
+    // Mini modal controls
+    const modal2 = document.getElementById('modal2');
+    document.getElementById('openTry2').addEventListener('click',()=>modal2.classList.add('open'));
+    document.getElementById('close2').addEventListener('click',()=>modal2.classList.remove('open'));
+    modal2.addEventListener('click',e=>{ if(e.target===modal2) modal2.classList.remove('open'); });
+
+    // subtle pulse (honors reduced motion via CSS not used here) - we keep JS minimal
+  </script>
+</body>
+</html>

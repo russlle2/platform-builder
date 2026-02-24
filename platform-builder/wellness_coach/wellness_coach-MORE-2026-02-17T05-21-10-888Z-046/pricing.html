@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Investments — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfbfb;--card:#fff;--muted:#6b7280;--accent:#0b7a5a;--accent-2:#0b5d87;--glass:rgba(255,255,255,0.6)}
+    html,body{height:100%}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#0f172a;background:linear-gradient(180deg,var(--bg),#f3f7f5);}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:linear-gradient(90deg,rgba(11,122,90,0.06),rgba(11,93,135,0.03));backdrop-filter:blur(4px)}
+    .brand{font-weight:700;letter-spacing:0.2px}
+    nav a{margin-left:18px;color:var(--accent-2);text-decoration:none;font-weight:600}
+    .hero{display:flex;gap:28px;padding:48px 28px;align-items:flex-start}
+    .hero .left{flex:1;max-width:760px}
+    h1{margin:0 0 12px;font-size:28px}
+    p.lead{margin:0 0 18px;color:var(--muted)}
+    .mood{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 20px}
+    .mood button{background:var(--card);border:1px solid #e6eef0;padding:10px 14px;border-radius:8px;cursor:pointer}
+    .mood button.active{border-color:var(--accent);box-shadow:0 6px 18px rgba(11,122,90,0.08)}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 30px rgba(15,23,42,0.04);border:1px solid rgba(10,10,10,0.02)}
+    .pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
+    .plan-title{font-weight:700;margin-bottom:6px}
+    .price{font-size:22px;color:var(--accent);font-weight:800}
+    .features{color:var(--muted);margin-top:8px}
+    .cta-wrap{margin-top:16px}
+    .btn{background:var(--accent);border:none;color:#fff;padding:10px 16px;border-radius:8px;cursor:pointer;font-weight:700}
+    .secondary{background:#fff;border:1px solid #e1e5e9;color:var(--accent-2)}
+    .side{width:360px}
+    .pattern{width:100%;height:120px;background-image:url('assets/img/pattern.svg');background-size:cover;border-radius:10px}
+    .goals{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+    .goal-check{display:flex;align-items:center;gap:10px}
+    .meter{margin-top:12px}
+    .path-legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .legend-item{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}
+    footer{padding:18px 28px;color:var(--muted);font-size:13px}
+    @media(max-width:920px){.hero{flex-direction:column}.side{width:100%}.pricing-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Overview</a>
+      <a href="services.html">Approach</a>
+      <a href="programs.html">Offerings</a>
+      <a href="pricing.html">Investments</a>
+      <a href="testimonials.html">Stories</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="hero">
+    <div class="left">
+      <div class="card">
+        <h1>Pricing shaped around how you start, not just what you pay for</h1>
+        <p class="lead">Choose a path matched to where you are today. Pick a mood, add the outcomes that matter, and we’ll map a clear 30-day route you can follow.</p>
+
+        <div>
+          <label style="font-weight:700">Mood-to-Method — where are you right now?</label>
+          <div class="mood" role="tablist" id="moodSelector">
+            <button data-key="overwhelmed" class="active">Overwhelmed</button>
+            <button data-key="stuck">Stuck</button>
+            <button data-key="gaining">Gaining traction</button>
+            <button data-key="optimizing">Optimizing</button>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:14px;align-items:center;margin-top:8px">
+          <div style="flex:1">
+            <div style="font-size:13px;color:var(--muted)">Recommended approach</div>
+            <div id="methodName" style="font-weight:800;font-size:18px;margin-top:6px">Gentle Reset</div>
+            <div id="methodBlurb" style="color:var(--muted);margin-top:6px">A focused short set of practical moves to relieve pressure and make decisions easier this week.</div>
+          </div>
+          <div class="cta-wrap">
+            <a id="primaryCta" class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          </div>
+        </div>
+
+        <div class="pricing-grid" style="margin-top:18px" id="plans">
+          <div class="card">
+            <div class="plan-title">Recharge Day</div>
+            <div class="price">$450</div>
+            <div class="features">One focused VIP-style day for practical recalibration. Ideal for clearing overwhelm and making a compact plan.</div>
+            <div style="margin-top:10px"><button class="btn secondary" data-plan="recharge" onclick="choosePlan('recharge')">Select</button></div>
+          </div>
+
+          <div class="card">
+            <div class="plan-title">Guided Momentum (8 weeks)</div>
+            <div class="price">$1,900</div>
+            <div class="features">Short weekly check-ins, a flexible habit map, and weekly action templates to build steady results.</div>
+            <div style="margin-top:10px"><button class="btn secondary" data-plan="momentum" onclick="choosePlan('momentum')">Select</button></div>
+          </div>
+
+          <div class="card">
+            <div class="plan-title">Signature Reset — VIP Day</div>
+            <div class="price">$3,200</div>
+            <div class="features">An immersive day to redesign your next 30 days with templates, priorities, and a custom micro-habit system.</div>
+            <div style="margin-top:10px"><button class="btn" data-plan="vip" onclick="choosePlan('vip')">Reserve VIP Day</button></div>
+          </div>
+        </div>
+
+      </div>
+
+      <div style="margin-top:16px" class="card">
+        <h3 style="margin:0 0 8px">Build your 30-day path</h3>
+        <div style="color:var(--muted);font-size:14px">Select the outcomes you want and see a simple daily path that focuses effort where it matters.</div>
+
+        <div class="goals" id="goalList">
+          <label class="goal-check"><input type="checkbox" value="sleep" onchange="updatePath()" checked> Better sleep rhythms</label>
+          <label class="goal-check"><input type="checkbox" value="energy" onchange="updatePath()" checked> More consistent energy</label>
+          <label class="goal-check"><input type="checkbox" value="clarity" onchange="updatePath()"> Clearer focus and decisions</label>
+          <label class="goal-check"><input type="checkbox" value="stress" onchange="updatePath()"> Lower day-to-day stress</label>
+          <label class="goal-check"><input type="checkbox" value="movement" onchange="updatePath()"> Simple daily movement</label>
+        </div>
+
+        <div class="meter">
+          <svg id="pathMap" width="100%" height="64" viewBox="0 0 600 64" preserveAspectRatio="xMidYMid meet"></svg>
+          <div class="path-legend" id="legend"></div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <aside class="side">
+      <div class="card pattern" aria-hidden="true"></div>
+
+      <div class="card" style="margin-top:12px">
+        <div style="font-weight:700">Plan snapshot</div>
+        <div id="planSnapshot" style="color:var(--muted);margin-top:8px">Pick a mood and goals to build a concise 30-day outline here.</div>
+        <div style="margin-top:12px"><a id="secondaryCta" class="btn secondary" href="book.html">Book a time</a></div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <div style="font-weight:700">Questions?</div>
+        <div style="color:var(--muted);margin-top:8px">Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      </div>
+
+    </aside>
+
+  </main>
+
+  <footer>
+    <div>© <span id="year"></span> {{BUSINESS_NAME}} — Practical frameworks for daily change · <a href="contact.html">Reach out</a></div>
+  </footer>
+
+  <script>
+    (function(){
+      document.getElementById('year').textContent = new Date().getFullYear();
+      const moods = {
+        overwhelmed:{name:'Gentle Reset',blurb:'Small, immediate moves to reduce decision load and create breathable margins.',cta:'Book a Short Reset'},
+        stuck:{name:'Bridge Plan',blurb:'A 4-week bridge that focuses on one clear habit at a time to restart forward momentum.',cta:'Start a Discovery Call'},
+        gaining:{name:'Momentum Coaching',blurb:'Weekly checkpoints and micro-habit scaffolds to maintain steady progress.',cta:'Claim Momentum Session'},
+        optimizing:{name:'VIP Intensive',blurb:'A high-impact day to redesign your routines and priorities for the quarter.',cta:'Reserve a VIP Day'}
+      };
+
+      const moodButtons = document.querySelectorAll('#moodSelector button');
+      moodButtons.forEach(b=>b.addEventListener('click', ()=>{
+        moodButtons.forEach(x=>x.classList.remove('active'));
+        b.classList.add('active');
+        applyMood(b.getAttribute('data-key'));
+      }));
+
+      function applyMood(key){
+        const m = moods[key] || moods.overwhelmed;
+        document.getElementById('methodName').textContent = m.name;
+        document.getElementById('methodBlurb').textContent = m.blurb;
+        const primary = document.getElementById('primaryCta');
+        primary.textContent = m.cta;
+        primary.href = '{{PRIMARY_CTA_URL}}';
+        document.getElementById('planSnapshot').textContent = m.name + ' — recommended approach updated.';
+      }
+
+      applyMood('overwhelmed');
+
+      window.choosePlan = function(plan){
+        const map = {recharge:'Recharge Day — a focused single-day reset.',momentum:'Guided Momentum — 8-week structure.',vip:'Signature Reset — VIP Day intensive.'};
+        document.getElementById('planSnapshot').textContent = map[plan] || 'Plan selected.';
+        document.getElementById('secondaryCta').href = 'book.html?plan='+plan;
+      }
+
+      // Path map rendering
+      function updatePath(){
+        const checks = Array.from(document.querySelectorAll('#goalList input')).filter(i=>i.checked).map(i=>i.value);
+        const svg = document.getElementById('pathMap');
+        while(svg.firstChild) svg.removeChild(svg.firstChild);
+        const totalDays = 30;
+        const w = 560; const h = 64; const gap = 4; const cellW = (w - (totalDays-1)*gap)/totalDays;
+        svg.setAttribute('viewBox','0 0 '+w+' '+h);
+        const colorMap = {sleep:'#0b7a5a',energy:'#0b5d87',clarity:'#9b5cf6',stress:'#f59e0b',movement:'#ef4444'};
+        const legend = document.getElementById('legend');
+        while(legend.firstChild) legend.removeChild(legend.firstChild);
+        checks.forEach(g=>{
+          const item = document.createElement('div'); item.className='legend-item';
+          const dot = document.createElement('span'); dot.style.width='12px'; dot.style.height='12px'; dot.style.display='inline-block'; dot.style.background=colorMap[g]||'#94a3b8'; dot.style.borderRadius='3px';
+          const txt = document.createElement('span'); txt.textContent = {sleep:'Sleep',energy:'Energy',clarity:'Clarity',stress:'Stress',movement:'Movement'}[g]||g;
+          item.appendChild(dot); item.appendChild(txt); legend.appendChild(item);
+        });
+
+        // Strategy: distribute focus segments: first week heavy on foundation (sleep/movement), middle on energy/clarity, last week taper
+        for(let d=0; d<totalDays; d++){
+          const x = d*(cellW+gap);
+          const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+          rect.setAttribute('x',x); rect.setAttribute('y',8); rect.setAttribute('width',cellW); rect.setAttribute('height',48); rect.setAttribute('rx',6);
+          // coloring logic
+          let shade = '#e6eef0';
+          if(checks.length === 0) shade = '#e6eef0';
+          else{
+            const pick = checks[(Math.floor(d/7)+d) % checks.length]; // deterministic mix
+            shade = colorMap[pick] || '#cbd5e1';
+          }
+          rect.setAttribute('fill',shade);
+          svg.appendChild(rect);
+        }
+
+        // snapshot text
+        const summary = checks.length ? checks.map(k=>({sleep:'better sleep',energy:'steady energy',clarity:'clear focus',stress:'calmer days',movement:'consistent movement'}[k])).filter(Boolean).slice(0,3).join(', ') : 'no outcomes selected';
+        document.getElementById('planSnapshot').textContent = '30-day outline focused on: ' + summary + '.';
+      }
+
+      window.updatePath = updatePath;
+      updatePath();
+
+    })();
+  </script>
+</body>
+</html>

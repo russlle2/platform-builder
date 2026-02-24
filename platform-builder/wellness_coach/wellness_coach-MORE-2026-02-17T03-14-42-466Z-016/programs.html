@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Series — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--accent:#5a9c6f;--muted:#6c7b7b}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#072026;background:var(--bg)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-bottom:1px solid #eef2f3}
+    .logo{font-weight:800;color:var(--accent)}
+    nav a{margin:0 8px;color:#10323a;text-decoration:none}
+
+    .lead{padding:36px 6vw;background-image:url('assets/img/pattern.svg');background-size:240px 240px}
+    .lead h1{margin:0;font-size:30px}
+    .lead p{color:var(--muted);margin-top:8px}
+
+    .series{display:grid;grid-template-columns:1fr 360px;gap:22px;padding:26px 6vw}
+    .list{display:flex;flex-direction:column;gap:12px}
+    .item{background:#fff;padding:16px;border-radius:10px;box-shadow:0 8px 24px rgba(10,30,40,0.04)}
+    .item h4{margin:0 0 8px 0}
+    .item p{margin:0;color:var(--muted)}
+
+    .sidebar{position:sticky;top:88px;height:fit-content}
+    .mood-panel{background:#fff;padding:14px;border-radius:10px}
+    .mood-panel h4{margin:0 0 8px 0}
+    .mood-list{display:flex;gap:8px;flex-wrap:wrap}
+    .mood-list button{padding:8px 12px;border-radius:999px;border:2px solid #eef3f4;background:white;cursor:pointer}
+    .mood-list .active{background:linear-gradient(90deg,var(--accent)10%,#d2f0dc);border-color:var(--accent)}
+
+    .recommendation{margin-top:12px}
+    .cta{display:flex;gap:10px;margin-top:12px}
+    .cta button{padding:10px 14px;border-radius:10px;border:0;cursor:pointer}
+    .primary{background:var(--accent);color:white}
+    .secondary{background:transparent;border:2px solid var(--accent);color:var(--accent)}
+
+    footer{padding:18px 6vw;color:var(--muted);border-top:1px solid #f5f8f7}
+    @media(max-width:920px){.series{grid-template-columns:1fr}.sidebar{position:static}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Intro</a>
+      <a href="about.html">Backstory</a>
+      <a href="services.html">Offerings</a>
+      <a href="programs.html">Series</a>
+      <a href="pricing.html">Rates</a>
+      <a href="testimonials.html">Praise</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="lead">
+      <h1>Series shaped for short wins</h1>
+      <p>Groupings of sessions that teach a simple, repeatable approach. Each series centers on an outcome, a daily anchor and one weekly habit.</p>
+    </section>
+
+    <section class="series">
+      <div class="list">
+        <div class="item">
+          <h4>Focus Sprint — 4 weeks</h4>
+          <p>Build a single daily anchor to increase uninterrupted work blocks and reduce distraction flips.</p>
+          <div style="margin-top:10px;color:var(--muted)">Seats: small cohort • Pace: weekly</div>
+        </div>
+
+        <div class="item">
+          <h4>Reset & Sustain — 6 weeks</h4>
+          <p>Layer a weekly pulse with a short maintenance plan to preserve gains after the series ends.</p>
+          <div style="margin-top:10px;color:var(--muted)">Includes templates and two 1:1 check-ins</div>
+        </div>
+
+        <div class="item">
+          <h4>Week-by-Week Design — 3 weeks</h4>
+          <p>Map out three precise weekly experiments to test and lock in a new daily rhythm.</p>
+          <div style="margin-top:10px;color:var(--muted)">Best for fast iteration</div>
+        </div>
+      </div>
+
+      <aside class="sidebar">
+        <div class="mood-panel">
+          <h4>Where are you now?</h4>
+          <div class="mood-list">
+            <button data-mood="anxious">Anxious</button>
+            <button data-mood="busy">Busy</button>
+            <button data-mood="adrift">Adrift</button>
+            <button data-mood="steady">Steady</button>
+          </div>
+          <div class="recommendation" style="margin-top:12px">
+            <strong id="programTitle">Pick a state</strong>
+            <p id="programDesc" style="color:var(--muted);margin-top:8px">Choose how you feel to see the most suitable series and a tailored next action.</p>
+            <div class="cta">
+              <button id="progPrimary" class="primary" onclick="location.href='{{PRIMARY_CTA_URL}}'">{{PRIMARY_CTA_LABEL}}</button>
+              <button id="progAlt" class="secondary" onclick="location.href='contact.html'">Ask first</button>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;flex-wrap:wrap">
+      <div>&copy; {{BUSINESS_NAME}} • {{CITY}}, {{STATE}}</div>
+      <div>{{PHONE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </div>
+  </footer>
+
+  <script>
+    // Mood-to-Method selector for programs
+    const moodBtns = Array.from(document.querySelectorAll('.mood-list button'));
+    const titleEl = document.getElementById('programTitle');
+    const descEl = document.getElementById('programDesc');
+    const primaryBtn = document.getElementById('progPrimary');
+
+    const mapping = {
+      anxious: {title:'Focus Sprint — Start small',desc:'A four-week sprint centered on one daily anchor to reduce churn. Ideal when the mind races and decisions pile up.',cta:'Join Focus Sprint',url:'{{PRIMARY_CTA_URL}}?series=focus'},
+      busy: {title:'Week-by-Week Design — Order the week',desc:'Three-week design that gives precise weekly experiments to reclaim usable time each week.',cta:'Enroll in Week-by-Week',url:'{{PRIMARY_CTA_URL}}?series=week'},
+      adrift: {title:'Reset & Sustain — Create ballast',desc:'Six weeks to build a weekly pulse and maintenance habits so momentum carries forward.',cta:'Start Reset & Sustain',url:'{{PRIMARY_CTA_URL}}?series=reset'},
+      steady: {title:'Maintenance rhythm',desc:'Ongoing checkpoints to protect progress with minimal time overhead.',cta:'Join Maintenance',url:'{{PRIMARY_CTA_URL}}?series=maint'}
+    };
+
+    moodBtns.forEach(btn=>btn.addEventListener('click', ()=>{
+      moodBtns.forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const key = btn.getAttribute('data-mood');
+      const data = mapping[key];
+      animatePanelChange(data);
+    }));
+
+    function animatePanelChange(data){
+      titleEl.style.transform = 'translateY(6px)'; titleEl.style.opacity = 0;
+      descEl.style.transform = 'translateY(6px)'; descEl.style.opacity = 0;
+      primaryBtn.style.opacity = 0;
+      setTimeout(()=>{
+        titleEl.textContent = data.title;
+        descEl.textContent = data.desc;
+        primaryBtn.textContent = data.cta;
+        primaryBtn.onclick = ()=> location.href = data.url;
+        titleEl.style.transform = ''; titleEl.style.opacity = 1;
+        descEl.style.transform = ''; descEl.style.opacity = 1;
+        primaryBtn.style.opacity = 1;
+      },220);
+    }
+
+    // Initialize to 'busy'
+    document.querySelector('.mood-list button[data-mood="busy"]').click();
+  </script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+/* Base styles for wellness coach intensive template */
+:root{
+  --bg:#fbfdfb;
+  --muted:#6b7080;
+  --accent:#68a78a;
+  --accent-2:#9ac4b6;
+  --card:#ffffff;
+  --radius:12px;
+  --max-width:1100px;
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--bg);color:#0b1220}
+.wrap{max-width:var(--max-width);margin:0 auto;padding:2rem}
+.site-header{background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.2));backdrop-filter:blur(6px);position:sticky;top:0;z-index:20;border-bottom:1px solid #eee}
+.site-header .wrap{display:flex;align-items:center;justify-content:space-between}
+.logo{font-weight:700;color:#0b1220;text-decoration:none}
+.main-nav{display:flex;gap:1rem;align-items:center}
+.main-nav a{color:var(--muted);text-decoration:none;padding:0.45rem 0.6rem;border-radius:8px}
+.main-nav a.cta{background:var(--accent);color:#fff}
+.main-nav a.muted{opacity:0.9}
+.layout-split main{display:block}
+.section{padding:4rem 0}
+.hero.split{display:flex;align-items:stretch;gap:2rem;padding:4rem 0}
+.hero-left{flex:1;display:flex;flex-direction:column;justify-content:center}
+.hero-right{flex:1;display:flex;align-items:center;justify-content:center}
+.kicker{font-size:0.9rem;color:var(--accent);margin:0 0 0.5rem}
+.title{font-size:2rem;margin:0 0 1rem}
+.lead{color:var(--muted);max-width:48ch}
+.hero-actions{display:flex;gap:0.8rem;margin:1.2rem 0}
+.btn{display:inline-block;padding:0.7rem 1rem;border-radius:10px;border:1px solid transparent;text-decoration:none;cursor:pointer}
+.btn.primary{background:var(--accent);color:white}
+.btn.ghost{background:transparent;border-color:var(--accent);color:var(--accent)}
+.meta{list-style:none;padding:0;margin:0;display:flex;gap:1rem;color:var(--muted)}
+.pattern{width:100%;height:100%;max-height:420px}
+.gallery{padding:3.5rem 0}
+.gallery .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:1rem}
+.card{background:var(--card);padding:1rem;border-radius:var(--radius);box-shadow:0 6px 18px rgba(12,16,20,0.06)}
+.what-to-expect{background:linear-gradient(180deg,#fff,#f8faf8);padding:3.5rem 0}
+.what-to-expect ol{max-width:60ch;color:var(--muted)}
+.objections{padding:3.5rem 0}
+.objections dl{display:grid;gap:0.6rem}
+.objections dt{font-weight:700}
+.cta-slab{background:linear-gradient(90deg,rgba(104,167,138,0.08),rgba(154,196,182,0.05));padding:3rem;border-radius:16px;margin:2rem}
+.site-footer{border-top:1px solid #eee;padding:2rem 0;margin-top:2rem}
+.site-footer .wrap{display:flex;justify-content:space-between}
+.brand{font-weight:700;margin:0}
+.muted{color:var(--muted)}
+/* Modal */
+.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(6,10,12,0.35);z-index:60}
+.modal[aria-hidden="false"]{display:flex}
+.modal-panel{background:white;padding:1.4rem;border-radius:12px;max-width:700px;width:94%;box-shadow:0 14px 40px rgba(10,12,14,0.2);position:relative}
+.modal-close{position:absolute;right:12px;top:12px;border:0;background:transparent;font-size:1.2rem;cursor:pointer}
+.exercise-controls{display:flex;gap:0.6rem;align-items:center;margin-top:0.8rem}
+.exercise-stage{display:flex;gap:1rem;align-items:center;margin-top:1rem}
+.exercise-visual{width:140px;height:140px;display:flex;align-items:center;justify-content:center}
+#breath-circle{width:100%;height:100%}
+#pulse{transition:transform 1s ease,opacity 0.4s}
+.exercise-text{flex:1}
+.exercise-footer{text-align:right;margin-top:1rem}
+/* Reveal animation */
+[data-reveal]{opacity:0;transform:translateY(18px);transition:opacity 520ms cubic-bezier(.2,.8,.2,1),transform 520ms cubic-bezier(.2,.8,.2,1)}
+[data-reveal].revealed{opacity:1;transform:none}
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce){
+  [data-reveal]{transition:none;opacity:1;transform:none}
+  #pulse{transition:none}
+}
+/* Responsive */
+@media (max-width:800px){
+  .hero.split{flex-direction:column}
+  .site-header .wrap{padding:0.5rem 1rem}
+}

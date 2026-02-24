@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f6fbfa;--accent:#2d7a66;--muted:#5d6f6b}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;margin:0;background:var(--bg);color:#022f2a}
+    header{display:flex;justify-content:space-between;padding:14px 20px;background:linear-gradient(180deg,rgba(45,122,102,.04),transparent)}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none}
+    .container{max-width:920px;margin:24px auto;padding:0 20px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .panel{background:white;padding:16px;border-radius:12px;border:1px solid rgba(2,48,43,.04)}
+
+    label{display:block;margin:8px 0 4px;font-size:14px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #eaf5f1}
+    .actions{display:flex;gap:8px;align-items:center;margin-top:12px}
+    .primary{background:var(--accent);color:white;padding:10px 12px;border-radius:8px;text-decoration:none;border:none}
+
+    .habit-tool{background:linear-gradient(90deg,rgba(102,168,154,.06),transparent);padding:12px;border-radius:10px}
+
+    @media (max-width:860px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:44px;height:44px;border-radius:8px;background:linear-gradient(90deg,#66a89a,#2d7a66);display:flex;align-items:center;justify-content:center;color:white;font-weight:700">WC</div>
+      <div style="font-weight:700">Reserve time</div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="pricing.html">Rates</a>
+      <a href="testimonials.html">Stories</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div class="grid">
+      <div>
+        <section class="panel">
+          <h2 style="margin-top:0">Book a conversation</h2>
+          <p style="color:var(--muted)">Choose a slot or request a private intake. Sessions focus on habits, frameworks, and measurable steps.</p>
+
+          <form id="bookingForm" onsubmit="return false;">
+            <label for="name">Your name</label>
+            <input id="name" required placeholder="Full name" />
+            <label for="email">Email</label>
+            <input id="email" type="email" required placeholder="you@domain.com" />
+            <label for="type">Session type</label>
+            <select id="type">
+              <option>Intro: 20 minutes</option>
+              <option>Deep session: 50 minutes</option>
+              <option>Planning review: 30 minutes</option>
+            </select>
+            <label for="note">A short note</label>
+            <textarea id="note" placeholder="What would you like to focus on?" rows="4"></textarea>
+
+            <div class="actions">
+              <button class="primary" id="bookNow">Request time</button>
+              <button id="mailto" style="padding:10px;border-radius:8px">Email a request</button>
+            </div>
+          </form>
+
+          <p style="margin-top:12px;color:var(--muted);font-size:13px">After requesting we will follow up to confirm details and suggest starting habits you can trial in the interim.</p>
+        </section>
+
+        <section class="panel" style="margin-top:12px">
+          <h3 style="margin-top:0">Quick try-before-you-book</h3>
+          <p style="color:var(--muted);margin-bottom:8px">A short guided moment to sample the approach.</p>
+          <div style="display:flex;gap:8px">
+            <button id="tryBooking" style="padding:10px;border-radius:8px;border:1px solid rgba(2,48,43,.06);background:#fff">Try it now</button>
+            <a href="pricing.html" style="padding:10px;border-radius:8px;background:var(--accent);color:#fff;text-decoration:none">See rates</a>
+          </div>
+        </section>
+      </div>
+
+      <aside>
+        <div class="panel habit-tool">
+          <h4 style="margin-top:0">On-the-spot 7-day starter</h4>
+          <p style="color:var(--muted);font-size:13px;margin-top:0">Generate a compact weekly checklist you can use right away.</p>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <select id="hbTheme">
+              <option value="movement">Movement</option>
+              <option value="breath">Breath</option>
+              <option value="journaling">Journaling</option>
+            </select>
+            <button id="hbGen">Generate</button>
+          </div>
+          <div id="hbOut" style="margin-top:8px;color:var(--muted);font-size:14px">No plan yet.</div>
+          <button id="hbPrint" style="margin-top:8px;padding:8px;border-radius:8px">Print checklist</button>
+        </div>
+
+        <div class="panel" style="margin-top:12px">
+          <h4 style="margin-top:0">Need help?</h4>
+          <p style="color:var(--muted);font-size:13px;margin-top:0">Call or email to arrange a time that fits your week.</p>
+          <div style="font-weight:600;margin-top:6px">{{PHONE}}</div>
+          <a href="mailto:{{EMAIL}}" style="display:inline-block;margin-top:6px;background:var(--accent);color:#fff;padding:8px;border-radius:8px;text-decoration:none">Contact</a>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <div id="miniModal" style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.25)">
+    <div style="background:#fff;padding:16px;border-radius:10px;width:90%;max-width:520px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <strong>Guided micro-practice</strong>
+        <button id="miniClose">✕</button>
+      </div>
+      <div style="margin-top:12px" id="miniContent">
+        <p style="margin:0 0 8px 0;color:var(--muted)">Choose one: breathing (2 min) or a micro-journal prompt (write a sentence).</p>
+        <div style="display:flex;gap:8px;justify-content:flex-end">
+          <button id="miniBreath" style="padding:8px;border-radius:8px">Breath</button>
+          <button id="miniJournal" style="padding:8px;border-radius:8px">Journal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Booking UI (client-side only)
+    document.getElementById('bookNow').addEventListener('click',function(){
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      if(!name || !email) return alert('Please enter name and email.');
+      alert('Thanks, '+name+". We've received your request and will follow up at " + email + '.');
+      // Simulated success
+      document.getElementById('bookingForm').reset();
+    });
+
+    document.getElementById('mailto').addEventListener('click',function(){
+      const subject = encodeURIComponent('Requesting a session');
+      const body = encodeURIComponent('Hi,\n\nI would like to request a session. Please suggest available times.\n\nThanks.');
+      window.location.href = 'mailto:{{EMAIL}}?subject='+subject+'&body='+body;
+    });
+
+    // Habit builder in aside
+    (function(){
+      const map = {
+        movement:["1 min stretch","2 min walk","ankle rolls","shoulder circles","sit-stand 5x","gentle twist","deep breath + reach"],
+        breath:["4-6 breathing x3","slow exhale focus","box breathing 2 rounds","belly breaths 3x","sigh release 2x","counted breath 4x","long exhale 3x"],
+        journaling:["one-sentence log","note a small win","record a worry + step","3-word summary","gratitude line","tiny plan for next day","capture a sensory detail"]
+      };
+      const hbGen = document.getElementById('hbGen');
+      const hbOut = document.getElementById('hbOut');
+      const hbPrint = document.getElementById('hbPrint');
+      hbGen.addEventListener('click',()=>{
+        const key = document.getElementById('hbTheme').value;
+        const list = map[key] || [];
+        hbOut.innerHTML = '<ol style="padding-left:18px;margin:8px 0">'+list.slice(0,7).map(i=>'<li>'+i+'</li>').join('')+'</ol>';
+        hbPrint.dataset.html = hbOut.innerHTML;
+      });
+      hbPrint.addEventListener('click',()=>{
+        const w = window.open('about:blank');
+        w.document.write('<!doctype html><meta charset="utf-8"><title>Checklist</title><style>body{font-family:system-ui;padding:18px}</style><h3>7-day checklist</h3>'+ (hbPrint.dataset.html||'<p>No plan generated</p>'));
+        w.print();
+        w.close();
+      });
+    })();
+
+    // Mini guided modal reuse
+    const miniModal = document.getElementById('miniModal');
+    document.getElementById('tryBooking').addEventListener('click',()=> miniModal.style.display='flex');
+    document.getElementById('miniClose').addEventListener('click',()=> miniModal.style.display='none');
+    document.getElementById('miniBreath').addEventListener('click',()=>{
+      alert('Breathe in for 4, out for 6. Repeat 3 times. Notice changes.'); miniModal.style.display='none';
+    });
+    document.getElementById('miniJournal').addEventListener('click',()=>{
+      const one = prompt('Write one sentence about how your day felt.');
+      if(one) alert('Nice — that sentence can be a small anchor.');
+      miniModal.style.display='none';
+    });
+  </script>
+</body>
+</html>

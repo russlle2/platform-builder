@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Investment — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7efe6;--card:#fff6ee;--accent:#8a5a3c;--muted:#6b5a50;--accent-2:#c28f6a;--shadow:0 8px 24px rgba(121,86,62,.12);font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+    html,body{height:100%}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#fff);color:var(--muted);display:flex;flex-direction:column;min-height:100vh}
+    header{background:linear-gradient(90deg, rgba(138,90,60,.08), rgba(194,143,106,.04));border-bottom:1px solid rgba(138,90,60,.06)}
+    .wrap{max-width:980px;margin:0 auto;padding:28px}
+    nav{display:flex;align-items:center;gap:18px}
+    nav a{color:var(--accent);text-decoration:none;font-weight:600}
+    .logo{font-weight:700;color:var(--accent-2)}
+    .hero{display:grid;grid-template-columns:1fr;gap:18px;padding:40px 0}
+    .hero h1{margin:0;font-size:28px;color:var(--accent)}
+    .hero p{margin:0;color:var(--muted)}
+    .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:22px}
+    .card{background:var(--card);padding:20px;border-radius:12px;box-shadow:var(--shadow);border:1px solid rgba(138,90,60,.06);transition:transform .28s ease}
+    .card:hover{transform:translateY(-6px)}
+    .card h3{margin:0 0 8px 0;color:var(--accent)}
+    .price{font-weight:700;color:var(--accent-2);font-size:18px}
+    .muted{color:#7a6a61;font-size:14px}
+    .cta{display:inline-block;padding:10px 16px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none;font-weight:700}
+    footer{margin-top:auto;padding:28px 0;color:#7a6a61;font-size:14px}
+    .small{font-size:13px;color:#8b7a71}
+
+    /* pattern accent (inline SVG as background) */
+    .pattern{background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200"><defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="%23f3e9e0"/><stop offset="1" stop-color="%23fff7f2"/></linearGradient></defs><rect width="400" height="200" fill="url(%23g)"/><g fill="none" stroke="%238a5a3c" stroke-opacity="0.06"><path d="M0 160s60-40 120-24 80 40 160 16 120 40 120 40"/></g><circle cx="340" cy="40" r="28" fill="%23c28f6a" fill-opacity="0.06"/></svg>');background-repeat:no-repeat;background-position:right top;background-size:cover}
+
+    /* reveal system */
+    [data-reveal]{opacity:0;transform:translateY(14px);transition:opacity .6s ease, transform .6s ease}
+    [data-reveal].is-visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion: reduce){[data-reveal]{opacity:1;transform:none;transition:none}}
+
+    /* responsive */
+    @media (min-width:820px){.hero{grid-template-columns:1fr 360px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav>
+        <div class="logo">{{BUSINESS_NAME}}</div>
+        <a href="index.html">Home</a>
+        <a href="services.html">Offerings</a>
+        <a href="approach.html">Discover</a>
+        <a href="pricing.html" aria-current="page">Investment</a>
+        <a href="about.html">About</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap" role="main">
+    <section class="hero pattern" data-reveal>
+      <div>
+        <h1>Investment and pathways—practical options for busy lives</h1>
+        <p class="small">Thoughtful, evidence-informed care and a one-day deep integration offering. Choose what fits your calendar and goals.</p>
+      </div>
+      <aside aria-label="Quick action">
+        <p class="muted">Ready to commit to clearer next steps?</p>
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </aside>
+    </section>
+
+    <section style="margin-top:22px" data-reveal>
+      <div class="cards">
+        <article class="card">
+          <h3>Orientation Visit</h3>
+          <p class="muted">60-minute intake and focused planning session to clarify priorities and practical first steps.</p>
+          <div style="margin-top:12px"><span class="price">$325</span> <span class="small">one session</span></div>
+          <p class="small" style="margin-top:10px">Good for people wanting a clear, manageable starting plan with evidence-based suggestions.</p>
+        </article>
+
+        <article class="card">
+          <h3>Renewal Series</h3>
+          <p class="muted">A structured 6-week program combining coaching, integrative recommendations, and measurable goals.</p>
+          <div style="margin-top:12px"><span class="price">$1,150</span> <span class="small">6-week package</span></div>
+          <p class="small" style="margin-top:10px">Includes check-ins, adjustments, and an integration note to share with your primary care provider.</p>
+        </article>
+
+        <article class="card" aria-describedby="vip-note">
+          <h3>VIP Integration Day</h3>
+          <p class="muted">A full-day, focused collaboration to reframe your priorities, co-create a practical plan, and leave with a prioritized roadmap.</p>
+          <div style="margin-top:12px"><span class="price">$3,400</span> <span class="small">per day</span></div>
+          <p id="vip-note" class="small" style="margin-top:10px">Ideal for urgent re-prioritization, complex schedules, or a rapid reset with a detailed written plan.</p>
+        </article>
+      </div>
+    </section>
+
+    <section style="margin-top:28px" data-reveal>
+      <h2 style="color:var(--accent)">What's included</h2>
+      <ul class="small">
+        <li>Personalized, practical recommendations (lifestyle, nutrition, movement, sleep hygiene)</li>
+        <li>Coordination with your existing providers when requested</li>
+        <li>Takeaway plan with realistic, measurable steps</li>
+      </ul>
+      <p class="small" style="margin-top:8px">Insurance and billing: we provide superbills and can discuss flexible payment options during your booking conversation.</p>
+    </section>
+
+    <section style="margin-top:22px" data-reveal>
+      <h2 style="color:var(--accent)">How to proceed</h2>
+      <ol class="small">
+        <li>Choose the option that fits your timeline and goals.</li>
+        <li>Book a time via the Book page or call {{PHONE}} for questions.</li>
+        <li>Receive a brief intake form to help us prepare—aim to complete it 48 hours before your session.</li>
+      </ol>
+    </section>
+
+    <section style="margin-top:28px;padding:16px;background:#fffefc;border-radius:10px;border:1px solid rgba(138,90,60,.04)" data-reveal>
+      <h3 style="margin-top:0;color:var(--accent)">Still unsure?</h3>
+      <p class="small">If you'd like a short conversation to determine the right pathway, use the primary booking link or call us. We help people pick the option that fits their life and goals.</p>
+      <a class="cta" href="{{PRIMARY_CTA_URL}}" style="margin-top:12px;display:inline-block">Book a conversation</a>
+    </section>
+
+  </main>
+
+  <footer class="wrap">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+      <div class="small">© <span>{{BUSINESS_NAME}}</span> — {{CITY}}, {{STATE}}</div>
+      <div class="small">Contact: <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </div>
+  </footer>
+
+  <script>
+    (function(){
+      // Scroll reveal with prefers-reduced-motion support
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var revealEls = document.querySelectorAll('[data-reveal]');
+      if(prefersReduced){
+        revealEls.forEach(function(el){el.classList.add('is-visible');});
+        return;
+      }
+      if('IntersectionObserver' in window){
+        var obs = new IntersectionObserver(function(entries){
+          entries.forEach(function(e){
+            if(e.isIntersecting){ e.target.classList.add('is-visible'); obs.unobserve(e.target); }
+          });
+        },{threshold:0.12});
+        revealEls.forEach(function(el){obs.observe(el);});
+      } else { revealEls.forEach(function(el){el.classList.add('is-visible');}); }
+    })();
+  </script>
+</body>
+</html>

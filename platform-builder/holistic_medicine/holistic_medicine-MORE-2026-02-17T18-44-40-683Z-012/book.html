@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book — Plan a Call</title>
+  <style>
+    :root{--bg:#f7faf7;--ink:#0e241f;--muted:#566463;--accent:#89ae9d}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:var(--bg);color:var(--ink)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.25rem;border-bottom:1px solid rgba(10,20,18,0.04);background:white;position:sticky;top:0;z-index:10}
+    .logo{width:40px;height:40px;border-radius:9px;background:linear-gradient(135deg,var(--accent),#d4e7df);display:grid;place-items:center;color:white;font-weight:800}
+    nav a{margin-left:1rem;color:var(--muted);text-decoration:none;font-weight:600}
+    main{max-width:860px;margin:2rem auto;padding:1rem}
+    .content{display:grid;grid-template-columns:1fr 320px;gap:1rem}
+    .panel{background:white;padding:1rem;border-radius:10px;border:1px solid rgba(12,25,22,0.03)}
+    label{display:block;font-weight:700;margin-top:.6rem}
+    input,select,textarea{width:100%;padding:.6rem;margin-top:.35rem;border-radius:8px;border:1px solid rgba(10,20,18,0.06)}
+    button.primary{background:var(--accent);color:white;padding:.6rem .9rem;border-radius:10px;border:none;font-weight:700;margin-top:.7rem}
+    .muted{color:var(--muted)}
+    .reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none}}
+
+    /* small calendar mock */
+    .slot{padding:.5rem;border-radius:8px;border:1px dashed rgba(10,20,18,0.06);margin-bottom:.5rem}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:.6rem">
+      <div class="logo">HM</div>
+      <div>
+        <div style="font-weight:800">Holistic Medicine</div>
+        <div style="font-size:.85rem;color:var(--muted)">Book a planning conversation</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="about.html">About</a>
+      <a class="primary" href="#" style="margin-left:1rem;color:var(--accent);font-weight:700">{{PRIMARY_CTA_LABEL}}</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1 class="reveal" data-reveal>Schedule a short planning call</h1>
+    <p class="muted reveal" data-reveal>Choose a time for a 20-minute conversation to outline priorities and next steps. We’ll send a clear summary and suggested pathways after our talk.</p>
+
+    <div class="content">
+      <div class="panel reveal" data-reveal>
+        <form id="bookingForm">
+          <label for="name">Your name</label>
+          <input id="name" name="name" required placeholder="First and last">
+
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required placeholder="you@domain.com">
+
+          <label for="phone">Phone</label>
+          <input id="phone" name="phone" placeholder="Optional: {{PHONE}}">
+
+          <label for="reason">What would you like to focus on?</label>
+          <select id="reason" name="reason">
+            <option>General evaluation & plan</option>
+            <option>Sleep</option>
+            <option>Digestion</option>
+            <option>Stress & resilience</option>
+            <option>Other</option>
+          </select>
+
+          <label for="notes">A short note (optional)</label>
+          <textarea id="notes" rows="4" placeholder="A few sentences helps us prepare."></textarea>
+
+          <div style="display:flex;gap:.5rem;align-items:center;margin-top:.6rem">
+            <input type="checkbox" id="terms">
+            <label for="terms" class="muted small">I understand this is an educational consultation and not emergency care.</label>
+          </div>
+
+          <button type="submit" class="primary">{{PRIMARY_CTA_LABEL}}</button>
+        </form>
+      </div>
+
+      <aside class="panel reveal" data-reveal>
+        <h3 style="margin-top:0">Available slots</h3>
+        <div id="slots">
+          <div class="slot">Tue • 10:00 AM</div>
+          <div class="slot">Tue • 2:30 PM</div>
+          <div class="slot">Wed • 9:00 AM</div>
+          <div class="slot">Thu • 3:15 PM</div>
+        </div>
+        <p class="muted small" style="margin-top:.6rem">Times are illustrative. Once you reserve, we confirm via email with exact details. If none fit, reply to {{EMAIL}} and we’ll find another time.</p>
+        <div style="margin-top:1rem">
+          <button id="tryBtn3" style="border:1px solid var(--accent);background:transparent;padding:.5rem .7rem;border-radius:8px;color:var(--accent);font-weight:700">Try a guided moment</button>
+        </div>
+      </aside>
+    </div>
+
+  </main>
+
+  <footer style="max-width:860px;margin:2rem auto;padding:1rem;color:var(--muted)">Questions? Email {{EMAIL}} or call {{PHONE}} • Serving {{CITY}}, {{STATE}}</footer>
+
+  <div id="modalBackdrop3" style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(6,8,7,0.45)">
+    <div style="background:white;padding:1rem;border-radius:12px;max-width:520px;width:100%">
+      <h3 id="gTitle">Guided check-in</h3>
+      <div id="gArea" style="color:var(--muted)"></div>
+      <div style="display:flex;justify-content:flex-end;gap:.5rem;margin-top:.6rem">
+        <button id="close3">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // reveal
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const nodes = document.querySelectorAll('[data-reveal]');
+      if(prefersReduced){ nodes.forEach(n=>n.classList.add('visible')); return; }
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); } });
+      },{threshold:0.12});
+      nodes.forEach(n=>io.observe(n));
+    })();
+
+    // booking form (front-end only placeholder)
+    document.getElementById('bookingForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      const name = document.getElementById('name').value || 'Guest';
+      alert('Thanks, '+name+". We'll follow up at the email you provided to confirm the time.");
+    });
+
+    // small guided check-in modal
+    (function(){
+      const backdrop = document.getElementById('modalBackdrop3');
+      const tryBtn = document.getElementById('tryBtn3');
+      const close = document.getElementById('close3');
+      const gArea = document.getElementById('gArea');
+      const sequences = [
+        'Pause: place both feet on the floor and breathe for three slow counts.',
+        'Scan: notice one place of tension and soften it for a breath.',
+        'Note: one small, doable next step you can try today.'
+      ];
+      tryBtn.addEventListener('click', ()=>{
+        backdrop.style.display='flex';
+        gArea.innerHTML = '<ol><li>'+sequences[0]+'</li><li>'+sequences[1]+'</li><li>'+sequences[2]+'</li></ol>';
+      });
+      close.addEventListener('click', ()=>{ backdrop.style.display='none'; });
+      backdrop.addEventListener('click',(e)=>{ if(e.target===backdrop) backdrop.style.display='none'; });
+      document.addEventListener('keydown',(e)=>{ if(e.key==='Escape') backdrop.style.display='none'; });
+    })();
+  </script>
+</body>
+</html>

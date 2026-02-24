@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Method — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#FFFCF9;--ink:#2B251F;--accent:#8F5A35;--muted:#7A6A61}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto;background:var(--bg);color:var(--ink)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;border-bottom:1px solid rgba(43,37,31,0.06)}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none}
+    main{max-width:980px;margin:26px auto;padding:18px}
+    .hero{background:linear-gradient(180deg,#FFFDF8,#FFF8F0);padding:18px;border-radius:12px}
+    .process{display:flex;gap:14px;margin-top:16px}
+    .step{flex:1;padding:12px;background:#fff;border-radius:10px}
+    .tryBtn{margin-top:12px;padding:10px 12px;border-radius:9px;background:var(--accent);color:#fff;border:0}
+    .miniInventory{margin-top:16px;padding:12px;background:#fff;border-radius:10px}
+    footer{margin-top:26px;text-align:center;color:var(--muted)}
+    /* unique geometric svg */
+    body::after{content:"";position:fixed;right:0;top:0;width:320px;height:320px;background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22320%22 height=%22320%22><rect width=%22100%25%22 height=%22100%25%22 fill=%22%23FFFDF8%22/><g fill=%22%238F5A35%22 fill-opacity=%220.04%22><circle cx=%2260%22 cy=%2260%22 r=%2250%22/><rect x=%22160%22 y=%22140%22 width=%2290%22 height=%2290%22 transform=%22rotate(25 205 185)%22/></g></svg>');pointer-events:none}
+    @media(max-width:760px){.process{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center"><div style="width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,#F6E7D6,#FFF5ED);display:grid;place-items:center;color:var(--accent)">IM</div><div><strong>{{BUSINESS_NAME}}</strong></div></div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="approach.html">Method</a>
+      <a href="services.html">Offerings</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+  <main>
+    <section class="hero">
+      <h1>Method: structured curiosity and measurable moves</h1>
+      <p class="small">We look for leverage — small changes with outsized influence on energy, mood and function — and build short, testable cycles around them.</p>
+      <div style="margin-top:12px"><button class="tryBtn" id="openInventory">Try a short inventory</button></div>
+    </section>
+
+    <section class="process">
+      <div class="step">
+        <strong>Map</strong>
+        <div class="small">Understand context: rhythms, demands, supports and constraints.</div>
+      </div>
+      <div class="step">
+        <strong>Prioritize</strong>
+        <div class="small">Choose one or two high-leverage targets for the cycle.</div>
+      </div>
+      <div class="step">
+        <strong>Test & iterate</strong>
+        <div class="small">Short cycles, measurement, and straightforward adjustments.</div>
+      </div>
+    </section>
+
+    <section class="miniInventory">
+      <strong>Mini inventory</strong>
+      <div class="small">Select concerns to see the typical first-cycle focus and monitoring rhythm.</div>
+      <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap">
+        <button data-topic="Sleep" class="topicBtn">Sleep</button>
+        <button data-topic="Stress" class="topicBtn">Stress</button>
+        <button data-topic="Gut" class="topicBtn">Digestion</button>
+        <button data-topic="Pain" class="topicBtn">Pain</button>
+        <button data-topic="Energy" class="topicBtn">Energy</button>
+      </div>
+      <div id="miniResult" style="margin-top:12px"></div>
+    </section>
+
+    <section style="margin-top:18px">
+      <h3>Why short cycles?</h3>
+      <div class="small">Focused, time-limited experiments reveal what helps and what doesn’t — faster. We favor clear indicators and gently measurable steps over open-ended commitments.</div>
+    </section>
+
+    <section style="margin-top:18px;text-align:center">
+      <a href="book.html" class="tryBtn">Request a method consult</a>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="small">Questions: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • {{CITY}}, {{STATE}}</div>
+  </footer>
+
+  <script>
+    // Mini inventory logic
+    (function(){
+      const buttons = document.querySelectorAll('.topicBtn');
+      const out = document.getElementById('miniResult');
+      buttons.forEach(b=>b.addEventListener('click', ()=>{
+        const t = b.dataset.topic;
+        let html = '<div style="padding:10px;background:#fff;border-radius:8px">';
+        if(t==='Sleep') html += '<strong>First-cycle focus:</strong> regular sleep window, wind-down routine; track wake time and daytime energy.\n<div class="small">Follow-up: 2-week check-in by message, then 4-week visit.</div>';
+        if(t==='Stress') html += '<strong>First-cycle focus:</strong> short daily practices (6–10 minutes) + one situational plan.\n<div class="small">Follow-up: 1-week brief check, 3-week adjustment.</div>';
+        if(t==='Gut') html += '<strong>First-cycle focus:</strong> meal timing and simple eliminations; symptom diary for 2 weeks.\n<div class="small">Follow-up: symptom review at 2 weeks.</div>';
+        if(t==='Pain') html += '<strong>First-cycle focus:</strong> graded movement, load rules and sleep alignment.\n<div class="small">Follow-up: 1–2 week remote check.</div>';
+        if(t==='Energy') html += '<strong>First-cycle focus:</strong> daytime pacing, light exposure, small carbohydrate timing changes.\n<div class="small">Follow-up: 2-week review.</div>';
+        html += '</div>';
+        out.innerHTML = html;
+      }));
+
+      // Small inventory modal from hero
+      document.getElementById('openInventory').addEventListener('click', ()=>{
+        // reuse simple prompt: show a tailored suggested first step
+        const pick = prompt('Which area is most pressing? (sleep, stress, gut, pain, energy)');
+        if(!pick) return;
+        const key = pick.trim().toLowerCase();
+        const map = {
+          sleep: 'Start with a consistent bedtime and 20–30 minute wind-down. Track wake time and next-day energy for 2 weeks.',
+          stress: 'Try a 6-minute daily paced breathing practice. Note mood and reactivity for 10 days.',
+          gut: 'Use a 2-week symptom and meal tracker with one simple elimination (dairy or high-FODMAP foods).',
+          pain: 'Begin graded movement with 3 brief sessions per week; record pain trends and activity tolerance.',
+          energy: 'Shift morning light exposure and short movement breaks; track midday energy dips for 10 days.'
+        };
+        alert(map[key] || 'That area is valid — we will refine a starting step in consultation.');
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Sessions — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1720;--card:#0f1a24;--accent:#a6d2c1;--muted:#9aa6b2;--glass:rgba(255,255,255,0.04);--mono: #cbd5e1}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--mono);background:linear-gradient(180deg,#071018 0%, #071b22 50%);}
+    header{display:flex;align-items:center;justify-content:space-between;padding:22px 28px;background:linear-gradient(90deg,rgba(255,255,255,0.02),transparent);backdrop-filter:blur(6px)}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#6fb39b);display:flex;align-items:center;justify-content:center;font-weight:700;color:#072;box-shadow:0 6px 18px rgba(0,0,0,0.45)}
+    nav a{color:var(--mono);text-decoration:none;margin-left:18px;font-weight:600}
+    .wrap{max-width:1080px;margin:32px auto;padding:24px}
+    .grid{display:grid;grid-template-columns:1fr 420px;gap:22px}
+    .hero{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:28px;border-radius:12px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.02)}
+    h1{margin:0 0 8px 0;color:#e8f7f0;font-size:28px}
+    p.lead{margin:0;color:var(--muted)}
+    .card{background:var(--card);padding:18px;border-radius:12px}
+    label{display:block;margin-top:12px;color:var(--muted);font-size:13px}
+    input[type=text],select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:var(--glass);color:var(--mono);margin-top:6px}
+    .btn{display:inline-block;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#79bd9a);color:#05211a;font-weight:700;border:none;cursor:pointer}
+    .muted{color:var(--muted);font-size:13px}
+    .list{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02)}
+    pre{white-space:pre-wrap;background:rgba(2,6,23,0.6);padding:12px;border-radius:8px;color:var(--mono);font-size:13px}
+    footer{padding:30px;text-align:center;color:var(--muted);font-size:13px}
+    .note{font-size:12px;color:#bcd6cc;margin-top:8px}
+    .small-cta{margin-top:14px}
+    @media(max-width:900px){.grid{grid-template-columns:1fr;}.brand .logo{width:40px;height:40px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">A</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Sessions</a>
+      <a href="blends.html">Concoctions</a>
+      <a href="shop.html">Apothecary</a>
+      <a href="pricing.html">Fees</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <div class="grid">
+      <section class="hero">
+        <h1>Personal Session Planner</h1>
+        <p class="lead">Build a thoughtful scent rhythm for the weeks ahead. No medical promises — choices that may support calm, clarity, or restful evenings.</p>
+        <div style="margin-top:18px" class="card">
+          <form id="planner">
+            <label>Primary intention</label>
+            <input type="text" id="intention" placeholder="e.g., steady energy during work, unwind before sleep">
+
+            <label>Focus areas (choose up to 3)</label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+              <button type="button" class="pill" data-val="calm">Calm</button>
+              <button type="button" class="pill" data-val="focus">Focus</button>
+              <button type="button" class="pill" data-val="sleep">Sleep</button>
+              <button type="button" class="pill" data-val="uplift">Uplift</button>
+              <button type="button" class="pill" data-val="ground">Grounding</button>
+            </div>
+
+            <label>Session rhythm</label>
+            <select id="frequency">
+              <option value="daily">Daily micro-practice</option>
+              <option value="3x">3x per week</option>
+              <option value="weekly">Weekly focus session</option>
+              <option value="intensive">Two-week intensive</option>
+            </select>
+
+            <label>Preferred scent families</label>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <label class="muted"><input type="checkbox" value="floral"> Floral</label>
+              <label class="muted"><input type="checkbox" value="herbal"> Herbal</label>
+              <label class="muted"><input type="checkbox" value="citrus"> Citrus</label>
+              <label class="muted"><input type="checkbox" value="woody"> Woody</label>
+            </div>
+
+            <label style="margin-top:12px">Session length</label>
+            <select id="length">
+              <option value="5">5 minutes (micro)</option>
+              <option value="15">15 minutes</option>
+              <option value="40">40 minutes (session)</option>
+            </select>
+
+            <div style="display:flex;gap:10px;margin-top:16px;align-items:center">
+              <button class="btn" id="build">Create Plan</button>
+              <div class="small-cta muted">We’ll generate clear steps and a simple at-home ritual you can copy.</div>
+            </div>
+          </form>
+
+          <div id="result" style="display:none;margin-top:14px">
+            <h3 style="margin:0;color:var(--accent)">Your Plan</h3>
+            <pre id="planout">...</pre>
+            <div style="display:flex;gap:10px;margin-top:8px">
+              <button class="btn" id="copyPlan">Copy Summary</button>
+              <button class="btn" id="emailPlan" style="background:transparent;color:var(--accent);border:1px solid rgba(255,255,255,0.04)">Email Plan</button>
+            </div>
+            <div class="note">Safety: always test a new scent on a small skin area. If pregnant, nursing, or living with pets, review the safety notes below or consult a qualified practitioner.</div>
+          </div>
+        </div>
+
+        <div style="margin-top:18px;color:var(--muted);font-size:13px">
+          <strong>How it works</strong>
+          <p class="muted">We shape a short ritual and a scent suggestion that may support your stated intention. This planner is for guidance and personal use only.</p>
+        </div>
+      </section>
+
+      <aside>
+        <div class="card">
+          <h3 style="margin-top:0">Session offerings</h3>
+          <div style="display:flex;flex-direction:column;gap:12px;margin-top:8px">
+            <div>
+              <div style="font-weight:700">Focus Lab — 40 min</div>
+              <div class="muted">Gentle scent layering to support short, clear work spans. Includes take-home micro-practice.</div>
+            </div>
+            <div>
+              <div style="font-weight:700">Ground & Reset — 60 min</div>
+              <div class="muted">More exploration and breath-guided scenting for deeper settling.</div>
+            </div>
+            <div>
+              <div style="font-weight:700">Intensive Pathway — 4 sessions</div>
+              <div class="muted">A short course for moment-to-moment habit formation and a bespoke blend card.</div>
+            </div>
+          </div>
+          <div style="margin-top:12px"><a href="book.html" class="btn">Reserve a slot</a></div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <h4 style="margin:0">Quick safety notes</h4>
+          <ul class="muted" style="margin-top:8px">
+            <li>Start with low dilutions (0.5–2%).</li>
+            <li>Always patch-test on the inner forearm before topical use.</li>
+            <li>Essential oils should be kept away from eyes and mucous membranes.</li>
+            <li>If pregnant or nursing, consult with your health care provider about specific oils.</li>
+            <li>Some oils can be hazardous to pets — review notes before use around animals.</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+
+    <section style="margin-top:20px" class="card">
+      <h3 style="margin:0 0 8px 0">Plan history</h3>
+      <div class="muted">Plans you build here are stored locally in your browser. Use the copy button to export a plaintext summary to share.</div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} — Serving {{CITY}}, {{STATE}} • <a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a></div>
+  </footer>
+
+  <script>
+    (function(){
+      const pillButtons = document.querySelectorAll('.pill');
+      const selected = new Set();
+      pillButtons.forEach(b=>b.addEventListener('click',()=>{
+        const v=b.getAttribute('data-val');
+        if(selected.has(v)){ selected.delete(v); b.style.opacity='1'; b.style.border='1px solid rgba(255,255,255,0.02)'; }
+        else if(selected.size<3){ selected.add(v); b.style.opacity='0.8'; b.style.border='1px solid rgba(255,255,255,0.08)'; }
+      }));
+
+      document.getElementById('planner').addEventListener('submit',function(e){
+        e.preventDefault();
+        const intention = document.getElementById('intention').value.trim() || 'Personal intention';
+        const freq = document.getElementById('frequency').value;
+        const len = document.getElementById('length').value;
+        const checked = Array.from(document.querySelectorAll('input[type=checkbox]:checked')).map(i=>i.value);
+        const vibe = Array.from(selected).join(', ') || 'balanced';
+
+        // Build a simple plan
+        const steps = [];
+        steps.push('Intention: '+intention);
+        steps.push('Primary vibe: '+vibe);
+        steps.push('Scent families: '+(checked.length?checked.join(', '):'neutral')); 
+        steps.push('Rhythm: '+(freq==='daily'? 'Every day — a short micro-practice':'See schedule: '+freq));
+        steps.push('Typical session length: '+len+' minutes');
+
+        // Small ritual suggestion
+        if(freq==='daily') steps.push('Ritual: 3 deep breaths with diffuser or inhaler; 1–2 drops in palms for 30s mindful inhale.');
+        else if(freq==='3x') steps.push('Ritual: Prepare blend on session days; inhale once before work and once mid-day.');
+        else if(freq==='weekly') steps.push('Ritual: Create a longer ritual with journaling and a 15-minute scented pause.');
+        else steps.push('Ritual: Intensive check-ins and a curated at-home blend card for daily use.');
+
+        steps.push('Safety note: Start at 0.5–2% dilution for topical blends; patch test before skin contact. Avoid eyes and mucous membranes.');
+        steps.push('If pregnant, nursing, or living with pets, consult safety notes before use.');
+
+        const output = steps.join('\n\n');
+        document.getElementById('planout').textContent = output;
+        document.getElementById('result').style.display='block';
+      });
+
+      document.getElementById('copyPlan').addEventListener('click',async()=>{
+        const text = document.getElementById('planout').textContent;
+        try{ await navigator.clipboard.writeText(text); alert('Plan copied to clipboard'); }
+        catch(e){ prompt('Copy the plan text below', text); }
+      });
+
+      document.getElementById('emailPlan').addEventListener('click',()=>{
+        const text = encodeURIComponent(document.getElementById('planout').textContent);
+        window.location.href = 'mailto:'+encodeURIComponent('{{EMAIL}}')+'?subject='+encodeURIComponent('My Scent Plan')+'&body='+text;
+      });
+
+    })();
+  </script>
+</body>
+</html>

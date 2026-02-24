@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Gatherings — {{BUSINESS_NAME}}</title>
+  <meta name='description' content='Group sound gatherings, upcoming dates, what to bring, and a quick guided practice you can try now.'>
+  <style>
+    :root{--bg:#f5efe6;--card:#fff9f4;--accent:#7a4b2a;--muted:#8b6a58;--glass:rgba(250,244,240,0.8);--shadow:0 6px 18px rgba(26,20,16,0.08)}
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;color:var(--accent);background:linear-gradient(180deg,var(--bg),#efe6dc)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:linear-gradient(90deg,rgba(122,75,42,0.06),transparent);backdrop-filter:blur(2px)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;border-radius:8px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-weight:600}
+    .container{max-width:980px;margin:28px auto;padding:0 18px}
+    .hero{background:var(--card);padding:28px;border-radius:14px;box-shadow:var(--shadow);display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:center}
+    .hero h1{margin:0 0 6px;font-size:24px}
+    .hero p{margin:0;color:var(--muted)}
+    .next-event{background:linear-gradient(180deg,#fffefc, #fff7f1);padding:16px;border-radius:10px;border:1px solid rgba(122,75,42,0.06)}
+    .when{font-weight:700;color:var(--accent)}
+    .calendar{margin-top:18px;display:grid;gap:10px}
+    .cal-item{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:8px;background:var(--glass)}
+    .cal-item small{color:var(--muted)}
+    .seat-selector{background:linear-gradient(180deg,#fff, #fffdfb);padding:16px;border-radius:10px;border:1px dashed rgba(122,75,42,0.08)}
+    .seats{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .seat{width:36px;height:36px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid rgba(122,75,42,0.06);cursor:pointer}
+    .seat.selected{background:var(--accent);color:#fff}
+    .controls{display:flex;gap:8px;margin-top:12px}
+    .btn{background:var(--accent);color:#fff;padding:10px 14px;border-radius:8px;border:none;cursor:pointer}
+    .secondary{background:transparent;border:1px solid rgba(122,75,42,0.12);color:var(--accent);padding:8px 12px;border-radius:8px}
+    .packing{margin-top:14px;padding:12px;border-radius:8px;background:#fffefc;border:1px solid rgba(122,75,42,0.04)}
+    footer{margin:36px 0 80px;text-align:center;color:var(--muted)}
+    .try-btn{display:inline-block;margin-top:12px;padding:8px 12px;border-radius:8px;background:transparent;border:1px solid rgba(122,75,42,0.12);cursor:pointer}
+    /* subtle pattern via inline svg as data uri */
+    body::before{content:'';position:fixed;inset:0;opacity:0.06;background-image:url('data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'140\' height=\'140\'><defs><linearGradient id=\'g\' x1=\'0\' x2=\'1\'><stop offset=\'0\' stop-color=\'%237a4b2a\' stop-opacity=\'0.06\'/><stop offset=\'1\' stop-color=\'%23c79b7b\' stop-opacity=\'0.02\'/></linearGradient></defs><rect width=\'140\' height=\'140\' fill=\'none\'/><circle cx=\'20\' cy=\'20\' r=\'18\' fill=\'url(%23g)\'/><circle cx=\'120\' cy=\'120\' r=\'16\' fill=\'url(%23g)\'/><path d=\'M0 70 L140 70\' stroke=\'%23c79b7b\' stroke-opacity=\'0.02\' stroke-width=1/></svg>');background-repeat:repeat;pointer-events:none}
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(10,6,4,0.45);display:none;align-items:center;justify-content:center;padding:18px}
+    .modal{background:var(--card);padding:20px;border-radius:12px;max-width:720px;width:100%;box-shadow:0 24px 48px rgba(26,20,16,0.3)}
+    .modal h3{margin:0 0 8px}
+    .modal .flow{display:flex;gap:12px}
+    .prompt{background:#fff6f0;padding:14px;border-radius:8px;border:1px solid rgba(122,75,42,0.04)}
+    .close{background:transparent;border:none;font-weight:700;cursor:pointer;color:var(--muted)}
+    .disclaimer{font-size:13px;color:#6b5a4f;margin-top:12px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class='brand'>
+      <div class='logo'>SB</div>
+      <div>
+        <div style='font-weight:700'>{{BUSINESS_NAME}}</div>
+        <div style='font-size:13px;color:var(--muted)'>{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href='index.html'>Home</a>
+      <a href='events.html'>Gatherings</a>
+      <a href='private-sessions.html'>Private Sessions</a>
+      <a href='pricing.html'>Membership</a>
+      <a href='about.html'>Learn</a>
+      <a href='contact.html'>Contact</a>
+    </nav>
+  </header>
+  <main class='container'>
+    <section class='hero'>
+      <div>
+        <h1>Group sound gatherings — a steadying hour</h1>
+        <p>Join a gentle, shared sound experience designed to ease the nervous system and open attention. Bring what makes you comfortable; leave with a clearer mind.</p>
+        <div style='margin-top:12px'>
+          <button class='btn' id='primaryCta'>{{PRIMARY_CTA_LABEL}}</button>
+          <button class='try-btn' id='openTry'>Try a short practice</button>
+        </div>
+        <p class='disclaimer'>Contraindications: if you have epilepsy, severe auditory sensitivity, recent ear surgery, or concerns about medical implants, consult a clinician before attending. This is not a substitute for medical advice.</p>
+      </div>
+      <aside>
+        <div class='next-event'>
+          <div style='display:flex;justify-content:space-between;align-items:center'>
+            <div>
+              <div style='font-size:12px;color:var(--muted)'>Next gathering</div>
+              <div class='when'>Sat, Mar 6 • 7:00–8:15pm</div>
+              <div style='font-size:13px;color:var(--muted)'>{{CITY}}, {{STATE}}</div>
+            </div>
+            <div style='text-align:right'>
+              <div style='font-weight:700'>30 seats</div>
+              <div style='font-size:12px;color:var(--muted)'>Doors open 6:30pm</div>
+            </div>
+          </div>
+        </div>
+        <div class='calendar' aria-label='upcoming dates'>
+          <div class='cal-item'><div><strong>Mar 6</strong><div style='font-size:12px;color:var(--muted)'>Evening circle</div></div><div><small>7pm</small></div></div>
+          <div class='cal-item'><div><strong>Mar 20</strong><div style='font-size:12px;color:var(--muted)'>Full-light session</div></div><div><small>6pm</small></div></div>
+          <div class='cal-item'><div><strong>Apr 3</strong><div style='font-size:12px;color:var(--muted)'>Opening the week</div></div><div><small>7pm</small></div></div>
+          <div class='cal-item'><div><strong>Apr 17</strong><div style='font-size:12px;color:var(--muted)'>Liminal sound</div></div><div><small>6:30pm</small></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <section style='margin-top:20px;display:grid;grid-template-columns:1fr 340px;gap:18px;align-items:start'>
+      <div class='seat-selector'>
+        <h3 style='margin:0'>Reserve seats</h3>
+        <p style='margin:6px 0 0;color:var(--muted)'>Pick the seats you imagine taking. This is a local demo selector — not a payment system.</p>
+        <div class='seats' id='seatGrid' aria-label='seat map'>
+          <!-- seats injected by JS -->
+        </div>
+        <div class='controls'>
+          <button id='clearSeats' class='secondary'>Clear</button>
+          <button id='confirmSeats' class='btn'>Reserve locally</button>
+          <div style='margin-left:auto;color:var(--muted);align-self:center' id='selectedCount'>0 selected</div>
+        </div>
+        <div class='packing' id='packingList'>
+          <strong>Packing suggestions</strong>
+          <div id='packItems' style='margin-top:8px;color:var(--muted)'>Select seats and preferences to generate a compact list.</div>
+          <div style='margin-top:10px'>
+            <label style='font-size:13px;color:var(--muted)'><input type='checkbox' id='opt-blanket'> Bring a small blanket</label><br>
+            <label style='font-size:13px;color:var(--muted)'><input type='checkbox' id='opt-eye'> Eye mask or scarf</label><br>
+            <label style='font-size:13px;color:var(--muted)'><input type='checkbox' id='opt-journal'> Journal + pen</label>
+          </div>
+        </div>
+      </div>
+
+      <aside style='background:var(--card);padding:16px;border-radius:12px;box-shadow:var(--shadow)'>
+        <h4 style='margin:0 0 6px'>What people notice after</h4>
+        <p style='margin:0;color:var(--muted)'>A quieter mind; less constriction in shoulders; a clearer evening. Testimonials are gathered with consent.</p>
+        <div style='margin-top:12px;display:flex;gap:8px;flex-direction:column'>
+          <div style='background:#fff;padding:10px;border-radius:8px'>"The room slowed my breath in a way coffee never can." — A</div>
+          <div style='background:#fff;padding:10px;border-radius:8px'>"I slept more deeply that night." — R</div>
+        </div>
+      </aside>
+    </section>
+
+  </main>
+
+  <div class='modal-backdrop' id='modalBackdrop'>
+    <div class='modal' role='dialog' aria-modal='true' aria-labelledby='modalTitle'>
+      <div style='display:flex;justify-content:space-between;align-items:center'>
+        <h3 id='modalTitle'>Try a brief practice</h3>
+        <button class='close' id='closeModal' aria-label='Close'>✕</button>
+      </div>
+      <p style='color:var(--muted);margin:6px 0'>Choose a 2–5 minute guided option to see how the work lands.</p>
+      <div style='display:flex;gap:10px;margin-top:12px'>
+        <button class='btn' data-mode='breath'>Breathing</button>
+        <button class='secondary' data-mode='journal'>Journaling</button>
+        <button class='secondary' data-mode='intention'>Intention</button>
+      </div>
+      <div id='practiceArea' style='margin-top:14px'></div>
+    </div>
+  </div>
+
+  <footer>
+    <div>Questions — <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a> • <a href='tel:{{PHONE}}'>{{PHONE}}</a></div>
+    <div style='margin-top:8px;color:var(--muted)'>© <span id='yr'></span> {{BUSINESS_NAME}}</div>
+  </footer>
+
+  <script>
+    // header primary CTA
+    document.getElementById('primaryCta').addEventListener('click',function(){location.href='{{PRIMARY_CTA_URL}}'});
+    document.getElementById('yr').textContent=new Date().getFullYear();
+
+    // seat map generation
+    const seatGrid=document.getElementById('seatGrid');
+    const selectedCount=document.getElementById('selectedCount');
+    const packItems=document.getElementById('packItems');
+    let selected=new Set();
+    const totalSeats=30;
+    for(let i=1;i<=totalSeats;i++){
+      const s=document.createElement('button');s.className='seat';s.type='button';s.textContent=i; s.dataset.index=i;
+      s.addEventListener('click',()=>{
+        if(selected.has(i)){selected.delete(i);s.classList.remove('selected')}else{selected.add(i);s.classList.add('selected')}
+        updateCount();
+        renderPacking();
+      });
+      seatGrid.appendChild(s);
+    }
+    function updateCount(){selectedCount.textContent=selected.size+ ' selected'}
+    document.getElementById('clearSeats').addEventListener('click',()=>{selected.clear();document.querySelectorAll('.seat.selected').forEach(el=>el.classList.remove('selected'));updateCount();renderPacking();});
+    document.getElementById('confirmSeats').addEventListener('click',()=>{alert(selected.size?('Reserved '+selected.size+' seat(s) locally.'): 'No seats selected.');});
+
+    // packing list generator
+    ['opt-blanket','opt-eye','opt-journal'].forEach(id=>document.getElementById(id).addEventListener('change',renderPacking));
+    function renderPacking(){
+      const items=[];
+      if(selected.size>0) items.push('Your chosen spot: arrive 10–15 min early');
+      if(document.getElementById('opt-blanket').checked) items.push('Small blanket or yoga mat');
+      if(document.getElementById('opt-eye').checked) items.push('Eye cover or scarf');
+      if(document.getElementById('opt-journal').checked) items.push('Journal and pen');
+      items.push('Water bottle (optional)');
+      packItems.innerHTML=items.map(i=>'<div style="margin:6px 0">• '+i+'</div>').join('');
+    }
+
+    // guided practice modal
+    const modal=document.getElementById('modalBackdrop');
+    document.getElementById('openTry').addEventListener('click',()=>{modal.style.display='flex';document.getElementById('practiceArea').innerHTML='';});
+    document.getElementById('closeModal').addEventListener('click',()=>{stopTimer();modal.style.display='none';});
+    modal.addEventListener('click',e=>{if(e.target===modal){stopTimer();modal.style.display='none'}});
+
+    let timer=null;function stopTimer(){if(timer){clearInterval(timer);timer=null}}
+    document.querySelectorAll('.modal button[data-mode]').forEach(btn=>btn.addEventListener('click',e=>{
+      const mode=e.currentTarget.dataset.mode;startPractice(mode);
+    }));
+
+    function startPractice(mode){stopTimer();const area=document.getElementById('practiceArea');area.innerHTML='';
+      if(mode==='breath'){
+        let step=0;const rounds=4;const el=document.createElement('div');el.className='prompt';el.innerHTML='<div style="font-weight:700;margin-bottom:8px">Breathing — follow the count</div><div id="countDown" style="font-size:24px;">Prepare…</div><div style="font-size:13px;color:var(--muted);margin-top:8px">Equal-length inhale/exhale. Sit or lie comfortably.</div>';area.appendChild(el);
+        timer=setInterval(()=>{
+          step++;
+          const phase=((step%6)+6)%6; // 0..5
+          const label=(phase<3)?'Inhale':'Exhale';
+          const cnt=(phase%3)+1;
+          document.getElementById('countDown').textContent=label+ ' · '+cnt;
+          if(step>rounds*6){stopTimer();document.getElementById('countDown').textContent='Done — thank you.'}
+        },1000);
+      }
+      else if(mode==='journal'){
+        const el=document.createElement('div');el.className='prompt';el.innerHTML='<div style="font-weight:700;margin-bottom:8px">Journaling — 3 prompts</div><ol style="margin:0 0 8px 16px;color:var(--muted)"><li>What arrived in you today?</li><li>One small thing you can do tonight to rest.</li><li>A short sentence of gratitude.</li></ol><div style="font-size:13px;color:var(--muted)">Write freely for 3 minutes on each prompt. Use a timer if helpful.</div>';area.appendChild(el);
+      }
+      else if(mode==='intention'){
+        const el=document.createElement('div');el.className='prompt';el.innerHTML='<div style="font-weight:700;margin-bottom:8px">Intention setting — 2 minutes</div><div id="intentText" style="font-size:18px;margin-bottom:8px;color:var(--muted)">Breathe in… breathe out…</div><div style="font-size:13px;color:var(--muted)">Form a concise intention: one line, present tense.</div>';
+        area.appendChild(el);
+        let countdown=120;const txt=document.getElementById('intentText');timer=setInterval(()=>{countdown--;txt.textContent='Time left: '+Math.ceil(countdown/1)+'s';if(countdown<=0){stopTimer();txt.textContent='Time complete — hold your intention.'}},1000);
+      }
+    }
+  </script>
+</body>
+</html>

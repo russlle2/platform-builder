@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Book a Visit — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#021225;--card:#071827;--accent1:#63f3b0;--accent2:#7dd3fc;--txt:#eaf6f1}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,Arial;color:var(--txt);background:linear-gradient(180deg,#021225 0%,#041528 60%)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 26px}
+    nav a{color:#9fb0c6;margin-left:12px;text-decoration:none;font-weight:700}
+    .stage{max-width:920px;margin:24px auto;padding:22px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:20px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px}
+    label{display:block;font-size:13px;color:#bfeadf;margin-bottom:6px}
+    input,textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--txt)}
+    .btn{display:inline-block;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#021025;font-weight:800;text-decoration:none;border:none}
+    .note{font-size:13px;color:#9fb0c6}
+    .pattern{position:fixed;right:20px;bottom:10px;opacity:0.12;pointer-events:none}
+    @media (max-width:880px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <svg class='pattern' width='360' height='360' viewBox='0 0 360 360' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'>
+    <defs>
+      <linearGradient id='lg' x1='0' x2='1'>
+        <stop offset='0' stop-color='#63f3b0'/>
+        <stop offset='1' stop-color='#7dd3fc'/>
+      </linearGradient>
+    </defs>
+    <rect width='360' height='360' rx='24' fill='url(#lg)' opacity='0.09'/>
+    <g opacity='0.08' fill='none' stroke='white' stroke-width='1'>
+      <path d='M20 180c60-90 180-90 280-20'></path>
+      <path d='M40 220c80 40 180 60 300-40'></path>
+    </g>
+  </svg>
+
+  <header>
+    <div style='display:flex;gap:12px;align-items:center'>
+      <div style='width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#63f3b0,#7dd3fc);display:flex;align-items:center;justify-content:center;color:#021025;font-weight:800'>HM</div>
+      <div>
+        <div style='font-weight:800'>{{BUSINESS_NAME}}</div>
+        <div style='font-size:12px;color:#9fb0c6'>Schedule your first conversation</div>
+      </div>
+    </div>
+    <nav>
+      <a href='index.html'>Back</a>
+      <a href='services.html'>Offerings</a>
+      <a href='pricing.html'>Pricing</a>
+      <a href='about.html'>Who</a>
+      <a href='book.html' style='color:var(--txt)'>Reserve</a>
+    </nav>
+  </header>
+
+  <main class='stage'>
+    <div class='grid'>
+      <section class='card'>
+        <h1 style='margin:0 0 10px'>Reserve time</h1>
+        <p class='note' style='margin:0 0 14px'>Choose an intake or follow‑up. If you're unsure, pick an intake (longer visit). We will review and may suggest labs only if clinically warranted.</p>
+
+        <form action='{{PRIMARY_CTA_URL}}' method='get' aria-label='Booking form' style='display:grid;gap:12px'>
+          <div>
+            <label for='visit'>Visit type</label>
+            <select id='visit' name='visit'>
+              <option>Initial intake — 75 minutes</option>
+              <option>Follow‑up — 45 minutes</option>
+              <option>Follow‑up — 30 minutes</option>
+            </select>
+          </div>
+
+          <div>
+            <label for='name'>Full name</label>
+            <input id='name' name='name' placeholder='Your name' required>
+          </div>
+
+          <div style='display:grid;grid-template-columns:1fr 1fr;gap:10px'>
+            <div>
+              <label for='phone'>Phone</label>
+              <input id='phone' name='phone' placeholder='{{PHONE}}' required>
+            </div>
+            <div>
+              <label for='email'>Email</label>
+              <input id='email' name='email' placeholder='{{EMAIL}}' required>
+            </div>
+          </div>
+
+          <div>
+            <label for='concern'>Primary concern</label>
+            <input id='concern' name='concern' placeholder='e.g., sleep, digestion, low energy'>
+          </div>
+
+          <div>
+            <label for='notes'>Anything to share before we meet?</label>
+            <textarea id='notes' name='notes' rows='4' placeholder='Brief health history, meds, or priorities (optional)'></textarea>
+          </div>
+
+          <div style='display:flex;gap:10px;align-items:center'>
+            <button type='submit' class='btn'>Request appointment</button>
+            <div class='note'>We will follow up to confirm availability and intake instructions.</div>
+          </div>
+        </form>
+
+        <div style='margin-top:14px;font-size:13px;color:#9fb0c6'>Cancellation policy: Please give 48 hours' notice when possible. Late cancellations or missed visits may incur a fee.</div>
+      </section>
+
+      <aside class='card'>
+        <h3 style='margin:0 0 8px;color:var(--txt)'>Before your visit</h3>
+        <p class='note' style='margin:0 0 12px'>To make the most of our time: write down recent labs, current supplements, medications, and a short timeline of your symptoms.</p>
+
+        <div style='margin-bottom:12px'>
+          <strong style='color:var(--txt)'>Virtual & in‑person options</strong>
+          <div class='note'>We offer secure telehealth and selective in‑clinic appointments. Location and format will be confirmed when booking.</div>
+        </div>
+
+        <div style='margin-bottom:12px'>
+          <strong style='color:var(--txt)'>Optional labs</strong>
+          <div class='note'>Functional lab testing is educational. It may be useful in some cases but is never required. We discuss appropriateness during intake.</div>
+        </div>
+
+        <div style='margin-top:12px'>
+          <div class='note'>Questions? Call {{PHONE}} or email <a href='mailto:{{EMAIL}}' style='color:var(--accent2);text-decoration:none'>{{EMAIL}}</a>.</div>
+          <div style='margin-top:10px'><a class='btn' href='{{PRIMARY_CTA_URL}}'>Proceed to scheduling</a></div>
+        </div>
+      </aside>
+    </div>
+
+  </main>
+</body>
+</html>

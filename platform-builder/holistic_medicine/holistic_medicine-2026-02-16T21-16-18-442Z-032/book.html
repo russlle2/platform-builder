@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bgA:#fcfff9;--accent:#4a7c4a;--muted:#587}
+    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto;background:linear-gradient(160deg,var(--bgA),#eef7ef);color:#0c2}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px}
+    .nav a{margin-left:12px;color:#153;text-decoration:none}
+    .container{max-width:920px;margin:18px auto;padding:0 20px}
+    .panel{background:white;border-radius:12px;padding:18px;box-shadow:0 10px 30px rgba(12,20,12,0.05)}
+    h1{margin-top:0}
+    form{display:grid;grid-template-columns:1fr 280px;gap:18px}
+    label{display:block;margin-bottom:6px;font-weight:600}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6efe6}
+    .right{background:linear-gradient(180deg,#f9fff8,#fff);padding:14px;border-radius:10px}
+    .btn{display:inline-block;background:linear-gradient(90deg,var(--accent),#3f6c3f);color:white;padding:10px 14px;border-radius:10px;text-decoration:none}
+    .note{color:var(--muted);font-size:0.95rem}
+    footer{margin-top:18px;color:var(--muted)}
+    /* subtle background svg motif */
+    .pattern{position:fixed;right:-120px;bottom:-100px;opacity:0.12;pointer-events:none}
+    @media(max-width:820px){form{grid-template-columns:1fr} .pattern{display:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+    <nav class="nav">
+      <a href="index.html">Begin</a>
+      <a href="services.html">Services</a>
+      <a href="conditions.html">Concerns</a>
+      <a href="approach.html">Approach</a>
+      <a href="pricing.html">Investment</a>
+      <a href="about.html">About</a>
+      <a href="book.html" aria-current="page">Reserve</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="panel">
+      <h1>Reserve a spot or a short consult</h1>
+      <p class="note">Choose a session type below — workshops are collaborative, consults are private. We emphasize education, paced change, and informed consent. No guarantees are given.</p>
+
+      <form action="{{PRIMARY_CTA_URL}}" method="get">
+        <div>
+          <label for="name">Your name</label>
+          <input id="name" name="name" placeholder="Full name" required>
+
+          <label for="email" style="margin-top:12px">Email</label>
+          <input id="email" name="email" type="email" placeholder="you@example.com" required>
+
+          <label for="type" style="margin-top:12px">Session type</label>
+          <select id="type" name="type">
+            <option>Intro Workshop (group)</option>
+            <option>Series Enrollment</option>
+            <option>Private Intake (60m)</option>
+            <option>Follow-up (25m)</option>
+          </select>
+
+          <label for="notes" style="margin-top:12px">Short note</label>
+          <textarea id="notes" name="notes" rows="4" placeholder="A few lines about what you hope to address"></textarea>
+
+          <div style="margin-top:12px">
+            <button class="btn" type="submit">Request booking</button>
+          </div>
+        </div>
+
+        <aside class="right">
+          <h3>Before we meet</h3>
+          <p class="note">A brief intake form will be sent after you request a booking. Optional labs may be discussed as educational tools. If you have urgent medical needs, please seek immediate care.</p>
+
+          <h4 style="margin-top:12px">Session costs</h4>
+          <div class="note">Workshop: starting $45 • Private intake: $140 • Series plans available — see Pricing.</div>
+
+          <div style="margin-top:16px">
+            <strong>Contact</strong>
+            <div class="note">{{PHONE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+            <div style="margin-top:8px"><a class="btn" href="contact.html">Message us</a></div>
+          </div>
+        </aside>
+      </form>
+
+      <section style="margin-top:18px">
+        <h3>Myth vs. helpful view</h3>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px">
+          <div style="flex:1;min-width:200px;background:#fff;padding:10px;border-radius:10px;box-shadow:0 8px 18px rgba(12,18,12,0.03)"><strong>Myth</strong><p class="note">A single test will explain everything.</p></div>
+          <div style="flex:1;min-width:200px;background:#fff;padding:10px;border-radius:10px;box-shadow:0 8px 18px rgba(12,18,12,0.03)"><strong>Better</strong><p class="note">Tests can illuminate one piece; we integrate data with lived experience.</p></div>
+        </div>
+      </section>
+
+      <section style="margin-top:18px">
+        <h3>A brief case note</h3>
+        <div style="background:#fff;padding:12px;border-radius:10px;box-shadow:0 8px 18px rgba(12,18,12,0.03)">
+          <strong>Digestive learning</strong>
+          <p class="note">Education on meal timing and mindful eating helped a participant lower bloating and normalize energy over several weeks.</p>
+        </div>
+      </section>
+
+    </div>
+
+    <footer style="margin-top:14px;color:var(--muted)">
+      <div>{{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • Practitioner: {{PRACTITIONER_NAME}}, {{CREDENTIALS}}</div>
+      <div style="margin-top:6px">By requesting a booking you consent to receiving a scheduling email. This practice provides educational, integrative care; it is not a substitute for emergency medical services.</div>
+    </footer>
+  </div>
+
+  <!-- decorative svg pattern -->
+  <svg class="pattern" width="380" height="380" viewBox="0 0 380 380" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="pg" x1="0" x2="1">
+        <stop offset="0" stop-color="#eaf7ee" />
+        <stop offset="1" stop-color="#fff" />
+      </linearGradient>
+    </defs>
+    <g fill="url(#pg)">
+      <rect x="10" y="10" width="120" height="120" rx="20" />
+      <circle cx="220" cy="60" r="52" />
+      <rect x="60" y="200" width="240" height="120" rx="30" />
+    </g>
+  </svg>
+</body>
+</html>

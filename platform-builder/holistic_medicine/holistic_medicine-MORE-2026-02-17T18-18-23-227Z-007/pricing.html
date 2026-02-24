@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Investment & Plans — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f6fbf9;--card:#ffffff;--muted:#60716b;--accent:#2b7a63;--accent-2:#1f5f49;--glass:rgba(255,255,255,0.7);font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#eef6f2);color:#123;border-image:initial}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:transparent}
+    nav a{margin:0 10px;color:var(--accent-2);text-decoration:none;font-weight:600}
+    .wrap{max-width:980px;margin:28px auto;padding:24px}
+    .hero{display:grid;grid-template-columns:1fr 340px;gap:22px;align-items:start}
+    .hero .lead{background:var(--card);padding:22px;border-radius:12px;box-shadow:0 8px 20px rgba(9,23,18,0.06)}
+    .hero h1{margin:0 0 8px 0;font-size:22px;color:var(--accent-2)}
+    .hero p{margin:0;color:var(--muted)}
+    .cards{display:flex;gap:14px;margin-top:20px}
+    .plan{background:linear-gradient(180deg,rgba(255,255,255,0.9),var(--card));padding:18px;border-radius:12px;flex:1;box-shadow:0 6px 18px rgba(17,34,28,0.05)}
+    .plan h3{margin:0;color:var(--accent)}
+    .price{font-size:20px;font-weight:700;color:var(--accent-2);margin-top:8px}
+    .btn{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:8px;background:var(--accent);color:#fff;text-decoration:none;font-weight:700}
+    .muted{color:var(--muted);font-size:14px}
+    .panel{background:var(--card);padding:16px;border-radius:12px;margin-top:18px}
+    label{display:block;font-size:14px;margin:8px 0}
+    input[type="text"],textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid #e1e8e4}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    /* small utility */
+    .small{font-size:13px;color:var(--muted)}
+    footer{max-width:980px;margin:28px auto;padding:18px;color:var(--muted)}
+    .pattern{position:fixed;right:8px;bottom:8px;opacity:0.08;width:220px;height:220px}
+    /* responsive */
+    @media(max-width:880px){.hero{grid-template-columns:1fr}.cards{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:14px">
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="36" height="36" rx="8" fill="#E9F6F1"/><path d="M18 9c2.5 0 4.5 2 4.5 4.5S20.5 18 18 18s-4.5-2-4.5-4.5S15.5 9 18 9z" fill="#2B7A63" opacity="0.9"/></svg>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">Thoughtful, whole-person offerings</div>
+      </div>
+    </div>
+    <nav aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Conditions</a>
+      <a href="approach.html">Method</a>
+      <a href="pricing.html" style="text-decoration:underline">Invest</a>
+      <a href="about.html">Our Story</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="lead">
+        <h1>Memberships and packages framed for life rhythms</h1>
+        <p class="muted">Flexible pathways rather than rigid programs — pick a level that respects your cadence. All engagements are educational and supportive; we do not promise cures.</p>
+        <div class="cards">
+          <div class="plan" aria-labelledby="nav-title">
+            <h3 id="nav-title">Navigator Plan</h3>
+            <div class="price">$95 / month</div>
+            <p class="small">A monthly check-in plus guided home practices. Great for those wanting light, ongoing support.</p>
+            <a class="btn" href="book.html">Reserve a Discovery Slot</a>
+          </div>
+          <div class="plan">
+            <h3>Foundations Series</h3>
+            <div class="price">$420 (4 sessions)</div>
+            <p class="small">Four focused visits to build baseline practices and measurable shifts.</p>
+            <a class="btn" href="book.html">Begin a Foundations Path</a>
+          </div>
+          <div class="plan">
+            <h3>Continuum Care</h3>
+            <div class="price">Starting at $1200 / quarter</div>
+            <p class="small">A blended model with coaching, group micro-sessions, and individualized planning for complex goals.</p>
+            <a class="btn" href="book.html">Talk to our Coordinator</a>
+          </div>
+        </div>
+      </div>
+      <aside>
+        <div class="panel">
+          <strong>Why tiered investment?</strong>
+          <p class="small">Framing care as an investment in steady traction helps you choose the right rhythm. We focus on practical choices and measurable next steps.</p>
+          <hr style="margin:12px 0;border:none;border-top:1px solid #eef6f2"/>
+          <strong>Quick calculator</strong>
+          <div style="margin-top:10px" class="small">Choose a preference and see a suggested plan below.</div>
+          <label>Priority</label>
+          <select id="pricePriority">
+            <option value="maintenance">Maintenance & check-ins</option>
+            <option value="reset">Short reset (4 sessions)</option>
+            <option value="deep">Ongoing coordination</option>
+          </select>
+          <div style="margin-top:12px;text-align:right"><button id="priceSuggest" class="btn">Suggest plan</button></div>
+          <div id="suggestion" style="margin-top:12px;font-size:14px;color:var(--muted)"></div>
+        </div>
+
+        <div class="panel" style="margin-top:14px">
+          <strong>Session Planner</strong>
+          <p class="small">Draft your next visit and export a plain-text summary to bring to your appointment.</p>
+          <label>Primary concern</label>
+          <input type="text" id="sp_concern" placeholder="e.g., evening insomnia, digestive discomfort">
+          <label>Preferred duration</label>
+          <select id="sp_duration">
+            <option>25 minutes</option>
+            <option>50 minutes</option>
+            <option>80 minutes</option>
+          </select>
+          <label>Modalities to consider</label>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <label style="font-size:13px"><input type="checkbox" value="nutrition" class="modal"> Nutrition</label>
+            <label style="font-size:13px"><input type="checkbox" value="movement" class="modal"> Movement</label>
+            <label style="font-size:13px"><input type="checkbox" value="mindfulness" class="modal"> Mindfulness</label>
+            <label style="font-size:13px"><input type="checkbox" value="sleep" class="modal"> Sleep support</label>
+            <label style="font-size:13px"><input type="checkbox" value="herbal" class="modal"> Botanical options</label>
+          </div>
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <button id="sp_build" class="btn" style="background:var(--accent-2)">Build plan</button>
+            <button id="sp_copy" class="btn" style="background:#6aa987">Copy summary</button>
+          </div>
+          <textarea id="sp_output" rows="6" style="margin-top:10px"></textarea>
+        </div>
+
+        <div class="panel" style="margin-top:14px">
+          <strong>Whole-person inventory</strong>
+          <p class="small">Check areas you want addressed; we translate this into a consultation agenda and a follow-up cadence.</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px">
+            <label><input type="checkbox" class="inv" value="sleep"> Sleep</label>
+            <label><input type="checkbox" class="inv" value="nutrition"> Nutrition</label>
+            <label><input type="checkbox" class="inv" value="movement"> Movement</label>
+            <label><input type="checkbox" class="inv" value="stress"> Stress / mood</label>
+            <label><input type="checkbox" class="inv" value="relationships"> Relationships</label>
+            <label><input type="checkbox" class="inv" value="environment"> Environment</label>
+            <label><input type="checkbox" class="inv" value="work"> Work / rhythm</label>
+            <label><input type="checkbox" class="inv" value="spiritual"> Meaning / spiritual</label>
+          </div>
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <button id="inv_build" class="btn">Create agenda</button>
+            <button id="inv_copy" class="btn" style="background:#6aa987">Copy agenda</button>
+          </div>
+          <textarea id="inv_output" rows="6" style="margin-top:10px"></textarea>
+        </div>
+
+      </aside>
+    </section>
+
+    <section style="margin-top:26px">
+      <div class="panel">
+        <h3 style="margin:0 0 8px 0">Notes on pricing and scope</h3>
+        <p class="small">We aim to make care predictable. Packages bundle time and coaching between visits. Insurance coverage varies; ask our team for details. All information shared is educational and not a promise of cure or guaranteed outcome.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap small">Questions? Call {{PHONE}} or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>. Serving {{CITY}}, {{STATE}}.</div>
+  </footer>
+
+  <svg class="pattern" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1">
+        <stop offset="0" stop-color="#E6F6EF"/>
+        <stop offset="1" stop-color="#D9F0E6"/>
+      </linearGradient>
+    </defs>
+    <rect width="200" height="200" rx="18" fill="url(#g1)"/>
+    <g fill-opacity="0.85" fill="#2b7a63">
+      <circle cx="40" cy="40" r="6"/>
+      <circle cx="80" cy="60" r="4"/>
+      <circle cx="120" cy="30" r="5"/>
+      <circle cx="160" cy="80" r="3"/>
+      <circle cx="60" cy="120" r="5"/>
+      <circle cx="100" cy="140" r="6"/>
+    </g>
+  </svg>
+
+  <script>
+    // Price suggestion
+    document.getElementById('priceSuggest').addEventListener('click', function(){
+      var v = document.getElementById('pricePriority').value;
+      var out = document.getElementById('suggestion');
+      if(v==='maintenance'){out.textContent='Suggested: Navigator Plan — monthly touchpoints and a brief planning session.'}
+      else if(v==='reset'){out.textContent='Suggested: Foundations Series — four visits to re-establish rhythms and practices.'}
+      else{out.textContent='Suggested: Continuum Care — coordinated quarterly work with coaching and planning.'}
+    });
+
+    // Session planner build & copy
+    function gatherModalities(){
+      return Array.from(document.querySelectorAll('.modal:checked')).map(function(n){return n.value}).join(', ') || 'none selected';
+    }
+    document.getElementById('sp_build').addEventListener('click', function(){
+      var concern = document.getElementById('sp_concern').value||'[no primary concern entered]';
+      var dur = document.getElementById('sp_duration').value;
+      var mods = gatherModalities();
+      var text = 'Session Plan\n---------------\nPrimary concern: '+concern+'\nDuration: '+dur+'\nModalities: '+mods+'\n\nSuggested focus areas:\n - Intake & symptom timeline\n - Immediate, simple practices to test over 1–2 weeks\n - Measurable next step and follow-up homework\n\nBring this summary to your visit.';
+      document.getElementById('sp_output').value = text;
+    });
+    document.getElementById('sp_copy').addEventListener('click', function(){
+      var t = document.getElementById('sp_output');
+      t.select();try{document.execCommand('copy');alert('Summary copied to clipboard');}catch(e){alert('Copy not available; select and copy manually');}
+    });
+
+    // Whole-person inventory -> agenda & cadence
+    function buildAgendaFor(selection){
+      var parts = [];
+      var cadence = [];
+      var map = {
+        sleep:['Review sleep timing and environment; trial a 2-week wind-down routine.','2-week review'],
+        nutrition:['Brief dietary pattern assessment; one small, testable change.','4-week check-in'],
+        movement:['Functional movement baseline and micro-habits; 10-minute practices.','2-week micro-check'],
+        stress:['Explore stress triggers and quick breath practices; resources for 1–3 minute resets.','1–2 week check for response'],
+        relationships:['Map relational stressors and boundaries; identify a small experiment.','3-week follow-up'],
+        environment:['Assess light, noise, and workspace; practical edits to test.','2–4 week review'],
+        work:['Schedule and rhythm audit; small timing experiments.','3-week check'],
+        spiritual:['Explore values and meaning; simple daily reflection prompts.','Monthly touchpoint']
+      };
+      selection.forEach(function(s){
+        if(map[s]){parts.push('- '+map[s][0]);cadence.push(s+': '+map[s][1]);}
+      });
+      return {agenda: parts.length?parts.join('\n'):'No areas selected.', cadence:cadence.length?cadence.join('\n'):'No cadence defined.'};
+    }
+
+    document.getElementById('inv_build').addEventListener('click', function(){
+      var checked = Array.from(document.querySelectorAll('.inv:checked')).map(function(i){return i.value});
+      var r = buildAgendaFor(checked);
+      document.getElementById('inv_output').value = 'Consultation agenda\n--------------------\n'+r.agenda+'\n\nRecommended follow-up cadence\n----------------------------\n'+r.cadence;
+    });
+    document.getElementById('inv_copy').addEventListener('click', function(){
+      var t = document.getElementById('inv_output');t.select();try{document.execCommand('copy');alert('Agenda copied') }catch(e){alert('Copy not available')}
+    });
+  </script>
+</body>
+</html>

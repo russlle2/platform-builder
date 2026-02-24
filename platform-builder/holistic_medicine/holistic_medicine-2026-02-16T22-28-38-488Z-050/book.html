@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Book — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#021018;--card:#08202a;--accent:#7CFFDE;--muted:#9fb3bb}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:var(--accent);background:linear-gradient(180deg,#001018 0%,#041722 100%)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px}
+    .nav a{color:var(--muted);text-decoration:none;margin-left:16px;font-weight:700}
+    main{max-width:960px;margin:22px auto;padding:20px}
+    .book-grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:20px;border-radius:14px;border:1px solid rgba(255,255,255,0.03)}
+    h1{margin:0 0 8px;color:#E7FFF8}
+    p.lead{color:var(--muted);margin:0 0 16px}
+    label{display:block;color:var(--muted);font-size:13px;margin-top:12px}
+    input,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--accent)}
+    .actions{margin-top:12px}
+    .btn{background:linear-gradient(90deg,#7CFFDE,#4ac4ff);color:#042;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:800}
+    .note{color:var(--muted);font-size:13px;margin-top:10px}
+    .aside .step{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;margin-bottom:10px;color:var(--muted)}
+    .svg-deco{position:fixed;right:8px;top:60px;opacity:0.08;width:320px;height:320px;pointer-events:none}
+    @media(max-width:860px){.book-grid{grid-template-columns:1fr}.svg-deco{display:none}}
+  </style>
+</head>
+<body>
+  <svg class="svg-deco" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <defs>
+      <linearGradient id="gg" x1="0" x2="1"><stop offset="0" stop-color="#7CFFDE"/><stop offset="1" stop-color="#4ac4ff"/></linearGradient>
+      <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><rect width="32" height="32" fill="transparent"/><path d="M0 16 L32 16 M16 0 L16 32" stroke="#7CFFDE" stroke-opacity="0.05"/></pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#grid)" />
+    <circle cx="80" cy="80" r="70" fill="url(#gg)" opacity="0.12"/>
+  </svg>
+
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,#7CFFDE,#4ac4ff);display:flex;align-items:center;justify-content:center;font-weight:900;color:#052">HM</div>
+      <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+    </div>
+    <nav class="nav">
+      <a href="index.html">Back</a>
+      <a href="services.html">Services</a>
+      <a href="about.html">About</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="book-grid">
+      <section class="panel">
+        <h1>Reserve a Discovery Session</h1>
+        <p class="lead">A 45-minute conversation to map your priorities and create an initial plan. Pricing and follow-up options are explained during the visit. We focus on education and practical next steps.</p>
+
+        <form id="booking" action="{{PRIMARY_CTA_URL}}" method="post">
+          <label for="name">Full name</label>
+          <input id="name" name="name" required placeholder="Your name">
+
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required placeholder="you@example.com">
+
+          <label for="phone">Phone</label>
+          <input id="phone" name="phone" placeholder="Optional — for scheduling">
+
+          <label for="service">Select visit</label>
+          <select id="service" name="service">
+            <option>Discovery Session — 45 min ($120)</option>
+            <option>Foundations Package — 3 visits ($420)</option>
+            <option>Comprehensive Pathway — 12 weeks ($1,220)</option>
+          </select>
+
+          <label for="notes">Brief notes: What brings you in?</label>
+          <textarea id="notes" name="notes" rows="4" placeholder="Sleep, energy, stress, digestion…"></textarea>
+
+          <div class="actions">
+            <button class="btn" type="submit">{{PRIMARY_CTA_LABEL}}</button>
+          </div>
+
+          <div class="note">By submitting you agree to be contacted for scheduling. We do not guarantee outcomes; care is educational and individualized.</div>
+        </form>
+
+      </section>
+
+      <aside class="panel aside">
+        <h3 style="margin-top:0;color:#E7FFF8">What happens next</h3>
+        <div class="step"><strong>1. Intake</strong><div style="color:var(--muted)">We collect history and priorities.</div></div>
+        <div class="step"><strong>2. Plan</strong><div style="color:var(--muted)">You receive a clear, practical set of steps and resources.</div></div>
+        <div class="step"><strong>3. Follow-up</strong><div style="color:var(--muted)">Focused sessions to adjust and support progress.</div></div>
+
+        <h4 style="margin-top:12px;color:#CFFFE9">Notes on labs</h4>
+        <p style="color:var(--muted);margin:6px 0">Occasionally, targeted lab work can be educational. Tests are discussed as optional tools, not requirements.</p>
+
+        <div style="margin-top:12px">
+          <a class="btn" href="pricing.html">View Pricing</a>
+        </div>
+
+        <div style="margin-top:18px;color:var(--muted);font-size:13px">Questions? Call {{PHONE}} or email <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a></div>
+      </aside>
+    </div>
+
+    <section style="margin-top:18px" class="panel">
+      <h3 style="margin:0 0 8px;color:#E7FFF8">Accessibility & Telehealth</h3>
+      <p style="color:var(--muted)">Virtual visits are available for many services. We aim to accommodate needs — please note any access requirements in the booking form.</p>
+    </section>
+
+    <section style="margin-top:18px;display:flex;gap:12px;flex-wrap:wrap">
+      <div class="panel" style="flex:1;min-width:240px">
+        <h4 style="margin-top:0;color:#E7FFF8">Cancellation policy</h4>
+        <p style="color:var(--muted)">Please provide 24 hours notice for cancellations to avoid a fee. Emergencies are handled with care — contact us directly at {{PHONE}}.</p>
+      </div>
+      <div class="panel" style="flex:1;min-width:240px">
+        <h4 style="margin-top:0;color:#E7FFF8">Confidentiality</h4>
+        <p style="color:var(--muted)">Conversations are confidential as defined by professional standards. For specifics, ask during your visit.</p>
+      </div>
+    </section>
+
+  </main>
+</body>
+</html>

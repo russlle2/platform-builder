@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Praise & Proof — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfcfd;--card:#fff;--muted:#6b7280;--accent:#1568a6;--accent-2:#09a28a}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#0b1220;background:linear-gradient(180deg,#f6fbff,#fbfcfd)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:22px 34px}
+    nav a{color:var(--muted);text-decoration:none;margin:0 10px}
+    .container{max-width:980px;margin:18px auto;padding:20px}
+    h1{margin:6px 0 6px 0;font-size:22px}
+    .lead{color:var(--muted)}
+    .gallery{display:grid;grid-template-columns:1fr 240px;gap:18px;margin-top:18px}
+    .carousel{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 26px rgba(12,18,28,0.05)}
+    .testimonial{min-height:120px}
+    blockquote{margin:0;padding:0;font-size:16px;line-height:1.4}
+    .author{margin-top:12px;font-weight:700}
+    .controls{display:flex;gap:8px;margin-top:12px}
+    .dot{width:10px;height:10px;border-radius:50%;background:#e6eef8;cursor:pointer}
+    .dot.active{background:var(--accent)}
+    .sidebar{background:linear-gradient(180deg,#fff,var(--card));padding:14px;border-radius:12px}
+    .badge-cell{display:flex;flex-direction:column;gap:12px}
+    .cred{display:flex;align-items:center;gap:10px;background:#fff;padding:8px;border-radius:8px;border:1px solid #eef3f8}
+    .cred svg{width:34px;height:34px}
+    .tooltip{position:relative}
+    .tooltip:hover::after{content:attr(data-tip);position:absolute;left:110%;top:50%;transform:translateY(-50%);background:#0b1220;color:#fff;padding:8px 10px;border-radius:8px;white-space:nowrap;font-size:13px}
+    .cta{display:inline-block;margin-top:16px;padding:10px 12px;border-radius:9px;background:var(--accent);color:#fff;text-decoration:none;font-weight:700}
+    @media (max-width:880px){.gallery{grid-template-columns:1fr}}  
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:40px;height:40px;background:linear-gradient(135deg,var(--accent),var(--accent-2));border-radius:8px;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800">WC</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Story</a>
+      <a href="services.html">Offerings</a>
+      <a href="programs.html">Series</a>
+      <a href="pricing.html">Rates</a>
+      <a href="testimonials.html" style="color:var(--accent)">Praise</a>
+      <a href="book.html">Schedule</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h1>What people notice after a month</h1>
+    <p class="lead">Real accounts of steady shifts — not overnight fixes. Read a rotating selection below and explore the credentials that inform our approach.</p>
+
+    <div class="gallery">
+      <section class="carousel">
+        <div id="testimonialWrap">
+          <article class="testimonial" data-index="0">
+            <blockquote>"I replaced an endless to-do approach with a small daily frame. A month in, I feel calmer and clearer about how to spend my energy."</blockquote>
+            <div class="author">— Maya, teacher</div>
+          </article>
+
+          <article class="testimonial" style="display:none" data-index="1">
+            <blockquote>"The 30-day path felt like a map that was actually doable. The daily prompts nudged me in a way that stuck."</blockquote>
+            <div class="author">— Keon, designer</div>
+          </article>
+
+          <article class="testimonial" style="display:none" data-index="2">
+            <blockquote>"Simple habits paired with coaching calls made the plan fit my odd schedule. No guilt, just progress."</blockquote>
+            <div class="author">— Priya, freelancer</div>
+          </article>
+        </div>
+
+        <div class="controls" aria-hidden="false">
+          <div id="dots"></div>
+          <div style="margin-left:auto;display:flex;gap:8px">
+            <button id="prev" aria-label="Previous">◀</button>
+            <button id="next" aria-label="Next">▶</button>
+          </div>
+        </div>
+
+      </section>
+
+      <aside class="sidebar">
+        <h3 style="margin-top:0">Proof gallery</h3>
+        <p style="color:var(--muted)">Certifications and community accolades that support our coaching framework. Hover badges to read details.</p>
+
+        <div class="badge-cell" style="margin-top:12px">
+          <div class="cred tooltip" data-tip="Accredited coaching hours; supervision-based training">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="#1568a6" stroke-width="1.6"/><path d="M8 12l2.5 2.5L16 9" stroke="#1568a6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div>
+              <div style="font-weight:700">Certified Coach</div>
+              <div style="font-size:13px;color:var(--muted)">Structured coaching training</div>
+            </div>
+          </div>
+
+          <div class="cred tooltip" data-tip="A local wellness network recognition for consistent outcomes">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="18" height="18" rx="4" stroke="#09a28a" stroke-width="1.6"/><path d="M7 12h10" stroke="#09a28a" stroke-width="1.6" stroke-linecap="round"/></svg>
+            <div>
+              <div style="font-weight:700">Community Endorsement</div>
+              <div style="font-size:13px;color:var(--muted)">Peer-reviewed outcomes</div>
+            </div>
+          </div>
+
+          <div class="cred tooltip" data-tip="Practical frameworks published in workshop modules">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 7h14" stroke="#f59e0b" stroke-width="1.6" stroke-linecap="round"/><path d="M5 12h14" stroke="#f59e0b" stroke-width="1.6" stroke-linecap="round"/><path d="M5 17h14" stroke="#f59e0b" stroke-width="1.6" stroke-linecap="round"/></svg>
+            <div>
+              <div style="font-weight:700">Workshop Modules</div>
+              <div style="font-size:13px;color:var(--muted)">Tools used in live cohorts</div>
+            </div>
+          </div>
+        </div>
+
+        <a class="cta" href="book.html">Book a clarity call</a>
+      </aside>
+    </div>
+
+    <section style="margin-top:18px;padding:16px;background:linear-gradient(180deg,#fff,#f8fbff);border-radius:12px;display:flex;align-items:center;gap:12px;justify-content:space-between">
+      <div>
+        <strong>Want to try a short experiment?</strong>
+        <div style="color:var(--muted)">We can build a tailored 30-day path in one session. It’s a planning conversation, not a quick fix.</div>
+      </div>
+      <div>
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">Schedule a plan session</a>
+      </div>
+    </section>
+
+    <footer style="margin-top:18px;color:var(--muted)">© {{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></footer>
+  </main>
+
+  <script>
+    (function(){
+      // Rotating testimonials
+      const wrap = document.getElementById('testimonialWrap');
+      const items = Array.from(wrap.querySelectorAll('.testimonial'));
+      const dotsEl = document.getElementById('dots');
+      let index = 0;
+      function renderDots(){
+        dotsEl.innerHTML = '';
+        items.forEach((it,i)=>{
+          const d = document.createElement('div');
+          d.className = 'dot' + (i===index? ' active':'');
+          d.addEventListener('click', ()=>{go(i)});
+          dotsEl.appendChild(d);
+        });
+      }
+      function show(i){
+        items.forEach((it,idx)=>it.style.display = idx===i? 'block':'none');
+        index = i; renderDots();
+      }
+      function go(i){ show((i+items.length)%items.length); }
+      document.getElementById('prev').addEventListener('click', ()=>go(index-1));
+      document.getElementById('next').addEventListener('click', ()=>go(index+1));
+      renderDots();
+      let timer = setInterval(()=>go(index+1), 6000);
+      ["prev","next"].forEach(id=>document.getElementById(id).addEventListener('click', ()=>{clearInterval(timer);timer=setInterval(()=>go(index+1),6000);}));
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Investment — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfbfb;--ink:#122;--muted:#586;--accent:#7aa;--glass:rgba(255,255,255,0.6);--card:#fff}
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:var(--ink);background:linear-gradient(160deg,#fbfff9 0%,#f6f9ff 100%);} 
+    .wrap{max-width:980px;margin:44px auto;padding:40px;background:linear-gradient(180deg,rgba(255,255,255,0.75),rgba(255,255,255,0.9));box-shadow:0 10px 30px rgba(16,24,32,0.08);border-radius:14px;position:relative;overflow:hidden}
+    nav{display:flex;gap:18px;align-items:center;margin-bottom:28px}
+    nav a{color:var(--ink);text-decoration:none;font-weight:600;font-size:14px;opacity:0.9}
+    .logo{font-weight:700;letter-spacing:0.2px}
+    header.hero{display:grid;grid-template-columns:1fr 320px;gap:28px;align-items:center}
+    h1{margin:0 0 8px;font-size:28px}
+    p.lead{margin:0;color:#334;opacity:0.9}
+    .aside{background:var(--card);padding:20px;border-radius:10px;box-shadow:0 6px 20px rgba(20,30,40,0.04)}
+    .price-tier{border-left:4px solid var(--accent);padding:14px;border-radius:8px;background:linear-gradient(180deg,rgba(122,170,170,0.03),transparent)}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
+    .tier{background:var(--card);padding:18px;border-radius:10px;border:1px solid rgba(0,0,0,0.04)}
+    .tier h3{margin:0 0 6px;font-size:16px}
+    .cost{font-weight:700;color:var(--muted);font-size:18px}
+    .muted{color:#556;opacity:0.9}
+    .note{font-size:13px;color:#445;margin-top:10px}
+    .cta{display:inline-block;margin-top:12px;background:linear-gradient(90deg,var(--accent),#66c);color:white;padding:10px 14px;border-radius:8px;text-decoration:none;font-weight:700}
+    .process{display:flex;gap:12px;margin-top:26px}
+    .step{flex:1;background:linear-gradient(180deg,rgba(122,170,170,0.03),transparent);padding:12px;border-radius:8px;font-size:14px}
+    footer{margin-top:28px;padding-top:18px;border-top:1px dashed rgba(18,34,34,0.06);display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#556}
+    .faq{margin-top:22px}
+    .faq details{background:var(--card);padding:12px;border-radius:8px;margin-bottom:8px}
+    /* SVG decorative corner */
+    .pattern{position:absolute;right:-120px;top:-120px;opacity:0.12;transform:rotate(12deg)}
+    /* subtle responsive */
+    @media(max-width:880px){header.hero{grid-template-columns:1fr;}.grid{grid-template-columns:1fr}} 
+    /* background reference to asset pattern (fallback if available) */
+    .wrap::before{content:'';position:absolute;inset:0;background-image:url('assets/img/pattern.svg');opacity:0.06;mix-blend-mode:overlay}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <div class="logo">{{BUSINESS_NAME}}</div>
+      <div style="flex:1"></div>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="approach.html">Path</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+
+    <header class="hero">
+      <div>
+        <h1>Investment in care: sessions & series</h1>
+        <p class="lead">Choose thoughtful support for body, mind, and rhythm. Pricing is transparent; plans are educational and tailored. No promises of cures—only tools, context, and partnership.</p>
+
+        <section style="margin-top:18px">
+          <div class="grid">
+            <div class="tier">
+              <h3>Intro Session</h3>
+              <div class="cost">$95 — 50–60 min</div>
+              <div class="muted">Great for new clients and learning the whole-person approach.</div>
+              <div class="note">A single intake to map priorities and offer an integrative plan.</div>
+            </div>
+
+            <div class="tier">
+              <h3>Follow-up</h3>
+              <div class="cost">$75 — 30–40 min</div>
+              <div class="muted">Progress check, plan tweaks, education and self-care coaching.</div>
+            </div>
+
+            <div class="tier">
+              <h3>Series: Monthly Cohort</h3>
+              <div class="cost">$240 / month</div>
+              <div class="muted">Three-session series designed as a learning arc: intake, educational session, integration workshop.</div>
+            </div>
+          </div>
+        </section>
+
+        <div class="process">
+          <div class="step">Intake: understand you.</div>
+          <div class="step">Plan: options, education, gentle labs as choice.</div>
+          <div class="step">Support: follow-up and group learning.</div>
+        </div>
+
+        <p class="note">Optional lab work may be discussed for educational purposes; decisions are collaborative. Insurance and sliding scale options may be available—ask on booking.</p>
+
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+
+      <aside class="aside">
+        <div class="price-tier">
+          <strong>Upcoming series</strong>
+          <div style="margin-top:8px">A seasonal integrative series begins soon: four workshops + two small-group check-ins. Limited seats.</div>
+          <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+            <div style="font-weight:700">Next cohort:</div>
+            <div class="muted">Starts Apr 14 — online + local office</div>
+          </div>
+          <a class="cta" href="book.html" style="display:inline-block;margin-top:12px">Reserve a seat</a>
+        </div>
+
+        <div class="faq" style="margin-top:14px">
+          <details>
+            <summary>Do you accept insurance?</summary>
+            <div class="muted" style="margin-top:8px">Primary care may be billed differently. We provide receipts and can discuss options; many clients pay out-of-pocket or use flexible spending accounts.</div>
+          </details>
+          <details>
+            <summary>Are there refunds?</summary>
+            <div class="muted" style="margin-top:8px">Workshops have a courtesy policy—contact us at {{EMAIL}} for details. No guaranteed cures are offered.</div>
+          </details>
+        </div>
+
+      </aside>
+    </header>
+
+    <svg class="pattern" width="460" height="460" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+      <defs>
+        <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#7aa" /><stop offset="1" stop-color="#66c" /></linearGradient>
+      </defs>
+      <rect x="0" y="0" width="200" height="200" fill="url(#g1)" opacity="0.08" />
+      <g fill="white" opacity="0.06">
+        <circle cx="30" cy="40" r="28" />
+        <circle cx="160" cy="150" r="36" />
+      </g>
+    </svg>
+
+    <footer>
+      <div>{{CITY}}, {{STATE}} • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+      <div>Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </footer>
+  </div>
+</body>
+</html>

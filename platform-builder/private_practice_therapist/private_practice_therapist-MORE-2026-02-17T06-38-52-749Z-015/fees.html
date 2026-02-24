@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Rates & Options — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbf8f5;--card:#fff;--muted:#6b6b6b;--accent:#7c5cff;--accent-2:#ff8273;--glass:rgba(255,255,255,0.7)}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#222;background:linear-gradient(180deg,var(--bg),#f6f4f2)}
+    header{padding:26px 28px;display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{width:56px;height:56px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:white;font-weight:700}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none;font-size:15px}
+    .wrap{max-width:980px;margin:18px auto;padding:20px}
+    .hero{background:var(--card);padding:26px;border-radius:14px;display:flex;gap:20px;align-items:center;box-shadow:0 8px 30px rgba(40,30,40,0.06)}
+    .hero .left{flex:1}
+    .hero h1{margin:0;font-size:22px}
+    .hero p{color:var(--muted);margin:8px 0 0}
+    .pattern{width:120px;height:120px}
+
+    .controls{display:flex;gap:12px;margin-top:18px;align-items:center}
+    .toggle{background:linear-gradient(180deg,#fff,#fbfbff);padding:6px;border-radius:999px;border:1px solid #ece8f5;display:inline-flex;align-items:center}
+    .toggle button{border:0;background:transparent;padding:6px 12px;border-radius:999px;cursor:pointer;font-weight:600}
+    .toggle button.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;box-shadow:0 6px 18px rgba(124,92,255,0.16)}
+
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}
+    .card{background:var(--card);border-radius:12px;padding:18px;border:1px solid #efeaf6;transition:transform 300ms ease,box-shadow 300ms ease}
+    .card:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(20,18,30,0.06)}
+    .title{font-weight:700;margin:0}
+    .price{font-size:28px;margin:8px 0;color:var(--accent)}
+    .meta{color:var(--muted);font-size:14px}
+    .cta-row{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+    .cta{background:var(--accent);color:white;padding:8px 12px;border-radius:8px;text-decoration:none}
+
+    .details{margin-top:22px;background:linear-gradient(90deg,rgba(124,92,255,0.03),rgba(255,130,115,0.02));padding:18px;border-radius:12px;border:1px solid rgba(124,92,255,0.06)}
+    .small{font-size:13px;color:var(--muted)}
+
+    footer{margin:28px 0;text-align:center;color:var(--muted);font-size:13px}
+
+    /* small responsive */
+    @media (max-width:880px){.cards{grid-template-columns:1fr}header{padding:14px} .hero{flex-direction:column;align-items:flex-start}}
+
+    /* subtle svg backdrop */
+    .bg-svg{position:fixed;right:-120px;top:-80px;opacity:0.08;transform:rotate(8deg);pointer-events:none}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">T</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="specialties.html">Fields</a>
+      <a href="approach.html">Approach</a>
+      <a href="fees.html">Rates</a>
+      <a href="faq.html">FAQ</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <svg class="bg-svg" width="480" height="480" viewBox="0 0 480 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1">
+        <stop offset="0" stop-color="#7c5cff" stop-opacity="0.9"/>
+        <stop offset="1" stop-color="#ff8273" stop-opacity="0.9"/>
+      </linearGradient>
+      <pattern id="p1" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
+        <rect x="0" y="0" width="24" height="24" fill="transparent"/>
+        <circle cx="4" cy="4" r="2" fill="#7c5cff" fill-opacity="0.12"/>
+        <circle cx="20" cy="20" r="2" fill="#ff8273" fill-opacity="0.08"/>
+      </pattern>
+    </defs>
+    <rect width="480" height="480" fill="url(#p1)"/>
+    <g opacity="0.16" transform="translate(70,60)">
+      <path d="M80 0c44 0 80 36 80 80s-36 80-80 80S0 124 0 80 36 0 80 0z" fill="url(#g1)" />
+    </g>
+  </svg>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="left">
+        <h1>Rates, packages, and helpful add-ons</h1>
+        <p>Options are built to match how people actually make time for therapy: short focused series, monthly rhythm, or an occasional intensive. Choose what fits your life rhythm.</p>
+        <div class="controls">
+          <div class="toggle" role="tablist" aria-label="Pricing view">
+            <button id="monthlyBtn" class="active" aria-pressed="true">Monthly</button>
+            <button id="packageBtn" aria-pressed="false">Packages</button>
+          </div>
+          <div style="font-size:13px;color:var(--muted)">Prices animate so you can compare quickly</div>
+        </div>
+      </div>
+      <div class="pattern">
+        <svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <rect width="120" height="120" rx="18" fill="#fff" stroke="#efeaf6" />
+          <g transform="translate(12,12)">
+            <circle cx="24" cy="24" r="10" fill="#ff8273" opacity="0.12" />
+            <rect x="52" y="16" width="42" height="18" rx="6" fill="#7c5cff" opacity="0.14" />
+            <path d="M0 84c12-28 46-36 76-24" stroke="#7c5cff" stroke-opacity="0.12" stroke-width="6" fill="none" stroke-linecap="round"/>
+          </g>
+        </svg>
+      </div>
+    </section>
+
+    <section class="cards" aria-live="polite">
+      <div class="card" data-plan="starter">
+        <div class="title">Starter Sessions</div>
+        <div class="price" data-price>—</div>
+        <div class="meta">Single sessions to explore what matters most</div>
+        <div class="cta-row">
+          <a class="cta" href="book.html?plan=starter" id="cta-starter">Start a session</a>
+          <div class="small">30–50 minutes</div>
+        </div>
+      </div>
+
+      <div class="card" data-plan="series">
+        <div class="title">Focused Series</div>
+        <div class="price" data-price>—</div>
+        <div class="meta">3–6 session sequence for clearer shifts</div>
+        <div class="cta-row">
+          <a class="cta" href="book.html?plan=series" id="cta-series">Reserve a spot</a>
+          <div class="small">Most people start here</div>
+        </div>
+      </div>
+
+      <div class="card" data-plan="intensive">
+        <div class="title">Deep-Dive Intensive</div>
+        <div class="price" data-price>—</div>
+        <div class="meta">A concentrated session block for focused clarity</div>
+        <div class="cta-row">
+          <a class="cta" href="book.html?plan=intensive" id="cta-intensive">Explore the intensive</a>
+          <div class="small">90–180 minutes options</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="details">
+      <div style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap">
+        <div style="flex:1;min-width:220px">
+          <strong>Add-ons</strong>
+          <p class="small">Workbooks, brief check-in messages, and specialized assessments are available as modest extras. Ask during your booking.</p>
+        </div>
+        <div style="flex:1;min-width:220px">
+          <strong>Payment & insurance</strong>
+          <p class="small">I accept private pay. If you have out-of-network benefits you may submit receipts to your insurer. I can help with codes to file claims.</p>
+        </div>
+        <div style="flex:1;min-width:220px">
+          <strong>Cancellation & length</strong>
+          <p class="small">Please notify at least 48 hours ahead if you need to cancel. Sessions are typically 50 minutes unless otherwise noted.</p>
+        </div>
+      </div>
+
+      <p class="small" style="margin-top:12px">If cost is a barrier, reach out — I keep a small number of reduced-fee spaces when possible.</p>
+    </section>
+
+    <footer>
+      <div>Questions? Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      <div style="margin-top:6px">Confidentiality and scope: sessions are confidential within legal and ethical limits. This practice is not a crisis service. If you're in immediate danger, please call emergency services or your local crisis line.</div>
+    </footer>
+  </main>
+
+  <script>
+    (function(){
+      // Pricing values
+      const prices = {
+        monthly: {starter:95, series:160, intensive:320},
+        package: {starter:90, series:880, intensive:420}
+      };
+
+      let mode = 'monthly';
+      const monthlyBtn = document.getElementById('monthlyBtn');
+      const packageBtn = document.getElementById('packageBtn');
+      const priceEls = document.querySelectorAll('[data-price]');
+
+      function animatePrice(el, start, end){
+        const duration = 450; const startTime = performance.now();
+        const fmt = (v)=> v>=1000? '$'+v.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",") : '$'+v;
+        requestAnimationFrame(function tick(t){
+          const p = Math.min(1,(t-startTime)/duration);
+          const v = Math.round(start + (end-start)*p);
+          el.textContent = fmt(v) + (mode==='monthly'?'/mo':' total');
+          if(p<1) requestAnimationFrame(tick);
+        });
+      }
+
+      function updatePrices(){
+        priceEls.forEach(el=>{
+          const card = el.closest('.card');
+          const plan = card.getAttribute('data-plan');
+          const newVal = prices[mode][plan];
+          const currentText = el.textContent.replace(/[^0-9]/g,'');
+          const current = currentText?parseInt(currentText,10):0;
+          animatePrice(el,current,newVal);
+        });
+      }
+
+      monthlyBtn.addEventListener('click',()=>{ if(mode==='monthly') return; mode='monthly'; monthlyBtn.classList.add('active'); monthlyBtn.setAttribute('aria-pressed','true'); packageBtn.classList.remove('active'); packageBtn.setAttribute('aria-pressed','false'); updatePrices(); });
+      packageBtn.addEventListener('click',()=>{ if(mode==='package') return; mode='package'; packageBtn.classList.add('active'); packageBtn.setAttribute('aria-pressed','true'); monthlyBtn.classList.remove('active'); monthlyBtn.setAttribute('aria-pressed','false'); updatePrices(); });
+
+      // init
+      updatePrices();
+    })();
+  </script>
+</body>
+</html>

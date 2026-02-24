@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Blends — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7f7f6;--card:#fff;--muted:#5a5a5a;--accent:#5a3f36;--accent-2:#5b8c73}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:#222}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 28px;background:#fff;border-bottom:1px solid #eee}
+    .brand{font-weight:700}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none}
+    nav a.active{color:var(--accent)}
+    main{max-width:1100px;margin:28px auto;padding:0 20px}
+
+    .intro{display:flex;gap:20px;align-items:center}
+    .intro h1{margin:0;color:var(--accent)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:18px}
+    .card{background:var(--card);padding:14px;border-radius:10px;box-shadow:0 6px 18px rgba(20,20,20,0.04)}
+    .card h4{margin:0 0 8px 0}
+    .muted{color:var(--muted);font-size:14px}
+
+    /* proof gallery */
+    .proof{margin-top:22px;padding:16px;border-radius:12px;background:linear-gradient(180deg,#fff,#fbfbfb)}
+    .testimonial{min-height:72px;display:flex;flex-direction:column;justify-content:center}
+    .test-text{font-style:italic;color:#333}
+    .test-by{font-size:13px;color:var(--muted);margin-top:8px}
+    .cred{display:flex;gap:8px;margin-top:12px}
+    .cred .item{padding:6px 8px;border-radius:8px;background:#fff;border:1px solid #eee;font-size:13px;cursor:pointer}
+    .tooltip{position:absolute;background:#111;color:#fff;padding:8px 10px;border-radius:6px;font-size:12px;opacity:0;pointer-events:none;transform:translateY(-8px);transition:0.16s}
+
+    footer{margin-top:30px;padding:18px;background:linear-gradient(180deg,#fff,#f7f6f4);border-radius:10px;display:flex;justify-content:space-between}
+
+    @media (max-width:760px){header{padding:12px} .intro{flex-direction:column;align-items:flex-start}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Services</a>
+      <a href="blends.html" class="active">Blends</a>
+      <a href="shop.html">Shop</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="book.html">Book</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="intro">
+      <div>
+        <h1>Rotating, small-batch blends</h1>
+        <div class="muted">Blends intended for short rotation: an inhaler, a roll-on, or a drop for a diffuser. Packaged with dilution and safe-use notes.</div>
+      </div>
+      <div style="margin-left:auto;text-align:right">
+        <div style="font-weight:700">Hybrid offerings</div>
+        <div class="muted">Book a consult to receive a tailored blend, or choose from curated sets.</div>
+      </div>
+    </section>
+
+    <section class="grid" aria-live="polite">
+      <article class="card">
+        <h4>Morning Clarity — Inhaler</h4>
+        <div class="muted">Citrus & rosemary hints. Suggested use: 1–2 gentle inhales. 5 mL inhaler.</div>
+        <div style="margin-top:10px"><strong>$18</strong> &middot; <button onclick="location.href='shop.html'">Choose</button></div>
+      </article>
+      <article class="card">
+        <h4>Evening Ground — Roll-on</h4>
+        <div class="muted">Low dilution, cedar & lavender base for an evening cue. 10 mL roll-on.</div>
+        <div style="margin-top:10px"><strong>$26</strong> &middot; <button onclick="location.href='shop.html'">Choose</button></div>
+      </article>
+      <article class="card">
+        <h4>Quiet Focus — Diffuser Blend</h4>
+        <div class="muted">A short diffuser recipe for task beginnings. Includes dilution guidance card.</div>
+        <div style="margin-top:10px"><strong>$12</strong> &middot; <button onclick="location.href='shop.html'">Choose</button></div>
+      </article>
+    </section>
+
+    <section class="proof">
+      <h3 style="margin:0 0 8px 0">Proof Gallery</h3>
+      <div class="testimonial" id="testimonial">
+        <div class="test-text" id="tt">"I began with a single inhaler and found it easy to fold into my morning routine."</div>
+        <div class="test-by" id="tb">— local client, Portland</div>
+      </div>
+      <div class="cred" id="cred">
+        <div class="item" data-tip="Small-batch tested">Small-batch</div>
+        <div class="item" data-tip="Safety protocol checklist">Safety-checked</div>
+        <div class="item" data-tip="Client-reviewed" >Client-reviewed</div>
+      </div>
+    </section>
+
+    <footer>
+      <div>
+        <strong>Interested in a tailored series?</strong>
+        <div class="muted">Combine a consult + three rotation blends for a short-term experiment.</div>
+      </div>
+      <div>
+        <a href="book.html" style="background:var(--accent);color:#fff;padding:10px 14px;border-radius:8px;text-decoration:none">Book a pairing</a>
+      </div>
+    </footer>
+  </main>
+
+  <div id="tip" class="tooltip" aria-hidden="true"></div>
+
+  <script>
+    (function(){
+      // rotating testimonials
+      const texts = [
+        {t:'"I began with a single inhaler and found it easy to fold into my morning routine."', by:'— local client, Portland'},
+        {t:'"Clear guidance and a simple, low-dilution roll-on that I actually used."', by:'— workshop attendee'},
+        {t:'"The notes were subtle; the ritual was what mattered. No dramatic promises, just a small practice."', by:'— returning client'}
+      ];
+      let i = 0; const tt = document.getElementById('tt'), tb = document.getElementById('tb');
+      function rotate(){ i = (i+1) % texts.length; tt.textContent = texts[i].t; tb.textContent = texts[i].by; }
+      setInterval(rotate,4200);
+
+      // badges tooltips
+      const cred = document.getElementById('cred');
+      const tip = document.getElementById('tip');
+      cred.addEventListener('mouseover', e => {
+        if(e.target.dataset && e.target.dataset.tip){
+          tip.textContent = e.target.dataset.tip; tip.style.left = (e.pageX)+'px'; tip.style.top = (e.pageY - 36)+'px'; tip.style.opacity = 1; tip.setAttribute('aria-hidden','false');
+        }
+      });
+      cred.addEventListener('mouseout', () => { tip.style.opacity = 0; tip.setAttribute('aria-hidden','true'); });
+    })();
+  </script>
+</body>
+</html>

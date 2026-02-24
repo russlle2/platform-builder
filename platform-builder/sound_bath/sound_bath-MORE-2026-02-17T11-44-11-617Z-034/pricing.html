@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Pricing — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7f2ec;--accent:#5a3b2e;--muted:#8a7a71;--card:#fff}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:#2b231f}
+    .wrap{max-width:980px;margin:0 auto;padding:28px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    .brand{font-weight:800;color:var(--accent)}
+    nav a{margin-left:12px;text-decoration:none;color:var(--muted);font-weight:600}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:18px;margin-top:18px}
+    .card{background:var(--card);padding:16px;border-radius:12px}
+    h1{margin:0}
+    .plan{border-radius:10px;padding:14px;border:1px solid #efe6de}
+    .price{font-weight:800;color:var(--accent);font-size:20px}
+    .muted{color:var(--muted)}
+
+    .reveal{opacity:0;transform:translateY(8px);transition:opacity .5s ease,transform .5s ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media (max-width:960px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html">Gather</a>
+        <a href="events.html">Calendar</a>
+        <a href="private-sessions.html">Sessions</a>
+        <a href="pricing.html">Invest</a>
+      </nav>
+    </header>
+
+    <main class="grid">
+      <section>
+        <div class="card reveal">
+          <h1>Investment & packages</h1>
+          <p class="muted">Clear pricing, flexible options. Choose a standard session or inquire about a tailored VIP Day for deeper alignment and strategy work.</p>
+        </div>
+
+        <div class="card reveal" style="margin-top:14px">
+          <h3 style="margin-top:0">Public gatherings</h3>
+          <div class="plan" style="margin-top:10px">
+            <strong>Short Pause — Community</strong>
+            <div class="muted">45–60 minutes • Open group</div>
+            <div class="price">$18 — $30</div>
+            <div class="muted" style="margin-top:8px">Pay-what-you-can seats available on select dates.</div>
+          </div>
+
+          <div class="plan" style="margin-top:10px">
+            <strong>Extended Field — Workshop</strong>
+            <div class="muted">2–3 hours • Themed, guided</div>
+            <div class="price">$55 — $95</div>
+            <div class="muted" style="margin-top:8px">Includes a short take-home practice and guidance notes.</div>
+          </div>
+        </div>
+
+        <div class="card reveal" style="margin-top:14px">
+          <h3 style="margin-top:0">Private work</h3>
+          <div class="plan" style="margin-top:10px">
+            <strong>Express Private</strong>
+            <div class="muted">45 minutes — targeted</div>
+            <div class="price">From $95</div>
+            <div class="muted" style="margin-top:6px">Best for an efficient reset.</div>
+          </div>
+          <div class="plan" style="margin-top:10px">
+            <strong>Focused Private</strong>
+            <div class="muted">90 minutes — integration focused</div>
+            <div class="price">From $170</div>
+          </div>
+
+          <div class="plan" style="margin-top:10px;border-left:4px solid var(--accent);padding-left:10px">
+            <strong>VIP Day — Immersive half-day</strong>
+            <div class="muted">4+ hours, tailored program and guided practices</div>
+            <div class="price">Custom pricing — inquire</div>
+            <div class="muted" style="margin-top:8px">A dedicated day for deeper re-patterning and tools you can carry forward.</div>
+          </div>
+        </div>
+
+        <div class="card reveal" style="margin-top:14px">
+          <h4 style="margin-top:0">How payments work</h4>
+          <p class="muted">Deposit required for private bookings. Public events take card payments online. Refunds and transfers vary by event; check the booking page or contact <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</p>
+        </div>
+
+      </section>
+
+      <aside>
+        <div class="card reveal">
+          <h4 style="margin-top:0">Need a custom plan?</h4>
+          <p class="muted">If you are organizing for a small team, retreat, or special event, we design an offering that covers logistics and fit. Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> with times and goals.</p>
+          <div style="margin-top:10px"><a class="cta" href="contact.html">Inquire about a custom plan</a></div>
+        </div>
+
+        <div class="card reveal" style="margin-top:12px">
+          <h4 style="margin-top:0">Accessibility & safety</h4>
+          <p class="muted">Let us know about mobility needs, sensory sensitivities, or medical notes ahead of time. For full contraindications see the Events or Private Sessions pages, and contact us if unsure.</p>
+        </div>
+
+        <div class="card reveal" style="margin-top:12px">
+          <h4 style="margin-top:0">Small business terms</h4>
+          <p class="muted">Gift certificates, seasonal offers, and sliding scale options are occasionally available. Reach out or sign up for notices on the homepage.</p>
+        </div>
+      </aside>
+    </main>
+
+    <footer style="margin-top:18px;color:var(--muted)">
+      <div>Questions? Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </footer>
+  </div>
+
+  <script>
+    // Simple reveal with reduced-motion support
+    (function(){
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if(reduced){ document.querySelectorAll('.reveal').forEach(r=>r.classList.add('visible')); return; }
+      const io = new IntersectionObserver((entries)=>{ entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('visible'); io.unobserve(en.target); } }); },{threshold:0.12});
+      document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+    })();
+  </script>
+</body>
+</html>

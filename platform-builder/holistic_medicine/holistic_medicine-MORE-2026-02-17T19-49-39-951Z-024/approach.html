@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Our Way — Integrative Methodology</title>
+  <style>
+    :root{--accent:#0b7285;--muted:#475058;--bg:#ffffff}
+    body{margin:0;font-family:system-ui,Arial,Helvetica;background:var(--bg);color:#0b1b1b}
+    .container{max-width:1050px;margin:20px auto;padding:20px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:10px;color:var(--muted);text-decoration:none}
+
+    .intro{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
+    .panel{background:#fff;border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(3,10,10,0.04)}
+    h1{margin:0 0 8px 0}
+    p.lead{margin:0;color:var(--muted)}
+
+    .method-steps{display:flex;flex-direction:column;gap:12px;margin-top:12px}
+    .step{display:flex;gap:12px;align-items:flex-start}
+    .step .num{width:44px;height:44px;border-radius:50%;background:linear-gradient(180deg,#e9fbff,#f8feff);display:flex;align-items:center;justify-content:center;color:var(--accent);font-weight:700}
+    .step h4{margin:0}
+    .note{color:var(--muted);font-size:14px}
+
+    .planner{margin-top:14px}
+    .planner label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    .planner input[type="date"]{padding:8px;border-radius:8px;border:1px solid #e6eef0;width:100%}
+    .planner .row{display:flex;gap:8px}
+    .planner .row > *{flex:1}
+
+    .disclaimer{margin-top:12px;padding:10px;border-radius:8px;background:#fff8e9;border-left:4px solid #e0a400;color:#5b431a}
+
+    .suggest{background:linear-gradient(90deg,rgba(11,114,133,0.06),transparent);padding:12px;border-radius:10px;margin-top:12px}
+
+    footer{margin-top:22px;color:var(--muted)}
+
+    @media (max-width:880px){.intro{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div style="display:flex;align-items:center;gap:12px"><div style="font-weight:700;color:var(--accent)">{{BUSINESS_NAME}}</div>
+        <nav>
+          <a href="index.html">Home</a>
+          <a href="services.html">Offerings</a>
+          <a href="conditions.html">Conditions</a>
+          <a href="approach.html" style="font-weight:600">Way</a>
+          <a href="book.html">Reserve</a>
+        </nav>
+      </div>
+      <div style="color:var(--muted)">Contact: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </header>
+
+    <div class="intro">
+      <div class="panel">
+        <h1>How we design a brief, testable plan</h1>
+        <p class="lead">We emphasize clarity: a small experiment, measurement, and an agreed follow-up. The goal is learning, not promises.</p>
+
+        <div class="method-steps">
+          <div class="step">
+            <div class="num">1</div>
+            <div>
+              <h4>Listen & map</h4>
+              <div class="note">An intake to gather history, rhythms, and what you’ve already tried. We map energy and symptom patterns together.</div>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="num">2</div>
+            <div>
+              <h4>Design a small trial</h4>
+              <div class="note">Two to three targeted changes with simple measurements so you can tell if things move.</div>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="num">3</div>
+            <div>
+              <h4>Review & adapt</h4>
+              <div class="note">A follow-up to look at results, keep what helps, and modify what doesn’t.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="suggest">
+          <strong>Practical framing:</strong>
+          <p style="margin:8px 0 0;color:var(--muted)">We recommend short timelines (2–8 weeks) and measurable goals: sleep minutes, symptom count, or energy windows. These are learning aims rather than clinical guarantees.</p>
+        </div>
+
+      </div>
+
+      <aside class="panel">
+        <h3>Timeline planner</h3>
+        <p style="color:var(--muted)">Pick target dates for each phase. Use this as a soft roadmap — you can adjust anytime.</p>
+
+        <div class="planner">
+          <label for="start">Phase 1 (stabilize) start</label>
+          <input id="start" type="date">
+
+          <label for="phase2">Phase 2 (test) start</label>
+          <input id="phase2" type="date">
+
+          <label for="phase3">Phase 3 (sustain) checkpoint</label>
+          <input id="phase3" type="date">
+
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <button id="savePlan" style="flex:1;padding:8px;border-radius:8px;border:1px solid #e5eef0;background:#eefefc;color:var(--accent)">Save plan locally</button>
+            <button id="resetPlan" style="flex:1;padding:8px;border-radius:8px;border:1px solid #eee;background:white">Clear</button>
+          </div>
+
+          <div class="disclaimer">Note: This planner is for personal planning and education. It is not a replacement for clinical scheduling or urgent care. If you have significant concerns, coordinate with your medical team.</div>
+        </div>
+
+        <div style="margin-top:12px">
+          <h4>Quick suggestions</h4>
+          <ul style="color:var(--muted)">
+            <li>Set Phase 1 for 7–14 days.</li>
+            <li>Use Phase 2 for a focused experiment (2–4 weeks).</li>
+            <li>Mark Phase 3 as a maintenance check-in or longer follow-up.</li>
+          </ul>
+        </div>
+
+      </aside>
+    </div>
+
+    <section style="margin-top:18px" class="panel">
+      <h2>Interactive pathway hint — choose a current state</h2>
+      <p style="color:var(--muted)">A tiny selector to suggest an initial skill focus; the suggested home practice and follow-up phrasing will update below.</p>
+
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+        <select id="stateSelect" style="padding:10px;border-radius:8px;border:1px solid #e6eef0">
+          <option value="scattered">Scattered attention</option>
+          <option value="dragging">Dragging mid-afternoon</option>
+          <option value="bloating">Regular bloating</option>
+          <option value="wake">Waking multiple times</option>
+        </select>
+
+        <button id="apply" style="padding:10px;border-radius:8px;background:var(--accent);color:#fff;border:none">Apply suggestion</button>
+      </div>
+
+      <div id="pathCard" style="margin-top:12px;padding:12px;border-radius:8px;background:#f6fbff;border-left:4px solid rgba(11,114,133,0.12)">
+        <strong id="pathTitle">Choose a state</strong>
+        <div id="pathDesc" style="margin-top:8px;color:var(--muted)">Pick an item above and click Apply suggestion to get a recommended starting practice and a next-check date.</div>
+      </div>
+
+      <div style="margin-top:12px;color:var(--muted);font-size:13px">Educational note: any suggestions are intended as low-risk experiments. If you are on medications or have complex medical conditions, discuss changes with your clinician before altering treatment, diet, or exercise.</div>
+    </section>
+
+    <footer>
+      <div style="margin-top:20px;color:var(--muted);display:flex;justify-content:space-between;align-items:center">
+        <div>Based in {{CITY}}, {{STATE}} — educational integrative care</div>
+        <div><a href="book.html">Book a session</a> | <a href="contact.html">Contact</a></div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    (function(){
+      // Planner save to localStorage
+      var start = document.getElementById('start');
+      var p2 = document.getElementById('phase2');
+      var p3 = document.getElementById('phase3');
+      var save = document.getElementById('savePlan');
+      var reset = document.getElementById('resetPlan');
+
+      function loadPlan(){
+        try{
+          var raw = localStorage.getItem('holistic_planner_v1');
+          if(raw){
+            var o = JSON.parse(raw);
+            start.value = o.start||'';
+            p2.value = o.phase2||'';
+            p3.value = o.phase3||'';
+          }
+        }catch(e){console.warn(e)}
+      }
+      function savePlan(){
+        var o = {start:start.value, phase2:p2.value, phase3:p3.value};
+        localStorage.setItem('holistic_planner_v1', JSON.stringify(o));
+        save.textContent = 'Saved locally';
+        setTimeout(function(){save.textContent='Save plan locally'},1400);
+      }
+      function clearPlan(){
+        start.value='';p2.value='';p3.value='';localStorage.removeItem('holistic_planner_v1');
+      }
+      save.addEventListener('click', savePlan);
+      reset.addEventListener('click', clearPlan);
+      loadPlan();
+
+      // Interactive pathway hint
+      var select = document.getElementById('stateSelect');
+      var apply = document.getElementById('apply');
+      var pathTitle = document.getElementById('pathTitle');
+      var pathDesc = document.getElementById('pathDesc');
+
+      var suggestions = {
+        'scattered':{title:'Attention anchor',desc:'Try a simple 5-minute seated practice: 2 minutes breath awareness, 3 minutes light movement. Track focus episodes for a week. Next-check: 7–10 days.'},
+        'dragging':{title:'Pacing & protein',desc:'Add a 20–30 minute mid-morning protein-rich snack and 10 minutes of brief movement. Monitor energy windows for two weeks.'},
+        'bloating':{title:'Gentle food log',desc:'Record meal timing and symptoms for 10 days; introduce a single food swap (e.g. lower FODMAP trial) while tracking changes.'},
+        'wake':{title:'Wind-down rehearsal',desc:'Shorten evening screen time by 30 minutes, add a consistent low-light ritual and 20 minutes of quiet reading; try for 14 nights and note sleep continuity.'}
+      };
+
+      apply.addEventListener('click', function(){
+        var val = select.value;
+        var s = suggestions[val];
+        pathTitle.textContent = s.title;
+        pathDesc.textContent = s.desc;
+      });
+
+    })();
+  </script>
+</body>
+</html>

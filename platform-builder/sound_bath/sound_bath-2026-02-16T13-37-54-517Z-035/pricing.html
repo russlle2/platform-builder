@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Rates & Packages — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#F7F3EE;--primary:#7B4F34;--muted:#6B5A53;--card:#FFFDFB;--accent:#AA7A58;--radius:16px;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#EFE4D5);color:var(--primary)}
+    .wrap{max-width:1100px;margin:0 auto;padding:34px}
+    header{display:flex;justify-content:space-between;align-items:center;padding:12px 0}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,#D9B79C,#F6EDE5);display:flex;align-items:center;justify-content:center;font-weight:800}
+    nav a{margin-left:14px;text-decoration:none;color:var(--muted)}
+
+    .hero{display:flex;gap:20px;align-items:center;padding:18px 0}
+    h1{margin:0;font-size:34px}
+    .sub{color:var(--muted)}
+
+    .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}
+    .plan{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:0 12px 30px rgba(122,82,48,0.06)}
+    .price{font-size:22px;color:var(--primary);font-weight:800}
+    .note{color:var(--muted);font-size:13px}
+
+    .cta{display:inline-block;padding:10px 14px;border-radius:10px;background:var(--primary);color:#fff;text-decoration:none;font-weight:700}
+
+    /* subtle svg */
+    .toppattern{width:100%;height:72px;opacity:0.12}
+
+    @media(max-width:980px){.plans{grid-template-columns:1fr} .logo{display:none}}
+  </style>
+</head>
+<body>
+  <svg class="toppattern" viewBox="0 0 1200 72" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="gp" x1="0" x2="1"><stop offset="0" stop-color="#F6EDE5"/><stop offset="1" stop-color="#D9B79C"/></linearGradient>
+      <pattern id="pp" width="240" height="72" patternUnits="userSpaceOnUse">
+        <rect width="240" height="72" fill="url(#gp)"/>
+        <path d="M0 36 C60 0 120 72 180 36 C240 0 300 72 360 36" stroke="#CFA58A" stroke-width="8" stroke-opacity="0.14" fill="none"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#pp)"/>
+  </svg>
+
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">PR</div>
+        <div>
+          <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+          <div style="font-size:12px;color:var(--muted)">Transparent pricing for restorative sessions</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Start</a>
+        <a href="private-sessions.html">Sessions</a>
+        <a href="events.html">Gatherings</a>
+        <a href="about.html">About</a>
+      </nav>
+    </header>
+
+    <!-- HERO -->
+    <div class="hero">
+      <div>
+        <h1>Rates & Packages</h1>
+        <p class="sub">Simple, honest pricing: drop-in options, multi-pass savings, and bespoke packages for private work.</p>
+      </div>
+      <div style="margin-left:auto;align-self:start">
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </div>
+
+    <!-- DIAGNOSTIC (varied order) -->
+    <section style="margin-top:12px">
+      <h2>Choose with clarity</h2>
+      <p class="note">If you’re unsure, start with a single public gathering to feel the field; move into private work for deeper change.</p>
+    </section>
+
+    <!-- PRICING PLANS -->
+    <section style="margin-top:18px">
+      <div class="plans">
+        <div class="plan">
+          <h3 style="margin-top:0">Drop-in Gathering</h3>
+          <div class="price">$35</div>
+          <div class="note" style="margin-top:8px">Single session ticket. Includes mat space and a short follow-up email.</div>
+          <ul style="margin-top:12px;color:var(--muted)">
+            <li>75-minute group sound bath</li>
+            <li>Small-group capacity</li>
+            <li>Bring your mat/blanket</li>
+          </ul>
+          <div style="margin-top:12px"><a class="cta" href="book.html">Reserve</a></div>
+        </div>
+
+        <div class="plan">
+          <h3 style="margin-top:0">5-Pack Pass</h3>
+          <div class="price">$160</div>
+          <div class="note">Save when you commit to regular practice.</div>
+          <ul style="margin-top:12px;color:var(--muted)">
+            <li>Five group sessions</li>
+            <li>Shareable with a friend</li>
+            <li>Valid for 6 months</li>
+          </ul>
+          <div style="margin-top:12px"><a class="cta" href="book.html">Buy pass</a></div>
+        </div>
+
+        <div class="plan">
+          <h3 style="margin-top:0">Private Session (1:1)</h3>
+          <div class="price">From $140</div>
+          <div class="note">60–90 minute bespoke session with intake and follow-up.</div>
+          <ul style="margin-top:12px;color:var(--muted)">
+            <li>Monochord + tuned percussion</li>
+            <li>Custom micro-habit plan</li>
+            <li>On-site option for groups (quote)</li>
+          </ul>
+          <div style="margin-top:12px"><a class="cta" href="booking.html">Request</a></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLAN DETAILS -->
+    <section style="margin-top:18px">
+      <h2>Packages & customization</h2>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px">
+        <div class="plan" style="flex:1;min-width:260px">
+          <h4 style="margin-top:0">Couples & Partner Work</h4>
+          <p class="note">75–90 minutes. From $240. Includes paired listening exercises and shared integration plan.</p>
+        </div>
+        <div class="plan" style="flex:1;min-width:260px">
+          <h4 style="margin-top:0">Corporate & Retreats</h4>
+          <p class="note">Custom pricing. Travel and setup fees may apply. Programs include sound offering + short facilitated practices to embed learning.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- MICRO HABITS -->
+    <section style="margin-top:18px">
+      <h2>Included with private sessions</h2>
+      <ul style="color:var(--muted)">
+        <li>Short written aftercare and two micro-habits tailored to your session.</li>
+        <li>Audio snippet on request (extra fee) to support home practice.</li>
+      </ul>
+    </section>
+
+    <!-- CTA -->
+    <section style="margin-top:18px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div>
+          <strong>Have a special request?</strong>
+          <div class="note" style="margin-top:6px">We price bespoke offerings for groups and corporate events. Reach out with event size and goals.</div>
+        </div>
+        <div>
+          <a class="cta" href="contact.html">Contact us</a>
+        </div>
+      </div>
+    </section>
+
+    <footer style="margin-top:28px;color:var(--muted)">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div>Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

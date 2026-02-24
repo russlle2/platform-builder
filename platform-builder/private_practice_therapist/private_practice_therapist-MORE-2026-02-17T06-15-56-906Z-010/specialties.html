@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Focus Areas & Pricing • {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--glass:rgba(255,255,255,0.06);--accent:#ff7aa2;--muted:#d9cfe1}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto;background:#071022;color:#fff}
+    header{padding:18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,0.04)}
+    .nav a{color:var(--muted);text-decoration:none;margin-left:12px}
+    main{max-width:1100px;margin:28px auto;padding:20px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:22px}
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.06)}
+    h1{margin:0 0 6px 0}
+    .switch{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+    .toggle{background:rgba(255,255,255,0.03);padding:6px;border-radius:999px;border:1px solid rgba(255,255,255,0.06);display:inline-flex}
+    .toggle button{border:0;background:transparent;padding:8px 14px;border-radius:999px;color:var(--muted);cursor:pointer}
+    .toggle button.active{background:var(--accent);color:#0b0720;font-weight:700}
+    .plans{display:flex;flex-direction:column;gap:12px}
+    .plan{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;background:rgba(0,0,0,0.12)}
+    .price{font-weight:800;font-size:20px;color:var(--accent)}
+    .desc{color:var(--muted)}
+    ul.specialties{margin:12px 0 0 16px;color:var(--muted)}
+    .cta{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:10px;background:var(--accent);color:#fff;text-decoration:none}
+    /* small screens */
+    @media(max-width:900px){.grid{grid-template-columns:1fr}.nav{display:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style='font-weight:700'>{{BUSINESS_NAME}}</div>
+    <nav class='nav'>
+      <a href='index.html'>Home</a>
+      <a href='about.html'>About</a>
+      <a href='specialties.html'>Focus Areas</a>
+      <a href='contact.html'>Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class='grid'>
+      <section class='panel'>
+        <h1>Where I often join people</h1>
+        <p class='desc'>I support adults navigating work strain, relationship shifts, caregiving changes, and the fog that comes with big life pivots. Below are common threads I help untangle with practical, evidence-informed approaches.</p>
+
+        <ul class='specialties'>
+          <li>Work overwhelm & burnout recovery</li>
+          <li>Transitions: moves, career shifts, parenting changes</li>
+          <li>Anxiety and worry that interferes with daily life</li>
+          <li>Relationship patterns and communication skill-building</li>
+        </ul>
+
+        <a class='cta' href='{{PRIMARY_CTA_URL}}'>Join a cohort conversation</a>
+      </section>
+
+      <aside class='panel'>
+        <div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:8px'>
+          <div style='font-weight:700'>Pricing comparator</div>
+          <div style='font-size:13px;color:var(--muted)'>Toggle to compare</div>
+        </div>
+
+        <div class='switch'>
+          <div style='font-size:13px;color:var(--muted)'>Monthly</div>
+          <div class='toggle' role='tablist' aria-label='pricing toggle'>
+            <button id='opt-monthly' class='active' aria-pressed='true'>Monthly</button>
+            <button id='opt-package' aria-pressed='false'>Package</button>
+          </div>
+          <div style='font-size:13px;color:var(--muted)'>Package</div>
+        </div>
+
+        <div class='plans' id='plans'>
+          <div class='plan'>
+            <div>
+              <div style='font-weight:700'>Momentum Monthly</div>
+              <div class='desc'>Weekly sessions with short check-ins</div>
+            </div>
+            <div class='price' data-month='180' data-package='950'>$180</div>
+          </div>
+
+          <div class='plan'>
+            <div>
+              <div style='font-weight:700'>Clarity Package</div>
+              <div class='desc'>Six-session focus on a specific goal</div>
+            </div>
+            <div class='price' data-month='220' data-package='1200'>$220</div>
+          </div>
+
+          <div class='plan'>
+            <div>
+              <div style='font-weight:700'>Drop-in Essentials</div>
+              <div class='desc'>Flexible, single sessions for targeted work</div>
+            </div>
+            <div class='price' data-month='95' data-package='95'>$95</div>
+          </div>
+        </div>
+
+        <div style='margin-top:12px;color:var(--muted);font-size:13px'>Prices shown for comparison. Packages include a short planning call and printable takeaways. Insurance not billed here; I can provide receipts for out-of-network reimbursement.</div>
+
+      </aside>
+
+    </div>
+
+    <section style='margin-top:20px' class='panel'>
+      <h2 style='margin-top:0'>How a cohort offering works</h2>
+      <p class='desc'>I run time-limited cohorts with a small group size to practice skills, try experiments, and gain accountability—paired with optional individual check-ins. Cohorts are framed as collaborative learning rather than therapy alone; individual clinical needs may require private sessions.</p>
+      <div style='margin-top:12px'><a class='cta' href='book.html'>See upcoming cohort dates</a></div>
+    </section>
+
+    <section style='margin-top:14px' class='panel'>
+      <h3 style='margin-top:0'>Scope & accessibility</h3>
+      <p class='desc'>I cannot provide emergency services or medication management. If you need urgent support, call local emergency services. My practice strives to be accessible; sliding scale spots may be available for cohort seats.</p>
+    </section>
+
+  </main>
+
+  <script>
+    (function(){
+      const btnMonthly=document.getElementById('opt-monthly');
+      const btnPackage=document.getElementById('opt-package');
+      const prices=document.querySelectorAll('.price');
+      function setMode(mode){
+        btnMonthly.classList.toggle('active', mode==='month');
+        btnPackage.classList.toggle('active', mode==='package');
+        btnMonthly.setAttribute('aria-pressed', mode==='month');
+        btnPackage.setAttribute('aria-pressed', mode==='package');
+        prices.forEach(el=>{
+          const target = mode==='month' ? el.getAttribute('data-month') : el.getAttribute('data-package');
+          animateNumber(el, Number(target));
+        })
+      }
+      function animateNumber(el,to){
+        const from = Number(el.textContent.replace(/[^0-9\.]/g,''))||0;
+        const duration=550; const start=performance.now();
+        requestAnimationFrame(function raf(now){
+          const t=Math.min(1,(now-start)/duration);
+          const val = Math.round(from + (to-from)*easeOutCubic(t));
+          el.textContent = '$'+val;
+          if(t<1) requestAnimationFrame(raf);
+        })
+      }
+      function easeOutCubic(t){return 1-Math.pow(1-t,3)}
+      btnMonthly.addEventListener('click',()=>setMode('month'));
+      btnPackage.addEventListener('click',()=>setMode('package'));
+      // init monthly
+      setMode('month');
+    })();
+  </script>
+</body>
+</html>

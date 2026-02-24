@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7fffb;--ink:#0e2b2a;--accent:#2e806f;--muted:#65736f}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:var(--bg);color:var(--ink)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:14px 26px;background:linear-gradient(180deg, rgba(46,128,111,0.06), transparent)}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none}
+    .brand{font-weight:800;color:var(--accent)}
+    .wrap{max-width:880px;margin:26px auto;padding:18px}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
+    .card{background:#fff;padding:16px;border-radius:12px;box-shadow:0 10px 30px rgba(8,12,10,0.04)}
+    label{display:block;margin:8px 0}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6f3ee}
+    .button{background:var(--accent);color:#fff;padding:10px 12px;border-radius:10px;border:none;cursor:pointer}
+    .muted{color:var(--muted)}
+    .result{margin-top:12px;padding:12px;background:rgba(46,128,111,0.04);border-radius:8px}
+    footer{max-width:880px;margin:24px auto;padding:18px;color:var(--muted);font-size:13px}
+    .trybtn{background:transparent;border:1px solid var(--accent);padding:8px 12px;border-radius:8px;color:var(--accent);cursor:pointer}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="pricing.html">Plans</a>
+      <a href="about.html">Roots</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+    <div><a class="trybtn" href="mailto:{{EMAIL}}">Email us</a></div>
+  </header>
+
+  <main class="wrap">
+    <div class="grid">
+      <div>
+        <div class="card">
+          <h2 style="margin-top:0">Request a session</h2>
+          <p class="muted">Pick a rough time. We’ll follow up to confirm and gather a brief intake. Educational, collaborative care.</p>
+
+          <form id="booking-form">
+            <label>Full name<input type="text" id="name" required></label>
+            <label>Preferred contact<input type="text" id="contact" placeholder="phone or email" required></label>
+            <label>Choose pathway
+              <select id="pathway">
+                <option value="Starter Compass">Starter Compass — 60 min</option>
+                <option value="Seasonal Support">Seasonal Support — 3-session series</option>
+                <option value="Deep Alignment">Deep Alignment — 6-session series</option>
+              </select>
+            </label>
+            <label>Preferred date<input type="date" id="date"></label>
+
+            <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
+              <button type="button" class="button" id="book-now">Request session</button>
+              <button type="button" class="trybtn" id="book-practice">Try a short practice</button>
+            </div>
+
+            <div id="booking-output" class="result" style="display:none"></div>
+          </form>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h3 style="margin:0 0 8px">Whole-person inventory</h3>
+          <p class="muted">Complete this before your visit to shape the time: it generates a brief agenda and follow-up plan you can copy into the intake.</p>
+          <form id="book-inv">
+            <label><input type="checkbox" name="area" value="Sleep"> Sleep</label>
+            <label><input type="checkbox" name="area" value="Digestion"> Digestion</label>
+            <label><input type="checkbox" name="area" value="Stress"> Stress</label>
+            <label><input type="checkbox" name="area" value="Movement"> Movement</label>
+            <label><input type="checkbox" name="area" value="Nutrition"> Nutrition</label>
+            <label><input type="checkbox" name="area" value="Connections"> Relationships</label>
+            <div style="margin-top:8px"><button type="button" class="trybtn" id="book-inv-run">Sketch agenda</button></div>
+          </form>
+          <div id="book-inv-result" class="result" style="display:none"></div>
+        </div>
+
+      </div>
+
+      <aside>
+        <div class="card">
+          <h3 style="margin-top:0">What to expect</h3>
+          <ol class="muted" style="padding-left:18px">
+            <li>We review your concerns and a short history</li>
+            <li>We co-create 2–3 practical steps to try</li>
+            <li>We agree on follow-up cadence and measurements</li>
+          </ol>
+          <div style="margin-top:12px"><strong>Phone:</strong> {{PHONE}}<br><strong>Email:</strong> <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0 0 8px">Short practice</h4>
+          <p class="muted" style="margin:0 0 10px">A brief breathing or journaling practice to steady you before booking.</p>
+          <div style="display:flex;gap:8px"><button class="trybtn" id="side-practice">Begin practice</button><a href="pricing.html" class="trybtn">See plans</a></div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <div style="max-width:880px;margin:0 auto;padding:18px;color:var(--muted);font-size:13px">By requesting a session you agree to an administrative follow-up from our team. For urgent medical concerns call local emergency services.</div>
+  </footer>
+
+  <!-- practice modal reused -->
+  <div class="modal" id="book-practice-modal" aria-hidden="true">
+    <div class="modal-dialog">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <strong>Short practice</strong>
+        <button id="close-book-practice" class="trybtn">Close</button>
+      </div>
+      <div>
+        <p class="muted">Choose a brief practice to center yourself.</p>
+        <div style="display:flex;gap:8px">
+          <button class="trybtn" id="bp-breath">Breathing</button>
+          <button class="trybtn" id="bp-journal">Journaling</button>
+          <button class="trybtn" id="bp-intent">Set an intention</button>
+        </div>
+        <div id="bp-area" style="margin-top:12px"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // booking interactions
+    function assembleAgenda(selected){
+      const map = {
+        Sleep: {focus:'Sleep rhythm and bedtime cues',cad:'2 weeks'},
+        Digestion: {focus:'Simple digestion supports',cad:'4 weeks'},
+        Stress: {focus:'Stress anchors and micro-practices',cad:'2 weeks'},
+        Movement: {focus:'Movement starters',cad:'4 weeks'},
+        Nutrition: {focus:'Food patterns and small changes',cad:'4 weeks'},
+        Connections: {focus:'Relationship rhythms',cad:'6 weeks'}
+      };
+      if(!selected.length) return {title:'Initial visit','items':['Open history','Priorities list'],'cadence':'2 weeks'}
+      const items = selected.map(s=>map[s]?.focus||s);
+      const cadence = selected.includes('Stress') || selected.includes('Sleep') ? '2 weeks' : '4 weeks';
+      return {title:'Draft agenda','items':items,'cadence':cadence};
+    }
+
+    document.getElementById('book-inv-run').addEventListener('click',()=>{
+      const boxes = Array.from(document.querySelectorAll('#book-inv input[type=checkbox]:checked')).map(i=>i.value);
+      const out = assembleAgenda(boxes);
+      const el = document.getElementById('book-inv-result'); el.style.display='block';
+      el.innerHTML = '<strong>'+out.title+'</strong><br><ul>'+out.items.map(i=>'<li>'+i+'</li>').join('')+'</ul><div class="muted">Suggested first follow-up: '+out.cadence+'</div>';
+    });
+
+    document.getElementById('book-now').addEventListener('click',()=>{
+      const name = document.getElementById('name').value.trim(); const contact = document.getElementById('contact').value.trim();
+      if(!name||!contact){ alert('Please include your name and contact.'); return; }
+      document.getElementById('booking-output').style.display='block';
+      document.getElementById('booking-output').innerHTML = 'Thanks, '+name+'. We received your request and will reach out to '+contact+' to confirm details. If urgent, call '+ '{{PHONE}}' + '.';
+    });
+
+    // practice modal handlers
+    const bpModal = document.getElementById('book-practice-modal');
+    document.getElementById('book-practice').addEventListener('click',()=>{ bpModal.classList.add('open'); bpModal.setAttribute('aria-hidden','false'); });
+    document.getElementById('side-practice').addEventListener('click',()=>{ bpModal.classList.add('open'); bpModal.setAttribute('aria-hidden','false'); });
+    document.getElementById('close-book-practice').addEventListener('click',()=>{ bpModal.classList.remove('open'); bpModal.setAttribute('aria-hidden','true'); clearBpArea(); });
+
+    function clearBpArea(){ document.getElementById('bp-area').innerHTML=''; }
+
+    document.getElementById('bp-breath').addEventListener('click',()=>{ renderBreath(); });
+    document.getElementById('bp-journal').addEventListener('click',()=>{ renderJournal(); });
+    document.getElementById('bp-intent').addEventListener('click',()=>{ renderIntent(); });
+
+    function renderBreath(){ document.getElementById('bp-area').innerHTML = '<div style="text-align:center"><div id="bp-ball" style="width:40px;height:40px;border-radius:50%;background:var(--accent);margin:12px auto;transition:all 1s"></div><div id="bp-ttl" class="muted">Ready</div><div style="margin-top:8px"><button id="bp-start" class="trybtn">Start 3 breaths</button><button id="bp-stop" class="trybtn">Stop</button></div></div>';
+      let t=null; let exp=true; let count=0; const ball = document.getElementById('bp-ball'); const ttl=document.getElementById('bp-ttl');
+      document.getElementById('bp-start').addEventListener('click',()=>{ if(t) return; count=0; exp=true; ttl.textContent='Inhale...'; t=setInterval(()=>{ if(exp){ ball.style.width='120px'; ball.style.height='120px'; ttl.textContent='Exhale...'; } else { ball.style.width='40px'; ball.style.height='40px'; ttl.textContent='Inhale...'; } exp=!exp; count++; if(count>=6){ clearInterval(t); t=null; ttl.textContent='Complete.' } },3000); });
+      document.getElementById('bp-stop').addEventListener('click',()=>{ if(t){ clearInterval(t); t=null; ttl.textContent='Stopped'; ball.style.width='40px'; ball.style.height='40px'; } });
+    }
+
+    function renderJournal(){ document.getElementById('bp-area').innerHTML = '<div><textarea id="bp-jtext" rows="6" style="width:100%;padding:10px;border-radius:8px;border:1px solid #e6f3ee" placeholder="Write a few lines about what you notice..."></textarea><div style="display:flex;gap:8px;margin-top:8px"><button id="bp-jstart" class="trybtn">Start 2 min</button><div id="bp-jtime" class="muted"></div></div></div>';
+      let jt=null; let rem=120; document.getElementById('bp-jstart').addEventListener('click',()=>{ if(jt) return; rem=120; document.getElementById('bp-jtime').textContent='2:00'; jt=setInterval(()=>{ rem--; const mm=Math.floor(rem/60); const ss=String(rem%60).padStart(2,'0'); document.getElementById('bp-jtime').textContent=mm+':'+ss; if(rem<=0){ clearInterval(jt); jt=null; document.getElementById('bp-jtime').textContent='Complete'; } },1000); });
+    }
+
+    function renderIntent(){ document.getElementById('bp-area').innerHTML = '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="trybtn" data-i="Move gently">Move gently</button><button class="trybtn" data-i="Breathe more">Breathe more</button><button class="trybtn" data-i="Choose kindness">Choose kindness</button></div><div id="bp-intout" class="muted" style="margin-top:8px"></div>';
+      document.querySelectorAll('#bp-area .trybtn').forEach(b=>b.addEventListener('click',e=>{ document.getElementById('bp-intout').textContent = 'Intention set: "'+e.target.getAttribute('data-i')+'" — carry it into the next hour.'; }));
+    }
+  </script>
+</body>
+</html>

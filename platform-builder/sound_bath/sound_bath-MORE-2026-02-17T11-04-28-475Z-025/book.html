@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — Book a Session — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#031217;--glass:#ffffff10;--accent:#89e0b8;--muted:#b9ded3;--text:#e9fdf6}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#031217 0%,#021014 100%);color:var(--text)}
+    .wrap{max-width:920px;margin:36px auto;padding:22px;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.004));backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.03)}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;margin-left:10px}
+    h1{margin:10px 0}
+    .booking{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
+    .form{padding:12px;border-radius:10px}
+    label{display:block;margin-top:10px;color:var(--muted);font-size:14px}
+    input,select,textarea{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--text)}
+    .row{display:flex;gap:8px}
+    .btn{display:inline-block;padding:10px 12px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#4fc3b1);color:#042018;text-decoration:none;font-weight:700;border:none;cursor:pointer}
+    .alt{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+    .program-list{margin-top:12px;display:grid;gap:8px}
+    .program{padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02);display:flex;justify-content:space-between;align-items:center}
+    .muted{color:var(--muted)}
+    .note{font-size:13px;color:var(--muted);margin-top:8px}
+
+    @media(max-width:880px){.booking{grid-template-columns:1fr}} 
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <div style="font-weight:600">{{BUSINESS_NAME}}</div>
+        <nav style="margin-top:6px">
+          <a href="index.html">Home</a>
+          <a href="events.html">Gatherings</a>
+          <a href="about.html">About</a>
+          <a href="faq.html">Queries</a>
+        </nav>
+      </div>
+      <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+    </header>
+
+    <h1>Reserve a session</h1>
+    <div class="booking">
+      <form class="form" id="booking-form" onsubmit="return false;">
+        <label>Full name<input type="text" id="name" placeholder="Your name" required></label>
+        <label>Email<input type="email" id="email" placeholder="you@domain.com" required></label>
+        <label>Phone<input type="tel" id="phone" placeholder="{{PHONE}}"></label>
+
+        <label>Preferred sound texture</label>
+        <div class="row" id="mixer-book">
+          <button type="button" class="alt" data-level="gentle">Gentle</button>
+          <button type="button" class="alt active" data-level="medium">Medium</button>
+          <button type="button" class="alt" data-level="intense">Intense</button>
+        </div>
+
+        <div class="program-list" id="programs-book">
+          <!-- populated by JS -->
+        </div>
+
+        <label>Notes (comfort, hearing, accessibility)</label>
+        <textarea id="notes" rows="3" placeholder="Tell us about any needs..."></textarea>
+
+        <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+          <button id="submit" class="btn">Secure a spot</button>
+          <button id="call" class="alt" onclick="location.href='tel:{{PHONE}}'">Call to reserve</button>
+        </div>
+
+        <div class="note">By booking you confirm you have read the contraindications in the FAQ. If uncertain, contact <a href="mailto:{{EMAIL}}" style="color:var(--muted)">{{EMAIL}}</a>.</div>
+      </form>
+
+      <aside class="form">
+        <strong>Quick recommendations</strong>
+        <div class="muted" style="margin-top:8px">Choose a texture that matches your current threshold. You can change it on arrival.</div>
+
+        <div style="margin-top:12px" id="suggestion">
+          <div class="program"><div><strong id="rec-title">Vessel Session</strong><div class="muted" style="font-size:13px">Recommended for steady return</div></div><div class="muted" id="rec-price">$45</div></div>
+        </div>
+
+        <div style="margin-top:12px">
+          <strong>Proof</strong>
+          <div id="proof-book" style="margin-top:8px"></div>
+        </div>
+
+      </aside>
+    </div>
+
+    <footer style="margin-top:18px;display:flex;justify-content:space-between;align-items:center">
+      <small class="muted">Questions? Call <a href="tel:{{PHONE}}" style="color:var(--muted);text-decoration:none">{{PHONE}}</a></small>
+      <div class="muted">Serving {{CITY}}, {{STATE}}</div>
+    </footer>
+  </div>
+
+  <script>
+    // Booking page: mixer + program recommendations
+    (function(){
+      const mapping = {
+        gentle:[{title:'Drift Circle',price:'Sliding scale',desc:'30 min gentle seating'},{title:'Lull Frame',price:'$25',desc:'Soft tones + rest cues'}],
+        medium:[{title:'Vessel Session',price:'$45',desc:'45 min tone architecture'},{title:'Arc Practice',price:'$55',desc:'Movement-friendly sound'}],
+        intense:[{title:'Deep Meridian',price:'$75',desc:'60 min sustained resonance'},{title:'Pulse Intensive',price:'$95',desc:'Focused recalibration'}]
+      };
+
+      const buttons = document.querySelectorAll('#mixer-book button');
+      const programsEl = document.getElementById('programs-book');
+      const recTitle = document.getElementById('rec-title');
+      const recPrice = document.getElementById('rec-price');
+      const suggestion = document.getElementById('suggestion');
+
+      function setActive(el){buttons.forEach(b=>b.classList.remove('active'));el.classList.add('active')}
+
+      function render(level){
+        programsEl.innerHTML='';
+        mapping[level].forEach(p=>{
+          const d=document.createElement('div');d.className='program';d.innerHTML='<div><strong>'+p.title+'</strong><div class="muted" style="font-size:13px">'+p.desc+'</div></div><div class="muted">'+p.price+'</div>';
+          d.addEventListener('click',()=>{recTitle.textContent=p.title;recPrice.textContent=p.price});
+          programsEl.appendChild(d);
+        });
+        // default suggestion
+        recTitle.textContent=mapping[level][0].title;recPrice.textContent=mapping[level][0].price;
+      }
+
+      buttons.forEach(b=>b.addEventListener('click',()=>{setActive(b);render(b.dataset.level)}));
+      // init
+      const init = Array.from(buttons).find(b=>b.classList.contains('active')) || buttons[1];
+      setActive(init);render(init.dataset.level);
+
+      // submit (local only) — show simple confirmation then redirect to PRIMARY_CTA_URL
+      document.getElementById('submit').addEventListener('click',()=>{
+        const name=document.getElementById('name').value.trim();
+        const email=document.getElementById('email').value.trim();
+        if(!name||!email){alert('Please provide name and email');return}
+        // simple success flow
+        alert('Thanks '+name+' — we received your request. You will receive a confirmation at '+email+'.');
+        window.location.href='{{PRIMARY_CTA_URL}}';
+      });
+
+      // Proof rotation
+      (function(){
+        const notes=[
+          {t:'"Clear guidance and a soft landing — perfect midweek."',w:'— H.'},
+          {t:'"We brought the team; it recalibrated our meeting rhythm."',w:'— R.'},
+          {t:'"Just what I needed. No fuss. Deeply restful."',w:'— S.'}
+        ];let i=0;const el=document.getElementById('proof-book');
+        function show(){el.innerHTML='<div style="padding:10px;border-radius:8px;background:rgba(255,255,255,0.01)">'+notes[i].t+'<div class="muted" style="margin-top:8px">'+notes[i].w+'</div></div>'}
+        show();setInterval(()=>{i=(i+1)%notes.length;show();},4000);
+      })();
+
+    })();
+  </script>
+</body>
+</html>

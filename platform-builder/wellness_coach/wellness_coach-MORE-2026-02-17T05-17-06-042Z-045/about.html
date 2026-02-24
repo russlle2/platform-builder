@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7fbf8;--card:#ffffff;--accent:#3b8e7a;--muted:#6b7376;--glass:rgba(255,255,255,0.6);--shadow:0 6px 20px rgba(37,50,63,0.08);font-family:Inter,Segoe UI,Helvetica,Arial,sans-serif}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#eef6f3);color:#16322e}
+    .wrap{max-width:980px;margin:36px auto;padding:28px}
+    nav{display:flex;gap:12px;align-items:center;justify-content:space-between}
+    .brand{display:flex;gap:10px;align-items:center}
+    .logo{width:46px;height:46px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),#2e6e57);color:#fff;font-weight:700}
+    .links{display:flex;gap:14px}
+    .links a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:8px}
+    .links a:hover{background:rgba(60,140,122,0.08);color:var(--accent)}
+    .cta{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none}
+
+    /* Hero */
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:22px;align-items:center;margin-top:18px}
+    .hero-card{background:var(--card);padding:22px;border-radius:14px;box-shadow:var(--shadow)}
+    .eyebrow{font-size:13px;color:var(--muted);font-weight:600}
+    h1{margin:8px 0 6px;font-size:28px}
+    p.lead{margin:0;color:#2a3c36}
+
+    /* Pattern */
+    .pattern-wrap{position:relative}
+    .bg-svg{position:absolute;right:-40px;top:-40px;opacity:0.9}
+
+    /* Proof gallery (rotating testimonials + badges) */
+    .proof{display:flex;gap:18px;margin-top:18px}
+    .testimon{flex:1;background:linear-gradient(180deg,#ffffff,#fbfffe);padding:16px;border-radius:12px;box-shadow:var(--shadow)}
+    .quote{font-style:italic;color:#154036}
+    .meta{display:flex;gap:10px;align-items:center;margin-top:10px}
+    .avatar{width:44px;height:44px;border-radius:8px;background:#e6f2ec;display:grid;place-items:center;color:var(--accent);font-weight:700}
+    .badges{display:flex;gap:8px;align-items:center}
+    .badge{background:#fff;border:1px solid #e7f1ec;padding:8px;border-radius:8px;font-size:12px;cursor:default;position:relative}
+    .badge:hover .tip{opacity:1;transform:translateY(0)}
+    .tip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translate(-50%,8px);background:rgba(10,20,16,0.95);color:#fff;padding:8px 10px;border-radius:8px;font-size:12px;white-space:nowrap;opacity:0;transition:all .18s}
+
+    /* diagnostic */
+    .diagnostic{display:flex;gap:16px;margin-top:18px}
+    .diagnostic > div{background:var(--card);padding:16px;border-radius:10px;flex:1;box-shadow:var(--shadow)}
+    .pill{display:inline-block;padding:6px 10px;background:rgba(59,142,122,0.08);color:var(--accent);border-radius:999px;font-weight:700}
+
+    /* micro-habits */
+    .micro{margin-top:18px;display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .micro .item{background:linear-gradient(180deg,#fff,#fbfffe);padding:12px;border-radius:10px}
+
+    footer{margin-top:28px;padding:12px;text-align:center;color:var(--muted);font-size:13px}
+
+    /* small responsive */
+    @media (max-width:860px){.hero{grid-template-columns:1fr;padding-bottom:6px}.pattern-wrap .bg-svg{display:none}.micro{grid-template-columns:1fr}.diagnostic{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <div class="brand">
+        <div class="logo">W</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="links">
+          <a href="index.html">Start</a>
+          <a href="services.html">Offerings</a>
+          <a href="programs.html">Pathways</a>
+          <a href="about.html">About</a>
+          <a href="pricing.html">Pricing</a>
+          <a href="testimonials.html">Stories</a>
+        </div>
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <div class="hero-card">
+        <div class="eyebrow">About this practice</div>
+        <h1>Why a scaffolded approach to everyday wellbeing?</h1>
+        <p class="lead">We design small, repeatable movements across your day that add up to clearer energy and steadier focus. No grand overhauls—only a compass, a map, and checkpoints you can actually keep.
+        </p>
+        <div style="margin-top:12px;display:flex;gap:10px">
+          <a class="cta" href="programs.html">Explore Pathways</a>
+          <a href="contact.html" style="padding:10px;border-radius:8px;text-decoration:none;color:var(--accent);border:1px solid rgba(59,142,122,0.12)">Ask a quick question</a>
+        </div>
+      </div>
+
+      <div class="pattern-wrap">
+        <svg class="bg-svg" width="360" height="240" viewBox="0 0 360 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="pA-397" width="20" height="20" patternUnits="userSpaceOnUse">
+              <rect width="10" height="10" fill="#eaf6f2" />
+              <rect x="10" y="10" width="10" height="10" fill="#eaf6f2" />
+            </pattern>
+            <linearGradient id="gA" x1="0" x2="1">
+              <stop offset="0" stop-color="#f7fff9" stop-opacity="1" />
+              <stop offset="1" stop-color="#e9f7ef" stop-opacity="1" />
+            </linearGradient>
+          </defs>
+          <rect width="360" height="240" fill="url(#pA-397)" rx="18" />
+          <g transform="translate(16,24)">
+            <rect x="0" y="0" width="320" height="160" rx="12" fill="url(#gA)" stroke="#d8efe6" />
+            <circle cx="44" cy="40" r="28" fill="#fff" stroke="#d9f0e7" />
+            <rect x="90" y="26" width="180" height="16" rx="8" fill="#dff6ee" />
+            <rect x="90" y="54" width="140" height="12" rx="6" fill="#f0fbf8" />
+            <g transform="translate(200,110)" opacity="0.9">
+              <path d="M0 20 Q28 -10 56 20" stroke="#9ee2cc" stroke-width="6" fill="none" stroke-linecap="round" />
+            </g>
+          </g>
+        </svg>
+      </div>
+    </section>
+
+    <section class="proof">
+      <div class="testimon" id="testimon">
+        <div class="quote" id="quote">"A steady way to adopt tiny practices — each week felt more doable than the last."</div>
+        <div class="meta">
+          <div class="avatar" id="who">AS</div>
+          <div style="flex:1">
+            <div style="font-weight:700" id="whoName">A. Sinclair</div>
+            <div style="font-size:13px;color:var(--muted)" id="whoRole">Teacher, Oregon</div>
+          </div>
+          <div class="badges">
+            <div class="badge">Featured — Local Paper<div class="tip">Interviewed on sustainable daily practices</div></div>
+            <div class="badge">Partner — Studio Grove<div class="tip">Co-hosted a short series of community workshops</div></div>
+            <div class="badge">Trusted — Clients' Choice<div class="tip">High repeat participation across cohorts</div></div>
+          </div>
+        </div>
+      </div>
+      <div style="width:320px;background:linear-gradient(180deg,#fff,#f9fffb);border-radius:12px;padding:16px;box-shadow:var(--shadow);">
+        <div style="font-weight:700">What we measure</div>
+        <ul style="margin:8px 0 0 18px;color:var(--muted)">
+          <li>Consistency of short habits</li>
+          <li>Adaptability guides — how to scale practices</li>
+          <li>Weekly reflection prompts</li>
+        </ul>
+        <div style="margin-top:12px">
+          <a class="cta" href="services.html">See Services</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="diagnostic">
+      <div>
+        <div class="pill">Quick diagnostic</div>
+        <h3 style="margin-top:10px">Where do you start?</h3>
+        <p style="color:var(--muted)">Take three minutes to pick the stressors you want to buffer. We'll point to a first week of micro-habits suited to that focus.</p>
+        <div style="margin-top:10px">
+          <form id="mini-dx">
+            <label><input type="checkbox" name="dx" value="sleep"> Sleep rhythm</label><br>
+            <label><input type="checkbox" name="dx" value="energy"> Midday energy dips</label><br>
+            <label><input type="checkbox" name="dx" value="focus"> Distractions & focus</label><br>
+            <label><input type="checkbox" name="dx" value="movement"> Gentle movement</label><br>
+            <button type="button" id="dx-go" style="margin-top:10px;padding:8px 12px;border-radius:8px;background:var(--accent);color:#fff;border:none">Show a short plan</button>
+          </form>
+        </div>
+      </div>
+      <div>
+        <div class="pill">Snapshot</div>
+        <h3 style="margin-top:10px">A simple promise</h3>
+        <p style="color:var(--muted)">We will recommend 3–5 micro-habits for a 7-day stretch. Each is easy to log and to keep flexible.</p>
+        <div id="dx-res" style="margin-top:8px;color:#16322e;font-weight:700"></div>
+      </div>
+    </section>
+
+    <section class="micro">
+      <div class="item"><strong>Morning anchor</strong><div style="color:var(--muted);font-size:13px">2–4 minutes of breath + intention setting</div></div>
+      <div class="item"><strong>Midday recalibrate</strong><div style="color:var(--muted);font-size:13px">A short walk or standing series to reset energy</div></div>
+      <div class="item"><strong>Evening ritual</strong><div style="color:var(--muted);font-size:13px">A single question reflection and 3-minute wind-down</div></div>
+      <div class="item"><strong>Micro-checks</strong><div style="color:var(--muted);font-size:13px">Two-minute check-ins to notice and course-correct the day</div></div>
+    </section>
+
+    <footer>
+      <div>Reach: <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • {{CITY}}, {{STATE}}</div>
+    </footer>
+  </div>
+
+  <script>
+    // Rotating testimonials (Proof Gallery)
+    (function(){
+      const items = [
+        {q: 'This felt like a short manual for my daily tempo — tangible steps, not slogans.', who: 'J. Ortiz', role: 'Designer, CA'},
+        {q: 'Clear micro-habits that actually stuck — I could feel a steady improvement in three weeks.', who: 'M. Chen', role: 'Nurse, WA'},
+        {q: 'Warm approach, useful prompts. Small acts added up to calmer mornings.', who: 'R. Patel', role: 'Engineer, NY'}
+      ];
+      let idx=0;
+      const chQuote = document.getElementById('quote');
+      const chWho = document.getElementById('whoName');
+      const chRole = document.getElementById('whoRole');
+      const avatar = document.getElementById('who');
+      function show(i){
+        chQuote.textContent='"'+items[i].q+'"';
+        chWho.textContent=items[i].who;
+        chRole.textContent=items[i].role;
+        avatar.textContent=items[i].who.split(' ').map(s=>s[0]).slice(0,2).join('');
+      }
+      show(0);
+      setInterval(()=>{ idx=(idx+1)%items.length; show(idx); },4500);
+    })();
+
+    // Diagnostic mini-response
+    document.getElementById('dx-go').addEventListener('click',function(){
+      const choices = Array.from(document.querySelectorAll('#mini-dx input[type=checkbox]:checked')).map(n=>n.value);
+      const out = document.getElementById('dx-res');
+      if(!choices.length){ out.textContent='Pick one focus to see a short first-week recommendation.'; return; }
+      out.textContent='Start with: '+choices.slice(0,3).map(c=>({sleep:'Evening ease',energy:'Midday reset',focus:'Focus anchors',movement:'Gentle movement'})[c]).join(', ')+'.';
+    });
+  </script>
+</body>
+</html>

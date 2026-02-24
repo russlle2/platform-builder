@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--accent:#6C8CFF;--muted:#F6F7FB;--ink:#0f1724;--soft:#EAF0FF}
+    html,body{height:100%;margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue';color:var(--ink);background:linear-gradient(135deg,var(--muted),#fff);-webkit-font-smoothing:antialiased}
+    header{position:relative;padding:28px 24px;display:flex;align-items:center;justify-content:space-between}
+    nav a{color:var(--ink);text-decoration:none;margin-left:18px;font-weight:600;opacity:.9}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(180deg,var(--accent),#83E0FF);display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    main{display:grid;grid-template-columns:1fr 460px;gap:48px;padding:28px;align-items:start}
+    .panel{background:rgba(255,255,255,0.6);backdrop-filter:blur(6px);border-radius:16px;padding:28px;box-shadow:0 8px 30px rgba(16,24,40,0.06)}
+    .hero{padding:40px;border-radius:16px;position:relative;overflow:hidden}
+    h1{margin:0 0 8px 0;font-size:clamp(22px,3.4vw,36px);line-height:1.05}
+    p.lead{margin:0;color:#334155}
+    .split-diag{position:absolute;inset:0;pointer-events:none}
+    .portrait{height:100%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:600}
+    .section{margin-top:20px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .muted{color:#475569;font-size:14px}
+    .cta{display:inline-block;margin-top:16px;padding:12px 18px;background:var(--accent);color:white;border-radius:10px;text-decoration:none;font-weight:700}
+    small{color:#6B7280}
+    footer{padding:28px;text-align:center;color:#64748B}
+    /* diagonal accent */
+    .diag-accent{position:absolute;right:-20%;top:-30%;width:160%;height:140%;background:linear-gradient(120deg,rgba(108,140,255,0.16),rgba(131,224,255,0.08));transform:skewY(-8deg)}
+    /* responsive */
+    @media(max-width:900px){main{grid-template-columns:1fr;padding:18px} .panel{padding:18px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class='brand'>
+      <div class='logo'>SB</div>
+      <div>
+        <div style='font-weight:700'>{{BUSINESS_NAME}}</div>
+        <div style='font-size:13px;color:#64748B'>{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href='index.html'>Gatherings</a>
+      <a href='events.html'>Calendar</a>
+      <a href='pricing.html'>Offerings</a>
+      <a href='book.html'>Reserve</a>
+      <a href='contact.html'>Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class='panel hero'>
+      <div class='diag-accent' aria-hidden='true'></div>
+      <svg class='split-diag' viewBox='0 0 800 400' preserveAspectRatio='none' aria-hidden='true'>
+        <defs>
+          <linearGradient id='g1' x1='0' x2='1' y1='0' y2='1'>
+            <stop offset='0' stop-color='#EAF0FF' stop-opacity='0.6'/>
+            <stop offset='1' stop-color='#ffffff' stop-opacity='0.2'/>
+          </linearGradient>
+          <pattern id='p-about' x='0' y='0' width='40' height='40' patternUnits='userSpaceOnUse'>
+            <circle cx='6' cy='6' r='2' fill='#D9E8FF'/>
+            <path d='M0 40 L40 0' stroke='#E6F0FF' stroke-width='1'/>
+          </pattern>
+        </defs>
+        <rect width='100%' height='100%' fill='url(#g1)'/>
+        <rect width='100%' height='100%' fill='url(#p-about)' opacity='0.8'/>
+      </svg>
+
+      <h1>We tune stillness into opening</h1>
+      <p class='lead'>A slow-form ritual of sound and breath—crafted instruments, a careful room, a held pause for what wants to surface.</p>
+      <a class='cta' href='book.html'>{{PRIMARY_CTA_LABEL}}</a>
+
+      <div class='section grid'>
+        <div>
+          <h3 style='margin:0 0 6px 0'>Our ritual</h3>
+          <p class='muted'>Circles begin with gentle arrival: an orientation, breathwork, and guided listening. Then the instruments weave — layered bowls, chimes, and a long-tone monochord — folding the room toward softness.</p>
+        </div>
+        <div>
+          <h3 style='margin:0 0 6px 0'>Facilitator</h3>
+          <p class='muted'>Led by {{FACILITATOR_NAME}}, trained in somatic listening and sound hygiene. Each session is held at {{VENUE_NAME}} in {{CITY}}, {{STATE}}.</p>
+        </div>
+      </div>
+
+      <div class='section' style='display:flex;gap:12px;align-items:center'>
+        <div style='flex:1'>
+          <small>Next group gathering</small>
+          <div style='font-weight:700;margin-top:6px'>{{NEXT_EVENT_DATE}}</div>
+        </div>
+        <div style='text-align:right'>
+          <a href='events.html' style='color:#0B1220;text-decoration:underline;font-weight:600'>See all gatherings</a>
+        </div>
+      </div>
+    </section>
+
+    <aside class='panel'>
+      <h4 style='margin:0 0 8px 0'>What to bring</h4>
+      <p class='muted'>A yoga mat or blanket, cozy layers, eye covering, and any small pillow for your knees. We provide bolsters and extra blankets upon request.</p>
+
+      <div class='section'>
+        <h4 style='margin:0 0 8px 0'>A note on safety</h4>
+        <p class='muted'>Sound is supportive but visceral. Please consult with your healthcare provider if you are pregnant, have epilepsy, recent surgery, or an implanted device. If in doubt, email <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a>.</p>
+      </div>
+
+      <div class='section'>
+        <h4 style='margin:0 0 8px 0'>Instruments we love</h4>
+        <ul style='margin:0;padding-left:18px;color:#374151'>
+          <li>Crystal singing bowls</li>
+          <li>Steel tongue drum</li>
+          <li>Wind chimes</li>
+        </ul>
+      </div>
+
+      <div style='margin-top:18px'>
+        <a class='cta' href='contact.html'>Questions? Call {{PHONE}}</a>
+      </div>
+    </aside>
+  </main>
+
+  <footer>
+    <div>Made softly by {{BUSINESS_NAME}} • <a href='mailto:{{EMAIL}}' style='color:inherit;text-decoration:underline'>{{EMAIL}}</a></div>
+  </footer>
+</body>
+</html>

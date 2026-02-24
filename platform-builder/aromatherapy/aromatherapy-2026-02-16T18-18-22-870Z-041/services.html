@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--accent:#6AA84F;--muted:#6b7280;--bg:#f7fbf6;--card:#ffffff;--glass:rgba(255,255,255,0.6);--shadow:0 8px 24px rgba(15,23,42,0.08);--radius:14px;font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Helvetica,Arial;}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#eef7ee);color:#102a14}
+    .wrap{max-width:1100px;margin:28px auto;padding:28px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#9ad27a);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;box-shadow:var(--shadow)}
+    nav{display:flex;gap:12px;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:10px}
+    nav a.primary{background:var(--card);box-shadow:var(--shadow);color:#083014}
+    .hero{margin-top:22px;background:linear-gradient(180deg,rgba(106,168,79,0.06),rgba(154,210,122,0.03));padding:28px;border-radius:18px;display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:center}
+    .hero h1{margin:0;color:#083014;font-size:28px}
+    .hero p.lead{margin:8px 0 0;color:var(--muted)}
+    .hero .card{background:var(--card);padding:18px;border-radius:14px;box-shadow:var(--shadow)}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:20px;margin-top:18px}
+    .section{background:var(--card);padding:20px;border-radius:12px;box-shadow:var(--shadow)}
+    h2{margin:0 0 8px 0;color:#0a2d12}
+    ul.clean{padding:0;margin:12px 0 0 0;list-style:none}
+    .pill{display:inline-block;background:var(--glass);padding:8px 10px;border-radius:999px;margin:6px 6px 0 0;color:#234;box-shadow:inset 0 -2px 0 rgba(0,0,0,0.02)}
+    .cta{display:inline-block;padding:12px 16px;border-radius:12px;background:linear-gradient(90deg,var(--accent),#9ad27a);color:white;text-decoration:none;font-weight:600;box-shadow:0 10px 30px rgba(106,168,79,0.18)}
+    .list{display:grid;gap:12px}
+    .service-item{display:flex;gap:12px;align-items:flex-start}
+    .service-item .meta{font-size:13px;color:var(--muted)}
+    .price{font-weight:700;color:#15491f}
+    footer{margin-top:28px;color:var(--muted);font-size:13px;display:flex;justify-content:space-between;align-items:center}
+    .faq .q{font-weight:600;margin-top:12px}
+    /* decorative SVG as background */
+    .bg-svg{position:fixed;right:-10vw;top:-6vh;width:70vw;height:70vh;opacity:0.14;pointer-events:none}
+    @media(max-width:880px){.hero{grid-template-columns:1fr;}.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <svg class="bg-svg" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1">
+        <stop offset="0" stop-color="#cfeecd" />
+        <stop offset="1" stop-color="#e9f7e9" />
+      </linearGradient>
+      <pattern id="p1" width="120" height="120" patternUnits="userSpaceOnUse" patternTransform="rotate(12)">
+        <rect width="120" height="120" fill="url(#g1)"/>
+        <circle cx="20" cy="20" r="6" fill="#a7d99a" opacity="0.55"/>
+        <circle cx="80" cy="100" r="10" fill="#78b85b" opacity="0.18"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#p1)" rx="80"/>
+  </svg>
+
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">A</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="services.html" class="primary">Offerings</a>
+        <a href="blends.html">Blends</a>
+        <a href="shop.html">Shop</a>
+        <a href="book.html">Book</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div>
+        <h1>Personalized aromatherapy & a VIP Day for deep ritual</h1>
+        <p class="lead">A thoughtful session to design blends and routines tailored to your life and preferences. Safety-first, evidence-aware guidance from {{PRACTITIONER_NAME}} in {{CITY}}, {{STATE}}.</p>
+        <div style="margin-top:14px">
+          <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <a href="contact.html" style="margin-left:12px;color:var(--muted);text-decoration:none">Ask a question</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-size:13px;color:var(--muted)">Featured</div>
+          <div class="pill">VIP Day</div>
+        </div>
+        <div style="margin-top:12px">
+          <div style="font-weight:700;font-size:18px">Aromatherapy VIP Day</div>
+          <div class="meta" style="margin-top:6px">One focused day: intake, blend crafting, practical rituals, take-home kit.</div>
+          <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center">
+            <div class="price">From $1,200</div>
+            <a class="cta" href="book.html">Reserve your VIP Day</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid">
+      <main class="section">
+        <h2>Guided rituals & signature sessions</h2>
+        <p style="color:var(--muted);margin:8px 0 16px 0">Sessions emphasize ritual, scent literacy, and at-home integration—no medical promises, just practical care and safety-first protocols.</p>
+
+        <div class="list">
+          <div class="service-item">
+            <div style="width:8px;height:8px;background:var(--accent);border-radius:4px;margin-top:6px"></div>
+            <div>
+              <div style="font-weight:700">Signature Intake + Custom Blend</div>
+              <div class="meta">90–120 minutes · Personalized blend, dilution guidance, take-home sample</div>
+            </div>
+          </div>
+
+          <div class="service-item">
+            <div style="width:8px;height:8px;background:#9ad27a;border-radius:4px;margin-top:6px"></div>
+            <div>
+              <div style="font-weight:700">Ritual Coaching Session</div>
+              <div class="meta">60 minutes · Scent rituals for daily routines & mindful moments</div>
+            </div>
+          </div>
+
+          <div class="service-item">
+            <div style="width:8px;height:8px;background:#cfeecd;border-radius:4px;margin-top:6px"></div>
+            <div>
+              <div style="font-weight:700">Refill + Tune-up</div>
+              <div class="meta">30 minutes · Blend adjustment, dilution check, storage tips</div>
+            </div>
+          </div>
+        </div>
+
+        <h2 style="margin-top:18px">What to expect</h2>
+        <ul class="clean">
+          <li>Intake that respects your history and sensitivities.</li>
+          <li>Evidence-aware discussion—no medical diagnosis or treatment promises.</li>
+          <li>Clear dilution and patch-test instructions for home use.</li>
+        </ul>
+
+        <h2 style="margin-top:18px">Session flow</h2>
+        <ol style="color:var(--muted);margin:8px 0 0 18px">
+          <li>Pre-session intake form</li>
+          <li>In-depth consultation and scent sampling</li>
+          <li>Blend formulation and ritual mapping</li>
+          <li>Take-home oils, label, and care plan</li>
+        </ol>
+
+        <div class="faq" style="margin-top:18px">
+          <h2>Frequently asked — safety & practical</h2>
+          <div class="q">How should I dilute essential oils?</div>
+          <div class="a" style="color:var(--muted)">I provide dilution guidelines based on age, sensitivity, and intended application. Typical topical dilutions range from 0.5–5% depending on use; always follow the specific recipe and perform a patch test first.</div>
+
+          <div class="q">What is a patch test?</div>
+          <div class="a" style="color:var(--muted)">A patch test involves applying a small diluted amount to a discreet area of skin and observing for 24–48 hours. It's a key safety step, and I will walk you through it.</div>
+
+          <div class="q">Are your blends safe around pets?</div>
+          <div class="a" style="color:var(--muted)">Some oils can be irritating to animals. I will provide guidance specific to your household and recommend pet-safe options and dispersal methods.</div>
+
+          <div class="q">Pregnancy and breastfeeding notes?</div>
+          <div class="a" style="color:var(--muted)">Certain oils are best avoided during pregnancy and lactation. I do not provide medical advice; I will offer conservative, safety-first recommendations and encourage consultation with your healthcare provider.</div>
+        </div>
+      </main>
+
+      <aside class="section">
+        <h3 style="margin:0 0 6px 0">Quick schedule & pricing</h3>
+        <div style="color:var(--muted);margin-bottom:12px">Block availability varies; VIP Day is limited to monthly slots.</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>Custom Blend Session</div>
+            <div class="price">$180</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>Ritual Coaching (60 min)</div>
+            <div class="price">$115</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>Refill + Tune-up (30 min)</div>
+            <div class="price">$55</div>
+          </div>
+        </div>
+
+        <div style="margin-top:16px">
+          <div style="font-size:13px;color:var(--muted)">VIP Day</div>
+          <div style="font-weight:700;margin-top:6px">Full-day immersion & blend library</div>
+          <div style="color:var(--muted);margin-top:6px">From $1,200 — email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+        </div>
+
+        <div style="margin-top:16px">
+          <a class="cta" href="book.html">Book a session</a>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      <div>Serving {{CITY}}, {{STATE}} • {{BUSINESS_NAME}}</div>
+      <div style="text-align:right">Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    </footer>
+  </div>
+</body>
+</html>

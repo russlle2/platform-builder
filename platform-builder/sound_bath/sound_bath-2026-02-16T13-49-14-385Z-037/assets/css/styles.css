@@ -1,0 +1,64 @@
+/* Minimal reset */
+:root{
+  --bg1:#0f1724; /* deep navy */
+  --accent:#f8c6d8; /* soft rose */
+  --accent-2:#8fe3d8; /* mint */
+  --muted:#9aa4b2;
+  --card:#0b1220cc;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; margin:0; color:#ecf0f6; background:linear-gradient(180deg,var(--bg1),#041023); overflow-x:hidden}
+.bg-pattern{position:fixed;left:0;top:0;width:100%;height:100%;opacity:0.12;pointer-events:none;mix-blend-mode:overlay}
+.site-header{display:flex;justify-content:space-between;align-items:center;padding:1.25rem 2rem;position:relative;z-index:10}
+.brand a{font-weight:700;color:var(--accent);text-decoration:none;font-size:1.1rem}
+.brand .tag{display:block;font-size:.8rem;color:var(--muted)}
+.nav-list{list-style:none;padding:0;margin:0;display:flex;gap:1rem;align-items:center}
+.nav-list a{color:#dfe9f2;text-decoration:none;padding:.4rem .6rem;border-radius:6px}
+.nav-list .cta a{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#08202a}
+.menu-toggle{display:none}
+
+/* Split diagonal hero */
+.split {display:flex;align-items:stretch;min-height:64vh}
+.hero-left{flex:1;padding:3rem 2.5rem;display:flex;flex-direction:column;justify-content:center}
+.hero-right{flex:1;display:flex;align-items:center;justify-content:center;padding:3rem}
+.eyebrow{color:var(--accent);margin:0 0 .5rem}
+h2{font-size:2rem;margin:.25rem 0 1rem}
+.lead{color:#dbe9ee;max-width:54ch}
+.card{background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.08));padding:1.25rem;border-radius:12px;border:1px solid rgba(255,255,255,0.04);box-shadow:0 8px 30px rgba(2,6,23,0.6)}
+.hero-cta{margin-top:1rem;display:flex;gap:.75rem}
+.btn{display:inline-block;padding:.6rem 1rem;border-radius:10px;text-decoration:none;font-weight:600}
+.btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#052826}
+.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#dbe9ee}
+.btn.large{padding:1rem 1.4rem;font-size:1.05rem}
+
+/* Panels */
+.panel{padding:2.25rem 2.5rem;margin:1.25rem 2rem;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.06));border:1px solid rgba(255,255,255,0.03)}
+.myth-truth .grid{display:flex;gap:1rem;margin-top:1rem}
+.card.myth{background:linear-gradient(180deg,#08121a66,#04102155);padding:1rem}
+.card.truth{background:linear-gradient(180deg,#081a12aa,#04221566);padding:1rem}
+.small{color:var(--muted);font-size:.9rem}
+.pillars .columns{display:flex;gap:1rem;margin-top:1rem}
+.pillars article{flex:1}
+.instruments ul{margin:0;padding-left:1.25rem}
+.case-notes .note{background:rgba(255,255,255,0.02);padding:1rem;border-radius:8px;margin-top:.75rem}
+.faq details{margin-top:.75rem}
+.faq summary{cursor:pointer;font-weight:600}
+.answer{padding:.5rem 0;color:#dbe9ee}
+.cta{display:flex;flex-direction:column;align-items:center;text-align:center}
+.cta-actions{display:flex;gap:1rem;margin-top:1rem}
+.site-footer{display:flex;justify-content:space-between;align-items:center;padding:1.25rem 2rem;border-top:1px solid rgba(255,255,255,0.02);color:var(--muted);font-size:.9rem}
+
+/* Responsive */
+@media(max-width:900px){
+  .split{flex-direction:column}
+  .hero-right{order:-1;padding:1.5rem}
+  .nav-list{display:none;position:absolute;right:2rem;top:3.5rem;background:#041025;padding:1rem;border-radius:10px}
+  .menu-toggle{display:inline-block;background:transparent;border:1px solid rgba(255,255,255,0.04);padding:.4rem .6rem;border-radius:8px;color:#dbe9ee}
+}
+
+/* Diagonal decorative clip */
+.split-diagonal main{clip-path:polygon(0 0,100% 0,100% 92%,0 100%)}
+
+/* small utilities */
+.muted{color:var(--muted)}

@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Origins — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#07101a;--glass:rgba(255,255,255,0.03);--accent:#7A9A7B;--muted:#bfc9d2}
+    body{margin:0;background:linear-gradient(180deg,#07101a,#081827);color:#eef6f7;font-family:Inter,system-ui,Arial,sans-serif}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,#8fc6a0,#6a8f7a);display:grid;place-items:center}
+    nav a{margin-left:10px;color:var(--muted);text-decoration:none;padding:8px;border-radius:8px}
+    nav a:hover{background:var(--glass);color:#fff}
+    main{max-width:980px;margin:24px auto;padding:18px}
+    .intro{display:flex;gap:18px;align-items:flex-start}
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:16px;border-radius:12px}
+    h1{margin:0 0 6px 0}
+    .story{color:var(--muted)}
+    .wheel-wrap{margin-top:14px}
+    .wheel-legend{display:flex;gap:10px;margin-top:10px}
+    .legend-item{display:flex;gap:8px;align-items:center}
+    .dot{width:14px;height:14px;border-radius:4px}
+    .dot.top{background:#D8B4A3}
+    .dot.mid{background:#9DBF9A}
+    .dot.base{background:#A8C7D9}
+    .faq{margin-top:18px}
+    .q{font-weight:600}
+    .a{color:var(--muted);margin-bottom:10px}
+    /* glass card for the pattern */
+    .pattern-card{position:relative;overflow:hidden}
+    .pattern-card svg{position:absolute;right:-20px;top:-20px;opacity:0.12}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">S</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">An aromatherapy practice in {{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+
+    <nav>
+      <a href="index.html">Hearth</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Apothecary</a>
+      <a href="pricing.html">Plans</a>
+      <a href="about.html" style="background:var(--glass);color:#fff;padding:8px;border-radius:8px">Origins</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="intro">
+      <div style="flex:1" class="panel pattern-card">
+        <h1>Why scent, why now</h1>
+        <p class="story">Scents are small designs for attention — when chosen with care they may support glimpses of ease. We combine simple rituals, mindful inquiry, and safe dilution practices so blends feel approachable and useful in daily life.</p>
+        <svg width="260" height="260" viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <pattern id="p1" width="20" height="20" patternUnits="userSpaceOnUse">
+              <rect width="20" height="20" fill="#0b1620"/>
+              <circle cx="10" cy="10" r="3" fill="#17343a"/>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#p1)"/>
+        </svg>
+      </div>
+
+      <aside style="width:360px">
+        <div class="panel">
+          <h3 style="margin-top:0">Our approach</h3>
+          <p class="story">We listen first. Sessions are practical: an exploration of what you want differently, a short ritual to try, and safe, clearly labeled blends you can take home. Nothing clinical — purely supportive and sensory.</p>
+
+          <div class="wheel-wrap">
+            <div style="font-weight:600">Aroma wheel — hover the zones</div>
+            <div id="wheel" style="margin-top:8px">
+              <svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" style="width:220px;height:220px">
+                <g transform="translate(110,110)">
+                  <path id="wTop" d="M0,-88 A88,88 0 0,1 76.3,-44" fill="#D8B4A3" stroke="rgba(0,0,0,0.06)"/>
+                  <path id="wMid" d="M76.3,-44 A88,88 0 0,1 76.3,44 L0,0" fill="#9DBF9A" stroke="rgba(0,0,0,0.06)"/>
+                  <path id="wBase" d="M76.3,44 A88,88 0 0,1 0,88 A88,88 0 0,1 -76.3,44 L0,0" fill="#A8C7D9" stroke="rgba(0,0,0,0.06)"/>
+                  <circle r="36" fill="#08121a"/>
+                  <text y="6" text-anchor="middle" fill="#fff" font-size="12">Notes</text>
+                </g>
+              </svg>
+            </div>
+
+            <div class="wheel-legend">
+              <div class="legend-item"><div class="dot top"></div><div class="muted">Top: lemon, bergamot — fresh, immediate cues</div></div>
+              <div class="legend-item"><div class="dot mid"></div><div class="muted">Middle: lavender, rosemary — character and heart</div></div>
+              <div class="legend-item"><div class="dot base"></div><div class="muted">Base: cedarwood, vetiver — lingering warmth</div></div>
+            </div>
+
+            <div id="noteInfo" style="margin-top:10px;color:var(--muted)">Hover a zone to read a short note about the kinds of oils found there.</div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="faq panel" aria-labelledby="faq-heading">
+      <h3 id="faq-heading">Safety & common questions</h3>
+      <div>
+        <div class="q">Do your blends make medical claims?</div>
+        <div class="a">No. Blends are intended to be supportive sensory tools and may support wellbeing, but they are not medical treatments.</div>
+
+        <div class="q">What about dilution and patch tests?</div>
+        <div class="a">All ready-to-use blends are properly diluted for typical topical use. We recommend performing a patch test before full use — place a small dab on inner forearm and wait 24 hours for irritation. Guidance is included with each product.</div>
+
+        <div class="q">Pets, pregnancy and children?</div>
+        <div class="a">Some essential oils are not recommended around pets, infants, or during pregnancy. We provide notes and alternatives; consult your care provider for individual guidance.</div>
+
+        <div class="q">How long are blends good for?</div>
+        <div class="a">Stored away from heat and light, most blends remain good for many months. We label each product with a best-by indication.</div>
+      </div>
+    </section>
+
+    <footer style="text-align:center;margin-top:18px;color:var(--muted)">
+      <div>Reach out at <a href="mailto:{{EMAIL}}" style="color:var(--muted);text-decoration:none">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}" style="color:var(--muted);text-decoration:none">{{PHONE}}</a></div>
+    </footer>
+  </main>
+
+  <script>
+    const top = document.getElementById('wTop');
+    const mid = document.getElementById('wMid');
+    const base = document.getElementById('wBase');
+    const info = document.getElementById('noteInfo');
+
+    top.addEventListener('mouseenter',()=>{info.textContent='Top notes are bright and fleeting — think citrus, mint, or light spice. They offer immediate cues.'});
+    top.addEventListener('mouseleave',()=>{info.textContent='Hover a zone to read a short note about the kinds of oils found there.'});
+
+    mid.addEventListener('mouseenter',()=>{info.textContent='Middle notes make up the character of a blend — floral, herbal, or resinous elements that bridge top and base.'});
+    mid.addEventListener('mouseleave',()=>{info.textContent='Hover a zone to read a short note about the kinds of oils found there.'});
+
+    base.addEventListener('mouseenter',()=>{info.textContent='Base notes are grounding and slow to fade — woods, resins, and deep musks that linger.'});
+    base.addEventListener('mouseleave',()=>{info.textContent='Hover a zone to read a short note about the kinds of oils found there.'});
+  </script>
+</body>
+</html>

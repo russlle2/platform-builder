@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Fees & Packages — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--accent:#6C5CE7;--muted:#64748b;--bg:#fbfdff;--card:#ffffff;--ink:#0f172a}
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";color:var(--ink);background:var(--bg)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:linear-gradient(180deg,rgba(108,92,231,0.08),transparent);border-bottom:1px solid rgba(12,14,20,0.04)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:48px;height:48px;background:linear-gradient(135deg,var(--accent),#5ad0d6);border-radius:8px;display:grid;place-items:center;color:white;font-weight:700}
+    nav a{margin-left:18px;color:var(--muted);text-decoration:none;font-size:14px}
+    nav a.active{color:var(--accent);font-weight:600}
+    .hero{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:24px;padding:48px;position:relative;overflow:hidden}
+    .hero::after{content:"";position:absolute;right:-10%;top:0;bottom:0;width:60%;background:url('assets/img/pattern.svg');opacity:0.12;transform:skewX(-12deg)}
+    .hero-left{padding:28px;max-width:640px}
+    h1{margin:0 0 12px 0;font-size:28px}
+    p.lead{margin:0;color:var(--muted)}
+    .hero-right{display:flex;justify-content:center;align-items:center}
+    .card{background:var(--card);padding:20px;border-radius:12px;box-shadow:0 6px 20px rgba(16,24,40,0.06);width:100%;max-width:520px}
+    .packages{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+    .pkg{padding:14px;border-radius:10px;border:1px solid rgba(12,14,20,0.05);background:linear-gradient(180deg,rgba(255,255,255,0.8),transparent)}
+    .pkg h3{margin:0 0 6px 0;font-size:15px}
+    .price{font-weight:700;color:var(--accent);font-size:16px}
+    small{color:var(--muted)}
+    .disclaimer{font-size:13px;color:var(--muted);margin-top:12px}
+    .reveal{opacity:0;transform:translateY(12px);transition:opacity 420ms cubic-bezier(.2,.9,.2,1),transform 420ms cubic-bezier(.2,.9,.2,1)}
+    .reveal.in{opacity:1;transform:translateY(0)}
+    /* Session Planner */
+    .planner{margin-top:18px;border-top:1px dashed rgba(12,14,20,0.06);padding-top:16px}
+    label{display:block;font-size:13px;margin:8px 0 4px}
+    input[type="text"],textarea,select{width:100%;padding:9px;border:1px solid rgba(12,14,20,0.06);border-radius:8px;font-size:14px}
+    textarea{min-height:84px}
+    .row{display:flex;gap:10px}
+    .row > *{flex:1}
+    .btn{display:inline-block;padding:10px 14px;border-radius:8px;background:var(--accent);color:white;text-decoration:none;border:none;cursor:pointer}
+    .muted-btn{background:transparent;border:1px solid rgba(12,14,20,0.06);color:var(--muted)}
+    footer{padding:20px 28px;font-size:13px;color:var(--muted);border-top:1px solid rgba(12,14,20,0.04)}
+    @media (max-width:880px){.hero{grid-template-columns:1fr;padding:24px}.hero::after{display:none}.packages{grid-template-columns:1fr}}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none!important}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">TP</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted);">Professional therapy, tailored and practical</div>
+      </div>
+    </div>
+    <nav aria-label="Primary navigation">
+      <a href="index.html">Begin</a>
+      <a href="approach.html">My Approach</a>
+      <a href="specialties.html">Areas</a>
+      <a href="fees.html" class="active">Investment</a>
+      <a href="faq.html">Q&amp;A</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-left">
+        <h1 class="reveal">Fees, formats, and how I structure work together</h1>
+        <p class="lead reveal">I offer options that fit urgent concerns and longer-term aims. Below you can see common arrangements and use the Session Planner to create a short, shareable plan to bring to a first conversation.</p>
+
+        <div class="reveal" style="margin-top:18px">
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <a class="muted-btn" href="contact.html" style="margin-left:8px">Still have questions</a>
+        </div>
+      </div>
+
+      <div class="hero-right">
+        <div class="card reveal" role="region" aria-label="Packages and fees">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-size:13px;color:var(--muted)">Session types</div>
+              <div style="font-weight:700">Short terms, steady work, and focused intensives</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:12px;color:var(--muted)">Location</div>
+              <div style="font-weight:700">Telehealth / Office</div>
+            </div>
+          </div>
+
+          <div class="packages">
+            <div class="pkg">
+              <h3>Clarity Session — single</h3>
+              <div class="price">$160</div>
+              <small>One targeted session for a pressing decision or next step.</small>
+            </div>
+
+            <div class="pkg">
+              <h3>Momentum Series — short</h3>
+              <div class="price">$580 (4 sessions)</div>
+              <small>Structured series to build, practice, and adjust over a month.</small>
+            </div>
+
+            <div class="pkg">
+              <h3>Collaborative Day — extended</h3>
+              <div class="price">$980</div>
+              <small>A concentrated, multi-hour collaborative session for planning or transition work.</small>
+            </div>
+          </div>
+
+          <div class="disclaimer">
+            Fees listed are typical session rates. Sliding scale or alternative structures may be considered in conversation. Sessions are confidential; see full notes below for scope, limits, and crisis guidance.
+          </div>
+
+          <div class="planner" id="planner">
+            <h4 style="margin:10px 0">Session Planner</h4>
+            <label for="concern">Primary concern or reason for seeking support</label>
+            <textarea id="concern" placeholder="A short sentence about what brought you here"></textarea>
+
+            <div class="row">
+              <div>
+                <label for="horizon">Time horizon</label>
+                <select id="horizon"><option>Single session (1–2 weeks)</option><option>Short series (4 weeks)</option><option>Seasonal focus (8–12 weeks)</option></select>
+              </div>
+              <div>
+                <label for="freq">Preferred frequency</label>
+                <select id="freq"><option>Weekly</option><option>Every other week</option><option>One-off / as needed</option></select>
+              </div>
+            </div>
+
+            <label for="outcomes">What would feel useful to notice or change?</label>
+            <textarea id="outcomes" placeholder="Practical aims or experiences you want to shift"></textarea>
+
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button class="btn" id="build">Build plan</button>
+              <button class="muted-btn" id="clear">Clear</button>
+            </div>
+
+            <label for="summary" style="margin-top:10px">Plan summary (plain text)</label>
+            <textarea id="summary" readonly placeholder="Your generated plan will appear here"></textarea>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button class="btn" id="copy">Copy summary</button>
+              <button class="muted-btn" id="emailPlan">Attach to email</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section style="padding:28px" class="reveal">
+      <h2 style="margin-top:0">Notes on confidentiality and scope</h2>
+      <p style="color:var(--muted)">Therapeutic work is confidential within legal and ethical limits. I will discuss limits to confidentiality (for instance, concerns about safety) at intake. I do not provide emergency services. If you are in crisis or danger, please contact local emergency services or your crisis line immediately.</p>
+
+      <h3>Professional boundaries</h3>
+      <p style="color:var(--muted)">Sessions are clinical and focused; communication outside sessions is managed through agreed channels. We’ll clarify expected response times and suitable content for messages. If your needs fall outside my scope, I will suggest other resources or referrals.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+      <div>Contact: <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      <div style="color:var(--muted)">Serving clients in {{CITY}}, {{STATE}}</div>
+    </div>
+  </footer>
+
+  <script>
+    (function(){
+      // Respect reduced motion
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var reveals = document.querySelectorAll('.reveal');
+      if(reduce){reveals.forEach(function(el){el.classList.add('in')});}
+      else if('IntersectionObserver' in window){
+        var io = new IntersectionObserver(function(entries){
+          entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}},{threshold:0.08});
+        reveals.forEach(function(el){io.observe(el)});
+      } else {reveals.forEach(function(el){el.classList.add('in')});}
+
+      // Session Planner
+      var el = document.getElementById('planner');
+      if(!el) return;
+      var concern = document.getElementById('concern');
+      var horizon = document.getElementById('horizon');
+      var freq = document.getElementById('freq');
+      var outcomes = document.getElementById('outcomes');
+      var build = document.getElementById('build');
+      var clear = document.getElementById('clear');
+      var summary = document.getElementById('summary');
+      var copyBtn = document.getElementById('copy');
+      var emailBtn = document.getElementById('emailPlan');
+
+      function recommendPackage(h){
+        if(h.indexOf('Single')>=0) return {name:'Clarity Session — single',sessions:1,price:'$160'};
+        if(h.indexOf('4 weeks')>=0) return {name:'Momentum Series — short (4)',sessions:4,price:'$580'};
+        return {name:'Seasonal Focus — extended',sessions:8,price:'Custom pricing'};
+      }
+
+      build.addEventListener('click',function(){
+        var c = concern.value.trim() || '[no short description provided]';
+        var out = outcomes.value.trim() || '[no specific outcomes provided]';
+        var r = recommendPackage(horizon.value);
+        var text = 'Session Plan\n--------\nConcern: '+c+'\nTime horizon: '+horizon.value+'\nFrequency: '+freq.value+'\nDesired shifts: '+out+'\n\nRecommended structure: '+r.name+' ('+r.sessions+' sessions). Typical fee: '+r.price+'.\n\nNotes: Bring this plan to the first appointment to orient the conversation; adjustments are expected as we learn together.';
+        summary.value = text;
+      });
+
+      clear.addEventListener('click',function(){concern.value='';outcomes.value='';summary.value='';horizon.selectedIndex=0;freq.selectedIndex=0});
+
+      copyBtn.addEventListener('click',function(){
+        if(!summary.value){summary.focus();return}
+        navigator.clipboard && navigator.clipboard.writeText(summary.value).then(function(){
+          copyBtn.textContent = 'Copied'; setTimeout(function(){copyBtn.textContent='Copy summary'},1200);
+        },function(){alert('Copy failed — you can select and copy manually.')});
+      });
+
+      emailBtn.addEventListener('click',function(){
+        var body = encodeURIComponent(summary.value || '');
+        var subj = encodeURIComponent('Session plan and request');
+        window.location.href = 'mailto:{{EMAIL}}?subject='+subj+'&body='+body;
+      });
+    })();
+  </script>
+</body>
+</html>

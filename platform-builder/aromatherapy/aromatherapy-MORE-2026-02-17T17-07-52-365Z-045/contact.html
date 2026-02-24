@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang='en'>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width,initial-scale=1'>
+<title>Contact — {{BUSINESS_NAME}}</title>
+<link rel='icon' href='data:,'>
+<style>
+:root{--accent:#6b4cff;--bg:#f7f8fc;--card:#ffffff;--muted:#6b6b7a}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial,sans-serif;background:linear-gradient(180deg,var(--bg),#fff);color:#0f1724;-webkit-font-smoothing:antialiased}
+.header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;background:linear-gradient(90deg,rgba(107,76,255,0.06),transparent);backdrop-filter:blur(6px);position:sticky;top:0;z-index:20;border-bottom:1px solid rgba(15,23,42,0.04)}
+.brand{display:flex;align-items:center;gap:.75rem}
+.logo{width:44px;height:44px;display:grid;place-items:center;border-radius:10px;background:var(--accent);color:#fff;font-weight:700}
+.nav{display:flex;gap:.5rem}
+.nav a{color:var(--muted);text-decoration:none;padding:.5rem .6rem;border-radius:.5rem;font-weight:700}
+.nav a:hover{background:rgba(107,76,255,0.06);color:var(--accent)}
+.hero{padding:2.2rem 1.25rem;display:grid;grid-template-columns:1fr;background-image:url('assets/img/pattern.svg');background-size:360px 360px;background-repeat:repeat;align-items:center}
+.hero-inner{max-width:980px;margin:0 auto;background:linear-gradient(180deg,rgba(255,255,255,0.86),rgba(255,255,255,0.92));padding:1.6rem;border-radius:12px;box-shadow:0 8px 30px rgba(16,24,40,0.05)}
+.h-title{font-size:clamp(1.25rem,2.6vw,2rem);margin:0;color:#071233}
+.h-sub{margin:.4rem 0 1rem;color:var(--muted)}
+.cta{display:inline-block;padding:.6rem .9rem;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none;font-weight:800}
+.section{max-width:920px;margin:2rem auto;padding:1rem;border-radius:10px}
+.card{background:var(--card);padding:1rem;border-radius:10px;box-shadow:0 10px 30px rgba(16,24,40,0.04)}
+.reveal-on-scroll{opacity:0;transform:translateY(18px) scale(.995);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.9,.2,1)}
+.reveal-on-scroll.reveal{opacity:1;transform:none}
+.grid{display:grid;gap:1rem}
+.grid.columns-2{grid-template-columns:repeat(2,1fr)}
+.input,textarea,select{width:100%;padding:.6rem;border:1px solid #e7e7ef;border-radius:8px;background:transparent}
+.form-row{display:flex;gap:.6rem;flex-wrap:wrap}
+.copy-btn{background:#f3f4f6;border-radius:8px;padding:.5rem .7rem;border:1px solid rgba(0,0,0,0.04);cursor:pointer}
+.footer{padding:2rem 1.25rem;color:var(--muted);font-size:.93rem;text-align:center}
+.small{font-size:.9rem;color:var(--muted)}
+.note{font-size:.9rem;color:#374151}
+@media(min-width:800px){.hero{grid-template-columns:1fr 380px}.h-title{font-size:2.2rem}.hero-inner{padding:2rem}}
+</style>
+</head>
+<body>
+<header class='header'>
+<div class='brand'><div class='logo'>A</div><div><div style='font-weight:800'>{{BUSINESS_NAME}}</div><div class='small' style='margin-top:2px'>A modern aromatherapy guide</div></div></div>
+<nav class='nav' aria-label='Primary Navigation'>
+<a href='index.html'>Begin</a>
+<a href='services.html'>Guides</a>
+<a href='blends.html'>Blends</a>
+<a href='shop.html'>Shop</a>
+<a href='pricing.html'>Investment</a>
+<a href='about.html'>Who I Am</a>
+<a href='book.html'>Book</a>
+<a href='contact.html' style='font-weight:800;color:var(--accent)'>Connect</a>
+</nav>
+</header>
+
+<main>
+<section class='hero'>
+<div class='hero-inner reveal-on-scroll'>
+<h1 class='h-title'>Reach out to begin a scent-forward plan</h1>
+<p class='h-sub'>A brief intake, a planning exercise, and practical safety guidance — simple steps that may support steadier daily rituals.</p>
+<p><a class='cta' href='book.html'>{{PRIMARY_CTA_LABEL}}</a></p>
+</div>
+
+<div class='card reveal-on-scroll' aria-hidden='false' style='margin-top:1rem'>
+<h3 style='margin-top:0'>Quick Contact</h3>
+<form id='contact-form' class='grid'>
+<label class='small'>Name<input class='input' name='name' placeholder='Your name'></label>
+<label class='small'>Email<input class='input' name='email' placeholder='you@domain.com'></label>
+<label class='small'>Phone<input class='input' name='phone' placeholder='{{PHONE}}'></label>
+<label class='small'>Message<textarea name='message' rows='4' class='input' placeholder='What would you like support with?'></textarea></label>
+<div style='display:flex;gap:.6rem;align-items:center'>
+<button type='submit' class='cta'>Send message</button>
+<a href='mailto:{{EMAIL}}' class='copy-btn'>Or email directly</a>
+</div>
+<div class='small note'>We aim to respond within 48 hours. If you have immediate safety concerns, contact local services.</div>
+</form>
+</div>
+</section>
+
+<section class='section reveal-on-scroll card' id='planner'>
+<h2 style='margin-top:0'>Session Planner — compose a concise plan</h2>
+<p class='small'>Use this tool to create a plaintext session summary you can copy or download. This is planning guidance and may support wellbeing; it is not medical advice.</p>
+
+<form id='planner-form' class='grid'>
+<div class='grid columns-2'>
+<label class='small'>Primary focus
+<select name='focus' class='input' required>
+<option value='rest'>Rest & sleep</option>
+<option value='clarity'>Mental clarity</option>
+<option value='grounding'>Grounding / stress</option>
+<option value='energy'>Gentle energy lift</option>
+</select></label>
+
+<label class='small'>Session length
+<select name='length' class='input'>
+<option value='10'>10 minutes</option>
+<option value='20'>20 minutes</option>
+<option value='40'>40 minutes</option>
+</select></label>
+</div>
+
+<label class='small'>Intensity / style
+<select name='intensity' class='input'>
+<option value='intro'>Introductory (low)</option>
+<option value='balanced'>Balanced</option>
+<option value='intensive'>Deep session</option>
+</select></label>
+
+<label class='small'>Preferred method (pick any)
+<div class='form-row'>
+<label><input type='checkbox' name='method' value='diffuse'> Diffusing</label>
+<label><input type='checkbox' name='method' value='topical'> Topical (diluted)</label>
+<label><input type='checkbox' name='method' value='inhalation'> Inhalation / scent strip</label>
+</div>
+</label>
+
+<label class='small'>Allergies, pregnancy, pets, or other notes<textarea name='notes' rows='3' class='input' placeholder='Any household or safety notes (pets, pregnancy, sensitive skin)'></textarea></label>
+
+<div style='display:flex;gap:.6rem;flex-wrap:wrap;align-items:center'>
+<button type='button' id='build-plan' class='cta'>Compose plan</button>
+<button type='button' id='copy-plan' class='copy-btn'>Copy summary</button>
+<button type='button' id='download-plan' class='copy-btn'>Download .txt</button>
+</div>
+
+<label class='small'>Session summary<textarea id='plan-output' rows='8' class='input' readonly placeholder='Your plan will appear here'></textarea></label>
+
+<div class='small note'>Safety first: always patch test topicals, use appropriate dilution, and keep essential oils away from eyes and sensitive areas. Discuss pregnancy, medications, or severe conditions with a qualified clinician. Keep oils away from pets unless confirmed safe.</div>
+</form>
+</section>
+
+<section class='section grid card reveal-on-scroll'>
+<h2 style='margin-top:0'>Practical FAQs</h2>
+<div>
+<h3 style='margin-bottom:.2rem'>Is aromatherapy medical care?</h3>
+<p class='small'>No. Aromatherapy may support comfort and wellbeing but is not a substitute for medical care. Sessions are intended to support personal routines.</p>
+
+<h3 style='margin-bottom:.2rem'>How to dilute for topical use?</h3>
+<p class='small'>Dilution guidance varies; a common starting guideline is 1–2% for adults for short-term topical use. Patch test a small area and wait 24 hours for reactions.</p>
+
+<h3 style='margin-bottom:.2rem'>Pets and pregnancy?</h3>
+<p class='small'>Some essential oils are best avoided around pets or during pregnancy. Note these details in your planner so recommendations steer clear of concerning substances.</p>
+</div>
+</section>
+
+<section class='section card reveal-on-scroll'>
+<h2 style='margin-top:0'>Reach me</h2>
+<p class='small'>Email: <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a></p>
+<p class='small'>Phone: <a href='tel:{{PHONE}}'>{{PHONE}}</a></p>
+<p class='small'>Location: {{CITY}}, {{STATE}}</p>
+<p style='margin-top:1rem'><a class='cta' href='book.html'>Schedule a session</a></p>
+</section>
+
+</main>
+
+<footer class='footer'>
+<div class='small'>&copy; <span id='year'></span> {{BUSINESS_NAME}} — Intentional aromatherapy approaches that may support everyday balance.</div>
+</footer>
+
+<script>
+/* set year */
+document.getElementById('year').textContent = new Date().getFullYear();
+
+/* reveal: respects prefers-reduced-motion */
+const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const revealEls = document.querySelectorAll('.reveal-on-scroll');
+if (prefersReduced) {
+  revealEls.forEach(el => el.classList.add('reveal'));
+} else {
+  const io = new IntersectionObserver((entries, obs) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('reveal');
+        obs.unobserve(entry.target);
+      }
+    });
+  }, {threshold: 0.12, rootMargin: '0px 0px -8% 0px'});
+  revealEls.forEach(el => io.observe(el));
+}
+
+/* Session Planner widget */
+function gatherMethods(form){
+  const boxes = form.querySelectorAll('input[type=checkbox][name=method]');
+  const vals = [];
+  boxes.forEach(cb => { if(cb.checked) vals.push(cb.value); });
+  return vals.length ? vals.join(', ') : 'none selected';
+}
+
+function buildSummary(){
+  const form = document.getElementById('planner-form');
+  const data = new FormData(form);
+  const name = 'Client';
+  const focus = data.get('focus') || '';
+  const length = data.get('length') || '';
+  const intensity = data.get('intensity') || '';
+  const methods = gatherMethods(form);
+  const notes = data.get('notes') || '';
+  const nl = String.fromCharCode(10);
+  const plan = [
+    'Aromatherapy Session Plan',
+    '------------------------',
+    'For: ' + name,
+    'Primary focus: ' + focus,
+    'Session length: ' + length + ' minutes',
+    'Style: ' + intensity,
+    'Methods: ' + methods,
+    '',
+    'Suggested approach (examples only):',
+    '- Select 2–3 essential oils aligned with the focus; use low dilutions for topical work; diffuse briefly for inhalation sessions.',
+    '- Begin with grounding breath for a few minutes, then introduce scent mindfully.',
+    '',
+    'Notes: ' + (notes ? notes : '—'),
+    '',
+    'Safety reminders: patch test new topicals; consult a clinician about pregnancy, medications, or major health considerations; avoid substances known to affect household pets.',
+    '',
+    'Prepared by: ' + '{{BUSINESS_NAME}}'
+  ].join(nl);
+  return plan;
+}
+
+document.getElementById('build-plan').addEventListener('click', () => {
+  const out = document.getElementById('plan-output');
+  out.value = buildSummary();
+  out.focus();
+  out.select();
+});
+
+document.getElementById('copy-plan').addEventListener('click', async () => {
+  const out = document.getElementById('plan-output');
+  try{
+    await navigator.clipboard.writeText(out.value);
+    const btn = document.getElementById('copy-plan');
+    const prior = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(()=> btn.textContent = prior, 1200);
+  }catch(e){
+    alert('Copy failed. Select and copy the summary manually.');
+  }
+});
+
+document.getElementById('download-plan').addEventListener('click', () => {
+  const text = document.getElementById('plan-output').value || buildSummary();
+  const blob = new Blob([text], {type:'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'aromatherapy-plan.txt';
+  document.body.appendChild(a); a.click(); URL.revokeObjectURL(url); a.remove();
+});
+
+/* contact form stub */
+document.getElementById('contact-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const btn = e.target.querySelector('button[type=submit]');
+  const original = btn.textContent;
+  btn.textContent = 'Sending…';
+  setTimeout(()=>{
+    btn.textContent = original;
+    alert('Thanks — your message was submitted. We will contact you soon.');
+    e.target.reset();
+  }, 900);
+});
+</script>
+</body>
+</html>

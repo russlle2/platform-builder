@@ -1,0 +1,65 @@
+/* Simple modern clinic-inspired styles */
+:root{
+  --bg:#0f1720;
+  --card:#0f1a24;
+  --muted:#9aa4ad;
+  --accent:#9ee7e1;
+  --accent-2:#7ad3c8;
+  --white:#eef6f7;
+  --radius:10px;
+}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Arial;color:var(--white);margin:0;background:linear-gradient(180deg,#061017 0%, #071824 100%);}
+.container{max-width:1100px;margin:0 auto;padding:28px}
+.site-header{background:rgba(0,0,0,0.18);backdrop-filter:blur(6px);}
+.header-inner{display:flex;align-items:center;justify-content:space-between}
+.brand{font-weight:700;font-size:1.1rem}
+.main-nav a{color:var(--muted);text-decoration:none;margin:0 10px}
+.nav-actions .btn{margin-left:12px}
+.btn{display:inline-block;padding:10px 14px;border-radius:8px;text-decoration:none;color:var(--white);background:transparent;border:1px solid rgba(255,255,255,0.06)}
+.btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#032727;border:none}
+.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--white)}
+.btn-sm{padding:8px 10px;font-size:0.9rem}
+.link-muted{color:var(--muted);text-decoration:underline}
+.hero{padding:48px 0;position:relative;overflow:hidden}
+.hero-inner{display:grid;grid-template-columns:1fr 320px;gap:28px;align-items:start}
+.hero-copy h1{font-size:1.9rem;margin:0 0 12px}
+.tagline{color:var(--muted);margin-bottom:18px}
+.hero-panel{background:rgba(255,255,255,0.02);padding:18px;border-radius:var(--radius)}
+.panel-block{margin-bottom:18px}
+.mixer{display:flex;gap:8px;margin-top:10px}
+.mix-btn{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--white);padding:8px;border-radius:8px;cursor:pointer}
+.mix-btn.active{background:rgba(255,255,255,0.04);box-shadow:0 4px 18px rgba(0,0,0,0.6)}
+.recommendations{margin-top:12px;color:var(--muted)}
+.next-event-card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.14));padding:12px;border-radius:8px}
+.next-event-card .when{font-weight:700}
+.what-to-expect{padding:48px 0}
+.grid.three{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
+.card{background:rgba(255,255,255,0.02);padding:18px;border-radius:10px}
+.contra{margin-top:18px;color:var(--muted);font-size:0.95rem}
+.proof{padding:48px 0;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent)}
+.proof-wrap{display:flex;gap:22px;align-items:flex-start}
+.testimonials{flex:1;min-height:120px;display:flex;align-items:center}
+.testimonial{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.06));padding:20px;border-radius:12px}
+.badges{width:260px;display:flex;flex-direction:column;gap:12px}
+.badge{display:flex;gap:12px;align-items:center;padding:10px;border-radius:8px;background:rgba(255,255,255,0.02);cursor:default;position:relative}
+.badge .icon{width:28px;height:28px;stroke:var(--accent);fill:none}
+.badge .label{color:var(--muted)}
+.badge .tip{position:absolute;left:110%;top:50%;transform:translateY(-50%);background:#041618;padding:8px;border-radius:6px;white-space:nowrap;color:var(--muted);font-size:0.85rem;opacity:0;pointer-events:none;transition:opacity 160ms}
+.badge:hover .tip{opacity:1}
+.objections{padding:40px 0}
+.qa-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.qa{background:rgba(255,255,255,0.02);padding:16px;border-radius:10px}
+.cta-strip{padding:24px 0;background:linear-gradient(90deg,rgba(0,0,0,0.18),transparent)}
+.cta-inner{display:flex;justify-content:space-between;align-items:center}
+.site-footer{padding:14px 0;background:rgba(0,0,0,0.2);border-top:1px solid rgba(255,255,255,0.02)}
+.footer-inner{display:flex;justify-content:space-between;align-items:center}
+/* Responsive */
+@media(max-width:880px){
+  .hero-inner{grid-template-columns:1fr}
+  .grid.three,.qa-grid{grid-template-columns:1fr}
+  .proof-wrap{flex-direction:column}
+  .badges{width:100%;flex-direction:row;justify-content:space-between}
+}
+/* Pattern placement */
+.pattern{position:absolute;right:-10%;top:-10%;width:60%;opacity:0.12;filter:blur(0.5px)}

@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Begin — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#ffffff;--ink:#08221b;--muted:#516257;--accent:#6ea78b}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,sans-serif;background:var(--bg) url('assets/img/pattern.svg')}
+    header{display:flex;justify-content:space-between;align-items:center;padding:16px 22px}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none}
+    .container{max-width:880px;margin:26px auto;padding:18px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .form-card{background:white;padding:18px;border-radius:12px;box-shadow:0 8px 28px rgba(12,24,18,0.06)}
+    label{display:block;margin-top:12px;font-weight:600}
+    input,textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid #e6ebe6;margin-top:6px}
+    .submit{margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--accent);color:white;border:0;font-weight:700}
+    .mood-panel{background:linear-gradient(180deg,#fbfff9,#ffffff);padding:16px;border-radius:10px}
+    .mood-grid{display:flex;gap:8px;flex-wrap:wrap}
+    .mood-grid button{padding:8px 10px;border-radius:8px;border:1px solid #eef6ed;background:white;cursor:pointer}
+    .rec{margin-top:12px;padding:12px;border-radius:10px;background:#fbfffb;border:1px solid #eaf6ea}
+    footer{max-width:880px;margin:18px auto;color:var(--muted);font-size:13px}
+    @media(max-width:880px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Ailments</a>
+      <a href="approach.html">Philosophy</a>
+      <a href="pricing.html">Invest</a>
+      <a href="about.html">Story</a>
+      <a href="book.html">Begin</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div class="grid">
+      <form id="book-form" class="form-card" action="{{PRIMARY_CTA_URL}}" method="post">
+        <h2 style="margin:0 0 6px">Begin a conversation</h2>
+        <p style="margin:0;color:var(--muted)">Tell us a few basics and what feels most pressing; we’ll suggest a first step.</p>
+
+        <label for="name">Your name</label>
+        <input id="name" name="name" placeholder="Full name" required>
+
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" placeholder="you@example.com" required>
+
+        <label for="phone">Phone</label>
+        <input id="phone" name="phone" placeholder="Optional phone">
+
+        <label for="notes">A short note — what's on your mind?</label>
+        <textarea id="notes" name="notes" rows="4" placeholder="Brief context, goals, or questions"></textarea>
+
+        <input type="hidden" id="programChoice" name="program">
+        <button id="submitBtn" class="submit" type="submit">Request an introductory call</button>
+      </form>
+
+      <aside class="mood-panel">
+        <h3 style="margin-top:0">Mood-to-Method</h3>
+        <p style="color:var(--muted);margin-bottom:12px">Select how you feel — we’ll shape a suggested first step and update the booking cue.</p>
+        <div class="mood-grid">
+          <button data-mood="fragile">Fragile</button>
+          <button data-mood="busy">Busy</button>
+          <button data-mood="inquiring">Inquiring</button>
+          <button data-mood="turning">Turning Point</button>
+        </div>
+
+        <div id="rec" class="rec">
+          <strong id="rec-type">Short consult</strong>
+          <div id="rec-note" style="color:var(--muted);margin-top:6px">A 25-minute video to listen and co-design a next step.</div>
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <a id="rec-link" href="{{PRIMARY_CTA_URL}}" class="submit" style="background:#fff;color:var(--accent);border:1px solid #dfefe0;text-decoration:none;padding:8px 12px;border-radius:8px">Go to booking</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <div style="text-align:center;color:var(--muted)">Prefer to call? <a href="tel:{{PHONE}}">{{PHONE}}</a> · Or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+  </footer>
+
+  <script>
+    // Mood-to-Method logic
+    (function(){
+      const map = {
+        fragile:{type:'Gentle Intake',note:'Short first meeting with breathing space and slower pacing.',btn:'Request a gentle intake',program:'Gentle Intake'},
+        busy:{type:'Focused Tune-up',note:'A practical session to fit into a busy schedule — clear, applied steps.',btn:'Book a tune-up',program:'Tune-up Session'},
+        inquiring:{type:'Exploratory Consult',note:'A 45-minute exploration to map possibilities and next experiments.',btn:'Start an exploratory consult',program:'Exploratory Consult'},
+        turning:{type:'Reset Package Intro',note:'Plan a reset with a clear pathway and follow-up supports.',btn:'Discuss a reset package',program:'Reset Package'}
+      };
+
+      const moodBtns = document.querySelectorAll('.mood-grid button');
+      const recType = document.getElementById('rec-type');
+      const recNote = document.getElementById('rec-note');
+      const recLink = document.getElementById('rec-link');
+      const submitBtn = document.getElementById('submitBtn');
+      const programInput = document.getElementById('programChoice');
+
+      function apply(mood){
+        const s = map[mood]||map.inquiring;
+        recType.textContent = s.type;
+        recNote.textContent = s.note;
+        recLink.textContent = s.btn;
+        submitBtn.textContent = s.btn;
+        programInput.value = s.program;
+        // animate subtle background
+        document.getElementById('rec').animate([{background:'#fbfffb'},{background:'#fff'}],{duration:240});
+        // update link href to include intent as query param
+        const base = '{{PRIMARY_CTA_URL}}';
+        recLink.href = base + '?intent=' + encodeURIComponent(s.program);
+      }
+
+      moodBtns.forEach(b=>{
+        b.addEventListener('click', ()=>{
+          moodBtns.forEach(x=>x.style.opacity=0.9);
+          b.style.opacity=1;
+          apply(b.dataset.mood);
+        });
+      });
+
+      // initialize
+      apply('inquiring');
+
+      // basic client-side validation
+      document.getElementById('book-form').addEventListener('submit', function(e){
+        const email = document.getElementById('email').value;
+        if(!email.match(/@/)){
+          e.preventDefault();
+          alert('Please provide a valid email so we can follow up.');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="A modern wellness conversation, practical rhythms, and a 7-day habit builder to begin your next intentional week.">
+  <style>
+    :root{--bg:#0f1720;--card:#0f1720;--muted:#9aa5ad;--accent:#7bd389;--soft:#112026;--glass:rgba(255,255,255,0.04);--glass-2:rgba(123,211,137,0.06);font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg) 0%, #061217 60%);color:#e6f3ee}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;position:sticky;top:0;background:linear-gradient(180deg,rgba(6,10,12,0.6),transparent);backdrop-filter:blur(6px);z-index:40}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#2ec2b4);display:flex;align-items:center;justify-content:center;color:#062422;font-weight:700}
+    nav a{color:var(--muted);text-decoration:none;margin:0 12px;font-size:14px}
+    nav a:hover{color:#e6f3ee}
+    .hero{padding:48px 28px 36px;display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:start}
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:14px;padding:22px;box-shadow:0 6px 30px rgba(4,6,8,0.6);}
+    h1{margin:0 0 10px;font-size:28px;letter-spacing:-0.02em;color:#f1fff6}
+    p.lead{margin:0 0 16px;color:var(--muted)}
+    .contact-form input,.contact-form textarea,.contact-form select{width:100%;padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);color:#eaf7ef}
+    .contact-form label{display:block;font-size:13px;margin:12px 0 6px;color:var(--muted)}
+    .row{display:flex;gap:12px}
+    .btn{background:linear-gradient(90deg,var(--accent),#33c2b0);color:#062422;padding:10px 14px;border-radius:9px;border:0;font-weight:700;cursor:pointer}
+    .ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+    .aside .card{margin-bottom:16px}
+    .small{font-size:13px;color:var(--muted)}
+    .habit-list{list-style:none;padding:0;margin:0}
+    .habit-list li{padding:10px 12px;border-radius:8px;background:rgba(255,255,255,0.02);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+    .print-area{background:linear-gradient(180deg,#f8fff7 0%,#e7fff0 100%);color:#05221a;padding:18px;border-radius:12px}
+    .check-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;align-items:center}
+    .day-box{display:flex;flex-direction:column;align-items:center;padding:8px;border-radius:8px;background:rgba(0,0,0,0.03)}
+    .day-box b{font-size:12px}
+    footer{padding:28px;color:var(--muted);text-align:center}
+    /* modal styles */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,8,0.6);display:none;align-items:center;justify-content:center;z-index:60}
+    .modal{width:min(740px,96%);max-height:92vh;overflow:auto;background:#041518;padding:22px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .modal h3{margin-top:0}
+    .breath-ring{width:160px;height:160px;border-radius:999px;background:radial-gradient(circle at 30% 30%, rgba(123,211,137,0.18), rgba(34,170,135,0.06));display:flex;align-items:center;justify-content:center;margin:18px auto}
+    .breath-circle{width:60px;height:60px;border-radius:999px;background:linear-gradient(180deg,var(--accent),#2ec2b4);display:flex;align-items:center;justify-content:center;color:#05221a;font-weight:700}
+    .controls{display:flex;gap:10px;flex-wrap:wrap}
+    /* printable */
+    @media print{body *{visibility:hidden}#print-root, #print-root *{visibility:visible}#print-root{position:fixed;left:0;top:0;width:100%}}
+    /* decorative inline svg */
+    .pattern-clip{position:absolute;inset:auto 0 0 0;height:220px;opacity:0.08;pointer-events:none}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">W</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{CITY}}, {{STATE}} • <a href="tel:{{PHONE}}" style="color:var(--muted);text-decoration:none">{{PHONE}}</a></div>
+      </div>
+    </div>
+    <nav aria-label="primary">
+      <a href="/index.html">Home</a>
+      <a href="/programs.html">Journeys</a>
+      <a href="/services.html">What I Do</a>
+      <a href="/pricing.html">Rates</a>
+      <a href="/testimonials.html">Voices</a>
+      <a href="/book.html">Book</a>
+      <a href="/contact.html" aria-current="page">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="panel">
+        <h1>Let's talk rhythm, results, and the next seven days.</h1>
+        <p class="lead">Reach out to start an intensive planning conversation, arrange a diagnostic session, or try the guided exercise tools below. I focus on outcomes, repeatable frameworks, and micro-habits—no medical advice, just practical structure.</p>
+
+        <form class="contact-form" id="contactForm" method="post" action="mailto:{{EMAIL}}">
+          <label for="name">Full name</label>
+          <input id="name" name="name" placeholder="Your name" required>
+
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="you@domain.com" required>
+
+          <label for="interest">What would you like?</label>
+          <select id="interest" name="interest">
+            <option>One-on-one intensive</option>
+            <option>7-day challenge</option>
+            <option>Team rhythm workshop</option>
+            <option>Ask a quick question</option>
+          </select>
+
+          <label for="message">A brief note</label>
+          <textarea id="message" name="message" rows="4" placeholder="Tell me what you're aiming for..." required></textarea>
+
+          <div style="display:flex;gap:10px;margin-top:12px;align-items:center">
+            <button class="btn" type="submit">{{PRIMARY_CTA_LABEL}}</button>
+            <button type="button" class="ghost" id="tryGuided">Try a short exercise</button>
+            <div style="margin-left:auto;font-size:13px;color:var(--muted)">Or call <a href="tel:{{PHONE}}" style="color:var(--muted)">{{PHONE}}</a></div>
+          </div>
+        </form>
+
+        <div style="margin-top:18px;font-size:13px;color:var(--muted)">Prefer to schedule? <a href="{{PRIMARY_CTA_URL}}" style="color:#bfeed6">Book time</a></div>
+      </div>
+
+      <aside class="aside" aria-label="tools" style="position:relative">
+        <div class="panel card">
+          <h3 style="margin:0 0 8px">7‑Day Habit Builder</h3>
+          <p class="small">Craft a short challenge—select a focus, generate a daily checklist, then print or download it for the week.</p>
+          <label class="small" for="focus">Focus area</label>
+          <select id="focus" aria-label="Focus area">
+            <option value="presence">Presence: micro-moments</option>
+            <option value="movement">Movement: short sessions</option>
+            <option value="sleep">Sleep: wind-down rituals</option>
+            <option value="nourish">Nourish: simple choices</option>
+            <option value="boundaries">Boundaries: time edges</option>
+          </select>
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <button class="btn" id="generate">Create challenge</button>
+            <button class="ghost" id="randomize">Surprise me</button>
+          </div>
+          <div id="challengePreview" style="margin-top:12px"></div>
+        </div>
+
+        <div class="panel card">
+          <h4 style="margin:0 0 8px">Quick contact</h4>
+          <div class="small">Email: <a href="mailto:{{EMAIL}}" style="color:var(--muted)">{{EMAIL}}</a></div>
+          <div class="small">Phone: <a href="tel:{{PHONE}}" style="color:var(--muted)">{{PHONE}}</a></div>
+          <div style="margin-top:10px">
+            <button class="btn" id="printChallenge">Print checklist</button>
+          </div>
+        </div>
+
+        <div class="panel card">
+          <h4 style="margin:0 0 8px">Mini demo</h4>
+          <p class="small">Try a 2-minute breathing cycle, a journaling prompt, or an intention-setting mini practice—right in the page.</p>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn" id="openBreath">Breathing</button>
+            <button class="ghost" id="openJournal">Journaling</button>
+            <button class="ghost" id="openIntent">Set an intention</button>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section style="padding:28px 28px 0">
+      <div class="panel" style="display:flex;gap:18px;flex-wrap:wrap;align-items:center;justify-content:space-between">
+        <div>
+          <h3 style="margin:0">Why connect?</h3>
+          <p class="small">I design short, anchored practices that move toward clearer energy, consistent progress, and repeatable routines. If you want a guided intensive to kickstart a month of change, this is a good first step.</p>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <a class="btn" href="/book.html">Reserve a diagnostic</a>
+          <a class="ghost" href="/programs.html">Explore journeys</a>
+        </div>
+      </div>
+    </section>
+
+    <section style="padding:22px 28px 40px">
+      <div id="print-root" class="panel">
+        <h3 style="margin-top:0">Printable 7‑Day Checklist</h3>
+        <div id="printContent" class="print-area">
+          <div id="challengeTitle" style="font-weight:700;margin-bottom:8px">Your 7‑Day Focus</div>
+          <div id="challengeDesc" class="small" style="margin-bottom:12px">A compact checklist to carry through the week.</div>
+          <div class="check-grid" id="checkGrid" style="grid-template-columns:repeat(8,1fr)">
+            <!-- days + items generated here -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="max-width:900px;margin:0 auto">Contact • {{EMAIL}} • {{PHONE}} • <a href="/privacy.html" style="color:var(--muted)">Privacy</a></div>
+  </footer>
+
+  <!-- decorative inline svg pattern -->
+  <svg class="pattern-clip" viewBox="0 0 800 220" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#1b5e4b" stop-opacity="0.12"/><stop offset="1" stop-color="#2ec2b4" stop-opacity="0.08"/></linearGradient>
+      <pattern id="p1" width="60" height="60" patternUnits="userSpaceOnUse">
+        <rect width="60" height="60" fill="rgba(255,255,255,0)"/>
+        <path d="M0 30 L30 0 L60 30 L30 60 Z" fill="url(#g1)"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#p1)"/>
+  </svg>
+
+  <!-- modal backdrop -->
+  <div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document">
+      <button id="modalClose" style="float:right;background:transparent;border:0;color:var(--muted);font-size:16px">Close</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script>
+    // Utility
+    function el(q){return document.querySelector(q)}
+    function create(tag,props){const n=document.createElement(tag);if(props){Object.assign(n,props)}return n}
+
+    // Habit builder content bank
+    const bank = {
+      presence: [
+        'Pause for 60 seconds of unfocused breath',
+        'Name three small wins before noon',
+        'Do a 2-minute body scan after lunch',
+        'Notice one pleasant detail during a task',
+        'Stand and stretch at every hour mark',
+        'At end of day, list one learning',
+        'Pick a single task to finish before social media'
+      ],
+      movement: [
+        'Walk briskly for 10 minutes',
+        'Two sets of 10 bodyweight squats',
+        'A 6-minute mobility flow',
+        '10-minute standing yoga sequence',
+        'A short climb of stairs for 5 minutes',
+        'Desk micro-movements for 3 minutes',
+        'Active cool-down: slow walking for 8 minutes'
+      ],
+      sleep: [
+        'Screen off 60 minutes before bed',
+        'A warm non-caffeinated beverage 30 mins prior',
+        'Write a two-line brain dump before sleep',
+        'Dim lights 45 minutes before bed',
+        'Gentle stretch for 5 minutes',
+        'Cool bedroom: lower temp by 1-2°C',
+        'Replace heavy meal with a light option if late'
+      ],
+      nourish: [
+        'Add one vegetable to a meal',
+        'Swap one snack for a fruit or nuts',
+        'Drink a glass of water before each meal',
+        'Choose a whole-grain option once today',
+        'Prep a simple balanced plate',
+        'Batch-cook a healthy base for tomorrow',
+        'Notice fullness cues before seconds'
+      ],
+      boundaries: [
+        'Set a 30-minute focus window with no interruptions',
+        'Say no to one non-essential ask',
+        'Schedule 15 minutes buffer between meetings',
+        'Declare an end-of-work time and honor it',
+        'Turn off notifications for one hour',
+        'Share availability rather than tasks',
+        'Leave one meeting early to preserve time'
+      ]
+    }
+
+    function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+    function buildWeek(focus){
+      const items = (bank[focus]||bank.presence).slice();
+      shuffle(items);
+      const chosen = items.slice(0,7);
+      return chosen;
+    }
+
+    const focusEl = el('#focus');
+    const generateBtn = el('#generate');
+    const randomBtn = el('#randomize');
+    const preview = el('#challengePreview');
+    const printGrid = el('#checkGrid');
+    const challengeTitle = el('#challengeTitle');
+    const challengeDesc = el('#challengeDesc');
+    let currentChallenge = [];
+
+    function renderPreview(list,focus){
+      preview.innerHTML='';
+      const ul = create('ul',{className:'habit-list'});
+      list.forEach((it,i)=>{
+        const li = create('li');
+        const left = create('div'); left.textContent = `Day ${i+1}: ${it}`;
+        const cb = create('input'); cb.type='checkbox'; cb.setAttribute('aria-label',`Complete day ${i+1}`);
+        li.appendChild(left); li.appendChild(cb); ul.appendChild(li);
+      });
+      preview.appendChild(ul);
+      challengeTitle.textContent = `7‑Day: ${focus.split("")[0].toUpperCase()+focus.slice(1)}`;
+      challengeDesc.textContent = 'Print this checklist and check off each day as you go.';
+      renderPrintGrid(list);
+    }
+
+    function renderPrintGrid(list){
+      printGrid.innerHTML='';
+      // first column labels
+      const titleCell = create('div'); titleCell.style.fontWeight='700'; titleCell.textContent='Day'; printGrid.appendChild(titleCell);
+      // days header
+      for(let d=1; d<=7; d++){
+        const day = create('div'); day.style.textAlign='center'; day.style.fontWeight='700'; day.textContent=`D${d}`; printGrid.appendChild(day);
+      }
+      // for each item, row
+      list.forEach((it,idx)=>{
+        const label = create('div'); label.textContent=it; label.style.padding='8px'; label.style.gridColumn='1 / 2';
+        printGrid.appendChild(label);
+        for(let d=1; d<=7; d++){
+          const box = create('div'); box.className='day-box'; box.style.minWidth='42px';
+          const cb = create('input'); cb.type='checkbox'; cb.setAttribute('aria-label',`Mark ${it} for day ${d}`);
+          box.appendChild(cb);
+          printGrid.appendChild(box);
+        }
+      });
+    }
+
+    generateBtn.addEventListener('click',()=>{
+      const f = focusEl.value;
+      currentChallenge = buildWeek(f);
+      renderPreview(currentChallenge,f);
+    });
+    randomBtn.addEventListener('click',()=>{
+      const keys = Object.keys(bank); const r = keys[Math.floor(Math.random()*keys.length)];
+      focusEl.value = r; currentChallenge = buildWeek(r); renderPreview(currentChallenge,r);
+    });
+
+    el('#printChallenge').addEventListener('click',()=>{
+      window.print();
+    });
+
+    // Guided exercise modal
+    const modal = el('#modalBackdrop');
+    const modalBody = el('#modalBody');
+    const modalClose = el('#modalClose');
+
+    function openModal(content){
+      modalBody.innerHTML='';
+      modalBody.appendChild(content);
+      modal.style.display='flex';
+      modal.setAttribute('aria-hidden','false');
+    }
+    function closeModal(){
+      modal.style.display='none';
+      modal.setAttribute('aria-hidden','true');
+      clearTimers();
+    }
+    modalClose.addEventListener('click',closeModal);
+    modal.addEventListener('click',(e)=>{if(e.target===modal)closeModal()});
+
+    // breathing exercise
+    let timers = [];
+    function clearTimers(){timers.forEach(t=>clearInterval(t));timers=[]}
+
+    function breathExercise(){
+      const wrap = create('div');
+      const h = create('h3'); h.textContent='Two-minute center: paced breath';
+      const desc = create('p'); desc.textContent='Follow the circle: inhale, hold, exhale. Repeat for two minutes.';
+      const ring = create('div'); ring.className='breath-ring';
+      const circle = create('div'); circle.className='breath-circle'; circle.textContent='Breathe';
+      ring.appendChild(circle);
+      const info = create('div'); info.style.textAlign='center'; info.style.marginTop='8px'; info.textContent='Cycle: inhale 4s • hold 4s • exhale 6s';
+      wrap.appendChild(h); wrap.appendChild(desc); wrap.appendChild(ring); wrap.appendChild(info);
+
+      // animation loop
+      let state=0; // 0-inhale,1-hold,2-exhale
+      let elapsed=0; const total=120; // seconds
+      const text = circle;
+      function step(){
+        elapsed++;
+        if(elapsed>total){ clearTimers(); closeModal(); return; }
+        // simple timing within 14s cycle (4+4+6)
+        const cycle = (elapsed%14)||14;
+        if(cycle<=4){ state=0; text.style.transform = `scale(${1 + 0.35*(cycle/4)})`; text.textContent='Inhale'; }
+        else if(cycle<=8){ state=1; text.style.transform = `scale(1.35)`; text.textContent='Hold'; }
+        else { state=2; const ex = 1.35 - 0.35*((cycle-8)/6); text.style.transform = `scale(${ex})`; text.textContent='Exhale'; }
+      }
+      // run step every second
+      step(); timers.push(setInterval(step,1000));
+      return wrap;
+    }
+
+    // journaling exercise
+    const journalPrompts = [
+      'What three small actions would make tomorrow easier?',
+      'Name one thing you completed this week and what you learned.',
+      'What occupies most of your attention right now? Can you shift it slightly?',
+      'Describe a boundary you want to try for the coming day.'
+    ];
+    function journalingExercise(){
+      const wrap = create('div');
+      const h = create('h3'); h.textContent='A 5‑minute journaling spark';
+      const prompt = create('p'); prompt.style.fontWeight='700'; prompt.style.fontSize='16px'; prompt.textContent = journalPrompts[Math.floor(Math.random()*journalPrompts.length)];
+      const ta = create('textarea'); ta.rows=6; ta.style.width='100%'; ta.placeholder='Write here...';
+      const timer = create('div'); timer.style.marginTop='8px'; timer.textContent='Timer: 05:00';
+      wrap.appendChild(h); wrap.appendChild(prompt); wrap.appendChild(ta); wrap.appendChild(timer);
+      // simple timer
+      let seconds = 300; function tick(){ seconds--; const m=Math.floor(seconds/60); const s=String(seconds%60).padStart(2,'0'); timer.textContent=`Timer: ${m}:${s}`; if(seconds<=0){ clearTimers(); timer.textContent='Done'; } }
+      timers.push(setInterval(()=>tick(),1000));
+      return wrap;
+    }
+
+    function intentionExercise(){
+      const wrap = create('div');
+      const h = create('h3'); h.textContent='Intentions: a short framing practice';
+      const instr = create('p'); instr.textContent='Choose one clear intention for the day and state how you will notice it. Keep it short.';
+      const form = create('div'); form.style.display='grid'; form.style.gap='8px';
+      const input = create('input'); input.placeholder='My intention is...';
+      const notice = create('input'); notice.placeholder='I will notice it when...';
+      const done = create('button'); done.className='btn'; done.textContent='Save intention';
+      const output = create('div'); output.style.marginTop='10px'; output.className='small';
+      done.addEventListener('click',()=>{ output.textContent = `Saved: "${input.value}" — Notice: "${notice.value}"`; });
+      form.appendChild(input); form.appendChild(notice); form.appendChild(done); wrap.appendChild(h); wrap.appendChild(instr); wrap.appendChild(form); wrap.appendChild(output);
+      return wrap;
+    }
+
+    // actions bound to buttons
+    el('#tryGuided').addEventListener('click',()=>{
+      const content = create('div');
+      const h = create('h3'); h.textContent='Try a micro practice';
+      const p = create('p'); p.textContent='Pick one: a two-minute breathing cycle, a short journaling prompt, or a single intention.';
+      const btns = create('div'); btns.className='controls';
+      const b1 = create('button'); b1.className='btn'; b1.textContent='Breathing';
+      const b2 = create('button'); b2.className='ghost'; b2.textContent='Journaling';
+      const b3 = create('button'); b3.className='ghost'; b3.textContent='Set intention';
+      btns.appendChild(b1); btns.appendChild(b2); btns.appendChild(b3);
+      content.appendChild(h); content.appendChild(p); content.appendChild(btns);
+      openModal(content);
+      b1.addEventListener('click',()=>{ clearTimers(); const e=breathExercise(); modalBody.innerHTML=''; modalBody.appendChild(e); });
+      b2.addEventListener('click',()=>{ clearTimers(); const e=journalingExercise(); modalBody.innerHTML=''; modalBody.appendChild(e); });
+      b3.addEventListener('click',()=>{ clearTimers(); const e=intentionExercise(); modalBody.innerHTML=''; modalBody.appendChild(e); });
+    });
+
+    el('#openBreath').addEventListener('click',()=>{ clearTimers(); openModal(breathExercise()); });
+    el('#openJournal').addEventListener('click',()=>{ clearTimers(); openModal(journalingExercise()); });
+    el('#openIntent').addEventListener('click',()=>{ clearTimers(); openModal(intentionExercise()); });
+
+    // initial sample
+    document.addEventListener('DOMContentLoaded',()=>{
+      currentChallenge = buildWeek('presence');
+      renderPreview(currentChallenge,'presence');
+    });
+
+    // small accessibility: close on Esc
+    document.addEventListener('keydown',(e)=>{ if(e.key==='Escape'){ closeModal(); } });
+  </script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+/* Zen minimal — playful premium */
+:root{
+--bg:#f7fbfa;
+--muted:#64707a;
+--accent-1:#6dd3c0;
+--accent-2:#ffd3a5;
+--accent-ink:#1b2b2b;
+--max-width:1100px;
+--radius:10px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body.zen{font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;line-height:1.4;color:var(--accent-ink);background:linear-gradient(180deg, #fbfdfa 0%, var(--bg) 100%);}
+.wrap{max-width:var(--max-width);margin:0 auto;padding:24px}
+.narrow{max-width:900px}
+.site-header{position:sticky;top:0;background:rgba(255,255,255,0.6);backdrop-filter:blur(6px);z-index:40;border-bottom:1px solid #00000008}
+.site-header .wrap{display:flex;align-items:center;gap:16px}
+.brand{font-weight:700;text-decoration:none;color:var(--accent-ink);font-size:1.05rem}
+.nav{margin-left:auto}
+.nav-toggle{display:none;background:none;border:0;font-size:1.2rem}
+.nav-list{list-style:none;display:flex;gap:12px;margin:0;padding:0;align-items:center}
+.nav-list a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:8px}
+.nav-list a.primary-cta{background:linear-gradient(90deg,var(--accent-1),var(--accent-2));color:#0a1b1a;font-weight:600}
+.hero{display:grid;grid-template-columns:1fr 420px;gap:24px;align-items:center;padding:56px 0}
+.headline{font-size:clamp(1.6rem,3.6vw,2.4rem);margin:0 0 8px}
+.sub{color:var(--muted);margin:0 0 18px}
+.hero-actions{display:flex;gap:12px;align-items:center}
+.btn{display:inline-block;padding:10px 16px;border-radius:12px;text-decoration:none;cursor:pointer;border:1px solid transparent}
+.btn-primary{background:linear-gradient(90deg,var(--accent-1),var(--accent-2));color:#05201f;font-weight:700}
+.btn-ghost{background:#fff;border:1px solid #00000009}
+.btn-outline{background:transparent;border:1px solid #00000010;padding:8px 12px}
+.hero-visual{border-radius:16px;overflow:hidden;box-shadow:0 8px 30px rgba(9,20,21,0.06)}
+.ripple-canvas{width:100%;height:240px;display:block}
+.ritual, .what-to-expect, .schedule, .pricing-preview, .faq{padding:44px 0}
+.lead{color:var(--muted)}
+.ritual-steps{display:flex;gap:18px;flex-wrap:wrap;list-style:none;padding:0;margin-top:14px}
+.ritual-steps li{background:#ffffff66;padding:12px;border-radius:10px;min-width:180px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:12px}
+.session-flow{padding-left:18px}
+.pricing-list{list-style:none;padding:0}
+.pricing-list li{padding:8px 0}
+.disclaimer{font-size:0.9rem;color:var(--muted)}
+.faq details{background:#fff;border-radius:10px;padding:12px;margin:8px 0}
+.final-cta{padding:40px 0;text-align:center}
+.site-footer{padding:24px 0;color:var(--muted);border-top:1px solid #00000006}
+.bg-pattern{position:fixed;inset:0;z-index:-1;opacity:1;background-image:url('../img/pattern.svg');background-repeat:repeat;mix-blend-mode:soft-light;}
+/* Responsive */
+@media (max-width:880px){
+.hero{grid-template-columns:1fr;}
+.nav-list{display:none}
+.nav-toggle{display:inline-block}
+.nav.open .nav-list{display:flex;flex-direction:column;background:#fff;position:absolute;right:20px;top:64px;padding:12px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.08)}
+.grid{grid-template-columns:1fr}
+}
+/* Ripple effect helper visuals for JS */
+.ripple{position:relative;overflow:hidden}
+.ripple .ink{position:absolute;border-radius:50%;transform:scale(0);background:rgba(255,255,255,0.4);animation:ripple 0.7s linear}
+@keyframes ripple{to{transform:scale(12);opacity:0}}
+/* Gentle micro-animations */
+.orbs circle{mix-blend-mode:screen;animation:float 6s ease-in-out infinite}
+.orbs circle:nth-child(2){animation-duration:7s}
+@keyframes float{0%{transform:translateY(0)}50%{transform:translateY(-8px)}100%{transform:translateY(0)}}

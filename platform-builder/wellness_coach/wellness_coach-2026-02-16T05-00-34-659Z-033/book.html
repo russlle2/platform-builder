@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Book a Discovery Call — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--muted:#6b7280;--accent:#0f766e;--bg:#fbfdfc}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;background:var(--bg);color:#072226}
+    .container{max-width:920px;margin:0 auto;padding:28px}
+    header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e9f3f2;padding-bottom:14px}
+    .logo{width:46px;height:46px;background:var(--accent);border-radius:10px;color:white;display:flex;align-items:center;justify-content:center;font-weight:800}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none}
+    main{display:grid;grid-template-columns:1fr 360px;gap:22px;margin-top:18px}
+    .form-card{background:white;padding:18px;border-radius:12px;border:1px solid #eef7f6}
+    label{display:block;font-size:13px;margin-top:12px;color:#083232}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #dfeff0;margin-top:6px}
+    .submit{background:var(--accent);color:white;padding:10px 14px;border-radius:10px;border:none;margin-top:12px;font-weight:700}
+    .side{position:relative}
+    .summary{background:linear-gradient(180deg,#fff,#f7fffc);padding:16px;border-radius:12px;border:1px solid #eaf7f4}
+    .radio{display:flex;gap:8px;align-items:center;margin-top:8px}
+    .small{font-size:13px;color:var(--muted)}
+    .faq{margin-top:10px;font-size:13px;color:var(--muted)}
+    @media (max-width:880px){main{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div style="display:flex;gap:12px;align-items:center">
+        <div class="logo">WC</div>
+        <div>
+          <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+          <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="programs.html">Paths</a>
+        <a href="pricing.html">Invest</a>
+        <a href="testimonials.html">Stories</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="form-card">
+        <h2 style="margin:0">Schedule a complimentary discovery session</h2>
+        <p class="small" style="margin-top:8px">A 20-minute call to clarify goals, choose the right path, and get your free 7-Day Habit Reset. No pressure — just clarity.</p>
+
+        <form action="/thank-you" method="POST" style="margin-top:12px">
+          <label for="name">Full name</label>
+          <input id="name" name="name" required placeholder="Your name">
+
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required placeholder="you@example.com">
+
+          <label for="phone">Phone (optional)</label>
+          <input id="phone" name="phone" placeholder="(555) 555-5555">
+
+          <label>Which offering are you curious about?</label>
+          <div class="radio">
+            <input type="radio" id="p1" name="plan" value="starter" checked>
+            <label for="p1">Starter Foundation — short-term focus</label>
+          </div>
+          <div class="radio">
+            <input type="radio" id="p2" name="plan" value="momentum">
+            <label for="p2">Momentum Method — focused sprints</label>
+          </div>
+          <div class="radio">
+            <input type="radio" id="p3" name="plan" value="whole-life">
+            <label for="p3">Whole-Life Partnership — deep systems work</label>
+          </div>
+
+          <label for="goals">One-line summary of your priority</label>
+          <textarea id="goals" name="goals" rows="3" placeholder="What is the most important change you want to make?" required></textarea>
+
+          <button class="submit" type="submit">Request a discovery call</button>
+        </form>
+
+        <div class="small" style="margin-top:10px">By submitting you agree to be contacted by {{BUSINESS_NAME}}. Coaching is not a substitute for medical care.</div>
+      </section>
+
+      <aside class="side">
+        <div class="summary">
+          <h3 style="margin:0">Quick booking details</h3>
+          <div style="color:var(--muted);margin-top:8px">Typical call: 20 minutes. We'll review your current routine and the best first habit to try.</div>
+
+          <div style="margin-top:12px">
+            <strong>Prices (summary)</strong>
+            <div class="small" style="margin-top:6px">Starter: $299/mo · Momentum: $1,100/quarter · Partnership: $4,200/year</div>
+          </div>
+
+          <div style="margin-top:12px">
+            <strong>What to expect</strong>
+            <div class="small" style="margin-top:6px">A practical conversation with next-step micro-practices and a suggested plan. You'll also get the 7-Day Habit Reset file after booking.</div>
+          </div>
+
+          <div style="margin-top:12px">
+            <strong>Need help?</strong>
+            <div class="small" style="margin-top:6px">Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+          </div>
+
+        </div>
+
+        <div style="margin-top:14px;" class="summary">
+          <h4 style="margin:0">Quick FAQ</h4>
+          <div class="faq" style="margin-top:8px">
+            <div>- How long is a program? Varies: monthly to yearly.</div>
+            <div>- Is there a trial? The discovery call helps confirm fit.</div>
+            <div>- Are sessions remote? Yes, via video or phone.</div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <footer style="margin-top:22px;color:var(--muted);font-size:13px">
+      <div>Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> · <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+      <div style="margin-top:6px">{{BUSINESS_NAME}} — {{COACH_NAME}}, {{CREDENTIALS}} — based in {{CITY}}, {{STATE}}</div>
+    </footer>
+  </div>
+</body>
+</html>

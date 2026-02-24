@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Gatherings — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Shared sound sessions and the next communal gatherings in {{CITY}}, {{STATE}}.">
+  <style>
+    :root{--bg:#0f1113;--card:#0f1416;--muted:#9da7ad;--accent:#c7f0e6;--glass:rgba(255,255,255,0.04);--radius:14px}
+    *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#e6f5ef;background:linear-gradient(180deg,#071011 0%, #081217 40%),#031214;min-height:100vh}
+    header{display:flex;align-items:center;justify-content:space-between;padding:28px 6vw}
+    .brand{display:flex;gap:14px;align-items:center}
+    .brand .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#062527,#0b3a36);display:grid;place-items:center;box-shadow:0 4px 18px rgba(0,0,0,0.6);}
+    .brand h1{margin:0;font-size:16px;letter-spacing:0.6px}
+    nav{display:flex;gap:14px;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:10px}
+    nav a[href$="events.html"]{color:var(--accent);background:rgba(199,240,230,0.04)}
+    .hero{padding:48px 6vw 36px;display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+    .hero .lead{background:linear-gradient(180deg,transparent,rgba(255,255,255,0.02));padding:28px;border-radius:var(--radius);backdrop-filter:blur(6px)}
+    .kicker{font-size:13px;color:var(--muted);margin-bottom:8px}
+    h2{margin:0 0 8px 0;font-size:28px}
+    p.lead-text{margin:0;color:#cfeee6}
+    .next-event{background:linear-gradient(135deg,#062c29,#083a3a);padding:18px;border-radius:12px;color:white}
+    .next-event .date{font-weight:700;font-size:20px}
+    .btn{display:inline-block;padding:10px 14px;border-radius:10px;background:var(--accent);color:#042b26;text-decoration:none;font-weight:600}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:20px}
+    .card{background:var(--card);padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+    .calendar{margin-top:18px}
+    .cal-item{display:flex;justify-content:space-between;padding:10px;border-radius:10px;background:linear-gradient(180deg,transparent,rgba(255,255,255,0.01));margin-bottom:8px}
+    .mixer{display:flex;gap:8px;align-items:center}
+    .mixer button{padding:8px 10px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted);cursor:pointer}
+    .mixer button.active{background:var(--accent);color:#042b26;border-color:rgba(199,240,230,0.18)}
+    .programs{margin-top:12px}
+    .programs li{margin:8px 0;padding:10px;border-radius:8px;background:rgba(255,255,255,0.02)}
+    footer{padding:32px 6vw;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+    /* Proof Gallery */
+    .proof{margin-top:22px}
+    .testimonial{background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);padding:16px;border-radius:12px;color:var(--muted);min-height:88px;display:flex;flex-direction:column;gap:8px}
+    .test-author{font-weight:700;color:#dff6ee}
+    .badges{display:flex;gap:8px;margin-top:8px}
+    .badge{background:rgba(255,255,255,0.03);padding:6px 8px;border-radius:8px;font-size:12px;position:relative}
+    .badge:hover .tip{opacity:1;transform:translateY(0)}
+    .tip{position:absolute;left:50%;transform:translate(-50%,8px);bottom:calc(100% + 8px);white-space:nowrap;background:#041918;color:var(--accent);padding:6px 8px;border-radius:6px;font-size:12px;opacity:0;transition:all .18s}
+    /* small screens */
+    @media(max-width:880px){.hero{grid-template-columns:1fr;}.grid{grid-template-columns:1fr}}    
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo" aria-hidden>
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="36" height="36" rx="8" fill="url(#g)"/>
+          <path d="M9 22c4-4 6-8 18-6" stroke="#BFF3E7" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#052926"/><stop offset="1" stop-color="#073f3b"/></linearGradient></defs>
+        </svg>
+      </div>
+      <div>
+        <h1>{{BUSINESS_NAME}}</h1>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Gatherings</a>
+      <a href="events.html">Calendar</a>
+      <a href="private-sessions.html">Private</a>
+      <a href="pricing.html">Investments</a>
+      <a href="about.html">Origins</a>
+      <a href="faq.html">Safeguards</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="lead">
+        <div class="kicker">Shared Sound</div>
+        <h2>Gathered evenings for listening together</h2>
+        <p class="lead-text">A held hour of layered tones and directed silence. We design a flow that meets a room — each event shaped by tempo, vessel, and the sound preference of those present.</p>
+        <div class="grid">
+          <div class="card">
+            <div class="next-event">
+              <div style="font-size:12px;color:rgba(255,255,255,0.7)">Next gathering</div>
+              <div class="date" id="nextDate">Sat • Feb 28 • 7:00pm</div>
+              <div style="margin-top:8px;color:rgba(255,255,255,0.9)">An evening of layered bowls and guided arriving.</div>
+              <div style="margin-top:12px"><a class="btn" href="book.html">{{PRIMARY_CTA_LABEL}}</a></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div style="font-size:13px;color:var(--muted)">Sound preference</div>
+            <div class="mixer" role="tablist" aria-label="Sound intensity">
+              <button class="mix-btn" data-level="gentle">Gentle</button>
+              <button class="mix-btn active" data-level="medium">Medium</button>
+              <button class="mix-btn" data-level="intense">Intense</button>
+            </div>
+            <ul class="programs" id="programList">
+              <!-- JS fills recommendations -->
+            </ul>
+          </div>
+        </div>
+
+        <div class="proof">
+          <div style="font-size:13px;color:var(--muted)">Voices from the room</div>
+          <div class="testimonial" id="testimonial">
+            <div id="testText">Softly held and precise; an hour that allowed a clean exhale.</div>
+            <div class="test-author" id="testAuthor">— A. from {{CITY}}</div>
+            <div class="badges" id="badgeRow">
+              <!-- badges populated by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="card">
+          <div style="font-size:13px;color:var(--muted)">Upcoming calendar</div>
+          <div class="calendar" id="calendar">
+            <!-- JS populates list -->
+          </div>
+          <div style="font-size:13px;color:var(--muted);margin-top:12px">Location: {{CITY}}, {{STATE}} • Doors open 20 minutes before start</div>
+        </div>
+
+        <div class="card" style="margin-top:18px">
+          <div style="font-size:13px;color:var(--muted)">Notes & contraindications</div>
+          <p style="font-size:13px;color:var(--muted);margin-top:8px">If you are pregnant, have blood-pressure concerns, recent head injury, or are sensitive to extended vibration, please consult with your healthcare provider before attending. If you use a pacemaker or similar device, contact us at {{EMAIL}} prior to booking.</p>
+        </div>
+      </aside>
+    </section>
+
+    <section style="padding:28px 6vw">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3 style="margin:0;color:#dff6ee">Why come</h3>
+        <a class="btn" href="book.html">Reserve a place</a>
+      </div>
+      <p style="color:var(--muted);margin-top:10px;max-width:64ch">We sequence sound to shift attention gently: opening tones, layered textures, guided breath, and a finishing silence. Each event offers practical integration suggestions for returning to daily rhythm.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} • <a href="mailto:{{EMAIL}}" style="color:var(--muted);text-decoration:none">{{EMAIL}}</a> • <a href="tel:{{PHONE}}" style="color:var(--muted);text-decoration:none">{{PHONE}}</a></div>
+    <div style="color:var(--muted)">Built for listening • {{CITY}}, {{STATE}}</div>
+  </footer>
+
+  <script>
+    (function(){
+      /* Calendar data */
+      const events = [
+        {date:'2026-02-28T19:00',label:'Evening Drift — Bowls + Breath'},
+        {date:'2026-03-07T19:00',label:'Sound & Silence: Guided Return'},
+        {date:'2026-03-14T11:00',label:'Midday Shortform — 45m'},
+        {date:'2026-03-21T19:00',label:'Slow Waves — Extended Session'},
+        {date:'2026-04-04T19:00',label:'Spring Align — Community Sit'},
+        {date:'2026-04-18T11:00',label:'Morning Reset — 60m'}
+      ];
+
+      function formatShort(d){
+        const dt=new Date(d); const opts={weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'};return dt.toLocaleString(undefined,opts);
+      }
+
+      const calendarEl=document.getElementById('calendar');
+      events.forEach((e,i)=>{
+        const div=document.createElement('div');div.className='cal-item';
+        div.innerHTML=`<div>${formatShort(e.date)}</div><div style=\"color:var(--muted)\">${e.label}</div>`;
+        calendarEl.appendChild(div);
+      });
+
+      // Next event
+      const next = events[0];
+      document.getElementById('nextDate').textContent = new Date(next.date).toLocaleString(undefined,{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+
+      /* Sound preference mixer */
+      const programs = {
+        gentle:[{name:'Evening Hush',desc:'Long, slow bowls that let breath lengthen.'},{name:'Soothe Sequence',desc:'Quiet textures and minimal introduction.'}],
+        medium:[{name:'Layered Drift',desc:'Interleaved tones with guided breath cues.'},{name:'Focused Return',desc:'Short prompts to anchor attention.'}],
+        intense:[{name:'Resonant Arc',desc:'Denser bowl clusters, deeper vibrations.'},{name:'Full-Body Tone',desc:'Long sine-like sustain and spacious silence.'}]
+      };
+      const list=document.getElementById('programList');
+      function show(level){
+        list.innerHTML=''; programs[level].forEach(p=>{
+          const li=document.createElement('li');li.innerHTML=`<strong>${p.name}</strong><div style=\"font-size:13px;color:var(--muted)\">${p.desc}</div>`;list.appendChild(li);
+        });
+      }
+      // init
+      show('medium');
+      document.querySelectorAll('.mix-btn').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          document.querySelectorAll('.mix-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');show(btn.getAttribute('data-level'));
+        });
+      });
+
+      /* Proof gallery rotation + badges */
+      const testimonials = [
+        {text:'The room guided me back to steady breath — simple and exact.','author':'L. — {{CITY}}','badges':['Wellness Collective','Local Review: Meadow Press']},
+        {text:'Clear pacing. I left with a softer jaw and straighter shoulders.','author':'M. — Nearby','badges':['Community Vet','Therapist Recommended']},
+        {text:'A precise frame for listening — no frills, just steady tone.','author':'R. — Visitor','badges':['Mindful Guide Mention','Press: Quiet Lines']}
+      ];
+      let tIndex=0;const testText=document.getElementById('testText'), testAuthor=document.getElementById('testAuthor'), badgeRow=document.getElementById('badgeRow');
+      function showTest(i){
+        const t=testimonials[i];testText.textContent=t.text;testAuthor.textContent=t.author;badgeRow.innerHTML='';t.badges.forEach(b=>{
+          const el=document.createElement('div');el.className='badge';el.innerHTML=`${b}<div class=\"tip\">${b} — credentialized mention</div>`;badgeRow.appendChild(el);
+        });
+      }
+      showTest(0);
+      setInterval(()=>{tIndex=(tIndex+1)%testimonials.length;showTest(tIndex);},4800);
+
+    })();
+  </script>
+</body>
+</html>

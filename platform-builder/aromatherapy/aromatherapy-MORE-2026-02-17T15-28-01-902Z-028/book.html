@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book a Session — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reserve time for a one-on-one aromatherapy design session or ask about small-group events.">
+  <style>
+    :root{--bg:#fff;--muted:#6b615b;--accent:#7aa27a;--ink:#241f1d}
+    body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;margin:0;background:linear-gradient(180deg,#fff 0%,#fbfbfb 100%);color:var(--ink)}
+    header{padding:12px 18px;position:sticky;top:0;background:rgba(255,255,255,0.8);backdrop-filter:blur(5px);border-bottom:1px solid rgba(36,31,29,0.04)}
+    .nav{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none}
+    main{max-width:900px;margin:28px auto;padding:20px}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
+    .card{background:#fff;padding:18px;border-radius:12px;border:1px solid rgba(36,31,29,0.04)}
+    label{display:block;font-weight:700;margin-top:8px}
+    input,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(36,31,29,0.06);margin-top:6px}
+    .muted{color:var(--muted);font-size:13px}
+    .primary{background:var(--accent);color:white;border:none;padding:10px 12px;border-radius:10px;margin-top:12px;font-weight:800}
+    .note{margin-top:10px;font-size:13px;color:var(--muted)}
+    .reveal-on-scroll{opacity:0;transform:translateY(18px);transition:opacity 520ms ease,transform 520ms cubic-bezier(.2,.9,.2,1)}
+    .reveal-on-scroll.revealed{opacity:1;transform:translateY(0)}
+    @media (prefers-reduced-motion:reduce){.reveal-on-scroll{transition:none;opacity:1;transform:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#9ad09a);display:flex;align-items:center;justify-content:center;color:white;font-weight:800">A</div>
+        <div>
+          <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+          <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="services.html">Offerings</a>
+        <a href="pricing.html">Tiers</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="reveal-on-scroll">
+      <h1>Reserve time</h1>
+      <p class="muted">Choose a session type and provide a few details so we can prepare a safe and practical plan. You'll receive a confirmation email and a short intake form after booking.</p>
+    </section>
+
+    <section class="grid" style="margin-top:18px">
+      <div class="card reveal-on-scroll">
+        <form id="booking-form">
+          <label for="name">Full name</label>
+          <input id="name" name="name" required>
+
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required>
+
+          <label for="phone">Phone</label>
+          <input id="phone" name="phone" required>
+
+          <label for="service">Select session</label>
+          <select id="service" name="service">
+            <option>Studio Design — 60 min</option>
+            <option>Micro Consult — 25 min</option>
+            <option>At-home Review (video) — 40 min</option>
+          </select>
+
+          <label for="notes">Brief notes (allergies, pregnancy, pets)</label>
+          <textarea id="notes" name="notes" placeholder="If you have pets, are pregnant, or have sensitive skin, please note it here."></textarea>
+
+          <div style="display:flex;gap:8px;align-items:center;margin-top:10px">
+            <input type="checkbox" id="agree" required>
+            <label for="agree" class="muted">I understand this service is supportive and not medical treatment.</label>
+          </div>
+
+          <button class="primary" id="submit">Book {{PRIMARY_CTA_LABEL}}</button>
+
+          <div class="note">We will send availability times to {{EMAIL}} after you submit. If you prefer to call, use {{PHONE}}.</div>
+        </form>
+      </div>
+
+      <aside class="card reveal-on-scroll">
+        <h3>Planning notes</h3>
+        <p class="muted">Sessions include clear advice on dilution and patch testing. We'll also offer guidance if you have pets at home or are pregnant. Please disclose relevant health information so we can adapt safely.</p>
+
+        <h4 style="margin-top:12px">What happens next</h4>
+        <ol class="muted">
+          <li>You submit this form and choose a preferred time window (in follow-up email).</li>
+          <li>We confirm a slot and send a short intake form.</li>
+          <li>Session outcomes include a practice card and sample blends when applicable.</li>
+        </ol>
+
+        <div style="margin-top:12px">
+          <a href="contact.html" class="primary" style="display:inline-block;text-decoration:none;text-align:center">Ask a question</a>
+        </div>
+      </aside>
+    </section>
+
+    <section style="margin-top:18px" class="reveal-on-scroll">
+      <div class="card">
+        <h4>Quick FAQs</h4>
+        <p class="muted"><strong>Patch test:</strong> Always test a new topical product on a small area; stop if irritation occurs.</p>
+        <p class="muted"><strong>Pregnancy & pets:</strong> Some components are best avoided in pregnancy or around animals. We'll provide substitutions and use alternatives when needed.</p>
+        <p class="muted"><strong>Refunds:</strong> For cancelled sessions please see our booking policy; contact us at {{EMAIL}}.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer style="padding:18px;text-align:center;color:var(--muted)">© <span id="yr"></span> {{BUSINESS_NAME}} · {{CITY}}, {{STATE}} · {{PHONE}}</footer>
+
+  <script>
+    document.getElementById('yr').textContent = new Date().getFullYear();
+
+    // reveal
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if(prefersReduced){ document.querySelectorAll('.reveal-on-scroll').forEach(el=>el.classList.add('revealed')); return; }
+      const obs = new IntersectionObserver((entries)=>{ entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('revealed'); obs.unobserve(e.target); } }); },{threshold:0.12});
+      document.querySelectorAll('.reveal-on-scroll').forEach(el=>obs.observe(el));
+    })();
+
+    // booking form: local simulation
+    document.getElementById('booking-form').addEventListener('submit', function(e){
+      e.preventDefault();
+      const data = {
+        name: this.name.value.trim(),
+        email: this.email.value.trim(),
+        phone: this.phone.value.trim(),
+        service: this.service.value,
+        notes: this.notes.value.trim()
+      };
+      // perform simple validation
+      if(!data.name || !data.email){ alert('Please add name and email.'); return; }
+      // Save a draft to localStorage and show a confirmation screen
+      localStorage.setItem('bookingDraft', JSON.stringify(data));
+      this.innerHTML = '<h3 style="margin-top:0">Thanks — request received</h3><p class="muted">We will contact you at ' + data.email + ' with available times and next steps. If you have an urgent question, call ' + '{{PHONE}}' + '.</p><p class="muted">If you prefer, email us at ' + '{{EMAIL}}' + '.</p>';
+    });
+  </script>
+</body>
+</html>

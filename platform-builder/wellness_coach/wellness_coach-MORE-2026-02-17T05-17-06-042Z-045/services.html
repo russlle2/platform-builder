@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fffdfb;--card:#ffffff;--accent:#1f7a63;--muted:#6a736e;--glass:rgba(255,255,255,0.6);font-family:Inter,system-ui,Segoe UI,Helvetica,Arial,sans-serif}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#f3fbf8);color:#15322b}
+    .container{max-width:1060px;margin:28px auto;padding:22px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    .nav{display:flex;gap:12px}
+    .nav a{color:var(--muted);text-decoration:none;padding:8px;border-radius:8px}
+    .nav a:hover{background:rgba(31,122,99,0.06);color:var(--accent)}
+    .cta{background:var(--accent);color:#fff;padding:8px 12px;border-radius:8px;text-decoration:none}
+
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:18px;margin-top:18px}
+    .panel{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 26px rgba(31,50,42,0.06)}
+
+    .services-list{display:flex;flex-direction:column;gap:12px}
+    .svc{display:flex;gap:12px;align-items:flex-start;border-left:4px solid rgba(31,122,99,0.08);padding-left:12px}
+    .svc h4{margin:0}
+    .muted{color:var(--muted)}
+
+    /* Proof Gallery: rotating testimonials & badges with tooltips */
+    .proof-view{display:flex;flex-direction:column;gap:12px}
+    .carousel{height:120px;overflow:hidden;border-radius:10px;background:linear-gradient(180deg,#fff,#f7fffb);padding:12px}
+    .t-item{opacity:0;transform:translateY(8px);transition:all .32s}
+    .t-item.active{opacity:1;transform:translateY(0)}
+    .cred{display:flex;gap:8px;flex-wrap:wrap}
+    .cred .logo{background:#fff;border-radius:8px;padding:8px;border:1px solid #e6f2ec;position:relative}
+    .cred .logo .tip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#0c1b17;color:#fff;padding:6px 9px;border-radius:8px;font-size:12px;opacity:0;transition:all .15s;pointer-events:none}
+    .cred .logo:hover .tip{opacity:1;transform:translateX(-50%) translateY(0)}
+
+    .tiers{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+    .tier{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#fbfffd)}
+    .price{font-weight:800;color:var(--accent)}
+
+    footer{margin-top:24px;text-align:center;color:var(--muted)}
+
+    @media (max-width:960px){.grid{grid-template-columns:1fr}.tier{flex-direction:column;align-items:flex-start}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div style="display:flex;gap:12px;align-items:center">
+        <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#219a7b,#17684f);color:#fff;display:grid;place-items:center;font-weight:700">W</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <div class="nav">
+        <a href="index.html">Start</a>
+        <a href="services.html">Offerings</a>
+        <a href="programs.html">Pathways</a>
+        <a href="about.html">About</a>
+        <a href="pricing.html">Pricing</a>
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </header>
+
+    <main class="grid">
+      <div>
+        <div class="panel">
+          <h2>Offerings — clear scaffolds for everyday change</h2>
+          <p class="muted">Each offering is built on outcomes + micro-habits you can measure. No prescriptive cures—just frameworks you adapt into your week.</p>
+
+          <div class="services-list" style="margin-top:12px">
+            <div class="svc">
+              <div style="width:48px;height:48px;border-radius:8px;background:#e9faf3;display:grid;place-items:center;color:var(--accent);font-weight:700">1</div>
+              <div>
+                <h4>Focused Weeks</h4>
+                <div class="muted">A 4-week guided series to build a single daily anchor (sleep, focus, movement).</div>
+              </div>
+            </div>
+
+            <div class="svc">
+              <div style="width:48px;height:48px;border-radius:8px;background:#fff7ec;display:grid;place-items:center;color:#d88e45;font-weight:700">2</div>
+              <div>
+                <h4>Accountable Pairs</h4>
+                <div class="muted">A lightweight pairing system: weekly check-ins, shared prompts, and small accountability nudges.</div>
+              </div>
+            </div>
+
+            <div class="svc">
+              <div style="width:48px;height:48px;border-radius:8px;background:#eef8ff;display:grid;place-items:center;color:#1b6aa3;font-weight:700">3</div>
+              <div>
+                <h4>Workshop Series</h4>
+                <div class="muted">Practical sessions that teach how to fold micro-habits into your schedule and keep them flexible.</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:14px;display:flex;gap:10px">
+            <a class="cta" href="book.html">Reserve a Spot</a>
+            <a href="contact.html" style="padding:8px;border-radius:8px;text-decoration:none;color:var(--accent);border:1px solid rgba(31,122,99,0.08)">Ask about a bespoke plan</a>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:12px">
+          <h3>How we frame pricing</h3>
+          <p class="muted">Transparent tiers that match the time and accountability you need. We suggest selecting a tier based on how much guided touch you want for habit adoption.</p>
+          <div class="tiers">
+            <div class="tier"><div><strong>Starter Track</strong><div class="muted" style="font-size:13px">Self-paced, weekly check-ins</div></div><div class="price">$59 / wk</div></div>
+            <div class="tier"><div><strong>Guided Track</strong><div class="muted" style="font-size:13px">Facilitated cohorts + weekly live Q&amp;A</div></div><div class="price">$125 / wk</div></div>
+            <div class="tier"><div><strong>Bridge Track</strong><div class="muted" style="font-size:13px">Pairing + monthly 1:1</div></div><div class="price">$220 / wk</div></div>
+          </div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="panel proof-view">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div style="font-weight:700">Proof & Credentials</div>
+            <div style="font-size:13px;color:var(--muted)">Rotating highlights</div>
+          </div>
+
+          <div class="carousel" id="carousel">
+            <div class="t-item active"><strong>"Clear steps every day — I finally tracked a habit for longer than two weeks."</strong><div class="muted" style="margin-top:8px">— S. Morgan</div></div>
+            <div class="t-item"><strong>"The badges and mini-metrics made follow-through feel simple."</strong><div class="muted" style="margin-top:8px">— L. Gomez</div></div>
+            <div class="t-item"><strong>"Helpful prompts and friendly check-ins. Not prescriptive—practical."</strong><div class="muted" style="margin-top:8px">— T. Kline</div></div>
+          </div>
+
+          <div class="cred" style="margin-top:10px">
+            <div class="logo">Local Paper<div class="tip">Guest column about habit design and community health</div></div>
+            <div class="logo">Studio Grove<div class="tip">Partnered for workshop facilitation</div></div>
+            <div class="logo">Client Choice<div class="tip">Repeat-cohort indicator among participants</div></div>
+            <div class="logo">Community Trust<div class="tip">Local endorsements from group leads</div></div>
+          </div>
+
+          <div style="margin-top:12px;display:flex;gap:8px">
+            <a href="programs.html" style="padding:8px;border-radius:8px;background:rgba(31,122,99,0.08);color:var(--accent);text-decoration:none">Explore Pathways</a>
+            <a href="contact.html" style="padding:8px;border-radius:8px;border:1px solid rgba(31,122,99,0.08);text-decoration:none;color:var(--muted)">Ask about credentials</a>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:12px">
+          <div style="font-weight:700">Quick connect</div>
+          <div class="muted" style="font-size:13px;margin-top:6px">Prefer a short call? Send a note and we'll propose two time options.</div>
+          <div style="margin-top:10px">
+            <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      <div style="text-align:center;color:var(--muted);margin-top:18px">Contact: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a> • {{CITY}}, {{STATE}}</div>
+    </footer>
+  </div>
+
+  <script>
+    // Carousel rotation for Proof Gallery
+    (function(){
+      const items = Array.from(document.querySelectorAll('.t-item'));
+      let i=0;
+      function show(n){ items.forEach((it,idx)=>{ it.classList.toggle('active', idx===n); }); }
+      setInterval(()=>{ i=(i+1)%items.length; show(i); },3800);
+    })();
+  </script>
+</body>
+</html>

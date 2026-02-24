@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Support Info — FAQs</title>
+  <style>
+    :root{--bg:#fbfcfe;--card:#fff;--muted:#58606a;--accent:#2563eb}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#0b1722;background:var(--bg)}
+    .wrap{max-width:980px;margin:28px auto;padding:20px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    header a{color:var(--accent);text-decoration:none;font-weight:600}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
+    .panel{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(9,20,32,0.05)}
+    h1{margin:0 0 6px 0}
+    .question{margin:0 0 10px 0}
+    .answer{color:var(--muted);margin:8px 0 14px 0}
+    .badge-list{display:flex;gap:10px;flex-wrap:wrap}
+    .badge{background:#fff;border-radius:8px;padding:8px 10px;border:1px solid rgba(9,20,32,0.06);font-size:13px;position:relative}
+    .tooltip{position:absolute;left:50%;transform:translateX(-50%);bottom:36px;background:#fff;padding:8px;border-radius:6px;box-shadow:0 6px 18px rgba(9,20,32,0.08);font-size:12px;color:var(--muted);display:none;width:220px}
+    .badge:hover .tooltip{display:block}
+
+    /* proof gallery */
+    .proof{display:flex;flex-direction:column;gap:10px}
+    .quote{padding:12px;border-radius:8px;background:linear-gradient(180deg,#fff,#fbfdff);border:1px solid rgba(9,20,32,0.04)}
+    .meta{font-size:13px;color:var(--muted)}
+    .controls{display:flex;gap:8px}
+    .dot{width:10px;height:10px;border-radius:10px;background:#e2e8f0;border:0}
+    .dot.active{background:var(--accent)}
+
+    .small{font-size:13px;color:var(--muted)}
+
+    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <header>
+      <div>
+        <a href='index.html'>Return</a>
+      </div>
+      <div>
+        <a href='book.html'>Book a time</a>
+      </div>
+    </header>
+
+    <main style='margin-top:18px'>
+      <h1>Common questions</h1>
+      <p class='small'>Concise answers to practical concerns. If something isn't covered here, reach out directly.</p>
+
+      <div class='grid' style='margin-top:12px'>
+        <div>
+          <div class='panel' id='faqs'>
+            <div>
+              <h3 class='question'>How do I start?</h3>
+              <div class='answer'>You can reserve a first session via the booking page or send a quick message to confirm availability. After booking, you'll receive an intake form and a short welcome note.</div>
+            </div>
+
+            <div>
+              <h3 class='question'>Do you accept insurance?</h3>
+              <div class='answer'>I do not bill insurance directly for memberships. If you wish to seek reimbursement, I can provide a superbill upon request; this may require a diagnostic code and brief documentation of sessions.</div>
+            </div>
+
+            <div>
+              <h3 class='question'>What if I need to cancel?</h3>
+              <div class='answer'>Please provide at least 48 hours' notice when possible. Late cancellations and missed sessions may be subject to a fee; we'll review these terms in intake so expectations are clear.</div>
+            </div>
+
+            <div>
+              <h3 class='question'>Are sessions virtual?</h3>
+              <div class='answer'>Most work is offered by secure video; occasional in-person options are available when noted. We will align on a format that fits your needs.</div>
+            </div>
+
+            <div>
+              <h3 class='question'>What if I'm in crisis?</h3>
+              <div class='answer'>This practice is not an emergency service. If you are in immediate danger, please call local emergency services or a crisis line. If unsure, contact your nearest resources or call the national crisis line.</div>
+            </div>
+
+            <div>
+              <h3 class='question'>Can I change membership frequency?</h3>
+              <div class='answer'>Yes. Memberships are intended to be flexible. We will review timing, frequency, and payment adjustments during our sessions.</div>
+            </div>
+
+          </div>
+
+          <div style='margin-top:12px' class='panel'>
+            <h4 style='margin-top:0'>Clinical boundaries</h4>
+            <p class='small'>Care is provided within professional scope; I maintain confidentiality except where disclosure is required by law. I document sessions in line with professional standards.</p>
+          </div>
+        </div>
+
+        <aside>
+          <div class='panel'>
+            <h4 style='margin-top:0'>What others say</h4>
+            <div class='proof' id='proofGallery' aria-live='polite'>
+              <div class='quote' id='quoteText'>Loading testimonials...</div>
+              <div class='meta' id='quoteMeta'></div>
+              <div style='display:flex;justify-content:space-between;align-items:center;margin-top:8px'>
+                <div class='controls' id='dots'></div>
+                <div class='small'>Verified by</div>
+              </div>
+
+              <div style='margin-top:10px'>
+                <div class='badge-list' id='badges'>
+                  <!-- badges inserted by JS -->
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div style='margin-top:12px' class='panel'>
+            <h4 style='margin-top:0'>Still unsure?</h4>
+            <p class='small'>Send a brief note about what you're hoping to address; I'll reply with availability and a recommendation for the first step.</p>
+            <div style='margin-top:8px'><a class='badge' href='contact.html'>Message me</a></div>
+          </div>
+        </aside>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Proof gallery: rotates testimonials and shows badges with tooltips
+    (function(){
+      const testimonials = [
+        {text: 'Regular sessions helped me organize decisions that felt overwhelming. Practical and steady.', meta: '— Adult client, 2024'},
+        {text: 'A short block clarified a path forward and gave tools I still use.', meta: '— Early-career professional'},
+        {text: 'Clear boundaries and thoughtful listening. I always felt respected.', meta: '— Parent, remote client'}
+      ];
+
+      const badges = [
+        {label:'Licensed Clinician',note:'State licensure maintained; clinical practice in psychotherapy.'},
+        {label:'Secure Telehealth',note:'Sessions use a secure, HIPAA-aligned video platform.'},
+        {label:'Continuing Ed',note:'Ongoing training in evidence-informed practice.'}
+      ];
+
+      const quoteText = document.getElementById('quoteText');
+      const quoteMeta = document.getElementById('quoteMeta');
+      const dots = document.getElementById('dots');
+      const badgesNode = document.getElementById('badges');
+
+      testimonials.forEach((t,i)=>{
+        const btn = document.createElement('button');
+        btn.className = 'dot' + (i===0?' active':'');
+        btn.setAttribute('aria-label','Show testimonial '+(i+1));
+        btn.addEventListener('click', ()=> show(i));
+        dots.appendChild(btn);
+      });
+
+      badges.forEach(b=>{
+        const node = document.createElement('div');
+        node.className='badge';
+        node.innerHTML = '<div style="font-weight:700">'+b.label+'</div><div class="tooltip">'+b.note+'</div>';
+        badgesNode.appendChild(node);
+      });
+
+      let idx=0;
+      function show(i){
+        idx = i;
+        quoteText.textContent = '"' + testimonials[i].text + '"';
+        quoteMeta.textContent = testimonials[i].meta;
+        Array.from(dots.children).forEach((d,di)=> d.classList.toggle('active', di===i));
+      }
+
+      show(0);
+      setInterval(()=> show((idx+1)%testimonials.length), 6000);
+    })();
+  </script>
+</body>
+</html>

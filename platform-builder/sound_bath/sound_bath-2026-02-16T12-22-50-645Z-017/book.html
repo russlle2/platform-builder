@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book • {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff6f0;--accent:#b26248;--dark:#3b2b25;--muted:#6a4f47}
+    body{margin:0;font-family:Georgia, 'Times New Roman', serif;background:linear-gradient(180deg,var(--bg),#f4e8df);color:var(--dark)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:20px 28px}
+    .brand{font-weight:800;color:var(--accent)}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none}
+    main{max-width:980px;margin:20px auto;padding:22px}
+    .hero{padding:20px 18px;background:linear-gradient(90deg,rgba(178,98,72,0.06),rgba(178,98,72,0.02));border-radius:12px}
+    h1{margin:0}
+    .grid{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-top:18px}
+    .form{background:#fff;padding:18px;border-radius:12px;box-shadow:0 8px 26px rgba(148,98,82,0.06)}
+    label{display:block;margin-top:12px;font-weight:700}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e7d7cf;margin-top:6px}
+    .aside{background:linear-gradient(180deg,#fff7f3,#fff1ea);padding:16px;border-radius:12px}
+    .note{font-size:13px;color:var(--muted)}
+    .btn{display:inline-block;padding:10px 14px;background:var(--accent);color:white;border-radius:10px;text-decoration:none;margin-top:12px}
+    .opt{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+    .option{padding:8px 12px;border-radius:8px;background:#fff;border:1px solid #efe0d6}
+    footer{padding:24px;text-align:center;color:#8a6d61}
+    @media(max-width:880px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <!-- Booking page unique decorative SVG (distinct pattern) -->
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <pattern id="pattern-book" width="48" height="48" patternUnits="userSpaceOnUse">
+        <rect width="48" height="48" fill="#fff6f0"/>
+        <path d="M0 0 L48 48" stroke="#f0d0c0" stroke-width="1" opacity="0.5"/>
+        <circle cx="24" cy="12" r="2" fill="#f2dfd6"/>
+      </pattern>
+    </defs>
+  </svg>
+
+  <header>
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Return</a>
+      <a href="events.html">Calendar</a>
+      <a href="faq.html">Help</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="hero">
+      <h1>Reserve your place</h1>
+      <p class="note">Choose a community seat, a private 1:1 offering, or begin a membership. Membership reduces per-visit fees and offers priority access.</p>
+    </div>
+
+    <div class="grid">
+      <div class="form">
+        <h2 style="margin-top:0">Booking details</h2>
+        <label>Which experience would you like?</label>
+        <div class="opt">
+          <label class="option"><input type="radio" name="type" checked> Community session (drop-in)</label>
+          <label class="option"><input type="radio" name="type"> Membership (monthly)</label>
+          <label class="option"><input type="radio" name="type"> Private 1:1</label>
+        </div>
+
+        <label for="event">Select date</label>
+        <select id="event" name="event">
+          <option>{{NEXT_EVENT_DATE}}</option>
+          <option>2026-03-05 • 7:00 PM</option>
+          <option>2026-03-19 • 10:30 AM</option>
+        </select>
+
+        <label for="name">Your full name</label>
+        <input id="name" name="name" placeholder="Your name">
+
+        <label for="email">Email</label>
+        <input id="email" name="email" placeholder="you@example.com">
+
+        <label for="notes">Any accessibility needs or notes</label>
+        <textarea id="notes" rows="3" placeholder="E.g., I need a low mat, I'm pregnant, I use a walker..."></textarea>
+
+        <div style="margin-top:12px">
+          <strong>Instrument focus</strong>
+          <div class="note">Tell us if you prefer a lighter chime-forward texture or a deep resonant field.</div>
+          <div class="opt" style="margin-top:8px">
+            <label class="option"><input type="radio" name="tone" checked> Crystal singing bowls</label>
+            <label class="option"><input type="radio" name="tone"> Tuning forks & chimes</label>
+            <label class="option"><input type="radio" name="tone"> Gong & low drone</label>
+          </div>
+        </div>
+
+        <div style="margin-top:14px;font-size:13px;color:var(--muted)">
+          <strong>What to bring:</strong> comfortable layers, a mat/blanket, pillow, and an open intention. We provide extras on-site.
+        </div>
+
+        <div style="margin-top:14px;display:flex;gap:10px;align-items:center">
+          <a class="btn" href="javascript:void(0)">{{PRIMARY_CTA_LABEL}}</a>
+          <div style="font-size:13px;color:#7b6057">Or call <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+        </div>
+
+        <div style="margin-top:12px;font-size:12px;color:#7b6057">By booking you acknowledge our refund policy. Please see the FAQ for contraindications and safety notes.</div>
+      </div>
+
+      <aside class="aside">
+        <h3 style="margin-top:0">Private & small-group offerings</h3>
+        <p class="note">We offer tailored sessions for individuals, couples, and workplaces. Private sessions let us adapt tones, volume, and format for healing needs or corporate relaxation events.</p>
+
+        <h4 style="margin-top:14px">1:1 sessions</h4>
+        <p class="note">Focused sound therapy using Himalayan bowls, tuning forks, and hand percussion. 60 or 90 minutes.</p>
+
+        <h4 style="margin-top:12px">Couples & shared</h4>
+        <p class="note">Shared sessions create a mutual field of presence; useful for partners or small households.</p>
+
+        <h4 style="margin-top:12px">Corporate & events</h4>
+        <p class="note">Short meditative sound rituals for retreats and team days — contact for custom proposals.</p>
+
+        <div style="margin-top:12px">
+          <strong>Pricing snapshot</strong>
+          <div class="note" style="margin-top:6px">Community seat: $25–40 • Membership: from $45/mo • 1:1: from $110</div>
+          <a href="pricing.html" class="btn" style="background:#8a5a44;margin-top:10px;display:inline-block">Full pricing</a>
+        </div>
+
+        <div style="margin-top:14px;font-size:13px">
+          <strong>Preparation & safety</strong>
+          <p class="note">If you are pregnant, have implants, or neurological sensitivities, please disclose in the booking notes. Contraindications are listed in the FAQ.</p>
+        </div>
+      </aside>
+    </div>
+
+    <section style="margin-top:18px;background:#fff;padding:16px;border-radius:12px">
+      <h3 style="margin-top:0">What to expect after booking</h3>
+      <p class="note">You will receive a confirmation email with arrival time, directions to {{VENUE_NAME}}, and parking notes. Bring the listed items and arrive 10–15 minutes early to settle in.</p>
+
+      <h4 style="margin-top:12px">Cancellation & refunds</h4>
+      <p class="note">Cancellations 24+ hours before the event are eligible for a refund. Membership downgrades take effect at the next billing cycle. Contact <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> for exceptions.</p>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>Questions? Call {{PHONE}} or <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+  </footer>
+</body>
+</html>

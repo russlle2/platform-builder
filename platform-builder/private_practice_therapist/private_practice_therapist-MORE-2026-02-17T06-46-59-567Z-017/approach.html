@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>How I Work — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7fbfb;--muted:#475569;--accent:#ff7a59}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial;background:var(--bg);color:#07203a}
+    header{padding:12px 20px;background:#fff;border-bottom:1px solid rgba(7,32,58,0.05);position:sticky;top:0;z-index:30}
+    .nav{max-width:1100px;margin:0 auto;display:flex;gap:12px;align-items:center}
+    .brand{font-weight:700;margin-right:auto}
+    nav a{padding:8px;border-radius:8px;text-decoration:none;color:#07203a}
+    .container{max-width:1100px;margin:34px auto;padding:0 20px}
+    .lead-card{display:flex;gap:16px;align-items:center;padding:18px;border-radius:12px;background:linear-gradient(180deg,#fff,rgba(255,255,255,0.95));box-shadow:0 8px 22px rgba(7,32,58,0.04)}
+    .framework{display:grid;grid-template-columns:1fr 300px;gap:18px;margin-top:18px}
+    .step{background:#fff;padding:14px;border-radius:10px}
+    .muted{color:var(--muted)}
+    .reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.9,.3,1)}
+    .reveal.visible{opacity:1;transform:none}
+    .cta{display:inline-block;background:var(--accent);color:#fff;padding:10px 12px;border-radius:9px;text-decoration:none}
+    @media (max-width:920px){.framework{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <nav aria-label="Primary">
+        <a href="index.html">Start</a>
+        <a href="about.html">My Story</a>
+        <a href="specialties.html">Areas I Help</a>
+        <a href="approach.html" aria-current="page">How I Work</a>
+        <a href="fees.html">Investment</a>
+        <a href="book.html">Book</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="reveal">
+      <div class="lead-card">
+        <div>
+          <h1 style="margin:0 0 6px">A practical framework</h1>
+          <p class="muted" style="margin:0">Therapy is a collaborative process. I focus on short, testable changes that fit into your life and on clarifying what matters most to you.</p>
+        </div>
+        <div>
+          <a class="cta" href="{{PRIMARY_CTA_URL}}">Start the conversation</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="framework">
+      <div>
+        <article class="step reveal">
+          <h3>1. Orientation</h3>
+          <p class="muted">First session is about listening and mapping the immediate concerns. We identify one or two practical aims to prioritize.</p>
+        </article>
+
+        <article class="step reveal" style="margin-top:12px">
+          <h3>2. Small experiments</h3>
+          <p class="muted">Between sessions we'll try short, measurable steps — a behavior to try, a thought experiment, or a communication strategy. We review what works and refine it.</p>
+        </article>
+
+        <article class="step reveal" style="margin-top:12px">
+          <h3>3. Building routine</h3>
+          <p class="muted">If helpful, we design small routines to sustain change: brief practices, check-ins, or planning anchors that fit your schedule.</p>
+        </article>
+
+        <article class="step reveal" style="margin-top:12px">
+          <h3>4. Transition and maintenance</h3>
+          <p class="muted">We plan how to keep gains alive and when to pause therapy or move to less frequent check-ins.</p>
+        </article>
+      </div>
+
+      <aside class="reveal" style="align-self:start">
+        <div style="background:#fff;padding:14px;border-radius:10px;box-shadow:0 8px 20px rgba(7,32,58,0.04)">
+          <h4 style="margin:0 0 8px">Session logistics</h4>
+          <p class="muted" style="margin:0 0 6px">Typical length: 45–55 minutes. Remote and limited in-person availability. Fees and scheduling are handled on the booking page.</p>
+          <a class="cta" href="book.html" style="margin-top:10px;display:inline-block">Find time</a>
+        </div>
+
+        <div style="margin-top:12px;background:#fff;padding:12px;border-radius:10px;box-shadow:0 6px 16px rgba(7,32,58,0.03)">
+          <h4 style="margin:0 0 6px">Confidentiality & scope</h4>
+          <p class="muted" style="margin:0">Conversations are confidential within legal limits. I cannot provide emergency care; if you are in immediate danger, contact local emergency services.</p>
+        </div>
+      </aside>
+    </section>
+
+    <section class="reveal" style="margin-top:18px">
+      <h2>How I describe progress</h2>
+      <p class="muted">Progress is tracked by what you feel able to do differently and by how consistently small changes fit into daily life. We also revisit goals and adjust the plan when needed.</p>
+    </section>
+
+    <section class="reveal" style="margin-top:18px">
+      <h2>Limits and referral</h2>
+      <p class="muted">If a problem is outside my scope (e.g., urgent safety, severe substance withdrawal, complex medical overlap), I will suggest appropriate referrals and support the transition.</p>
+    </section>
+
+  </main>
+
+  <footer style="max-width:1100px;margin:36px auto;padding:18px 20px;color:var(--muted)">
+    Contact: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • {{PHONE}} • Located in {{CITY}}, {{STATE}}
+  </footer>
+
+  <script>
+    // Small guided exercise available here too
+    (function(){
+      // Create a small floating button that opens the same exercises used elsewhere
+      const btn = document.createElement('button');
+      btn.textContent = 'Try: 3-min practice';
+      btn.style.position='fixed';btn.style.right='18px';btn.style.bottom='18px';btn.style.padding='10px 12px';btn.style.borderRadius='10px';btn.style.border='none';btn.style.background='linear-gradient(90deg, #ff7a59, #ff9a7a)';btn.style.color='#fff';btn.style.boxShadow='0 8px 20px rgba(255,122,89,0.12)';
+      btn.style.zIndex=60;document.body.appendChild(btn);
+
+      function openMini(){
+        // a tiny in-page modal
+        let modal = document.getElementById('mini-practice');
+        if(modal){ modal.style.display='block'; return; }
+        modal = document.createElement('div');
+        modal.id='mini-practice';
+        modal.style.position='fixed';modal.style.right='18px';modal.style.bottom='70px';modal.style.width='320px';modal.style.background='#fff';modal.style.borderRadius='12px';modal.style.padding='12px';modal.style.boxShadow='0 14px 40px rgba(7,32,58,0.12)';modal.style.zIndex=70;
+        modal.innerHTML = '<div style="font-weight:700;margin-bottom:6px">3-minute grounding</div><div style="color:#556;line-height:1.4;margin-bottom:8px">Take three slow breaths. On the exhale, notice one thing you can do in the next hour that would help you feel steadier.</div><button id="mini-close" style="padding:8px;border-radius:8px;border:0;background:#ff7a59;color:#fff">Done</button>';
+        document.body.appendChild(modal);
+        modal.querySelector('#mini-close').addEventListener('click', ()=>{ modal.style.display='none'; });
+      }
+
+      btn.addEventListener('click', openMini);
+
+      // Scroll reveal (duplicate support here) with reduced motion
+      const prefersReduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const elements = document.querySelectorAll('.reveal');
+      if(prefersReduce){ elements.forEach(e=>e.classList.add('visible')); }
+      else{ const obs = new IntersectionObserver((items)=>{ items.forEach(it=>{ if(it.isIntersecting) it.target.classList.add('visible'); }); },{threshold:0.12}); elements.forEach(e=>obs.observe(e)); }
+
+    })();
+  </script>
+</body>
+</html>

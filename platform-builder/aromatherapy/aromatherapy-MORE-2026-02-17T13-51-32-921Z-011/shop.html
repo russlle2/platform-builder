@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Boutique — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f6fbf8;--card:#fff;--ink:#1f2d24;--accent:#2f8d6b}
+    html,body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:linear-gradient(180deg,rgba(47,141,107,0.04),transparent);border-bottom:1px solid rgba(0,0,0,0.04)}
+    .logo{width:44px;height:44px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    nav a{margin:0 8px;text-decoration:none;color:var(--ink);font-weight:600}
+    nav a.active{color:var(--accent)}
+    main{padding:28px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+    .product{background:var(--card);padding:12px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.04)}
+    .prod-title{font-weight:700}
+    .price{color:var(--accent);font-weight:800}
+    .buy{background:var(--accent);color:#fff;border:none;padding:8px 10px;border-radius:8px}
+    .cart{position:fixed;right:20px;bottom:20px;background:var(--accent);color:#fff;padding:12px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.12)}
+    .faq{margin-top:18px;background:var(--card);padding:14px;border-radius:12px}
+    .note{font-size:14px;color:#465}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="logo">B</div>
+      <div style="font-weight:700">Boutique — {{BUSINESS_NAME}}</div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Mix Lab</a>
+      <a href="shop.html" class="active">Boutique</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Carefully curated items</h1>
+    <p style="color:#456">Carrier oils, roller bottles, printed labels, and small kits designed for safe home scent practices.</p>
+
+    <div class="grid" style="margin-top:16px">
+      <div class="product">
+        <div class="prod-title">Sweet Almond Carrier — 30 ml</div>
+        <div class="small">Neutral carrier, good for rollers and blends</div>
+        <div style="margin-top:10px" class="price">$9</div>
+        <div style="margin-top:10px"><button class="buy" data-sku="almond-30">Add to cart</button></div>
+      </div>
+
+      <div class="product">
+        <div class="prod-title">10 ml Amber Roller</div>
+        <div class="small">Portable roller for personal blends</div>
+        <div style="margin-top:10px" class="price">$4</div>
+        <div style="margin-top:10px"><button class="buy" data-sku="roller-10">Add to cart</button></div>
+      </div>
+
+      <div class="product">
+        <div class="prod-title">Beginner kit — 3 oils</div>
+        <div class="small">Small trio: Lavender, Sweet orange, Peppermint</div>
+        <div style="margin-top:10px" class="price">$27</div>
+        <div style="margin-top:10px"><button class="buy" data-sku="kit-3">Add to cart</button></div>
+      </div>
+
+      <div class="product">
+        <div class="prod-title">Printed blend labels — 24</div>
+        <div class="small">Water-resistant labels for your home blends</div>
+        <div style="margin-top:10px" class="price">$6</div>
+        <div style="margin-top:10px"><button class="buy" data-sku="labels-24">Add to cart</button></div>
+      </div>
+    </div>
+
+    <div class="faq">
+      <h3>Safety & use notes</h3>
+      <p class="note">All product guidance is safety-first. For topical use: dilute, do a patch test, and keep blends away from pets' faces. If pregnant or nursing, consult your care provider before use. This is not medical advice.</p>
+    </div>
+  </main>
+
+  <div id="cart" class="cart" aria-live="polite">Cart: <span id="count">0</span> items</div>
+
+  <script>
+    const cartCount = document.getElementById('count');
+    let count=0;
+    document.querySelectorAll('.buy').forEach(btn=>{
+      btn.addEventListener('click',()=>{count++;cartCount.textContent=count;btn.textContent='Added';btn.disabled=true});
+    });
+  </script>
+</body>
+</html>

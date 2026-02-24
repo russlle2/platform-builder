@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Tracks — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7fff7;--card:#ffffff;--muted:#5f6b60;--accent:#2e6a4f}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px}
+    .brand{display:flex;gap:10px;align-items:center}
+    .logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#7fbf9e);display:flex;align-items:center;justify-content:center;color:#fff}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none}
+    main{max-width:980px;margin:16px auto;padding:14px}
+    .lead{color:var(--muted)}
+    .list{display:grid;gap:12px;margin-top:14px}
+    .track{background:#fff;padding:14px;border-radius:12px;border:1px solid #eaf3ea}
+    .row{display:flex;justify-content:space-between;align-items:center}
+    .name{font-weight:700}
+    .meta{color:var(--muted);font-size:13px}
+    .actions{display:flex;gap:8px}
+    .btn{padding:8px 10px;border-radius:8px;border:0;background:var(--accent);color:#fff;text-decoration:none}
+    .muted{color:var(--muted)}
+    footer{margin-top:22px;text-align:center;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class='brand'>
+      <div class='logo'>W</div>
+      <div>
+        <div style='font-weight:700'>{{BUSINESS_NAME}}</div>
+        <div style='font-size:12px;color:var(--muted)'>Guided short-form tracks</div>
+      </div>
+    </div>
+    <nav>
+      <a href='index.html'>Home</a>
+      <a href='about.html'>About</a>
+      <a href='services.html'>Offerings</a>
+      <a href='programs.html'>Tracks</a>
+      <a href='pricing.html'>Plans</a>
+      <a href='contact.html'>Reach</a>
+      <a class='btn' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class='hero-card' style='background:transparent;padding:0;margin:0'>
+      <h1 style='margin:0 0 6px 0'>Short tracks for steady change</h1>
+      <p class='lead'>Each track is structured as a series of experiments: small daily actions, a mid-week check-in, and an end-of-track summary you can keep or iterate.
+      </p>
+    </section>
+
+    <section class='list' aria-labelledby='tracks'>
+      <article class='track' id='track-1'>
+        <div class='row'>
+          <div>
+            <div class='name'>Week of Clarity</div>
+            <div class='meta'>Five days of focused attention practices and a two-day integration window</div>
+          </div>
+          <div class='actions'>
+            <div style='text-align:right'>
+              <div style='font-weight:800'>$49</div>
+              <div class='muted' style='font-size:12px'>includes worksheets</div>
+            </div>
+            <button class='btn' data-track='clarity'>Start sample</button>
+          </div>
+        </div>
+      </article>
+
+      <article class='track' id='track-2'>
+        <div class='row'>
+          <div>
+            <div class='name'>Evening Reset</div>
+            <div class='meta'>A compact seven-day set of wind-down practices aimed at more predictable evenings</div>
+          </div>
+          <div class='actions'>
+            <div style='text-align:right'>
+              <div style='font-weight:800'>$39</div>
+              <div class='muted' style='font-size:12px'>printable checklist included</div>
+            </div>
+            <button class='btn' data-track='evening'>Preview</button>
+          </div>
+        </div>
+      </article>
+
+      <article class='track' id='track-3'>
+        <div class='row'>
+          <div>
+            <div class='name'>Momentum Booster</div>
+            <div class='meta'>Three-week experiment to identify and sustain one high-impact habit</div>
+          </div>
+          <div class='actions'>
+            <div style='text-align:right'>
+              <div style='font-weight:800'>$129</div>
+              <div class='muted' style='font-size:12px'>includes check-in prompts</div>
+            </div>
+            <button class='btn' data-track='momentum'>Begin</button>
+          </div>
+        </div>
+      </article>
+
+      <article class='track' id='track-4'>
+        <div class='row'>
+          <div>
+            <div class='name'>Sustained Habit Lab (membership)</div>
+            <div class='meta'>Ongoing, rolling experiments with monthly adjustments and community prompts</div>
+          </div>
+          <div class='actions'>
+            <div style='text-align:right'>
+              <div style='font-weight:800'>From $28/mo</div>
+              <div class='muted' style='font-size:12px'>cancel anytime</div>
+            </div>
+            <a class='btn' href='services.html'>Join</a>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section style='margin-top:16px;background:#fff;padding:12px;border-radius:10px;border:1px solid #eaf3ea'>
+      <strong>Why we structure tracks this way</strong>
+      <p class='muted' style='margin:8px 0 0 0'>Short, bounded experiments reduce friction and make it clearer whether a habit fits your life. You'll get outcomes framed as simple behaviors and the cues to keep them going.</p>
+    </section>
+
+    <footer>
+      <div style='margin-top:18px;color:var(--muted)'>Questions? Email <a href='mailto:{{EMAIL}}' style='color:var(--accent)'>{{EMAIL}}</a> or call {{PHONE}} • Serving {{CITY}}, {{STATE}}</div>
+    </footer>
+  </main>
+
+  <script>
+    // Lightweight interaction: open a small guided preview and optionally create a 7-day printable checklist for the selected track
+    (function(){
+      function simpleChecklist(name){
+        var w = window.open('','printWindow','width=600,height=720');
+        var html = '<html><head><title>'+name+' checklist</title><style>body{font-family:Arial;padding:20px}h1{font-size:18px}li{margin:10px 0}</style></head><body>';
+        html += '<h1>'+name+' — 7-day checklist</h1><ol>';
+        for(var i=1;i<=7;i++){ html += '<li>Day '+i+': Small practice — note any tweak</li>'; }
+        html += '</ol></body></html>';
+        w.document.write(html); w.document.close();
+      }
+
+      document.querySelectorAll('[data-track]').forEach(function(btn){
+        btn.addEventListener('click',function(){
+          var t = btn.getAttribute('data-track');
+          if(t==='evening'){
+            simpleChecklist('Evening Reset');
+          } else if(t==='clarity'){
+            simpleChecklist('Week of Clarity');
+          } else if(t==='momentum'){
+            simpleChecklist('Momentum Booster');
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

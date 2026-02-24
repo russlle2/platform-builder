@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>How I Work — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#08121a;--card:#0c2430;--glass:rgba(255,255,255,0.04);--accent:#9be7c4;--muted:#9bb0c8}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,var(--bg),#041722);color:#e8fbff}
+    .wrap{max-width:980px;margin:36px auto;padding:20px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;margin-left:14px}
+    h1{margin:0;font-size:26px}
+    .hero{margin-top:18px;padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid rgba(255,255,255,0.03)}
+    .split{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
+    .card{background:var(--card);padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
+    .muted{color:var(--muted)}
+    .mood-select{display:flex;gap:8px;margin-top:12px}
+    .mood-select button{padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,0.02);background:transparent;color:var(--muted);cursor:pointer}
+    .mood-select button.active{background:linear-gradient(90deg,var(--accent),#66c9f0);color:#042926}
+    .method-visual{height:160px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700}
+    .cta{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#ffd3a5);color:#05212a;text-decoration:none;font-weight:700}
+    .note{font-size:13px;color:#c9dbea;margin-top:12px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Therapeutic approach</h1>
+        <div class="muted">Grounded, relational, and oriented toward useful changes you can try between sessions.</div>
+      </div>
+      <nav>
+        <a href="index.html">Nest</a>
+        <a href="about.html">Who I Am</a>
+        <a href="specialties.html">Offerings</a>
+        <a href="approach.html">How I Work</a>
+      </nav>
+    </header>
+
+    <div class="hero">
+      <div class="muted">I combine relational understanding with behavioral and narrative techniques tailored to the person in front of me. Therapy is an experiment we run together — small, observable changes, reviewed and adjusted.</div>
+    </div>
+
+    <div class="split">
+      <main>
+        <div class="card">
+          <h3 style="margin:0 0 8px 0">A brief outline of sessions</h3>
+          <ol class="muted" style="margin:0 0 6px 18px">
+            <li>Check-in and mood/context.</li>
+            <li>Focused exploration of one target area.</li>
+            <li>Co-created plan: 1–2 simple, testable steps to try before we meet again.</li>
+            <li>Brief review and adaptation each session.</li>
+          </ol>
+          <p class="note">This structure is flexible; I tailor pacing and focus to what’s tolerable and useful for you.</p>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h3 style="margin:0 0 8px 0">Boundaries & confidentiality</h3>
+          <p class="muted">Communication and records are confidential except in situations required by law (e.g., imminent risk of harm). We will discuss limits and expectations during the initial intake so you know how information is handled.</p>
+          <p class="note">If you are in immediate danger or a medical/psychiatric emergency, please contact emergency services or a local crisis line.</p>
+        </div>
+      </main>
+
+      <aside>
+        <div class="card">
+          <strong>Mood-to-Method</strong>
+          <p class="muted" style="margin-top:8px">Pick the feeling that best matches you. The right-sized method and the booking prompt will adjust to match what you need now.</p>
+
+          <div class="mood-select" role="tablist">
+            <button data-mood="fragile" class="active">Fragile</button>
+            <button data-mood="ready">Ready</button>
+            <button data-mood="curious">Curious</button>
+          </div>
+
+          <div id="visual" class="method-visual" style="background:linear-gradient(90deg,#082a34, #05364a);margin-top:12px">Fragile → Gentle Pause</div>
+          <div id="methodText" style="margin-top:10px">
+            <div class="muted">Method</div>
+            <div id="methodName" style="font-weight:700;margin-top:6px">Gentle Pause</div>
+            <div id="methodDesc" class="muted" style="margin-top:8px">Shorter sessions and slower pacing; emphasis on safety, containment, and tiny experiments.</div>
+          </div>
+
+          <a id="approachCta" class="cta" href="{{PRIMARY_CTA_URL}}">Schedule a Gentle Pause</a>
+
+          <div class="note">Therapy is collaborative. I will not promise outcomes, but I will work respectfully with you to explore options that feel manageable.</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    // Mood-to-Method with content morph and CTA text update
+    (function(){
+      const map = {
+        fragile: {
+          title:'Gentle Pause',
+          desc:'Shorter sessions, slower pacing, and emphasis on safety and containment. We prioritize tolerable steps and strong structure.',
+          visual:'linear-gradient(90deg,#082a34,#05364a)',
+          cta:'Schedule a Gentle Pause'
+        },
+        ready: {
+          title:'Steady Work',
+          desc:'Regular rhythm with slightly longer sessions focused on building habits and skill practice between appointments.',
+          visual:'linear-gradient(90deg,#134e4a,#0b7a6b)',
+          cta:'Start Steady Work'
+        },
+        curious: {
+          title:'Exploratory Hour',
+          desc:'Open-ended sessions for mapping, reflection, and testing ideas without heavy commitment.',
+          visual:'linear-gradient(90deg,#2a3a6b,#6b4a9f)',
+          cta:'Book an Exploratory Hour'
+        }
+      };
+
+      const buttons = document.querySelectorAll('.mood-select button');
+      const visual = document.getElementById('visual');
+      const methodName = document.getElementById('methodName');
+      const methodDesc = document.getElementById('methodDesc');
+      const cta = document.getElementById('approachCta');
+
+      function setMood(key, btn){
+        buttons.forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        const data = map[key];
+        // subtle morphing transition
+        visual.style.transition = 'background 420ms ease-in-out, transform 420ms';
+        visual.style.transform = 'scale(0.98)';
+        setTimeout(()=>{ visual.style.background = data.visual; visual.style.transform = 'scale(1)'; }, 120);
+
+        // fade text
+        methodName.style.opacity = 0; methodDesc.style.opacity = 0; cta.style.opacity = 0;
+        setTimeout(()=>{
+          methodName.textContent = data.title;
+          methodDesc.textContent = data.desc;
+          cta.textContent = data.cta;
+          methodName.style.opacity = 1; methodDesc.style.opacity = 1; cta.style.opacity = 1;
+        }, 200);
+      }
+
+      buttons.forEach(b=>b.addEventListener('click',function(){setMood(this.getAttribute('data-mood'), this);}));
+      // init
+      setMood('fragile', document.querySelector('.mood-select button[data-mood="fragile"]'));
+    })();
+  </script>
+</body>
+</html>

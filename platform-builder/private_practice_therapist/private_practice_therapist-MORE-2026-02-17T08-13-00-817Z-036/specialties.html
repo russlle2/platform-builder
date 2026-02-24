@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fcfbf8;--ink:#0f1720;--muted:#5b6974;--accent:#7a6fb0;--card:#fff}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial;background:var(--bg);color:var(--ink)}
+    header{position:sticky;top:0;background:rgba(255,255,255,0.85);backdrop-filter:blur(6px);border-bottom:1px solid rgba(15,23,32,0.04)}
+    .navwrap{max-width:1100px;margin:0 auto;padding:12px;display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:16px;color:var(--muted);text-decoration:none}
+    main{max-width:1100px;margin:28px auto;padding:0 20px}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:20px}
+    .panel{background:var(--card);padding:20px;border-radius:12px;box-shadow:0 12px 30px rgba(14,20,25,0.05)}
+    h1{margin:0 0 8px}
+    .service{border-radius:10px;padding:14px;border:1px solid rgba(15,23,32,0.04);margin-bottom:12px}
+    .muted{color:var(--muted)}
+
+    .pricing{display:flex;flex-direction:column;gap:10px}
+    .price-card{padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#fbfbff);border:1px solid rgba(15,23,32,0.04)}
+    .cta{display:inline-block;padding:8px 12px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none;font-weight:600}
+
+    .reveal{opacity:0;transform:translateY(12px);transition:opacity 500ms ease,transform 500ms cubic-bezier(.2,.9,.3,1)}
+    .reveal.visible{opacity:1;transform:none}
+
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="navwrap">
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="about.html">Meet</a>
+        <a href="specialties.html" class="primary">Offerings</a>
+        <a href="approach.html">Method</a>
+        <a href="book.html">Reserve</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel reveal" aria-labelledby="offers-heading">
+      <h1 id="offers-heading">Therapeutic offerings — named for clarity</h1>
+      <p class="muted">Short, steady options shaped to the work you want to do. I describe these to make choices simple; we’ll adapt each plan to you.</p>
+    </section>
+
+    <div class="grid" style="margin-top:18px">
+      <div>
+        <section class="panel reveal">
+          <h2 style="margin:0 0 6px">Wayfinding Sessions</h2>
+          <p class="muted">Focused short-term plan for a specific decision, transition, or problem that needs practical sorting. Often 6–8 sessions with measurable tasks between meetings.</p>
+
+          <div style="margin-top:12px">
+            <div class="service">
+              <strong>Who it suits</strong>
+              <p class="muted" style="margin:6px 0">People wanting faster clarity — work, relationships, role changes.</p>
+            </div>
+            <div class="service">
+              <strong>How we work</strong>
+              <p class="muted" style="margin:6px 0">We map the issue, generate options, and practice small behavioral experiments that fit your life.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel reveal" style="margin-top:16px">
+          <h2 style="margin:0 0 6px">Root & Routine</h2>
+          <p class="muted">A weekly rhythm to focus on longer-term patterns: mood, relationships, or recurring struggles. Designed to hold steady work over months.</p>
+          <div style="margin-top:12px">
+            <div class="service"><strong>Structure</strong><p class="muted" style="margin:6px 0">Ongoing weekly sessions with periodic check-ins on goals and skill practice.</p></div>
+            <div class="service"><strong>Measure</strong><p class="muted" style="margin:6px 0">Progress is judged by functional changes and your experience, not promises of cure.</p></div>
+          </div>
+        </section>
+
+        <section class="panel reveal" style="margin-top:16px">
+          <h2 style="margin:0 0 6px">Beacon Session (Single consult)</h2>
+          <p class="muted">A single 50-minute meeting useful for quick perspective, a planning session, or deciding next steps. Not a crisis appointment.</p>
+        </section>
+      </div>
+
+      <aside class="panel reveal">
+        <h3 style="margin:0 0 6px">Investment & access</h3>
+        <p class="muted">Framing sessions as intentional investments: clear, transparent, and flexible.</p>
+
+        <div class="pricing" style="margin-top:12px">
+          <div class="price-card">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-weight:700">Beacon Session</div>
+                <div class="muted" style="font-size:13px">One 50-minute consult</div>
+              </div>
+              <div style="font-weight:700">${{BEACON_PRICE}}</div>
+            </div>
+          </div>
+
+          <div class="price-card">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-weight:700">Wayfinding</div>
+                <div class="muted" style="font-size:13px">6–8 session plan</div>
+              </div>
+              <div style="font-weight:700">${{WAYFINDING_PACKAGE}}</div>
+            </div>
+          </div>
+
+          <div class="price-card">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-weight:700">Root & Routine</div>
+                <div class="muted" style="font-size:13px">Weekly sessions (ongoing)</div>
+              </div>
+              <div style="font-weight:700">${{WEEKLY_SESSION}}</div>
+            </div>
+          </div>
+
+        </div>
+
+        <div style="margin-top:14px">
+          <a href="book.html" class="cta">Reserve a time</a>
+        </div>
+
+        <hr style="margin:14px 0;border:none;border-top:1px solid rgba(15,23,32,0.04)">
+        <p class="muted" style="font-size:13px">Insurance: I do not bill insurance directly. I can provide a superbill for possible reimbursement depending on your plan.</p>
+      </aside>
+    </div>
+
+    <section class="panel reveal" style="margin-top:18px">
+      <h3 style="margin:0 0 8px">Notes on care</h3>
+      <p class="muted" style="margin:0 0 8px">Therapy is collaborative. We name goals together and regularly check whether the chosen plan fits the life you have. If needs fall outside my scope, I will help identify appropriate referrals.</p>
+    </section>
+
+  </main>
+
+  <script>
+    // Scroll reveal with prefers-reduced-motion
+    (function(){
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var items = document.querySelectorAll('.reveal');
+      if(reduce){ items.forEach(function(i){ i.classList.add('visible'); }); return; }
+      var io = new IntersectionObserver(function(entries){ entries.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add('visible'); io.unobserve(en.target); } }); }, {threshold:0.08});
+      items.forEach(function(it){ io.observe(it); });
+    })();
+  </script>
+</body>
+</html>

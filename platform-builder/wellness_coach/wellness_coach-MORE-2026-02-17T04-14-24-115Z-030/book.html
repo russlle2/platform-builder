@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Book — {{BUSINESS_NAME}}</title>
+  <style>
+    body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;background:#fcfdfb;color:#07211e}
+    .wrap{max-width:720px;margin:28px auto;padding:20px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:12px;color:#4e6b61;text-decoration:none;font-weight:600}
+
+    h1{margin:18px 0 6px;font-size:26px}
+    p.lead{color:#56636a;margin:0 0 12px}
+
+    .mood-row{display:flex;gap:8px;margin:12px 0}
+    .opt{padding:10px 12px;border:1px solid #e6eee8;border-radius:10px;background:#fff;cursor:pointer}
+    .opt.active{background:#6b8e72;color:#fff;border-color:#5b7d62}
+
+    form{margin-top:16px;background:#fff;padding:16px;border-radius:12px;border:1px solid #eef6ef}
+    label{display:block;font-weight:700;margin-top:8px}
+    input,select,textarea{width:100%;padding:10px;margin-top:6px;border:1px solid #e6ece6;border-radius:8px}
+    .row{display:flex;gap:8px}
+    .col{flex:1}
+
+    .summary{margin-top:12px;padding:12px;border-radius:10px;background:linear-gradient(180deg,#f8fff7,#ffffff);border:1px solid #eaf6ef}
+    .book-btn{display:inline-block;margin-top:12px;padding:12px 16px;border-radius:10px;background:#6b8e72;color:#fff;text-decoration:none;font-weight:800}
+    footer{margin-top:22px;color:#647379;font-size:13px;text-align:center}
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <header>
+      <div style='font-weight:800;color:#6b8e72'>{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href='index.html'>Home</a>
+        <a href='services.html'>Offerings</a>
+        <a href='pricing.html'>Rates</a>
+        <a href='contact.html'>Connect</a>
+      </nav>
+    </header>
+
+    <main>
+      <h1>Reserve time</h1>
+      <p class='lead'>Tell me how you are and I'll suggest a method and time length. We design sessions around outcomes and tiny, repeatable habits.</p>
+
+      <div>
+        <div style='font-size:13px;color:#56636a'>Select how you feel now</div>
+        <div class='mood-row' role='tablist' aria-label='Mood to method'>
+          <button class='opt' data-key='flat'>Flat</button>
+          <button class='opt active' data-key='ready'>Ready</button>
+          <button class='opt' data-key='crowded'>Crowded</button>
+        </div>
+      </div>
+
+      <form id='bookForm' onsubmit='return false;'>
+        <div class='row'>
+          <div class='col'>
+            <label for='name'>Name</label>
+            <input id='name' name='name' placeholder='Your name'/>
+          </div>
+          <div class='col'>
+            <label for='email'>Email</label>
+            <input id='email' name='email' placeholder='you@example.com'/>
+          </div>
+        </div>
+
+        <label for='phone'>Phone</label>
+        <input id='phone' name='phone' placeholder='{{PHONE}}'/>
+
+        <label for='method'>Recommended approach</label>
+        <input id='method' name='method' readonly value='Rhythmic Sessions'/>
+
+        <div class='summary'>
+          <div style='font-weight:800' id='summaryTitle'>Rhythmic Sessions — 45 min</div>
+          <div style='color:#56636a;margin-top:6px' id='summaryDesc'>A practical session to build a daily checkpoint and simple habits.</div>
+          <div style='margin-top:8px;color:#435a53' id='summaryPrice'>Price: $269 (monthly guide)</div>
+        </div>
+
+        <button class='book-btn' id='submitBtn'>{{PRIMARY_CTA_LABEL}}</button>
+      </form>
+
+      <footer>
+        <div style='color:#647379'>You will receive a confirmation and a short diagnostic questionnaire. No medical advice is offered.</div>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    // Mood-to-method mapping for booking page
+    const optButtons = document.querySelectorAll('.opt');
+    const methodInput = document.getElementById('method');
+    const summaryTitle = document.getElementById('summaryTitle');
+    const summaryDesc = document.getElementById('summaryDesc');
+    const summaryPrice = document.getElementById('summaryPrice');
+    const submitBtn = document.getElementById('submitBtn');
+
+    const map = {
+      flat: {method:'Gentle Momentum',title:'Gentle Momentum — 30 min',desc:'Micro-practices and quick check-ins to rebuild rhythm.',price:'Price: $89 / month or $240 package'},
+      ready: {method:'Rhythmic Sessions',title:'Rhythmic Sessions — 45 min',desc:'Consistent sessions to form habits and review progress.',price:'Price: $269 / month or $720 package'},
+      crowded: {method:'Slice & Align',title:'Slice & Align — 30 min',desc:'Focused work to protect time and regain breathing room.',price:'Price: $159 / month or $420 package'}
+    };
+
+    function applyMood(key){
+      optButtons.forEach(b=> b.classList.toggle('active', b.getAttribute('data-key')===key));
+      const v = map[key] || map.ready;
+      methodInput.value = v.method;
+      summaryTitle.textContent = v.title;
+      summaryDesc.textContent = v.desc;
+      summaryPrice.textContent = v.price;
+      submitBtn.textContent = '{{PRIMARY_CTA_LABEL}} — ' + v.method;
+    }
+
+    optButtons.forEach(b=> b.addEventListener('click', ()=> applyMood(b.getAttribute('data-key'))));
+
+    // If loaded with ?method= param, try to set
+    (function initFromQuery(){
+      const q = new URLSearchParams(location.search);
+      const m = q.get('method');
+      if(m){
+        // find mapping by title match or set to ready
+        const key = Object.keys(map).find(k=> map[k].method.toLowerCase()===m.toLowerCase() || map[k].title.toLowerCase().startsWith(m.toLowerCase()));
+        applyMood(key || 'ready');
+      }
+    })();
+
+    // Fake submit
+    document.getElementById('bookForm').addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const name = document.getElementById('name').value || 'Guest';
+      const method = methodInput.value;
+      submitBtn.textContent = 'Scheduling…';
+      setTimeout(()=>{
+        submitBtn.textContent = 'Scheduled — ' + method;
+        alert(name + ', thank you. A booking note was sent to ' + '{{EMAIL}}');
+      },800);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Mix Lab — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fffaf9;--ink:#242423;--accent:#4a7c59;--accent-2:#a7d3b0;--card:#ffffff}
+    html,body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:linear-gradient(180deg,rgba(74,124,89,0.05),transparent);border-bottom:1px solid rgba(0,0,0,0.04)}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    nav a{margin:0 8px;text-decoration:none;color:var(--ink);font-weight:600}
+    nav a.active{color:var(--accent)}
+    main{padding:28px;display:grid;grid-template-columns:1fr 360px;gap:22px}
+    .lab{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 20px rgba(18,18,18,0.04)}
+    h1{margin:0 0 8px}
+    .hint{color:#555;font-size:14px}
+    .form-row{display:flex;gap:10px;margin-top:10px}
+    select,input,button{padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)}
+    button.primary{background:var(--accent);color:#fff;border:none}
+    .preview{margin-top:14px;padding:12px;border-radius:10px;border:1px dashed rgba(0,0,0,0.06)}
+    .blend-card{display:flex;gap:12px;align-items:center}
+    .label-preview{width:84px;height:84px;border-radius:10px;background:linear-gradient(135deg,var(--accent-2),#fff);display:flex;align-items:center;justify-content:center;font-weight:700;color:#214;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+    .safety{font-size:13px;color:#555;margin-top:10px}
+    .result{margin-top:12px}
+    .dilution{background:linear-gradient(180deg,rgba(74,124,89,0.06),transparent);padding:10px;border-radius:8px}
+    aside .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(18,18,18,0.04)}
+    .oil-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+    .oil{padding:6px 8px;border-radius:999px;background:rgba(0,0,0,0.03);font-size:13px}
+    .pattern{height:140px;background-image:url('assets/img/pattern.svg');background-size:cover;border-radius:10px;margin-top:12px}
+    .faq{margin-top:14px;font-size:14px}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="logo">M</div>
+      <div style="font-weight:700">Mix Lab — {{BUSINESS_NAME}}</div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html" class="active">Mix Lab</a>
+      <a href="shop.html">Boutique</a>
+      <a href="pricing.html">Join</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="lab">
+      <h1>Create a personal blend</h1>
+      <p class="hint">Choose a mood, select a carrier size, and the Mix Lab will suggest a safe dilution range and a drop-by-drop guide you can use at home. All guidance is non-medical and safety-forward.</p>
+
+      <div style="margin-top:12px;display:flex;gap:12px;align-items:center">
+        <div style="flex:1">
+          <label class="small">Desired vibe</label>
+          <select id="vibe" style="width:100%">
+            <option value="calm">Calm</option>
+            <option value="focus">Focus</option>
+            <option value="uplift">Uplift</option>
+            <option value="ground">Grounding</option>
+            <option value="rest">Rest</option>
+          </select>
+        </div>
+        <div style="width:140px">
+          <label class="small">Container</label>
+          <select id="size" style="width:100%">
+            <option value="10">10 ml roller</option>
+            <option value="30">30 ml bottle</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row" style="margin-top:12px">
+        <div style="flex:1">
+          <label class="small">Intensity</label>
+          <input id="intensity" type="range" min="1" max="3" value="2" />
+        </div>
+        <div style="width:150px;display:flex;align-items:flex-end;justify-content:flex-end">
+          <button id="make" class="primary">Make my blend</button>
+        </div>
+      </div>
+
+      <div id="output" class="preview" aria-live="polite" style="display:none">
+        <div class="blend-card">
+          <div class="label-preview" id="label">Blend</div>
+          <div>
+            <div id="title" style="font-weight:700">Calm blend</div>
+            <div id="subtitle" class="small">Suggested oils for this blend</div>
+            <div class="oil-list" id="oils"></div>
+          </div>
+        </div>
+
+        <div id="dilution-block" class="result">
+          <div class="dilution"><strong>Suggested dilution:</strong> <span id="dilution">2%</span> — <span id="drops">2 drops / 10 ml</span></div>
+          <div class="safety">Patch test recommended. If you are pregnant, nursing, or have respiratory sensitivities, consult a care provider before use. Keep away from pets' faces; some oils may not be safe for animals.</div>
+        </div>
+
+      </div>
+
+      <div class="faq">
+        <h4>Quick notes</h4>
+        <ul>
+          <li>Drop counts assume a standard droplet size (~20 drops/ml) — this is guidance, not a prescription.</li>
+          <li>We provide patch test advice and safe dilution ranges; always label your blends and store them away from children and pets.</li>
+        </ul>
+      </div>
+    </section>
+
+    <aside>
+      <div class="card">
+        <h4>Why dilution matters</h4>
+        <p class="small">Dilution keeps topical use gentle and reduces sensitivity risk. The Mix Lab defaults to conservative ranges for new blends.</p>
+        <div class="pattern"></div>
+        <div style="margin-top:10px"><a class="primary" href="shop.html">Browse carrier oils</a></div>
+      </div>
+
+      <div style="height:12px"></div>
+      <div class="card">
+        <h4>Save & label</h4>
+        <p class="small">After making a blend, you can print the label template for your bottle. Include date, ingredients, and dilution percentage.</p>
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    const vibes = {
+      calm:{title:'Calm',oils:['Lavender','Sweet orange','Bergamot'],dilution:[1,2]},
+      focus:{title:'Focus',oils:['Rosemary','Peppermint','Lemon'],dilution:[0.5,1.5]},
+      uplift:{title:'Uplift',oils:['Sweet orange','Grapefruit','Bergamot'],dilution:[1,2.5]},
+      ground:{title:'Grounding',oils:['Cedarwood','Patchouli','Vetiver'],dilution:[0.75,2]},
+      rest:{title:'Rest',oils:['Roman chamomile','Lavender','Cedarwood'],dilution:[0.5,2]}
+    };
+
+    function estimateDrops(ml,dilutionPercent){
+      // approx 20 drops per ml
+      const dropsPerMl = 20;
+      const totalDrops = Math.round(ml * dropsPerMl * (dilutionPercent/100));
+      return totalDrops;
+    }
+
+    document.getElementById('make').addEventListener('click',()=>{
+      const vibeKey = document.getElementById('vibe').value;
+      const size = parseInt(document.getElementById('size').value,10);
+      const intensity = parseInt(document.getElementById('intensity').value,10);
+      const data = vibes[vibeKey];
+      // choose dilution within range weighted by intensity
+      const min = data.dilution[0];
+      const max = data.dilution[1];
+      const pct = +(min + (max-min)*((intensity-1)/2)).toFixed(2);
+
+      document.getElementById('output').style.display='block';
+      document.getElementById('title').textContent = data.title + ' blend';
+      document.getElementById('label').textContent = data.title.charAt(0);
+      const oilsEl = document.getElementById('oils'); oilsEl.innerHTML='';
+      data.oils.forEach(o=>{const s=document.createElement('span');s.className='oil';s.textContent=o;oilsEl.appendChild(s)});
+      document.getElementById('dilution').textContent = pct + '%';
+      const drops = estimateDrops(size,pct);
+      const dropsPerOil = Math.max(1, Math.round(drops/data.oils.length));
+      document.getElementById('drops').textContent = drops + ' total drops — about ' + dropsPerOil + ' drops per oil for ' + size + ' ml';
+    });
+  </script>
+</body>
+</html>

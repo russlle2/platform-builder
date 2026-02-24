@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg1:#0f1724;--bg2:#05263a;--accent:#a8ffec;--muted:#b8c2cc;--card:#0b1220}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial,sans-serif;color:var(--accent);background:linear-gradient(180deg,var(--bg1),var(--bg2));}
+    .wrap{max-width:980px;margin:48px auto;padding:36px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));box-shadow:0 10px 30px rgba(2,6,23,0.6);border-radius:14px;position:relative;overflow:hidden}
+    header{display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .brand{display:flex;flex-direction:column}
+    .brand h1{margin:0;font-size:20px;letter-spacing:0.6px;color:#e6fff9}
+    .brand p{margin:2px 0 0 0;color:var(--muted);font-size:13px}
+    nav a{color:var(--muted);text-decoration:none;margin-left:16px;font-size:15px}
+
+    .hero{display:grid;grid-template-columns:1fr 340px;gap:28px;margin-top:28px}
+    .hero .lead{background:linear-gradient(180deg,rgba(168,255,236,0.04),transparent);padding:28px;border-radius:12px}
+    h2{margin:0 0 12px 0;color:#e8fff8;font-size:28px}
+    p.lead{color:var(--muted);line-height:1.5;margin:0}
+    .panel{background:rgba(255,255,255,0.02);padding:18px;border-radius:12px}
+    .small{font-size:13px;color:var(--muted)}
+
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:20px}
+    .card{background:linear-gradient(180deg,rgba(10,16,24,0.6),rgba(8,12,18,0.4));padding:18px;border-radius:10px;color:var(--muted)}
+    .card h3{color:#dffdf6;margin:0 0 8px 0;font-size:16px}
+    ul{padding-left:18px;margin:6px 0}
+    li{margin:6px 0}
+
+    .cta{display:flex;gap:12px;align-items:center;margin-top:18px}
+    .btn{background:linear-gradient(90deg,#7bf6d6,#19c3ac);color:#042028;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+
+    footer{display:flex;justify-content:space-between;align-items:center;margin-top:26px;color:var(--muted);font-size:13px}
+
+    /* subtle SVG ripple in top-right */
+    .svg-bg{position:absolute;right:-40px;top:-40px;opacity:0.12}
+
+    @media(max-width:880px){.hero{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.wrap{margin:16px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <svg class="svg-bg" width="300" height="300" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g1" x1="0" x2="1">
+          <stop offset="0%" stop-color="#a8ffec" stop-opacity="0.7" />
+          <stop offset="100%" stop-color="#19c3ac" stop-opacity="0.2" />
+        </linearGradient>
+      </defs>
+      <rect width="200" height="200" rx="20" fill="url(#g1)"/>
+      <g fill="rgba(2,6,23,0.6)">
+        <circle cx="40" cy="40" r="18" fill-opacity="0.14"/>
+        <circle cx="80" cy="80" r="26" fill-opacity="0.10"/>
+        <circle cx="130" cy="50" r="34" fill-opacity="0.08"/>
+      </g>
+    </svg>
+
+    <header>
+      <div class="brand">
+        <h1>{{BUSINESS_NAME}}</h1>
+        <p>{{TAGLINE}}</p>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="events.html">Gatherings</a>
+        <a href="private-sessions.html">Private</a>
+        <a href="book.html">Reserve</a>
+      </nav>
+    </header>
+
+    <section class="hero" aria-labelledby="about-hero">
+      <div class="lead">
+        <h2 id="about-hero">A sensory sound practice, reimagined</h2>
+        <p class="lead">We design immersive, premium sound baths rooted in safety, intentionality and elegant simplicity. Led by {{FACILITATOR_NAME}} at {{VENUE_NAME}} in {{CITY}}, {{STATE}}—sessions are curated for deep rest, nervous system regulation, and creative integration.</p>
+        <div class="cta">
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <a class="btn ghost" href="faq.html">FAQ</a>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <h3 style="color:#eafff7;margin-top:0">Quick details</h3>
+        <p class="small">Length: 75–90 minutes • Small groups • Sensory-first setup</p>
+        <p class="small" style="margin-top:8px">Next open event: <strong style="color:#bffae8">{{NEXT_EVENT_DATE}}</strong></p>
+      </aside>
+    </section>
+
+    <section class="grid">
+      <div class="card" aria-labelledby="who-for">
+        <h3 id="who-for">Who this is for</h3>
+        <p>People seeking a premium, sensory experience to reset. Folks who want guided rest—not meditation homework. It’s suitable for most adults, with restrictions listed below.</p>
+      </div>
+
+      <div class="card" aria-labelledby="instruments">
+        <h3 id="instruments">Instruments you may hear</h3>
+        <ul>
+          <li>Crystal singing bowls tuned to harmonic intervals</li>
+          <li>Subtle chimes and singing tube textures</li>
+          <li>Tuning forks for close, focused resonance</li>
+        </ul>
+      </div>
+
+      <div class="card" aria-labelledby="flow">
+        <h3 id="flow">What the session flow looks like</h3>
+        <ol>
+          <li>Arrival & gentle orientation (10–12 min)</li>
+          <li>Guided settling and breathwork (8–12 min)</li>
+          <li>Main soundscape — layered bowls & chimes (45–55 min)</li>
+          <li>Slow reintegration, tea & space for reflection (10–15 min)</li>
+        </ol>
+      </div>
+
+      <div class="card" aria-labelledby="what-to-bring">
+        <h3 id="what-to-bring">What to bring</h3>
+        <ul>
+          <li>A yoga mat or thick blanket, and a cushion for support</li>
+          <li>An eye-cover or light scarf for comfort</li>
+          <li>Water bottle; layers—rooms are gently cool</li>
+        </ul>
+      </div>
+    </section>
+
+    <section style="margin-top:22px">
+      <div class="card">
+        <h3 style="margin-top:0;color:#eafff7">Medical & safety note</h3>
+        <p class="small">Contraindications: If you are pregnant, have a pacemaker, epilepsy, recent surgery, severe psychiatric conditions, or are under heavy medication that affects consciousness, please consult your physician before attending. Loud gongs may be used occasionally; we provide ear protection on request. This is not a replacement for medical care.</p>
+      </div>
+    </section>
+
+    <section style="margin-top:18px;display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+      <a class="btn" href="book.html">Reserve a spot</a>
+      <a class="btn ghost" href="private-sessions.html">Inquire about private / VIP Day</a>
+      <div style="color:var(--muted);font-size:13px;margin-left:auto">Questions? <a href="contact.html" style="color:#bffae8;text-decoration:none">Contact us</a></div>
+    </section>
+
+    <footer>
+      <div>Phone: {{PHONE}} • Email: <a href="mailto:{{EMAIL}}" style="color:#bffae8">{{EMAIL}}</a></div>
+      <div style="opacity:0.8">© {{BUSINESS_NAME}}</div>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,75 @@
+/* Core design: split diagonal layout, soft gradients, and SVG pattern */
+:root{
+  --bg:#fbfbfd;--muted:#6b7280;--accent:#5aa897;--accent-2:#6b8cff;--card:#ffffff;--text:#0f172a;--radius:12px;
+  --max-width:1100px;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; color:var(--text);background:var(--bg);}
+.container{max-width:var(--max-width);margin:0 auto;padding:48px 20px}
+.site-header{background:transparent;padding:18px 0;position:sticky;top:0;z-index:40}
+.nav-row{display:flex;align-items:center;justify-content:space-between}
+.brand{font-weight:700;color:var(--text);text-decoration:none;font-size:1.05rem}
+.nav-toggle{display:none;background:none;border:1px solid transparent;padding:8px;border-radius:8px}
+.main-nav ul{list-style:none;margin:0;padding:0;display:flex;gap:18px;align-items:center}
+.main-nav a{color:var(--text);text-decoration:none;padding:6px 8px;border-radius:8px}
+.main-nav a.cta{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white}
+.btn{display:inline-block;padding:10px 16px;border-radius:10px;text-decoration:none;border:1px solid rgba(15,23,42,0.06)}
+.btn.primary{background:linear-gradient(180deg,var(--accent),var(--accent-2));color:#fff}
+.btn.ghost{background:transparent;border:1px solid rgba(15,23,42,0.06)}
+.btn.large{padding:14px 20px;font-size:1.05rem}
+.muted{color:var(--muted)}
+
+/* HERO split diagonal */
+.hero{display:flex;min-height:56vh;align-items:stretch;position:relative;overflow:hidden}
+.hero-panel{flex:1;padding:64px;display:flex;flex-direction:column;justify-content:center}
+.hero-left{background:linear-gradient(180deg,#fff 0%, #f7fafc 100%);z-index:10}
+.hero-title{font-size:2rem;margin:0 0 12px}
+.hero-lead{margin:0 0 18px;color:var(--muted);max-width:48ch}
+.hero-right{position:relative;padding:0;display:flex;align-items:stretch}
+.hero-right .pattern-slab{flex:1;background-image:url('../img/pattern.svg');background-repeat:repeat;opacity:0.95}
+.hero-decor{position:absolute;right:0;bottom:0;width:70%;height:100%;pointer-events:none}
+
+/* diagonal effect */
+.hero:before{content:"";position:absolute;right:50%;top:0;bottom:0;width:100%;background:linear-gradient(180deg, rgba(92,184,153,0.06), rgba(107,140,255,0.06));transform:skewX(-12deg);transform-origin:top right;z-index:5}
+
+/* Myth vs truth */
+.myth-truth h2{margin-top:0}
+.mt-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(220px,1fr));gap:18px}
+.card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 20px rgba(16,24,40,0.04)}
+.card.myth h3{margin:0 0 8px}
+
+/* Pillars */
+.pillars-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+.pillar{background:linear-gradient(180deg,#fff,#fbfeff);padding:18px;border-radius:12px;box-shadow:0 8px 22px rgba(15,23,42,0.04)}
+.pillar h3{margin-top:0}
+
+/* Case notes */
+.case-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+.case{background:#fff;padding:16px;border-radius:12px;border:1px solid rgba(15,23,42,0.03)}
+.case h3{margin:0 0 8px}
+.disclaimer{font-size:0.9rem;color:var(--muted)}
+
+/* FAQ Accordion */
+.accordion .q{border-bottom:1px solid rgba(15,23,42,0.04)}
+.q-btn{width:100%;text-align:left;padding:14px 10px;background:none;border:0;font-size:1rem;display:flex;justify-content:space-between;align-items:center}
+.a{padding:0 10px 18px;color:var(--muted);display:none}
+.q.open .a{display:block}
+
+/* CTA */
+.cta-card{background:linear-gradient(180deg,#fff,#f7fcfb);padding:28px;border-radius:14px;box-shadow:0 14px 40px rgba(11,22,38,0.06);text-align:center}
+
+/* Footer */
+.site-footer{background:#fff;border-top:1px solid rgba(15,23,42,0.03);padding:26px 0}
+.footer-grid{display:flex;gap:18px;flex-wrap:wrap;align-items:start}
+@media (max-width:880px){
+  .hero{flex-direction:column}
+  .hero:before{display:none}
+  .nav-toggle{display:inline-block}
+  .main-nav{display:none}
+  .main-nav.open{display:block;background:#fff;padding:12px;border-radius:10px;position:absolute;right:20px;top:64px;box-shadow:0 10px 30px rgba(11,22,38,0.08)}
+  .nav-row{position:relative}
+}
+
+/* small helpers */
+.contact-small{font-size:0.9rem;color:var(--muted)}
+.muted{color:var(--muted)}

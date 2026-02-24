@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Who we are: a small team offering integrative group learning and guided practical steps toward steadier wellbeing.">
+  <style>
+    :root{--bg:#fff;--accent:#2f5f4a;--muted:#6b7280;--card:#fbfbfb}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#05201a;background:linear-gradient(180deg,#ffffff,#f6fbf9)}
+    header{display:flex;justify-content:space-between;padding:20px 28px}
+    nav a{margin-left:14px;color:var(--accent);text-decoration:none;font-weight:600}
+    .container{max-width:880px;margin:18px auto;padding:24px}
+    h1{margin:6px 0 12px 0}
+    .intro{display:flex;gap:20px;align-items:center}
+    .portrait{width:120px;height:120px;border-radius:18px;background:linear-gradient(135deg,#e9f5ee,#ffffff);display:grid;place-items:center;color:var(--accent);font-weight:700}
+    .card{background:var(--card);padding:18px;border-radius:12px;margin-top:14px}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
+    .muted{color:var(--muted)}
+    .widget{margin-top:14px;padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#f8fffb);border:1px solid rgba(47,95,74,0.04)}
+    label{display:block;margin-top:8px}
+    input[type="text"], textarea{width:100%;padding:8px;border-radius:8px;border:1px solid #e6efea}
+    button{padding:8px 12px;border-radius:8px;background:var(--accent);color:#fff;border:0;cursor:pointer}
+    .output{background:#f8fffb;padding:10px;border-radius:8px;margin-top:8px;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace}
+    footer{padding:20px;text-align:center;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#cfe9da,#eaf6ef);display:grid;place-items:center;color:var(--accent);font-weight:700">H</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">Learning-focused group support in {{CITY}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Conditions</a>
+      <a href="approach.html">Method</a>
+      <a href="pricing.html">Plans</a>
+      <a href="about.html">Our Story</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="intro">
+      <div class="portrait">HS</div>
+      <div>
+        <h1>We stitch practical habits into everyday life</h1>
+        <p class="muted">A small team combining clinical curiosity, behavioral design, and community learning. We emphasize realistic change: small experiments, useful measures, and a clear path forward.</p>
+      </div>
+    </section>
+
+    <div class="grid">
+      <div>
+        <div class="card">
+          <h2>Our approach</h2>
+          <p class="muted">We pair short group learning sessions with personalized micro-goals. Each track includes check-ins, simple measurements you can actually do, and practical adaptations. We avoid promises and focus on what can be tested and learned.</p>
+          <h3 style="margin-top:12px">What you can expect</h3>
+          <ul class="muted">
+            <li>Clear agenda for each session</li>
+            <li>Actionable experiments between meetings</li>
+            <li>Bite-sized reflections and a modest set of measurements</li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h3>Team highlights</h3>
+          <p class="muted">Led by clinicians and educators with training across nutrition, sleep science, movement therapy, and behavioral coaching. We design group curricula that surface practical skills and personalizable practices.</p>
+        </div>
+
+      </div>
+
+      <aside>
+        <div class="widget">
+          <h4>Whole-person inventory</h4>
+          <p class="muted">Quickly mark areas you'd like to cover; receive a ready-to-share consultation agenda and follow-up cadence.</p>
+          <div style="margin-top:8px">
+            <label><input type="checkbox" class="bio" value="Sleep"> Sleep</label>
+            <label><input type="checkbox" class="bio" value="Energy"> Energy</label>
+            <label><input type="checkbox" class="bio" value="Mood"> Mood & focus</label>
+            <label><input type="checkbox" class="bio" value="Movement"> Movement</label>
+            <label><input type="checkbox" class="bio" value="Nutrition"> Nutrition</label>
+            <label><input type="checkbox" class="bio" value="Stress"> Stress resilience</label>
+          </div>
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <button id="buildAgenda2">Create agenda</button>
+            <button id="copyAgenda2" class="ghost">Copy</button>
+          </div>
+          <div id="agendaArea2" class="output">Agenda will appear here.</div>
+        </div>
+
+        <div class="widget" style="margin-top:12px">
+          <h4>Session sketch</h4>
+          <p class="muted">Draft a quick plan to bring to your booking.</p>
+          <label>Name</label>
+          <input id="guestName" type="text" placeholder="Your name">
+          <label>Primary question</label>
+          <input id="guestQ" type="text" placeholder="What's the main thing you want to improve?">
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button id="sketchBtn">Make sketch</button>
+            <button class="ghost" onclick="location.href='book.html'">Book</button>
+          </div>
+          <div id="sketchOut" class="output">Sketch will appear here.</div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <h3>Safety & scope</h3>
+      <p class="muted">Our programs are educational and community-led. We do not promise cures. If you have urgent medical concerns or complex conditions, please contact your primary care provider. Any program recommendations are intended as general guidance, not individual medical advice.</p>
+    </div>
+
+  </main>
+
+  <footer>
+    <div style="padding:20px;text-align:center;color:var(--muted)">Questions? <a href="contact.html">Get in touch</a> • {{EMAIL}} • {{PHONE}}</div>
+  </footer>
+
+  <script>
+    // Agenda builder (duplicate functionality on a different page & UI)
+    document.getElementById('buildAgenda2').addEventListener('click', function(){
+      const checked = Array.from(document.querySelectorAll('.bio:checked')).map(i=>i.value);
+      if(checked.length===0){ alert('Select at least one area.'); return; }
+      let out = 'Consultation agenda:\n\n- Intro & priorities\n- Quick measures\n- Focus areas:\n';
+      checked.forEach(a=>{ out += `  * ${a}\n`; });
+      out += '\n- Initial practical steps (2–4 week experiments)\n- Follow-up cadence suggestion\n';
+      out += '\nSuggested cadence:\n - 2-week check-in (brief)\n - 6-week review (longer)\n - 3-month maintenance check\n';
+      document.getElementById('agendaArea2').textContent = out;
+    });
+
+    document.getElementById('copyAgenda2').addEventListener('click', async function(){
+      const txt = document.getElementById('agendaArea2').textContent;
+      try{ await navigator.clipboard.writeText(txt); alert('Agenda copied'); }catch(e){ alert('Unable to copy'); }
+    });
+
+    // Session sketch
+    document.getElementById('sketchBtn').addEventListener('click', function(){
+      const name = document.getElementById('guestName').value || 'Guest';
+      const q = document.getElementById('guestQ').value || 'General wellbeing';
+      const sketch = `${name} — Session sketch\n\nPrimary question: ${q}\n\n1) Intake & measurements\n2) Quick education segment (15min)\n3) Actionable experiment to try\n4) Plan for a short check-in`;
+      document.getElementById('sketchOut').textContent = sketch;
+    });
+  </script>
+</body>
+</html>

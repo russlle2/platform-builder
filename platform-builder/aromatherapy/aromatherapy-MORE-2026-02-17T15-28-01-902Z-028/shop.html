@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Boutique — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7fbff;--ink:#1f2b2b;--muted:#6d6d6d;--accent:#5a9bd6}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;background:var(--bg);color:var(--ink)}
+    header{padding:16px 20px;border-bottom:1px solid rgba(0,0,0,0.04)}
+    .wrap{max-width:1100px;margin:0 auto}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    nav a.active{color:var(--ink)}
+    main{max-width:1100px;margin:22px auto;padding:0 20px}
+    .hero{display:flex;justify-content:space-between;align-items:center;padding:18px;background:#fff;border-radius:12px}
+    h1{margin:0}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-top:18px}
+    .product{background:#fff;padding:14px;border-radius:12px;border:1px solid rgba(0,0,0,0.03);display:flex;flex-direction:column}
+    .price{font-weight:700;margin-top:10px}
+    .small{color:var(--muted);font-size:13px}
+    .btn{margin-top:10px;padding:8px;border-radius:8px;border:none;background:var(--accent);color:#fff}
+    /* cart */
+    .cart-floating{position:fixed;right:18px;bottom:18px;background:var(--accent);color:#fff;padding:12px 14px;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,0.12)}
+    .cart-modal{position:fixed;right:18px;bottom:64px;width:320px;max-height:60vh;overflow:auto;background:#fff;border-radius:12px;padding:12px;box-shadow:0 12px 40px rgba(0,0,0,0.12);display:none}
+    .cart-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(0,0,0,0.04)}
+    /* reveal */
+    .reveal{opacity:0;transform:translateY(6px);transition:opacity 420ms cubic-bezier(.2,.8,.2,1),transform 420ms cubic-bezier(.2,.8,.2,1)}
+    .reveal.reveal-visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none;opacity:1;transform:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap" style="display:flex;justify-content:space-between;align-items:center">
+      <div><strong>{{BUSINESS_NAME}}</strong> <span style="color:var(--muted);font-size:13px">Boutique</span></div>
+      <nav>
+        <a href="index.html">Begin</a>
+        <a href="services.html">Practices</a>
+        <a href="blends.html">Formulas</a>
+        <a href="shop.html" class="active">Shop</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="hero reveal">
+      <div>
+        <h1>Bring a little ritual home</h1>
+        <p class="small">Browse ready blends, toolkits, and small extras. Orders are packaged with guidance and safety notes.</p>
+      </div>
+      <div style="text-align:right">
+        <div class="small">Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+        <button class="btn" onclick="document.getElementById('cartFloating').click()">Cart</button>
+      </div>
+    </div>
+
+    <section class="reveal" style="margin-top:16px">
+      <div class="grid">
+        <div class="product">
+          <div style="height:92px;background:linear-gradient(180deg,#fff,#eef6ff);border-radius:8px;display:grid;place-items:center">Diffuser Kit</div>
+          <h3 style="margin:10px 0 0">Starter diffuser kit</h3>
+          <div class="small">Compact diffuser + guide for safe usage</div>
+          <div class="price">$48</div>
+          <button class="btn" data-sku="starter-kit">Add to cart</button>
+        </div>
+
+        <div class="product">
+          <div style="height:92px;background:linear-gradient(180deg,#fff,#fff7f1);border-radius:8px;display:grid;place-items:center">Set of 3</div>
+          <h3 style="margin:10px 0 0">Three blend set</h3>
+          <div class="small">Choose any three travel-sized blends</div>
+          <div class="price">$38</div>
+          <button class="btn" data-sku="three-set">Add to cart</button>
+        </div>
+
+        <div class="product">
+          <div style="height:92px;background:linear-gradient(180deg,#fff,#f0fff7);border-radius:8px;display:grid;place-items:center">Roll-on</div>
+          <h3 style="margin:10px 0 0">Daily roll-on</h3>
+          <div class="small">2% dilution for everyday carry</div>
+          <div class="price">$14</div>
+          <button class="btn" data-sku="roll-on">Add to cart</button>
+        </div>
+
+        <div class="product">
+          <div style="height:92px;background:linear-gradient(180deg,#fff,#fff3f6);border-radius:8px;display:grid;place-items:center">Workshop</div>
+          <h3 style="margin:10px 0 0">At-home kit</h3>
+          <div class="small">Everything to host a small scent workshop</div>
+          <div class="price">$64</div>
+          <button class="btn" data-sku="home-kit">Add to cart</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="reveal" style="margin-top:18px">
+      <h2>Cart & checkout</h2>
+      <p class="small">Your cart stores locally in your browser until you choose to complete. For custom orders or local pickup, contact <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</p>
+    </section>
+
+    <footer style="margin-top:28px;padding:18px 0;border-top:1px solid rgba(0,0,0,0.04);color:var(--muted)">
+      <div style="display:flex;justify-content:space-between;align-items:center;max-width:1100px;margin:0 auto;padding:0 20px">
+        <div>Call: <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+        <div>{{CITY}}, {{STATE}}</div>
+      </div>
+    </footer>
+  </main>
+
+  <button id="cartFloating" class="cart-floating" aria-haspopup="dialog">View cart (<span id="cartCount">0</span>)</button>
+  <div id="cartModal" class="cart-modal" role="dialog" aria-hidden="true">
+    <h3 style="margin-top:0">Your cart</h3>
+    <div id="cartItems"></div>
+    <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center">
+      <button id="checkoutBtn" class="btn">Checkout</button>
+      <button id="emptyBtn" class="btn" style="background:#fff;color:var(--accent);border:1px solid rgba(0,0,0,0.06)">Empty</button>
+    </div>
+  </div>
+
+  <script>
+    // reveal
+    (function(){
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const reveals = document.querySelectorAll('.reveal');
+      if(reduced){reveals.forEach(r=>r.classList.add('reveal-visible'));return}
+      const obs = new IntersectionObserver((entries,observer)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('reveal-visible');observer.unobserve(e.target);}})},{threshold:0.05});
+      reveals.forEach(r=>obs.observe(r));
+    })();
+
+    // mini cart functionality (localStorage)
+    (function(){
+      const key = 'aroma_shop_1538081167';
+      function get(){return JSON.parse(localStorage.getItem(key) || '[]')}
+      function set(v){localStorage.setItem(key, JSON.stringify(v));}
+      function add(sku){const items=get();items.push({sku,ts:Date.now()});set(items);render();}
+      function empty(){set([]);render();}
+      function render(){const items=get();document.getElementById('cartCount').textContent = items.length; const list=document.getElementById('cartItems');list.innerHTML=''; if(items.length===0){list.innerHTML='<div class="small">Cart is empty.</div>';}
+        items.forEach((it,i)=>{const el=document.createElement('div');el.className='cart-item';el.innerHTML='<div>'+it.sku+'</div><div class="small">1</div>';list.appendChild(el);});
+      }
+      document.querySelectorAll('[data-sku]').forEach(b=>b.addEventListener('click',()=>add(b.getAttribute('data-sku'))));
+      document.getElementById('cartFloating').addEventListener('click',()=>{const m=document.getElementById('cartModal'); m.style.display = m.style.display==='block'? 'none' : 'block'; m.setAttribute('aria-hidden', m.style.display==='block' ? 'false' : 'true');});
+      document.getElementById('emptyBtn').addEventListener('click',()=>empty());
+      document.getElementById('checkoutBtn').addEventListener('click',()=>{const items=get(); if(items.length===0){alert('Your cart is empty.'); return;} window.location.href = '{{PRIMARY_CTA_URL}}';});
+      render();
+    })();
+
+    // small guided 'try it' for the shop page
+    (function(){
+      document.querySelectorAll('.btn').forEach(b=>{if(b.hasAttribute('data-sku')) return;});
+      // reuse simple prompt
+      document.querySelectorAll('button[data-sku]').forEach(b=>b.addEventListener('dblclick',()=>alert('Tip: Double-clicked to add twice.')));
+    })();
+  </script>
+</body>
+</html>

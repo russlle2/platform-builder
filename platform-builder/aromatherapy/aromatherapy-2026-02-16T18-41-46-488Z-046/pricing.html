@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Pricing — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f6fbf9;--card:#ffffff;--muted:#6b7280;--accent:#6aa79a;--accent-2:#8cc9ba;--glass:rgba(255,255,255,0.6);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#0f172a}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#eef7f5)}
+    .wrap{max-width:1100px;margin:36px auto;padding:28px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    nav a{margin:0 8px;color:#123;opacity:.85;text-decoration:none;font-size:14px}
+    nav a:nth-child(5){font-weight:600}
+
+    /* Pattern SVG behind content */
+    .pattern{position:fixed;right:-8vw;top:-10vh;width:60vw;height:120vh;pointer-events:none;opacity:.16}
+    main{background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,255,255,0.75));padding:28px;border-radius:14px;box-shadow:0 8px 30px rgba(15,23,42,0.06)}
+
+    .hero{display:grid;grid-template-columns:1fr 320px;gap:22px;align-items:center}
+    .hero h1{margin:0;font-size:28px;color:#072b29}
+    .hero p{color:var(--muted);margin:8px 0 0}
+    .cta-primary{display:inline-block;padding:10px 14px;background:linear-gradient(90deg,var(--accent),#5fb49f);color:#fff;border-radius:10px;text-decoration:none}
+
+    .pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px}
+    .card{background:var(--card);border-radius:12px;padding:18px;border:1px solid rgba(10,20,15,0.04)}
+    .card h3{margin:0 0 8px}
+    .price{font-size:22px;color:#08332f;font-weight:700}
+    .muted{color:var(--muted);font-size:13px}
+    .list{margin:12px 0;padding-left:18px;color:#174040}
+
+    .disclaimer{font-size:13px;color:var(--muted);margin-top:10px}
+
+    .grid-two{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:26px}
+
+    /* FAQ and notes */
+    details{background:linear-gradient(180deg,rgba(255,255,255,0.8),rgba(248,252,251,0.8));padding:12px;border-radius:8px;margin-bottom:10px}
+    summary{font-weight:600}
+
+    footer{display:flex;justify-content:space-between;align-items:center;margin-top:28px}
+
+    @media (max-width:880px){.hero,.grid-two{grid-template-columns:1fr};.pricing-grid{grid-template-columns:1fr}} 
+  </style>
+</head>
+<body>
+  <svg class="pattern" viewBox="0 0 800 1200" preserveAspectRatio="xMidYMid">
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#e6f8f3"/><stop offset="1" stop-color="#e8fbf6"/></linearGradient>
+      <filter id="f1" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="36"/></filter>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#g1)"/>
+    <g fill="#bfe9dc" opacity="0.6" filter="url(#f1)">
+      <circle cx="120" cy="220" r="140"/>
+      <circle cx="420" cy="680" r="220"/>
+      <circle cx="700" cy="300" r="120"/>
+    </g>
+    <g fill="#cdefe2" opacity="0.35"><path d="M0 900 C150 700 300 950 480 850 C650 760 820 940 1000 820 L1000 1200 0 1200 Z"/></g>
+  </svg>
+
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">A</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Nest</a>
+        <a href="services.html">Offerings</a>
+        <a href="blends.html">Blends</a>
+        <a href="shop.html">Boutique</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="about.html">About</a>
+        <a href="book.html">Book</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <h1>Transparent pricing for thoughtful aromatherapy support</h1>
+          <p>Sessions and blends that prioritize safety, clarity, and personalised scent planning. All offerings are educational and supportive — not medical.</p>
+          <div style="margin-top:14px">
+            <a class="cta-primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            <a href="contact.html" style="margin-left:10px;color:var(--muted);font-size:14px;text-decoration:none">Call {{PHONE}}</a>
+          </div>
+        </div>
+        <aside style="background:linear-gradient(180deg,rgba(255,255,255,0.6),rgba(245,252,250,0.6));padding:16px;border-radius:12px">
+          <strong style="display:block">Quick guide</strong>
+          <div class="muted" style="margin-top:8px">Consults include intake, safety assessment, and a personalised sample blend when relevant.</div>
+        </aside>
+      </section>
+
+      <section style="margin-top:18px">
+        <h2 style="margin:0 0 10px">Session & package rates</h2>
+        <div class="pricing-grid">
+          <div class="card">
+            <h3>Initial Consultation</h3>
+            <div class="price">$110 — 60 min</div>
+            <div class="muted">Full intake, safety checks, scent preferences, and next steps.</div>
+            <ul class="list">
+              <li>Intake & safety plan</li>
+              <li>Personalised scent notes</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>Focused Follow-up</h3>
+            <div class="price">$65 — 30 min</div>
+            <div class="muted">A short session to review use, adjust blends, or provide education.</div>
+            <ul class="list"><li>Dilution guidance</li><li>Quick adjustments</li></ul>
+          </div>
+
+          <div class="card">
+            <h3>Signature Care Package</h3>
+            <div class="price">$290 — 3 sessions + custom roll-on</div>
+            <div class="muted">Designed for safe, paced scent introduction and a tailored at-home plan.</div>
+            <ul class="list"><li>3 consults across 8 weeks</li><li>One small personalised roll-on</li></ul>
+          </div>
+        </div>
+
+        <div class="grid-two">
+          <div>
+            <h3 style="margin-top:18px">Products & add-ons (sample)</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px">
+              <div class="card"><strong>Mini Roll-On</strong><div class="muted">$18 — 10 mL</div></div>
+              <div class="card"><strong>Diffuser Kit</strong><div class="muted">$48 — ceramic + sample blends</div></div>
+              <div class="card"><strong>Sample Set</strong><div class="muted">$25 — 5 x 1 mL notes</div></div>
+              <div class="card"><strong>Refill Oils</strong><div class="muted">$12–$24 depending on oil</div></div>
+            </div>
+
+            <div class="disclaimer">Prices are indicative and subject to change. Products are sold with safe-use guidance; consults are recommended when introducing essential oils around pregnancy, pets, or complex health situations.</div>
+          </div>
+
+          <aside style="padding:12px">
+            <h4 style="margin:0 0 8px">A note on safety</h4>
+            <div class="muted">Practitioner-led guidance emphasises dilution, patch-testing, and avoiding high-risk oils for infants, pregnant people, and certain health conditions. No session replaces medical care.</div>
+            <a href="book.html" class="cta-primary" style="display:inline-block;margin-top:12px">Schedule a consult</a>
+          </aside>
+        </div>
+      </section>
+
+      <section style="margin-top:22px">
+        <h2>Myths & grounded truths</h2>
+        <div style="display:grid;gap:10px;margin-top:8px">
+          <details>
+            <summary>Myth: Essential oils cure illnesses</summary>
+            <div class="muted">Truth: Oils can support comfort, mood, and routine when used safely. They are not medical treatments. Work with licensed providers for health conditions.</div>
+          </details>
+          <details>
+            <summary>Myth: If it is natural it's always safe</summary>
+            <div class="muted">Truth: 'Natural' does not equal risk-free. Concentration, route of use, interactions, and age matter.</div>
+          </details>
+        </div>
+      </section>
+
+      <section style="margin-top:22px">
+        <h2>Core practice pillars</h2>
+        <div style="display:flex;gap:12px;margin-top:10px;flex-wrap:wrap">
+          <div class="card" style="flex:1;min-width:220px"><strong>Safety-first</strong><div class="muted">Dilution charts, patch testing and contraindication screening.</div></div>
+          <div class="card" style="flex:1;min-width:220px"><strong>Person-centred</strong><div class="muted">Preferences, history and daily context guide selections.</div></div>
+          <div class="card" style="flex:1;min-width:220px"><strong>Transparent education</strong><div class="muted">Clear instructions for at-home use; no exaggerated claims.</div></div>
+        </div>
+      </section>
+
+      <section style="margin-top:22px">
+        <h2>Illustrative case notes (anonymised)</h2>
+        <div class="card" style="margin-top:10px">
+          <strong>Case: olfactory preference & sleep routine</strong>
+          <div class="muted" style="margin-top:8px">Summary: Client described sensitivity to strong scents and a desire for a short bedtime routine. Plan: low-concentration lavender blend (0.5–1% dilution), patch test on forearm, gradual home trial with nightly journal. Outcome: client reported improved ease falling asleep within planned timeframe; adjustments were made for skin sensitivity.</div>
+        </div>
+      </section>
+
+      <section style="margin-top:22px">
+        <h2>Frequently asked questions</h2>
+        <div style="margin-top:8px">
+          <details>
+            <summary>How should I dilute essential oils?</summary>
+            <div class="muted">Dilution depends on age, use, and oil potency. Common safe at-home ranges: 0.5–1% for infants/older adults in sensitive contexts, 1–3% for daily adult blends, and up to 5% for targeted short-term topical use. Practitioner will advise specific ratios.</div>
+          </details>
+
+          <details>
+            <summary>What is a patch test?</summary>
+            <div class="muted">A patch test applies a small diluted amount to a forearm and checks for reaction over 24–48 hours. It’s a simple precaution before regular topical use.</div>
+          </details>
+
+          <details>
+            <summary>Are essential oils safe for pets?</summary>
+            <div class="muted">Some oils are unsafe for animals. Avoid diffusing for long periods around pets, and consult a veterinarian or practitioner for pet-safe options and concentrations.</div>
+          </details>
+
+          <details>
+            <summary>Can I use oils during pregnancy?</summary>
+            <div class="muted">Pregnancy requires a cautious, personalised approach. Some oils and uses are contraindicated; consult a practitioner and your healthcare provider before use.</div>
+          </details>
+        </div>
+      </section>
+
+      <footer>
+        <div>
+          <strong>Ready to begin?</strong>
+          <div class="muted">Book a consult to review safety and personal scent preferences.</div>
+        </div>
+        <div>
+          <a class="cta-primary" href="book.html">Book now</a>
+        </div>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

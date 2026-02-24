@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Method — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f8fffc;--card:#ffffff;--muted:#46555c;--accent:#19615a;--accent-2:#7fd0bb}
+    body{margin:0;font-family:Inter, system-ui;line-height:1.5;background:linear-gradient(180deg,#f8fffc,#f6fbfa);color:#07121a}
+    header{padding:16px 20px;display:flex;justify-content:space-between;align-items:center}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none}
+    .wrap{max-width:1100px;margin:18px auto;padding:18px}
+    .intro{display:flex;gap:18px;align-items:flex-start}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 12px 36px rgba(9,18,22,0.06)}
+    .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+    .step{padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#fbfffc);border:1px solid rgba(25,97,90,0.06)}
+    .muted{color:var(--muted)}
+    .cta-row{display:flex;gap:12px;margin-top:16px}
+    @media (max-width:900px){.steps{grid-template-columns:1fr}.intro{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="logo">HM</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Explore</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Concerns</a>
+      <a href="approach.html" style="color:var(--accent)">Method</a>
+      <a href="book.html">Book</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="intro card">
+      <div style="flex:1">
+        <h1 style="margin-top:0">Our working method: layered assessment + simple rhythms</h1>
+        <p class="muted">We design care around systems and the demands of daily life — mapping drivers quickly, choosing low-burden tests or trials, and sequencing follow-ups to maintain momentum.</p>
+
+        <div class="cta-row">
+          <button class="btn" style="padding:10px 12px;background:linear-gradient(90deg,#f6fffb,#fff);border-radius:10px;border:1px solid rgba(25,97,90,0.06)" id="open-inventory">Try the inventory</button>
+          <button class="btn" style="padding:10px 12px;background:linear-gradient(90deg,#eaf7ff,#fff);border-radius:10px;border:1px solid rgba(25,97,90,0.06)" id="open-exercise-3">Short pause</button>
+        </div>
+      </div>
+
+      <aside style="width:360px">
+        <div class="card" style="padding:12px;">
+          <h4 style="margin-top:0">Quick view: what to expect</h4>
+          <p class="muted">An intake maps priorities and creates a 60–90 minute agenda. Follow-ups are scheduled to match need — weekly for early stabilization, then spaced as gains consolidate.</p>
+        </div>
+      </aside>
+    </section>
+
+    <section style="margin-top:16px">
+      <div class="steps">
+        <div class="step">
+          <strong>Listen & Map</strong>
+          <div class="muted">A focused history: symptoms, routines, resources and daily stressors.</div>
+        </div>
+        <div class="step">
+          <strong>Low-risk trials</strong>
+          <div class="muted">Short, measurable experiments that carry minimal downside — sleep tweaks, movement anchors, micro-habits.</div>
+        </div>
+        <div class="step">
+          <strong>Coordination</strong>
+          <div class="muted">When needed, we coordinate labs and referrals and keep your plan simple across providers.</div>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:18px" class="card">
+      <h3 style="margin-top:0">How we set follow-up cadence</h3>
+      <p class="muted">Cadence balances urgency, complexity and your real-life bandwidth. Typical templates we use:</p>
+      <ul style="color:var(--muted)">
+        <li><strong>Initial stabilization:</strong> weekly or biweekly check-ins for the first 4–6 weeks.</li>
+        <li><strong>Active cycle:</strong> 6–8 week guided rhythm with short check-ins and tools.</li>
+        <li><strong>Maintenance:</strong> monthly or as-needed planning to sustain gains.</li>
+      </ul>
+      <p class="muted">During intake we co-design a cadence that you can keep up with — flexibility matters as much as clinical priority.</p>
+    </section>
+
+  </main>
+
+  <footer style="max-width:1100px;margin:20px auto;color:var(--muted)">
+    <div style="display:flex;justify-content:space-between"><div>&copy; {{BUSINESS_NAME}}</div><div>Questions? {{EMAIL}} • {{PHONE}}</div></div>
+  </footer>
+
+  <script>
+    // Lightweight actions: open inventory in services page and guided exercise
+    document.getElementById('open-inventory').addEventListener('click',function(){window.location.href='services.html#inventory'});
+    document.getElementById('open-exercise-3').addEventListener('click',function(){window.location.href='services.html'; setTimeout(()=>{const btn=document.getElementById('open-exercise'); if(btn) btn.click();},600)});
+  </script>
+</body>
+</html>

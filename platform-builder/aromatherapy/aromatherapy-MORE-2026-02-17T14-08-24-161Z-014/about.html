@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fffaf6;--ink:#2b2b2b;--muted:#6b6b6b;--accent:#7a4b2a;--card:#fff7ed}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#fbf3ea);font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial;color:var(--ink);-webkit-font-smoothing:antialiased}
+    header{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.2rem}
+    .logo{width:44px;height:44px;border-radius:8px;background:radial-gradient(circle at 30% 30%,#c07a49,#8a5a2b);display:grid;place-items:center;color:#fff;font-weight:700}
+    nav a{margin-left:1rem;color:var(--muted);text-decoration:none}
+    main{max-width:900px;margin:1.6rem auto;padding:1rem}
+    .panel{background:var(--card);padding:1.2rem;border-radius:12px;box-shadow:0 8px 24px rgba(35,20,8,0.06)}
+    h1{margin:0 0 .4rem}
+    .muted{color:var(--muted)}
+    .process{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1rem}
+    .step{background:white;padding:1rem;border-radius:8px}
+    .quote{margin-top:1rem;font-style:italic;color:var(--muted)}
+    footer{margin-top:1rem;padding:1rem;border-radius:10px;background:linear-gradient(180deg,rgba(122,75,42,0.06),transparent)}
+    .reveal{opacity:0;transform:translateY(10px);transition:opacity .6s ease,transform .6s ease}
+    .reveal-visible{opacity:1;transform:none}
+    @media(prefers-reduced-motion:reduce){.reveal{transition:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:.8rem;align-items:center">
+      <div class="logo">A</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:.85rem;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav aria-label="Secondary Navigation">
+      <a href="index.html">Nest</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Formulations</a>
+      <a href="shop.html">Boutique</a>
+      <a href="pricing.html">Rates</a>
+      <a href="about.html" style="font-weight:700;color:var(--accent)">About</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="panel reveal" data-reveal>
+      <h1>How we make scent intentional</h1>
+      <p class="muted">We combine careful botanical knowledge with simple, repeatable practices. Sessions are designed to be pragmatic and safety-forward — approaches that may support everyday steadiness and clearer routines.</p>
+
+      <div class="process">
+        <div class="step reveal" data-reveal>
+          <strong>1. Intake</strong>
+          <p class="muted small">A thorough intake clarifies goals, sensitivities, and household cautions (pets, pregnancy, medications).</p>
+        </div>
+        <div class="step reveal" data-reveal>
+          <strong>2. Formulation</strong>
+          <p class="muted small">We draft a short, practical protocol and a simple blend with conservative dilution and a patch-test plan.</p>
+        </div>
+        <div class="step reveal" data-reveal>
+          <strong>3. Integration</strong>
+          <p class="muted small">Short practices and placement suggestions that fit into daily routines — inhalation cues, diffuser timing, and topical guidance if appropriate.</p>
+        </div>
+      </div>
+
+      <p class="quote">"Plants as approachable allies you can work with day to day."</p>
+    </section>
+
+    <section class="panel reveal" data-reveal style="margin-top:1rem">
+      <h2>About the practice</h2>
+      <p class="muted">Work is informed by safety standards and conservative application. We do not offer medical diagnoses; our recommendations may support relaxation, focus, or sleep when used thoughtfully and as part of a broader wellness approach.</p>
+      <h3 style="margin-top:.8rem">Meet the practitioner</h3>
+      <p class="muted small">Practitioner holds formal study in botanical aromatics and clinical safety protocols. Consultations emphasize clear instructions, dilution math, and practical patch testing. To plan a session, use the Reserve link or the Session Planner on Rates and Book pages.</p>
+    </section>
+
+    <section class="panel reveal" data-reveal style="margin-top:1rem">
+      <h2>Values</h2>
+      <ul class="muted">
+        <li>Safety-first formulations</li>
+        <li>Simple, repeatable practices</li>
+        <li>Transparent guidance and informed consent</li>
+      </ul>
+
+      <footer>
+        <strong>Ready to reserve?</strong>
+        <p class="muted">Use the Reserve link to choose a time or reach out via {{EMAIL}}. Phone: {{PHONE}}.</p>
+        <a class="btn-ghost" href="book.html">Reserve a time</a>
+      </footer>
+    </section>
+
+  </main>
+
+  <script>
+    // Reveal behavior with accessibility
+    (function(){
+      const prefersReduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const reveals = document.querySelectorAll('[data-reveal]');
+      if(prefersReduce){
+        reveals.forEach(r=>r.classList.add('reveal-visible'));
+        return;
+      }
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('reveal-visible'); io.unobserve(e.target); } });
+      },{threshold:0.15});
+      reveals.forEach(r=>io.observe(r));
+    })();
+  </script>
+</body>
+</html>

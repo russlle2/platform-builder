@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#07161b;--card:#0d2630;--accent:#8be6d1;--muted:#9cc7c2}
+    body{margin:0;font-family:Inter,system-ui, -apple-system, 'Segoe UI', Roboto;background:linear-gradient(180deg,#05111a,#071b23);color:#ecfdf7}
+    .wrap{max-width:980px;margin:26px auto;padding:22px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{color:#bfeee0;margin-left:16px;text-decoration:none}
+
+    main{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px}
+
+    /* Pricing comparator */
+    .comp{display:flex;gap:8px;align-items:center}
+    .switch{background:rgba(255,255,255,0.03);padding:6px;border-radius:999px;display:flex}
+    .opt{padding:8px 12px;border-radius:999px;cursor:pointer}
+    .opt.active{background:var(--accent);color:#052a26;font-weight:800}
+    .prices{margin-top:12px;display:flex;gap:12px;align-items:baseline}
+    .price{font-size:28px;font-weight:800}
+    .desc{color:var(--muted);font-size:13px}
+
+    /* booking form */
+    form{display:grid;gap:10px}
+    input,select,button{padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+    button{background:var(--accent);border:none;color:#052a26;font-weight:800;cursor:pointer}
+
+    /* mood-to-method */
+    .moods{display:flex;gap:8px;margin-top:12px}
+    .chip{padding:8px 10px;border-radius:12px;background:rgba(255,255,255,0.02);cursor:pointer}
+    .chip.active{background:rgba(139,230,209,0.12);font-weight:700}
+
+    .pattern{position:fixed;inset:0;pointer-events:none;background-image:url('assets/img/pattern.svg');opacity:0.06}
+
+    @media (max-width:880px){main{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="pattern" aria-hidden></div>
+  <div class="wrap">
+    <header>
+      <div style="font-weight:700">Reserve a session — {{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="events.html">Sessions</a>
+        <a href="pricing.html">Plans</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <section>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div class="muted">Reserve</div>
+              <h2 style="margin:6px 0 0 0">Book a place or try a starter pack</h2>
+            </div>
+            <div style="text-align:right">
+              <div class="muted">Questions?</div>
+              <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">Contact us</a>
+            </div>
+          </div>
+
+          <div style="margin-top:14px">
+            <div style="font-weight:700">Choose pricing view</div>
+            <div class="comp" style="margin-top:8px">
+              <div class="switch" id="priceToggle">
+                <div class="opt active" data-mode="monthly">Monthly</div>
+                <div class="opt" data-mode="pack">3-session pack</div>
+              </div>
+              <div style="margin-left:12px;color:var(--muted)" id="priceLabel">Billed monthly or as package</div>
+            </div>
+
+            <div class="prices" aria-hidden="false">
+              <div>
+                <div class="price" id="priceMain">—</div>
+                <div class="desc" id="priceSub">Loading…</div>
+              </div>
+              <div style="margin-left:auto;text-align:right">
+                <div class="muted">Membership</div>
+                <div style="font-weight:700">Resonance Circle</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:16px">
+            <form id="bookingForm" onsubmit="return false">
+              <label class="muted">Full name</label>
+              <input name="name" placeholder="Your name" required>
+              <label class="muted">Email</label>
+              <input name="email" type="email" placeholder="you@example.com" required>
+              <label class="muted">Select time</label>
+              <select name="time">
+                <option>Friday — 6:30pm</option>
+                <option>Saturday — 10:00am</option>
+                <option>Sunday — 4:30pm</option>
+              </select>
+
+              <div style="margin-top:12px">
+                <div class="muted">How do you feel right now?</div>
+                <div class="moods" id="bookMoods">
+                  <div class="chip" data-key="tired">Worn out</div>
+                  <div class="chip" data-key="wired">Ramped up</div>
+                  <div class="chip" data-key="sad">Low</div>
+                  <div class="chip" data-key="curious">Curious</div>
+                </div>
+                <div class="muted" style="margin-top:8px" id="bookAdvice">Select a state to get a tailored recommendation.</div>
+              </div>
+
+              <div style="display:flex;gap:8px;margin-top:12px">
+                <button id="bookBtn">{{PRIMARY_CTA_LABEL}}</button>
+                <button type="button" onclick="alert('Hold: contact us at {{PHONE}}')" style="background:transparent;border:1px solid rgba(255,255,255,0.04);">Call to reserve</button>
+              </div>
+
+              <div class="muted" style="margin-top:12px;font-size:13px">Note: If you have epilepsy triggered by strobe or flicker, or have severe vestibular disorders, ask us about adaptations before booking. For urgent medical conditions, contact your care team.</div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <aside>
+        <div class="card">
+          <div style="font-weight:700">Package snapshot</div>
+          <div class="muted" style="margin-top:8px">Choose between a rolling monthly credit or a small-session pack. Toggle to see comparisons and animated totals.</div>
+
+          <div style="margin-top:12px;border-radius:10px;padding:12px;background:rgba(255,255,255,0.02);">
+            <div style="font-size:12px;color:var(--muted)">Displayed price</div>
+            <div id="miniPrice" style="font-weight:800;font-size:20px;margin-top:6px">—</div>
+            <div style="margin-top:8px"><a href="pricing.html" style="color:var(--accent);text-decoration:none">Full pricing</a></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <div style="font-weight:700">Need a private session?</div>
+          <div class="muted" style="margin-top:8px">We offer 1:1 sound sessions and small private groups. Contact <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a> for options.</div>
+        </div>
+      </aside>
+    </main>
+
+  </div>
+
+  <script>
+    // Pricing comparator: animated numbers
+    (function(){
+      const toggle = document.getElementById('priceToggle');
+      const opts = toggle.querySelectorAll('.opt');
+      const priceMain = document.getElementById('priceMain');
+      const priceSub = document.getElementById('priceSub');
+      const priceLabel = document.getElementById('priceLabel');
+      const miniPrice = document.getElementById('miniPrice');
+
+      // Data — unique framing
+      const data = {
+        monthly:{amount:28,sub:'per month — one session/week credit'},
+        pack:{amount:72,sub:'three-session pack — use within 90 days (per pack)'}
+      };
+
+      function setMode(mode){
+        opts.forEach(o=>o.classList.toggle('active', o.getAttribute('data-mode')===mode));
+        // animate numbers
+        animateNumber(priceMain, data[mode].amount, '$');
+        priceSub.textContent = data[mode].sub;
+        priceLabel.textContent = mode === 'monthly' ? 'Billed monthly' : 'One-time pack price';
+        miniPrice.textContent = '$' + data[mode].amount + (mode==='monthly'?'/mo':'');
+      }
+
+      opts.forEach(o=>o.addEventListener('click',()=>setMode(o.getAttribute('data-mode'))));
+
+      // simple animation
+      function animateNumber(el, to, prefix){
+        prefix = prefix||'';
+        const from = parseFloat(el.getAttribute('data-current')||0);
+        const start = performance.now();
+        const dur = 500;
+        function frame(now){
+          const t = Math.min(1,(now-start)/dur);
+          const val = Math.round(from + (to-from)*ease(t));
+          el.textContent = prefix + val;
+          if(t<1) requestAnimationFrame(frame); else el.setAttribute('data-current',to);
+        }
+        requestAnimationFrame(frame);
+      }
+      function ease(t){return (--t)*t*t+1}
+
+      // init
+      setMode('monthly');
+
+      // Mood-to-method on booking form
+      const moods = {
+        tired:'Slow Unwind — long tones and gentle pacing will be prioritized.',
+        wired:'Grounding Pulse — low frequencies and steady anchors.',
+        sad:'Warm Reframe — close textures to invite safety.',
+        curious:'Exploratory Flow — responsive motifs and attention play.'
+      };
+
+      const chips = document.getElementById('bookMoods');
+      const bookAdvice = document.getElementById('bookAdvice');
+      const bookBtn = document.getElementById('bookBtn');
+
+      chips.addEventListener('click',(e)=>{
+        const chip = e.target.closest('.chip'); if(!chip) return;
+        [...chips.querySelectorAll('.chip')].forEach(c=>c.classList.remove('active'));
+        chip.classList.add('active');
+        const key = chip.getAttribute('data-key');
+        const advise = moods[key] || 'Select a mood';
+        // morph advice and CTA
+        bookAdvice.textContent = advise;
+        const ctaMap = {tired:'Reserve: Slow Unwind',wired:'Reserve: Grounding Pulse',sad:'Reserve: Warm Reframe',curious:'Reserve: Exploratory Flow'};
+        animateCtaChange(bookBtn, ctaMap[key]);
+      });
+
+      function animateCtaChange(el, label){
+        el.style.transition='transform .14s ease,opacity .14s ease';
+        el.style.transform='translateY(-6px)';
+        el.style.opacity='0.6';
+        setTimeout(()=>{ el.textContent = label; el.style.transform='translateY(0)'; el.style.opacity='1'; },140);
+      }
+
+    })();
+  </script>
+</body>
+</html>

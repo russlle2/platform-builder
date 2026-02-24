@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Boutique — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Shop curated kits, roll-ons, and diffusers. Membership offers discounts on select items.">
+  <style>
+    :root{--bg:#fff7f2;--brand:#9b5b36;--accent:#d28a56;--muted:#5e4638}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,var(--bg),#fffdfa);color:var(--muted)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:20px}
+    .logo{font-weight:800;color:var(--brand)}
+    nav a{margin-left:14px;text-decoration:none;color:var(--muted)}
+    .container{max-width:1100px;margin:18px auto;padding:18px}
+    .hero{display:flex;justify-content:space-between;align-items:center}
+    .badge{background:rgba(210,138,86,0.12);color:var(--accent);padding:6px 10px;border-radius:999px}
+    .products{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:18px}
+    .card{background:white;border-radius:12px;padding:14px;box-shadow:0 8px 30px rgba(155,91,54,0.08);border:1px solid rgba(155,91,54,0.06)}
+    .price{font-weight:800;color:var(--brand);margin-top:8px}
+    .muted{font-size:13px;color:#7a5b6a}
+    .actions{margin-top:12px;display:flex;gap:8px}
+    .btn{padding:8px 12px;border-radius:10px;text-decoration:none;font-weight:700}
+    .btn.primary{background:var(--brand);color:#fff}
+    .btn.ghost{background:transparent;border:1px solid var(--brand);color:var(--brand)}
+    .footnote{font-size:13px;color:#6b5345;margin-top:12px}
+    footer{margin-top:22px;color:#7a5b4a}
+  </style>
+</head>
+<body>
+  <!-- subtle repeating motif as inline svg in the corner -->
+  <svg style="position:fixed;left:10px;top:10px;opacity:0.08;width:320px;height:320px;z-index:-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320">
+    <defs>
+      <pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse">
+        <circle cx="3" cy="3" r="1.8" fill="#d8b39a"/>
+      </pattern>
+    </defs>
+    <rect width="320" height="320" fill="url(#dots)"/>
+  </svg>
+
+  <header>
+    <div class="logo">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Services</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html" style="color:var(--brand)">Shop</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="hero">
+      <div>
+        <h1 style="margin:0;color:var(--brand)">Curated Boutique</h1>
+        <div class="muted">Kits, roll-ons, and diffusers crafted for everyday ritual. Members receive periodic discounts.</div>
+      </div>
+      <div style="text-align:right">
+        <div class="badge">Membership perks</div>
+        <div style="margin-top:8px"><a class="btn primary" href="pricing.html">Join &amp; save</a></div>
+      </div>
+    </div>
+
+    <section style="margin-top:18px">
+      <div class="products">
+        <!-- Kit card -->
+        <article class="card">
+          <h3 style="margin:0;color:var(--brand)">Starter Ritual Kit</h3>
+          <div class="muted">Includes three 5ml signature blends, a roller bottle, and usage guide.</div>
+          <div class="price">$48</div>
+          <div class="actions"><a class="btn primary" href="#">Add to cart</a><a class="btn ghost" href="blends.html">Blend notes</a></div>
+        </article>
+
+        <!-- Roll-ons -->
+        <article class="card">
+          <h3 style="margin:0;color:var(--brand)">Pocket Roll-On — Morning Clarity</h3>
+          <div class="muted">Pre-diluted (2–3%) in fractionated coconut oil. For inhalation and short topical use.</div>
+          <div class="price">$16</div>
+          <div class="actions"><a class="btn primary" href="#">Add to cart</a><a class="btn ghost" href="blends.html">Safety info</a></div>
+        </article>
+
+        <article class="card">
+          <h3 style="margin:0;color:var(--brand)">Pocket Roll-On — Evening Ease</h3>
+          <div class="muted">Low dilution for evening inhalation; gentle floral-resin profile.</div>
+          <div class="price">$16</div>
+          <div class="actions"><a class="btn primary" href="#">Add to cart</a><a class="btn ghost" href="blends.html">Blend notes</a></div>
+        </article>
+
+        <!-- Diffuser -->
+        <article class="card">
+          <h3 style="margin:0;color:var(--brand)">Ultrasonic Diffuser — Terra</h3>
+          <div class="muted">Compact diffuser with gentle mist and warm LED glow; ideal for small to mid-size rooms.</div>
+          <div class="price">$62</div>
+          <div class="actions"><a class="btn primary" href="#">Add to cart</a><a class="btn ghost" href="contact.html">Product specs</a></div>
+        </article>
+
+        <!-- Seasonal mini sets -->
+        <article class="card">
+          <h3 style="margin:0;color:var(--brand)">Seasonal Mini Set</h3>
+          <div class="muted">Three 2ml vials curated for the current season. Great as a gift or sampler.</div>
+          <div class="price">$28</div>
+          <div class="actions"><a class="btn primary" href="#">Add to cart</a><a class="btn ghost" href="blends.html">See blends</a></div>
+        </article>
+
+        <!-- Custom blend voucher -->
+        <article class="card">
+          <h3 style="margin:0;color:var(--brand)">Custom Blend Voucher</h3>
+          <div class="muted">Redeemable toward a bespoke blend session with {{PRACTITIONER_NAME}}. Includes safety review.</div>
+          <div class="price">$95</div>
+          <div class="actions"><a class="btn primary" href="#">Purchase</a><a class="btn ghost" href="book.html">Book session</a></div>
+        </article>
+
+        <!-- Diffuser accessories -->
+        <article class="card">
+          <h3 style="margin:0;color:var(--brand)">Diffuser Care Kit</h3>
+          <div class="muted">Cleaning solution and replacement pads to keep diffusion gentle and even.</div>
+          <div class="price">$14</div>
+          <div class="actions"><a class="btn primary" href="#">Add to cart</a><a class="btn ghost" href="contact.html">Shipping</a></div>
+        </article>
+
+      </div>
+
+      <div class="footnote">All products are crafted with safety in mind. See blends for dilution and patch testing guidance. If pregnant, nursing, or managing chronic conditions, please consult with your healthcare provider and our practitioner before use.</div>
+    </section>
+
+    <section style="margin-top:18px">
+      <h2 style="color:var(--brand)">Shop FAQ</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px">
+        <div style="background:#fff;padding:12px;border-radius:10px;border:1px solid rgba(155,91,54,0.05)"><strong>Dilution information</strong><div class="muted">Product pages list intended dilution. For topical use, follow the label and perform a patch test.</div></div>
+        <div style="background:#fff;padding:12px;border-radius:10px;border:1px solid rgba(155,91,54,0.05)"><strong>Patch test</strong><div class="muted">Apply a small amount of diluted product to inner arm; wait 24 hours. Stop if irritation occurs.</div></div>
+        <div style="background:#fff;padding:12px;border-radius:10px;border:1px solid rgba(155,91,54,0.05)"><strong>Pets</strong><div class="muted">Avoid concentrated sprays around animals; offer pet-free zones. Contact us for pet-specific guidance.</div></div>
+        <div style="background:#fff;padding:12px;border-radius:10px;border:1px solid rgba(155,91,54,0.05)"><strong>Pregnancy &amp; nursing</strong><div class="muted">Some oils are not recommended. Please speak with a healthcare provider before use and contact us for safer alternatives.</div></div>
+      </div>
+    </section>
+
+    <div style="margin-top:18px;display:flex;justify-content:space-between;align-items:center">
+      <div class="muted">Questions or wholesale inquiries? Reach out at <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      <div><a class="btn ghost" href="contact.html">Contact us</a></div>
+    </div>
+
+    <footer>© {{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • {{PHONE}}</footer>
+  </div>
+</body>
+</html>

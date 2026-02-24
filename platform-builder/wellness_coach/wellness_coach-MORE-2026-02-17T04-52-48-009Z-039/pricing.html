@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Investment Tiers — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7fbf9;--card:#ffffff;--muted:#6b7280;--accent:#2f855a;--accent-2:#0ea5a2;--glass:rgba(255,255,255,0.6)}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#0f172a;background:linear-gradient(180deg,#f7fbf9 0%,#ecfdf5 60%);-webkit-font-smoothing:antialiased}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:transparent}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    nav a{margin-left:16px;color:#064e3b;text-decoration:none;font-weight:600}
+    main{max-width:980px;margin:22px auto;padding:28px}
+    .hero{display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start}
+    .hero-card{background:var(--card);padding:22px;border-radius:12px;box-shadow:0 6px 18px rgba(2,6,23,0.06)}
+    h1{margin:0 0 8px 0;font-size:22px;color:#052e21}
+    p.lead{margin:0;color:var(--muted)}
+    .mood{margin-top:16px}
+    .mood label{display:block;font-size:13px;color:#064e3b;margin-bottom:6px}
+    .mood .options{display:flex;gap:8px;flex-wrap:wrap}
+    .mood button{background:#eefcf3;border:1px solid rgba(47,133,90,0.12);padding:10px 12px;border-radius:10px;cursor:pointer}
+    .method{margin-top:18px;padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(47,133,90,0.06),rgba(14,165,162,0.02));font-size:14px}
+    .cta{display:inline-block;margin-top:12px;padding:10px 14px;background:var(--accent);color:#fff;border-radius:10px;text-decoration:none}
+    .tiers{display:flex;gap:14px;margin-top:22px}
+    .tier{flex:1;padding:18px;border-radius:12px;background:var(--card);box-shadow:0 8px 22px rgba(2,6,23,0.06);border:1px solid rgba(15,23,42,0.04)}
+    .tier h3{margin:0 0 8px 0}
+    .price{font-size:20px;color:var(--accent);margin:6px 0}
+    .features{font-size:14px;color:var(--muted);margin:8px 0 0 0}
+    .progress-panel{background:linear-gradient(180deg,rgba(14,165,162,0.02),transparent);padding:14px;border-radius:12px;margin-top:18px}
+    .goals{display:flex;gap:8px;flex-wrap:wrap}
+    .goal{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#fff;border-radius:10px;border:1px solid rgba(2,6,23,0.04)}
+    .pathmap{margin-top:12px;background:linear-gradient(90deg,#ecfdf5,#fff);padding:12px;border-radius:10px}
+    .svg-map{width:100%;height:40px}
+    footer{margin-top:28px;padding:18px 0;color:var(--muted);font-size:13px}
+    .muted{color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">WC</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Profile</a>
+      <a href="services.html">Nourishment</a>
+      <a href="programs.html">Memberships</a>
+      <a href="pricing.html">Investments</a>
+      <a href="testimonials.html">Voices</a>
+      <a href="book.html">Start</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+  <main>
+    <div class="hero">
+      <div class="hero-card">
+        <h1>Membership investments tuned to steady progress</h1>
+        <p class="lead">No quick fixes — frameworks and small practices that build a livable month. Pick the rhythm that fits your days.</p>
+        <div class="mood">
+          <label>How are you feeling right now?</label>
+          <div class="options" role="list">
+            <button data-mood="scattered">Scattered</button>
+            <button data-mood="tired">Low Energy</button>
+            <button data-mood="curious">Curious</button>
+            <button data-mood="steady">Steady</button>
+            <button data-mood="urgent">Under Pressure</button>
+          </div>
+          <div class="method" id="methodArea">
+            <strong>Recommended approach:</strong>
+            <div id="methodText">Choose your current state to shape a recommended plan. The CTA will adapt to fit the next step.</div>
+            <a id="moodCTA" class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          </div>
+        </div>
+        <div class="progress-panel" aria-live="polite">
+          <strong>Map a 30-day path</strong>
+          <p class="muted">Pick up to three focus areas. The map visualizes habit blocks for the next month.</p>
+          <div class="goals" id="goalsList">
+            <label class="goal"><input type="checkbox" value="sleep"> Better sleep</label>
+            <label class="goal"><input type="checkbox" value="movement"> Daily movement</label>
+            <label class="goal"><input type="checkbox" value="focus"> Focus windows</label>
+            <label class="goal"><input type="checkbox" value="meals"> Regular meals</label>
+            <label class="goal"><input type="checkbox" value="breath"> Breath practices</label>
+          </div>
+          <div style="margin-top:10px">
+            Intensity: <input id="intensity" type="range" min="1" max="5" value="3">
+          </div>
+          <div class="pathmap">
+            <svg class="svg-map" viewBox="0 0 300 40" preserveAspectRatio="none" id="pathSvg" aria-hidden="false"></svg>
+            <div id="pathSummary" style="font-size:13px;color:var(--muted);margin-top:8px"></div>
+          </div>
+        </div>
+      </div>
+      <aside class="hero-card">
+        <h3>Choose a membership frame</h3>
+        <div class="tiers">
+          <div class="tier">
+            <h3>Compass</h3>
+            <div class="price">$39 / month</div>
+            <div class="features">Weekly check-in • Habit templates • Community forum</div>
+          </div>
+          <div class="tier">
+            <h3>Rhythm</h3>
+            <div class="price">$79 / month</div>
+            <div class="features">Everything in Compass + biweekly coaching and personalized plan</div>
+          </div>
+          <div class="tier">
+            <h3>Anchor</h3>
+            <div class="price">$149 / month</div>
+            <div class="features">Priority support, bespoke routines, monthly 1:1 planning session</div>
+          </div>
+        </div>
+        <div style="margin-top:12px;font-size:13px;color:var(--muted)">All tiers focused on actionable habits and measurable checkpoints — no medical advice. Cancel any time.</div>
+      </aside>
+    </div>
+    <footer>
+      <div>Questions? Call <strong>{{PHONE}}</strong> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </footer>
+  </main>
+  <script>
+    (function(){
+      // Mood-to-Method mappings
+      const map = {
+        scattered:{label:'Micro-structure: brief cues, 10-minute resets and single-step wins.',cta:'Try a single-step reset'},
+        tired:{label:'Energy scaffolding: gentle movement, nutrition anchors and sleep cues.',cta:'Start an energy scaffold'},
+        curious:{label:'Experiment block: short trials to find reliable small wins.',cta:'Launch a 7-day trial'},
+        steady:{label:'Consolidation plan: steady habits with weekly review.',cta:'Consolidate my rhythm'},
+        urgent:{label:'Stabilize first: immediate calming rituals and 48-hour triage.',cta:'Begin a stabilization'}
+      };
+      document.querySelectorAll('.mood .options button').forEach(btn=>{
+        btn.addEventListener('click',e=>{
+          const key = btn.getAttribute('data-mood');
+          const entry = map[key];
+          document.getElementById('methodText').textContent = entry.label;
+          const cta = document.getElementById('moodCTA');
+          cta.textContent = entry.cta;
+          // subtle visual cue
+          btn.style.transform = 'translateY(-3px)';
+          setTimeout(()=>btn.style.transform='none',200);
+        });
+      });
+
+      // Progress meter / path map
+      const svg = document.getElementById('pathSvg');
+      const summary = document.getElementById('pathSummary');
+      function drawMap(){
+        const checked = Array.from(document.querySelectorAll('#goalsList input:checked')).map(i=>i.value);
+        const intensity = parseInt(document.getElementById('intensity').value,10);
+        svg.innerHTML = '';
+        const colors = {sleep:'#A7F3D0',movement:'#FEEBC8',focus:'#BFDBFE',meals:'#FCE7F3',breath:'#E9D5FF'};
+        // allocate day blocks across selected goals, weighted by intensity
+        const days = 30;
+        const allocations = {};
+        const weight = Math.max(1,checked.length);
+        checked.forEach((g,i)=>allocations[g]=Math.max(1,Math.round((days/weight)*(intensity/3))));
+        // ensure sum <= days adjust
+        let sum = Object.values(allocations).reduce((a,b)=>a+b,0);
+        while(sum>days){
+          for(const k in allocations){ if(sum<=days) break; if(allocations[k]>1){allocations[k]--; sum--; }}
+          if(Object.keys(allocations).length===0) break;
+        }
+        // create sequence array length=days, fill with goal keys or empty
+        const seq = new Array(days).fill(null);
+        let idx=0;
+        for(const k of Object.keys(allocations)){
+          let count = allocations[k];
+          while(count>0 && idx<days){ seq[idx]=k; idx++; count--; }
+        }
+        // leftover days become 'rest'
+        for(let i=0;i<days;i++) if(!seq[i]) seq[i]='rest';
+        // draw rects
+        const rectW = 300/days;
+        seq.forEach((s,i)=>{
+          const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+          rect.setAttribute('x',(i*rectW).toFixed(2));
+          rect.setAttribute('y','4');
+          rect.setAttribute('width',rectW.toFixed(2));
+          rect.setAttribute('height','32');
+          rect.setAttribute('rx','4');
+          rect.setAttribute('fill', s==='rest' ? '#F1F5F9' : colors[s] || '#E2E8F0');
+          rect.setAttribute('stroke','#fff');
+          svg.appendChild(rect);
+        });
+        // summary text
+        if(checked.length===0){
+          summary.textContent = 'No focus selected — the month stays flexible. Select goals to see a simple 30-day habit map.';
+        } else {
+          const parts = Object.keys(allocations).map(k=>`${allocations[k]} days for ${k}`);
+          summary.textContent = 'Plan: ' + parts.join(' • ') + ` • Intensity ${intensity}/5`;
+        }
+      }
+      document.querySelectorAll('#goalsList input').forEach(inp=>inp.addEventListener('change',drawMap));
+      document.getElementById('intensity').addEventListener('input',drawMap);
+      drawMap();
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book a Session — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--brand:#1f6fb4;--bg:#ffffff;--card:#fbfdff;--muted:#6b7280}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:#f7fafc;color:#0b1220}
+    .wrap{max-width:900px;margin:28px auto;padding:20px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    .lead{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 12px 30px rgba(12,15,20,0.04);display:flex;gap:16px;align-items:center;margin-top:18px}
+    .lead svg{width:84px;height:84px}
+    .lead h2{margin:0}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:20px;margin-top:18px}
+    .panel{background:#fff;padding:18px;border-radius:12px;box-shadow:0 6px 20px rgba(12,15,20,0.04)}
+    label{display:block;margin-top:10px;font-size:14px}
+    input,textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef8;margin-top:6px}
+    .btn{display:inline-block;background:var(--brand);color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;margin-top:12px}
+    .muted{color:var(--muted);font-size:13px}
+    .small{font-size:13px;color:#475569}
+    @media (max-width:880px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1 style="margin:0">{{BUSINESS_NAME}}</h1>
+        <div class="small">{{TAGLINE}}</div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="specialties.html">Paths</a>
+        <a href="approach.html">Method</a>
+        <a href="fees.html">Invest</a>
+        <a href="faq.html">FAQ</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <div class="lead">
+      <!-- unique pattern svg for booking page -->
+      <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+        <rect x="4" y="4" width="112" height="112" rx="14" fill="#eef9ff"/>
+        <g fill="#1f6fb4" opacity="0.9">
+          <circle cx="36" cy="36" r="6"/>
+          <circle cx="84" cy="36" r="5"/>
+          <circle cx="60" cy="78" r="7"/>
+        </g>
+      </svg>
+      <div>
+        <h2>Reserve a time — simple next steps</h2>
+        <div class="muted">Choose an introductory conversation or schedule an intake. If you’re unsure which option fits, use the short call request.</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="panel">
+        <h3 style="margin:0">Booking form</h3>
+        <p class="muted">I will reply within 48 business hours with availability. This form is used to coordinate scheduling; it does not create a therapeutic relationship until a session is confirmed.</p>
+
+        <form id="booking" onsubmit="event.preventDefault();alert('Request sent — this is a placeholder. Contact: '+document.getElementById('email').value+'')">
+          <label for="name">Full name</label>
+          <input id="name" name="name" required>
+
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required>
+
+          <label for="phone">Phone</label>
+          <input id="phone" name="phone" type="tel">
+
+          <label for="service">I am requesting</label>
+          <select id="service" name="service">
+            <option>Introductory 15-minute phone consult</option>
+            <option>Initial intake — 60 minutes</option>
+            <option>Therapy session — 50 minutes</option>
+            <option>VIP/day intensive (limited availability)</option>
+          </select>
+
+          <label for="notes">Brief notes (reason for seeking support, preferences, any accessibility needs)</label>
+          <textarea id="notes" name="notes" rows="4"></textarea>
+
+          <label><input type="checkbox" required> I understand this request is for scheduling and is not an emergency service.</label>
+
+          <button class="btn" type="submit">Request appointment</button>
+        </form>
+
+        <div style="margin-top:14px" class="muted">
+          Typical reply time: within 2 business days. If you need urgent help, call emergency services or your local crisis number. If you are in {{STATE}} or {{CITY}} and seek immediate support, dial your local emergency line.
+        </div>
+
+      </div>
+
+      <aside class="panel">
+        <h4 style="margin:0">What to expect next</h4>
+        <div class="muted" style="margin-top:8px">After you request, you'll receive an email confirming options and the next available appointment. The first confirmed appointment includes a brief intake and consent forms to review prior to your session.</div>
+
+        <h4 style="margin-top:12px">Preparing for your intake</h4>
+        <ul style="padding-left:18px;color:#334155">
+          <li>Have a private, comfortable space for telehealth visits.</li>
+          <li>Think briefly about your goals for therapy (what would feel different?).</li>
+          <li>List any current medications or providers you want to coordinate with.</li>
+        </ul>
+
+        <h4 style="margin-top:12px">Payments & paperwork</h4>
+        <div class="muted">You will receive a secure invoice for your first session. Paperwork (consent, privacy notice) is handled electronically before the session. If cost is a concern, mention it in your form; limited sliding-scale options exist.</div>
+
+        <h4 style="margin-top:12px">Confidentiality & limits</h4>
+        <div class="muted">All clinical communications are confidential except where disclosure is mandated by law (safety concerns, abuse reporting, court order). I will review these limits with you during intake.</div>
+
+        <div style="margin-top:12px"><strong>Contact</strong><div class="muted">Phone: {{PHONE}}<br>Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div></div>
+      </aside>
+    </div>
+
+    <div style="margin-top:18px" class="panel">
+      <h4 style="margin:0">Consent & scope note</h4>
+      <p class="muted">By requesting an appointment you acknowledge that therapy is a collaborative process without guaranteed outcomes. I work with adults on anxiety, trauma recovery, relationships, life transitions, and burnout. For immediate danger or crisis, contact emergency services. Licensing: {{THERAPIST_NAME}}, {{LICENSE}}.</p>
+    </div>
+
+    <footer style="margin-top:14px;color:var(--muted);font-size:13px">If you have questions about accessibility, languages offered, or coordination with other providers, include that in the form. For direct scheduling, call {{PHONE}}.</footer>
+  </div>
+</body>
+</html>

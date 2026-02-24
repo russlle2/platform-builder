@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Questions — FAQ — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#081318;--glass:#ffffff12;--accent:#7bd389;--muted:#bcd9d1;--text:#e8fbf4}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#071016 0%,#031018 100%);color:var(--text);-webkit-font-smoothing:antialiased}
+    .container{max-width:940px;margin:36px auto;padding:22px;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.006));backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.03)}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;margin-left:10px}
+    h1{margin:6px 0}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
+    .qa{background:transparent;padding:12px;border-radius:10px}
+    .q{padding:12px;border-radius:8px;margin-bottom:10px;background:linear-gradient(180deg,rgba(255,255,255,0.012),rgba(255,255,255,0.005));border:1px solid rgba(255,255,255,0.02)}
+    .muted{color:var(--muted)}
+    .toggle{display:flex;gap:8px;margin-top:8px}
+    .cta{display:inline-block;padding:10px 12px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#4fc3b1);color:#042018;text-decoration:none;font-weight:600}
+    .notice{font-size:13px;color:var(--muted);margin-top:10px}
+    .badges{display:flex;gap:8px;flex-wrap:wrap}
+    .cred{padding:8px;border-radius:8px;background:rgba(255,255,255,0.02);cursor:default;position:relative}
+    .tip{position:absolute;left:105%;top:50%;transform:translateY(-50%);background:#041617;padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.04);white-space:nowrap;opacity:0;pointer-events:none;transition:all 160ms}
+    .cred:hover .tip{opacity:1}
+
+    @media(max-width:880px){.grid{grid-template-columns:1fr}.cred{font-size:13px}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <div style="font-weight:600">{{BUSINESS_NAME}}</div>
+        <nav style="margin-top:6px">
+          <a href="index.html">Home</a>
+          <a href="events.html">Gatherings</a>
+          <a href="pricing.html">Rates</a>
+          <a href="about.html">About</a>
+          <a href="book.html">Reserve</a>
+        </nav>
+      </div>
+      <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+    </header>
+
+    <h1>Questions & Considerations</h1>
+    <div class="grid">
+      <main>
+        <section class="qa">
+          <div class="q"><strong>Who benefits from these sessions?</strong><div class="muted" style="margin-top:8px">People looking to downshift attention, recover from stress, or improve rest. Sessions support steady breathing and gentle somatic awareness.</div></div>
+
+          <div class="q"><strong>Do I need experience?</strong><div class="muted" style="margin-top:8px">No—most offerings are accessible. We structure time and provide gentle cues to help you return from sound without strain.</div></div>
+
+          <div class="q"><strong>Are sessions loud?</strong><div class="muted" style="margin-top:8px">We calibrate to the room. You can choose gentle / medium / intense textures when booking. Intense does not mean harmful volume—it's about sustained resonance and density.</div></div>
+
+          <div class="q"><strong>Contraindications & safety</strong>
+            <div class="muted" style="margin-top:8px">Most people attend safely. Please consult your physician before attending if you have any of the following: epilepsy or seizure disorder, recent head injury, recent eye surgery, sensitivity to sustained low frequencies, pacemaker or certain implanted medical devices, or are in the early stages of pregnancy. If you are unsure, contact us at <a href="mailto:{{EMAIL}}" style="color:var(--muted);text-decoration:none">{{EMAIL}}</a>. Staff will offer quieter placement and can adapt the practice.</div>
+          </div>
+
+          <div class="q"><strong>Privacy & accessibility</strong><div class="muted" style="margin-top:8px">We hold space that is fragrance-free by request and wheelchair accessible at select venues. Notify us when reserving for specific accommodations.</div></div>
+        </section>
+
+        <section style="margin-top:10px">
+          <strong class="muted">Bookings & fees</strong>
+          <div class="q"><strong>Can I book privately?</strong><div class="muted" style="margin-top:8px">Yes — bespoke sessions and workplace gatherings are offered. See private sessions page for options and sliding-scale framing.</div></div>
+          <div class="q"><strong>Cancellation policy</strong><div class="muted" style="margin-top:8px">Please notify us 24 hours in advance to reschedule or receive a partial credit. Late cancellations may forfeit the fee.</div></div>
+        </section>
+
+      </main>
+
+      <aside>
+        <div class="card" style="padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid rgba(255,255,255,0.02)">
+          <strong>Proof & trust</strong>
+          <div class="notice">Voices and local partnerships rotate — samples below.</div>
+
+          <div class="badges" style="margin-top:12px">
+            <div class="cred">Local Clinic<div class="tip">Support work with community health partners</div></div>
+            <div class="cred">Arts Collective<div class="tip">Featured collaboration with regional arts groups</div></div>
+            <div class="cred">Somatic Guide<div class="tip">Lead facilitator with somatic training</div></div>
+          </div>
+
+          <div style="margin-top:12px">
+            <small class="muted">Testimonial rotation:</small>
+            <div id="testimony-faq" style="margin-top:10px;background:transparent;padding:10px;border-radius:8px"></div>
+          </div>
+
+          <div style="margin-top:12px"><a class="cta" href="book.html">Find your texture</a></div>
+        </div>
+      </aside>
+    </div>
+
+    <footer style="margin-top:18px;display:flex;justify-content:space-between;align-items:center">
+      <small class="muted">Questions? Call <a href="tel:{{PHONE}}" style="color:var(--muted);text-decoration:none">{{PHONE}}</a></small>
+      <div class="muted">© <span id="year"></span> {{BUSINESS_NAME}}</div>
+    </footer>
+  </div>
+
+  <script>
+    // Testimonial rotate for FAQ
+    (function(){
+      const notes=[
+        {t:'"A calm, clear session with real attention to comfort."',w:'— Noelle'},
+        {t:'"The facilitator listened first. I felt safe the whole way."',w:'— Aaron'},
+        {t:'"I booked again for a team reset. It grounded the group."',w:'— Maya'}
+      ];let i=0;const el=document.getElementById('testimony-faq');
+      function show(){el.innerHTML='<div style="font-weight:600">'+notes[i].t+'</div><div class="muted" style="margin-top:6px">'+notes[i].w+'</div>'}
+      show();setInterval(()=>{i=(i+1)%notes.length;show();},3800);
+      document.getElementById('year').textContent=new Date().getFullYear();
+    })();
+  </script>
+</body>
+</html>

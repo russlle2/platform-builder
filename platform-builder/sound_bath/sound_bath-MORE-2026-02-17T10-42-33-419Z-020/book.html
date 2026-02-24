@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--earth:#7b5e3b;--sand:#efe3cf;--leaf:#6a8f5a;--ink:#2b2a29;--muted:#7f746b}
+    body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;margin:0;background:linear-gradient(180deg,#fff,var(--sand));color:var(--ink)}
+    .container{max-width:980px;margin:32px auto;padding:20px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:12px;text-decoration:none;color:var(--ink);font-weight:600}
+    .panel{background:#fff;padding:18px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.06);}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px}
+    label{display:block;margin-bottom:6px;font-weight:600}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #eee}
+    .muted{color:var(--muted);font-size:13px}
+    .btn{background:var(--earth);color:#fff;padding:10px 12px;border-radius:8px;border:0;cursor:pointer}
+    .seat-control{display:flex;gap:10px;align-items:center}
+    .seat-num{font-size:20px;font-weight:700}
+    .packing{background:#fff;padding:12px;border-radius:10px}
+    .note{font-size:13px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div style="display:flex;gap:12px;align-items:center">
+        <div style="width:56px;height:56px;background:linear-gradient(135deg,var(--earth),var(--leaf));border-radius:10px;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">SB</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="events.html">Gatherings</a>
+        <a href="faq.html">Questions</a>
+      </nav>
+    </header>
+
+    <main class="panel">
+      <h1 style="margin-top:6px">Reserve your spot</h1>
+      <p class="muted">Select an upcoming event and choose seats. Packing suggestions will update based on your selections.</p>
+
+      <div class="grid">
+        <section>
+          <form id="booking-form" onsubmit="return false;">
+            <label for="event">Next event</label>
+            <select id="event" aria-label="Choose an event">
+              <option value="2026-03-05">Mar 5, 2026 — Evening Clearing (6:30pm)</option>
+              <option value="2026-03-12">Mar 12, 2026 — Midday Pause (12:00pm)</option>
+              <option value="2026-03-20">Mar 20, 2026 — New Cycle Mini (8:00am)</option>
+            </select>
+
+            <div style="margin-top:12px">
+              <label>Seats</label>
+              <div class="seat-control">
+                <button id="dec" style="padding:8px 10px;border-radius:8px;border:1px solid #eee">-</button>
+                <div class="seat-num" id="seat-count">1</div>
+                <button id="inc" style="padding:8px 10px;border-radius:8px;border:1px solid #eee">+</button>
+                <div class="muted" id="seats-available" style="margin-left:10px">Available: <span id="avail">12</span></div>
+              </div>
+              <div class="note" style="margin-top:6px">This is a local selector only; inventory is illustrative.</div>
+            </div>
+
+            <div style="margin-top:12px">
+              <label for="name">Your name</label>
+              <input id="name" placeholder="Full name" required>
+            </div>
+
+            <div style="margin-top:12px">
+              <label for="email">Email</label>
+              <input id="email" placeholder="you@example.com" required>
+            </div>
+
+            <div style="margin-top:12px">
+              <button id="book-now" class="btn">Confirm reservation</button>
+            </div>
+
+            <p class="muted" style="margin-top:8px">By reserving you agree to our policies. See refund and safety notes at <a href="faq.html">Questions</a>.</p>
+          </form>
+        </section>
+
+        <aside>
+          <div class="packing">
+            <h4 style="margin-top:0">What to bring</h4>
+            <p class="muted">Customize suggestions (toggle items you own or want to bring).</p>
+            <div style="display:flex;flex-direction:column;gap:6px;margin-top:8px">
+              <label><input type="checkbox" data-item="mat"> Yoga mat or cushion</label>
+              <label><input type="checkbox" data-item="blanket"> Blanket</label>
+              <label><input type="checkbox" data-item="mask"> Eye mask</label>
+              <label><input type="checkbox" data-item="water"> Water bottle</label>
+              <label><input type="checkbox" data-item="earplugs"> Soft earplugs</label>
+              <label><input type="checkbox" data-item="journal"> Small notebook / pen</label>
+            </div>
+            <div style="margin-top:12px;display:flex;gap:8px">
+              <button id="generate-list" class="btn" style="background:var(--leaf);border-color:var(--leaf)">Generate pack list</button>
+              <button id="suggest" class="btn">Auto-suggest</button>
+            </div>
+            <div id="pack-output" style="margin-top:12px;min-height:40px;color:var(--muted)"></div>
+            <div style="margin-top:12px;font-size:13px;color:var(--muted)">If you have contraindications (pregnancy, implants, epilepsy, recent surgery) consult a clinician before attending. For questions contact <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</div>
+          </div>
+
+          <div style="margin-top:12px;background:#fff;padding:12px;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.06)">
+            <h4 style="margin-top:0">Your selection</h4>
+            <div class="muted" style="margin-top:6px">Event: <span id="sel-event">Mar 5, 2026 — Evening Clearing</span></div>
+            <div class="muted" style="margin-top:6px">Seats: <span id="sel-seats">1</span></div>
+            <div style="margin-top:12px"><a href="pricing.html" class="btn">See rates</a></div>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Fake availability per event
+    const availability = { '2026-03-05':12, '2026-03-12':8, '2026-03-20':6 };
+    const eventSel = document.getElementById('event');
+    const availEl = document.getElementById('avail');
+    const seatCountEl = document.getElementById('seat-count');
+    const inc = document.getElementById('inc');
+    const dec = document.getElementById('dec');
+    const selSeats = document.getElementById('sel-seats');
+    const selEventDisplay = document.getElementById('sel-event');
+    const selEventNameMap = { '2026-03-05':'Mar 5, 2026 — Evening Clearing (6:30pm)', '2026-03-12':'Mar 12, 2026 — Midday Pause (12:00pm)', '2026-03-20':'Mar 20, 2026 — New Cycle Mini (8:00am)' };
+
+    let seats = 1;
+    function refresh(){
+      const e = eventSel.value; availEl.textContent = availability[e]; if(seats>availability[e]) seats = availability[e]; seatCountEl.textContent = seats; selSeats.textContent = seats; selEventDisplay.textContent = selEventNameMap[e];
+    }
+    eventSel.addEventListener('change', refresh);
+    inc.addEventListener('click', ()=>{ const a = availability[eventSel.value]; if(seats < a) seats++; refresh(); });
+    dec.addEventListener('click', ()=>{ if(seats>1) seats--; refresh(); });
+
+    // Packing list generator
+    const generateBtn = document.getElementById('generate-list');
+    const suggestBtn = document.getElementById('suggest');
+    const packOutput = document.getElementById('pack-output');
+
+    function readChecked(){
+      return Array.from(document.querySelectorAll('input[type="checkbox"]')).filter(i=>i.checked).map(i=>i.getAttribute('data-item'));
+    }
+
+    generateBtn.addEventListener('click', ()=>{
+      const chosen = readChecked();
+      if(chosen.length===0){ packOutput.innerHTML = '<div>No items selected. Consider a blanket and water.</div>'; return; }
+      const labelMap = { mat:'Mat / cushion', blanket:'Blanket', mask:'Eye mask', water:'Water bottle', earplugs:'Soft earplugs', journal:'Journal & pen' };
+      packOutput.innerHTML = '<ul style="padding-left:18px;margin:0">' + chosen.map(c=>'<li>'+labelMap[c]+'</li>').join('') + '</ul>';
+    });
+
+    suggestBtn.addEventListener('click', ()=>{
+      // Simple heuristic: morning events -> bring blanket + water; evening -> blanket + eye mask
+      const e = eventSel.value; const hour = selEventNameMap[e].includes('6:30') ? 18 : selEventNameMap[e].includes('8:00') ? 8 : 12;
+      const suggestions = (hour<12) ? ['mat','blanket','water'] : (hour>=18) ? ['mat','blanket','mask'] : ['mat','water','journal'];
+      // update checkboxes
+      document.querySelectorAll('input[type="checkbox"]').forEach(cb=>{ cb.checked = suggestions.includes(cb.getAttribute('data-item')); });
+      document.getElementById('generate-list').click();
+    });
+
+    // Fake booking confirm: local confirmation
+    document.getElementById('book-now').addEventListener('click', ()=>{
+      const name = document.getElementById('name').value.trim(); const email = document.getElementById('email').value.trim(); if(!name||!email){ alert('Please provide name and email'); return; }
+      alert('Reserved '+seats+' seat(s) for '+selEventNameMap[eventSel.value]+'\nAn email confirmation will be sent to '+email+' (simulated).');
+    });
+
+    // initialize
+    refresh();
+  </script>
+</body>
+</html>

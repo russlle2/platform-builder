@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Work with me — Book a VIP Day — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#021726;--card:#072434;--muted:#9fb2bb;--accent:#7dd3c8}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:linear-gradient(180deg,#00141a 0%,#02232a 60%);color:#e8fbf8}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px}
+    nav a{margin:0 8px;color:var(--muted);font-weight:600}
+    .wrap{max-width:980px;margin:22px auto;padding:18px}
+    h1{margin:0 0 6px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    label{display:block;font-size:13px;color:var(--muted);margin-top:12px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+    .btn{background:var(--accent);color:#042423;padding:10px 12px;border-radius:8px;border:none;font-weight:800;cursor:pointer;margin-top:12px}
+    .mini{font-size:13px;color:var(--muted);margin-top:8px}
+    .preview{margin-top:12px;padding:12px;border-radius:8px;background:rgba(255,255,255,0.02)}
+    .path-compact{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+    .mini-card{background:rgba(255,255,255,0.02);padding:8px;border-radius:8px;font-size:13px}
+    .success{background:#063a36;color:#cffbf6;padding:10px;border-radius:8px;margin-top:12px}
+    @media(max-width:880px){.grid{grid-template-columns:1fr}.panel{margin-bottom:12px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect x="2" y="2" width="30" height="30" rx="6" fill="#7dd3c8" /></svg>
+      <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Philosophy</a>
+      <a href="programs.html">Rituals</a>
+      <a href="pricing.html">Investment</a>
+      <a href="testimonials.html">Voices</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <div class="grid">
+      <section class="panel">
+        <h1>Book a VIP Reset Day</h1>
+        <p class="mini">A single, focused day to define a 7–14 day reset and a sustainable 30-day follow-up path. Ideal if you need quick, practical momentum.</p>
+
+        <form id="bookForm">
+          <label>Preferred date</label>
+          <input type="date" id="date" required />
+
+          <label>Choose a package</label>
+          <select id="package">
+            <option>VIP Reset Day</option>
+            <option>Clarity Sprint (6 weeks)</option>
+            <option>Rhythm Foundry (12 weeks)</option>
+          </select>
+
+          <label>Select your top focuses (up to 3)</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px" id="choices">
+            <button type="button" class="chip" data-key="energy" style="padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--muted)">Sustainable energy</button>
+            <button type="button" class="chip" data-key="sleep" style="padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--muted)">Better sleep</button>
+            <button type="button" class="chip" data-key="stress" style="padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--muted)">Manage stress</button>
+            <button type="button" class="chip" data-key="movement" style="padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--muted)">Gentle movement</button>
+            <button type="button" class="chip" data-key="focus" style="padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--muted)">Sharper focus</button>
+          </div>
+
+          <label>Quick note (what's the one outcome you want from the day?)</label>
+          <textarea id="note" rows="3" placeholder="E.g., build a repeatable evening routine or design my Monday plan"></textarea>
+
+          <label>Your email</label>
+          <input type="email" id="email" placeholder="you@example.com" required />
+
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="btn" type="submit">Request this date</button>
+            <div style="font-size:13px;color:var(--muted);margin-left:6px">We'll confirm availability and next steps via email.</div>
+          </div>
+
+          <div id="result"></div>
+        </form>
+      </section>
+
+      <aside class="panel">
+        <h3 style="margin:0 0 8px">Preview: your 30-day compact path</h3>
+        <div class="mini">This preview uses your selected focuses to outline four weekly checkpoints and three micro-habits per week. It's an editable starter plan you can test immediately after the VIP Day.</div>
+
+        <div class="preview" id="preview">
+          <div class="path-compact" id="compact"></div>
+        </div>
+
+        <div class="mini" style="margin-top:12px">Need invoicing or a team session? Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a>.</div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    // Small interactive booking + mini path preview
+    (function(){
+      const chips = Array.from(document.querySelectorAll('.chip'));
+      const compact = document.getElementById('compact');
+      const form = document.getElementById('bookForm');
+      const result = document.getElementById('result');
+      const selected = new Set();
+
+      function sample(keys){
+        const base = {
+          energy:['10m morning movement','protein-forward breakfast','midday walk'],
+          sleep:['consistent lights-out','tech curfew','wind-down ritual'],
+          stress:['3-breath reset','short breaks hourly','end-of-day note'],
+          movement:['mobility set 10m','walk after lunch','evening stretch'],
+          focus:['single-task sprints','priority list','email windows']
+        };
+        const weeks = [];
+        for(let w=0;w<4;w++){
+          const items = [];
+          keys.forEach((k,i)=>{ const arr=base[k]; items.push(arr[(w + i) % arr.length]); });
+          weeks.push(items.slice(0,3));
+        }
+        return weeks;
+      }
+
+      function render(){
+        compact.innerHTML='';
+        const keys = Array.from(selected);
+        if(keys.length===0){ compact.innerHTML='<div class="mini-card">No focuses yet — pick up to 3 items to generate a preview.</div>'; return; }
+        const weeks = sample(keys);
+        weeks.forEach((w,i)=>{
+          const el = document.createElement('div'); el.className='mini-card'; el.style.minWidth='140px';
+          el.innerHTML = '<strong>Week '+(i+1)+'</strong><div style="margin-top:8px">'+w.map(x=>'• '+x).join('<br>')+'</div>';
+          compact.appendChild(el);
+        });
+      }
+
+      chips.forEach(c=>{
+        c.addEventListener('click',()=>{
+          const k = c.dataset.key;
+          if(selected.has(k)) selected.delete(k); else {
+            if(selected.size<3) selected.add(k); else {
+              const first = selected.values().next().value; selected.delete(first); selected.add(k);
+            }
+          }
+          chips.forEach(b=>b.style.background = selected.has(b.dataset.key) ? 'var(--accent)' : 'transparent');
+          chips.forEach(b=>b.style.color = selected.has(b.dataset.key) ? '#00211f' : 'var(--muted)');
+          render();
+        });
+      });
+
+      // prefill from URL params
+      (function prefill(){
+        const params = new URLSearchParams(location.search);
+        const plan = params.get('plan');
+        if(plan){
+          const sel = Array.from(document.querySelectorAll('#package option')).find(o=>o.textContent===plan);
+          if(sel) sel.selected = true;
+        }
+        const goals = params.getAll('goal');
+        goals.forEach(g=>{ const chip = chips.find(c=>c.dataset.key===g); if(chip){ chip.click(); } });
+      })();
+
+      form.addEventListener('submit', (e)=>{
+        e.preventDefault();
+        const date = document.getElementById('date').value;
+        const pkg = document.getElementById('package').value;
+        const email = document.getElementById('email').value;
+        const note = document.getElementById('note').value;
+        if(!date || !email){ result.innerHTML = '<div class="success">Please add a date and your email to request this booking.</div>'; return; }
+        // fake submit
+        result.innerHTML = '<div class="success">Thanks — we received your request for '+pkg+' on '+date+'. We will follow up at '+email+' with confirmation and next steps.</div>';
+        // here we would POST to a server; instead we store in localStorage as demo
+        const payload = {date,package:pkg,email,note,focuses:Array.from(selected)};
+        localStorage.setItem('booking_'+Date.now(), JSON.stringify(payload));
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>

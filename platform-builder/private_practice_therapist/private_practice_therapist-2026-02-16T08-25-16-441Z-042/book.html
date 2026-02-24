@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Begin — Book a Session with {{THERAPIST_NAME}}</title>
+  <style>
+    :root{--bg:#f8f6fb;--card:#ffffff;--text:#141414;--muted:#6f6f76;--accent:#b98cff;--max:980px}
+    body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    .wrap{max-width:var(--max);margin:36px auto;padding:28px}
+    nav{display:flex;gap:12px;margin-bottom:20px}
+    nav a{color:var(--text);text-decoration:none;padding:8px 10px;border-radius:8px}
+    nav a.active{background:rgba(185,140,255,0.08)}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:20px}
+    .hero{background:linear-gradient(180deg,#fff,#fbf7ff);padding:18px;border-radius:12px;display:flex;gap:14px;align-items:center}
+    .hero h1{margin:0;font-size:20px}
+    .hero p{margin:6px 0 0;color:var(--muted)}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 30px rgba(30,20,40,0.04)}
+    form label{display:block;font-weight:600;margin-top:10px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #eae6f2;margin-top:6px}
+    button{margin-top:12px;background:var(--accent);border:none;color:white;padding:12px 14px;border-radius:10px;font-weight:700}
+    .muted{color:var(--muted);font-size:13px}
+    footer{margin-top:20px;color:var(--muted);font-size:13px}
+    @media (max-width:960px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="specialties.html">Programs</a>
+      <a href="book.html" class="active">Start</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+
+    <div class="grid">
+      <main>
+        <div class="hero">
+          <div>
+            <h1>Start a conversation — book a consult or a therapy slot</h1>
+            <p class="muted">Choose a brief consult if you need to check fit, or book an intake to begin a plan. I’ll follow up with a short intake form after you book.</p>
+          </div>
+
+          <!-- unique svg for booking page: entrance arch -->
+          <div aria-hidden>
+            <svg width="120" height="80" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
+              <rect width="120" height="80" rx="10" fill="#fff" />
+              <path d="M20 70 V40 A30 30 0 0 1 100 40 V70 Z" fill="#efe6ff" />
+              <circle cx="60" cy="34" r="6" fill="#b98cff" opacity="0.9" />
+            </svg>
+          </div>
+        </div>
+
+        <section class="card" style="margin-top:18px">
+          <h2 style="margin:0 0 8px">How to prepare</h2>
+          <p class="muted">Think about what brings you now and one or two goals you’d like to address. If you prefer, jot three things you want help with — we’ll prioritize them together.</p>
+          <ul class="muted" style="margin-top:10px">
+            <li>Sessions are 50 minutes.</li>
+            <li>If using out-of-network reimbursement, request a superbill after payment.</li>
+            <li>Cancellation policy: please give 48 hours notice to avoid full-session fees.</li>
+          </ul>
+        </section>
+
+        <section class="card" style="margin-top:18px">
+          <h2 style="margin:0 0 8px">Intake & consent</h2>
+          <p class="muted">After booking you will receive a secure intake questionnaire and consent form to review. We will discuss limits of confidentiality and what to expect from services. If you need help with paperwork, we can schedule extra time.</p>
+        </section>
+
+        <section style="margin-top:18px" class="card">
+          <h2 style="margin:0 0 8px">Small group of typical steps</h2>
+          <ol class="muted" style="margin:0;padding-left:18px">
+            <li>Quick consult (optional) — determine fit.</li>
+            <li>Intake session — gather history, set goals.</li>
+            <li>Regular sessions or a short package — we review progress often.</li>
+          </ol>
+        </section>
+      </main>
+
+      <aside>
+        <div class="card">
+          <h3 style="margin:0 0 8px">Schedule</h3>
+          <p class="muted" style="margin:0 0 12px">Select a session type and preferred times. You will be contacted with available slots; booking is confirmed after we agree on a time.</p>
+
+          <form onsubmit="event.preventDefault();alert('Booking request received. We will contact ' + (document.getElementById('name').value || 'you') + ' at ' + (document.getElementById('email-book').value || 'your email'))">
+            <label for="type">Session type</label>
+            <select id="type" required>
+              <option>20-minute connection call (brief consult)</option>
+              <option>Intake session (50 min)</option>
+              <option>Regular therapy session (50 min)</option>
+              <option>Deep Work Intensive (3 hrs)</option>
+            </select>
+
+            <label for="name">Full name</label>
+            <input id="name" type="text" placeholder="Your name" required />
+
+            <label for="email-book">Email</label>
+            <input id="email-book" type="email" placeholder="you@example.com" required />
+
+            <label for="phone">Phone (optional)</label>
+            <input id="phone" type="tel" placeholder="(555) 555-5555" />
+
+            <label for="note">Short note — what brings you?</label>
+            <textarea id="note" rows="4" placeholder="A few words about your reason for booking"></textarea>
+
+            <button type="submit">Request this time</button>
+          </form>
+
+          <p class="muted" style="margin-top:12px">If you need to reschedule or have questions before booking, email {{EMAIL}} or call {{PHONE}}.</p>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0 0 8px">Policies & disclaimers</h4>
+          <p class="muted" style="margin:0">I respect your privacy. Communications through this form are not therapy. Confidentiality specifics and mandated reporting will be discussed during intake. If you are in crisis, call 911 or your local emergency number immediately.</p>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0 0 8px">Quick links</h4>
+          <p class="muted" style="margin:0"><a href="fees.html" style="color:var(--accent);text-decoration:underline">Fees</a> • <a href="faq.html" style="color:var(--accent);text-decoration:underline">FAQs</a></p>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      <div class="muted">{{THERAPIST_NAME}}, {{LICENSE}} • {{BUSINESS_NAME}} • {{CITY}}, {{STATE}}<br/>Scope: psychotherapy and counseling for anxiety, trauma, relationships, life transitions, and burnout. If you are in immediate danger, call 911 or your local emergency services.</div>
+    </footer>
+  </div>
+</body>
+</html>

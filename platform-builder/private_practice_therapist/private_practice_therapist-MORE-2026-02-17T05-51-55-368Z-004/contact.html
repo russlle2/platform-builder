@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfbfc;--muted:#6b7280;--accent:#3b82f6;--card:#ffffff;--glass:rgba(255,255,255,0.6);--shadow:0 6px 18px rgba(16,24,40,0.06);--radius:12px}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;color:#0f172a;background:linear-gradient(180deg,#fbfdff 0%, #fbfbfb 60%);-webkit-font-smoothing:antialiased}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background-image:url('assets/img/pattern.svg');background-repeat:repeat;background-size:220px;border-bottom:1px solid rgba(15,23,42,0.04)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#06b6d4);display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    nav{display:flex;gap:14px;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:8px;font-weight:600}
+    nav a:hover{background:rgba(59,130,246,0.08);color:var(--accent)}
+    .primary-cta{background:var(--accent);color:white;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+
+    main{max-width:1100px;margin:34px auto;padding:20px;display:grid;grid-template-columns:1fr 420px;gap:28px}
+    .panel{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px}
+
+    .hero{padding:26px 26px 18px;border-radius:14px;background:linear-gradient(180deg,rgba(59,130,246,0.04),transparent);}
+    .hero h1{margin:0 0 8px;font-size:20px;color:#08112b}
+    .hero p{margin:0;color:var(--muted)}
+
+    .section-title{font-size:13px;color:#0f172a;font-weight:700;margin:10px 0}
+    .muted{color:var(--muted);font-size:14px}
+
+    form .row{display:flex;gap:10px}
+    label{display:block;font-size:13px;color:#0f172a;margin-bottom:6px}
+    input[type=text],input[type=email],textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06);background:linear-gradient(180deg,white, #fbfbfd)}
+    textarea{min-height:120px;resize:vertical}
+    button[type=submit]{background:var(--accent);color:white;padding:10px 14px;border-radius:10px;border:0;font-weight:700}
+
+    /* Pricing comparator */
+    .pricing{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .price-card{padding:12px;border-radius:10px;background:linear-gradient(180deg,white, #fcfeff);border:1px solid rgba(15,23,42,0.04)}
+    .price-number{font-size:22px;font-weight:800;color:#08112b}
+    .toggler{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+    .switch{width:50px;height:28px;background:#e6eefb;border-radius:999px;position:relative;padding:4px;cursor:pointer}
+    .knob{width:20px;height:20px;background:white;border-radius:50%;box-shadow:0 2px 8px rgba(2,6,23,0.08);transition:transform 280ms cubic-bezier(.2,.9,.2,1)}
+    .switch.on{background:linear-gradient(90deg,var(--accent),#06b6d4)}
+    .switch.on .knob{transform:translateX(22px)}
+
+    /* Mood-to-Method */
+    .mood-grid{display:flex;gap:8px;flex-wrap:wrap}
+    .mood{padding:10px 12px;border-radius:10px;border:1px solid rgba(15,23,42,0.06);background:white;cursor:pointer}
+    .mood.selected{background:linear-gradient(180deg,#eef2ff,white);border-color:rgba(59,130,246,0.18)}
+
+    .meta{font-size:13px;color:var(--muted);margin-top:12px}
+    footer{max-width:1100px;margin:24px auto;padding:18px 20px;color:var(--muted);font-size:13px}
+    .legal{background:linear-gradient(180deg,white, #fbfbfd);padding:14px;border-radius:10px;border:1px solid rgba(15,23,42,0.04)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">TP</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Practice</a>
+      <a href="about.html">Who I Am</a>
+      <a href="specialties.html">Focus Areas</a>
+      <a href="approach.html">Method</a>
+      <a href="fees.html">Investment</a>
+      <a href="faq.html">Q&A</a>
+      <a href="book.html">Schedule</a>
+      <a class="primary-cta" href="contact.html">{{PRIMARY_CTA_LABEL}}</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="panel hero" aria-labelledby="connect-heading">
+      <h1 id="connect-heading">Connect — practical clinical care with an ongoing membership option</h1>
+      <p class="muted">If you’re reaching out for support, you’ll find a calm, structured approach that respects confidentiality and your time. Use this page to tell me what feels off, or to arrange a first conversation.</p>
+
+      <div style="margin-top:18px">
+        <div class="section-title">Mood-to-Method (quick diagnostic)</div>
+        <div class="mood-grid" role="list" aria-label="Mood options">
+          <button class="mood" data-method="{&quot;title&quot;:&quot;Short-cycle Stabilization&quot;,&quot;copy&quot;:&quot;When daily overwhelm narrows your options, short-cycle stabilization focuses on immediate, practical steps you can put in place this week.&quot;,&quot;ctaSuffix&quot;:&quot;Stabilize"}">Overwhelmed</button>
+          <button class="mood" data-method="{&quot;title&quot;:&quot;Narrative Reframing&quot;,&quot;copy&quot;:&quot;When patterns feel stuck, we explore the stories that keep those patterns running and practice small experiments to shift them.&quot;,&quot;ctaSuffix&quot;:&quot;Explore&quot;}">Stuck</button>
+          <button class="mood" data-method="{&quot;title&quot;:&quot;Rhythm Building&quot;,&quot;copy&quot;:&quot;If your days feel scattered, rhythm work helps create micro-routines that restore predictability and ease throughout the week.&quot;,&quot;ctaSuffix&quot;:&quot;Build Rhythm"}">Scattered</button>
+          <button class="mood" data-method="{&quot;title&quot;:&quot;Transition Support&quot;,&quot;copy&quot;:&quot;Life changes call for a mix of planning and emotional processing. We map the transition and steady the day-to-day tasks that matter most.&quot;,&quot;ctaSuffix&quot;:&quot;Plan Change"}">In transition</button>
+        </div>
+
+        <div style="margin-top:14px;padding:12px;border-radius:12px;background:linear-gradient(180deg,white,#fbfcff);border:1px solid rgba(15,23,42,0.04)">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div id="method-title" style="font-weight:800">Choose a state above</div>
+              <div id="method-copy" class="muted">Selecting one of the options will surface a recommended clinical approach and adjust the message you can send when you reach out.</div>
+            </div>
+            <div style="text-align:right">
+              <a id="primary-cta" class="primary-cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <aside class="panel">
+      <div class="section-title">Send a note</div>
+      <form id="contact-form">
+        <div style="margin-bottom:10px">
+          <label for="name">Your name</label>
+          <input id="name" name="name" type="text" required>
+        </div>
+        <div style="margin-bottom:10px">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required>
+        </div>
+        <div style="margin-bottom:10px">
+          <label for="phone">Phone (optional)</label>
+          <input id="phone" name="phone" type="text">
+        </div>
+
+        <div style="margin-bottom:10px">
+          <label for="message">A brief note (what brought you here)</label>
+          <textarea id="message" name="message" placeholder="A line or two helps me prepare for our first conversation"></textarea>
+        </div>
+
+        <input type="hidden" id="selected-method" name="selected_method" value="">
+
+        <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+          <button type="submit">Send message</button>
+          <div class="meta">Or call <strong>{{PHONE}}</strong> — email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+        </div>
+        <div id="form-note" class="muted" style="margin-top:10px"></div>
+      </form>
+
+      <hr style="margin:16px 0;border:none;border-top:1px solid rgba(15,23,42,0.04)">
+
+      <div class="section-title">Investment snapshot</div>
+      <div style="margin-bottom:8px" class="muted">Toggle between simple monthly membership and an upfront package for focused work.</div>
+
+      <div class="toggler">
+        <div>Monthly</div>
+        <div id="switch" class="switch" role="switch" aria-checked="false" tabindex="0"><div class="knob"></div></div>
+        <div>Package</div>
+      </div>
+
+      <div class="pricing">
+        <div class="price-card">
+          <div style="font-size:12px;color:var(--muted)">Continuity Plan</div>
+          <div class="price-number" data-monthly="75" data-package="780" id="price-membership">$75</div>
+          <div class="muted" style="margin-top:6px;font-size:13px">Monthly access to brief check-ins, resources, and weekly micro-practice reminders.</div>
+        </div>
+
+        <div class="price-card">
+          <div style="font-size:12px;color:var(--muted)">Focused Work Package</div>
+          <div class="price-number" data-monthly="150" data-package="1200" id="price-package">$150</div>
+          <div class="muted" style="margin-top:6px;font-size:13px">A concentrated series of sessions for a defined goal (typically 6-10 sessions).</div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;font-size:13px;color:var(--muted)">Numbers animate to show the framing. You can reference either when you reach out.</div>
+
+    </aside>
+  </main>
+
+  <footer>
+    <div class="legal">
+      <div style="font-weight:700;margin-bottom:8px">Confidentiality & boundaries</div>
+      <div class="muted">Conversations are confidential except where required by law (e.g., risk of harm). I do not provide emergency services; if you are in crisis, call your local emergency number or contact crisis resources in your area. This site is for informational purposes and does not replace a clinical assessment or urgent care.</div>
+      <div style="margin-top:10px" class="muted">By reaching out you acknowledge you are requesting information about services and not establishing a therapist-client relationship until an intake and agreement have been completed.</div>
+    </div>
+  </footer>
+
+  <script>
+    // Mood-to-Method selector
+    (function(){
+      const moods = document.querySelectorAll('.mood');
+      const title = document.getElementById('method-title');
+      const copy = document.getElementById('method-copy');
+      const selectedMethodInput = document.getElementById('selected-method');
+      const cta = document.getElementById('primary-cta');
+      const baseLabel = '{{PRIMARY_CTA_LABEL}}';
+      cta.dataset.base = baseLabel;
+
+      function setMethod(obj){
+        title.textContent = obj.title;
+        copy.textContent = obj.copy;
+        selectedMethodInput.value = obj.title;
+        // Update CTA to reflect selected focus while keeping placeholder
+        cta.textContent = baseLabel + ' — ' + obj.ctaSuffix;
+        // also subtly pulse the CTA to show change
+        cta.animate([{transform:'scale(0.98)'},{transform:'scale(1)'}],{duration:220,iterations:1});
+      }
+
+      moods.forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          moods.forEach(b=>b.classList.remove('selected'));
+          btn.classList.add('selected');
+          try{
+            const parsed = JSON.parse(btn.getAttribute('data-method'));
+            setMethod(parsed);
+          }catch(e){console.error(e)}
+        });
+      });
+    })();
+
+    // Pricing comparator with animated numbers
+    (function(){
+      const switchEl = document.getElementById('switch');
+      const membershipEl = document.getElementById('price-membership');
+      const packageEl = document.getElementById('price-package');
+      let on = false; // false = monthly, true = package
+
+      function animateValue(el, start, end, duration){
+        const startTime = performance.now();
+        const step = (now)=>{
+          const elapsed = now - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = progress<.5?4*progress*progress*progress:1 - Math.pow(-2*progress+2,3)/2; // ease in-out cubic
+          const current = Math.round(start + (end-start) * eased);
+          el.textContent = '$' + current;
+          if(progress < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      }
+
+      function updatePrices(toPackage){
+        const mStart = parseInt(membershipEl.textContent.replace(/[^0-9]/g,'')) || 0;
+        const pStart = parseInt(packageEl.textContent.replace(/[^0-9]/g,'')) || 0;
+        const mTarget = parseInt(membershipEl.getAttribute(toPackage ? 'data-package' : 'data-monthly'));
+        const pTarget = parseInt(packageEl.getAttribute(toPackage ? 'data-package' : 'data-monthly'));
+        animateValue(membershipEl, mStart, mTarget, 420);
+        animateValue(packageEl, pStart, pTarget, 420);
+      }
+
+      switchEl.addEventListener('click',()=>{
+        on = !on;
+        switchEl.classList.toggle('on', on);
+        switchEl.setAttribute('aria-checked', String(on));
+        updatePrices(on);
+      });
+
+      // keyboard accessibility
+      switchEl.addEventListener('keydown',(e)=>{if(e.key==='Enter' || e.key===' '){e.preventDefault();switchEl.click();}});
+
+      // initialize numbers based on monthly state
+      updatePrices(false);
+    })();
+
+    // Form handling (local only)
+    (function(){
+      const form = document.getElementById('contact-form');
+      const note = document.getElementById('form-note');
+      form.addEventListener('submit',(e)=>{
+        e.preventDefault();
+        // Collect values to show a brief confirmation. In production, replace with real submission.
+        const data = new FormData(form);
+        const preview = {}; data.forEach((v,k)=>preview[k]=v);
+        note.textContent = 'Thanks — your message is ready to send. I will reply to ' + (preview.email || 'your email') + ' about next steps.';
+        form.reset();
+        // clear UI mood selection
+        document.querySelectorAll('.mood.selected').forEach(n=>n.classList.remove('selected'));
+        document.getElementById('method-title').textContent = 'Choose a state above';
+        document.getElementById('method-copy').textContent = 'Selecting one of the options will surface a recommended clinical approach and adjust the message you can send when you reach out.';
+        document.getElementById('primary-cta').textContent = document.getElementById('primary-cta').dataset.base;
+      });
+    })();
+  </script>
+</body>
+</html>

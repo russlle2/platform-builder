@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Shop — {{BUSINESS_NAME}}</title>
+<style>
+:root{--accent:#ff7b72;--muted:#666;--bg:#fffaf6;--card:#fff;--glass:rgba(255,255,255,0.65)}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:#111;background:var(--bg);margin:0;padding:0;background-image:var(--bg-pattern);background-size:320px}
+header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:linear-gradient(90deg,rgba(255,123,114,0.06),transparent)}
+.brand{font-weight:700}
+.nav{display:flex;gap:12px}
+.container{max-width:980px;margin:24px auto;padding:0 18px}
+.hero{padding:20px;border-radius:12px;background:linear-gradient(180deg,rgba(255,123,114,0.04),transparent)}
+.products{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.product{background:var(--card);padding:12px;border-radius:10px;box-shadow:0 8px 18px rgba(0,0,0,0.05);display:flex;flex-direction:column;gap:8px}
+.product h4{margin:0}
+.product .meta{color:var(--muted);font-size:13px}
+.controls{display:flex;gap:8px;margin-top:auto}
+.btn{padding:8px 10px;border-radius:8px;background:var(--accent);color:white;text-decoration:none}
+.side{padding:12px;border-radius:10px;background:linear-gradient(90deg,rgba(255,123,114,0.02),transparent)}
+.badges{display:flex;gap:8px;margin-top:10px}
+.badge{position:relative;padding:6px;border-radius:8px;background:var(--glass)}
+.badge .tip{display:none;position:absolute;top:-36px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:6px;border-radius:6px;font-size:12px}
+.badge:hover .tip{display:block}
+.faq dt{font-weight:700;margin-top:12px}
+.faq dd{color:var(--muted)}
+@media(max-width:920px){.products{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.products{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+<div class="brand">{{BUSINESS_NAME}}</div>
+<nav class="nav">
+<a href="index.html">Home</a>
+<a href="services.html">Offerings</a>
+<a href="blends.html">Blends</a>
+<a href="shop.html">Aroma Shop</a>
+<a href="contact.html">Contact</a>
+</nav>
+</header>
+<main class="container">
+<section class="hero card" aria-labelledby="shopTitle">
+<h1 id="shopTitle">Aroma Shop — ready-made kits & inhalers</h1>
+<p class="small">Choose curated kits for practice, single blends for inhalers, and tools with clear dilution and patch-test guidance. All products are prepared with attention to safety and traceability.</p>
+</section>
+<section style="display:flex;gap:12px;margin-top:16px;align-items:start">
+<div style="flex:1">
+<div class="products" id="products">
+<div class="product" data-sku="kit1"><h4>Intro Kit</h4><div class="meta">Includes: 3 blends, diffuser patch, instructions</div><div class="controls"><a class="btn" data-buy="kit1">Buy</a></div></div>
+<div class="product" data-sku="inhaler1"><h4>Clarity Inhaler</h4><div class="meta">Pre-diluted inhaler stick</div><div class="controls"><a class="btn" data-buy="inhaler1">Buy</a></div></div>
+<div class="product" data-sku="blend-pack"><h4>Seasonal Set</h4><div class="meta">Three 10ml blends with guidance</div><div class="controls"><a class="btn" data-buy="blend-pack">Buy</a></div></div>
+</div>
+</div>
+<aside class="side" style="width:320px">
+<h3 style="margin-top:0">Proof & trust</h3>
+<div class="badges">
+<div class="badge"><svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ffd3b6"/></svg><div class="tip">Clean sourcing commitment</div></div>
+<div class="badge"><svg width="20" height="20" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4" fill="#a0e3ff"/></svg><div class="tip">Third-party GC/MS reports</div></div>
+<div class="badge"><svg width="20" height="20" viewBox="0 0 24 24"><polygon points="12,2 15,11 23,11 17,16 19,24 12,19 5,24 7,16 1,11 9,11" fill="#c9b6ff"></polygon><div class="tip">Practitioner-formulated</div></svg></div>
+</div>
+<div style="margin-top:12px" class="card">
+<h4 style="margin:6px 0">Shipping & returns</h4>
+<p class="small">Ships within 3 business days. Opened liquids are non-returnable for safety reasons. International shipping available.</p>
+</div>
+</aside>
+</section>
+<section class="card faq" style="margin-top:14px">
+<h3 style="margin-top:0">Usage & safety</h3>
+<dl>
+<dt>How should I dilute for topical use?</dt>
+<dd>We include dilution notes on each product. Typical topical dilutions range 0.5–2% depending on use and sensitivity. Patch test before use.</dd>
+<dt>Pets & home use?</dt>
+<dd>Diffuse with ventilation and limit direct exposure around pets. Some oils may not be pet-safe; consult the product notes.</dd>
+<dt>Pregnancy & medication interactions?</dt>
+<dd>If pregnant or on medication, consult your healthcare provider. We can recommend pregnancy-safe alternatives.</dd>
+</dl>
+</section>
+<section class="card" style="margin-top:14px;display:flex;justify-content:space-between;align-items:center">
+<div>
+<strong>Have questions about a product?</strong>
+<div class="small">Reach out before purchase if you have specific health or household concerns.</div>
+</div>
+<div>
+<a class="btn" href="{{PRIMARY_CTA_URL}}">Ask about products</a>
+</div>
+</section>
+</main>
+<footer style="text-align:center;padding:18px;color:var(--muted)">Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a></footer>
+<svg id="page-pattern" xmlns="http://www.w3.org/2000/svg" width="220" height="220" viewBox="0 0 220 220" style="display:none">
+<defs>
+<linearGradient id="sgrad" x1="0" x2="1"><stop offset="0" stop-color="#fff7f5"/><stop offset="1" stop-color="#fff1f0"/></linearGradient>
+</defs>
+<rect width="220" height="220" fill="url(#sgrad)"/>
+<g opacity="0.06" fill="#ff7b72">
+<ellipse cx="50" cy="40" rx="16" ry="8"/>
+<ellipse cx="180" cy="160" rx="10" ry="6"/>
+</g>
+<path d="M0 140 C60 80 160 200 220 120" fill="none" stroke="#ffd3b6" stroke-opacity="0.05" stroke-width="6"/>
+</svg>
+<script>
+// pattern
+(function(){
+  const svg = document.getElementById('page-pattern').outerHTML;
+  const url = 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+  document.documentElement.style.setProperty('--bg-pattern','url("'+url+'")');
+})();
+// Shopping interactions & rotating mini-testimonials for trust
+(function(){
+  document.getElementById('products').addEventListener('click',function(e){
+    const buy = e.target.closest('[data-buy]'); if(!buy) return;
+    const sku = buy.dataset.buy; alert('Added to cart: '+sku+' (demo). Proceed to checkout via the booking or contact form.');
+  });
+  // small rotating testimonials in console and badges tooltips
+  const notes = ['Loved the Intro Kit — clear guidance included.','Helpful dilution charts — saved me time.','Well-labelled, thoughtful packaging.'];
+  let i=0; setInterval(()=>{ i=(i+1)%notes.length; console.info('Client note: ',notes[i]); },5000);
+})();
+</script>
+</body>
+</html>

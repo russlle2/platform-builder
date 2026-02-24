@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gatherings — Sound Baths & Circles</title>
+<style>
+:root{
+  --bg:#0f1112;
+  --panel:#0f1314;
+  --accent:#88b9a6;
+  --muted:#aab6b0;
+  --glass: rgba(255,255,255,0.04);
+  --radius:14px;
+  --maxw:920px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:system-ui,Segoe UI,Helvetica,Arial;
+  background-color:var(--bg);
+  color:#eaf5ef;
+  -webkit-font-smoothing:antialiased;
+  background-image: url('assets/img/pattern.svg');
+  background-repeat:repeat;
+  background-size:220px;
+  line-height:1.45;
+}
+.container{
+  max-width:var(--maxw);
+  margin:48px auto;
+  padding:32px;
+}
+.site-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+}
+.brand{
+  font-weight:600;
+  letter-spacing:0.2px;
+}
+.nav{
+  display:flex;
+  gap:14px;
+  align-items:center;
+}
+.nav a{
+  color:var(--muted);
+  text-decoration:none;
+  font-size:0.95rem;
+  padding:8px 10px;
+  border-radius:8px;
+}
+.nav a.primary{
+  background:linear-gradient(90deg,rgba(136,185,166,0.12),transparent);
+  color:var(--accent);
+  border:1px solid rgba(136,185,166,0.12);
+}
+.hero{
+  margin-top:28px;
+  padding:26px;
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
+  border-radius:var(--radius);
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:20px;
+  align-items:center;
+}
+.hero h1{
+  margin:0;
+  font-size:1.6rem;
+  color:#e8f8f0;
+}
+.hero p{margin:6px 0 0;color:var(--muted)}
+.next-event{
+  min-width:220px;
+  padding:12px;
+  background:var(--glass);
+  border-radius:12px;
+  text-align:center;
+  border:1px solid rgba(255,255,255,0.03);
+}
+.next-event .date{font-weight:700;font-size:1.05rem;color:var(--accent)}
+.grid{
+  display:grid;
+  gap:18px;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  margin-top:20px;
+}
+.card{
+  padding:16px;
+  background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.03);
+}
+.card h3{margin:0 0 8px;font-size:1.05rem}
+.card p{margin:0;color:var(--muted);font-size:0.92rem}
+.badge{display:inline-block;background:rgba(136,185,166,0.12);color:var(--accent);padding:6px 8px;border-radius:999px;font-weight:600;font-size:0.82rem}
+.small{font-size:0.85rem;color:var(--muted)}
+.reveal{opacity:0;transform:translateY(18px);transition:opacity 520ms ease, transform 520ms cubic-bezier(.2,.9,.2,1)}
+.reveal.visible{opacity:1;transform:none}
+.cta{
+  margin-top:26px;
+  padding:18px;
+  background:linear-gradient(90deg, rgba(136,185,166,0.06), rgba(0,0,0,0.02));
+  border-radius:12px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.cta a{background:var(--accent);color:#06221b;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+.disclaimer{margin-top:12px;font-size:0.8rem;color:#d1e9df}
+.modal-backdrop{position:fixed;inset:0;background:rgba(2,4,3,0.6);display:none;align-items:center;justify-content:center;padding:20px}
+.modal{background:#07100f;padding:20px;border-radius:12px;max-width:560px;width:100%;box-shadow:0 8px 30px rgba(0,0,0,0.6)}
+.modal header{display:flex;justify-content:space-between;align-items:center}
+.modal h2{margin:0;font-size:1.15rem}
+button{cursor:pointer}
+.small-btn{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted);padding:8px 10px;border-radius:8px}
+.primary-btn{background:var(--accent);border:none;color:#06221b;padding:10px 12px;border-radius:10px;font-weight:700}
+.journal{width:100%;height:90px;background:#071212;border-radius:8px;border:1px solid rgba(255,255,255,0.03);color:#dff3ea;padding:10px}
+.timer{font-weight:700;color:var(--accent);font-size:1.2rem}
+</style>
+</head>
+<body>
+<div class="container">
+<header class="site-header">
+<div class="brand"><span class="badge">〈{{BUSINESS_NAME}}〉</span><div class="small">A place for tuned rest</div></div>
+<nav class="nav" aria-label="Main">
+<a href="index.html">Home</a>
+<a href="events.html" class="primary">Gatherings</a>
+<a href="private-sessions.html">Private Harmonies</a>
+<a href="pricing.html">Investments</a>
+<a href="about.html">About</a>
+<a href="contact.html">Contact</a>
+</nav>
+</header>
+
+<section class="hero reveal" aria-labelledby="hero-title">
+<div>
+<h1 id="hero-title">Upcoming sound gatherings, and how they unfold</h1>
+<p>Choose a session built around focused rest: layered bowls, guided tone, and space to land. Select an event or book a private harmony.</p>
+</div>
+<div class="next-event" id="nextEventCard" aria-live="polite">
+<div class="small">Next gathering</div>
+<div class="date" id="nextDate">March 12 • 6:30PM</div>
+<div class="small" id="nextLocation">{{CITY}}, {{STATE}}</div>
+<div style="margin-top:10px">
+<a href="book.html" class="primary-btn">{{PRIMARY_CTA_LABEL}}</a>
+</div>
+</div>
+</section>
+
+<section class="grid" aria-label="Events list">
+<div class="card reveal">
+<h3>Moonlight Wells — Evening Sound Bath</h3>
+<p class="small">An hour of sustained bowls, breath cues, and soft voice. Doors 6:00PM • Start 6:30PM</p>
+<div style="margin-top:10px"><span class="badge">In-person</span></div>
+</div>
+
+<div class="card reveal">
+<h3>Midday Drift — Guided Lunchtime Pause</h3>
+<p class="small">A forty-minute session focused on breath and short intention practices. Bring a journal.</p>
+<div style="margin-top:10px"><span class="badge">Hybrid</span></div>
+</div>
+
+<div class="card reveal">
+<h3>Sound & Writing — Intention Workshop</h3>
+<p class="small">A slow blend of guided journaling and tonal scaffolding—designed to surface a single next-step.</p>
+<div style="margin-top:10px"><span class="badge">Limited seats</span></div>
+</div>
+</section>
+
+<section class="card reveal" style="margin-top:18px;">
+<h3>Calendar & RSVP</h3>
+<ul id="calendarList" style="margin-top:12px;padding-left:18px"></ul>
+<p class="small">Times shown are local. RSVP to reserve a spot — spaces vary by session.</p>
+</section>
+
+<section class="cta reveal">
+<div>
+<strong>Not sure what fits?</strong>
+<div class="small">Try a short guided practice below to feel the format.</div>
+</div>
+<div>
+<button id="tryBtn" class="primary-btn">Try a mini practice</button>
+</div>
+</section>
+
+<div class="disclaimer">
+<strong>Contraindications:</strong> Sound bathing is restful but not medical treatment. If you are pregnant, have epilepsy, severe cardiovascular conditions, or are sensitive to sustained sound, consult a healthcare provider before attending. If in doubt, contact {{EMAIL}} for guidance.
+</div>
+
+<footer style="margin-top:28px;color:var(--muted)">
+<div style="display:flex;justify-content:space-between;align-items:center">
+<div>{{BUSINESS_NAME}} • {{CITY}}, {{STATE}}</div>
+<div><a href="faq.html" style="color:var(--muted);text-decoration:none">FAQ</a></div>
+</div>
+</footer>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-hidden="true">
+<div class="modal" role="document">
+<header>
+<h2>Try a focus exercise</h2>
+<button id="closeModal" class="small-btn" aria-label="Close">Close</button>
+</header>
+<main style="margin-top:10px">
+<p class="small">Choose a three-step path: breathe, write, set an intention.</p>
+<div style="display:flex;gap:8px;margin-top:10px">
+<button id="startBreathe" class="primary-btn">Breathe</button>
+<button id="startJournal" class="small-btn">Journal</button>
+<button id="startIntent" class="small-btn">Set Intention</button>
+</div>
+
+<section id="exerciseArea" style="margin-top:14px"></section>
+</main>
+</div>
+</div>
+
+<script>
+(function(){
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reveals = document.querySelectorAll('.reveal');
+  if(prefersReduced){
+    reveals.forEach(el=>el.classList.add('visible'));
+  }else{
+    const obs = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); }
+      });
+    }, {threshold:0.12});
+    reveals.forEach(el=>obs.observe(el));
+  }
+})();
+
+const events = [
+  {date:'2026-03-12T18:30:00',title:'Moonlight Wells — Evening',loc:'{{CITY}}, {{STATE}}'},
+  {date:'2026-03-19T12:15:00',title:'Midday Drift — Lunchtime Pause',loc:'{{CITY}}, {{STATE}}'},
+  {date:'2026-03-26T10:30:00',title:'Sound & Writing Workshop',loc:'{{CITY}}, {{STATE}}'}
+];
+
+function fmtDate(iso){
+  const d = new Date(iso);
+  return d.toLocaleString(undefined,{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+}
+
+const calendarList = document.getElementById('calendarList');
+events.forEach(e=>{
+  const li = document.createElement('li');
+  li.innerHTML = '<strong>'+fmtDate(e.date)+'</strong> — '+e.title+' <span class="small">('+e.loc+')</span> '+
+    ' <a href="book.html" style="margin-left:8px;color:var(--accent);text-decoration:none">{{PRIMARY_CTA_LABEL}}</a>';
+  calendarList.appendChild(li);
+});
+
+(function setNext(){
+  const now = Date.now();
+  const upcoming = events.filter(e=>new Date(e.date).getTime()>now).sort((a,b)=>new Date(a.date)-new Date(b.date))[0]||events[0];
+  document.getElementById('nextDate').textContent = fmtDate(upcoming.date);
+  document.getElementById('nextLocation').textContent = upcoming.loc;
+})();
+
+const modalBackdrop = document.getElementById('modalBackdrop');
+const tryBtn = document.getElementById('tryBtn');
+const closeModal = document.getElementById('closeModal');
+const exerciseArea = document.getElementById('exerciseArea');
+
+tryBtn.addEventListener('click', ()=>{ openModal(); startBreatheFlow(); });
+closeModal.addEventListener('click', ()=> close());
+
+document.getElementById('startBreathe').addEventListener('click', startBreatheFlow);
+document.getElementById('startJournal').addEventListener('click', startJournalFlow);
+document.getElementById('startIntent').addEventListener('click', startIntentFlow);
+
+function openModal(){ modalBackdrop.style.display='flex'; modalBackdrop.setAttribute('aria-hidden','false'); }
+function close(){ modalBackdrop.style.display='none'; modalBackdrop.setAttribute('aria-hidden','true'); exerciseArea.innerHTML=''; }
+
+function startBreatheFlow(){
+  exerciseArea.innerHTML = '<div><div class="timer" id="breathTimer">3</div><p class="small">Follow a slow 3-step breath: inhale — hold — exhale. Repeat.</p></div>';
+  let count=3;
+  const el = document.getElementById('breathTimer');
+  const interval = setInterval(()=>{
+    count--;
+    if(count<=0){ clearInterval(interval); el.textContent='Done'; setTimeout(()=>{ el.textContent='3'; },1200); } else { el.textContent = count; }
+  },1200);
+}
+
+function startJournalFlow(){
+  exerciseArea.innerHTML = '<div><textarea class="journal" placeholder="Write a few lines..."></textarea><div style="margin-top:8px"><button id="saveNote" class="primary-btn">Save to device</button></div></div>';
+  document.getElementById('saveNote').addEventListener('click', ()=>{
+    const text = exerciseArea.querySelector('textarea').value;
+    const blob = new Blob([text],{type:'text/plain'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href=url; a.download='note.txt'; a.click(); URL.revokeObjectURL(url);
+  });
+}
+
+function startIntentFlow(){
+  exerciseArea.innerHTML = '<div><p class="small">Name one small next-step. Keep it practical.</p><input id="intentInput" style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:#071212;color:#eaf5ef"/><div style="margin-top:8px"><button id="setIntent" class="primary-btn">Lock it in</button></div></div>';
+  document.getElementById('setIntent').addEventListener('click', ()=>{
+    const val = document.getElementById('intentInput').value;
+    if(val.trim()){ alert('Saved: '+val); close(); }
+    else alert('Write a small, actionable step.');
+  });
+}
+</script>
+</body>
+</html>

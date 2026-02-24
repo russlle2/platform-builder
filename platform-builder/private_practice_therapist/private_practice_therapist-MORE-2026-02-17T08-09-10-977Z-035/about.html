@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff9fb;--accent:#6b3dd6;--muted:#6b7280;--card:#fff;--glass:rgba(255,255,255,0.7)}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,'Helvetica Neue',Arial;color:#111}
+    body{background:linear-gradient(180deg,var(--bg),#fff);-webkit-font-smoothing:antialiased}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:linear-gradient(90deg,rgba(107,61,214,0.08),transparent)}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#b57fff);display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none;font-weight:600}
+    .cta{background:var(--accent);color:white;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+    main{max-width:1100px;margin:28px auto;padding:0 20px}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:center}
+    .hero .card{background:var(--card);padding:28px;border-radius:14px;box-shadow:0 8px 30px rgba(99,102,241,0.06)}
+    .kicker{color:var(--accent);font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.08em}
+    h1{margin:10px 0 6px;font-size:28px}
+    p.lead{margin:0;color:var(--muted);line-height:1.5}
+    .who{font-size:14px;color:#111;margin-top:18px}
+    .pattern{width:100%;height:120px;border-radius:10px;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="120" viewBox="0 0 600 120"><defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="%236b3dd6" offset="0" stop-opacity="0.12"/><stop stop-color="%23b57fff" offset="1" stop-opacity="0.06"/></linearGradient></defs><rect width="600" height="120" fill="%23fff"/><g opacity="0.12"><path d="M0 90 C60 60 120 60 180 90 C240 120 300 120 360 90 C420 60 480 60 540 90 C600 120 660 120 720 90" stroke="url(%23g)" stroke-width="12" fill="none" stroke-linecap="round"/></g></svg>');background-size:cover}
+
+    /* Proof gallery */
+    .proof{margin-top:26px;display:flex;gap:18px;align-items:flex-start}
+    .testimonials{flex:1;background:linear-gradient(180deg,rgba(107,61,214,0.03),transparent);padding:18px;border-radius:12px}
+    .testimonials .quote{min-height:120px}
+    .controls{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+    .btn{background:#fff;border:1px solid rgba(16,24,40,0.06);padding:8px 10px;border-radius:8px;cursor:pointer}
+    .badges{width:220px;background:var(--card);padding:12px;border-radius:12px;display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+    .badge{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:10px;background:linear-gradient(90deg,#fff,#fbfbff);cursor:default}
+    .badge svg{width:34px;height:34px}
+    .badge .meta{font-size:13px;color:var(--muted)}
+    .tooltip{position:relative}
+    .tooltip:hover::after{content:attr(data-tip);position:absolute;left:calc(100% + 8px);top:50%;transform:translateY(-50%);background:#111;color:white;padding:8px 10px;border-radius:8px;white-space:nowrap;font-size:13px}
+
+    /* accordion */
+    .accordion{margin-top:22px;border-radius:12px;overflow:hidden}
+    .acc-item{border-top:1px solid rgba(16,24,40,0.06);background:var(--card)}
+    .acc-header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;cursor:pointer}
+    .acc-body{padding:0 16px 18px 16px;max-height:0;overflow:hidden;transition:max-height .28s ease}
+    .open .acc-body{max-height:400px}
+    .open .acc-header{background:linear-gradient(90deg,rgba(107,61,214,0.03),transparent)}
+
+    footer{margin:40px 0 80px;color:var(--muted);font-size:14px}
+    .footer-cta{display:flex;gap:12px;align-items:center;margin-top:12px}
+    .crisis{margin-top:14px;padding:14px;border-radius:10px;background:#fff4f4;border:1px solid #ffd8d8;color:#7a1b1b}
+
+    @media(max-width:880px){.hero{grid-template-columns:1fr;}.badges{width:100%}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo" aria-hidden>TH</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="about.html">My Story</a>
+      <a href="specialties.html">Focus Areas</a>
+      <a href="approach.html">How I Work</a>
+      <a href="fees.html">Investment</a>
+      <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="card">
+        <div class="kicker">Meet your clinician</div>
+        <h1>I'm a licensed therapist offering steady, practical guidance</h1>
+        <p class="lead">I work with adults navigating transitions, relationships, and the quiet anxieties that sit under everyday life. My style is direct, warm, and focused on building strategies that actually fit your day-to-day.</p>
+        <p class="who">I am licensed and insured, and I bring integrative training in cognitive and relational approaches. Sessions are collaborative—expect structure, curiosity, and clear next steps you can try between meetings.</p>
+        <div style="margin-top:16px;display:flex;gap:12px">
+          <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <a href="book.html" style="padding:10px 14px;border-radius:10px;border:1px solid rgba(16,24,40,0.06);text-decoration:none;color:var(--muted);background:#fff">Start a brief intake</a>
+        </div>
+      </div>
+
+      <aside style="display:flex;flex-direction:column;gap:14px">
+        <div class="pattern card" aria-hidden></div>
+        <div class="card">
+          <strong style="display:block">Cohort offering</strong>
+          <div style="color:var(--muted);font-size:14px;margin-top:6px">A small-group, time-limited cohort for focused growth: six sessions across 12 weeks with communal learning and individual check-ins. Limited to 8 participants to keep space intimate and clinically focused.</div>
+          <div style="margin-top:12px">
+            <a href="book.html" style="display:inline-block;padding:8px 12px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#8f5fff);color:white;text-decoration:none;font-weight:700">Join the next cohort</a>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="proof">
+      <div class="testimonials card">
+        <h3 style="margin:0 0 8px">Proof Gallery — what people notice</h3>
+        <div id="quote" class="quote">"I felt guided without pressure. We made a plan that fit my schedule and felt doable."</div>
+        <div class="controls">
+          <button id="prev" class="btn" aria-label="Previous">◀</button>
+          <button id="next" class="btn" aria-label="Next">▶</button>
+        </div>
+      </div>
+      <div class="badges">
+        <div class="badge tooltip" data-tip="Licensed clinical social worker, 10+ years practice">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="#6b3dd6" stroke-width="1.5"/><path d="M9 12l2 2 4-4" stroke="#6b3dd6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div>
+            <div style="font-weight:700">Licensure</div>
+            <div class="meta">Verified credentials</div>
+          </div>
+        </div>
+        <div class="badge tooltip" data-tip="Ongoing clinical supervision and CE training">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="6" width="18" height="12" rx="2" stroke="#b57fff" stroke-width="1.5"/><path d="M8 10h8" stroke="#b57fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <div>
+            <div style="font-weight:700">Clinical Standards</div>
+            <div class="meta">Supervision & training</div>
+          </div>
+        </div>
+        <div class="badge tooltip" data-tip="Participant feedback highlights practical tools and steady support">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5v6l4 2" stroke="#7f6bf0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="#7f6bf0" stroke-width="1.2"/></svg>
+          <div>
+            <div style="font-weight:700">Participant Feedback</div>
+            <div class="meta">Consistent themes</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:20px">
+      <h3 style="margin-bottom:8px">Therapy boundaries & confidentiality</h3>
+      <div class="accordion">
+        <div class="acc-item open" id="acc1">
+          <div class="acc-header" onclick="toggleAcc(this.parentElement)">
+            <div>
+              <strong>Session structure & length</strong>
+              <div style="font-size:13px;color:var(--muted)">What to expect each meeting</div>
+            </div>
+            <div style="font-weight:700">+</div>
+          </div>
+          <div class="acc-body">
+            <p style="margin:8px 0;color:var(--muted)">Standard sessions are 45–50 minutes. We agree on frequency together; many clients begin weekly and adjust as goals shift. If you need to pause or reschedule, we’ll plan that collaboratively.</p>
+          </div>
+        </div>
+
+        <div class="acc-item" id="acc2">
+          <div class="acc-header" onclick="toggleAcc(this.parentElement)">
+            <div>
+              <strong>Confidentiality & limits</strong>
+              <div style="font-size:13px;color:var(--muted)">Privacy, records, and legal exceptions</div>
+            </div>
+            <div style="font-weight:700">+</div>
+          </div>
+          <div class="acc-body">
+            <p style="margin:8px 0;color:var(--muted)">Conversations are confidential and stored securely. Exceptions include imminent risk of harm to self or others, court orders, or when required by law. We will discuss any limits to confidentiality before services begin.</p>
+          </div>
+        </div>
+
+        <div class="acc-item" id="acc3">
+          <div class="acc-header" onclick="toggleAcc(this.parentElement)">
+            <div>
+              <strong>Communications between sessions</strong>
+              <div style="font-size:13px;color:var(--muted)">Email, brief messages, and urgent contact</div>
+            </div>
+            <div style="font-weight:700">+</div>
+          </div>
+          <div class="acc-body">
+            <p style="margin:8px 0;color:var(--muted)">I check email and messages during business hours. For urgent matters, please call {{PHONE}}. Messages may be read and responded to in the next business day; they are not a substitute for a session when safety is a concern.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="crisis" role="note">
+        If you are in immediate danger or facing a medical emergency, call your local emergency number right away. If you are in the United States and are experiencing a mental health crisis, you can call or text 988 for support.
+      </div>
+    </section>
+
+    <footer>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
+        <div>
+          <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+          <div style="color:var(--muted)">{{EMAIL}} • {{PHONE}}</div>
+        </div>
+        <div class="footer-cta">
+          <a href="contact.html" style="text-decoration:none;color:var(--muted)">Reach out</a>
+          <a href="book.html" class="cta">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    // Testimonials carousel for Proof Gallery (rotates)
+    (function(){
+      const quotes = [
+        '"I felt guided without pressure. We made a plan that fit my schedule and felt doable."',
+        '"Practical tools I could try the next day. The pace was gentle and steady."',
+        '"I appreciated being asked what mattered to me. It changed how I approached decisions."'
+      ];
+      let idx = 0;
+      const el = document.getElementById('quote');
+      const next = document.getElementById('next');
+      const prev = document.getElementById('prev');
+      function show(i){ el.textContent = quotes[i]; }
+      next.addEventListener('click', ()=>{ idx = (idx+1)%quotes.length; show(idx); });
+      prev.addEventListener('click', ()=>{ idx = (idx-1+quotes.length)%quotes.length; show(idx); });
+      setInterval(()=>{ idx = (idx+1)%quotes.length; show(idx); },5000);
+      show(idx);
+    })();
+
+    // Accordion logic
+    function toggleAcc(item){ item.classList.toggle('open'); }
+  </script>
+</body>
+</html>

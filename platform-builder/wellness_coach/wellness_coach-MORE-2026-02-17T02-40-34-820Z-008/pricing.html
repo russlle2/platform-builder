@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Investment — Focused Renewal Day | {{BUSINESS_NAME}}</title>
+  <meta name="description" content="One-day VIP experience for busy professionals seeking reset, sustainable routines, and a concrete plan." />
+  <style>
+    :root{--bg:#fbfbfb;--card:#fff;--accent:#2b7a62;--muted:#6b7280;--glass:rgba(255,255,255,0.6);--shadow:0 8px 24px rgba(16,24,40,0.06)}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#0f172a;background:var(--bg);line-height:1.4}
+    a{color:inherit;text-decoration:none}
+
+    /* header */
+    .nav{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:linear-gradient(180deg,rgba(255,255,255,0.8),rgba(255,255,255,0.6));position:sticky;top:0;backdrop-filter:blur(6px);z-index:50}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:700}
+    .brand .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#0b5e4b);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    .menu{display:flex;gap:18px;align-items:center}
+    .menu a{padding:8px 10px;border-radius:8px;color:var(--muted);font-weight:600}
+    .menu a.active{color:var(--accent);background:rgba(43,122,98,0.08)}
+    .cta-btn{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;font-weight:700}
+
+    /* hero split diagonal */
+    .hero{display:grid;grid-template-columns:1fr 1fr;min-height:56vh;align-items:center;padding:60px 48px;gap:40px;background-image:url('assets/img/pattern.svg');background-repeat:no-repeat;background-size:700px;}
+    .hero-left{padding:28px;background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,255,255,0.85));border-radius:18px;box-shadow:var(--shadow)}
+    .eyebrow{color:var(--muted);font-weight:700;font-size:13px}
+    h1{margin:12px 0 8px;font-size:28px}
+    p.lead{color:var(--muted);margin:0 0 18px}
+    .price-card{background:var(--card);padding:18px;border-radius:12px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px}
+    .price{font-size:24px;font-weight:800;color:var(--accent)}
+    .features{display:grid;gap:8px;margin-top:8px}
+    .feature{display:flex;gap:10px;align-items:center;color:var(--muted);font-weight:600}
+
+    .hero-right{position:relative}
+    .diagonal{position:absolute;inset:0;border-radius:18px;background:linear-gradient(135deg,#fff 0%,#f0faf3 50%);transform:skewX(-6deg);box-shadow:var(--shadow)}
+    .hero-card{position:relative;padding:28px;border-radius:18px;background:transparent}
+
+    /* sections */
+    .container{max-width:980px;margin:28px auto;padding:0 20px}
+    section{margin:36px 0}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+
+    .pill{display:inline-block;padding:6px 10px;background:#f1f6f4;border-radius:999px;color:var(--accent);font-weight:700}
+    .muted{color:var(--muted)}
+
+    /* reveal */
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity 560ms cubic-bezier(.2,.9,.3,1),transform 560ms cubic-bezier(.2,.9,.3,1)}
+    .reveal.revealed{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none!important;opacity:1!important;transform:none!important}}
+
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}
+    .modal{background:var(--card);width:min(720px,96%);border-radius:12px;padding:20px;box-shadow:0 30px 50px rgba(2,6,23,0.3)}
+    .modal h3{margin:0 0 8px}
+    .modal .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .btn{padding:8px 12px;border-radius:8px;background:#f3f7f5;border:1px solid rgba(11,94,75,0.06);cursor:pointer;font-weight:700}
+    .btn.primary{background:var(--accent);color:#fff;border:none}
+    .hidden{display:none}
+
+    footer{padding:28px 20px;background:linear-gradient(180deg,rgba(250,251,252,0.8),rgba(255,255,255,0.9));display:flex;justify-content:space-between;align-items:center;border-top:1px solid #edf2f7}
+
+    @media (max-width:900px){.hero{grid-template-columns:1fr;padding:28px;grid-auto-rows:auto}.grid{grid-template-columns:1fr}.menu{display:none}.hero-right{display:none}}
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="brand"><div class="logo">W</div><div>{{BUSINESS_NAME}}</div></div>
+    <nav class="menu">
+      <a href="index.html">Home</a>
+      <a href="about.html">Philosophy</a>
+      <a href="services.html">Offerings</a>
+      <a href="programs.html">Journeys</a>
+      <a href="pricing.html" class="active">Invest</a>
+      <a href="testimonials.html">Voices</a>
+      <a href="book.html">Book a Day</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+    <a class="cta-btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-left">
+        <div class="eyebrow pill">VIP DAY</div>
+        <h1>Focused Renewal Day — intensive clarity, practical plan</h1>
+        <p class="lead">A single, concentrated workday to surface the habits and systems that actually fit your life, and leave with a step-by-step action map you can use the next morning.</p>
+
+        <div class="price-card reveal">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div class="muted">One-day VIP experience</div>
+              <div class="price">$2,800 — VIP Day</div>
+            </div>
+            <div style="text-align:right">
+              <div class="muted" style="font-size:13px">Includes:</div>
+              <div class="muted" style="font-size:13px">Pre-work, day of design, 30-day follow-up</div>
+            </div>
+          </div>
+          <div class="features">
+            <div class="feature">• A clear, prioritized plan for the next 90 days</div>
+            <div class="feature">• A compact routine to support energy and focus</div>
+            <div class="feature">• Short-stacked habits you can sustain</div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <a class="btn primary" href="book.html">Reserve a VIP Day</a>
+            <button class="btn" id="try-now">Try it now</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-right">
+        <div class="diagonal"></div>
+        <div class="hero-card">
+          <svg width="100%" height="160" viewBox="0 0 600 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="border-radius:12px;overflow:hidden">
+            <rect width="600" height="160" fill="#f7fdf9"/>
+            <g transform="translate(40,20)">
+              <circle cx="60" cy="60" r="36" fill="#e6f7ef" />
+              <rect x="120" y="12" width="320" height="28" rx="6" fill="#fff" />
+              <rect x="120" y="54" width="260" height="18" rx="6" fill="#fff" />
+              <rect x="120" y="84" width="200" height="12" rx="6" fill="#fff" />
+            </g>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <div class="container">
+      <section class="reveal">
+        <h2>What to expect during a VIP Day</h2>
+        <div class="grid">
+          <div>
+            <h3>Morning — diagnostic & themes</h3>
+            <p class="muted">We use a structured intake and short exercises to find the handful of pressure points blocking consistent progress.</p>
+          </div>
+          <div>
+            <h3>Afternoon — design & rehearsal</h3>
+            <p class="muted">We co-design a compact routine and practice small habit loops until they feel realistic and repeatable.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="reveal">
+        <h2>Investment framing</h2>
+        <p class="muted">The VIP Day is built for people who need rapid, durable change without a long program. It includes targeted follow-up and simple templates to keep momentum.</p>
+        <ul>
+          <li><strong>One payment:</strong> $2,800 — full-day engagement, pre-work, and 30-day check-in</li>
+          <li><strong>Optional add-on:</strong> 3 monthly coaching check-ins $450/month</li>
+        </ul>
+      </section>
+
+      <section class="reveal">
+        <h2>Common questions</h2>
+        <div>
+          <strong>Is this coaching or therapy?</strong>
+          <p class="muted">This is coaching: focused on habits, outcomes, and frameworks you can apply. Not a substitute for medical or mental health care.</p>
+        </div>
+        <div>
+          <strong>Who benefits most?</strong>
+          <p class="muted">Leaders and professionals who need concrete changes that fit into a busy week, not more things to manage.</p>
+        </div>
+      </section>
+
+      <section class="reveal">
+        <h2>Next step</h2>
+        <p class="muted">If you're ready for concentrated progress, reserve your day. We'll send a short intake and prep guide so the day is efficient and actionable.</p>
+        <a class="btn primary" href="book.html">Book your Focused Renewal Day</a>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="muted">Contact: <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    <div class="muted">Serving {{CITY}}, {{STATE}}</div>
+  </footer>
+
+  <!-- Guided exercise modal -->
+  <div id="modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document">
+      <h3 id="modal-title">Try a short practice</h3>
+      <p class="muted" id="modal-desc">Choose a quick guided exercise: breathing, journaling, or set an intention.</p>
+      <div class="controls">
+        <button class="btn" data-mode="breath">Breathing (2 min)</button>
+        <button class="btn" data-mode="journal">Journaling (5 min)</button>
+        <button class="btn" data-mode="intent">Intention setting (1 min)</button>
+        <button class="btn" id="close-modal">Close</button>
+      </div>
+      <div id="exercise" style="margin-top:14px"></div>
+    </div>
+  </div>
+
+  <script>
+    // Scroll reveal with prefers-reduced-motion
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if(prefersReduced){document.querySelectorAll('.reveal').forEach(el=>el.classList.add('revealed'));return}
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting){entry.target.classList.add('revealed');io.unobserve(entry.target)}
+        })
+      },{threshold:0.12});
+      document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+    })();
+
+    // Modal and guided exercises
+    (function(){
+      const tryBtn = document.getElementById('try-now');
+      const modal = document.getElementById('modal');
+      const exContainer = document.getElementById('exercise');
+      const closeBtn = document.getElementById('close-modal');
+      let timer = null;
+
+      function openModal(){modal.style.display='flex';modal.setAttribute('aria-hidden','false');document.querySelector('#modal .btn').focus()}
+      function closeModal(){modal.style.display='none';modal.setAttribute('aria-hidden','true');exContainer.innerHTML='';if(timer)clearInterval(timer)}
+
+      tryBtn.addEventListener('click',openModal);
+      closeBtn.addEventListener('click',closeModal);
+
+      modal.addEventListener('click',(e)=>{if(e.target===modal)closeModal()});
+
+      document.querySelectorAll('#modal .controls .btn[data-mode]').forEach(btn=>{
+        btn.addEventListener('click',()=>startExercise(btn.getAttribute('data-mode')))
+      });
+
+      function startExercise(mode){
+        if(timer)clearInterval(timer);
+        exContainer.innerHTML='';
+        if(mode==='breath'){
+          const total=120; let t=0;
+          exContainer.innerHTML='<div style="font-weight:700;margin-bottom:8px">Box breathing — 4s in, 4s hold, 4s out</div><div id="count" style="font-size:24px;color:var(--accent)">Ready</div>';
+          const count = document.getElementById('count');
+          timer = setInterval(()=>{
+            t++; const phase = t%12;
+            if(phase===1)count.textContent='In — 4';
+            else if(phase===5)count.textContent='Hold — 4';
+            else if(phase===9)count.textContent='Out — 4';
+            if(t>=total){clearInterval(timer);count.textContent='Complete';}
+          },1000);
+        }
+        if(mode==='journal'){
+          const total=300; let t=0;
+          exContainer.innerHTML='<div style="font-weight:700;margin-bottom:8px">Journaling prompt</div><div class="muted">What small decision today would make your tomorrow easier?</div><textarea id="journal" rows="6" style="width:100%;margin-top:8px;padding:10px;border-radius:8px;border:1px solid #e6eef0"></textarea><div style="margin-top:8px;color:var(--muted)"><span id="timer">5:00</span> remaining</div>';
+          const timerEl = document.getElementById('timer');
+          timer = setInterval(()=>{t++;const rem = Math.max(0,total-t);const mm = Math.floor(rem/60);const ss = String(rem%60).padStart(2,'0');timerEl.textContent=mm+':'+ss;if(rem<=0){clearInterval(timer);timerEl.textContent='Done'}} ,1000);
+        }
+        if(mode==='intent'){
+          exContainer.innerHTML='<div style="font-weight:700;margin-bottom:8px">Set a short intention</div><div class="muted">Choose 3 words that describe how you want to move through today.</div><div style="display:flex;gap:8px;margin-top:8px"><input placeholder="1 word" id="i1" class="btn" style="flex:1"/><input placeholder="2 word" id="i2" class="btn" style="flex:1"/><input placeholder="3 word" id="i3" class="btn" style="flex:1"/></div><div style="margin-top:10px"><button class="btn primary" id="save-intent">Save</button></div>';
+          document.getElementById('save-intent').addEventListener('click',()=>{
+            const i1=document.getElementById('i1').value.trim();const i2=document.getElementById('i2').value.trim();const i3=document.getElementById('i3').value.trim();exContainer.innerHTML='<div style="font-weight:700">Saved intention</div><div class="muted">'+[i1,i2,i3].filter(Boolean).join(' • ')+'</div>';
+          });
+        }
+      }
+    })();
+  </script>
+</body>
+</html>

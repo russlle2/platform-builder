@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Blends & Kits — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fffaf7;--accent:#6a4b2a;--muted:#6d6d6d;--card:#fff}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;color:#212121;background:var(--bg)}
+    .wrap{max-width:1100px;margin:20px auto;padding:18px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    .nav a{margin-left:14px;color:var(--muted);text-decoration:none}
+    .nav a.active{color:var(--accent);font-weight:700}
+
+    .intro{display:flex;gap:20px;align-items:center;margin-top:18px}
+    .intro h1{margin:0;color:var(--accent)}
+    .intro p{margin:0;color:var(--muted)}
+
+    .catalog{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-top:20px}
+    .mix{background:var(--card);padding:14px;border-radius:12px;box-shadow:0 6px 20px rgba(19,19,19,0.04)}
+    .mix h3{margin:6px 0;color:var(--accent)}
+    .mix p{color:var(--muted);font-size:0.95rem}
+    .small{font-size:0.9rem;color:var(--muted)}
+
+    .reveal{opacity:0;transform:translateY(14px);transition:opacity 420ms ease,transform 420ms cubic-bezier(.2,.9,.3,1)}
+    .reveal.in{opacity:1;transform:none}
+    @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+
+    .preview{display:flex;gap:12px;align-items:center;margin-top:12px}
+    .pill{background:linear-gradient(90deg,rgba(106,75,42,0.1),rgba(106,75,42,0.03));padding:6px 10px;border-radius:999px;color:var(--accent)}
+
+    .planner-inline{margin-top:18px;padding:12px;background:#fff;border-radius:10px;border:1px solid rgba(0,0,0,0.04)}
+    .planner-inline input, .planner-inline select{padding:8px;border-radius:8px;border:1px solid #eaeaea;margin-top:8px;width:100%}
+    .btn{background:var(--accent);color:#fff;padding:10px 12px;border-radius:10px;border:none;cursor:pointer}
+
+    footer{margin-top:28px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <strong>{{BUSINESS_NAME}}</strong>
+        <div class="small">Curated aroma blends and starter kits</div>
+      </div>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="services.html">Offerings</a>
+        <a href="blends.html" class="active">Blends</a>
+        <a href="shop.html">Store</a>
+        <a href="about.html">Meet</a>
+        <a href="book.html">Reserve</a>
+      </nav>
+    </header>
+
+    <section class="intro reveal">
+      <div>
+        <h1>Blends for quiet rituals</h1>
+        <p class="small">Hand-curated essential oil blends and small kits — designed to be approachable and safety-conscious. Use inhalers, roll-ons, or diluted topical applications per guidance.</p>
+      </div>
+      <div class="preview">
+        <div class="pill">Inhaler kits</div>
+        <div class="pill">Roll-ons</div>
+        <div class="pill">Starter sets</div>
+      </div>
+    </section>
+
+    <section class="catalog">
+      <article class="mix reveal">
+        <h3>Morning Bright — 10ml</h3>
+        <p class="small">A crisp citrus-forward blend for gentle uplift. Notes: bergamot, mandarin, juniper.</p>
+        <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center">
+          <div style="font-weight:700;color:#0a722a">$22</div>
+          <button class="btn" onclick="alert('Add to cart placeholder')">Add to cart</button>
+        </div>
+      </article>
+
+      <article class="mix reveal">
+        <h3>Quiet Ground — 10ml</h3>
+        <p class="small">Warm umami notes to create a sense of steady presence. Notes: sandalwood, cedar, a hint of clary sage.</p>
+        <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center">
+          <div style="font-weight:700;color:#0a722a">$26</div>
+          <button class="btn" onclick="alert('Add to cart placeholder')">Add to cart</button>
+        </div>
+      </article>
+
+      <article class="mix reveal">
+        <h3>Evening Ease — Roll-on</h3>
+        <p class="small">A pre-blended roll-on with gentle floral and herbaceous notes for bedtime rituals. Dilution ready.</p>
+        <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center">
+          <div style="font-weight:700;color:#0a722a">$18</div>
+          <button class="btn" onclick="alert('Add to cart placeholder')">Add to cart</button>
+        </div>
+      </article>
+
+      <article class="mix reveal">
+        <h3>Starter: At-Home Ritual Kit</h3>
+        <p class="small">Inhaler, roll-on, and a short guide to three small scent practices. Great as a first set.</p>
+        <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center">
+          <div style="font-weight:700;color:#0a722a">$48</div>
+          <button class="btn" onclick="alert('Add to cart placeholder')">Add to cart</button>
+        </div>
+      </article>
+
+    </section>
+
+    <section class="reveal planner-inline">
+      <h3>Quick blend finder</h3>
+      <label>Choose a mood</label>
+      <select id="mood">
+        <option value="uplift">Uplift</option>
+        <option value="ground">Grounding</option>
+        <option value="relax">Relaxation</option>
+      </select>
+      <label style="margin-top:8px">Any considerations?</label>
+      <select id="blendConsider">
+        <option value="none">None</option>
+        <option value="pets">Pets in home</option>
+        <option value="preg">Pregnancy or breastfeeding</option>
+        <option value="sens">Scent sensitivity</option>
+      </select>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn" id="findBlend">Find a blend</button>
+        <button class="btn" id="copyBlend" style="background:#4a4a4a">Copy details</button>
+      </div>
+      <textarea id="blendResult" rows="4" style="width:100%;margin-top:10px;border-radius:8px;border:1px solid #eee;padding:10px" readonly></textarea>
+    </section>
+
+    <section class="reveal" style="margin-top:18px">
+      <h3>Notes on safe use</h3>
+      <p class="small">We emphasize proper dilution and patch testing. If you're pregnant, breastfeeding, or have pets, choose from blends labeled for those situations or consult before applying topically. Our products include dilution suggestions and guidance.</p>
+    </section>
+
+    <footer>
+      <div class="small">Questions? Email {{EMAIL}} or call {{PHONE}}. Serving {{CITY}}, {{STATE}}.</div>
+    </footer>
+  </div>
+
+<script>
+// Reveal
+(function(){
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const nodes = document.querySelectorAll('.reveal');
+  if(prefersReduced){ nodes.forEach(n=>n.classList.add('in')); return; }
+  const io = new IntersectionObserver(entries=>{ entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }); },{threshold:0.12});
+  nodes.forEach(n=>io.observe(n));
+})();
+
+// Blend finder
+(function(){
+  const find = document.getElementById('findBlend');
+  const copy = document.getElementById('copyBlend');
+  const result = document.getElementById('blendResult');
+
+  function summary(){
+    const mood = document.getElementById('mood').value;
+    const consider = document.getElementById('blendConsider').value;
+    let text = 'Blend suggestion for: ' + (mood==='uplift'?'Uplift':mood==='ground'?'Grounding':'Relaxation') + '\n';
+    if(mood==='uplift') text += 'Suggested notes: bergamot, mandarin, a hint of basil.\nDilution: inhaler or 1% topical dilutions.';
+    if(mood==='ground') text += 'Suggested notes: cedarwood, sandalwood, a resinous base.\nDilution: diffuser or 1–2% topical blends.';
+    if(mood==='relax') text += 'Suggested notes: lavender, roman chamomile, sweet bergamot.\nDilution: roll-on at 1% for sensitive skin.';
+    text += '\nConsiderations: ' + (consider==='none'?'None noted':consider==='pets'?'Avoid tea tree, eucalyptus around pets.':'Consult for pregnancy or breastfeeding.');
+    text += '\n\nContact: ' + '{{EMAIL}}';
+    return text;
+  }
+
+  find.addEventListener('click', function(){ result.value = summary(); });
+  copy.addEventListener('click', async function(){
+    try{ await navigator.clipboard.writeText(result.value || summary()); copy.textContent = 'Copied'; setTimeout(()=>copy.textContent='Copy details',1200);}catch(e){ result.select(); document.execCommand('copy'); copy.textContent='Copied'; setTimeout(()=>copy.textContent='Copy details',1200); }
+  });
+})();
+</script>
+</body>
+</html>

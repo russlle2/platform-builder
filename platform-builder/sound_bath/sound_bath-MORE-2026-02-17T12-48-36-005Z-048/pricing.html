@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Rates & Options — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7fbff;--accent:#1b9aa8;--muted:#64666e}
+    body{margin:0;font-family:Inter,system-ui,Roboto,Arial;background:var(--bg);color:#111}
+    .wrap{max-width:980px;margin:18px auto;padding:18px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    h1{margin:12px 0 6px 0}
+    .tiers{display:flex;gap:12px;margin-top:14px}
+    .tier{flex:1;background:white;padding:14px;border-radius:12px;box-shadow:0 10px 24px rgba(22,26,60,0.05)}
+    .tier h3{margin:0}
+    .price{font-size:22px;font-weight:800;margin-top:12px}
+    .features{color:var(--muted);margin-top:10px}
+    .mixer-inline{display:flex;gap:8px;align-items:center;margin-top:12px}
+    .mixer-inline button{padding:8px 12px;border-radius:8px;border:none;background:#eef9fb;cursor:pointer}
+    .mixer-inline button.active{background:var(--accent);color:white}
+    .cta{display:inline-block;margin-top:12px;background:var(--accent);color:white;padding:10px 12px;border-radius:10px;text-decoration:none}
+    .disclaimer{margin-top:14px;color:var(--muted);font-size:13px}
+
+    @media (max-width:880px){.tiers{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+      <nav>
+        <a href="index.html">Gather</a>
+        <a href="events.html">Sessions</a>
+        <a href="private-sessions.html">Private</a>
+        <a href="pricing.html">Rates</a>
+        <a href="book.html">Book</a>
+      </nav>
+    </header>
+
+    <h1>Flexible pricing shaped around intent</h1>
+    <p style="color:var(--muted)">We price by session style rather than a single number so you can choose the format that fits your needs. Pick an empathy level to see typical ranges.</p>
+
+    <div class="mixer-inline">
+      <div style="font-weight:600;color:var(--muted)">Choose listening intensity:</div>
+      <button id="rGentle" class="active" data-level="gentle">Gentle</button>
+      <button id="rMedium" data-level="medium">Balanced</button>
+      <button id="rIntense" data-level="intense">Deep</button>
+    </div>
+
+    <div class="tiers" id="tiersArea">
+      <div class="tier" data-type="community">
+        <h3>Community Seat</h3>
+        <div class="price" id="priceCommunity">—</div>
+        <div class="features">Shared room, guided cues, 60–75 minutes. Best for exploratory rest.</div>
+        <a class="cta" href="book.html">Reserve community</a>
+      </div>
+
+      <div class="tier" data-type="private">
+        <h3>Private Session</h3>
+        <div class="price" id="pricePrivate">—</div>
+        <div class="features">One-to-one tailoring, intake, 45–90 minutes depending on depth.</div>
+        <a class="cta" href="private-sessions.html">Request private</a>
+      </div>
+
+      <div class="tier" data-type="series">
+        <h3>Focused Series</h3>
+        <div class="price" id="priceSeries">—</div>
+        <div class="features">3 or 6-session packages for sustained benefit and integration.</div>
+        <a class="cta" href="book.html">Start a series</a>
+      </div>
+    </div>
+
+    <div class="disclaimer">
+      Contraindications: Persons with pacemakers or implanted electronics, recent cranial surgery, or uncontrolled seizures should consult a medical professional before participating. If pregnant or under psychiatric care, please connect with us at <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> to discuss adaptations.
+    </div>
+
+    <footer style="margin-top:20px;color:var(--muted)">Questions? Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or visit our <a href="faq.html">FAQ</a>.</footer>
+  </div>
+
+  <script>
+    (function(){
+      const bracket = {
+        gentle:{community:'$22–$28',private:'$95–$140',series:'$250–$420'},
+        medium:{community:'$26–$34',private:'$140–$210',series:'$360–$580'},
+        intense:{community:'$30–$40',private:'$210–$320',series:'$540–$820'}
+      };
+
+      const buttons = document.querySelectorAll('.mixer-inline button');
+      const pc = document.getElementById('priceCommunity');
+      const pp = document.getElementById('pricePrivate');
+      const ps = document.getElementById('priceSeries');
+
+      function setRates(level){
+        buttons.forEach(b=>b.classList.toggle('active',b.dataset.level===level));
+        const data = bracket[level];
+        pc.textContent = data.community;
+        pp.textContent = data.private;
+        ps.textContent = data.series;
+      }
+
+      buttons.forEach(b=>b.addEventListener('click',()=>setRates(b.dataset.level)));
+      setRates('gentle');
+    })();
+  </script>
+</body>
+</html>

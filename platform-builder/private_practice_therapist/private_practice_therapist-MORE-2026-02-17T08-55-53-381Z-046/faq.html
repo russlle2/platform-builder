@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FAQ — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#F7F3EE;--card:#FFFFFF;--accent:#A86A3B;--muted:#6B695F}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:#222}
+    header{padding:20px 28px;display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:16px;color:var(--muted);text-decoration:none}
+    main{max-width:920px;margin:18px auto;padding:18px}
+    h1{margin:0;font-size:24px}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:18px;margin-top:18px}
+    .faqCard{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(20,20,18,0.06)}
+    .item{border-top:1px solid #F0EDE8;padding:12px 0}
+    .q{font-weight:700;margin:0;cursor:pointer}
+    .a{margin:6px 0 0 0;color:var(--muted);display:none}
+    .note{font-size:13px;color:var(--muted);margin-top:10px}
+    .wizard{background:linear-gradient(180deg,#fff,#FEF9F4);padding:14px;border-radius:10px}
+    label{display:block;margin-top:8px;font-size:13px;color:var(--muted)}
+    select,input[type="text"],textarea{width:100%;padding:9px;border-radius:8px;border:1px solid #E6E3DD;margin-top:6px}
+    button.btn{background:var(--accent);color:#fff;border:0;padding:10px 12px;border-radius:8px;margin-top:12px;cursor:pointer}
+    .summary{background:#FBF7F2;padding:12px;border-radius:8px;margin-top:10px;font-family:monospace;font-size:13px}
+    footer{max-width:920px;margin:18px auto;color:var(--muted);font-size:13px;padding:0 18px}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,#A86A3B,#C79A73);display:grid;place-items:center;color:white;font-weight:700">TP</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">Practical, steady clinical work.</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Who I am</a>
+      <a href="specialties.html">Focus Areas</a>
+      <a href="approach.html">Approach</a>
+      <a href="book.html">Schedule</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Frequently asked questions</h1>
+    <div class="grid">
+      <div>
+        <div class="faqCard">
+          <div class="item">
+            <div class="q">How do I know if this is the right fit?</div>
+            <div class="a">I offer an initial consultation to learn about your needs and see if the approach feels useful. You can also use the self-screening tool on the side to organize questions you want to discuss.</div>
+          </div>
+
+          <div class="item">
+            <div class="q">What does a membership include?</div>
+            <div class="a">Memberships typically include regular session time, scheduling priority, and access to brief between-session check-ins as arranged. Specifics are agreed during intake and recorded in the care plan.</div>
+          </div>
+
+          <div class="item">
+            <div class="q">Insurance and billing</div>
+            <div class="a">I provide invoices and can discuss receipts you can submit to insurance. I cannot guarantee reimbursement. For details, we will review billing during the consult.</div>
+          </div>
+
+          <div class="item">
+            <div class="q">Confidentiality and limits</div>
+            <div class="a">All clinical notes are confidential except in cases required by law (e.g., imminent harm, abuse). If you have specific privacy concerns we can discuss steps to minimize risks.</div>
+          </div>
+
+          <div class="item">
+            <div class="q">How long before I notice change?</div>
+            <div class="a">Therapy unfolds differently for everyone. Some people feel practical relief quickly; others appreciate steady progress over weeks or months. We'll set expectations together without promises of a specific outcome.</div>
+          </div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="wizard">
+          <strong>Brief self-screening</strong>
+          <p class="note">A short non-diagnostic check to help you identify areas to discuss in a first consult. This summary is for your use with the clinician.</p>
+
+          <label>Current concern (pick the most relevant)</label>
+          <select id="concern">
+            <option value="Stress / overwhelm">Stress / overwhelm</option>
+            <option value="Low mood">Low mood</option>
+            <option value="Anxiety or worry">Anxiety or worry</option>
+            <option value="Relationship strain">Relationship strain</option>
+            <option value="Career / purpose">Career / purpose</option>
+          </select>
+
+          <label>Duration</label>
+          <select id="durationSelect">
+            <option value="A few weeks">A few weeks</option>
+            <option value="Several months">Several months</option>
+            <option value="A year or more">A year or more</option>
+          </select>
+
+          <label>What matters most right now? (short)</label>
+          <input type="text" id="whatMatters" placeholder="e.g., sleep, concentration, relationships" />
+
+          <button class="btn" id="runWizard">Create questions to bring</button>
+
+          <div class="summary" id="wizardSummary" style="display:none"></div>
+          <button class="btn" id="copyWizard" style="display:none">Copy questions</button>
+        </div>
+      </aside>
+    </div>
+
+    <div style="margin-top:18px;color:var(--muted);font-size:13px">If you are in immediate danger or are experiencing a crisis, call emergency services or a local crisis line. Confidentiality and scope constraints will be reviewed during intake.</div>
+  </main>
+
+  <footer>
+    <div style="max-width:920px;margin:10px auto;padding:18px;color:var(--muted);font-size:13px">Contact: {{EMAIL}} • {{PHONE}} • Serving {{CITY}}, {{STATE}}</div>
+  </footer>
+
+  <script>
+    // FAQ accordion
+    document.querySelectorAll('.q').forEach(q=>{
+      q.addEventListener('click', ()=>{
+        const a = q.nextElementSibling;
+        a.style.display = a.style.display === 'block' ? 'none' : 'block';
+      });
+    });
+
+    // Simple wizard
+    (function(){
+      const run = document.getElementById('runWizard');
+      const copyBtn = document.getElementById('copyWizard');
+      const out = document.getElementById('wizardSummary');
+
+      function build(){
+        const concern = document.getElementById('concern').value;
+        const dur = document.getElementById('durationSelect').value;
+        const what = document.getElementById('whatMatters').value.trim() || '(no short note)';
+
+        const questions = [
+          'Brief notes for consult:',
+          '- Current primary concern: ' + concern,
+          '- How long: ' + dur,
+          '- What matters: ' + what,
+          '',
+          'Suggested questions to bring:',
+          '- What would a successful outcome look like for us to aim for?',
+          '- Which patterns have you noticed that make this better or worse?',
+          '- Are there recent stressors or supports I should know about?',
+          '- What has helped you in the past, if anything?',
+          '',
+          'You can copy these and paste them into the intake form or email to prepare.'
+        ].join('\n');
+
+        return questions;
+      }
+
+      run.addEventListener('click', ()=>{
+        const txt = build();
+        out.style.display = 'block';
+        out.textContent = txt;
+        copyBtn.style.display = 'inline-block';
+      });
+
+      copyBtn.addEventListener('click', ()=>{
+        const txt = out.textContent;
+        navigator.clipboard && navigator.clipboard.writeText(txt).then(()=>{
+          copyBtn.textContent='Copied'; setTimeout(()=>copyBtn.textContent='Copy questions',1400);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

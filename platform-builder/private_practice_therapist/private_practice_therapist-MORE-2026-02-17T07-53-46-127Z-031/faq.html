@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Questions & Practical Info — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--accent:#c06;--muted:#666;--bg:#fff}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:var(--bg);color:#222}
+    .wrap{max-width:980px;margin:28px auto;padding:24px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none}
+    h1{margin:12px 0}
+    .faq-list{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .qa{background:#fff;border-radius:10px;padding:14px;border:1px solid #f0f0f0}
+    .small{color:var(--muted);font-size:14px}
+    .wizard{margin-top:20px;background:#fff;padding:12px;border-radius:10px;border:1px solid #eee}
+    .step{display:none}
+    .step.active{display:block}
+    .row{display:flex;gap:10px}
+    input[type="radio"]{margin-right:8px}
+    button{background:var(--accent);color:#fff;border:0;padding:8px 12px;border-radius:8px;cursor:pointer}
+    .out{background:#fafafa;padding:12px;border-radius:8px;border:1px dashed #eee;margin-top:10px}
+    @media(max-width:800px){.faq-list{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div class="small">Private practice in {{CITY}}, {{STATE}}</div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">The Clinician</a>
+        <a href="specialties.html">Areas</a>
+        <a href="approach.html">How I Work</a>
+        <a href="fees.html">Investment</a>
+        <a href="faq.html">Quick Answers</a>
+        <a href="book.html">Begin</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <h1>Frequently asked practical questions</h1>
+    <p class="small">Short answers to common logistics and what to expect. If you don't see what you need, reach out by email at <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</p>
+
+    <section class="faq-list">
+      <div class="qa">
+        <strong>How do I book?</strong>
+        <p class="small">Use the "Begin" link to start a booking request, or call {{PHONE}}. If you already know what you want to work on, bring the session planner summary to the first conversation.</p>
+      </div>
+      <div class="qa">
+        <strong>Payment & insurance</strong>
+        <p class="small">I accept payment by card. I do not bill insurance directly; I can provide receipts (superbills) you may submit to your insurer—please ask during intake.</p>
+      </div>
+      <div class="qa">
+        <strong>Session length and format</strong>
+        <p class="small">Sessions are offered in 45 or 60 minute formats, in-person or telehealth when appropriate. We will choose the format that fits your goals and safety needs.</p>
+      </div>
+      <div class="qa">
+        <strong>Cancelation & rescheduling</strong>
+        <p class="small">Please provide at least 48 hours notice when possible. Short-notice cancellations may be billed; we'll discuss details during intake.</p>
+      </div>
+    </section>
+
+    <section style="margin-top:22px">
+      <h2 style="margin:0 0 8px">Quick Self‑screening (brief)</h2>
+      <p class="small">A short, non-diagnostic series of prompts to organize your thoughts for our first conversation. Results produce clear questions to bring to the appointment.</p>
+      <div class="wizard" id="miniWizard">
+        <div class="step active" data-step="1">
+          <label>1) Which phrase best fits right now?</label>
+          <div class="row">
+            <label><input type="radio" name="s1" value="Feeling overwhelmed">Feeling overwhelmed</label>
+            <label><input type="radio" name="s1" value="Stuck">Stuck</label>
+            <label><input type="radio" name="s1" value="Transitioning">Transitioning</label>
+          </div>
+        </div>
+        <div class="step" data-step="2">
+          <label>2) How long has this been a concern?</label>
+          <div class="row">
+            <label><input type="radio" name="s2" value="Less than 3 months">Less than 3 months</label>
+            <label><input type="radio" name="s2" value="3-12 months">3–12 months</label>
+            <label><input type="radio" name="s2" value="Longer than a year">Longer than a year</label>
+          </div>
+        </div>
+        <div class="step" data-step="3">
+          <label>3) What outcome feels most important?</label>
+          <div class="row">
+            <label><input type="radio" name="s3" value="More calm">More calm</label>
+            <label><input type="radio" name="s3" value="Clear decision">Clear decision</label>
+            <label><input type="radio" name="s3" value="Better boundaries">Better boundaries</label>
+          </div>
+        </div>
+
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <button id="miniPrev" style="background:#ddd;color:#111">Back</button>
+          <button id="miniNext">Next</button>
+          <button id="miniReset" style="background:#eee;color:#333">Reset</button>
+        </div>
+
+        <div class="out" id="miniOut">Complete the three prompts to see suggested questions to bring to your first meeting.</div>
+      </div>
+    </section>
+
+    <section style="margin-top:20px" class="small">
+      <strong>Boundaries & crisis information</strong>
+      <p>Messages sent here are not monitored 24/7. If you are in immediate danger, call your local emergency services. For urgent mental health crises, please contact your local crisis line.</p>
+    </section>
+
+  </div>
+
+  <script>
+    // Mini wizard behavior
+    (function(){
+      var step = 1;
+      var max = 3;
+      var steps = document.querySelectorAll('#miniWizard .step');
+      function show(){
+        steps.forEach(function(s){s.classList.remove('active')});
+        document.querySelector('#miniWizard .step[data-step="'+step+'"]').classList.add('active');
+      }
+      document.getElementById('miniNext').addEventListener('click', function(){
+        if(step<max) step++; else produce(); show();
+      });
+      document.getElementById('miniPrev').addEventListener('click', function(){ if(step>1) step--; show(); });
+      document.getElementById('miniReset').addEventListener('click', function(){
+        document.querySelectorAll('#miniWizard input[type=radio]').forEach(function(i){i.checked=false});
+        step=1; show(); document.getElementById('miniOut').textContent = 'Complete the three prompts to see suggested questions to bring to your first meeting.';
+      });
+      function produce(){
+        var a = document.querySelector('input[name="s1"]:checked');
+        var b = document.querySelector('input[name="s2"]:checked');
+        var c = document.querySelector('input[name="s3"]:checked');
+        var out = document.getElementById('miniOut');
+        if(!a || !b || !c){ out.textContent = 'Please answer each prompt to generate the suggested questions.'; return; }
+        var lines = [];
+        lines.push('Suggested prompts to bring to the consultation:');
+        lines.push('- Describe a recent example that shows why this is concerning.');
+        lines.push('- How long have these patterns been present and what has helped (or not)?');
+        lines.push('- What would it look like if things were better in 3 months?');
+        if(a.value.indexOf('overwhelmed')>-1) lines.push('- When do feelings of being overwhelmed come up most?');
+        if(c.value.indexOf('decision')>-1) lines.push('- What information would make a decision feel clearer?');
+        if(c.value.indexOf('boundaries')>-1) lines.push('- Which relationships or situations feel hardest to set limits in?');
+        lines.push('\nBring any timelines or recent events that feel relevant.');
+        out.textContent = lines.join('\n');
+      }
+    })();
+  </script>
+</body>
+</html>

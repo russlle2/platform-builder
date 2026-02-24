@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>About — {{PRACTITIONER_NAME}}</title>
+  <style>
+    :root{--bg:#fbfbfb;--ink:#132;--accent:#7b9;--card:#fff}
+    body{margin:0;font-family:Georgia,serif;color:var(--ink);background:linear-gradient(180deg,#fffefc,#f2fbff)}
+    .sheet{max-width:880px;margin:48px auto;padding:36px;background:rgba(255,255,255,0.8);border-radius:12px;box-shadow:0 12px 40px rgba(12,20,30,0.06);position:relative}
+    header{display:flex;gap:20px;align-items:center}
+    .title{font-family:Cambria,Georgia;line-height:1.05}
+    h1{margin:0;font-size:28px}
+    .byline{color:#345;opacity:0.9;margin-top:6px}
+    nav{margin-top:14px;display:flex;gap:12px}
+    nav a{font-weight:600;text-decoration:none;color:var(--ink)}
+    .bio{display:grid;grid-template-columns:1fr 320px;gap:22px;margin-top:18px}
+    .card{background:var(--card);padding:18px;border-radius:10px;border:1px solid rgba(0,0,0,0.04)}
+    .credentials{font-weight:700;color:#234;margin-top:6px}
+    .quote{font-style:italic;color:#456;padding:12px;border-left:3px solid rgba(123,153,153,0.16);margin-top:12px}
+    .testimonials{display:flex;flex-direction:column;gap:10px}
+    .test{background:linear-gradient(180deg,rgba(123,153,153,0.02),transparent);padding:10px;border-radius:8px}
+    .cta{display:inline-block;margin-top:14px;background:linear-gradient(90deg,#6fa,#78a);color:white;padding:10px 14px;border-radius:8px;text-decoration:none;font-weight:700}
+    .pattern{position:absolute;left:-90px;bottom:-90px;opacity:0.08}
+    .wrap::before{content:'';position:absolute;inset:0;background-image:url('assets/img/pattern.svg');opacity:0.04}
+    @media(max-width:880px){.bio{grid-template-columns:1fr}} 
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header>
+      <div>
+        <div class="title">
+          <h1>Gentle inquiry, whole-person practice</h1>
+          <div class="byline">I am {{PRACTITIONER_NAME}}, {{CREDENTIALS}}—rooted in curious listening and evidence-informed integrative care.</div>
+        </div>
+      </div>
+      <nav style="margin-left:auto">
+        <a href="index.html">Studio</a>
+        <a href="services.html">Offerings</a>
+        <a href="conditions.html">Concerns</a>
+        <a href="pricing.html">Investment</a>
+        <a href="book.html">Book</a>
+      </nav>
+    </header>
+
+    <div class="bio">
+      <div>
+        <section class="card">
+          <h2 style="margin-top:0;font-size:18px">Philosophy</h2>
+          <p class="muted">I view health as a layered landscape where sleep, movement, nutrition, stress, and meaning intersect. Sessions focus on education, practical shifts, and measurable steps—never on quick fixes or promises.</p>
+
+          <div class="credentials">Training & work</div>
+          <ul style="margin:10px 0 0 18px;color:#345">
+            <li>Certifications in integrative medicine, nutrition, and mind-body approaches</li>
+            <li>Years of clinical practice combining lifestyle medicine with gentle diagnostics</li>
+            <li>Group learning facilitation for sustainable habits</li>
+          </ul>
+
+          <div style="margin-top:12px">
+            <a class="cta" href="book.html">Meet me</a>
+          </div>
+        </section>
+
+        <section style="margin-top:12px" class="card">
+          <h3 style="margin:0 0 8px">Approach in brief</h3>
+          <ol style="margin:0 0 0 18px;color:#345">
+            <li>We listen—goals, history, context</li>
+            <li>We educate—what affects you and why</li>
+            <li>We plan—small experiments, measurable outcomes</li>
+            <li>We follow up—refine and build resilience</li>
+          </ol>
+        </section>
+      </div>
+
+      <aside>
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:64px;height:64px;border-radius:10px;background:linear-gradient(180deg,#cfe,#aee);display:flex;align-items:center;justify-content:center;font-weight:700;color:#033">PM</div>
+            <div>
+              <div style="font-weight:700">{{PRACTITIONER_NAME}}, {{CREDENTIALS}}</div>
+              <div style="color:#345;font-size:13px">Practitioner in {{CITY}}, {{STATE}}</div>
+            </div>
+          </div>
+
+          <div class="quote">"True change arrives through steady, curious practice and small reliable habits. I teach the steps and walk beside you."</div>
+
+          <div style="margin-top:12px">
+            <div style="font-size:13px;color:#345">Reach out: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+            <div style="font-size:13px;color:#345;margin-top:6px">Call: <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px" class="card">
+          <h4 style="margin:0 0 8px">Kind words</h4>
+          <div class="testimonials">
+            <div class="test">"I learned practical steps that actually fit into my life—slow, steady change." — A.</div>
+            <div class="test">"A gentle approach that taught me to notice patterns instead of blame." — M.</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <svg class="pattern" width="320" height="320" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+      <defs>
+        <radialGradient id="rg" cx="0.3" cy="0.2"><stop offset="0" stop-color="#bfe" /><stop offset="1" stop-color="#def" /></radialGradient>
+      </defs>
+      <rect width="200" height="200" fill="url(#rg)" opacity="0.06" rx="20"/>
+      <path d="M20 160c40-30 60-60 120-80" stroke="#7b9" stroke-width="6" fill="none" opacity="0.08"/>
+    </svg>
+
+    <footer style="margin-top:20px;color:#445;font-size:13px">
+      <div>Small-group series, workshops, and individual sessions. Educational resources provided after each visit.</div>
+    </footer>
+  </div>
+</body>
+</html>

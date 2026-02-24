@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Connect — {{BUSINESS_NAME}}</title>
+<style>
+:root{--bg:#0f1724;--card:#0b1220;--accent:#7c5cff;--muted:#9aa4b2;--glass:rgba(255,255,255,0.04);--joy:#ffb86b}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial;color:#e6eef8;background:
+linear-gradient(180deg,rgba(124,92,255,0.08),transparent 30%), url('assets/img/pattern.svg');background-size:cover;padding:36px}
+.container{max-width:980px;margin:0 auto}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#45e6b1);display:flex;align-items:center;justify-content:center;color:#081126;font-weight:700;font-size:18px}
+.nav{display:flex;gap:12px;align-items:center}
+.nav a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:8px;font-weight:600}
+.nav a.active, .nav a:hover{background:var(--glass);color:#fff}
+.hero{background:linear-gradient(180deg,rgba(16,24,39,0.6),rgba(8,12,20,0.6));padding:28px;border-radius:14px;display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:center}
+.hero h1{margin:0;font-size:26px;color:#fff}
+.hero p{margin:8px 0 0;color:var(--muted)}
+.card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px;color:#eaf2ff}
+.controls{display:flex;flex-direction:column;gap:12px}
+.select, .goals{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:10px;border-radius:10px;color:inherit}
+.method{padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent)}
+.method h3{margin:0 0 6px}
+.cta{display:inline-block;padding:10px 14px;border-radius:10px;background:var(--accent);color:#051827;text-decoration:none;font-weight:700;margin-top:10px}
+.grid{display:grid;grid-template-columns:1fr 300px;gap:18px;margin-top:18px}
+.goals-list{display:flex;flex-wrap:wrap;gap:8px}
+.goal-item{background:rgba(255,255,255,0.03);padding:8px 10px;border-radius:10px;display:flex;gap:8px;align-items:center;cursor:pointer}
+.goal-item input{display:none}
+.pathmap{background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);padding:12px;border-radius:10px;overflow:auto}
+.path-svg{width:100%;height:120px}
+.legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.legend .key{display:flex;gap:6px;align-items:center;background:rgba(255,255,255,0.02);padding:6px 8px;border-radius:8px}
+.footer{margin-top:22px;color:var(--muted);font-size:13px;display:flex;justify-content:space-between;align-items:center}
+.tooltip{position:absolute;padding:6px 8px;background:#081126;color:#fff;border-radius:6px;font-size:12px;transform:translate(-50%,-120%);pointer-events:none;display:none}
+@media(max-width:880px){.hero{grid-template-columns:1fr;}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+<header class="header">
+<div class="brand">
+<div class="logo">{{BUSINESS_NAME}}</div>
+<div>
+<div style="font-weight:700;color:#fff">{{BUSINESS_NAME}}</div>
+<div style="font-size:13px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+</div>
+</div>
+<nav class="nav" aria-label="primary">
+<a href="index.html">Home</a>
+<a href="about.html">Who I Am</a>
+<a href="services.html">Offerings</a>
+<a href="programs.html">Journeys</a>
+<a href="pricing.html">Rates</a>
+<a href="testimonials.html">Stories</a>
+<a href="book.html">Start</a>
+<a href="contact.html" class="active">Connect</a>
+</nav>
+</header>
+
+<section class="hero">
+<div>
+<h1>Let's design a short, sharp plan to steady your days</h1>
+<p>Choose how you feel and the site will shape a practical approach and a 30-day path you can actualize in increments.</p>
+<div style="margin-top:12px;color:var(--muted);font-size:13px">Prefer to speak? <a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none">{{PHONE}}</a> or <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a></div>
+</div>
+<div>
+<div class="card">
+<div style="font-size:13px;color:var(--muted)">Ready now</div>
+<div style="font-weight:800;color:#fff;font-size:18px;margin-top:6px" id="miniMethodTitle">—</div>
+<div style="font-size:13px;color:var(--muted);margin-top:6px" id="miniMethodDesc">Pick a mood to see a tailored approach and a CTA that fits how you'd like to begin.</div>
+<a id="primaryCta" class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+</div>
+</div>
+</section>
+
+<section class="grid">
+<div>
+<div class="card">
+<h3 style="margin-top:0">Mood-to-Method</h3>
+<p style="color:var(--muted)">Select a descriptor for your current state. The recommended method, pace, and invitation update instantly.</p>
+<div class="controls" role="tablist" aria-label="mood selector" id="moodControls">
+<label class="select"><input type="radio" name="mood" value="scattered"> Scattered</label>
+<label class="select"><input type="radio" name="mood" value="drained"> Drained</label>
+<label class="select"><input type="radio" name="mood" value="overwhelmed"> Overloaded</label>
+<label class="select"><input type="radio" name="mood" value="curious"> Curious</label>
+<label class="select"><input type="radio" name="mood" value="steady"> Steady</label>
+</div>
+</div>
+
+<div class="card" style="margin-top:18px">
+<h3 style="margin-top:0">Your short invitation</h3>
+<div class="method" id="methodPanel">
+<h3 id="methodTitle">Choose a mood</h3>
+<p id="methodBody" style="color:var(--muted)">Each method blends outcome-focused habits and a simple structure to support less friction and more momentum.</p>
+</div>
+</div>
+
+<div class="card" style="margin-top:18px">
+<h3 style="margin-top:0">Build your path</h3>
+<p style="color:var(--muted)">Pick up to 4 focus areas you want to show up for in the next month.</p>
+<div class="goals-list" id="goalsList">
+<label class="goal-item"><input type="checkbox" value="sleep"><span>Sleep rhythm</span></label>
+<label class="goal-item"><input type="checkbox" value="movement"><span>Daily movement</span></label>
+<label class="goal-item"><input type="checkbox" value="calm"><span>Micro-meditation</span></label>
+<label class="goal-item"><input type="checkbox" value="focus"><span>Focused work windows</span></label>
+<label class="goal-item"><input type="checkbox" value="hydration"><span>Hydration</span></label>
+<label class="goal-item"><input type="checkbox" value="food"><span>Simple meal cues</span></label>
+</div>
+</div>
+
+</div>
+
+<div>
+<div class="card">
+<h3 style="margin-top:0">30-day path map</h3>
+<p style="color:var(--muted)">A visual plan that distributes your chosen focuses across the next 30 days. Hover a day to see the aim.</p>
+<div class="pathmap" id="pathmap">
+<svg class="path-svg" id="pathSvg" viewBox="0 0 900 120" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="30 day path map"></svg>
+<div class="legend" id="legend"></div>
+<div style="margin-top:8px;color:var(--muted)" id="planSummary">Select goals to render the map.</div>
+</div>
+</div>
+
+<div style="margin-top:18px" class="card">
+<h3 style="margin-top:0">Plan metrics</h3>
+<div style="display:flex;align-items:center;gap:12px;justify-content:space-between">
+<div>
+<div style="font-size:12px;color:var(--muted)">Monthly focus density</div>
+<div style="font-weight:800;font-size:20px" id="densityPct">—</div>
+</div>
+<div style="text-align:right">
+<div style="font-size:12px;color:var(--muted)">Suggested sprint</div>
+<div style="font-weight:700" id="sprintLabel">—</div>
+</div>
+</div>
+</div>
+
+</div>
+
+<div class="footer">
+<div>© <span id="year"></span> {{BUSINESS_NAME}} — small intensives. Outcomes + habits + frameworks.</div>
+<div><a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a></div>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+</div>
+
+<script>
+(function(){
+document.getElementById('year').textContent = new Date().getFullYear();
+
+const moods = {
+scattered:{title:"Micro-structure: regroup",desc:"Short anchors to reduce decision fatigue. Focus on two repeatable cues per day.",cta:"Start a 7-day regroup"},
+drained:{title:"Energy-first reset",desc:"Gentle restoratives and small movement increments to rebuild energy across a month.",cta:"Begin an energy reset"},
+overwhelmed:{title:"Contain & route",desc:"A 3-point containment plan: triage, timed focus, and brief recovery practices.",cta:"Open containment plan"},
+curious:{title:"Experiment sprint",desc:"A mini lab: try one small habit per week and measure how it lands.",cta:"Launch an experiment"},
+steady:{title:"Scale your rhythm",desc:"Add subtle structure to strengthen wins you already have—sustainable, low-friction.",cta:"Refine my rhythm"}
+};
+
+const moodControls = document.getElementById('moodControls');
+moodControls.addEventListener('change', function(e){
+if(!e.target || e.target.type!=='radio') return;
+const val = e.target.value;
+const m = moods[val];
+if(!m) return;
+document.getElementById('methodTitle').textContent = m.title;
+document.getElementById('methodBody').textContent = m.desc;
+document.getElementById('miniMethodTitle').textContent = m.title;
+document.getElementById('miniMethodDesc').textContent = m.desc;
+const cta = document.getElementById('primaryCta');
+cta.textContent = m.cta || '{{PRIMARY_CTA_LABEL}}';
+cta.href = '{{PRIMARY_CTA_URL}}' + '?mood=' + encodeURIComponent(val);
+});
+
+// Goals and path map
+const goalInfo = {
+sleep:{label:'Sleep rhythm',color:'#7c5cff',density:0.2},
+movement:{label:'Daily movement',color:'#45e6b1',density:0.2},
+calm:{label:'Micro-meditation',color:'#ffd66b',density:0.15},
+focus:{label:'Focused windows',color:'#ff7aa2',density:0.2},
+hydration:{label:'Hydration',color:'#6fc3ff',density:0.1},
+food:{label:'Meal cues',color:'#b89cff',density:0.15}
+};
+
+const goalsList = document.getElementById('goalsList');
+const pathSvg = document.getElementById('pathSvg');
+const legend = document.getElementById('legend');
+const planSummary = document.getElementById('planSummary');
+const densityPct = document.getElementById('densityPct');
+const sprintLabel = document.getElementById('sprintLabel');
+const tooltip = document.getElementById('tooltip');
+
+function getCheckedGoals(){
+return Array.from(goalsList.querySelectorAll('input[type=checkbox]'))
+.filter(i=>i.checked).map(i=>i.value);
+}
+
+goalsList.addEventListener('click', function(e){
+const target = e.target.closest('.goal-item');
+if(!target) return;
+const input = target.querySelector('input');
+if(!input) return;
+if(!input.checked){
+const checked = getCheckedGoals();
+if(checked.length>=4){ alert('Pick up to 4 priorities.'); return; }
+input.checked = true;
+} else {
+input.checked = false;
+}
+renderPath();
+});
+
+function renderPath(){
+const selected = getCheckedGoals();
+pathSvg.innerHTML = '';
+legend.innerHTML = '';
+if(selected.length===0){
+planSummary.textContent = 'Select goals to render the 30-day distribution.';
+densityPct.textContent = '—';
+sprintLabel.textContent = '—';
+return;
+}
+// build legend
+selected.forEach(k=>{
+const info=goalInfo[k];
+const key = document.createElement('div');
+key.className='key';
+key.innerHTML = '<span style="width:12px;height:12px;border-radius:4px;display:inline-block;background:'+info.color+'"></span><span style="font-size:13px;color:var(--muted);margin-left:6px">'+info.label+'</span>';
+legend.appendChild(key);
+});
+// simple distribution rotating assignment
+const days = 30;
+const pad = 40;
+const w = 900;
+const h = 120;
+const cxStart = pad;
+const cxEnd = w - pad;
+const spacing = (cxEnd - cxStart) / (days-1);
+const circles = [];
+for(let i=0;i<days;i++){
+const dayX = cxStart + i*spacing;
+const sineY = 60 + Math.sin(i/3)*28;
+const idx = i % selected.length;
+const goal = selected[idx];
+const color = goalInfo[goal].color;
+const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+circle.setAttribute('cx',dayX);
+circle.setAttribute('cy',sineY);
+circle.setAttribute('r',8);
+circle.setAttribute('fill',color);
+circle.setAttribute('data-day',i+1);
+circle.setAttribute('data-goal',goal);
+circle.style.cursor='pointer';
+pathSvg.appendChild(circle);
+if(i>0){
+const prevX = cxStart + (i-1)*spacing;
+const prevY = 60 + Math.sin((i-1)/3)*28;
+const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+line.setAttribute('x1',prevX);
+line.setAttribute('y1',prevY);
+line.setAttribute('x2',dayX);
+line.setAttribute('y2',sineY);
+line.setAttribute('stroke','rgba(255,255,255,0.06)');
+line.setAttribute('stroke-width',2);
+line.setAttribute('stroke-linecap','round');
+pathSvg.appendChild(line);
+}
+circles.push(circle);
+}
+// hover tooltip
+Array.from(pathSvg.querySelectorAll('circle')).forEach(c=>{
+c.addEventListener('mousemove', function(ev){
+const day = c.getAttribute('data-day');
+const goal = c.getAttribute('data-goal');
+tooltip.style.display='block';
+tooltip.textContent = 'Day ' + day + ' — ' + goalInfo[goal].label;
+tooltip.style.left = (ev.clientX) + 'px';
+tooltip.style.top = (ev.clientY) + 'px';
+});
+c.addEventListener('mouseleave', function(){ tooltip.style.display='none'; });
+c.addEventListener('click', function(){
+alert('Plan note: Day ' + c.getAttribute('data-day') + ' focus — ' + goalInfo[c.getAttribute('data-goal')].label);
+});
+});
+
+// plan metrics: compute density as weighted share
+let totalDensity=0;
+selected.forEach(k=> totalDensity += (goalInfo[k].density || 0.15));
+const density = Math.round(Math.min(100,totalDensity*100));
+densityPct.textContent = density + '%';
+sprintLabel.textContent = (selected.length<=2? 'Focused fortnight' : '4-week steady sprint');
+planSummary.textContent = 'Your month will cycle through: ' + selected.map(s=>goalInfo[s].label).join(' • ') + '. Tap a day for a quick note.';
+}
+
+// initial
+renderPath();
+
+// keyboard affordances: allow selecting mood by pressing 1-5
+document.addEventListener('keydown', function(e){
+if(e.key>='1' && e.key<='5'){
+const idx = parseInt(e.key,10)-1;
+const radios = Array.from(document.querySelectorAll('input[name=mood]'));
+if(radios[idx]){ radios[idx].checked=true; radios[idx].dispatchEvent(new Event('change')); }
+}
+});
+})();
+</script>
+</body>
+</html>

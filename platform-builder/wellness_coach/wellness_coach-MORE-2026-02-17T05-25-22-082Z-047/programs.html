@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Courses • {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f9fff9;--accent:#256a51;--muted:#4f6160;--card:#fff}
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:#07221b}
+    header{padding:18px 20px;border-bottom:1px solid rgba(0,0,0,0.04)}
+    nav{max-width:1100px;margin:0 auto;display:flex;gap:14px}
+    nav a{color:var(--accent);text-decoration:none;font-weight:600}
+    .wrap{max-width:1100px;margin:28px auto;padding:0 20px}
+    .hero{display:flex;gap:18px;align-items:flex-start}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(16,24,24,0.04)}
+    .programs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+    .prog{padding:12px;border-radius:10px;border:1px solid rgba(16,24,24,0.04);background:linear-gradient(180deg,#fff,#f7fffb)}
+    .cta{margin-top:14px}
+    .btn{display:inline-block;padding:9px 12px;border-radius:8px;background:var(--accent);color:#fff;text-decoration:none;font-weight:700}
+    .price-note{color:var(--muted);font-size:13px;margin-top:8px}
+    @media(max-width:900px){.programs{grid-template-columns:1fr}} 
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="wrap">
+      <a href="index.html">Start</a>
+      <a href="about.html">Approach</a>
+      <a href="services.html">Offerings</a>
+      <a href="programs.html">Courses</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="testimonials.html">Stories</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+  <main class="wrap">
+    <div class="hero">
+      <div class="card" style="flex:1">
+        <h1>Courses and short tracks</h1>
+        <p style="color:var(--muted)">Modular learning that trains one habit per week, with checkpoints and brief evidence-based rationale for each practice.</p>
+        <div class="programs">
+          <div class="prog">
+            <h3>Weekwise Foundations</h3>
+            <div class="price-note">4 modules, one habit introduced each week. Small assignments and a weekly review template.</div>
+            <div class="cta"><a class="btn" href="pricing.html">Enroll — $129</a></div>
+          </div>
+
+          <div class="prog">
+            <h3>Anchor Sprint</h3>
+            <div class="price-note">A short 2-week sprint focused on two anchors and contextual cues to secure them.</div>
+            <div class="cta"><a class="btn" href="pricing.html">Reserve spot — $69</a></div>
+          </div>
+
+          <div class="prog">
+            <h3>Review Lab</h3>
+            <div class="price-note">Course focused on creating robust weekly reviews — how to learn from data and adjust anchors.</div>
+            <div class="cta"><a class="btn" href="book.html">Schedule diagnostic</a></div>
+          </div>
+        </div>
+      </div>
+
+      <aside style="width:320px">
+        <div class="card">
+          <h4>Generate a 7-day checklist</h4>
+          <p style="color:var(--muted)">Type one or multiple short habits (one per line) and print a checklist to use this week.</p>
+          <textarea id="progHabit" rows="6" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(16,24,24,0.04)"></textarea>
+          <button class="btn" id="progMake" style="margin-top:8px">Print checklist</button>
+          <div style="margin-top:12px;color:var(--muted);font-size:13px">Questions? Contact <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+        </div>
+
+        <div style="margin-top:12px" class="card">
+          <h4>Quick try</h4>
+          <p style="color:var(--muted)">A breathing cue for grounding when you begin a session.</p>
+          <button class="btn" id="tryNow">Try it now</button>
+        </div>
+      </aside>
+    </div>
+
+    <section style="margin-top:18px" class="card">
+      <h3 style="margin-top:0">How course progression works</h3>
+      <p style="color:var(--muted)">Each module includes a compact rationale, a micro-practice, and a brief review. The aim is steady, measurable adoption rather than an unbounded to-do list.</p>
+    </section>
+  </main>
+
+  <script>
+    // Printable builder similar to other pages but self-contained
+    document.getElementById('progMake').addEventListener('click', ()=>{
+      const raw = document.getElementById('progHabit').value.trim() || 'Daily micro habit';
+      const items = raw.split('\n').map(s=>s.trim()).filter(Boolean);
+      const title = items.join(', ');
+      let content = '<div style="font-family:system-ui">';
+      content += '<h2>7-day checklist</h2>';
+      content += '<p style="color:#556">'+(title||'Micro habit')+'</p>';
+      content += '<table style="width:100%;border-collapse:collapse"><thead><tr><th style="text-align:left;border-bottom:1px solid #eee;padding:8px">Action</th>';
+      for(let d=1;d<=7;d++) content += '<th style="padding:8px;border-bottom:1px solid #eee">D'+d+'</th>';
+      content += '</tr></thead><tbody>';
+      items.forEach(it=>{
+        content += '<tr><td style="padding:8px;border-bottom:1px solid #f3f3f3">'+it+'</td>';
+        for(let i=0;i<7;i++) content += '<td style="padding:8px;border-bottom:1px solid #f3f3f3;text-align:center">☐</td>';
+        content += '</tr>';
+      })
+      if(items.length===0){ content += '<tr><td style="padding:8px;border-bottom:1px solid #f3f3f3">'+raw+'</td>'; for(let i=0;i<7;i++) content += '<td style="padding:8px;border-bottom:1px solid #f3f3f3;text-align:center">☐</td>'; content += '</tr>' }
+      content += '</tbody></table>';
+      content += '<p style="color:#6b7b78;font-size:13px">Generated by {{BUSINESS_NAME}}</p></div>';
+      const w = window.open('','_blank','width=700,height=800');
+      if(w){ w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>Checklist</title></head><body>'+content+'<script>window.onload=function(){window.print();};<'+'/script></body></html>'); w.document.close(); }
+    });
+
+    // Simple breathing try now (small inline modalless interaction)
+    document.getElementById('tryNow').addEventListener('click', ()=>{
+      const step = confirm('Begin a short 90-second breathing reset?\n\nInhale 4s • hold 2s • exhale 6s. Press OK to begin.');
+      if(!step) return;
+      let t=90; const iv = setInterval(()=>{ t--; if(t<=0){ clearInterval(iv); alert('Complete — notice any change in steadiness.'); } },1000);
+    });
+  </script>
+</body>
+</html>

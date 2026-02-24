@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Begin Your Journey — Book a Session</title>
+  <style>
+    :root{--bg:#ffffff;--ink:#152225;--muted:#57706a;--accent:#8b5cf6}
+    body{margin:0;font-family: 'Avenir', 'Helvetica Neue', Arial, sans-serif;background:var(--bg);color:var(--ink)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:20px 36px}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none}
+    .hero{display:flex;gap:36px;align-items:center;padding:36px}
+    .hero .copy{max-width:620px}
+    .hero h2{font-size:32px;margin:0}
+    .form-wrap{max-width:820px;margin:18px auto;padding:0 18px}
+    form{display:grid;grid-template-columns:1fr 320px;gap:18px}
+    fieldset{border:0;padding:0}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input,textarea,select{width:100%;padding:10px;border:1px solid #e6e6e6;border-radius:8px;font-size:14px}
+    .side{background:#fbfbff;padding:14px;border-radius:10px}
+    .submit{background:var(--accent);color:#fff;padding:12px;border-radius:8px;border:none;font-weight:700;cursor:pointer}
+    .note{font-size:13px;color:var(--muted)}
+    footer{padding:24px;text-align:center;color:var(--muted);font-size:13px}
+    @media(max-width:920px){form{grid-template-columns:1fr;}.hero{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <img src="assets/img/hero.svg" alt="logo" width="56" height="56" />
+      <div>
+        <strong>{{BUSINESS_NAME}}</strong>
+        <div class="note">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Work With Me</a>
+      <a href="specialties.html">Specialties</a>
+      <a href="approach.html">Approach</a>
+      <a href="fees.html">Pricing</a>
+      <a href="faq.html">FAQ</a>
+      <a href="book.html">Programs</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="copy">
+      <h2>Begin your journey — schedule a time to connect</h2>
+      <p class="note">I offer a short phone or video consult to assess fit. This is a chance to clarify goals, practicalities, and to answer any questions about process or safety.</p>
+    </div>
+    <div style="width:320px">
+      <img src="assets/img/avatar.svg" alt="therapist" width="320" height="220" />
+    </div>
+  </section>
+
+  <main class="form-wrap">
+    <form action="/" method="post" onsubmit="event.preventDefault();alert('This is a placeholder. Your booking request would be sent to '+document.getElementById('email').value);">
+      <div>
+        <fieldset>
+          <label for="name">Full name</label>
+          <input id="name" name="name" required />
+        </fieldset>
+        <fieldset style="margin-top:12px">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required />
+        </fieldset>
+        <fieldset style="margin-top:12px">
+          <label for="phone">Phone (optional)</label>
+          <input id="phone" name="phone" />
+        </fieldset>
+        <fieldset style="margin-top:12px">
+          <label for="reason">Brief reason for seeking support</label>
+          <textarea id="reason" name="reason" rows="4" placeholder="e.g., anxiety, relationship change, sleep, transitions" required></textarea>
+        </fieldset>
+        <fieldset style="margin-top:12px">
+          <label for="times">Preferred days/times</label>
+          <input id="times" name="times" placeholder="e.g., weekdays after 5pm, mornings" />
+        </fieldset>
+      </div>
+
+      <aside class="side">
+        <div style="margin-bottom:10px">
+          <label for="session">Preferred session type</label>
+          <select id="session" name="session">
+            <option>Video</option>
+            <option>Phone</option>
+            <option>In-person ({{CITY}}, {{STATE}})</option>
+          </select>
+        </div>
+
+        <div style="margin-bottom:10px">
+          <label for="insurance">Insurance / Payment notes</label>
+          <input id="insurance" name="insurance" placeholder="Do you plan to use insurance?" />
+        </div>
+
+        <div style="margin-bottom:10px">
+          <label for="program">If known, preferred program</label>
+          <select id="program" name="program">
+            <option>Short-Term Support</option>
+            <option>Rooted Path Program</option>
+            <option>Deep Integration</option>
+            <option>Not sure — need consult</option>
+          </select>
+        </div>
+
+        <div style="margin-top:12px">
+          <button class="submit" type="submit">Request a consult</button>
+        </div>
+
+        <p class="note" style="margin-top:12px">By submitting, you agree that a member of {{BUSINESS_NAME}} may contact you to schedule. For urgent matters, call emergency services. Your information is treated confidentially; for details, email {{EMAIL}}.</p>
+      </aside>
+    </form>
+
+    <section style="margin-top:18px;background:#fffaf3;padding:14px;border-radius:10px">
+      <h4 style="margin:0 0 8px">Before we meet — a few practical notes</h4>
+      <ul style="color:var(--muted);margin:8px 0 0;padding-left:18px">
+        <li>I will confirm licensure and telehealth availability for your state.</li>
+        <li>We will spend our first session on understanding safety, immediate needs, and a short plan.</li>
+        <li>We are guided by {{MODALITIES}} and relational, trauma-informed care.</li>
+      </ul>
+    </section>
+
+    <section style="margin-top:18px;padding:14px;border-radius:10px;border:1px solid #f0f0f0">
+      <h4 style="margin:0 0 8px">Confidentiality & limits</h4>
+      <p class="note" style="margin:0">All communications and records are confidential with legal exceptions. If you are in immediate danger, call emergency services. Therapy is not an emergency service and is not a replacement for medical care.</p>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="note">Questions? Call {{PHONE}} or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>. {{THERAPIST_NAME}}, {{LICENSE}} • {{BUSINESS_NAME}} • {{CITY}}, {{STATE}}</div>
+  </footer>
+</body>
+</html>

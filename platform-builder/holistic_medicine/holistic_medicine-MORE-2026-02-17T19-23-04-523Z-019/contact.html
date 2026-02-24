@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{
+      --bg:#f6efe7; --card:#fff7ee; --accent:#7a4b2b; --accent-2:#b07a4a; --muted:#6b6b6b; --glass:rgba(255,255,255,0.6);
+      --radius:12px; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    html,body{height:100%;}
+    body{
+      margin:0; background:var(--bg) url('assets/img/pattern.svg'); background-size:450px; color:#2b2b2b; -webkit-font-smoothing:antialiased;
+    }
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:linear-gradient(180deg,rgba(255,255,255,0.75),rgba(255,255,255,0.92));backdrop-filter: blur(6px);box-shadow:0 2px 6px rgba(0,0,0,0.04);}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none;font-weight:600}
+    nav a.primary{background:var(--accent);color:white;padding:8px 12px;border-radius:8px;text-decoration:none}
+    main{max-width:1100px;margin:34px auto;padding:26px}
+    .grid{display:grid;grid-template-columns:1fr 420px;gap:22px}
+    .card{background:var(--card);padding:20px;border-radius:var(--radius);box-shadow:0 6px 20px rgba(122,75,43,0.06)}
+    h1{margin:0 0 8px 0;color:var(--accent)}
+    p.lead{margin:0 0 14px 0;color:#4a4a4a}
+
+    /* Session Planner */
+    .planner .row{display:flex;gap:12px;margin-bottom:12px}
+    .pill{border-radius:999px;padding:8px 12px;background:rgba(186,146,118,0.12);border:1px solid rgba(160,110,70,0.08);font-weight:600;color:var(--accent)}
+    label{display:block;font-size:14px;margin-bottom:6px;color:#35403f}
+    select,input[type="text"],textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.07);background:transparent}
+    textarea{min-height:110px}
+    .btn{display:inline-block;padding:10px 14px;border-radius:10px;border:none;background:var(--accent);color:white;font-weight:700;cursor:pointer}
+    .btn.secondary{background:transparent;color:var(--accent);border:1px solid rgba(122,75,43,0.12)}
+    .small{font-size:13px;color:var(--muted)}
+    .output{white-space:pre-wrap;background:linear-gradient(180deg,rgba(255,255,255,0.6),rgba(255,255,255,0.4));padding:12px;border-radius:10px;border:1px dashed rgba(0,0,0,0.06);min-height:120px}
+    .checks{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    footer{margin-top:28px;padding:20px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.6),transparent);display:flex;align-items:center;justify-content:space-between}
+
+    @media(max-width:940px){.grid{grid-template-columns:1fr;}.brand{gap:8px}.logo{width:40px;height:40px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">H</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">Neighborhood integrative care</div>
+      </div>
+    </div>
+    <nav aria-label="Main navigation">
+      <a href="index.html">Start</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Conditions</a>
+      <a href="approach.html">Method</a>
+      <a href="pricing.html">Investment</a>
+      <a href="about.html">Our Story</a>
+      <a href="book.html" class="primary">{{PRIMARY_CTA_LABEL}}</a>
+      <a href="contact.html" style="margin-left:8px;font-weight:700;color:var(--accent)">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="grid">
+      <section class="card">
+        <h1>Let's plan something real</h1>
+        <p class="lead">A quick, practical sketch of an initial session and the follow-up that makes it useful. Use the planner and the whole-person inventory to create a shareable summary you can bring to your first visit.</p>
+
+        <div style="margin-top:12px;">
+          <strong>Contact</strong>
+          <p class="small">Call: <a href="tel:{{PHONE}}">{{PHONE}}</a> • Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+          <p class="small">Serving: {{CITY}}, {{STATE}} • Appointments by video or in-person</p>
+        </div>
+
+        <hr style="margin:18px 0;border:none;border-top:1px solid rgba(0,0,0,0.04)">
+
+        <div class="planner">
+          <label for="goal">Primary goal for care</label>
+          <select id="goal">
+            <option value="Improve sleep consistency">Improve sleep consistency</option>
+            <option value="Reduce daily stress and overwhelm">Reduce daily stress and overwhelm</option>
+            <option value="Support energy and digestion">Support energy and digestion</option>
+            <option value="Manage chronic pain">Manage chronic pain</option>
+            <option value="Clarify next steps after a diagnosis">Clarify next steps after a diagnosis</option>
+            <option value="Other">Other</option>
+          </select>
+
+          <div class="row" style="margin-top:10px">
+            <div style="flex:1">
+              <label for="sessionType">Session type</label>
+              <select id="sessionType">
+                <option>Comprehensive intake (60-75 min)</option>
+                <option>Focused follow-up (30-40 min)</option>
+                <option>Brief check-in (15-20 min)</option>
+                <option>Care coordination consult</option>
+              </select>
+            </div>
+            <div style="width:140px">
+              <label for="duration">Planned duration</label>
+              <select id="duration">
+                <option>60 minutes</option>
+                <option>45 minutes</option>
+                <option>30 minutes</option>
+              </select>
+            </div>
+          </div>
+
+          <label for="frequency">Preferred follow-up rhythm</label>
+          <select id="frequency">
+            <option>Weekly for 6 weeks</option>
+            <option>Biweekly for 8 weeks</option>
+            <option>Monthly for 3 months</option>
+            <option>Ad hoc as needed</option>
+          </select>
+
+          <label for="notes">Notes & priorities (what matters most right now)</label>
+          <textarea id="notes" placeholder="Brief description: symptoms, timing, what's been tried..."></textarea>
+
+          <div style="display:flex;gap:10px;margin-top:12px;align-items:center">
+            <button class="btn" id="buildPlan">Plan my session</button>
+            <button class="btn secondary" id="clearPlanner">Clear</button>
+            <div style="margin-left:auto;font-size:13px;color:var(--muted)">Export: plaintext summary</div>
+          </div>
+
+          <div style="margin-top:12px">
+            <label class="small">Plan preview</label>
+            <div id="planOutput" class="output" aria-live="polite">Use the planner and click "Plan my session" to generate a concise plan here.</div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button class="btn" id="copyPlan">Copy summary</button>
+              <button class="btn secondary" id="downloadPlan">Download .txt</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="card">
+        <h2 style="margin-top:0;color:var(--accent-2)">Whole-person inventory</h2>
+        <p class="small">Quick checkboxes to sketch the consultation agenda and a follow-up cadence that fits your life. This is a preparatory exercise — not diagnostic.</p>
+
+        <div style="margin-top:12px">
+          <div class="checks">
+            <label><input type="checkbox" value="Sleep" class="wp"> Sleep patterns & quality</label>
+            <label><input type="checkbox" value="Nutrition" class="wp"> Nutrition & appetite</label>
+            <label><input type="checkbox" value="Movement" class="wp"> Movement & aches</label>
+            <label><input type="checkbox" value="Stress" class="wp"> Stress & mood</label>
+            <label><input type="checkbox" value="Relationships" class="wp"> Relationships & support</label>
+            <label><input type="checkbox" value="Work" class="wp"> Work & schedule</label>
+            <label><input type="checkbox" value="Environment" class="wp"> Home & environment</label>
+            <label><input type="checkbox" value="Spirituality" class="wp"> Meaning, values, rest</label>
+            <label><input type="checkbox" value="Symptoms" class="wp"> Specific symptoms & history</label>
+            <label><input type="checkbox" value="Medications" class="wp"> Medications & supplements</label>
+          </div>
+
+          <div style="margin-top:12px;display:flex;gap:8px">
+            <button class="btn" id="generateAgenda">Generate agenda</button>
+            <button class="btn secondary" id="clearChecks">Clear</button>
+          </div>
+
+          <div style="margin-top:14px">
+            <label class="small">Consultation agenda</label>
+            <div id="agendaOutput" class="output">Select areas above and click "Generate agenda" to see a suggested meeting agenda and follow-up cadence tailored to what you checked.</div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button class="btn" id="copyAgenda">Copy agenda</button>
+              <button class="btn secondary" id="saveAgenda">Save as note</button>
+            </div>
+          </div>
+        </div>
+
+        <footer>
+          <div style="font-size:13px;color:var(--muted)">No medical promises — educational guidance only. For urgent concerns, contact local emergency services.</div>
+          <a href="book.html" class="btn">Plan a visit</a>
+        </footer>
+      </aside>
+    </div>
+
+    <section style="margin-top:20px" class="card">
+      <h3 style="margin:0;color:var(--accent)">Why use these tools before our first meeting?</h3>
+      <p class="small" style="margin-top:8px">They help clarify what matters most, keep the first visit focused, and create a follow-up rhythm you can actually use. The outputs are shareable notes you can copy into messages or bring to your appointment.</p>
+    </section>
+
+  </main>
+
+  <script>
+    // Simple helper
+    function el(id){return document.getElementById(id)}
+
+    // Planner
+    var build = el('buildPlan');
+    var clear = el('clearPlanner');
+    var copyPlan = el('copyPlan');
+    var downloadPlan = el('downloadPlan');
+    var planOutput = el('planOutput');
+
+    build.addEventListener('click', function(){
+      var goal = el('goal').value;
+      var type = el('sessionType').value;
+      var duration = el('duration').value;
+      var freq = el('frequency').value;
+      var notes = el('notes').value.trim();
+
+      var now = new Date().toLocaleDateString();
+      var summary = '';
+      summary += 'Client sketch — ' + now + '\n';
+      summary += 'Primary goal: ' + goal + '\n';
+      summary += 'Planned session: ' + type + ' (' + duration + ')\n';
+      summary += 'Follow-up rhythm: ' + freq + '\n\n';
+      summary += 'Top priorities for first session:\n';
+      summary += '- Brief history & timeline of current concern\n';
+      summary += '- Relevant daily rhythms (sleep, meals, movement)\n';
+      summary += '- What has been tried & responses\n';
+      if(notes) summary += '\nClient notes:\n' + notes + '\n';
+      summary += '\nNotes for practitioner: use an educational, whole-person frame and create measurable first-step actions.\n';
+
+      planOutput.textContent = summary;
+    });
+
+    clear.addEventListener('click', function(){
+      el('goal').selectedIndex = 0; el('sessionType').selectedIndex = 0; el('duration').selectedIndex = 0; el('frequency').selectedIndex = 0; el('notes').value=''; planOutput.textContent = 'Use the planner and click "Plan my session" to generate a concise plan here.';
+    });
+
+    copyPlan.addEventListener('click', function(){
+      var text = planOutput.textContent || '';
+      navigator.clipboard.writeText(text).then(function(){
+        copyPlan.textContent = 'Copied'; setTimeout(()=>copyPlan.textContent='Copy summary',1200);
+      }, function(){ alert('Copy failed — select and copy manually.'); });
+    });
+
+    downloadPlan.addEventListener('click', function(){
+      var text = planOutput.textContent || '';
+      var blob = new Blob([text], {type: 'text/plain;charset=utf-8'});
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a'); a.href = url; a.download = 'session-plan.txt'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    });
+
+    // Whole-person inventory -> agenda
+    var gen = el('generateAgenda');
+    var clearChecks = el('clearChecks');
+    var agendaOutput = el('agendaOutput');
+    var copyAgenda = el('copyAgenda');
+    var saveAgenda = el('saveAgenda');
+
+    function buildAgenda(){
+      var checks = Array.from(document.querySelectorAll('.wp:checked')).map(function(i){return i.value});
+      if(checks.length===0){ agendaOutput.textContent = 'No areas selected. Choose a few items that feel most pressing and click "Generate agenda".'; return; }
+
+      // Prioritize: sleep, symptoms, stress, nutrition, movement, relationships, work, environment, meds, spirituality
+      var order = ['Symptoms','Sleep','Stress','Nutrition','Medications','Movement','Work','Relationships','Environment','Spirituality'];
+      checks.sort(function(a,b){return order.indexOf(a)-order.indexOf(b)});
+
+      var lines = [];
+      lines.push('Suggested consultation agenda (concise):');
+      lines.push('1) Opening — 5 minutes: current top concern, immediate safety or urgent needs.');
+      var idx=2;
+      checks.forEach(function(item){
+        lines.push(idx + ') ' + item + ': 10-15 minutes — focused questions, measures (sleep logs, meals, pain rating), and one small testable change.');
+        idx++;
+      });
+      lines.push(idx + ') Practical plan & education — 10 minutes: one concrete habit to try, resources, and simple monitoring.');
+      lines.push('\nFollow-up cadence recommendation:');
+
+      // Determine cadence logic
+      var cadence = '';
+      if(checks.includes('Symptoms') || checks.includes('Medications')){
+        cadence = 'Weekly or biweekly follow-ups for 4–8 weeks to monitor symptoms and medication interactions.';
+      } else if(checks.includes('Stress') || checks.includes('Sleep')){
+        cadence = 'Biweekly for 6–10 weeks to support behavioral changes and adjust pacing.';
+      } else {
+        cadence = 'Monthly check-ins for 2–3 months to track steady, small changes and adjust as needed.';
+      }
+      lines.push('- ' + cadence);
+      lines.push('\nPractical handoffs:');
+      lines.push('- Identify 1 measurable goal and a 1-week micro-test.');
+      lines.push('- Share plan summary with the client via secure message or bring to the next visit.');
+      lines.push('\nNote: This is educational planning. For urgent concerns or changes in health, seek immediate medical advice.');
+
+      agendaOutput.textContent = lines.join('\n');
+    }
+
+    gen.addEventListener('click', buildAgenda);
+    clearChecks.addEventListener('click', function(){ document.querySelectorAll('.wp').forEach(function(i){i.checked=false}); agendaOutput.textContent = 'Select areas above and click "Generate agenda" to see a suggested meeting agenda and follow-up cadence tailored to what you checked.'; });
+
+    copyAgenda.addEventListener('click', function(){ var text = agendaOutput.textContent || ''; navigator.clipboard.writeText(text).then(function(){ copyAgenda.textContent='Copied'; setTimeout(()=>copyAgenda.textContent='Copy agenda',1200); }, function(){ alert('Copy failed — select and copy manually.'); }); });
+
+    saveAgenda.addEventListener('click', function(){
+      var text = agendaOutput.textContent || '';
+      if(!text) return; // nothing
+      // quick client-side save using localStorage
+      var key = 'hp_agenda_' + (new Date()).toISOString();
+      localStorage.setItem(key, text);
+      saveAgenda.textContent = 'Saved'; setTimeout(()=>saveAgenda.textContent='Save as note',1200);
+    });
+
+    // Accessibility: allow Enter to trigger planner
+    el('notes').addEventListener('keydown', function(e){ if(e.metaKey && e.key==='Enter'){ build.click(); } });
+  </script>
+</body>
+</html>

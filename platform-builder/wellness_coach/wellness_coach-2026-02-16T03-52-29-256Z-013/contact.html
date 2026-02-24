@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Contact — {{BUSINESS_NAME}}</title>
+<style>
+:root{--bg:#fff8f2;--earth:#7a4b2e;--warm:#d9824f;--muted:#6a4f42;--card:#fff3ea;--accent:#b86b3a}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--earth);margin:0;line-height:1.5}
+.container{max-width:1000px;margin:0 auto;padding:28px}
+.header{display:flex;align-items:center;justify-content:space-between;padding:12px 0}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--card),#ffeede);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--earth)}
+.nav{display:flex;gap:18px;font-weight:600}
+.nav a{color:var(--muted);text-decoration:none;padding:8px;border-radius:8px}
+.nav a:hover{background:#fff0e6}
+.hero{display:grid;grid-template-columns:1fr 320px;gap:28px;align-items:center;padding:28px 0}
+.hero-card{background:linear-gradient(180deg,#fffaf4, #fff3ea);padding:28px;border-radius:16px;box-shadow:0 6px 22px rgba(120,70,40,0.08)}
+.hero h1{margin:0 0 8px;font-size:28px;color:var(--earth)}
+.hero p{margin:0 0 18px;color:var(--muted)}
+.btn{background:var(--accent);color:white;padding:12px 18px;border-radius:10px;text-decoration:none;font-weight:700}
+.contact-grid{display:grid;grid-template-columns:1fr 360px;gap:24px;margin-top:24px}
+.card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(120,70,40,0.06)}
+.form-row{display:flex;gap:12px;margin-bottom:12px}
+.input,textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid #efd6c9;background:white;color:var(--earth)}
+textarea{min-height:120px;resize:vertical}
+.small{font-size:13px;color:var(--muted)}
+.section-heading{font-size:18px;margin:0 0 12px}
+.programs{display:flex;flex-direction:column;gap:12px}
+.program{display:flex;gap:12px;align-items:flex-start}
+.program .dot{width:12px;height:12px;border-radius:50%;background:var(--warm);margin-top:6px}
+.habits{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.habit{background:white;padding:12px;border-radius:10px;border:1px solid #ffe6d9}
+.pricing-grid{display:flex;gap:12px;margin-top:18px}
+.price{flex:1;padding:14px;border-radius:10px;background:linear-gradient(180deg,#fffaf6,#fff1e8);border:1px solid #f2c9b0}
+.footer{margin-top:36px;padding-top:24px;border-top:1px solid #fee7d9;display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:14px}
+svg.bg-pattern{position:absolute;right:0;top:0;opacity:0.08;width:320px;height:320px}
+@media(max-width:880px){.hero{grid-template-columns:1fr;}.contact-grid{grid-template-columns:1fr}.nav{display:none}}
+</style>
+</head>
+<body>
+<svg class="bg-pattern" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#ffe7d9"/><stop offset="1" stop-color="#fff0e6"/></linearGradient></defs><path d="M10 80 C40 10, 160 10, 190 80 C160 150, 40 150, 10 80 Z" fill="url(#g)"/></svg>
+<div class="container">
+<header class="header">
+<div class="brand">
+<div class="logo">W</div>
+<div>
+<div style="font-weight:800">{{BUSINESS_NAME}}</div>
+<div class="small">{{TAGLINE}}</div>
+</div>
+</div>
+<nav class="nav">
+<a href="index.html">Home</a>
+<a href="about.html">Philosophy</a>
+<a href="programs.html">Work With Me</a>
+<a href="services.html">Paths</a>
+<a href="pricing.html">Investment</a>
+<a href="contact.html" style="font-weight:800">Contact</a>
+</nav>
+</header>
+
+<section class="hero">
+<div class="hero-card">
+<h1>Connect. Clarify. Begin a Gentle Transformation.</h1>
+<p>I'm {{COACH_NAME}}, {{CREDENTIALS}}. I guide busy people in {{CITY}}, {{STATE}} to steady energy, calmer mornings, and sustainable daily practices — without burnout or rigid rules.</p>
+<p><a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></p>
+<p class="small">Prefer a quick note? Call <strong>{{PHONE}}</strong> or email <strong>{{EMAIL}}</strong>.</p>
+</div>
+<div><img src="assets/img/hero.svg" alt="organic illustration" style="width:100%;border-radius:12px;"/></div>
+</section>
+
+<section class="contact-grid">
+<div>
+<div class="card">
+<h2 class="section-heading">Get in touch — Schedule a free clarity call</h2>
+<p class="small">Use the form to share what feels most pressing. I’ll reply with next steps and session availability.</p>
+<form id="contactForm">
+<div class="form-row"><input class="input" name="name" placeholder="Your name" required></div>
+<div class="form-row"><input class="input" name="email" placeholder="{{EMAIL}}" required></div>
+<div class="form-row"><input class="input" name="phone" placeholder="{{PHONE}} (optional)"></div>
+<div class="form-row"><select name="interest"><option>I'm curious about: Seasons Reset</option><option>Root & Rise program</option><option>Alignment Cohort</option></select></div>
+<div class="form-row"><textarea name="message" placeholder="A short note about your goals or where you're stuck"></textarea></div>
+<div><button type="submit" class="btn">{{PRIMARY_CTA_LABEL}}</button></div>
+<p class="small" style="margin-top:8px">By connecting you agree to receive scheduling emails. No spam — just practical, supportive guidance.</p>
+</form>
+</div>
+
+<div>
+<div class="card">
+<h3 class="section-heading">Not sure where to begin?</h3>
+<p class="small">Try the 3-minute Wellness Compass — a quick diagnostic that highlights the one micro-habit to start today.</p>
+<p><a class="btn" href="programs.html">Take the Compass</a></p>
+</div>
+
+<div class="card" style="margin-top:14px">
+<h3 class="section-heading">Paths I Offer</h3>
+<div class="programs">
+<div class="program"><div class="dot"></div><div><strong>Seasons Reset</strong><div class="small">4-week gentle reset focused on sleep rhythm and morning rituals.</div></div></div>
+<div class="program"><div class="dot" style="background:#a85b3a"></div><div><strong>Root & Rise</strong><div class="small">12-week one-to-one momentum program for habit layering and confidence.</div></div></div>
+<div class="program"><div class="dot" style="background:#c57a4a"></div><div><strong>Alignment Cohort</strong><div class="small">8-week group experience with weekly modules, community reflection, and weekly micro-habits.</div></div></div>
+</div>
+</div>
+
+<div class="card" style="margin-top:14px">
+<h3 class="section-heading">Daily Micro-Habits (sample)</h3>
+<div class="habits">
+<div class="habit"><strong>2-minute breathing</strong><div class="small">Morning grounding for clarity.</div></div>
+<div class="habit"><strong>Water first</strong><div class="small">A warm glass within 20 minutes of waking.</div></div>
+<div class="habit"><strong>Single-task 25-min</strong><div class="small">Block to protect focus.</div></div>
+<div class="habit"><strong>Evening-ish ritual</strong><div class="small">A short unwind list — lights, device pause, herbal tea.</div></div>
+<div class="habit"><strong>Micro-movement</strong><div class="small">5-minute stretch or walk mid-day.</div></div>
+<div class="habit"><strong>Reflective note</strong><div class="small">One sentence of progress before bed.</div></div>
+</div>
+</div>
+
+<div class="card" style="margin-top:14px">
+<h3 class="section-heading">Investment — simple and clear</h3>
+<div class="pricing-grid">
+<div class="price"><strong>Foundations</strong><div class="small">One-off 60-min clarity + plan<br>From $150</div></div>
+<div class="price"><strong>Momentum</strong><div class="small">Monthly 1:1 coaching<br>From $550 / month</div></div>
+<div class="price"><strong>Cohort</strong><div class="small">Group rhythm program, 8 weeks<br>From $320</div></div>
+</div>
+<p class="small" style="margin-top:10px">I share a tailored investment guide after the clarity call so you can choose what fits your season.</p>
+</div>
+
+</div>
+</div>
+
+<section style="margin-top:28px;">
+<div class="card">
+<h3 class="section-heading">How the first week looks</h3>
+<p class="small">You’ll get a simple plan focused on three commitments: a morning anchor, one energy habit, and a short evening reset. Small consistent moves build steady change.</p>
+<p style="margin-top:12px"><a class="btn" href="programs.html">View program rhythms</a></p>
+</div>
+</section>
+
+<section style="margin-top:22px;display:flex;align-items:center;gap:18px;justify-content:space-between">
+<div style="flex:1">
+<h2 style="margin:0">Ready to start?</h2>
+<p class="small" style="margin:6px 0 0">Book a clarity call or send a quick message — I respond within 48 hours on weekdays.</p>
+</div>
+<div><a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+</section>
+
+<footer class="footer">
+<div>&copy; <span id="year"></span> {{BUSINESS_NAME}} — {{CITY}}, {{STATE}}</div>
+<div><a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></div>
+</footer>
+</div>
+
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+document.getElementById('contactForm').addEventListener('submit', function(e){
+ e.preventDefault();
+ var form = e.target;
+ var name = form.name.value||'';
+ var email = form.email.value||'';
+ var phone = form.phone.value||'';
+ var interest = form.interest.value||'';
+ var message = form.message.value||'';
+ var subject = encodeURIComponent('Clarity call request from ' + name);
+ var body = encodeURIComponent('Name: '+name+'\\nEmail: '+email+'\\nPhone: '+phone+'\\nInterest: '+interest+'\\n\\nMessage:\\n'+message);
+ window.location.href = 'mailto:{{EMAIL}}?subject='+subject+'&body='+body;
+});
+</script>
+</body>
+</html>

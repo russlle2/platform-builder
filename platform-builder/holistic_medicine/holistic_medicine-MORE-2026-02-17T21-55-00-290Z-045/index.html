@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{BUSINESS_NAME}} — {{TAGLINE}}</title>
+  <meta name="description" content="Integrative, personalized session design for people who need practical, balanced support. VIP Day format available.">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="theme-earthy">
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="/">{{BUSINESS_NAME}}</a>
+      <nav class="main-nav" aria-label="Primary">
+        <a href="/">Home</a>
+        <a href="/services.html">Offerings</a>
+        <a href="/conditions.html">Health Concerns</a>
+        <a href="/approach.html">Method</a>
+        <a href="/pricing.html">Investments</a>
+        <a href="/about.html">Our Story</a>
+        <a href="/book.html">Reserve</a>
+        <a href="/contact.html">Connect</a>
+      </nav>
+      <div class="header-cta">
+        <a class="btn primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero" data-reveal>
+      <div class="container hero-grid">
+        <div class="hero-text">
+          <h1>Whole-context care crafted into a realistic plan</h1>
+          <p class="lead">We translate complex health context into a single, doable session plan so you leave with clarity, not more lists. Sessions, a focused VIP Day option, and ongoing support to match your life rhythm.</p>
+          <div class="hero-actions">
+            <a class="btn primary" href="{{PRIMARY_CTA_URL}}">Start your plan</a>
+            <a class="btn ghost" href="/about.html">Meet the team</a>
+          </div>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <svg class="pattern" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <pattern id="p" patternUnits="userSpaceOnUse" width="40" height="40" patternTransform="rotate(15)">
+                <rect width="40" height="40" fill="#efe7dd"></rect>
+                <path d="M0 20 Q10 0 20 20 T40 20" stroke="#c9a66b" stroke-width="1.5" fill="none"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#p)"></rect>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- Social proof -->
+    <section class="social-proof" data-reveal>
+      <div class="container">
+        <h2>Trusted by people juggling big lives</h2>
+        <div class="testimonials">
+          <blockquote>
+            “A single practical plan that actually fit my week. I started sleeping better within two weeks.”
+            <cite>— R., small business owner</cite>
+          </blockquote>
+          <blockquote>
+            “Clear priorities, fewer appointments, measurable shifts in energy.”
+            <cite>— T., parent and educator</cite>
+          </blockquote>
+        </div>
+      </div>
+    </section>
+
+    <!-- Benefits + Session Planner widget -->
+    <section class="benefits" data-reveal>
+      <div class="container">
+        <h2>What you get in a session</h2>
+        <ul class="benefit-list">
+          <li>
+            <h3>Context-aware listening</h3>
+            <p>We map your routines, stressors, and supports to craft a realistic sequence of actions.</p>
+          </li>
+          <li>
+            <h3>Evidence-informed options</h3>
+            <p>Integrative approaches selected with clarity about benefits, risks, and burden.</p>
+          </li>
+          <li>
+            <h3>One-page plan</h3>
+            <p>A concise, prioritized plan you can read in 90 seconds—and follow this week.</p>
+          </li>
+        </ul>
+
+        <div class="planner-card" id="session-planner" aria-labelledby="planner-title">
+          <h3 id="planner-title">Session Planner — Build your first plan</h3>
+          <form id="planner-form">
+            <label>Primary goal (in one line)
+              <input type="text" name="goal" placeholder="Sleep, digestion, energy, focus..." required>
+            </label>
+
+            <label>Time you can commit per week
+              <select name="time">
+                <option value="30">~30 minutes</option>
+                <option value="60">~1 hour</option>
+                <option value="150">~2.5+ hours</option>
+              </select>
+            </label>
+
+            <fieldset class="areas" aria-label="Focus areas">
+              <legend>Focus areas</legend>
+              <label><input type="checkbox" name="areas" value="sleep"> Sleep</label>
+              <label><input type="checkbox" name="areas" value="stress"> Stress & mood</label>
+              <label><input type="checkbox" name="areas" value="movement"> Movement</label>
+              <label><input type="checkbox" name="areas" value="nutrition"> Nutrition</label>
+              <label><input type="checkbox" name="areas" value="digestion"> Digestion</label>
+            </fieldset>
+
+            <label>Intensity preference
+              <select name="intensity">
+                <option value="gentle">Gentle, low-burden</option>
+                <option value="balanced">Balanced steps</option>
+                <option value="active">More active change</option>
+              </select>
+            </label>
+
+            <label>Notes
+              <textarea name="notes" placeholder="Things to know (meds, recent tests, constraints)"></textarea>
+            </label>
+
+            <div class="planner-actions">
+              <button type="button" id="build-plan" class="btn primary">Draft a plan</button>
+              <button type="reset" class="btn ghost">Clear</button>
+            </div>
+          </form>
+
+          <div id="plan-output" class="plan-output" hidden>
+            <h4>Your session summary</h4>
+            <pre id="plan-text" aria-live="polite"></pre>
+            <div class="plan-actions">
+              <button id="copy-plan" class="btn">Copy summary</button>
+              <a id="book-link" class="btn primary" href="{{PRIMARY_CTA_URL}}">Reserve a session</a>
+            </div>
+            <div id="copy-confirm" class="copy-confirm" aria-hidden="true">Copied to clipboard</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Process / How it works -->
+    <section class="process" data-reveal>
+      <div class="container">
+        <h2>How a typical engagement unfolds</h2>
+        <ol class="process-steps">
+          <li>
+            <strong>Single-session intake.</strong>
+            <p>A focused deep-listen to set priorities and constraints.</p>
+          </li>
+          <li>
+            <strong>Co-created plan.</strong>
+            <p>A one-page plan with 3 immediate actions and 2-week checkpoints.</p>
+          </li>
+          <li>
+            <strong>Option: VIP Day.</strong>
+            <p>A dedicated full-day to create a multi-week architecture plus practical tools.</p>
+          </li>
+          <li>
+            <strong>Follow-up support.</strong>
+            <p>Optional coaching pulses to keep momentum.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq" data-reveal>
+      <div class="container">
+        <h2>Common questions</h2>
+        <details>
+          <summary>Do you guarantee results?</summary>
+          <p>We offer tailored education and practical plans. Individual outcomes vary; plans are designed to be realistic and low-burden.</p>
+        </details>
+        <details>
+          <summary>How long is a session?</summary>
+          <p>Standard sessions are 60 minutes. VIP Day is a concentrated 6-hour option with prep and follow-up.</p>
+        </details>
+        <details>
+          <summary>Can you work with existing medical care?</summary>
+          <p>Yes. We collaborate with your care team when appropriate and always include safety checks related to medicines or conditions.</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta" data-reveal>
+      <div class="container">
+        <h2>Ready for a single, practical plan?</h2>
+        <p>Book a focused session and leave with an actionable roadmap for the next two weeks.</p>
+        <a class="btn primary" href="{{PRIMARY_CTA_URL}}">Reserve your session</a>
+        <p class="muted">Questions? Call {{PHONE}} or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <strong>{{BUSINESS_NAME}}</strong>
+        <p class="muted">{{CITY}}, {{STATE}}</p>
+      </div>
+      <nav aria-label="Footer">
+        <a href="/about.html">About</a>
+        <a href="/pricing.html">Pricing</a>
+        <a href="/contact.html">Contact</a>
+      </nav>
+      <div class="small">
+        <p class="muted">© <span id="year"></span> {{BUSINESS_NAME}}. All educational content. Not a substitute for medical advice.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js" defer></script>
+</body>
+</html>

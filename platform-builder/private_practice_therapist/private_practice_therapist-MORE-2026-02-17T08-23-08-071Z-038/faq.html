@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FAQ — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--muted:#58646d;--accent:#6a8a76;--card:#fff;font-family:Inter,system-ui,Segoe UI,Roboto,Arial}
+    body{margin:0;background:linear-gradient(180deg,#fbfcfd,#f7f9fb);color:#122}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px}
+    nav a{margin-left:16px;color:var(--muted);text-decoration:none}
+    .wrap{max-width:920px;margin:28px auto;padding:18px}
+    h1{font-size:1.5rem;margin:0}
+    .intro{color:var(--muted);margin-top:8px}
+
+    .faq-list{margin-top:18px}
+    .qa{background:var(--card);border-radius:10px;padding:14px;margin-bottom:10px;border:1px solid rgba(18,34,40,0.04)}
+    .q{display:flex;justify-content:space-between;cursor:pointer}
+    .q h3{margin:0;font-size:1rem}
+    .a{margin-top:10px;color:var(--muted);display:none}
+    .q .toggle{color:var(--muted);font-weight:700}
+
+    .note{margin-top:16px;font-size:0.9rem;color:var(--muted)}
+    .footer-legal{margin-top:22px;font-size:0.85rem;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Who I am</a>
+      <a href="specialties.html">Areas</a>
+      <a href="approach.html">Method</a>
+      <a href="fees.html">Invest</a>
+      <a href="faq.html">Help</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <h1>Questions people often ask</h1>
+    <p class="intro">Straightforward answers about what to expect, how sessions are structured, and practicalities like fees and cancellations.</p>
+
+    <section class="faq-list" id="faq">
+      <div class="qa">
+        <div class="q" tabindex="0">
+          <h3>What happens in a first session?</h3>
+          <div class="toggle">+</div>
+        </div>
+        <div class="a">We usually begin with what brings you now—goals, recent events, and immediate concerns. You'll get a chance to describe your priorities. We often leave time to plan next steps together. Sessions are collaborative and tailored to your pace.</div>
+      </div>
+
+      <div class="qa">
+        <div class="q" tabindex="0">
+          <h3>How long is a session and how often should I come?</h3>
+          <div class="toggle">+</div>
+        </div>
+        <div class="a">Standard sessions are 50–60 minutes. Frequency depends on need—some start weekly for momentum, others move to biweekly for steady maintenance. We'll discuss a rhythm that fits your life and goals.</div>
+      </div>
+
+      <div class="qa">
+        <div class="q" tabindex="0">
+          <h3>Are sessions confidential?</h3>
+          <div class="toggle">+</div>
+        </div>
+        <div class="a">Yes. Information shared in sessions is kept confidential within legal and ethical boundaries. Exceptions include imminent risk of harm, court orders, or where required by law. We'll go over limits of confidentiality on intake.</div>
+      </div>
+
+      <div class="qa">
+        <div class="q" tabindex="0">
+          <h3>What if I need help between sessions or I'm in crisis?</h3>
+          <div class="toggle">+</div>
+        </div>
+        <div class="a">I aim to respond to messages in a timely way, but I do not provide emergency services through email or text. If you are in immediate danger, please call local emergency services or a crisis line. We can discuss safety planning during sessions.</div>
+      </div>
+
+      <div class="qa">
+        <div class="q" tabindex="0">
+          <h3>Payment, cancellations, and insurance</h3>
+          <div class="toggle">+</div>
+        </div>
+        <div class="a">Payment is due at the time of the session. Cancellation policy is 48 hours notice for full refund or reschedule. I provide receipts you may submit to your insurer—check your plan for out-of-network coverage. No medical claims or guarantees are made about outcomes.</div>
+      </div>
+
+    </section>
+
+    <div class="note">If your question isn't listed, please reach out at <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call {{PHONE}}. I'll respond with the best next steps within two business days.</div>
+
+    <div class="footer-legal">
+      Clinical boundaries and confidentiality are reviewed during intake. If you are experiencing suicidal thoughts or are a danger to yourself or others, call local emergency services or your local crisis resources immediately.
+    </div>
+
+  </main>
+
+  <script>
+    // Simple accordion for FAQ
+    (function(){
+      const items = document.querySelectorAll('.qa');
+      items.forEach(item=>{
+        const q = item.querySelector('.q');
+        const a = item.querySelector('.a');
+        q.addEventListener('click', ()=>{
+          const open = a.style.display === 'block';
+          // close all
+          document.querySelectorAll('.qa .a').forEach(x=>x.style.display='none');
+          document.querySelectorAll('.qa .toggle').forEach(t=>t.textContent='+');
+          if(!open){
+            a.style.display='block';
+            q.querySelector('.toggle').textContent='−';
+          }
+        });
+        q.addEventListener('keydown', e=>{if(e.key==='Enter' || e.key===' ') q.click();});
+      });
+    })();
+  </script>
+</body>
+</html>

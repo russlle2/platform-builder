@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contact — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--muted:#6b7280;--accent:#2b6cb0;--radius:10px;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+    body{background:var(--bg);color:#0b1220;margin:0;padding:48px;line-height:1.5}
+    .container{max-width:860px;margin:0 auto}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:42px}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-size:15px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .brand h1{font-size:18px;margin:0;font-weight:600}
+    .hero{padding:48px 36px;border-radius:14px;background:#fbfdff;border:1px solid #eef3f8}
+    .hero h2{margin:0 0 8px 0;font-size:28px}
+    .hero p{margin:0;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:28px;margin-top:28px}
+    .card{padding:22px;border-radius:12px;background:white;border:1px solid #f0f4f7}
+    label{display:block;font-size:13px;color:var(--muted);margin-top:12px}
+    input,textarea,select{width:100%;padding:10px;margin-top:6px;border:1px solid #e6edf3;border-radius:8px;font-size:14px}
+    button.primary{background:var(--accent);color:white;padding:10px 14px;border-radius:10px;border:none;margin-top:14px;cursor:pointer}
+    .muted{color:var(--muted);font-size:13px}
+    .small{font-size:13px;color:#4b5563}
+    .micro-list{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+    .micro-item{padding:10px;border-radius:8px;background:#fbfcfe;border:1px solid #eef4fb}
+    .pricing-cta{display:flex;gap:10px;align-items:center;margin-top:12px}
+    footer{margin-top:34px;color:var(--muted);font-size:13px}
+    .legal{background:#fff8; padding:12px;border-radius:8px;margin-top:16px;border:1px dashed #e6edf3}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <svg width="48" height="48" viewBox="0 0 48 48" aria-hidden="true" style="border-radius:10px;background:linear-gradient(180deg,#f7fcff,#ecf7ff);padding:8px">
+          <rect x="6" y="6" width="36" height="36" rx="8" fill="#e6f5ff"></rect>
+          <circle cx="24" cy="20" r="6" fill="#bfe3ff"></circle>
+          <path d="M14 34c4-5 12-5 16 0" stroke="#9fd4ff" stroke-width="2" fill="none" stroke-linecap="round"></path>
+        </svg>
+        <div>
+          <h1>{{BUSINESS_NAME}}</h1>
+          <div class="small">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav aria-label="Primary navigation">
+        <a href="index.html">Home</a>
+        <a href="about.html">About the Work</a>
+        <a href="specialties.html">Paths</a>
+        <a href="approach.html">How I Work</a>
+        <a href="fees.html">Fees</a>
+        <a href="faq.html">Help</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </header>
+
+    <!-- HERO: gentle opening -->
+    <section class="hero" aria-labelledby="contact-heading">
+      <h2 id="contact-heading">Connect gently — let's talk about next steps</h2>
+      <p>I'm {{THERAPIST_NAME}}. I offer confidential, compassionate therapy rooted in mindfulness and somatic awareness. Use the form to share what brings you here, or call/text {{PHONE}}.</p>
+    </section>
+
+    <div class="grid" role="main">
+      <div>
+        <!-- DIAGNOSTIC: short intake checklist -->
+        <section class="card" aria-labelledby="quick-check">
+          <h3 id="quick-check">A brief intake check</h3>
+          <p class="small">This is a quick way to name what you're noticing. It does not replace clinical assessment.</p>
+          <form action="{{PRIMARY_CTA_URL}}" method="post" onsubmit="alert('Form submitted — demo only');return false;" novalidate>
+            <label for="name">Your name</label>
+            <input id="name" name="name" type="text" placeholder="First and last">
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="you@example.com">
+
+            <label for="concerns">Primary concern</label>
+            <select id="concerns" name="concerns">
+              <option>Choose a focus — anxiety, relationships, trauma, transitions</option>
+              <option>Anxiety / worries</option>
+              <option>Relationship stress</option>
+              <option>Trauma aftereffects</option>
+              <option>Life transitions / career</option>
+              <option>Burnout / exhaustion</option>
+            </select>
+
+            <label for="message">A short note (optional)</label>
+            <textarea id="message" name="message" rows="4" placeholder="What would be most helpful in a few sentences?"></textarea>
+
+            <div class="pricing-cta">
+              <button class="primary" type="submit">{{PRIMARY_CTA_LABEL}}</button>
+              <a href="book.html" style="color:var(--accent);font-size:14px;align-self:center">See booking options</a>
+            </div>
+
+            <div class="small" style="margin-top:10px">Prefer to call? {{PHONE}} • Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+          </form>
+        </section>
+
+        <!-- PLAN: what happens next -->
+        <section class="card" style="margin-top:18px" aria-labelledby="next-steps">
+          <h3 id="next-steps">What happens after you reach out</h3>
+          <ol class="small" style="padding-left:18px">
+            <li>I'll read your message and offer a time for a 15-minute consult call or a first session.</li>
+            <li>We clarify goals, practicalities, and whether my approach is a good fit.</li>
+            <li>If we proceed, we'll discuss an initial plan and session frequency.</li>
+          </ol>
+          <p class="muted" style="margin-top:8px">I work remotely with adults in {{STATE}} (licensed as {{LICENSE}}). If you are outside my jurisdiction, I will let you know in the consult.</p>
+        </section>
+
+        <!-- MICRO_HABITS: practical small steps -->
+        <section class="card" style="margin-top:18px" aria-labelledby="micro-habits">
+          <h3 id="micro-habits">Small practices you can try today</h3>
+          <div class="micro-list">
+            <div class="micro-item"><strong>Box breathing</strong> — 4 in, hold 4, 4 out, hold 4. 1 minute can calm the nervous system.</div>
+            <div class="micro-item"><strong>Sensory check-in</strong> — name three things you see, two you can touch, one you hear.</div>
+            <div class="micro-item"><strong>Gentle boundary</strong> — practice saying a brief, kind no to something small to notice how you feel.</div>
+          </div>
+          <p class="small" style="margin-top:10px">These are supportive practices; they are not a substitute for therapy when deeper work is needed.</p>
+        </section>
+
+        <!-- PRICING SUMMARY: concise with program framing -->
+        <section class="card" style="margin-top:18px" aria-labelledby="pricing-summary">
+          <h3 id="pricing-summary">Fee overview — framed options</h3>
+          <p class="small">I offer a few pathways to meet different needs. Full details and sliding-scale availability on the Fees page.</p>
+          <ul class="small" style="padding-left:18px;margin-top:8px">
+            <li><strong>Calm Harbor Intro</strong> — Single session for orientation; hourly rate applies.</li>
+            <li><strong>Deep Waters Series</strong> — 8-session focused package for deeper themes; package pricing available.</li>
+            <li><strong>Maintenance Sessions</strong> — Ongoing weekly/biweekly support; standard per-session rate.</li>
+          </ul>
+          <div class="pricing-cta">
+            <a href="fees.html" style="text-decoration:none"><button class="primary">View fees & options</button></a>
+            <a href="book.html" style="align-self:center;color:var(--accent)">Reserve a consult</a>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- SIDEBAR: quick contact, credentials, safety -->
+      <aside>
+        <section class="card" aria-labelledby="therapist-info">
+          <h4 id="therapist-info">{{THERAPIST_NAME}}</h4>
+          <div class="small">{{MODALITIES}} • {{LICENSE}}</div>
+          <div style="margin-top:12px">
+            <svg width="80" height="80" viewBox="0 0 80 80" aria-hidden="true">
+              <rect x="6" y="6" width="68" height="68" rx="12" fill="#f7fbff"></rect>
+              <circle cx="40" cy="30" r="14" fill="#e3f2ff"></circle>
+              <path d="M22 62c6-8 30-8 36 0" stroke="#cfeaff" stroke-width="3" fill="none" stroke-linecap="round"></path>
+            </svg>
+          </div>
+          <p class="small" style="margin-top:12px">Sessions are held via secure telehealth and in-person in {{CITY}}, {{STATE}} where available. I take a limited number of clients to keep work focused and attentive.</p>
+          <div style="margin-top:12px">
+            <a href="mailto:{{EMAIL}}" style="text-decoration:none"><button class="primary">Email {{EMAIL}}</button></a>
+          </div>
+        </section>
+
+        <section class="card" style="margin-top:18px" aria-labelledby="safety">
+          <h4 id="safety">Confidentiality & safety</h4>
+          <p class="small">Conversations are confidential within legal and ethical limits (e.g., risk of harm to self/others, court order). Clinical notes are stored privately.</p>
+          <div class="legal">
+            <strong class="small">Crisis notice</strong>
+            <p class="small">If you are in immediate danger or experiencing a psychiatric emergency, call local emergency services or go to the nearest emergency room. If you are located in the U.S., you can also call or text 988 for the Suicide & Crisis Lifeline.</p>
+          </div>
+        </section>
+
+        <section class="card" style="margin-top:18px" aria-labelledby="policy">
+          <h4 id="policy">Scope & boundaries</h4>
+          <p class="small">Therapy is collaborative. I do not provide legal, medical, or forensic services. I will discuss referrals when needs fall outside my scope.</p>
+        </section>
+      </aside>
+    </div>
+
+    <!-- CTA FOOTER -->
+    <section style="margin-top:28px;padding:18px;border-radius:12px;background:#f8fbff;border:1px solid #eef6ff">
+      <h3 style="margin:0 0 6px 0">Ready for a gentle first step?</h3>
+      <p class="small" style="margin:0 0 12px 0">Schedule a 15-minute consult or send a brief message — whichever feels easier.</p>
+      <div style="display:flex;gap:10px">
+        <a href="{{PRIMARY_CTA_URL}}"><button class="primary">{{PRIMARY_CTA_LABEL}}</button></a>
+        <a href="book.html" style="align-self:center;color:var(--accent)">See full booking</a>
+      </div>
+    </section>
+
+    <footer>
+      <p class="muted">Licensed in {{STATE}} as {{LICENSE}}. Telehealth offered where permitted. Privacy and confidentiality are foundational to this work.</p>
+    </footer>
+  </div>
+</body>
+</html>

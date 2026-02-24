@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reserve a spot in a workshop or request a consult. Simple booking for integrative programs.">
+  <style>
+    :root{--bg:#ffffff;--accent:#5f9960;--ink:#102;--muted:#6c6c6c}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;background:linear-gradient(180deg,#fbfff9, #ffffff);color:var(--ink)}
+    .container{max-width:880px;margin:34px auto;padding:20px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    h1{font-size:26px;margin:12px 0}
+
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
+    .form-card{background:#fff;padding:18px;border-radius:12px;box-shadow:0 12px 30px rgba(12,16,12,0.06)}
+    label{display:block;font-size:13px;margin-top:12px;color:#234}
+    input,select,textarea{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid #e6ece6;font-size:14px}
+    button{margin-top:14px;padding:11px 14px;background:linear-gradient(90deg,var(--accent),#82ad82);color:white;border:none;border-radius:10px;font-weight:600}
+
+    .note{font-size:13px;color:var(--muted);margin-top:8px}
+    .side{padding:16px;background:linear-gradient(180deg,#fff,#f7fff6);border-radius:12px}
+    .spot{display:flex;justify-content:space-between;padding:10px;border-radius:10px;background:rgba(95,153,96,0.06);margin-top:10px}
+
+    .pattern{height:120px;margin-bottom:12px}
+    footer{margin-top:22px;font-size:13px;color:var(--muted);text-align:center}
+
+    @media (max-width:900px){.grid{grid-template-columns:1fr}.pattern{display:none}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+      <nav>
+        <a href="index.html">Main</a>
+        <a href="about.html">About</a>
+        <a href="pricing.html">Rates</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <h1>Reserve a spot or request a consult</h1>
+    <div class="grid">
+      <form id="booking" class="form-card" onsubmit="return submitForm(event)">
+        <label for="name">Full name</label>
+        <input id="name" name="name" required>
+
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" required placeholder="you@example.com">
+
+        <label for="phone">Phone</label>
+        <input id="phone" name="phone" placeholder="{{PHONE}}">
+
+        <label for="series">I'm booking</label>
+        <select id="series" name="series">
+          <option value="consult">Private consult</option>
+          <option value="seasonal-reset">Seasonal Reset — 4 sessions</option>
+          <option value="digestive">Digestive Tune‑Up — 6 weeks</option>
+          <option value="sleep">Sleep Rituals — workshop</option>
+        </select>
+
+        <label for="notes">Notes / goals (brief)</label>
+        <textarea id="notes" name="notes" rows="4" placeholder="What brought you here?"></textarea>
+
+        <label style="margin-top:12px"><input type="checkbox" id="agree" required> I understand the programming is educational and not a guaranteed medical cure.</label>
+
+        <div style="display:flex;gap:10px;align-items:center">
+          <button type="submit">{{PRIMARY_CTA_LABEL}}</button>
+          <div style="font-size:13px;color:var(--muted)">Or call <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+        </div>
+
+        <div class="note">After submitting you'll receive a confirmation by email and next steps. Payments are taken via secure links after reservation.</div>
+      </form>
+
+      <aside class="side">
+        <div class="pattern" aria-hidden="true">
+          <svg viewBox="0 0 360 120" width="100%" height="100%">
+            <defs>
+              <pattern id="p1" width="24" height="24" patternUnits="userSpaceOnUse">
+                <rect width="24" height="24" fill="#f7fff6"/>
+                <circle cx="6" cy="6" r="2.5" fill="#d7f0d8"/>
+                <circle cx="18" cy="18" r="2.5" fill="#eaf7ea"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#p1)"/>
+          </svg>
+        </div>
+
+        <div style="font-weight:700">Upcoming</div>
+        <div class="spot"><div>Seasonal Reset</div><div>Next: Apr 4</div></div>
+        <div class="spot"><div>Sleep Workshop</div><div>Next: Mar 19</div></div>
+        <div style="margin-top:12px;font-size:13px;color:var(--muted)">Need help choosing? Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+
+        <div style="margin-top:14px;font-size:13px">
+          <strong>Policies</strong>
+          <p style="margin:6px 0;color:var(--muted)">Cancellations within 48 hours may forfeit fee. Sliding scale for series; ask for details.</p>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      <div>Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • {{PHONE}}</div>
+      <div style="margin-top:8px;color:var(--muted);font-size:12px">Educational services only. For urgent or emergent medical concerns, contact emergency services.</div>
+    </footer>
+  </div>
+
+  <script>
+    function submitForm(e){
+      e.preventDefault();
+      const form=document.getElementById('booking');
+      const data={
+        name:form.name.value,
+        email:form.email.value,
+        phone:form.phone.value,
+        series:form.series.value,
+        notes:form.notes.value
+      };
+      // Minimal client-side flow: redirect to PRIMARY_CTA_URL with encoded data
+      const params=new URLSearchParams(data).toString();
+      const target='{{PRIMARY_CTA_URL}}';
+      if(!target || target===''){
+        alert('Thanks — we would send confirmation to ' + data.email);
+        return false;
+      }
+      window.location.href = target + (target.includes('?') ? '&' : '?') + params;
+      return false;
+    }
+  </script>
+</body>
+</html>

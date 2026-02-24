@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1720;--card:#0b1220;--muted:#9aa6b2;--accent:#7ad7c6;--glass:rgba(255,255,255,0.04);--glass-2:rgba(255,255,255,0.02)}
+    *{box-sizing:border-box}
+    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; margin:0; background:linear-gradient(180deg,var(--bg),#071018 60%); color:#e6eef3; -webkit-font-smoothing:antialiased}
+    header{display:flex;align-items:center;justify-content:space-between;padding:22px 28px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:52px;height:52px;border-radius:10px;background:linear-gradient(135deg,#0a2b2a,#07323a);display:grid;place-items:center;font-weight:700;color:var(--accent);font-size:18px}
+    nav a{color:var(--muted);margin-left:18px;text-decoration:none;font-weight:600}
+    .hero{padding:36px 28px 18px;display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+    .card{background:linear-gradient(180deg,var(--glass),var(--glass-2));padding:20px;border-radius:16px;border:1px solid rgba(255,255,255,0.03)}
+    h1{margin:0 0 8px;font-size:28px;color:#f0fbf8}
+    p.lead{margin:0;color:var(--muted)}
+    .who{margin-top:18px;display:flex;gap:14px;align-items:center}
+    .avatar{width:68px;height:68px;border-radius:12px;background:linear-gradient(180deg,#0f3940,#07232c);display:grid;place-items:center;color:var(--accent);font-weight:700}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:18px}
+    .fact{background:transparent;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
+    /* Proof Gallery */
+    .proof{margin-top:22px}
+    .testimonial{min-height:120px;display:grid;align-content:center}
+    .quote{font-style:italic;color:#dff7f0}
+    .meta{margin-top:8px;color:var(--muted);font-size:13px}
+    .badges{display:flex;gap:10px;margin-top:14px}
+    .badge{background:linear-gradient(90deg,#082a2a,#08323a);padding:8px 10px;border-radius:10px;font-weight:600;color:var(--accent);font-size:13px;position:relative;cursor:default}
+    .badge[data-tip]:focus::after,.badge[data-tip]:hover::after{content:attr(data-tip);position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 8px);background:#021617;padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);white-space:nowrap;font-size:12px;color:#bdfff3}
+    .side-cta{display:flex;flex-direction:column;gap:12px}
+    .cta-btn{background:var(--accent);color:#03201b;padding:12px 14px;border-radius:10px;text-decoration:none;text-align:center;font-weight:700}
+    footer{padding:28px;color:var(--muted);font-size:13px}
+    /* pattern */
+    .pattern-wrap{position:absolute;right:6%;top:14%;opacity:0.08;width:420px;height:420px;pointer-events:none}
+    /* small screens */
+    @media (max-width:880px){.hero{grid-template-columns:1fr;}.pattern-wrap{display:none}.brand .logo{width:44px;height:44px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">SB</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav aria-label="Primary">
+      <a href="index.html">Gatherings</a>
+      <a href="events.html">Calendar</a>
+      <a href="private-sessions.html">Private</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="about.html" style="color:var(--accent)">About</a>
+      <a href="book.html">Reserve</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="hero">
+      <section class="card">
+        <h1>We tune the room for what you bring</h1>
+        <p class="lead">A small team of facilitators and sound architects focused on approachable, restorative sound gatherings. We design cohesive cohorts — short series meant to land with lasting calm.</p>
+
+        <div class="who">
+          <div class="avatar">EA</div>
+          <div>
+            <div style="font-weight:700">Meet the team</div>
+            <div style="font-size:13px;color:var(--muted)">Facilitators trained across somatic practices, breathwork, and contemporary gong language.</div>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="fact"><strong>Cohort model</strong><div style="color:var(--muted);margin-top:6px">Small groups, consistent rhythm — join a standing series or a short run.</div></div>
+          <div class="fact"><strong>Audio-led design</strong><div style="color:var(--muted);margin-top:6px">We craft layers of tuned bowls, chimes, and subtle electronics to support rest.</div></div>
+          <div class="fact"><strong>Local & live</strong><div style="color:var(--muted);margin-top:6px">Sessions are in {{CITY}}, {{STATE}} — in-person with occasional livestreams.</div></div>
+          <div class="fact"><strong>Responsibility</strong><div style="color:var(--muted);margin-top:6px">We include contraindication guidance for safety and clarity.</div></div>
+        </div>
+
+        <div class="proof card" aria-live="polite">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div style="font-weight:800">Proof Gallery</div>
+            <div style="font-size:13px;color:var(--muted)">Rotating voices & credentials</div>
+          </div>
+
+          <div id="testimonial" class="testimonial" tabindex="0" style="margin-top:12px">
+            <div class="quote">"A restorative arc that felt tailored — I slept deeply the next night."</div>
+            <div class="meta">— L. (cohort participant)</div>
+          </div>
+
+          <div class="badges" aria-hidden="false">
+            <div class="badge" tabindex="0" data-tip="Featured in a local wellness digest">Digest Pick</div>
+            <div class="badge" tabindex="0" data-tip="Collaborated with neighborhood clinic to craft trauma-sensitive sessions">Clinic Partner</div>
+            <div class="badge" tabindex="0" data-tip="Instructor holds somatic and music therapy certifications">Practitioner Certified</div>
+          </div>
+        </div>
+
+      </section>
+
+      <aside class="side-cta card">
+        <div style="font-weight:800">Book a spot in the next cohort</div>
+        <div style="color:var(--muted);font-size:14px">Cohorts fill quickly — reserve a place for the upcoming series.</div>
+        <a class="cta-btn" href="book.html">Reserve your seat</a>
+        <a style="color:var(--muted);font-size:13px;text-decoration:none" href="contact.html">Questions? Reach us at {{EMAIL}}</a>
+      </aside>
+    </div>
+  </main>
+
+  <svg class="pattern-wrap" viewBox="0 0 200 200" aria-hidden="true">
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#073238"/><stop offset="1" stop-color="#032e2b"/></linearGradient>
+      <pattern id="p1" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(18)">
+        <rect width="40" height="40" fill="url(#g1)" />
+        <path d="M0 20h40M20 0v40" stroke="#0b3b3a" stroke-width="0.8"/>
+        <circle cx="20" cy="20" r="4" fill="#064e4a" />
+      </pattern>
+    </defs>
+    <rect width="200" height="200" fill="url(#p1)" opacity="0.85"></rect>
+  </svg>
+
+  <footer>
+    <div style="max-width:900px;margin:0 auto">{{BUSINESS_NAME}} • Phone: {{PHONE}} • <a style="color:var(--accent);text-decoration:none" href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+  </footer>
+
+  <script>
+    (function(){
+      // Testimonial rotation
+      const items = [
+        {q:'"A restorative arc that felt tailored — I slept deeply the next night."', m:'— L. (cohort participant)'},
+        {q:'"Gentle, precise sound that let me drop the story and rest in my body."', m:'— R. (repeat attendee)'},
+        {q:'"The facilitators are calm, clear, and quietly professional."', m:'— S. (clinic partner)'}
+      ];
+      let i=0; const node=document.getElementById('testimonial');
+      function rotate(){
+        i=(i+1)%items.length; node.innerHTML = '<div class="quote">'+items[i].q+'</div><div class="meta">'+items[i].m+'</div>';
+      }
+      setInterval(rotate,6000);
+
+      // keyboard accessibility: left/right to cycle
+      node.addEventListener('keydown',function(e){ if(e.key==='ArrowRight'){ rotate(); } if(e.key==='ArrowLeft'){ i=(i-1+items.length)%items.length; node.innerHTML = '<div class="quote">'+items[i].q+'</div><div class="meta">'+items[i].m+'</div>'; } });
+
+      // badges: simple tooltip is from CSS ::after on hover/focus
+    })();
+  </script>
+</body>
+</html>

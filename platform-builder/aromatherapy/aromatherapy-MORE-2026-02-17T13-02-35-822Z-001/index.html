@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{BUSINESS_NAME}} — Aromatherapy membership & sessions</title>
+  <meta name="description" content="Clinical, calm aromatherapy plans and a membership to explore blends that may support rest and focus.">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script defer src="assets/js/main.js"></script>
+</head>
+<body class="theme-earthy">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="/">{{BUSINESS_NAME}}</a>
+      <nav class="main-nav">
+        <a href="services.html">Offerings</a>
+        <a href="blends.html">Signature Blends</a>
+        <a href="shop.html">Boutique</a>
+        <a href="pricing.html">Memberships</a>
+        <a href="about.html">Our Story</a>
+        <a href="book.html">Schedule</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+      <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <h1 class="title">Plant-supported rituals tailored to your rhythm</h1>
+          <p class="lead">{{TAGLINE}}</p>
+          <p class="sub">Join a practical membership or book a focused consultation to explore non-medical, safety-first aromatherapy that may support sleep, balance, and calm.</p>
+          <div class="hero-actions">
+            <a class="btn primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            <a class="btn ghost" href="book.html">Book a session</a>
+          </div>
+        </div>
+        <div class="hero-pattern" aria-hidden="true">
+          <svg viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice" class="pattern">
+            <defs>
+              <pattern id="p" width="40" height="40" patternUnits="userSpaceOnUse">
+                <rect width="40" height="40" fill="#f5efe7"></rect>
+                <path d="M0 20 Q10 0 20 20 T40 20" stroke="#d9c7b4" stroke-width="2" fill="none"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#p)"></rect>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <section class="social-proof wrap">
+      <h2>People's notes</h2>
+      <div class="testimonials">
+        <blockquote>
+          “Thoughtful, safe guidance — a small ritual that actually fit my nights.”
+          <cite>— S., {{CITY}}</cite>
+        </blockquote>
+        <blockquote>
+          “Clear advice and blends I can make at home. Membership keeps me exploring.”
+          <cite>— K., {{STATE}}</cite>
+        </blockquote>
+      </div>
+    </section>
+
+    <section class="benefits wrap">
+      <h2>How we work</h2>
+      <ul class="benefit-list">
+        <li><strong>Personalized plans:</strong> A simple session planner guides a tailored at-home routine that may support your goals.</li>
+        <li><strong>Evidence-informed safety:</strong> Dilution and patch-test guidance without medical promises — just clear safety steps.</li>
+        <li><strong>Ongoing learning:</strong> Membership content, blend recipes, and supportive checks to build confidence.</li>
+      </ul>
+    </section>
+
+    <section class="interactive wrap">
+      <div class="grid-2">
+        <div class="widget card" id="session-planner">
+          <h3>Session Planner</h3>
+          <p class="muted">Build a concise, printable plan for a single aromatherapy session.</p>
+          <label>Primary goal
+            <select id="sp-goal">
+              <option value="relaxation">Relaxation</option>
+              <option value="sleep">Better sleep</option>
+              <option value="focus">Calm focus</option>
+              <option value="uplift">Gentle uplift</option>
+            </select>
+          </label>
+          <label>Duration
+            <select id="sp-duration">
+              <option value="5">5 minutes</option>
+              <option value="15" selected>15 minutes</option>
+              <option value="30">30 minutes</option>
+            </select>
+          </label>
+          <label>Delivery
+            <select id="sp-delivery">
+              <option value="diffuser">Diffuser</option>
+              <option value="inhalation">Inhalation (cloth/nerve points)</option>
+              <option value="topical">Topical (diluted)</option>
+            </select>
+          </label>
+          <label>Notes (allergies, pets, pregnancy?)
+            <input id="sp-notes" placeholder="e.g. cats at home, sensitive skin">
+          </label>
+          <div class="actions">
+            <button id="sp-generate" class="btn">Create plan</button>
+            <button id="sp-copy" class="btn ghost" disabled>Copy summary</button>
+          </div>
+          <pre id="sp-output" class="output" aria-live="polite"></pre>
+        </div>
+
+        <div class="widget card" id="blend-builder">
+          <h3>Blend Builder</h3>
+          <p class="muted">Choose a vibe and get a safe dilution guide plus a printable blend card.</p>
+          <label>Vibe
+            <select id="bb-vibe">
+              <option value="calming">Calming</option>
+              <option value="grounding">Grounding</option>
+              <option value="clarity">Clarity</option>
+              <option value="bright">Bright & uplifting</option>
+            </select>
+          </label>
+          <label>Carrier size
+            <select id="bb-size">
+              <option value="10">10 ml</option>
+              <option value="30" selected>30 ml</option>
+              <option value="100">100 ml</option>
+            </select>
+          </label>
+          <label>Strength
+            <select id="bb-strength">
+              <option value="0.5">0.5% (very light)</option>
+              <option value="1">1% (everyday)</option>
+              <option value="2">2% (short-term)</option>
+            </select>
+          </label>
+          <div class="actions">
+            <button id="bb-generate" class="btn">Create blend</button>
+            <button id="bb-copy" class="btn ghost" disabled>Copy blend card</button>
+          </div>
+          <div id="bb-output" class="output" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="process wrap">
+      <h2>Pathway</h2>
+      <ol>
+        <li>Start with a short consult to set priorities and safety notes.</li>
+        <li>Use the Session Planner to practice a home routine; refine via membership content.</li>
+        <li>Receive blend cards and dilution guides you can safely use at home.</li>
+      </ol>
+    </section>
+
+    <section class="faq wrap">
+      <h2>FAQ — Safety first</h2>
+      <dl>
+        <dt>Are these medical treatments?</dt>
+        <dd>No. Our offerings are informational and may support wellbeing. We do not make medical claims. Consult a healthcare professional for medical conditions.</dd>
+
+        <dt>What about dilution and patch tests?</dt>
+        <dd>We provide clear dilution guidance in blend cards. Always perform a patch test for topical use: apply a small diluted amount to an inconspicuous area and wait 24 hours. Discontinue if irritation occurs.</dd>
+
+        <dt>Pets and essential oils?</dt>
+        <dd>Some oils can affect animals. Avoid exposing pets to concentrated vapors and consult a veterinarian if unsure. We include pet-safe notes when relevant.</dd>
+
+        <dt>Pregnancy and nursing</dt>
+        <dd>Caution is advised. Some oils are not recommended in pregnancy or lactation. Please disclose pregnancy/nursing status before any personalized guidance.</dd>
+      </dl>
+    </section>
+
+    <section class="cta wrap">
+      <h2>Join a practical circle</h2>
+      <p>Memberships give ongoing blend cards, short group check-ins, and a private library of safety-first resources.</p>
+      <a class="btn primary" href="pricing.html">Explore memberships</a>
+      <p class="muted">Prefer a single consult? <a href="book.html">Book a session</a>.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-left">
+        <strong>{{BUSINESS_NAME}}</strong>
+        <p>{{CITY}}, {{STATE}}</p>
+      </div>
+      <div class="footer-right">
+        <p>Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a></p>
+        <p>Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

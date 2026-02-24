@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Get in Touch — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Contact {{THERAPIST_NAME}} in {{CITY}}, {{STATE}} for compassionate, confidential therapy focused on anxiety, relationships, life transitions and burnout.">
+  <style>
+    :root{--bg:#0b0b0d;--card:#0f1720;--muted:#9aa4b2;--accent:#ffd166;--accent-2:#ff8a66;--glass:rgba(255,255,255,0.04);--radius:12px;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#050608 0%,#0b0b0d 60%);color:#e6eef7}
+    .container{max-width:980px;margin:48px auto;padding:28px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{width:58px;height:58px;background:var(--glass);border-radius:10px;display:flex;align-items:center;justify-content:center}
+    .logo svg{width:40px;height:40px}
+    nav{display:flex;gap:14px;flex-wrap:wrap}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:8px;font-weight:600}
+    nav a.contact{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#0b0b0d}
+
+    .hero{display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start;margin-top:28px}
+    .hero-card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:32px;border-radius:16px;box-shadow:0 10px 30px rgba(2,6,23,0.6)}
+    h1{font-size:28px;line-height:1.05;margin:0 0 8px;color:#fff}
+    p.lead{color:var(--muted);margin:0 0 18px}
+    .meta{display:flex;gap:12px;flex-wrap:wrap}
+    .pill{background:rgba(255,255,255,0.03);padding:8px 10px;border-radius:999px;font-weight:600;color:var(--muted)}
+
+    .form{background:var(--card);padding:22px;border-radius:12px}
+    label{display:block;font-size:13px;color:var(--muted);margin:10px 0 6px}
+    input[type=text],input[type=email],textarea,select{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#e6eef7}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    button.cta{margin-top:12px;width:100%;padding:12px;background:linear-gradient(90deg,var(--accent),var(--accent-2));border:none;color:#0b0b0d;font-weight:700;border-radius:10px;cursor:pointer}
+
+    .info-block{margin-top:18px;font-size:13px;color:var(--muted);line-height:1.5}
+    .small{font-size:12px;color:#98a6b4}
+
+    footer{margin:36px 0 0;color:var(--muted);font-size:13px}
+    .legal{background:rgba(255,255,255,0.02);padding:16px;border-radius:10px;margin-top:18px}
+
+    @media(max-width:880px){.hero{grid-template-columns:1fr;}.container{padding:18px}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true">
+          <!-- simple local mark, referencing asset for editorial templates -->
+          <img src="assets/img/avatar.svg" alt="{{THERAPIST_NAME}} logo" style="width:44px;height:44px;display:block">
+        </div>
+        <div>
+          <div style="font-weight:800;color:#fff">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="specialties.html">Paths</a>
+        <a href="approach.html">How I Work</a>
+        <a href="fees.html">Investment</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html" class="contact">Contact</a>
+      </nav>
+    </header>
+
+    <main class="hero">
+      <section class="hero-card">
+        <h1>Let's plan a first conversation</h1>
+        <p class="lead">I offer a calm, practical approach to therapy tailored to adults navigating anxiety, relationship strain, trauma recovery, burnout and life transitions. If you want clear steps, active collaboration and steady support, start here.</p>
+        <div class="meta">
+          <div class="pill">Clinician: {{THERAPIST_NAME}}, {{LICENSE}}</div>
+          <div class="pill">Modalities: {{MODALITIES}}</div>
+          <div class="pill">Location: {{CITY}}, {{STATE}}</div>
+        </div>
+
+        <div style="margin-top:18px">
+          <strong style="color:#fff">Quick ways to reach me</strong>
+          <div class="info-block">
+            Phone: <a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none">{{PHONE}}</a><br>
+            Email: <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a>
+          </div>
+        </div>
+
+        <div class="legal small">
+          Confidentiality & privacy: messages sent from this site are treated as private and are only used to schedule and triage services. We keep client information secure and only share with consent or as required by law.
+        </div>
+
+        <div class="legal small" style="margin-top:10px">
+          Scope & boundaries: I work with adults on common mental health concerns including anxiety, depression, trauma and relational issues. I do not provide emergency services. If you are in crisis or feel you may harm yourself or others, please call your local emergency number or the nearest crisis line immediately.
+        </div>
+      </section>
+
+      <aside class="form">
+        <form method="post" action="{{PRIMARY_CTA_URL}}" novalidate>
+          <label for="name">Your name</label>
+          <input id="name" name="name" type="text" placeholder="First and last name" required>
+
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="you@example.com" required>
+
+          <div class="grid-2">
+            <div>
+              <label for="phone">Phone</label>
+              <input id="phone" name="phone" type="text" placeholder="(555) 555-5555">
+            </div>
+            <div>
+              <label for="method">Preferred contact</label>
+              <select id="method" name="method">
+                <option>Email</option>
+                <option>Phone</option>
+                <option>Video session</option>
+              </select>
+            </div>
+          </div>
+
+          <label for="reason">What brings you here? (brief)</label>
+          <textarea id="reason" name="reason" rows="4" placeholder="A sentence or two about the main concern"></textarea>
+
+          <label for="modalities">Interested in</label>
+          <select id="modalities" name="modalities">
+            <option>{{MODALITIES}}</option>
+            <option>Individual therapy</option>
+            <option>Couples work</option>
+            <option>Short-term coaching</option>
+          </select>
+
+          <button type="submit" class="cta">{{PRIMARY_CTA_LABEL}}</button>
+
+          <div class="small" style="margin-top:10px;color:var(--muted)">
+            I typically respond to contact requests within 48 business hours. If you don’t hear back, please try calling.<br>
+            Appointment scheduling requires a brief intake; payment and cancellation terms are discussed prior to the first session.
+          </div>
+        </form>
+      </aside>
+    </main>
+
+    <section style="margin-top:30px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);padding:18px;border-radius:12px">
+      <h2 style="margin:0 0 8px;color:#fff;font-size:18px">How a first call works</h2>
+      <p class="small">We’ll spend 15–20 minutes by phone or secure video to understand your goals and determine whether my approach and availability are a good fit. If we decide to move forward, we’ll discuss frequency, modalities and administrative details.</p>
+
+      <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap">
+        <div style="background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;min-width:180px">
+          <strong style="color:#fff">Step 1</strong>
+          <div class="small">Reach out using the form, email or phone</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;min-width:180px">
+          <strong style="color:#fff">Step 2</strong>
+          <div class="small">Brief intake call to clarify needs and logistics</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;min-width:180px">
+          <strong style="color:#fff">Step 3</strong>
+          <div class="small">Begin sessions if we agree it’s the right next step</div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px">
+        <div>
+          <div style="font-weight:700;color:#fff">{{THERAPIST_NAME}}</div>
+          <div class="small">{{LICENSE}} • {{CITY}}, {{STATE}}</div>
+        </div>
+        <div class="small">Questions about insurance, sliding scale or payment policies? See the Investment page or email <a href="mailto:{{EMAIL}}" style="color:var(--accent)">{{EMAIL}}</a>.</div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Services • {{BUSINESS_NAME}}</title>
+  <style>
+    :root{
+      --earth-1:#3b2f2f;--earth-2:#7a5a3a;--earth-3:#d9b892;--accent:#c06c4c;--muted:#776654;--glass:rgba(255,255,255,0.06);
+      --radius:12px;--maxw:1100px;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,var(--earth-3) 0%, #fff6ee 60%);color:var(--earth-1);min-height:100vh;line-height:1.45}
+    .wrap{max-width:var(--maxw);margin:36px auto;padding:28px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:18px}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--earth-2),var(--accent));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    nav a{color:var(--earth-1);text-decoration:none;margin:0 10px;font-weight:600}
+    nav a.cta{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px}
+
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:center;margin-top:28px}
+    .card{background:var(--glass);border-radius:var(--radius);padding:28px;box-shadow:0 6px 30px rgba(0,0,0,0.06);backdrop-filter:blur(6px)}
+    h1{margin:0 0 8px;font-size:28px}
+    p.lead{margin:0;color:var(--muted)}
+
+    /* pattern svg as decorative background */
+    .pattern-wrap{position:fixed;inset:0;z-index:-1;opacity:0.55}
+    .pattern{width:100%;height:100%}
+
+    .services-list{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:18px}
+    .service{padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.5),rgba(255,255,255,0.25));border:1px solid rgba(0,0,0,0.04)}
+    .service h3{margin:0 0 8px}
+    .muted{color:var(--muted);font-size:14px}
+
+    .social-proof{display:flex;gap:14px;align-items:center;margin-top:20px}
+    .quote{font-style:italic;color:var(--earth-1)}
+
+    .process{display:flex;gap:12px;margin-top:20px}
+    .step{background:#fff;border-radius:10px;padding:12px;width:100%;box-shadow:0 6px 18px rgba(0,0,0,0.04)}
+
+    .faq{margin-top:22px}
+    .faq h4{margin:0 0 8px}
+    .leadmag{display:flex;gap:12px;align-items:center;margin-top:20px;padding:18px;border-radius:12px;background:linear-gradient(90deg,var(--earth-3),#fff)}
+    .leadmag form input{padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)}
+
+    footer{margin-top:28px;padding:18px 0;color:var(--muted)}
+
+    @media (max-width:880px){
+      .hero{grid-template-columns:1fr;}
+      .services-list{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="pattern-wrap" aria-hidden="true">
+    <svg class="pattern" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="g1" x1="0" x2="1">
+          <stop offset="0" stop-color="#f6e7db" />
+          <stop offset="1" stop-color="#fff6ee" />
+        </linearGradient>
+        <pattern id="p-services" width="120" height="120" patternUnits="userSpaceOnUse">
+          <rect width="120" height="120" fill="url(#g1)" />
+          <path d="M0 60 Q30 20 60 60 T120 60" stroke="#e6c9b0" stroke-width="6" fill="none" opacity="0.9"/>
+          <circle cx="24" cy="96" r="6" fill="#c6a07b" opacity="0.7" />
+          <circle cx="96" cy="24" r="10" fill="#d9b892" opacity="0.35" />
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#p-services)" />
+    </svg>
+  </div>
+
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">A</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/services.html" aria-current="page">Offerings</a>
+        <a href="/blends.html">Blends</a>
+        <a href="/shop.html">Boutique</a>
+        <a href="/contact.html" class="cta">{{PRIMARY_CTA_LABEL}}</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="card">
+        <h1>Deep-dive aromatherapy sessions tailored to you</h1>
+        <p class="lead">An immersive, safety-first approach to scent work — bespoke formulas, focused pathways, and hands-on guidance from {{PRACTITIONER_NAME}}. No medical promises, just careful, aromatic support for mood and everyday wellbeing.</p>
+
+        <div class="social-proof">
+          <div style="font-weight:700">Trusted in {{CITY}}, {{STATE}}</div>
+          <div class="quote">“Warm, grounded, and transformative.” — client</div>
+        </div>
+
+        <div style="margin-top:16px;display:flex;gap:10px">
+          <a class="cta" href="{{PRIMARY_CTA_URL}}">Book an Intensive</a>
+          <a href="/contact.html" style="padding:10px 14px;border-radius:10px;background:transparent;border:1px solid rgba(0,0,0,0.06)">Ask a question</a>
+        </div>
+      </div>
+
+      <aside>
+        <div class="card">
+          <h3>Offerings</h3>
+          <div class="services-list">
+            <div class="service">
+              <h3>One-on-one Intensive</h3>
+              <div class="muted">90–120 minutes. Exploration & custom blend.</div>
+            </div>
+            <div class="service">
+              <h3>Follow-up Tuning</h3>
+              <div class="muted">30–45 minutes. Adjustments and support.</div>
+            </div>
+            <div class="service">
+              <h3>Workplace Aromatherapy</h3>
+              <div class="muted">Programs for calm, focus, and shared spaces.</div>
+            </div>
+            <div class="service">
+              <h3>Blend Coaching</h3>
+              <div class="muted">Hands-on lessons for building confidence with oils.</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="height:12px"></div>
+        <div class="card">
+          <h4>Quick Info</h4>
+          <p class="muted">Sessions are scent-led, safety-conscious, and tailored. We'll always review sensitivity, dilution, and safe use around pets and pregnancy.</p>
+          <div style="margin-top:12px"><strong>Phone:</strong> {{PHONE}}</div>
+          <div><strong>Email:</strong> {{EMAIL}}</div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="process">
+      <div class="step card">
+        <strong>1 — Connect</strong>
+        <div class="muted">Short intake to understand needs and safety considerations.</div>
+      </div>
+      <div class="step card">
+        <strong>2 — Explore</strong>
+        <div class="muted">Scent sampling, notes, and preferences guide the blend choices.</div>
+      </div>
+      <div class="step card">
+        <strong>3 — Create</strong>
+        <div class="muted">Formulate a diluted, labelled blend with instructions for safe use.</div>
+      </div>
+    </section>
+
+    <section class="faq card">
+      <h3>Frequently asked — safety first</h3>
+      <div style="margin-top:10px">
+        <h4>How do you handle dilution?</h4>
+        <p class="muted">Dilution is personalized. We use conservative, recommended dilutions (typically 1–5% for topical blends unless advised otherwise) and provide clear application instructions. We never suggest exceeding safe rates.</p>
+
+        <h4>Do I need a patch test?</h4>
+        <p class="muted">Yes — for topical blends, a patch test is encouraged before regular use, especially if you have sensitive skin.</p>
+
+        <h4>Are essential oils safe around pets?</h4>
+        <p class="muted">We prioritize pet safety: some oils are best avoided around animals and we'll suggest diffusion practices and placement to reduce exposure. Always consult your veterinarian if unsure.</p>
+
+        <h4>What about pregnancy?</h4>
+        <p class="muted">Pregnancy needs extra caution. We avoid certain oils and use pregnancy-safe alternatives. Inform us early in the intake so formulations are appropriate.</p>
+      </div>
+    </section>
+
+    <section class="leadmag card">
+      <div style="flex:1">
+        <strong>Free Intensive Prep Guide</strong>
+        <p class="muted">Sign up and receive a short guide to prepare for your first intensive session — how to sample safely, what to expect, and scent journaling tips.</p>
+      </div>
+      <form action="#" onsubmit="alert('Thanks — we\'ll send the guide to your inbox!');return false;">
+        <input type="email" placeholder="Email address" required aria-label="Email">
+        <button style="background:var(--earth-2);color:#fff;padding:10px 12px;border-radius:8px;border:none;margin-left:8px">Get the Guide</button>
+      </form>
+    </section>
+
+    <section style="margin-top:18px;text-align:center">
+      <a class="cta" href="{{PRIMARY_CTA_URL}}">Schedule your Intensive with {{PRACTITIONER_NAME}}</a>
+    </section>
+
+    <footer>
+      <div>{{BUSINESS_NAME}} • Serving {{CITY}}, {{STATE}} • <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fffdfb;--ink:#1f2e2a;--muted:#6b776f;--accent:#95b38f}
+    body{margin:0;font-family:Inter,system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;background:var(--bg);color:var(--ink)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:20px 28px}
+    nav a{margin:0 10px;color:var(--muted)}
+    .hero{padding:44px 28px;background-image:url('assets/img/pattern.svg');background-size:280px}
+    .kicker{color:var(--accent);font-size:0.95rem}
+    h1{margin:6px 0;font-size:clamp(1.6rem,3vw,2.2rem)}
+    .grid{display:grid;grid-template-columns:2fr 1fr;gap:24px;padding:28px}
+    .card{background:#fff;padding:18px;border-radius:12px;box-shadow:0 8px 24px rgba(31,46,42,0.05)}
+    .mini{font-size:0.95rem;color:var(--muted)}
+    .quote{font-style:italic;color:var(--muted);margin-top:10px}
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity 500ms ease,transform 500ms ease}
+    .revealed{opacity:1;transform:none}
+    @media (max-width:880px){.grid{grid-template-columns:1fr}}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div><strong>{{BUSINESS_NAME}}</strong> <span class="mini">— {{TAGLINE}}</span></div>
+    <nav aria-label="Primary">
+      <a href="index.html">Nest</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Synergies</a>
+      <a href="shop.html">Apothecary</a>
+      <a href="pricing.html">Rates</a>
+      <a href="about.html">Origins</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="reveal" data-reveal>
+        <div class="kicker">Origins</div>
+        <h1>Quiet craft, deliberate scent</h1>
+        <p class="mini">We work with plant distillations and botanical absolutes to create small, intentional practices. Sessions and blends aim to support daily rhythm and presence — not medical treatment.</p>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card reveal" data-reveal>
+        <h2>Our approach</h2>
+        <p class="mini">We combine sensory listening with simple, repeatable rituals. Each plan is safety-forward: we discuss sensitivities, dilution, and environmental considerations before creating a blend. Our work may support relaxation, focus, or sleep when paired with consistent practice.</p>
+
+        <h3 style="margin-top:16px">How a session flows</h3>
+        <ol class="mini">
+          <li>Brief intake and safety check</li>
+          <li>Custom blend or inhalation strategy</li>
+          <li>Guided in-session practice (breath, awareness, gentle movement)</li>
+          <li>Take-home notes and product suggestions</li>
+        </ol>
+
+        <p class="quote">"Small, steady rituals that fit into your day."</p>
+      </div>
+
+      <aside class="card reveal" data-reveal>
+        <h3>Values</h3>
+        <ul class="mini">
+          <li>Clarity over complication</li>
+          <li>Safety and consent first</li>
+          <li>Plant humility</li>
+          <li>Accessible practices for everyday life</li>
+        </ul>
+
+        <h3 style="margin-top:16px">Practical notes</h3>
+        <div class="mini">
+          - Patch testing is recommended for topical use. <br>
+          - Keep concentrations modest; we often use 1–3% for adults. <br>
+          - Inform us of pregnancy, nursing, medical conditions, or household pets so we can adapt safely.
+        </div>
+      </aside>
+    </section>
+
+    <section style="padding:0 28px 28px">
+      <div class="card reveal" data-reveal>
+        <h2>Meet the practitioner</h2>
+        <p class="mini">A longtime student of plant materials and somatic practices, the practitioner blends practical botany with plain language coaching. Sessions are invitational and paced to your needs.</p>
+
+        <h3 style="margin-top:12px">Teaching & collaborations</h3>
+        <p class="mini">We offer small workshops and community gatherings that may support shared learning — check the Offerings page for upcoming events.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer style="padding:28px;text-align:center;color:var(--muted)">Contact: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a> • {{CITY}}, {{STATE}}</footer>
+
+  <script>
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const items = document.querySelectorAll('[data-reveal]');
+      function show(i){ i.classList.add('revealed'); }
+      if(prefersReduced){ items.forEach(show); }
+      else if('IntersectionObserver' in window){
+        const io = new IntersectionObserver((entries)=>{ entries.forEach(e=>{ if(e.isIntersecting){ show(e.target); io.unobserve(e.target); } }); },{threshold:0.08});
+        items.forEach(i=>io.observe(i));
+      } else { items.forEach(show); }
+    })();
+  </script>
+</body>
+</html>

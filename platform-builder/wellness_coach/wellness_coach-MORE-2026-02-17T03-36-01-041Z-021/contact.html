@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contact — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Contact {{BUSINESS_NAME}} for a focused VIP Day to design habits and frameworks that deliver measurable outcomes.">
+  <style>
+    :root{
+      --bg:#0f1720; --card:#0b1220; --muted:#9aa7b3; --accent:#6ee7b7; --accent-2:#60a5fa; --glass:rgba(255,255,255,0.04);
+      --radius:12px; --max-width:1100px;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+    }
+    html,body{height:100%;}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#071024);color:#e6eef6;line-height:1.5}
+    a{color:var(--accent-2);text-decoration:none}
+    .site-header{backdrop-filter:blur(6px);background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);position:sticky;top:0;z-index:40;border-bottom:1px solid rgba(255,255,255,0.03)}
+    .nav{max-width:var(--max-width);margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:18px}
+    .nav .brand{font-weight:700;letter-spacing:0.4px}
+    .nav .links{display:flex;gap:18px;align-items:center}
+    .nav .links a{color:var(--muted);font-size:14px}
+    .cta{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#06202a;padding:10px 14px;border-radius:9px;font-weight:600}
+
+    main{max-width:var(--max-width);margin:30px auto;padding:0 18px}
+
+    /* split diagonal hero */
+    .split{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:stretch}
+    .pane{border-radius:var(--radius);overflow:hidden}
+    .pane.text{padding:36px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);box-shadow:0 10px 30px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.03)}
+    .pane.pattern{background-color:var(--card);position:relative}
+    .pane.pattern::before{content:"";position:absolute;inset:0;background-image:url('assets/img/pattern.svg');background-repeat:no-repeat;background-size:cover;opacity:0.85}
+    .hero h1{margin:0 0 8px 0;font-size:28px}
+    .lead{color:var(--muted);margin:0 0 18px}
+    .contact-line{font-size:13px;color:var(--muted);margin-bottom:18px}
+
+    form{display:grid;gap:10px}
+    label{display:flex;flex-direction:column;font-size:13px;color:var(--muted)}
+    input,textarea,select{margin-top:8px;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:var(--glass);color:inherit}
+    button{background:var(--accent);border:0;padding:10px 12px;border-radius:10px;color:#042023;font-weight:700}
+
+    .section{margin-top:28px;padding:22px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);border:1px solid rgba(255,255,255,0.03)}
+    .planner{display:grid;grid-template-columns:1fr 320px;gap:20px}
+    #planOutput{white-space:pre-wrap;background:#021021;padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);min-height:180px;color:#dff7ee;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    .plan-controls{display:flex;gap:10px;margin-top:10px}
+
+    /* reveal animation */
+    .reveal{opacity:0;transform:translateY(20px);transition:transform 520ms cubic-bezier(.2,.9,.2,1),opacity 520ms ease}
+    .reveal.revealed{opacity:1;transform:none}
+    .no-motion .reveal{transition:none}
+
+    /* small screens */
+    @media (max-width:880px){
+      .split{grid-template-columns:1fr;}
+      .planner{grid-template-columns:1fr}
+    }
+    footer{max-width:var(--max-width);margin:28px auto;padding:18px;color:var(--muted);text-align:center;font-size:13px}
+
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav">
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <div class="links">
+        <a href="index.html">Home</a>
+        <a href="about.html">Approach</a>
+        <a href="services.html">Offerings</a>
+        <a href="programs.html">Programs</a>
+        <a href="pricing.html">Invest</a>
+        <a href="testimonials.html">Stories</a>
+        <a href="book.html" class="cta">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero split">
+      <div class="pane text">
+        <div class="hero">
+          <h1>Get started with a focused VIP Day</h1>
+          <p class="lead">We design short, structured intensives that translate intention into durable habits and practical outcomes.</p>
+          <p class="contact-line">Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a> · Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+        </div>
+
+        <form id="contactForm" aria-label="Contact form">
+          <label>Full name<input type="text" name="name" placeholder="Your name" required></label>
+          <label>Email<input type="email" name="email" placeholder="you@domain.com" required></label>
+          <label>Phone (optional)<input type="tel" name="phone" placeholder="{{PHONE}}"></label>
+          <label>Message<textarea name="message" rows="4" placeholder="Brief note about what you want to achieve"></textarea></label>
+          <div style="display:flex;gap:10px;align-items:center">
+            <button type="submit">Send inquiry</button>
+            <button type="button" id="bookQuick">Request a quick call</button>
+          </div>
+          <div id="contactStatus" role="status" aria-live="polite" style="margin-top:8px;color:var(--muted)"></div>
+        </form>
+      </div>
+      <div class="pane pattern" aria-hidden="true"></div>
+    </section>
+
+    <section id="planner" class="reveal section planner" aria-labelledby="plannerTitle">
+      <div>
+        <h2 id="plannerTitle">Session Planner</h2>
+        <p class="lead">Map a short VIP Day: pick an outcome, set the rhythm, and get a shareable plan you can copy.</p>
+
+        <form id="plannerForm">
+          <label>Primary outcome<input name="outcome" placeholder="What will success look like?" required></label>
+          <label>Session length<select name="duration">
+            <option value="2">2 hours</option>
+            <option value="4" selected>4 hours</option>
+            <option value="6">6 hours</option>
+          </select></label>
+          <label>Focus areas (comma separated)<input name="focus" placeholder="e.g. sleep consistency, midday energy, meeting rhythm"></label>
+          <label>Preferred emphasis<select name="approach">
+            <option value="framework">Frameworks & rituals</option>
+            <option value="habits">Habit design</option>
+            <option value="hybrid" selected>Hybrid</option>
+          </select></label>
+          <label>Preparation notes<textarea name="prep" rows="3" placeholder="What do we need to review before the day?"></textarea></label>
+          <div style="display:flex;gap:10px;align-items:center">
+            <button type="button" id="buildPlan">Build plan</button>
+            <button type="button" id="clearPlan">Clear</button>
+          </div>
+        </form>
+      </div>
+
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <strong>Plan preview</strong>
+          <small style="color:var(--muted)">Plaintext summary, ready to copy</small>
+        </div>
+        <pre id="planOutput" aria-live="polite">No plan built yet.</pre>
+        <div class="plan-controls">
+          <button id="copyPlan">Copy plan</button>
+          <button id="downloadPlan">Download .txt</button>
+        </div>
+        <div id="plannerStatus" role="status" aria-live="polite" style="margin-top:8px;color:var(--muted)"></div>
+      </div>
+    </section>
+
+    <section class="reveal section" aria-labelledby="expectTitle">
+      <h3 id="expectTitle">What to expect</h3>
+      <ul>
+        <li>Explicit outcomes: one measurable target for the session.</li>
+        <li>Repeatable micro-habits paired with a tailored framework to support them.</li>
+        <li>Materials and a short follow-up note that keeps momentum.</li>
+      </ul>
+    </section>
+
+    <section class="reveal section" aria-labelledby="faqTitle">
+      <h3 id="faqTitle">Questions people ask</h3>
+      <details>
+        <summary>How long until I see a change?</summary>
+        <p style="color:var(--muted)">We focus on immediate, actionable shifts you can practice right after the VIP Day. These are habit-focused adjustments, not clinical treatments.</p>
+      </details>
+      <details>
+        <summary>Is this right for a busy schedule?</summary>
+        <p style="color:var(--muted)">Yes. Sessions are designed to be condensed, intentional, and ready to plug into a full calendar.</p>
+      </details>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} · {{CITY}}, {{STATE}} · <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> · <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    <div style="margin-top:6px;color:var(--muted)">© <span id="year"></span> {{BUSINESS_NAME}}. All rights reserved.</div>
+  </footer>
+
+  <script>
+    // accessibility: set year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // prefers-reduced-motion
+    const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) document.documentElement.classList.add('no-motion');
+
+    // scroll-triggered reveal
+    (function(){
+      const targets = Array.from(document.querySelectorAll('.reveal'));
+      if (reduceMotion) {
+        targets.forEach(t => t.classList.add('revealed'));
+        return;
+      }
+      if ('IntersectionObserver' in window) {
+        const obs = new IntersectionObserver((entries, o) => {
+          entries.forEach(e => {
+            if (e.isIntersecting) { e.target.classList.add('revealed'); o.unobserve(e.target); }
+          });
+        },{threshold:0.12});
+        targets.forEach(t => obs.observe(t));
+      } else {
+        targets.forEach(t => t.classList.add('revealed'));
+      }
+    })();
+
+    // contact form behavior (no backend) — provide a summary and clear
+    (function(){
+      const form = document.getElementById('contactForm');
+      const status = document.getElementById('contactStatus');
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        const fd = new FormData(form);
+        const summary = `Contact inquiry from ${fd.get('name') || '—'}\nEmail: ${fd.get('email') || '—'}\nPhone: ${fd.get('phone') || '—'}\nMessage:\n${fd.get('message') || '—'}`;
+        // show a friendly local status and prepare mailto link as a convenience
+        status.textContent = 'Prepared message locally. You can paste the summary into an email or copy from the planner below.';
+        console.log('Contact summary:\n', summary);
+      });
+      document.getElementById('bookQuick').addEventListener('click', function(){
+        // open mailto to request a quick call
+        const subject = encodeURIComponent('Quick call request — ' + '{{BUSINESS_NAME}}');
+        location.href = 'mailto:{{EMAIL}}?subject=' + subject;
+      });
+    })();
+
+    // Session Planner logic
+    (function(){
+      const form = document.getElementById('plannerForm');
+      const output = document.getElementById('planOutput');
+      const status = document.getElementById('plannerStatus');
+
+      function buildSummary(){
+        const fd = new FormData(form);
+        const outcome = fd.get('outcome') || 'No outcome specified';
+        const duration = fd.get('duration') || '4';
+        const focus = fd.get('focus') || 'General focus';
+        const approach = fd.get('approach') || 'Hybrid';
+        const prep = (fd.get('prep') || '').trim();
+
+        const header = `Session Plan — ${'{{BUSINESS_NAME}}'}\nLength: ${duration} hrs\nApproach: ${approach}\n`;
+        const body = [`Primary outcome: ${outcome}`,
+          `Focus areas: ${focus}`,
+          `Session structure:`,
+          `  • Opening (20 min): Align on target and baseline`,
+          `  • Core (${Math.max(60,(duration*60 - 80))} min): Focused work on frameworks and practice`,
+          `  • Integration (20 min): Concrete micro-habits + immediate next steps`,
+          `Prep notes: ${prep || 'None'}`].join('\n');
+
+        return header + '\n' + body + '\n\n' + 'Follow-up: 1 concise note with 3 next actions and practice cues.';
+      }
+
+      document.getElementById('buildPlan').addEventListener('click', function(){
+        try{
+          const text = buildSummary();
+          output.textContent = text;
+          status.textContent = 'Plan built. Use the buttons to copy or download.';
+        }catch(err){
+          status.textContent = 'Could not build plan.';
+        }
+      });
+
+      document.getElementById('clearPlan').addEventListener('click', function(){
+        form.reset(); output.textContent = 'No plan built yet.'; status.textContent = '';
+      });
+
+      document.getElementById('copyPlan').addEventListener('click', async function(){
+        const text = output.textContent || '';
+        if (!text.trim()) { status.textContent = 'No plan to copy.'; return; }
+        try{
+          await navigator.clipboard.writeText(text);
+          status.textContent = 'Plan copied to clipboard.';
+        }catch(e){
+          // fallback
+          const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select();
+          try{ document.execCommand('copy'); status.textContent = 'Plan copied to clipboard.'; }catch(e2){ status.textContent = 'Copy failed. Select and copy manually.'; }
+          ta.remove();
+        }
+      });
+
+      document.getElementById('downloadPlan').addEventListener('click', function(){
+        const text = output.textContent || '';
+        if (!text.trim()){ status.textContent = 'No plan to download.'; return; }
+        const blob = new Blob([text], {type: 'text/plain'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = 'session-plan.txt';
+        document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+        status.textContent = 'Downloaded plan.txt';
+      });
+    })();
+
+  </script>
+</body>
+</html>

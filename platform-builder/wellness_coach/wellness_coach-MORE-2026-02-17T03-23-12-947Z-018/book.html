@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book a Session — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#071227;--glass:#ffffff12;--accent:#7bd389;--muted:#cdebd7}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;background:#051226 url('assets/img/pattern.svg');color:var(--muted)}
+    .container{max-width:980px;margin:36px auto;padding:28px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    .formWrap{display:grid;grid-template-columns:1fr 360px;gap:20px;margin-top:18px}
+    .panel{padding:18px;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);backdrop-filter:blur(6px)}
+    label{display:block;margin-top:12px;color:#a9d9bf}
+    input[type="text"],input[type="email"],select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--muted)}
+    .submit{margin-top:14px;padding:10px 12px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#6fb1ff);color:#05201a;border:none;font-weight:700}
+    .meter{margin-top:12px}
+    .pathSmall{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+    .pathSmall .step{width:10px;height:10px;border-radius:3px;background:#0f2430}
+    .step.active{background:linear-gradient(180deg,var(--accent),#4bb0ff)}
+    .note{font-size:13px;color:#9fbfb0;margin-top:10px}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div style="font-weight:700;color:#eafff3">Book with {{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html" style="color:var(--muted);text-decoration:none;margin-right:10px">Home</a>
+        <a href="pricing.html" style="color:var(--muted);text-decoration:none">Plans</a>
+      </nav>
+    </header>
+
+    <div class="formWrap">
+      <div class="panel">
+        <h2 style="margin:0;color:#e9fff0">Schedule a short orientation</h2>
+        <p class="note">A focused 20–30 minute session to map one clear 30-day pathway and confirm fit for membership. No medical advice — practical habit frameworks and outcomes.</p>
+
+        <form id="bookingForm">
+          <label for="name">Full name</label>
+          <input id="name" name="name" type="text" required>
+
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required>
+
+          <label for="phone">Phone</label>
+          <input id="phone" name="phone" type="text">
+
+          <label for="focus">Primary focus (pick up to 2)</label>
+          <select id="focus" name="focus" multiple size="4">
+            <option value="energy">Energy & sleep rhythm</option>
+            <option value="movement">Short daily movement</option>
+            <option value="reflection">Brief reflection practice</option>
+            <option value="workflow">Work session structure</option>
+            <option value="meals">Meal timing & simple routines</option>
+          </select>
+
+          <label for="notes">Any details you'd like to share</label>
+          <textarea id="notes" name="notes" rows="3"></textarea>
+
+          <div class="meter">
+            <div style="font-weight:700;color:#e9fff0">Preview 30-day path</div>
+            <div class="pathSmall" id="smallPath"></div>
+            <div class="note">Select focus to preview. This helps us show up to your first session with a clear starting map.</div>
+          </div>
+
+          <button type="submit" class="submit">Request orientation</button>
+        </form>
+      </div>
+
+      <aside class="panel">
+        <div style="font-weight:700;color:#eafff3">What to expect in 20–30 minutes</div>
+        <ul style="color:#bfe6cf;margin-top:10px">
+          <li>Clarify one practical outcome to pursue for 30 days</li>
+          <li>Agree on 2–3 micro-habits to support it</li>
+          <li>Schedule next steps and share the membership options that fit</li>
+        </ul>
+
+        <div style="margin-top:12px">
+          <div style="font-weight:700;color:#e9fff0">Quick availability</div>
+          <div class="note">Book via the form and we’ll reply with two options. If you prefer immediate contact, call {{PHONE}}.</div>
+        </div>
+
+        <div style="margin-top:14px">
+          <div style="font-weight:700;color:#e9fff0">Why short sessions work</div>
+          <div class="note">Short, focused alignment sessions reduce friction. We leave the call with a concrete 7-day plan and measurable micro-habits.</div>
+        </div>
+      </aside>
+    </div>
+
+  </div>
+
+  <script>
+    (function(){
+      const focusSelect = document.getElementById('focus');
+      const smallPath = document.getElementById('smallPath');
+      const form = document.getElementById('bookingForm');
+
+      const patterns = {
+        energy:[1,0,1,0,1,0,1],
+        movement:[0,1,0,1,0,1,0],
+        reflection:[1,0,0,1,0,0,1],
+        workflow:[1,1,0,0,1,1,0],
+        meals:[0,1,1,0,1,1,0]
+      };
+
+      function renderSmall(){
+        smallPath.innerHTML='';
+        const sel = Array.from(focusSelect.selectedOptions).map(o=>o.value).slice(0,2);
+        const days = 30;
+        const active = new Array(days).fill(false);
+        sel.forEach(s=>{
+          const p = patterns[s] || [];
+          for(let i=0;i<days;i++) if(p[i%p.length]) active[i]=true;
+        });
+        for(let i=0;i<days;i++){
+          const div = document.createElement('div');
+          div.className='step'+(active[i]? ' active':'');
+          smallPath.appendChild(div);
+        }
+      }
+
+      focusSelect.addEventListener('change', renderSmall);
+      renderSmall();
+
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        const data = {name:form.name.value,email:form.email.value,phone:form.phone.value,focus:Array.from(form.focus.selectedOptions).map(o=>o.value),notes:form.notes.value};
+        // local demo behavior: show a confirmation summary
+        alert('Request sent. We will contact '+(data.name||'you')+' at '+(data.email||'your email')+'.');
+        form.reset(); renderSmall();
+      });
+    })();
+  </script>
+</body>
+</html>

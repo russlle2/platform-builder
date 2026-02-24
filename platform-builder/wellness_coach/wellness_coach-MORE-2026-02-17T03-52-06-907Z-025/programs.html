@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Paths — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f9f4ef;--card:#fffaf4;--accent:#7c4b31;--muted:#705744;--ink:#352921;--radius:12px;--maxWidth:980px}
+    body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial;color:var(--ink)}
+    .wrap{max-width:var(--maxWidth);margin:0 auto;padding:28px}
+    nav{display:flex;gap:14px}
+    nav a{color:var(--muted);text-decoration:none}
+    .lead{margin-top:18px}
+
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 20px rgba(53,41,36,0.05)}
+    .program{border-left:4px solid rgba(124,75,49,0.12);padding:12px;border-radius:8px}
+    .tag{background:rgba(124,75,49,0.08);padding:6px 8px;border-radius:8px;font-size:13px;color:var(--accent);display:inline-block}
+    .muted{color:var(--muted)}
+    .cta{display:inline-block;padding:10px 12px;background:var(--accent);color:white;border-radius:10px;text-decoration:none;margin-top:12px}
+
+    /* Session planner styles */
+    .planner{display:flex;flex-direction:column;gap:10px}
+    .planner label{font-size:13px;color:var(--muted)}
+    .planner input[type=text], .planner textarea, .planner select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)}
+    .planner .row{display:flex;gap:8px}
+    .planner .btns{display:flex;gap:8px}
+    .output{white-space:pre-wrap;background:#fff;padding:12px;border-radius:8px;border:1px dashed rgba(0,0,0,0.04);min-height:80px}
+
+    .reveal{opacity:0;transform:translateY(16px);transition:opacity 420ms ease,transform 420ms ease}
+    .reveal.revealed{opacity:1;transform:none}
+    @media (prefers-reduced-motion: reduce){.reveal{transition:none;opacity:1;transform:none}}
+
+    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header style="display:flex;justify-content:space-between;align-items:center">
+      <nav>
+        <a href="index.html">Hearth</a>
+        <a href="about.html">Who</a>
+        <a href="services.html">Offerings</a>
+        <a href="programs.html" style="font-weight:700;color:var(--accent)">Paths</a>
+        <a href="pricing.html">Invest</a>
+        <a href="testimonials.html">Voices</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+      <a class="cta" href="book.html">Start a plan</a>
+    </header>
+
+    <main>
+      <section class="reveal" aria-labelledby="paths-heading">
+        <h1 id="paths-heading">Structured tracks for steady change</h1>
+        <p class="muted lead">Each track is a compact curriculum: a clear outcome, daily micro-practices, and checkpoints. Choose how deep you want to go.</p>
+      </section>
+
+      <section class="grid">
+        <div>
+          <div class="card reveal">
+            <h3>Short Tracks</h3>
+            <div class="muted">Three-week cycles for targeted habit shifts.</div>
+            <div style="margin-top:12px">
+              <div class="program">
+                <div class="tag">Morning Reset</div>
+                <p class="muted">Design a 10–15 minute morning routine that reliably primes your energy and decision bandwidth.</p>
+                <div style="margin-top:8px;font-weight:700;color:var(--accent)">$160 for a 3-week track</div>
+              </div>
+
+              <div class="program" style="margin-top:12px">
+                <div class="tag">Focus Anchor</div>
+                <p class="muted">A short plan to reduce friction for focused work blocks and weekly planning.</p>
+                <div style="margin-top:8px;font-weight:700;color:var(--accent)">$160 for a 3-week track</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card reveal" style="margin-top:12px">
+            <h3>Extended Tracks</h3>
+            <div class="muted">For broader shifts: integrate new rhythms with consistent review.</div>
+            <div style="margin-top:12px" class="program">
+              <div class="tag">Rhythm Builder — 8 weeks</div>
+              <p class="muted">Weekly coaching, short daily practices, and check-ins to embed sustainable routines.</p>
+              <div style="margin-top:8px;font-weight:700;color:var(--accent)">$580 for the series</div>
+            </div>
+          </div>
+
+          <div class="card reveal" style="margin-top:12px">
+            <h3>Team & Custom</h3>
+            <div class="muted">Half-day intensives or tailored curricula for groups. Pricing depends on scope.</div>
+            <a class="cta" href="contact.html">Request a custom plan</a>
+          </div>
+        </div>
+
+        <aside>
+          <div class="card reveal">
+            <h4>Session Planner</h4>
+            <p class="muted">Build a short, personalized plan now. Copy the plan or download it as plain text to keep in your notes.</p>
+
+            <form id="planner" class="planner" onsubmit="return false;">
+              <label for="goal">Primary goal</label>
+              <input id="goal" name="goal" type="text" placeholder="What do you want to change this month? (e.g., clearer mornings)">
+
+              <label for="time">Time per day you can commit</label>
+              <select id="time" name="time">
+                <option value="5">5 minutes</option>
+                <option value="10">10 minutes</option>
+                <option value="15">15 minutes</option>
+                <option value="30">30 minutes</option>
+              </select>
+
+              <label for="habit">Current blocker</label>
+              <input id="habit" name="habit" type="text" placeholder="What often prevents you from following through? (e.g., no cue, low energy)">
+
+              <label for="duration">Preferred plan length</label>
+              <select id="duration" name="duration">
+                <option value="3">3 weeks</option>
+                <option value="8">8 weeks</option>
+                <option value="4">4 weeks</option>
+              </select>
+
+              <div class="row">
+                <button id="build" class="cta" style="border:none;background:var(--accent);">Draft plan</button>
+                <button id="clear" style="border:1px solid rgba(0,0,0,0.06);background:transparent;padding:10px;border-radius:8px;">Clear</button>
+              </div>
+
+              <div style="margin-top:8px">
+                <div id="output" class="output" aria-live="polite">Your plan will appear here.</div>
+              </div>
+
+              <div class="btns">
+                <button id="copy" type="button" style="padding:8px;border-radius:8px;background:#e9d6c9;border:none">Copy</button>
+                <button id="download" type="button" style="padding:8px;border-radius:8px;background:#f4efe9;border:1px solid rgba(0,0,0,0.04)">Download .txt</button>
+              </div>
+            </form>
+
+            <p class="muted" style="margin-top:10px">The planner creates a lightweight script: a named outcome, daily practice, a cue, and a simple review to track progress.</p>
+          </div>
+
+          <div class="card reveal" style="margin-top:12px">
+            <h4>Ready-made FAQs</h4>
+            <div class="muted">Not sure which path fits? A short discovery call (30 min) will clarify the right track for you.</div>
+            <a class="cta" href="book.html">Schedule discovery</a>
+          </div>
+        </aside>
+      </section>
+
+      <section class="reveal" style="margin-top:18px" aria-labelledby="faq-heading">
+        <h3 id="faq-heading">Questions people ask</h3>
+        <div class="card" style="margin-top:10px">
+          <p><strong>How do you measure progress?</strong> Small, specific checks: did the practice occur, and what was the result? We refine quickly.</p>
+          <p><strong>Do you make medical promises?</strong> No medical claims. Work centers on habits, routines, and measurable outcomes.</p>
+        </div>
+      </section>
+
+      <section style="margin-top:18px" class="card reveal">
+        <h3>Begin</h3>
+        <p class="muted">If you prefer tailored support, book a 30-minute discovery call to align a path to your life.</p>
+        <a class="cta" href="book.html">Book a discovery call</a>
+      </section>
+    </main>
+
+    <footer style="margin-top:18px;color:var(--muted);font-size:13px">
+      <div>Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    </footer>
+  </div>
+
+  <script>
+    // Reveal logic
+    (function(){
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var items = document.querySelectorAll('.reveal');
+      if(prefersReduced){ items.forEach(function(i){i.classList.add('revealed')}); return; }
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('revealed'); io.unobserve(e.target);} });
+      },{threshold:0.12});
+      items.forEach(function(i){ io.observe(i); });
+    })();
+
+    // Session Planner
+    (function(){
+      var build = document.getElementById('build');
+      var clear = document.getElementById('clear');
+      var copy = document.getElementById('copy');
+      var download = document.getElementById('download');
+      var output = document.getElementById('output');
+      var form = document.getElementById('planner');
+
+      function summarize(data){
+        var header = 'Personal plan — '+(new Date()).toLocaleDateString();
+        var lines = [];
+        lines.push(header);
+        lines.push('Goal: '+(data.goal||'—'));
+        lines.push('Daily time: '+data.time+' minutes');
+        lines.push('Blocker: '+(data.habit||'—'));
+        lines.push('Length: '+data.duration+' weeks');
+
+        // Suggest practice based on time
+        var practice = '';
+        if(+data.time <= 5) practice = 'One single cue-based micro-practice (e.g., 2 breaths + 1 short stretch).';
+        else if(+data.time <= 15) practice = 'A brief ritual: 3 min centering + 5 min planning or movement.';
+        else practice = 'A short sequence: 5 min breathwork + 10 min focused action.';
+        lines.push('Suggested daily practice: '+practice);
+
+        // Cue and review
+        lines.push('Cue: Tie the practice to an existing habit (e.g., after brushing teeth, before coffee).');
+        lines.push('Review: Quick check every 3 days; weekly snapshot at the end of each week.');
+
+        // Commitment plan
+        var sessionsPerWeek = (+data.duration <=3) ? 1 : 1 + Math.floor(+data.duration/4);
+        lines.push('Coach sessions recommended: '+sessionsPerWeek+' short check(s) over the plan length.');
+
+        lines.push('\nNotes: Keep the practice minimal. If it feels hard to start, reduce the time by half and keep the cue.')
+        return lines.join('\n');
+      }
+
+      build.addEventListener('click', function(ev){
+        ev.preventDefault();
+        var data = {
+          goal: document.getElementById('goal').value.trim(),
+          time: document.getElementById('time').value,
+          habit: document.getElementById('habit').value.trim(),
+          duration: document.getElementById('duration').value
+        };
+        var text = summarize(data);
+        output.textContent = text;
+        // small focus for screen readers
+        output.setAttribute('tabindex','-1'); output.focus();
+      });
+
+      clear.addEventListener('click', function(ev){
+        ev.preventDefault();
+        form.reset();
+        output.textContent = 'Your plan will appear here.';
+      });
+
+      copy.addEventListener('click', function(){
+        var txt = output.textContent || '';
+        if(!txt) return;
+        if(navigator.clipboard && navigator.clipboard.writeText){
+          navigator.clipboard.writeText(txt).then(function(){ copy.textContent='Copied'; setTimeout(function(){copy.textContent='Copy'},1200); });
+        } else {
+          // fallback
+          var ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); copy.textContent='Copied'; setTimeout(function(){copy.textContent='Copy'},1200); }catch(e){} ta.remove();
+        }
+      });
+
+      download.addEventListener('click', function(){
+        var txt = output.textContent || '';
+        if(!txt) return;
+        var blob = new Blob([txt],{type:'text/plain'});
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a'); a.href = url; a.download = 'session-plan.txt'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+      });
+    })();
+  </script>
+</body>
+</html>

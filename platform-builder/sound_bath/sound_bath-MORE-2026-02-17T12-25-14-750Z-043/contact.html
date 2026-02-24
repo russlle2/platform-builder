@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contact — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reach out for upcoming sound cohorts, private circles, or to try a short guided exercise.">
+  <style>
+    :root{
+      --bg:#f6efe6; /* warm parchment */
+      --accent:#7a4b2a; /* rich clay */
+      --muted:#8b6f59;
+      --card:#fff8f2;
+      --glass:rgba(255,255,255,0.6);
+      --radius:14px;
+      --shadow:0 8px 30px rgba(114,73,50,0.12);
+      --accent-2:#b27a4a;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;padding:0;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background:linear-gradient(180deg,var(--bg),#fffaf3);
+      color:#3b2e22;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.5;
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    /* header */
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.96);font-weight:700;box-shadow:var(--shadow)}
+    .brand h1{font-size:18px;margin:0}
+    nav{display:flex;gap:12px}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:10px;font-weight:600}
+    nav a[href$="contact.html"]{background:var(--accent);color:#fff}
+
+    /* hero */
+    .hero{padding:48px 24px;border-radius:18px;margin:10px auto;max-width:1100px;position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(255,250,244,0.9),rgba(255,250,244,0.95));box-shadow:var(--shadow)}
+    .hero .pattern{position:absolute;inset:0;opacity:0.14;background-image:url('assets/img/pattern.svg');background-repeat:repeat;background-size:200px;mix-blend-mode:multiply}
+    .hero-grid{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:center}
+    .hero h2{margin:0;font-size:28px;color:var(--accent)}
+    .hero p{margin-top:10px;color:var(--muted)}
+    .hero .actions{display:flex;gap:10px;margin-top:16px}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;border:0;cursor:pointer;font-weight:700}
+    .btn-primary{background:var(--accent);color:#fff}
+    .btn-ghost{background:transparent;border:1px solid rgba(122,75,42,0.12);color:var(--accent)}
+
+    /* card */
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(100,60,40,0.06)}
+
+    /* form */
+    form.contact-form{display:grid;gap:12px}
+    label{font-size:13px;color:var(--muted)}
+    input[type="text"],input[type="email"],textarea,select{width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(66,40,27,0.06);background:transparent;font-size:15px}
+    textarea{min-height:110px;resize:vertical}
+    .row{display:flex;gap:12px}
+    .small{flex:1}
+
+    footer{margin:40px auto 20px;max-width:1100px;padding:16px 24px;color:var(--muted);font-size:14px}
+
+    /* try it modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(15,10,7,0.45);display:none;align-items:center;justify-content:center;padding:20px;z-index:120}
+    .modal{width:100%;max-width:720px;background:linear-gradient(180deg,#fff,#fff8f6);border-radius:14px;padding:20px;box-shadow:0 20px 50px rgba(66,40,27,0.3)}
+    .modal h3{margin:0 0 8px 0}
+    .modal .steps{margin-top:12px}
+    .controls{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+
+    /* reveal effect */
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity 520ms cubic-bezier(.16,.84,.44,1),transform 520ms cubic-bezier(.16,.84,.44,1)}
+    .revealed{opacity:1;transform:none}
+
+    /* reduced motion support */
+    @media (prefers-reduced-motion: reduce){
+      .reveal{transition:none;opacity:1;transform:none}
+      *{scroll-behavior:auto}
+    }
+
+    /* small screens */
+    @media (max-width:880px){
+      .hero-grid{grid-template-columns:1fr}
+      nav{display:none}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo" aria-hidden>sb</div>
+      <div>
+        <h1>{{BUSINESS_NAME}}</h1>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="events.html">Gatherings</a>
+      <a href="private-sessions.html">Circles</a>
+      <a href="pricing.html">Investment</a>
+      <a href="about.html">Story</a>
+      <a href="faq.html">Answers</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero card">
+      <div class="pattern" aria-hidden></div>
+      <div class="hero-grid">
+        <div>
+          <h2>Let's make space — reach out to meet the next cohort or request a private circle</h2>
+          <p>Whether you're curious about our group rhythms or want a bespoke sound session for a small group, send a note. You can also try a quick guided exercise below to feel the approach before you commit.</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            <button id="tryNow" class="btn btn-ghost" aria-haspopup="dialog">Try a short exercise</button>
+          </div>
+        </div>
+        <aside class="card" aria-labelledby="contact-info">
+          <h3 id="contact-info">Connect</h3>
+          <p style="color:var(--muted);margin-top:6px">We typically respond within 48 hours. For urgent bookings, call or text.</p>
+          <dl style="margin-top:12px">
+            <dt style="font-size:13px;color:var(--muted);">Phone</dt>
+            <dd style="margin:6px 0 14px 0"><a href="tel:{{PHONE}}">{{PHONE}}</a></dd>
+            <dt style="font-size:13px;color:var(--muted);">Email</dt>
+            <dd style="margin:6px 0 14px 0"><a href="mailto:{{EMAIL}}">{{EMAIL}}</a></dd>
+            <dt style="font-size:13px;color:var(--muted);">Location</dt>
+            <dd style="margin:6px 0 0 0">{{CITY}}, {{STATE}}</dd>
+          </dl>
+        </aside>
+      </div>
+    </section>
+
+    <section class="card reveal" style="max-width:1100px;margin:20px auto;padding:18px;">
+      <h3>Tell us about your needs</h3>
+      <p style="color:var(--muted);margin-top:6px">Use the form to inquire about upcoming cohort sessions, private circles, or corporate soundings. Be as specific as you like — we tailor each offering to the group's context.</p>
+
+      <form class="contact-form" id="contactForm" novalidate>
+        <div class="row">
+          <div class="small">
+            <label for="name">Name</label>
+            <input id="name" name="name" type="text" placeholder="Your name" required>
+          </div>
+          <div class="small">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="you@domain.com" required>
+          </div>
+        </div>
+
+        <label for="topic">What are you interested in?</label>
+        <select id="topic" name="topic">
+          <option>Upcoming cohort (group)</option>
+          <option>Private circle</option>
+          <option>Corporate / team session</option>
+          <option>Teaching/partnership</option>
+        </select>
+
+        <label for="message">Message</label>
+        <textarea id="message" name="message" placeholder="Tell us about dates, group size, accessibility needs, or any questions."></textarea>
+
+        <div style="display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:10px">
+          <div style="font-size:13px;color:var(--muted)">Preferred follow-up</div>
+          <div style="display:flex;gap:8px">
+            <input type="radio" id="prefEmail" name="pref" value="email" checked><label for="prefEmail">Email</label>
+            <input type="radio" id="prefCall" name="pref" value="call"><label for="prefCall">Phone</label>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:12px;align-items:center;margin-top:12px">
+          <button type="submit" class="btn btn-primary">Send inquiry</button>
+          <button type="button" id="clearForm" class="btn btn-ghost">Clear</button>
+        </div>
+
+        <div style="margin-top:12px;font-size:13px;color:#664a3a;background:linear-gradient(90deg,#fff8f3,transparent);padding:10px;border-radius:8px">Please note: sound sessions are generally supportive but not a substitute for medical or psychological care. If you are pregnant, have epilepsy, a pacemaker, or a history of severe psychiatric conditions, consult a clinician before attending and indicate any concerns in your message.</div>
+      </form>
+    </section>
+
+    <section class="card reveal" style="max-width:1100px;margin:20px auto;padding:18px;">
+      <h3>Office hours & bookings</h3>
+      <p style="color:var(--muted);margin-top:6px">We run cohort experiences seasonally and maintain a waitlist. Private circles are scheduled by request.</p>
+      <ul style="margin-top:12px;color:var(--muted)">
+        <li><strong>Bookings:</strong> Monday–Friday, 9am–5pm</li>
+        <li><strong>Response time:</strong> typically within 48 hours</li>
+      </ul>
+
+      <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+        <a class="btn btn-ghost" href="events.html">See upcoming cohorts</a>
+        <a class="btn btn-ghost" href="book.html">Request a private circle</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center">
+      <div>&copy; <strong>{{BUSINESS_NAME}}</strong> — warmly held gatherings
+      </div>
+      <div style="font-size:13px">Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    </div>
+  </footer>
+
+  <!-- Modal: Try it now guided exercise -->
+  <div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document" aria-labelledby="modalTitle">
+      <h3 id="modalTitle">Quick guided practice</h3>
+      <p style="color:var(--muted);margin-top:6px">Pick a mini-exercise to feel how we lead a moment of attention. This runs locally in your browser.</p>
+
+      <div style="display:flex;gap:10px;margin-top:12px;align-items:center">
+        <label style="font-size:13px;color:var(--muted)">Choose</label>
+        <select id="exerciseType">
+          <option value="breath">Breathing focus (2 min)</option>
+          <option value="journal">Timed journaling (3 min)</option>
+          <option value="intention">Set an intention (quick)</option>
+        </select>
+      </div>
+
+      <div id="exerciseArea" class="steps" aria-live="polite"></div>
+
+      <div class="controls">
+        <button id="modalClose" class="btn btn-ghost">Close</button>
+        <button id="modalStart" class="btn btn-primary">Begin</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      // Scroll reveal with prefers-reduced-motion support
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const reveals = document.querySelectorAll('.reveal');
+      if(prefersReduced){
+        reveals.forEach(el => el.classList.add('revealed'));
+      } else if('IntersectionObserver' in window){
+        const io = new IntersectionObserver((entries)=>{
+          entries.forEach(e=>{
+            if(e.isIntersecting){
+              e.target.classList.add('revealed');
+              io.unobserve(e.target);
+            }
+          });
+        },{threshold:0.12});
+        reveals.forEach(r=>io.observe(r));
+      } else {
+        reveals.forEach(el=>el.classList.add('revealed'));
+      }
+
+      // Contact form handlers (local only)
+      const form = document.getElementById('contactForm');
+      const clearBtn = document.getElementById('clearForm');
+      form.addEventListener('submit', (ev)=>{
+        ev.preventDefault();
+        const data = new FormData(form);
+        // Simulate client-side send
+        const summary = {};
+        data.forEach((v,k)=>summary[k]=v);
+        alert('Thanks — we received your inquiry.\n(Preview on device only)\n\n' + JSON.stringify(summary,null,2));
+        form.reset();
+      });
+      clearBtn.addEventListener('click', ()=>form.reset());
+
+      // Modal & guided exercises
+      const tryNow = document.getElementById('tryNow');
+      const modal = document.getElementById('modalBackdrop');
+      const modalClose = document.getElementById('modalClose');
+      const modalStart = document.getElementById('modalStart');
+      const exerciseType = document.getElementById('exerciseType');
+      const exerciseArea = document.getElementById('exerciseArea');
+
+      function openModal(){
+        modal.style.display='flex';
+        modal.setAttribute('aria-hidden','false');
+        // focus start button
+        modalStart.focus();
+      }
+      function closeModal(){
+        modal.style.display='none';
+        modal.setAttribute('aria-hidden','true');
+        exerciseArea.innerHTML='';
+      }
+
+      tryNow.addEventListener('click', openModal);
+      modalClose.addEventListener('click', closeModal);
+      modal.addEventListener('click', (e)=>{ if(e.target===modal) closeModal(); });
+
+      let timerId = null;
+
+      modalStart.addEventListener('click', ()=>{
+        const type = exerciseType.value;
+        exerciseArea.innerHTML='';
+        if(type==='breath') runBreath();
+        else if(type==='journal') runJournal();
+        else runIntention();
+      });
+
+      // BREATHING: simple paced UI with visual circle and text
+      function runBreath(){
+        const container = document.createElement('div');
+        container.innerHTML = '<div style="display:flex;gap:14px;align-items:center"><div id="breathCircle" style="width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,#fff6f0,#ffece0);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent);box-shadow:inset 0 -6px 18px rgba(122,75,42,0.06)"></div><div><div id="breathText" style="font-weight:700;color:var(--accent)">Get ready</div><div id="breathTimer" style="color:var(--muted);font-size:13px;margin-top:6px">2:00</div></div></div>';
+        const steps = [ {label:'Inhale',len:4},{label:'Hold',len:4},{label:'Exhale',len:6} ];
+        exerciseArea.appendChild(container);
+        const breathCircle = container.querySelector('#breathCircle');
+        const breathText = container.querySelector('#breathText');
+        const breathTimer = container.querySelector('#breathTimer');
+
+        const totalSeconds = 120; // 2 minutes
+        let remaining = totalSeconds;
+        // compute paced cycles
+        let cycleIndex = 0;
+        let phaseSeconds = steps[cycleIndex].len;
+        let phaseElapsed = 0;
+
+        function tick(){
+          const mins = Math.floor(remaining/60).toString().padStart(2,'0');
+          const secs = (remaining%60).toString().padStart(2,'0');
+          breathTimer.textContent = `${mins}:${secs}`;
+          const current = steps[cycleIndex];
+          breathText.textContent = current.label;
+          // visual pulsing
+          const pct = phaseElapsed/phaseSeconds;
+          if(current.label==='Inhale'){
+            breathCircle.style.transform = `scale(${1 + 0.25 * pct})`;
+          } else if(current.label==='Hold'){
+            breathCircle.style.transform = `scale(1.25)`;
+          } else {
+            breathCircle.style.transform = `scale(${1.25 - 0.25 * pct})`;
+          }
+          // decrement
+          remaining--; phaseElapsed++;
+          if(phaseElapsed>=phaseSeconds){
+            cycleIndex = (cycleIndex+1) % steps.length;
+            phaseSeconds = steps[cycleIndex].len; phaseElapsed=0;
+          }
+          if(remaining<0){ clearInterval(timerId); breathText.textContent='Done'; breathCircle.style.transform='scale(1)'; }
+        }
+        // respects reduced motion: if user prefers reduced motion, skip pulsing and show static text timer
+        if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+          breathCircle.style.transition='none';
+        } else {
+          breathCircle.style.transition='transform 620ms cubic-bezier(.16,.84,.44,1)';
+        }
+        tick();
+        timerId = setInterval(tick,1000);
+      }
+
+      // JOURNAL: timed journaling with local save
+      function runJournal(){
+        const container = document.createElement('div');
+        container.innerHTML = '<div><p style="margin:0;color:var(--muted)">You have 3 minutes to write freely. Press save to keep a copy locally.</p><textarea id="journalText" placeholder="Write what comes to mind..." style="margin-top:10px"></textarea><div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><div id="journalTimer" style="color:var(--muted)">3:00</div><div><button id="saveJournal" class="btn btn-ghost">Save</button></div></div></div>';
+        exerciseArea.appendChild(container);
+        const ta = container.querySelector('#journalText');
+        const timer = container.querySelector('#journalTimer');
+        const saveBtn = container.querySelector('#saveJournal');
+        let remaining = 180; // 3 min
+        function tick(){
+          const mins = Math.floor(remaining/60).toString().padStart(2,'0');
+          const secs = (remaining%60).toString().padStart(2,'0');
+          timer.textContent = `${mins}:${secs}`;
+          remaining--; if(remaining<0){ clearInterval(timerId); timer.textContent='Done'; ta.disabled=true; }
+        }
+        tick(); timerId = setInterval(tick,1000);
+        saveBtn.addEventListener('click', ()=>{
+          const val = ta.value || '';
+          const now = new Date().toISOString();
+          const key = 'sb_journal_' + now;
+          try{ localStorage.setItem(key,val); alert('Saved locally.'); }catch(e){ alert('Unable to save locally.'); }
+        });
+      }
+
+      // INTENTION: short prompt and confirmation
+      function runIntention(){
+        const container = document.createElement('div');
+        container.innerHTML = '<div><p style="margin:0;color:var(--muted)">Pick a concise intention to carry for today.</p><div style="display:flex;gap:8px;margin-top:10px"><button class="btn" data-val="Open">Open</button><button class="btn" data-val="Gentle">Gentle</button><button class="btn" data-val="Clear">Clear</button></div><div id="chosen" style="margin-top:12px;color:var(--accent)"></div></div>';
+        exerciseArea.appendChild(container);
+        container.querySelectorAll('button[data-val]').forEach(b=>{
+          b.addEventListener('click', ()=>{
+            const v = b.getAttribute('data-val');
+            container.querySelector('#chosen').textContent = 'Intention: ' + v;
+          });
+        });
+      }
+
+      // Cleanup timer on modal close
+      const obsClose = new MutationObserver(()=>{
+        if(modal.getAttribute('aria-hidden')==='true' && timerId){ clearInterval(timerId); timerId=null; }
+      });
+      obsClose.observe(modal,{attributes:true,attributeFilter:['aria-hidden']});
+
+      // Accessibility: close with Escape
+      document.addEventListener('keydown',(e)=>{ if(e.key==='Escape'){ if(modal.style.display==='flex') closeModal(); } });
+
+    })();
+  </script>
+</body>
+</html>

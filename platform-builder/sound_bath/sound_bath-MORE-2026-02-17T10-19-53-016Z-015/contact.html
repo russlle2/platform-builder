@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <meta name='description' content='Reach out to book a session, ask about accessibility, or tell us your current state. Interactive mood + intensity tools help shape a tailored plan.'>
+  <style>
+    :root{--bg:#0f1720;--card:#0b1220;--muted:#98a0b1;--accent:#8be4d4;--glass:rgba(255,255,255,0.04)}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; color:#dce7ee;background:linear-gradient(180deg,#08101a 0%, #071520 100%);}
+    .wrap{min-height:100vh;display:flex;flex-direction:column}
+    header{padding:24px 28px;display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:56px;height:44px;background:linear-gradient(135deg,rgba(139,228,212,0.14),rgba(139,228,212,0.06));border-radius:10px;display:flex;align-items:center;justify-content:center}
+    .logo svg{width:36px;height:36px}
+    nav a{color:var(--muted);text-decoration:none;margin:0 10px;font-size:15px}
+    .primary-cta{background:transparent;border:1px solid rgba(139,228,212,0.18);color:var(--accent);padding:8px 12px;border-radius:8px;font-weight:600;text-decoration:none}
+
+    main{flex:1;padding:28px;display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:start}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:14px;padding:20px;box-shadow:0 6px 30px rgba(3,7,12,0.6);border:1px solid rgba(255,255,255,0.03)}
+
+    .hero{display:flex;flex-direction:column;gap:12px}
+    h1{font-size:28px;margin:0;color:#e9f8f4}
+    p.lead{margin:0;color:var(--muted)}
+
+    .controls{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+    .seg{display:flex;gap:8px}
+    .seg button{background:var(--glass);border:1px solid rgba(255,255,255,0.03);color:var(--muted);padding:8px 12px;border-radius:10px;cursor:pointer}
+    .seg button.active{background:linear-gradient(90deg,rgba(139,228,212,0.09),rgba(139,228,212,0.04));color:var(--accent);border-color:rgba(139,228,212,0.22)}
+
+    .recommendation{margin-top:18px;padding:14px;border-radius:12px;background:linear-gradient(180deg,rgba(3,8,12,0.35),rgba(3,8,12,0.25));border:1px solid rgba(255,255,255,0.02)}
+    .re-title{font-weight:700;color:#dff7f0;margin:0}
+    .re-desc{color:var(--muted);margin:8px 0 0}
+    .cta-row{display:flex;gap:10px;margin-top:14px;align-items:center}
+    .book-btn{background:var(--accent);border:none;color:#052426;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer}
+    .book-btn.secondary{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted);font-weight:600}
+
+    form.contact{display:flex;flex-direction:column;gap:12px}
+    input,textarea,select{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);padding:10px;border-radius:8px;color:#e6f5f1}
+    label{font-size:13px;color:var(--muted)}
+    .small{font-size:13px;color:var(--muted)}
+
+    .aside{position:sticky;top:28px}
+    .map{height:180px;border-radius:10px;background:linear-gradient(180deg,rgba(11,18,28,0.5),rgba(2,6,10,0.7));display:flex;align-items:center;justify-content:center;color:var(--muted)}
+
+    footer{padding:18px 28px;color:var(--muted);font-size:13px;display:flex;justify-content:space-between;align-items:center}
+
+    /* subtle SVG pattern overlay */
+    .pattern{position:fixed;inset:0;pointer-events:none;opacity:0.06;background-image:url('/assets/img/pattern.svg');background-repeat:repeat;mix-blend-mode:screen}
+
+    @media (max-width:980px){main{grid-template-columns:1fr;padding:18px} .aside{position:relative;top:auto}}
+  </style>
+</head>
+<body>
+  <div class='pattern' aria-hidden='true'></div>
+  <div class='wrap'>
+    <header>
+      <div class='brand'>
+        <div class='logo' aria-hidden='true'>
+          <svg viewBox='0 0 48 48' fill='none' xmlns='http://www.w3.org/2000/svg'><rect x='6' y='6' width='36' height='36' rx='8' fill='url(#g)' /><defs><linearGradient id='g' x1='0' x2='1'><stop offset='0' stop-color='#8be4d4' stop-opacity='0.9'/><stop offset='1' stop-color='#3ec3ff' stop-opacity='0.6'/></linearGradient></defs></svg>
+        </div>
+        <div>
+          <div style='font-weight:700;color:#e9f8f4'>{{BUSINESS_NAME}}</div>
+          <div style='font-size:13px;color:var(--muted)'>Listen. Choose. Begin.</div>
+        </div>
+      </div>
+      <nav aria-label='top navigation'>
+        <a href='index.html'>Home</a>
+        <a href='events.html'>Gatherings</a>
+        <a href='private-sessions.html'>Private</a>
+        <a href='pricing.html'>Investment</a>
+        <a href='about.html'>Story</a>
+        <a href='faq.html'>Help</a>
+        <a href='book.html' class='primary-cta'>Reserve</a>
+        <a href='contact.html'>Connect</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class='card hero' aria-labelledby='contact-title'>
+        <h1 id='contact-title'>Let's shape a session for right now</h1>
+        <p class='lead'>Tell us how you feel. Two simple controls tune a suggested approach and the next steps — then the booking prompt shifts in real time.</p>
+
+        <div>
+          <div class='small'>I am feeling:</div>
+          <div class='controls' role='radiogroup' aria-label='Mood selector'>
+            <div class='seg' id='moods'>
+              <button data-mood='stressed' aria-pressed='false'>Stressed</button>
+              <button data-mood='distracted' aria-pressed='false'>Distracted</button>
+              <button data-mood='tired' aria-pressed='false'>Tired</button>
+              <button data-mood='seeking' aria-pressed='false'>Seeking depth</button>
+              <button data-mood='curious' aria-pressed='false'>Curious</button>
+            </div>
+
+            <div style='min-width:10px'></div>
+
+            <div class='seg' aria-label='Intensity selector' id='intensities'>
+              <button data-intensity='gentle' aria-pressed='false'>Gentle</button>
+              <button data-intensity='medium' aria-pressed='false'>Medium</button>
+              <button data-intensity='intense' aria-pressed='false'>Intense</button>
+            </div>
+          </div>
+
+          <div class='recommendation' id='recommendation' aria-live='polite'>
+            <p class='re-title' id='re-title'>A calm, focused offering</p>
+            <p class='re-desc' id='re-desc'>Choose a mood and an intensity to reveal a suggested format, what to expect, and the phrasing we recommend for your booking. Local guidance adjusts the next available options.</p>
+            <div class='cta-row'>
+              <button class='book-btn' id='dynamic-cta'>{{PRIMARY_CTA_LABEL}}</button>
+              <button class='book-btn secondary' id='contact-form-toggle'>Send a note</button>
+            </div>
+          </div>
+        </div>
+
+        <div style='margin-top:18px'>
+          <details style='background:rgba(255,255,255,0.01);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)'>
+            <summary style='cursor:pointer;color:var(--muted)'>Contraindications & safety</summary>
+            <div style='margin-top:10px;color:var(--muted);font-size:14px'>
+              Please do not attend group sound sessions if you have a pacemaker, are in the first trimester of pregnancy without medical clearance, or have a history of uncontrolled epilepsy triggered by vibration or sound. If you have a serious psychiatric condition or are currently under intensive mental health care, consult your provider first. When in doubt, contact us at <a href='mailto:{{EMAIL}}' style='color:var(--accent)'>{{EMAIL}}</a> or call <a href='tel:{{PHONE}}' style='color:var(--accent)'>{{PHONE}}</a> to discuss accommodations.
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <aside class='aside card'>
+        <div class='map' aria-hidden='true'>
+          <div style='text-align:center'>
+            <div style='font-weight:700;color:#e9f8f4'>In-studio in {{CITY}}, {{STATE}}</div>
+            <div style='color:var(--muted);margin-top:8px'>Private sessions by appointment. Small group schedule online.</div>
+          </div>
+        </div>
+
+        <div style='margin-top:14px'>
+          <div style='font-weight:700;color:#dff7f0'>Quick contact</div>
+          <div style='color:var(--muted);margin-top:8px'>
+            <div style='margin-bottom:6px'>Phone: <a href='tel:{{PHONE}}' style='color:var(--accent)'>{{PHONE}}</a></div>
+            <div>Email: <a href='mailto:{{EMAIL}}' style='color:var(--accent)'>{{EMAIL}}</a></div>
+          </div>
+        </div>
+
+        <hr style='margin:14px 0;border:none;border-top:1px solid rgba(255,255,255,0.02)'>
+
+        <div>
+          <div style='font-weight:700;color:#dff7f0'>Hours</div>
+          <div style='color:var(--muted);margin-top:8px'>Sessions by appointment most weekdays; occasional weekend gatherings. See the events page for the next scheduled group.</div>
+        </div>
+
+        <form class='contact' id='contact-form' style='margin-top:14px' aria-hidden='true'>
+          <label class='small'>Your name<input type='text' name='name' placeholder='Name' required></label>
+          <label class='small'>Email<input type='email' name='email' placeholder='you@example.com' required></label>
+          <label class='small'>Phone (optional)<input type='tel' name='phone' placeholder='Optional'></label>
+          <label class='small'>Preferred date<input type='date' name='date'></label>
+          <label class='small'>Message<textarea name='message' rows='3' placeholder='Any notes, accessibility needs, or questions'></textarea></label>
+          <input type='hidden' name='mood' id='form-mood'>
+          <input type='hidden' name='intensity' id='form-intensity'>
+          <button type='submit' class='book-btn' style='width:100%'>Send request</button>
+          <div id='form-note' class='small' style='margin-top:8px;color:var(--muted)'>We typically reply within 48 hours.</div>
+        </form>
+
+      </aside>
+    </main>
+
+    <footer>
+      <div>© <span id='year'></span> {{BUSINESS_NAME}} — <span style='color:var(--muted)'>gentle attention to present needs</span></div>
+      <div style='color:var(--muted)'>Questions? <a href='mailto:{{EMAIL}}' style='color:var(--accent)'>{{EMAIL}}</a></div>
+    </footer>
+  </div>
+
+  <script>
+    (function(){
+      // UI elements
+      const moodButtons = document.querySelectorAll('#moods button');
+      const intensityButtons = document.querySelectorAll('#intensities button');
+      const titleEl = document.getElementById('re-title');
+      const descEl = document.getElementById('re-desc');
+      const cta = document.getElementById('dynamic-cta');
+      const form = document.getElementById('contact-form');
+      const formMood = document.getElementById('form-mood');
+      const formIntensity = document.getElementById('form-intensity');
+      const contactToggle = document.getElementById('contact-form-toggle');
+      const formNote = document.getElementById('form-note');
+      const year = document.getElementById('year');
+      year.textContent = new Date().getFullYear();
+
+      // State
+      let state = { mood: 'seeking', intensity: 'gentle' };
+
+      const library = {
+        stressed: {
+          label: 'Soothing re-balance',
+          gentle: {desc: 'Warm bowls, low drone, guided breath to lower the nervous system. Ideal when adrenaline is high.', cta: 'Book a calming session · {{PRIMARY_CTA_LABEL}}'},
+          medium: {desc: 'Grounding layers with voice and mid-range bowls; breath cues to release tension. Good for short resets.', cta: 'Reserve a grounding slot · {{PRIMARY_CTA_LABEL}}'},
+          intense: {desc: 'Deep vibrational immersion, longer sustain to shift acute tension. Best if you have experience with sound work.', cta: 'Request an immersive shift · {{PRIMARY_CTA_LABEL}}'}
+        },
+        distracted: {
+          label: 'Focused centering',
+          gentle: {desc: 'Short tonal anchors and silence windows to steady attention. Gentle frequencies aid mental clarity.', cta: 'Schedule a centering drop · {{PRIMARY_CTA_LABEL}}'},
+          medium: {desc: 'Rhythmic pulses and harmonic tones that bring focus without imposing intensity.', cta: 'Choose a focus session · {{PRIMARY_CTA_LABEL}}'},
+          intense: {desc: 'High-contrast layers to cut through scatter for a reset. Best with a preparatory breathing practice.', cta: 'Book a clarifying session · {{PRIMARY_CTA_LABEL}}'}
+        },
+        tired: {
+          label: 'Restful recovery',
+          gentle: {desc: 'Soft sustained overtones and long pauses to invite rest. For nervous-system-led recovery.', cta: 'Book gentle rest · {{PRIMARY_CTA_LABEL}}'},
+          medium: {desc: 'Warm overtones with grounding pulses to balance rest with subtle engagement.', cta: 'Reserve restorative time · {{PRIMARY_CTA_LABEL}}'},
+          intense: {desc: 'Deeper vibrational therapy to stimulate sleep architecture in short, guided blocks.', cta: 'Request restorative immersion · {{PRIMARY_CTA_LABEL}}'}
+        },
+        seeking: {
+          label: 'Exploratory deep work',
+          gentle: {desc: 'A slow invitation: minimal cues, long tones, space to notice changes. For unfolding curiosity.', cta: 'Begin a gentle exploration · {{PRIMARY_CTA_LABEL}}'},
+          medium: {desc: 'Guided arc with layered instruments and spoken prompts to facilitate inner inquiry.', cta: 'Reserve an exploratory arc · {{PRIMARY_CTA_LABEL}}'},
+          intense: {desc: 'Extended, complex sound arrangements for sustained inward work. Prior experience advised.', cta: 'Request an extended practice · {{PRIMARY_CTA_LABEL}}'}
+        },
+        curious: {
+          label: 'Introductory sampler',
+          gentle: {desc: 'Short, accessible sessions that demonstrate the range of tools without overwhelming the senses.', cta: 'Try a gentle sampler · {{PRIMARY_CTA_LABEL}}'},
+          medium: {desc: 'A fuller introduction with moments of intensity and guided orientation.', cta: 'Reserve a discovery session · {{PRIMARY_CTA_LABEL}}'},
+          intense: {desc: 'A robust first encounter for those eager to explore deeper textures.', cta: 'Book an active discovery · {{PRIMARY_CTA_LABEL}}'}
+        }
+      };
+
+      function updateUI(){
+        const mood = state.mood;
+        const intensity = state.intensity;
+        const block = library[mood];
+        titleEl.textContent = block.label + ' — ' + intensity.charAt(0).toUpperCase() + intensity.slice(1);
+        descEl.textContent = block[intensity].desc;
+        cta.textContent = block[intensity].cta;
+        formMood.value = mood;
+        formIntensity.value = intensity;
+
+        // Toggle active classes
+        moodButtons.forEach(b=>b.classList.toggle('active', b.dataset.mood===mood));
+        moodButtons.forEach(b=>b.setAttribute('aria-pressed', b.dataset.mood===mood));
+        intensityButtons.forEach(b=>b.classList.toggle('active', b.dataset.intensity===intensity));
+        intensityButtons.forEach(b=>b.setAttribute('aria-pressed', b.dataset.intensity===intensity));
+      }
+
+      // Bind events
+      moodButtons.forEach(b=>b.addEventListener('click', ()=>{ state.mood = b.dataset.mood; updateUI(); }));
+      intensityButtons.forEach(b=>b.addEventListener('click', ()=>{ state.intensity = b.dataset.intensity; updateUI(); }));
+
+      // Default activation
+      updateUI();
+
+      // CTA behavior: goes to PRIMARY_CTA_URL with query params reflecting choices
+      cta.addEventListener('click', ()=>{
+        const url = new URL('{{PRIMARY_CTA_URL}}', window.location.href);
+        url.searchParams.set('mood', state.mood);
+        url.searchParams.set('intensity', state.intensity);
+        // Simulate navigation
+        window.location.href = url.toString();
+      });
+
+      // Toggle form
+      contactToggle.addEventListener('click', ()=>{
+        const hidden = form.getAttribute('aria-hidden') === 'true';
+        form.setAttribute('aria-hidden', hidden ? 'false' : 'true');
+        form.style.display = hidden ? 'block' : 'none';
+        if(hidden) form.querySelector('input[name]')?.focus();
+      });
+
+      // Form submit (local-only)
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        const fd = new FormData(form);
+        const out = {};
+        fd.forEach((v,k)=>out[k]=v);
+        // Basic validation
+        if(!out.name || !out.email){
+          formNote.textContent = 'Please include your name and email.';
+          return;
+        }
+        // Simulate send
+        formNote.textContent = 'Sending...';
+        setTimeout(()=>{
+          formNote.textContent = 'Thanks — your request was sent. We will reply within 48 hours.';
+          form.reset();
+          state = { mood: 'seeking', intensity: 'gentle' };
+          updateUI();
+        }, 900);
+        // NOTE: real integrations should POST to a secure API or mail handler.
+        console.log('contact sub', out);
+      });
+
+      // Small accessibility: allow keyboard to navigate buttons with arrow keys
+      function arrowNav(containerSelector, keyLeft, keyRight){
+        const container = document.querySelector(containerSelector);
+        if(!container) return;
+        container.addEventListener('keydown', (e)=>{
+          if(e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+          const buttons = Array.from(container.querySelectorAll('button'));
+          const idx = buttons.findIndex(b=>b.classList.contains('active'));
+          let next = idx;
+          if(e.key === 'ArrowRight') next = (idx+1) % buttons.length;
+          if(e.key === 'ArrowLeft') next = (idx-1+buttons.length) % buttons.length;
+          buttons[next].focus(); buttons[next].click();
+        });
+      }
+      arrowNav('#moods'); arrowNav('#intensities');
+
+    })();
+  </script>
+</body>
+</html>

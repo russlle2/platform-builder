@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Start — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Book a discovery diagnostic and join a cohort with {{COACH_NAME}}. Cohort model, habit-based plans, spiritual-informed guidance." />
+  <style>
+    :root{--bg:#fbf7f1;--accent:#7a5c3a;--card:#fff7f0;--muted:#6b6b6b}
+    body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial;background:var(--bg);color:#222}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px}
+    .logo{font-weight:700}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none}
+    .container{max-width:840px;margin:20px auto;padding:0 18px}
+    .hero{padding:22px;border-radius:12px;background:linear-gradient(180deg,#fff,#fff7f2);display:flex;gap:18px;align-items:center}
+    .hero svg{width:120px;height:120px}
+    h1{margin:0;color:var(--accent)}
+    .diagnostic{margin-top:18px;background:white;padding:16px;border-radius:12px;box-shadow:0 8px 18px rgba(122,92,58,0.05)}
+    form{display:grid;gap:10px;margin-top:12px}
+    label{font-size:14px;color:var(--muted)}
+    input,select,textarea{padding:10px;border-radius:10px;border:1px solid #e6dcd0}
+    .row{display:flex;gap:10px}
+    .row .col{flex:1}
+    .btn{background:var(--accent);color:white;padding:10px 14px;border-radius:10px;text-decoration:none;border:none}
+    .micro-habits{margin-top:14px;padding:12px;border-radius:10px;background:linear-gradient(90deg,rgba(122,92,58,0.03),transparent)}
+    .muted-small{font-size:13px;color:var(--muted)}
+    footer{margin:28px 0;text-align:center;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="programs.html">Programs</a>
+      <a href="services.html">Services</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div>
+        <h1>Book your discovery diagnostic</h1>
+        <p class="muted-small">A 20-minute conversation and a 3-minute questionnaire that helps us place you in the right cohort and design your first micro-habit plan.</p>
+      </div>
+      <div aria-hidden="true">
+        <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <rect x="6" y="6" width="108" height="108" rx="18" fill="#f3eae0"/>
+          <circle cx="60" cy="44" r="22" fill="#7a5c3a"/>
+          <path d="M22 90c18-20 58-20 76 0" stroke="#cbb59b" stroke-width="6" stroke-linecap="round" fill="none"/>
+        </svg>
+      </div>
+    </section>
+
+    <section class="diagnostic">
+      <h2 style="margin:0 0 8px;color:var(--accent)">Quick details</h2>
+      <p class="muted-small">Complete this form and choose a time. We’ll send a short diagnostic questionnaire to refine your plan before our call.</p>
+
+      <form id="bookingForm" action="#" method="post" onsubmit="return handleSubmit(event)">
+        <div class="row">
+          <div class="col">
+            <label for="name">Full name</label>
+            <input id="name" name="name" required placeholder="Your full name" />
+          </div>
+          <div class="col">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required placeholder="you@example.com" />
+          </div>
+        </div>
+
+        <div>
+          <label for="phone">Phone (optional)</label>
+          <input id="phone" name="phone" placeholder="{{PHONE}}" />
+        </div>
+
+        <div>
+          <label for="goal">Primary goal</label>
+          <select id="goal" name="goal">
+            <option>Build consistent energy rituals</option>
+            <option>Reduce reactive stress patterns</option>
+            <option>Design a daily reflective practice</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="experience">Experience with habits/coaching</label>
+          <select id="experience" name="experience">
+            <option>New to habit work</option>
+            <option>Some practice (inconsistent)</option>
+            <option>Seasoned, seeking depth</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="note">Anything you'd like me to know?</label>
+          <textarea id="note" name="note" rows="3" placeholder="A few lines about your current rhythm"></textarea>
+        </div>
+
+        <div style="display:flex;gap:10px;align-items:center;margin-top:8px">
+          <button class="btn" type="submit">Schedule discovery</button>
+          <div class="muted-small">We’ll follow up at <strong>{{EMAIL}}</strong> with available slots.</div>
+        </div>
+      </form>
+
+      <script>
+        function handleSubmit(e){
+          e.preventDefault();
+          var btn = document.querySelector('.btn');
+          btn.disabled = true;
+          btn.innerText = 'Sending...';
+          setTimeout(function(){
+            btn.innerText = 'Scheduled — check your email';
+            alert('Thank you. We will email {{EMAIL}} with a short diagnostic and available times.');
+          },900);
+          return false;
+        }
+      </script>
+
+      <div class="micro-habits">
+        <strong>Starter micro-habit</strong>
+        <div class="muted-small">Try a 60-second arrival ritual for three mornings this week: stand at the window, breathe for 30s, set one intention. Small signals anchor daily practice.</div>
+      </div>
+
+      <div style="margin-top:14px" class="muted-small">
+        <strong>Refund & scheduling note:</strong> Cohorts are limited and seats are reserved on payment. Discovery calls are complementary and help us align a path for you.
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="muted-small">Questions? Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call {{PHONE}} • {{BUSINESS_NAME}} • {{CITY}}, {{STATE}}</div>
+  </footer>
+</body>
+</html>

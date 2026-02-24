@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ritual Offerings — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Intensive aromatherapy sessions and short programs that may support relaxation, clarity, and restorative rhythm." />
+  <style>
+    :root{
+      --bg:#0f0b12; --card:#111018; --muted:#bfb6d6; --accent:#caa7ff; --accent-2:#7ef0d3; --glass:rgba(255,255,255,0.04);
+      --maxw:1000px; font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; color:var(--muted);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,var(--bg) 0%, #08060a 100%);min-height:100vh;}
+    header{padding:28px 20px;display:flex;align-items:center;justify-content:space-between;max-width:var(--maxw);margin:0 auto}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:54px;height:54px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:#0a0610;font-weight:700}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-size:15px}
+    .hero{max-width:var(--maxw);margin:18px auto 28px;padding:34px;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:center}
+    .hero h1{margin:0;color:#fff;font-size:30px;letter-spacing:-0.01em}
+    .hero p{margin:12px 0 0;color:var(--muted);line-height:1.5}
+    .cta{margin-top:18px}
+    .btn{background:var(--accent);color:#110417;padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:600}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.45)}
+    .mini{font-size:13px;color:var(--muted)}
+
+    /* Pricing comparator */
+    .pricing{display:flex;flex-direction:column;gap:12px}
+    .toggle{display:inline-flex;background:var(--glass);border-radius:999px;padding:6px}
+    .toggle button{background:transparent;border:0;color:var(--muted);padding:6px 12px;border-radius:999px;cursor:pointer}
+    .toggle button.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#0a0610}
+    .plans{display:flex;gap:14px;margin-top:10px}
+    .plan{flex:1;padding:16px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);}
+    .plan h3{margin:0;color:#fff}
+    .price{font-size:22px;color:var(--accent);margin-top:8px}
+    .per{font-size:13px;color:var(--muted)}
+
+    /* Myth vs truth */
+    .myths{max-width:var(--maxw);margin:22px auto;padding:18px}
+    .myths h4{color:#fff;margin:0 0 12px}
+    .myth-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .myth{padding:14px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent)}
+
+    /* Case notes & FAQ */
+    .case{display:grid;grid-template-columns:1fr 320px;gap:18px;max-width:var(--maxw);margin:18px auto;padding:0 18px}
+    .notes{padding:18px;background:var(--card);border-radius:12px}
+    footer{max-width:var(--maxw);margin:28px auto;padding:18px;color:var(--muted);display:flex;justify-content:space-between}
+
+    /* small screens */
+    @media (max-width:880px){.hero{grid-template-columns:1fr;padding:20px}.case{grid-template-columns:1fr}.plans{flex-direction:column}.myth-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">A</div>
+      <div>
+        <div style="font-weight:700;color:#fff">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">A focused intensive approach to aromatic practice</div>
+      </div>
+    </div>
+    <nav aria-label="Main Navigation">
+      <a href="index.html">Explore</a>
+      <a href="services.html" style="font-weight:600">Rituals</a>
+      <a href="blends.html">Custom Blends</a>
+      <a href="shop.html">Apothecary</a>
+      <a href="pricing.html">Plans</a>
+      <a href="about.html">Origin</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h1>Short intensives and guided scent sessions that may support rest and focus</h1>
+        <p>Choose an intentional session track — single deep-session, a multi-week focused course, or a concentrated reset. Practices are guided and safety-focused; they may support steadying mood and clearer attention.</p>
+        <div class="cta">
+          <button class="btn" id="primaryCta">{{PRIMARY_CTA_LABEL}}</button>
+        </div>
+      </div>
+      <aside class="card">
+        <div class="mini">Next intensive start</div>
+        <div style="margin-top:8px;font-weight:700;color:#fff">March — small cohort</div>
+        <div style="margin-top:14px" class="mini">Tailored blends, guided breathwork, ritual mapping, and at-home integration notes included.</div>
+      </aside>
+    </section>
+
+    <section class="myths">
+      <h4>Common assumptions and what’s centered here</h4>
+      <div class="myth-grid">
+        <div class="myth">
+          <strong>Myth</strong>
+          <p class="mini" style="margin-top:8px">All aromatherapy is the same.</p>
+          <strong style="display:block;margin-top:10px">Practical view</strong>
+          <p class="mini" style="margin-top:8px">We pair intent with safety-first dilutions and clear stepwise practices that may support your aims.</p>
+        </div>
+        <div class="myth">
+          <strong>Myth</strong>
+          <p class="mini" style="margin-top:8px">A single scent fixes a condition.</p>
+          <strong style="display:block;margin-top:10px">Practical view</strong>
+          <p class="mini" style="margin-top:8px">A program adapts scents, context, and delivery to the person; results vary and may support comfort or focus.</p>
+        </div>
+      </div>
+    </section>
+
+    <section style="max-width:var(--maxw);margin:18px auto;padding:18px">
+      <div style="display:flex;gap:18px;align-items:flex-start">
+        <div style="flex:1" class="card">
+          <h3 style="color:#fff;margin:0">Protocols & Pillars</h3>
+          <p class="mini" style="margin-top:8px">We use structured sessions with clear dilution guidance, patch testing, and post-session integration steps. Each protocol has measurable touchpoints so you can practice with confidence.</p>
+
+          <div style="margin-top:14px" class="pricing">
+            <div class="mini">Choose how you want billing to display</div>
+            <div class="toggle" role="tablist" aria-label="Pricing type">
+              <button id="monthlyBtn" class="active" aria-pressed="true">Monthly</button>
+              <button id="packageBtn" aria-pressed="false">Package</button>
+            </div>
+
+            <div class="plans" id="plans">
+              <div class="plan" data-month="89" data-package="240">
+                <h3>Single Deep Session</h3>
+                <div class="price"><span class="num">89</span><span class="per"> /month</span></div>
+                <div class="mini" style="margin-top:8px">One focused 75-minute session with a blend and integration notes.</div>
+              </div>
+              <div class="plan" data-month="160" data-package="420">
+                <h3>Focused Course (4)</h3>
+                <div class="price"><span class="num">160</span><span class="per"> /month</span></div>
+                <div class="mini" style="margin-top:8px">A short program with weekly touchpoints and a custom blend.</div>
+              </div>
+              <div class="plan" data-month="320" data-package="880">
+                <h3>Intensive Reset</h3>
+                <div class="price"><span class="num">320</span><span class="per"> /month</span></div>
+                <div class="mini" style="margin-top:8px">A compact retreat-style sequence with coaching notes and blend kits.</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <aside style="width:320px">
+          <div class="card">
+            <h4 style="margin:0;color:#fff">Session snapshot</h4>
+            <div class="mini" style="margin-top:8px">What to expect in a single deep session</div>
+            <ul style="margin-top:12px;color:var(--muted);padding-left:18px">
+              <li>Pre-session intake and safety review</li>
+              <li>Guided scent exploration and breathwork</li>
+              <li>Custom at-home plan & blend note</li>
+            </ul>
+            <div style="margin-top:14px"><button class="btn" id="bookNow">Reserve a session</button></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="case" aria-labelledby="caseTitle">
+      <div class="notes">
+        <h4 id="caseTitle" style="color:#fff;margin:0">Case notes — practice notes from cohort pilots</h4>
+        <p class="mini" style="margin-top:10px">Short, anonymized summaries of what shifted in concentrated practice. These are illustrative only; they do not promise outcomes.</p>
+        <div style="margin-top:12px" class="mini">Participant A — reported steadier focus during mid-day work blocks after a two-week ritual pairing scent with a 5-minute breath pattern.</div>
+        <div style="margin-top:10px" class="mini">Participant B — used an evening pre-sleep aromatic routine and noted softer transitions to rest across the program.</div>
+      </div>
+
+      <aside class="card">
+        <h4 style="margin:0;color:#fff">FAQ snapshot</h4>
+        <div class="mini" style="margin-top:10px"><strong>Is aromatherapy safe?</strong> When guided and diluted appropriately, it can be used safely by many people. We emphasize patch tests and clear dilution limits.</div>
+        <div style="margin-top:10px" class="mini"><strong>What about pregnancy & pets?</strong> Certain oils are not advised in pregnancy or around pets. We tailor protocols and always offer alternatives.</div>
+        <div style="margin-top:10px" class="mini"><strong>Patch test?</strong> Yes — we walk you through an at-home patch test before new blends are recommended.</div>
+      </aside>
+    </section>
+  </main>
+
+  <footer>
+    <div>Contact: {{EMAIL}} • {{PHONE}}</div>
+    <div>{{CITY}}, {{STATE}}</div>
+  </footer>
+
+  <script>
+    // Pricing comparator with animated numbers
+    (function(){
+      const monthlyBtn = document.getElementById('monthlyBtn');
+      const packageBtn = document.getElementById('packageBtn');
+      const planEls = document.querySelectorAll('.plan');
+      let mode = 'month';
+
+      function animateValue(el, start, end, duration){
+        const startTime = performance.now();
+        function step(now){
+          const t = Math.min(1,(now-startTime)/duration);
+          const value = Math.round(start + (end-start)*t);
+          el.textContent = value;
+          if(t < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+
+      function setMode(m){
+        mode = m; // 'month' or 'package'
+        planEls.forEach(plan =>{
+          const numEl = plan.querySelector('.num');
+          const current = parseInt(numEl.textContent,10) || 0;
+          const target = parseInt(plan.dataset[m === 'month' ? 'month' : 'package'],10);
+          const per = plan.querySelector('.per');
+          per.textContent = m === 'month' ? ' /month' : ' /package';
+          animateValue(numEl, current, target, 600);
+        });
+        monthlyBtn.classList.toggle('active', m==='month');
+        packageBtn.classList.toggle('active', m==='package');
+        monthlyBtn.setAttribute('aria-pressed', m==='month');
+        packageBtn.setAttribute('aria-pressed', m==='package');
+      }
+
+      monthlyBtn.addEventListener('click', ()=> setMode('month'));
+      packageBtn.addEventListener('click', ()=> setMode('package'));
+
+      // initial values (ensure numbers reflect data-month)
+      planEls.forEach(plan =>{
+        plan.querySelector('.num').textContent = plan.dataset.month;
+      });
+
+      // Primary CTA wiring to placeholder URL
+      document.getElementById('primaryCta').addEventListener('click', ()=>{
+        window.location.href = '{{PRIMARY_CTA_URL}}';
+      });
+
+      document.getElementById('bookNow').addEventListener('click', ()=>{
+        window.location.href = 'book.html';
+      });
+    })();
+  </script>
+</body>
+</html>

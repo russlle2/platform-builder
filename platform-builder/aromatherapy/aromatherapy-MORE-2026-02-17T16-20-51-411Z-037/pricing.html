@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <title>Rates & Plans — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfaf8;--card:#fff;--muted:#6b6b6b;--accent:#6aa84f;--accent-2:#7aa7c7;--glass:rgba(255,255,255,0.6)}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    body{background:linear-gradient(180deg, #fcfcfb 0%, #f6f7f8 100%), url('assets/img/pattern.svg');background-size:260px; color:#222}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:rgba(255,255,255,0.5);backdrop-filter: blur(6px);border-bottom:1px solid rgba(0,0,0,0.04)}
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand svg{width:44px;height:44px}
+    nav a{margin-left:14px;color:#222;text-decoration:none;font-weight:600}
+    main{max-width:980px;margin:28px auto;padding:18px}
+    .hero{padding:26px;border-radius:12px;background:linear-gradient(180deg,#ffffff,#fbfbfc);box-shadow:0 6px 22px rgba(20,20,30,0.06);display:flex;gap:18px;align-items:center}
+    .hero h1{margin:0;font-size:20px}
+    .hero p{margin:6px 0 0;color:var(--muted)}
+    .controls{display:flex;gap:18px;align-items:center;margin-top:18px}
+    .toggle{display:inline-flex;align-items:center;gap:10px;padding:8px;border-radius:999px;background:var(--glass)}
+    .switch{width:58px;height:30px;border-radius:20px;background:#e8ece7;position:relative;padding:4px;cursor:pointer}
+    .knob{width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 3px 8px rgba(0,0,0,0.12);transform:translateX(0);transition:transform .32s cubic-bezier(.2,.9,.2,1)}
+    .switch.on{background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+    .switch.on .knob{transform:translateX(28px)}
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 20px rgba(20,20,30,0.04);transition:transform .28s ease,box-shadow .28s ease}
+    .card:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(10,10,18,0.06)}
+    .tier{font-size:13px;color:var(--muted);text-transform:uppercase;font-weight:700}
+    .price{font-size:28px;margin-top:8px;font-weight:700}
+    .meta{color:var(--muted);font-size:13px;margin-top:6px}
+    .cta{margin-top:14px;display:inline-block;padding:10px 14px;border-radius:8px;background:var(--accent);color:#fff;text-decoration:none;font-weight:700}
+    .moodbox{margin-top:22px;padding:14px;border-radius:10px;background:linear-gradient(180deg,#fff,#fcfffb);display:flex;gap:12px;align-items:center}
+    .mood-options{display:flex;gap:8px}
+    .mood-option{padding:8px 12px;border-radius:999px;background:#f3f4f3;border:1px solid transparent;cursor:pointer}
+    .mood-option.active{background:linear-gradient(90deg,#fff,#eef9ee);border-color:rgba(106,168,79,0.18)}
+    .recommend{margin-left:auto;text-align:right}
+    .recommend h4{margin:0;font-size:15px}
+    .recommend p{margin:6px 0 0;color:var(--muted);font-size:13px}
+    footer{margin-top:28px;padding:18px;text-align:center;color:var(--muted);font-size:13px}
+    /* small responsive */
+    @media (max-width:880px){.cards{grid-template-columns:1fr}.recommend{margin-left:0;text-align:left}.hero{flex-direction:column;align-items:flex-start}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class='brand'>
+      <svg viewBox='0 0 48 48' aria-hidden='true'><rect width='48' height='48' rx='10' fill='#f6fbf5'/><circle cx='24' cy='18' r='8' fill='#7aa7c7'/></svg>
+      <div>
+        <strong>{{BUSINESS_NAME}}</strong>
+        <div style='font-size:13px;color:var(--muted)'>Wellness through scent — may support everyday balance</div>
+      </div>
+    </div>
+    <nav>
+      <a href='index.html'>Home</a>
+      <a href='services.html'>Offerings</a>
+      <a href='blends.html'>Formulas</a>
+      <a href='shop.html'>Shop</a>
+      <a href='pricing.html' style='opacity:0.9'>Rates</a>
+      <a href='about.html'>About</a>
+      <a href='book.html'>Reserve</a>
+      <a href='contact.html'>Contact</a>
+    </nav>
+  </header>
+  <main>
+    <section class='hero'>
+      <div>
+        <h1>Rates & Memberships — choose how you want scent to arrive</h1>
+        <p>Simple plans and single sessions designed to fit rhythms. Prices are framed to compare ongoing & bundle options; offerings may support well-being and are not medical care.</p>
+        <div class='controls'>
+          <div class='toggle' aria-hidden='true'>
+            <span style='font-size:13px;color:var(--muted)'>Show</span>
+            <div id='priceSwitch' class='switch' role='button' aria-pressed='false' tabindex='0'>
+              <div class='knob'></div>
+            </div>
+            <span style='font-size:13px;color:var(--muted)'>Packages</span>
+          </div>
+          <div style='font-size:13px;color:var(--muted)'>Compare monthly subscription vs multi-session packages</div>
+        </div>
+      </div>
+      <div style='min-width:180px;text-align:right'>
+        <div style='font-size:13px;color:var(--muted)'>Need help picking?</div>
+        <a class='cta' href='book.html'>{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </section>
+
+    <section class='cards' aria-live='polite'>
+      <div class='card' data-tier='single'>
+        <div class='tier'>Single Ritual</div>
+        <div class='price'><span class='num' data-monthly='55' data-package='48'>$55</span><span style='font-size:13px;color:var(--muted)'>/session</span></div>
+        <div class='meta'>A focused 40–50 minute session — ideal for occasional support</div>
+        <a class='cta' href='book.html' data-cta-label='Book a Single Ritual'>Reserve a Session</a>
+      </div>
+
+      <div class='card' data-tier='pathway'>
+        <div class='tier'>Pathway Pass</div>
+        <div class='price'><span class='num' data-monthly='39' data-package='95'>$39</span><span style='font-size:13px;color:var(--muted)'>/mo or $95 pack</span></div>
+        <div class='meta'>A recurring plan for restorative practice — one curated session per month</div>
+        <a class='cta' href='book.html' data-cta-label='Join the Pathway Pass'>Reserve Now</a>
+      </div>
+
+      <div class='card' data-tier='seasonal'>
+        <div class='tier'>Seasonal Pack</div>
+        <div class='price'><span class='num' data-monthly='0' data-package='240'>$240</span><span style='font-size:13px;color:var(--muted)'>/3 sessions</span></div>
+        <div class='meta'>Three sessions for a thematic series—mixes, notes and at-home suggestions included</div>
+        <a class='cta' href='shop.html' data-cta-label='Purchase a Seasonal Pack'>Add to Cart</a>
+      </div>
+    </section>
+
+    <section class='moodbox' aria-label='Mood to method selector'>
+      <div>
+        <strong>Pick a current state</strong>
+        <div class='mood-options' role='tablist' aria-label='Mood choices'>
+          <button class='mood-option active' data-key='calm' aria-selected='true'>Need calm</button>
+          <button class='mood-option' data-key='focus'>Need focus</button>
+          <button class='mood-option' data-key='lift'>Need lift</button>
+          <button class='mood-option' data-key='rest'>Better sleep</button>
+        </div>
+      </div>
+      <div class='recommend' id='recommend'>
+        <h4 id='rec-title'>Recommended: Gentle Alignment</h4>
+        <p id='rec-desc'>A short, centering session that may support grounding. Includes a take-home blend and simple daily prompts.</p>
+        <a id='rec-cta' class='cta' href='book.html'>Request a Gentle Alignment</a>
+      </div>
+    </section>
+
+    <section style='margin-top:22px;background:transparent;padding:14px;border-radius:10px'>
+      <h3 style='margin:0 0 8px 0'>Notes on safety</h3>
+      <div style='color:var(--muted);font-size:13px'>All scent recommendations are general and may support comfort. For safety: always dilute essential oils appropriately; perform a patch test on skin before topical use; be mindful around pets and consult with your health provider if you are pregnant or nursing. Sessions are not medical treatment.</div>
+    </section>
+
+    <footer>
+      <div>Questions? Call {{PHONE}} or email <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a></div>
+      <div style='margin-top:6px'>&copy; <span id='year'></span> {{BUSINESS_NAME}} — {{CITY}}, {{STATE}}</div>
+    </footer>
+  </main>
+
+  <script>
+    // set year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Price comparator logic
+    (function(){
+      const switchEl = document.getElementById('priceSwitch');
+      let packageMode = false;
+      const nums = Array.from(document.querySelectorAll('.num'));
+      function formatPrice(n){
+        if(n === 0) return '$0';
+        return '$' + Math.round(n);
+      }
+      function animateTo(target){
+        nums.forEach(el => {
+          const current = Number(el.getAttribute('data-current') || el.textContent.replace(/[^0-9.]/g,'')) || 0;
+          const end = Number(el.dataset[packageMode ? 'package' : 'monthly']) || 0;
+          el.setAttribute('data-current', current);
+          const startTime = performance.now();
+          const duration = 420;
+          function step(now){
+            const t = Math.min(1, (now - startTime)/duration);
+            const eased = t<.5 ? 2*t*t : -1 + (4-2*t)*t; // simple ease
+            const value = current + (end - current) * eased;
+            el.textContent = formatPrice(value);
+            if(t < 1) requestAnimationFrame(step);
+            else el.setAttribute('data-current', end);
+          }
+          requestAnimationFrame(step);
+        });
+      }
+      // init: store dataset as numbers
+      nums.forEach(n => { n.dataset.monthly = Number(n.dataset.monthly); n.dataset.package = Number(n.dataset.package); });
+      // initial show monthly
+      animateTo();
+      function toggle(){
+        packageMode = !packageMode;
+        switchEl.classList.toggle('on', packageMode);
+        switchEl.setAttribute('aria-pressed', packageMode?'true':'false');
+        animateTo();
+      }
+      switchEl.addEventListener('click', toggle);
+      switchEl.addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }});
+    })();
+
+    // Mood-to-Method selector
+    (function(){
+      const options = document.querySelectorAll('.mood-option');
+      const title = document.getElementById('rec-title');
+      const desc = document.getElementById('rec-desc');
+      const cta = document.getElementById('rec-cta');
+      const recipes = {
+        calm:{title:'Gentle Alignment',desc:'A centering session with grounding notes and breathing prompts. May support a steadying effect.',cta:'Request a Gentle Alignment'},
+        focus:{title:'Clarity Session',desc:'A focused ritual that may support alertness and clearer rhythms with targeted aromatics.',cta:'Request a Clarity Session'},
+        lift:{title:'Uplift Blend',desc:'A bright, enlivening approach with citrusy top-notes that may support mood elevation.',cta:'Request an Uplift Blend'},
+        rest:{title:'Evening Ease',desc:'A restorative protocol that may support gentle winding down and better pre-sleep routine.',cta:'Request an Evening Ease'}
+      };
+      function select(key, btn){
+        options.forEach(o=>o.classList.remove('active')); options.forEach(o=>o.setAttribute('aria-selected','false'));
+        if(btn){btn.classList.add('active'); btn.setAttribute('aria-selected','true');}
+        const r = recipes[key] || recipes.calm;
+        // smooth text morph
+        title.style.opacity = 0; desc.style.opacity = 0; cta.style.opacity = 0;
+        setTimeout(()=>{ title.textContent = 'Recommended: ' + r.title; desc.textContent = r.desc; cta.textContent = r.cta; cta.setAttribute('href','book.html'); }, 220);
+        setTimeout(()=>{ title.style.opacity = 1; desc.style.opacity = 1; cta.style.opacity = 1; }, 320);
+      }
+      options.forEach(o=>{
+        o.addEventListener('click', ()=> select(o.dataset.key || o.textContent.toLowerCase(), o));
+        // attach data-key from inner text when absent
+        if(!o.dataset.key){ o.dataset.key = o.textContent.toLowerCase().split(' ')[0]; }
+      });
+      // init
+      select('calm', document.querySelector('.mood-option'));
+    })();
+  </script>
+</body>
+</html>

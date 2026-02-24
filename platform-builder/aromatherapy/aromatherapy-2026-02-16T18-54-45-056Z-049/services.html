@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Services — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg1:linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));--glass: rgba(255,255,255,0.08);--accent:#7CC6B7;--accent2:#6EB0FF;--muted:rgba(255,255,255,0.6);--glass-border:rgba(255,255,255,0.12)}
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:rgba(255,255,255,0.95);background:#0f1724;background-image:radial-gradient(circle at 10% 20%, rgba(124,198,183,0.06) 0, transparent 20%),radial-gradient(circle at 80% 80%, rgba(110,176,255,0.04) 0, transparent 25%);-webkit-font-smoothing:antialiased}
+    /* SVG pattern sits in DOM and creates subtle motion-like repetition */
+    .pattern-wrap{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.14;filter:blur(20px);}
+    header{position:relative;z-index:5;display:flex;justify-content:space-between;align-items:center;padding:22px 36px}
+    .brand{display:flex;flex-direction:column}
+    .brand .name{font-weight:700;letter-spacing:0.3px}
+    nav{display:flex;gap:14px;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:10px;font-size:14px}
+    nav a.cta{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#08202b;font-weight:600}
+
+    main{position:relative;z-index:3;max-width:1100px;margin:28px auto;padding:28px}
+    .card{background:var(--bg1);backdrop-filter:blur(8px) saturate(120%);border:1px solid var(--glass-border);border-radius:14px;padding:20px;margin-bottom:18px;box-shadow:0 6px 24px rgba(2,6,23,0.6)}
+
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:center}
+    .hero h1{margin:0;font-size:28px}
+    .hero p{color:var(--muted);margin:10px 0 18px}
+    .hero .actions{display:flex;gap:12px}
+    .btn{padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:600}
+    .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#042026}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+
+    .diagnostic .q{display:flex;gap:10px;margin-bottom:10px}
+    .small{font-size:13px;color:var(--muted)}
+
+    .plan .steps{display:flex;flex-direction:column;gap:8px}
+    .steps .step{display:flex;gap:12px;align-items:flex-start}
+    .micro-habits ul{margin:0;padding-left:18px}
+
+    .pricing-grid{display:flex;gap:12px}
+    .pricing-grid .plan{flex:1}
+
+    .faq dt{cursor:pointer;padding:12px;border-radius:8px}
+    .faq dd{margin:0 0 12px 0;padding:0 12px;color:var(--muted)}
+
+    footer{display:flex;justify-content:space-between;align-items:center;padding:18px 36px;color:var(--muted);font-size:14px}
+
+    @media (max-width:900px){.hero{grid-template-columns:1fr;}.brand{display:none}.pricing-grid{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <div class="pattern-wrap">
+    <svg width="100%" height="100%" viewBox="0 0 1000 1000" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#7CC6B7" stop-opacity="0.18"/><stop offset="1" stop-color="#6EB0FF" stop-opacity="0.08"/></linearGradient>
+        <pattern id="p1" width="120" height="120" patternUnits="userSpaceOnUse">
+          <rect width="120" height="120" fill="transparent"/>
+          <circle cx="20" cy="20" r="2" fill="#7CC6B7" opacity="0.7"/>
+          <circle cx="100" cy="60" r="2" fill="#6EB0FF" opacity="0.6"/>
+          <rect x="10" y="70" width="4" height="40" rx="2" fill="#7CC6B7" opacity="0.12"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#p1)"/>
+      <g transform="translate(100,200) rotate(-12)">
+        <path d="M0 0 C 200 80, 400 -80, 600 0 L 600 800 L 0 800 Z" fill="url(#g1)" opacity="0.12"/>
+      </g>
+    </svg>
+  </div>
+
+  <header>
+    <div class="brand">
+      <div class="name">{{BUSINESS_NAME}}</div>
+      <div class="small">Aromatherapy · {{CITY}}, {{STATE}}</div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Who We Are</a>
+      <a href="blends.html">Blends &amp; Notes</a>
+      <a href="shop.html">Shop</a>
+      <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="card hero">
+      <div>
+        <h1>Personalized Aromatherapy Sessions &amp; VIP Day</h1>
+        <p class="small">A practical, safety-first approach to scent-based wellness. Tailored consultations, blend creation, and an at-home plan you can use right away.</p>
+        <div class="actions">
+          <button class="btn primary" onclick="location.href='{{PRIMARY_CTA_URL}}'">{{PRIMARY_CTA_LABEL}}</button>
+          <button class="btn ghost" onclick="location.href='book.html'">Book a Consultation</button>
+        </div>
+      </div>
+      <aside style="padding:12px;">
+        <div style="background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.04)">
+          <strong>VIP Day</strong>
+          <div class="small">Deep-dive: intake, blending session, at-home protocol, samples included.
+          <div style="margin-top:12px;"><button class="btn primary" onclick="location.href='book.html'">Reserve VIP Day</button></div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="card diagnostic">
+      <h2 style="margin-top:0">Quick Diagnostic</h2>
+      <p class="small">Answer three simple prompts to get a directional scent suggestion. This is informational—not a diagnosis.</p>
+      <div>
+        <div class="q">
+          <label style="flex:1">1) Which resonates more? <select id="q1"><option>Calm</option><option>Focus</option><option>Sleep</option><option>Uplift</option></select></label>
+        </div>
+        <div class="q">
+          <label style="flex:1">2) Preferred intensity? <select id="q2"><option>Soft</option><option>Moderate</option><option>Robust</option></select></label>
+        </div>
+        <div class="q">
+          <label style="flex:1">3) Any pets at home? <select id="q3"><option>No</option><option>Yes - dogs</option><option>Yes - cats</option><option>Yes - other</option></select></label>
+        </div>
+        <div style="margin-top:10px"><button class="btn primary" onclick="diagnose()">Get a Direction</button></div>
+        <p id="diagResult" class="small" style="margin-top:10px;color:var(--muted)"></p>
+      </div>
+    </section>
+
+    <section class="card plan">
+      <h2>What to expect in a VIP Day</h2>
+      <div class="steps">
+        <div class="step"><div style="width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center">1</div><div><strong>Intake & goals</strong><div class="small">We explore preferences, safety notes (allergies, pregnancy, pets) and lifestyle.</div></div></div>
+        <div class="step"><div style="width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center">2</div><div><strong>Blending workshop</strong><div class="small">Create safe, well-balanced blends with educated dilution guidance.</div></div></div>
+        <div class="step"><div style="width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center">3</div><div><strong>At-home plan</strong><div class="small">Micro-habits, sample vials, and a written protocol to integrate aroma practices.</div></div></div>
+      </div>
+    </section>
+
+    <section class="card micro-habits">
+      <h3>Daily micro-habits (practical)</h3>
+      <p class="small">Small scent practices that fit into busy days. Start with one and build consistency.</p>
+      <ul>
+        <li><strong>2-3 deep inhales</strong> of a roll-on before a focused task (dilute appropriately).</li>
+        <li><strong>10-minute diffuser break</strong> during wind-down hour—low intensity, 30–60 mins max.</li>
+        <li><strong>Scent anchor:</strong> a comforting scent used only for one routine (e.g., bedtime).</li>
+      </ul>
+    </section>
+
+    <section class="card pricing">
+      <h3>Service snapshot &amp; pricing</h3>
+      <div class="pricing-grid">
+        <div class="plan">
+          <div style="font-weight:700">VIP Day</div>
+          <div class="small">Single-day immersive session with blends and samples.</div>
+          <div style="margin-top:8px;font-weight:600">Starting at $495</div>
+        </div>
+        <div class="plan">
+          <div style="font-weight:700">Consultation (60 min)</div>
+          <div class="small">Remote or in-person intake + directional blend.</div>
+          <div style="margin-top:8px;font-weight:600">$120</div>
+        </div>
+      </div>
+      <p class="small" style="margin-top:10px">Prices may vary. All sessions include safety guidance and dilution recommendations. No medical claims are made.</p>
+    </section>
+
+    <section class="card faq" aria-live="polite">
+      <h3>Frequently asked safety questions</h3>
+      <dl>
+        <dt onclick="toggleFaq(0)">Dilution — how to dilute essential oils?</dt>
+        <dd id="faq0">Use carrier oils (fractionated coconut, jojoba). Common topical dilutions: 1% for sensitive users, 2–3% for general adult use. Always follow the guidance provided with your blends.</dd>
+        <dt onclick="toggleFaq(1)">Patch test — do I need one?</dt>
+        <dd id="faq1" style="display:none">Yes. Apply diluted blend to a small area on the inner arm for 24 hours to check irritation. Stop use if redness or discomfort occurs.</dd>
+        <dt onclick="toggleFaq(2)">Pets — are essential oils safe around animals?</dt>
+        <dd id="faq2" style="display:none">Some oils can be harmful to pets, especially cats. Use low, well-ventilated diffuser settings and consult before using strong oils if you have pets at home.</dd>
+        <dt onclick="toggleFaq(3)">Pregnancy &amp; nursing — any notes?</dt>
+        <dd id="faq3" style="display:none">Some oils are not recommended during pregnancy and while nursing. We always review pregnancy status during intake and provide pregnancy-safe alternatives.</dd>
+      </dl>
+    </section>
+
+    <section class="card" style="text-align:center">
+      <h3>Ready to transform your scent routine?</h3>
+      <p class="small">Book a VIP day or a consultation and receive a crafted protocol you can implement immediately.</p>
+      <button class="btn primary" onclick="location.href='book.html'">Reserve a Session</button>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>{{PRACTITIONER_NAME}} · {{BUSINESS_NAME}} · {{CITY}}, {{STATE}}</div>
+    <div>{{PHONE}} · <a href="mailto:{{EMAIL}}" style="color:inherit;text-decoration:underline">{{EMAIL}}</a></div>
+  </footer>
+
+  <script>
+    function diagnose(){
+      const q1 = document.getElementById('q1').value;
+      const q2 = document.getElementById('q2').value;
+      const q3 = document.getElementById('q3').value;
+      let suggestion = 'A gentle, low-intensity blend featuring citrus top notes and a soft floral heart.';
+      if(q1==='Focus') suggestion = 'A bright minty/woodsy blend with rosemary and citrus for short-term clarity (use sparingly).';
+      if(q1==='Sleep') suggestion = 'A low-intensity chamomile/wood/vanilla-forward mix to support evening routines.';
+      if(q3.includes('cats')) suggestion += ' Note: avoid certain phenolic or highly concentrated oils around cats; we will customize.';
+      document.getElementById('diagResult').textContent = suggestion + ' This is an informational suggestion—book a consult for individualized safety guidance.';
+    }
+    function toggleFaq(i){
+      const el = document.getElementById('faq'+i);
+      el.style.display = el.style.display==='none'?'block':'none';
+    }
+  </script>
+</body>
+</html>

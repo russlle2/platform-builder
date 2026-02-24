@@ -1,0 +1,55 @@
+/* Minimal reset */
+:root{
+  --bg:#fbfdfb;
+  --muted:#6b6b60;
+  --accent:#2a7a5f;
+  --accent-2:#7aa58e;
+  --card:#ffffff;
+  --glass:rgba(255,255,255,0.7);
+  --shadow:0 6px 18px rgba(20,30,20,0.08);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:#1e2931;line-height:1.45}
+.wrap{max-width:1000px;margin:0 auto;padding:28px}
+.site-header{background:linear-gradient(180deg,rgba(42,122,95,0.06),transparent);backdrop-filter:blur(2px)}
+.site-header .wrap{display:flex;align-items:center;justify-content:space-between}
+.brand{font-weight:700;color:var(--accent);text-decoration:none;font-size:1.1rem}
+.main-nav a{margin-left:18px;color:var(--muted);text-decoration:none}
+.main-nav a.cta{background:var(--accent);color:#fff;padding:8px 12px;border-radius:6px;text-decoration:none}
+.hero{padding:48px 0}
+.hero-inner{display:grid;grid-template-columns:1fr 260px;gap:28px;align-items:center}
+.hero-copy h1{margin:0 0 8px 0;font-size:clamp(1.4rem,3vw,2.1rem);color:var(--accent)}
+.subtitle{color:var(--muted);margin-top:4px}
+.hero-art .pattern{width:100%;height:180px;border-radius:12px;box-shadow:var(--shadow)}
+.btn{display:inline-block;padding:10px 14px;border-radius:8px;background:transparent;border:1px solid rgba(30,40,30,0.08);text-decoration:none;color:inherit}
+.btn.primary{background:var(--accent);color:#fff;border:none}
+.btn.ghost{background:transparent;border:1px solid rgba(30,40,30,0.06)}
+.framework,.offers,.story,.pricing,.testimonials,.cta,.session-planner{padding:36px 0}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.card{background:var(--card);padding:18px;border-radius:10px;box-shadow:var(--shadow)}
+.tile-row{display:flex;gap:16px}
+.tile{flex:1;background:linear-gradient(180deg,#fff,#fbfff9);padding:18px;border-radius:10px;box-shadow:var(--shadow)}
+.tile h3{margin-top:0}
+.price{font-weight:700;color:var(--accent);margin:8px 0}
+.planner-output{margin-top:18px;display:flex;flex-direction:column;gap:8px}
+#plan-output{min-height:120px;padding:12px;border-radius:8px;border:1px solid rgba(30,40,30,0.06);resize:vertical}
+.output-actions{display:flex;gap:8px}
+.note{font-size:0.9rem;color:var(--muted)}
+.pricing-grid{display:flex;gap:14px}
+.price-card{background:var(--card);padding:18px;border-radius:10px;flex:1;box-shadow:var(--shadow)}
+.test-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+footer{padding:28px 0;background:linear-gradient(180deg,transparent,#f7faf6);font-size:0.95rem}
+.foot-grid{display:flex;justify-content:space-between;gap:16px}
+.fineprint{color:var(--muted);margin-top:10px}
+/* responsive */
+@media (max-width:800px){
+  .hero-inner{grid-template-columns:1fr}
+  .grid{grid-template-columns:1fr}
+  .tile-row{flex-direction:column}
+  .pricing-grid{flex-direction:column}
+  .test-grid{grid-template-columns:1fr}
+}
+/* subtle background pattern via svg file reference if available */
+body.asym-masonry{background-image:url('/assets/img/pattern.svg');background-repeat:repeat;background-size:240px;}

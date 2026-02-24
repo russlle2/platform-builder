@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Gatherings — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Upcoming community sound gatherings in {{CITY}}, {{STATE}}. Find the next public session and a compact calendar of upcoming dates.">
+  <style>
+    :root{--bg:#0f1720;--card:#071021;--muted:#9aa6b2;--accent:#88d1c9;--glass:rgba(255,255,255,0.04);--radius:12px}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#e6eef0;background:linear-gradient(180deg,#071021 0%, #071a27 60%),url("assets/img/pattern.svg");background-size:400px;line-height:1.45}
+    header{display:flex;align-items:center;justify-content:space-between;padding:22px 28px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#5ea7ff);display:flex;align-items:center;justify-content:center;color:#022; font-weight:700}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-weight:600}
+    nav a.active{color:var(--accent)}
+    main{padding:28px;max-width:1100px;margin:20px auto}
+    .hero{display:grid;grid-template-columns:1fr 350px;gap:24px;align-items:start}
+    .panel{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:0 6px 20px rgba(2,6,23,0.6)}
+    h1{color:#dff3f0;margin:0 0 8px;font-weight:700}
+    .kicker{color:var(--accent);font-weight:700;letter-spacing:0.06em;font-size:13px}
+    .next-event{background:linear-gradient(180deg,rgba(136,209,201,0.06),transparent);padding:16px;border-radius:10px;border:1px solid rgba(136,209,201,0.06)}
+    .next-event time{display:block;font-weight:700;color:#e6f9f6}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:14px}
+    .card{background:var(--glass);padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
+    .muted{color:var(--muted);font-size:14px}
+    .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+    .tile{height:110px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));display:flex;align-items:center;justify-content:center;color:var(--muted);font-weight:600}
+    .section{margin-top:20px}
+    .cta{display:inline-block;padding:10px 16px;border-radius:10px;background:var(--accent);color:#022;font-weight:700;text-decoration:none}
+    .calendar-list{list-style:none;padding:0;margin:0}
+    .calendar-list li{padding:10px;border-radius:8px;margin-bottom:8px;background:rgba(255,255,255,0.01);display:flex;justify-content:space-between;align-items:center}
+    .disclaimer{font-size:13px;color:#b6c6cb;margin-top:10px}
+    /* reveal animation */
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity 520ms cubic-bezier(.2,.9,.2,1),transform 520ms cubic-bezier(.2,.9,.2,1)}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none;opacity:1;transform:none}}
+    footer{color:var(--muted);text-align:center;padding:30px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">SB</div>
+      <div>
+        <div style="color:#dff3f0;font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="color:var(--muted);font-size:13px">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="events.html" class="active">Gatherings</a>
+      <a href="private-sessions.html">Solo Sessions</a>
+      <a href="pricing.html">Invest</a>
+      <a href="about.html">Story</a>
+      <a href="faq.html">Answers</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+  <main>
+    <section class="hero reveal" id="hero">
+      <div class="panel">
+        <div class="kicker">COMMUNITY GATHERINGS</div>
+        <h1>Public Sound Sessions — next convening</h1>
+        <p class="muted">Join a compact, intentional public session in {{CITY}}, {{STATE}}. Each gathering has a guided arc: arrival, attunement, a layered sound field, and a gentle return.</p>
+        <div class="section">
+          <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </div>
+      <aside class="panel next-event">
+        <div style="font-size:13px;color:var(--muted)">Next gathering</div>
+        <time datetime="2026-03-05T18:30">Thu, Mar 5 · 6:30 PM</time>
+        <div class="muted" style="margin-top:8px">Studio at {{CITY}}, {{STATE}} — limited capacity</div>
+        <div style="margin-top:12px">
+          <a href="book.html" class="cta">Reserve a seat</a>
+        </div>
+      </aside>
+    </section>
+
+    <section class="panel section reveal" id="calendar">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div>
+          <div style="font-weight:700;color:#e6f9f6">Upcoming dates</div>
+          <div class="muted">A short calendar of public sessions</div>
+        </div>
+        <div class="muted">Capacity is limited — arrive early</div>
+      </div>
+      <ul class="calendar-list" aria-live="polite">
+        <li><span>Sat, Mar 14 · 10:00 AM</span><span class="muted">Morning field</span></li>
+        <li><span>Sun, Mar 22 · 4:00 PM</span><span class="muted">Soft evening</span></li>
+        <li><span>Fri, Apr 3 · 7:00 PM</span><span class="muted">Weeknight pause</span></li>
+        <li><span>Sat, Apr 18 · 11:30 AM</span><span class="muted">Weekend calm</span></li>
+      </ul>
+      <p class="disclaimer">Note: If you are pregnant, have a history of seizures, serious cardiac conditions, or are under medical treatment for psychiatric conditions, consult your healthcare provider before attending a session. Sound-based events are deeply relaxing and not a substitute for medical care.</p>
+    </section>
+
+    <section class="panel section reveal" id="gallery">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-weight:700;color:#e6f9f6">A small gallery of the room</div>
+        <div class="muted">Clean, warm, and intentionally arranged</div>
+      </div>
+      <div class="gallery" role="list">
+        <div class="tile">Bowls &amp; space</div>
+        <div class="tile">Soft light</div>
+        <div class="tile">Seating layout</div>
+      </div>
+    </section>
+
+    <section class="panel section reveal" id="faq">
+      <h2 style="margin-top:0;color:#e6f9f6">Practical notes</h2>
+      <div class="grid">
+        <div class="card">
+          <strong>What to bring</strong>
+          <div class="muted">A mat or blanket, a small cushion, an open curiosity. Wear layers.</div>
+        </div>
+        <div class="card">
+          <strong>Who attends</strong>
+          <div class="muted">People seeking a focused break. Sessions are accessible to newcomers and regulars alike.</div>
+        </div>
+        <div class="card">
+          <strong>Sound level</strong>
+          <div class="muted">Intentionally varied: some sustained tones, gentle percussion. You control distance and comfort.</div>
+        </div>
+      </div>
+      <p class="disclaimer">Accessibility: If you need accommodations please contact us at {{EMAIL}} or call {{PHONE}}.</p>
+    </section>
+
+    <section class="panel section reveal" id="cta">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-weight:700;color:#e6f9f6">Ready to join a gathering?</div>
+          <div class="muted">Reserve a spot for the next session or get on the waitlist.</div>
+        </div>
+        <div>
+          <a class="cta" href="book.html">Reserve a seat</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+  <footer>
+    &copy; <span id="year"></span> {{BUSINESS_NAME}} · <a href="contact.html" style="color:var(--muted);text-decoration:none">{{EMAIL}}</a> · <span class="muted">{{PHONE}}</span>
+  </footer>
+  <script>
+    // year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // scroll reveal with reduced motion support
+    (function(){
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var items = document.querySelectorAll('.reveal');
+      if(prefersReduced){
+        items.forEach(function(el){el.classList.add('visible')});
+        return;
+      }
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); } });
+      },{rootMargin:'-8% 0px',threshold:0.12});
+      items.forEach(function(el){ io.observe(el); });
+    })();
+  </script>
+</body>
+</html>

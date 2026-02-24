@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Contact {{BUSINESS_NAME}} — clinical, safety-forward aromatherapy guidance and hybrid in-person + virtual sessions." />
+  <style>
+    :root{
+      --bg1:#f6fbf9; --bg2:#f2f8ff; --accent:#6a9a76; --accent-2:#3a7bd5; --muted:#6f7a83; --radius:14px; --glass:rgba(255,255,255,0.6);
+      --ff-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:var(--ff-sans); color:#102027; background:linear-gradient(160deg,var(--bg1),var(--bg2));
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; padding:36px;
+    }
+    /* playful, bold layout */
+    .wrap{max-width:1100px;margin:0 auto;position:relative}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#a5d6a7);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:20px;box-shadow:0 6px 18px rgba(54,89,63,0.12)}
+    nav{display:flex;gap:12px;flex-wrap:wrap}
+    nav a{color:#073642;text-decoration:none;padding:8px 12px;border-radius:10px;font-weight:600}
+    nav a:hover{background:rgba(58,123,213,0.08)}
+
+    main{position:relative}
+    /* background svg accent */
+    .pattern-svg{position:absolute;right:-140px;top:-80px;opacity:0.13;width:520px;height:520px;pointer-events:none}
+
+    /* HERO */
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:26px;align-items:start;margin-bottom:26px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.9),var(--glass));border-radius:var(--radius);padding:26px;box-shadow:0 10px 30px rgba(15,23,24,0.06);backdrop-filter:blur(6px)}
+    .hero h1{font-size:34px;margin:0 0 8px 0;color:#08333a}
+    .hero p.lead{margin:0 0 16px 0;color:var(--muted)}
+    .cta-row{display:flex;gap:10px;align-items:center}
+    .btn{background:linear-gradient(90deg,var(--accent-2),#7ec8e3);color:white;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+    .muted{color:var(--muted);font-size:14px}
+
+    /* sections */
+    section{margin-bottom:20px}
+    h2{margin:0 0 10px 0;font-size:20px;color:#0b3b2e}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+
+    /* myth vs truth */
+    .myth{display:flex;gap:12px}
+    .myth .col{flex:1;padding:12px;border-radius:12px}
+    .myth .m{background:linear-gradient(180deg,#fff6f6,#fff);border:1px solid rgba(200,100,100,0.06)}
+    .myth .t{background:linear-gradient(180deg,#f6fffb,#fff);border:1px solid rgba(50,160,120,0.06)}
+
+    /* pillars */
+    .pillars{display:flex;gap:12px}
+    .pillar{flex:1;padding:14px;border-radius:12px;background:linear-gradient(180deg,#ffffff,#f9fffa)}
+    .pillar h3{margin:0 0 6px 0}
+
+    /* case notes */
+    .case{font-family:monospace;background:#fbfffd;padding:12px;border-radius:10px;border-left:4px solid rgba(106,154,118,0.18)}
+
+    /* FAQ */
+    .faq dt{font-weight:700;margin-top:12px}
+    .faq dd{margin:4px 0 10px 0;color:var(--muted)}
+
+    /* contact form */
+    form{display:grid;gap:10px}
+    input[type=text],input[type=email],textarea{padding:10px;border-radius:10px;border:1px solid #e7eef0}
+    textarea{min-height:120px;resize:vertical}
+    .contact-details{font-size:14px;color:var(--muted);line-height:1.4}
+
+    footer{display:flex;justify-content:space-between;gap:12px;align-items:center;padding-top:18px}
+    .small{font-size:13px;color:var(--muted)}
+
+    @media (max-width:900px){
+      .hero{grid-template-columns:1fr;}
+      .grid{grid-template-columns:1fr}
+      .pattern-svg{display:none}
+      nav{display:none}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">A</div>
+        <div>
+          <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+          <div class="muted">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="services.html">Care Offerings</a>
+        <a href="blends.html">Blends</a>
+        <a href="shop.html">Boutique</a>
+        <a href="pricing.html">Investment</a>
+        <a href="about.html">About</a>
+        <a href="book.html">Reserve</a>
+        <a href="contact.html" style="background:rgba(106,154,118,0.08);border-radius:10px">Connect</a>
+      </nav>
+    </header>
+
+    <main>
+      <!-- decorative svg pattern (unique) -->
+      <svg class="pattern-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="g1" x1="0" x2="1">
+            <stop offset="0" stop-color="#a8e6cf" stop-opacity="0.9"/>
+            <stop offset="1" stop-color="#c7f0ff" stop-opacity="0.7"/>
+          </linearGradient>
+        </defs>
+        <rect x="0" y="0" width="200" height="200" fill="url(#g1)" />
+        <g fill-opacity="0.18" fill="#08333a">
+          <circle cx="40" cy="40" r="28" />
+          <circle cx="160" cy="60" r="18" />
+          <circle cx="120" cy="150" r="36" />
+        </g>
+        <g fill="#ffffff" fill-opacity="0.06">
+          <path d="M20 180 C40 160, 60 120, 100 110 C140 100, 180 120, 180 160 L20 180 Z"/>
+        </g>
+      </svg>
+
+      <section class="hero card" id="hero">
+        <div>
+          <h1>Connect with a safety-forward aromatherapy practitioner</h1>
+          <p class="lead">Clinical, calm guidance for using essential oils and blends responsibly. Hybrid sessions (virtual + in-person) with personalized blending and dilution plans.</p>
+
+          <div class="cta-row">
+            <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            <div class="muted">or call <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+          </div>
+
+          <p class="muted" style="margin-top:12px">Sessions led by {{PRACTITIONER_NAME}} in {{CITY}}, {{STATE}}. Offer model: hybrid appointments and curated at-home plans.</p>
+        </div>
+
+        <aside>
+          <div class="card" style="display:flex;flex-direction:column;gap:10px">
+            <div style="font-weight:800">Quick contact</div>
+            <div class="contact-details">
+              <div><strong>Email:</strong> <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+              <div><strong>Phone:</strong> <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+              <div><strong>Location:</strong> {{CITY}}, {{STATE}}</div>
+            </div>
+            <div>
+              <small class="muted">If you have immediate concerns about an allergic reaction or emergency, contact local emergency services. I do not offer medical diagnosis.</small>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section id="myth_vs_truth" class="card">
+        <h2>Myths vs. Truths — clear, practical safety guidance</h2>
+        <div class="myth" style="margin-top:10px">
+          <div class="col m">
+            <strong>Myth</strong>
+            <ul style="margin:8px 0 0 18px;color:#7a3a3a">
+              <li>More drops means better results.</li>
+              <li>All natural = automatically safe for everyone.</li>
+              <li>Essential oils replace medical care.</li>
+            </ul>
+          </div>
+          <div class="col t">
+            <strong>Truth</strong>
+            <ul style="margin:8px 0 0 18px;color:#1f5b3e">
+              <li>Concentration matters—start low; follow dilution guidelines.</li>
+              <li>Natural substances can still cause irritation or interact with medications.</li>
+              <li>Aromatherapy supports wellbeing tools but is not a substitute for clinical treatment.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="pillars" class="card">
+        <h2>Core pillars of the practice</h2>
+        <div class="pillars" style="margin-top:12px">
+          <div class="pillar">
+            <h3>Safety-first</h3>
+            <p class="muted">Personalized dilution, patch testing, and clear instructions for age, pregnancy, and pet-safe use.</p>
+          </div>
+          <div class="pillar">
+            <h3>Evidence-aware</h3>
+            <p class="muted">Decisions guided by reputable safety standards and a conservative approach—no medical claims.</p>
+          </div>
+          <div class="pillar">
+            <h3>Practical blends</h3>
+            <p class="muted">Blends for daily rituals, sensory support, and mindful moments—formulated to be user-friendly at recommended dilutions.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="case_notes" class="card">
+        <h2>Sample case note (anonymized)</h2>
+        <div class="case" aria-live="polite">
+          <div><strong>Client:</strong> "C."
+          </div>
+          <div><strong>Presentation:</strong> Mild sleep disruption and workplace stress; history of sensitive skin.</div>
+          <div><strong>Plan:</strong> 0.5% topical blend (fractionated coconut) for wrists; inhalation-based bedtime ritual using {{FAVORITE_BLEND}} in a diffuser for 10 minutes before bed. Patch test documented negative at 24 hours. Follow-up scheduled in 3 weeks.</div>
+          <div><small class="muted">Notes: no medical diagnosis provided; referral suggested if symptoms persist.</small></div>
+        </div>
+      </section>
+
+      <section id="faq" class="card">
+        <h2>FAQ — practical safety answers</h2>
+        <dl class="faq">
+          <dt>How do I dilute essential oils for topical use?</dt>
+          <dd>Start low. A common conservative guideline: 0.5–2% for adults depending on context. Use a carrier oil and measure drops precisely. I provide exact dilution plans during consultations.</dd>
+
+          <dt>What is a patch test and why do I need one?</dt>
+          <dd>A patch test checks for skin sensitivity: apply a tiny diluted amount to a small area and observe 24–48 hours. Stop use if you notice redness, itching, or burning.</dd>
+
+          <dt>Are essential oils safe around pets?</dt>
+          <dd>Many oils can affect animals differently. Use well-ventilated spaces, keep diffusers out of reach, and consult a veterinarian before regular use around sensitive species. I provide pet-safety notes for blends.</dd>
+
+          <dt>What about pregnancy and breastfeeding?</dt>
+          <dd>Pregnancy requires extra caution. Some oils are not recommended. Tell me if you are pregnant or breastfeeding so I can tailor safe options and avoid any restricted substances.</dd>
+
+          <dt>Can aromatherapy treat medical conditions?</dt>
+          <dd>No. Aromatherapy offers supportive sensory and ritual tools. It does not replace medical advice, diagnosis, or treatment. Seek healthcare professionals for medical concerns.</dd>
+        </dl>
+      </section>
+
+      <section id="cta" class="card">
+        <h2>Ready to book a hybrid session?</h2>
+        <p class="muted">Schedule a focused consultation to receive a personalized plan, safe dilutions, and an optional custom blend. Sessions combine virtual check-ins with optional in-person blending sessions in {{CITY}}.</p>
+
+        <form id="contactForm" action="{{PRIMARY_CTA_URL}}" method="post" onsubmit="return handleSubmit(event)">
+          <input type="text" name="name" placeholder="Your name" required />
+          <input type="email" name="email" placeholder="Email" required />
+          <input type="text" name="phone" placeholder="Phone (optional)" />
+          <textarea name="message" placeholder="Briefly describe your interest (safety notes, pregnancy, pets, allergies)" required></textarea>
+          <div style="display:flex;gap:10px;align-items:center">
+            <button class="btn" type="submit">{{PRIMARY_CTA_LABEL}}</button>
+            <div class="muted">Or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+          </div>
+        </form>
+      </section>
+
+    </main>
+
+    <footer>
+      <div class="small">© <strong>{{BUSINESS_NAME}}</strong> · Practitioner: {{PRACTITIONER_NAME}} · Offering hybrid aromatherapy sessions in {{CITY}}, {{STATE}}</div>
+      <div class="small">Design: bold_playful · Voice: clinical_calm · Offer: hybrid</div>
+    </footer>
+  </div>
+
+  <script>
+    function handleSubmit(e){
+      // lightweight client-side validation + friendly safety reminder
+      var form = e.target;
+      var msg = form.message.value || '';
+      if(msg.toLowerCase().includes('diagnose')){
+        alert('Please note: this form is for appointment requests and safety-guided aromatherapy. No medical diagnoses are provided. If this is an emergency, contact local services.');
+        return false;
+      }
+      // allow normal submit to PRIMARY_CTA_URL; if it's a placeholder, prevent default and show a friendly message
+      if(form.action.indexOf('{{PRIMARY_CTA_URL}}')!==-1){
+        e.preventDefault();
+        alert('Thanks — appointment request saved locally. Replace {{PRIMARY_CTA_URL}} with your booking endpoint to enable live submissions.');
+        return false;
+      }
+      return true;
+    }
+  </script>
+</body>
+</html>

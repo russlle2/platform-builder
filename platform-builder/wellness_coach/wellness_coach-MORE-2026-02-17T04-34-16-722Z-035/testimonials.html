@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Testimonials — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fffaf6;--accent:#2b7a78;--muted:#6d6d6d;--card:#ffffff;--ink:#102022}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:var(--bg);color:var(--ink)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;background:transparent}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#2b7a78,#7bd389);display:grid;place-items:center;color:white;font-weight:800}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none;font-weight:600}
+    nav a.active{color:var(--accent)}
+    .cta{background:var(--accent);color:white;padding:8px 12px;border-radius:10px;text-decoration:none;font-weight:700}
+
+    main{max-width:1000px;margin:20px auto;padding:12px}
+    .intro{display:flex;gap:18px;align-items:flex-start}
+    .intro .copy{background:#fff;border-radius:12px;padding:18px;flex:1}
+    .intro .visual{width:260px;background:linear-gradient(180deg,#e9fffb,#fff);border-radius:12px;padding:18px}
+
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
+    .card{background:#fff;border-radius:12px;padding:14px;box-shadow:0 8px 20px rgba(12,12,12,0.06);position:relative}
+    .quote{color:var(--muted);font-size:14px}
+    .who{margin-top:10px;font-weight:700}
+
+    .moodmini{margin-top:12px}
+    .moodmini button{padding:8px;border-radius:10px;border:1px solid rgba(16,16,16,0.04);cursor:pointer;background:white}
+    .moodmini button.active{background:linear-gradient(90deg,#dff3f1,#fff);border-color:var(--accent)}
+
+    .progressbar{height:10px;background:#fff;border-radius:999px;box-shadow:inset 0 2px 6px rgba(0,0,0,0.04);overflow:hidden}
+    .progressbar > i{display:block;height:100%;background:linear-gradient(90deg,#2b7a78,#7bd389);width:0}
+
+    footer{margin-top:24px;text-align:center;color:var(--muted)}
+
+    @media(max-width:880px){.grid{grid-template-columns:1fr}.intro{flex-direction:column}.visual{width:100%}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="logo">WC</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Story</a>
+      <a href="services.html">Solutions</a>
+      <a href="programs.html">Gatherings</a>
+      <a href="pricing.html">Pricing</a>
+      <a class="active" href="testimonials.html">Praise</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+    <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+  </header>
+
+  <main>
+    <div class="intro">
+      <div class="copy">
+        <h2 style="margin:0 0 6px">What people say after the group month</h2>
+        <div style="color:var(--muted);font-size:14px">Outcomes framed as habits and practices. No medical claims — just steady routines people actually use.</div>
+
+        <div class="moodmini" style="margin-top:12px">
+          <div style="font-size:13px;color:var(--muted)">Filter stories by outcome</div>
+          <div style="margin-top:8px;display:flex;gap:8px">
+            <button data-filter="all" class="active">All</button>
+            <button data-filter="sleep">Sleep</button>
+            <button data-filter="energy">Energy</button>
+            <button data-filter="focus">Focus</button>
+            <button data-filter="boundaries">Boundaries</button>
+          </div>
+        </div>
+
+      </div>
+      <div class="visual">
+        <div style="font-weight:800">30-day pattern</div>
+        <div style="margin-top:10px;color:var(--muted);font-size:13px">Hover each card to see a snapshot: week-by-week shifts and a small set of actions.</div>
+
+        <div style="margin-top:12px">
+          <div class="progressbar"><i id="progressFill"></i></div>
+          <div style="font-size:12px;color:var(--muted);margin-top:6px">Average habit completion across recent cohorts</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid" id="testiGrid">
+      <div class="card" data-tags="sleep focus">
+        <div class="quote">"I learned three tiny tools and my nights started to settle in two weeks. Simple, repeatable things I still use."</div>
+        <div class="who">— J., Product Designer</div>
+      </div>
+
+      <div class="card" data-tags="energy">
+        <div class="quote">"The group nudges kept me honest. Short practices, shared check-ins, and a clearer daily plan."</div>
+        <div class="who">— S., Teacher</div>
+      </div>
+
+      <div class="card" data-tags="boundaries focus">
+        <div class="quote">"Learning to protect a small block of time each day changed everything. I have more focus and fewer late evenings."</div>
+        <div class="who">— R., Entrepreneur</div>
+      </div>
+
+      <div class="card" data-tags="sleep energy">
+        <div class="quote">"The monthly rhythm felt achievable: a few small experiments and we tracked what worked."</div>
+        <div class="who">— T., Nurse</div>
+      </div>
+
+      <div class="card" data-tags="focus">
+        <div class="quote">"I stopped waiting for big motivation. The micro-habits helped me actually ship work instead of planning."</div>
+        <div class="who">— A., Writer</div>
+      </div>
+
+      <div class="card" data-tags="boundaries energy">
+        <div class="quote">"Saying no in practice felt easier after the coaching exercises. My week feels calmer."</div>
+        <div class="who">— M., Consultant</div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <div style="padding:18px;text-align:center;color:var(--muted)">{{BUSINESS_NAME}} • Stories reflect individual outcomes and habit changes. For bookings: <a href="book.html">Book a call</a>.</div>
+  </footer>
+
+  <script>
+    // Filter testimonials by tag
+    const filterButtons = document.querySelectorAll('.moodmini button');
+    const grid = document.getElementById('testiGrid');
+    const cards = Array.from(document.querySelectorAll('.card'));
+    const progressFill = document.getElementById('progressFill');
+
+    // simulate average completion percent
+    let avg = 64; progressFill.style.width = avg + '%';
+
+    filterButtons.forEach(b=>b.addEventListener('click',()=>{
+      filterButtons.forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      const key = b.getAttribute('data-filter');
+      cards.forEach(c=>{
+        if(key==='all') c.style.display='block';
+        else {
+          const tags = c.getAttribute('data-tags').split(' ');
+          c.style.display = tags.includes(key) ? 'block' : 'none';
+        }
+      });
+      // subtle animation for progress
+      avg = Math.max(30, Math.floor(Math.random()*80));
+      progressFill.style.transition = 'width 600ms ease';
+      progressFill.style.width = avg + '%';
+    }));
+
+    // Hover preview (transform)
+    cards.forEach(c=>{
+      c.addEventListener('mouseenter',()=>c.style.transform='translateY(-6px)');
+      c.addEventListener('mouseleave',()=>c.style.transform='translateY(0)');
+    });
+  </script>
+</body>
+</html>

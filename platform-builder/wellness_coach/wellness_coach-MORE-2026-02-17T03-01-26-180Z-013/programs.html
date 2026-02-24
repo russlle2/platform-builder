@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Programs — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7fbfa;--card:#fff;--accent:#17695f;--muted:#556b6b}
+    body{margin:0;font-family:system-ui,Arial;background:var(--bg);color:#052f2a}
+    .wrap{max-width:980px;margin:0 auto;padding:28px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{color:var(--accent);margin-left:12px}
+    h1{margin:12px 0}
+    .intro{display:flex;gap:20px;align-items:flex-start}
+    .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 8px 24px rgba(3,20,18,0.04)}
+    .programs{display:grid;grid-template-columns:1fr;gap:14px;margin-top:16px}
+    .prog{display:flex;gap:12px;align-items:center}
+    .prog .badge{background:linear-gradient(90deg,#e6f7f3,#eefcfb);padding:10px;border-radius:8px;border:1px solid rgba(23,105,95,0.06)}
+    .prog h3{margin:0}
+    .muted{color:var(--muted);font-size:13px}
+    button{background:var(--accent);color:#fff;padding:8px 12px;border-radius:8px;border:0;cursor:pointer}
+    .secondary{background:#fff;color:var(--accent);border:1px solid rgba(23,105,95,0.12)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html">Start</a>
+        <a href="about.html">About</a>
+        <a href="services.html">Offerings</a>
+        <a href="programs.html">Paths</a>
+        <a href="pricing.html">Rates</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <h1>Program pathways</h1>
+      <p class="muted">Structured arcs for people who want more than isolated sessions — short, measurable, and flexible.</p>
+
+      <section class="intro" style="margin-top:16px">
+        <div class="card" style="flex:1">
+          <h2 style="margin-top:0">Foundational Path</h2>
+          <p class="muted">Three sessions across a month focused on identifying friction points, testing a micro-habit, and adapting systems to hold that habit.</p>
+          <div style="margin-top:8px"><strong>$275</strong> total — three guided sessions + weekly plan reviews</div>
+          <div style="margin-top:12px"><a href="{{PRIMARY_CTA_URL}}"><button>Join foundational path</button></a></div>
+        </div>
+
+        <div class="card" style="width:320px">
+          <h3 style="margin-top:0">Who benefits</h3>
+          <ul style="margin:8px 0 0 18px;color:var(--muted)">
+            <li>People juggling work and caregiving</li>
+            <li>Anyone needing a repeatable check-in loop</li>
+            <li>Those launching a small, realistic change</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="programs">
+        <div class="card prog">
+          <div class="badge">1</div>
+          <div style="flex:1">
+            <h3>Starter Sprint</h3>
+            <div class="muted">Two sessions in two weeks — fast focus on one priority and a 7-day trial.</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-weight:700">$120</div>
+            <div style="margin-top:8px"><a href="{{PRIMARY_CTA_URL}}"><button class="secondary">Reserve sprint</button></a></div>
+          </div>
+        </div>
+
+        <div class="card prog">
+          <div class="badge">2</div>
+          <div style="flex:1">
+            <h3>Consistency Track</h3>
+            <div class="muted">Four sessions over six weeks, with habit checkpoints and incremental adjustments.</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-weight:700">$380</div>
+            <div style="margin-top:8px"><a href="{{PRIMARY_CTA_URL}}"><button class="secondary">Join track</button></a></div>
+          </div>
+        </div>
+
+        <div class="card prog">
+          <div class="badge">3</div>
+          <div style="flex:1">
+            <h3>Rhythm Builder</h3>
+            <div class="muted">A monthly membership model: coaching credit, monthly planning, and habit reviews. Designed to support steady progress.</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-weight:700">Membership — $95/month</div>
+            <div style="margin-top:8px"><a href="{{PRIMARY_CTA_URL}}"><button class="secondary">Inquire</button></a></div>
+          </div>
+        </div>
+      </section>
+
+      <section style="margin-top:18px" class="card">
+        <h3 style="margin-top:0">Session Planner & Habit test</h3>
+        <p class="muted">Use the micro-tools here to design your first session and a 7-day trial checklist before you enroll. Paste your plan into the booking form to make the first meeting efficient.</p>
+
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <div style="flex:1;min-width:260px">
+            <label class="muted">Quick session summary</label>
+            <textarea id="quickPlan" rows="6" style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);font-family:monospace" placeholder="Enter your goal, focus, and any notes"></textarea>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button id="pasteToBook">Paste to booking</button>
+              <button id="copyQuick">Copy</button>
+              <div id="qNote" class="muted" style="align-self:center"></div>
+            </div>
+          </div>
+
+          <div style="width:320px">
+            <label class="muted">7-day trial checklist generator</label>
+            <input id="progHabitName" type="text" placeholder="Habit name" style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)" />
+            <select id="progHabitTemplate" style="width:100%;margin-top:8px;padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)">
+              <option>Micro-movement</option>
+              <option>Breathing reset</option>
+              <option>Evening log</option>
+              <option>Hydration prompt</option>
+            </select>
+            <div style="display:flex;gap:8px;margin-top:8px"><button id="genProgHabit">Create</button><button id="copyProgHabit">Copy text</button></div>
+            <div id="progChecklist" style="margin-top:8px"></div>
+          </div>
+        </div>
+
+      </section>
+
+      <section style="margin-top:18px" class="card">
+        <h3 style="margin-top:0">Questions before you join</h3>
+        <p class="muted">Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> with a quick note about your scheduling constraints and a sentence about the outcome you want. We'll reply with a recommended pathway and next steps.</p>
+        <div style="margin-top:12px"><a href="mailto:{{EMAIL}}"><button>Contact for details</button></a></div>
+      </section>
+
+    </main>
+
+    <footer style="margin-top:28px;color:var(--muted);text-align:center">Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></footer>
+  </div>
+
+  <script>
+    // Quick tools on programs page
+    document.getElementById('copyQuick').addEventListener('click', async function(){
+      const text = document.getElementById('quickPlan').value;
+      if (!text) { document.getElementById('qNote').textContent = 'Nothing to copy'; return; }
+      try{ await navigator.clipboard.writeText(text); document.getElementById('qNote').textContent = 'Copied'; }
+      catch(e){ document.getElementById('qNote').textContent = 'Copy failed'; }
+    });
+
+    document.getElementById('pasteToBook').addEventListener('click', function(){
+      const text = document.getElementById('quickPlan').value;
+      if (!text){ document.getElementById('qNote').textContent = 'Write a quick plan first'; return; }
+      // Simulate pasting into booking form by opening the booking page with text in hash
+      const encoded = encodeURIComponent(text);
+      window.location.href = 'book.html#plan='+encoded;
+    });
+
+    function buildProgChecklist(name, template){
+      const lines = [];
+      for (let i=1;i<=7;i++){
+        lines.push('Day '+i+': ' + (name || template));
+      }
+      return lines.join('\n');
+    }
+
+    document.getElementById('genProgHabit').addEventListener('click', function(){
+      const name = document.getElementById('progHabitName').value.trim();
+      const template = document.getElementById('progHabitTemplate').value;
+      const text = buildProgChecklist(name, template);
+      const el = document.getElementById('progChecklist');
+      el.innerHTML = '<pre style="background:#f5fffb;padding:10px;border-radius:8px">'+text+'</pre>';
+    });
+
+    document.getElementById('copyProgHabit').addEventListener('click', async function(){
+      const el = document.getElementById('progChecklist');
+      if (!el.innerText.trim()){ return; }
+      try{ await navigator.clipboard.writeText(el.innerText); alert('Checklist copied'); }
+      catch(e){ alert('Copy failed'); }
+    });
+  </script>
+</body>
+</html>

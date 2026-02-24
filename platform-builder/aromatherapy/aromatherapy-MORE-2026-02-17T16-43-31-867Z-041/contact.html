@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Connect • {{BUSINESS_NAME}}</title>
+  <meta name='description' content='Reach out to schedule an immersive aromatherapy session or ask about bespoke blends. Safety-forward guidance included.'>
+  <style>
+    :root{
+      --bg1: rgba(12,8,20,0.6);
+      --bg2: rgba(255,255,255,0.04);
+      --glass: rgba(255,255,255,0.06);
+      --accent: #A77BFF;
+      --accent-2: #60E6C5;
+      --muted: rgba(255,255,255,0.7);
+      --glass-border: rgba(255,255,255,0.08);
+      --card-radius: 16px;
+      --shadow: 0 8px 30px rgba(3,3,7,0.65);
+      color-scheme: dark;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    html,body{height:100%;margin:0;background:radial-gradient(1200px 400px at 10% 10%, rgba(167,123,255,0.06), transparent), radial-gradient(900px 300px at 90% 90%, rgba(96,230,197,0.03), transparent), #08040a url('assets/img/pattern.svg') repeat; background-attachment:fixed;}
+    .wrap{max-width:1100px;margin:48px auto;padding:28px;}
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:0 6px 20px rgba(96,230,197,0.12);display:grid;place-items:center;color:#111;font-weight:700}
+    nav a{color:var(--muted);text-decoration:none;margin-left:16px;font-size:14px}
+    nav a:hover{color:white}
+
+    .grid{display:grid;grid-template-columns:1fr 420px;gap:22px}
+    @media (max-width:980px){.grid{grid-template-columns:1fr;}.wrap{padding:18px}}
+
+    .hero-card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));backdrop-filter: blur(8px);border-radius:var(--card-radius);padding:22px;border:1px solid var(--glass-border);box-shadow:var(--shadow)}
+    .hero-title{font-size:22px;color:#fff;margin:0 0 6px}
+    .hero-sub{color:var(--muted);margin:0 0 14px}
+
+    form .row{display:flex;gap:10px}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#fff;font-size:14px}
+    textarea{min-height:120px;resize:vertical}
+    .btn{display:inline-block;padding:12px 18px;border-radius:10px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#08101a;font-weight:700;border:none;cursor:pointer}
+
+    .panel{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:16px;border-radius:14px;border:1px solid var(--glass-border)}
+    .muted{color:var(--muted);font-size:14px}
+
+    /* Aroma wheel */
+    .wheel-wrap{display:flex;flex-direction:column;align-items:center;gap:12px}
+    .wheel{width:320px;height:320px;border-radius:50%;position:relative;display:grid;place-items:center}
+    .slice{position:absolute;width:50%;height:50%;left:25%;top:25%;transform-origin:50% 100%;overflow:hidden}
+    .slice > i{display:block;width:200%;height:200%;border-radius:50%;position:absolute;left:-50%;top:-50%;}
+    .slice[data-seg='top']{transform:rotate(0deg)}
+    .slice[data-seg='middle']{transform:rotate(120deg)}
+    .slice[data-seg='base']{transform:rotate(240deg)}
+    .slice:hover{filter:brightness(1.12);cursor:pointer}
+    .center{width:120px;height:120px;border-radius:50%;display:grid;place-items:center;background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.04)}
+    .note-label{color:#fff;font-weight:600}
+    .note-desc{color:var(--muted);font-size:13px;text-align:center;padding:8px}
+
+    /* Proof gallery */
+    .proof{display:flex;flex-direction:column;gap:12px}
+    .testimonial{min-height:90px;display:grid;place-items:center;padding:14px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid var(--glass-border);opacity:0;transform:translateY(6px);transition:all 450ms cubic-bezier(.2,.9,.2,1)}
+    .testimonial.show{opacity:1;transform:translateY(0)}
+    .quote{color:var(--muted);font-size:15px;margin:0}
+    .who{font-weight:700;color:#fff;margin-top:8px;font-size:13px}
+    .badges{display:flex;gap:8px;align-items:center}
+    .badge{width:42px;height:42px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04);position:relative}
+    .badge:hover .tip{opacity:1;transform:translateY(0)}
+    .tip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%) translateY(6px);background:#0b0b0d;color:#fff;padding:8px;border-radius:8px;font-size:12px;white-space:nowrap;box-shadow:0 6px 20px rgba(0,0,0,0.6);opacity:0;transition:all 220ms ease}
+
+    footer{margin-top:28px;color:var(--muted);font-size:13px;text-align:center}
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <header>
+      <div class='brand'>
+        <div class='logo'>A</div>
+        <div>
+          <div style='color:#fff;font-weight:700'>{{BUSINESS_NAME}}</div>
+          <div style='color:var(--muted);font-size:13px;margin-top:2px'>Connect with the scent craft</div>
+        </div>
+      </div>
+      <nav>
+        <a href='index.html'>Home</a>
+        <a href='services.html'>Offerings</a>
+        <a href='blends.html'>Alchemy</a>
+        <a href='shop.html'>Apothecary</a>
+        <a href='pricing.html'>Plans</a>
+        <a href='about.html'>Story</a>
+        <a href='book.html'>Reserve</a>
+        <a href='contact.html' style='color:#fff'>Connect</a>
+      </nav>
+    </header>
+
+    <main class='grid'>
+      <section>
+        <div class='hero-card'>
+          <h1 class='hero-title'>Reach out to arrange a focused scent session or ask about a custom blend</h1>
+          <p class='hero-sub'>Online and in-person consultations available in {{CITY}}, {{STATE}} — thoughtful guidance and safety-first practices that may support a calmer ritual.</p>
+
+          <div style='display:flex;gap:12px;align-items:center;margin-top:12px'>
+            <a href='{{PRIMARY_CTA_URL}}' class='btn'>{{PRIMARY_CTA_LABEL}}</a>
+            <div class='muted'>Call: <a href='tel:{{PHONE}}' style='color:var(--muted)'>{{PHONE}}</a> · Email: <a href='mailto:{{EMAIL}}' style='color:var(--muted)'>{{EMAIL}}</a></div>
+          </div>
+
+          <div style='margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:12px'>
+            <div class='panel'>
+              <div style='font-weight:700;color:#fff'>Quick contact</div>
+              <form id='contactForm' style='margin-top:10px'>
+                <div class='row'>
+                  <div style='flex:1'>
+                    <label for='name'>Your name</label>
+                    <input id='name' name='name' placeholder='First & last'>
+                  </div>
+                  <div style='flex:1'>
+                    <label for='email'>Email</label>
+                    <input id='email' name='email' placeholder='you@domain.com'>
+                  </div>
+                </div>
+                <div style='margin-top:10px'>
+                  <label for='phone'>Phone (optional)</label>
+                  <input id='phone' name='phone' placeholder='(optional)'>
+                </div>
+                <div style='margin-top:10px'>
+                  <label for='reason'>Reason for contact</label>
+                  <select id='reason' name='reason'>
+                    <option>Session inquiry</option>
+                    <option>Custom blend</option>
+                    <option>Wholesale / shop</option>
+                    <option>Safety question</option>
+                  </select>
+                </div>
+                <div style='margin-top:10px'>
+                  <label for='message'>Message</label>
+                  <textarea id='message' name='message' placeholder='Tell me a bit about what you are seeking...'></textarea>
+                </div>
+                <div style='display:flex;gap:10px;align-items:center;margin-top:12px'>
+                  <button type='submit' class='btn'>Send request</button>
+                  <div class='muted' style='font-size:13px'>We reply within 48 hours. Safety-first responses only.</div>
+                </div>
+              </form>
+            </div>
+
+            <div class='panel'>
+              <div style='font-weight:700;color:#fff'>Aroma wheel — hover to explore notes</div>
+              <div class='wheel-wrap' style='margin-top:12px'>
+                <div id='wheel' class='wheel' aria-hidden='false'>
+                  <div class='slice' data-seg='top' data-name='Top notes' data-desc='Bright, fleeting scents that arrive quickly — citrus, herb, light florals. They create first impressions.'>
+                    <i style='background:conic-gradient(from 30deg at 50% 50%, rgba(167,123,255,0.25), rgba(96,230,197,0.22))'></i>
+                  </div>
+                  <div class='slice' data-seg='middle' data-name='Heart notes' data-desc='The heart or middle aromas form the personality of a blend — spices, rich florals, green accords.'>
+                    <i style='background:conic-gradient(from 150deg at 50% 50%, rgba(96,230,197,0.18), rgba(167,123,255,0.18))'></i>
+                  </div>
+                  <div class='slice' data-seg='base' data-name='Base notes' data-desc='Warm, lingering anchors—woods, resins, musks. They ground the blend and last the longest.'>
+                    <i style='background:conic-gradient(from 270deg at 50% 50%, rgba(255,200,160,0.06), rgba(167,123,255,0.14))'></i>
+                  </div>
+
+                  <div class='center'>
+                    <div style='text-align:center'>
+                      <div class='note-label' id='noteName'>Hover a slice</div>
+                      <div class='note-desc' id='noteShort'>See a quick description here</div>
+                    </div>
+                  </div>
+                </div>
+                <div style='font-size:13px;color:var(--muted);margin-top:6px;text-align:center'>Use this wheel to begin a conversation about balancing an aroma profile.</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div style='height:18px'></div>
+
+        <div class='hero-card panel' id='proofPanel' style='overflow:hidden'>
+          <div style='display:flex;align-items:center;justify-content:space-between'>
+            <div style='font-weight:700;color:#fff'>Proof Gallery</div>
+            <div style='color:var(--muted);font-size:13px'>Rotating testimonials & badges</div>
+          </div>
+          <div style='display:flex;gap:18px;margin-top:12px'>
+            <div style='flex:1'>
+              <div class='proof'>
+                <div id='testi1' class='testimonial show'>
+                  <p class='quote' id='quoteText'>"A quiet, attentive session that left my home scent feeling purposeful."</p>
+                  <div class='who'>— S. from {{CITY}}</div>
+                </div>
+                <div id='testi2' class='testimonial'>
+                  <p class='quote'>"Thoughtful blending and clear safety guidance — I felt informed and calm."</p>
+                  <div class='who'>— A. in the neighborhood</div>
+                </div>
+                <div id='testi3' class='testimonial'>
+                  <p class='quote'>"A bespoke scent for my workspace — subtle and steady."</p>
+                  <div class='who'>— L. (client)</div>
+                </div>
+              </div>
+            </div>
+            <div style='width:160px'>
+              <div style='display:flex;flex-direction:column;gap:10px;align-items:flex-start'>
+                <div class='badges'>
+                  <div class='badge' title='Certified Aromatherapist'>
+                    <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                      <rect x='3' y='3' width='18' height='18' rx='4' stroke='white' stroke-opacity='0.12' stroke-width='1.2'/>
+                      <path d='M7 13l3 3 7-7' stroke='white' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' opacity='0.9'/>
+                    </svg>
+                    <div class='tip'>Certified aromatherapy coursework</div>
+                  </div>
+                  <div class='badge' title='Practitioner Reviewed'>
+                    <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                      <circle cx='12' cy='12' r='8' stroke='white' stroke-opacity='0.12' stroke-width='1.2'/>
+                      <path d='M9 12l2 2 4-4' stroke='white' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' opacity='0.9'/>
+                    </svg>
+                    <div class='tip'>Peer-reviewed protocols</div>
+                  </div>
+                </div>
+
+                <div style='color:var(--muted);font-size:13px'>Hover any badge to see what it stands for. Testimonials rotate automatically — pause on hover.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style='height:18px'></div>
+
+        <div class='hero-card panel'>
+          <div style='display:flex;justify-content:space-between;align-items:center'>
+            <div>
+              <div style='font-weight:700;color:#fff'>FAQ — safety & practices</div>
+              <div class='muted' style='margin-top:8px'>Short answers for common safety concerns. Always patch test and check personal risks.</div>
+            </div>
+            <div>
+              <a href='book.html' class='btn'>Reserve a consult</a>
+            </div>
+          </div>
+
+          <div style='margin-top:12px;display:grid;gap:10px'>
+            <details open>
+              <summary style='color:#fff;font-weight:700'>Dilution & patch tests</summary>
+              <div class='muted' style='margin-top:6px'>We recommend dilutions for topical use and a small patch test before first topical application. Suggested dilution rates are provided during consultations. This is general guidance and not medical advice.</div>
+            </details>
+
+            <details>
+              <summary style='color:#fff;font-weight:700'>Pregnancy & medication notes</summary>
+              <div class='muted' style='margin-top:6px'>Certain essential oils may be avoided in pregnancy, while others require extra care. Always consult your healthcare provider about medications and pregnancy; we provide conservative suggestions and safety-minded alternatives.</div>
+            </details>
+
+            <details>
+              <summary style='color:#fff;font-weight:700'>Pets & home environments</summary>
+              <div class='muted' style='margin-top:6px'>Some oils can be irritating to animals. We guide on pet-friendly usage and ventilation strategies to reduce risks. If you have concerns, share details in your message.</div>
+            </details>
+
+            <details>
+              <summary style='color:#fff;font-weight:700'>What to expect during a session</summary>
+              <div class='muted' style='margin-top:6px'>Sessions include a conversation about history and preferences, sensory exploration, and a safety checklist. Recommendations may support a ritual or routine but are not a substitute for medical care.</div>
+            </details>
+          </div>
+        </div>
+
+      </section>
+
+      <aside>
+        <div class='panel hero-card'>
+          <div style='font-weight:700;color:#fff'>Contact details</div>
+          <div style='margin-top:8px' class='muted'>Phone</div>
+          <div style='font-weight:700;color:#fff;margin-top:4px'>{{PHONE}}</div>
+          <div style='margin-top:8px' class='muted'>Email</div>
+          <div style='font-weight:700;color:#fff;margin-top:4px'>{{EMAIL}}</div>
+
+          <div style='height:12px'></div>
+
+          <div class='muted'>Office region</div>
+          <div style='font-weight:700;color:#fff;margin-top:4px'>{{CITY}}, {{STATE}}</div>
+
+          <div style='height:12px'></div>
+
+          <div class='muted'>Hours</div>
+          <div style='font-weight:700;color:#fff;margin-top:4px'>By appointment — evenings & weekends available</div>
+
+          <div style='height:12px'></div>
+
+          <div class='muted'>Quick links</div>
+          <div style='display:flex;flex-direction:column;gap:8px;margin-top:8px'>
+            <a href='book.html' class='btn' style='text-align:center;padding:10px'>Schedule</a>
+            <a href='blends.html' style='color:var(--muted);text-decoration:none'>Explore blends</a>
+            <a href='pricing.html' style='color:var(--muted);text-decoration:none'>Plans & offerings</a>
+          </div>
+        </div>
+
+        <div style='height:12px'></div>
+
+        <div class='panel hero-card'>
+          <div style='font-weight:700;color:#fff'>Proof snippets</div>
+          <div style='margin-top:8px;color:var(--muted);font-size:14px'>We work with small studios, mindful retailers, and private clients to craft approachable scent systems that may support restful spaces.</div>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      <div>© <span id='year'></span> {{BUSINESS_NAME}} — contact: <a href='mailto:{{EMAIL}}' style='color:var(--muted)'>{{EMAIL}}</a></div>
+    </footer>
+  </div>
+
+  <script>
+    // footer year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Contact form (local demo handler)
+    document.getElementById('contactForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      var name = document.getElementById('name').value || 'friend';
+      alert('Thanks, ' + name + ". We'll be in touch via " + (document.getElementById('email').value || '{{EMAIL}}') + '.');
+      this.reset();
+    });
+
+    // Aroma wheel interactions
+    (function(){
+      var slices = document.querySelectorAll('.slice');
+      var nameEl = document.getElementById('noteName');
+      var descEl = document.getElementById('noteShort');
+      slices.forEach(function(s){
+        s.addEventListener('mouseenter', function(){
+          nameEl.textContent = s.getAttribute('data-name');
+          descEl.textContent = s.getAttribute('data-desc');
+          s.style.filter = 'drop-shadow(0 10px 30px rgba(0,0,0,0.6))';
+        });
+        s.addEventListener('mouseleave', function(){
+          nameEl.textContent = 'Hover a slice';
+          descEl.textContent = 'See a quick description here';
+          s.style.filter = '';
+        });
+        s.addEventListener('click', function(){
+          // On click, open a micro modal (simple prompt to start a booking)
+          var part = s.getAttribute('data-name');
+          if(confirm('Begin a conversation about ' + part + '?')){
+            window.location.href = 'book.html';
+          }
+        });
+      });
+    })();
+
+    // Proof gallery rotation
+    (function(){
+      var testi = [document.getElementById('testi1'),document.getElementById('testi2'),document.getElementById('testi3')];
+      var idx = 0; var rotating = true; var interval = 4200; var timer;
+      function show(i){
+        testi.forEach(function(el,j){
+          el.classList.toggle('show', j===i);
+        });
+      }
+      function start(){ timer = setInterval(function(){ idx = (idx+1) % testi.length; show(idx); }, interval); }
+      function stop(){ clearInterval(timer); }
+      start();
+      testi.forEach(function(t){ t.addEventListener('mouseenter', function(){ stop(); }); t.addEventListener('mouseleave', function(){ start(); }); });
+
+      // Badge tooltips are CSS-driven; ensure touch reveals
+      document.querySelectorAll('.badge').forEach(function(b){ b.addEventListener('click', function(){ var tip = b.querySelector('.tip'); if(tip){ tip.style.opacity = 1; tip.style.transform = 'translateY(0)'; setTimeout(function(){ tip.style.opacity = ''; tip.style.transform=''; },2200);} }); });
+    })();
+  </script>
+</body>
+</html>

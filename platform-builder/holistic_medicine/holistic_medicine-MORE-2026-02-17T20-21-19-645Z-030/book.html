@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#071428;--glass:rgba(255,255,255,0.03);--accent:#7af3c6;--muted:#9fb8bf}
+    body{margin:0;font-family:Inter,system-ui,Roboto,Arial;color:#e8fbf3;background:linear-gradient(180deg,#04101a,#081524)}
+    body::before{content:'';position:fixed;inset:0;background-image:url('assets/img/pattern.svg');opacity:0.07}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 24px}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#5fb0ff);display:grid;place-items:center;color:#002}
+    nav a{color:#cfeee2;margin:0 10px;text-decoration:none}
+    .wrap{max-width:980px;margin:26px auto;padding:20px}
+    .intro{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:18px;border-radius:12px}
+    h1{margin:0;color:#e6fff4}
+    p{color:var(--muted)}
+    .selector{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .mood{padding:10px 12px;border-radius:10px;background:rgba(255,255,255,0.02);cursor:pointer;color:#dff9ef;border:1px solid rgba(255,255,255,0.02)}
+    .mood.active{background:linear-gradient(90deg,var(--accent),#60a5fa);color:#042028}
+    .method-card{margin-top:16px;padding:14px;border-radius:10px;background:var(--glass);border:1px solid rgba(255,255,255,0.03)}
+    .method-card h3{margin:0;color:#e6fff4}
+    .method-card p{color:var(--muted);margin-top:8px}
+    .book-cta{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#60a5fa);color:#042028;text-decoration:none;font-weight:700}
+    .timeline{margin-top:18px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.02)}
+    .timeline .step{padding:10px;border-radius:8px;margin-top:8px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent)}
+    .timeline .step h4{margin:0;color:#e6fff4}
+    .timeline .step p{color:var(--muted);margin-top:6px}
+    .disclaimer{font-size:12px;color:#9fb0b7;margin-top:10px}
+    form{margin-top:12px;display:grid;gap:8px}
+    input,select,textarea{padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#e6fff4}
+    .note{font-size:12px;color:var(--muted)}
+    footer{margin-top:20px;color:var(--muted);font-size:13px;text-align:center}
+    @media(max-width:700px){.selector{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="logo">HM</div>
+      <div>
+        <div style="font-weight:800;color:#eafff3">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Start</a>
+      <a href="services.html">Offerings</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="about.html">Team</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="intro">
+      <h1>Book an Intro or a Program</h1>
+      <p class="muted">Select how you feel right now; we’ll suggest an approach and update the booking action. All sessions are educational and integrative rather than curative.</p>
+
+      <div style="margin-top:12px">
+        <div style="font-weight:700;color:#dff9ef">Mood-to-Method — choose one</div>
+        <div class="selector" id="mood-selector">
+          <button class="mood" data-method="clarify">Stuck & Overwhelmed</button>
+          <button class="mood" data-method="renew">Low Energy & Tired</button>
+          <button class="mood" data-method="stabilize">Recurring Upsets</button>
+          <button class="mood" data-method="optimize">Ready to Optimize</button>
+        </div>
+
+        <div class="method-card" id="method-card">
+          <h3 id="method-title">Start with an Intro</h3>
+          <p id="method-desc" class="muted">A 45-minute educational intake to map your priorities and plan the next practical steps.</p>
+          <a id="book-cta" class="book-cta" href="book.html?pkg=intro">Book a 45-min Intro</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="timeline" id="timeline">
+      <h3 style="color:#e6fff4">Three-stage planner</h3>
+      <div class="step">
+        <h4>Phase 1 — Map</h4>
+        <p class="muted">Detailed intake and simple metrics to establish a baseline and priorities.</p>
+      </div>
+      <div class="step">
+        <h4>Phase 2 — Adjust</h4>
+        <p class="muted">Short experiments, habit anchoring, and practical supports to shift patterns.</p>
+      </div>
+      <div class="step">
+        <h4>Phase 3 — Maintain</h4>
+        <p class="muted">Sustaining practices and tools — membership or periodic check-ins if desired.</p>
+      </div>
+      <div class="disclaimer">Educational note: This planner is a guide, not a medical prescription. Timelines change based on individual context. If you have an urgent medical concern, please contact your medical provider.</div>
+    </section>
+
+    <section style="margin-top:18px">
+      <h3 style="color:#e6fff4">Quick booking</h3>
+      <form id="booking-form">
+        <label class="note">Full name</label>
+        <input name="name" placeholder="Your name" required>
+        <label class="note">Email</label>
+        <input name="email" type="email" placeholder="you@example.com" required>
+        <label class="note">Phone</label>
+        <input name="phone" placeholder="Optional">
+        <label class="note">Preferred package</label>
+        <select id="package-select" name="package">
+          <option value="intro">45-min Intro</option>
+          <option value="foundational">Foundational Sequence</option>
+          <option value="restorative">Restorative Series</option>
+          <option value="continuum">Integration Continuum (monthly)</option>
+        </select>
+        <label class="note">Notes (goals & current concerns)</label>
+        <textarea name="notes" rows="4" placeholder="Briefly tell us what's on your mind"></textarea>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+          <button type="submit" class="book-cta" id="submit-btn">Request Booking</button>
+          <div class="note">Or call <a href="tel:{{PHONE}}" style="color:#bfeee0">{{PHONE}}</a></div>
+        </div>
+      </form>
+      <div id="form-msg" class="note" style="margin-top:10px"></div>
+    </section>
+
+    <footer>
+      <div class="note">If you need immediate care, contact local services. For scheduling: <a href="mailto:{{EMAIL}}" style="color:#bfeee0">{{EMAIL}}</a></div>
+      <div class="note" style="margin-top:6px;color:#9fb0b7">All services are educational and supportive. We do not claim cures.</div>
+    </footer>
+  </main>
+
+  <script>
+    (function(){
+      // Mood-to-Method logic
+      const moods = document.querySelectorAll('#mood-selector .mood');
+      const title = document.getElementById('method-title');
+      const desc = document.getElementById('method-desc');
+      const cta = document.getElementById('book-cta');
+      const pkgSelect = document.getElementById('package-select');
+
+      const methods = {
+        clarify: {title:'Clarify & Prioritize',desc:'A 45–60 minute mapping session to untangle competing demands and set realistic first steps.',ctaLabel:'Book a Mapping Session',pkg:'intro'},
+        renew: {title:'Energy Renewal Block',desc:'A short sequence focused on sleep, rhythm, and modest nutritional shifts to rebuild energy.',ctaLabel:'Request the Renewal Block',pkg:'foundational'},
+        stabilize: {title:'Stability Toolkit',desc:'Targeted supports and monitoring for recurring upsets with scheduled check-ins.',ctaLabel:'Start the Stabilizer',pkg:'restorative'},
+        optimize: {title:'Optimize & Maintain',desc:'A longer view for layering sustainable practices and monthly oversight.',ctaLabel:'Join the Continuum',pkg:'continuum'}
+      };
+
+      function setActive(methodKey,button){
+        moods.forEach(b=>b.classList.remove('active'));
+        if(button) button.classList.add('active');
+        const m = methods[methodKey] || methods.clarify;
+        title.textContent = m.title;
+        desc.textContent = m.desc;
+        cta.textContent = m.ctaLabel;
+        cta.href = 'book.html?pkg='+m.pkg;
+        // update select to match
+        if(pkgSelect) pkgSelect.value = m.pkg;
+        // update submit button label
+        document.getElementById('submit-btn').textContent = m.ctaLabel;
+      }
+
+      moods.forEach(b=>{
+        b.addEventListener('click',()=>{setActive(b.dataset.method,b)})
+      });
+
+      // initialize by query param or default
+      const params = new URLSearchParams(location.search);
+      const initial = params.get('mood') || params.get('pkg') || 'clarify';
+      // map pkg to method
+      const map = {intro:'clarify',foundational:'renew',restorative:'stabilize',continuum:'optimize'};
+      const start = map[initial] || initial;
+      const btn = Array.from(moods).find(b=>b.dataset.method===start);
+      setActive(start,btn);
+
+      // booking form handler (local-only simulation)
+      const form = document.getElementById('booking-form');
+      const msg = document.getElementById('form-msg');
+      form.addEventListener('submit',function(e){
+        e.preventDefault();
+        const data = new FormData(form);
+        // simple validation
+        if(!data.get('name')||!data.get('email')){
+          msg.textContent = 'Please provide name and email.';return;
+        }
+        // update message
+        msg.textContent = 'Thanks — a scheduling coordinator will follow up at '+data.get('email')+'. If urgent, call '+ '{{PHONE}}' +'.';
+        form.reset();
+        setTimeout(()=>{msg.textContent='';},8000);
+      });
+
+      // Simple timeline toggles for user to mark phases they'd like
+      const timeline = document.getElementById('timeline');
+      const steps = timeline.querySelectorAll('.step');
+      steps.forEach((s,i)=>{
+        s.style.cursor='pointer';
+        s.addEventListener('click',()=>{
+          s.classList.toggle('selected');
+          s.style.outline = s.classList.contains('selected') ? '2px solid rgba(122,243,198,0.18)' : 'none';
+        });
+      });
+
+    })();
+  </script>
+</body>
+</html>

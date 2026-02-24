@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Q&amp;A — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--accent:#00bfa6;--muted:#4b5563;--bg:#fbfcfe}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:var(--bg);color:#052026}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 26px}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none;font-weight:600}
+    .container{max-width:980px;margin:22px auto;padding:18px}
+    .intro{background:white;padding:20px;border-radius:12px;box-shadow:0 6px 20px rgba(9,10,11,0.04)}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:18px;margin-top:16px}
+    .card{background:white;padding:16px;border-radius:10px}
+    .faq-item{border-bottom:1px dashed #eef2f4;padding:12px 0}
+    .faq-item h4{margin:0;font-size:15px}
+    .faq-item p{margin:6px 0 0 0;color:var(--muted);font-size:14px}
+    .seatmap{display:grid;grid-template-columns:repeat(8,28px);gap:8px;justify-content:center}
+    .seat{width:28px;height:28px;border-radius:6px;background:#f3f4f6;border:1px solid #e6eef0;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px}
+    .seat.taken{background:#e5e7eb;opacity:0.6;cursor:not-allowed}
+    .seat.selected{background:var(--accent);color:white}
+    button.cta{background:var(--accent);color:white;padding:9px 12px;border-radius:8px;border:0;cursor:pointer;font-weight:700}
+    .tiny{font-size:13px;color:var(--muted)}
+    .packing{margin-top:12px}
+  </style>
+</head>
+<body>
+  <header>
+    <div style='font-weight:700;color:var(--accent)'>{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href='index.html'>Front</a>
+      <a href='events.html'>Events</a>
+      <a href='pricing.html'>Pricing</a>
+      <a href='about.html'>About</a>
+      <a href='book.html'>Book</a>
+      <a href='contact.html'>Contact</a>
+    </nav>
+  </header>
+
+  <main class='container'>
+    <section class='intro card'>
+      <h2>Questions people ask before a session</h2>
+      <p class='tiny'>Below are practical answers, plus a small interactive seat selector that helps you see what to bring when you reserve a spot.</p>
+    </section>
+
+    <div class='grid'>
+      <section>
+        <div class='card'>
+          <div class='faq-item'>
+            <h4>What should I bring?</h4>
+            <p class='tiny'>A yoga mat or blanket, a pillow for your head, water, and a light sweater. You can tailor this from the packing generator to suit an evening or morning session.</p>
+          </div>
+          <div class='faq-item'>
+            <h4>How crowded are sessions?</h4>
+            <p class='tiny'>We cap groups to keep the field intimate — usually 12–18 people depending on the space. Private sessions are available.</p>
+          </div>
+          <div class='faq-item'>
+            <h4>Contraindications</h4>
+            <p class='tiny'>If you have metal implants that react to low-frequency vibration, uncontrolled seizures, recent surgery, or are pregnant, please consult with your physician before attending and notify us when booking.</p>
+          </div>
+          <div class='faq-item'>
+            <h4>Cancellation</h4>
+            <p class='tiny'>Cancellations with full refund are available up to 48 hours prior. For cohort bookings, credits may apply for later sessions.</p>
+          </div>
+        </div>
+
+        <div class='card' style='margin-top:12px'>
+          <h4>Seat selector & packing list</h4>
+          <p class='tiny'>Choose an upcoming session to see a suggested packing list. This seat selector is a local demo and does not reserve a real seat.</p>
+          <div style='margin-top:8px'>
+            <label for='event-select'>Event</label>
+            <select id='event-select' style='width:100%;padding:8px;border-radius:8px;border:1px solid #eef2f4'>
+              <option value='evening-drift' data-cap='16' data-type='gentle'>Evening Drift — 6:30pm</option>
+              <option value='deep-resonance' data-cap='12' data-type='deep'>Deep Resonance — 8:00pm</option>
+              <option value='weekend-soft' data-cap='18' data-type='soft'>Weekend Soft — 10:30am</option>
+            </select>
+          </div>
+          <div style='margin-top:12px'>
+            <div class='seatmap' id='seatmap' aria-hidden='true'></div>
+          </div>
+          <div style='display:flex;gap:8px;align-items:center;margin-top:12px'>
+            <div class='tiny'>Selected:</div>
+            <div id='selected-count' style='font-weight:700'>0</div>
+            <button id='pack-generate' class='cta'>Packing list</button>
+            <button id='copy-packing' style='background:#eef7f3;border-radius:8px;padding:8px;border:1px solid #ddf5ea;cursor:pointer'>Copy</button>
+          </div>
+          <div class='packing card' id='packing-output' style='margin-top:12px'>Choose a session and some seats to see suggestions.</div>
+        </div>
+      </section>
+
+      <aside class='card'>
+        <h4>Still unsure?</h4>
+        <p class='tiny'>If you need a quieter space or extra distance, reach out and we will mark a spot for accessibility. Email <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a> or call {{PHONE}}.</p>
+        <div style='margin-top:12px'><a class='cta' href='contact.html' style='text-decoration:none'>Contact us</a></div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    // Simple fake seatmap
+    const seatmap = document.getElementById('seatmap');
+    const select = document.getElementById('event-select');
+    let taken = new Set();
+    let selected = new Set();
+
+    function renderSeatmap(){
+      seatmap.innerHTML = '';
+      const cap = parseInt(select.selectedOptions[0].dataset.cap,10) || 16;
+      taken = new Set();
+      // pseudo-random taken seats based on seed
+      for(let i=1;i<=Math.min(cap,24);i++){
+        if(Math.random() < 0.15) taken.add(i);
+      }
+      for(let i=1;i<=cap;i++){
+        const b = document.createElement('div');
+        b.className = 'seat';
+        b.textContent = i;
+        if(taken.has(i)) b.classList.add('taken');
+        b.dataset.index = i;
+        b.addEventListener('click', ()=>{
+          if(b.classList.contains('taken')) return;
+          if(selected.has(i)){selected.delete(i);b.classList.remove('selected');}
+          else{selected.add(i);b.classList.add('selected');}
+          document.getElementById('selected-count').textContent = selected.size;
+        });
+        seatmap.appendChild(b);
+      }
+    }
+
+    select.addEventListener('change', ()=>{
+      selected.clear();document.getElementById('selected-count').textContent = 0;renderSeatmap();
+      document.getElementById('packing-output').textContent = 'Choose seats to create a tailored packing list.';
+    });
+
+    document.getElementById('pack-generate').addEventListener('click', ()=>{
+      const evType = select.selectedOptions[0].dataset.type;
+      const num = selected.size || 1;
+      const items = new Set(['Water bottle','Blanket or mat','Small pillow']);
+      if(evType === 'deep') items.add('Ear-optional earplugs');
+      if(evType === 'soft') items.add('Light eye covering');
+      if(evType === 'gentle') items.add('Light sweater');
+      if(num>4) items.add('Optional note: arrive 10–15 minutes early to lay out space');
+      const list = Array.from(items).map((it,i)=>`${i+1}. ${it}`).join('\n');
+      const out = `Packing suggestions for ${select.selectedOptions[0].textContent} (for ${num} attendee${num===1? '':'s'}):\n\n${list}`;
+      document.getElementById('packing-output').textContent = out;
+    });
+
+    document.getElementById('copy-packing').addEventListener('click', async ()=>{
+      const text = document.getElementById('packing-output').textContent;
+      try{ await navigator.clipboard.writeText(text); alert('Packing list copied'); }
+      catch(e){ alert('Copy failed — select and copy manually'); }
+    });
+
+    // initial render
+    renderSeatmap();
+  </script>
+</body>
+</html>

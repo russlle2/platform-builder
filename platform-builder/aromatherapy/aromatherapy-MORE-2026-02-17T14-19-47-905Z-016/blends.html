@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Custom Blends — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff9f2;--card:#fffdfb;--accent:#7a4b28;--muted:#5b4639}
+    html,body{height:100%}body{margin:0;font-family:Inter,system-ui,Segoe UI,Arial;color:var(--muted);background:var(--bg) url("assets/img/pattern.svg") repeat}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 24px}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#a87652,#7a4b28);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none}
+    main{max-width:1100px;margin:28px auto;padding:0 22px}
+
+    .top{display:flex;gap:18px;align-items:center}
+    .title{flex:1}
+    h1{margin:0;color:#3e2d26}
+    .subtitle{color:#6b5444}
+
+    .builder{display:grid;grid-template-columns:360px 1fr;gap:18px;margin-top:18px}
+    .panel{background:var(--card);padding:16px;border-radius:12px;border:1px solid rgba(122,75,40,0.06)}
+    label{display:block;margin-bottom:8px;font-weight:700;color:var(--accent)}
+    select,input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(120,90,70,0.09);margin-bottom:12px}
+    .vibes{display:flex;flex-wrap:wrap;gap:8px}
+    .vibe{padding:8px 10px;border-radius:999px;background:#fff;border:1px solid rgba(120,90,70,0.06);cursor:pointer}
+    .vibe.active{background:var(--accent);color:#fff}
+    .output{background:#fff;padding:12px;border-radius:10px;border:1px dashed rgba(122,75,40,0.12)}
+    .blend-card{margin-top:12px}
+    button.primary{background:var(--accent);color:#fff;padding:10px 12px;border-radius:8px;border:0;font-weight:700}
+    .try-btn{background:transparent;border:2px solid var(--accent);padding:8px 12px;border-radius:8px;color:var(--accent);cursor:pointer}
+
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(10,10,10,0.4);display:none;align-items:center;justify-content:center}
+    .modal{background:#fff;width:520px;max-width:92%;border-radius:12px;padding:18px}
+    .steps{display:flex;gap:8px;align-items:center}
+    .breath-circle{width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,#f2e6d9,#f9efe6);display:flex;align-items:center;justify-content:center;margin:18px auto}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo">B</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">custom blends &amp; safe dilution notes</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Custom Blends</a>
+      <a href="shop.html">Apothecary</a>
+      <a href="pricing.html">Invest</a>
+      <a href="about.html">Story</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+    <div><a href="{{PRIMARY_CTA_URL}}" class="try-btn">{{PRIMARY_CTA_LABEL}}</a></div>
+  </header>
+
+  <main>
+    <div class="top">
+      <div class="title">
+        <h1>Build a blend — pick a mood, get a safe dilution guide</h1>
+        <div class="subtitle">Select a vibe and bottle size. The builder will produce a simple blend card with drops and a dilution recommendation. For topical use, follow patch-test guidance.</div>
+      </div>
+      <div>
+        <button class="try-btn" id="openExercise">Try it now — short guided practice</button>
+      </div>
+    </div>
+
+    <div class="builder">
+      <div class="panel">
+        <label>Choose a vibe</label>
+        <div class="vibes" id="vibeList">
+          <div class="vibe" data-key="calm">Calm</div>
+          <div class="vibe" data-key="focus">Focus</div>
+          <div class="vibe" data-key="sleep">Sleep</div>
+          <div class="vibe" data-key="energy">Energy</div>
+          <div class="vibe" data-key="ground">Grounding</div>
+        </div>
+
+        <label>Bottle size</label>
+        <select id="bottle">
+          <option value="10">10 ml</option>
+          <option value="15">15 ml</option>
+          <option value="30">30 ml</option>
+        </select>
+
+        <label>Use</label>
+        <select id="useType">
+          <option value="diffuser">Diffuser / Room</option>
+          <option value="topical">Topical (diluted roll-on)</option>
+        </select>
+
+        <label>Personal note (optional)</label>
+        <input type="text" id="note" placeholder="Add a scent note or intention">
+
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="primary" id="buildBtn">Create blend card</button>
+          <button class="try-btn" id="clearBtn">Reset</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="panel">
+          <div class="output" id="result">
+            <div style="color:#5b4639;font-weight:700">Blend preview</div>
+            <div class="blend-card" id="cardArea">
+              <p style="color:#8a7364">Choose a vibe and bottle to see a suggested blend and dilution guide.</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px" class="panel">
+          <strong>Notes on safety</strong>
+          <p class="muted">This tool offers general dilution suggestions and is not medical advice. Always patch test and adapt for sensitive people, pregnancy, or pets. See FAQ for details.</p>
+        </div>
+      </div>
+    </div>
+
+    <section style="margin-top:18px" class="panel">
+      <h3>Quick reference: dilution guide</h3>
+      <p class="muted">The builder uses a simple assumption: 1 ml ≈ 20 drops. Dilution examples are rounded to whole drops. For topical use we recommend conservative dilutions (1–3%) depending on sensitivity.</p>
+    </section>
+
+    <section style="margin-top:18px" class="panel">
+      <h3>FAQ</h3>
+      <p class="muted"><strong>How are percentages chosen?</strong> The default percentages are conservative: diffuser blends use higher aromatic proportions for scent presence, topical blends default to 1–2% for safety. Adjust downward for sensitive skin.</p>
+      <p class="muted"><strong>Patch testing</strong> — Apply a small diluted amount to the inner forearm and wait 24 hours for irritation. Discontinue if redness or discomfort occurs.</p>
+      <p class="muted"><strong>Pets &amp; pregnancy</strong> — Some essential oils can affect animals or pregnancy. The builder will flag oils that commonly require caution; consult your practitioner or healthcare provider for individual guidance.</p>
+    </section>
+
+  </main>
+
+  <div class="modal-backdrop" id="modal">
+    <div class="modal" role="dialog" aria-modal="true">
+      <h3 id="modalTitle">Guided Practice — 3 minutes</h3>
+      <div id="modalContent">
+        <p class="muted">Follow a short breathing sequence, then a journaling prompt to set an intention. No audio required.</p>
+        <div class="breath-circle" id="breathCircle">Breathe</div>
+        <div class="steps" id="modalSteps"></div>
+        <div style="display:flex;justify-content:flex-end;margin-top:10px"><button class="try-btn" id="closeModal">Close</button></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Blend data
+    const BLENDS = {
+      calm:{label:'Calm', oils:[{name:'Lavender',note:'top'},{name:'Sweet Orange',note:'top'},{name:'Frankincense',note:'base'}],defaultPct:{diffuser:8,topical:2}},
+      focus:{label:'Focus', oils:[{name:'Rosemary',note:'top'},{name:'Basil',note:'top'},{name:'Cedarwood',note:'base'}],defaultPct:{diffuser:6,topical:1}},
+      sleep:{label:'Sleep', oils:[{name:'Chamomile',note:'middle'},{name:'Lavender',note:'top'},{name:'Vetiver',note:'base'}],defaultPct:{diffuser:6,topical:2}},
+      energy:{label:'Energy', oils:[{name:'Grapefruit',note:'top'},{name:'Peppermint',note:'top'},{name:'Ginger',note:'base'}],defaultPct:{diffuser:7,topical:1}},
+      ground:{label:'Grounding', oils:[{name:'Patchouli',note:'base'},{name:'Sandalwood',note:'base'},{name:'Bergamot',note:'top'}],defaultPct:{diffuser:6,topical:2}}
+    };
+
+    // UI
+    const vibeEls = document.querySelectorAll('.vibe');
+    let selectedVibe = null;
+    vibeEls.forEach(el=>el.addEventListener('click',()=>{
+      vibeEls.forEach(v=>v.classList.remove('active'));
+      el.classList.add('active');
+      selectedVibe = el.dataset.key;
+    }));
+
+    function round(n){return Math.max(1,Math.round(n));}
+
+    document.getElementById('buildBtn').addEventListener('click',()=>{
+      const bottle = Number(document.getElementById('bottle').value);
+      const use = document.getElementById('useType').value;
+      const note = document.getElementById('note').value.trim();
+      if(!selectedVibe){alert('Choose a vibe');return}
+      const info = BLENDS[selectedVibe];
+      const pct = info.defaultPct[use];
+      // 1 ml ≈ 20 drops
+      const totalDrops = Math.round(bottle * (pct/100) * 20);
+      // distribute drops across oils (simple even split)
+      const perOil = Math.floor(totalDrops / info.oils.length) || 1;
+      const remainder = totalDrops - perOil*info.oils.length;
+      let dropsList = info.oils.map((o,i)=>({name:o.name,drops:perOil + (i < remainder ? 1:0)}));
+      // safety flags (simple)
+      const flags = [];
+      if(use==='topical' && pct>2) flags.push('Consider reducing dilution for sensitive skin.');
+      // build card
+      const cardArea = document.getElementById('cardArea');
+      cardArea.innerHTML = '';
+      const title = document.createElement('div');title.style.fontWeight='700';title.style.color='#5b4639';title.textContent = info.label + ' • ' + pct + '% dilution';
+      cardArea.appendChild(title);
+      const ul = document.createElement('ul');ul.style.paddingLeft='18px';ul.style.color='#5b4639';
+      dropsList.forEach(d=>{const li=document.createElement('li');li.textContent = d.name + ' — ' + d.drops + ' drops';ul.appendChild(li)});
+      cardArea.appendChild(ul);
+      const meta = document.createElement('div');meta.style.color='#8a7364';meta.style.marginTop='8px';meta.textContent = 'Bottle: ' + bottle + ' ml • Total essential oil drops: ' + totalDrops + (note?(' • Note: '+note):'');
+      cardArea.appendChild(meta);
+      if(flags.length){const f=document.createElement('div');f.style.marginTop='8px';f.style.color='#a24d2a';f.textContent = 'Safety: ' + flags.join(' ');cardArea.appendChild(f)}
+      const save = document.createElement('div');save.style.marginTop='10px';
+      const copyBtn = document.createElement('button');copyBtn.className='try-btn';copyBtn.textContent='Copy blend card';
+      copyBtn.onclick = ()=>{navigator.clipboard.writeText(title.textContent+'\n'+ul.textContent+'\n'+meta.textContent).then(()=>alert('Blend copied to clipboard'))};
+      save.appendChild(copyBtn);
+      cardArea.appendChild(save);
+    });
+
+    document.getElementById('clearBtn').addEventListener('click',()=>{selectedVibe=null;vibeEls.forEach(v=>v.classList.remove('active'));document.getElementById('cardArea').innerHTML='<p style="color:#8a7364">Choose a vibe and bottle to see a suggested blend and dilution guide.</p>';document.getElementById('note').value=''});
+
+    // Guided practice modal logic
+    const modal = document.getElementById('modal');
+    const openExercise = document.getElementById('openExercise');
+    const closeModal = document.getElementById('closeModal');
+    let breathTimer=null;let stepIndex=0;
+
+    openExercise.addEventListener('click',()=>{modal.style.display='flex';startPractice()});
+    closeModal.addEventListener('click',()=>{modal.style.display='none';stopPractice()});
+
+    function startPractice(){
+      stepIndex=0;const stepsEl = document.getElementById('modalSteps');stepsEl.innerHTML='';
+      const steps = [
+        {label:'Set an intention',desc:'Spend 30s naming one short intention for this moment.'},
+        {label:'3-part breath',desc:'Inhale 4s, hold 4s, exhale 6s — repeat 6 times.'},
+        {label:'Journal prompt',desc:'Write one line: "I notice..." and one line: "I intend..."'}
+      ];
+      steps.forEach((s,i)=>{
+        const el=document.createElement('div');el.style.flex='1';el.style.padding='8px';el.style.borderRadius='8px';el.style.background=i===0?'#fff1eb':'#fff';el.textContent=s.label;stepsEl.appendChild(el)});
+      // breathe animation
+      const circle = document.getElementById('breathCircle');
+      let cycle=0;function breatheCycle(){cycle++;circle.style.transform='scale(1)';circle.textContent='Inhale';
+        setTimeout(()=>{circle.style.transform='scale(1.25)';circle.textContent='Hold'},4000);
+        setTimeout(()=>{circle.style.transform='scale(0.8)';circle.textContent='Exhale'},8000);
+        setTimeout(()=>{if(cycle<6) breatheCycle(); else showJournal()},14000);
+      }
+      breatheCycle();
+      function showJournal(){const modalTitle=document.getElementById('modalTitle');modalTitle.textContent='Journal & Intention';const modalSteps=document.getElementById('modalSteps');modalSteps.innerHTML='';const prompt=document.createElement('div');prompt.style.color='#5b4639';prompt.textContent='Write for 60 seconds: "I notice..." then "I intend..."';modalSteps.appendChild(prompt)}
+    }
+    function stopPractice(){clearTimeout(breathTimer)}
+  </script>
+</body>
+</html>

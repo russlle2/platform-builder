@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Personal Sound — Private Sessions • {{BUSINESS_NAME}}</title>
+  <meta name="description" content="One-on-one and small pods — bespoke sessions to work with sound as a focused tool for rest, regulation, or activation.">
+  <style>
+    :root{--bg:#071017;--card:#07121a;--muted:#98a6ad;--accent:#7bd389}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial;color:#e7f3f0;background:var(--bg)}
+    .wrap{max-width:980px;margin:26px auto;padding:22px}
+    header{display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;gap:10px;align-items:center}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(180deg,#1c8  ,#19a57a);display:flex;align-items:center;justify-content:center;color:#002;font-weight:700}
+    nav a{color:#bfe6d9;text-decoration:none;margin-left:16px}
+    .hero{background:linear-gradient(180deg,var(--card),#041018);padding:18px;border-radius:12px;margin-top:18px}
+    h2{margin:0}
+    .cols{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:14px}
+    .card{background:rgba(255,255,255,0.02);padding:14px;border-radius:12px}
+    .muted{color:var(--muted)}
+
+    .mixer{display:flex;gap:8px;margin-top:14px}
+    .mixer button{padding:8px 10px;border-radius:9px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#dff3eb;cursor:pointer}
+    .mixer button.active{background:linear-gradient(90deg,#0c5,#49b784);color:#022}
+
+    .recommend{margin-top:12px}
+    .opt{padding:10px;border-radius:8px;background:linear-gradient(180deg,transparent,rgba(255,255,255,0.02));margin-bottom:8px}
+
+    .proof{margin-top:12px}
+    .carousel{display:flex;overflow:hidden}
+    .quote{min-width:100%;transition:transform .35s}
+    .badges{display:flex;gap:8px;margin-top:8px}
+    .badge{padding:8px;border-radius:8px;background:rgba(255,255,255,0.02);position:relative}
+    .badge .tip{position:absolute;bottom:120%;left:50%;transform:translateX(-50%) translateY(6px);background:#071b20;color:#d1f3e8;padding:6px 8px;border-radius:6px;font-size:12px;opacity:0;transition:all .16s}
+    .badge:hover .tip{opacity:1;transform:translateX(-50%) translateY(0)}
+
+    footer{margin-top:20px;color:var(--muted);font-size:13px}
+    .pattern{position:fixed;inset:0;pointer-events:none;opacity:0.05;background-image:url('assets/img/pattern.svg');background-repeat:repeat}
+
+    @media(max-width:920px){.cols{grid-template-columns:1fr}.pattern{display:none}}
+  </style>
+</head>
+<body>
+  <div class="pattern" aria-hidden></div>
+  <div class="wrap">
+    <header>
+      <div class="brand"><div class="logo">PS</div><div><strong>{{BUSINESS_NAME}}</strong><div class="muted">Private sessions and small pods</div></div></div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="events.html">Gatherings</a>
+        <a href="private-sessions.html">Personal Sound</a>
+        <a href="pricing.html">Investments</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h2>Private sessions shaped to your needs</h2>
+        <p class="muted">One-on-one or tiny pods. Choose a tonal intensity to see suggested formats, durations, and session focuses.</p>
+
+        <div class="cols">
+          <div>
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <div>
+                  <div class="muted">Pick a tone</div>
+                  <div class="mixer" role="radiogroup">
+                    <button class="mix-btn active" data-level="soft">Soft</button>
+                    <button class="mix-btn" data-level="balanced">Balanced</button>
+                    <button class="mix-btn" data-level="pierce">Piercing</button>
+                  </div>
+                </div>
+                <div style="text-align:right">
+                  <div class="muted">Contact</div>
+                  <div style="font-weight:700">{{PHONE}}</div>
+                </div>
+              </div>
+
+              <div class="recommend" id="privateRecs">
+                <!-- injected -->
+              </div>
+
+              <div style="margin-top:12px">
+                <a href="book.html" style="background:#2ea57f;color:#021;padding:10px 12px;border-radius:9px;text-decoration:none;font-weight:700">Request a private booking</a>
+              </div>
+
+            </div>
+
+            <div class="card" style="margin-top:12px">
+              <h4 style="margin:0">Contraindications</h4>
+              <p class="muted" style="margin:8px 0 0 0">If you experience seizure disorders, unstable cardiovascular conditions, recent head injury, or are pregnant without prior clearance, please contact us before booking. Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</p>
+            </div>
+          </div>
+
+          <aside>
+            <div class="card">
+              <h4 style="margin:0 0 6px 0">Session formats</h4>
+              <div class="opt"><strong>Focus Reset</strong><div class="muted">30–45 min — gentle bowls, breath guidance</div></div>
+              <div class="opt"><strong>Deep Attunement</strong><div class="muted">60–90 min — layered frequencies, vocal tones</div></div>
+              <div class="opt"><strong>Pod Session</strong><div class="muted">Small private group — tailored to goals</div></div>
+
+              <div style="margin-top:12px">
+                <strong class="muted">Rates start at</strong>
+                <div style="font-weight:800;font-size:20px">See investments »</div>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:12px">
+              <h4 style="margin:0 0 6px 0">Proof & badges</h4>
+              <div class="carousel" id="carousel">
+                <div class="quote" id="quote">"A precise, clear session — I left with practical breathing cues." — S.</div>
+              </div>
+              <div class="badges" id="psBadges">
+                <div class="badge">Practitioner<div class="tip">Certified in sound facilitation</div></div>
+                <div class="badge">Small-Group Specialist<div class="tip">Runs pods for 3–6 participants</div></div>
+              </div>
+            </div>
+          </aside>
+        </div>
+
+      </section>
+
+    </main>
+
+    <footer>
+      <div class="muted">Book by email: <a href="mailto:{{EMAIL}}" style="color:var(--accent)">{{EMAIL}}</a></div>
+      <div class="muted">© <span id="yr"></span> {{BUSINESS_NAME}} • {{CITY}}, {{STATE}}</div>
+    </footer>
+  </div>
+
+  <script>
+    // private session recommendations tied to intensity
+    const formats = {
+      soft:[
+        {title:'Focus Reset — 35 min',desc:'Short, attuned set: singing bowls and guided breath.'},
+        {title:'Evening Ease — 50 min',desc:'Smoother timbres with voice for unwinding.'}
+      ],
+      balanced:[
+        {title:'Attuned Session — 60 min',desc:'Balanced frequencies and intention setting.'},
+        {title:'Pod Tuning — 75 min',desc:'Small-group tailored to a shared goal.'}
+      ],
+      pierce:[
+        {title:'Deep Attunement — 90 min',desc:'Sustained low frequencies to move deeper.'},
+        {title:'Resonant Work — 120 min',desc:'Extended immersion for intense clearing.'}
+      ]
+    };
+
+    function renderPrivate(level){
+      const wrap = document.getElementById('privateRecs');
+      wrap.innerHTML='';
+      (formats[level]||formats.soft).forEach(f=>{
+        const el = document.createElement('div');el.className='opt';el.innerHTML=`<strong>${f.title}</strong><div class='muted'>${f.desc}</div>`;wrap.appendChild(el);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded',()=>{
+      renderPrivate('soft');
+      document.getElementById('yr').textContent=new Date().getFullYear();
+      // mixer buttons
+      document.querySelectorAll('.mix-btn').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          document.querySelectorAll('.mix-btn').forEach(b=>b.classList.remove('active'));
+          btn.classList.add('active');
+          renderPrivate(btn.getAttribute('data-level'));
+        });
+      });
+
+      // rotating carousel + badge tooltips
+      const quotes = [
+        '"Practical takeaways and a quieting of the nervous system." — K.',
+        '"A precise session; the practitioner listened and adapted." — H.',
+        '"The pods are intimate and well paced." — J.'
+      ];
+      const quotesEl = document.getElementById('quote');
+      let i=0;
+      setInterval(()=>{i++;quotesEl.textContent=quotes[i%quotes.length]},4200);
+
+      // badge tips rotate every cycle
+      const badgeTips = ['Graduated acoustic therapy course','Professional facilitator','Partner verified space in {{CITY}}'];
+      const badgeEls = document.querySelectorAll('#psBadges .badge');
+      let bi=0;
+      setInterval(()=>{badgeEls.forEach((b,idx)=>b.querySelector('.tip').textContent = badgeTips[(bi+idx)%badgeTips.length]);bi++;},4200);
+    });
+  </script>
+</body>
+</html>

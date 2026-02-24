@@ -1,0 +1,57 @@
+/* Minimal, playful-leaning styles */
+:root{
+  --bg:#ffffff;
+  --ink:#14332f;
+  --muted:#5e7b76;
+  --accent:#7fb6b0;
+  --radius:12px;
+  --wrap:1100px;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.45}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:2rem}
+.bg-pattern{position:fixed;inset:0;z-index:-1;width:100%;height:100%;opacity:1}
+.site-header{border-bottom:1px solid #eef6f5}
+.site-header .wrap{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem}
+.brand{font-weight:700;color:var(--ink);text-decoration:none}
+.main-nav a{margin-left:1rem;color:var(--muted);text-decoration:none}
+.main-nav .cta{background:var(--accent);color:white;padding:.5rem .8rem;border-radius:8px;text-decoration:none}
+.hero{padding:3rem 0}
+.hero-grid{display:grid;grid-template-columns:1fr 360px;gap:2rem;align-items:start}
+.hero-copy h1{font-size:1.8rem;margin:0 0 .5rem}
+.lede{color:var(--muted);margin:0 0 1rem}
+.primary{display:inline-block;background:var(--accent);color:white;padding:.7rem 1rem;border-radius:10px;text-decoration:none}
+.planner-card{background:#fff;border:1px solid #eef6f5;padding:1rem;border-radius:12px;box-shadow:0 6px 22px rgba(9,24,22,0.03)}
+.planner-card h2{margin-top:0}
+.planner-card label{display:block;font-size:.9rem;color:var(--muted);margin-bottom:.5rem}
+.planner-card input, .planner-card select, .planner-card textarea{width:100%;padding:.5rem;border:1px solid #e6f0ed;border-radius:8px;margin-top:.35rem}
+.planner-actions{display:flex;gap:.5rem;margin-top:.5rem}
+.planner-actions button{flex:1;padding:.6rem;border-radius:8px;border:0;background:var(--accent);color:white}
+.planner-actions #copy-plan{background:#fff;color:var(--accent);border:1px solid var(--accent)}
+.pillars{padding:2rem 0}
+.pillars .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:1rem}
+.pillars article{background:#fff;border:1px solid #eef6f5;padding:1rem;border-radius:10px}
+.icon{width:44px;height:44px;margin-bottom:.5rem;display:block}
+.myth-truth,.case-notes,.faq,.final-cta{padding:2rem 0}
+.myth-list{list-style:none;padding:0}
+.myth-list li{background:#fff;border:1px solid #eef6f5;padding:1rem;border-radius:10px;margin-bottom:.6rem}
+.myth-list .truth{color:var(--muted);margin:0}
+.case-notes ol{padding-left:1.2rem}
+.case-notes .disclaimer{font-size:.85rem;color:var(--muted)}
+.faq .qa{margin-bottom:.6rem}
+.faq .q{width:100%;text-align:left;padding:.8rem;border-radius:10px;border:1px solid #eef6f5;background:#fff}
+.faq .a{display:none;padding:.6rem;border-left:3px solid var(--accent);background:#fbfdfc;border-radius:0 8px 8px 8px}
+.final-cta .primary.large{padding:1rem 1.4rem;border-radius:12px}
+.site-footer{border-top:1px solid #eef6f5;padding:1rem 0;margin-top:2rem}
+.site-footer .wrap{display:flex;justify-content:space-between;align-items:center}
+.reveal{opacity:0;transform:translateY(12px);transition:opacity .5s ease,transform .5s ease}
+.reveal.is-visible{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){
+  .reveal{transition:none}
+}
+@media (max-width:900px){
+  .hero-grid{grid-template-columns:1fr}
+  .pillars .grid{grid-template-columns:1fr}
+}

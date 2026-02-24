@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Schedule — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fcfbf8;--accent:#6a8c7f;--muted:#6c6c6c}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:#222;background:var(--bg)}
+    header{padding:14px 18px;border-bottom:1px solid rgba(0,0,0,0.04)}
+    .nav{max-width:980px;margin:0 auto;display:flex;align-items:center;gap:18px}
+    .brand{font-weight:700;color:var(--accent)}
+    nav a{color:#3a3a3a;text-decoration:none;padding:8px 10px;border-radius:8px}
+    nav a[href$="book.html"]{background:rgba(106,140,127,0.08);color:var(--accent)}
+
+    main{max-width:980px;margin:26px auto;padding:0 18px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .card{background:#fff;padding:18px;border-radius:12px;border:1px solid rgba(0,0,0,0.04)}
+    h1{margin:0 0 6px 0;font-size:22px}
+    p.lead{margin:0;color:var(--muted)}
+
+    .mood-grid{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+    .mood{flex:1 1 140px;padding:12px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);background:#fff;cursor:pointer;text-align:center}
+    .mood.active{background:linear-gradient(90deg,var(--accent),#8ab4a1);color:#fff;border-color:transparent;transform:translateY(-4px)}
+
+    .method{margin-top:16px;padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(106,140,127,0.06),transparent)}
+    .method h3{margin:0}
+    .method p{margin:6px 0 0 0;color:var(--muted)}
+    .book-cta{display:inline-block;margin-top:12px;padding:10px 14px;background:var(--accent);color:#fff;border-radius:10px;text-decoration:none}
+
+    footer{max-width:980px;margin:20px auto;padding:0 18px;color:var(--muted);font-size:13px}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <nav style="margin-left:18px;display:flex;gap:6px">
+        <a href="index.html">Home</a>
+        <a href="about.html">Who I Am</a>
+        <a href="specialties.html">Areas</a>
+        <a href="approach.html">How I Work</a>
+        <a href="fees.html">Investment</a>
+        <a href="faq.html">FAQ</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="grid">
+      <section class="card">
+        <h1>Find the right kind of session today</h1>
+        <p class="lead">Choose how you feel. The recommendation adapts, and the action button updates to match what you might need right now.</p>
+
+        <div class="mood-grid" id="moodGrid">
+          <div class="mood" data-key="overwhelmed">Overwhelmed</div>
+          <div class="mood" data-key="stuck">Stuck</div>
+          <div class="mood" data-key="anxious">Anxious Nights</div>
+          <div class="mood" data-key="avoid">Avoiding Talk</div>
+          <div class="mood" data-key="grief">Grief & Loss</div>
+          <div class="mood" data-key="relationship">Relationship Strain</div>
+        </div>
+
+        <div class="method" id="methodPane">
+          <h3 id="methodTitle">Select a mood</h3>
+          <p id="methodText" style="color:var(--muted)">When you choose how you're feeling, I'll suggest a next step and a tailored session type. This is not a diagnosis—just a way to align what happens in session with what matters to you right now.</p>
+
+          <a id="bookBtn" class="book-cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+
+        <div style="margin-top:12px;color:var(--muted);font-size:13px">If you’re unsure, select the option that feels closest. We’ll clarify needs together in the first visit.</div>
+      </section>
+
+      <aside class="card">
+        <h3>Quick logistics</h3>
+        <p style="margin:6px 0 0 0;color:var(--muted);font-size:14px">Sessions are available weekday afternoons and some evenings. After you choose a session type, the booking link will take you to the scheduler to pick a time.</p>
+
+        <h4 style="margin-top:12px">Confidentiality & limits</h4>
+        <p style="margin:6px 0 0 0;color:var(--muted);font-size:13px">Conversations are confidential except in legal or safety-related exceptions. I will review privacy and record-keeping at intake.</p>
+
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <div>Clinical boundaries: I do not provide emergency services. If you are in immediate danger or crisis, contact local emergency services or crisis lines in {{CITY}}, {{STATE}}.</div>
+    <div style="margin-top:8px">For questions: {{EMAIL}} • {{PHONE}}</div>
+  </footer>
+
+  <script>
+    // Mood-to-Method: maps mood to recommended approach and CTA text
+    (function(){
+      const map = {
+        overwhelmed:{title:'Single planning session',text:'A focused 50-minute meeting to reduce immediate load, set priorities, and identify two small next steps.',cta:'Book a planning session',url:'{{PRIMARY_CTA_URL}}?type=planning'},
+        stuck:{title:'3-session momentum block',text:'Three sessions over 6–8 weeks to test small changes and build forward momentum.',cta:'Reserve a 3-session block',url:'{{PRIMARY_CTA_URL}}?type=short_block'},
+        anxious:{title:'Evening check-in',text:'Short-term sessions to address sleep, worry cycles, and calming practices you can apply between meetings.',cta:'Schedule an evening slot',url:'{{PRIMARY_CTA_URL}}?type=sleep'},
+        avoid:{title:'Conversation rehearsal',text:'Workshops in session to practice and prepare for hard conversations—role-play and planning included.',cta:'Start conversation practice',url:'{{PRIMARY_CTA_URL}}?type=skills'},
+        grief:{title:'Grief-focused sessions',text:'A supportive space to sit with loss, process feelings, and find stabilizing routines.',cta:'Book grief support',url:'{{PRIMARY_CTA_URL}}?type=grief'},
+        relationship:{title:'Couples or individual relational work',text:'Short assessments followed by tailored sessions to build clearer patterns and better connection.',cta:'Schedule relational work',url:'{{PRIMARY_CTA_URL}}?type=relationship'}
+      };
+
+      const moodEls = Array.from(document.querySelectorAll('.mood'));
+      const titleEl = document.getElementById('methodTitle');
+      const textEl = document.getElementById('methodText');
+      const bookBtn = document.getElementById('bookBtn');
+
+      function setMood(key,el){
+        moodEls.forEach(m=>m.classList.remove('active'));
+        if(el) el.classList.add('active');
+        const entry = map[key];
+        if(entry){
+          // morphing animation
+          titleEl.style.opacity=0; textEl.style.opacity=0; bookBtn.style.opacity=0;
+          setTimeout(()=>{
+            titleEl.textContent = entry.title;
+            textEl.textContent = entry.text;
+            bookBtn.textContent = entry.cta;
+            bookBtn.href = entry.url;
+            titleEl.style.opacity=1; textEl.style.opacity=1; bookBtn.style.opacity=1;
+          },180);
+        }
+      }
+
+      moodEls.forEach(m=>m.addEventListener('click',()=> setMood(m.dataset.key,m)));
+
+      // check query param to preselect
+      const params = new URLSearchParams(location.search);
+      const preset = params.get('mode') || params.get('type');
+      if(preset){
+        // try to match keys loosely
+        const key = Object.keys(map).find(k=>preset.includes(k) || preset===k) || null;
+        if(key){
+          const el = moodEls.find(m=>m.dataset.key===key);
+          if(el) setMood(key,el);
+        }
+      }
+    })();
+  </script>
+</body>
+</html>

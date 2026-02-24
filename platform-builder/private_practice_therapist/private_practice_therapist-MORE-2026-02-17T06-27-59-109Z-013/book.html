@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Schedule an Orientation — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#061323;--muted:#cbd8df;--accent:#7fd0c8}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#03121a,#06202e);color:var(--muted);min-height:100vh}
+    body::before{content:'';position:fixed;inset:0;background:url('assets/img/pattern.svg');opacity:0.055}
+    .wrap{max-width:920px;margin:30px auto;padding:22px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));backdrop-filter:blur(8px)}
+    header{display:flex;align-items:center;justify-content:space-between}
+    .brand{font-weight:700;color:#fff}
+    nav a{color:var(--muted);margin-left:14px;text-decoration:none}
+    .form-grid{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
+    form{background:rgba(255,255,255,0.01);padding:14px;border-radius:10px}
+    label{display:block;font-size:0.9rem;margin-top:10px}
+    input,textarea,select{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--muted)}
+    .row{display:flex;gap:10px}
+    .btn{background:linear-gradient(180deg,#0c6b5f,#0b5d52);color:white;padding:10px 12px;border-radius:10px;border:0;cursor:pointer;margin-top:12px;font-weight:600}
+    .widget{padding:12px;background:rgba(255,255,255,0.02);border-radius:10px}
+    .small{font-size:0.86rem;color:var(--muted)}
+    .price-mini{display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:8px;background:rgba(255,255,255,0.01);margin-top:8px}
+    .switch{display:flex;gap:6px;margin-top:8px}
+    .switch button{padding:8px 10px;border-radius:8px;border:0;background:transparent;color:var(--muted);cursor:pointer}
+    .switch button.active{background:linear-gradient(90deg,#07574c,#0b6a5b);color:#fff}
+    .proof{margin-top:14px;padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));}
+    .testimonial{min-height:64px}
+    footer{margin-top:14px;font-size:0.82rem;color:#9fb1bd}
+    @media(max-width:880px){.form-grid{grid-template-columns:1fr}.widget{order:-1}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="specialties.html">Areas</a>
+        <a href="approach.html">Method</a>
+        <a href="fees.html">Rates</a>
+        <a href="faq.html">Help</a>
+      </nav>
+    </header>
+
+    <h1>Book an orientation conversation</h1>
+    <p class="small">An orientation is a short meeting to clarify goals, explain options, and find a cadence that feels manageable.</p>
+
+    <div class="form-grid">
+      <form id="booking-form" novalidate>
+        <label for="name">Full name</label>
+        <input id="name" name="name" required>
+
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" required>
+
+        <label for="phone">Phone</label>
+        <input id="phone" name="phone" type="tel">
+
+        <label for="pref">Preferred times or days</label>
+        <input id="pref" name="pref">
+
+        <label for="reason">Brief description of what you'd like help with</label>
+        <textarea id="reason" name="reason" rows="4"></textarea>
+
+        <label>Interest</label>
+        <div class="row">
+          <label style="flex:1"><input type="radio" name="interest" value="membership" checked> Ongoing support membership</label>
+          <label style="flex:1"><input type="radio" name="interest" value="package"> Short package</label>
+        </div>
+
+        <div class="row">
+          <button class="btn" type="submit">Request a time</button>
+          <a class="btn" href="contact.html" style="background:transparent;border:1px solid rgba(255,255,255,0.04)">Message instead</a>
+        </div>
+
+        <div class="small" style="margin-top:10px">I will follow up to schedule a 20–30 minute orientation. This is not an emergency service. Confidentiality and limits to confidentiality will be discussed before we begin treatment.</div>
+      </form>
+
+      <aside>
+        <div class="widget">
+          <div style="font-weight:700;color:#fff">Quick pricing look</div>
+          <div class="small">Toggle to view typical monthly or package figures.</div>
+          <div class="switch">
+            <button id="btn-m" class="active">Monthly</button>
+            <button id="btn-p">Package</button>
+          </div>
+
+          <div class="price-mini"><div>Intro Pack (3 sessions)</div><div id="mini-intro">$120</div></div>
+          <div class="price-mini"><div>Ongoing (avg/month)</div><div id="mini-member">$240</div></div>
+          <div class="price-mini"><div>Focused (4 session)</div><div id="mini-focused">$170</div></div>
+
+          <div class="proof" style="margin-top:12px">
+            <div class="testimonial">"A steady, collaborative approach made it possible to try new strategies without overwhelm."</div>
+            <div class="badges" style="display:flex;gap:8px;margin-top:8px">
+              <div class="badge" data-tooltip="I hold appropriate licensure and engage in ongoing professional development">Licensed clinician</div>
+              <div class="badge" data-tooltip="Boundaries and confidentiality are maintained in clinical work">Confidential practice</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.01)">
+          <div style="font-weight:700;color:#fff">Before we meet</div>
+          <div class="small" style="margin-top:8px">If you are in crisis or danger, call local emergency services. For other urgent concerns, I will provide guidance at initial contact.</div>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      <div class="small">By submitting a request you consent to being contacted by email or phone to schedule. Services are within my professional scope; limits to confidentiality and crisis resources will be reviewed on contact.</div>
+    </footer>
+  </div>
+
+  <script>
+    // Simple client-side booking flow simulation
+    const form = document.getElementById('booking-form');
+    form.addEventListener('submit', e=>{
+      e.preventDefault();
+      const name = form.name.value.trim();
+      const email = form.email.value.trim();
+      if(!name || !email){
+        alert('Please include at least your name and email so I can follow up.');
+        return;
+      }
+      // In a real site, this would submit to a server. Here we show a confirmation.
+      form.querySelector('button[type=submit]').textContent = 'Sending...';
+      setTimeout(()=>{
+        alert('Thanks — I received your request and will be in touch to schedule an orientation.');
+        form.reset();
+        form.querySelector('button[type=submit]').textContent = 'Request a time';
+      },900);
+    });
+
+    // Mini price toggle with animated numbers reused from comparator concept
+    function animate(el, from, to, ms){
+      const start = performance.now();
+      function frame(t){
+        const p = Math.min((t - start) / ms, 1);
+        el.textContent = '$' + Math.round(from + (to - from) * p);
+        if(p < 1) requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+    }
+
+    const btnM = document.getElementById('btn-m');
+    const btnP = document.getElementById('btn-p');
+    const miniIntro = document.getElementById('mini-intro');
+    const miniMember = document.getElementById('mini-member');
+    const miniFocused = document.getElementById('mini-focused');
+
+    btnM.addEventListener('click', ()=>{
+      btnM.classList.add('active'); btnP.classList.remove('active');
+      animate(miniIntro, parseInt(miniIntro.textContent.replace('$',''))||0, 120, 500);
+      animate(miniMember, parseInt(miniMember.textContent.replace('$',''))||0, 240, 500);
+      animate(miniFocused, parseInt(miniFocused.textContent.replace('$',''))||0, 170, 500);
+    });
+
+    btnP.addEventListener('click', ()=>{
+      btnP.classList.add('active'); btnM.classList.remove('active');
+      animate(miniIntro, parseInt(miniIntro.textContent.replace('$',''))||0, 330, 500);
+      animate(miniMember, parseInt(miniMember.textContent.replace('$',''))||0, 900, 500);
+      animate(miniFocused, parseInt(miniFocused.textContent.replace('$',''))||0, 480, 500);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Connect with a clinical aromatherapy practitioner. Safety-forward consults and a membership offering that may support regular aromatic practice.">
+  <style>
+    :root{
+      --bg:#fbfcfb;
+      --muted:#6b6f72;
+      --accent:#6b936a;
+      --accent-2:#9fbfbb;
+      --card:#ffffff;
+      --glass:rgba(255,255,255,0.6);
+      --maxw:1100px;
+      --radius:12px;
+      font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      color:#233;
+    }
+    html,body{height:100%;}
+    body{
+      margin:0; background:var(--bg) url('assets/img/pattern.svg') repeat center/280px; -webkit-font-smoothing:antialiased; line-height:1.5;
+      padding:24px; display:flex; justify-content:center;
+    }
+    .site{max-width:var(--maxw); width:100%;}
+    header{display:flex;align-items:center;justify-content:space-between; gap:18px; margin-bottom:18px}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:56px;height:56px;background:linear-gradient(180deg,var(--accent-2),var(--accent));border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    nav{display:flex;gap:12px;flex-wrap:wrap}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:8px}
+    nav a.active,nav a:hover{background:var(--card);box-shadow:0 1px 0 rgba(0,0,0,0.04);color:#111}
+
+    main{display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:start}
+    .panel{background:var(--card);border-radius:var(--radius);padding:18px;box-shadow:0 6px 18px rgba(20,20,20,0.05)}
+    .lead{font-size:18px;color:var(--muted);margin-bottom:12px}
+    h1{margin:0 0 6px 0;font-size:28px}
+    .meta{color:var(--muted);font-size:14px}
+
+    form .row{display:flex;gap:12px}
+    form label{display:block;font-size:13px;margin-bottom:6px;color:var(--muted)}
+    input[type="text"],input[type="email"],select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9ea;background:transparent}
+    textarea{min-height:120px;resize:vertical}
+    .actions{display:flex;gap:10px;align-items:center;margin-top:12px}
+    .btn{background:linear-gradient(180deg,var(--accent),var(--accent-2));color:#fff;padding:11px 14px;border-radius:10px;border:0;cursor:pointer}
+    .btn.secondary{background:transparent;color:var(--accent);border:1px solid #e6e9ea}
+
+    aside .contact-card{display:flex;flex-direction:column;gap:12px}
+    .small{font-size:13px;color:var(--muted)}
+
+    .faq{margin-top:10px}
+    .faq h3{margin:0 0 8px 0;font-size:16px}
+    .faq p{margin:0 0 10px 0;color:var(--muted);font-size:14px}
+
+    /* Try-it modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(12,14,13,0.45);display:none;align-items:center;justify-content:center;padding:18px;z-index:80}
+    .modal{background:var(--card);width:100%;max-width:720px;border-radius:14px;padding:20px;box-shadow:0 12px 40px rgba(10,10,10,0.25)}
+    .modal .controls{display:flex;gap:8px;align-items:center;margin-top:12px}
+    .breath-ring{width:160px;height:160px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:10px auto;background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.6), rgba(255,255,255,0));}
+    .ring{width:88px;height:88px;border-radius:50%;background:var(--accent-2);display:flex;align-items:center;justify-content:center;color:#fff;transition:transform 3s ease-in-out}
+    .ring.shrink{transform:scale(0.6)}
+    .ring.grow{transform:scale(1.5)}
+
+    /* reveal animation */
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity 480ms ease,var(--t,transform) 480ms ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){
+      .reveal{transition:none;opacity:1;transform:none}
+      .ring{transition:none}
+    }
+
+    footer{margin-top:22px;color:var(--muted);font-size:13px}
+
+    @media (max-width:920px){main{grid-template-columns:1fr;}
+      .brand .name{display:none}
+    }
+  </style>
+</head>
+<body>
+  <div class="site">
+    <header>
+      <div class="brand">
+        <div class="logo">A</div>
+        <div>
+          <div class="name" style="font-weight:600">{{BUSINESS_NAME}}</div>
+          <div class="meta small">Clinical aromatherapy that may support day-to-day balance</div>
+        </div>
+      </div>
+      <nav aria-label="Primary navigation">
+        <a href="index.html">Welcome</a>
+        <a href="services.html">Sessions</a>
+        <a href="blends.html">Blends &amp; Tools</a>
+        <a href="shop.html">Boutique</a>
+        <a href="pricing.html">Membership Plans</a>
+        <a href="about.html">About</a>
+        <a href="book.html">Book a Session</a>
+        <a href="contact.html" class="active">Connect</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="panel" aria-labelledby="contact-heading">
+        <h1 id="contact-heading">Connect and discover a supportive scent practice</h1>
+        <p class="lead reveal" data-reveal>Use this page to arrange a consult, ask about our membership, or try a short guided practice right in the browser.</p>
+
+        <form id="contactForm" class="reveal" data-reveal style="margin-top:12px" autocomplete="on">
+          <div class="row">
+            <div style="flex:1">
+              <label for="name">Your name</label>
+              <input id="name" name="name" type="text" placeholder="First &amp; last">
+            </div>
+            <div style="width:160px">
+              <label for="phone">Phone</label>
+              <input id="phone" name="phone" type="text" placeholder="{{PHONE}}">
+            </div>
+          </div>
+
+          <div style="margin-top:12px">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="{{EMAIL}}">
+          </div>
+
+          <div style="margin-top:12px">
+            <label for="service">I am interested in</label>
+            <select id="service" name="service">
+              <option>Intro consult — seasonal scent plan</option>
+              <option>One-off session — focused support</option>
+              <option>Membership — weekly practice support</option>
+              <option>Workshops &amp; events</option>
+            </select>
+          </div>
+
+          <div style="margin-top:12px">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" placeholder="Tell me what's on your mind (allergies, pets at home, pregnancy, preferred days)..."></textarea>
+          </div>
+
+          <div class="actions">
+            <button class="btn" type="submit">Send inquiry</button>
+            <button type="button" class="btn secondary" id="openTry">Try a short practice</button>
+            <span class="small">Or call <a href="tel:{{PHONE}}">{{PHONE}}</a></span>
+          </div>
+        </form>
+
+        <div class="faq">
+          <h3 class="reveal" data-reveal>Frequently asked safety questions</h3>
+          <div class="reveal" data-reveal>
+            <strong>Dilution and patch tests</strong>
+            <p class="small">I recommend simple dilution guidelines and a patch test before applying any blend topically. Guidance will be tailored and safety-forward — no medical promises, only supportive language.</p>
+          </div>
+          <div class="reveal" data-reveal>
+            <strong>Pets</strong>
+            <p class="small">Essential oils can affect animals differently. If you have pets, include information in your message so I can offer pet-safe options and diffusion suggestions.</p>
+          </div>
+          <div class="reveal" data-reveal>
+            <strong>Pregnancy &amp; medications</strong>
+            <p class="small">Some oils are not recommended in pregnancy or with certain medications. Always mention pregnancy status and current medications during booking so I can ensure safety-focused alternatives.</p>
+          </div>
+          <div class="reveal" data-reveal>
+            <strong>Allergies &amp; sensitivities</strong>
+            <p class="small">We always prioritize patch tests and low-concentration introductions. If you have known sensitivities, please tell me up front.</p>
+          </div>
+        </div>
+
+      </section>
+
+      <aside class="panel" aria-labelledby="member-heading">
+        <div class="contact-card">
+          <div>
+            <h3 id="member-heading">Membership and quick links</h3>
+            <p class="small">Our membership is a rolling support model with curated blends, guided home practices, and quarterly reviews — framed as ongoing practice rather than therapy. Memberships may support regularity in scent-based rituals.</p>
+          </div>
+
+          <div>
+            <strong>Interested in joining?</strong>
+            <p class="small">Select "Membership — weekly practice support" in the form or <a href="pricing.html">view plans</a>.</p>
+          </div>
+
+          <div>
+            <strong>Location</strong>
+            <p class="small">Serving {{CITY}}, {{STATE}}. Remote consults available.</p>
+          </div>
+
+          <div>
+            <strong>Quick contacts</strong>
+            <p class="small">Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a><br>Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+          </div>
+
+          <div style="margin-top:8px">
+            <button class="btn" onclick="location.href='{{PRIMARY_CTA_URL}}'">{{PRIMARY_CTA_LABEL}}</button>
+          </div>
+        </div>
+      </aside>
+
+    </main>
+
+    <footer>
+      <div class="small">We focus on safety, education, and routine. If you need urgent medical help, contact local emergency services. Our consults are supportive and informational — not medical treatment.</div>
+    </footer>
+  </div>
+
+  <!-- Modal: Try-it now guided exercise -->
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document" aria-labelledby="modalTitle">
+      <h2 id="modalTitle">Try it now — brief guided practice</h2>
+      <p class="small">Choose a practice: breathing, journaling prompt, or intention setting. Each is short and safety-aware.</p>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:10px">
+        <button class="btn" id="modeBreath">Breathing</button>
+        <button class="btn" id="modeJournal">Journaling</button>
+        <button class="btn" id="modeIntent">Set an intention</button>
+        <button class="btn secondary" id="closeModal">Close</button>
+      </div>
+
+      <div id="practiceArea" style="margin-top:14px">
+        <!-- content swapped by JS -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Accessibility helpers
+    function showModal(){
+      const b = document.getElementById('modalBackdrop'); b.style.display='flex'; b.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden';
+    }
+    function closeModal(){
+      const b = document.getElementById('modalBackdrop'); b.style.display='none'; b.setAttribute('aria-hidden','true'); document.body.style.overflow='';
+    }
+
+    document.getElementById('openTry').addEventListener('click', function(){ showModal(); startIdle(); });
+    document.getElementById('closeModal').addEventListener('click', closeModal);
+    document.getElementById('modalBackdrop').addEventListener('click', function(e){ if(e.target===this) closeModal(); });
+
+    // Simple guided breath with grow/shrink ring
+    let breathTimer = null;
+    function makeBreathUI(container){
+      container.innerHTML = '';
+      const info = document.createElement('p'); info.className='small'; info.textContent='Follow the ring: inhale (grow) — pause — exhale (shrink). Repeat for a few cycles.';
+      const ringWrap = document.createElement('div'); ringWrap.className='breath-ring';
+      const ring = document.createElement('div'); ring.className='ring'; ring.textContent='Breathe';
+      ringWrap.appendChild(ring);
+      const controls = document.createElement('div'); controls.className='controls';
+      const start = document.createElement('button'); start.className='btn'; start.textContent='Start';
+      const stop = document.createElement('button'); stop.className='btn secondary'; stop.textContent='Stop';
+      controls.appendChild(start); controls.appendChild(stop);
+      container.appendChild(info); container.appendChild(ringWrap); container.appendChild(controls);
+
+      let state = 'idle'; // 'inhale','hold','exhale'
+      let cycle = 0;
+      const durations = {inhale:4000, hold:2000, exhale:4000};
+
+      function step(){
+        if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+          ring.className='ring'; return; // no animation
+        }
+        if(state==='idle' || state==='exhale'){ state='inhale'; ring.classList.remove('shrink'); ring.classList.add('grow'); }
+        else if(state==='inhale'){ state='hold'; }
+        else if(state==='hold'){ state='exhale'; ring.classList.remove('grow'); ring.classList.add('shrink'); }
+
+        let ms = durations[state] || 3000;
+        breathTimer = setTimeout(function(){
+          if(state==='exhale') cycle++;
+          if(cycle>=5){ stopCycle(); }
+          else step();
+        }, ms);
+      }
+      function startCycle(){ if(breathTimer) return; step(); }
+      function stopCycle(){ clearTimeout(breathTimer); breathTimer=null; state='idle'; ring.className='ring'; }
+
+      start.addEventListener('click', startCycle);
+      stop.addEventListener('click', stopCycle);
+
+      return {start: startCycle, stop: stopCycle};
+    }
+
+    // Journaling prompt generator
+    function makeJournalUI(container){
+      container.innerHTML='';
+      const p = document.createElement('p'); p.className='small'; p.textContent='Short prompts to help ground a minute of writing.';
+      const promptArea = document.createElement('div'); promptArea.style.marginTop='8px'; promptArea.className='small';
+      const prompts = [
+        'Name three small things you noticed today.',
+        'Write a single sentence about what you hope to feel this week.',
+        'List one action that could make a small shift in your routine.'
+      ];
+      let idx = 0;
+      promptArea.textContent = prompts[idx];
+      const controls = document.createElement('div'); controls.className='controls';
+      const next = document.createElement('button'); next.className='btn'; next.textContent='New prompt';
+      const done = document.createElement('button'); done.className='btn secondary'; done.textContent='Close';
+      controls.appendChild(next); controls.appendChild(done);
+      container.appendChild(p); container.appendChild(promptArea); container.appendChild(controls);
+      next.addEventListener('click', function(){ idx=(idx+1)%prompts.length; promptArea.textContent=prompts[idx]; });
+      done.addEventListener('click', closeModal);
+    }
+
+    // Intention setting UI
+    function makeIntentUI(container){
+      container.innerHTML='';
+      const p = document.createElement('p'); p.className='small'; p.textContent='A short exercise to frame a clear intention.';
+      const input = document.createElement('input'); input.type='text'; input.placeholder='Write an intention in one sentence'; input.style.width='100%'; input.style.marginTop='8px'; input.style.padding='10px'; input.style.borderRadius='8px'; input.style.border='1px solid #e6e9ea';
+      const controls = document.createElement('div'); controls.className='controls';
+      const save = document.createElement('button'); save.className='btn'; save.textContent='Save & close';
+      const cancel = document.createElement('button'); cancel.className='btn secondary'; cancel.textContent='Cancel';
+      controls.appendChild(save); controls.appendChild(cancel);
+      container.appendChild(p); container.appendChild(input); container.appendChild(controls);
+      save.addEventListener('click', function(){ if(input.value.trim()){ alert('Saved: ' + input.value.trim()); } closeModal(); });
+      cancel.addEventListener('click', closeModal);
+    }
+
+    // Mode wiring
+    const practiceArea = document.getElementById('practiceArea');
+    document.getElementById('modeBreath').addEventListener('click', function(){ makeBreathUI(practiceArea); });
+    document.getElementById('modeJournal').addEventListener('click', function(){ makeJournalUI(practiceArea); });
+    document.getElementById('modeIntent').addEventListener('click', function(){ makeIntentUI(practiceArea); });
+
+    // Basic idle opener
+    function startIdle(){ practiceArea.innerHTML='<p class="small">Choose a practice to begin.</p>'; }
+
+    // Reveal on scroll with reduced motion support
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const revealEls = Array.from(document.querySelectorAll('[data-reveal]'));
+      if(prefersReduced){ revealEls.forEach(e=>e.classList.add('visible')); return; }
+      const obs = new IntersectionObserver(function(entries){
+        entries.forEach(entry=>{
+          if(entry.isIntersecting){ entry.target.classList.add('visible'); obs.unobserve(entry.target); }
+        });
+      },{threshold:0.12});
+      revealEls.forEach(el=>obs.observe(el));
+    })();
+
+    // Form submission placeholder (no backend)
+    document.getElementById('contactForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      const btn = this.querySelector('.btn');
+      btn.disabled = true; btn.textContent='Sending...';
+      setTimeout(()=>{ btn.disabled=false; btn.textContent='Send inquiry'; alert('Thanks — your message has been prepared. We will respond by email.'); },900);
+    });
+
+    // Small keyboard accessibility: ESC to close modal
+    window.addEventListener('keydown', function(e){ if(e.key==='Escape'){ closeModal(); }});
+  </script>
+</body>
+</html>

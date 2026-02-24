@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#071021;--glass:rgba(255,255,255,0.05);--text:#dbeafe;--muted:#9fb3c8;--accent:#ffd6a5}
+    html,body{height:100%;margin:0;background:radial-gradient(circle at 10% 20%,#082033 0%,#041018 60%),linear-gradient(180deg,#012;#001);font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial;color:var(--text)}
+    body::before{content:'';position:fixed;inset:0;background-image:url('/assets/img/pattern.svg');opacity:0.12;mix-blend-mode:soft-light}
+    .wrap{max-width:1000px;margin:28px auto;padding:20px}
+    nav{display:flex;gap:12px;padding:10px;background:linear-gradient(90deg,rgba(255,255,255,0.02),transparent);border-radius:12px}
+    nav a{color:var(--muted);text-decoration:none;padding:8px;border-radius:8px}
+    nav a:hover{color:var(--text)}
+    .hero{display:flex;gap:18px;align-items:center;margin-top:16px}
+    .bio{flex:1;padding:20px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:12px;backdrop-filter:blur(6px);}
+    .profile{width:260px;padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);}
+    h1{margin:0 0 8px 0;color:var(--accent)}
+    .muted{color:var(--muted)}
+    .approach{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+    .card{padding:14px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent)}
+    .faq{margin-top:16px}
+    .leadmag{margin-top:12px}
+    .cta{background:linear-gradient(90deg,#ffd6a5,#ffb4c6);color:#041018;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}
+    footer{margin-top:20px;color:var(--muted);font-size:13px;text-align:center}
+    @media(max-width:800px){.hero{flex-direction:column}.approach{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <!-- Unique inline SVG for this page -->
+  <svg class='svg-unique' style='position:fixed;inset:0;pointer-events:none;opacity:0.05' xmlns='http://www.w3.org/2000/svg'>
+    <defs>
+      <linearGradient id='gabout' x1='0' x2='1'>
+        <stop offset='0' stop-color='#ffd6a5'/>
+        <stop offset='1' stop-color='#ffb4c6'/>
+      </linearGradient>
+    </defs>
+    <g>
+      <rect x='-10' y='-10' width='40%' height='60%' fill='url(#gabout)'></rect>
+      <circle cx='85%' cy='20%' r='160' fill='#fff' opacity='0.02'></circle>
+    </g>
+  </svg>
+
+  <div class='wrap'>
+    <nav>
+      <a href='index.html'>Home</a>
+      <a href='services.html'>Services</a>
+      <a href='blends.html'>Blends</a>
+      <a href='shop.html'>Store</a>
+      <a href='pricing.html'>Rates</a>
+      <a href='about.html'>Who we are</a>
+      <a href='book.html'>Book</a>
+      <a href='contact.html'>Contact</a>
+    </nav>
+
+    <div class='hero'>
+      <div class='bio card'>
+        <h1>About {{PRACTITIONER_NAME}}</h1>
+        <p class='muted'>A practical, safety-first aromatherapy practice rooted in scent education, hands-on blending, and clear usage guidance. My approach is tailored and evidence-respecting — not a substitute for medical care.</p>
+        <p class='muted'>I trained in clinical-grade aroma technique and botanical safety and have worked with individuals seeking sensory support, mindful workplace scenting, and custom ritual blends.</p>
+
+        <div class='approach'>
+          <div class='card'>
+            <strong>Method</strong>
+            <p class='muted'>Intake & scent mapping → formulation with documented dilutions → education for safe daily use.</p>
+          </div>
+          <div class='card'>
+            <strong>Values</strong>
+            <p class='muted'>Respect for individual sensitivity, transparency about contraindications, and practical takeaways you can use at home.</p>
+          </div>
+        </div>
+
+        <div style='margin-top:12px'>
+          <a class='cta' href='book.html'>Reserve a personalized session</a>
+        </div>
+      </div>
+
+      <aside class='profile card'>
+        <h3 style='margin:0;color:#fff'>Credentials</h3>
+        <p class='muted' style='margin:6px 0 0'>Certified aromatherapist and registered practitioner in safe essential oil use. Ongoing training in botanical safety and fragrance psychology.</p>
+
+        <div style='margin-top:12px'>
+          <strong style='color:#fff'>Locations</strong>
+          <div class='muted'>{{CITY}}, {{STATE}}</div>
+        </div>
+
+        <div style='margin-top:12px'>
+          <strong style='color:#fff'>Contact</strong>
+          <div class='muted'><a href='mailto:{{EMAIL}}' style='color:var(--muted)'>{{EMAIL}}</a></div>
+          <div class='muted'><a href='tel:{{PHONE}}' style='color:var(--muted)'>{{PHONE}}</a></div>
+        </div>
+      </aside>
+    </div>
+
+    <section class='card' style='margin-top:16px'>
+      <h2 style='margin:0;color:var(--accent)'>Philosophy: scent as a practical tool</h2>
+      <p class='muted'>I view aroma as an expressive tool that can shape environment and routine when used with respect and clarity. Sessions emphasize reproducible routines — labeled blends, clear dilution notes, and safe storage recommendations.</p>
+
+      <div style='margin-top:12px'>
+        <strong style='color:#fff'>What I don't do</strong>
+        <p class='muted'>I do not diagnose, treat, or claim cures for medical conditions. I provide sensory and lifestyle support, and when health conditions are relevant I encourage collaboration with your healthcare provider.</p>
+      </div>
+    </section>
+
+    <section class='card faq' style='margin-top:16px'>
+      <h3 style='margin:0;color:#ffd6a5'>Safety Q&A</h3>
+      <div style='margin-top:8px'>
+        <strong>Dilution guidance</strong>
+        <p class='muted'>We provide dilution percentages for every topical product and explain adjustments for age and sensitivity.</p>
+      </div>
+      <div>
+        <strong>Patch testing</strong>
+        <p class='muted'>A patch test is strongly recommended for new topical blends and will be covered during the session.</p>
+      </div>
+      <div>
+        <strong>Pets & oils</strong>
+        <p class='muted'>We use pet-aware guidelines and will adapt blends if animals are in your home. Some oils are avoided where animal exposure is likely.</p>
+      </div>
+      <div>
+        <strong>Pregnancy note</strong>
+        <p class='muted'>Pregnancy warrants extra caution. We provide pregnancy-safe alternatives and will omit oils commonly discouraged in prenatal care.</p>
+      </div>
+    </section>
+
+    <section class='card leadmag' style='margin-top:16px'>
+      <h3 style='margin:0;color:#fff'>Free: Quick safety checklist</h3>
+      <p class='muted'>Get a printable checklist for dilution and storage. Ideal for new blend-makers and gifting guidance.</p>
+      <form action='{{PRIMARY_CTA_URL}}' method='post' style='display:flex;gap:8px;margin-top:8px'>
+        <input type='email' name='email' placeholder='Email address' required>
+        <button class='cta' type='submit'>Send checklist</button>
+      </form>
+    </section>
+
+    <footer>
+      <div class='muted'>{{BUSINESS_NAME}} • {{PRACTITIONER_NAME}} • {{CITY}}, {{STATE}} • <a href='mailto:{{EMAIL}}' style='color:var(--muted)'>{{EMAIL}}</a></div>
+    </footer>
+  </div>
+</body>
+</html>

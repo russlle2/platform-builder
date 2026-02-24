@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{{BUSINESS_NAME}} — Integrative Session Planning</title>
+  <meta name="description" content="Personalized session planning and a whole-person inventory to shape practical, context-aware integrative care." />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand">
+      <svg class="logo" width="48" height="48" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22" fill="url(#g)" stroke="#fff" stroke-width="1"/></svg>
+      <div class="brand-text">
+        <strong class="biz">{{BUSINESS_NAME}}</strong>
+        <span class="tag">A modern integrative practice</span>
+      </div>
+    </div>
+    <nav class="main-nav">
+      <a href="index.html">Begin</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Conditions</a>
+      <a href="approach.html">Method</a>
+      <a href="pricing.html">Investments</a>
+      <a href="about.html">Team</a>
+      <a href="book.html" class="primary">{{PRIMARY_CTA_LABEL}}</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-inner">
+        <h1>Blueprints for resilient living—made to match your whole life</h1>
+        <p class="lead">We map your current priorities, conditions, and constraints into a compact, doable plan you can use between sessions.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <a class="btn" href="#planner">Try the Session Planner</a>
+        </div>
+      </div>
+      <div class="pattern" aria-hidden="true"></div>
+    </section>
+
+    <section id="planner" class="session-planner">
+      <h2>Session Planner</h2>
+      <p class="muted">Draft a focused session sequence and export a one-page summary you can bring to consultations or share with a coach.</p>
+      <form id="planner-form">
+        <label>Primary goal
+          <input type="text" id="goal" placeholder="e.g., reduce mid-day energy drops" />
+        </label>
+        <div class="row">
+          <label>Session length
+            <select id="length"><option>30 min</option><option>45 min</option><option>60 min</option></select>
+          </label>
+          <label>Cadence
+            <select id="cadence"><option>Weekly</option><option>Bi-weekly</option><option>Monthly</option></select>
+          </label>
+        </div>
+        <label>Focus areas (pick up to 4)</label>
+        <div class="chips" id="focus-chips">
+          <label><input type="checkbox" value="Sleep"/> Sleep</label>
+          <label><input type="checkbox" value="Nutrition"/> Nutrition</label>
+          <label><input type="checkbox" value="Movement"/> Movement</label>
+          <label><input type="checkbox" value="Stress"/> Stress Regulation</label>
+          <label><input type="checkbox" value="Digestion"/> Digestion</label>
+          <label><input type="checkbox" value="Energy"/> Energy/Mood</label>
+          <label><input type="checkbox" value="Work-Life"/> Work-Life Flow</label>
+        </div>
+        <label>Preferred modalities
+          <select id="modalities" multiple>
+            <option>Nutrition coaching</option>
+            <option>Movement prescription</option>
+            <option>Mindfulness & breathwork</option>
+            <option>Lab-guided steps</option>
+            <option>Functional coaching</option>
+          </select>
+        </label>
+        <label>Notes
+          <textarea id="notes" placeholder="Anything else to include..."></textarea>
+        </label>
+        <div class="form-actions">
+          <button type="button" id="build-plan" class="btn btn-primary">Build plan</button>
+          <button type="button" id="clear-plan" class="btn">Reset</button>
+        </div>
+      </form>
+
+      <div class="plan-output">
+        <h3>Your Session Summary</h3>
+        <textarea id="plan-text" readonly rows="8" spellcheck="false"></textarea>
+        <div class="output-actions">
+          <button id="copy-plan" class="btn">Copy</button>
+          <a id="download-plan" class="btn" download="session-plan.txt">Download</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="inventory" class="inventory">
+      <h2>Whole-person Inventory</h2>
+      <p class="muted">Check the areas that feel important now. We use your selections to generate a consultation agenda and a follow-up cadence.</p>
+      <form id="inventory-form">
+        <div class="grid">
+          <label><input type="checkbox" value="Sleep"/> Sleep & Rest
+          </label>
+          <label><input type="checkbox" value="Nutrition"/> Nutrition
+          </label>
+          <label><input type="checkbox" value="Digestion"/> Digestion
+          </label>
+          <label><input type="checkbox" value="Movement"/> Movement & Strength
+          </label>
+          <label><input type="checkbox" value="Stress"/> Stress & Recovery
+          </label>
+          <label><input type="checkbox" value="Mood"/> Mood & Emotion
+          </label>
+          <label><input type="checkbox" value="Energy"/> Energy & Focus
+          </label>
+          <label><input type="checkbox" value="Relationships"/> Relationships
+          </label>
+          <label><input type="checkbox" value="Work"/> Work & Daily Rhythm
+          </label>
+          <label><input type="checkbox" value="Environment"/> Home & Environment
+          </label>
+        </div>
+        <div class="form-actions">
+          <button type="button" id="build-agenda" class="btn btn-primary">Create agenda</button>
+          <button type="button" id="clear-inv" class="btn">Clear</button>
+        </div>
+      </form>
+
+      <div class="inventory-output">
+        <h3>Consultation Agenda</h3>
+        <textarea id="agenda-text" readonly rows="6" spellcheck="false"></textarea>
+        <h3>Suggested Follow-up Cadence</h3>
+        <textarea id="cadence-text" readonly rows="3" spellcheck="false"></textarea>
+        <div class="output-actions">
+          <button id="copy-agenda" class="btn">Copy agenda</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="story">
+      <div class="story-inner">
+        <h2>Why this way?</h2>
+        <p>People are complex; so are their lives. We build brief, measurable steps that fit into your routines and priorities—so progress is visible and sustainable. Each plan is educational and adaptable, not prescriptive or guaranteed.</p>
+      </div>
+    </section>
+
+    <section class="framework">
+      <h2>Our approach</h2>
+      <ol>
+        <li><strong>Map:</strong> Understand current demands and medical context.</li>
+        <li><strong>Prioritize:</strong> Select 1–3 leverage points for early wins.</li>
+        <li><strong>Design:</strong> Create short cycles that combine behavior, tests where appropriate, and self-monitoring.</li>
+        <li><strong>Adjust:</strong> Iterate based on outcomes and lived experience.</li>
+      </ol>
+    </section>
+
+    <section class="offers">
+      <h2>Programs & Formats</h2>
+      <div class="cards">
+        <div class="card">
+          <h3>Starter Cycle</h3>
+          <p>3-session focused plan for acute priorities and immediate tools.</p>
+          <div class="price">$375</div>
+        </div>
+        <div class="card">
+          <h3>Guided Rhythm</h3>
+          <p>6-session program with mid-cycle check-ins and remote tracking.</p>
+          <div class="price">$995</div>
+        </div>
+        <div class="card">
+          <h3>Comprehensive Path</h3>
+          <p>12-session collaborative program with labs, coaching, and integration steps.</p>
+          <div class="price">$1950</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pricing">
+      <h2>Transparent investments</h2>
+      <p class="muted">Sessions and programs are offered a la carte or bundled. Sliding scale options are available on request; we prioritize access where possible.</p>
+      <ul>
+        <li>Single consult: $165–$225 depending on length and scope.</li>
+        <li>Packages: savings available for bundled visits.</li>
+        <li>Remote check-ins: short visits at reduced rates.</li>
+      </ul>
+    </section>
+
+    <section class="testimonials">
+      <h2>Voices</h2>
+      <blockquote>"Helpful, nuanced conversations that balanced clinical data and daily life." — A local client</blockquote>
+      <blockquote>"Clear mini-plans that I could actually follow instead of feeling overwhelmed." — A working parent</blockquote>
+    </section>
+
+    <section class="cta">
+      <h2>Ready to reserve a space?</h2>
+      <p>Book a clarity visit to turn what matters into the next practical steps.</p>
+      <a class="btn btn-primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      <p class="muted">Or call <a href="tel:{{PHONE}}">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <small>&copy; <span id="year"></span> {{BUSINESS_NAME}} — Serving {{CITY}}, {{STATE}}. Not medical advice; educational resources only.</small>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

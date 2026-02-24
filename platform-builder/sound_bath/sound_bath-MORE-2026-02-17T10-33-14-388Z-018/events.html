@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gatherings — {{BUSINESS_NAME}}</title>
+<style>
+:root{--bg:#0f1113;--card:#0b0c0d;--muted:#9aa0a6;--accent:#7dd3fc;--glass:rgba(255,255,255,0.03)}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#e6eef3;background:linear-gradient(180deg,#071018 0%, #071016 60%), url('assets/img/pattern.svg');background-size:300px;min-height:100vh}
+.header{display:flex;align-items:center;justify-content:space-between;padding:22px 28px}
+.brand{font-weight:700;letter-spacing:0.4px;color:var(--accent)}
+.nav{display:flex;gap:18px}
+.nav a{color:var(--muted);text-decoration:none;padding:8px;border-radius:6px}
+.nav a:hover{color:#fff;background:var(--glass)}
+.hero{padding:40px 28px;display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start}
+.hero .lead{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:28px;border-radius:12px}
+.small{color:var(--muted);font-size:14px}
+.card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px;margin-bottom:14px}
+.next-event{border-left:3px solid var(--accent);padding-left:14px}
+.calendar{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:12px}
+.event-item{padding:12px;border-radius:10px;background:#071217;border:1px solid rgba(255,255,255,0.02)}
+.meta{font-size:13px;color:var(--muted)}
+.cta{display:inline-block;margin-top:12px;padding:10px 14px;background:var(--accent);color:#08202a;border-radius:8px;text-decoration:none;font-weight:600}
+.disclaimer{font-size:13px;color:#d6dce2;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);padding:12px;border-radius:8px;margin-top:10px}
+.footer{padding:28px;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+@media(max-width:800px){.hero{grid-template-columns:1fr;}.nav{display:none}}
+</style>
+</head>
+<body>
+<header class="header">
+<div class="brand">{{BUSINESS_NAME}}</div>
+<nav class="nav">
+<a href="events.html">Gatherings</a>
+<a href="private-sessions.html">Privates</a>
+<a href="pricing.html">Investment</a>
+<a href="about.html">Story</a>
+<a href="faq.html">Help</a>
+<a href="book.html">{{PRIMARY_CTA_LABEL}}</a>
+</nav>
+</header>
+
+<section class="hero">
+<div class="lead">
+<h1 style="margin:0 0 8px 0">Upcoming gatherings for focused unwinding</h1>
+<p class="small">A series of guided sound experiences mixing bowls, subtle percussion and breath cues — crafted for quick recalibration after the day's friction.</p>
+
+<div class="card next-event" id="nextEventCard">
+<div class="meta">Next session</div>
+<h2 id="nextEventTitle">Loading…</h2>
+<div class="meta" id="nextEventWhen"></div>
+<p id="nextEventBlurb" class="small" style="margin-top:8px"></p>
+<a id="nextEventCTA" class="cta" href="{{PRIMARY_CTA_URL}}">Reserve a spot</a>
+</div>
+
+<div class="card">
+<div class="meta">Quick calendar</div>
+<div id="calendarList" class="calendar" aria-live="polite"></div>
+</div>
+
+<div class="card">
+<div class="meta">Plan a group</div>
+<p class="small">Private group sessions and studio rentals available. Tailored sequences for teams, retreats and small cohorts.</p>
+<a class="cta" href="private-sessions.html">Inquire about privates</a>
+</div>
+
+</div>
+
+<aside>
+<div class="card">
+<h3 style="margin:0 0 8px 0">Why come</h3>
+<p class="small">Short-form sonic landscapes to lower the sympathetic tone and invite a clearer exhale. No prior practice required.</p>
+</div>
+
+<div class="card">
+<h4 style="margin:0 0 8px 0">Contraindications</h4>
+<p class="small">Sound sessions may not suit those with certain cardiovascular conditions, pregnancy without clearance, recent head injury, or implanted medical devices. Please consult your clinician and email <a href="mailto:{{EMAIL}}" style="color:var(--accent)">{{EMAIL}}</a> with questions.</p>
+</div>
+
+</aside>
+</section>
+
+<footer class="footer">
+<div>{{CITY}}, {{STATE}} • <a href="contact.html" style="color:var(--muted);text-decoration:none">{{PHONE}}</a></div>
+<div><a href="book.html" class="cta">{{PRIMARY_CTA_LABEL}}</a></div>
+</footer>
+
+<script>
+(function(){
+const events = [
+{title:'Dusk Breath Batch',date:'2026-03-05T18:30:00',blurb:'A steady 45-minute sound sequence for decompression.'},
+{title:'Midday Clarity Session',date:'2026-02-20T12:15:00',blurb:'Short midday reset with bells and voice.'},
+{title:'Weekend Deep Drift',date:'2026-03-14T10:00:00',blurb:'An extended group immersion for slow settling.'},
+{title:'Lunar Evening',date:'2026-02-25T19:00:00',blurb:'Gentle tones and breath prompts to close the day.'}
+];
+
+function isoToLocal(d){const dt=new Date(d);return dt.toLocaleString(undefined,{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}
+function now(){return new Date()}
+const upcoming = events.filter(e=>new Date(e.date)>now()).sort((a,b)=>new Date(a.date)-new Date(b.date));
+const next = upcoming[0];
+if(next){
+document.getElementById('nextEventTitle').textContent = next.title;
+document.getElementById('nextEventWhen').textContent = isoToLocal(next.date);
+document.getElementById('nextEventBlurb').textContent = next.blurb;
+document.getElementById('nextEventCTA').href = 'book.html?event='+encodeURIComponent(next.title);
+} else {
+document.getElementById('nextEventCard').innerHTML = '<div class="meta">No upcoming sessions</div><p class="small">No scheduled gatherings are available right now. Sign up to be notified when new dates are added.</p><a class="cta" href="contact.html">Contact us</a>'
+}
+
+const list = document.getElementById('calendarList');
+events.sort((a,b)=>new Date(a.date)-new Date(b.date)).forEach(e=>{
+const el = document.createElement('div');
+el.className='event-item';
+el.innerHTML = '<strong>'+e.title+'</strong><div class="meta">'+isoToLocal(e.date)+'</div><div class="small" style="margin-top:6px">'+e.blurb+'</div><a class="cta" style="margin-top:8px;display:inline-block" href="book.html?event='+encodeURIComponent(e.title)+'">Join</a>';
+list.appendChild(el);
+});
+
+// lightweight local subscribe (no backend)
+window.subscribeToNotify = function(){
+alert('Thanks — we will reach out with new dates. Email: {{EMAIL}}');
+}
+})();
+</script>
+</body>
+</html>

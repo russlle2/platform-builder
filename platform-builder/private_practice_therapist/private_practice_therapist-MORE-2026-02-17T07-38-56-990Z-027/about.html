@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--accent:#6a4fbf;--muted:#6b7280;--bg:#fbfbfe;--card:#ffffff;--glass:rgba(255,255,255,0.6)}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;background:var(--bg);color:#0f172a}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;background:linear-gradient(180deg,rgba(106,79,191,0.06),transparent);backdrop-filter: blur(6px);position:sticky;top:0;z-index:10}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none;font-size:15px}
+    .cta{background:var(--accent);color:white;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}
+
+    .hero{padding:56px 24px 36px;display:grid;grid-template-columns:1fr;gap:20px;background-image:url('assets/img/pattern.svg');background-repeat:repeat;background-size:260px}
+    .hero .card{background:linear-gradient(180deg,rgba(255,255,255,0.8),rgba(250,250,253,0.7));padding:28px;border-radius:14px;box-shadow:0 6px 24px rgba(12,18,33,0.06)}
+    h1{margin:0 0 8px 0;font-size:28px}
+    p.lead{margin:0;color:var(--muted)}
+
+    .wrap{max-width:980px;margin:24px auto;padding:0 20px}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:18px}
+    .panel{background:var(--card);padding:20px;border-radius:12px;box-shadow:0 6px 24px rgba(11,15,30,0.04)}
+
+    /* Reveal animation */
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity 420ms cubic-bezier(.2,.9,.26,1),transform 420ms cubic-bezier(.2,.9,.26,1)}
+    .reveal.is-visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion: reduce){
+      .reveal{opacity:1;transform:none;transition:none}
+    }
+
+    /* Session planner */
+    .planner label{display:block;font-weight:600;margin:12px 0 6px}
+    .planner input,.planner select,.planner textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9f0}
+    .btn-row{display:flex;gap:10px;margin-top:12px}
+    .btn{padding:10px 12px;border-radius:10px;border:none;cursor:pointer}
+    .btn.primary{background:var(--accent);color:white}
+    .btn.ghost{background:#f1f3f8}
+    pre.summary{white-space:pre-wrap;word-wrap:break-word;background:#0f172a;color:#f8fafc;padding:14px;border-radius:8px;margin-top:12px;font-size:13px}
+
+    footer{padding:28px 20px;color:var(--muted);font-size:13px}
+    .fineprint{margin-top:12px;color:#475569;font-size:13px}
+
+    @media (max-width:880px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">T</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav aria-label="Primary navigation">
+      <a href="index.html">Home</a>
+      <a href="specialties.html">Areas</a>
+      <a href="approach.html">How I Work</a>
+      <a href="fees.html">Fees</a>
+      <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap card reveal" data-reveal>
+        <h1>About the practice</h1>
+        <p class="lead">I provide thoughtful, clinician-led therapy for adults, and I run small learning cohorts when people want shared structure. Sessions are private, time-limited, and guided by your goals.</p>
+      </div>
+    </section>
+
+    <section class="wrap">
+      <div class="grid">
+        <div class="panel reveal" data-reveal>
+          <h2 style="margin-top:0">A little about me</h2>
+          <p style="color:var(--muted)">I combine evidence-based approaches with practical, human-centered work: helping people notice the patterns that matter, pick experiments that fit daily life, and tend to relationships and roles that often feel tangled. My style is steady, curious, and direct — alongside warmth.</p>
+
+          <h3 style="margin-top:18px">My training & scope</h3>
+          <ul style="color:var(--muted)">
+            <li>Licensed clinician with experience in adult therapy</li>
+            <li>Common focuses: life transitions, anxiety, relationship stress, new-parent adjustment, work-related stress</li>
+            <li>Therapeutic tools include CBT, ACT, and relational approaches</li>
+          </ul>
+
+          <div class="fineprint">
+            Confidentiality: what you share in sessions is protected by clinical confidentiality, with exceptions required by law (e.g., imminent risk of harm). I do not provide emergency/crisis services. If you are in crisis, please contact local emergency services or a crisis line.
+          </div>
+        </div>
+
+        <aside class="panel reveal" data-reveal>
+          <h3 style="margin-top:0">Session Planner</h3>
+          <div class="planner">
+            <label for="concern">What's the main thing you want to work on?</label>
+            <input id="concern" placeholder="e.g., managing worry about work" />
+
+            <label for="goal">What would count as progress in 3 months?</label>
+            <input id="goal" placeholder="e.g., calmer evenings, clearer boundaries" />
+
+            <label for="format">Preferred format</label>
+            <select id="format"><option>Individual</option><option>Cohort (small group)</option><option>Virtual</option></select>
+
+            <label for="frequency">Frequency</label>
+            <select id="frequency"><option>Weekly</option><option>Biweekly</option><option>Monthly check-ins</option></select>
+
+            <label for="notes">Anything else to note (history, supports)?</label>
+            <textarea id="notes" rows="3" placeholder="e.g., previous therapy, medication, supports"></textarea>
+
+            <div class="btn-row">
+              <button class="btn primary" id="buildPlan">Build Plan</button>
+              <button class="btn ghost" id="clearPlan">Clear</button>
+            </div>
+
+            <pre id="summary" class="summary" aria-live="polite">Your session plan will appear here.</pre>
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button class="btn primary" id="copyPlan">Copy Plan</button>
+              <a class="btn" href="{{PRIMARY_CTA_URL}}">Book a consult</a>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <div class="reveal" data-reveal style="margin-top:18px">
+        <h3>Community & cohorts</h3>
+        <p style="color:var(--muted)">When aligned with goals, I lead short cohorts — small, structured groups that blend psychoeducation and practice. They are optional, professionally-facilitated, and run on a calendar so members move together. Participation is always confidential within the group boundaries.</p>
+      </div>
+    </section>
+
+    <section class="wrap reveal" data-reveal style="margin-top:28px">
+      <div class="panel">
+        <h3 style="margin-top:0">Ready to start?</h3>
+        <p style="color:var(--muted)">If this feels like a good fit, you can book a short consultation to talk through needs and next steps. I aim to help you leave each session with at least one clear thing to try.</p>
+        <div style="margin-top:12px"><a class="cta" href="{{PRIMARY_CTA_URL}}">Start a quick consult</a></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="max-width:980px;margin:0 auto;padding:0 20px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
+        <div>
+          <strong>{{BUSINESS_NAME}}</strong><br>
+          <span style="color:var(--muted)">{{CITY}}, {{STATE}}</span>
+        </div>
+        <div style="text-align:right">
+          <div style="font-weight:700">Contact</div>
+          <div style="color:var(--muted)">{{PHONE}} | {{EMAIL}}</div>
+        </div>
+      </div>
+
+      <div class="fineprint">
+        Scope: Clinical therapy focuses on non-emergency mental health concerns for adults. If you are experiencing an emergency, please call local emergency services or a crisis hotline. Sessions respect privacy and professional boundaries. Fees, scheduling, and policies are shared at intake.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function(){
+      // Scroll reveal respecting prefers-reduced-motion
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      function revealInit(){
+        const els = document.querySelectorAll('[data-reveal]');
+        if(prefersReduced){ els.forEach(e=>e.classList.add('is-visible')); return; }
+        const io = new IntersectionObserver((entries)=>{
+          entries.forEach(ent=>{ if(ent.isIntersecting) ent.target.classList.add('is-visible'); });
+        },{threshold:0.12});
+        els.forEach(e=>io.observe(e));
+      }
+      revealInit();
+
+      // Session planner logic
+      function textSafe(s){ return (s||'').trim(); }
+      const buildBtn = document.getElementById('buildPlan');
+      const clearBtn = document.getElementById('clearPlan');
+      const copyBtn = document.getElementById('copyPlan');
+      const summaryEl = document.getElementById('summary');
+
+      function buildSummary(){
+        const concern = textSafe(document.getElementById('concern').value);
+        const goal = textSafe(document.getElementById('goal').value);
+        const format = textSafe(document.getElementById('format').value);
+        const freq = textSafe(document.getElementById('frequency').value);
+        const notes = textSafe(document.getElementById('notes').value);
+
+        const lines = [];
+        lines.push('{{BUSINESS_NAME}} — Personalized Session Plan');
+        lines.push('Location: {{CITY}}, {{STATE}}');
+        lines.push('Contact: {{PHONE}} / {{EMAIL}}');
+        lines.push('---');
+        lines.push('Primary focus: ' + (concern || '[not specified]'));
+        lines.push('Short-term goal (3 months): ' + (goal || '[not specified]'));
+        lines.push('Format: ' + (format || 'Individual'));
+        lines.push('Suggested cadence: ' + (freq || 'Weekly'));
+        if(notes) lines.push('Notes: ' + notes);
+        lines.push('---');
+        lines.push('Suggested first session topics:');
+        lines.push('- Clarify one specific, doable step to try this week');
+        lines.push('- Explore past attempts and supports');
+        lines.push('- Agree on check-in items for next meeting');
+
+        lines.push('To book: ' + '{{PRIMARY_CTA_URL}}');
+        return lines.join('\n');
+      }
+
+      if(buildBtn){ buildBtn.addEventListener('click',()=>{ summaryEl.textContent = buildSummary(); }); }
+      if(clearBtn){ clearBtn.addEventListener('click',()=>{ ['concern','goal','notes'].forEach(id=>document.getElementById(id).value=''); document.getElementById('format').selectedIndex=0; document.getElementById('frequency').selectedIndex=0; summaryEl.textContent='Your session plan will appear here.'; }); }
+      if(copyBtn){ copyBtn.addEventListener('click',async ()=>{ try{ await navigator.clipboard.writeText(summaryEl.textContent); copyBtn.textContent='Copied'; setTimeout(()=>copyBtn.textContent='Copy Plan',1600); }catch(e){ alert('Copy failed: ' + e); } }); }
+
+    })();
+  </script>
+</body>
+</html>

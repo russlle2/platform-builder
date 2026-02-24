@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Method — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fffaf6;--ink:#0b1220;--muted:#51606a;--accent:#c06a6a;--card:#fff}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:var(--bg);color:var(--ink)}
+    header{position:sticky;top:0;background:rgba(255,255,255,0.9);border-bottom:1px solid rgba(11,18,32,0.04)}
+    .nav{max-width:1100px;margin:0 auto;padding:12px;display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none}
+    main{max-width:1100px;margin:28px auto;padding:0 20px}
+    .lead{background:linear-gradient(90deg,#fffaf0,#fff);padding:22px;border-radius:14px;box-shadow:0 8px 30px rgba(10,14,20,0.04)}
+    h1{margin:0 0 8px}
+    .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:18px}
+    .step{background:var(--card);padding:16px;border-radius:10px;border:1px solid rgba(11,18,32,0.04)}
+    .muted{color:var(--muted)}
+
+    .reveal{opacity:0;transform:translateY(12px);transition:opacity 480ms ease,transform 480ms cubic-bezier(.2,.9,.3,1)}
+    .reveal.visible{opacity:1;transform:none}
+
+    .try-inline{display:inline-block;padding:8px 10px;background:var(--accent);color:#fff;border-radius:10px;text-decoration:none}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="about.html">Who I am</a>
+        <a href="specialties.html">Services</a>
+        <a href="approach.html" class="primary">Method</a>
+        <a href="contact.html">Reach</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="lead reveal" aria-labelledby="method-title">
+      <h1 id="method-title">How I help people find steadier ways of living</h1>
+      <p class="muted">My method is relational and pragmatic: we notice patterns, try small experiments, and name practical steps that fit your life. I aim for clarity over jargon, and for plans you can actually keep.</p>
+      <div style="margin-top:12px">
+        <a href="#practice-steps" class="try-inline">Explore the steps</a>
+      </div>
+    </section>
+
+    <section id="practice-steps" style="margin-top:18px">
+      <div class="steps">
+        <div class="step reveal">
+          <strong>1. Map the moment</strong>
+          <p class="muted">We begin by naming the immediate concern and how it plays out day-to-day.</p>
+        </div>
+        <div class="step reveal">
+          <strong>2. Choose a small test</strong>
+          <p class="muted">Rather than wholesale change, we pick an experiment you can try between sessions.</p>
+        </div>
+        <div class="step reveal">
+          <strong>3. Review & adapt</strong>
+          <p class="muted">We review what happened, refine the approach, and solidify useful shifts.</p>
+        </div>
+        <div class="step reveal">
+          <strong>4. Build routines</strong>
+          <p class="muted">Over time, practices and brief skills become more automatic and less effortful.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="reveal" style="margin-top:18px;padding:18px;background:linear-gradient(180deg,#fff,#fffaf4);border-radius:12px;"> 
+      <h2 style="margin:0 0 8px">Clinical priorities</h2>
+      <ul class="muted" style="margin:0;padding-left:18px">
+        <li>Respect for your values and pace</li>
+        <li>Clear boundaries about confidentiality and emergencies</li>
+        <li>Practical skills tested in everyday contexts</li>
+      </ul>
+    </section>
+
+    <section style="margin-top:18px" class="reveal">
+      <h3 style="margin:0 0 8px">A note on limits</h3>
+      <p class="muted">If your needs are outside my expertise, or if a medical or legal opinion is required, I will discuss alternatives and refer to appropriate services. If you are in immediate danger, please call emergency services.</p>
+    </section>
+
+    <section style="margin-top:18px" class="reveal panel">
+      <h3 style="margin:0 0 8px">Try a brief practice</h3>
+      <p class="muted" style="margin:0 0 8px">A two-minute prompt you can do now to notice breathing and stance.</p>
+      <button id="mini-practice" class="try-inline">Start two-minute check</button>
+    </section>
+
+  </main>
+
+  <script>
+    // Scroll reveal with reduced-motion awareness
+    (function(){
+      var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var els = document.querySelectorAll('.reveal');
+      if(reduced){ els.forEach(function(x){ x.classList.add('visible'); }); return; }
+      var io = new IntersectionObserver(function(entries){ entries.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add('visible'); io.unobserve(en.target); } }); }, {threshold:0.1});
+      els.forEach(function(i){ io.observe(i); });
+    })();
+
+    // Mini guided practice (inline, no modal)
+    (function(){
+      var btn = document.getElementById('mini-practice');
+      btn.addEventListener('click', function(){
+        var start = Date.now();
+        var duration = 120000; // 2 minutes
+        var step = function(){
+          var elapsed = Date.now()-start;
+          if(elapsed >= duration){ alert('Practice complete. Notice anything different?'); return; }
+          // simple breathing prompt via alert-free timed console messages
+        };
+        // Create a subtle on-screen prompt element
+        var over = document.createElement('div');
+        over.style.position='fixed';over.style.left='50%';over.style.top='12%';over.style.transform='translateX(-50%)';over.style.background='rgba(0,0,0,0.7)';over.style.color='white';over.style.padding='14px 18px';over.style.borderRadius='12px';over.style.zIndex=120;over.style.fontWeight=600;over.id='mini-overlay';
+        document.body.appendChild(over);
+        var phase = 0; // 0 inhale 1 exhale
+        var counts = [4,6];
+        over.textContent='Start: gentle inhale for 4...';
+        var interval = setInterval(function(){
+          if(phase===0){ over.textContent='Breathe in — 4'; phase=1; } else { over.textContent='Breathe out — 6'; phase=0; }
+        }, 5000);
+        setTimeout(function(){ clearInterval(interval); document.body.removeChild(over); alert('Two-minute practice finished. Sit for a moment and notice.'); }, duration);
+      });
+    })();
+  </script>
+</body>
+</html>

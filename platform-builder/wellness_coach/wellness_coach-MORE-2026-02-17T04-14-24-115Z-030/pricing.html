@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Rates — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfbfa;--muted:#65707a;--accent:#6b8e72;--card:#ffffff;--glass:rgba(255,255,255,0.7)}
+    *{box-sizing:border-box;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#fbfbfa 0%,#fff 100%);color:#102023}
+    /* pattern layer */
+    .pattern-wrap{position:fixed;inset:0;pointer-events:none;z-index:-1;opacity:.12}
+    svg#pattern{width:100%;height:100%;display:block}
+
+    header{display:flex;justify-content:space-between;align-items:center;padding:20px 28px}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-weight:600}
+
+    .hero{padding:48px 28px 20px;display:flex;gap:28px;align-items:center}
+    .hero .intro{max-width:680px}
+    h1{margin:0 0 10px;font-size:28px;line-height:1.05}
+    p.lead{margin:0;color:var(--muted);font-size:15px}
+
+    .controls{display:flex;gap:18px;align-items:center;margin-top:22px}
+    .mood{display:flex;gap:8px;align-items:center}
+    .mood button{background:#fff;border:1px solid #e6e9eb;padding:8px 10px;border-radius:10px;cursor:pointer}
+    .mood button.active{border-color:var(--accent);box-shadow:0 4px 18px rgba(107,142,114,.12)}
+
+    .panel{padding:22px;border-radius:14px;background:linear-gradient(180deg,var(--card),var(--glass));box-shadow:0 6px 28px rgba(16,32,35,.06);margin:22px 28px}
+    .price-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+    .card{padding:18px;border-radius:12px;background:white;border:1px solid #eef2f2}
+    .plan{font-weight:700;margin-bottom:6px}
+    .price{font-size:22px;font-weight:800;color:var(--accent)}
+    .meta{color:var(--muted);font-size:13px;margin-top:6px}
+
+    .toggle{display:inline-flex;background:#f3f6f5;border-radius:999px;padding:5px;border:1px solid #e8eeeb}
+    .toggle button{border:0;background:transparent;padding:6px 12px;border-radius:999px;cursor:pointer}
+    .toggle button.on{background:var(--accent);color:#fff}
+
+    .cta{display:inline-block;margin-top:14px;padding:12px 16px;border-radius:10px;background:var(--accent);color:#fff;text-decoration:none;font-weight:700}
+    footer{padding:28px;text-align:center;color:var(--muted);font-size:13px}
+
+    @media(min-width:900px){h1{font-size:36px}}
+  </style>
+</head>
+<body>
+  <div class='pattern-wrap' aria-hidden='true'>
+    <svg id='pattern' viewBox='0 0 800 600' preserveAspectRatio='xMidYMid slice' xmlns='http://www.w3.org/2000/svg'>
+      <defs>
+        <linearGradient id='g' x1='0' x2='1'><stop offset='0' stop-color='#dfeee7'/><stop offset='1' stop-color='#f7fbf9'/></linearGradient>
+        <pattern id='p' width='120' height='120' patternUnits='userSpaceOnUse'>
+          <rect width='120' height='120' fill='transparent'/>
+          <circle cx='16' cy='16' r='4' fill='#e9f4ee'/>
+          <circle cx='96' cy='96' r='6' fill='#f1faf7'/>
+          <path d='M0 60 C30 10,90 110,120 60' stroke='#e6f2ec' stroke-width='1' fill='none' opacity='0.9'/>
+        </pattern>
+      </defs>
+      <rect width='100%' height='100%' fill='url(#g)' opacity='0.9'/>
+      <rect width='100%' height='100%' fill='url(#p)' opacity='0.6'/>
+      <g transform='translate(40,30) rotate(-8)' opacity='0.14'>
+        <path d='M0 200 C140 80, 300 320, 420 180 C540 40,700 260,800 120 L800 600 L0 600 Z' fill='#eaf7ef'/>
+      </g>
+    </svg>
+  </div>
+
+  <header>
+    <div style='display:flex;align-items:center;gap:12px'>
+      <div style='font-weight:800;color:var(--accent)'>{{BUSINESS_NAME}}</div>
+      <div style='color:var(--muted);font-size:13px'>{{CITY}}, {{STATE}}</div>
+    </div>
+    <nav>
+      <a href='index.html'>Home</a>
+      <a href='services.html'>Offerings</a>
+      <a href='programs.html'>Paths</a>
+      <a href='pricing.html' style='color:var(--accent)'>Rates</a>
+      <a href='testimonials.html'>Stories</a>
+      <a href='book.html'>Book</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class='hero'>
+      <div class='intro'>
+        <h1>Small, clear choices that change how days feel</h1>
+        <p class='lead'>Pricing framed as a craft — pick an approach that matches your rhythm. No medical promises, only habits, frameworks, and measurable outcomes.</p>
+        <div class='controls'>
+          <div class='mood' aria-hidden='false'>
+            <label style='color:var(--muted);font-size:13px;padding-right:8px'>How are you today?</label>
+            <button class='mood-btn' data-key='flat'>Flat</button>
+            <button class='mood-btn' data-key='busy'>Busy</button>
+            <button class='mood-btn active' data-key='ready'>Ready</button>
+          </div>
+          <div style='margin-left:18px'>
+            <div class='toggle' role='tablist' aria-label='Pricing toggle'>
+              <button id='monthlyBtn' class='on' aria-pressed='true'>Monthly</button>
+              <button id='packageBtn' aria-pressed='false'>Package</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style='margin-left:auto;max-width:360px'>
+        <div class='panel'>
+          <div style='font-size:13px;color:var(--muted)'>Recommended</div>
+          <div style='font-size:18px;font-weight:800;margin-top:6px' id='methodTitle'>Rhythmic Sessions</div>
+          <div style='color:var(--muted);margin-top:8px' id='methodDesc'>Short guided sessions that fit into uneven weeks — root habits that hold.</div>
+          <a class='cta' id='primaryCta' href='book.html'>{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </div>
+    </section>
+
+    <section class='panel' aria-label='Pricing table'>
+      <div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:12px'>
+        <div style='font-weight:800'>Choose a rhythm</div>
+        <div style='color:var(--muted);font-size:13px'>Toggle to compare monthly vs package pricing</div>
+      </div>
+
+      <div class='price-grid' id='priceGrid'>
+        <div class='card'>
+          <div class='plan'>Seed Plan</div>
+          <div class='price' data-monthly='89' data-package='240'>$<span class='num'>89</span></div>
+          <div class='meta'>Start: 4 sessions / month. Habits + check-ins.</div>
+        </div>
+        <div class='card'>
+          <div class='plan'>Root Plan</div>
+          <div class='price' data-monthly='159' data-package='420'>$<span class='num'>159</span></div>
+          <div class='meta'>Core: 8 sessions / month. Frameworks + tracking.</div>
+        </div>
+        <div class='card'>
+          <div class='plan'>Flourish Plan</div>
+          <div class='price' data-monthly='269' data-package='720'>$<span class='num'>269</span></div>
+          <div class='meta'>Depth: 12 sessions / month. Habit design + review.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class='panel' aria-label='Compare details' style='margin:22px'>
+      <div style='display:flex;justify-content:space-between;align-items:center'>
+        <div>
+          <div style='font-weight:700'>What each model means</div>
+          <div style='color:var(--muted);margin-top:6px;font-size:14px'>Monthly: flexible care with rolling billing. Package: pre-paid focus blocks with a small saving.</div>
+        </div>
+        <div style='text-align:right'>
+          <div style='font-size:13px;color:var(--muted)'>Selected:</div>
+          <div id='selectedMode' style='font-weight:800'>Monthly</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} — Wellness coaching and practice design. Phone: {{PHONE}} • Email: {{EMAIL}}</div>
+  </footer>
+
+  <script>
+    // Pricing comparator
+    const monthlyBtn = document.getElementById('monthlyBtn');
+    const packageBtn = document.getElementById('packageBtn');
+    const selectedMode = document.getElementById('selectedMode');
+    const nums = document.querySelectorAll('.price .num');
+
+    function animateNumber(el, start, end, duration){
+      const startTime = performance.now();
+      function step(now){
+        const t = Math.min(1, (now - startTime) / duration);
+        const val = Math.round(start + (end - start) * easeOutCubic(t));
+        el.textContent = val;
+        if(t < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+    function easeOutCubic(t){ return 1 - Math.pow(1 - t, 3); }
+
+    function setMode(mode){
+      const isMonthly = mode === 'monthly';
+      monthlyBtn.classList.toggle('on', isMonthly);
+      packageBtn.classList.toggle('on', !isMonthly);
+      monthlyBtn.setAttribute('aria-pressed', isMonthly);
+      packageBtn.setAttribute('aria-pressed', !isMonthly);
+      selectedMode.textContent = isMonthly ? 'Monthly' : 'Package';
+
+      nums.forEach(nEl => {
+        const priceEl = nEl.parentElement;
+        const from = parseInt(nEl.textContent,10);
+        const to = parseInt(priceEl.getAttribute(isMonthly ? 'data-monthly' : 'data-package'),10);
+        animateNumber(nEl, from, to, 600);
+      });
+    }
+
+    monthlyBtn.addEventListener('click',()=>setMode('monthly'));
+    packageBtn.addEventListener('click',()=>setMode('package'));
+
+    // Mood-to-Method selector
+    const moodButtons = document.querySelectorAll('.mood-btn');
+    const methodTitle = document.getElementById('methodTitle');
+    const methodDesc = document.getElementById('methodDesc');
+    const primaryCta = document.getElementById('primaryCta');
+
+    const methods = {
+      flat: {title:'Gentle Momentum',desc:'Micro-steps and two-week check-ins to rebuild gentle momentum. Fits low-energy days.',ctaSuffix:'— Start Gentle Momentum'},
+      busy: {title:'Slice & Align',desc:'Short, tactical shifts to clear overloaded schedules and protect recovery minutes.',ctaSuffix:'— Reserve a Tactical Session'},
+      ready: {title:'Rhythmic Sessions',desc:'A steady cadence of sessions to build repeatable routines and habits.',ctaSuffix:'— Begin a Rhythmic Path'}
+    };
+
+    function pickMood(key){
+      const m = methods[key] || methods.ready;
+      methodTitle.textContent = m.title;
+      methodDesc.textContent = m.desc;
+      primaryCta.textContent = '{{PRIMARY_CTA_LABEL}} ' + m.ctaSuffix;
+      primaryCta.href = 'book.html?method=' + encodeURIComponent(m.title);
+      moodButtons.forEach(b=> b.classList.toggle('active', b.getAttribute('data-key')===key));
+    }
+
+    moodButtons.forEach(b => b.addEventListener('click', (e)=>{
+      pickMood(b.getAttribute('data-key'));
+    }));
+
+    // initialize
+    setMode('monthly');
+    pickMood('ready');
+  </script>
+</body>
+</html>

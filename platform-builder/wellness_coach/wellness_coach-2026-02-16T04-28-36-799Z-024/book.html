@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Book a Session — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff9f3;--accent:#b56b43;--muted:#7b5f52;--ink:#3a2f2b;--card:#fff;--radius:12px;--max:980px}
+    body{margin:0;padding:28px;background:var(--bg);font-family:system-ui,Segoe UI,Roboto,Arial;color:var(--ink)}
+    .wrap{max-width:var(--max);margin:0 auto}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;margin-left:12px}
+    h1{margin-top:18px}
+    .layout{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px}
+    .card{background:var(--card);padding:18px;border-radius:var(--radius);box-shadow:0 10px 30px rgba(181,107,67,0.06);border:1px solid rgba(181,107,67,0.06)}
+    label{display:block;font-weight:700;margin-top:8px}
+    input,textarea,select{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(58,47,43,0.06);margin-top:6px}
+    .note{color:var(--muted);font-size:14px;margin-top:8px}
+    .cta{display:inline-block;background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:800;margin-top:12px}
+    .aside .small{font-size:14px;color:var(--muted)}
+    .steps{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+    .step{background:linear-gradient(90deg,#fff,#fff8f2);border-radius:10px;padding:10px;border-left:6px solid var(--accent)}
+    .faq{margin-top:14px}
+    @media (max-width:920px){.layout{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,#d7a381,#b56b43);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800">WC</div>
+        <div>
+          <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="services.html">Services</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <h1>Reserve your session — simple booking</h1>
+      <p class="note">Choose a session type, share a little about where you are, and pick times that work. I'll follow up within 48 hours to confirm.</p>
+
+      <div class="layout">
+        <div class="card">
+          <form action="/" method="post" onsubmit="alert('This is a static demo. Replace with your booking flow.');return false;">
+            <label for="name">Your name</label>
+            <input id="name" name="name" placeholder="First & last" required>
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="you@example.com" required>
+
+            <label for="type">Choose a session</label>
+            <select id="type" name="type">
+              <option>30-min Clarity Call — free</option>
+              <option>60-min Focus Session — $195</option>
+              <option>VIP Day — $2,950</option>
+              <option>12-week Root Work — custom schedule</option>
+            </select>
+
+            <label for="when">Preferred days/times</label>
+            <input id="when" name="when" placeholder="Weekdays mornings, Wed afternoons, etc.">
+
+            <label for="notes">Brief context</label>
+            <textarea id="notes" name="notes" rows="4" placeholder="What would you like to focus on?"></textarea>
+
+            <div style="margin-top:10px">
+              <button class="cta" type="submit">Request booking</button>
+            </div>
+
+            <div class="note" style="margin-top:10px">By booking you agree to follow-up emails and suggested pre-work. For any questions, email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</div>
+          </form>
+        </div>
+
+        <aside class="card aside">
+          <div style="display:flex;gap:12px;align-items:center">
+            <img src="assets/img/avatar.svg" alt="coach" style="width:84px;border-radius:12px">
+            <div>
+              <div style="font-weight:800">Meet {{COACH_NAME}}, {{CREDENTIALS}}</div>
+              <div class="small" style="margin-top:6px">Based in {{CITY}}, {{STATE}}. My approach emphasizes tiny, repeatable actions that compound.</div>
+            </div>
+          </div>
+
+          <div class="steps">
+            <div class="step"><strong>Before the call</strong><div style="color:var(--muted);margin-top:6px">Short intake and a one-page reflection to clarify your aim.</div></div>
+            <div class="step"><strong>During</strong><div style="color:var(--muted);margin-top:6px">Clear next steps, a simple habit to start, and a short resource list.</div></div>
+            <div class="step"><strong>After</strong><div style="color:var(--muted);margin-top:6px">Email summary and suggested micro-practices to try for one week.</div></div>
+          </div>
+
+          <div class="faq">
+            <strong>Cancellation policy</strong>
+            <div style="color:var(--muted);margin-top:6px">Please try to reschedule at least 48 hours in advance. VIP and longer packages have separate terms.</div>
+
+            <strong style="display:block;margin-top:8px">Need a custom plan?</strong>
+            <div style="color:var(--muted);margin-top:6px">Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> with a brief outline and I will propose options.</div>
+          </div>
+
+          <div style="margin-top:12px;text-align:center">
+            <a class="cta" href="pricing.html">See offerings</a>
+          </div>
+        </aside>
+      </div>
+
+      <section style="margin-top:18px">
+        <h2 style="margin-bottom:8px">A short note on coaching philosophy</h2>
+        <p style="color:var(--muted)">We work with what already exists in your life and make small adjustments that meaningfully change outcomes. No quick fixes—just steady refinement.</p>
+      </section>
+
+      <section style="margin-top:18px">
+        <h2>Lead magnet — quick start checklist</h2>
+        <div style="display:flex;gap:12px;align-items:center;margin-top:8px">
+          <img src="assets/img/pattern.svg" alt="pattern" style="width:86px;border-radius:12px">
+          <div>
+            <div style="font-weight:700">Download: 7 small rituals to win the morning</div>
+            <div style="color:var(--muted);margin-top:6px">A concise PDF and an accompanying 3-minute audio to get started.</div>
+          </div>
+          <div style="margin-left:auto"><a class="cta" href="contact.html">Send me the checklist</a></div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer style="margin-top:24px;color:var(--muted);text-align:center">{{BUSINESS_NAME}} • <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,88 @@
+/* Core styles for split diagonal layout */
+:root{
+  --bg:#fff;
+  --muted:#6b7280;
+  --accent1:#6EE7B7;
+  --accent2:#60A5FA;
+  --ink:#052E25;
+  --card:#ffffff;
+  --shadow: 0 8px 30px rgba(6,95,70,0.08);
+  --radius:14px;
+  --gap:24px;
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:linear-gradient(180deg,#fcfff7 0%, #f6f9ff 100%);color:var(--ink);line-height:1.45}
+.site-header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:transparent}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:56px;height:56px}
+.name{font-weight:700}
+.tag{font-size:13px;color:var(--muted)}
+.main-nav a{margin-left:18px;color:var(--ink);text-decoration:none}
+.main-nav a.cta{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#00302b;padding:8px 12px;border-radius:10px;font-weight:600}
+.menu-toggle{display:none;background:transparent;border:0;font-size:20px}
+
+/* Hero split diagonal */
+.split-diagonal .hero{position:relative;overflow:hidden;padding:48px 0}
+.hero-inner{display:grid;grid-template-columns:1fr 460px;align-items:center;gap:28px;max-width:1200px;margin:0 auto;padding:48px}
+.hero-copy h1{font-size:32px;margin:0 0 12px}
+.lead{color:var(--muted);margin-bottom:18px}
+.hero-art{border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.pattern{width:100%;height:100%;display:block}
+.hero-ctas .btn{margin-right:10px}
+
+/* Sections */
+.section{padding:48px 20px}
+.container{max-width:1100px;margin:0 auto}
+.soft{background:linear-gradient(180deg, rgba(245,255,250,0.6), transparent);border-radius:12px}
+.framework .steps{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;list-style:none;padding:0;margin:18px 0}
+.steps li{background:linear-gradient(135deg,#fff,#f7fffb);padding:18px;border-radius:12px;box-shadow:var(--shadow)}
+.note{font-size:14px;color:var(--muted)}
+
+.offers .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
+.card{background:var(--card);padding:18px;border-radius:12px;box-shadow:var(--shadow)}
+.card h3{margin-top:0}
+
+.pricing .price-grid{display:flex;gap:12px}
+.price-item{background:linear-gradient(135deg,#fff,#f9fffb);padding:14px;border-radius:10px;text-align:center;flex:1}
+.price-item .cost{font-weight:700;font-size:20px}
+
+.testimonials{background:linear-gradient(90deg, rgba(96,165,250,0.06), rgba(110,231,183,0.03));border-radius:12px}
+.testi-wrap{display:flex;align-items:center;gap:12px}
+.testimonials-list{list-style:none;padding:0;margin:0;flex:1;position:relative;overflow:hidden;height:120px}
+.testimonials-list li{position:absolute;left:0;right:0;top:0;padding:18px;opacity:0;transform:translateY(8px);transition:all .42s cubic-bezier(.2,.9,.3,1)}
+.testimonials-list li[aria-hidden="false"], .testimonials-list li.active{opacity:1;transform:none;position:relative}
+.testimonials-list blockquote{margin:0;font-style:italic}
+.testimonials-list cite{display:block;margin-top:10px;color:var(--muted);font-size:13px}
+.prev,.next{background:#fff;border:1px solid rgba(0,0,0,0.06);padding:8px;border-radius:8px}
+
+.cta{background:linear-gradient(120deg, rgba(96,165,250,0.08), rgba(110,231,183,0.06));text-align:center;border-radius:12px}
+.cta .large{padding:12px 24px;font-size:18px}
+.contact{margin-top:10px;color:var(--muted)}
+
+.site-footer{padding:28px 20px;margin-top:28px}
+.footer-grid{display:flex;justify-content:space-between;align-items:center}
+.small{max-width:1100px;margin:0 auto}
+.tiny{font-size:13px}
+.muted{color:var(--muted)}
+
+/* Responsive */
+@media(max-width:900px){
+  .hero-inner{grid-template-columns:1fr; padding:24px}
+  .offers .cards{grid-template-columns:1fr}
+  .menu-toggle{display:block}
+  .main-nav{display:none}
+}
+
+/* Diagonal subtle visual via pseudo element */
+.split-diagonal::before{content:'';position:fixed;right:-20%;top:-20%;width:80vw;height:80vh;background:linear-gradient(135deg,rgba(110,231,183,0.18),rgba(96,165,250,0.14));transform:rotate(18deg);filter:blur(38px);pointer-events:none;z-index:-1}
+
+/* Buttons */
+.btn{display:inline-block;padding:8px 12px;border-radius:10px;background:#fff;border:1px solid rgba(0,0,0,0.06);text-decoration:none;color:var(--ink)}
+.btn.primary{background:linear-gradient(90deg,var(--accent1),var(--accent2));border:0;color:#03241f}
+.btn.ghost{background:transparent;border:1px solid rgba(0,0,0,0.06)}
+.btn.large{padding:12px 20px;border-radius:14px}
+
+/* Accessibility focus */
+a:focus{outline:3px solid rgba(96,165,250,0.25);outline-offset:3px}

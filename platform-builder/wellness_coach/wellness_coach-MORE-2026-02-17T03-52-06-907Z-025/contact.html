@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{
+      --bg:#f6efe6;
+      --panel:#fff7f0;
+      --muted:#6b5747;
+      --accent:#7a4b2d;
+      --accent-2:#c2865a;
+      --glass:rgba(255,255,255,0.6);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:var(--bg);color:var(--muted);}
+    a{color:var(--accent);text-decoration:none}
+    .site-header{position:relative;padding:28px 20px 10px;}
+    nav{display:flex;gap:18px;align-items:center;justify-content:space-between;max-width:1100px;margin:0 auto}
+    .brand{font-weight:700;color:var(--accent);letter-spacing:0.6px}
+    .nav-links{display:flex;gap:12px;font-size:15px}
+    .nav-links a{padding:8px 10px;border-radius:8px}
+    .hero-rect{max-width:1100px;margin:18px auto 0;display:grid;grid-template-columns:1fr;gap:18px;padding:28px;border-radius:14px;background:linear-gradient(180deg,var(--panel),#fff);box-shadow:0 6px 30px rgba(90,50,30,0.06);overflow:hidden}
+    .hero-inner{display:flex;gap:20px;align-items:center}
+    .hero-copy{padding:22px}
+    h1{margin:0 0 10px;font-size:28px;color:var(--accent-2);font-weight:600}
+    p.lead{margin:0 0 14px;color:#5e4434;line-height:1.5}
+    .hero-cta{display:inline-block;padding:10px 14px;background:var(--accent);color:#fff;border-radius:10px}
+    /* pattern svg holder */
+    .pattern-wrap{flex:0 0 210px;display:flex;align-items:center;justify-content:center}
+    .pattern{width:180px;height:180px;opacity:0.95}
+
+    main{max-width:1100px;margin:28px auto;padding:0 20px}
+    section{margin:26px 0;padding:22px;border-radius:12px;background:var(--panel);box-shadow:0 6px 18px rgba(80,40,20,0.04)}
+    .section-title{margin:0 0 12px;font-size:18px;color:var(--accent)}
+    .muted{color:#6d5a4b;font-size:15px}
+
+    /* Session planner */
+    .planner-grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input[type="text"],textarea,select,input[type="number"]{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(120,90,70,0.12);background:#fff}
+    textarea{min-height:120px}
+    .controls{display:flex;gap:8px;margin-top:10px}
+    .btn{padding:9px 12px;border-radius:10px;border:0;background:var(--accent);color:#fff;cursor:pointer}
+    .btn.ghost{background:transparent;border:1px solid rgba(120,90,70,0.12);color:var(--muted)}
+    pre.plan{white-space:pre-wrap;padding:12px;background:rgba(250,245,240,0.8);border-radius:8px;min-height:140px;overflow:auto}
+
+    /* Reveal animation */
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity 520ms cubic-bezier(.2,.9,.3,1),transform 520ms cubic-bezier(.2,.9,.3,1)}
+    .reveal.visible{opacity:1;transform:none}
+
+    /* responsive */
+    @media (max-width:880px){.planner-grid{grid-template-columns:1fr}}
+    footer{max-width:1100px;margin:28px auto;padding:18px;color:#796056;font-size:13px}
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav>
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="about.html">Philosophy</a>
+        <a href="services.html">Offerings</a>
+        <a href="programs.html">Journeys</a>
+        <a href="pricing.html">Investment</a>
+        <a href="testimonials.html">Stories</a>
+        <a href="book.html">Reserve</a>
+        <a href="contact.html">Connect</a>
+      </div>
+    </nav>
+    <div class="hero-rect">
+      <div class="hero-inner">
+        <div class="hero-copy">
+          <h1>Reach out. I listen like a map.</h1>
+          <p class="lead">Share what you want to steady, build, or reframe. We craft short, repeatable habits and a weekly scaffold you can actually carry.</p>
+          <a class="hero-cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+        <div class="pattern-wrap">
+          <!-- Unique inline SVG pattern. This creates a warm woven motif. -->
+          <svg class="pattern" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="g1" x1="0" x2="1">
+                <stop offset="0" stop-color="#f2e6db"/>
+                <stop offset="1" stop-color="#e8d6c4"/>
+              </linearGradient>
+              <pattern id="patt" width="20" height="20" patternUnits="userSpaceOnUse">
+                <rect width="20" height="20" fill="url(#g1)"/>
+                <path d="M0 10 L10 0 M10 20 L20 10" stroke="#d2b59a" stroke-width="1.6" stroke-linecap="round"/>
+                <path d="M0 0 L20 20" stroke="#c89a76" stroke-width="0.8" opacity="0.45"/>
+              </pattern>
+            </defs>
+            <rect width="200" height="200" fill="url(#patt)" rx="18"/>
+            <circle cx="34" cy="160" r="18" fill="#cfa07a" fill-opacity="0.08"/>
+            <circle cx="170" cy="40" r="24" fill="#7a4b2d" fill-opacity="0.06"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="reveal" aria-labelledby="connect-heading">
+      <h2 id="connect-heading" class="section-title">How to reach me</h2>
+      <p class="muted">Call, message, or send a note. I reply with a short plan and next steps.</p>
+      <ul style="margin:12px 0 0;padding-left:18px;color:var(--muted)">
+        <li>Phone: <strong>{{PHONE}}</strong></li>
+        <li>Email: <strong><a href="mailto:{{EMAIL}}">{{EMAIL}}</a></strong></li>
+        <li>Location: <strong>{{CITY}}, {{STATE}}</strong></li>
+      </ul>
+    </section>
+
+    <section class="reveal" aria-labelledby="planner-heading">
+      <h3 id="planner-heading" class="section-title">Session Planner</h3>
+      <p class="muted">Build a compact, plain-text plan you can copy and carry. No accounts. No fuss.</p>
+      <div class="planner-grid" id="planner">
+        <div>
+          <label for="goal">Primary goal (one sentence)</label>
+          <input id="goal" type="text" placeholder="e.g., Sleep better, steady my mornings, finish creative work twice a week">
+
+          <label for="time">Weekly time available (minutes)</label>
+          <input id="time" type="number" min="30" step="15" value="120">
+
+          <label>Focus areas</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+            <label style="font-size:13px"><input type="checkbox" value="Movement"> Movement</label>
+            <label style="font-size:13px"><input type="checkbox" value="Sleep"> Sleep</label>
+            <label style="font-size:13px"><input type="checkbox" value="Nutrition"> Nutrition</label>
+            <label style="font-size:13px"><input type="checkbox" value="Mindfulness"> Mindfulness</label>
+            <label style="font-size:13px"><input type="checkbox" value="Habits"> Habits</label>
+          </div>
+
+          <label for="rhythm">Preferred rhythm</label>
+          <select id="rhythm">
+            <option>Gentle daily steps</option>
+            <option>Three focused sessions per week</option>
+            <option>Weekend deep session + short daily cues</option>
+          </select>
+
+          <label for="notes">Short context (optional)</label>
+          <textarea id="notes" placeholder="Work hours, constraints, what has helped before..."></textarea>
+
+          <div class="controls">
+            <button class="btn" id="build">Make my plan</button>
+            <button class="btn ghost" id="clear">Clear</button>
+          </div>
+        </div>
+
+        <aside>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div style="font-weight:600;color:var(--accent)">Your plan</div>
+            <div style="font-size:13px;color:#7a5b48">Plain text • ready to copy</div>
+          </div>
+          <pre id="plan" class="plan" aria-live="polite">Start by entering a goal and available minutes, then choose a rhythm.</pre>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn" id="copy">Copy Summary</button>
+            <button class="btn ghost" id="export">Download .txt</button>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="reveal" aria-labelledby="form-heading">
+      <h3 id="form-heading" class="section-title">Message form</h3>
+      <p class="muted">A short note is enough. I will reply with a suggested first session and a week-long scaffolding.</p>
+      <form id="contactForm">
+        <label for="name">Your name</label>
+        <input id="name" type="text" required>
+
+        <label for="email">Email</label>
+        <input id="email" type="text" placeholder="you@example.com" required>
+
+        <label for="msg">Tell me in 120 words or less</label>
+        <textarea id="msg" maxlength="800" placeholder="What would you like to change or create? Any constraints?" required></textarea>
+
+        <div style="display:flex;gap:10px;margin-top:10px">
+          <button class="btn" type="submit">Send note</button>
+          <button class="btn ghost" type="button" id="prefill">Use planner summary</button>
+        </div>
+      </form>
+      <div id="formStatus" style="margin-top:10px;color:var(--muted);font-size:14px"></div>
+    </section>
+
+    <section class="reveal" aria-labelledby="faq-heading">
+      <h3 id="faq-heading" class="section-title">Quick questions</h3>
+      <details>
+        <summary style="cursor:pointer">What happens after I reach out?</summary>
+        <p class="muted">I send a short reply with a proposed first session and a tiny 7-day scaffold you can try before our meeting.</p>
+      </details>
+      <details>
+        <summary style="cursor:pointer">Do you offer one-off sessions?</summary>
+        <p class="muted">Yes. We shape sessions and short cohorts. Pricing and structures are explained on the Investment page.</p>
+      </details>
+      <details>
+        <summary style="cursor:pointer">Is this medical care?</summary>
+        <p class="muted">No. Sessions focus on habits, outcomes, and useful frameworks for daily life, not medical advice.</p>
+      </details>
+    </section>
+
+    <section class="reveal" aria-labelledby="final-cta">
+      <h3 id="final-cta" class="section-title">Ready to shape the next week?</h3>
+      <p class="muted">Send a note or build a short plan here. We start with what you can keep.</p>
+      <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+    </section>
+  </main>
+
+  <footer>
+    <div>© <span style="font-weight:600;color:var(--accent)">{{BUSINESS_NAME}}</span> — Small, steady changes. Contact: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+  </footer>
+
+  <script>
+    // Scroll-triggered reveal with reduced-motion respect
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const revealEls = document.querySelectorAll('.reveal');
+      if(prefersReduced){
+        revealEls.forEach(el => el.classList.add('visible'));
+        return;
+      }
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if(e.isIntersecting){
+            e.target.classList.add('visible');
+            obs.unobserve(e.target);
+          }
+        });
+      },{threshold:0.12});
+      revealEls.forEach(el => obs.observe(el));
+    })();
+
+    // Session Planner logic
+    (function(){
+      const $ = id => document.getElementById(id);
+      const buildBtn = $('build');
+      const clearBtn = $('clear');
+      const copyBtn = $('copy');
+      const exportBtn = $('export');
+      const planEl = $('plan');
+
+      function readInputs(){
+        const goal = $('goal').value.trim();
+        const minutes = parseInt($('time').value,10) || 0;
+        const rhythm = $('rhythm').value;
+        const notes = $('notes').value.trim();
+        const checks = Array.from(document.querySelectorAll('#planner input[type=checkbox]:checked')).map(n=>n.value);
+        return {goal,minutes,rhythm,notes,checks};
+      }
+
+      function suggestHabits({goal,minutes,checks,rhythm}){
+        const items = [];
+        // Create core micro-habits depending on rhythm
+        if(rhythm.includes('Gentle')){
+          items.push('Daily 8-12 minute micro-session (morning or evening).');
+        } else if(rhythm.includes('Three')){
+          items.push('Three 25-35 minute focused sessions across the week.');
+        } else {
+          items.push('One longer weekend focus (60+ minutes) plus short daily cues.');
+        }
+        // Add suggestions for focus areas
+        if(checks.includes('Movement')) items.push('Movement: 10-min walk or mobility sequence on session days.');
+        if(checks.includes('Sleep')) items.push('Sleep: a 15-minute pre-sleep routine 5x this week.');
+        if(checks.includes('Mindfulness')) items.push('Mindfulness: 5-minute breathing cue twice daily.');
+        if(checks.includes('Nutrition')) items.push('Nutrition: plan 2 simple meals to remove decision fatigue.');
+        if(checks.includes('Habits')) items.push('Habits: pick a single anchor habit and attach one tiny action to it.');
+        // Time allocation
+        items.push('Weekly minutes available: ' + minutes + ' minutes — distributed across chosen sessions.');
+        // Outcome alignment
+        if(goal) items.unshift('Goal: ' + goal);
+        return items;
+      }
+
+      function buildPlan(){
+        const data = readInputs();
+        if(!data.goal){
+          planEl.textContent = 'Please add a primary goal to shape the plan.';
+          return;
+        }
+        const lines = [];
+        lines.push('Plan for: ' + data.goal);
+        lines.push('Rhythm: ' + data.rhythm);
+        if(data.checks.length) lines.push('Focus areas: ' + data.checks.join(', '));
+        if(data.notes) lines.push('Context: ' + data.notes);
+        lines.push('');
+        lines.push('Suggested micro-structure:');
+        suggestHabits(data).forEach((s, i) => lines.push((i+1)+'. ' + s));
+        lines.push('');
+        lines.push('Simple weekly scaffold:');
+        if(data.rhythm.includes('Gentle')){
+          lines.push('- Daily: 8–12 minutes (habit cue + single practice).');
+          lines.push('- Mid-week: 15 minute check-in to adjust.');
+        } else if(data.rhythm.includes('Three')){
+          lines.push('- Mon/Wed/Fri: 30–40 minute focused sessions.');
+          lines.push('- Daily: 3-minute anchor practice.');
+        } else {
+          lines.push('- Weekend: 60 minute deep session.');
+          lines.push('- Weekdays: 5–10 minute anchors.');
+        }
+        lines.push('');
+        lines.push('Notes: Keep tasks tiny. Measure by consistency, not intensity.');
+        planEl.textContent = lines.join('\n');
+      }
+
+      function clearForm(){
+        $('goal').value='';$('time').value='120';$('notes').value='';$('rhythm').selectedIndex=0;
+        document.querySelectorAll('#planner input[type=checkbox]').forEach(cb=>cb.checked=false);
+        planEl.textContent = 'Start by entering a goal and available minutes, then choose a rhythm.';
+      }
+
+      function copyPlan(){
+        const text = planEl.textContent;
+        if(!text) return;
+        if(navigator.clipboard && navigator.clipboard.writeText){
+          navigator.clipboard.writeText(text).then(()=>{
+            copyBtn.textContent='Copied'; setTimeout(()=>copyBtn.textContent='Copy Summary',1200);
+          }).catch(()=> fallbackCopy(text));
+        } else fallbackCopy(text);
+      }
+      function fallbackCopy(text){
+        const ta = document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select();
+        try{document.execCommand('copy'); copyBtn.textContent='Copied'; setTimeout(()=>copyBtn.textContent='Copy Summary',1200);}catch(e){alert('Copy failed — select and copy manually.')}
+        ta.remove();
+      }
+
+      function exportTxt(){
+        const text = planEl.textContent || '';
+        const blob = new Blob([text],{type:'text/plain;charset=utf-8'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href=url; a.download='session-plan.txt'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+      }
+
+      buildBtn.addEventListener('click', buildPlan);
+      clearBtn.addEventListener('click', clearForm);
+      copyBtn.addEventListener('click', copyPlan);
+      exportBtn.addEventListener('click', exportTxt);
+
+      // Prefill contact message with planner summary
+      document.getElementById('prefill').addEventListener('click', function(){
+        document.getElementById('msg').value = planEl.textContent || '';
+      });
+
+      // Simulated form submit (no backend). Replace with real endpoint as needed.
+      const form = document.getElementById('contactForm');
+      const status = document.getElementById('formStatus');
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const msg = document.getElementById('msg').value.trim();
+        if(!name||!email||!msg){ status.textContent='Please complete the form.'; return; }
+        status.textContent='Sending...';
+        // Simulate network latency
+        setTimeout(()=>{
+          status.textContent='Message sent. Expect a reply with a suggested first session and a short scaffold.';
+          form.reset();
+        },900);
+      });
+    })();
+  </script>
+</body>
+</html>

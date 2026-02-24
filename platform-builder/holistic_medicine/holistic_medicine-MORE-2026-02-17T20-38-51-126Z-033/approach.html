@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Method — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfbff;--accent:#2c7aa0;--muted:#556679}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:var(--bg) url('assets/img/pattern.svg');color:#0b1720}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 28px}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none}
+    .wrap{max-width:980px;margin:22px auto;padding:22px;background:rgba(255,255,255,0.95);border-radius:12px}
+    h1{color:var(--accent)}
+    p{color:var(--muted)}
+    .steps{display:flex;gap:12px;margin-top:18px}
+    .step{flex:1;padding:16px;border-radius:10px;background:#fff;border:1px solid #eef6fa}
+    .micro{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .habit{background:#f3fbff;border:1px solid #e0f2fb;padding:10px;border-radius:8px;font-size:14px}
+    .planner{margin-top:18px;padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#f7fcff);border:1px solid #e3f0f6}
+    .controls{display:flex;gap:8px;margin-top:10px}
+    .btn{padding:8px 12px;border-radius:8px;background:var(--accent);color:#fff;text-decoration:none}
+    /* small proof gallery */
+    .gallery{display:flex;gap:12px;align-items:center;margin-top:18px}
+    .cred{padding:10px;border-radius:8px;background:#fff;border:1px solid #eef3f7}
+    .cred svg{display:block}
+    footer{padding:18px;text-align:center;color:var(--muted);margin-top:18px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Ailments</a>
+      <a href="approach.html">Method</a>
+      <a href="contact.html">Reach</a>
+      <a href="book.html">Reserve</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <h1>Our working method</h1>
+    <p>We combine measurement, brief experiments, and daily supports. The aim is clarity: know what matters now, then create a small, trackable routine to test change.</p>
+
+    <div class="steps" aria-hidden="false">
+      <div class="step">
+        <strong>Map</strong>
+        <p class="muted">Intake, targeted questions, and simple data capture. We build a concise picture rather than a laundry list.</p>
+      </div>
+      <div class="step">
+        <strong>Try</strong>
+        <p class="muted">Short, measurable experiments tailored to your schedule — often 2–6 weeks in length.</p>
+      </div>
+      <div class="step">
+        <strong>Root</strong>
+        <p class="muted">Sustain what worked and design fallback strategies so gains endure amidst life’s changes.</p>
+      </div>
+    </div>
+
+    <section class="planner" aria-labelledby="planner-title">
+      <h3 id="planner-title">Timeline planner — select a phase</h3>
+      <div style="display:flex;gap:10px;align-items:center">
+        <label style="font-size:14px;color:var(--muted)">Start in week:</label>
+        <input id="startWeek" type="number" min="1" max="52" value="1" style="width:70px;padding:8px;border-radius:6px;border:1px solid #dbeef8">
+        <div class="controls">
+          <a class="btn" id="planPreview">Preview roadmap</a>
+          <a class="btn" id="exportPlan" style="background:#556679">Export summary</a>
+        </div>
+      </div>
+      <div id="roadmap" style="margin-top:12px;color:#123"></div>
+      <div style="margin-top:10px;font-size:13px;color:var(--muted)">Note: This planner is a guideline for educational planning. It does not replace specialized medical advice. Timelines vary.</div>
+    </section>
+
+    <section style="margin-top:18px">
+      <h3>Micro-habits you can start this week</h3>
+      <div class="micro">
+        <div class="habit">Morning light: 5–10 minutes within 1 hour of waking</div>
+        <div class="habit">Evening wind-down: 20 minutes without screens</div>
+        <div class="habit">Midday pause: 2-minute breathing break</div>
+        <div class="habit">Meal check: note fullness and timing for 3 days</div>
+      </div>
+    </section>
+
+    <section style="margin-top:18px">
+      <h3>Proof & signals</h3>
+      <div class="gallery">
+        <div class="cred" role="img" aria-label="Badge: Clinical training">
+          <svg width="48" height="48" viewBox="0 0 24 24"><rect width="24" height="24" rx="6" fill="#e8f6fb"/><path d="M6 12h12M6 8h12M6 16h12" stroke="#2c7aa0" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="cred" role="img" aria-label="Badge: Workshop leader">
+          <svg width="48" height="48" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#eef8f9"/><path d="M8 12h8M8 8h8M8 16h8" stroke="#2c7aa0" stroke-width="1.2" stroke-linecap="round"/></svg>
+        </div>
+        <div style="color:var(--muted)">Rotating short endorsements below.</div>
+      </div>
+      <div id="approachTestimony" style="margin-top:10px;font-style:italic;color:#0d2b3a">"Direct, gentle, and useful." — L.</div>
+    </section>
+
+    <div style="margin-top:18px">
+      <a class="btn" href="{{PRIMARY_CTA_URL}}">Arrange an orientation</a>
+      <a href="contact.html" style="margin-left:10px;color:var(--muted);text-decoration:none">Ask a question</a>
+    </div>
+  </main>
+
+  <footer>
+    <div class="muted">Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • Call <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+  </footer>
+
+  <script>
+    (function(){
+      // Roadmap preview builder
+      function buildRoadmap(start){
+        start = Math.max(1, parseInt(start)||1);
+        const phases = [
+          {name:'Phase 1 — Map',weeks:2,desc:'Intake, simple tracking, and priorities.'},
+          {name:'Phase 2 — Experiment',weeks:4,desc:'Short trials with one primary change at a time.'},
+          {name:'Phase 3 — Legitimize',weeks:6,desc:'Consolidate what worked and design fallback plans.'}
+        ];
+        let s = '';
+        let week = start;
+        phases.forEach(p=>{
+          s += `<div style=\"padding:8px 0\"><strong>${p.name}</strong> — weeks ${week}–${week+p.weeks-1}<div style=\"color:#556679;margin-top:6px\">${p.desc}</div></div>`;
+          week += p.weeks;
+        });
+        s += '<div style=\"margin-top:8px;font-size:13px;color:#6b6b6b\">Reminder: timelines are individualized and approximate.</div>';
+        return s;
+      }
+      document.getElementById('planPreview').addEventListener('click',()=>{
+        const w=document.getElementById('startWeek').value; document.getElementById('roadmap').innerHTML=buildRoadmap(w);
+      });
+      document.getElementById('exportPlan').addEventListener('click',()=>{
+        const w=document.getElementById('startWeek').value; const txt= buildRoadmap(w).replace(/<[^>]+>/g,'');
+        const blob = new Blob([txt],{type:'text/plain'}); const url=URL.createObjectURL(blob);
+        const a=document.createElement('a'); a.href=url; a.download='roadmap.txt'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+      });
+
+      // rotating short endorsement
+      const notes = ['"Clear plans that fit my day." — S.','"Helped me try one thing at a time." — R.','"Practical and evidence-minded." — K.'];
+      let idx=0; const el=document.getElementById('approachTestimony');
+      setInterval(()=>{ idx=(idx+1)%notes.length; el.textContent=notes[idx]; },4000);
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f6efe6;--accent:#7a4e2b;--muted:#8b6b5a;--card:#fff7f0;--glass:rgba(255,255,255,0.6)}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#2b2b2b;background:linear-gradient(180deg,var(--bg),#efe6dc)}
+    header{backdrop-filter: blur(4px);background:linear-gradient(180deg,rgba(255,255,255,0.6),transparent);padding:18px 24px;position:sticky;top:0;z-index:40;border-bottom:1px solid rgba(0,0,0,0.04)}
+    .nav{display:flex;gap:18px;align-items:center;max-width:1100px;margin:0 auto}
+    .brand{font-weight:700;color:var(--accent);font-size:1.05rem}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:8px}
+    nav a.cta{background:var(--accent);color:#fff;padding:8px 12px}
+    main{max-width:1100px;margin:28px auto;padding:0 20px}
+    .hero{display:grid;grid-template-columns:1fr;gap:18px;align-items:center;padding:36px;border-radius:14px;background:linear-gradient(135deg,var(--card),#fff);box-shadow:0 8px 30px rgba(34,20,10,0.06)}
+    .hero h1{margin:0;font-size:1.8rem;color:var(--accent)}
+    .hero p{margin:8px 0;color:#4b3a32}
+    .controls{display:flex;gap:12px;flex-wrap:wrap}
+    button.primary{background:var(--accent);color:#fff;border:none;padding:10px 14px;border-radius:10px;cursor:pointer}
+    button.ghost{background:transparent;border:1px solid rgba(122,78,43,0.12);padding:10px 12px;border-radius:10px}
+    section{margin-top:28px}
+    .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+    .card{background:var(--card);padding:14px;border-radius:12px;box-shadow:0 6px 18px rgba(34,20,10,0.04)}
+    .muted{color:#6b5a4f;font-size:0.95rem}
+    footer{max-width:1100px;margin:36px auto;padding:20px;border-top:1px solid rgba(0,0,0,0.04);color:#6b5a4f}
+    .testimonials{display:flex;flex-direction:column;gap:12px}
+    .testimonial{padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#fff7f5);border-left:4px solid rgba(122,78,43,0.08)}
+    .process-list{display:flex;gap:12px;flex-wrap:wrap}
+    .process-item{flex:1;min-width:180px}
+    /* Reveal animation */
+    .reveal{opacity:0;transform:translateY(16px);transition:opacity 520ms cubic-bezier(.2,.9,.3,1),transform 520ms cubic-bezier(.2,.9,.3,1)}
+    .reveal.is-visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){
+      .reveal{transition:none;opacity:1;transform:none}
+    }
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(12,10,8,0.4);display:none;align-items:center;justify-content:center;padding:20px;z-index:60}
+    .modal{max-width:680px;width:100%;background:#fff;border-radius:12px;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,0.35)}
+    .hidden{display:none}
+    .breath-circle{width:120px;height:120px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#ffd9c9 0,#f7caa8 40%,#f0b48b 100%);margin:18px auto}
+    .timer{font-weight:700;color:var(--accent)}
+    form.inline{display:flex;gap:8px;align-items:center}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <nav style="margin-left:20px;display:flex;gap:8px">
+        <a href="index.html">Home</a>
+        <a href="events.html">Gatherings</a>
+        <a href="private-sessions.html">Private</a>
+        <a href="pricing.html">Rates</a>
+        <a href="about.html" aria-current="page">Who we are</a>
+        <a href="faq.html">Q&amp;A</a>
+        <a class="cta" href="book.html">Reserve a seat</a>
+      </nav>
+      <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+        <a href="mailto:{{EMAIL}}" style="color:var(--muted);text-decoration:none">{{EMAIL}}</a>
+        <a href="tel:{{PHONE}}" style="color:var(--muted);text-decoration:none">{{PHONE}}</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <div>
+        <h1 id="hero-title">We lead small cohorts through tuned listening</h1>
+        <p class="muted">A seasonal series for intentional rest, steady focus, and gentle shared descent. We blend bowls, subtle textures, and guided attention for a single-session arc.</p>
+        <div class="controls">
+          <button class="primary" onclick="location.href='{{PRIMARY_CTA_URL}}'">{{PRIMARY_CTA_LABEL}}</button>
+          <button class="ghost" id="tryNowBtn">Try it now — micro-practice</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="reveal" data-reveal>
+      <h2>Why join a cohort?</h2>
+      <p class="muted">Cohorts lean into continuity: the same circle, a shared rhythm, and cumulative ease. Expect steady lead-ins, short ritual, and 40–55 minutes of tuned sound work.</p>
+      <div class="cards" style="margin-top:12px">
+        <div class="card">
+          <strong>Shared arc</strong>
+          <p class="muted">You move with a small set of familiar faces; the shape supports deeper listening over weeks.</p>
+        </div>
+        <div class="card">
+          <strong>Guided entry</strong>
+          <p class="muted">Short guided practices before sound help skillful attention and settling.</p>
+        </div>
+        <div class="card">
+          <strong>Intention-forward</strong>
+          <p class="muted">We hold a brief intention-setting ritual so each session lands with clarity.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="reveal" data-reveal>
+      <h2>How a typical cohort evening flows</h2>
+      <div class="process-list">
+        <div class="process-item card">
+          <strong>Gather & orient</strong>
+          <p class="muted">Welcome, grounding instruction, and a one-minute centering exercise.</p>
+        </div>
+        <div class="process-item card">
+          <strong>Short practice</strong>
+          <p class="muted">A guided breath or prompt to shape listening and settle bodies.</p>
+        </div>
+        <div class="process-item card">
+          <strong>Sound arc</strong>
+          <p class="muted">A curated sequence across tones and textures for 35–45 minutes.</p>
+        </div>
+        <div class="process-item card">
+          <strong>Re-entry</strong>
+          <p class="muted">Slow return, optional sharing, and short journaling to land back in the room.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="reveal" data-reveal>
+      <h2>Voices from our circle</h2>
+      <div class="testimonials">
+        <div class="testimonial">
+          “There's a warmth to the pacing — I stepped out quieter and more present than I expected.”
+        </div>
+        <div class="testimonial">
+          “Consistent evenings helped me notice small shifts. The cohort energy matters.”
+        </div>
+      </div>
+    </section>
+
+    <section class="reveal" data-reveal>
+      <h2>Practical notes</h2>
+      <p class="muted">Sessions are held in a calm, carpeted room. Please bring a mat, blanket, and anything to make lying comfortably for the session easier. We keep the experience low-tech and scent-free.</p>
+      <p class="muted"><strong>Contraindications:</strong> Sound sessions are supportive for many people, but may not be suitable for those with uncontrolled epilepsy, recent head surgery or severe inner-ear conditions, pacemakers sensitive to vibrational devices, or if you are under recent surgical recovery. If you have a serious psychiatric diagnosis, are pregnant, or have concerns about intense auditory exposure, consult your healthcare provider before attending. If uncertain, reach out to us at <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</p>
+    </section>
+
+    <section class="reveal" data-reveal style="display:flex;gap:16px;align-items:center">
+      <div>
+        <p class="muted">Ready to explore with a cohort?</p>
+        <div style="display:flex;gap:8px">
+          <a class="primary" href="book.html">Find your series</a>
+          <a class="ghost" href="contact.html">Ask a question</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;max-width:1100px;margin:0 auto">
+      <div>&copy; <span id="year"></span> {{BUSINESS_NAME}} — <span class="muted">Based in {{CITY}}, {{STATE}}</span></div>
+      <div><a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></div>
+    </div>
+  </footer>
+
+  <!-- Try-it-now Modal -->
+  <div id="modalBackdrop" class="modal-backdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h3 id="modalTitle">Micro-practice: Choose a short exercise</h3>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px">
+        <button class="ghost" data-mode="breath">3-minute breath</button>
+        <button class="ghost" data-mode="journ" id="journBtn">2-minute journaling</button>
+        <button class="ghost" data-mode="intent">Intention-setting</button>
+      </div>
+      <div id="modalBody" style="margin-top:14px"></div>
+      <div style="display:flex;justify-content:flex-end;margin-top:12px">
+        <button id="closeModal" class="ghost">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // small helper: respects prefers-reduced-motion
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Scroll reveal
+    (function(){
+      const els = document.querySelectorAll('[data-reveal]');
+      if(els.length===0) return;
+      if(reduced){ els.forEach(e=>e.classList.add('is-visible')); return; }
+      const obs = new IntersectionObserver((entries)=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting) entry.target.classList.add('is-visible');
+        });
+      },{threshold:0.12});
+      els.forEach(e=>obs.observe(e));
+    })();
+
+    // Modal and micro-practices
+    const tryNowBtn = document.getElementById('tryNowBtn');
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    const modalBody = document.getElementById('modalBody');
+    const closeModal = document.getElementById('closeModal');
+
+    function openModal(){ modalBackdrop.style.display='flex'; modalBackdrop.setAttribute('aria-hidden','false'); }
+    function close(){ modalBackdrop.style.display='none'; modalBackdrop.setAttribute('aria-hidden','true'); modalBody.innerHTML=''; }
+
+    tryNowBtn.addEventListener('click',openModal);
+    closeModal.addEventListener('click',close);
+    modalBackdrop.addEventListener('click', (e)=>{ if(e.target===modalBackdrop) close(); });
+
+    document.querySelectorAll('[data-mode]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const mode = btn.getAttribute('data-mode');
+        if(mode==='breath') renderBreath();
+        if(mode==='journ') renderJourn();
+        if(mode==='intent') renderIntent();
+      });
+    });
+
+    // Breath: 3-minute guided with visual circle
+    let breathTimer;
+    function renderBreath(){
+      modalBody.innerHTML = '';
+      const container = document.createElement('div');
+      container.innerHTML = '<div class="breath-circle" id="circle" aria-hidden="true"></div><div style="text-align:center"><div id="breathText">Find a comfortable seat. Inhale for 4, hold 2, exhale 6.</div><div class="timer" id="breathCountdown">03:00</div><div style="margin-top:8px"><button class="primary" id="startBreath">Start</button><button class="ghost" id="stopBreath">Stop</button></div></div>';
+      modalBody.appendChild(container);
+
+      const start = modalBody.querySelector('#startBreath');
+      const stop = modalBody.querySelector('#stopBreath');
+      const circle = modalBody.querySelector('#circle');
+      const text = modalBody.querySelector('#breathText');
+      const countdown = modalBody.querySelector('#breathCountdown');
+      let remaining = 180;
+      function format(t){const m=Math.floor(t/60);const s=t%60;return (m<10? '0'+m:m)+":"+(s<10?'0'+s:s);}
+      function step(){
+        if(remaining<=0){ clearInterval(breathTimer); countdown.textContent='Done'; text.textContent='Gently open your eyes and return.'; return; }
+        remaining--; countdown.textContent = format(remaining);
+        // simple visual pulse synced to a 12-second cycle inhale 4 hold 2 exhale 6
+        const cycle = 12; const pos = (180-remaining)%cycle;
+        if(pos<4){ circle.style.transform = 'scale(1.15)'; text.textContent='Inhale gently'; }
+        else if(pos<6){ circle.style.transform = 'scale(1.18)'; text.textContent='Hold'; }
+        else { circle.style.transform = 'scale(0.9)'; text.textContent='Exhale slowly'; }
+      }
+      start.onclick = ()=>{ if(breathTimer) clearInterval(breathTimer); breathTimer = setInterval(step,1000); };
+      stop.onclick = ()=>{ if(breathTimer) clearInterval(breathTimer); countdown.textContent='Stopped'; };
+    }
+
+    // Journaling: 2-minute timed prompt
+    let journTimer;
+    function renderJourn(){
+      modalBody.innerHTML = '';
+      const container = document.createElement('div');
+      container.innerHTML = '<div><strong>Prompt</strong><p class="muted">What did today need that you can give yourself — even in a small way?</p></div><textarea id="journInput" rows="6" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(0,0,0,0.08);"></textarea><div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><div class="timer" id="journCountdown">02:00</div><div><button class="primary" id="startJourn">Start</button><button class="ghost" id="saveJourn">Save</button></div></div>';
+      modalBody.appendChild(container);
+      const input = modalBody.querySelector('#journInput');
+      const countdown = modalBody.querySelector('#journCountdown');
+      const start = modalBody.querySelector('#startJourn');
+      const save = modalBody.querySelector('#saveJourn');
+      let remaining = 120;
+      function format(t){const m=Math.floor(t/60);const s=t%60;return (m<10? '0'+m:m)+":"+(s<10?'0'+s:s);}
+      function tick(){ if(remaining<=0){ clearInterval(journTimer); countdown.textContent='Time'; input.blur(); return; } remaining--; countdown.textContent=format(remaining); }
+      start.onclick = ()=>{ if(journTimer) clearInterval(journTimer); remaining=120; countdown.textContent='02:00'; journTimer=setInterval(tick,1000); input.focus(); };
+      save.onclick = ()=>{ const val = input.value.trim(); if(!val){ alert('Write a line or two to save.'); return; } // simple local save
+        const now = new Date().toISOString(); const stored = {time:now,text:val}; const stash = JSON.parse(localStorage.getItem('journals')||'[]'); stash.push(stored); localStorage.setItem('journals',JSON.stringify(stash)); alert('Saved to browser.'); };
+    }
+
+    // Intention: short guided entry
+    function renderIntent(){
+      modalBody.innerHTML = '';
+      const container = document.createElement('div');
+      container.innerHTML = '<p class="muted">Take a breath. Choose a single word or short sentence that you will carry into the hour. Jot it below.</p><input id="intentInput" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(0,0,0,0.08);" placeholder="e.g., soften, let go, listen"/><div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center"><button class="primary" id="saveIntent">Set intention</button><button class="ghost" id="clearIntent">Clear</button></div><div id="intentSaved" style="margin-top:8px;color:var(--muted)"></div>';
+      modalBody.appendChild(container);
+      const input = modalBody.querySelector('#intentInput');
+      const save = modalBody.querySelector('#saveIntent');
+      const clear = modalBody.querySelector('#clearIntent');
+      const info = modalBody.querySelector('#intentSaved');
+      save.onclick = ()=>{ const v = input.value.trim(); if(!v){ alert('A single word or short phrase helps.'); return; } localStorage.setItem('lastIntent',v); info.textContent = 'Saved — you can copy this into your phone or bring it with you.'; };
+      clear.onclick = ()=>{ localStorage.removeItem('lastIntent'); input.value=''; info.textContent='Cleared'; };
+    }
+
+    // set year
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

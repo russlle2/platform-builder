@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Boutique — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Small-batch blends, sample kits, and membership-addons. Safety-forward product notes included." />
+  <style>
+    :root{--bg:#f7fafc;--card:#fff;--muted:#666;--accent:#d96b6b;--maxw:1100px}
+    body{font-family:Georgia,serif;margin:0;background:var(--bg);color:#222}
+    .wrap{max-width:var(--maxw);margin:0 auto;padding:26px}
+    header{padding:14px 0}
+    nav{display:flex;justify-content:space-between;align-items:center}
+    .navlinks a{margin-left:10px;text-decoration:none;color:#333}
+    .hero{padding:20px;border-radius:12px;background:linear-gradient(180deg,rgba(217,107,107,0.06),transparent)}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+    .product{background:var(--card);padding:14px;border-radius:10px;box-shadow:0 6px 14px rgba(12,12,20,0.04)}
+    .muted{color:var(--muted)}
+    .cart{position:fixed;right:18px;bottom:18px;background:var(--accent);color:white;padding:10px 14px;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,0.12)}
+    @media (max-width:900px){.grid{grid-template-columns:1fr 1fr}}@media (max-width:600px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div class="navlinks">
+          <a href="index.html">Home</a>
+          <a href="services.html">Offerings</a>
+          <a href="blends.html">Blends</a>
+          <a href="shop.html" aria-current="page">Boutique</a>
+          <a href="pricing.html">Plans</a>
+          <a href="contact.html">Contact</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <h1>Small-batch blends and sample kits</h1>
+      <p class="muted">Products curated for short practices; each listing includes safety notes and dilution suggestions.</p>
+    </section>
+
+    <section style="margin-top:18px">
+      <div class="grid">
+        <div class="product">
+          <h3>Sample trio — Focus / Calm / Reset</h3>
+          <p class="muted">Three 2ml samples with suggested uses and dilution cards. Ideal for trying different cues without commitment.</p>
+          <div style="margin-top:8px"><strong>$18</strong></div>
+          <button data-id="sample-trio" style="margin-top:8px;padding:8px 10px;border-radius:8px;border:none;background:#333;color:white">Add to cart</button>
+        </div>
+        <div class="product">
+          <h3>Scent Circle Blend — member size</h3>
+          <p class="muted">Member-priced 10ml bottles reserved for Scent Circle subscribers; includes a guide sheet for micro-practices.</p>
+          <div style="margin-top:8px"><strong>$22</strong> <span class="muted">(members $16)</span></div>
+          <button data-id="circle-10ml" style="margin-top:8px;padding:8px 10px;border-radius:8px;border:none;background:#333;color:white">Add to cart</button>
+        </div>
+        <div class="product">
+          <h3>Reset spray</h3>
+          <p class="muted">Low-strength room spray. Use sparingly and test on fabrics. Not for direct skin use.</p>
+          <div style="margin-top:8px"><strong>$14</strong></div>
+          <button data-id="reset-spray" style="margin-top:8px;padding:8px 10px;border-radius:8px;border:none;background:#333;color:white">Add to cart</button>
+        </div>
+
+        <div class="product">
+          <h3>Diffuser timer kit</h3>
+          <p class="muted">Simple timer and diffuser scheduling tips to keep exposures minimal. Recommended run times included.</p>
+          <div style="margin-top:8px"><strong>$34</strong></div>
+          <button data-id="timer-kit" style="margin-top:8px;padding:8px 10px;border-radius:8px;border:none;background:#333;color:white">Add to cart</button>
+        </div>
+
+        <div class="product">
+          <h3>Workshop voucher</h3>
+          <p class="muted">Redeemable for a group micro-ritual or workplace session. Giftable.</p>
+          <div style="margin-top:8px"><strong>$95</strong></div>
+          <button data-id="voucher" style="margin-top:8px;padding:8px 10px;border-radius:8px;border:none;background:#333;color:white">Add to cart</button>
+        </div>
+
+        <div class="product">
+          <h3>Carrier oil 30ml</h3>
+          <p class="muted">Neutral carrier for diluting blends. Use for topical applications only at recommended ratios.</p>
+          <div style="margin-top:8px"><strong>$12</strong></div>
+          <button data-id="carrier-30" style="margin-top:8px;padding:8px 10px;border-radius:8px;border:none;background:#333;color:white">Add to cart</button>
+        </div>
+
+      </div>
+    </section>
+
+    <section style="margin-top:18px">
+      <h3>Product safety notes</h3>
+      <div class="product" style="margin-top:10px">
+        <p class="muted">All listings include dilution guidance; avoid concentrated topical application. Patch-test new products. If you are pregnant, nursing, or have significant health concerns, consult a clinician before introducing new aromatic products. Keep products away from pets and verify pet-safe options when needed.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <button id="cartBtn" class="cart">Cart (<span id="count">0</span>)</button>
+
+  <script>
+    (function(){
+      var buttons = document.querySelectorAll('[data-id]');
+      var cart = JSON.parse(localStorage.getItem('cart')||'{}');
+      function updateCount(){var sum=0;for(var k in cart) sum+=cart[k];document.getElementById('count').textContent=sum}
+      buttons.forEach(function(b){b.addEventListener('click',function(){var id=b.getAttribute('data-id');cart[id]=(cart[id]||0)+1;localStorage.setItem('cart',JSON.stringify(cart));updateCount();b.textContent='Added';setTimeout(function(){b.textContent='Add to cart'},900)})});
+      updateCount();
+
+      // Simple cart view
+      document.getElementById('cartBtn').addEventListener('click',function(){
+        var details = Object.keys(cart).length?Object.keys(cart).map(function(k){return k+': '+cart[k]}).join('\n'):'Cart is empty';
+        alert(details);
+      });
+
+      // scroll reveal: prefer reduced motion
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var els = document.querySelectorAll('.product');
+      if(prefersReduced) els.forEach(function(e){e.style.opacity=1});
+      else if('IntersectionObserver' in window){
+        var io = new IntersectionObserver(function(entries){entries.forEach(function(ent){if(ent.isIntersecting){ent.target.style.transition='opacity 360ms ease,transform 360ms ease';ent.target.style.opacity=1;ent.target.style.transform='none';io.unobserve(ent.target)}}),{threshold:0.08}});
+        els.forEach(function(el){el.style.opacity=0;el.style.transform='translateY(10px)';io.observe(el)});
+      } else els.forEach(function(e){e.style.opacity=1});
+
+    })();
+  </script>
+</body>
+</html>

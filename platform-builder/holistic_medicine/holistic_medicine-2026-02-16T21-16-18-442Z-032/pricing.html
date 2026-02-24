@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Investment — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg1:#f6fbf8;--accent:#6b8f6b;--muted:#6d6d6d;--card:#ffffff;--glass:rgba(255,255,255,0.6)}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:#123;background:linear-gradient(180deg,var(--bg1),#eef6f2);}
+    .wrap{min-height:100%;display:flex;flex-direction:column;}
+    nav{display:flex;justify-content:space-between;align-items:center;padding:22px 28px;background:transparent}
+    .brand{font-weight:600;color:var(--accent)}
+    .links{display:flex;gap:14px;font-size:0.95rem}
+    .links a{color:#123;text-decoration:none;padding:8px 10px;border-radius:8px}
+    .links a:hover{background:rgba(0,0,0,0.04)}
+    header.hero{position:relative;overflow:hidden;padding:48px 28px 60px;}
+    .canvas{position:absolute;inset:0;pointer-events:none;opacity:0.28}
+    .sheet{max-width:980px;margin:0 auto;display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:center}
+    .lead{padding:28px;background:linear-gradient(180deg,rgba(255,255,255,0.8),var(--glass));border-radius:14px;backdrop-filter:blur(6px)}
+    h1{margin:0 0 10px;font-size:2rem;line-height:1.05}
+    p.lead-by{margin:0;color:var(--muted)}
+    .price-card{padding:20px;border-radius:12px;background:var(--card);box-shadow:0 6px 20px rgba(12,18,12,0.06)}
+    .tier{display:flex;flex-direction:column;gap:8px}
+    .tier strong{font-size:1.15rem}
+    .list{margin:14px 0 0;padding:0;list-style:none;color:var(--muted)}
+    main{max-width:980px;margin:24px auto;padding:0 28px 80px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+    .card{background:var(--card);padding:16px;border-radius:10px;box-shadow:0 6px 18px rgba(11,20,14,0.04)}
+    .muted{color:var(--muted);font-size:0.95rem}
+    .cta-row{display:flex;gap:12px;align-items:center;margin-top:12px}
+    .btn{background:linear-gradient(90deg,var(--accent),#4f7a4f);color:white;padding:10px 14px;border-radius:10px;text-decoration:none}
+    footer{padding:28px;text-align:center;color:var(--muted);font-size:0.9rem}
+    /* FAQ small interactions */
+    details{background:linear-gradient(180deg,rgba(255,255,255,0.7),#fff);padding:12px;border-radius:8px}
+    summary{cursor:pointer;font-weight:600}
+    @media(max-width:860px){.sheet{grid-template-columns:1fr;}.lead{order:2}.price-card{order:1}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <div class="links">
+        <a href="index.html">Start</a>
+        <a href="services.html">Offerings</a>
+        <a href="conditions.html">Concerns</a>
+        <a href="approach.html">How we work</a>
+        <a href="pricing.html" aria-current="page">Investment</a>
+        <a href="about.html">Who we are</a>
+        <a href="book.html">Reserve</a>
+      </div>
+    </nav>
+
+    <header class="hero">
+      <!-- unique svg background: soft cellular motif -->
+      <svg class="canvas" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="g1" x1="0" x2="1">
+            <stop offset="0" stop-color="#dff3e8" />
+            <stop offset="1" stop-color="#eaf7ee" />
+          </linearGradient>
+          <filter id="blur"><feGaussianBlur stdDeviation="35" /></filter>
+        </defs>
+        <g fill="url(#g1)" filter="url(#blur)" opacity="0.95">
+          <circle cx="120" cy="120" r="140" />
+          <circle cx="400" cy="80" r="100" />
+          <circle cx="680" cy="180" r="150" />
+          <circle cx="520" cy="360" r="120" />
+        </g>
+      </svg>
+
+      <div class="sheet">
+        <div class="lead">
+          <h1>Practical pricing for mindful care</h1>
+          <p class="lead-by">Events, workshops and a series model designed to support whole-person change — education, nutrition literacy, movement and guided coaching. No promises of cure; only pathways and skilled guidance.</p>
+          <div class="cta-row">
+            <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            <a href="contact.html" style="color:var(--muted);text-decoration:none;padding:8px;border-radius:8px">Contact {{PRACTITIONER_NAME}}</a>
+          </div>
+        </div>
+
+        <aside class="price-card">
+          <div class="tier">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <strong>Series Plan</strong><span class="muted">Events + 5 follow-ups</span>
+            </div>
+            <div class="muted">Starting at</div>
+            <div style="font-size:1.6rem;font-weight:700">$420</div>
+            <ul class="list">
+              <li>Group learning sessions</li>
+              <li>Two private touchpoints</li>
+              <li>Guided home plan & resources</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </header>
+
+    <main>
+      <section>
+        <h2>What you get — gentle pillars of practice</h2>
+        <div class="grid" style="margin-top:12px">
+          <div class="card"><strong>Education</strong><p class="muted">Evidence-framed learning about how body, mind and environment interplay.</p></div>
+          <div class="card"><strong>Nutrition & Lifestyle</strong><p class="muted">Practical steps tailored to rhythms, not rigid rules.</p></div>
+          <div class="card"><strong>Mind-Body Tools</strong><p class="muted">Breath, movement and sleep strategies to stabilize energy.</p></div>
+          <div class="card"><strong>Follow-up Support</strong><p class="muted">Short check-ins to adapt plans and celebrate small wins.</p></div>
+        </div>
+      </section>
+
+      <section style="margin-top:28px">
+        <h3>Selected session formats</h3>
+        <div class="grid" style="margin-top:12px">
+          <div class="card"><strong>Intro Workshop (90m)</strong><p class="muted">Group orientation to topics and approachable practices.</p></div>
+          <div class="card"><strong>Deep-Dive (2h)</strong><p class="muted">Focused skill-building and personalized pointers.</p></div>
+          <div class="card"><strong>Private Consult</strong><p class="muted">Individual intake, tailored plan, optional educational labs.</p></div>
+        </div>
+      </section>
+
+      <section style="margin-top:28px">
+        <h3>Common questions</h3>
+        <details>
+          <summary>Are labs required?</summary>
+          <p class="muted">Optional labs may be suggested for education and clarity; they are never mandatory. Any lab work is discussed and consented to before ordering.</p>
+        </details>
+        <details style="margin-top:10px">
+          <summary>Do you guarantee improvement?</summary>
+          <p class="muted">No guarantee is made. Our work focuses on education, supported habit change and whole-person assessment. Results vary.</p>
+        </details>
+      </section>
+
+      <section style="margin-top:28px">
+        <h3>Case notes — small stories of steady change</h3>
+        <div class="grid" style="margin-top:12px">
+          <div class="card"><strong>Sleep & Rhythm</strong><p class="muted">Patient-centered tweaks to evening routines that improved sleep continuity over weeks.</p></div>
+          <div class="card"><strong>Digestive Education</strong><p class="muted">Dietary re-education and mindful eating reduced bloating and supported energy.</p></div>
+        </div>
+      </section>
+
+      <section style="margin-top:28px">
+        <h3>Myths vs. thoughtful truth</h3>
+        <div class="grid" style="margin-top:12px">
+          <div class="card"><strong>Myth:</strong> Quick fixes heal everything.<p class="muted">Truth: Durability comes from incremental, supported changes.</p></div>
+          <div class="card"><strong>Myth:</strong> More tests always mean better care.<p class="muted">Truth: Tests are tools; their value lies in how results shape meaningful plans.</p></div>
+        </div>
+      </section>
+
+      <section style="margin-top:28px;display:flex;gap:14px;align-items:center;justify-content:space-between">
+        <div>
+          <h3>Ready to join a series?</h3>
+          <p class="muted">Sign up for the next cohort, or book a short consult to see if the format fits your needs.</p>
+        </div>
+        <div>
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">Save my spot</a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div>{{BUSINESS_NAME}} — {{TAGLINE}} • <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      <div style="margin-top:8px;color:var(--muted)">Located in {{CITY}}, {{STATE}} — Practitioned by {{PRACTITIONER_NAME}}, {{CREDENTIALS}}</div>
+    </footer>
+  </div>
+</body>
+</html>

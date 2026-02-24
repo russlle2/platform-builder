@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Rates & Programs — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--ink:#0b1320;--muted:#6b7280;--accent:#ff6b6b;--accent-2:#3b82f6;--card:#fff8f8}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:linear-gradient(180deg,#fff 0%,#fffefc 100%)}
+    .container{max-width:980px;margin:40px auto;padding:28px}
+    nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    .brand{font-weight:700;letter-spacing:0.4px}
+    .nav-links{display:flex;gap:14px}
+    a{color:var(--ink);text-decoration:none}
+    header.hero{display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:center;margin-bottom:30px}
+    .hero-card{background:linear-gradient(180deg,rgba(255,107,107,0.06),transparent);padding:22px;border-radius:12px;box-shadow:0 6px 20px rgba(59,130,246,0.06)}
+    h1{font-size:28px;margin:0 0 8px}
+    p.lead{color:var(--muted);margin:0 0 14px}
+    .price-grid{display:flex;flex-direction:column;gap:12px}
+    .plan{display:flex;justify-content:space-between;align-items:center;padding:14px;border-radius:10px;background:linear-gradient(90deg,rgba(59,130,246,0.04),transparent);border:1px solid rgba(11,19,32,0.04)}
+    .plan strong{display:block;font-size:16px}
+    .muted{color:var(--muted);font-size:13px}
+    .cta{display:inline-block;padding:10px 16px;border-radius:10px;background:var(--accent);color:#fff;font-weight:600;text-decoration:none}
+    section{margin:26px 0;padding:18px;border-radius:12px}
+    .values{background:#fffaf9;border:1px solid rgba(255,107,107,0.06)}
+    .methods{background:#f8fbff;border:1px solid rgba(59,130,246,0.06)}
+    .objections{background:#fffdf7;border:1px solid rgba(249,115,22,0.06)}
+    .testimonials{background:linear-gradient(90deg,#f7fff4,transparent);border:1px solid rgba(34,197,94,0.04)}
+    .lead-magnet{display:flex;gap:12px;align-items:center;background:#eef2ff;border:1px solid rgba(59,130,246,0.06)}
+    footer{font-size:13px;color:var(--muted);margin-top:28px}
+    .small{font-size:13px;color:var(--muted)}
+    /* playful accents */
+    .badge{background:var(--accent-2);color:#fff;padding:6px 10px;border-radius:999px;font-weight:700}
+    svg{max-width:100%}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav>
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <div class="nav-links"><a href="index.html">Home</a><a href="about.html">About</a><a href="specialties.html">Specialties</a><a href="fees.html" style="font-weight:700">Rates</a><a href="book.html">Book</a></div>
+    </nav>
+
+    <header class="hero">
+      <div class="hero-card">
+        <div class="badge">Rates & Options</div>
+        <h1>Clear pricing with flexible paths to care</h1>
+        <p class="lead">I partner with adults navigating anxiety, relationship shifts, burnout, and life transitions. Below are transparent options so you can choose what fits your life and goals.</p>
+        <div class="price-grid" aria-hidden="false">
+          <div class="plan">
+            <div>
+              <strong>Foundations — Single Session</strong>
+              <div class="muted">45–55 minutes. Short-term needs, planning, urgent work.</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-weight:800">${{PRICE_SESSION}}*</div>
+              <div class="muted">Pay per visit</div>
+            </div>
+          </div>
+
+          <div class="plan">
+            <div>
+              <strong>Momentum — 6-Session Focus</strong>
+              <div class="muted">A structured, short-term program for a clear next step.</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-weight:800">${{PRICE_PACKAGE}} total</div>
+              <div class="muted">Package saves time and keeps momentum</div>
+            </div>
+          </div>
+
+          <div class="plan">
+            <div>
+              <strong>Reset Intensive — 3-hour deep session</strong>
+              <div class="muted">Focused work for transitions or trauma stabilization planning.</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-weight:800">${{PRICE_INTENSIVE}}</div>
+              <div class="muted">One-time investment</div>
+            </div>
+          </div>
+        </div>
+
+        <p class="small" style="margin-top:12px">I offer a limited number of sliding-scale spots. Insurance is not directly billed; superbills can be provided upon request.</p>
+        <div style="margin-top:14px"><a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+      </div>
+
+      <div style="text-align:center">
+        <!-- unique SVG hero illustration -->
+        <svg width="320" height="240" viewBox="0 0 320 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="heroTitle">
+          <title id="heroTitle">Warm geometric illustration</title>
+          <rect x="0" y="0" width="320" height="240" rx="18" fill="#fff8f8" stroke="#ffecec"/>
+          <circle cx="60" cy="60" r="28" fill="#ff6b6b" opacity="0.15"/>
+          <rect x="110" y="40" width="140" height="28" rx="8" fill="#3b82f6" opacity="0.12"/>
+          <path d="M40 180c20-40 80-40 120-12s100 20 120-12" stroke="#ffdede" stroke-width="10" fill="none" opacity="0.2"/>
+          <g transform="translate(20,30)">
+            <rect x="0" y="120" width="60" height="70" rx="10" fill="#fff" stroke="#ffb4b4"/>
+            <rect x="70" y="100" width="140" height="90" rx="12" fill="#fff" stroke="#cfe3ff"/>
+          </g>
+        </svg>
+      </div>
+    </header>
+
+    <section class="values">
+      <h2>How I work — core commitments</h2>
+      <p class="muted">I blend practical coaching-style clarity with evidence-informed psychotherapy. My commitments are simple: presence, directness, and collaboration.</p>
+      <ul class="small">
+        <li>We set measurable, realistic goals together.</li>
+        <li>I provide tailored tools—skills you can use between sessions.</li>
+        <li>I protect your privacy and bring a nonjudgmental stance to each meeting.</li>
+      </ul>
+    </section>
+
+    <section class="methods">
+      <h2>Approach & Methods</h2>
+      <p class="muted">Sessions integrate brief cognitive-behavioral techniques, somatic regulation, and narrative work when helpful. Modalities: {{MODALITIES}}.</p>
+      <div class="small">Typical session structure: check-in (10m), focused skill work or processing (30m), plan & experiment (5–10m).</div>
+    </section>
+
+    <section class="objections">
+      <h2>Common concerns and real answers</h2>
+      <ul class="small">
+        <li><strong>"I can’t afford regular therapy."</strong> I keep several sliding-scale openings and offer focused packages to concentrate work when resources are limited.</li>
+        <li><strong>"What if I don’t click with you?"</strong> Feel free to try one session; if we’re not a fit, I’ll help you find someone better suited to your needs.</li>
+        <li><strong>"How long will this take?"</strong> That depends on goals. Many clients see meaningful change within 6–12 sessions; others use therapy as ongoing support.</li>
+      </ul>
+    </section>
+
+    <section class="testimonials">
+      <h2>Client reflections</h2>
+      <blockquote class="small">"I appreciated the straightforward, action-focused work. I left each week with something to try." — A, {{CITY}}</blockquote>
+      <blockquote class="small">"We made safer space to talk about hard things; that steady pace helped me take risks in life outside therapy." — M, {{STATE}}</blockquote>
+    </section>
+
+    <section class="lead-magnet">
+      <div style="flex:1">
+        <h3 style="margin:0">Free guide: 5 grounding moves you can do in 10 minutes</h3>
+        <p class="muted" style="margin:6px 0 0">Downloadable PDF with brief exercises for moments of overwhelm.</p>
+      </div>
+      <div>
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">Get the guide</a>
+      </div>
+    </section>
+
+    <section style="padding:18px;border-radius:12px;background:#fff">
+      <h2>Next steps</h2>
+      <p class="muted">If you'd like to start, book a single session or reach out to discuss which option fits your need. I try to respond to messages within 48 hours on business days.</p>
+      <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+    </section>
+
+    <footer>
+      <div>{{THERAPIST_NAME}} • {{LICENSE}} • {{CITY}}, {{STATE}}</div>
+      <div class="small" style="margin-top:8px">Confidentiality: Sessions are confidential except where disclosure is required by law (risk of harm to self or others, abuse). This site and communications are for scheduling and orientation; they are not a substitute for urgent care.</div>
+      <div class="small" style="margin-top:6px">Crisis note: If you or someone is in immediate danger, call local emergency services or a crisis line. If you are in the U.S., dial 988 for the Suicide & Crisis Lifeline.</div>
+      <div class="small" style="margin-top:6px">Scope & boundaries: I do not provide emergency services or forensic evaluations. If you require those services, I will refer you to appropriate local resources.</div>
+    </footer>
+  </div>
+</body>
+</html>

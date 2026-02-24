@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Shop — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7f3ef;--accent:#9a603b;--muted:#5e4b45}
+    body{margin:0;font-family:Inter,system-ui,Arial;background:linear-gradient(180deg,var(--bg),#efe7df);color:#352b26}
+    header{display:flex;justify-content:space-between;align-items:center;padding:20px 26px}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#9a603b,#caa57f);display:flex;align-items:center;justify-content:center;color:white;font-weight:800}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none;font-weight:600}
+    main{max-width:1100px;margin:28px auto;padding:22px}
+    h1{margin:0}
+    .intro{margin-top:8px;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}
+    .product{background:white;border-radius:12px;padding:14px;border:1px solid rgba(120,88,66,0.06)}
+    .product h4{margin:0 0 8px 0}
+    .price{font-weight:800;color:#7a4f31}
+    .btn{display:inline-block;padding:10px 12px;background:linear-gradient(90deg,#8a5a37,#b67f56);color:white;border-radius:10px;text-decoration:none;margin-top:10px}
+    .small{font-size:13px;color:var(--muted)}
+    .faq{margin-top:24px}
+    .pattern{position:fixed;right:-120px;bottom:-120px;opacity:0.08}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <!-- inline swirl svg unique to shop -->
+  <svg class="pattern" width="480" height="480" viewBox="0 0 480 480" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <defs>
+      <linearGradient id="lg2" x1="0" x2="1">
+        <stop offset="0" stop-color="#fff7f0" />
+        <stop offset="1" stop-color="#efd7c1" />
+      </linearGradient>
+    </defs>
+    <rect width="480" height="480" rx="28" fill="url(#lg2)"/>
+    <g stroke="#b07a52" stroke-opacity="0.12" stroke-width="8" fill="none">
+      <path d="M40 200 C120 80, 300 60, 420 180" />
+      <path d="M60 260 C160 380, 340 380, 420 260" />
+    </g>
+  </svg>
+
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo">S</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">Shop hand-curated aromatherapy items</div>
+      </div>
+    </div>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/services.html">Sessions</a>
+      <a href="/blends.html">Blends</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Market</h1>
+    <p class="intro">Thoughtfully selected kits, rollers, and diffusers. Product descriptions include safe-use prompts. No medical promises.</p>
+
+    <!-- SOCIAL PROOF block first on this page -->
+    <section style="margin-top:14px">
+      <strong>Love from buyers</strong>
+      <div style="display:flex;gap:10px;margin-top:8px">
+        <div style="background:white;padding:10px;border-radius:10px">"The starter kit was perfect for my first blends." — L.</div>
+        <div style="background:white;padding:10px;border-radius:10px">"Beautiful rollers, great scents." — J.</div>
+      </div>
+    </section>
+
+    <!-- PRODUCTS GRID -->
+    <section class="grid" aria-label="products">
+      <div class="product">
+        <h4>Starter Kit — The Basics</h4>
+        <div class="small">Includes: 5 x 5ml singles, 1 amber roller, dilution guide</div>
+        <div class="price">$49</div>
+        <a class="btn" href="/book.html">Reserve</a>
+      </div>
+
+      <div class="product">
+        <h4>On-the-go Rollers (Set of 3)</h4>
+        <div class="small">Pre-diluted rollers (calming, focus, refresh). 10ml each.</div>
+        <div class="price">$38</div>
+        <a class="btn" href="/book.html">Buy</a>
+      </div>
+
+      <div class="product">
+        <h4>Mini Electric Diffuser</h4>
+        <div class="small">USB diffuser for bedrooms and desks. Quiet, 200ml.</div>
+        <div class="price">$45</div>
+        <a class="btn" href="/book.html">Add to cart</a>
+      </div>
+
+      <div class="product">
+        <h4>Seasonal Blends Bundle</h4>
+        <div class="small">Four 5ml blends curated for the season + usage notes.</div>
+        <div class="price">$36</div>
+        <a class="btn" href="/book.html">Buy</a>
+      </div>
+
+      <div class="product">
+        <h4>Travel Roller Trio (Blank)</h4>
+        <div class="small">Empty amber rollers with pipettes. Great for custom blends.</div>
+        <div class="price">$14</div>
+        <a class="btn" href="/book.html">Shop</a>
+      </div>
+
+      <div class="product">
+        <h4>Practitioner Blend Pack</h4>
+        <div class="small">Hand-selected oils for co-creation sessions. Includes safety datasheet.</div>
+        <div class="price">$89</div>
+        <a class="btn" href="/book.html">Inquire</a>
+      </div>
+
+    </section>
+
+    <!-- BENEFITS (short) -->
+    <section style="margin-top:18px">
+      <h3>Why shop here?</h3>
+      <ul style="color:var(--muted)">
+        <li>Sourcing transparency and batch notes included.</li>
+        <li>Products packed with safe-use literature.</li>
+        <li>Return policy for unopened kits within 14 days.</li>
+      </ul>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq">
+      <h3>Product safety FAQ</h3>
+      <div class="faq-item"><strong>Dilution:</strong> Every topical product includes a recommended dilution range. If in doubt, choose the lower concentration.</div>
+      <div class="faq-item"><strong>Patch testing:</strong> We recommend a patch test for any topical product to check for sensitivity, even if pre-diluted.</div>
+      <div class="faq-item"><strong>Pets:</strong> Some products may not be suitable around cats or small mammals. Check the product notes or reach out before use.</div>
+      <div class="faq-item"><strong>Pregnancy & nursing:</strong> Several common oils are avoided during pregnancy; consult before purchasing if pregnant or nursing.</div>
+    </section>
+
+    <!-- PROCESS (checkout-like reassurance) -->
+    <section style="margin-top:18px;background:linear-gradient(90deg,rgba(154,96,59,0.06),transparent);padding:12px;border-radius:10px;display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <strong>Easy ordering</strong>
+        <div style="color:var(--muted)">Secure checkout, tracked shipping, and friendly returns.</div>
+      </div>
+      <div>
+        <a href="/contact.html" class="btn">Questions? Contact us</a>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section style="margin-top:22px;display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <strong>Prefer a custom kit?</strong>
+        <div style="color:var(--muted)">Book a consult to co-create a personalized kit and receive safety documentation.</div>
+      </div>
+      <div>
+        <a href="{{PRIMARY_CTA_URL}}" class="btn">Book a consult</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer style="padding:18px;text-align:center;color:var(--muted)">Questions? Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call {{PHONE}} — {{BUSINESS_NAME}}</footer>
+</body>
+</html>

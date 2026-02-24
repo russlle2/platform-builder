@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Care — Services by {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#ffffff;--accent:#5b8c6f;--muted:#6b6b66}
+    body{font-family:Inter, system-ui, -apple-system, Roboto, Arial; background:linear-gradient(180deg,#fff,#fbfdf9);margin:0;color:#1f1f1e}
+    .wrap{max-width:1020px;margin:44px auto;padding:22px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none}
+    .lead{display:flex;gap:18px;align-items:center;margin-top:18px}
+    .lead .intro{flex:1}
+    .lead h1{margin:0;font-size:26px}
+    .lead p{margin:8px 0;color:var(--muted)}
+    .services{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:18px}
+    .svc{background:white;padding:16px;border-radius:12px;box-shadow:0 8px 24px rgba(26,26,26,0.04)}
+    .price{font-weight:800;color:var(--accent);font-size:16px}
+    .meta{color:var(--muted);font-size:13px}
+    .widget{margin-top:18px}
+    input,select,textarea,button{font-family:inherit}
+    .center{display:flex;gap:8px}
+    .small{font-size:13px;color:var(--muted)}
+    @media(max-width:800px){.services{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <header>
+      <div style='font-weight:700'>{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href='index.html'>Hearth</a>
+        <a href='about.html'>Origins</a>
+        <a href='services.html'>Care</a>
+        <a href='programs.html'>Journeys</a>
+        <a href='pricing.html'>Ledger</a>
+        <a href='testimonials.html'>Echoes</a>
+        <a href='book.html'>Meet</a>
+        <a href='contact.html'>Signal</a>
+      </nav>
+    </header>
+
+    <div class='lead'>
+      <div class='intro'>
+        <h1>Care: focused offerings</h1>
+        <p class='small'>Practical formats for steady progress — single sessions, multi-week supports, and quick intensives that leave you with a clear plan.</p>
+      </div>
+      <div style='text-align:right'>
+        <a href='book.html' style='text-decoration:none'><button>{{PRIMARY_CTA_LABEL}}</button></a>
+        <div class='small' style='margin-top:8px'>Contact: <a href='mailto:{{EMAIL}}' style='color:inherit'>{{EMAIL}}</a></div>
+      </div>
+    </div>
+
+    <section class='services'>
+      <div class='svc'>
+        <h3>Session — Deep Clarify</h3>
+        <div class='meta'>60-minute guided mapping session. Outcome: clear, prioritized next steps.</div>
+        <div style='margin-top:10px' class='price'>$120</div>
+        <div style='margin-top:10px' class='small'>Includes a straightforward action list you can follow for the week after.</div>
+      </div>
+
+      <div class='svc'>
+        <h3>Short course — Habit Kit</h3>
+        <div class='meta'>4-week support with focus on one habit, simple tracking, and two check-ins.</div>
+        <div style='margin-top:10px' class='price'>$420</div>
+        <div style='margin-top:10px' class='small'>A hybrid model: guided sessions plus weekly templates and habit checklists.</div>
+      </div>
+
+      <div class='svc'>
+        <h3>Maintenance — Monthly</h3>
+        <div class='meta'>Monthly tune-ups to keep momentum: one check-in and ongoing email support.</div>
+        <div style='margin-top:10px' class='price'>$95/mo</div>
+        <div style='margin-top:10px' class='small'>Best for people who want light structure with accountability.</div>
+      </div>
+
+      <div class='svc'>
+        <h3>Intensive — Weekend Reset</h3>
+        <div class='meta'>A compact, focused plan over a weekend — design and seed new routines.</div>
+        <div style='margin-top:10px' class='price'>$750</div>
+        <div style='margin-top:10px' class='small'>Includes a printable 7-day starter checklist and a session plan.</div>
+      </div>
+    </section>
+
+    <section class='widget'>
+      <div class='svc'>
+        <h3>Quick Session Planner</h3>
+        <p class='small'>Use this to sketch a session outline before you book.</p>
+        <form id='sp-quick'>
+          <input type='text' id='q-focus' placeholder='Focus (eg. morning energy)' />
+          <div style='display:flex;gap:8px;margin-top:8px'>
+            <select id='q-length'><option value='30'>30 min</option><option value='60' selected>60 min</option></select>
+            <select id='q-format'><option>Online</option><option>Phone</option></select>
+          </div>
+          <div style='display:flex;gap:8px;margin-top:10px'>
+            <button type='button' id='q-build'>Outline</button>
+            <button type='button' class='secondary' id='q-copy'>Copy</button>
+          </div>
+        </form>
+        <pre id='q-output' style='margin-top:10px;display:none'></pre>
+      </div>
+    </section>
+
+    <section style='margin-top:18px'>
+      <div class='svc'>
+        <h3>7‑day challenge generator</h3>
+        <p class='small'>Make a short, printable challenge checklist to test a new habit for a week.</p>
+        <div style='display:flex;gap:8px;margin-top:8px'>
+          <input type='text' id='hb2-name' placeholder='Habit name'/>
+          <button id='hb2-gen'>Generate</button>
+          <button id='hb2-print' class='secondary'>Print</button>
+        </div>
+        <div id='hb2-wrap' style='margin-top:10px;display:none'></div>
+      </div>
+    </section>
+
+    <footer style='margin-top:28px;color:var(--muted)'>
+      <div>{{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • {{PHONE}}</div>
+    </footer>
+  </div>
+
+  <script>
+    // Quick planner
+    document.getElementById('q-build').addEventListener('click', function(){
+      const focus = document.getElementById('q-focus').value || 'General clarity';
+      const len = document.getElementById('q-length').value;
+      const fmt = document.getElementById('q-format').value;
+      const out = [];
+      out.push('{{BUSINESS_NAME}} — Session Outline');
+      out.push('Focus: '+focus);
+      out.push('Length: '+len+' minutes');
+      out.push('Format: '+fmt);
+      out.push('Core questions: 1) What is one clear next step? 2) Which small habit supports that? 3) How will we check progress?');
+      const pre = document.getElementById('q-output');
+      pre.textContent = out.join('\n'); pre.style.display='block';
+    });
+    document.getElementById('q-copy').addEventListener('click', function(){
+      const t = document.getElementById('q-output').textContent; if(!t) return; navigator.clipboard.writeText(t).then(()=>{alert('Outline copied');});
+    });
+
+    // Habit generator (simple)
+    function renderChecklist(container, name){
+      const el = document.getElementById(container);
+      el.innerHTML = '';
+      const title = document.createElement('div'); title.textContent = name; title.style.fontWeight='700'; el.appendChild(title);
+      const list = document.createElement('div'); list.style.marginTop='8px';
+      for(let i=1;i<=7;i++){
+        const row = document.createElement('label'); row.style.display='flex';row.style.gap='8px';row.style.alignItems='center';
+        const cb = document.createElement('input'); cb.type='checkbox'; row.appendChild(cb);
+        const txt = document.createElement('div'); txt.textContent = 'Day '+i; row.appendChild(txt);
+        list.appendChild(row);
+      }
+      el.appendChild(list);
+      el.style.display='block';
+    }
+
+    document.getElementById('hb2-gen').addEventListener('click', function(){
+      const name = document.getElementById('hb2-name').value || 'Weekly habit';
+      renderChecklist('hb2-wrap', name);
+    });
+    document.getElementById('hb2-print').addEventListener('click', function(){
+      const el = document.getElementById('hb2-wrap'); if(!el.innerHTML) return; const w = window.open('','_blank');
+      w.document.write('<html><head><meta charset="utf-8"><title>Checklist</title></head><body>');
+      w.document.write('<h1>'+ (document.getElementById('hb2-name').value || '7-day challenge') +'</h1>');
+      w.document.write(el.innerHTML); w.document.write('</body></html>'); w.document.close(); w.print();
+    });
+  </script>
+</body>
+</html>

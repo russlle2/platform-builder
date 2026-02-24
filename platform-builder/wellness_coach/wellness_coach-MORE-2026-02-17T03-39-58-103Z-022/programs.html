@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Journeys — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--earth:#EDE4D8;--wood:#6E432A;--accent:#B77446;--ink:#4C3A33}
+    body{margin:0;background:var(--earth) url('assets/img/pattern.svg') repeat;font-family:Inter,system-ui,Arial;color:var(--ink)}
+    .wrap{max-width:980px;margin:28px auto;padding:22px}
+    nav{margin-bottom:12px}
+    nav a{color:var(--wood);margin-right:12px;text-decoration:none;font-weight:700}
+    .lead{background:white;padding:18px;border-radius:12px;box-shadow:0 8px 30px rgba(100,60,40,0.06)}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}
+    .tile{background:linear-gradient(180deg,rgba(183,116,70,0.06),transparent);padding:16px;border-radius:12px}
+    .tile h3{margin:0 0 6px;color:var(--wood)}
+    .muted{color:#755B50}
+    .price{font-weight:800;color:var(--accent)}
+    .foot{margin-top:18px;color:#6E584B}
+    .cta{background:var(--wood);color:white;padding:8px 10px;border-radius:8px;text-decoration:none}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Roots</a>
+      <a href="services.html">Offerings</a>
+      <a href="programs.html">Journeys</a>
+      <a href="pricing.html">Invest</a>
+    </nav>
+
+    <div class="lead">
+      <h1 style="margin:0;color:var(--wood)">Journeys</h1>
+      <p class="muted">Structured multi-week paths for specific life rhythms. Each journey combines brief coaching, weekly micro-experiments, and a tailored daily checklist.</p>
+    </div>
+
+    <div style="margin-top:14px;display:flex;gap:12px;align-items:center">
+      <div style="flex:1">
+        <p class="muted">Pick a journey tuned to the season of life you are in. Pricing is framed as an investment in repeatable habits — we include a compact toolkit you can reuse.</p>
+      </div>
+      <div>
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">Start a conversation</a>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="tile">
+        <h3>Foundations Cycle</h3>
+        <p class="muted">6-week course to set three core daily anchors and a weekly review practice.</p>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px"><div class="price">$980 total</div><a class="cta" href="book.html">Enroll</a></div>
+      </div>
+
+      <div class="tile">
+        <h3>Focus Sprint</h3>
+        <p class="muted">A compact 4-week plan for tighter focus windows and a midday recovery routine.</p>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px"><div class="price">$650 (includes check-ins)</div><a class="cta" href="book.html">Enroll</a></div>
+      </div>
+
+      <div class="tile">
+        <h3>Resilience Lab</h3>
+        <p class="muted">8-week iterative experiments to discover which small rituals stabilize your energy across busy weeks.</p>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px"><div class="price">$1,300 with toolkit</div><a class="cta" href="book.html">Enroll</a></div>
+      </div>
+    </div>
+
+    <div style="margin-top:18px" class="panel">
+      <div style="background:white;padding:16px;border-radius:12px;box-shadow:0 12px 30px rgba(80,40,20,0.05)}">
+        <h3 style="margin:0 0 8px;color:var(--wood)">Included in each journey</h3>
+        <ul class="muted">
+          <li>Clear outcome definition and one primary metric</li>
+          <li>A 7-day micro-experiment template you can run repeatedly</li>
+          <li>Three short coaching touchpoints</li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="margin-top:18px">
+      <div style="background:white;padding:16px;border-radius:12px">
+        <h3 style="margin:0 0 8px;color:var(--wood)">Try a guided exercise</h3>
+        <p class="muted">If you're deciding, try a 3-minute micro-practice below to get a sense of the approach.</p>
+        <div style="display:flex;gap:8px">
+          <button id="openExercise">Try it now</button>
+          <a class="cta" href="{{PRIMARY_CTA_URL}}" style="margin-left:8px">Discuss my goals</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="foot">Questions? Call {{PHONE}} or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>. Based in {{CITY}}, {{STATE}}.</div>
+  </div>
+
+  <div id="overlay" style="display:none;position:fixed;inset:0;background:rgba(10,10,10,0.5);align-items:center;justify-content:center">
+    <div style="background:white;padding:18px;border-radius:10px;max-width:640px;width:100%">
+      <button id="closeX" style="float:right">Close</button>
+      <h3 id="exTitle">Guided micro-practice</h3>
+      <div id="exBody"></div>
+    </div>
+  </div>
+
+  <script>
+    // Simple guided exercise used on programs page
+    (function(){
+      const overlay = document.getElementById('overlay');
+      const body = document.getElementById('exBody');
+      document.getElementById('openExercise').addEventListener('click',()=>{overlay.style.display='flex';startSequence()});
+      document.getElementById('closeX').addEventListener('click',()=>{overlay.style.display='none';body.innerHTML=''});
+      function startSequence(){
+        document.getElementById('exTitle').textContent='Intention + Breath (3 min)';
+        body.innerHTML='<p class="muted">Step 1: Set one simple intention for the next hour. Step 2: Follow the guided breaths. Step 3: Note one action you will do differently.</p><div id="seqVis" style="height:120px;display:flex;align-items:center;justify-content:center;background:linear-gradient(90deg,#B77446,#6E432A);color:white;border-radius:8px;font-weight:700">Ready</div><div style="margin-top:10px"><button id="beginSeq">Begin</button></div>';
+        document.getElementById('beginSeq').addEventListener('click',()=>{const el=document.getElementById('seqVis'); let count=0; el.textContent='Inhale'; let t=setInterval(()=>{count++; if(count%2===0){el.textContent='Inhale';el.style.transform='scale(1.12)'}else{el.textContent='Exhale';el.style.transform='scale(0.9)'} if(count>6){clearInterval(t);el.textContent='Complete';}},1000)});
+      }
+    })();
+  </script>
+</body>
+</html>

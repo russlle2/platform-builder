@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Investment — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1724;--card:rgba(255,255,255,0.06);--glass:linear-gradient(135deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));--accent:#8FD3C7;--muted:#9AA4B2;--glass-border:rgba(255,255,255,0.08);font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    html,body{height:100%;margin:0;background:radial-gradient(1200px 400px at 10% 10%,rgba(143,211,199,0.08),transparent),linear-gradient(180deg,#08101a 0%,#07121a 100%);color:#e6f7f1}
+    header{position:sticky;top:12px;display:flex;justify-content:space-between;align-items:center;padding:18px 28px;margin:8px;border-radius:14px;background:var(--glass);backdrop-filter:blur(8px);border:1px solid var(--glass-border);box-shadow:0 6px 18px rgba(2,6,10,0.6)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#7aabd4);display:flex;align-items:center;justify-content:center;color:#042225;font-weight:700;box-shadow:inset 0 -6px 18px rgba(255,255,255,0.03)}
+    nav a{color:#cdeee6;text-decoration:none;margin:0 10px;font-size:14px}
+    nav a:hover{color:#fff}
+    main{max-width:1100px;margin:36px auto;padding:28px}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+    .hero-card{padding:28px;border-radius:14px;background:var(--card);border:1px solid var(--glass-border);box-shadow:0 12px 36px rgba(2,6,10,0.6)}
+    h1{margin:0 0 8px;font-size:28px;letter-spacing:0.4px}
+    p.lead{margin:0;color:var(--muted)}
+    .price-list{display:flex;flex-direction:column;gap:14px;margin-top:18px}
+    .plan{display:flex;justify-content:space-between;align-items:center;padding:14px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid rgba(255,255,255,0.03)}
+    .plan .meta{max-width:66%}
+    .plan h3{margin:0;font-size:16px}
+    .plan p{margin:6px 0 0;color:var(--muted);font-size:13px}
+    .plan .cta{background:linear-gradient(90deg,var(--accent),#7ac1d8);color:#042225;padding:8px 12px;border-radius:10px;border:none;cursor:pointer;font-weight:600}
+    .disclaimer{font-size:12px;color:var(--muted);margin-top:10px}
+
+    /* Proof Gallery */
+    .proof{margin-top:28px;padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid rgba(255,255,255,0.03)}
+    .testimony{min-height:72px;display:flex;flex-direction:column;justify-content:center}
+    .quote{font-size:15px;margin:0 0 8px}
+    .who{font-size:13px;color:var(--muted)}
+    .badges{display:flex;gap:10px;margin-top:12px;align-items:center}
+    .badge{background:rgba(255,255,255,0.03);padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);font-size:12px;position:relative}
+    .badge:hover{transform:translateY(-4px);transition:transform .18s}
+    .tooltip{position:absolute;left:50%;transform:translateX(-50%);top:-40px;background:#02121a;color:#bfeee2;padding:8px;border-radius:8px;font-size:12px;white-space:nowrap;display:none}
+    .badge:hover .tooltip{display:block}
+
+    footer{margin-top:36px;padding:18px;border-radius:12px;background:var(--card);border:1px solid var(--glass-border);display:flex;justify-content:space-between;align-items:center}
+    .pattern{position:fixed;right:18px;bottom:18px;opacity:0.08;width:180px;height:180px}
+
+    @media(max-width:880px){.hero{grid-template-columns:1fr;}.logo{width:40px;height:40px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">A</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">Sanctuary for aromatic clarity</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Sanctum</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Formulas</a>
+      <a href="shop.html">Apothecary</a>
+      <a href="pricing.html" style="color:#fff;font-weight:600">Investment</a>
+      <a href="about.html">Story</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="hero">
+      <section class="hero-card">
+        <h1>Investment tiers for focused aroma intensives</h1>
+        <p class="lead">Choose a pathway designed to deepen your scent awareness and daily ritual. Safety-minded, evidence-informed approaches that may support emotional and sensory balance.</p>
+
+        <div class="price-list" id="plans">
+          <div class="plan">
+            <div class="meta">
+              <h3>Essence Dive — 90 minutes</h3>
+              <p>One extended focused session with a tailored home-handout and a scent plan.</p>
+            </div>
+            <div>
+              <div style="text-align:right">$150</div>
+              <button class="cta" onclick="location.href='book.html?plan=essence-dive'">Reserve this</button>
+            </div>
+          </div>
+
+          <div class="plan">
+            <div class="meta">
+              <h3>Root & Rise — Two-session intensive</h3>
+              <p>Two concentrated sessions spaced to refine your scent practice and coping tools.</p>
+            </div>
+            <div>
+              <div style="text-align:right">$270</div>
+              <button class="cta" onclick="location.href='book.html?plan=root-rise'">Start the duo</button>
+            </div>
+          </div>
+
+          <div class="plan">
+            <div class="meta">
+              <h3>Scent Steward — Monthly deep care</h3>
+              <p>Four focused check-ins with evolving blends and at-home guidance.
+              </p>
+            </div>
+            <div>
+              <div style="text-align:right">$480 / month</div>
+              <button class="cta" onclick="location.href='book.html?plan=steward'">Enrol as steward</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="disclaimer">Sessions are intended to be supportive and non-medical. Please review safety notes in FAQ and let us know about pregnancy, pets, or chronic sensitivities before booking.</div>
+
+      </section>
+
+      <aside class="hero-card">
+        <h3 style="margin-top:0">Why the tiers?</h3>
+        <p class="lead">Each option scaffolds practice: single deep work, a paired refinement, or ongoing stewardship. You’ll receive dilution guidance, a patch-test routine, and scent storage notes.</p>
+
+        <div class="proof" aria-live="polite">
+          <div class="testimony" id="testimonial">
+            <p class="quote">"A quiet, precise practice that made scent feel purposeful again."</p>
+            <div class="who">— Mara, Portland</div>
+          </div>
+
+          <div class="badges" id="badges">
+            <div class="badge">Certified Practitioner
+              <div class="tooltip">Completed accredited aromatherapy training</div>
+            </div>
+            <div class="badge">Safety-first Protocols
+              <div class="tooltip">Guidance on dilution, pregnancy, pets, and patch tests</div>
+            </div>
+            <div class="badge">Community Reviews
+              <div class="tooltip">Hundreds of client reflections on care and craft</div>
+            </div>
+          </div>
+        </div>
+
+      </aside>
+    </div>
+
+    <section style="margin-top:26px;padding:20px;border-radius:12px;background:var(--card);border:1px solid var(--glass-border)">
+      <h3 style="margin:0 0 10px">Payment & scheduling</h3>
+      <p class="lead">Payments can be made by card at booking. Sessions are scheduled by mutual availability; cancellations accepted with 48-hour notice for a refund. For questions: <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a>.</p>
+    </section>
+
+    <footer>
+      <div>
+        <strong>{{BUSINESS_NAME}}</strong>
+        <div style="font-size:13px;color:var(--muted)">Serving {{CITY}}, {{STATE}} • <a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none">{{PHONE}}</a></div>
+      </div>
+      <div><button onclick="location.href='book.html'" style="background:transparent;border:1px solid rgba(255,255,255,0.06);padding:10px 14px;border-radius:10px;color:#cdeee6">{{PRIMARY_CTA_LABEL}}</button></div>
+    </footer>
+
+  </main>
+
+  <svg class="pattern" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1">
+        <stop offset="0" stop-color="#8FD3C7" stop-opacity="0.6"/>
+        <stop offset="1" stop-color="#7AC1D8" stop-opacity="0.3"/>
+      </linearGradient>
+    </defs>
+    <circle cx="40" cy="40" r="36" fill="url(#g1)"/>
+    <circle cx="160" cy="160" r="28" fill="none" stroke="#6fbfb1" stroke-opacity="0.14"/>
+    <g fill="#ffffff" opacity="0.02">
+      <rect x="0" y="120" width="200" height="2"/>
+      <rect x="0" y="90" width="200" height="2"/>
+    </g>
+  </svg>
+
+  <script>
+    // Rotating testimonial set
+    (function(){
+      const items = [
+        {q: '"A quiet, precise practice that made scent feel purposeful again."', who: '— Mara, Portland'},
+        {q: '"Clear guidance, gentle pace, and blends that suit my home life."', who: '— Jorge, Seattle'},
+        {q: '"I appreciated the safety tips and the slow build of confidence."', who: '— Asha, Denver'},
+        {q: '"Practical notes and a scent plan I actually use each morning."', who: '— L., Minneapolis'}
+      ];
+      let i=0;
+      const quoteEl=document.getElementById('testimonial');
+      function show(){
+        quoteEl.querySelector('.quote').textContent = items[i].q;
+        quoteEl.querySelector('.who').textContent = items[i].who;
+        i = (i+1)%items.length;
+      }
+      show();
+      setInterval(show,4200);
+    })();
+  </script>
+</body>
+</html>

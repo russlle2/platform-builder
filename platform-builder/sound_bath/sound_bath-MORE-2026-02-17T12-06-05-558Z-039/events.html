@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Events — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#F5EFE6;--accent:#5B3A29;--muted:#7E6A59;--card:#FFFDF8;--glass:rgba(255,255,255,0.6);--accent-2:#A67C52}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;line-height:1.4;color:var(--accent)}
+    body{background:linear-gradient(180deg,#FBF7F2 0%,var(--bg) 100%);background-image:url('assets/img/pattern.svg');background-attachment:fixed}
+    header{padding:28px 20px;display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none;font-weight:600}
+    .hero{max-width:980px;margin:10px auto;padding:36px;border-radius:14px;background:var(--card);box-shadow:0 8px 30px rgba(91,58,41,0.08)}
+    .kicker{color:var(--accent-2);font-weight:700;font-size:14px}
+    h1{margin:6px 0 10px;font-size:28px}
+    p.lead{margin:0 0 18px;color:var(--muted)}
+    .controls{display:flex;gap:12px;flex-wrap:wrap}
+    .btn{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+    .btn.ghost{background:transparent;border:2px solid var(--accent);color:var(--accent)}
+
+    /* modules */
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:22px;margin-top:18px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(91,58,41,0.05)}
+    .next-event{display:flex;flex-direction:column;gap:8px}
+    .date{font-weight:800;font-size:20px;color:var(--accent)}
+    .meta{color:var(--muted);font-size:13px}
+
+    .calendar{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+    .event-row{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:10px;background:linear-gradient(180deg,rgba(166,124,82,0.04),transparent)}
+    .event-row small{color:var(--muted)}
+
+    .section{margin:26px 0}
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity 520ms ease,var(--t,transform) 520ms ease}
+    .reveal.visible{opacity:1;transform:translateY(0)}
+
+    footer{padding:28px 20px;text-align:center;color:var(--muted);font-size:13px}
+
+    /* modal */
+    .overlay{position:fixed;inset:0;background:rgba(11,7,5,0.55);display:none;align-items:center;justify-content:center;padding:20px}
+    .overlay.active{display:flex}
+    .modal{width:100%;max-width:760px;background:var(--card);padding:20px;border-radius:12px;box-shadow:0 12px 40px rgba(11,7,5,0.28)}
+    .modal h3{margin:0 0 8px}
+    .controls-row{display:flex;gap:8px;align-items:center}
+    .breath-circle{width:120px;height:120px;border-radius:50%;margin:12px auto;background:radial-gradient(circle at 30% 30%,rgba(166,124,82,0.18),transparent 40%),linear-gradient(180deg,#fff 0%,#F8F5F2 100%);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent)}
+    .breath-animate{animation:breath 4s ease-in-out infinite}
+    @keyframes breath{0%{transform:scale(1)}50%{transform:scale(1.25)}100%{transform:scale(1)}}
+
+    /* accessibility */
+    @media (prefers-reduced-motion: reduce){.breath-animate{animation:none}.reveal{transition:none;opacity:1;transform:none}}
+
+    /* small */
+    @media (max-width:880px){.grid{grid-template-columns:1fr}.hero{margin:12px}} 
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">SB</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="events.html">Sessions</a>
+      <a href="private-sessions.html">Private Care</a>
+      <a href="pricing.html">Invest</a>
+      <a href="about.html">About</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main class="hero">
+    <div class="kicker">Upcoming gatherings</div>
+    <h1>Public sound gatherings &amp; focused immersions</h1>
+    <p class="lead">Join live chambers of tuned resonance. Each session is framed to help you unwind, anchor intention, and return with clearer attention.</p>
+    <div class="controls">
+      <a class="btn" href="book.html">Reserve a seat</a>
+      <button id="tryNowBtn" class="btn ghost">Try it now — quick exercise</button>
+    </div>
+
+    <div class="grid">
+      <section class="card reveal" id="nextModule">
+        <div class="next-event">
+          <div class="date">Next session: Saturday, March 6 • 6:30pm</div>
+          <div class="meta">A mixed-tone sound wave event — 75 minutes in a warm studio in {{CITY}}, {{STATE}}</div>
+          <div style="margin-top:12px">Facilitator: sound practitioner • Limited to 20 participants</div>
+          <div style="margin-top:12px;display:flex;gap:8px">
+            <a class="btn" href="book.html">Claim a spot</a>
+            <a class="btn ghost" href="#calendar">See all dates</a>
+          </div>
+        </div>
+      </section>
+
+      <aside class="card reveal" id="eventsList">
+        <strong>Calendar</strong>
+        <div class="calendar" id="calendar">
+          <div class="event-row"><div><strong>Mar 6</strong><div style="font-size:12px;color:var(--muted)">Evening Wave — 6:30pm</div></div><div><small>Seats left: 8</small></div></div>
+          <div class="event-row"><div><strong>Mar 20</strong><div style="font-size:12px;color:var(--muted)">Lunar Drift — 7:00pm</div></div><div><small>Seats left: 14</small></div></div>
+          <div class="event-row"><div><strong>Apr 3</strong><div style="font-size:12px;color:var(--muted)">Spring Reset — 10:30am</div></div><div><small>Seats left: 20</small></div></div>
+          <div class="event-row"><div><strong>Apr 17</strong><div style="font-size:12px;color:var(--muted)">Focused Release — 6:00pm</div></div><div><small>Seats left: 10</small></div></div>
+        </div>
+        <p style="margin-top:12px;font-size:13px;color:var(--muted)"><strong>Note:</strong> If you are pregnant, have uncontrolled epilepsy, recent surgery, a pacemaker, or severe psychiatric conditions, please consult your health provider before attending sound immersions.</p>
+      </aside>
+    </div>
+
+    <section class="section reveal" aria-labelledby="what">
+      <h2 id="what">What to expect</h2>
+      <p class="lead">Sessions begin with a short settling practice, then move through layered instruments and vocal tones. We emphasize safe, embodied release and clear post-session integration.</p>
+      <ul>
+        <li>Small groups — attentive facilitation</li>
+        <li>75–90 minutes including a brief check-in and grounding</li>
+        <li>Tools: bowls, gongs, chimes, and voice</li>
+      </ul>
+    </section>
+
+    <section class="section reveal" aria-labelledby="faqMini">
+      <h2 id="faqMini">Quick logistics</h2>
+      <p class="lead">Arrive 10 minutes early. Bring a mat, blanket, and pillow. Water is recommended after sessions. Late entry is minimized to maintain the field.</p>
+    </section>
+
+    <section class="section reveal" aria-labelledby="cta">
+      <h2 id="cta">Join a public session</h2>
+      <p class="lead">Reserve a seat or join the waiting list. We keep gatherings intimate to preserve depth.</p>
+      <a class="btn" href="book.html">Reserve your seat</a>
+    </section>
+  </main>
+
+  <footer>
+    <div style="margin-bottom:8px">Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    <div style="color:var(--muted)">Contraindications: sound work is not recommended for those with cardiac pacemakers, active seizures, or recent cranial surgery. Please consult a clinician with concerns.</div>
+  </footer>
+
+  <!-- Try-it-now modal -->
+  <div id="overlay" class="overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h3 id="modalTitle">Try a quick focus practice</h3>
+      <p style="color:var(--muted)">A three-part micro-experience: breathing, intention, short journaling. Takes ~4 minutes.</p>
+      <div id="exercise">
+        <div id="step1" class="step">
+          <div style="text-align:center">
+            <div id="circle" class="breath-circle">Breathe</div>
+            <p id="breathInstr">Slow inhalation for 4s, hold 2s, exhale 6s. Repeat.</p>
+            <div class="controls-row" style="justify-content:center;margin-top:8px">
+              <button id="startBreath" class="btn">Start breathing</button>
+              <button id="skipToIntent" class="btn ghost">Skip</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="step2" class="step" style="display:none">
+          <h4>Set an intention</h4>
+          <p style="color:var(--muted)">Choose a single short phrase to carry with you after the practice.</p>
+          <input id="intention" placeholder="e.g., Return with clarity" style="width:100%;padding:10px;border-radius:8px;border:1px solid #e6dfd6">
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <button id="saveIntent" class="btn">Save &amp; continue</button>
+            <button id="backToBreath" class="btn ghost">Back</button>
+          </div>
+        </div>
+
+        <div id="step3" class="step" style="display:none">
+          <h4>Quick reflection</h4>
+          <p style="color:var(--muted)">Write one line about how you feel now. This is private to you — copy to your notes if you want to keep it.</p>
+          <textarea id="journal" rows="4" style="width:100%;padding:10px;border-radius:8px;border:1px solid #e6dfd6"></textarea>
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <button id="finishBtn" class="btn">Finish</button>
+            <button id="backToIntent" class="btn ghost">Back</button>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:12px;color:var(--muted);font-size:13px">This exercise is a brief guided practice — not a substitute for medical or mental health care.</div>
+    </div>
+  </div>
+
+  <script>
+    // Scroll reveal with reduced-motion support
+    (function(){
+      const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const reveals = document.querySelectorAll('.reveal');
+      if(prefersReduced){reveals.forEach(r=>r.classList.add('visible'));return}
+      const obs = new IntersectionObserver((entries, o)=>{
+        entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');o.unobserve(e.target)}});
+      },{threshold:0.12});
+      reveals.forEach(r=>obs.observe(r));
+    })();
+
+    // Try-it-now modal logic with simple focus handling
+    (function(){
+      const overlay = document.getElementById('overlay');
+      const tryNowBtn = document.getElementById('tryNowBtn');
+      const startBreath = document.getElementById('startBreath');
+      const skipToIntent = document.getElementById('skipToIntent');
+      const step1 = document.getElementById('step1');
+      const step2 = document.getElementById('step2');
+      const step3 = document.getElementById('step3');
+      const saveIntent = document.getElementById('saveIntent');
+      const backToBreath = document.getElementById('backToBreath');
+      const backToIntent = document.getElementById('backToIntent');
+      const finishBtn = document.getElementById('finishBtn');
+      const circle = document.getElementById('circle');
+      let breathTimer = null;
+
+      function openModal(){overlay.classList.add('active');overlay.setAttribute('aria-hidden','false');step1.style.display='block';step2.style.display='none';step3.style.display='none';document.body.style.overflow='hidden';startBreath.focus()}
+      function closeModal(){overlay.classList.remove('active');overlay.setAttribute('aria-hidden','true');document.body.style.overflow='';if(breathTimer){clearInterval(breathTimer);circle.classList.remove('breath-animate')}}
+
+      tryNowBtn.addEventListener('click',openModal);
+      overlay.addEventListener('click',e=>{if(e.target===overlay)closeModal()});
+      // breathing animation and simple timer
+      startBreath.addEventListener('click',()=>{
+        circle.classList.add('breath-animate');
+        // simulate a short 60s cycle of breaths visually by showing animation for 16s then auto-advance
+        if(breathTimer)clearInterval(breathTimer);
+        let secs=16; circle.textContent='Breath';
+        breathTimer=setInterval(()=>{secs--; if(secs<=0){clearInterval(breathTimer);circle.classList.remove('breath-animate');goToIntent()}},1000);
+      });
+      skipToIntent.addEventListener('click',goToIntent);
+      function goToIntent(){step1.style.display='none';step2.style.display='block';document.getElementById('intention').focus()}
+      saveIntent.addEventListener('click',()=>{step2.style.display='none';step3.style.display='block';document.getElementById('journal').focus()});
+      backToBreath.addEventListener('click',()=>{step2.style.display='none';step1.style.display='block'});
+      backToIntent.addEventListener('click',()=>{step3.style.display='none';step2.style.display='block'});
+      finishBtn.addEventListener('click',()=>{closeModal();alert('Thank you — your quick practice is complete. Carry your intention gently.')});
+      // keyboard escape
+      window.addEventListener('keydown',e=>{if(e.key==='Escape' && overlay.classList.contains('active'))closeModal()});
+    })();
+  </script>
+</body>
+</html>

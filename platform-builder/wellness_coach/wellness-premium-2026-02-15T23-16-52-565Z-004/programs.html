@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{BUSINESS_NAME}} Programs | Modern Clinical Wellness Coaching</title>
+  <meta name="description" content="Evidence-based wellness programs designed to create precise, sustainable change. Explore clinically informed tiers tailored to your goals." />
+  <meta name="theme-color" content="#2F3437" />
+  <link rel="icon" href="assets/img/pattern.svg" />
+  <style>
+    :root {
+      --cream: #F7F4ED;
+      --sage-50: #F0F4F1;
+      --sage-100: #E4ECE6;
+      --sage-300: #B7C8BC;
+      --sage-500: #8FAA96;
+      --sage-600: #7E9D83; /* primary */
+      --sage-700: #6E8E74;
+      --charcoal: #2F3437; /* text */
+      --ink: #1E2224;
+      --muted: #6A7175;
+      --border: #E3E1DA;
+      --focus: #1B6F5B;
+      --radius: 14px;
+      --shadow-1: 0 1px 2px rgba(0,0,0,.06), 0 6px 18px rgba(0,0,0,.06);
+      --shadow-2: 0 2px 6px rgba(0,0,0,.08), 0 12px 36px rgba(0,0,0,.1);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; color: var(--charcoal); background: var(--cream); line-height: 1.55; }
+    img { max-width: 100%; display: block; height: auto; }
+    a { color: var(--ink); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .container { width: min(1140px, 92vw); margin-inline: auto; }
+    .grid { display: grid; gap: 1.25rem; }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0,1fr)); }
+    @media (max-width: 960px) { .grid-4 { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 720px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+
+    /* Header */
+    .topbar { background: linear-gradient(90deg, var(--sage-600), var(--sage-700)); color: #fff; font-size: 14px; }
+    .topbar .container { display: flex; gap: .75rem; align-items: center; justify-content: space-between; padding: .5rem 0; }
+    .topbar a { color: #fff; opacity: .9; }
+
+    header { position: sticky; top: 0; backdrop-filter: saturate(140%) blur(6px); background: color-mix(in oklab, var(--cream) 82%, white 18% /.86); border-bottom: 1px solid var(--border); z-index: 40; }
+    .nav { display: flex; align-items: center; justify-content: space-between; padding: .9rem 0; }
+    .brand { display: flex; align-items: center; gap: .75rem; font-weight: 700; letter-spacing: .2px; }
+    .brand-logo { inline-size: 36px; block-size: 36px; border-radius: 8px; background: url('assets/img/pattern.svg') center/cover no-repeat, var(--sage-600); box-shadow: inset 0 0 0 2px rgba(255,255,255,.6); }
+    .brand .sub { display:block; font-size: 12px; font-weight: 500; color: var(--muted); }
+
+    .nav ul { display: flex; gap: 1rem; align-items: center; list-style: none; margin: 0; padding: 0; }
+    .nav a { padding: .5rem .6rem; border-radius: 10px; }
+    .nav a:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; border: 1px solid transparent; border-radius: 999px; padding: .7rem 1.1rem; font-weight: 600; transition: .2s ease; cursor: pointer; text-decoration: none; }
+    .btn--primary { background: var(--sage-600); color: #fff; box-shadow: var(--shadow-1); }
+    .btn--primary:hover { background: var(--sage-700); transform: translateY(-1px); }
+    .btn--ghost { background: transparent; border-color: var(--border); color: var(--ink); }
+    .btn--ghost:hover { border-color: var(--sage-500); }
+
+    .nav-toggle { display: none; background: transparent; border: 1px solid var(--border); padding: .55rem .7rem; border-radius: 10px; }
+    .nav-toggle svg { width: 22px; height: 22px; }
+
+    @media (max-width: 960px) {
+      .nav-primary { position: fixed; inset: 64px 0 auto 0; background: var(--cream); border-bottom: 1px solid var(--border); transform: translateY(-120%); transition: transform .25s ease; }
+      .nav-primary.open { transform: translateY(0); }
+      .nav ul { flex-direction: column; align-items: stretch; padding: .75rem; }
+      .nav-toggle { display: inline-flex; }
+      .nav .cta { display: none; }
+    }
+
+    /* Hero */
+    .hero { position: relative; padding: 4rem 0 2rem; background: linear-gradient(180deg, color-mix(in oklab, var(--sage-50) 70%, white 30%), transparent), url('assets/img/pattern.svg') right -120px top -120px/320px no-repeat; }
+    .hero .wrap { display: grid; grid-template-columns: 1.2fr .8fr; gap: 2rem; align-items: center; }
+    .eyebrow { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--sage-700); }
+    h1 { font-size: clamp(28px, 4vw, 44px); line-height: 1.15; margin: .4rem 0 1rem; }
+    .lede { color: var(--muted); max-width: 58ch; }
+    .hero-art { border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-2); background: linear-gradient(135deg, var(--sage-100), #ffffff); border: 1px solid var(--border); }
+    .hero-art img { width: 100%; height: auto; }
+
+    /* Sections */
+    section { padding: 3rem 0; }
+    .section-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; }
+    .section-header h2 { font-size: clamp(22px, 3vw, 32px); margin: 0; }
+    .kicker { color: var(--muted); }
+
+    /* Cards */
+    .card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-1); overflow: clip; display: grid; }
+    .card .content { padding: 1.1rem 1.1rem 1.25rem; }
+    .badge { display: inline-flex; align-items: center; gap: .5rem; background: color-mix(in oklab, var(--sage-100) 70%, white 30%); border: 1px solid var(--sage-300); color: var(--sage-700); padding: .2rem .55rem; border-radius: 999px; font-size: 12px; font-weight: 600; }
+    .list { list-style: none; padding: 0; margin: .75rem 0 0; display: grid; gap: .5rem; }
+    .list li { display: grid; grid-template-columns: 20px 1fr; align-items: start; gap: .5rem; }
+    .check { width: 18px; height: 18px; border-radius: 50%; background: var(--sage-600); color: #fff; display: inline-grid; place-items: center; font-size: 14px; line-height: 1; }
+
+    /* Testimonials */
+    .testimonials { background: linear-gradient(180deg, #fff, var(--cream)); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .quote { display: grid; grid-template-columns: 56px 1fr; gap: .9rem; align-items: start; padding: 1rem; border: 1px solid var(--border); border-radius: 14px; background: #fff; }
+    .avatar { width: 56px; height: 56px; border-radius: 50%; background: url('assets/img/avatar.svg') center/cover no-repeat, var(--sage-500); box-shadow: inset 0 0 0 2px #fff; }
+
+    /* FAQ */
+    .faq { display: grid; gap: .75rem; }
+    .faq details { border: 1px solid var(--border); border-radius: 12px; background: #fff; overflow: hidden; }
+    .faq summary { list-style: none; cursor: pointer; padding: 1rem 1rem; font-weight: 600; display: flex; align-items: center; justify-content: space-between; }
+    .faq summary::-webkit-details-marker { display: none; }
+    .faq .answer { padding: 0 1rem 1rem; color: var(--muted); }
+
+    /* Newsletter */
+    .newsletter { background: linear-gradient(135deg, var(--sage-100), #fff); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-1); padding: 1.25rem; display: grid; grid-template-columns: 1.2fr .8fr; gap: 1.25rem; align-items: center; }
+    .newsletter form { display: grid; grid-template-columns: 1fr auto; gap: .6rem; }
+    .field { position: relative; }
+    .input { width: 100%; padding: .85rem 1rem; border: 1px solid var(--border); border-radius: 12px; background: #fff; font: inherit; }
+    .input:focus { outline: 3px solid color-mix(in oklab, var(--sage-600) 20%, transparent); border-color: var(--sage-500); }
+    .hint { font-size: 12px; color: var(--muted); margin-top: .35rem; }
+
+    /* CTA band */
+    .cta-band { background: linear-gradient(90deg, var(--sage-600), var(--sage-700)); color: #fff; border-radius: var(--radius); padding: 1.5rem; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 1rem; }
+    .cta-band a.btn { background: #fff; color: var(--ink); }
+
+    /* Footer */
+    footer { padding: 2rem 0; border-top: 1px solid var(--border); color: var(--muted); }
+    footer .cols { display: grid; grid-template-columns: 1.2fr .8fr; gap: 1rem; }
+    footer small { display: block; margin-top: .5rem; }
+
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+  </style>
+</head>
+<body>
+  <a class="sr-only" href="#main">Skip to content</a>
+  <div class="topbar" role="banner">
+    <div class="container">
+      <div>Now enrolling: Precision Metabolic Spring Cohort · Limited to 16 seats</div>
+      <div><a href="{{PRIMARY_CTA_URL}}" class="btn btn--ghost" aria-label="{{PRIMARY_CTA_LABEL}} via top bar">{{PRIMARY_CTA_LABEL}}</a></div>
+    </div>
+  </div>
+  <header>
+    <nav class="container nav" aria-label="Primary">
+      <a class="brand" href="index.html">
+        <span class="brand-logo" aria-hidden="true"></span>
+        <span>
+          Meridian Clinical Wellness
+          <span class="sub">Modern, evidence-based coaching</span>
+        </span>
+      </a>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+      <div class="nav-primary" id="site-menu">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="programs.html" aria-current="page">Programs</a></li>
+          <li><a href="pricing.html">Pricing</a></li>
+          <li><a href="testimonials.html">Testimonials</a></li>
+          <li><a href="book.html">Book</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div class="cta"><a class="btn btn--primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+    </nav>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <section class="hero">
+      <div class="container wrap">
+        <div>
+          <div class="eyebrow">Program Catalog</div>
+          <h1>{{BUSINESS_NAME}} Programs</h1>
+          <p class="lede">Clinical-grade, coach-guided programs designed around your physiology—not trends. Each pathway pairs data-driven insights with compassionate accountability so your next step is always clear.</p>
+          <div class="grid" style="grid-template-columns: auto auto; gap: .75rem; margin-top: 1rem;">
+            <a class="btn btn--primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            <a class="btn btn--ghost" href="#tiers">Explore tiers</a>
+          </div>
+        </div>
+        <div class="hero-art" aria-hidden="true"><img src="assets/img/hero.svg" alt="" /></div>
+      </div>
+    </section>
+
+    <section aria-labelledby="benefits">
+      <div class="container">
+        <div class="section-header">
+          <h2 id="benefits">Built for measurable results</h2>
+          <p class="kicker">Transparent methods, gentle delivery</p>
+        </div>
+        <div class="grid grid-4">
+          <article class="card">
+            <div class="content">
+              <span class="badge">Clinical clarity</span>
+              <h3 style="margin:.6rem 0 .4rem;">Assessment-first</h3>
+              <p class="kicker">Intake includes lifestyle, labs you provide, and a structured interview to personalize your roadmap.</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="content">
+              <span class="badge">Precision habits</span>
+              <h3 style="margin:.6rem 0 .4rem;">Tiny, consistent steps</h3>
+              <p class="kicker">We shape micro-behaviors that compound—no overwhelm, no moralizing, just traction.</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="content">
+              <span class="badge">Measured progress</span>
+              <h3 style="margin:.6rem 0 .4rem;">Metrics that matter</h3>
+              <p class="kicker">Track energy, sleep, and focus with simple scorecards that align to real-life outcomes.</p>
+            </div>
+          </article>
+          <article class="card">
+            <div class="content">
+              <span class="badge">Whole-person</span>
+              <h3 style="margin:.6rem 0 .4rem;">Compassion forward</h3>
+              <p class="kicker">Change that respects your context: culture, schedule, preferences, and neurotype.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="tiers" aria-labelledby="program-tiers">
+      <div class="container">
+        <div class="section-header">
+          <h2 id="program-tiers">Program tiers</h2>
+          <p class="kicker">Choose the structure that meets your season of life</p>
+        </div>
+        <div class="grid grid-3">
+          <article class="card">
+            <div class="content">
+              <span class="badge">Starter · 8 weeks</span>
+              <h3 style="margin:.6rem 0 .2rem;">Clinical Reset</h3>
+              <p class="kicker">Clarify the basics. Stabilize sleep, meals, and movement with a gentle cadence.</p>
+              <ul class="list">
+                <li><span class="check">✓</span><span>1:1 kickoff + closeout sessions with {{COACH_NAME}}, {{CREDENTIALS}}</span></li>
+                <li><span class="check">✓</span><span>Weekly 30-min focus calls</span></li>
+                <li><span class="check">✓</span><span>Personal habit blueprint PDF</span></li>
+                <li><span class="check">✓</span><span>Secure messaging, 2x/week</span></li>
+              </ul>
+              <div class="grid" style="grid-template-columns:auto auto; margin-top:1rem; gap:.6rem;">
+                <a class="btn btn--primary" href="pricing.html#programs">See pricing</a>
+                <a class="btn btn--ghost" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+              </div>
+            </div>
+          </article>
+          <article class="card" style="outline: 2px solid color-mix(in oklab, var(--sage-600) 26%, transparent);">
+            <div class="content">
+              <span class="badge">Popular · 12 weeks</span>
+              <h3 style="margin:.6rem 0 .2rem;">Precision Metabolic</h3>
+              <p class="kicker">Dial in nutrition and recovery with data-informed adjustments every week.</p>
+              <ul class="list">
+                <li><span class="check">✓</span><span>Bi-weekly deep-dive coaching (50 min)</span></li>
+                <li><span class="check">✓</span><span>Continuous habit tracking dashboard</span></li>
+                <li><span class="check">✓</span><span>Protocol updates every 7–10 days</span></li>
+                <li><span class="check">✓</span><span>Optional lab interpretation add-on</span></li>
+              </ul>
+              <div class="grid" style="grid-template-columns:auto auto; margin-top:1rem; gap:.6rem;">
+                <a class="btn btn--primary" href="pricing.html#programs">See pricing</a>
+                <a class="btn btn--ghost" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+              </div>
+            </div>
+          </article>
+          <article class="card">
+            <div class="content">
+              <span class="badge">Intensive · 16 weeks</span>
+              <h3 style="margin:.6rem 0 .2rem;">Executive Burnout Recovery</h3>
+              <p class="kicker">Restore capacity with structured nervous-system and workload protocols.</p>
+              <ul class="list">
+                <li><span class="check">✓</span><span>Weekly 50-min coaching</span></li>
+                <li><span class="check">✓</span><span>On-call micro-support, next-business-day</span></li>
+                <li><span class="check">✓</span><span>Stakeholder alignment (manager/partner)</span></li>
+                <li><span class="check">✓</span><span>Return-to-meaning plan</span></li>
+              </ul>
+              <div class="grid" style="grid-template-columns:auto auto; margin-top:1rem; gap:.6rem;">
+                <a class="btn btn--primary" href="pricing.html#programs">See pricing</a>
+                <a class="btn btn--ghost" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+              </div>
+            </div>
+          </article>
+          <article class="card">
+            <div class="content">
+              <span class="badge">Specialty · 12 weeks</span>
+              <h3 style="margin:.6rem 0 .2rem;">Prenatal Balance</h3>
+              <p class="kicker">Gentle, OB-aligned routines to support energy, sleep, and nourishment.</p>
+              <ul class="list">
+                <li><span class="check">✓</span><span>Trimester-specific habit plans</span></li>
+                <li><span class="check">✓</span><span>Partner support toolkit</span></li>
+                <li><span class="check">✓</span><span>Pelvic floor and breathwork basics</span></li>
+                <li><span class="check">✓</span><span>Postnatal transition prep</span></li>
+              </ul>
+              <div class="grid" style="grid-template-columns:auto auto; margin-top:1rem; gap:.6rem;">
+                <a class="btn btn--primary" href="pricing.html#programs">See pricing</a>
+                <a class="btn btn--ghost" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+              </div>
+            </div>
+          </article>
+          <article class="card">
+            <div class="content">
+              <span class="badge">Maintenance · Month-to-month</span>
+              <h3 style="margin:.6rem 0 .2rem;">Sustain</h3>
+              <p class="kicker">Light-touch accountability to maintain momentum after a core program.</p>
+              <ul class="list">
+                <li><span class="check">✓</span><span>Two 25-min calls per month</span></li>
+                <li><span class="check">✓</span><span>Weekly habit check-ins</span></li>
+                <li><span class="check">✓</span><span>Program alumni community</span></li>
+                <li><span class="check">✓</span><span>Exclusive refresh modules</span></li>
+              </ul>
+              <div class="grid" style="grid-template-columns:auto auto; margin-top:1rem; gap:.6rem;">
+                <a class="btn btn--primary" href="pricing.html#subscriptions">See pricing</a>
+                <a class="btn btn--ghost" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+              </div>
+            </div>
+          </article>
+          <article class="card">
+            <div class="content">
+              <span class="badge">Team · 6 weeks</span>
+              <h3 style="margin:.6rem 0 .2rem;">Foundations for Teams</h3>
+              <p class="kicker">A compact team protocol for sleep, meeting hygiene, and deep work culture.</p>
+              <ul class="list">
+                <li><span class="check">✓</span><span>Kickoff workshop + playbook</span></li>
+                <li><span class="check">✓</span><span>Leader coaching (2 sessions)</span></li>
+                <li><span class="check">✓</span><span>Weekly micro-drills for squads</span></li>
+                <li><span class="check">✓</span><span>Impact metrics dashboard</span></li>
+              </ul>
+              <div class="grid" style="grid-template-columns:auto auto; margin-top:1rem; gap:.6rem;">
+                <a class="btn btn--primary" href="contact.html">Request quote</a>
+                <a class="btn btn--ghost" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="testimonials" aria-labelledby="voices">
+      <div class="container">
+        <div class="section-header">
+          <h2 id="voices">Client outcomes</h2>
+          <p class="kicker">Quiet, steady progress that compounds</p>
+        </div>
+        <div class="grid grid-3">
+          <figure class="quote">
+            <div class="avatar" aria-hidden="true"></div>
+            <blockquote>
+              <p>Week three felt like flipping a switch—meals got easier, meetings felt lighter, and I stopped negotiating with my bedtime.</p>
+              <figcaption>— J.S., Product Lead, Austin</figcaption>
+            </blockquote>
+          </figure>
+          <figure class="quote">
+            <div class="avatar" aria-hidden="true"></div>
+            <blockquote>
+              <p>The structure is clinical without being cold. I always knew the smallest next step and why it mattered.</p>
+              <figcaption>— R.K., Attorney, Seattle</figcaption>
+            </blockquote>
+          </figure>
+          <figure class="quote">
+            <div class="avatar" aria-hidden="true"></div>
+            <blockquote>
+              <p>I expected diet tweaks; I got capacity back. The burnout program changed how my team works, too.</p>
+              <figcaption>— L.M., CTO, Denver</figcaption>
+            </blockquote>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="faq">
+      <div class="container">
+        <div class="section-header">
+          <h2 id="faq">Frequently asked questions</h2>
+          <p class="kicker">Clear answers before you begin</p>
+        </div>
+        <div class="faq">
+          <details>
+            <summary>Do I need recent lab work? <span aria-hidden="true">▾</span></summary>
+            <div class="answer">No. We begin with lifestyle and symptom mapping. If you have recent labs, we incorporate them; optional interpretation is available for select programs.</div>
+          </details>
+          <details>
+            <summary>Is this medical care? <span aria-hidden="true">▾</span></summary>
+            <div class="answer">This is coaching, not medical diagnosis or treatment. We happily collaborate with your clinician and work within their guidance.</div>
+          </details>
+          <details>
+            <summary>How much time should I budget weekly? <span aria-hidden="true">▾</span></summary>
+            <div class="answer">Most clients spend 60–90 minutes total: one call plus micro-habits embedded into existing routines.</div>
+          </details>
+          <details>
+            <summary>Can my company cover the program? <span aria-hidden="true">▾</span></summary>
+            <div class="answer">Yes. Many clients use L&D or wellness stipends. We provide invoices and outcome summaries on request.</div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="lead">
+      <div class="container">
+        <div class="newsletter" role="region" aria-labelledby="lead-title">
+          <div>
+            <h3 id="lead-title" style="margin:0 0 .4rem;">Clinical Habit Blueprint (free PDF)</h3>
+            <p class="kicker">A 7-page primer to design one frictionless habit that actually sticks. Worksheets included.</p>
+          </div>
+          <form id="newsletter" novalidate>
+            <div class="field">
+              <label for="nl-email" class="sr-only">Email address</label>
+              <input id="nl-email" name="email" type="email" required class="input" placeholder="you@company.com" autocomplete="email" />
+              <div id="nl-hint" class="hint" aria-live="polite"></div>
+            </div>
+            <button class="btn btn--primary" type="submit">Get the PDF</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section aria-label="Call to book">
+      <div class="container">
+        <div class="cta-band">
+          <div>
+            <h3 style="margin:.2rem 0 .4rem;">Ready to begin with {{BUSINESS_NAME}}?</h3>
+            <p style="margin:0; opacity:.9;">Reserve a 20‑minute fit call. No pressure—just clarity on the best first step.</p>
+          </div>
+          <div><a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container cols">
+      <div>
+        <strong>Meridian Clinical Wellness</strong>
+        <small>Coaching for health, energy, and performance—delivered with clinical rigor and human warmth.</small>
+      </div>
+      <div>
+        <div><strong>Contact</strong></div>
+        <div>Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+        <div>Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+        <div>{{ADDRESS}}, {{CITY}}, {{STATE}} {{ZIP}}</div>
+        <div>Hours: {{HOURS}}</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile nav toggle
+    const navToggle = document.querySelector('[data-nav-toggle]');
+    const navMenu = document.querySelector('.nav-primary');
+    if (navToggle) {
+      navToggle.addEventListener('click', () => {
+        const open = navMenu.classList.toggle('open');
+        navToggle.setAttribute('aria-expanded', String(open));
+      });
+    }
+
+    // Smooth scroll for in-page anchors
+    document.addEventListener('click', (e) => {
+      const a = e.target.closest('a[href^="#"]');
+      if (!a) return;
+      const id = a.getAttribute('href');
+      if (id.length > 1) {
+        const el = document.querySelector(id);
+        if (el) {
+          e.preventDefault();
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    });
+
+    // FAQ accessible toggle using details element is native; enhance arrow direction
+    document.querySelectorAll('.faq details').forEach(d => {
+      const summary = d.querySelector('summary');
+      if (!summary) return;
+      summary.addEventListener('click', () => {
+        // allow default; just cosmetic
+      });
+    });
+
+    // Newsletter validation hints
+    const nlForm = document.getElementById('newsletter');
+    const nlEmail = document.getElementById('nl-email');
+    const nlHint = document.getElementById('nl-hint');
+    nlForm?.addEventListener('submit', (e) => {
+      nlHint.textContent = '';
+      if (!nlEmail.checkValidity()) {
+        e.preventDefault();
+        nlHint.textContent = 'Please enter a valid email address.';
+        nlEmail.focus();
+      } else {
+        e.preventDefault();
+        nlHint.textContent = 'Thanks! Check your inbox in a few minutes.';
+        nlForm.reset();
+      }
+    });
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "{{BUSINESS_NAME}}",
+    "image": "assets/img/hero.svg",
+    "telephone": "{{PHONE}}",
+    "email": "{{EMAIL}}",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "{{ADDRESS}}",
+      "addressLocality": "{{CITY}}",
+      "addressRegion": "{{STATE}}",
+      "postalCode": "{{ZIP}}"
+    }
+  }
+  </script>
+</body>
+</html>

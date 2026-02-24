@@ -1,0 +1,66 @@
+/* Core reset */
+:root{--bg:#fff9f4;--accent:#6aa6a4;--accent-2:#f2bfa3;--muted:#6b6b6b;--card:#ffffff;--shadow:0 6px 20px rgba(39,39,39,0.08);--radius:12px}
+*{box-sizing:border-box}html,body{height:100%}body{margin:0;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial;line-height:1.45;background:linear-gradient(180deg,var(--bg),#f7fff9);color:#1d2326}
+.site-header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:transparent;position:sticky;top:0;z-index:20}
+.brand{font-weight:700;color:#173a3a;text-decoration:none}
+.main-nav{display:flex;gap:14px}
+.main-nav a{color:inherit;text-decoration:none;padding:8px 10px;border-radius:8px}
+.main-nav a:hover{background:rgba(23,58,58,0.06)}
+.menu-toggle{display:none;border:0;background:none;font-size:20px}
+
+/* Split diagonal hero */
+.hero{display:flex;align-items:stretch;min-height:58vh;overflow:hidden;position:relative}
+.hero .panel{flex:1;padding:48px;display:flex;flex-direction:column;justify-content:center}
+.hero .left{background:linear-gradient(180deg,rgba(255,239,230,0.6),rgba(246,255,253,0.6));padding-right:64px}
+.hero .right{position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.hero .right .art{position:relative;width:100%;height:100%}
+.bg-pattern{position:absolute;right:-6%;top:-6%;width:120%;height:120%;opacity:0.9}
+.ripple{position:relative;width:100%;height:100%;max-height:340px}
+.split-diagonal::before{content:'';position:absolute;top:0;right:50%;bottom:0;left:0;background:linear-gradient(135deg,rgba(255,255,255,0) 30%,rgba(0,0,0,0.02));transform:skewX(-12deg);pointer-events:none}
+.hero-title{font-size:clamp(28px,4vw,40px);margin:0 0 12px}
+.hero-lede{max-width:44ch;color:#2b3a38}
+.hero-cta{margin:18px 0}
+.btn{display:inline-block;padding:10px 14px;border-radius:10px;text-decoration:none;border:0;font-weight:600;background:#fff;color:inherit;box-shadow:var(--shadow)}
+.btn.primary{background:linear-gradient(90deg,var(--accent),#4daaa8);color:#fff}
+.btn.ghost{background:transparent;border:1px solid rgba(27,27,27,0.06)}
+.hero-meta{list-style:none;padding:0;margin:14px 0 0;display:flex;gap:12px;color:var(--muted)}
+
+/* Cards */
+.card{background:var(--card);border-radius:var(--radius);padding:22px;margin:22px auto;max-width:1000px;box-shadow:var(--shadow)}
+.diagnostic fieldset{border:0;padding:0;margin:0 0 12px}
+.diagnostic label{display:block;padding:8px 10px;border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,0.7),rgba(245,245,245,0.7));margin-bottom:8px}
+.diag-actions{margin-top:10px}
+.diag-result{margin-top:12px;color:#114b44}
+
+.plan{max-width:980px;margin:30px auto;padding:22px}
+.plan-features{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:14px}
+
+.micro-habits{background:linear-gradient(180deg,#fff,#fbfffc);padding:28px}
+.micro-habits .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+.micro-habits h4{margin-top:0}
+
+.pricing .cards{display:flex;gap:14px;flex-wrap:wrap}
+.card.price{flex:1;min-width:220px}
+.card.price.recommended{box-shadow:0 12px 30px rgba(61,110,104,0.12);transform:translateY(-6px)}
+.price-amount{font-weight:700;font-size:20px}
+
+.cta{padding:36px;background:linear-gradient(180deg,rgba(210,243,238,0.6),rgba(255,245,235,0.6));margin:26px 0}
+.ripple-cta .ripple-wrap{max-width:900px;margin:0 auto;text-align:center;padding:20px}
+.join-form{display:flex;gap:8px;justify-content:center;margin-top:14px}
+.join-form input[type="email"]{padding:10px;border-radius:10px;border:1px solid rgba(30,30,30,0.08);min-width:260px}
+.fineprint{font-size:13px;color:var(--muted);margin-top:10px}
+
+.site-footer{display:flex;justify-content:space-between;align-items:center;padding:22px 28px;border-top:1px solid rgba(20,20,20,0.04);background:transparent}
+.site-footer .muted{color:var(--muted)}
+.foot-nav a{margin-left:12px;color:inherit;text-decoration:none}
+
+/* Responsive */
+@media (max-width:900px){
+  .hero{flex-direction:column}
+  .hero .panel{padding:22px}
+  .main-nav{display:none}
+  .menu-toggle{display:block}
+}
+
+/* Accessibility helpers */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}

@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg1:#0f1724;--bg2:#081022;--accent:#8be7d6;--muted:#9aa6b2;--card:#0b1220}
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;color:#e6f7f1;background:linear-gradient(180deg,var(--bg1),var(--bg2));-webkit-font-smoothing:antialiased}
+    .wrap{max-width:980px;margin:40px auto;padding:36px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:14px;position:relative;overflow:hidden;box-shadow:0 10px 40px rgba(2,6,23,0.6)}
+    nav{display:flex;gap:18px;align-items:center;margin-bottom:20px}
+    .brand{font-weight:700;color:var(--accent)}
+    nav a{color:#cfeee6;text-decoration:none;font-size:14px;padding:8px 10px;border-radius:8px}
+    nav a[href='about.html']{background:rgba(139,231,214,0.07)}
+
+    header.hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+    .intro h1{margin:0 0 8px 0;font-size:30px;line-height:1.05;color:#f3fff9}
+    .intro p{margin:0 0 16px;color:var(--muted)}
+    .meta{background:linear-gradient(135deg, rgba(139,231,214,0.06), rgba(139,231,214,0.02));padding:18px;border-radius:12px;color:#e8fff7}
+    .meta strong{display:block;font-weight:700;font-size:13px}
+
+    .social_proof{display:flex;gap:12px;margin:18px 0}
+    .pill{padding:10px 12px;background:rgba(255,255,255,0.02);border-radius:999px;color:var(--muted);font-size:13px}
+
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:22px 0}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0));padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .card h3{margin:0 0 6px 0;color:#e8fff7;font-size:15px}
+    .card p{margin:0;color:var(--muted);font-size:13px}
+
+    .process, .faq, .lead{margin-top:22px}
+    .process ol{padding-left:18px;color:var(--muted)}
+    .faq dt{font-weight:600;color:#e8fff7;margin-top:10px}
+    .faq dd{margin:6px 0 12px 0;color:var(--muted)}
+
+    .cta{display:flex;gap:12px;align-items:center;margin-top:18px}
+    .btn-primary{background:linear-gradient(90deg,#70ffd8,#37b3a3);padding:12px 16px;border-radius:12px;color:#032522;text-decoration:none;font-weight:700}
+    .btn-ghost{padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);color:var(--muted);text-decoration:none}
+
+    footer{margin-top:28px;color:var(--muted);font-size:13px}
+    /* SVG pattern */
+    .pattern{position:absolute;right:-120px;top:-120px;opacity:0.14;transform:rotate(18deg);width:640px;height:640px;pointer-events:none}
+    @media (max-width:880px){header.hero{grid-template-columns:1fr;}
+      .meta{order:2}
+      .pattern{display:none}}
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <svg class='pattern' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'>
+      <defs>
+        <linearGradient id='g' x1='0' x2='1'>
+          <stop offset='0' stop-color='#8be7d6'/>
+          <stop offset='1' stop-color='#3bb0a0'/>
+        </linearGradient>
+        <pattern id='p' width='20' height='20' patternUnits='userSpaceOnUse' patternTransform='rotate(30)'>
+          <rect width='10' height='10' fill='rgba(255,255,255,0.02)'></rect>
+          <circle cx='15' cy='5' r='2' fill='url(#g)'></circle>
+        </pattern>
+      </defs>
+      <rect width='200' height='200' fill='url(#p)'></rect>
+    </svg>
+
+    <nav>
+      <div class='brand'>{{BUSINESS_NAME}}</div>
+      <a href='index.html'>Home</a>
+      <a href='events.html'>Gatherings</a>
+      <a href='private-sessions.html'>1:1 & Private</a>
+      <a href='pricing.html'>Rates</a>
+      <a href='book.html'>Reserve</a>
+    </nav>
+
+    <header class='hero'>
+      <div class='intro'>
+        <h1>We steward space for stillness — an invitation to arrive.</h1>
+        <p>A sensory, premium sound bathing practice held in intimate circles. We weave tones, silence and breath to encourage release and clarity.</p>
+        <div class='social_proof'>
+          <div class='pill'>♡ Small circles • Limited tickets</div>
+          <div class='pill'>★ 4.9 / 5 — attendee rating</div>
+          <div class='pill'>✦ Curated instruments & amber lighting</div>
+        </div>
+
+        <div class='cards'>
+          <div class='card'><h3>Facilitator</h3><p>{{FACILITATOR_NAME}} guides with breath-led cues and precise bowl tuning — trained in somatic listening.</p></div>
+          <div class='card'><h3>Venue</h3><p>Held at {{VENUE_NAME}} — a warm wood-paneled room with floor cushions and filtered air.</p></div>
+          <div class='card'><h3>Next gathering</h3><p>{{NEXT_EVENT_DATE}} — reserve early; limited spots.</p></div>
+        </div>
+
+        <div class='cta'>
+          <a class='btn-primary' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a>
+          <a class='btn-ghost' href='contact.html'>Contact us</a>
+        </div>
+      </div>
+
+      <aside class='meta'>
+        <strong>Session essentials</strong>
+        <div style='font-size:13px;color:var(--muted);margin-top:8px'>A guided sound bath lasts ~75 minutes. Expect guided settling, a 45-minute immersion of layered instruments, and a gentle reorientation.</div>
+        <div style='margin-top:10px;font-size:13px;color:var(--muted)'>What to bring: yoga mat or thick blanket, pillow, light blanket for warmth, water bottle.</div>
+      </aside>
+    </header>
+
+    <section class='benefits'>
+      <h2 style='color:#e8fff7;margin:18px 0 8px 0'>Why people come</h2>
+      <p style='color:var(--muted)'>We design each gathering to land you in calmness with a premium sensory architecture: curated harmonics, dimmed amber light, and intentional pacing.</p>
+      <div class='cards' style='margin-top:12px'>
+        <div class='card'><h3>Rest deeper</h3><p>Sound frequency supports nervous system downshift and restorative states.</p></div>
+        <div class='card'><h3>Emotional clarity</h3><p>Tonal patterns let the body unhook from rumination; space for new perspective to arise.</p></div>
+        <div class='card'><h3>Gentle structure</h3><p>We hold a clear flow: arrival, grounding, immersion, soft return.</p></div>
+      </div>
+    </section>
+
+    <section class='process'>
+      <h2 style='color:#e8fff7;margin:18px 0 8px 0'>A quiet map of the flow</h2>
+      <ol>
+        <li>Arrival & brief orientation — settle into your cushion.</li>
+        <li>Breath & guided relaxation — a soft scaffold for listening.</li>
+        <li>Immersion — layered textures from crystal bowls, chimes and the monochord.</li>
+        <li>Integration — a slow return with tea and a short reflection.</li>
+      </ol>
+    </section>
+
+    <section class='faq'>
+      <h2 style='color:#e8fff7;margin:18px 0 8px 0'>Short answers</h2>
+      <dl>
+        <dt>Is this meditation?</dt>
+        <dd>It is an auditory, embodied practice — not a mantra-based meditation. You may rest or remain lightly aware.</dd>
+        <dt>How should I dress?</dt>
+        <dd>Layers are best — the body cools during deep rest. Bring socks and a spare blanket.</dd>
+        <dt>Contraindications?</dt>
+        <dd>People with recent concussion, certain cardiac devices, first-trimester pregnancy, or who have active psychiatric crises should consult us or a clinician first. This is not a substitute for medical care.</dd>
+      </dl>
+    </section>
+
+    <section class='lead'>
+      <h2 style='color:#e8fff7;margin:12px 0 8px 0'>A small gift</h2>
+      <p style='color:var(--muted)'>Sign up and receive our 6-minute guided settling audio — a preview of the evening soundscape.</p>
+      <form action='{{PRIMARY_CTA_URL}}' method='post' style='display:flex;gap:8px;align-items:center'>
+        <input name='email' type='email' placeholder='Your email' required style='padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#eafaf5'>
+        <button class='btn-primary' type='submit'>Send me the guide</button>
+      </form>
+    </section>
+
+    <footer>
+      <div>{{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • <a href='tel:{{PHONE}}' style='color:var(--muted);text-decoration:none'>{{PHONE}}</a> • <a href='mailto:{{EMAIL}}' style='color:var(--muted);text-decoration:none'>{{EMAIL}}</a></div>
+    </footer>
+  </div>
+</body>
+</html>

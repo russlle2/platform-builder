@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfbfa;--card:#fff;--muted:#6b6b6b;--accent:#6a7c5a;--accent-2:#c9d6b5;--glass:rgba(255,255,255,0.6)}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#222;background:var(--bg)}
+    .page{min-height:100%;display:flex;flex-direction:column}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:linear-gradient(180deg,transparent,transparent);position:sticky;top:0;backdrop-filter:blur(6px);z-index:10}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent-2),#eef4e6);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff}
+    nav a{margin-left:18px;color:var(--muted);text-decoration:none;font-size:15px}
+    .hero{padding:44px 28px;background-image:url('assets/img/pattern.svg');background-repeat:no-repeat;background-position:top right;background-size:320px}
+    .hero .inner{max-width:920px}
+    h1{margin:0 0 8px;font-size:28px;letter-spacing:-0.2px}
+    p.lead{margin:0;color:var(--muted);font-size:15px}
+    main{padding:28px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+    .card{background:var(--card);padding:20px;border-radius:12px;box-shadow:0 6px 18px rgba(25,25,25,0.04)}
+    .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+    .pill{padding:14px;border-radius:10px;background:linear-gradient(180deg,#fff,#fbfff7);font-size:14px}
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity 500ms ease,transform 500ms ease}
+    .reveal.in-view{opacity:1;transform:none}
+    .packages{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:16px}
+    .pkg{padding:18px;border-radius:10px;border:1px solid #eef1ea}
+    .price{font-weight:700;font-size:18px;color:var(--accent)}
+    footer{padding:20px 28px;margin-top:28px;color:var(--muted);font-size:13px}
+    /* session planner */
+    .planner h3{margin:0 0 8px}
+    .field{margin-bottom:10px}
+    label{display:block;font-size:13px;margin-bottom:6px;color:#333}
+    input[type=text],select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9e3;font-size:14px}
+    .controls{display:flex;gap:8px;margin-top:8px}
+    button{background:var(--accent);color:#fff;border:none;padding:10px 12px;border-radius:8px;cursor:pointer}
+    button.secondary{background:#fff;color:var(--accent);border:1px solid #e5e8e0}
+    .muted-note{font-size:13px;color:var(--muted);margin-top:8px}
+    @media (max-width:880px){.grid{grid-template-columns:1fr}}  
+    /* reduced motion preference */
+    @media (prefers-reduced-motion: reduce){.reveal{transition:none;opacity:1;transform:none}}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="brand">
+        <div class="logo">A</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="services.html">Offerings</a>
+        <a href="blends.html">Essences</a>
+        <a href="shop.html">Apothecary</a>
+        <a href="pricing.html">Plans</a>
+        <a href="book.html">Schedule</a>
+        <a href="contact.html">Reach</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="inner card">
+        <h1>Therapeutic sessions crafted around your context</h1>
+        <p class="lead">Tailored aromatherapy sessions that may support moments of ease. Choose single-session focus work or layered session plans for repeat support.</p>
+        <div style="margin-top:14px">
+          <a href="{{PRIMARY_CTA_URL}}" style="display:inline-block;padding:10px 14px;border-radius:10px;background:var(--accent);color:#fff;text-decoration:none">{{PRIMARY_CTA_LABEL}}</a>
+          <a href="book.html" style="margin-left:10px;color:var(--muted);text-decoration:none">Book a consult</a>
+        </div>
+      </div>
+    </section>
+
+    <main>
+      <div class="grid">
+        <div>
+          <section class="card reveal" id="overview">
+            <h2 style="margin-top:0">What we offer</h2>
+            <div class="pillars">
+              <div class="pill">
+                <strong>Focused Session</strong>
+                <div class="muted-note">30 minutes to address a single intent; scent profile and brief practice included.</div>
+              </div>
+              <div class="pill">
+                <strong>Deep Day</strong>
+                <div class="muted-note">90–120 minute immersive exploration with a custom blend kit to continue at home.</div>
+              </div>
+              <div class="pill">
+                <strong>Series Plan</strong>
+                <div class="muted-note">A 3–6 visit pathway to layer practices and refine a home protocol.</div>
+              </div>
+            </div>
+
+            <div class="packages" style="margin-top:16px">
+              <div class="pkg">
+                <div style="font-size:13px;color:var(--muted)">Focused Session</div>
+                <div class="price">$95 — 30 min</div>
+                <div class="muted-note">A guided mini-session with a tailored inhalation or diffusion practice.</div>
+              </div>
+              <div class="pkg">
+                <div style="font-size:13px;color:var(--muted)">Deep Day</div>
+                <div class="price">$260 — extended</div>
+                <div class="muted-note">Includes take-home sample blend and written plan.</div>
+              </div>
+              <div class="pkg">
+                <div style="font-size:13px;color:var(--muted)">Series Plan</div>
+                <div class="price">From $240 — 3 sessions</div>
+                <div class="muted-note">Discounted block to build continuity and refine scent strategies.</div>
+              </div>
+            </div>
+
+          </section>
+
+          <section class="card reveal" style="margin-top:18px" id="case-notes">
+            <h2 style="margin-top:0">Practitioner notes & approach</h2>
+            <p class="muted-note">Each plan is personalized, safety-forward, and practical. We emphasize low-concentration protocols and stepwise introduction to new aromas. Sessions may support relaxation, gentle focus, or an uplift in mood; they are not medical therapies.</p>
+          </section>
+
+          <section class="card reveal" style="margin-top:18px" id="faq">
+            <h2 style="margin-top:0">Safety & FAQs</h2>
+            <ul style="padding-left:18px;color:var(--muted)">
+              <li><strong>Are sessions medical?</strong> No. Aromatherapy sessions are supportive and complementary and may support well-being, but they are not medical treatments.</li>
+              <li><strong>Dilution guidance:</strong> Home blends typically start 0.5–2% for adults. For sensitive skin, pregnancy, children, or pets at home, we advise lower dilutions and specific ingredient avoidance.</li>
+              <li><strong>Patch test:</strong> Always perform a small skin patch test before topical use: dilute, apply a small amount behind the ear or inner forearm, and wait 24 hours.</li>
+              <li><strong>Pregnancy & medications:</strong> Some aromas are contraindicated in pregnancy or certain conditions. Disclose pregnancy, medications, and major health considerations before sessions.</li>
+              <li><strong>Pets:</strong> Many essential oils can be harmful to pets. We provide pet-safe alternatives and diffusion guidelines when animals share the space.</li>
+            </ul>
+          </section>
+        </div>
+
+        <aside class="card planner reveal" id="planner-side">
+          <h3>Session Planner</h3>
+          <form id="session-planner">
+            <div class="field"><label for="name">Name (optional)</label><input id="name" type="text" placeholder="Your name"/></div>
+            <div class="field"><label for="goal">Primary intent</label><select id="goal"><option>Choose an intent…</option><option value="ease">Manage mild stress or nervous tension</option><option value="sleep">Support sleep onset</option><option value="focus">Short-term focus or clarity</option><option value="mood">Gentle mood lift</option><option value="tension">Muscle tension support</option><option value="custom">Custom exploration</option></select></div>
+            <div class="field"><label>Session length</label><select id="duration"><option value="5">5 min micro</option><option value="15">15 min focused</option><option value="30" selected>30 min session</option><option value="60">60 min extended</option></select></div>
+            <div class="field"><label>Considerations</label>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <label><input type="checkbox" id="pregnancy"/> Pregnancy / breastfeeding</label>
+                <label><input type="checkbox" id="sensitive"/> Sensitive skin</label>
+                <label><input type="checkbox" id="pets"/> Pets at home</label>
+              </div>
+            </div>
+            <div class="field"><label>Preferred scent notes</label>
+              <div style="display:flex;flex-wrap:wrap;gap:6px">
+                <label><input type="checkbox" name="note" value="citrus"/> Citrus</label>
+                <label><input type="checkbox" name="note" value="floral"/> Floral</label>
+                <label><input type="checkbox" name="note" value="wood"/> Woody</label>
+                <label><input type="checkbox" name="note" value="herbal"/> Herbal</label>
+                <label><input type="checkbox" name="note" value="spice"/> Warm spice</label>
+                <label><input type="checkbox" name="note" value="fresh"/> Fresh / green</label>
+              </div>
+            </div>
+
+            <div class="controls">
+              <button type="button" id="build-plan">Create plan</button>
+              <button type="button" class="secondary" id="clear-plan">Reset</button>
+            </div>
+
+            <div style="margin-top:10px">
+              <label for="plan-output">Plan summary (plaintext)</label>
+              <textarea id="plan-output" rows="8" placeholder="Your session plan will appear here"></textarea>
+              <div style="display:flex;gap:8px;margin-top:8px">
+                <button type="button" id="copy-plan">Copy</button>
+                <button type="button" id="download-plan" class="secondary">Download .txt</button>
+              </div>
+              <div class="muted-note">This tool builds a simple, printable plan and safety notes you can bring to a session.</div>
+            </div>
+          </form>
+        </aside>
+      </div>
+    </main>
+
+    <footer>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+        <div>&copy; <span id="year"></span> {{BUSINESS_NAME}} • <span style="color:var(--muted)">{{CITY}}, {{STATE}}</span></div>
+        <div style="color:var(--muted)">Phone: {{PHONE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Scroll reveal with reduced-motion support
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const reveals = document.querySelectorAll('.reveal');
+      if(prefersReduced){ reveals.forEach(r=>r.classList.add('in-view')); return; }
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{ if(e.isIntersecting) { e.target.classList.add('in-view'); io.unobserve(e.target); } });
+      },{threshold:0.12});
+      reveals.forEach(r=>io.observe(r));
+    })();
+
+    // Session Planner logic
+    (function(){
+      const btn = document.getElementById('build-plan');
+      const output = document.getElementById('plan-output');
+      const copyBtn = document.getElementById('copy-plan');
+      const downloadBtn = document.getElementById('download-plan');
+      const clearBtn = document.getElementById('clear-plan');
+
+      const blendMap = {
+        ease: {name:'Calm Thread', notes:'lavender, sweet marjoram, bergamot'},
+        sleep: {name:'Dusk Ease', notes:'lavender, cedarwood, vetiver'},
+        focus: {name:'Bright Line', notes:'rosemary, lemon, black pepper'},
+        mood: {name:'Sunsmall', notes:'orange, geranium, petitgrain'},
+        tension: {name:'Warm Support', notes:'peppermint (low), helichrysum, fir'},
+        custom: {name:'Custom Compose', notes:'practitioner-led selection'}
+      };
+
+      function gather(){
+        const name = document.getElementById('name').value.trim();
+        const goal = document.getElementById('goal').value;
+        const duration = document.getElementById('duration').value;
+        const pregnancy = document.getElementById('pregnancy').checked;
+        const sensitive = document.getElementById('sensitive').checked;
+        const pets = document.getElementById('pets').checked;
+        const notes = Array.from(document.querySelectorAll('input[name="note"]:checked')).map(n=>n.value);
+        return {name,goal,duration,pregnancy,sensitive,pets,notes};
+      }
+
+      function recommend(opts){
+        const base = blendMap[opts.goal] || blendMap.custom;
+        let dilution = '1% (mild)';
+        if(opts.sensitive || opts.pregnancy || opts.pets) dilution = '0.25–0.5% (very low)';
+        else if(opts.duration==='5') dilution = '0.5–1%';
+        else if(opts.duration==='60') dilution = '1–2%';
+
+        const method = opts.duration==='5' ? 'Personal inhaler or brief sniffing ritual' : 'Diffusion or inhalation and guided 1:1 practice';
+
+        let notesLine = opts.notes.length? 'Preferred notes: '+opts.notes.join(', ')+'.' : '';
+        if(opts.pets) notesLine += ' Use pet-safe alternatives; avoid diffusing for prolonged periods.';
+        if(opts.pregnancy) notesLine += ' Some oils are contraindicated in pregnancy; consult before topical use.';
+
+        return {
+          title: base.name,
+          ingredients: base.notes,
+          dilution,
+          method,
+          notesLine
+        };
+      }
+
+      function buildText(){
+        const opts = gather();
+        if(!opts.goal || opts.goal==='Choose an intent…') { output.value = 'Please select an intent to build a plan.'; return; }
+        const rec = recommend(opts);
+        const who = opts.name ? opts.name : 'Client';
+        const lines = [];
+        lines.push(who + ' — Aromatherapy session plan');
+        lines.push('Intent: '+(opts.goal));
+        lines.push('Recommended blend: '+rec.title);
+        lines.push('Suggested notes/constituents: '+rec.ingredients);
+        lines.push('Dilution guideline: '+rec.dilution);
+        lines.push('Delivery: '+rec.method);
+        lines.push('Session outline:');
+        lines.push('  1) Brief intake and safety check (patch test if topical).');
+        lines.push('  2) Guided inhalation or diffusion practice for '+opts.duration+' minutes.');
+        lines.push('  3) Short reflection and written notes to take home.');
+        if(rec.notesLine) lines.push('Safety notes: '+rec.notesLine);
+        lines.push('\nRemember: these practices may support well-being but are not a substitute for medical care. Avoid using undiluted oils on the skin.');
+        output.value = lines.join('\n');
+      }
+
+      btn.addEventListener('click', buildText);
+      clearBtn.addEventListener('click', ()=>{ document.getElementById('session-planner').reset(); output.value=''; });
+
+      copyBtn.addEventListener('click', async ()=>{
+        try{ await navigator.clipboard.writeText(output.value || ''); copyBtn.textContent='Copied'; setTimeout(()=>copyBtn.textContent='Copy',1400);}catch(e){ alert('Copy failed — select and copy manually.'); }
+      });
+
+      downloadBtn.addEventListener('click', ()=>{
+        const blob = new Blob([output.value || ''],{type:'text/plain'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href=url; a.download='session-plan.txt'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+      });
+
+      // set year
+      document.getElementById('year').textContent = new Date().getFullYear();
+    })();
+  </script>
+</body>
+</html>

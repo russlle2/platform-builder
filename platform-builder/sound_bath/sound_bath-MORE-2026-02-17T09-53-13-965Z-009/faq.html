@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FAQs — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#071018;--muted:#9fb3c0;--accent:#bda5ff}
+    body{margin:0;background:linear-gradient(180deg,#071018 0%, #08121a 100%);color:#e7f1f6;font-family:Inter,system-ui, -apple-system, 'Segoe UI', Roboto}
+    .wrap{max-width:960px;margin:0 auto;padding:36px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    a.cta{background:linear-gradient(90deg,#bda5ff,#6fd3ff);padding:10px 14px;border-radius:10px;color:#061018;text-decoration:none;font-weight:700}
+    .accordion{margin-top:22px}
+    .q{border-radius:10px;padding:14px;background:rgba(255,255,255,0.02);margin-bottom:10px}
+    .q summary{cursor:pointer;list-style:none;font-weight:700}
+    .q p{color:var(--muted);margin:10px 0 0}
+
+    .disclaimer{background:#172428;padding:12px;border-left:4px solid #ffb37b;border-radius:6px;color:var(--muted);font-size:13px;margin-top:16px}
+
+    /* reveal */
+    .reveal{opacity:0;transform:translateY(14px);transition:opacity 480ms ease,transform 480ms ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion: reduce){ .reveal{transition:none;opacity:1;transform:none} }
+
+    .try{margin-top:18px}
+
+    /* small footer */
+    footer{margin-top:34px;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="color:var(--muted);font-size:13px">Questions & practical notes</div>
+      </div>
+      <div>
+        <a href="book.html" class="cta">Reserve a seat</a>
+      </div>
+    </header>
+
+    <section class="reveal" style="margin-top:18px">
+      <h2>Common questions</h2>
+      <div class="accordion">
+        <details class="q">
+          <summary>What should I bring?</summary>
+          <p>Comfortable clothing, something to lie on (yoga mat), a light blanket, and an open curiosity. We have a small selection of borrowed mats and blankets if you need them.</p>
+        </details>
+        <details class="q">
+          <summary>How loud are sessions?</summary>
+          <p>We use tuned metal and crystal bowls and layered textures. Volume is moderated for the room and there are quiet seating options in the back. If you are sound-sensitive, get in touch before your visit.</p>
+        </details>
+        <details class="q">
+          <summary>Is this therapy?</summary>
+          <p>These gatherings are supportive practices but not a substitute for mental health care. If you are receiving clinical treatment or are in crisis, please contact a licensed provider.</p>
+        </details>
+        <details class="q">
+          <summary>Are children allowed?</summary>
+          <p>Our public sessions are intended for adults. Family-friendly or intergenerational offerings will be noted where appropriate.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="reveal">
+      <h3>Safety & contraindications</h3>
+      <div class="disclaimer">
+        <strong>Please note:</strong>
+        <div style="margin-top:6px;color:var(--muted)">If you have uncontrolled seizures, a history of traumatic brain injury, are in the later stages of pregnancy, use certain implantable medical devices, or are highly sensitive to vibration, consult a medical professional before attending. If you are currently in acute psychological crisis, these events are not a substitute for clinical care.</div>
+      </div>
+    </section>
+
+    <section class="reveal try">
+      <h3>Curious? Try a short practice</h3>
+      <p style="color:var(--muted)">A quick option to see how guided breath and intention feel—no booking required.</p>
+      <button id="tryNow" class="cta">Try it now</button>
+    </section>
+
+    <footer class="reveal">
+      <div>Questions not covered here? Email <a href="mailto:{{EMAIL}}" style="color:var(--muted)">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}" style="color:var(--muted)">{{PHONE}}</a>.</div>
+    </footer>
+  </div>
+
+  <!-- Modal reused from site (lightweight) -->
+  <div id="modal" style="display:none;position:fixed;inset:0;align-items:center;justify-content:center;background:rgba(2,6,12,0.6);z-index:90">
+    <div style="background:#071018;padding:18px;border-radius:10px;max-width:560px;width:94%;color:#eaf0f6">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <strong id="title">Short exercise</strong>
+        <button id="close" style="background:transparent;border:none;color:var(--muted)">Close</button>
+      </div>
+      <div id="content" style="margin-top:12px;color:var(--muted)">A simple breath: inhale 4, hold 4, exhale 6. Repeat for one minute.</div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button id="begin" class="cta">Begin</button>
+        <button id="end" style="background:transparent;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:8px;color:var(--muted)">Stop</button>
+        <div id="timersmall" style="margin-left:auto;color:var(--muted)">00:00</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // reveal observer
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const items = document.querySelectorAll('.reveal');
+      if(prefersReduced){ items.forEach(i=>i.classList.add('visible')); return; }
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+      },{threshold:0.08});
+      items.forEach(i=>io.observe(i));
+    })();
+
+    // small modal for FAQ try-it
+    (function(){
+      const modal = document.getElementById('modal');
+      const tryBtn = document.getElementById('tryNow');
+      const close = document.getElementById('close');
+      const begin = document.getElementById('begin');
+      const end = document.getElementById('end');
+      const timersmall = document.getElementById('timersmall');
+      let inter = null, rem = 0;
+      tryBtn.addEventListener('click',()=>{ modal.style.display='flex'; document.body.style.overflow='hidden'; });
+      close.addEventListener('click',()=>{ modal.style.display='none'; document.body.style.overflow='auto'; stop(); });
+      begin.addEventListener('click',()=>{ rem=60; timersmall.textContent='01:00'; if(inter) clearInterval(inter); inter=setInterval(()=>{ rem--; timersmall.textContent=('0'+Math.floor(rem/60)).slice(-2)+':'+('0'+rem%60).slice(-2); if(rem<=0) clearInterval(inter); },1000); });
+      end.addEventListener('click',()=>{ stop(); });
+      function stop(){ if(inter) clearInterval(inter); inter=null; rem=0; timersmall.textContent='00:00'; }
+    })();
+  </script>
+</body>
+</html>

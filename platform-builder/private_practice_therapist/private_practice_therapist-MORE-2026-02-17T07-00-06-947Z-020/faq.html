@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FAQs — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#071226;--glass:rgba(255,255,255,0.04);--muted:#b8c7d6;--accent:#7bd389}
+    body{margin:0;background:linear-gradient(180deg,#051122,#07172a),url('assets/img/pattern.svg');background-size:700px 700px;color:var(--muted);font-family:Inter,system-ui,Arial}
+    .wrap{max-width:880px;margin:28px auto;padding:20px}
+    header{display:flex;align-items:center;justify-content:space-between}
+    .brand h1{margin:0;color:#fff;font-size:18px}
+    nav{display:flex;gap:10px}
+    nav a{color:var(--muted);text-decoration:none;padding:6px 10px;border-radius:8px}
+    nav a:hover{background:var(--glass);color:#fff}
+
+    .hero{margin-top:18px;padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));backdrop-filter:blur(6px)}
+    h2{color:#fff;margin:0 0 8px 0}
+    p.lead{color:var(--muted);margin:0 0 16px 0}
+
+    .faq-list{margin-top:12px}
+    .q{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:10px;padding:12px;margin-bottom:10px}
+    .q button{width:100%;text-align:left;background:transparent;border:0;color:#fff;padding:0;font-size:15px;cursor:pointer}
+    .a{margin-top:8px;color:var(--muted);font-size:14px}
+
+    .side{margin-top:16px;padding:12px;border-radius:10px;background:linear-gradient(90deg,rgba(123,211,137,0.03),rgba(90,163,255,0.02))}
+    .mood-compact{display:flex;gap:8px;flex-wrap:wrap}
+    .mood-compact button{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted);padding:6px 8px;border-radius:8px}
+
+    footer{margin-top:18px;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <h1>{{BUSINESS_NAME}}</h1>
+        <div style="color:var(--muted);font-size:13px">Questions and practical answers</div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="approach.html">How I Work</a>
+        <a href="specialties.html">Services</a>
+        <a href="fees.html">Pricing</a>
+        <a href="faq.html" class="active">FAQs</a>
+        <a href="book.html">Schedule</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <div class="hero">
+        <h2>Answers to the questions people ask first</h2>
+        <p class="lead">Short, clear responses to help you decide whether to reach out. If you don’t see your question here, you can email <a href="mailto:{{EMAIL}}" style="color:var(--accent)">{{EMAIL}}</a>.</p>
+
+        <div style="display:flex;gap:16px;flex-wrap:wrap">
+          <div style="flex:1;min-width:320px">
+            <div class="faq-list">
+              <div class="q">
+                <button aria-expanded="false" aria-controls="a1" onclick="toggle(this,'a1')">How do I know whether weekly sessions or a short series is right?</button>
+                <div id="a1" class="a" hidden>We look at what you want to get out of therapy, how urgent the concern is, and how much time you can realistically commit. Short series work when the goal is contained; weekly sessions fit work that needs steady adjustment. We can decide together at intake.</div>
+              </div>
+
+              <div class="q">
+                <button aria-expanded="false" aria-controls="a2" onclick="toggle(this,'a2')">What about confidentiality and records?</button>
+                <div id="a2" class="a" hidden>Sessions are confidential. Records are stored securely. There are legal limits to confidentiality that I will review at the first appointment (e.g., imminent risk, mandated reporting).</div>
+              </div>
+
+              <div class="q">
+                <button aria-expanded="false" aria-controls="a3" onclick="toggle(this,'a3')">Do you accept insurance?</button>
+                <div id="a3" class="a" hidden>I am currently out-of-network with most insurers. I provide superbills you may submit for reimbursement depending on your plan. We will discuss payment arrangements at first contact.</div>
+              </div>
+
+              <div class="q">
+                <button aria-expanded="false" aria-controls="a4" onclick="toggle(this,'a4')">What happens in the first session?</button>
+                <div id="a4" class="a" hidden>The first session is an intake: we clarify concerns, goals, history, and practicalities (scheduling, fees, and policies). It’s collaborative: you can ask questions about my approach and how we might work together.</div>
+              </div>
+
+              <div class="q">
+                <button aria-expanded="false" aria-controls="a5" onclick="toggle(this,'a5')">How do cancellations and rescheduling work?</button>
+                <div id="a5" class="a" hidden>Policy details are shared at booking. Generally, I request 48 hours notice for cancellations where possible. I will share exceptions and work to reschedule when you need to change an appointment.</div>
+              </div>
+            </div>
+          </div>
+
+          <aside style="width:300px;min-width:260px">
+            <div class="side">
+              <div style="font-weight:600;color:#fff">Still unsure?</div>
+              <div style="margin-top:8px;color:var(--muted);font-size:14px">Try a brief consult to get a sense of fit before committing to a plan. No obligation to continue.</div>
+              <div style="margin-top:10px" class="mood-compact">
+                <button data-mood="overwhelmed">Overwhelmed</button>
+                <button data-mood="stuck">Stuck</button>
+                <button data-mood="transitioning">Transitioning</button>
+                <button data-mood="curious">Curious</button>
+              </div>
+              <div style="margin-top:12px"><a href="book.html" class="btn" style="background:var(--accent);padding:8px 12px;border-radius:8px;color:#042a15;text-decoration:none">Schedule a consult</a></div>
+            </div>
+
+            <div style="margin-top:12px;padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent)">
+              <div style="font-size:13px;color:var(--muted)">Urgent concerns</div>
+              <div style="margin-top:6px;color:var(--muted);font-size:13px">I do not provide emergency services. If you are in immediate danger, please call local emergency services or a crisis line.</div>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+      <footer>
+        <div style="margin-top:14px;color:var(--muted);font-size:13px">Scope & boundaries: I provide psychotherapy for a range of life stressors and transitions. I do not provide forensic services, and I will discuss referral options if a concern would be better served elsewhere.</div>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    function toggle(btn,id){
+      const el = document.getElementById(id);
+      const open = !el.hidden;
+      el.hidden = open;
+      btn.setAttribute('aria-expanded', String(!open));
+    }
+
+    // Compact mood selector in FAQ — update query string and forward to book with mood hint
+    document.querySelectorAll('.mood-compact button').forEach(b=>{
+      b.addEventListener('click',()=>{
+        const mood = b.getAttribute('data-mood');
+        // steer user to booking page with mood preselected
+        window.location = 'book.html?mood=' + encodeURIComponent(mood);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Private Sessions — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#efe6dd;--accent:#6b402e;--muted:#7b6b62;--card:#fff}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:#2b231f}
+    .wrap{max-width:920px;margin:0 auto;padding:28px}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    .brand{font-weight:800;color:var(--accent)}
+    nav a{margin-left:14px;text-decoration:none;color:var(--muted);font-weight:600}
+    .intro{background:linear-gradient(180deg,#fff,#fff9);padding:18px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.04)}
+    .cols{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
+    .card{background:var(--card);padding:16px;border-radius:10px}
+    h1{margin:0 0 8px 0}
+    .muted{color:var(--muted)}
+    .cta{display:inline-block;background:var(--accent);color:#fff;padding:10px 12px;border-radius:8px;text-decoration:none;font-weight:700}
+    .service{border-left:3px solid #eee;padding-left:12px;margin-bottom:10px}
+
+    .reveal{opacity:0;transform:translateY(10px);transition:opacity .5s ease,transform .5s ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media (max-width:900px){.cols{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html">Gather</a>
+        <a href="events.html">Calendar</a>
+        <a href="private-sessions.html">Sessions</a>
+        <a href="pricing.html">Invest</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </header>
+
+    <section class="intro reveal" id="top">
+      <h1>Private resonance sessions</h1>
+      <p class="muted">Bespoke one-on-one experiences for rest and recalibration. Options range from concise bespoke sessions to a dedicated VIP Day for deeper re-patterning.</p>
+      <div style="margin-top:12px">
+        <a class="cta" href="book.html">Request a private session</a>
+        <button id="tryBtnPS" style="margin-left:8px" class="cta">Try it now</button>
+      </div>
+    </section>
+
+    <div class="cols">
+      <main>
+        <div class="card reveal">
+          <h3 style="margin-top:0">Formats</h3>
+          <div class="service">
+            <strong>Express Session — 45 minutes</strong>
+            <div class="muted">A practical reset for body and breath. Useful before travel or a busy evening.</div>
+          </div>
+          <div class="service">
+            <strong>Focused Session — 90 minutes</strong>
+            <div class="muted">A complete private session with intention-setting, guided sound, and a short integration.</div>
+          </div>
+          <div class="service">
+            <strong>VIP Day — Reserved Half Day</strong>
+            <div class="muted">A VIP-style multi-hour immersion combining assessment, tailored instruments, and coaching. Ideal for aligned rest and a durable reset.</div>
+          </div>
+
+          <h4 style="margin-top:12px">How a private session flows</h4>
+          <ol class="muted">
+            <li>Quick intake and needs check</li>
+            <li>Intention-setting and working frame</li>
+            <li>Sound application — tuned bowls, bell work, and subtle percussion</li>
+            <li>Quiet integration; short reflection and aftercare notes</li>
+          </ol>
+        </div>
+
+        <div class="card reveal" style="margin-top:12px">
+          <h4 style="margin-top:0">Contraindications & accessibility</h4>
+          <p class="muted">Private sessions are adjusted when necessary. However, for safety: please disclose pregnancy (especially first trimester), implanted medical devices, recent traumatic brain injury, or uncontrolled seizures. We will adapt or recommend alternatives if needed. If you rely on sensory assistance, tell us in advance so we can prepare the space.</p>
+        </div>
+      </main>
+
+      <aside>
+        <div class="card reveal">
+          <h4 style="margin-top:0">Rates & booking</h4>
+          <div class="muted">
+            <strong>Express (45m)</strong> — starting $95<br>
+            <strong>Focused (90m)</strong> — starting $170<br>
+            <strong>VIP Day (4–6 hrs)</strong> — custom pricing (inquire)
+          </div>
+          <div style="margin-top:10px">
+            <a class="cta" href="pricing.html">See detailed pricing</a>
+          </div>
+        </div>
+
+        <div class="card reveal" style="margin-top:12px">
+          <h4 style="margin-top:0">Before you arrive</h4>
+          <ul class="muted" style="margin:0 0 0 18px">
+            <li>Limit heavy meals 60 minutes prior</li>
+            <li>Remove noisy jewelry</li>
+            <li>Share any medical notes with your practitioner</li>
+          </ul>
+        </div>
+
+        <div class="card reveal" style="margin-top:12px">
+          <h4 style="margin-top:0">Contact</h4>
+          <div class="muted">Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a> to begin the request.</div>
+        </div>
+      </aside>
+    </div>
+
+    <div style="margin-top:18px" class="reveal">
+      <small class="muted">Sessions typically take place in a quiet studio. Mobile options available for an additional travel fee. All packages include brief written aftercare notes.</small>
+    </div>
+
+  </div>
+
+  <!-- Try it now modal re-used -->
+  <div id="modalPS" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;z-index:90">
+    <div style="background:#fff;padding:20px;border-radius:12px;width:92%;max-width:680px">
+      <header style="display:flex;justify-content:space-between;align-items:center"><strong>Quick practice</strong><button id="closePS">Close</button></header>
+      <div id="areaPS" style="margin-top:12px">Loading…</div>
+    </div>
+  </div>
+
+  <script>
+    // Reveal observer (with reduced-motion support)
+    (function(){
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if(reduced){ document.querySelectorAll('.reveal').forEach(el=>el.classList.add('visible')); return; }
+      const obs = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); } });
+      },{threshold:0.14});
+      document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+    })();
+
+    // Try it modal: lightweight breathing guide
+    const modalPS = document.getElementById('modalPS');
+    const areaPS = document.getElementById('areaPS');
+    document.getElementById('tryBtnPS').addEventListener('click',()=>{ modalPS.style.display='flex'; startMiniBreath(); });
+    document.getElementById('closePS').addEventListener('click',()=>{ modalPS.style.display='none'; stopMiniBreath(); });
+
+    let miniInterval=null, miniPhase=0;
+    function startMiniBreath(){
+      areaPS.innerHTML = '<div style="text-align:center"><div id="dotPS" style="width:60px;height:60px;border-radius:50%;background:'+getComputedStyle(document.documentElement).getPropertyValue('--accent')+';margin:18px auto"></div><div id="txtPS" style="font-weight:700">Inhale</div></div>';
+      const dot = document.getElementById('dotPS');
+      const txt = document.getElementById('txtPS');
+      const seq=['Inhale','Hold','Exhale'];
+      miniPhase=0; txt.textContent = seq[0];
+      miniInterval = setInterval(()=>{
+        miniPhase = (miniPhase+1)%3; txt.textContent = seq[miniPhase];
+        const s = miniPhase===0?1.05:miniPhase===1?1.3:0.65;
+        dot.style.transform = 'scale('+s+')';
+      },4500);
+    }
+    function stopMiniBreath(){ if(miniInterval){ clearInterval(miniInterval); miniInterval=null;} }
+
+  </script>
+</body>
+</html>

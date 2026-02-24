@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{{BUSINESS_NAME}} — Connect</title>
+  <meta name="description" content="A brief connector page for thoughtful, integrative care — plan a session and map what to bring." />
+  <style>
+    :root{
+      --bg:#fbfbf8;--ink:#13221f;--muted:#556;--accent:#7aa887;--accent-2:#b48e6d;--card:#ffffff;--glass:rgba(255,255,255,0.7);
+      --max-width:980px;--radius:14px;--gap:20px;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    html,body{height:100%;}
+    body{margin:0;background:linear-gradient(120deg, var(--bg), #f2f6f2 60%);color:var(--ink);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
+    header{padding:28px 20px;display:flex;align-items:center;justify-content:space-between;max-width:var(--max-width);margin:0 auto}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,var(--accent),var(--accent-2));color:white;font-weight:700}
+    nav{display:flex;gap:12px;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;font-size:14px;padding:8px 12px;border-radius:10px}
+    nav a.active{background:var(--glass);color:var(--ink)}
+
+    /* Diagonal split hero */
+    .hero-wrap{max-width:var(--max-width);margin:18px auto;padding:28px;border-radius:var(--radius);position:relative;overflow:hidden}
+    .hero-split{display:grid;grid-template-columns:1fr 420px;gap:24px;align-items:stretch}
+    .panel{background:var(--card);padding:26px;border-radius:12px;box-shadow:0 6px 18px rgba(10,10,10,0.06)}
+    .intro{font-size:20px;line-height:1.4;color:var(--ink)}
+    .tag{display:inline-block;margin-top:12px;padding:6px 10px;border-radius:999px;background:rgba(122,168,135,0.12);color:var(--accent);font-weight:600;font-size:13px}
+
+    /* decorative diagonal */
+    .pattern{position:absolute;right:-6%;top:-10%;width:56%;height:140%;pointer-events:none;opacity:0.12;}
+
+    /* split content */
+    .grid{display:grid;grid-template-columns:1fr 380px;gap:20px;margin-top:18px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.4));padding:18px;border-radius:12px}
+    h1{margin:0 0 8px 0;font-size:24px}
+    p.lead{margin:0;color:var(--muted)}
+
+    /* Session planner */
+    form{display:flex;flex-direction:column;gap:12px}
+    label{font-size:13px;color:var(--muted)}
+    input[type="text"], textarea, select{padding:10px;border-radius:8px;border:1px solid rgba(15,20,18,0.06);font-size:14px}
+    textarea{min-height:90px;resize:vertical}
+    .row{display:flex;gap:10px}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;border:none;background:var(--accent);color:white;font-weight:600;cursor:pointer}
+    .btn.ghost{background:transparent;border:1px solid rgba(19,34,31,0.06);color:var(--ink)}
+
+    /* Inventory */
+    .checks{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+    .check{display:flex;gap:10px;align-items:flex-start}
+    .check input{margin-top:4px}
+
+    /* outputs */
+    .output{white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#fbfff9;padding:12px;border-radius:10px;border:1px dashed rgba(15,20,18,0.06);font-size:13px}
+    .meta{font-size:12px;color:var(--muted)}
+
+    footer{max-width:var(--max-width);margin:30px auto;text-align:center;color:var(--muted);padding:20px}
+
+    @media (max-width:880px){
+      .hero-split{grid-template-columns:1fr;}
+      .grid{grid-template-columns:1fr}
+      nav{display:none}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">HM</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:3px">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav aria-label="Primary">
+      <a href="index.html">Start</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Symptoms</a>
+      <a href="approach.html">Method</a>
+      <a href="pricing.html">Rates</a>
+      <a href="about.html">Story</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html" class="active">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="hero-wrap">
+      <svg class="pattern" viewBox="0 0 600 800" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#b8d9c2" stop-opacity="0.9"/><stop offset="1" stop-color="#f0d8c0" stop-opacity="0.9"/></linearGradient>
+          <pattern id="p1" patternUnits="userSpaceOnUse" width="60" height="60" patternTransform="rotate(15)">
+            <rect width="60" height="60" fill="url(#g1)"/>
+            <path d="M0 30 L60 30" stroke="#ffffff" stroke-opacity="0.06" stroke-width="2"/>
+            <circle cx="30" cy="30" r="4" fill="#ffffff" fill-opacity="0.04"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#p1)"></rect>
+      </svg>
+
+      <div class="hero-split">
+        <div class="panel">
+          <div class="tag">Connect • Prepare • Focus</div>
+          <h1 style="margin-top:10px">Bring what matters to the first conversation</h1>
+          <p class="lead">Use the planner below to sketch a session frame, and try the inventory to shape a focused consultation agenda. Save or copy a concise summary to bring to your appointment.</p>
+          <p class="meta" style="margin-top:12px">Prefer speaking? Call <strong>{{PHONE}}</strong> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+        </div>
+
+        <div class="panel">
+          <div style="font-size:13px;color:var(--muted);margin-bottom:8px">Quick link</div>
+          <div style="display:flex;gap:8px">
+            <a class="btn ghost" href="book.html">Plan a visit</a>
+            <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          </div>
+          <div style="margin-top:12px;font-size:12px;color:var(--muted)">Serving {{CITY}}, {{STATE}} — sessions by video or in-person.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="grid" style="max-width:var(--max-width);margin:22px auto;padding:0 20px;">
+      <div>
+        <div class="card">
+          <h2 style="margin:0 0 6px 0">Session Planner</h2>
+          <p style="margin:0 0 12px;color:var(--muted)">Build a practical first-session outline and export a plaintext summary to copy into messages or your notes.</p>
+
+          <form id="planner">
+            <label for="goal">Primary goal for this series</label>
+            <input id="goal" name="goal" type="text" placeholder="e.g., calm evening anxiety, stabilize energy, manage chronic tension" />
+
+            <div class="row">
+              <div style="flex:1">
+                <label for="length">Session length</label>
+                <select id="length" name="length">
+                  <option>50 minutes (standard)</option>
+                  <option>25 minutes (brief)</option>
+                  <option>80 minutes (comprehensive)</option>
+                </select>
+              </div>
+              <div style="width:160px">
+                <label for="frequency">Frequency</label>
+                <select id="frequency" name="frequency">
+                  <option>Weekly</option>
+                  <option>Biweekly</option>
+                  <option>Monthly</option>
+                </select>
+              </div>
+            </div>
+
+            <label>Modalities to consider</label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <label style="font-size:13px"><input type="checkbox" name="mod" value="Nutrition"/> Nutrition</label>
+              <label style="font-size:13px"><input type="checkbox" name="mod" value="Sleep"/> Sleep
+              </label>
+              <label style="font-size:13px"><input type="checkbox" name="mod" value="Movement"/> Movement</label>
+              <label style="font-size:13px"><input type="checkbox" name="mod" value="Mind-Body"/> Mind-Body
+              </label>
+              <label style="font-size:13px"><input type="checkbox" name="mod" value="Supplements"/> Supplements</label>
+              <label style="font-size:13px"><input type="checkbox" name="mod" value="Environmental"/> Environment</label>
+            </div>
+
+            <label for="notes">Key notes to share with the clinician</label>
+            <textarea id="notes" name="notes" placeholder="Brief context, previous treatments, medication, important preferences..."></textarea>
+
+            <div style="display:flex;gap:8px;margin-top:6px;align-items:center">
+              <button type="button" id="buildBtn" class="btn">Create summary</button>
+              <button type="button" id="clearPlanner" class="btn ghost">Reset</button>
+            </div>
+
+            <div style="margin-top:12px">
+              <div class="meta">Summary preview</div>
+              <div id="plannerOutput" class="output" aria-live="polite">Start a plan to see a plaintext summary.</div>
+              <div style="display:flex;gap:8px;margin-top:8px">
+                <button type="button" id="copyPlanner" class="btn">Copy summary</button>
+                <button type="button" id="downloadPlanner" class="btn ghost">Download .txt</button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <h2 style="margin:0 0 6px 0">Whole-person inventory</h2>
+          <p style="margin:0 0 12px;color:var(--muted)">Tick the areas you want to review. The page will propose a focused consultation agenda and a follow-up cadence tailored to how many areas you pick.</p>
+
+          <div class="checks" id="inventory">
+            <label class="check"><input type="checkbox" value="Sleep"/>Sleep</label>
+            <label class="check"><input type="checkbox" value="Nutrition"/>Nutrition
+            </label>
+            <label class="check"><input type="checkbox" value="Movement"/>Movement</label>
+            <label class="check"><input type="checkbox" value="Stress"/>Stress & Rhythm</label>
+            <label class="check"><input type="checkbox" value="Mood"/>Mood & Emotions</label>
+            <label class="check"><input type="checkbox" value="Relationships"/>Relationships</label>
+            <label class="check"><input type="checkbox" value="Work"/>Work & Focus</label>
+            <label class="check"><input type="checkbox" value="Environment"/>Environment</label>
+            <label class="check"><input type="checkbox" value="Digestive"/>Digestive Health</label>
+            <label class="check"><input type="checkbox" value="Mindfulness"/>Mindfulness & Practices</label>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button id="generateAgenda" class="btn">Generate agenda & cadence</button>
+            <button id="clearInventory" class="btn ghost">Clear</button>
+          </div>
+
+          <div style="margin-top:12px">
+            <div class="meta">Consultation agenda</div>
+            <div id="agendaOutput" class="output">Mark areas and press "Generate" to get a tailored agenda.</div>
+            <div style="margin-top:8px" class="meta">Suggested follow-up cadence</div>
+            <div id="cadenceOutput" class="output">—</div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button id="copyAgenda" class="btn">Copy agenda</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <aside>
+        <div class="card">
+          <h3 style="margin:0 0 6px 0">What to bring</h3>
+          <ul style="margin:0;color:var(--muted);padding-left:18px">
+            <li>Any recent labs or consult notes (optional)</li>
+            <li>A short list of priorities or worries</li>
+            <li>Medications & supplements list</li>
+            <li>Questions about logistics or billing</li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <h3 style="margin:0 0 6px 0">Practical notes</h3>
+          <p style="margin:0;color:var(--muted);font-size:13px">This site helps you prepare. Clinical assessment is individualized; the planner is an aide to conversation, not a diagnosis. For urgent medical issues, seek immediate care.</p>
+        </div>
+
+        <div class="card" style="margin-top:14px;display:flex;flex-direction:column;gap:8px;align-items:stretch">
+          <div style="font-size:13px;color:var(--muted)">Prefer direct contact</div>
+          <a href="tel:{{PHONE}}" class="btn">Call {{PHONE}}</a>
+          <a href="mailto:{{EMAIL}}" class="btn ghost">Email {{EMAIL}}</a>
+        </div>
+
+      </aside>
+    </div>
+
+  </main>
+
+  <footer>
+    <div style="max-width:var(--max-width);margin:0 auto;padding:8px 20px;color:var(--muted);font-size:13px">© {{BUSINESS_NAME}} — thoughtful integrative support in {{CITY}}, {{STATE}}. For emergencies, contact local services. <a href="privacy.html">Privacy</a></div>
+  </footer>
+
+  <script>
+    // Planner logic
+    function getCheckedValues(name){
+      const els = document.querySelectorAll('input[name="mod"]:checked');
+      return Array.from(els).map(e=>e.value);
+    }
+
+    function buildSummary(){
+      const goal = document.getElementById('goal').value.trim() || 'No primary goal entered';
+      const length = document.getElementById('length').value;
+      const freq = document.getElementById('frequency').value;
+      const mods = getCheckedValues('mod');
+      const notes = document.getElementById('notes').value.trim() || '(no extra notes)';
+
+      const lines = [];
+      lines.push('{{BUSINESS_NAME}} — Session plan');
+      lines.push('Primary goal: ' + goal);
+      lines.push('Session length: ' + length + ' | ' + 'Frequency: ' + freq);
+      lines.push('Consider modalities: ' + (mods.length? mods.join(', '): 'None selected'));
+      lines.push('Notes: ' + notes);
+      lines.push('Prepared: ' + new Date().toLocaleString());
+
+      return lines.join('\n');
+    }
+
+    document.getElementById('buildBtn').addEventListener('click', ()=>{
+      const text = buildSummary();
+      document.getElementById('plannerOutput').textContent = text;
+    });
+
+    document.getElementById('clearPlanner').addEventListener('click', ()=>{
+      document.getElementById('planner').reset();
+      document.getElementById('plannerOutput').textContent = 'Start a plan to see a plaintext summary.';
+    });
+
+    document.getElementById('copyPlanner').addEventListener('click', async ()=>{
+      const txt = document.getElementById('plannerOutput').textContent;
+      try{ await navigator.clipboard.writeText(txt); alert('Summary copied to clipboard'); }catch(e){ alert('Copy failed — select and copy manually'); }
+    });
+
+    document.getElementById('downloadPlanner').addEventListener('click', ()=>{
+      const txt = document.getElementById('plannerOutput').textContent;
+      const blob = new Blob([txt],{type:'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'session-plan.txt'; document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    // Inventory -> Agenda & Cadence
+    function inventoryItems(){
+      const checks = document.querySelectorAll('#inventory input[type="checkbox"]');
+      return Array.from(checks).filter(c=>c.checked).map(c=>c.value);
+    }
+
+    function generateAgenda(){
+      const items = inventoryItems();
+      if(items.length===0){
+        return {agenda: 'No areas selected. Mark areas you want to review to create an agenda.', cadence: 'No cadence suggested.'};
+      }
+      // Prioritize: first three are primary topics
+      const primary = items.slice(0,3);
+      const secondary = items.slice(3);
+      const agendaLines = [];
+      agendaLines.push('Consultation agenda — ' + new Date().toLocaleDateString());
+      agendaLines.push('Total areas: ' + items.length);
+      agendaLines.push('Opening (5–10 min): brief check-in and main concern');
+      agendaLines.push('Primary topics:');
+      primary.forEach((it,i)=>{ agendaLines.push((i+1)+'. ' + it + ' — 12–18 min (history, key measures, one immediate step)'); });
+      if(secondary.length){
+        agendaLines.push('Secondary topics:');
+        secondary.forEach((it,i)=>{ agendaLines.push('- ' + it + ' — 4–8 min (screen/plan)'); });
+      }
+      agendaLines.push('Wrap: refine 2–3 action steps and any small tracking items');
+
+      // cadence rules
+      let cadence = '';
+      if(items.length<=2){ cadence = 'Follow-up: 2–4 weeks for progress check. If symptom-focused, consider 1–2 week check-ins for medication or acute changes.'; }
+      else if(items.length<=5){ cadence = 'Follow-up: 1–3 weeks initially, then 4–6 week spacing as steps stabilize. Use brief check-ins between visits for tracking.'; }
+      else { cadence = 'Follow-up: Start with weekly or biweekly touchpoints for 6–8 weeks while priorities are addressed, then extend to monthly maintenance as items stabilize.'; }
+
+      // build short plan of measurements
+      const measures = items.map(it=> '- Track: ' + it + ' (one metric or symptom to monitor)').join('\n');
+      agendaLines.push('Suggested measures:\n' + measures);
+
+      return {agenda: agendaLines.join('\n'), cadence: cadence};
+    }
+
+    document.getElementById('generateAgenda').addEventListener('click', ()=>{
+      const out = generateAgenda();
+      document.getElementById('agendaOutput').textContent = out.agenda;
+      document.getElementById('cadenceOutput').textContent = out.cadence;
+    });
+
+    document.getElementById('clearInventory').addEventListener('click', ()=>{
+      document.querySelectorAll('#inventory input[type="checkbox"]').forEach(c=>c.checked=false);
+      document.getElementById('agendaOutput').textContent = 'Mark areas and press "Generate" to get a tailored agenda.';
+      document.getElementById('cadenceOutput').textContent = '—';
+    });
+
+    document.getElementById('copyAgenda').addEventListener('click', async ()=>{
+      const agenda = document.getElementById('agendaOutput').textContent;
+      const cadence = document.getElementById('cadenceOutput').textContent;
+      const text = agenda + '\n\nFollow-up cadence:\n' + cadence + '\n\nPrepared by: {{BUSINESS_NAME}}';
+      try{ await navigator.clipboard.writeText(text); alert('Agenda copied to clipboard'); }catch(e){ alert('Copy failed — select and copy manually'); }
+    });
+
+    // Simple accessibility: allow Enter on checkboxes to toggle
+    document.querySelectorAll('#inventory input[type="checkbox"]').forEach(cb=>{
+      cb.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); cb.checked=!cb.checked; }});
+    });
+  </script>
+</body>
+</html>

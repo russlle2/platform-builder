@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sound Bath Events — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg1:#0f1724;--bg2:#071023;--accent:#D4B8FF;--muted:#9aa4b2;--panel:#0b1220}
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;color:#e6eef8;background:linear-gradient(180deg,var(--bg1),var(--bg2));-webkit-font-smoothing:antialiased}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:linear-gradient(90deg,rgba(255,255,255,0.02),transparent);backdrop-filter:blur(6px);position:sticky;top:0;z-index:40}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#1a2a4a,#2a1a44);display:flex;align-items:center;justify-content:center;color:var(--accent);font-weight:700}
+    nav a{color:#cfe6ff;text-decoration:none;margin:0 10px;font-size:14px}
+    nav a.active{color:var(--accent);font-weight:600}
+    main{max-width:1100px;margin:36px auto;padding:28px}
+    /* decorative panel */
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:stretch}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:14px;padding:24px;box-shadow:0 8px 30px rgba(5,8,15,0.6);border:1px solid rgba(255,255,255,0.03)}
+    h1{margin:0 0 8px;font-size:28px;color:#fff}
+    p.lead{color:var(--muted);margin:0 0 14px}
+    .pill{display:inline-block;padding:8px 12px;border-radius:999px;background:linear-gradient(90deg,rgba(212,184,255,0.12),rgba(212,184,255,0.06));color:var(--accent);font-weight:600;font-size:13px}
+    .next-event{background:linear-gradient(180deg,#071226,rgba(7,16,36,0.6));padding:18px;border-radius:12px;color:#dbefff}
+    .calendar-list{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+    .date-item{display:flex;justify-content:space-between;padding:10px;border-radius:10px;background:rgba(255,255,255,0.02);align-items:center}
+    ul.flow{padding-left:18px;color:var(--muted);line-height:1.6}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .micro{display:flex;flex-direction:column;gap:8px}
+    footer{margin-top:28px;padding-top:18px;border-top:1px solid rgba(255,255,255,0.03);display:flex;justify-content:space-between;align-items:center;color:var(--muted)}
+    .cta{display:inline-block;padding:12px 18px;border-radius:10px;background:linear-gradient(90deg, #a98bff, #6bd3ff);color:#04243a;font-weight:700;text-decoration:none}
+    /* responsive */
+    @media (max-width:880px){.hero{grid-template-columns:1fr;}.card{padding:18px}.logo{width:40px;height:40px}}
+    /* patterned background using external SVG */
+    body::before{content:"";position:fixed;inset:0;z-index:-1;background-image:url('assets/img/pattern.svg');opacity:0.12;background-repeat:repeat;mix-blend-mode:overlay}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">SB</div>
+      <div>
+        <div style="font-weight:700;color:#fff">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{CITY}}, {{STATE}} • Sound immersion</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Gatherings</a>
+      <a class="active" href="events.html">Next Sound</a>
+      <a href="private-sessions.html">Private</a>
+      <a href="pricing.html">Rates</a>
+      <a href="book.html">Reserve</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- HERO (centered on experience) -->
+    <section class="hero">
+      <div class="card">
+        <span class="pill">Live Sound Bath</span>
+        <h1>Slow down. Sink in. Resonate together.</h1>
+        <p class="lead">An intimate, sensory-led sound ceremony combining rich overtones and subtle touch to support deep rest and clarity. Each event is curated to be both restful and elevated.</p>
+
+        <div style="margin-top:16px;display:flex;gap:12px;align-items:center">
+          <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <div style="color:var(--muted)">or call <strong style="color:#fff">{{PHONE}}</strong></div>
+        </div>
+
+        <hr style="margin:18px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)">
+
+        <h3 style="color:#fff;margin:0 0 8px">What to expect (flow)</h3>
+        <ul class="flow">
+          <li>Welcome & grounding (10–12 min) — gentle breathwork to settle in.</li>
+          <li>Resonant soundscape (45–60 min) — layered instruments guide a slow wave of vibration.</li>
+          <li>Soft reorientation (8–12 min) — gradual return with tea and space to journal.</li>
+        </ul>
+
+        <div style="margin-top:14px;color:var(--muted);font-size:13px">Instruments featured this event: crystal bowls, planet gong, wind chimes and soft electronics — carefully layered for a spacious, tactile field.</div>
+
+      </div>
+
+      <aside class="card next-event">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-size:13px;color:var(--muted)">Next event</div>
+            <div style="font-weight:700;font-size:18px;margin-top:6px">{{NEXT_EVENT_DATE}}</div>
+            <div style="font-size:13px;color:var(--muted);margin-top:6px">Hosted at {{VENUE_NAME}} • Doors 18:30 • Begins 19:00</div>
+          </div>
+          <div style="text-align:right">
+            <a class="cta" href="book.html">Reserve Spot</a>
+          </div>
+        </div>
+
+        <div class="calendar-list">
+          <div class="date-item"><div>Mar 7 — Evening Immersion</div><div style="color:var(--accent)">Limited</div></div>
+          <div class="date-item"><div>Apr 4 — Full Moon Field</div><div style="color:var(--muted)">Open</div></div>
+          <div class="date-item"><div>May 9 — Morning Reset</div><div style="color:var(--muted)">Open</div></div>
+        </div>
+
+        <hr style="margin:12px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)">
+        <div style="font-size:13px;color:var(--muted)">
+          What to bring: cozy layers, a yoga mat or cushion, eye cover or blanket, water. We provide bolsters and extra blankets on request.
+        </div>
+      </aside>
+    </section>
+
+    <!-- DIAGNOSTIC (quick self-check) -->
+    <section style="margin-top:22px" class="card">
+      <h2 style="margin:0 0 6px">Is this session right for you?</h2>
+      <p class="lead">A quick practical guide to help you choose — this is gentle, low-impact sound work designed for relaxation and nervous-system regulation.</p>
+      <div class="grid-2" style="margin-top:12px">
+        <div>
+          <h4 style="margin:0 0 6px">Good fit if you:</h4>
+          <ul style="color:var(--muted)">
+            <li>Want to rest without guided therapy</li>
+            <li>Crave sensory calm and deep breathing</li>
+            <li>Enjoy shared, quiet ceremony</li>
+          </ul>
+        </div>
+        <div>
+          <h4 style="margin:0 0 6px">Contraindications & safety</h4>
+          <p style="color:var(--muted);margin:0">If you have epilepsy, are pregnant in the first trimester, have a heart pacemaker, or are currently experiencing severe psychiatric symptoms, please consult your healthcare provider and notify the facilitator before booking.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- MICRO HABITS -->
+    <section style="margin-top:18px" class="card micro">
+      <h3 style="margin:0">Micro-habits to prepare</h3>
+      <div style="color:var(--muted)">Small practices you can do before arrival to deepen the experience.</div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px">
+        <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:10px;font-size:13px">Hydrate well — avoid heavy meals within an hour</div>
+        <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:10px;font-size:13px">Wear breathable layers and non-restrictive clothes</div>
+        <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:10px;font-size:13px">Journal one intention or thing to release</div>
+      </div>
+    </section>
+
+    <!-- PLAN (logistics & accessibility) -->
+    <section style="margin-top:18px" class="card">
+      <h3 style="margin:0 0 6px">Plan & Logistics</h3>
+      <p style="color:var(--muted);margin:0">Arrive 15 minutes early for check-in. Sessions last ~75 minutes. Street parking and bike racks at {{VENUE_NAME}}. Quiet space with dim lighting and low fragrance policy.</p>
+    </section>
+
+    <!-- PRICING (compact) -->
+    <section style="margin-top:18px" class="card">
+      <h3 style="margin:0 0 6px">Rates</h3>
+      <div style="display:flex;gap:12px;align-items:center">
+        <div style="font-weight:700;font-size:20px">$35</div>
+        <div style="color:var(--muted)">General admission — concessions available</div>
+      </div>
+      <div style="margin-top:8px;color:var(--muted);font-size:13px">Arrive rested; refunds up to 48 hours prior. For group bookings see Private Sessions.</div>
+    </section>
+
+    <!-- CTA -->
+    <footer>
+      <div>
+        <div style="font-weight:700;color:#fff">Still unsure?</div>
+        <div style="color:var(--muted);font-size:13px">Email <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a> for personalized guidance.</div>
+      </div>
+      <div>
+        <a class="cta" href="book.html">Reserve Your Spot</a>
+      </div>
+    </footer>
+
+  </main>
+</body>
+</html>

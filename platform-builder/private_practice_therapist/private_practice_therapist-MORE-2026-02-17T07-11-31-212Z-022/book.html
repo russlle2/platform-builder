@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book a Session — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="How to book, what to expect at intake, and a short intake checklist. Secure, private scheduling and clear boundaries for care.">
+  <style>
+    :root{--bg:#f7f6fb;--muted:#6b7280;--accent:#6b3b9b;--card:#fff;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial}
+    body{margin:0;background:var(--bg);color:#0f172a}
+    .wrap{max-width:980px;margin:0 auto;padding:28px 20px}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    nav a{margin-left:10px;color:#0f172a;text-decoration:none}
+    h1{margin:0 0 6px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .card{background:#fff;padding:18px;border-radius:12px;box-shadow:0 8px 20px rgba(15,23,42,0.06)}
+    label{display:block;font-size:13px;margin-bottom:6px}
+    input,select,textarea{width:100%;padding:10px;border:1px solid rgba(15,23,42,0.06);border-radius:8px}
+    .submit{background:var(--accent);color:#fff;padding:12px 14px;border-radius:10px;border:0;cursor:pointer}
+    .note{font-size:13px;color:var(--muted)}
+    .reveal{opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease}
+    .reveal.visible{opacity:1;transform:none}
+    .small{font-size:13px;color:var(--muted)}
+    footer{margin-top:18px;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <div style="font-weight:700;color:var(--accent)">{{BUSINESS_NAME}}</div>
+        <div class="small">Private clinical services in {{CITY}}, {{STATE}}</div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">Meet</a>
+        <a href="specialties.html">Services</a>
+        <a href="fees.html">Fees</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <main class="grid">
+      <section>
+        <h1 class="reveal">Book an appointment</h1>
+        <p class="reveal small">Choose a consult or a full intake. If you’re unsure which option fits, the 20-minute consult is a short conversation to clarify fit and logistics.</p>
+
+        <div class="card reveal" style="margin-top:12px">
+          <h3 style="margin-top:0">Scheduling</h3>
+          <p class="small">I offer telehealth and limited in-person availability. New clients begin with an intake session; follow-up appointments can be scheduled at the close of a session or via email.</p>
+
+          <form id="booking-form" style="margin-top:12px">
+            <label for="type">Appointment type</label>
+            <select id="type" name="type">
+              <option value="consult">20-minute consult — $0</option>
+              <option value="intake">Intake — 75 minutes — $195</option>
+              <option value="session">Standard session — 50 minutes — $165</option>
+              <option value="intensive">Weekend Intensive — 4 hours — $720</option>
+            </select>
+
+            <label for="name">Your name</label>
+            <input id="name" name="name" required placeholder="Full name">
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required placeholder="you@example.com">
+
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" placeholder="Optional phone number">
+
+            <label for="notes">Brief note (what brings you here)</label>
+            <textarea id="notes" name="notes" rows="5" placeholder="A few sentences about your reason for seeking support"></textarea>
+
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <button type="submit" class="submit">Request time</button>
+              <a href="mailto:{{EMAIL}}" class="try-btn">Email directly</a>
+            </div>
+            <div class="small" style="margin-top:10px">After you request time I will reply with next steps and available times. This is not an emergency line.</div>
+          </form>
+        </div>
+
+        <div class="card reveal" style="margin-top:12px">
+          <h3 style="margin-top:0">What happens after you request</h3>
+          <ol class="small">
+            <li>I reply by email to confirm availability and send intake paperwork.</li>
+            <li>Complete paperwork before your intake so we can use session time for clinical work.</li>
+            <li>At intake we review history, set initial goals, and make a short plan.</li>
+          </ol>
+        </div>
+
+      </section>
+
+      <aside>
+        <div class="card reveal">
+          <h4 style="margin-top:0">Before your intake</h4>
+          <ul class="small">
+            <li>Have a quiet, private space for telehealth.</li>
+            <li>Be ready to discuss current concerns and any prior mental health care.</li>
+            <li>Think about what you hope to get from a few sessions or longer-term work.</li>
+          </ul>
+          <div style="margin-top:12px">
+            <a href="fees.html" class="try-btn">See fees</a>
+            <a href="faq.html" class="try-btn">Read FAQs</a>
+          </div>
+        </div>
+
+        <div class="card reveal" style="margin-top:12px">
+          <h4 style="margin-top:0">Boundaries & confidentiality</h4>
+          <p class="small">All clinical notes and communication are confidential within legal limits. I will review limits to confidentiality with you in intake. For emergencies, call emergency services or your crisis line.</p>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
+        <div class="small">Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • {{PHONE}}</div>
+        <div class="small">Serving adults in {{CITY}}, {{STATE}}.</div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    (function(){
+      // reveal
+      const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const nodes = document.querySelectorAll('.reveal');
+      if(prefersReduced){ nodes.forEach(n=>n.classList.add('visible')); }
+      else if('IntersectionObserver' in window){
+        const io = new IntersectionObserver((entries,obs)=>{ entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('visible'); obs.unobserve(en.target); } }) },{threshold:0.08});
+        nodes.forEach(n=>io.observe(n));
+      } else { nodes.forEach(n=>n.classList.add('visible')); }
+
+      // booking form: local-only stub
+      const form = document.getElementById('booking-form');
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        const data = new FormData(form); const payload = {};
+        data.forEach((v,k)=>payload[k]=v);
+        // simulate sending — no network
+        alert('Request received. I will reply by email to schedule a time.');
+        form.reset();
+      });
+    })();
+  </script>
+</body>
+</html>

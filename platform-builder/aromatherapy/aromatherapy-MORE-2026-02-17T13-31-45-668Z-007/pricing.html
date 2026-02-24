@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Invest — {{BUSINESS_NAME}} Pricing</title>
+  <style>
+    :root{--bg:#fff8f3;--accent:#6b4cff;--muted:#6b6b76;--card:#ffffff;--glass:rgba(255,255,255,0.6);--accent-2:#ff7aa2}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;color:#222;background:linear-gradient(180deg,var(--bg),#fff);-webkit-font-smoothing:antialiased}
+    header{padding:20px 28px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:18px}
+    nav a{margin-left:16px;color:var(--muted);text-decoration:none;font-weight:600}
+    .hero{padding:36px 28px 12px;display:grid;grid-template-columns:1fr 360px;gap:20px;align-items:start}
+    .hero h1{margin:0;font-size:28px;color:#1f1f2b}
+    .hero p{color:var(--muted);margin:8px 0 0}
+    .pattern{width:100%;height:120px;border-radius:12px;overflow:hidden;background:#fef7fb;display:flex;align-items:center;justify-content:center}
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(28,22,40,0.06)}
+    .toggle{display:flex;align-items:center;gap:10px;padding:10px;background:linear-gradient(180deg,#fff,#fbfbff);border-radius:999px;width:max-content}
+    .switch{position:relative;width:82px;height:34px;background:#eee;border-radius:999px;padding:4px;cursor:pointer}
+    .knob{position:absolute;top:4px;left:4px;width:26px;height:26px;background:#fff;border-radius:50%;box-shadow:0 3px 8px rgba(20,20,30,0.12);transition:left .28s cubic-bezier(.2,.9,.3,1)}
+    .switch.active{background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+    .switch.active .knob{left:52px;background:white}
+    .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+    .plan{padding:16px;border-radius:12px;text-align:center}
+    .plan h3{margin:0;font-size:15px}
+    .price{font-size:28px;font-weight:700;margin-top:8px;color:var(--accent)}
+    .muted{color:var(--muted);font-size:13px}
+    .cta{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;text-decoration:none;font-weight:700}
+    .mood-wrap{margin-top:18px}
+    .moods{display:flex;gap:8px;flex-wrap:wrap}
+    .moods button{padding:8px 10px;border-radius:999px;border:1px solid #eee;background:white;cursor:pointer}
+    .rec{margin-top:12px;padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#f9fbff);display:flex;align-items:center;gap:12px}
+    .rec .icon{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#ffe3f0);display:flex;align-items:center;justify-content:center;font-weight:700;color:white}
+    footer{padding:24px 28px;color:var(--muted);font-size:13px}
+    .faq{margin-top:18px}
+    @media (max-width:880px){.hero{grid-template-columns:1fr;}.plans{grid-template-columns:1fr}.pattern{height:100px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">A</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Creations</a>
+      <a href="shop.html">Boutique</a>
+      <a href="pricing.html">Invest</a>
+      <a href="about.html">Story</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div>
+      <h1>Investment tiers for scent-led learning and care</h1>
+      <p>Small-group cohorts and bespoke packages framed as skillful aromatic practices that may support daily rhythm and focus. Pricing where transparency meets ritual.</p>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="toggle">
+            <div style="font-size:13px;color:var(--muted);font-weight:700">Monthly</div>
+            <div id="priceSwitch" class="switch" role="switch" aria-checked="true" tabindex="0">
+              <div class="knob"></div>
+            </div>
+            <div style="font-size:13px;color:var(--muted);font-weight:700">Package</div>
+          </div>
+          <div style="font-size:12px;color:var(--muted)">Billing rhythm</div>
+        </div>
+
+        <div class="plans" aria-live="polite">
+          <div class="plan card" data-monthly="32" data-package="89">
+            <h3>Scent Companion Cohort</h3>
+            <div class="price"><span class="price-value">32</span><span class="muted">/mo</span></div>
+            <div class="muted">Weekly mini-practice + group study</div>
+          </div>
+          <div class="plan card" data-monthly="78" data-package="199">
+            <h3>Ritual Craft Series</h3>
+            <div class="price"><span class="price-value">78</span><span class="muted">/mo</span></div>
+            <div class="muted">Monthly live deep-dive and blend kit</div>
+          </div>
+          <div class="plan card" data-monthly="160" data-package="420">
+            <h3>Blend Lab Intensive</h3>
+            <div class="price"><span class="price-value">160</span><span class="muted">/mo</span></div>
+            <div class="muted">3-session cohort + artisan blend</div>
+          </div>
+        </div>
+
+        <div class="mood-wrap">
+          <label style="font-weight:700;font-size:13px">Pick your mood — see a fitting pathway</label>
+          <div class="moods">
+            <button data-mood="clarify">Foggy</button>
+            <button data-mood="steady">Wired</button>
+            <button data-mood="revive">Low Energy</button>
+            <button data-mood="soften">Tender</button>
+          </div>
+          <div class="rec" id="recommendation">
+            <div class="icon">R</div>
+            <div>
+              <div id="rec-title" style="font-weight:800">Ritual Craft Series</div>
+              <div id="rec-note" class="muted" style="font-size:13px">A monthly rhythm with focused blending that may support steadiness.</div>
+              <a id="rec-cta" class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <aside>
+      <div class="pattern card">
+        <svg width="220" height="120" viewBox="0 0 220 120" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="g1" x1="0" x2="1">
+              <stop offset="0" stop-color="#ffeef8"/>
+              <stop offset="1" stop-color="#f0f5ff"/>
+            </linearGradient>
+            <pattern id="p1" width="20" height="20" patternUnits="userSpaceOnUse" patternTransform="rotate(15)">
+              <rect width="20" height="20" fill="url(#g1)"/>
+              <circle cx="5" cy="5" r="2" fill="#ffd6e8"/>
+              <circle cx="15" cy="15" r="2" fill="#e8f0ff"/>
+            </pattern>
+          </defs>
+          <rect width="220" height="120" fill="url(#p1)" rx="10"/>
+          <g transform="translate(40,18)" fill="#6b4cff">
+            <path d="M10 6c5-9 22-9 27 0 5 9-3 22-13 22s-18-13-14-22z" fill-opacity="0.12"/>
+            <path d="M30 12c3-5 12-5 15 0 3 5-2 12-7 12s-11-7-8-12z" fill-opacity="0.18"/>
+          </g>
+        </svg>
+      </div>
+      <div style="margin-top:12px" class="card">
+        <strong>Why cohort or package?</strong>
+        <p class="muted" style="margin:8px 0 0">Cohorts cultivate habit; packages concentrate learning. All formats are safety-forward and described to support everyday balance — not a medical treatment.</p>
+      </div>
+    </aside>
+  </section>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+      <div>Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> · <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+      <div class="muted">Serving {{CITY}}, {{STATE}} — practices may support calm and clarity when used thoughtfully.</div>
+    </div>
+    <div class="faq">
+      <details>
+        <summary style="cursor:pointer">Safety notes & small print</summary>
+        <div class="muted" style="margin-top:8px">Dilution guidance and patch-test instructions are provided with every blend. Avoid undiluted topical application. If pregnant, nursing, or living with pets, consult with your healthcare professional and let us know before booking. This work may support wellbeing but is not medical care.</div>
+      </details>
+    </div>
+  </footer>
+
+  <script>
+    // Pricing switch + animation
+    (function(){
+      const switchEl = document.getElementById('priceSwitch');
+      const plans = Array.from(document.querySelectorAll('.plan'));
+      let isPackage = false;
+
+      function animateValue(el, start, end, duration=480){
+        const startTime = performance.now();
+        function tick(now){
+          const t = Math.min((now-startTime)/duration,1);
+          const value = Math.round(start + (end-start)*t);
+          el.textContent = value;
+          if(t<1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      }
+
+      function updatePrices(){
+        plans.forEach(p=>{
+          const valEl = p.querySelector('.price-value');
+          const from = parseInt(valEl.textContent,10);
+          const to = isPackage ? parseInt(p.dataset.package,10) : parseInt(p.dataset.monthly,10);
+          animateValue(valEl, from, to);
+          const suffix = isPackage ? '/pkg' : '/mo';
+          const muted = p.querySelector('.muted');
+          // update small suffix by replacing last child text node
+          const span = p.querySelector('.muted');
+          // set suffix visually next to price
+          const priceContainer = p.querySelector('.price');
+          priceContainer.querySelector('.muted').textContent = suffix;
+        });
+      }
+
+      function toggle(){
+        isPackage = !isPackage;
+        switchEl.classList.toggle('active', isPackage);
+        switchEl.setAttribute('aria-checked', isPackage);
+        updatePrices();
+      }
+
+      switchEl.addEventListener('click',toggle);
+      switchEl.addEventListener('keydown',e=>{if(e.key==='Enter' || e.key===' ') toggle();});
+
+      // init prices from data
+      plans.forEach(p=>{
+        p.querySelector('.price-value').textContent = p.dataset.monthly;
+      });
+
+    })();
+
+    // Mood-to-Method
+    (function(){
+      const buttons = document.querySelectorAll('.moods button');
+      const titleEl = document.getElementById('rec-title');
+      const noteEl = document.getElementById('rec-note');
+      const cta = document.getElementById('rec-cta');
+
+      const map = {
+        clarify:{title:'Scent Companion Cohort',note:'Short weekly practices and clarifying blends that may support focus.',cta:'Join a Cohort'},
+        steady:{title:'Blend Lab Intensive',note:'Three hands-on sessions to design grounding blends you can keep.',cta:'Reserve an Intensive'},
+        revive:{title:'Ritual Craft Series',note:'A monthly set of practices and a kit for gentle energy lifts.',cta:'Claim a Series Spot'},
+        soften:{title:'Personal Ritual Session',note:'One-on-one session to craft a tender support blend for soothing moments.',cta:'Book a Personal Session'}
+      };
+
+      buttons.forEach(b=>{
+        b.addEventListener('click',()=>{
+          buttons.forEach(x=>x.style.outline='');
+          b.style.outline='3px solid rgba(107,76,255,0.12)';
+          const m = b.dataset.mood;
+          const info = map[m] || map.clarify;
+          titleEl.textContent = info.title;
+          noteEl.textContent = info.note + ' All guidance is safety-first.';
+          cta.textContent = info.cta;
+        });
+      });
+
+    })();
+  </script>
+</body>
+</html>

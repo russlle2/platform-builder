@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Book a spot in an events series, reserve a private consult, or request a workshop. Safety checklist and simple booking form.">
+  <style>
+    :root{--bg:#fbfff9;--ink:#0b2;--muted:#6b766f;--accent:#8fb996;font-family:Inter,system-ui,Segoe UI,Roboto}
+    body{margin:0;background:linear-gradient(180deg,#ffffff,#f5fff7);color:#143}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 28px}
+    .logo{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#a7d5b0,#e9f6ec);display:flex;align-items:center;justify-content:center;font-weight:700}
+    nav{display:flex;gap:12px}
+    nav a{color:var(--muted);text-decoration:none}
+    main{max-width:920px;margin:20px auto;padding:20px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .form{background:#fff;padding:18px;border-radius:12px;box-shadow:0 14px 40px rgba(10,15,12,0.06)}
+    label{display:block;font-size:13px;color:var(--muted);margin-top:10px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(10,15,12,0.06);margin-top:6px}
+    .btn{display:inline-block;padding:10px 14px;border-radius:10px;background:var(--accent);color:#fff;text-decoration:none;margin-top:12px}
+    .side{background:linear-gradient(180deg,#fff,#f7fff8);padding:12px;border-radius:12px}
+    .note{font-size:13px;color:var(--muted)}
+    .faq{margin-top:14px}
+    .faq h4{margin:8px 0}
+    footer{max-width:920px;margin:22px auto;padding:14px;color:var(--muted);font-size:13px}
+    @media(max-width:880px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="logo">A</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="pricing.html">Invest</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+  <main>
+    <h1 style="margin:0 0 8px">Reserve your place or request a private session</h1>
+    <p class="note">Complete the booking below. You'll receive a confirmation and safety checklist. For quick questions, call {{PHONE}} or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</p>
+
+    <div class="grid">
+      <form class="form" action="/submit-booking" method="post" onsubmit="alert('This is a static demo form — integrate with your booking system.');return false;">
+        <label for="name">Full name</label>
+        <input id="name" name="name" type="text" placeholder="Your name" required>
+
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" placeholder="you@example.com" required>
+
+        <label for="phone">Phone (optional)</label>
+        <input id="phone" name="phone" type="tel" placeholder="(555) 555-5555">
+
+        <label for="type">Booking type</label>
+        <select id="type" name="type">
+          <option>Four-Week Series</option>
+          <option>Private Consult (60 min)</option>
+          <option>Workshop — Weekend</option>
+          <option>Custom Corporate / Group</option>
+        </select>
+
+        <label for="notes">Notes (allergies, pregnancy, pets, sensitivities)</label>
+        <textarea id="notes" name="notes" rows="4" placeholder="Tell us anything that helps us plan a safe session"></textarea>
+
+        <label style="margin-top:12px"><input type="checkbox" required> I have read the safety guidance and understand this is not medical care.</label>
+
+        <button class="btn" type="submit">{{PRIMARY_CTA_LABEL}}</button>
+      </form>
+
+      <aside class="side">
+        <strong>Booking checklist</strong>
+        <ul style="padding-left:18px;margin-top:10px;color:var(--muted)">
+          <li>Bring a list of current medications and known sensitivities.</li>
+          <li>Note pregnancy or breastfeeding so we can offer alternatives.</li>
+          <li>If you have pets at home, tell us and we'll recommend pet-friendly choices.</li>
+          <li>We encourage patch testing and will guide dilution levels for topical blends.</li>
+        </ul>
+
+        <div style="margin-top:12px">
+          <strong>Quick FAQ</strong>
+          <div class="faq">
+            <h4>How to dilute?</h4>
+            <p class="note">Dilution varies by age and use; events include clear charts (eg. 1–2% for everyday adult topical use). Ask during your session.</p>
+            <h4>Patch test?</h4>
+            <p class="note">Apply diluted blend to a small area and wait 24–48 hours. Discontinue if irritation occurs.</p>
+            <h4>Pregnancy & pets</h4>
+            <p class="note">Some oils are not recommended during pregnancy and some are pet-sensitive. We provide safe alternatives; always discuss in notes.</p>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <strong>Need help?</strong>
+          <p class="note">Call {{PHONE}} or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>. For group bookings, ask about sliding-scale and venue options.</p>
+        </div>
+      </aside>
+    </div>
+
+    <section style="margin-top:20px;padding:14px;background:linear-gradient(180deg,#fff,#f6fff7);border-radius:12px">
+      <h2 style="margin-top:0">Series schedule (example)</h2>
+      <ol class="note">
+        <li>Week 1 — Sensory orientation & diagnostic</li>
+        <li>Week 2 — Blending skills & dilution practice</li>
+        <li>Week 3 — Integration of micro-habits into daily life</li>
+        <li>Week 4 — Personal blend finishing & safety review</li>
+      </ol>
+      <p class="note">Each session is about 75 minutes. Materials included for event participants.</p>
+    </section>
+
+  </main>
+  <footer>
+    <div style="max-width:920px;margin:0 auto;padding:20px;color:var(--muted);font-size:13px">By booking you agree to receive email confirmation. {{BUSINESS_NAME}} is a non-medical aromatherapy practice focused on safety and education. For urgent medical concerns, consult a licensed professional.</div>
+  </footer>
+</body>
+</html>

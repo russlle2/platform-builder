@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Begin — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff6f9;--accent:#ff8fb8;--ink:#2b2730}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:var(--bg);color:var(--ink)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:22px 36px}
+    nav a{margin-left:12px;color:#6b6b76;text-decoration:none}
+    .container{max-width:880px;margin:20px auto;padding:18px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:20px}
+    .panel{background:#fff;padding:18px;border-radius:14px;box-shadow:0 10px 30px rgba(12,8,20,0.06)}
+    label{display:block;margin-top:10px;font-weight:700}
+    input,select,textarea{width:100%;padding:10px;margin-top:6px;border-radius:10px;border:1px solid #efe7ef}
+    .cta{background:var(--accent);color:white;padding:12px 16px;border-radius:12px;text-decoration:none;display:inline-block;margin-top:12px;font-weight:800}
+    .micro{background:linear-gradient(90deg,#fff4fb,#fff);padding:10px;border-radius:10px;margin-top:12px}
+    .muted{color:#7b7b81;font-size:14px}
+    footer{padding:24px;text-align:center;color:#7b7b81}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:900">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="programs.html">Work With Me</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div class="grid">
+      <div>
+        <div class="panel">
+          <h2 style="margin:0">Start your enrollment</h2>
+          <p class="muted" style="margin-top:8px">Choose a cohort, book your diagnostic, and we'll send a short intake to customize your first micro-habit map.</p>
+
+          <form action="/submit" method="post" style="margin-top:12px">
+            <label for="name">Full name</label>
+            <input id="name" name="name" placeholder="Your name" required>
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="you@domain.com" required>
+
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" placeholder="Optional" >
+
+            <label for="program">Choose a path</label>
+            <select id="program" name="program">
+              <option>Essentials — Cohort (8 weeks) — $497</option>
+              <option>Guided Path — Cohort + 1:1 — $997</option>
+              <option>Nurture — VIP — $2400 (inquiry required)</option>
+            </select>
+
+            <label for="intent">What are you hoping to shift?</label>
+            <textarea id="intent" name="intent" rows="4" placeholder="Be brief — a line or two is perfect."></textarea>
+
+            <div style="display:flex;gap:12px;align-items:center;margin-top:12px">
+              <button class="cta" type="submit">{{PRIMARY_CTA_LABEL}}</button>
+              <div class="muted">Or call <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+            </div>
+          </form>
+
+          <div style="margin-top:14px" class="micro">
+            <strong>Mini-diagnostic on arrival</strong>
+            <div class="muted" style="margin-top:6px">You’ll receive a short questionnaire and a 60-minute diagnostic session to map leverage points. Think of it as a compass, not a verdict.</div>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:14px">
+          <h3 style="margin:0">Micro-habits — examples you'll encounter</h3>
+          <ul class="muted" style="margin-top:8px">
+            <li>Two-minute breath anchor when you sit at your desk.</li>
+            <li>Evening wind-down: a 3-step ritual for sleep readiness.</li>
+            <li>Midday micro-movement to reset energy and focus.</li>
+          </ul>
+        </div>
+      </div>
+
+      <aside>
+        <div class="panel">
+          <h4 style="margin:0">Need guidance?</h4>
+          <p class="muted" style="margin-top:8px">Book a free 15-minute consult to see which cohort fits your rhythm.</p>
+          <a href="contact.html" class="cta" style="background:#2b2730">Schedule consult</a>
+
+          <div style="margin-top:12px;font-size:13px;color:#5f5b64">
+            <strong>{{COACH_NAME}}, {{CREDENTIALS}}</strong>
+            <div style="margin-top:6px">I design pragmatic rituals that align with your life. We co-create steady progress, using small acts and gentle accountability.</div>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:14px">
+          <h4 style="margin:0">What happens after you sign up</h4>
+          <ol class="muted" style="margin-top:8px">
+            <li>Complete intake questionnaire.</li>
+            <li>Attend 60-min diagnostic.</li>
+            <li>Receive micro-habit map and weekly cohort schedule.</li>
+          </ol>
+        </div>
+      </aside>
+    </div>
+
+    <section style="margin-top:18px">
+      <div class="panel">
+        <h4 style="margin:0">Policies & logistics</h4>
+        <p class="muted" style="margin-top:8px">Cohorts run on a schedule; please review dates before booking. Payment plans are available for Guided Path and Nurture — contact <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> for details.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="muted">Questions? Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>. {{BUSINESS_NAME}} • {{CITY}}, {{STATE}}</div>
+  </footer>
+</body>
+</html>

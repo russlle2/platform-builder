@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Plans — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f6fbf7;--muted:#6b6b6b;--accent:#3b7a6f;--card:#ffffff;--glass:rgba(255,255,255,0.6)}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; color:#203233;background:var(--bg)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 32px;background:linear-gradient(180deg, rgba(59,122,111,0.06), transparent);backdrop-filter:blur(4px)}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none;font-weight:600}
+    .brand{font-weight:700;color:var(--accent);letter-spacing:0.4px}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;padding:48px 32px;background-image:url('assets/img/pattern.svg');background-repeat:repeat;align-items:center}
+    .hero .left{padding:28px}
+    h1{margin:0 0 12px;font-size:28px;color:#0e2b2a}
+    p.lead{margin:0 0 18px;color:var(--muted)}
+    .cta{display:inline-block;padding:10px 16px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none}
+    .cards{display:flex;flex-direction:column;gap:14px}
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(16,32,28,0.06);border:1px solid rgba(11,22,20,0.04)}
+    .price{font-weight:800;color:#0b3b35;font-size:20px}
+    .muted{color:var(--muted)}
+    .side{background:linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.9));padding:18px;border-radius:12px}
+    label.area{display:flex;align-items:center;gap:10px;padding:8px 6px;border-radius:8px}
+    .result{margin-top:12px;padding:12px;border-radius:8px;background:var(--glass)}
+    footer{padding:22px 32px;color:var(--muted);font-size:13px}
+    .trybtn{background:transparent;border:1px solid var(--accent);padding:8px 12px;border-radius:8px;color:var(--accent);cursor:pointer}
+    /* modal */
+    .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(8,12,10,0.5);visibility:hidden;opacity:0;transition:all .18s}
+    .modal.open{visibility:visible;opacity:1}
+    .modal-dialog{width:520px;max-width:94%;background:#fff;border-radius:14px;padding:18px;box-shadow:0 20px 50px rgba(6,10,8,0.4)}
+    .modes{display:flex;gap:8px;margin-bottom:12px}
+    .modebtn{padding:8px 10px;border-radius:8px;border:1px solid #e6efe9;background:#fafcfb;color:#0b3b35;cursor:pointer}
+    .breath-circle{width:160px;height:160px;border-radius:50%;background:linear-gradient(180deg, rgba(59,122,111,0.12), rgba(59,122,111,0.02));display:flex;align-items:center;justify-content:center;margin:auto}
+    .breath-anim{width:40px;height:40px;border-radius:50%;background:var(--accent);transition:all 1s cubic-bezier(.3,.8,.2,1)}
+    .journ{display:flex;flex-direction:column;gap:8px}
+    .small{font-size:13px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <nav aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Patterns</a>
+      <a href="approach.html">Method</a>
+      <a href="pricing.html">Plans</a>
+      <a href="about.html">Roots</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+    <div>
+      <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="left">
+        <h1>Care Pathways tuned to your life rhythm</h1>
+        <p class="lead">Small, practical frameworks — integrative visits, tailored home practices, and gentle follow-up. Choose a pathway as you would choose a season.</p>
+        <div class="cards">
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-weight:700">Starter Compass</div>
+                <div class="muted small">A single, focused consult to map priorities</div>
+              </div>
+              <div class="price">$175</div>
+            </div>
+            <p class="small muted">60-minute integrative consultation, personalized simple steps, a brief home plan.</p>
+            <div style="margin-top:10px"><a class="trybtn" href="book.html">Claim this pathway</a></div>
+          </div>
+
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-weight:700">Seasonal Support</div>
+                <div class="muted small">Short series for steady progress and adjustments</div>
+              </div>
+              <div class="price">$420 / 3 sessions</div>
+            </div>
+            <p class="small muted">Three visits spaced to suit your schedule; home practice & brief check-ins.</p>
+            <div style="margin-top:10px"><a class="trybtn" href="book.html">Reserve a series</a></div>
+          </div>
+
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-weight:700">Deep Alignment</div>
+                <div class="muted small">Structured course for layered change and root support</div>
+              </div>
+              <div class="price">$1200 / 6 sessions</div>
+            </div>
+            <p class="small muted">A paced program with measurements, referrals when helpful, and collaborative goals.</p>
+            <div style="margin-top:10px"><a class="trybtn" href="book.html">Begin this path</a></div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="side">
+        <h3 style="margin:0 0 8px">Sketch your agenda</h3>
+        <p class="small muted" style="margin:0 0 12px">Check areas you want to address. We’ll suggest focal points for your first visit and a follow-up cadence.</p>
+        <form id="inventory-form">
+          <div>
+            <label class="area"><input type="checkbox" name="area" value="Sleep"> Sleep</label>
+            <label class="area"><input type="checkbox" name="area" value="Digestion"> Digestion</label>
+            <label class="area"><input type="checkbox" name="area" value="Stress"> Stress & Calm</label>
+            <label class="area"><input type="checkbox" name="area" value="Movement"> Movement</label>
+            <label class="area"><input type="checkbox" name="area" value="Nutrition"> Nutrition</label>
+            <label class="area"><input type="checkbox" name="area" value="Connections"> Relationships</label>
+            <label class="area"><input type="checkbox" name="area" value="WorkLife"> Work-Life Balance</label>
+            <label class="area"><input type="checkbox" name="area" value="Meaning"> Purpose & Meaning</label>
+            <label class="area"><input type="checkbox" name="area" value="Environment"> Environment</label>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button type="button" class="trybtn" id="inventory-submit">Sketch my agenda</button>
+            <button type="button" class="trybtn" id="open-practice">Take a short practice</button>
+          </div>
+        </form>
+
+        <div id="inventory-result" class="result" aria-live="polite" style="display:none"></div>
+      </aside>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>{{BUSINESS_NAME}} | {{CITY}}, {{STATE}}</div>
+      <div class="small">Call: {{PHONE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </div>
+  </footer>
+
+  <!-- practice modal (breath / journaling / intention) -->
+  <div class="modal" id="practice-modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-dialog">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div style="font-weight:700">A small guided pause</div>
+        <div><button id="close-practice" class="trybtn">Close</button></div>
+      </div>
+      <div class="modes">
+        <button class="modebtn" data-mode="breath">Breathing</button>
+        <button class="modebtn" data-mode="journal">Journaling</button>
+        <button class="modebtn" data-mode="intent">Set an Intention</button>
+      </div>
+      <div id="mode-area">
+        <!-- breath -->
+        <div id="breath" style="display:none;text-align:center">
+          <p class="small muted">Follow the expanding circle for paced breathing.</p>
+          <div class="breath-circle" aria-hidden="true">
+            <div class="breath-anim" id="breath-ball"></div>
+          </div>
+          <div style="display:flex;justify-content:center;gap:10px;margin-top:12px"><button id="start-breath" class="trybtn">Start</button><button id="stop-breath" class="trybtn">Stop</button></div>
+          <p id="breath-ttl" class="small muted" style="margin-top:10px">Ready</p>
+        </div>
+
+        <!-- journal -->
+        <div id="journal" style="display:none">
+          <p class="small muted">Write for a short stretch. A timer keeps it simple.</p>
+          <div class="journ">
+            <textarea id="journal-text" placeholder="Noticing: what matters today..." rows="6" style="width:100%;padding:10px;border-radius:8px;border:1px solid #edf6f2"></textarea>
+            <div style="display:flex;gap:8px;align-items:center">
+              <select id="journal-min">
+                <option value="1">1 min</option>
+                <option value="3" selected>3 min</option>
+                <option value="5">5 min</option>
+              </select>
+              <button id="start-journal" class="trybtn">Start timer</button>
+              <div id="journal-timer" class="small muted"> </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- intention -->
+        <div id="intent" style="display:none">
+          <p class="small muted">Choose a short, clear intention to guide your next hours.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="modebtn intent-choice">Begin with calm</button>
+            <button class="modebtn intent-choice">Listen more</button>
+            <button class="modebtn intent-choice">Move with ease</button>
+            <button class="modebtn intent-choice">Nourish kindly</button>
+          </div>
+          <div style="margin-top:12px"><div id="intent-result" class="small muted"> </div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Inventory analyzer
+    const map = {
+      Sleep: {focus:'Sleep rhythm and bedtime habits', cadence:'2-week check-in'},
+      Digestion: {focus:'Baseline digestion review and gentle nutrition shifts', cadence:'4-week follow-up'},
+      Stress: {focus:'Stress anchors and quick calming tools', cadence:'2-week check and weekly micro-checks'},
+      Movement: {focus:'Accessible movement plan', cadence:'4-week review'},
+      Nutrition: {focus:'Simple, sustainable food steps', cadence:'4-week review'},
+      Connections: {focus:'Relationship patterns and communication habits', cadence:'6-week check-in'},
+      WorkLife: {focus:'Workload and boundary mapping', cadence:'3-week check-in'},
+      Meaning: {focus:'Values and small experiments toward purpose', cadence:'6-week cadence'},
+      Environment: {focus:'Environmental changes that reduce strain', cadence:'4-week review'}
+    };
+
+    function assembleAgenda(selected){
+      if(!selected.length) return {title:'Starter conversation','items':['Open conversation about current concerns','Collaborative priorities list'],cadence:'2-week follow-up suggested'}
+      const items = selected.map(s=>map[s]?.focus||s);
+      // derive cadence by priority of selected areas
+      const cads = selected.map(s=>map[s]?.cadence);
+      const cad = cads.includes('2-week check-in') || cads.includes('2-week check and weekly micro-checks') ? '2 weeks' : (cads.includes('3-week check-in') ? '3 weeks' : '4 weeks');
+      return {title:'Suggested agenda',items:items.splice(0,5),cadence:`First follow-up: approximately ${cad}.`};
+    }
+
+    document.getElementById('inventory-submit').addEventListener('click',()=>{
+      const boxes = Array.from(document.querySelectorAll('#inventory-form input[name=area]:checked')).map(i=>i.value);
+      const res = assembleAgenda(boxes);
+      const el = document.getElementById('inventory-result');
+      el.style.display='block';
+      el.innerHTML = '<strong>'+res.title+'</strong><br><ul>'+res.items.map(it=>'<li>'+it+'</li>').join('')+'</ul><div class="small muted">'+res.cadence+'</div><div style="margin-top:8px"><a class="trybtn" href="book.html">Request a booking — '+res.cadence+'</a></div>';
+    });
+
+    // Modal and practice interactions
+    const modal = document.getElementById('practice-modal');
+    document.getElementById('open-practice').addEventListener('click',()=>{ modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); showMode('breath');});
+    document.getElementById('close-practice').addEventListener('click',()=>{ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); stopBreathing(); stopJournal();});
+    document.querySelectorAll('.modebtn').forEach(b=>b.addEventListener('click',e=>{ showMode(e.target.getAttribute('data-mode')); }));
+
+    function showMode(mode){
+      ['breath','journal','intent'].forEach(m=>document.getElementById(m).style.display='none');
+      if(mode==='breath') document.getElementById('breath').style.display='block';
+      if(mode==='journal') document.getElementById('journal').style.display='block';
+      if(mode==='intent') document.getElementById('intent').style.display='block';
+    }
+
+    // Breathing: expand/contract loop
+    let breathTimer=null; let expanding=true; let breathCount=0;
+    const ball = document.getElementById('breath-ball'); const ttl = document.getElementById('breath-ttl');
+    document.getElementById('start-breath').addEventListener('click',()=>{ startBreathing(); });
+    document.getElementById('stop-breath').addEventListener('click',()=>{ stopBreathing(); });
+
+    function startBreathing(){ if(breathTimer) return; breathCount=0; expanding=true; ttl.textContent='Begin: inhale...'; ball.style.width='40px'; ball.style.height='40px'; breathTimer = setInterval(()=>{
+      if(expanding){ ball.style.width='120px'; ball.style.height='120px'; ttl.textContent='Exhale slowly...'; } else { ball.style.width='40px'; ball.style.height='40px'; ttl.textContent='Inhale gently...'; }
+      expanding=!expanding; breathCount++; if(breathCount>10) { ttl.textContent='You can stop when ready.' }
+    },3000); }
+    function stopBreathing(){ if(breathTimer){ clearInterval(breathTimer); breathTimer=null; ttl.textContent='Paused'; ball.style.width='40px'; ball.style.height='40px'; }}
+
+    // Journaling timer
+    let jTimer=null; let jRemaining=0;
+    document.getElementById('start-journal').addEventListener('click',()=>{
+      stopJournal();
+      const mins = parseInt(document.getElementById('journal-min').value,10);
+      jRemaining = mins*60; document.getElementById('journal-timer').textContent = formatTime(jRemaining);
+      jTimer = setInterval(()=>{ jRemaining--; document.getElementById('journal-timer').textContent=formatTime(jRemaining); if(jRemaining<=0) stopJournal(); },1000);
+    });
+    function stopJournal(){ if(jTimer){ clearInterval(jTimer); jTimer=null; document.getElementById('journal-timer').textContent='Complete'; }}
+    function formatTime(s){ const m=Math.floor(s/60); const sec=s%60; return m+':'+String(sec).padStart(2,'0'); }
+
+    // Intent choices
+    document.querySelectorAll('.intent-choice').forEach(b=>b.addEventListener('click',e=>{ document.getElementById('intent-result').textContent = 'Your intention: "'+e.target.textContent+'" — take a breath and begin.' }));
+
+  </script>
+</body>
+</html>

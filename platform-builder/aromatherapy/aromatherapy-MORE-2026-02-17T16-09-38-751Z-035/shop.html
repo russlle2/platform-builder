@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Boutique — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Ready-made small-batch aromatherapy blends and tools. Safety labels included.">
+  <style>
+    :root{--bg:#fffaf6;--accent:#5a3a2a;--muted:#6b5d53;--card:#fff;--glass:rgba(255,255,255,0.6);font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;color:#2f231d}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#fff)}
+    .pattern{position:fixed;inset:0;background:url('assets/img/pattern.svg') repeat;opacity:0.04;pointer-events:none}
+    header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    .wrap{max-width:1080px;margin:18px auto;padding:0 20px}
+    .hero{background:var(--card);padding:20px;border-radius:12px;display:flex;justify-content:space-between;align-items:center}
+    .muted{color:var(--muted)}
+    .products{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}
+    .product{background:#fff;padding:16px;border-radius:10px;box-shadow:0 8px 20px rgba(0,0,0,0.04)}
+    .price{font-weight:700;color:var(--accent)}
+    .btn{margin-top:10px;padding:8px;border-radius:8px;border:none;background:var(--accent);color:#fff;cursor:pointer}
+    .reveal{opacity:0;transform:translateY(8px);transition:opacity 520ms ease,transform 520ms ease}
+    .reveal.visible{opacity:1;transform:none}
+    footer{margin:40px 0;color:var(--muted);text-align:center}
+    @media(max-width:900px){.products{grid-template-columns:1fr}} 
+  </style>
+</head>
+<body>
+  <div class="pattern" aria-hidden="true"></div>
+  <header>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#fff0e6,#fde1c7);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--accent)">S</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{CITY}} • Boutique</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Custom Blends</a>
+      <a href="shop.html">Boutique</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="hero reveal" data-reveal>
+      <div>
+        <h1 style="margin:0;color:var(--accent)">Ready-made blends & tools</h1>
+        <p class="muted" style="margin-top:8px">Small-batch blends, inhalers, and diffusers — each with clear usage and safety notes. Items ship locally.</p>
+      </div>
+      <div style="text-align:right">
+        <a class="btn" href="book.html">Schedule pickup</a>
+      </div>
+    </section>
+
+    <section class="products" style="margin-top:18px">
+      <article class="product reveal" data-reveal>
+        <h3 style="margin:0">Evening Ease — 10ml</h3>
+        <p class="muted">Lavender, Cedarwood, Mandarin.</p>
+        <div class="price">$18</div>
+        <button class="btn">Add to cart</button>
+      </article>
+
+      <article class="product reveal" data-reveal>
+        <h3 style="margin:0">Focus Clip — inhaler</h3>
+        <p class="muted">Rosemary, Lemon, Basil.</p>
+        <div class="price">$12</div>
+        <button class="btn">Add to cart</button>
+      </article>
+
+      <article class="product reveal" data-reveal>
+        <h3 style="margin:0">Ritual Blend — 30ml</h3>
+        <p class="muted">Frankincense, Bergamot, Vetiver. Labeled for topical & diffuse use.</p>
+        <div class="price">$34</div>
+        <button class="btn">Add to cart</button>
+      </article>
+
+      <article class="product reveal" data-reveal>
+        <h3 style="margin:0">Diffuser Duo</h3>
+        <p class="muted">Simple ceramic USB diffuser, compact for home or travel.</p>
+        <div class="price">$48</div>
+        <button class="btn">Add to cart</button>
+      </article>
+
+      <article class="product reveal" data-reveal>
+        <h3 style="margin:0">Starter Set — 3x10ml</h3>
+        <p class="muted">A curated trio and a quick-start safety sheet.</p>
+        <div class="price">$45</div>
+        <button class="btn">Add to cart</button>
+      </article>
+
+      <article class="product reveal" data-reveal>
+        <h3 style="margin:0">Label Kit</h3>
+        <p class="muted">Blank labels and safety sticker templates for your blends.</p>
+        <div class="price">$8</div>
+        <button class="btn">Add to cart</button>
+      </article>
+    </section>
+
+    <section class="reveal" data-reveal style="margin-top:18px">
+      <h2 style="margin:0;color:var(--accent)">Notes on use</h2>
+      <p class="muted" style="margin-top:6px">All products include suggested dilution, patch-test steps, and pet/pregnancy advisories where relevant. We avoid definitive health claims and state only that aromatherapy may support comfort and routine.</p>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="muted">Questions? {{EMAIL}} • {{PHONE}} • © <span id="yr"></span> {{BUSINESS_NAME}}</div>
+  </footer>
+
+  <script>
+    // reveal
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const items = document.querySelectorAll('[data-reveal]');
+      if(prefersReduced){ items.forEach(i=>i.classList.add('visible')); return; }
+      const io = new IntersectionObserver((entries)=>{ entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('visible'); io.unobserve(en.target); } }); },{threshold:0.1});
+      items.forEach(i=>io.observe(i));
+    })();
+
+    // simple cart behavior (local only)
+    (function(){
+      const buttons = document.querySelectorAll('.product .btn');
+      buttons.forEach(b=>b.addEventListener('click',()=>{ b.textContent='Added'; setTimeout(()=>b.textContent='Add to cart',1200); }));
+      document.getElementById('yr').textContent=new Date().getFullYear();
+    })();
+  </script>
+</body>
+</html>

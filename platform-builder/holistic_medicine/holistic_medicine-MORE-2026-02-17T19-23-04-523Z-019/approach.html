@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Philosophy — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbf8f5;--accent:#6b4c38;--soft:#e9d9cc}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;background-image:url('assets/img/pattern.svg');background-color:var(--bg);color:#3e2f26}
+    header{display:flex;justify-content:space-between;padding:16px 20px;border-bottom:1px solid rgba(58,45,35,0.04)}
+    nav a{margin-left:14px;color:#6b5d53;text-decoration:none}
+    main{max-width:980px;margin:20px auto;padding:18px}
+    h1{color:var(--accent)}
+    .pillars{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+    .pillar{background:#fff;padding:14px;border-radius:12px;border:1px solid rgba(58,45,35,0.04);flex:1;min-width:200px}
+    .process{margin-top:18px;background:#fff;padding:16px;border-radius:12px;border-left:4px solid var(--soft)}
+    .step{margin-bottom:12px}
+    .planner{margin-top:18px;padding:16px;background:#fff;border-radius:10px;border:1px solid rgba(58,45,35,0.04)}
+    label{display:block;margin-top:8px}
+    input[type=text],select{width:100%;padding:8px;border-radius:6px;border:1px solid rgba(58,45,35,0.06)}
+    .inventory{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:8px}
+    .btn{padding:10px 12px;border-radius:8px;background:var(--accent);color:#fff;border:0;margin-top:10px}
+    pre{white-space:pre-wrap;background:#fbf7f3;padding:10px;border-radius:8px;border:1px dashed rgba(58,45,35,0.05)}
+    footer{max-width:980px;margin:20px auto;padding:12px;color:#6b5d53}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:700;color:var(--accent)">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Start</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Concerns</a>
+      <a href="approach.html">Philosophy</a>
+      <a href="pricing.html">Plans</a>
+      <a href="about.html">Our Story</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>How we work — a practical, integrative method</h1>
+    <p style="color:#5c4f45">Work begins with a map of your life and moves toward simple practices that fit your routine. We call our approach "Map, Try, Tune" — a loop that values early wins and real-world adaptation.</p>
+
+    <div class="pillars">
+      <div class="pillar">
+        <h3>Map</h3>
+        <p class="small">Collect the important context: medical history, current priorities, daily rhythms, and constraints. This helps us set realistic goals.</p>
+      </div>
+      <div class="pillar">
+        <h3>Try</h3>
+        <p class="small">Introduce a small set of experiments with clear timing and measures. These are practical tasks you can do between sessions.</p>
+      </div>
+      <div class="pillar">
+        <h3>Tune</h3>
+        <p class="small">Review what worked, adjust intensity, and refine steps. The goal is steady, sustainable change rather than dramatic overhaul.</p>
+      </div>
+    </div>
+
+    <div class="process">
+      <h2 style="margin-top:0">Our session process</h2>
+      <div class="step"><strong>1. Intake & priorities</strong> — A focused review to create a short list of prioritized changes.</div>
+      <div class="step"><strong>2. Short-term trials</strong> — 2–6 week experiments with measurable checkpoints.</div>
+      <div class="step"><strong>3. Integration</strong> — Embedding practices into routines and sequencing follow-ups at the right cadence.</div>
+    </div>
+
+    <div class="planner">
+      <h3>Session Planner — build a working rhythm</h3>
+      <p class="small">Choose a few specifics and get a plain-text plan and follow-up cadence you can copy or download.</p>
+
+      <label for="aim">Working aim</label>
+      <input id="aim" type="text" placeholder="e.g., steady morning energy, reduce afternoon crashes">
+
+      <label for="length">Plan length</label>
+      <select id="length">
+        <option>4 weeks</option>
+        <option>6 weeks</option>
+        <option>8 weeks</option>
+      </select>
+
+      <label>Areas to include</label>
+      <div class="inventory" id="approachInv">
+        <label><input type="checkbox" value="Sleep"> Sleep</label>
+        <label><input type="checkbox" value="Nutrition"> Nutrition</label>
+        <label><input type="checkbox" value="Movement"> Movement</label>
+        <label><input type="checkbox" value="Stress"> Stress</label>
+        <label><input type="checkbox" value="Social"> Social / roles</label>
+        <label><input type="checkbox" value="Environment"> Environment</label>
+      </div>
+
+      <div style="margin-top:10px">
+        <button id="buildApproach" class="btn">Create plan</button>
+        <button id="clearApproach" class="btn" style="background:#ccc;color:#3e2f26;margin-left:8px">Reset</button>
+      </div>
+
+      <div style="margin-top:12px">
+        <label>Plan (plain text)</label>
+        <pre id="approachOut">No plan yet — click "Create plan".</pre>
+        <div style="margin-top:8px"><button id="copyApproach" class="btn">Copy text</button></div>
+      </div>
+
+    </div>
+
+    <section style="margin-top:18px">
+      <h2 style="color:var(--accent)">A note on evidence and safety</h2>
+      <p style="color:#5c4f45">Recommendations are based on clinical experience and accessible evidence, intended to be low-risk and reversible. We avoid extravagant claims and prioritize safety and coordination with your existing care team.</p>
+    </section>
+
+    <div style="margin-top:16px">
+      <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+    </div>
+
+  </main>
+
+  <footer>
+    <div style="text-align:center;color:#6b5d53">Questions? Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+  </footer>
+
+  <script>
+    function checkedList(container){
+      return Array.from(document.querySelectorAll(container+' input')).filter(i=>i.checked).map(i=>i.value);
+    }
+
+    function buildApproach(){
+      const aim = document.getElementById('aim').value.trim() || '(no aim entered)';
+      const length = document.getElementById('length').value;
+      const areas = checkedList('#approachInv');
+
+      let agenda = 'Working aim: '+aim+'\nPlan length: '+length+'\n\nFocus areas:\n';
+      if(areas.length===0) agenda += '- General lifestyle review (sleep, meals, movement)\n';
+      else areas.forEach((a,i)=> agenda += (i+1)+'. '+a+'\n');
+
+      agenda += '\nInitial steps:\n- Intake and baseline measures (sleep, brief food log, movement check)\n- Choose 2 small, measurable experiments to run for the first half of the plan\n\nFollow-up cadence:\n';
+      if(length.includes('4')) agenda += 'Weekly or biweekly check-ins recommended.';
+      else if(length.includes('6')) agenda += 'Biweekly check-ins with midpoint review.';
+      else agenda += 'Biweekly to monthly, adapt after midpoint.';
+
+      agenda += '\n\nNote: This is a working outline; bring this to your first session to refine.';
+      return agenda;
+    }
+
+    document.getElementById('buildApproach').addEventListener('click', function(){
+      document.getElementById('approachOut').textContent = buildApproach();
+    });
+
+    document.getElementById('clearApproach').addEventListener('click', function(){
+      document.getElementById('aim').value='';
+      document.getElementById('length').value='4 weeks';
+      document.querySelectorAll('#approachInv input').forEach(i=>i.checked=false);
+      document.getElementById('approachOut').textContent='No plan yet — click "Create plan".';
+    });
+
+    document.getElementById('copyApproach').addEventListener('click', async function(){
+      const text = document.getElementById('approachOut').textContent;
+      try{ await navigator.clipboard.writeText(text); this.textContent='Copied'; setTimeout(()=>this.textContent='Copy text',1400);}catch(e){ alert('Unable to copy — select and copy manually.'); }
+    });
+  </script>
+</body>
+</html>

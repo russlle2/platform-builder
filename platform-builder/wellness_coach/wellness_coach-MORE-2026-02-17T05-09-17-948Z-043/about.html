@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfbfb;--card:#ffffff;--muted:#6b6b6b;--accent:#4a7c59;--accent-2:#7fbf9e}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    body{background:linear-gradient(180deg,var(--bg) 0%,#f2f6f2 100%);color:#222}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:transparent}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none;font-size:15px}
+    .primary-cta{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}
+    main{max-width:980px;margin:22px auto;padding:24px}
+    .hero{display:grid;grid-template-columns:1fr;gap:22px;align-items:center}
+    .hero-card{background:var(--card);padding:28px;border-radius:12px;box-shadow:0 6px 22px rgba(30,40,20,0.06)}
+    .eyebrow{font-size:13px;color:var(--accent-2);font-weight:700}
+    h1{margin:8px 0 6px;font-size:28px}
+    p.lead{margin:0;color:var(--muted);line-height:1.5}
+    .split{display:flex;gap:18px;margin-top:18px}
+    .col{flex:1}
+    .gallery{display:flex;gap:12px}
+    .tile{flex:1;border-radius:10px;min-height:90px;background:linear-gradient(180deg,rgba(74,124,89,0.12),rgba(127,191,158,0.06));display:flex;align-items:center;justify-content:center;color:var(--accent);font-weight:700}
+    /* Habit builder */
+    .builder{margin-top:18px;background:linear-gradient(180deg,rgba(255,255,255,0.8),#fff);padding:18px;border-radius:10px;border:1px solid rgba(110,110,110,0.04)}
+    .form-row{display:flex;gap:10px;align-items:center}
+    select,input[type='text']{padding:10px;border-radius:8px;border:1px solid #e6e6e6;flex:1}
+    button{padding:10px 12px;border-radius:10px;border:0;background:var(--accent);color:#fff;font-weight:700}
+    .checklist{margin-top:16px;background:#fff;padding:12px;border-radius:8px;border:1px solid #f0f0f0}
+    .day-item{display:flex;align-items:center;gap:10px;padding:8px 6px;border-bottom:1px dashed #eee}
+    .day-item:last-child{border-bottom:0}
+    .print-tools{display:flex;gap:10px;align-items:center;margin-top:12px}
+    .try-btn{background:#fff;border:1px solid var(--accent);color:var(--accent);padding:8px 10px;border-radius:8px}
+    footer{margin-top:30px;padding:18px 0;color:var(--muted);text-align:center}
+    /* modal */
+    .overlay{position:fixed;inset:0;background:rgba(10,12,10,0.5);display:none;align-items:center;justify-content:center}
+    .modal{width:92%;max-width:680px;background:#fff;border-radius:12px;padding:18px;box-shadow:0 20px 40px rgba(20,30,10,0.25)}
+    .modal-header{display:flex;justify-content:space-between;align-items:center}
+    .modal-body{margin-top:12px}
+    .exercise-visual{height:160px;display:flex;align-items:center;justify-content:center}
+    .circle{width:120px;height:120px;border-radius:999px;background:radial-gradient(circle at 30% 30%,#eaf8ef,#fff);display:flex;align-items:center;justify-content:center;color:var(--accent);font-weight:700}
+    .hidden{display:none}
+    /* print rules */
+    @media print{
+      body>*:not(.print-area){display:none}
+      .print-area{display:block}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class='brand'>
+      <div class='logo'>W</div>
+      <div>
+        <div style='font-size:15px;font-weight:700'>{{BUSINESS_NAME}}</div>
+        <div style='font-size:12px;color:var(--muted)'>{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href='index.html'>Overview</a>
+      <a href='about.html'>The Method</a>
+      <a href='services.html'>Offerings</a>
+      <a href='programs.html'>Tracks</a>
+      <a href='pricing.html'>Invest</a>
+      <a href='testimonials.html'>Voices</a>
+      <a href='book.html'>Book</a>
+      <a class='primary-cta' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class='hero-card hero'>
+      <div>
+        <div class='eyebrow'>A simple framework for steady practice</div>
+        <h1>Build a week that nudges you forward without friction</h1>
+        <p class='lead'>We design small daily anchors—actions you can repeat—so outcomes like clearer focus, calmer evenings, and reliable energy emerge from what you actually do each day.
+        </p>
+        <div class='split'>
+          <div class='col'>
+            <div style='font-weight:700;margin-bottom:6px'>What to expect</div>
+            <ul style='margin:0;padding-left:18px;color:var(--muted)'>
+              <li>Three micro-practices to fold into your morning and evening</li>
+              <li>Weekly review cues and a lightweight tracking ritual</li>
+              <li>Tools to adapt a practice when life gets busy</li>
+            </ul>
+          </div>
+          <div class='col'>
+            <div style='font-weight:700;margin-bottom:6px'>Who this helps</div>
+            <p style='margin:0;color:var(--muted)'>People who want dependable structure without heavy routines—small, repeatable habits that compound.</p>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class='gallery'>
+          <div class='tile'>Rituals</div>
+          <div class='tile'>Check-ins</div>
+          <div class='tile'>Momentum</div>
+        </div>
+      </div>
+    </section>
+
+    <section class='hero-card builder' aria-labelledby='builder-heading'>
+      <h2 id='builder-heading' style='margin:0 0 10px 0'>7-Day Challenge Builder</h2>
+      <p style='margin:0 0 12px 0;color:var(--muted)'>Pick a focus and produce a printable checklist to carry with you. Each day is a manageable nudge—adjust any item to suit your life.</p>
+      <div class='form-row'>
+        <select id='focus'>
+          <option value='mindset'>Mindset: short reflections</option>
+          <option value='movement'>Movement: micro-exercises</option>
+          <option value='sleep'>Evening: wind-down cues</option>
+          <option value='nutrition'>Nourish: simple swaps</option>
+          <option value='presence'>Presence: single-minute practices</option>
+        </select>
+        <input id='customPrompt' placeholder='Or type a custom short habit (optional)' type='text'>
+        <button id='generate'>Generate</button>
+      </div>
+
+      <div id='checklist' class='checklist print-area hidden' aria-live='polite'>
+        <!-- generated checklist will appear here -->
+      </div>
+
+      <div class='print-tools'>
+        <button id='printBtn' class='try-btn hidden'>Print checklist</button>
+        <button id='openTry' class='try-btn'>Try a practice now</button>
+      </div>
+
+      <p style='margin-top:12px;color:var(--muted);font-size:13px'>Printable lists are formatted to be clipped, carried, or taped to a mirror. Each day includes a one-line tweak you can make if you miss a day.</p>
+    </section>
+
+    <section class='hero-card' style='margin-top:18px'>
+      <h3 style='margin:0 0 8px 0'>Common concerns</h3>
+      <div class='split'>
+        <div>
+          <strong>Will this need a lot of time?</strong>
+          <p style='margin:6px 0;color:var(--muted)'>No. The core idea is micro-effort—2 to 12 minutes per practice. We aim for reliability over intensity.</p>
+        </div>
+        <div>
+          <strong>Is this a coaching program or a one-off?</strong>
+          <p style='margin:6px 0;color:var(--muted)'>Both: membership options keep you progressing, while short tracks focus on specific habit windows.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class='hero-card' style='margin-top:18px'>
+      <div style='display:flex;justify-content:space-between;align-items:center'>
+        <div>
+          <strong style='display:block'>Ready to shape your next week?</strong>
+          <div style='color:var(--muted)'>Start with a tiny practice and build from there.</div>
+        </div>
+        <div>
+          <a class='primary-cta' href='{{PRIMARY_CTA_URL}}'>Begin the first step</a>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div>Questions? Call {{PHONE}} or email <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a></div>
+      <div style='margin-top:8px;color:var(--muted)'>Serving clients in {{CITY}}, {{STATE}}</div>
+    </footer>
+  </main>
+
+  <div id='overlay' class='overlay' role='dialog' aria-modal='true'>
+    <div class='modal' role='document'>
+      <div class='modal-header'>
+        <strong id='modalTitle'>Try a short guided practice</strong>
+        <button id='closeModal' aria-label='close' style='background:none;border:0;font-weight:700;font-size:18px'>✕</button>
+      </div>
+      <div class='modal-body'>
+        <div style='display:flex;gap:8px;margin-top:8px'>
+          <button class='try-btn' data-ex='breath'>Breathing</button>
+          <button class='try-btn' data-ex='journ'>Journaling</button>
+          <button class='try-btn' data-ex='intent'>Intention</button>
+        </div>
+        <div id='exercise' style='margin-top:12px'>
+          <div class='exercise-visual hidden' id='visual'>
+            <div class='circle' id='circle'>3</div>
+          </div>
+          <div id='prompt' style='color:var(--muted)'></div>
+          <div style='margin-top:12px;display:flex;gap:8px'>
+            <button id='start' class='primary-cta' style='background:var(--accent)'>Start</button>
+            <button id='stop' class='try-btn'>Stop</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Habit builder logic
+    (function(){
+      var focusMap = {
+        'mindset':["Note one win","Two-minute reflection","Set a short intention","Name one thing you can let go","Smile for 30s"],
+        'movement':["Two-minute stretch","Walk 400 steps","One set of bodyweight moves","Desk shoulder rolls","Stand for 5 minutes"],
+        'sleep':["Dusk screen dimming","10-min wind-down","Limit late caffeine","Light journaling","Breath before bed"],
+        'nutrition':["Add one veg","Swap one snack","Hydrate first thing","Protein with breakfast","Mindful meal bite"],
+        'presence':["One-minute grounding","Single deep breath","Notice three sounds","Name three gratitudes","Brief pause before replying"]
+      };
+
+      var generateBtn = document.getElementById('generate');
+      var checklist = document.getElementById('checklist');
+      var printBtn = document.getElementById('printBtn');
+      var focusSel = document.getElementById('focus');
+      var customInput = document.getElementById('customPrompt');
+
+      function makeChecklist(items,custom){
+        checklist.innerHTML = '';
+        var title = document.createElement('div');
+        title.style.fontWeight='700';
+        title.textContent = '7-Day checklist — ' + (custom||focusSel.options[focusSel.selectedIndex].text);
+        checklist.appendChild(title);
+        items = items.slice();
+        for(var i=0;i<7;i++){
+          var d = document.createElement('div');d.className='day-item';
+          var lab = document.createElement('div');lab.style.flex='1';
+          lab.innerHTML = '<strong>Day '+(i+1)+':</strong> ' + (items[i%items.length] || custom);
+          var cb = document.createElement('input');cb.type='checkbox';
+          cb.setAttribute('aria-label','Day '+(i+1)+' complete');
+          d.appendChild(lab);d.appendChild(cb);
+          checklist.appendChild(d);
+        }
+        checklist.classList.remove('hidden');
+        printBtn.classList.remove('hidden');
+      }
+
+      generateBtn.addEventListener('click',function(){
+        var key = focusSel.value;
+        var custom = customInput.value.trim();
+        if(custom){
+          makeChecklist([custom],custom);
+        } else {
+          makeChecklist(focusMap[key]||['Small habit']);
+        }
+      });
+
+      printBtn.addEventListener('click',function(){
+        window.print();
+      });
+
+      // Try it now button opens modal
+      var openTry = document.getElementById('openTry');
+      var overlay = document.getElementById('overlay');
+      var closeModal = document.getElementById('closeModal');
+      var startBtn = document.getElementById('start');
+      var stopBtn = document.getElementById('stop');
+      var promptEl = document.getElementById('prompt');
+      var visual = document.getElementById('visual');
+      var circle = document.getElementById('circle');
+      var exercise = null;
+      var timer = null;
+      var countdown = 0;
+
+      function openModal(){overlay.style.display='flex';}
+      function close(){overlay.style.display='none';stopPractice();resetModal();}
+      function resetModal(){promptEl.textContent='';visual.classList.add('hidden');circle.textContent='3';}
+
+      openTry.addEventListener('click',openModal);
+      closeModal.addEventListener('click',close);
+      overlay.addEventListener('click',function(e){if(e.target===overlay)close();});
+
+      document.querySelectorAll('[data-ex]').forEach(function(btn){
+        btn.addEventListener('click',function(){
+          exercise = btn.getAttribute('data-ex');
+          setupExercise(exercise);
+        });
+      });
+
+      function setupExercise(ex){
+        stopPractice();
+        startBtn.disabled=false;
+        if(ex==='breath'){
+          promptEl.textContent='A paced breathing cycle: inhale 4s, hold 4s, exhale 6s. Repeat for as long as you like.';
+          visual.classList.remove('hidden');
+          circle.textContent='4';
+        } else if(ex==='journ'){
+          promptEl.textContent='Free-write for 5 minutes. Use the prompt: "What small thing helped me today?"';
+          visual.classList.add('hidden');
+        } else if(ex==='intent'){
+          promptEl.textContent='Set a clear intention for the next hour in one sentence. Keep it feasible and kind.';
+          visual.classList.add('hidden');
+        }
+      }
+
+      function startPractice(){
+        if(!exercise)return;
+        startBtn.disabled=true;stopBtn.disabled=false;
+        if(exercise==='breath'){
+          // animate circle and run a single 3-cycle demo (inhale-hold-exhale)
+          var phases = [4,4,6];
+          var phase = 0;function runPhase(){
+            circle.textContent = phases[phase];
+            var value = phases[phase];
+            var step = value;var int = setInterval(function(){
+              step--; if(step<=0){clearInterval(int);phase=(phase+1)%phases.length; if(exercise==='breath')runPhase();}
+              circle.style.transform = 'scale('+ (1 + (phases[phase]-step)/20) +')';
+            },1000);
+          }
+          runPhase();
+        } else if(exercise==='journ'){
+          countdown = 5*60;startCountdown();
+        } else if(exercise==='intent'){
+          // short audible ping using WebAudio
+          try{
+            var ctx = new (window.AudioContext||window.webkitAudioContext)();
+            var o = ctx.createOscillator();var g = ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type='sine';o.frequency.value=440;g.gain.value=0.001; o.start();
+            g.gain.exponentialRampToValueAtTime(0.2,ctx.currentTime+0.02);
+            g.gain.exponentialRampToValueAtTime(0.0001,ctx.currentTime+0.6);
+            setTimeout(function(){o.stop();},650);
+          }catch(e){}
+        }
+      }
+
+      function stopPractice(){
+        startBtn.disabled=false;stopBtn.disabled=true; if(timer){clearInterval(timer);timer=null}
+      }
+
+      function startCountdown(){
+        var display = document.createElement('div');display.style.marginTop='10px';display.style.fontSize='14px';display.style.color='var(--muted)';
+        promptEl.appendChild(display);
+        timer = setInterval(function(){
+          if(countdown<=0){clearInterval(timer);display.textContent='Time\'s up — close or restart.';return}
+          countdown--; var m=Math.floor(countdown/60), s=countdown%60; display.textContent='Remaining: '+m+':'+(s<10? '0'+s: s);
+        },1000);
+      }
+
+      startBtn.addEventListener('click',startPractice);
+      stopBtn.addEventListener('click',function(){stopPractice();});
+
+      // expose a fallback default exercise selection
+      document.addEventListener('DOMContentLoaded',function(){setupExercise('breath');});
+    })();
+  </script>
+</body>
+</html>

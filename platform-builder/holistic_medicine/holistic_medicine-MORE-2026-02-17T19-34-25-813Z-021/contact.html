@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contact • {{BUSINESS_NAME}}</title>
+  <style>
+    :root{
+      --earth-1:#3b2f2f; /* deep umber */
+      --earth-2:#7a5a3c; /* warm clay */
+      --earth-3:#d9c9b8; /* soft parchment */
+      --accent:#8aa394; /* muted sage */
+      --muted:#6b6b6b;
+      --glass: rgba(255,255,255,0.7);
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    html,body{height:100%;margin:0;background-color:var(--earth-3);color:var(--earth-1);}
+    .site-wrap{min-height:100%;display:flex;flex-direction:column;background-image:url("assets/img/pattern.svg");background-repeat:repeat;background-size:160px;}
+    header{background:linear-gradient(180deg, rgba(59,47,47,0.95), rgba(59,47,47,0.88));color:var(--glass);padding:20px 18px;border-bottom:4px solid rgba(138,163,148,0.08);}
+    .nav{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand h1{font-size:18px;margin:0;letter-spacing:0.2px}
+    nav a{color:var(--glass);text-decoration:none;margin-left:14px;font-size:14px}
+    .container{max-width:1100px;margin:28px auto;padding:20px}
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:start}
+    .hero-card{background:linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.98));padding:22px;border-radius:10px;box-shadow:0 6px 30px rgba(58,40,20,0.08)}
+    h2{margin:0 0 12px 0;color:var(--earth-1)}
+    p.lead{color:var(--muted);margin:0 0 18px 0}
+    .muted{color:var(--muted);font-size:14px}
+    .contact-list{display:flex;flex-direction:column;gap:8px}
+    .btn{display:inline-block;padding:10px 14px;border-radius:8px;background:var(--accent);color:white;text-decoration:none;border:none;cursor:pointer}
+    .secondary{background:transparent;border:1px solid rgba(59,47,47,0.06);color:var(--earth-1)}
+    form.session-planner{display:flex;flex-direction:column;gap:12px}
+    label{font-size:13px;color:var(--earth-1)}
+    input[type='text'],textarea,select{padding:10px;border-radius:8px;border:1px solid #e6dcd2;background:white;font-size:14px}
+    .checks{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+    .card-block{padding:14px;border-radius:8px;background:rgba(250,246,242,0.9);border:1px solid rgba(59,47,47,0.04)}
+    .result{white-space:pre-wrap;background:#fff;padding:12px;border-radius:8px;border:1px dashed rgba(59,47,47,0.06);font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace;font-size:13px}
+    footer{margin-top:auto;padding:20px;color:var(--muted);font-size:13px}
+    .small{font-size:12px;color:var(--muted)}
+    @media(max-width:900px){
+      .hero{grid-template-columns:1fr;}
+      .checks{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="site-wrap">
+    <header>
+      <div class="nav">
+        <div class="brand">
+          <svg width="44" height="44" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+            <rect width="44" height="44" rx="8" fill="var(--earth-2)"></rect>
+            <circle cx="22" cy="22" r="10" fill="var(--accent)"></circle>
+          </svg>
+          <div>
+            <h1>{{BUSINESS_NAME}}</h1>
+            <div style="font-size:12px;color:var(--glass)">{{TAGLINE}}</div>
+          </div>
+        </div>
+        <nav>
+          <a href="index.html">Home</a>
+          <a href="services.html">Offerings</a>
+          <a href="conditions.html">Issues</a>
+          <a href="approach.html">Method</a>
+          <a href="pricing.html">Join</a>
+          <a href="about.html">Team</a>
+          <a href="book.html">Schedule</a>
+          <a href="contact.html">Connect</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="hero">
+        <div class="hero-card">
+          <h2>Connect with the practice</h2>
+          <p class="lead">Use the planner below to sketch a personalized session plan and a consult agenda based on what matters most. Then share or copy the summary for your first visit.</p>
+
+          <div style="display:flex;gap:12px;align-items:center;margin-bottom:14px">
+            <div class="contact-list">
+              <div class="muted">Phone</div>
+              <a class="small" href="tel:{{PHONE}}">{{PHONE}}</a>
+              <div class="muted" style="margin-top:8px">Email</div>
+              <a class="small" href="mailto:{{EMAIL}}">{{EMAIL}}</a>
+            </div>
+          </div>
+
+          <div class="card-block small">
+            <strong>Visit options</strong>
+            <div style="margin-top:8px" class="muted">We offer ongoing membership plans and single-session evaluations. Membership includes guided check-ins and a tailored pathway.</div>
+            <div style="margin-top:12px"><a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+          </div>
+        </div>
+
+        <aside class="hero-card">
+          <h2 style="font-size:18px">Session Planner</h2>
+          <p class="muted">Build a concise plan and a consultation agenda. Copy the summary for appointment notes or to share with our intake team.</p>
+
+          <form class="session-planner" id="planner" onsubmit="return false;">
+            <label for="name">Your name</label>
+            <input id="name" type="text" placeholder="First and last">
+
+            <label for="goal">Primary goal for sessions</label>
+            <input id="goal" type="text" placeholder="What outcome matters most?">
+
+            <label>Whole-person inventory — check areas to include in the consultation</label>
+            <div class="checks" id="areas">
+              <label><input type="checkbox" value="Sleep"> Sleep</label>
+              <label><input type="checkbox" value="Nutrition"> Nutrition</label>
+              <label><input type="checkbox" value="Movement"> Movement</label>
+              <label><input type="checkbox" value="Stress & Mood"> Stress & Mood</label>
+              <label><input type="checkbox" value="Energy & Fatigue"> Energy & Fatigue</label>
+              <label><input type="checkbox" value="Digestive Health"> Digestive Health</label>
+              <label><input type="checkbox" value="Hormonal Health"> Hormonal Health</label>
+              <label><input type="checkbox" value="Environment"> Environment & Exposure</label>
+            </div>
+
+            <label for="cadence">Preferred contact cadence</label>
+            <select id="cadence">
+              <option value="weekly">Weekly check-ins</option>
+              <option value="biweekly">Every other week</option>
+              <option value="monthly">Monthly visits</option>
+              <option value="asneeded">As needed / flexible</option>
+            </select>
+
+            <label for="duration">Session length</label>
+            <select id="duration">
+              <option value="30">30 minutes</option>
+              <option value="45">45 minutes</option>
+              <option value="60">60 minutes</option>
+            </select>
+
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button class="btn" id="build">Create plan</button>
+              <button class="secondary" id="clear">Reset</button>
+            </div>
+          </form>
+
+          <div style="margin-top:12px">
+            <div class="muted">Generated plan</div>
+            <div id="output" class="result" aria-live="polite">No plan yet — use the form to create a short plan.</div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button class="btn" id="copy">Copy summary</button>
+              <button class="secondary" id="download">Download .txt</button>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section style="margin-top:22px;display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start">
+        <div class="hero-card">
+          <h2 style="font-size:16px">Consultation agenda & follow-up</h2>
+          <p class="muted">The checklist above informs a focused intake agenda and a follow-up cadence. Below we show the logic used so you see how recommendations are built.</p>
+
+          <div style="margin-top:12px">
+            <h3 style="font-size:14px;margin-bottom:6px">How areas map to agenda items</h3>
+            <ul class="small" style="margin:0 0 8px 18px;color:var(--muted)">
+              <li><strong>Sleep:</strong> sleep history, sleep hygiene, brief screening for disordered sleep.</li>
+              <li><strong>Nutrition:</strong> patterns, food sensitivities, targeted labs if indicated.</li>
+              <li><strong>Movement:</strong> daily activity, mobility, realistic exercise targets.</li>
+              <li><strong>Stress & Mood:</strong> context, coping strategies, circadian cues.</li>
+              <li><strong>Energy & Fatigue:</strong> timeline, triggers, medication review.</li>
+              <li><strong>Digestive Health:</strong> bowel patterns, food response, simple testing plan.</li>
+              <li><strong>Hormonal Health:</strong> cycles, symptoms, relevant labs conversation.</li>
+              <li><strong>Environment:</strong> exposures, sleep/chemical considerations, immediate mitigations.</li>
+            </ul>
+
+            <h3 style="font-size:14px;margin-top:10px">Typical follow-up cadence</h3>
+            <div class="small muted">Based on selections, the planner suggests an initial review at 2–6 weeks with a membership-led cadence afterwards oriented around coaching and monitoring. These are educational recommendations, not treatment guarantees.</div>
+          </div>
+        </div>
+
+        <aside class="hero-card">
+          <h3 style="margin:0 0 8px 0">Quick intake</h3>
+          <div class="muted small">If you'd like direct help converting the plan into an intake appointment, share the copied plan in an email when you schedule.</div>
+          <div style="margin-top:12px">
+            <a class="btn" href="book.html">Request first appointment</a>
+          </div>
+          <div style="margin-top:16px;font-size:13px;color:var(--muted)">
+            <strong>Location</strong>
+            <div>{{CITY}}, {{STATE}}</div>
+            <div style="margin-top:8px"><a class="small" href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+          </div>
+        </aside>
+      </section>
+
+      <section style="margin-top:20px">
+        <div class="hero-card">
+          <h3 style="margin:0 0 8px 0">Privacy & note</h3>
+          <div class="small muted">Information entered here is for planning and preparation only. It is not a clinical record until you complete intake through our secured channels. No diagnoses are made on this page. If you are in crisis, contact local emergency services.</div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container" style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+        <div>{{BUSINESS_NAME}} — <span class="small">Membership care • Integrative guidance</span></div>
+        <div class="small">Phone <a href="tel:{{PHONE}}">{{PHONE}}</a> · <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    (function(){
+      const areaMap = {
+        "Sleep": {agenda: "Sleep timeline + basic hygiene review", follow: "Sleep diary + 2-week check-in"},
+        "Nutrition": {agenda: "Diet pattern review + food sensitivity screening conversation", follow: "3-week food log review"},
+        "Movement": {agenda: "Mobility and routine assessment; realistic goals", follow: "Progress check in 4 weeks"},
+        "Stress & Mood": {agenda: "Contextual stress mapping; brief mood screen", follow: "Weekly short check-ins by message"},
+        "Energy & Fatigue": {agenda: "Energy timeline and triggers; med review", follow: "Lab review or energy plan at 4 weeks"},
+        "Digestive Health": {agenda: "Bowel pattern, bloating, reflux screening", follow: "Trial diet or targeted testing and 3-week check"},
+        "Hormonal Health": {agenda: "Cycle and symptom review; baseline labs conversation", follow: "Hormone tracking + 6-week follow-up"},
+        "Environment": {agenda: "Exposure history and sleep environment review", follow: "Mitigation steps and 2-week follow-up"}
+      };
+
+      const planner = document.getElementById('planner');
+      const buildBtn = document.getElementById('build');
+      const clearBtn = document.getElementById('clear');
+      const output = document.getElementById('output');
+      const copyBtn = document.getElementById('copy');
+      const downloadBtn = document.getElementById('download');
+
+      function collect(){
+        const name = document.getElementById('name').value.trim();
+        const goal = document.getElementById('goal').value.trim();
+        const cadence = document.getElementById('cadence').value;
+        const duration = document.getElementById('duration').value;
+        const checked = Array.from(document.querySelectorAll('#areas input:checked')).map(n=>n.value);
+        return {name,goal,cadence,duration,checked};
+      }
+
+      function cadenceLabel(c){
+        switch(c){
+          case 'weekly': return 'Weekly check-ins';
+          case 'biweekly': return 'Every other week';
+          case 'monthly': return 'Monthly';
+          default: return 'Flexible / as needed';
+        }
+      }
+
+      function buildText(data){
+        const who = data.name || 'Client';
+        let lines = [];
+        lines.push('{{BUSINESS_NAME}} — Session plan summary');
+        lines.push('Name: '+who);
+        lines.push('Primary goal: '+(data.goal||'Not specified'));
+        lines.push('Preferred cadence: '+cadenceLabel(data.cadence));
+        lines.push('Session length: '+data.duration+' minutes');
+        lines.push('');
+
+        if(data.checked.length===0){
+          lines.push('Focus areas: none selected');
+        } else {
+          lines.push('Focus areas: '+data.checked.join(', '));
+          lines.push('');
+          lines.push('Suggested intake agenda:');
+          data.checked.forEach(area=>{
+            const map = areaMap[area];
+            if(map) lines.push('- '+area+': '+map.agenda);
+            else lines.push('- '+area+': standard review');
+          });
+          lines.push('');
+          lines.push('Suggested follow-up cadence:');
+          data.checked.forEach(area=>{
+            const map = areaMap[area];
+            if(map) lines.push('- '+area+': '+map.follow);
+          });
+        }
+
+        lines.push('');
+        lines.push('Notes: This is an educational planning summary to help you prepare for an intake. It is not a diagnosis.');
+        lines.push('Contact: '+{{JSON.stringify('{{EMAIL}}')}}+' | '+{{JSON.stringify('{{PHONE}}')}});
+        return lines.join('\n');
+      }
+
+      buildBtn.addEventListener('click', function(e){
+        e.preventDefault();
+        const data = collect();
+        const text = buildText(data);
+        output.textContent = text;
+      });
+
+      clearBtn.addEventListener('click', function(e){
+        e.preventDefault();
+        planner.reset();
+        output.textContent = 'No plan yet — use the form to create a short plan.';
+      });
+
+      copyBtn.addEventListener('click', function(){
+        const text = output.textContent;
+        if(!text) return;
+        navigator.clipboard.writeText(text).then(()=>{
+          copyBtn.textContent = 'Copied';
+          setTimeout(()=>copyBtn.textContent='Copy summary',1200);
+        }).catch(()=>{
+          alert('Unable to copy — please select and copy manually.');
+        });
+      });
+
+      downloadBtn.addEventListener('click', function(){
+        const text = output.textContent;
+        const blob = new Blob([text], {type: 'text/plain;charset=utf-8'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'session-plan.txt';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      });
+
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{{BUSINESS_NAME}} — Testimonials</title>
+  <style>
+    :root{--bg:#021021;--card:#071428;--accent:#6ef6d8;--muted:#9fb0c7}
+    body{font-family:Inter,system-ui,Segoe UI,Roboto;background:var(--bg);color:#e9fbff;margin:0;min-height:100vh;background-image:url('assets/img/pattern.svg')}
+    header{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent)}
+    nav a{color:var(--muted);margin-left:16px;text-decoration:none}
+    .wrap{max-width:980px;margin:28px auto;padding:0 18px}
+    h1{margin:6px 0 4px 0}
+    .intro{color:var(--muted);margin-bottom:18px}
+    .filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+    .chip{padding:8px 10px;border-radius:999px;background:rgba(255,255,255,0.03);color:var(--muted);cursor:pointer;border:1px solid rgba(255,255,255,0.02)}
+    .chip.active{background:linear-gradient(90deg,#074d4a,#6ef6d8);color:#002925;font-weight:700}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+    .quote{background:linear-gradient(180deg,var(--card),rgba(255,255,255,0.02));padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+    .quote p{margin:0;color:#dff9f3}
+    .meta{color:var(--muted);font-size:13px;margin-top:8px}
+    .cta{margin-top:18px}
+    .btn{background:linear-gradient(90deg,#6ef6d8,#9b7cff);border:none;padding:10px 14px;border-radius:10px;color:#002925;font-weight:700;cursor:pointer}
+    @media(max-width:760px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Origin</a>
+      <a href="services.html">Offerings</a>
+      <a href="programs.html">Tracks</a>
+      <a href="pricing.html">Investment</a>
+      <a href="testimonials.html">Voices</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <h1>Client voices & results</h1>
+    <div class="intro">Real notes from people who tightened routines, reclaimed focus, and built repeatable habits. No promises beyond habit change and practical frameworks.</div>
+
+    <div class="filters">
+      <div class="chip active" data-filter="all">All</div>
+      <div class="chip" data-filter="rhythm">Rhythm</div>
+      <div class="chip" data-filter="energy">Energy</div>
+      <div class="chip" data-filter="focus">Focus</div>
+      <div class="chip" data-filter="micro">Micro-shifts</div>
+    </div>
+
+    <div style="display:flex;gap:14px;align-items:center;justify-content:space-between">
+      <div style="color:var(--muted)">Select a state to change recommended approach</div>
+      <div>
+        <select id="moodSelect" style="padding:8px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)">
+          <option value="rushed">Rushed</option>
+          <option value="drained">Drained</option>
+          <option value="wired">Wired</option>
+          <option value="flat">Flat</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid" id="quotes">
+      <div class="quote" data-tags="rhythm micro">
+        <p>"In three weeks I built a short evening cue that reliably calmed my nights and made mornings easier."</p>
+        <div class="meta">— A., Product Manager</div>
+      </div>
+      <div class="quote" data-tags="energy rhythm">
+        <p>"The daily anchors gave small, repeatable steps that compounded into steadier energy across the month."</p>
+        <div class="meta">— S., Designer</div>
+      </div>
+      <div class="quote" data-tags="focus micro">
+        <p>"I finally have a 20-minute focus ritual that blocks distractions and makes deep work predictable."</p>
+        <div class="meta">— R., Writer</div>
+      </div>
+      <div class="quote" data-tags="energy focus">
+        <p>"The cadence of mini-checkpoints helped me avoid mid-day crashes and keep pace through long afternoons."</p>
+        <div class="meta">— L., Engineer</div>
+      </div>
+    </div>
+
+    <div class="cta">
+      <button id="primaryCta" class="btn" onclick="location.href='{{PRIMARY_CTA_URL}}'">{{PRIMARY_CTA_LABEL}}</button>
+    </div>
+
+  </main>
+
+  <script>
+    // Filter chips
+    const chips = document.querySelectorAll('.chip');
+    const quotes = document.querySelectorAll('.quote');
+    chips.forEach(c=>c.addEventListener('click',()=>{
+      chips.forEach(x=>x.classList.remove('active'));
+      c.classList.add('active');
+      const tag = c.dataset.filter;
+      quotes.forEach(q=>{
+        if(tag==='all') q.style.display='block';
+        else q.style.display = q.dataset.tags.includes(tag)?'block':'none';
+      });
+    }));
+
+    // Mood-to-Method changes CTA text and highlights matching testimonials
+    const moodSelect = document.getElementById('moodSelect');
+    const primaryCta = document.getElementById('primaryCta');
+    const moodMap = {
+      rushed:{cta:'Reserve a Rhythm Call',highlight:'rhythm'},
+      drained:{cta:'Start an Energy Reset',highlight:'energy'},
+      wired:{cta:'Book a Focus Sprint',highlight:'focus'},
+      flat:{cta:'Request a Micro-Plan',highlight:'micro'}
+    };
+    function applyMood(){
+      const m = moodSelect.value;
+      primaryCta.textContent = moodMap[m].cta;
+      // lightly pulse matching quotes
+      quotes.forEach(q=>q.style.boxShadow='none');
+      quotes.forEach(q=>{ if(q.dataset.tags.includes(moodMap[m].highlight)) q.style.boxShadow='0 8px 30px rgba(110,246,216,0.08)'; });
+    }
+    moodSelect.addEventListener('change',applyMood);
+    applyMood();
+  </script>
+</body>
+</html>

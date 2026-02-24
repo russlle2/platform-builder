@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Investments — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Event series and practical cohorts that teach sustainable habits for clearer days.">
+  <style>
+    :root{--bg:#fcfbf8;--card:#ffffff;--muted:#6b6b6b;--accent:#7bbf9e;--accent-2:#4b8fa1;--glass:rgba(255,255,255,0.6);--shadow:0 6px 20px rgba(30,30,30,0.08)}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;line-height:1.45;color:#142029;background:var(--bg);-webkit-font-smoothing:antialiased}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:linear-gradient(180deg,rgba(75,143,161,0.06),transparent);position:sticky;top:0;z-index:10}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;border-radius:8px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:white;font-weight:700}
+    nav a{margin-left:18px;color:#163241;text-decoration:none;font-weight:600}
+    .primary-cta{background:var(--accent-2);color:white;padding:8px 14px;border-radius:8px;text-decoration:none;font-weight:700}
+
+    main{max-width:980px;margin:36px auto;padding:20px}
+    .hero{display:grid;grid-template-columns:1fr;gap:18px;align-items:center;background-image:url('assets/img/pattern.svg');background-size:600px;border-radius:14px;padding:28px;box-shadow:var(--shadow)}
+    .hero h1{margin:0;font-size:1.6rem}
+    .hero p{margin:6px 0;color:var(--muted)}
+
+    .plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-top:18px}
+    .plan{background:var(--card);padding:18px;border-radius:12px;box-shadow:var(--shadow);border:1px solid rgba(15,30,30,0.03)}
+    .plan h3{margin:0 0 6px 0}
+    .price{font-size:1.4rem;font-weight:800;color:var(--accent-2)}
+    .features{margin:12px 0;color:var(--muted);font-size:0.95rem}
+    .plan button{background:transparent;border:2px solid var(--accent-2);padding:10px 12px;border-radius:10px;font-weight:700;color:var(--accent-2);cursor:pointer}
+
+    .note{margin-top:14px;font-size:0.95rem;color:var(--muted)}
+
+    footer{max-width:980px;margin:30px auto;padding:20px;color:var(--muted);font-size:0.9rem}
+
+    /* reveal animations */
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity 420ms ease,var(--transform) 420ms ease}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none;opacity:1;transform:none}}
+    .reveal.visible{opacity:1;transform:none}
+
+    /* modal basics */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(6,10,12,0.45);display:none;justify-content:center;align-items:center;padding:20px}
+    .modal{background:var(--card);border-radius:12px;max-width:720px;width:100%;padding:20px;box-shadow:0 10px 40px rgba(4,8,12,0.5)}
+    .modal h4{margin:0 0 8px}
+    .modal .controls{display:flex;gap:8px;margin-top:12px}
+    .btn{padding:8px 12px;border-radius:8px;border:none;cursor:pointer}
+    .btn.primary{background:var(--accent-2);color:white}
+    .utility{font-size:0.9rem;color:var(--muted)}
+
+    /* small utilities */
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width:640px){.grid-2{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">W</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:0.86rem;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="/index.html">Home</a>
+      <a href="/programs.html">Offerings</a>
+      <a href="/services.html">Frameworks</a>
+      <a href="/testimonials.html">Voices</a>
+      <a href="/pricing.html" class="primary-cta">{{PRIMARY_CTA_LABEL}}</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero reveal" id="intro">
+      <div>
+        <h1>Invest in steady practices, not one-off fixes</h1>
+        <p>Join small-group event series and guided cohorts that teach repeatable habits and practical frameworks. Each series is centered around outcomes you can track weekly.</p>
+        <div style="display:flex;gap:12px;margin-top:12px">
+          <a class="primary-cta" href="{{PRIMARY_CTA_URL}}">Reserve your spot</a>
+          <button class="btn" id="tryNowBtn">Try a short guided exercise</button>
+        </div>
+      </div>
+      <div class="utility" style="text-align:right">
+        <div style="font-weight:700">Upcoming mix: small-group events</div>
+        <div style="color:var(--muted);margin-top:8px">Live workshops in {{CITY}}, {{STATE}} and ongoing remote cohorts — choose the cadence that fits your schedule.</div>
+      </div>
+    </section>
+
+    <section class="reveal" style="margin-top:20px">
+      <h2>How we price learning that lasts</h2>
+      <p class="utility">Every offering is priced as a series with built-in practice time: a window to adopt outcomes, measure progress, and iterate with peer support.</p>
+
+      <div class="plans">
+        <article class="plan">
+          <h3>Habit Launch Series</h3>
+          <div class="price">$149 — 4 sessions</div>
+          <div class="features">Weekly 90-minute workshops + weekly accountability prompts. Ideal for habit formation and basic structure.</div>
+          <div class="note">Outcome focus: 1-2 habits, consistent for 30 days.</div>
+          <div style="margin-top:12px"><button onclick="location.href='book.html?plan=habit-launch'">Reserve a place</button></div>
+        </article>
+
+        <article class="plan">
+          <h3>Foundations Cohort</h3>
+          <div class="price">$395 — 8 sessions</div>
+          <div class="features">Bi-weekly group labs and two 1:1 strategy sessions. Build frameworks that scale into routines.</div>
+          <div class="note">Outcome focus: 3 habits + a flexible framework for day-to-day use.</div>
+          <div style="margin-top:12px"><button onclick="location.href='book.html?plan=foundations'">Join the cohort</button></div>
+        </article>
+
+        <article class="plan">
+          <h3>Seasonal Reset Series</h3>
+          <div class="price">$95 — Single workshop</div>
+          <div class="features">A concentrated 3-hour event for a focused reset and practical next steps you can use the following week.</div>
+          <div class="note">Outcome focus: a 5-step plan to try for the next 14 days.</div>
+          <div style="margin-top:12px"><button onclick="location.href='book.html?plan=seasonal-reset'">Book a seat</button></div>
+        </article>
+      </div>
+
+      <p class="note">We also offer sliding-scale options and team rates. Reach out at <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a>.</p>
+    </section>
+
+    <section class="reveal" style="margin-top:24px;display:grid;grid-template-columns:1fr 200px;gap:12px;align-items:start">
+      <div>
+        <h3>Why a series model?</h3>
+        <p class="utility">Short workshops settle ideas. Series are where habits stick: repeated practice, checkpoints, and adjustments. We design each curriculum around measurable steps you can test in your life.</p>
+      </div>
+      <aside style="padding:12px;background:var(--glass);border-radius:10px;text-align:center">
+        <div style="font-weight:800">Next cohort starts</div>
+        <div style="color:var(--muted);margin-top:8px">May 12 — limited seats</div>
+        <div style="margin-top:12px"><a class="primary-cta" href="book.html">Reserve</a></div>
+      </aside>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>© <span id="year"></span> {{BUSINESS_NAME}} — Practical coaching for steady habits.</div>
+      <div style="color:var(--muted)">Located in {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </div>
+  </footer>
+
+  <!-- Guided exercise modal -->
+  <div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-hidden="true">
+    <div class="modal" role="document" aria-modal="true">
+      <div id="modalContent">
+        <h4>Try a short practice</h4>
+        <p class="utility">Pick one: a paced breathing cycle, a quick journaling prompt, or a two-minute intention-setting routine.</p>
+
+        <div style="display:flex;gap:10px;margin-top:12px">
+          <button class="btn" data-mode="breath">Breathing</button>
+          <button class="btn" data-mode="journal">Journaling</button>
+          <button class="btn" data-mode="intention">Intention</button>
+          <button class="btn" id="closeModal" style="margin-left:auto">Close</button>
+        </div>
+
+        <div id="exerciseArea" style="margin-top:14px"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // simple year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // reveal on scroll with reduced-motion respect
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const revealEls = Array.from(document.querySelectorAll('.reveal'));
+      if(prefersReduced){ revealEls.forEach(el=>el.classList.add('visible')); return; }
+      const onScroll = ()=>{
+        const viewH = window.innerHeight || document.documentElement.clientHeight;
+        revealEls.forEach(el=>{
+          if(el.classList.contains('visible')) return;
+          const r = el.getBoundingClientRect();
+          if(r.top <= viewH - 80) el.classList.add('visible');
+        });
+      };
+      onScroll();
+      window.addEventListener('scroll', onScroll, {passive:true});
+      window.addEventListener('resize', onScroll);
+    })();
+
+    // Guided exercise modal logic
+    (function(){
+      const modalBackdrop = document.getElementById('modalBackdrop');
+      const tryNowBtn = document.getElementById('tryNowBtn');
+      const closeModal = document.getElementById('closeModal');
+      const exerciseArea = document.getElementById('exerciseArea');
+
+      function openModal(){ modalBackdrop.style.display='flex'; modalBackdrop.setAttribute('aria-hidden','false'); }
+      function hideModal(){ modalBackdrop.style.display='none'; modalBackdrop.setAttribute('aria-hidden','true'); stopActive(); }
+
+      tryNowBtn.addEventListener('click', openModal);
+      closeModal.addEventListener('click', hideModal);
+      modalBackdrop.addEventListener('click', (e)=>{ if(e.target===modalBackdrop) hideModal(); });
+
+      // Mode buttons
+      modalBackdrop.querySelectorAll('button[data-mode]').forEach(btn=>{
+        btn.addEventListener('click', ()=>startMode(btn.getAttribute('data-mode')));
+      });
+
+      let activeTimer = null;
+      function stopActive(){ if(activeTimer) { clearInterval(activeTimer); activeTimer=null; } }
+
+      function startMode(mode){ stopActive(); exerciseArea.innerHTML='';
+        if(mode==='breath'){ startBreathing(); }
+        else if(mode==='journal'){ startJournaling(); }
+        else if(mode==='intention'){ startIntention(); }
+      }
+
+      // breathing: 4-6-8 pattern with animated circle
+      function startBreathing(){
+        const el = document.createElement('div');
+        el.innerHTML = '<div style="display:flex;gap:12px;align-items:center"><svg id="breathSvg" width="120" height="120" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="36" fill="#e9faf6" stroke="#7bbf9e" stroke-width="4"></circle></svg><div><div style="font-weight:700">Follow the circle</div><div id="breathLabel" style="color:#6b6b6b">Ready</div></div></div>';
+        el.style.padding='8px';
+        exerciseArea.appendChild(el);
+
+        const svg = document.getElementById('breathSvg').querySelector('circle');
+        const label = document.getElementById('breathLabel');
+        let phase=0; // 0 inhale,1 hold,2 exhale
+        const cycle = [ {name:'Inhale', dur:4000, scale:1.6}, {name:'Hold', dur:2000, scale:1.6}, {name:'Exhale', dur:6000, scale:0.6} ];
+        function tick(){
+          const p = cycle[phase];
+          label.textContent = p.name;
+          svg.style.transition = 'r '+(p.dur)+'ms ease';
+          svg.setAttribute('r', String(36 * p.scale));
+          activeTimer = setTimeout(()=>{ phase = (phase+1)%cycle.length; tick(); }, p.dur);
+        }
+        tick();
+      }
+
+      // journaling: prompt + 3-minute timer
+      function startJournaling(){
+        const container = document.createElement('div');
+        container.innerHTML = '<div style="font-weight:700">Quick journal — 3 minutes</div><div style="margin-top:8px;color:#6b6b6b">Prompt: What small change would improve today? Describe one action you can take in the next 24 hours.</div><textarea id="journalText" rows="6" style="width:100%;margin-top:8px;padding:8px;border-radius:8px;border:1px solid #e6e6e6"></textarea><div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><div id="timer" style="font-weight:700">03:00</div><div><button class="btn primary" id="saveJournal">Done</button></div></div>';
+        exerciseArea.appendChild(container);
+        let seconds = 180; const display = container.querySelector('#timer');
+        activeTimer = setInterval(()=>{
+          seconds--; if(seconds<0){ clearInterval(activeTimer); activeTimer=null; display.textContent='00:00'; return; }
+          const m = String(Math.floor(seconds/60)).padStart(2,'0'); const s = String(seconds%60).padStart(2,'0'); display.textContent = m+':'+s;
+        },1000);
+        container.querySelector('#saveJournal').addEventListener('click', ()=>{ const val = container.querySelector('#journalText').value; if(val.trim()===''){ alert('Write a line or two — anything helps.'); return; } alert('Thanks — your quick note is saved in this session.'); hideModal(); });
+      }
+
+      // intention: two-minute micro-plan with step list
+      function startIntention(){
+        const cont = document.createElement('div');
+        cont.innerHTML = '<div style="font-weight:700">Two-minute intention</div><div style="color:#6b6b6b;margin-top:6px">Name one intention for the next hour and list two tiny actions that will make it real.</div><div style="margin-top:10px"><input id="intentTitle" placeholder="Intention (e.g., focus on morning work)" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6e6e6"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px"><input placeholder="Action 1" id="act1" style="padding:8px;border-radius:8px;border:1px solid #e6e6e6"><input placeholder="Action 2" id="act2" style="padding:8px;border-radius:8px;border:1px solid #e6e6e6"></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px"><div id="countdown" style="font-weight:700">02:00</div><div><button class="btn primary" id="setIntention">Set</button></div></div>';
+        exerciseArea.appendChild(cont);
+        let t = 120; const countdown = cont.querySelector('#countdown');
+        activeTimer = setInterval(()=>{ t--; if(t<0){ clearInterval(activeTimer); activeTimer=null; countdown.textContent='00:00'; return; } const m=String(Math.floor(t/60)).padStart(2,'0'); const s=String(t%60).padStart(2,'0'); countdown.textContent=m+':'+s; },1000);
+        cont.querySelector('#setIntention').addEventListener('click', ()=>{
+          const title = cont.querySelector('#intentTitle').value.trim(); const a1 = cont.querySelector('#act1').value.trim(); const a2 = cont.querySelector('#act2').value.trim();
+          if(!title||!a1) { alert('Add an intention and at least one small action.'); return; }
+          alert('Intention set: '+title+' — Actions: '+a1+(a2?(', '+a2):'')); hideModal();
+        });
+      }
+
+    })();
+  </script>
+</body>
+</html>

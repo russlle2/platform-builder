@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{BUSINESS_NAME}} — Pricing</title>
+  <style>
+    :root{--bg1:#FFFAF0;--accent:#7D5BEF;--accent-2:#FF7AB6;--muted:#6B6872;--card:#FFFFFF}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    body{background:linear-gradient(180deg,var(--bg1),#FFF);color:#222;display:flex;flex-direction:column}
+    header{position:sticky;top:0;backdrop-filter: blur(6px);background:linear-gradient(180deg,rgba(255,255,255,0.7),rgba(255,255,255,0.5));border-bottom:1px solid rgba(16,24,40,0.06);z-index:40}
+    .nav{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:18px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;color:white;font-weight:700}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none;font-weight:600}
+    .cta{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+
+    .hero{max-width:1100px;margin:28px auto;padding:40px;border-radius:18px;position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(125,91,239,0.06),rgba(255,122,182,0.03));display:grid;grid-template-columns:1fr 360px;gap:28px}
+    .hero .lead{padding:12px 6px}
+    .eyebrow{color:var(--accent);font-weight:700;letter-spacing:0.02em}
+    h1{margin:8px 0 12px;font-size:28px}
+    p.lead{color:#333;line-height:1.5}
+    .hero .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 8px 24px rgba(16,24,40,0.06)}
+
+    .grid{max-width:1100px;margin:24px auto;display:grid;gap:20px;padding:0 18px}
+    .row{display:flex;gap:20px;flex-wrap:wrap}
+    .col{flex:1;min-width:260px}
+
+    .pricing-cards{display:flex;gap:18px;align-items:stretch}
+    .plan{background:linear-gradient(180deg,#fff,#FFF);border-radius:12px;padding:20px;flex:1;border:1px solid rgba(16,24,40,0.06);display:flex;flex-direction:column}
+    .plan h3{margin:0 0 8px}
+    .price{font-size:22px;font-weight:800;color:var(--accent);margin:6px 0}
+    ul.benefits{margin:10px 0 14px;padding-left:18px;color:var(--muted)}
+    .plan .btn{margin-top:auto;padding:10px 12px;border-radius:10px;border:none;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;font-weight:700;text-decoration:none;display:inline-block}
+
+    footer{margin-top:36px;padding:36px 18px;background:linear-gradient(180deg,rgba(125,91,239,0.04),transparent)}
+    .muted{color:var(--muted);font-size:13px}
+
+    /* playful svg shapes */
+    .pattern{position:absolute;right:-40px;bottom:-40px;opacity:0.12;filter:blur(10px)}
+
+    @media(max-width:860px){.hero{grid-template-columns:1fr;}.pricing-cards{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand">
+        <div class="logo">A</div>
+        <div>
+          <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+          <div style="font-size:12px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="services.html">Offerings</a>
+        <a href="blends.html">Blends</a>
+        <a href="shop.html">Boutique</a>
+        <a href="pricing.html" style="color:var(--accent)">Investment</a>
+        <a href="about.html">Our Story</a>
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="lead">
+        <div class="eyebrow">Guided Aroma Experiences</div>
+        <h1>Clear, simple pricing for one-on-one aromatherapy work</h1>
+        <p class="lead">I blend targeted aroma practices and teach safe at-home rituals. Pricing below is crafted for clarity — safety-forward, practical, and tailored. No medical promises; pure aroma support and lifestyle guidance.</p>
+
+        <div style="margin-top:18px;display:flex;gap:12px">
+          <a class="cta" href="#book">Book a VIP Day</a>
+          <a href="#plans" style="padding:10px 12px;border-radius:10px;border:1px solid rgba(16,24,40,0.06);text-decoration:none;color:var(--muted)">See plans</a>
+        </div>
+
+        <p class="muted" style="margin-top:12px">Questions? Call {{PHONE}} or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+      </div>
+
+      <div class="card">
+        <strong>Quick Snapshot</strong>
+        <p class="muted" style="margin:8px 0">All sessions include a safety consult, dilution guidance, and a custom blend recipe when requested.</p>
+        <dl>
+          <dt style="font-weight:700">Short Consults</dt>
+          <dd class="muted">20 minutes, discovery & guidance</dd>
+          <dt style="font-weight:700;margin-top:8px">VIP Day</dt>
+          <dd class="muted">Deep, focused session + custom at-home plan</dd>
+        </dl>
+      </div>
+
+      <svg class="pattern" width="260" height="260" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+        <defs>
+          <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#7D5BEF"/><stop offset="1" stop-color="#FF7AB6"/></linearGradient>
+        </defs>
+        <g fill="url(#g1)" opacity="0.6">
+          <circle cx="40" cy="40" r="36"/>
+          <rect x="96" y="96" width="88" height="88" rx="18" transform="rotate(22 140 140)"/>
+        </g>
+      </svg>
+    </section>
+
+    <section class="grid" id="plans">
+      <div class="row">
+        <div class="col">
+          <h2>Pricing tiers</h2>
+          <p class="muted">Choose a focused session, a deeper VIP Day, or a short consult to get started. All sessions include practical guidance and safe dilution recommendations.</p>
+        </div>
+        <div class="col">
+          <div style="background:linear-gradient(180deg,rgba(125,91,239,0.04),transparent);padding:12px;border-radius:10px">
+            <strong>Ask about sliding scale & multi-session packages.</strong>
+            <p class="muted" style="margin-top:8px">I aim to make aromatherapy accessible — inquire if cost is a barrier.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="pricing-cards">
+        <div class="plan">
+          <h3>Quick Consult</h3>
+          <div class="price">$75 — 20 min</div>
+          <p class="muted">Fast guidance, safety check, and next-steps.</p>
+          <ul class="benefits">
+            <li>Safety & dilution primer</li>
+            <li>One recommended blend</li>
+            <li>Email summary</li>
+          </ul>
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">Book Quick Consult</a>
+        </div>
+
+        <div class="plan">
+          <h3>Standard Session</h3>
+          <div class="price">$185 — 60 min</div>
+          <p class="muted">A thoughtful session to explore blends, routines, and safe use.</p>
+          <ul class="benefits">
+            <li>Comprehensive safety review</li>
+            <li>Custom blend recipe</li>
+            <li>At-home ritual suggestions</li>
+          </ul>
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">Book Standard</a>
+        </div>
+
+        <div class="plan" style="border:2px solid rgba(125,91,239,0.14);box-shadow:0 10px 30px rgba(125,91,239,0.06)">
+          <h3>VIP Day</h3>
+          <div class="price">$995 — half day intensive</div>
+          <p class="muted">Immerse in a practical, hands-on VIP Day designed to leave you with a personalized aroma toolkit.</p>
+          <ul class="benefits">
+            <li>Pre-work intake & safety screening</li>
+            <li>Extended blend development</li>
+            <li>Written at-home program + follow-up</li>
+          </ul>
+          <a class="btn" href="#book">Reserve VIP Day</a>
+        </div>
+      </div>
+
+      <div style="margin-top:18px;display:flex;gap:14px;flex-wrap:wrap">
+        <div style="flex:1;min-width:260px;background:var(--card);padding:14px;border-radius:12px;border:1px solid rgba(16,24,40,0.04)">
+          <strong>Group Workshops</strong>
+          <p class="muted">Inquire for custom dates. Workshops include safe use training and blending demos.</p>
+        </div>
+        <div style="flex:1;min-width:260px;background:var(--card);padding:14px;border-radius:12px;border:1px solid rgba(16,24,40,0.04)">
+          <strong>Product Sourcing</strong>
+          <p class="muted">I can source small-batch essentials and responsibly-made carriers on request.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <h2>What to expect</h2>
+      <div class="row">
+        <div class="col">
+          <div style="background:var(--card);padding:16px;border-radius:12px;border:1px solid rgba(16,24,40,0.04)">
+            <h4>Safety-first process</h4>
+            <p class="muted">Every session includes a safety consultation, dilution guidance, and recommendations to avoid interactions and sensitivities. I never provide medical diagnoses.</p>
+          </div>
+        </div>
+        <div class="col">
+          <div style="background:var(--card);padding:16px;border-radius:12px;border:1px solid rgba(16,24,40,0.04)">
+            <h4>Simple, actionable takeaways</h4>
+            <p class="muted">You leave with an easy-to-follow plan, a recipe for a custom blend, and clear steps for safe at-home practice.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <h2>Testimonials</h2>
+      <div class="row">
+        <div class="col" style="min-width:320px;background:linear-gradient(180deg,#fff, #FFF);padding:16px;border-radius:12px;border:1px solid rgba(16,24,40,0.04)">
+          <p style="font-weight:700">"Thoughtful, practical, and safe — I loved the custom blend and the step-by-step home plan."</p>
+          <p class="muted">— M.K., {{CITY}}</p>
+        </div>
+        <div class="col" style="min-width:320px;background:linear-gradient(180deg,#fff,#FFF);padding:16px;border-radius:12px;border:1px solid rgba(16,24,40,0.04)">
+          <p style="font-weight:700">"The VIP Day was transformative for my at-home rituals. Clear safety guidance throughout."</p>
+          <p class="muted">— L.T., {{STATE}}</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="book" class="grid">
+      <h2>Ready to book?</h2>
+      <p class="muted">Reserve a spot for a VIP Day or a standard session. If you need assistance, call {{PHONE}} or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">Book now — {{PRIMARY_CTA_LABEL}}</a>
+        <a href="contact.html" style="padding:10px 12px;border-radius:10px;border:1px solid rgba(16,24,40,0.06);text-decoration:none;color:var(--muted)">Ask a question</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div style="max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap">
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div class="muted">{{TAGLINE}}</div>
+      </div>
+      <div class="muted">Call: {{PHONE}} • Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </div>
+  </footer>
+</body>
+</html>

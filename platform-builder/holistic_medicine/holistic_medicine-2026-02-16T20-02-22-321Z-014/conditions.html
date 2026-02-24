@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Concerns & Conditions — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fffaf8;--accent:#ff7ab6;--muted:#556074}
+    *{box-sizing:border-box;font-family:Inter, system-ui, 'Helvetica Neue', Arial}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#fff);color:#071633}
+    header{display:flex;justify-content:space-between;align-items:center;padding:14px 6vw;border-bottom:1px solid rgba(7,22,51,0.06);background:rgba(255,255,255,0.6)}
+    .logo{font-weight:800;color:var(--accent)}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none}
+    .hero{padding:48px 6vw;background:linear-gradient(135deg,#fff,#fff7fb);position:relative}
+    .hero svg{position:absolute;right:0;top:0;opacity:0.08;height:220px}
+    .hero h1{margin:0 0 8px;font-size:28px}
+    .section{max-width:1000px;margin:28px auto;padding:0 6vw}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
+    .condition{background:white;padding:14px;border-radius:12px;border:1px solid rgba(7,22,51,0.04)}
+    .muted{color:var(--muted)}
+    .disclaimer{font-size:13px;background:linear-gradient(90deg,rgba(255,122,182,0.06),rgba(255,255,255,0.02));padding:10px;border-radius:8px;border:1px solid rgba(255,122,182,0.08)}
+    .cta{display:inline-block;padding:10px 14px;background:var(--accent);color:white;border-radius:10px;text-decoration:none;font-weight:700}
+    footer{padding:28px 6vw;text-align:center;color:var(--muted)}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}} 
+  </style>
+</head>
+<body>
+  <header>
+    <div style='display:flex;align-items:center;gap:12px'>
+      <div class='logo'>{{BUSINESS_NAME}}</div>
+      <div class='muted' style='font-size:13px'>Integrative & practical</div>
+    </div>
+    <nav>
+      <a href='index.html'>Home</a>
+      <a href='services.html'>Services</a>
+      <a href='conditions.html' style='color:var(--accent)'>Concerns</a>
+      <a href='approach.html'>Approach</a>
+      <a href='book.html'>Book</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class='hero'>
+      <svg viewBox='0 0 120 80' xmlns='http://www.w3.org/2000/svg'>
+        <defs>
+          <linearGradient id='cgrad' x1='0' x2='1'><stop offset='0' stop-color='#fff7fb'/><stop offset='1' stop-color='#fff'/></linearGradient>
+        </defs>
+        <rect width='120' height='80' fill='url(#cgrad)' rx='8' />
+        <g stroke='#ff7ab6' stroke-opacity='0.14' stroke-width='1.5' fill='none'>
+          <path d='M10 60 C30 20,60 120,110 40' />
+        </g>
+      </svg>
+
+      <div style='max-width:1000px;margin:0 auto'>
+        <h1>Common concerns people bring to integrative care</h1>
+        <p class='muted'>We gather context and create a plan focused on education and sustainable shifts. We do not promise cures; outcomes vary and are individual.</p>
+      </div>
+    </section>
+
+    <section class='section'>
+      <div class='grid'>
+        <div>
+          <div class='condition'>
+            <h3>Stress & nervous system dysregulation</h3>
+            <p class='muted'>Symptoms: racing thoughts, overwhelm, difficulty unwinding. Our focus: breath practices, sleep hygiene, lifestyle adjustments, and gentle botanical support when appropriate.</p>
+          </div>
+
+          <div class='condition' style='margin-top:12px'>
+            <h3>Poor sleep & fatigue</h3>
+            <p class='muted'>Symptoms: non-restorative sleep, daytime sleepiness. We use behavioral strategies, circadian alignment, targeted nutrition, and optional lab review to address underlying contributors.</p>
+          </div>
+
+          <div class='condition' style='margin-top:12px'>
+            <h3>Digestive complaints</h3>
+            <p class='muted'>Symptoms: bloating, irregular bowel habits, discomfort. Education involves eat patterns, meal composition, and stepwise investigative testing if needed.</p>
+          </div>
+
+          <div class='condition' style='margin-top:12px'>
+            <h3>Chronic low-grade inflammation</h3>
+            <p class='muted'>Symptoms: stiffness, brain fog, unexplained aches. Interventions focus on anti-inflammatory nutrition, movement, sleep, and stress modulation.</p>
+          </div>
+
+          <div class='condition' style='margin-top:12px'>
+            <h3>Energy & metabolic concerns</h3>
+            <p class='muted'>Symptoms: unpredictable energy, sugar cravings. We emphasize metabolic-supportive eating, activity timing, and educational lab options.</p>
+          </div>
+        </div>
+
+        <aside>
+          <div class='disclaimer'>
+            <strong>Important:</strong>
+            <p class='muted' style='margin:6px 0'>This page lists common areas we address. Individual evaluation is required. We provide education and supportive integrative strategies — not emergency medical treatment, and not guaranteed cures.</p>
+          </div>
+
+          <div style='margin-top:16px' class='card'>
+            <h4 style='margin:0'>Possible next steps</h4>
+            <ul style='margin-top:8px;color:var(--muted)'>
+              <li>Book a foundational intake</li>
+              <li>Consider focused short-term coaching</li>
+              <li>Optional labs for deeper insight (educational)</li>
+            </ul>
+            <div style='margin-top:10px'><a class='cta' href='book.html'>Schedule consult</a></div>
+          </div>
+
+          <div style='margin-top:16px' class='card'>
+            <h4 style='margin:0'>Quick contacts</h4>
+            <div class='muted' style='margin-top:8px'>Email: <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a></div>
+            <div class='muted'>Phone: <a href='tel:{{PHONE}}'>{{PHONE}}</a></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class='section'>
+      <h3>Educational resources & typical offerings</h3>
+      <div style='display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:12px'>
+        <div class='card'>
+          <strong>Sleep primer</strong>
+          <div class='muted' style='margin-top:8px'>A stepwise guide to improving sleep without medications as a first step.</div>
+        </div>
+        <div class='card'>
+          <strong>Gentle gut rehab</strong>
+          <div class='muted' style='margin-top:8px'>Dietary experiments, elimination guidance, and supportive botanicals with safety checks.</div>
+        </div>
+        <div class='card'>
+          <strong>Inflammation reduction plan</strong>
+          <div class='muted' style='margin-top:8px'>Lifestyle-focused interventions to lower systemic stressors and support recovery.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class='section' style='text-align:center'>
+      <h3>Curious about next steps?</h3>
+      <p class='muted'>Start with an intake to set priorities and receive a clear, educational plan.</p>
+      <a class='cta' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a>
+    </section>
+  </main>
+
+  <footer>
+    <div class='muted'>{{BUSINESS_NAME}} • {{PRACTITIONER_NAME}} {{CREDENTIALS}} • Serving {{CITY}}, {{STATE}}</div>
+    <div class='muted' style='margin-top:6px'>Educational integrative care. If you have an emergency, call local emergency services.</div>
+  </footer>
+</body>
+</html>

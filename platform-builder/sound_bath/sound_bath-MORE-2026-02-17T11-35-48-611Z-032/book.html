@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#02121a;--card:#082126;--muted:#9dc3bd;--accent:#65f3e3}
+    body{margin:0;background:linear-gradient(180deg,#031019 0%,#071622 100%);font-family:Inter,system-ui;color:#eafefb}
+    header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:linear-gradient(180deg,rgba(3,6,8,0.6),transparent);position:sticky;top:0}
+    nav a{color:#ddf; margin-left:12px;text-decoration:none}
+    main{max-width:980px;margin:28px auto;padding:0 18px}
+    .lead{display:flex;gap:18px;align-items:center;padding:18px;background:linear-gradient(180deg,rgba(101,243,227,0.02),transparent);border-radius:12px}
+    .lead h1{margin:0;font-size:26px}
+    .packages{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+    .pack{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:12px;border-radius:12px}
+    .price{font-weight:700;color:var(--accent);font-size:20px}
+    .muted{color:var(--muted)}
+
+    .planner{margin-top:18px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.02)}
+    label{font-size:13px;color:var(--muted)}
+    input,select,textarea{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#eafefb;margin-top:6px}
+    .row{display:flex;gap:8px}
+    .btn{background:var(--accent);border:none;padding:10px 12px;border-radius:10px;font-weight:700;color:#023}
+    .ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted);padding:10px 12px;border-radius:10px}
+
+    section{opacity:0;transform:translateY(12px);transition:opacity .6s ease,transform .6s ease}
+    section.visible{opacity:1;transform:none}
+
+    .disclaimer{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;margin-top:12px;color:var(--muted)}
+
+    @media(max-width:920px){.packages{grid-template-columns:1fr}.lead{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:700;color:var(--accent)">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="events.html">Gatherings</a>
+      <a href="private-sessions.html">Private</a>
+      <a href="pricing.html">Rates</a>
+      <a href="about.html">Story</a>
+      <a href="faq.html">Help</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="lead" data-reveal>
+      <div>
+        <h1>Reserve a session</h1>
+        <p class="muted">Choose a format and lock in time. If you'd like a short strategy call first, select "Consult" below.</p>
+      </div>
+      <div style="margin-left:auto"><a class="btn" href="contact.html">Request a consult</a></div>
+    </section>
+
+    <section data-reveal>
+      <h3>Our session menus</h3>
+      <div class="packages">
+        <div class="pack">
+          <div class="price">Intro 20m</div>
+          <p class="muted">A focused introduction — a practical way to try the format.</p>
+          <div style="margin-top:8px"><a class="btn" href="#book-form">Select</a></div>
+        </div>
+        <div class="pack">
+          <div class="price">Core 40m</div>
+          <p class="muted">Balanced opening, main phase, and short integration. Most chosen.</p>
+          <div style="margin-top:8px"><a class="btn" href="#book-form">Select</a></div>
+        </div>
+        <div class="pack">
+          <div class="price">Deep 70m</div>
+          <p class="muted">Extended work for deeper recalibration and time for integration.</p>
+          <div style="margin-top:8px"><a class="btn" href="#book-form">Select</a></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="book-form" data-reveal>
+      <h3>Reservation form</h3>
+      <div class="planner" id="planner-book">
+        <label for="bname">Name</label>
+        <input id="bname" placeholder="Full name" />
+        <label for="bemail">Email</label>
+        <input id="bemail" placeholder="you@example.com" />
+        <div class="row" style="margin-top:8px">
+          <div style="flex:1">
+            <label for="bpackage">Package</label>
+            <select id="bpackage"><option>Intro 20m</option><option selected>Core 40m</option><option>Deep 70m</option></select>
+          </div>
+          <div style="flex:1">
+            <label for="bdate">Preferred date</label>
+            <input id="bdate" placeholder="YYYY-MM-DD" />
+          </div>
+        </div>
+        <label for="bnotes">Notes (sensory notes, contraindications)</label>
+        <textarea id="bnotes" rows="3" placeholder="e.g., sensitive to high volumes, recent surgery, pacemaker"></textarea>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="btn" id="preview-book">Preview booking</button>
+          <button class="ghost" id="submit-book">Submit request</button>
+          <button class="ghost" id="copy-book">Copy summary</button>
+        </div>
+        <textarea id="summary-book" rows="5" style="margin-top:10px;display:block"></textarea>
+      </div>
+
+      <div class="disclaimer">
+        <strong>Safety note:</strong> Please disclose pacemakers, recent concussions, epilepsy, or pregnancy. For medical concerns, consult your health provider before attending. We may decline or adapt sessions if medical risk is present.
+      </div>
+    </section>
+
+    <section data-reveal>
+      <h3>What happens after you submit</h3>
+      <p class="muted">We’ll follow up by email to confirm availability and any required intake questions. For continuity bookings, we offer discounted monthly credits — ask us during confirmation.</p>
+    </section>
+
+    <footer style="margin-top:28px;color:var(--muted)"><small>Questions? Call {{PHONE}} or email {{EMAIL}} — {{CITY}}, {{STATE}}</small></footer>
+  </main>
+
+  <script>
+    // scroll reveal
+    (function(){
+      var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var elements = document.querySelectorAll('[data-reveal]');
+      if(reduced){ elements.forEach(function(e){ e.classList.add('visible'); }); return; }
+      var observer = new IntersectionObserver(function(entries){ entries.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add('visible'); observer.unobserve(en.target); } }); },{threshold:0.1});
+      elements.forEach(function(el){ observer.observe(el); });
+    })();
+
+    // Booking planner interactions
+    (function(){
+      function el(id){return document.getElementById(id)}
+      var preview = el('preview-book'), submit = el('submit-book'), copy = el('copy-book');
+      function summary(){
+        var name = el('bname').value.trim()||'—';
+        var email = el('bemail').value.trim()||'—';
+        var pack = el('bpackage').value;
+        var date = el('bdate').value.trim()||'Flexible';
+        var notes = el('bnotes').value.trim()||'No notes';
+        var out = [];
+        out.push('Reservation request');
+        out.push('Name: '+name);
+        out.push('Email: '+email);
+        out.push('Package: '+pack);
+        out.push('Requested date: '+date);
+        out.push('Notes: '+notes);
+        out.push('\nNext steps: We will reply with availability and a short intake. If there are safety notes, we may request a brief consult first.');
+        return out.join('\n');
+      }
+      preview.addEventListener('click',function(){ el('summary-book').value = summary(); });
+      copy.addEventListener('click',function(){ var t=summary(); if(navigator.clipboard){ navigator.clipboard.writeText(t); } else { var ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); } alert('Reservation summary copied'); });
+      submit.addEventListener('click',function(){ alert('Request submitted. We will contact you at the provided email.'); });
+    })();
+  </script>
+</body>
+</html>

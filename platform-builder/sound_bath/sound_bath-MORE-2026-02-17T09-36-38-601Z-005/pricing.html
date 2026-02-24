@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Investments — Pricing • {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Transparent investment tiers for events and private sessions. Choose single visits or commit to a short series.">
+  <style>
+    :root{--bg:#071016;--card:#07151a;--muted:#9fb6b1;--accent:#66d19a}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial;color:#e8f6ef;background:var(--bg)}
+    .wrap{max-width:1000px;margin:26px auto;padding:22px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    .nav a{color:#cfeee2;text-decoration:none;margin-left:14px}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
+    .panel{background:linear-gradient(180deg,var(--card),#031417);padding:18px;border-radius:12px}
+    h2{margin:0 0 8px 0}
+    .tiers{display:flex;flex-direction:column;gap:12px}
+    .tier{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;background:rgba(255,255,255,0.02)}
+    .price{font-weight:800;font-size:20px}
+    .muted{color:var(--muted)}
+    .switch{display:flex;gap:8px;align-items:center}
+    .pill{background:rgba(255,255,255,0.03);padding:8px 10px;border-radius:999px}
+    .badge{padding:8px;border-radius:8px;background:rgba(255,255,255,0.02)}
+    footer{margin-top:20px;color:var(--muted);font-size:13px}
+    .pattern{position:fixed;inset:0;pointer-events:none;opacity:0.05;background-image:url('assets/img/pattern.svg');background-repeat:repeat}
+    @media(max-width:920px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="pattern" aria-hidden></div>
+  <div class="wrap">
+    <header>
+      <div><strong>{{BUSINESS_NAME}}</strong><div class="muted">Clear pricing for gatherings and private work</div></div>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="events.html">Gatherings</a>
+        <a href="private-sessions.html">Personal Sound</a>
+        <a href="about.html">About</a>
+      </nav>
+    </header>
+
+    <main>
+      <h2>How to invest in sessions</h2>
+      <p class="muted">We frame offerings as short-term commitments or single contributions. Choose the cadence that fits your needs and budget.</p>
+
+      <div class="grid">
+        <section class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <h3 style="margin:0">Choose a band</h3>
+              <div class="muted">Single visit or short-series prices</div>
+            </div>
+            <div class="switch">
+              <div class="muted">Single</div>
+              <div class="pill" id="toggle">Per session</div>
+              <div class="muted">Series</div>
+            </div>
+          </div>
+
+          <div class="tiers" id="tiers">
+            <!-- tiers inserted via JS -->
+          </div>
+
+          <div style="margin-top:12px" class="muted">Membership is not required. Book single events, book a small series for working through a clear intention, or schedule private sessions for deeper work.</div>
+        </section>
+
+        <aside class="panel">
+          <h4 style="margin:0 0 8px 0">Packages and phrasing</h4>
+          <div class="muted">We use three investment bands designed for different commitments: Starter (one-offs), Rhythm (short series), and Deep Work (private packages). Each band includes guidance on session length and suggested rhythm.</div>
+
+          <div style="margin-top:12px">
+            <div class="badge">Starter — single gatherings</div>
+            <div class="badge" style="margin-top:8px">Rhythm — 3-session short-series</div>
+            <div class="badge" style="margin-top:8px">Deep Work — private packages</div>
+          </div>
+
+          <div style="margin-top:12px">
+            <a href="contact.html" style="background:var(--accent);padding:10px 12px;border-radius:9px;color:#012;font-weight:700;text-decoration:none">Questions? Get a quote</a>
+          </div>
+        </aside>
+      </div>
+
+      <section class="panel" style="margin-top:14px">
+        <h4 style="margin:0 0 8px 0">Contraindications & safety</h4>
+        <p class="muted" style="margin:0">If you have seizure disorders, uncontrolled cardiac conditions, an implanted pacemaker, or are pregnant without medical clearance, please consult a clinician before joining. Reach us at <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</p>
+      </section>
+
+    </main>
+
+    <footer>
+      <div class="muted">Call <a href="tel:{{PHONE}}" style="color:var(--accent)">{{PHONE}}</a> • {{CITY}}, {{STATE}}</div>
+      <div class="muted">© <span id="y"></span> {{BUSINESS_NAME}}</div>
+    </footer>
+  </div>
+
+  <script>
+    // pricing bands dynamic rendering
+    const bands = {
+      starter:[
+        {name:'Starter Visit',desc:'Single group gathering — 60–75 min',single:'$28',series:'$75 (3)'}
+      ],
+      rhythm:[
+        {name:'Rhythm Series',desc:'Three sessions across a month — paced support',single:'$85',series:'$240 (3)'}
+      ],
+      deep:[
+        {name:'Deep Work Package',desc:'Private sessions or extended pods — tailored',single:'$140',series:'$400 (3)'}
+      ]
+    };
+
+    let view='single';
+    const tiers = document.getElementById('tiers');
+    function renderTiers(){
+      tiers.innerHTML='';
+      const sets = [bands.starter[0],bands.rhythm[0],bands.deep[0]];
+      sets.forEach(s=>{
+        const el = document.createElement('div');
+        el.className='tier';
+        el.innerHTML = `<div><strong>${s.name}</strong><div class='muted'>${s.desc}</div></div><div class='price'>${view==='single'?s.single:s.series}</div>`;
+        tiers.appendChild(el);
+      })
+    }
+
+    document.addEventListener('DOMContentLoaded',()=>{
+      document.getElementById('y').textContent=new Date().getFullYear();
+      renderTiers();
+      // toggle view
+      document.getElementById('toggle').addEventListener('click',()=>{
+        view = (view==='single')? 'series' : 'single';
+        document.getElementById('toggle').textContent = view==='single'? 'Per session' : 'Per series';
+        renderTiers();
+      });
+    });
+  </script>
+</body>
+</html>

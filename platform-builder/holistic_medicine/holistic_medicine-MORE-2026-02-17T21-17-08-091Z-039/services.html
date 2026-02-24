@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--accent:#6b8a5a;--muted:#6b7178;--bg:#fbfbfa;--card:#ffffff;--glass:rgba(255,255,255,0.6);--shadow:0 6px 20px rgba(27,31,35,0.08);--radius:12px}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#0f1720;background:linear-gradient(180deg, #fbfdf9 0%, #f7faf6 100%)}
+    /* page pattern using an embedded, unique SVG */
+    .hero{position:relative;padding:48px 24px 36px;overflow:hidden}
+    .hero:before{content:"";position:absolute;inset:0;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400"><defs><linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="%236b8a5a" stop-opacity="0.06"/><stop offset="1" stop-color="%23a2c29a" stop-opacity="0.02"/></linearGradient></defs><g fill="none"><rect width="800" height="400" fill="%23fbfbfa"/><path d="M0 320c80-60 160 0 240-20s160-120 240-80 160 20 320-40v220H0z" fill="url(%23g1)" opacity="0.9"/></g></svg>');background-size:cover;mix-blend-mode:soft-light;opacity:0.95;pointer-events:none}
+    .container{max-width:1100px;margin:0 auto;position:relative}
+    nav{display:flex;justify-content:space-between;align-items:center;gap:16px}
+    .brand{font-weight:700;color:var(--accent)}
+    .navlinks{display:flex;gap:12px}
+    .navlinks a{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:8px}
+    .navlinks a:hover{background:rgba(107,138,90,0.08);color:var(--accent)}
+    h1{margin:12px 0 8px;font-size:28px}
+    p.lead{margin:0;color:var(--muted);max-width:66ch}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:20px;margin-top:22px}
+    .cards{display:grid;gap:14px}
+    .card{background:var(--card);padding:16px;border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid rgba(16,22,18,0.03)}
+    .card h3{margin:0 0 8px}
+    .muted{color:var(--muted);font-size:14px}
+    .pricing{display:flex;gap:10px;flex-wrap:wrap}
+    .pill{background:linear-gradient(180deg,rgba(107,138,90,0.12),rgba(107,138,90,0.04));padding:8px 10px;border-radius:999px;color:var(--accent);font-weight:600}
+    button.cta{background:var(--accent);color:white;border:0;padding:10px 16px;border-radius:10px;cursor:pointer}
+    .timeline{display:flex;flex-direction:column;gap:10px}
+    .phase{display:flex;align-items:flex-start;gap:12px}
+    .phase .dot{width:44px;height:44px;border-radius:10px;background:#fff;border:1px solid rgba(16,22,18,0.06);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent)}
+    .phase.active .dot{background:linear-gradient(180deg,var(--accent),#8aae7f);color:white}
+    .phase .body{flex:1}
+    .disclaimer{font-size:13px;color:#7b7f82;margin-top:10px}
+    footer{margin-top:32px;padding:24px 0;color:var(--muted);font-size:13px}
+    @media(max-width:880px){.grid{grid-template-columns:1fr;}.hero{padding:28px 18px}.navlinks{display:none}}
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="container">
+      <nav>
+        <div class="brand">{{BUSINESS_NAME}}</div>
+        <div class="navlinks">
+          <a href="index.html">Home</a>
+          <a href="services.html" aria-current="page">Offerings</a>
+          <a href="approach.html">Method</a>
+          <a href="conditions.html">Conditions</a>
+          <a href="pricing.html">Investment</a>
+          <a href="about.html">Story</a>
+          <a href="book.html">Schedule</a>
+          <a href="contact.html">Contact</a>
+        </div>
+      </nav>
+      <h1>Practical programs that fit into real lives</h1>
+      <p class="lead">Short, guided cycles that blend lifestyle, targeted therapies, and coaching. Choose the scope that suits your season—each offering is structured as a clear start, a learning phase, and a path forward.</p>
+      <div class="grid">
+        <div>
+          <div class="cards">
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;align-items:start;gap:10px">
+                <div>
+                  <h3>Reset Cycle — 6 weeks</h3>
+                  <div class="muted">A focused short series for digestion, sleep, or energy recalibration.</div>
+                </div>
+                <div class="pill">Weekly check-ins</div>
+              </div>
+              <p class="muted" style="margin-top:10px">Includes intake, two targeted lab suggestions (optional), and a weekly actionable roadmap. Educational emphasis — no promises of cure.</p>
+            </div>
+            <div class="card">
+              <h3>Threads Program — 12 weeks</h3>
+              <div class="muted">A layered pathway combining lifestyle coaching, gentle physical practice, and nutritional support.</div>
+              <p class="muted" style="margin-top:8px">Ideal when several systems feel out of sync. Measured steps, documented goals, and small habit milestones.</p>
+            </div>
+            <div class="card">
+              <h3>Ongoing Guidance — monthly</h3>
+              <div class="muted">A maintenance loop for people who benefit from regular refinements and accountability.</div>
+              <p class="muted" style="margin-top:8px">Flexible, month-to-month support emphasizing education and sustainable adjustments.</p>
+            </div>
+          </div>
+          <div class="card" style="margin-top:14px;">
+            <h3>Pricing frame</h3>
+            <div class="pricing" style="margin-top:8px">
+              <div class="pill">Reset Cycle — starting at $420</div>
+              <div class="pill">Threads Program — starting at $1,150</div>
+              <div class="pill">Ongoing Guidance — monthly $225</div>
+            </div>
+            <p class="muted" style="margin-top:8px">Prices reflect program structure and practitioner time. Labs, supplements, or specialty services are billed separately and discussed before recommendation.</p>
+          </div>
+        </div>
+        <aside>
+          <div class="card">
+            <h3>Roadmap planner</h3>
+            <div class="muted">Tap phases to set your tentative timeline. Each phase is educational and supportive — not a promise of cure.</div>
+            <div class="timeline" id="timeline">
+              <div class="phase" data-phase="1">
+                <div class="dot">1</div>
+                <div class="body">
+                  <strong>Phase 1 — Stabilize (2–6 weeks)</strong>
+                  <div class="muted">Foundational tweaks: sleep timing, baseline labs, short habit sprints.</div>
+                </div>
+              </div>
+              <div class="phase" data-phase="2">
+                <div class="dot">2</div>
+                <div class="body">
+                  <strong>Phase 2 — Deepen (6–12 weeks)</strong>
+                  <div class="muted">Targeted therapies, movement prescription, and individualized nutrition experiments.</div>
+                </div>
+              </div>
+              <div class="phase" data-phase="3">
+                <div class="dot">3</div>
+                <div class="body">
+                  <strong>Phase 3 — Integrate (ongoing)</strong>
+                  <div class="muted">Embedding practices, relapse planning, and transition to maintenance.</div>
+                </div>
+              </div>
+            </div>
+            <div class="disclaimer">Disclaimer: These phases outline a general sequence. Individual pacing varies. This program is educational and supportive, not a guaranteed cure. Clinical decisions will be personalized and discussed during care planning.</div>
+            <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+              <button class="cta" id="planStart">Build a tentative plan</button>
+              <a href="book.html" style="color:var(--accent);text-decoration:none;font-weight:600">Or schedule an inquiry</a>
+            </div>
+          </div>
+          <div class="card" style="margin-top:12px">
+            <h3>Ready to begin?</h3>
+            <p class="muted">If you need a brief consult to decide which program fits, we offer a short orientation session.</p>
+            <button class="cta" onclick="location.href='{{PRIMARY_CTA_URL}}'">{{PRIMARY_CTA_LABEL}}</button>
+            <div style="margin-top:8px;color:var(--muted);font-size:13px">Call: {{PHONE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+          </div>
+        </aside>
+      </div>
+      <footer>
+        <div class="container">Serving {{CITY}}, {{STATE}} — Educational, integrative support. Not a substitute for emergency or urgent medical care.</div>
+      </footer>
+    </div>
+  </header>
+  <script>
+    // timeline interactivity
+    (function(){
+      const timeline=document.getElementById('timeline');
+      const phases=Array.from(timeline.querySelectorAll('.phase'));
+      function setActive(n){
+        phases.forEach(p=>p.classList.toggle('active', p.getAttribute('data-phase')===String(n)));
+      }
+      phases.forEach(p=>p.addEventListener('click',()=> setActive(p.getAttribute('data-phase'))));
+      // default to phase 1
+      setActive(1);
+      document.getElementById('planStart').addEventListener('click',()=>{
+        // lightweight planner: open booking with a query param describing desired phase
+        const active=phases.find(p=>p.classList.contains('active')).getAttribute('data-phase');
+        const url=new URL('{{PRIMARY_CTA_URL}}', location.href);
+        url.searchParams.set('phase', active);
+        location.href=url.toString();
+      });
+    })();
+  </script>
+</body>
+</html>

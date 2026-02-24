@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Investments — {{BUSINESS_NAME}}</title>
+  <meta name='description' content='Pricing and session options for aromatic ritual series and gatherings.'>
+  <style>
+    :root{
+      --bg1:#f6f2ee;--accent:#7aa28a;--muted:#6b6b6b;--card:#fff;--glass:rgba(255,255,255,0.6);
+      --radius:14px;--pad:20px;--max:980px;
+    }
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial;color:#222;background:linear-gradient(180deg,var(--bg1),#fff);}
+    header{display:flex;justify-content:space-between;align-items:center;padding:20px calc(6vw);max-width:var(--max);margin:0 auto;}
+    .brand{font-weight:700;letter-spacing:0.6px}
+    nav a{color:#333;text-decoration:none;margin-left:18px;font-size:0.95rem}
+    main{max-width:var(--max);margin:30px auto;padding:0 6vw}
+    .hero{display:grid;grid-template-columns:1fr;gap:18px;align-items:center;padding:36px;border-radius:var(--radius);background:linear-gradient(135deg,rgba(122,162,138,0.06),rgba(170,210,190,0.04));box-shadow:0 6px 24px rgba(38,30,15,0.04);position:relative;overflow:hidden}
+    /* subtle inline SVG pattern behind hero */
+    .hero svg{position:absolute;right:-4vw;top:-6vh;width:60vw;height:160%;opacity:0.14}
+    .hero h1{margin:0;font-size:2rem;color:var(--accent)}
+    .hero p{margin:6px 0 0;color:var(--muted)}
+
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 20px rgba(34,28,20,0.04)}
+    .card h3{margin:0 0 6px;color:#153a2e}
+    .price{font-size:1.6rem;font-weight:700;color:#0f2b20}
+    .muted{color:var(--muted);font-size:0.92rem}
+    .cta-row{display:flex;gap:12px;margin-top:12px}
+    .btn{background:linear-gradient(180deg,var(--accent),#6b8f74);color:#fff;padding:10px 14px;border-radius:10px;border:none;cursor:pointer;text-decoration:none}
+    .ghost{background:transparent;border:1px solid rgba(15,43,32,0.08);padding:10px 12px;border-radius:10px}
+
+    .faq{margin-top:28px}
+    .faq h4{margin:0 0 12px}
+    details{background:var(--glass);padding:12px;border-radius:10px;margin-bottom:10px}
+    footer{max-width:var(--max);margin:36px auto 80px;padding:0 6vw;color:var(--muted);font-size:0.92rem}
+
+    @media (max-width:900px){.grid{grid-template-columns:1fr}.hero h1{font-size:1.6rem}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class='brand'>{{BUSINESS_NAME}} — Quiet Gatherings</div>
+    <nav>
+      <a href='index.html'>Home</a>
+      <a href='services.html'>Offerings</a>
+      <a href='blends.html'>Blends</a>
+      <a href='shop.html'>Shop</a>
+      <a href='about.html'>About</a>
+      <a href='book.html'>Reserve</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class='hero' aria-labelledby='pricing-hero'>
+      <svg viewBox='0 0 800 800' preserveAspectRatio='xMidYMid meet' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'>
+        <defs>
+          <linearGradient id='g' x1='0' x2='1'><stop offset='0' stop-color='%237aa28a'/><stop offset='1' stop-color='%23e6f0e8' stop-opacity='0.4'/></linearGradient>
+          <pattern id='p' width='60' height='60' patternUnits='userSpaceOnUse' patternTransform='rotate(12)'>
+            <rect width='60' height='60' fill='transparent'/>
+            <path d='M0 30 Q15 0 30 30 T60 30' stroke='%236ba38c' stroke-width='1' fill='none' opacity='0.45'/>
+          </pattern>
+        </defs>
+        <rect width='100%' height='100%' fill='url(%23p)'/>
+        <circle cx='130' cy='120' r='80' fill='url(%23g)' opacity='0.25'/>
+      </svg>
+
+      <div>
+        <h1 id='pricing-hero'>Seasonal Series & Private Rituals — clear price guide</h1>
+        <p>Choose a gathering aligned with scent, space, and intention. All sessions emphasize safe topical practices; no health promises are made.</p>
+      </div>
+      <div style='text-align:right'>
+        <div class='muted'>Questions?</div>
+        <div style='margin-top:8px'><a class='btn' href='mailto:{{EMAIL}}'>Email {{PRACTITIONER_NAME}}</a></div>
+      </div>
+    </section>
+
+    <section class='grid' aria-label='pricing options'>
+      <article class='card'>
+        <h3>Gathering — Small Series</h3>
+        <div class='price'>$180 / person</div>
+        <p class='muted'>Three weekly 90‑minute sessions for groups up to 8. Shared ritual, guided scent exploration, and take‑home sample.</p>
+        <div class='cta-row'>
+          <a class='btn' href='book.html'>Reserve a Spot</a>
+          <a class='ghost' href='contact.html'>Ask a Question</a>
+        </div>
+      </article>
+
+      <article class='card'>
+        <h3>Private Ritual</h3>
+        <div class='price'>$220</div>
+        <p class='muted'>One-on-one 75‑minute session tailored to your olfactory preferences — includes a custom roll‑on at the end.</p>
+        <div class='cta-row'>
+          <a class='btn' href='book.html'>Book Private</a>
+          <a class='ghost' href='services.html'>Session Details</a>
+        </div>
+      </article>
+
+      <article class='card'>
+        <h3>Community Drop‑In</h3>
+        <div class='price'>$35</div>
+        <p class='muted'>An evening of shared scents and short rituals (60 minutes). Ideal for newcomers and curious neighbors.</p>
+        <div class='cta-row'>
+          <a class='btn' href='book.html'>Join Next</a>
+          <a class='ghost' href='blends.html'>See Blends</a>
+        </div>
+      </article>
+    </section>
+
+    <section class='card' style='margin-top:22px'>
+      <h3 style='margin-top:0'>How pricing works</h3>
+      <p class='muted'>All gatherings include a safety briefing, suggested dilution guidance for topical use, and a short handout for home practice. Travel fee may apply for offsite rituals in {{CITY}}, {{STATE}}.</p>
+      <ul style='margin:12px 0 0 18px;color:var(--muted)'>
+        <li>Deposit required at booking to hold group and private sessions.</li>
+        <li>Group discounts available for organizations booking multiple people.</li>
+        <li>Refund and rescheduling policy: contact at least 72 hours before an event for a credit.</li>
+      </ul>
+    </section>
+
+    <section class='faq' aria-labelledby='pricing-faq'>
+      <h4 id='pricing-faq'>Common questions — safe practice first</h4>
+      <details>
+        <summary><strong>Dilution: what is recommended?</strong></summary>
+        <p class='muted'>Suggested dilutions are included with each session. Typical adult topical dilutions range 1–3% for blends in roller bottles. For children or sensitive skin, lower dilutions are advised. Always perform a patch test prior to extended use.</p>
+      </details>
+      <details>
+        <summary><strong>Do you do patch tests?</strong></summary>
+        <p class='muted'>Yes. We guide a simple skin patch test during private sessions and recommend it for all new blends before regular topical use.</p>
+      </details>
+      <details>
+        <summary><strong>What about pets?</strong></summary>
+        <p class='muted'>Certain essential oils are not pet-friendly. We avoid diffuse-heavy use of known toxic oils in mixed settings and will advise pet-safe options. Inform us at booking if animals will be present.</p>
+      </details>
+      <details>
+        <summary><strong>Pregnancy & nursing</strong></summary>
+        <p class='muted'>If you are pregnant, planning pregnancy, or nursing, please mention this before booking. We will adapt blends and practices; sessions avoid strong topical or inhalation techniques contraindicated during pregnancy. This is guidance, not medical advice.</p>
+      </details>
+    </section>
+
+    <section style='margin-top:18px;display:flex;gap:12px;align-items:center'>
+      <a class='btn' href='book.html' aria-label='Book a session'>{{PRIMARY_CTA_LABEL}}</a>
+      <a class='ghost' href='contact.html'>Call {{PHONE}}</a>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} · {{TAGLINE}} · {{CITY}}, {{STATE}}</div>
+    <div style='margin-top:6px'>Email: <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a> · Phone: {{PHONE}}</div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Connect with {{BUSINESS_NAME}} for an integrative approach to wellbeing. Use our Mood-to-Method selector and timeline planner to map next steps.">
+  <style>
+    :root{
+      --bg:#0f1724; --card:#0b1220bb; --glass:rgba(255,255,255,0.06);
+      --accent:#7dd3fc; --muted:#9aa4b2; --glass-border:rgba(255,255,255,0.08);
+      --radius:14px; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+    }
+    html,body{height:100%;margin:0;background-color:var(--bg);color:#e6eef6}
+    body{background-image:url('assets/img/pattern.svg');background-size:400px;background-repeat:repeat;display:flex;align-items:center;justify-content:center;padding:40px}
+    .shell{width:100%;max-width:1100px}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#60a5fa);display:flex;align-items:center;justify-content:center;color:#04263b;font-weight:700;box-shadow:0 6px 20px rgba(6,10,14,0.6)}
+    .nav{display:flex;gap:14px;align-items:center}
+    .nav a{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:10px}
+    .nav a:hover{background:var(--glass);color:#fff}
+
+    main.card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.25));border:1px solid var(--glass-border);backdrop-filter:blur(8px);padding:28px;border-radius:var(--radius);box-shadow:0 10px 40px rgba(2,6,23,0.6)}
+    .grid{display:grid;grid-template-columns:1fr 380px;gap:20px}
+
+    h1{margin:0 0 6px 0;font-size:22px}
+    p.lead{margin:0 0 18px 0;color:var(--muted)}
+
+    /* Mood-to-Method */
+    .mood{padding:16px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03)}
+    .mood .options{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+    .mood button{background:transparent;border:1px solid rgba(255,255,255,0.05);padding:10px 12px;color:var(--muted);border-radius:10px;cursor:pointer}
+    .mood button.active{background:linear-gradient(90deg,rgba(125,211,252,0.12),rgba(96,165,250,0.08));color:#eaf7ff;border-color:rgba(125,211,252,0.18)}
+    .method{padding:12px;border-radius:10px;background:linear-gradient(90deg,rgba(0,0,0,0.12),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.02)}
+    .cta-row{display:flex;gap:10px;margin-top:12px}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;border:0;cursor:pointer}
+    .btn.primary{background:linear-gradient(90deg,var(--accent),#60a5fa);color:#012433}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+
+    /* Form */
+    form.contact{display:flex;flex-direction:column;gap:8px}
+    .field{display:flex;flex-direction:column}
+    input,textarea,select{padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#e6eef6}
+    textarea{min-height:110px;resize:vertical}
+
+    /* Timeline */
+    .timeline{margin-top:18px;padding:12px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.15));border:1px solid rgba(255,255,255,0.03)}
+    .phases{display:flex;gap:10px}
+    .phase{flex:1;padding:12px;border-radius:10px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.02)}
+    .phase small{color:var(--muted)}
+    .disclaimer{font-size:12px;color:var(--muted);margin-top:10px}
+
+    /* Sidebar */
+    aside.card{padding:16px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.12));border:1px solid rgba(255,255,255,0.03)}
+    .meta{font-size:13px;color:var(--muted);margin-bottom:10px}
+    .phone{font-weight:600;color:#dbeefe}
+
+    footer{margin-top:18px;display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:13px}
+
+    @media (max-width:980px){
+      .grid{grid-template-columns:1fr}
+      aside.card{order:2}
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="brand">
+        <div class="logo">HM</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:var(--muted)">{{CITY}}, {{STATE}} · <span class="phone">{{PHONE}}</span></div>
+        </div>
+      </div>
+      <nav class="nav">
+        <a href="index.html">Explore</a>
+        <a href="services.html">Offerings</a>
+        <a href="conditions.html">Conditions</a>
+        <a href="approach.html">Way</a>
+        <a href="pricing.html">Plans</a>
+        <a href="about.html">Story</a>
+        <a href="book.html">Reserve</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </header>
+
+    <main class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap">
+        <div style="flex:1;min-width:280px">
+          <h1>Connect & Plan: a short guidance session</h1>
+          <p class="lead">Use the selector to describe how you feel now and get a tailored first-step approach plus a timeline you can take to a visit. Educational and supportive — not diagnostic.</p>
+        </div>
+        <div style="min-width:240px;display:flex;gap:8px;align-items:center;justify-content:flex-end">
+          <div style="text-align:right;color:var(--muted)">Need urgent help? Call <strong>{{PHONE}}</strong></div>
+          <a href="book.html" class="btn primary">Reserve an Insight Session</a>
+        </div>
+      </div>
+
+      <div class="grid" style="margin-top:18px">
+        <section>
+          <div class="mood">
+            <strong>How are you today?</strong>
+            <div class="options" id="mood-options">
+              <button data-key="drained">Drained</button>
+              <button data-key="anxious">Anxious</button>
+              <button data-key="stuck">Stuck</button>
+              <button data-key="clear">Quiet / Ready</button>
+              <button data-key="energetic">Energetic</button>
+            </div>
+
+            <div class="method" id="method-pane">
+              <div style="display:flex;justify-content:space-between;align-items:center"><strong id="method-title">Select a mood</strong><span style="font-size:13px;color:var(--muted)" id="method-tag">— a short suggested focus</span></div>
+              <p id="method-body" style="margin:10px 0;color:var(--muted)">Pick an option above to see a recommended starting approach and a suggested next-step.</p>
+
+              <div class="cta-row">
+                <a id="primary-cta" class="btn primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+                <button id="plan-toggle" class="btn ghost">Add to timeline planner</button>
+              </div>
+            </div>
+
+            <div class="timeline" id="timeline-compact" style="display:none">
+              <strong>3-Phase Roadmap</strong>
+              <div class="phases" style="margin-top:8px">
+                <div class="phase">
+                  <div style="font-weight:700">Phase 1 — Stabilize</div>
+                  <small>Weeks 0–6: immediate supports and symptom relief.</small>
+                </div>
+                <div class="phase">
+                  <div style="font-weight:700">Phase 2 — Rebuild</div>
+                  <small>Weeks 6–16: rebuild routines and learn practical habits.</small>
+                </div>
+                <div class="phase">
+                  <div style="font-weight:700">Phase 3 — Sustain</div>
+                  <small>Ongoing: maintenance, community supports, check-ins.</small>
+                </div>
+              </div>
+              <div class="disclaimer">This timeline is a general educational guide. Individual needs and medical considerations alter timing. Not a substitute for professional medical advice.</div>
+            </div>
+          </div>
+
+          <div style="margin-top:14px;padding:12px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);border:1px solid rgba(255,255,255,0.02)">
+            <strong>Contact form</strong>
+            <form id="contact-form" class="contact" autocomplete="off">
+              <div class="field"><label style="font-size:13px;color:var(--muted)">Name</label><input id="name" name="name" placeholder="Your name"></div>
+              <div class="field"><label style="font-size:13px;color:var(--muted)">Email</label><input id="email" name="email" type="email" placeholder="you@domain.com"></div>
+              <div class="field"><label style="font-size:13px;color:var(--muted)">Phone</label><input id="phone" name="phone" placeholder="Optional"></div>
+              <div class="field"><label style="font-size:13px;color:var(--muted)">Tell us briefly</label><textarea id="message" name="message" placeholder="What's prompting you to reach out?"></textarea></div>
+              <div style="display:flex;gap:8px;align-items:center">
+                <button type="submit" class="btn primary">Send a quick note</button>
+                <button type="button" id="prefill" class="btn ghost">Auto-fill with mood</button>
+              </div>
+              <div style="font-size:12px;color:var(--muted);margin-top:8px">By sending you consent to our process notes and a follow-up from our team. This is educational and supportive — not a diagnostic tool.</div>
+            </form>
+          </div>
+
+          <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+            <div style="padding:12px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)">
+              <strong>Quick policies</strong>
+              <div style="font-size:13px;color:var(--muted);margin-top:6px">Privacy-respecting communications. No surprise billing. Educational support only.</div>
+            </div>
+            <div style="padding:12px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)">
+              <strong>Session types</strong>
+              <div style="font-size:13px;color:var(--muted);margin-top:6px">Short consults, focused follow-ups, and multi-visit plans — priced as distinct offerings.</div>
+            </div>
+          </div>
+
+          <!-- Repeated timeline summary for emphasis (educational only) -->
+          <div class="timeline" style="margin-top:12px">
+            <strong>Planner snapshot</strong>
+            <div class="phases" style="margin-top:8px">
+              <div class="phase"><div style="font-weight:700">Phase 1</div><small>Support & early adjustments</small></div>
+              <div class="phase"><div style="font-weight:700">Phase 2</div><small>Skills & routine building</small></div>
+              <div class="phase"><div style="font-weight:700">Phase 3</div><small>Maintenance & check-ins</small></div>
+            </div>
+            <div class="disclaimer">Use as a planning aid. Timelines vary. For urgent medical issues, contact a licensed provider or emergency services immediately.</div>
+          </div>
+
+        </section>
+
+        <aside class="card">
+          <div class="meta">Office</div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div class="meta">{{CITY}}, {{STATE}}</div>
+          <div style="margin-top:10px">
+            <div style="font-size:13px;color:var(--muted)">Phone</div>
+            <div class="phone">{{PHONE}}</div>
+            <div style="font-size:13px;color:var(--muted);margin-top:8px">Email</div>
+            <div style="color:var(--muted)">{{EMAIL}}</div>
+          </div>
+
+          <div style="margin-top:12px">
+            <strong style="font-size:13px">Social proof</strong>
+            <div style="margin-top:8px;font-size:13px;color:var(--muted)">"Attentive and practical guidance" — local client</div>
+            <div style="margin-top:6px;font-size:13px;color:var(--muted)">"Helped me build a realistic plan" — participant</div>
+          </div>
+
+          <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px">
+            <a href="book.html" class="btn primary">Reserve a short consult</a>
+            <a href="approach.html" class="btn ghost">See how we work</a>
+          </div>
+        </aside>
+
+      </div>
+
+      <footer>
+        <div>© <span id="year"></span> {{BUSINESS_NAME}} — Educational support and coaching</div>
+        <div style="color:var(--muted)">Questions? <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a></div>
+      </footer>
+
+    </main>
+  </div>
+
+  <script>
+    // Mood-to-Method mapping
+    const methods = {
+      drained: {
+        title: 'Nourish & Pace',
+        tag: 'rest-first micro-steps',
+        body: 'Begin with short, low-demand practices: sleep hygiene check, nutrient-focused meals, brief activity pacing. Recommended focus: small predictable wins you can repeat daily.',
+        cta: 'Reserve a Restore Check-in',
+        url: '{{PRIMARY_CTA_URL}}?mood=drained'
+      },
+      anxious: {
+        title: 'Calm Circuit',
+        tag: 'breath, structure, boundary',
+        body: 'Use guided micro-practices: breathing anchors, boundary-setting prompts, and short cognitive reframes. Ideal: a quick plan to interrupt patterns and reorient attention.',
+        cta: 'Start a Calm Check-in',
+        url: '{{PRIMARY_CTA_URL}}?mood=anxious'
+      },
+      stuck: {
+        title: 'Reset Routine',
+        tag: 'mini-habits & habit scaffolding',
+        body: 'Target friction points and rebuild one core routine (sleep, movement, or meals). Create tiny daily actions and a tracking habit to cue progress.',
+        cta: 'Begin a Reset Visit',
+        url: '{{PRIMARY_CTA_URL}}?mood=stuck'
+      },
+      energetic: {
+        title: 'Optimize Momentum',
+        tag: 'harness energy wisely',
+        body: 'Channel energy into sustainable projects and stability supports — establish guardrails so gains last. Explore pacing and goal alignment.',
+        cta: 'Book an Optimization Session',
+        url: '{{PRIMARY_CTA_URL}}?mood=energetic'
+      },
+      clear: {
+        title: 'Map & Move',
+        tag: 'clarify next-best-steps',
+        body: 'You have clarity — let’s map priorities into a three-phase plan and set check-ins to keep momentum. Great moment to plan forward.',
+        cta: 'Plan a Short Mapping Visit',
+        url: '{{PRIMARY_CTA_URL}}?mood=clear'
+      }
+    };
+
+    const opts = document.getElementById('mood-options');
+    const methodTitle = document.getElementById('method-title');
+    const methodTag = document.getElementById('method-tag');
+    const methodBody = document.getElementById('method-body');
+    const primaryCta = document.getElementById('primary-cta');
+    const planToggle = document.getElementById('plan-toggle');
+    const timelineCompact = document.getElementById('timeline-compact');
+
+    function clearActive(){
+      opts.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+    }
+
+    opts.addEventListener('click', e=>{
+      if(e.target.tagName !== 'BUTTON') return;
+      const key = e.target.dataset.key;
+      selectMood(key);
+    });
+
+    function selectMood(key){
+      const data = methods[key];
+      if(!data) return;
+      clearActive();
+      opts.querySelector(`button[data-key="${key}"]`).classList.add('active');
+      methodTitle.textContent = data.title;
+      methodTag.textContent = '— ' + data.tag;
+      methodBody.textContent = data.body;
+      primaryCta.textContent = data.cta;
+      primaryCta.href = data.url;
+      // Prefill message to help the user
+      const message = document.getElementById('message');
+      if(message && (!message.value || message.value.length < 6)){
+        message.value = `Mood: ${key}\nFocus: ${data.title} — ${data.tag}\nA short note:`;
+      }
+    }
+
+    planToggle.addEventListener('click', ()=>{
+      if(timelineCompact.style.display === 'none'){
+        timelineCompact.style.display = 'block';
+        planToggle.textContent = 'Remove from planner';
+      } else {
+        timelineCompact.style.display = 'none';
+        planToggle.textContent = 'Add to timeline planner';
+      }
+    });
+
+    // Prefill button uses current selected mood
+    document.getElementById('prefill').addEventListener('click', ()=>{
+      const active = opts.querySelector('button.active');
+      if(active){
+        selectMood(active.dataset.key);
+      } else {
+        alert('Select a mood above to auto-fill your message.');
+      }
+    });
+
+    // Contact form fake submit
+    document.getElementById('contact-form').addEventListener('submit', e=>{
+      e.preventDefault();
+      const name = document.getElementById('name').value || 'Friend';
+      const overlay = document.createElement('div');
+      overlay.style.position='fixed';overlay.style.left=0;overlay.style.top=0;overlay.style.right=0;overlay.style.bottom=0;overlay.style.display='flex';overlay.style.alignItems='center';overlay.style.justifyContent='center';overlay.style.background='rgba(2,6,14,0.6)';
+      overlay.innerHTML = `<div style="padding:20px;border-radius:12px;background:linear-gradient(180deg,#071425,#082034);border:1px solid rgba(255,255,255,0.04);max-width:520px;text-align:center;color:#eaf7ff">Thanks, ${name}!\n\nWe've received your note and will follow up by email. If it is urgent, please call ${'{{PHONE}}'}.<div style="margin-top:12px"><button id=close class=btn style=\"padding:8px 12px;border-radius:8px;background:linear-gradient(90deg,var(--accent),#60a5fa);border:0;color:#012433;cursor:pointer\">Close</button></div></div>`;
+      document.body.appendChild(overlay);
+      overlay.querySelector('#close').addEventListener('click', ()=>overlay.remove());
+    });
+
+    // Small initializations
+    document.getElementById('year').textContent = new Date().getFullYear();
+    // default selection
+    selectMood('stuck');
+  </script>
+</body>
+</html>

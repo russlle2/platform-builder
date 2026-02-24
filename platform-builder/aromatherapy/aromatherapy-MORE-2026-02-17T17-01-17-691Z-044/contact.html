@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Connect — Contact & Tools</title>
+  <style>
+    :root{
+      --bg:#fbfbfb; --muted:#6b6b6b; --accent:#6b8e7c; --card:#ffffff; --glass:rgba(255,255,255,0.6);
+      --max-width:980px; font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg, #fff 0%, #fbfbfb 60%);color:#222}
+    header{background:linear-gradient(135deg, rgba(107,142,124,0.08), rgba(107,142,124,0.02));border-bottom:1px solid rgba(0,0,0,0.04)}
+    .wrap{max-width:var(--max-width);margin:0 auto;padding:22px}
+    nav{display:flex;gap:18px;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:600}
+    .brand .logo{width:44px;height:44px;background:var(--accent);display:grid;place-items:center;color:white;border-radius:10px;font-weight:700}
+    .nav-links{display:flex;gap:12px;align-items:center}
+    .nav-links a{color:var(--muted);text-decoration:none;padding:8px;border-radius:8px}
+    .nav-links a.cta{background:var(--accent);color:white;padding:9px 12px}
+    main{max-width:var(--max-width);margin:28px auto;padding:28px}
+    .hero{display:grid;grid-template-columns:1fr 320px;gap:28px;align-items:start}
+    .card{background:var(--card);box-shadow:0 8px 30px rgba(23,23,23,0.06);padding:18px;border-radius:14px}
+    h1{margin:0 0 8px 0;font-size:1.6rem}
+    p.lead{margin:0;color:var(--muted)}
+
+    /* pattern accent */
+    .pattern-surface{background-image:url('assets/img/pattern.svg');background-size:280px 280px;background-repeat:repeat;}
+
+    form.contact{display:flex;flex-direction:column;gap:8px}
+    input,textarea,select{padding:10px;border:1px solid #e6e6e6;border-radius:8px;font-size:0.95rem}
+    button{background:var(--accent);color:#fff;border:none;padding:10px 14px;border-radius:10px;cursor:pointer}
+    .muted{color:var(--muted);font-size:0.9rem}
+
+    /* Blend builder */
+    .builder{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .blend-output{display:flex;flex-direction:column;gap:10px}
+    .pill{display:inline-block;background:#f1f8f3;color:var(--accent);padding:6px 10px;border-radius:999px;font-weight:600}
+    .blend-card{border:1px dashed rgba(107,142,124,0.25);padding:12px;border-radius:10px}
+
+    /* modal */
+    .overlay{position:fixed;inset:0;background:rgba(10,10,10,0.45);display:none;place-items:center;padding:20px}
+    .overlay.show{display:grid}
+    .modal{max-width:720px;width:100%;background:linear-gradient(180deg, rgba(255,255,255,0.98), rgba(250,250,250,0.98));padding:20px;border-radius:12px}
+    .timer{font-size:2rem;text-align:center}
+    .controls{display:flex;gap:8px;justify-content:center;margin-top:12px}
+
+    footer{margin-top:28px;padding:20px 0;color:var(--muted);font-size:0.9rem}
+
+    @media(max-width:880px){.hero{grid-template-columns:1fr}.builder{grid-template-columns:1fr}.wrap{padding:14px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav aria-label="Primary">
+        <div class="brand">
+          <div class="logo">A</div>
+          <div>
+            <div style="font-size:0.95rem">Contact & Tools</div>
+            <div style="font-size:0.78rem;color:var(--muted)">Reach out or try a guided micro-practice</div>
+          </div>
+        </div>
+        <div class="nav-links">
+          <a href="index.html">Home</a>
+          <a href="services.html">Offerings</a>
+          <a href="blends.html">Custom Blends</a>
+          <a href="shop.html">Shop</a>
+          <a href="pricing.html">Investment</a>
+          <a href="about.html">About</a>
+          <a href="book.html" class="cta">{{PRIMARY_CTA_LABEL}}</a>
+          <a href="contact.html" aria-current="page">Connect</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <div class="card pattern-surface">
+          <h1>Let's make an approachable plan</h1>
+          <p class="lead">Share a little about what you’re hoping to address and pick a quick practice to try now. Our member options also include monthly blends and short coach-led scent moments that may support clearer days.</p>
+          <div style="margin-top:12px;display:flex;gap:10px;align-items:center">
+            <button onclick="openModal('guided')">Try a 3-minute session</button>
+            <a href="book.html" style="text-decoration:none"><button style="background:transparent;border:1px solid #e6e6e6;color:var(--muted)">Schedule a call</button></a>
+          </div>
+        </div>
+
+        <div style="height:18px"></div>
+
+        <div class="card">
+          <h3 style="margin-top:0">Quick contact</h3>
+          <form class="contact" onsubmit="submitContact(event)">
+            <input id="name" placeholder="Your name" required />
+            <input id="phone" placeholder="Phone (optional)" />
+            <input id="email" placeholder="Email" required />
+            <select id="interest">
+              <option value="membership">Membership — recurring support</option>
+              <option value="blend">Custom blend</option>
+              <option value="session">One-on-one session</option>
+              <option value="retail">Product purchase</option>
+            </select>
+            <textarea id="message" rows="4" placeholder="Tell us briefly what you hope to get from scent or a membership — we read every message."></textarea>
+            <div class="muted">By submitting you consent to being contacted. We do not provide medical advice. If urgent, call local services.</div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button type="submit">Send message</button>
+              <button type="button" onclick="mailtoContact()" style="background:transparent;border:1px solid #e6e6e6;color:var(--muted)">Email directly</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <aside>
+        <div class="card">
+          <h3 style="margin-top:0">Blend builder</h3>
+          <p class="muted">Choose a mood and we’ll suggest a simple inhalation or topical blend with a safety-forward dilution guide.</p>
+          <div style="height:8px"></div>
+          <div class="builder">
+            <div>
+              <label class="muted">Select a vibe</label>
+              <select id="vibeSelect" onchange="buildBlend()">
+                <option value="calm">Calm focus</option>
+                <option value="energize">Gentle energy</option>
+                <option value="rest">Easy sleep support</option>
+                <option value="clarity">Clear thinking</option>
+                <option value="comfort">Soothing comfort</option>
+              </select>
+
+              <div style="margin-top:10px">
+                <label class="muted">Use</label>
+                <div style="display:flex;gap:8px;margin-top:6px">
+                  <button onclick="setUse('inhalation')" id="useInh" style="padding:8px;border-radius:8px;border:1px solid #e6e6e6">Inhalation</button>
+                  <button onclick="setUse('topical')" id="useTop" style="padding:8px;border-radius:8px;border:1px solid #e6e6e6">Topical (diluted)</button>
+                </div>
+              </div>
+
+              <div style="margin-top:12px">
+                <label class="muted">Bottle size (ml)</label>
+                <input type="number" id="bottleSize" value="10" min="2" max="100" onchange="buildBlend()" />
+              </div>
+
+              <div style="margin-top:12px">
+                <button onclick="buildBlend()">Generate blend</button>
+                <button onclick="saveCard()" style="background:transparent;border:1px solid #e6e6e6;color:var(--muted)">Save card</button>
+              </div>
+            </div>
+
+            <div class="blend-output">
+              <div class="pill" id="dilutionPill">Safe guide</div>
+              <div class="blend-card" id="blendCard">
+                <div class="muted">No blend yet — pick a vibe and generate.</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:10px" class="muted">The suggestions are non-clinical and may support everyday wellbeing. Always patch test, keep out of reach of pets when using essential oils, and consult a qualified provider for pregnancy or medical questions.</div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="card">
+          <h4 style="margin:0">Need a quick answer?</h4>
+          <p class="muted">Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+        </div>
+      </aside>
+    </section>
+
+    <section style="margin-top:18px" class="card">
+      <h3 style="margin-top:0">FAQ — safety first</h3>
+      <dl>
+        <dt><strong>Are these remedies medical?</strong></dt>
+        <dd class="muted">No. Our scent guides and blends are thoughtfully composed and may support mood or relaxation, but they are not medical treatments.</dd>
+
+        <dt><strong>How should I dilute oils for topical use?</strong></dt>
+        <dd class="muted">We list dilution ranges on each suggested blend. A common low-risk range for adults is 1-2% for leave-on skin application. For children, pregnant people, or sensitive skin choose lower dilutions and consult a provider. Always perform a patch test.</dd>
+
+        <dt><strong>What about pets?</strong></dt>
+        <dd class="muted">Some essential oils can be unsafe for pets. Use caution near animals, avoid applying oils directly to them, and ensure shared spaces have good ventilation.</dd>
+
+        <dt><strong>Pregnancy & nursing</strong></dt>
+        <dd class="muted">If pregnant or nursing, consult a qualified healthcare provider before using essential oils.</dd>
+      </dl>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap" style="display:flex;justify-content:space-between;align-items:center">
+      <div class="muted">Contact • {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      <div><a href="pricing.html">Membership & pricing</a> • <a href="about.html">Our approach</a></div>
+    </div>
+  </footer>
+
+  <!-- Modal: Guided micro-practice -->
+  <div id="modalOverlay" class="overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h2 id="modalTitle">Brief guided practice</h2>
+      <p class="muted">Choose one of three micro-practices and follow the gentle prompts. This is a non-medical calming routine that may support steadier moments.</p>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button onclick="selectPractice('breath')">Breathing</button>
+        <button onclick="selectPractice('journaling')">Journaling</button>
+        <button onclick="selectPractice('intention')">Intention</button>
+      </div>
+
+      <div id="practiceArea" style="margin-top:14px"></div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px">
+        <button onclick="closeModal()" style="background:transparent;border:1px solid #e6e6e6;color:var(--muted)">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Contact form actions
+    function submitContact(e){
+      e.preventDefault();
+      const name=document.getElementById('name').value.trim();
+      const email=document.getElementById('email').value.trim();
+      const phone=document.getElementById('phone').value.trim();
+      const interest=document.getElementById('interest').value;
+      const message=document.getElementById('message').value.trim();
+      const body = encodeURIComponent('Name: '+name+'\nPhone: '+phone+'\nInterest: '+interest+'\n\nMessage:\n'+message);
+      const mail = 'mailto:{{EMAIL}}?subject='+encodeURIComponent('Contact from site: '+name)+'&body='+body;
+      window.location.href = mail;
+    }
+    function mailtoContact(){
+      window.location.href = 'mailto:{{EMAIL}}';
+    }
+
+    // Blend builder data & logic
+    const blendProfiles = {
+      calm: {title:'Calm focus', oils:[{name:'Lavender',drops:6},{name:'Sweet orange',drops:3},{name:'Roman chamomile',drops:1}],notes:'Soothing, gentle for inhalation.'},
+      energize: {title:'Gentle energy', oils:[{name:'Grapefruit',drops:5},{name:'Peppermint',drops:2},{name:'Bergamot',drops:3}],notes:'Bright, uplifting when inhaled.'},
+      rest: {title:'Easy rest', oils:[{name:'Lavender',drops:6},{name:'Cedarwood',drops:3},{name:'Vetiver (small)',drops:1}],notes:'Warm base to help wind down.'},
+      clarity: {title:'Clear thinking', oils:[{name:'Rosemary',drops:3},{name:'Lemon',drops:5},{name:'Frankincense',drops:2}],notes:'Focus-supporting aroma blend.'},
+      comfort: {title:'Soothing comfort', oils:[{name:'Sweet marjoram',drops:2},{name:'Lavender',drops:5},{name:'Chamomile',drops:3}],notes:'Gentle contouring and calm.'}
+    };
+    let useMode='inhalation';
+    function setUse(mode){useMode=mode;document.getElementById('useInh').style.border='1px solid #e6e6e6';document.getElementById('useTop').style.border='1px solid #e6e6e6';if(mode==='inhalation'){document.getElementById('useInh').style.border='2px solid var(--accent)';}else{document.getElementById('useTop').style.border='2px solid var(--accent)'};buildBlend();}
+    function setDefaults(){document.getElementById('useInh').style.border='2px solid var(--accent)';}
+    setDefaults();
+
+    function buildBlend(){
+      const vibe=document.getElementById('vibeSelect').value;
+      const bottle = Math.max(2,Number(document.getElementById('bottleSize').value||10));
+      const profile = blendProfiles[vibe];
+      const totalDrops = profile.oils.reduce((s,o)=>s+o.drops,0);
+      const singleDropVolume=0.05; // mL per drop approx
+      const blendVolumeDrops = Math.round((bottle)/singleDropVolume);
+      // scale factor
+      const scale = Math.max(1, Math.round(blendVolumeDrops/20));
+      const lines = [];
+      profile.oils.forEach(o=>{
+        const d = Math.max(1, Math.round(o.drops*scale));
+        lines.push(d+' drops — '+o.name);
+      });
+      const dilution = computeDilution(useMode,bottle, profile.oils.map(o=>o.drops));
+      const pill = document.getElementById('dilutionPill');
+      pill.textContent = dilution.title + ' • ' + dilution.note;
+
+      const el = document.getElementById('blendCard');
+      el.innerHTML = '';
+      const h = document.createElement('div'); h.style.fontWeight='700'; h.textContent=profile.title; el.appendChild(h);
+      const ul = document.createElement('div'); ul.style.marginTop='8px'; ul.innerHTML = lines.map(l=>'<div>'+l+'</div>').join(''); el.appendChild(ul);
+      const inst = document.createElement('div'); inst.style.marginTop='10px'; inst.innerHTML = '<strong>Instructions</strong><div style="margin-top:6px" class="muted">'+generateInstructions(useMode,bottle,dilution)+'<br/><em style="display:block;margin-top:8px;color:#7a7a7a">Note: always patch test. Keep away from pets. Consult a specialist for pregnancy or medical concerns.</em></div>';
+      el.appendChild(inst);
+    }
+
+    function computeDilution(use,bottle,oilDrops){
+      // Provide human-friendly guidance
+      if(use==='inhalation'){
+        return {title:'Inhalation (diffuse)',note:'no topical dilution needed'};
+      }
+      // topical
+      // rough dilution percent: total drops in bottle * 0.05 / bottle mL
+      const totalDrops = oilDrops.reduce((s,d)=>s+d,0);
+      const approxMl = totalDrops*0.05; // mL
+      const percent = Math.round((approxMl / Math.max(1,bottle)) * 100);
+      // recommend safe ranges
+      let note='Approx. '+percent+'%';
+      if(percent<=1) note += ' (low)'; else if(percent<=3) note += ' (typical)'; else note += ' (use with caution)';
+      return {title:'Topical dilution',note:note};
+    }
+
+    function generateInstructions(use,bottle,dilution){
+      if(use==='inhalation'){
+        return 'Add the drops to a diffuser or a tissue for occasional inhalation. Start with a small amount and observe how you respond.';
+      }
+      return 'Combine the recommended drops into a '+bottle+' mL carrier oil bottle. Shake gently before use. Apply a small patch test to the inner forearm and wait 24 hours for sensitivity. Use sparingly.';
+    }
+
+    function saveCard(){
+      const el = document.getElementById('blendCard');
+      const text = el.innerText || 'Blend saved.';
+      // download as text file locally
+      const blob = new Blob([text],'text/plain');
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href=url;a.download='blend-card.txt';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+    }
+
+    // Modal guided practice
+    function openModal(id){
+      document.getElementById('modalOverlay').classList.add('show');
+      document.getElementById('modalOverlay').setAttribute('aria-hidden','false');
+      selectPractice('breath');
+    }
+    function closeModal(){
+      document.getElementById('modalOverlay').classList.remove('show');
+      document.getElementById('modalOverlay').setAttribute('aria-hidden','true');
+      // stop any running timers
+      clearInterval(window._practiceInterval);
+    }
+
+    function selectPractice(key){
+      const area=document.getElementById('practiceArea'); area.innerHTML=''; clearInterval(window._practiceInterval);
+      if(key==='breath'){
+        area.innerHTML = '<div class="timer" id="breathTimer">Ready</div><div class="muted" style="text-align:center;margin-top:8px">Follow the circle: inhale 4, hold 4, exhale 6. Repeat for 3 cycles.</div><div class="controls"><button onclick="startBreath()">Start</button><button onclick="stopBreath()">Stop</button></div><div id="breathCircle" style="width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#9fb49c);margin:12px auto"></div>';
+      } else if(key==='journaling'){
+        area.innerHTML = '<div class="muted">A short timed journaling prompt. Write untidily for 3 minutes. Prompts rotate.</div><div style="margin-top:8px"><textarea id="journal" rows="6" style="width:100%"></textarea></div><div class="controls"><button onclick="startJournal()">Start 3 min</button><button onclick="stopPractice()">Clear</button></div><div id="journalTimer" class="muted" style="text-align:center;margin-top:8px"></div>';
+      } else if(key==='intention'){
+        area.innerHTML = '<div class="muted">Set an intention in three short steps: name it, choose one tiny action, and note when you will do it.</div><ol style="margin-top:8px"><li><input placeholder="My intention..." style="width:100%"></li><li><input placeholder="One small action..." style="width:100%"></li><li><input placeholder="When will I do it?" style="width:100%"></li></ol><div class="controls"><button onclick="saveIntention()">Save</button></div><div id="intentionSaved" class="muted" style="text-align:center;margin-top:8px"></div>';
+      }
+    }
+
+    // Breathing practice simple animation
+    function startBreath(){
+      const circle = document.getElementById('breathCircle'); const timer = document.getElementById('breathTimer');
+      let phase = 0; // 0 inhale,1 hold,2 exhale
+      let step = 0;
+      const sequence = [4,4,6];
+      function animatePhase(){
+        const duration = sequence[phase]*1000;
+        timer.textContent = (sequence[phase])+'s '+(phase===0?'inhale':phase===1?'hold':'exhale');
+        circle.animate([{transform:'scale('+(phase===2?0.8:1)+')'},{transform:'scale('+(phase===2?1:1.1)+')'}],{duration:duration,iterations:1,easing:'ease-in-out'});
+        phase = (phase+1)%3;
+      }
+      animatePhase();
+      window._practiceInterval = setInterval(animatePhase, (sequence[0]+sequence[1]+sequence[2])*1000);
+    }
+    function stopBreath(){ clearInterval(window._practiceInterval); document.getElementById('breathTimer').textContent='Stopped'; }
+
+    // Journaling timer
+    function startJournal(){
+      const timerEl = document.getElementById('journalTimer'); let t=3*60; timerEl.textContent = formatTime(t);
+      window._practiceInterval = setInterval(()=>{ t--; timerEl.textContent=formatTime(t); if(t<=0){clearInterval(window._practiceInterval);timerEl.textContent='Complete — take a breath.';} },1000);
+    }
+    function stopPractice(){ clearInterval(window._practiceInterval); const jt=document.getElementById('journalTimer'); if(jt) jt.textContent='Cleared'; document.getElementById('journal').value=''; }
+    function formatTime(s){ const m=Math.floor(s/60); const sec=s%60; return m+':'+(sec<10?'0':'')+sec; }
+    function saveIntention(){ document.getElementById('intentionSaved').textContent='Saved locally for now.'; }
+
+    // Utils
+    // initialize blend
+    document.addEventListener('DOMContentLoaded',()=>{ buildBlend(); });
+  </script>
+</body>
+</html>

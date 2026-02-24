@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Programs | {{BUSINESS_NAME}} — {{TAGLINE}}</title>
+  <meta name="description" content="Explore signature wellness coaching programs designed to help you reset, build momentum, and thrive. Flexible support, evidence-informed tools, and playful accountability." />
+  <style>
+    :root{
+      --teal:#0b4d4d;
+      --teal-900:#083c3c;
+      --teal-700:#0f6666;
+      --off:#f7f5ef;
+      --sand:#e9d9c0;
+      --ink:#0e1b1b;
+      --accent:#ff8a5b;
+      --ok:#1b9c6a;
+      --warn:#b85c00;
+      --radius:14px;
+      --shadow:0 10px 30px rgba(11,77,77,.15);
+    }
+    html{scroll-behavior:smooth}
+    *{box-sizing:border-box}
+    body{margin:0;font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--off)}
+    a{color:var(--teal-700);text-decoration:none}
+    a:hover{text-decoration:underline}
+    img{max-width:100%;display:block}
+    .container{width:min(1120px,92%);margin-inline:auto}
+
+    /* Header */
+    .site-header{position:sticky;top:0;z-index:50;background:linear-gradient(0deg,rgba(247,245,239,.85),rgba(247,245,239,.95));backdrop-filter:saturate(120%) blur(6px);border-bottom:1px solid rgba(11,77,77,.08)}
+    .nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0}
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand-badge{width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 30% 30%, var(--sand) 0 40%, transparent 41%),var(--teal);position:relative;overflow:hidden}
+    .brand-badge::after{content:"";position:absolute;inset:-30%;background:url('assets/img/pattern.svg') center/140% repeat;opacity:.12;mix-blend:multiply}
+    .brand-name{font-weight:700;color:var(--teal);letter-spacing:.3px}
+    .nav-links{display:flex;align-items:center;gap:22px}
+    .nav-links a{color:var(--ink);font-weight:600}
+    .nav-cta{display:inline-flex;align-items:center;gap:10px;background:var(--teal);color:white;padding:10px 16px;border-radius:999px;border:2px solid var(--teal);box-shadow:var(--shadow)}
+    .nav-cta:hover{background:var(--teal-700)}
+    .nav-toggle{display:none;background:var(--teal);color:#fff;border:none;border-radius:10px;padding:10px 12px}
+    .nav-toggle:focus{outline:3px solid var(--accent)}
+    @media (max-width:860px){
+      .nav-links{position:fixed;inset:64px 0 auto 0;background:var(--off);padding:18px 24px;border-bottom:1px solid rgba(11,77,77,.08);display:none;flex-direction:column;align-items:flex-start;gap:16px}
+      .nav-links.open{display:flex}
+      .nav-toggle{display:inline-flex}
+    }
+
+    /* Hero */
+    .hero{position:relative;overflow:hidden}
+    .hero::before{content:"";position:absolute;inset:0;background:radial-gradient(1200px 400px at -10% -10%, var(--sand), transparent 60%), radial-gradient(900px 300px at 110% -20%, rgba(255,138,91,.25), transparent 60%)}
+    .hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;padding:56px 0}
+    .eyebrow{display:inline-block;background:rgba(11,77,77,.08);color:var(--teal);padding:6px 10px;border-radius:999px;font-weight:700;letter-spacing:.2px}
+    h1{margin:10px 0 12px;font-size:clamp(28px,3.6vw,44px);line-height:1.15;color:var(--teal-900)}
+    .sub{font-size:clamp(16px,2.2vw,20px);max-width:56ch}
+    .actions{display:flex;flex-wrap:wrap;gap:14px;margin-top:18px}
+    .btn{display:inline-flex;align-items:center;gap:10px;padding:12px 18px;border-radius:12px;border:2px solid transparent;font-weight:700}
+    .btn-primary{background:var(--teal);color:#fff;border-color:var(--teal)}
+    .btn-primary:hover{background:var(--teal-700)}
+    .btn-soft{background:rgba(11,77,77,.08);color:var(--teal);border-color:rgba(11,77,77,.12)}
+    .hero-visual{position:relative}
+    .hero-visual::after{content:"";position:absolute;inset:auto -18% -12% -18%;height:40%;background:url('assets/img/pattern.svg') center/120% repeat;border-radius:40px;opacity:.15;transform:rotate(-2deg)}
+    .hero art{position:relative;z-index:1}
+    @media (max-width:960px){.hero .wrap{grid-template-columns:1fr}}
+
+    /* Sections */
+    section{padding:56px 0}
+    .section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:22px}
+    .kicker{color:var(--teal);font-weight:800;letter-spacing:.2px}
+    h2{margin:6px 0 14px;font-size:clamp(22px,3vw,30px);color:var(--teal-900)}
+    .lead{max-width:62ch}
+
+    /* Benefits */
+    .benefits{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .card{background:#fff;border:1px solid rgba(11,77,77,.1);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+    .icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(145deg,var(--sand),#fff);border:1px solid rgba(11,77,77,.12);display:grid;place-items:center;color:var(--teal);font-weight:800}
+    .card h3{margin:12px 0 8px;font-size:18px;color:var(--teal)}
+    @media (max-width:960px){.benefits{grid-template-columns:1fr}}
+
+    /* Tiers */
+    .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;align-items:stretch}
+    .tier{background:#fff;border:2px solid rgba(11,77,77,.12);border-radius:18px;padding:22px;position:relative;overflow:hidden}
+    .tier.featured{border-color:var(--teal);box-shadow:0 20px 50px rgba(11,77,77,.18)}
+    .tag{position:absolute;top:14px;right:14px;background:var(--teal);color:#fff;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800;letter-spacing:.3px}
+    .price{font-weight:900;color:var(--teal-900);font-size:22px}
+    .meta{color:#3a5555;font-weight:600}
+    .tier ul{padding-left:18px;margin:10px 0}
+    .tier li{margin:8px 0}
+    .tier .btn{width:100%;justify-content:center;margin-top:8px}
+    @media (max-width:960px){.tiers{grid-template-columns:1fr}}
+
+    /* Testimonials */
+    .testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .quote{background:#fff;border:1px solid rgba(11,77,77,.1);border-radius:16px;padding:18px;box-shadow:var(--shadow)}
+    .who{display:flex;align-items:center;gap:10px;margin-top:10px}
+    .avatar{width:42px;height:42px;border-radius:50%;background:url('assets/img/avatar.svg') center/cover no-repeat;border:1px solid rgba(11,77,77,.12)}
+    @media (max-width:960px){.testi-grid{grid-template-columns:1fr}}
+
+    /* FAQ */
+    .faq{display:grid;grid-template-columns:1.1fr .9fr;gap:24px}
+    .accordion{border:1px solid rgba(11,77,77,.12);border-radius:14px;overflow:hidden;background:#fff}
+    .acc-item+.acc-item{border-top:1px solid rgba(11,77,77,.08)}
+    .acc-btn{width:100%;text-align:left;background:#fff;border:0;padding:16px 16px;display:flex;justify-content:space-between;align-items:center;font-weight:700;color:var(--teal-900)}
+    .acc-btn:focus{outline:3px solid var(--accent)}
+    .acc-panel{max-height:0;overflow:hidden;transition:max-height .35s ease;padding:0 16px}
+    .acc-panel.open{padding:0 16px 14px}
+    .acc-icon{width:26px;height:26px;border-radius:8px;background:rgba(11,77,77,.08);display:grid;place-items:center;color:var(--teal);font-weight:800;margin-left:12px}
+    @media (max-width:960px){.faq{grid-template-columns:1fr}}
+
+    /* Newsletter */
+    .news-wrap{display:grid;grid-template-columns:1.2fr .8fr;gap:24px;align-items:center;background:linear-gradient(180deg, #fff, #fff) padding-box, linear-gradient(135deg, var(--sand), rgba(11,77,77,.1)) border-box;border:2px solid transparent;border-radius:20px;padding:22px;box-shadow:var(--shadow)}
+    .news-art{border-radius:16px;overflow:hidden;background:var(--sand);position:relative}
+    .news-art::after{content:"";position:absolute;inset:0;background:url('assets/img/pattern.svg') center/120% repeat;opacity:.2}
+    form.news{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .input{flex:1;min-width:220px;padding:12px 12px;border-radius:12px;border:2px solid rgba(11,77,77,.2)}
+    .hint{font-size:13px;color:#3a5555;margin-top:6px}
+    .error{color:#9a2c2c}
+
+    /* CTA Strip */
+    .cta-strip{position:relative;border-radius:20px;background:var(--teal);color:#fff;overflow:hidden}
+    .cta-strip::before{content:"";position:absolute;inset:-40% -10% auto -10%;height:200%;background:url('assets/img/pattern.svg') center/120% repeat;opacity:.1}
+    .cta-flex{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:24px}
+    .cta-flex .btn{background:#fff;color:var(--teal);border-color:#fff}
+    @media (max-width:860px){.cta-flex{flex-direction:column;text-align:center}}
+
+    /* Footer */
+    footer{padding:40px 0;border-top:1px solid rgba(11,77,77,.08)}
+    .foot-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}
+    .foot small{color:#3a5555}
+    @media (max-width:860px){.foot-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <a class="visually-hidden" href="#main">Skip to content</a>
+  <header class="site-header" role="banner">
+    <div class="container nav">
+      <a class="brand" href="index.html" aria-label="Go to home">
+        <span class="brand-badge" aria-hidden="true"></span>
+        <span class="brand-name">Tide & Bloom Wellness Co.</span>
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="primary-navigation">Menu</button>
+      <nav class="nav-links" id="primary-navigation" role="navigation" aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="services.html">Services</a>
+        <a href="programs.html" aria-current="page">Programs</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="testimonials.html">Testimonials</a>
+        <a href="book.html">Book</a>
+        <a class="nav-cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="container wrap">
+        <div>
+          <span class="eyebrow">Signature Coaching</span>
+          <h1 id="hero-title">{{BUSINESS_NAME}}</h1>
+          <p class="sub">{{TAGLINE}} — A playful, premium coaching experience blending nervous-system care, evidence-informed habits, and kind accountability designed by <strong>{{COACH_NAME}}</strong>, <em>{{CREDENTIALS}}</em>.</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            <a class="btn btn-soft" href="#tiers">Explore Programs</a>
+          </div>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <art>
+            <img src="assets/img/hero.svg" alt="Abstract shapes suggesting balance and energy" />
+          </art>
+        </div>
+      </div>
+    </section>
+
+    <section class="container" id="benefits" aria-labelledby="benefits-title">
+      <div class="section-head">
+        <div>
+          <div class="kicker">Why it works</div>
+          <h2 id="benefits-title">Playful structure. Premium support.</h2>
+          <p class="lead">Big shifts come from kind, consistent moves. Each program mixes strategy and softness so you can build momentum without burning out.</p>
+        </div>
+      </div>
+      <div class="benefits">
+        <article class="card">
+          <div class="icon" aria-hidden="true">✓</div>
+          <h3>System-first coaching</h3>
+          <p>We start with your nervous system. Regulate, then rewire—so change feels safe and sustainable.</p>
+        </article>
+        <article class="card">
+          <div class="icon" aria-hidden="true">✺</div>
+          <h3>Evidence, with heart</h3>
+          <p>Behavior science made human. Clear tools, warm support, and room for your real life.</p>
+        </article>
+        <article class="card">
+          <div class="icon" aria-hidden="true">⚡</div>
+          <h3>Momentum by design</h3>
+          <p>Weekly focus sprints, gentle accountability, and tiny experiments that compound.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="container" id="tiers" aria-labelledby="tiers-title">
+      <div class="section-head">
+        <div>
+          <div class="kicker">Choose your container</div>
+          <h2 id="tiers-title">Programs that meet you where you are</h2>
+          <p class="lead">All tiers include private coaching calls, in-between support, and a playful toolkit library. Pick the pace that matches your season.</p>
+        </div>
+        <div>
+          <a class="btn btn-soft" href="pricing.html">See pricing</a>
+        </div>
+      </div>
+
+      <div class="tiers" role="list">
+        <article class="tier" role="listitem" aria-labelledby="reset-title">
+          <h3 id="reset-title">Reset</h3>
+          <p class="meta">4 weeks • gentle reboot</p>
+          <p>Calm the noise and rebuild a kinder baseline. Perfect for busy seasons or a focused refresh.</p>
+          <ul>
+            <li>4 x 50-min private sessions</li>
+            <li>Personal regulation map + morning/evening micro-routines</li>
+            <li>Unlimited voice/text check-ins (48h response)</li>
+            <li>Access to the Pocket Tools library</li>
+          </ul>
+          <p class="price">Starts at $480</p>
+          <a class="btn btn-primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </article>
+
+        <article class="tier featured" role="listitem" aria-labelledby="momentum-title">
+          <span class="tag">Most popular</span>
+          <h3 id="momentum-title">Momentum</h3>
+          <p class="meta">12 weeks • steady growth</p>
+          <p>Build confident habits with rhythm and support. Ideal for meaningful lifestyle changes.</p>
+          <ul>
+            <li>12 x 50-min private sessions</li>
+            <li>Custom Habit Architecture plan + weekly focus sprints</li>
+            <li>In-between feedback loops (24h response)</li>
+            <li>Guided breath + nervous-system audio bundle</li>
+          </ul>
+          <p class="price">Starts at $1,380</p>
+          <a class="btn btn-primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </article>
+
+        <article class="tier" role="listitem" aria-labelledby="thrive-title">
+          <h3 id="thrive-title">Thrive</h3>
+          <p class="meta">6 months • deep transformation</p>
+          <p>Long-game coaching for sustainable identity shifts and joyful performance.</p>
+          <ul>
+            <li>24 x 50-min private sessions</li>
+            <li>Quarterly vision reset + metrics that actually matter</li>
+            <li>Priority chat support (same-day)</li>
+            <li>Bonus: Retreat day itinerary + integration plan</li>
+          </ul>
+          <p class="price">Starts at $2,520</p>
+          <a class="btn btn-primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="container" id="testimonials" aria-labelledby="testi-title">
+      <div class="section-head">
+        <div>
+          <div class="kicker">Client notes</div>
+          <h2 id="testi-title">Wins worth celebrating</h2>
+          <p class="lead">Real results from kind, strategic effort. Photos are illustrative to protect privacy.</p>
+        </div>
+      </div>
+      <div class="testi-grid">
+        <figure class="quote">
+          <blockquote>
+            “I arrived crispy and skeptical. Four weeks later I sleep, I eat breakfast, and the 3pm crash is gone. It felt like being coached by a scientist who also gives great hugs.”
+          </blockquote>
+          <figcaption class="who"><span class="avatar" aria-hidden="true"></span> <div><strong>A.</strong> • founder, {{CITY}}</div></figcaption>
+        </figure>
+        <figure class="quote">
+          <blockquote>
+            “Momentum unlocked my afternoons. The habit sprints are genius—small, doable, and somehow exciting. My team noticed before I did.”
+          </blockquote>
+          <figcaption class="who"><span class="avatar" aria-hidden="true"></span> <div><strong>M.</strong> • product lead</div></figcaption>
+        </figure>
+        <figure class="quote">
+          <blockquote>
+            “Six months with {{COACH_NAME}} reframed how I take care of myself and my business. Revenue up, stress down, joy unmistakably higher.”
+          </blockquote>
+          <figcaption class="who"><span class="avatar" aria-hidden="true"></span> <div><strong>J.</strong> • creative director</div></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="container" id="faq" aria-labelledby="faq-title">
+      <div class="faq">
+        <div>
+          <div class="kicker">Good to know</div>
+          <h2 id="faq-title">Program FAQ</h2>
+          <p class="lead">Transparent, flexible, and human. If you have a question that isn’t here, email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</p>
+        </div>
+        <div class="accordion" role="region" aria-label="Program FAQ">
+          <div class="acc-item">
+            <button class="acc-btn" aria-expanded="false" aria-controls="a1" id="q1">How do I choose between tiers? <span class="acc-icon" aria-hidden="true">+</span></button>
+            <div id="a1" class="acc-panel" role="region" aria-labelledby="q1">
+              <p>Pick the container that matches your timeline and support needs. If you’re new or in a busy season, Reset is a kind starting point. Momentum builds real skills with weekly rhythm. Thrive supports bigger identity shifts over time. We’re happy to advise on a free consult.</p>
+            </div>
+          </div>
+          <div class="acc-item">
+            <button class="acc-btn" aria-expanded="false" aria-controls="a2" id="q2">What’s your approach? <span class="acc-icon" aria-hidden="true">+</span></button>
+            <div id="a2" class="acc-panel" role="region" aria-labelledby="q2">
+              <p>We blend behavior science, nervous-system literacy, and compassionate coaching. We design tiny experiments, track meaningful signals, and celebrate imperfect action.</p>
+            </div>
+          </div>
+          <div class="acc-item">
+            <button class="acc-btn" aria-expanded="false" aria-controls="a3" id="q3">Do you offer payment plans? <span class="acc-icon" aria-hidden="true">+</span></button>
+            <div id="a3" class="acc-panel" role="region" aria-labelledby="q3">
+              <p>Yes. Monthly plans are available for all tiers at no added cost. See the Pricing page for details and checkout links.</p>
+            </div>
+          </div>
+          <div class="acc-item">
+            <button class="acc-btn" aria-expanded="false" aria-controls="a4" id="q4">What’s the time commitment? <span class="acc-icon" aria-hidden="true">+</span></button>
+            <div id="a4" class="acc-panel" role="region" aria-labelledby="q4">
+              <p>Sessions are 50 minutes weekly. Expect 15–20 minutes on practice days for tiny experiments and reflection. You’ll feel progress without crowding your calendar.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="container" id="newsletter" aria-labelledby="news-title">
+      <div class="news-wrap">
+        <div>
+          <div class="kicker">Free guide</div>
+          <h2 id="news-title">Pocket Reset: 5-Min Nervous System Soother</h2>
+          <p class="lead">Join the studio newsletter and get a one-page guide you can use between meetings, before bed, or whenever you need a soft reboot.</p>
+          <form class="news" id="news-form" novalidate>
+            <label class="visually-hidden" for="news-email">Email</label>
+            <input class="input" id="news-email" name="email" type="email" placeholder="you@domain.com" required aria-describedby="news-hint" />
+            <button class="btn btn-primary" type="submit">Send me the guide</button>
+            <div id="news-hint" class="hint">We send thoughtful notes. 1–2x/month. Unsubscribe anytime.</div>
+            <div id="news-feedback" class="hint" role="status" aria-live="polite"></div>
+          </form>
+        </div>
+        <div class="news-art" aria-hidden="true">
+          <img src="assets/img/pattern.svg" alt="" style="opacity:0" />
+        </div>
+      </div>
+    </section>
+
+    <section class="container cta-strip" aria-labelledby="book-cta-title">
+      <div class="cta-flex">
+        <div>
+          <h2 id="book-cta-title" style="margin:6px 0 6px">Ready to begin with {{COACH_NAME}}?</h2>
+          <p style="margin:0">Your future self is waving from the other side of the first call.</p>
+        </div>
+        <div>
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer role="contentinfo">
+    <div class="container foot">
+      <div class="foot-grid">
+        <div>
+          <strong>{{BUSINESS_NAME}}</strong><br />
+          <small>{{TAGLINE}}</small>
+        </div>
+        <div>
+          <small>
+            Contact: <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a><br />
+            Studio: {{ADDRESS}}, {{CITY}}, {{STATE}} {{ZIP}}<br />
+            Hours: {{HOURS}}
+          </small>
+        </div>
+      </div>
+      <small style="display:block;margin-top:14px;color:#3a5555">© <span id="year"></span> Tide & Bloom Wellness Co. All rights reserved.</small>
+    </div>
+  </footer>
+
+  <script>
+    (function(){
+      const navToggle = document.querySelector('.nav-toggle');
+      const nav = document.getElementById('primary-navigation');
+      if(navToggle){
+        navToggle.addEventListener('click',()=>{
+          const open = nav.classList.toggle('open');
+          navToggle.setAttribute('aria-expanded',open);
+        });
+      }
+      // Smooth scroll for in-page anchors
+      document.querySelectorAll('a[href^="#"]').forEach(a=>{
+        a.addEventListener('click',e=>{
+          const id = a.getAttribute('href');
+          if(id.length>1){
+            const el = document.querySelector(id);
+            if(el){
+              e.preventDefault();
+              el.scrollIntoView({behavior:'smooth',block:'start'});
+            }
+          }
+        })
+      });
+      // Accordion
+      document.querySelectorAll('.acc-btn').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          const panel = document.getElementById(btn.getAttribute('aria-controls'));
+          const expanded = btn.getAttribute('aria-expanded')==='true';
+          btn.setAttribute('aria-expanded', String(!expanded));
+          const p = panel;
+          if(!expanded){
+            p.classList.add('open');
+            p.style.maxHeight = p.scrollHeight + 'px';
+          }else{
+            p.style.maxHeight = '0px';
+            p.addEventListener('transitionend',()=>p.classList.remove('open'),{once:true});
+          }
+        })
+      });
+      // Newsletter form validation hints
+      const form = document.getElementById('news-form');
+      const email = document.getElementById('news-email');
+      const feedback = document.getElementById('news-feedback');
+      if(form){
+        form.addEventListener('submit',e=>{
+          e.preventDefault();
+          feedback.classList.remove('error');
+          if(!email.value || !email.validity.valid){
+            feedback.textContent = 'Please enter a valid email address.';
+            feedback.classList.add('error');
+            email.focus();
+            return;
+          }
+          feedback.textContent = 'Thanks! Check your inbox for the Pocket Reset.';
+          form.reset();
+        })
+      }
+      // Year
+      const y = document.getElementById('year'); if(y) y.textContent = new Date().getFullYear();
+    })();
+  </script>
+</body>
+</html>

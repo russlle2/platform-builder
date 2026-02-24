@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'/>
+  <meta name='viewport' content='width=device-width,initial-scale=1'/>
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fffdfb;--accent:#7b5ea6;--muted:#68707b;--card:#fff;--glass:rgba(255,255,255,0.8);font-family:Georgia, 'Times New Roman', serif}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#f7f4fb);color:#1a1530}
+    .wrap{max-width:960px;margin:0 auto;padding:28px}
+    header{display:flex;justify-content:space-between;align-items:center;padding-bottom:12px}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    .hero{background:linear-gradient(135deg, rgba(123,94,166,0.06), rgba(247,240,251,0.8));padding:26px;border-radius:12px}
+    h1{margin:0;font-size:30px}
+    p.lead{color:var(--muted);margin-top:8px}
+    .grid{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-top:18px}
+    .card{background:var(--card);padding:16px;border-radius:12px;border:1px solid rgba(20,18,24,0.03)}
+    .bio{font-size:15px}
+    .credentials{margin-top:12px;color:var(--muted);font-weight:700}
+    .social-proof{display:flex;gap:12px;margin-top:12px}
+    .chip{background:linear-gradient(90deg,#fff,#faf7ff);padding:8px;border-radius:10px}
+    .process{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+    .faq details{margin-top:8px}
+    .cta{display:inline-block;margin-top:12px;padding:10px 14px;background:var(--accent);color:white;border-radius:10px;text-decoration:none}
+    .pattern{position:fixed;left:-80px;bottom:-60px;opacity:0.08;width:460px;height:460px;pointer-events:none}
+    @media(max-width:800px){.grid{grid-template-columns:1fr}.pattern{left:-40px;bottom:-20px;width:300px;height:300px}}
+  </style>
+</head>
+<body>
+  <svg class='pattern' viewBox='0 0 600 600' xmlns='http://www.w3.org/2000/svg'>
+    <defs>
+      <radialGradient id='rg' cx='30%' cy='30%'>
+        <stop offset='0%' stop-color='#f4e9ff' />
+        <stop offset='100%' stop-color='#fff' />
+      </radialGradient>
+    </defs>
+    <rect width='100%' height='100%' fill='url(#rg)' rx='40'/>
+    <g fill='rgba(123,94,166,0.12)'>
+      <rect x='40' y='60' width='140' height='140' rx='20' />
+      <circle cx='420' cy='120' r='90' />
+      <rect x='200' y='320' width='220' height='90' rx='18' />
+    </g>
+  </svg>
+
+  <div class='wrap'>
+    <header>
+      <div style='font-weight:800;color:var(--accent)'>{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href='index.html'>Intro</a>
+        <a href='services.html'>Services</a>
+        <a href='conditions.html'>Issues</a>
+        <a href='approach.html'>Approach</a>
+        <a href='pricing.html'>Prices</a>
+        <a href='book.html'>Reserve</a>
+      </nav>
+    </header>
+
+    <section class='hero card'>
+      <h1>Meet {{PRACTITIONER_NAME}}, {{CREDENTIALS}}</h1>
+      <p class='lead'>A collaborative guide for people who want practical, sustainable health changes — balanced with curiosity, science, and attention to the whole person.</p>
+      <div class='social-proof'>
+        <div class='chip'>"Kind, clear, and realistic." — E.M.</div>
+        <div class='chip'>"Helped me sleep better without extremes." — R.S.</div>
+      </div>
+    </section>
+
+    <div class='grid'>
+      <div class='card bio'>
+        <h3>Philosophy</h3>
+        <p>I help people bring simple, evidence-informed practices into their daily lives. My work centers on education, small experiments, and systems thinking — sleep, digestion, movement, stress, and community all matter. I do not sell quick-fixes; instead I guide steady progress.</p>
+
+        <h3 style='margin-top:14px'>Background</h3>
+        <p class='small'>Years of training in integrative approaches plus clinical experience working with people managing stress, sleep disruption, digestive concerns, and chronic inflammation. I collaborate with your existing providers when helpful.</p>
+
+        <div class='credentials'>{{PRACTITIONER_NAME}} • {{CREDENTIALS}}</div>
+
+        <div style='margin-top:12px'>
+          <a class='cta' href='book.html'>Schedule a Meet & Greet</a>
+        </div>
+      </div>
+
+      <aside class='card'>
+        <h4>Quick facts</h4>
+        <ul style='color:var(--muted)'>
+          <li>Approach: Whole-person & collaborative</li>
+          <li>Primary focus: Education, habit-building, optional labs</li>
+          <li>Serving: {{CITY}}, {{STATE}}</li>
+        </ul>
+
+        <div style='margin-top:12px'>
+          <h4>What to expect</h4>
+          <div class='process'>
+            <div><strong>Intake:</strong> 60–90 minutes</div>
+            <div><strong>Plan:</strong> Tailored goals and education</div>
+            <div><strong>Follow-up:</strong> Focused visits & adjustments</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <section style='margin-top:18px'>
+      <h3>Frequently asked</h3>
+      <div class='faq'>
+        <details>
+          <summary>Will you order tests?</summary>
+          <div class='small'>Sometimes. Tests are optional and used as tools to clarify questions. They are explained in plain language and framed within a plan.</div>
+        </details>
+        <details>
+          <summary>Is this medical care?</summary>
+          <div class='small'>We provide integrative care and education. For urgent medical needs or emergencies, please contact primary care or emergency services. We coordinate with your medical team as needed.</div>
+        </details>
+      </div>
+    </section>
+
+    <section style='margin-top:20px' class='card'>
+      <h3>Want a short orientation?</h3>
+      <p class='small'>Sign up for a free, 15-minute clarity call to make sure this is the right fit.</p>
+      <form onsubmit='event.preventDefault();alert("Thanks — we'll reach out at " + (this.email.value||"your email"));'>
+        <input name='email' placeholder='Email' style='padding:10px;border-radius:8px;border:1px solid #eee;width:60%' required />
+        <button class='cta' style='margin-left:8px'>Get the 15-min call</button>
+      </form>
+    </section>
+
+    <footer style='margin-top:18px;color:var(--muted);text-align:center'>
+      <div>{{BUSINESS_NAME}} • {{PHONE}} • <a href='mailto:{{EMAIL}}' style='color:var(--muted);text-decoration:none'>{{EMAIL}}</a></div>
+    </footer>
+  </div>
+</body>
+</html>

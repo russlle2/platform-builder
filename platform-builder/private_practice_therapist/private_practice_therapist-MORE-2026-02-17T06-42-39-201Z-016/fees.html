@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Investment — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1724;--card:#071226;--accent:#ff7a59;--muted:#9aa6b2;--glass:rgba(255,255,255,0.04);--gold:#ffd27a}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:#e6eef6;background:linear-gradient(180deg,var(--bg),#071026);min-height:100vh}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent)}
+    .brand{font-weight:700;color:var(--gold);letter-spacing:-0.5px}
+    nav a{color:#cfe8ff;margin-left:18px;text-decoration:none;font-weight:600}
+    nav a:hover{color:var(--accent)}
+    .container{max-width:1100px;margin:32px auto;padding:0 20px}
+    .hero{display:flex;gap:28px;align-items:center}
+    .hero .left{flex:1}
+    h1{margin:0;font-size:28px;color:#fff}
+    p.lead{color:var(--muted);margin:10px 0 20px}
+    .controls{display:flex;gap:12px;align-items:center}
+    .toggle{background:var(--glass);padding:6px;border-radius:999px;display:inline-flex}
+    .toggle button{background:transparent;border:0;color:#cfe8ff;padding:8px 12px;border-radius:999px;cursor:pointer;font-weight:700}
+    .toggle button.active{background:linear-gradient(90deg,rgba(255,122,89,0.14),rgba(255,122,89,0.06));color:var(--accent)}
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:26px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .price{font-size:22px;font-weight:800;color:var(--accent);display:flex;align-items:baseline;gap:8px}
+    .meta{color:var(--muted);font-size:13px;margin-top:8px}
+    .cta{margin-top:14px}
+    .cta a{display:inline-block;padding:10px 14px;background:var(--accent);color:#06101a;border-radius:10px;text-decoration:none;font-weight:800}
+    .small{font-size:12px;color:var(--muted)}
+    footer{max-width:1100px;margin:36px auto;padding:22px;background:rgba(255,255,255,0.02);border-radius:10px;color:var(--muted)}
+    .mood{display:flex;gap:10px;align-items:center}
+    .mood button{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:8px 10px;border-radius:8px;color:#cfe8ff;cursor:pointer}
+    .mood button.selected{background:rgba(255,122,89,0.12);border-color:rgba(255,122,89,0.2);color:var(--accent)}
+    .recommend{margin-top:16px;padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,122,89,0.03),transparent);border:1px solid rgba(255,122,89,0.04)}
+    .note{font-size:13px;color:var(--muted);margin-top:14px}
+    /* pattern background */
+    .pattern{position:fixed;right:-120px;top:-120px;width:520px;height:520px;opacity:0.08;background:url('assets/img/pattern.svg') no-repeat center/cover;transform:rotate(18deg);pointer-events:none}
+    @media(max-width:900px){.cards{grid-template-columns:1fr}.hero{flex-direction:column;align-items:stretch}}
+  </style>
+</head>
+<body>
+  <div class="pattern" aria-hidden="true"></div>
+  <header>
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Nest</a>
+      <a href="about.html">Profile</a>
+      <a href="specialties.html">Focus Areas</a>
+      <a href="approach.html">Way I Work</a>
+      <a href="fees.html">Investment</a>
+      <a href="faq.html">FAQ</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="left">
+        <h1>Investment & Options</h1>
+        <p class="lead">Transparent choices for short-term focus and group-based learning. Pick what feels right for the moment—you can change course later.</p>
+        <div class="controls">
+          <div class="toggle" role="tablist" aria-label="Pricing display">
+            <button id="toggle-package">Package</button>
+            <button id="toggle-monthly" class="active">Per session</button>
+          </div>
+          <div style="margin-left:10px;color:var(--muted);font-weight:600">Currency: USD</div>
+        </div>
+
+        <div class="mood" style="margin-top:14px">
+          <div class="small">How are you right now?</div>
+          <button data-mood="overwhelmed">Overwhelmed</button>
+          <button data-mood="stuck">Stuck</button>
+          <button data-mood="curious">Curious</button>
+        </div>
+        <div class="recommend" id="recommend">
+          <strong>Recommended:</strong>
+          <div id="recommend-text">A single session can help you get clear on next steps.</div>
+          <div style="margin-top:8px"><a id="recommend-cta" class="cta-link" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cards" aria-live="polite">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div class="small">One-off</div>
+            <div style="font-weight:800">Single Session</div>
+          </div>
+          <div class="price"><span class="value" data-package="120" data-session="130">$130</span><span class="small">/session</span></div>
+        </div>
+        <div class="meta">A focused 50-minute conversation to unpack one concern and plan next steps.</div>
+        <div class="cta"><a href="book.html">Reserve a spot</a></div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div class="small">Focused series</div>
+            <div style="font-weight:800">Short Package</div>
+          </div>
+          <div class="price"><span class="value" data-package="330" data-session="370">$370</span><span class="small">/3 sessions</span></div>
+        </div>
+        <div class="meta">Three sessions sequenced to deepen insight and translate it into small, practical steps.</div>
+        <div class="cta"><a href="book.html">Begin a short package</a></div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div class="small">Cohort experience</div>
+            <div style="font-weight:800">Mini Cohort</div>
+          </div>
+          <div class="price"><span class="value" data-package="420" data-session="75">$75</span><span class="small">/week</span></div>
+        </div>
+        <div class="meta">Six-week small-group track: shared themes, guided process, peer reflections. Limited seats per cohort.</div>
+        <div class="cta"><a href="book.html">See upcoming cohorts</a></div>
+      </div>
+    </section>
+
+    <div class="note">All options include a brief intake so we can set goals together. Payments are processed securely. No medical claims; services are for support and skill-building. If you are in crisis, contact local emergency services or a crisis line immediately.</div>
+  </main>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;gap:20px;align-items:flex-start">
+      <div>
+        <div style="font-weight:700">Confidentiality & scope</div>
+        <div class="small">Sessions are confidential within legal and ethical limits. Therapy is a collaborative process; I will be explicit about my role and any boundaries that apply.</div>
+      </div>
+      <div>
+        <div style="font-weight:700">Contact</div>
+        <div class="small">Phone: {{PHONE}} · Email: {{EMAIL}}</div>
+      </div>
+    </div>
+    <div style="margin-top:12px;font-size:13px;color:var(--muted)">Please note: I do not provide emergency services. If there is immediate danger, call local emergency services or a crisis hotline.</div>
+  </footer>
+
+  <script>
+    // Pricing comparator
+    const btnMonthly = document.getElementById('toggle-monthly');
+    const btnPackage = document.getElementById('toggle-package');
+    const values = Array.from(document.querySelectorAll('.value'));
+    let mode = 'session';
+
+    function animateNumber(el, start, end, suffix=''){
+      const duration = 400;
+      const startTime = performance.now();
+      function tick(now){
+        const t = Math.min(1,(now-startTime)/duration);
+        const current = Math.round(start + (end-start)*t);
+        el.textContent = '$' + current + suffix;
+        if(t<1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+
+    function setMode(newMode){
+      mode = newMode;
+      values.forEach(v=>{
+        const from = parseInt(v.textContent.replace(/[^0-9]/g,''),10) || 0;
+        const to = parseInt(v.getAttribute('data-' + (newMode==='session'?'session':'package')),10);
+        animateNumber(v, from, to, newMode==='package' && v.getAttribute('data-session')? (newMode==='package' && v.getAttribute('data-session')==='75'?'':'') : '');
+      });
+      if(newMode==='session'){
+        btnMonthly.classList.add('active');
+        btnPackage.classList.remove('active');
+      } else {
+        btnPackage.classList.add('active');
+        btnMonthly.classList.remove('active');
+      }
+    }
+
+    btnMonthly.addEventListener('click',()=>setMode('session'));
+    btnPackage.addEventListener('click',()=>setMode('package'));
+
+    // Mood-to-Method (simple)
+    const moodBtns = Array.from(document.querySelectorAll('.mood button'));
+    const recommendText = document.getElementById('recommend-text');
+    const recommendCta = document.getElementById('recommend-cta');
+
+    const moodMap = {
+      overwhelmed: {text:'A single session can help you name what feels most urgent and plan a first step.', cta:'Reserve a clarity session', href:'book.html?intent=clarity'},
+      stuck: {text:'A short package of 3 sessions is a good way to build momentum and test practical shifts.', cta:'Start a short package', href:'book.html?intent=short_package'},
+      curious: {text:'Joining the next cohort will pair structure with shared learning—good for exploring themes over weeks.', cta:'Join the next cohort', href:'book.html?intent=cohort'}
+    };
+
+    moodBtns.forEach(b=>b.addEventListener('click',()=>{
+      moodBtns.forEach(n=>n.classList.remove('selected'));
+      b.classList.add('selected');
+      const key = b.getAttribute('data-mood');
+      const m = moodMap[key];
+      recommendText.textContent = m.text;
+      recommendCta.textContent = m.cta;
+      recommendCta.setAttribute('href', m.href);
+    }));
+
+    // Initialize
+    setMode('session');
+  </script>
+</body>
+</html>

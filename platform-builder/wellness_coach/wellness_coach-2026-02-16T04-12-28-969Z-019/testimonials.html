@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Stories — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfdfe;--card:#fff;--accent:#065f5a;--muted:#556073}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Arial;color:#072022;background:var(--bg)}
+    .container{max-width:1000px;margin:36px auto;padding:20px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none}
+    .lead{background:var(--card);padding:22px;border-radius:12px;display:flex;gap:18px;align-items:center;box-shadow:0 6px 20px rgba(7,18,20,0.06)}
+    .avatar{width:84px;height:84px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(180deg,#e6fffb,#bff1e6)}
+    .avatar svg{width:56px;height:56px}
+    h1{margin:0;font-size:22px}
+    .muted{color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
+    .testimonial{background:var(--card);padding:16px;border-radius:10px;min-height:140px;display:flex;flex-direction:column;justify-content:space-between}
+    .quote{font-style:italic;color:#083333}
+    .meta{display:flex;gap:10px;align-items:center;margin-top:12px}
+    .btn{background:var(--accent);color:#fff;padding:8px 12px;border-radius:8px;text-decoration:none;font-weight:700}
+    .lead-magnet{margin-top:18px;display:flex;gap:12px}
+    .faq{margin-top:18px;background:var(--card);padding:12px;border-radius:10px}
+    footer{margin-top:24px;color:var(--muted);text-align:center}
+    @media(max-width:980px){.grid{grid-template-columns:1fr}.lead{flex-direction:column;align-items:flex-start}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div class="muted">| {{TAGLINE}}</div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="programs.html">Programs</a>
+        <a href="pricing.html">Plans</a>
+        <a href="book.html">Book</a>
+      </nav>
+    </header>
+
+    <section class="lead">
+      <div class="avatar card">
+        <!-- avatar svg unique to testimonials -->
+        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img">
+          <circle cx="32" cy="20" r="12" fill="#0f766e"/>
+          <rect x="12" y="36" width="40" height="16" rx="6" fill="#34d399"/>
+        </svg>
+      </div>
+      <div>
+        <h1>Real clients, real shifts — short stories</h1>
+        <p class="muted">How small habit pivots created calmer mornings, steadier energy, and more clarity. No hype — just structured change led by {{COACH_NAME}}.</p>
+      </div>
+      <div style="margin-left:auto;text-align:right">
+        <div style="font-weight:800">Book a clarity call</div>
+        <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </section>
+
+    <!-- Testimonials grid -->
+    <section class="grid">
+      <article class="testimonial">
+        <div>
+          <div class="quote">“I stopped relying on willpower and started building a short, doable morning routine. Within 6 weeks I felt more focused at work.”</div>
+          <div class="meta muted">— Sarah R., teacher • {{CITY}}</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;justify-content:flex-end">
+          <a class="btn" href="book.html?story=sarah">Read the plan</a>
+        </div>
+      </article>
+
+      <article class="testimonial">
+        <div>
+          <div class="quote">“The Momentum Program helped me stop starting and actually keep going. The accountability and micro-goals were life-changing.”</div>
+          <div class="meta muted">— Marcus D., engineer</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;justify-content:flex-end">
+          <a class="btn" href="book.html?story=marcus">See his schedule</a>
+        </div>
+      </article>
+
+      <article class="testimonial">
+        <div>
+          <div class="quote">“Our VIP Day was practical and calm. By afternoon I had a 90-day blueprint I could actually follow.”</div>
+          <div class="meta muted">— Lena K., entrepreneur</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;justify-content:flex-end">
+          <a class="btn" href="book.html?plan=vipday">Book a VIP Day</a>
+        </div>
+      </article>
+    </section>
+
+    <!-- Social proof / metrics -->
+    <section style="display:flex;gap:12px;margin-top:18px">
+      <div class="card" style="flex:1;padding:14px">
+        <div style="font-size:20px;font-weight:800">250+</div>
+        <div class="muted">coaching hours delivered this year</div>
+      </div>
+      <div class="card" style="flex:1;padding:14px">
+        <div style="font-size:20px;font-weight:800">4.9</div>
+        <div class="muted">average client satisfaction</div>
+      </div>
+    </section>
+
+    <!-- Benefits snapshot -->
+    <section style="margin-top:18px" class="card">
+      <h3 style="margin:0 0 8px">What clients gain</h3>
+      <ul class="muted">
+        <li>Practical daily rhythms that stick</li>
+        <li>Simple frameworks for decision fatigue</li>
+        <li>Accountability without pressure</li>
+      </ul>
+    </section>
+
+    <!-- Lead magnet -->
+    <section class="lead-magnet" style="margin-top:18px">
+      <aside class="card" style="flex:1">
+        <div style="font-weight:800">Free: 7-day habit reboot</div>
+        <p class="muted">A short email sequence with small, achievable steps you can implement today.</p>
+        <form action="/lead" method="post">
+          <input class="input" name="email" placeholder="you@example.com" required>
+          <div style="margin-top:8px"><button class="btn" type="submit">Send me the 7-day reboot</button></div>
+        </form>
+      </aside>
+
+      <aside class="card" style="width:320px;padding:12px">
+        <div style="font-weight:800">Want a case study?</div>
+        <p class="muted">Download a 1-page case study on the Momentum Program.</p>
+        <a class="btn" href="pricing.html">Download</a>
+      </aside>
+    </section>
+
+    <!-- Process (how change happens) -->
+    <section class="faq" aria-labelledby="process">
+      <h3 id="process">How change is built — our three-phase approach</h3>
+      <ol class="muted">
+        <li>Clarify: Identify the single highest-impact habit.</li>
+        <li>Structure: Build repeatable micro-steps and cues.</li>
+        <li>Scale: Layer additional habits and review metrics weekly.</li>
+      </ol>
+    </section>
+
+    <!-- FAQ unique to testimonials page -->
+    <section class="card" style="margin-top:18px;padding:12px">
+      <h4 style="margin:0 0 8px">Questions from clients</h4>
+      <div class="muted">
+        <strong>How long before I see change?</strong>
+        <p>Many clients notice small wins in 2–3 weeks; meaningful, stable shifts typically by 8–12 weeks when the framework is followed.</p>
+
+        <strong>Do you share templates?</strong>
+        <p>Yes — habit maps, checklists, and morning/evening templates are included in the Momentum and VIP options.</p>
+      </div>
+    </section>
+
+    <footer>
+      <div class="muted">Contact {{COACH_NAME}} at <a class="muted" href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="book.html">Book a call</a></div>
+      <div style="margin-top:8px;color:var(--muted)">© {{BUSINESS_NAME}} • {{CITY}}, {{STATE}}</div>
+    </footer>
+  </div>
+</body>
+</html>

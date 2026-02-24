@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Costs — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1724;--glass:rgba(255,255,255,0.06);--accent:#8ec5ff;--muted:#cbd5e1;--card:rgba(255,255,255,0.04);font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;background:linear-gradient(180deg,var(--bg),#071025 60%);color:var(--muted);position:relative;overflow-y:auto}
+    header{backdrop-filter:blur(6px);position:sticky;top:16px;margin:24px auto;max-width:1000px;padding:12px;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));display:flex;gap:18px;align-items:center;justify-content:space-between;border:1px solid rgba(255,255,255,0.04)}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#08293b,#0f4f6f);display:grid;place-items:center;color:var(--accent);font-weight:700}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:10px;font-size:14px}
+    nav a:hover{background:rgba(255,255,255,0.02)}
+    main{max-width:1100px;margin:40px auto;padding:28px}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.04)}
+    h1{margin:0;color:#e6f7ff;font-size:28px}
+    p.lead{color:var(--muted);margin-top:8px;line-height:1.5}
+    .diagnostic{margin-top:18px;padding:14px;border-radius:12px;background:linear-gradient(90deg,rgba(142,197,255,0.04),rgba(140,197,255,0.02));border:1px solid rgba(142,197,255,0.06)}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px}
+    .plan{padding:18px;border-radius:12px;background:var(--card);border:1px solid rgba(255,255,255,0.03)}
+    .plan h3{margin:0 0 8px 0;color:#e9fbff}
+    .price{font-size:20px;color:var(--accent);font-weight:700}
+    .micro{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+    .micro li{background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;font-size:14px}
+    .pricing-table{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+    .cta{display:flex;gap:12px;align-items:center;margin-top:18px}
+    .btn{background:linear-gradient(90deg,var(--accent),#6fd3ff);color:#012;padding:10px 14px;border-radius:10px;font-weight:700;text-decoration:none}
+    .ghost{border:1px solid rgba(255,255,255,0.06);padding:10px 12px;border-radius:10px;color:var(--muted);text-decoration:none}
+    footer{max-width:1100px;margin:28px auto;color:rgba(255,255,255,0.4);font-size:13px;padding:14px;text-align:center}
+    /* decorative svg backdrop */
+    .bg-svg{position:fixed;inset:0;pointer-events:none;opacity:0.6}
+    @media(max-width:900px){.hero{grid-template-columns:1fr;}.pricing-table{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <!-- unique inline SVG pattern for this page -->
+  <svg class="bg-svg" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <defs>
+      <linearGradient id="gA" x1="0" x2="1"><stop offset="0" stop-color="#08304a" stop-opacity="0.7"/><stop offset="1" stop-color="#06121a" stop-opacity="0.3"/></linearGradient>
+      <pattern id="pA" width="120" height="120" patternUnits="userSpaceOnUse">
+        <rect width="120" height="120" fill="none"/>
+        <circle cx="20" cy="20" r="2.5" fill="#0ea5bf" opacity="0.12"/>
+        <circle cx="80" cy="80" r="2.5" fill="#8ec5ff" opacity="0.08"/>
+        <path d="M0 120 L120 0" stroke="#0ea5bf" stroke-opacity="0.03"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#gA)"/>
+    <rect width="100%" height="100%" fill="url(#pA)"/>
+  </svg>
+
+  <header>
+    <div class="brand">
+      <div class="logo">A</div>
+      <div>
+        <div style="color:#dff6ff;font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav aria-label="Primary navigation">
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Shop</a>
+      <a href="pricing.html" style="background:rgba(255,255,255,0.02);border-radius:8px;padding:8px 10px">Costs</a>
+      <a href="about.html">Who&nbsp;we&nbsp;are</a>
+      <a href="book.html" class="btn" style="padding:8px 10px">{{PRIMARY_CTA_LABEL}}</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h1>Transparent pricing for mindful aromatherapy</h1>
+        <p class="lead">Carefully structured sessions, product bundles, and short check-ins. A hybrid approach combining personalized consultations with safe, evidence-informed aromatic care. No medical promises — only practical, safety-first guidance.</p>
+
+        <div class="diagnostic card">
+          <strong>Choose your path</strong>
+          <p style="margin:8px 0 0 0;color:var(--muted);font-size:14px">We offer remote & in-person consultations, blend design, and curated product kits. Select a diagnostic path to find the right match for your needs.</p>
+          <div class="grid" style="margin-top:12px">
+            <div class="plan">
+              <h3>Intro Consult</h3>
+              <div class="price">$65 • 30 min</div>
+              <p style="font-size:13px;color:var(--muted);margin-top:8px">Safe, focused intake and basic recommendations.</p>
+            </div>
+            <div class="plan">
+              <h3>Personal Session</h3>
+              <div class="price">$140 • 60 min</div>
+              <p style="font-size:13px;color:var(--muted);margin-top:8px">Comprehensive assessment with blend formulation.</p>
+            </div>
+            <div class="plan">
+              <h3>Follow-up</h3>
+              <div class="price">$55 • 25 min</div>
+              <p style="font-size:13px;color:var(--muted);margin-top:8px">Review progress, adjust blends/routines.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="micro card" style="margin-top:18px">
+          <strong>Micro-habits (sample)</strong>
+          <ul style="list-style:none;padding:0;margin:8px 0 0 0">
+            <li>&#8226; 1–2 drops in diffuser for 20–30 min in a ventilated space</li>
+            <li>&#8226; Patch test before direct skin application</li>
+            <li>&#8226; Record responses for two days after a new blend</li>
+          </ul>
+        </div>
+
+        <div style="margin-top:16px" class="card">
+          <strong>Safety note</strong>
+          <p style="margin:8px 0 0 0;color:var(--muted);font-size:13px">Practitioner guidance focuses on safety and aromatherapeutic use. Not a substitute for medical care. We discuss dilution, patch testing, pregnancy, and pet-safe practices during consultations.</p>
+        </div>
+      </div>
+
+      <aside class="card">
+        <h2 style="margin-top:0;color:#eafcff">Bundles & purchases</h2>
+        <p style="color:var(--muted)">Select hybrid offerings that combine a session + tailored kit for at-home practice.</p>
+        <div class="pricing-table">
+          <div class="card">
+            <h3>Starter Kit + Intro</h3>
+            <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:14px;color:var(--muted)">Includes 5 essential oils + roller</div><div class="price">$95</div></div>
+            <div style="margin-top:10px"><a class="btn" href="book.html">Reserve</a></div>
+          </div>
+
+          <div class="card">
+            <h3>Custom Blend Package</h3>
+            <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:14px;color:var(--muted)">Session + 10ml bespoke blend</div><div class="price">$170</div></div>
+            <div style="margin-top:10px"><a class="ghost" href="book.html">Book</a></div>
+          </div>
+        </div>
+
+        <div style="margin-top:14px;font-size:13px;color:var(--muted)">
+          Payment accepted by card. Reduced rates for repeat clients. Gift certificates available.
+        </div>
+      </aside>
+    </section>
+
+    <section class="card" style="margin-top:22px">
+      <h3 style="margin:0;color:#eafcff">Comparative plans</h3>
+      <p style="margin:8px 0 0 0;color:var(--muted)">Short, medium, and extended options to fit different needs and budgets. All plans emphasize safety-first dilution and testing.</p>
+
+      <div class="grid" style="margin-top:14px">
+        <div class="plan">
+          <h3>Short Series</h3>
+          <div class="price">$185</div>
+          <p style="font-size:13px;color:var(--muted);margin-top:8px">Three 25-minute check-ins over six weeks. Good for adjustment and troubleshooting.</p>
+        </div>
+        <div class="plan">
+          <h3>Standard</h3>
+          <div class="price">$320</div>
+          <p style="font-size:13px;color:var(--muted);margin-top:8px">One full consult + blend + two follow-ups. Ideal for tailored starts.</p>
+        </div>
+        <div class="plan">
+          <h3>Monthly Support</h3>
+          <div class="price">$95/mo</div>
+          <p style="font-size:13px;color:var(--muted);margin-top:8px">Ongoing care with brief check-ins and supply replenishment.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:20px">
+      <h3 style="margin:0;color:#eafcff">Booking and small print</h3>
+      <ul style="margin-top:10px;color:var(--muted);font-size:14px">
+        <li>&#8226; Appointments may be virtual or in-person; choose when booking.</li>
+        <li>&#8226; Cancellation policy: 24-hour notice requested.</li>
+        <li>&#8226; All consultations include safety screening and guidance on dilution, patch testing, pregnancy, and animals where relevant.</li>
+      </ul>
+      <div class="cta">
+        <a class="btn" href="book.html">Book a session</a>
+        <a class="ghost" href="contact.html">Questions? Contact {{EMAIL}}</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} — Serving {{CITY}}, {{STATE}} • Phone: {{PHONE}} • Email: {{EMAIL}}</div>
+    <div style="margin-top:6px;font-size:12px;color:rgba(255,255,255,0.25)">All guidance prioritizes safety. Not medical advice.</div>
+  </footer>
+</body>
+</html>

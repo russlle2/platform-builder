@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{{BUSINESS_NAME}} — A steady course for daily wellbeing</title>
+  <meta name="description" content="Practical frameworks, habit wiring, and a 30-day path map to clearer routines. No medical claims — just usable changes." />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand">
+      <svg class="logo" width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="48" height="48" rx="8" fill="#E6F7F0"/><path d="M12 30c4-6 10-10 18-10" stroke="#0A6" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
+      <div>
+        <h1 class="business">{{BUSINESS_NAME}}</h1>
+        <p class="tag">{{TAGLINE}}</p>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="index.html" class="nav-link">Pathways</a>
+      <a href="services.html" class="nav-link">Offerings</a>
+      <a href="programs.html" class="nav-link">Journeys</a>
+      <a href="testimonials.html" class="nav-link">Stories</a>
+      <a href="book.html" class="nav-link cta">{{PRIMARY_CTA_LABEL}}</a>
+      <a href="contact.html" class="nav-link">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- HERO (pattern background) -->
+    <section class="hero">
+      <div class="hero-inner">
+        <h2 class="hero-title">Build a clearer rhythm for how your days unfold</h2>
+        <p class="hero-lead">Small, repeatable choices that shape a month. We craft plans around what you already do — and make the important things stick.</p>
+        <div class="hero-actions">
+          <a class="btn primary" href="{{PRIMARY_CTA_URL}}">Start a 15-minute discovery</a>
+          <a class="btn ghost" href="programs.html">Explore Journeys</a>
+        </div>
+        <div class="hero-contacts">Call <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      </div>
+      <svg class="hero-wave" viewBox="0 0 800 200" preserveAspectRatio="none" aria-hidden="true"><path d="M0,120 C120,90 240,160 400,140 C560,120 680,60 800,80 L800,200 L0,200 Z" fill="rgba(255,255,255,0.6)"/></svg>
+    </section>
+
+    <!-- PROGRESS METER: choose goals -> 30-day path map -->
+    <section id="progress" class="card section">
+      <div class="section-grid">
+        <div>
+          <h3>Map your next 30 days</h3>
+          <p>Pick two or three focus areas and watch a suggested path form. Each day shows small, repeatable actions tied to a habit framework.</p>
+
+          <form id="goalForm" class="goals">
+            <label><input type="checkbox" name="goal" value="sleep"> Consistent sleep window</label>
+            <label><input type="checkbox" name="goal" value="movement"> Gentle daily movement</label>
+            <label><input type="checkbox" name="goal" value="mornings"> A clear morning ritual</label>
+            <label><input type="checkbox" name="goal" value="focus"> Built focus blocks</label>
+            <label><input type="checkbox" name="goal" value="connection"> Short daily check-ins</label>
+          </form>
+
+          <div class="path-legend">
+            <strong>Path guidance:</strong>
+            <div class="legend-grid">
+              <span><em class="dot p-sleep"></em> Sleep cue</span>
+              <span><em class="dot p-move"></em> Movement</span>
+              <span><em class="dot p-morn"></em> Morning cue</span>
+              <span><em class="dot p-focus"></em> Focus block</span>
+              <span><em class="dot p-connect"></em> Connection</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h4>30-day path map</h4>
+          <div id="pathMap" class="path-map" aria-live="polite" aria-atomic="true">
+            <!-- JS builds 30 day tiles here -->
+          </div>
+          <div class="path-summary">
+            <div id="progressPct" class="progress-pct">Select goals to preview a plan</div>
+            <button id="exportPlan" class="btn" disabled>Save plan (download)</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHAT TO EXPECT -->
+    <section class="section" id="what-to-expect">
+      <div class="card">
+        <h3>What to expect in a month</h3>
+        <ul>
+          <li><strong>Frameworks, not fads:</strong> Clear habit anchors and micro-routines you can keep.</li>
+          <li><strong>Daily micro-tasks:</strong> Simple prompts that slot into mornings, mid-day, or evenings.</li>
+          <li><strong>Quarterly mindset:</strong> A review method to keep momentum beyond 30 days.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- PROOF GALLERY: rotating testimonials + credibility badges -->
+    <section class="section" id="proofs">
+      <div class="card">
+        <h3>Stories & credibility</h3>
+        <div class="proof-grid">
+          <div class="testimonials">
+            <div id="testimonialHolder" class="testimonial">
+              <!-- JS rotates testimonials here -->
+            </div>
+            <div class="testimonial-controls">
+              <button id="prevTestimonial" class="icon">◀</button>
+              <button id="nextTestimonial" class="icon">▶</button>
+            </div>
+          </div>
+
+          <aside class="badges">
+            <div class="badge" data-tip="Certified Habit Mentor - evidence-informed training">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="#0A6" stroke-width="1.5"/><path d="M8 12.5l2 2 5-5" stroke="#0A6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>Certified Mentor</span>
+            </div>
+            <div class="badge" data-tip="Featured in mindful living newsletters and community roundups">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2" stroke="#06A" stroke-width="1.5"/><path d="M7 10h10" stroke="#06A" stroke-width="1.2" stroke-linecap="round"/></svg>
+              <span>Community feature</span>
+            </div>
+            <div class="badge" data-tip="Practical coaching process for daily habits — client-reviewed">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v6l4 2" stroke="#A60" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="#A60" stroke-width="1.2"/></svg>
+              <span>Client-reviewed</span>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- OBJECTIONS -->
+    <section class="card section" id="objections">
+      <h3>Is this for you?</h3>
+      <div class="faq-grid">
+        <div>
+          <h4>Will this fit a busy schedule?</h4>
+          <p>The paths are built around short anchors: 5–15 minute shifts you can fold into an existing routine. No extra hour needed.</p>
+        </div>
+        <div>
+          <h4>Is this therapy or medical advice?</h4>
+          <p>This is habit and routine coaching focused on outcomes and frameworks. It is not medical care or therapy.</p>
+        </div>
+        <div>
+          <h4>What if I miss days?</h4>
+          <p>The plan includes recovery micro-routines and quick reviews so you can resume momentum without guilt or heavy resets.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section cta-strip">
+      <div class="card">
+        <h3>Ready to try a livable path?</h3>
+        <p>Book a short discovery and see a custom 30-day outline for your current habits.</p>
+        <a class="btn primary large" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>© <span id="year"></span> {{BUSINESS_name}}</div>
+      <div class="footer-links">
+        <a href="about.html">About</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js" defer></script>
+</body>
+</html>

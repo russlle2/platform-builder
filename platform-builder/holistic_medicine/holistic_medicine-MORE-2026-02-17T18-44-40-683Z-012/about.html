@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — Our Approach</title>
+  <style>
+    :root{--bg:#fffefc;--ink:#0f231f;--muted:#5d6a66;--accent:#9dbbac}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:var(--ink);background:var(--bg)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.25rem;border-bottom:1px solid rgba(15,35,31,0.04);background:linear-gradient(180deg,rgba(255,255,255,0.85),rgba(255,255,255,0.6));position:sticky;top:0;z-index:10}
+    .logo{width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#d1e6df);display:grid;place-items:center;font-weight:800;color:#fff}
+    nav a{margin-left:1rem;color:var(--muted);text-decoration:none;font-weight:600}
+    main{max-width:920px;margin:2rem auto;padding:1rem}
+    .hero{display:flex;gap:1rem;align-items:center}
+    h1{margin:0 0 .25rem 0}
+    .muted{color:var(--muted)}
+    .pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:1rem}
+    .pillar{background:white;padding:1rem;border-radius:10px;border:1px solid rgba(15,35,31,0.03)}
+    .quote{font-style:italic;color:var(--muted);margin-top:.6rem}
+    footer{max-width:920px;margin:2rem auto;padding:1rem;color:var(--muted);font-size:.95rem}
+    .reveal{opacity:0;transform:translateY(14px);transition:opacity .7s ease,transform .7s ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none}}
+
+    .modal-backdrop{position:fixed;inset:0;background:rgba(3,5,4,0.45);display:none;align-items:center;justify-content:center;padding:1rem}
+    .modal{background:white;border-radius:12px;padding:1rem;max-width:540px;width:100%}
+    .controls{display:flex;gap:.5rem;justify-content:flex-end;margin-top:.5rem}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:.6rem">
+      <div class="logo">HM</div>
+      <div>
+        <div style="font-weight:800">Holistic Medicine</div>
+        <div style="font-size:.85rem;color:var(--muted)">A practical, whole-life view</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="approach.html">Our Way</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="book.html" style="margin-left:1rem;font-weight:700;color:var(--ink)">{{PRIMARY_CTA_LABEL}}</a>
+      <a href="contact.html" style="margin-left:1rem">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="reveal" data-reveal>
+        <h1>We translate your daily pattern into practical steps</h1>
+        <p class="muted">We start by listening: what matters, what’s getting in the way, and what tiny changes you can carry forward. Our work is educational and collaborative, not prescriptive.</p>
+        <p class="quote">"Small adjustments that align with your life are more likely to stick."</p>
+      </div>
+      <div style="margin-left:auto;display:flex;flex-direction:column;gap:.6rem">
+        <button id="tryBtn2" style="border:1px solid var(--accent);background:transparent;padding:.55rem .8rem;border-radius:9px;color:var(--accent);font-weight:700">Try a guided practice</button>
+        <a href="book.html" style="background:var(--accent);color:white;padding:.55rem .8rem;border-radius:9px;text-decoration:none;font-weight:700;display:inline-block;text-align:center">Schedule a conversation</a>
+      </div>
+    </section>
+
+    <section style="margin-top:1.2rem" class="reveal" data-reveal>
+      <h2>Core pillars</h2>
+      <div class="pillars">
+        <div class="pillar">
+          <strong>Listen & Map</strong>
+          <p class="muted small">A broad intake that captures symptoms, routines, stressors, and supports — then a straightforward map of priorities.</p>
+        </div>
+        <div class="pillar">
+          <strong>Practice & Adjust</strong>
+          <p class="muted small">Short, testable practices we try for a week or two. We review what helps and what needs tweaking.</p>
+        </div>
+        <div class="pillar">
+          <strong>Support at Home</strong>
+          <p class="muted small">Written supports, small toolkits, or brief check-ins to hold progress without overwhelming your schedule.</p>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:1.2rem" class="card reveal" data-reveal>
+      <h3 style="margin-top:0">Myths versus practical truth</h3>
+      <ul class="muted small">
+        <li><strong>Myth:</strong> Integrative means unscientific. <strong>Truth:</strong> We knit lifestyle, evidence-informed techniques, and collaboration with clinicians when needed.</li>
+        <li><strong>Myth:</strong> Change requires big overhaul. <strong>Truth:</strong> Tiny, repeated experiments compound into reliable shifts over time.</li>
+      </ul>
+    </section>
+
+    <section style="margin-top:1rem" class="reveal" data-reveal>
+      <h3>Who we work with</h3>
+      <p class="muted">People navigating chronic stress, intermittent symptoms, or those seeking a clearer routine around sleep, digestion, mood, and daily energy. We do not offer emergency care or guarantee cures — our role is educational and supportive.</p>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="max-width:920px;margin:0 auto;padding:1rem;color:var(--muted);display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <strong>Holistic Medicine</strong>
+        <div class="muted small">Serving {{CITY}}, {{STATE}} — contact {{EMAIL}} or call {{PHONE}}</div>
+      </div>
+      <div class="muted small">© <span id="year2"></span></div>
+    </div>
+  </footer>
+
+  <div id="modalBackdrop2" class="modal-backdrop" role="dialog" aria-hidden="true">
+    <div class="modal">
+      <h3 id="modalTitle2">Guided practice</h3>
+      <div id="modalContent2" style="color:var(--muted)">Choose a short, approachable practice to try now.</div>
+      <div class="controls">
+        <button id="close2">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('year2').textContent = new Date().getFullYear();
+
+    // Reuse ScrolReveal logic
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const nodes = document.querySelectorAll('[data-reveal]');
+      if(prefersReduced){ nodes.forEach(n=>n.classList.add('visible')); return; }
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('visible'); io.unobserve(en.target); } });
+      },{threshold:0.12});
+      nodes.forEach(n=>io.observe(n));
+    })();
+
+    // Simple modal: smaller experience of the guided exercise (non-interactive text)
+    (function(){
+      const backdrop = document.getElementById('modalBackdrop2');
+      const tryBtn = document.getElementById('tryBtn2');
+      const closeBtn = document.getElementById('close2');
+      const content = document.getElementById('modalContent2');
+      tryBtn.addEventListener('click', ()=>{
+        backdrop.style.display='flex'; backdrop.setAttribute('aria-hidden','false');
+        content.innerHTML = '<ol><li><strong>Breathe:</strong> three slow breaths.</li><li><strong>Notice:</strong> one small relief in your day.</li><li><strong>Plan:</strong> one tiny next step to repeat tomorrow.</li></ol>';
+      });
+      closeBtn.addEventListener('click', ()=>{ backdrop.style.display='none'; backdrop.setAttribute('aria-hidden','true'); });
+      backdrop.addEventListener('click', (e)=>{ if(e.target===backdrop){ backdrop.style.display='none'; backdrop.setAttribute('aria-hidden','true'); }});
+      document.addEventListener('keydown',(e)=>{ if(e.key==='Escape') backdrop.style.display='none'; });
+    })();
+  </script>
+</body>
+</html>

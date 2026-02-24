@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Rates & Plans — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Flexible pathways and intensives in holistic care. Compare monthly support vs concentrated packages.">
+  <style>
+    :root{--bg:#0f1720;--card:#0f2330;--muted:#9fb4b2;--accent:#8fd3c7;--glass:rgba(255,255,255,0.04);--glass-2:rgba(255,255,255,0.02);--pill:#123b35}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#e6f1ef;background:radial-gradient(1200px 600px at 10% 10%, rgba(18,59,53,0.18), transparent), linear-gradient(180deg,#02111a 0%, #04151a 100%), #07121a;min-height:100vh}
+    header{position:sticky;top:0;z-index:40;background:linear-gradient(180deg,rgba(2,10,8,0.45),transparent);backdrop-filter: blur(6px);padding:18px 24px;display:flex;align-items:center;gap:18px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:42px;height:42px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#166b60);display:flex;align-items:center;justify-content:center;color:#022; font-weight:700}
+    nav{margin-left:auto;display:flex;gap:12px;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:8px;font-size:14px}
+    nav a.active,nav a:hover{background:var(--glass);color:#eaf7f3}
+    .container{max-width:1100px;margin:28px auto;padding:28px}
+    .hero{display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start}
+    .hero .lead{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:26px;border-radius:14px;border:1px solid var(--glass);box-shadow:0 8px 30px rgba(3,8,9,0.45)}
+    .kicker{color:var(--accent);font-weight:600;font-size:13px;letter-spacing:0.6px}
+    h1{margin:12px 0 8px;font-size:26px;color:#eafaf6}
+    p.lead-desc{color:var(--muted);line-height:1.5}
+    .cta-row{display:flex;gap:12px;margin-top:18px}
+    .btn{background:linear-gradient(90deg,var(--accent),#3bb29f);color:#012322;padding:10px 14px;border-radius:10px;font-weight:700;text-decoration:none}
+    .muted-btn{background:transparent;border:1px solid var(--glass);color:var(--muted);padding:10px 12px;border-radius:10px;text-decoration:none}
+    /* pricing card */
+    .price-card{background:linear-gradient(180deg,var(--card),rgba(255,255,255,0.02));padding:18px;border-radius:12px;border:1px solid var(--glass-2)}
+    .toggle{display:flex;gap:10px;align-items:center;margin-bottom:14px}
+    .switch{width:58px;height:30px;border-radius:999px;background:var(--glass);display:flex;align-items:center;padding:4px;cursor:pointer}
+    .switch .knob{width:22px;height:22px;background:#fff;border-radius:50%;box-shadow:0 2px 8px rgba(2,8,8,0.6);transition:transform .28s}
+    .switch[data-state="package"] .knob{transform:translateX(28px)}
+    .plans{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .plan{padding:14px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);border:1px solid var(--glass);position:relative}
+    .plan h3{margin:0;font-size:16px;color:#eafaf3}
+    .price{font-weight:800;font-size:24px;margin-top:8px;color:#e9fff8}
+    .meta{font-size:12px;color:var(--muted);margin-top:6px}
+    .more{margin-top:12px}
+    .small-note{color:var(--muted);font-size:13px;margin-top:8px}
+    /* proof gallery */
+    .proof{margin-top:28px;padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);border:1px solid var(--glass)}
+    .testimonial{min-height:84px;display:flex;flex-direction:column;justify-content:center;transition:opacity .6s}
+    .quote{font-size:15px;color:#e9fff8}
+    .who{font-size:13px;color:var(--muted);margin-top:8px}
+    .badges{display:flex;gap:8px;margin-top:12px}
+    .badge{background:var(--pill);padding:6px 10px;border-radius:999px;font-size:12px;color:#cfeee7;position:relative}
+    .tooltip{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 8px);background:#022;color:#dff3ec;padding:8px;border-radius:8px;font-size:13px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .18s,transform .18s}
+    .badge:hover .tooltip{opacity:1;transform:translateX(-50%) translateY(-6px)}
+    .grid-cta{display:flex;gap:12px;margin-top:18px}
+    footer{padding:30px 24px;color:var(--muted);text-align:center}
+    /* responsive */
+    @media(max-width:920px){.hero{grid-template-columns:1fr;}.plans{grid-template-columns:1fr}.brand .logo{width:36px;height:36px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand"><div class="logo">HS</div>
+      <div>
+        <div style="font-weight:700;color:#eafaf3">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="/index.html">Home</a>
+      <a href="/services.html">Offerings</a>
+      <a href="/conditions.html">Ailments</a>
+      <a href="/approach.html">Method</a>
+      <a href="/pricing.html" class="active">Rates</a>
+      <a href="/about.html">The Team</a>
+      <a href="/book.html">Schedule</a>
+      <a href="/contact.html">Reach Out</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="lead">
+        <div class="kicker">Tailored visibility into care</div>
+        <h1>Choose how you invest in steady change</h1>
+        <p class="lead-desc">We frame support as pathways—ongoing guidance or time-boxed intensives. Both aim to reveal patterns, not quick fixes. Pick the rhythm that fits your current life demands.</p>
+        <div class="cta-row">
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <a class="muted-btn" href="/about.html">Meet the clinicians</a>
+        </div>
+      </div>
+
+      <aside class="price-card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <strong style="color:#dff7f0">Plan comparator</strong>
+          <div class="toggle">
+            <div style="font-size:13px;color:var(--muted)">Monthly</div>
+            <div id="cmpSwitch" class="switch" data-state="monthly" role="switch" aria-checked="false" tabindex="0">
+              <div class="knob"></div>
+            </div>
+            <div style="font-size:13px;color:var(--muted)">Package</div>
+          </div>
+        </div>
+
+        <div class="plans">
+          <div class="plan">
+            <h3>Rooted Support</h3>
+            <div class="price" data-month="240" data-package="680">$<span class="amount">240</span><span style="font-size:12px;color:var(--muted)">/mo</span></div>
+            <div class="meta">Weekly touchpoints, messaging, and monthly review.</div>
+            <div class="more small-note">Best for gentle ongoing recalibration.</div>
+          </div>
+
+          <div class="plan">
+            <h3>Rhythm Intensive</h3>
+            <div class="price" data-month="420" data-package="1200">$<span class="amount">420</span><span style="font-size:12px;color:var(--muted)">/mo</span></div>
+            <div class="meta">Deeper weekly sessions and targeted labs where needed.</div>
+            <div class="more small-note">Designed for concentrated changes over 3 months.</div>
+          </div>
+
+          <div class="plan">
+            <h3>SomaSync Package</h3>
+            <div class="price" data-month="0" data-package="2200">$<span class="amount">2200</span><span style="font-size:12px;color:var(--muted)">/package</span></div>
+            <div class="meta">A compact, multidisciplinary sequence: mind-body sessions + lab review.</div>
+            <div class="more small-note">A single-engagement path for focused work.</div>
+          </div>
+
+          <div class="plan">
+            <h3>Guided Maintenance</h3>
+            <div class="price" data-month="95" data-package="280">$<span class="amount">95</span><span style="font-size:12px;color:var(--muted)">/mo</span></div>
+            <div class="meta">Light check-ins to sustain gains after an intensive.</div>
+            <div class="more small-note">Appropriate after completing a main pathway.</div>
+          </div>
+        </div>
+
+        <div class="small-note">All pricing listed as starting rates. Payment plans available for packages. No guarantees—educational and supportive care focus.</div>
+      </aside>
+
+    </section>
+
+    <section class="proof">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <strong style="color:#dff7f0">What people notice</strong>
+        <div style="font-size:13px;color:var(--muted)">Credibility & stories</div>
+      </div>
+
+      <div id="testimonial" class="testimonial" style="margin-top:12px">
+        <div class="quote" id="quoteText">""</div>
+        <div class="who" id="quoteWho"></div>
+        <div class="badges" id="credBadges"></div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:14px;align-items:center">
+        <a class="muted-btn" href="/book.html">Reserve a discovery</a>
+        <div style="font-size:13px;color:var(--muted)">Or call <strong>{{PHONE}}</strong></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>&copy; <span id="year"></span> {{BUSINESS_NAME}} • Care in {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}" style="color:var(--accent)">{{EMAIL}}</a></div>
+  </footer>
+
+  <!-- decorative inline SVG pattern (unique, not externally loaded) -->
+  <svg id="patternSVG" width="0" height="0" style="position:absolute;left:-9999px;">
+    <defs>
+      <pattern id="p1" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(16)">
+        <rect width="12" height="12" fill="#062225"></rect>
+        <path d="M0 6 L12 6" stroke="#083b35" stroke-width="1" opacity="0.6"></path>
+        <circle cx="6" cy="6" r="1.2" fill="#0e6a5e" opacity="0.4"/>
+      </pattern>
+    </defs>
+  </svg>
+
+  <script>
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Pricing comparator logic
+    (function(){
+      const switchEl = document.getElementById('cmpSwitch');
+      const priceEls = Array.from(document.querySelectorAll('.price'));
+      function setState(state){
+        switchEl.dataset.state = state;
+        switchEl.setAttribute('aria-checked', state==='package');
+        priceEls.forEach(pe => {
+          const amtEl = pe.querySelector('.amount');
+          const from = parseInt(amtEl.textContent,10) || 0;
+          const to = parseInt(pe.dataset[state==='package'? 'package' : 'month'],10) || 0;
+          const suffix = state==='package'?'/package':'/mo';
+          animateValue(amtEl, from, to, 600, suffix);
+        });
+      }
+      function animateValue(el, start, end, duration, suffix){
+        const startTime = performance.now();
+        const step = (now)=>{
+          const t = Math.min(1,(now-startTime)/duration);
+          const eased = 1 - Math.pow(1-t,3);
+          const val = Math.round(start + (end-start)*eased);
+          el.textContent = val;
+          if(t < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      }
+      // click and keyboard
+      switchEl.addEventListener('click', ()=> setState(switchEl.dataset.state==='monthly'?'package':'monthly'));
+      switchEl.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') { e.preventDefault(); switchEl.click(); } });
+      // initialize
+      setState('monthly');
+    })();
+
+    // Proof gallery & badges
+    (function(){
+      const testimonials = [
+        {text:'A steady, practical set of steps that actually fit into busy weeks.', who:'— L., teacher', badges:[{label:'Published Case Review',tip:'Featured in a peer-reviewed case digest.'},{label:'10+ yrs',tip:'Lead clinician experience.'}]},
+        {text:'They knit together labs, sleep, and movement into a clear course I could follow.', who:'— M., engineer', badges:[{label:'Community Workshops',tip:'Runs recurring learning series.'},{label:'Board Certified',tip:'Licensed and board-certified practice.'}]},
+        {text:'The short intensive helped me break a cycle and maintain what changed.', who:'— R., parent', badges:[{label:'Client-reported',tip:'Aggregate outcomes tracked across clients.'},{label:'Collaborative',tip:'Works with local specialists when needed.'}]}
+      ];
+      let index = 0;
+      const q = document.getElementById('quoteText');
+      const w = document.getElementById('quoteWho');
+      const b = document.getElementById('credBadges');
+      function render(i){
+        const t = testimonials[i];
+        q.style.opacity = 0; w.style.opacity = 0; b.style.opacity = 0;
+        setTimeout(()=>{
+          q.textContent = '"' + t.text + '"';
+          w.textContent = t.who;
+          b.innerHTML = '';
+          t.badges.forEach(bd=>{
+            const span = document.createElement('span'); span.className='badge'; span.textContent = bd.label;
+            const tip = document.createElement('span'); tip.className='tooltip'; tip.textContent = bd.tip;
+            span.appendChild(tip);
+            b.appendChild(span);
+          });
+          q.style.opacity = 1; w.style.opacity = 1; b.style.opacity = 1;
+        },360);
+      }
+      render(0);
+      setInterval(()=>{ index = (index+1)%testimonials.length; render(index); },5000);
+    })();
+  </script>
+</body>
+</html>

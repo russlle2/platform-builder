@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Common Concerns — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:linear-gradient(180deg,#FEFCFF,#F0FFF9);--accent:#00C2A8;--text:#0b0b0b}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px}
+    .nav a{margin-left:12px;color:#4b5563;text-decoration:none;font-weight:600}
+    .logo{font-weight:800;color:var(--accent)}
+
+    main{max-width:950px;margin:16px auto;padding:20px}
+    .hero{background:#fff;padding:20px;border-radius:14px;box-shadow:0 10px 30px rgba(10,10,10,0.04)}
+    h1{margin:0 0 8px}
+    p.lead{margin:0;color:#556b6b}
+
+    .conditions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+    .cond{background:linear-gradient(180deg,#fff,#fbfffe);padding:14px;border-radius:10px;border-left:3px solid rgba(0,194,168,0.14)}
+    .cond h3{margin:0 0 6px}
+    .cond p{margin:0;color:#616161;font-size:14px}
+
+    .disclaimer{margin-top:12px;color:#6b6b6b;font-size:13px}
+    .micro{margin-top:18px;background:#fff;padding:14px;border-radius:10px}
+
+    .cta-block{margin-top:18px;text-align:center}
+    .cta{background:var(--accent);padding:10px 14px;border-radius:10px;color:#fff;text-decoration:none;font-weight:700}
+
+    .svg-edge{position:fixed;left:0;top:0;opacity:0.06;width:280px;height:280px;pointer-events:none}
+
+    @media(max-width:700px){.conditions{grid-template-columns:1fr}.svg-edge{display:none}}
+  </style>
+</head>
+<body>
+  <svg class="svg-edge" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- Unique decorative pattern; could be exported to assets/img/pattern.svg for reuse -->
+    <defs>
+      <linearGradient id="a" x1="0" x2="1">
+        <stop offset="0" stop-color="#00C2A8"/>
+        <stop offset="1" stop-color="#6B4CFF"/>
+      </linearGradient>
+    </defs>
+    <rect width="200" height="200" rx="40" fill="url(#a)"/>
+    <g fill="#fff" fill-opacity="0.06">
+      <rect x="18" y="28" width="160" height="12" rx="6"/>
+      <rect x="30" y="60" width="120" height="12" rx="6"/>
+      <rect x="60" y="100" width="70" height="12" rx="6"/>
+    </g>
+  </svg>
+
+  <header>
+    <div class="logo">{{BUSINESS_NAME}}</div>
+    <div class="nav">
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="approach.html">Method</a>
+      <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>What people commonly bring to a holistic visit</h1>
+      <p class="lead">Below are common concerns addressed in whole-person care. Each entry describes typical contributors and educational approaches we use. This is not an exhaustive list and not medical advice.</p>
+    </section>
+
+    <section class="conditions" aria-label="conditions list">
+      <article class="cond">
+        <h3>Stress & Overwhelm</h3>
+        <p>Chronic stress shows up as fatigue, low mood, and sleep disruption. Interventions focus on breathing practices, pacing, and identifying small behavioural changes to restore resilience.</p>
+      </article>
+
+      <article class="cond">
+        <h3>Sleep Difficulties</h3>
+        <p>Insomnia and fragmented sleep often relate to routine, screen exposure, and stress hormones. We prioritize sleep hygiene, bedtime rituals, and circadian-supporting habits before considering other options.</p>
+      </article>
+
+      <article class="cond">
+        <h3>Digestive Complaints</h3>
+        <p>Bloating, irregularity, or discomfort are assessed for dietary patterns, stress responses, and lifestyle. Education and gentle elimination strategies are used; labs may be discussed when appropriate.</p>
+      </article>
+
+      <article class="cond">
+        <h3>Low Energy & Fatigue</h3>
+        <p>Fatigue can be multi-factorial. We explore sleep, nutrition, movement, and psychosocial context, emphasizing graded steps that return energy sustainably rather than quick fixes.</p>
+      </article>
+
+      <article class="cond">
+        <h3>Chronic Inflammation & Aches</h3>
+        <p>Persistent inflammation is approached through diet patterns, movement, sleep, and stress management. Any use of supplements or labs is guided by safety and evidence.</p>
+      </article>
+
+      <article class="cond">
+        <h3>Anxiety & Mood Variability</h3>
+        <p>Treating emotions includes psychoeducation, lifestyle supports, and referral when specialized mental health care is needed. Our role emphasizes skills and rhythm-building.</p>
+      </article>
+    </section>
+
+    <div class="disclaimer">
+      Important: This information is educational and not a guarantee of outcome. For urgent symptoms, severe or progressive conditions, or emergencies, please seek immediate medical attention or your primary care provider.
+    </div>
+
+    <div class="micro" aria-label="micro habits">
+      <strong>Simple daily actions that support many concerns</strong>
+      <ul style="margin:8px 0 0;padding-left:18px;color:#525252">
+        <li>5-minute morning breathing or grounding practice</li>
+        <li>Consistent sleep schedule — same rise and rest window</li>
+        <li>Include small movement breaks after meals to aid digestion</li>
+      </ul>
+    </div>
+
+    <div class="cta-block">
+      <p style="color:#526c66">Curious whether a holistic approach fits your needs? Schedule a conversation to learn more.</p>
+      <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+    </div>
+
+    <footer style="margin-top:24px;color:#6b6b6b;text-align:center;font-size:13px">
+      {{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>
+    </footer>
+  </main>
+</body>
+</html>

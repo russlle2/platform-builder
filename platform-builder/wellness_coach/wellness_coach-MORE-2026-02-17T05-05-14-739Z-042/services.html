@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Offerings • {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fffefb;--accent:#4f7b6f;--muted:#5b5b5b;--card:#ffffff;--maxw:1100px}
+    body{font-family:system-ui,Segoe UI,Roboto,Arial;background:var(--bg);margin:0;color:#162;line-height:1.45}
+    .wrap{max-width:var(--maxw);margin:28px auto;padding:18px}
+    header{display:flex;align-items:center;justify-content:space-between}
+    header h1{margin:0;font-size:1.45rem}
+    nav a{margin-left:12px;text-decoration:none;color:#234;font-weight:700}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+    .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 8px 20px rgba(20,20,20,0.06);opacity:0;transform:translateY(18px);transition:opacity .6s,transform .6s}
+    .card.revealed{opacity:1;transform:none}
+    .price{font-weight:800;color:var(--accent);margin-top:10px}
+    .meta{color:var(--muted);font-size:0.95rem}
+    .small{font-size:0.9rem;color:var(--muted)}
+    .cta{display:flex;gap:10px;align-items:center;margin-top:14px}
+    .btn{background:var(--accent);color:#fff;padding:8px 12px;border-radius:10px;text-decoration:none;font-weight:700}
+    .btn.ghost{background:#fff;color:var(--accent);border:1px solid rgba(0,0,0,0.06)}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+    @media (prefers-reduced-motion:reduce){.card{transition:none !important}}
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <header>
+      <div>
+        <div style='font-weight:900'>{{BUSINESS_NAME}}</div>
+        <div class='small'>Distinct event-series designed around repeatable habits</div>
+      </div>
+      <div>
+        <nav>
+          <a href='index.html'>Home</a>
+          <a href='about.html'>Who we are</a>
+          <a href='services.html'>Offerings</a>
+          <a href='programs.html'>Series</a>
+          <a href='contact.html'>Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <!-- different order: cta first, then services cards, then FAQs -->
+      <section class='cta-block' style='margin-top:18px;padding:16px;background:linear-gradient(90deg,#f8fff8,#ffffff);border-radius:12px'>
+        <div style='display:flex;gap:12px;align-items:center'>
+          <div>
+            <h2 style='margin:0'>Find a small event that fits your week</h2>
+            <p class='meta' style='margin:6px 0 0'>Short cohorts and one-off labs. Join a series to practice with a group and bring the tools home.</p>
+          </div>
+          <div style='margin-left:auto'>
+            <a href='programs.html' class='btn'>Browse Series</a>
+            <a href='book.html' class='btn ghost'>Reserve a Consult</a>
+          </div>
+        </div>
+      </section>
+
+      <section style='margin-top:18px'>
+        <div class='grid' id='offer-grid'>
+          <article class='card' data-reveal>
+            <h3>Habit Labs</h3>
+            <p class='meta'>Weekly gatherings for building one habit over 4 weeks. Small group, hands-on cues, trackers you can adapt.</p>
+            <div class='price'>Series pass • $95 per person</div>
+            <div class='cta'>
+              <a href='programs.html#habit-labs' class='btn'>Join a Lab</a>
+              <a href='pricing.html' class='btn ghost'>See Options</a>
+            </div>
+          </article>
+
+          <article class='card' data-reveal>
+            <h3>Rhythm Sessions</h3>
+            <p class='meta'>Two-session intensives focused on crafting a morning or evening scaffold that matches your life.</p>
+            <div class='price'>Weekend pair • $145 per seat</div>
+            <div class='cta'>
+              <a href='programs.html#rhythm-sessions' class='btn'>Sign up</a>
+              <a href='book.html' class='btn ghost'>Ask a question</a>
+            </div>
+          </article>
+
+          <article class='card' data-reveal>
+            <h3>Monthly Reset</h3>
+            <p class='meta'>A single guided session to review, prune, and set a simple plan for the coming month.</p>
+            <div class='price'>Drop-in • $25 suggested contribution</div>
+            <div class='cta'>
+              <a href='programs.html#monthly-reset' class='btn'>Reserve</a>
+              <a href='contact.html' class='btn ghost'>Group inquiries</a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section style='margin-top:18px;padding:16px;border-radius:12px;background:#fff;box-shadow:0 8px 18px rgba(10,10,10,0.04)'>
+        <h3>Quick answers</h3>
+        <p class='meta'><strong>How are these priced?</strong> We offer per-series pricing and occasional sliding-scale spots. Rates are framed per event-series to emphasize learning in cycles, not per-hour sessions.</p>
+        <p class='meta'><strong>Who attends?</strong> People looking for concrete habit scaffolds — planners, professionals, caretakers — anyone wanting repeatable practice without one-off fixes.</p>
+      </section>
+    </main>
+
+    <footer style='margin-top:22px;color:var(--muted)'>
+      <div>Questions? Email <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a> or call {{PHONE}}</div>
+    </footer>
+  </div>
+
+  <script>
+    // Reveal cards with IntersectionObserver and reduced-motion check
+    (function(){
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const cards = document.querySelectorAll('[data-reveal]');
+      if(reduced){ cards.forEach(c=>c.classList.add('revealed')); return }
+      const o = new IntersectionObserver((entries)=>{
+        entries.forEach(en=>{ if(en.isIntersecting) en.target.classList.add('revealed'); });
+      },{threshold:0.1});
+      cards.forEach(c=>o.observe(c));
+    })();
+  </script>
+</body>
+</html>

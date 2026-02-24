@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Stories — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbf7f2;--card:#fff6f0;--accent:#8a5a3a;--muted:#6a5748}
+    body{font-family:system-ui,Segoe UI,Roboto,Arial;color:var(--muted);margin:0;background:var(--bg)}
+    header{padding:18px 20px;border-bottom:1px solid rgba(138,90,58,0.06)}
+    .nav{max-width:980px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+    .brand{font-weight:700;color:var(--accent)}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none}
+    main{max-width:980px;margin:24px auto;padding:0 20px}
+
+    .intro{background:linear-gradient(180deg,rgba(138,90,58,0.04),transparent);padding:18px;border-radius:10px}
+    .intro h1{margin:0;color:var(--accent)}
+    .list{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+    .card{background:white;padding:14px;border-radius:10px;border:1px solid rgba(138,90,58,0.05)}
+    .quote{font-style:italic;color:#4f3f33}
+    .by{margin-top:10px;color:#8b7360;font-weight:600}
+
+    .mini-habit{margin-top:20px;padding:14px;background:#fff;border-radius:10px;border:1px dashed rgba(138,90,58,0.06)}
+    .mini-habit form{display:flex;gap:8px}
+    .mini-habit input{flex:1;padding:8px;border-radius:8px;border:1px solid rgba(138,90,58,0.08)}
+    .mini-habit button{padding:8px 10px;border-radius:8px;border:none;background:var(--accent);color:white}
+
+    footer{max-width:980px;margin:30px auto;padding:0 20px;color:#8b7b6c}
+    @media (max-width:900px){.list{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="services.html">Offerings</a>
+        <a href="programs.html">Paths</a>
+        <a href="pricing.html">Invest</a>
+        <a href="testimonials.html">Stories</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="intro">
+      <h1>Stories from people finding steadier days</h1>
+      <p style="margin:8px 0 0">Real responses to small shifts — habit design, shorter sessions, and consistent nudges. No medical promises, only practical outcomes and routines that hold.</p>
+    </section>
+
+    <section class="list" aria-label="testimonials">
+      <div class="card">
+        <div class="quote">"I began with two simple anchors each morning and the week shifted. The steps were doable and slowly became my rhythm."</div>
+        <div class="by">— A. Rivera, project manager</div>
+      </div>
+
+      <div class="card">
+        <div class="quote">"The hybrid plan kept me connected without overwhelm — a short checkpoint meant consistent movement toward my goal."</div>
+        <div class="by">— J. Patel, parent & teacher</div>
+      </div>
+
+      <div class="card">
+        <div class="quote">"I did the 7-day challenge and the printable checklist made it easy to keep track. Small actions added up."</div>
+        <div class="by">— S. Lee, designer</div>
+      </div>
+
+      <div class="card">
+        <div class="quote">"Good structure and a gentle cadence. I feel more intentional about evenings and sleep cues now."</div>
+        <div class="by">— M. Gomez, entrepreneur</div>
+      </div>
+
+      <div class="card">
+        <div class="quote">"The habit map helped me place micro-practices into a crowded schedule without stress."</div>
+        <div class="by">— K. Nguyen, nurse</div>
+      </div>
+
+      <div class="card">
+        <div class="quote">"A straightforward plan, clear checkpoints, and a coach who keeps things humane."</div>
+        <div class="by">— R. Alvarez, student</div>
+      </div>
+    </section>
+
+    <section class="mini-habit" aria-labelledby="miniHabitTitle">
+      <h3 id="miniHabitTitle" style="margin-top:0;color:var(--accent)">Quick 7-day Checklist — make one now</h3>
+      <p style="margin:6px 0 10px">A compact generator for a single habit. Enter a label and produce a small printable checklist.</p>
+      <form onsubmit="event.preventDefault();miniGenerate();">
+        <input id="miniName" placeholder="Habit label (e.g., 10-minute walk)" required>
+        <button type="submit">Make checklist</button>
+      </form>
+      <div id="miniResult" style="margin-top:10px"></div>
+      <div style="margin-top:10px"><button id="miniCopy" style="display:none">Copy checklist</button> <button id="miniPrint" style="display:none" onclick="window.print()">Print</button></div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>Curious to try something similar? <a href="book.html">Book a brief consult</a> — {{BUSINESS_NAME}} in {{CITY}}, {{STATE}}</div>
+  </footer>
+
+  <script>
+    function miniGenerate(){
+      const name = document.getElementById('miniName').value.trim();
+      if(!name) return;
+      let text = `7-Day: ${name}\n`;
+      for(let i=1;i<=7;i++) text += `Day ${i}: ${name} — done/not done\n`;
+      document.getElementById('miniResult').innerHTML = '<pre class="print-area" style="white-space:pre-wrap">'+escapeHtml(text)+'</pre>';
+      const copyBtn = document.getElementById('miniCopy');
+      copyBtn.style.display='inline-block';
+      copyBtn.onclick = ()=>navigator.clipboard.writeText(text).then(()=>alert('Checklist copied'));
+      document.getElementById('miniPrint').style.display='inline-block';
+    }
+    function escapeHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  </script>
+</body>
+</html>

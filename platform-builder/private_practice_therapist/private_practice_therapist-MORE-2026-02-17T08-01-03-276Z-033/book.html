@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Book a Visit — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7fbfd;--muted:#475569;--accent:#0f5aa7}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:var(--bg);color:#072034}
+    header{padding:14px 22px;display:flex;align-items:center;justify-content:space-between}
+    header nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    main{padding:22px}
+    .content{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .card{background:#fff;padding:16px;border-radius:12px;box-shadow:0 10px 30px rgba(6,22,31,0.06)}
+    input,textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef7;margin-top:8px}
+    label{font-size:13px;color:var(--muted)}
+    .btn-primary{background:var(--accent);color:#fff;padding:10px 12px;border-radius:8px;border:none}
+    .small{font-size:13px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,#dff5ff,#eaf9ff);display:flex;align-items:center;justify-content:center;font-weight:700">TP</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div class="small">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="specialties.html">Services</a>
+      <a href="approach.html">Approach</a>
+      <a href="fees.html">Fees</a>
+      <a href="faq.html">FAQ</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="content">
+      <div>
+        <div class="card">
+          <h2 style="margin-top:0">Book an initial consultation</h2>
+          <p class="small">A 20–30 minute consult helps us check fit, clarify goals, and find an appropriate plan together. Please complete the brief intake so our time is focused on what matters.</p>
+
+          <form id="bookingForm" onsubmit="return false;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div>
+                <label>Your name</label>
+                <input id="name" type="text" required />
+              </div>
+              <div>
+                <label>Contact phone</label>
+                <input id="phone" type="text" placeholder="optional" />
+              </div>
+            </div>
+
+            <div style="margin-top:10px">
+              <label>Email</label>
+              <input id="email" type="text" value="{{EMAIL}}" />
+            </div>
+
+            <div style="margin-top:10px">
+              <label>Preferred days / times</label>
+              <input id="when" type="text" placeholder="e.g. Tuesdays morning" />
+            </div>
+
+            <div style="margin-top:10px">
+              <label>Brief reason for consult</label>
+              <textarea id="reason" rows="4" placeholder="A sentence or two will help guide the consult"></textarea>
+            </div>
+
+            <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
+              <button id="openCheck" class="btn-primary" style="background:#1d4ed8">Start self-check</button>
+              <button id="submitBooking" class="btn-primary">Request consult</button>
+            </div>
+            <div class="small" style="margin-top:8px">After you submit, I will respond to schedule the consult and share the intake summary you created.</div>
+          </form>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="card">
+          <h3 style="margin:0 0 8px">Accessibility & session preferences</h3>
+          <p class="small">Tell me about any accessibility needs or preferences for session format (video, phone, in-person). We’ll build these into scheduling.</p>
+        </div>
+      </div>
+
+      <aside>
+        <div class="card">
+          <h4 style="margin-top:0">Need a quick exercise?</h4>
+          <p class="small">If you feel nervous before booking, try one of the short practices below. They’re designed to settle attention so you can choose with more clarity.</p>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">
+            <button id="bookExercise" class="btn-primary">Try breathing</button>
+            <button id="bookJournal" class="btn-primary" style="background:#0b74b3">Quick journaling</button>
+          </div>
+
+          <div style="margin-top:12px" class="small">Questions about fit? Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a>.</div>
+        </div>
+      </aside>
+    </div>
+
+    <div style="margin-top:18px" class="card">
+      <h3 style="margin-top:0">Notes about care</h3>
+      <p class="small">Therapeutic work is collaborative. I will be explicit about boundaries, confidentiality, and when additional supports might be needed. If you are in crisis or at imminent risk, please call emergency services; this site and communications are not monitored as an emergency service.</p>
+    </div>
+  </main>
+
+  <footer style="padding:14px 22px;color:var(--muted)">{{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></footer>
+
+  <!-- small self-check modal reused locally -->
+  <div id="overlay" style="display:none;position:fixed;inset:0;background:rgba(2,6,23,0.45);align-items:center;justify-content:center;padding:12px">
+    <div style="background:#fff;padding:14px;border-radius:12px;max-width:720px;width:100%">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <strong>Short intake</strong>
+        <button id="closeCheck" style="border:none;background:#f1f5f9;padding:8px;border-radius:8px">Close</button>
+      </div>
+      <div id="checkArea" style="margin-top:12px"></div>
+    </div>
+  </div>
+
+  <script>
+    // Book page wiring
+    document.getElementById('openCheck').addEventListener('click', (e)=>{
+      e.preventDefault(); openCheckModal();
+    });
+
+    document.getElementById('submitBooking').addEventListener('click', (e)=>{
+      e.preventDefault();
+      // Gather form and saved brief
+      const brief = localStorage.getItem('selfcheck-brief') || document.getElementById('reason').value || '';
+      const payload = {
+        name: document.getElementById('name').value || '',
+        phone: document.getElementById('phone').value || '',
+        email: document.getElementById('email').value || '{{EMAIL}}',
+        when: document.getElementById('when').value || '',
+        brief: brief
+      };
+      // Display a friendly confirmation (not actually sending)
+      alert('Request submitted. I will contact you to schedule a consult.\n\nSummary: ' + (payload.brief || 'No brief provided'));
+    });
+
+    // Exercise buttons
+    document.getElementById('bookExercise').addEventListener('click', ()=>{ openMiniBreath(); });
+    document.getElementById('bookJournal').addEventListener('click', ()=>{ openMiniJournal(); });
+
+    // local self-check modal implementation
+    const overlay = document.getElementById('overlay');
+    const checkArea = document.getElementById('checkArea');
+    document.getElementById('closeCheck').addEventListener('click', ()=>{ overlay.style.display='none'; });
+
+    function openCheckModal(){
+      overlay.style.display='flex';
+      checkArea.innerHTML = `\n        <div>\n          <label class=\"small\">What is the main thing you'd like to address?</label>\n          <input id=\"m1\" type=\"text\" placeholder=\"One sentence\">\n          <label class=\"small\" style=\"margin-top:8px;display:block\">In 1–3 words, the impact on daily life</label>\n          <input id=\"m2\" type=\"text\" placeholder=\"e.g. sleep, concentration\">\n          <div style=\"display:flex;gap:8px;justify-content:flex-end;margin-top:10px\">\n            <button id=\"saveCheck\" class=\"btn-primary\">Save brief</button>\n          </div>\n        </div>\n      `;
+      document.getElementById('saveCheck').addEventListener('click', ()=>{
+        const m1 = document.getElementById('m1').value || '';
+        const m2 = document.getElementById('m2').value || '';
+        const brief = m1 + (m2? ' — ' + m2 : '');
+        localStorage.setItem('selfcheck-brief', brief);
+        alert('Brief saved. It will be included with your booking request.');
+        overlay.style.display='none';
+      });
+    }
+
+    // Mini exercises
+    function openMiniBreath(){
+      overlay.style.display='flex';
+      checkArea.innerHTML = `\n        <div style=\"text-align:center\">\n          <div style=\"width:120px;height:120px;border-radius:50%;margin:0 auto;background:linear-gradient(135deg,#e6f7ff,#ffffff);display:flex;align-items:center;justify-content:center;font-weight:700;color:#063a53\" id=\"miniCircle\">B</div>\n          <div style=\"margin-top:10px;color:var(--muted)\">4s inhale — 4s hold — 6s exhale. Tap start when ready.</div>\n          <div style=\"display:flex;gap:8px;justify-content:center;margin-top:10px\">\n            <button id=\"miniStart\" class=\"btn-primary\">Start</button>\n            <button id=\"miniStop\" class=\"btn-primary\" style=\"background:#94a3b8\">Stop</button>\n          </div>\n        </div>\n      `;
+      let tId=null; document.getElementById('miniStart').addEventListener('click', ()=>{
+        const el = document.getElementById('miniCircle'); let step=0; let seconds=60;
+        tId = setInterval(()=>{ const cycle = step % 14; let scale=1; if(cycle<4) scale=1+((cycle+1)/4)*0.3; else if(cycle<8) scale=1.3; else scale=1.3-((cycle-8+1)/6)*0.3; el.style.transform=`scale(${scale})`; step++; seconds--; if(seconds<=0) clearInterval(tId); },1000);
+      });
+      document.getElementById('miniStop').addEventListener('click', ()=>{ clearInterval(tId); overlay.style.display='none'; });
+    }
+
+    function openMiniJournal(){
+      overlay.style.display='flex';
+      checkArea.innerHTML = `\n        <div>\n          <label class=\"small\">Take two minutes: write whatever comes to mind</label>\n          <textarea id=\"miniJ\" rows=\"6\" placeholder=\"Start writing...\"></textarea>\n          <div style=\"display:flex;gap:8px;justify-content:flex-end;margin-top:8px\">\n            <button id=\"miniSave\" class=\"btn-primary\">Save</button>\n            <button id=\"miniClear\" class=\"btn-primary\" style=\"background:#94a3b8\">Clear</button>\n          </div>\n        </div>\n      `;
+      document.getElementById('miniSave').addEventListener('click', ()=>{ const t=document.getElementById('miniJ').value; if(t.trim()){ localStorage.setItem('mini-journal', t); alert('Saved to this browser.'); overlay.style.display='none'; } else alert('Nothing to save.'); });
+      document.getElementById('miniClear').addEventListener('click', ()=>{ document.getElementById('miniJ').value=''; });
+    }
+  </script>
+</body>
+</html>

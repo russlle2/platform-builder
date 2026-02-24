@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Investment — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f8faf6;--accent:#3b7d6b;--muted:#64707a;--card:#ffffff;--glass:rgba(255,255,255,0.6)}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#0b1720;background:var(--bg)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.4rem;background:linear-gradient(180deg,rgba(59,125,107,0.07),transparent);backdrop-filter:blur(6px)}
+    nav a{margin:0 .6rem;color:var(--muted);text-decoration:none;font-weight:600}
+    .brand{display:flex;gap:.6rem;align-items:center;font-weight:700}
+    .brand svg{width:44px;height:44px}
+    main{max-width:980px;margin:2rem auto;padding:1.2rem}
+    .hero{display:grid;grid-template-columns:1fr;gap:1rem;align-items:center;padding:1.6rem;border-radius:14px;background:linear-gradient(160deg,rgba(59,125,107,0.06),rgba(11,23,32,0.01));box-shadow:0 6px 24px rgba(11,23,32,0.04)}
+    .kicker{color:var(--accent);font-weight:700}
+    h1{margin:.2rem 0;font-size:1.6rem}
+    p.lead{color:var(--muted);margin:0 0 .6rem}
+    .tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:1rem}
+    .tier{background:var(--card);border-radius:12px;padding:1rem;box-shadow:0 6px 20px rgba(11,23,32,0.04);border:1px solid rgba(11,23,32,0.03)}
+    .price{font-size:1.4rem;font-weight:800;color:var(--accent)}
+    .note{font-size:.86rem;color:var(--muted);margin-top:.6rem}
+    .cta-row{display:flex;gap:.6rem;margin-top:.8rem}
+    button.primary{background:var(--accent);color:#fff;border:0;padding:.6rem .9rem;border-radius:8px;font-weight:700}
+    button.ghost{background:transparent;border:1px solid rgba(11,23,32,0.06);padding:.6rem .9rem;border-radius:8px}
+    .disclaimer{font-size:.78rem;color:var(--muted);margin-top:1rem}
+    footer{padding:1.4rem;text-align:center;color:var(--muted)}
+    /* subtle diagonal pattern */
+    .pattern-hero{background-image:url('assets/img/pattern.svg');background-repeat:no-repeat;background-position:right -40px top -40px;background-size:280px}
+    /* small responsive */
+    @media(min-width:720px){.hero{grid-template-columns:1fr 340px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <svg viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#7fc6b0"/><stop offset="1" stop-color="#2f6d58"/></linearGradient></defs><rect width="100" height="100" rx="18" fill="url(#g)"/></svg>
+      <div>{{BUSINESS_NAME}}</div>
+    </div>
+    <nav aria-label="Primary">
+      <a href="index.html">Welcome</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Ailments</a>
+      <a href="approach.html">Method</a>
+      <a href="pricing.html">Investment</a>
+      <a href="about.html">Roots</a>
+      <a href="book.html">Plan a Visit</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero pattern-hero" aria-labelledby="pricing-title">
+      <div>
+        <div class="kicker">Care articulated</div>
+        <h1 id="pricing-title">Flexible guidance, priced for progress</h1>
+        <p class="lead">Fees and formats that match how you want to work — a blend of remote and in-person collaboration with clear next steps, not promises.</p>
+        <p class="note">All consultations include an intake, a personalized agenda and a follow-up plan. Clinical care is educational and supportive — outcomes vary.</p>
+      </div>
+      <div>
+        <div class="tiers" style="margin-top:0">
+          <div class="tier">
+            <div style="font-weight:700">Foundations — Solo</div>
+            <div class="price">$120 / session</div>
+            <p class="note">Single-session orienting visit. Ideal to map concerns and leave with practical first steps.</p>
+            <div class="cta-row"><button class="primary" onclick="location.href='book.html'">Reserve a Foundations Visit</button><button class="ghost" onclick="document.getElementById('compare').scrollIntoView()">Compare</button></div>
+          </div>
+
+          <div class="tier">
+            <div style="font-weight:700">Curated Track — Guided</div>
+            <div class="price">$420 / month</div>
+            <p class="note">Monthly package: 1 extended visit + two check-ins and a tailored routine. Good for modest, steady shifts.</p>
+            <div class="cta-row"><button class="primary" onclick="location.href='book.html?package=curated'">Begin a Curated Track</button></div>
+          </div>
+
+          <div class="tier">
+            <div style="font-weight:700">Integrated Plan — Ongoing</div>
+            <div class="price">$950 / month</div>
+            <p class="note">A coordinated plan with multi-modal sessions, priority scheduling and group learning sessions. For complex, sustained work.</p>
+            <div class="cta-row"><button class="primary" onclick="location.href='book.html?package=integrated'">Inquire about Integration</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="compare" style="margin-top:1.2rem;background:linear-gradient(180deg,transparent,rgba(59,125,107,0.02));padding:1rem;border-radius:12px">
+      <h2 style="margin:.2rem 0">How we frame value</h2>
+      <p class="note">Packages combine assessment, guided practice, and review. We estimate a realistic cadence rather than promising a cure. Your plan grows from what you choose to focus on.</p>
+      <ul style="color:var(--muted)">
+        <li>Assessment and a clear agenda after the first visit.</li>
+        <li>Short, measurable checkpoints rather than vague timelines.</li>
+        <li>Adjustments based on how life actually unfolds.</li>
+      </ul>
+      <div style="display:flex;gap:.6rem;margin-top:.8rem">
+        <button class="primary" onclick="location.href='book.html'">Start with an Intake</button>
+        <button class="ghost" onclick="alert('Call us at {{PHONE}} or email {{EMAIL}} to discuss a custom plan')">Discuss a Custom Plan</button>
+      </div>
+      <p class="disclaimer">Note: Treatments and recommendations are educational and supportive. They are not guarantees of specific results. For urgent medical needs, please contact emergency services.</p>
+    </section>
+
+  </main>
+  <footer>
+    <small>{{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></small>
+  </footer>
+</body>
+</html>

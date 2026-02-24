@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book a Session — Schedule & Planner</title>
+  <style>
+    :root{--accent:#6b8e7a;--muted:#6b7280;--bg:#f7fbfa}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:var(--bg);color:#082a2a}
+    .wrap{max-width:920px;margin:0 auto;padding:28px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav{display:flex;gap:14px}
+    nav a{color:var(--muted);text-decoration:none;font-weight:600}
+    .hero{padding:20px 0}
+    .hero h1{margin:0 0 6px;font-size:26px}
+    .muted{color:var(--muted)}
+    .columns{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px}
+    .card{background:#fff;padding:18px;border-radius:12px;box-shadow:0 10px 30px rgba(8,42,42,0.06)}
+    label{display:block;margin-top:10px;font-weight:700;font-size:13px}
+    input,select,textarea{width:100%;padding:8px;border-radius:8px;border:1px solid #e6ece8;margin-top:6px}
+    .btn{padding:10px 14px;border-radius:10px;border:0;background:var(--accent);color:#fff;cursor:pointer}
+    .secondary{background:#e9f2ee;color:#083533}
+    .summary{white-space:pre-wrap;background:#f9fffb;padding:10px;border-radius:8px;border:1px solid #e6efe9;margin-top:10px;font-family:monospace}
+    #bookingResult{margin-top:12px;font-size:14px}
+    @media (max-width:860px){.columns{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">Philosophy</a>
+        <a href="specialties.html">Focus Areas</a>
+        <a href="approach.html">Method</a>
+        <a href="fees.html">Investment</a>
+        <a href="faq.html">Answers</a>
+        <a href="book.html" style="color:var(--accent);font-weight:700">Schedule</a>
+      </nav>
+      <div><a class="btn" href="mailto:{{EMAIL}}">Contact</a></div>
+    </header>
+
+    <section class="hero">
+      <h1>Make an appointment or craft a session plan</h1>
+      <p class="muted">Use the planner to prepare what you want from therapy — then share it at intake. Or use this page to request a time.</p>
+    </section>
+
+    <div class="columns">
+      <div>
+        <div class="card" id="bookingCard">
+          <h3 style="margin:0">Request a time</h3>
+          <p class="muted" style="margin-top:6px">I currently offer telehealth and limited in-person availability. Submit a request and we’ll coordinate next steps.</p>
+
+          <form id="bookingForm" onsubmit="return false;">
+            <label for="name">Your name</label>
+            <input id="name" type="text" required>
+
+            <label for="email">Email</label>
+            <input id="email" type="text" required placeholder="you@example.com">
+
+            <label for="phone">Phone (optional)</label>
+            <input id="phone" type="text" placeholder="Optional">
+
+            <label for="when">Preferred days / times</label>
+            <input id="when" type="text" placeholder="e.g., Tue mornings or weekday evenings">
+
+            <label for="notes">Brief note about what you'd like to work on</label>
+            <textarea id="notes" rows="4" placeholder="A few lines helps me prepare."></textarea>
+
+            <div style="display:flex;gap:10px;margin-top:12px">
+              <button class="btn" id="sendRequest">Send request</button>
+              <button class="btn secondary" id="usePlan">Use planner summary</button>
+            </div>
+
+            <div id="bookingResult"></div>
+          </form>
+        </div>
+
+        <div style="margin-top:14px;padding:12px" class="card">
+          <h4 style="margin:0 0 8px">Clinical boundaries & confidentiality</h4>
+          <p class="muted">Therapy is confidential within legal and ethical limits. We will review limits of confidentiality and what to expect at intake. If you are in immediate danger, please call your local emergency services or crisis line.</p>
+        </div>
+      </div>
+
+      <aside>
+        <div class="card" id="planner">
+          <h3 id="planner">Session Planner</h3>
+          <p class="muted">Design a short plan for your concerns. The summary can be copied into the booking form or saved for yourself.</p>
+
+          <label for="pGoal">Primary aim</label>
+          <input id="pGoal" type="text" placeholder="e.g., reduce panic in meetings">
+
+          <label for="pFocus">Focus style</label>
+          <select id="pFocus">
+            <option>Skill-building (CBT/skills)</option>
+            <option>Reflective / Narrative</option>
+            <option>Short-term problem solving</option>
+          </select>
+
+          <div style="display:flex;gap:8px">
+            <div style="flex:1">
+              <label for="pSessions">Planned sessions</label>
+              <input id="pSessions" type="number" value="6" min="1">
+            </div>
+            <div style="flex:1">
+              <label for="pPace">Pace</label>
+              <select id="pPace"><option>Weekly</option><option>Biweekly</option><option>Monthly</option></select>
+            </div>
+          </div>
+
+          <label for="pTools">Preferred tools</label>
+          <select id="pTools">
+            <option>Homework & worksheets</option>
+            <option>Brief between-session notes</option>
+            <option>Guided exercises and audio</option>
+          </select>
+
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button class="btn" id="buildPlan">Build plan</button>
+            <button class="btn secondary" id="clearPlan">Reset</button>
+          </div>
+
+          <div id="planSummary" class="summary" aria-live="polite">Your plan will appear here.</div>
+
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn" id="copyPlan">Copy</button>
+            <button class="btn secondary" id="pasteToForm">Paste into request</button>
+          </div>
+
+        </div>
+      </aside>
+    </div>
+
+    <footer style="margin-top:18px">If you need to speak by phone, call {{PHONE}}. For messages, email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</footer>
+  </div>
+
+  <script>
+    // Respect reduced motion for any reveals (small use here)
+    (function(){
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if(!prefersReduced){
+        // gentle focus animation on planner
+        var planner = document.getElementById('planner');
+        planner.style.transition='transform .45s ease,box-shadow .45s ease';
+        planner.addEventListener('mouseover',function(){planner.style.transform='translateY(-3px)';planner.style.boxShadow='0 20px 40px rgba(8,42,42,0.06)'});
+        planner.addEventListener('mouseout',function(){planner.style.transform='none';planner.style.boxShadow='none'});
+      }
+    })();
+
+    // Planner functionality
+    (function(){
+      function $(id){return document.getElementById(id)}
+      var build = $('buildPlan'), clear = $('clearPlan'), copy = $('copyPlan'), paste = $('pasteToForm');
+      var summary = $('planSummary');
+      var nameField = $('name'), notesField = $('notes'), bookingResult = $('bookingResult');
+
+      function makePlan(){
+        var goal = $('pGoal').value.trim() || 'Not specified';
+        var focus = $('pFocus').value;
+        var sessions = Number($('pSessions').value) || 1;
+        var pace = $('pPace').value;
+        var tools = $('pTools').value;
+        // estimate guidance
+        var per = sessions === 1 ? 175 : (sessions >= 6 ? 155 : 165);
+        var total = per * sessions;
+        var text = 'Session Plan\n' +
+                   'Goal: ' + goal + '\n' +
+                   'Approach: ' + focus + '\n' +
+                   'Pace: ' + pace + ' | Sessions: ' + sessions + '\n' +
+                   'Support tools: ' + tools + '\n' +
+                   'Estimated per-session: $' + per + '\n' +
+                   'Estimated total: $' + total + '\n\n' +
+                   'Notes: This is a working plan to bring to intake. Final treatment is collaborative and may change. If you are in crisis, please contact local emergency services.';
+        return text;
+      }
+
+      build.addEventListener('click',function(e){e.preventDefault();summary.textContent = makePlan()});
+      clear.addEventListener('click',function(e){e.preventDefault();['pGoal','pSessions','pPace','pFocus','pTools'].forEach(function(id){var el=$(id); if(el.tagName==='SELECT'){el.selectedIndex=0}else if(el.type==='number'){el.value=6}else el.value=''});summary.textContent='Your plan will appear here.'});
+
+      copy.addEventListener('click',function(){var text = summary.textContent; if(!text || text==='Your plan will appear here.'){return alert('No plan to copy.');}navigator.clipboard&&navigator.clipboard.writeText(text).then(function(){alert('Plan copied.')},function(){alert('Copy failed — select and copy manually.');})});
+
+      paste.addEventListener('click',function(){var text = summary.textContent; if(!text || text==='Your plan will appear here.'){return alert('No plan to paste.');}notesField.value = text; alert('Plan pasted into the request notes.');});
+
+      // Booking form faux-submission
+      $('sendRequest').addEventListener('click',function(e){e.preventDefault();
+        var n = nameField.value.trim(), em = $('email').value.trim(), w = $('when').value.trim();
+        if(!n || !em){bookingResult.textContent='Please provide name and email.'; return}
+        bookingResult.textContent = 'Request sent. Thank you, ' + n + '. I will reply to ' + em + ' to confirm availability.';
+        // simulate sending by clearing lightly
+        setTimeout(function(){nameField.value='';$('email').value='';$('phone').value='';$('when').value='';notesField.value='';},1200);
+      });
+
+      // 'Use planner summary' pulls current plan into notes
+      $('usePlan').addEventListener('click',function(e){e.preventDefault();var p = summary.textContent; if(!p || p==='Your plan will appear here.'){return alert('No plan built yet.');}notesField.value = p; alert('Plan copied into request notes.');});
+    })();
+  </script>
+</body>
+</html>

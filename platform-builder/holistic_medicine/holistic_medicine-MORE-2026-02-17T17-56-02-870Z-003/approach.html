@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Our Way — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f8fff8;--ink:#121212;--muted:#666;--accent:#c57fdb}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--ink)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px;background-image:url('assets/img/pattern.svg');background-size:300px}
+    nav a{margin-left:14px;text-decoration:none;color:var(--ink)}
+    main{max-width:920px;margin:30px auto;background:#fff;padding:22px;border-radius:12px;box-shadow:0 10px 30px rgba(10,10,10,0.04)}
+    h1{margin:0 0 6px}
+    p.lead{color:var(--muted)}
+    .steps{display:flex;gap:10px;margin-top:14px}
+    .step{flex:1;padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#fffaf8);border:1px solid #f1e8f6}
+    .planner{margin-top:18px;padding:14px;border-radius:10px;background:#fffefb;border:1px solid #f3f0ea}
+    .phase-btn{padding:10px 12px;border-radius:8px;border:1px solid #eee;background:#fff;cursor:pointer}
+    .phase-btn.active{background:var(--accent);color:#fff;border-color:rgba(197,127,219,0.5)}
+    .micro-list{margin-top:10px}
+    .disclaimer{font-size:13px;color:var(--muted);margin-top:12px}
+    .nav-note{font-size:13px;color:var(--muted);margin-top:10px}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:700">{{BUSINESS_NAME}} — Method</div>
+    <nav>
+      <a href="index.html">Front</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Symptoms</a>
+      <a href="approach.html">Way</a>
+      <a href="pricing.html">Rates</a>
+      <a href="about.html">Who</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Talk</a>
+    </nav>
+  </header>
+  <main>
+    <h1>How we move together</h1>
+    <p class="lead">A simple scaffold: discover, practice, steady. Each step is chosen to fit your life and measured for what matters to you.</p>
+
+    <div class="steps">
+      <div class="step">
+        <strong>Discover</strong>
+        <p style="color:var(--muted);font-size:14px">A mapping conversation and simple baseline measurements.</p>
+      </div>
+      <div class="step">
+        <strong>Practice</strong>
+        <p style="color:var(--muted);font-size:14px">Short, repeatable routines that stack into everyday life.</p>
+      </div>
+      <div class="step">
+        <strong>Steady</strong>
+        <p style="color:var(--muted);font-size:14px">Periodic review, relapse-aware options, and tools for independence.</p>
+      </div>
+    </div>
+
+    <section class="planner" id="planner">
+      <strong>Interactive timeline planner</strong>
+      <div style="margin-top:10px">Click a phase to open suggested actions and small measurable steps.</div>
+
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button class="phase-btn active" data-phase="1">Phase 1</button>
+        <button class="phase-btn" data-phase="2">Phase 2</button>
+        <button class="phase-btn" data-phase="3">Phase 3</button>
+      </div>
+
+      <div id="phaseContent" style="margin-top:12px;color:var(--muted)">
+        <h3 style="margin:0">Phase 1 — Clarify & Ground</h3>
+        <p style="margin:6px 0 0">Initial intake and two simple practices to collect baseline data. Example micro-habits:</p>
+        <ul class="micro-list">
+          <li>Record one sleep metric for three nights.</li>
+          <li>Three breaths before each meal for three days.</li>
+        </ul>
+      </div>
+
+      <div style="margin-top:12px;padding:10px;border-radius:8px;background:#fff;border:1px solid #f0f0ef">
+        <strong>Planner actions</strong>
+        <label style="display:block;margin-top:8px"><input type="checkbox" id="p1c1"> Schedule intake (45–60 min)</label>
+        <label style="display:block"><input type="checkbox" id="p1c2"> Try two baseline micro-habits for one week</label>
+      </div>
+
+      <div class="disclaimer">This planner is educational and for personal use. It is not individualized medical advice. Coordinate with your clinician as needed.</div>
+    </section>
+
+    <div style="margin-top:16px;padding:12px;border-radius:8px;background:#fffefb;border:1px solid #f3f0ea">
+      <strong>Save & act</strong>
+      <p style="color:var(--muted);margin:8px 0">When you pick a phase, use the button to move toward a booking that matches the plan.</p>
+      <a id="planCta" href="{{PRIMARY_CTA_URL}}"><button class="phase-btn active" style="padding:10px 14px;border-radius:8px;background:var(--accent);color:#fff;border:0">Proceed to a planning visit</button></a>
+      <div class="nav-note">Questions? Call <strong>{{PHONE}}</strong> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </div>
+  </main>
+
+  <script>
+    (function(){
+      const content = document.getElementById('phaseContent');
+      const buttons = document.querySelectorAll('.phase-btn');
+      const phases = {
+        '1':{title:'Phase 1 — Clarify & Ground',body:'Intake, two short practices to collect baseline data. Micro-steps: record sleep metric x3 nights; 3 breaths before meals for three days.'},
+        '2':{title:'Phase 2 — Integrate',body:'Introduce 2–3 consistent micro-habits over 4–8 weeks. Focus on habit timing and context cues; brief check-ins.'},
+        '3':{title:'Phase 3 — Maintain & Evolve',body:'Transition to independent practice: skills for resilience, relapse planning, and optional monthly checkups.'}
+      };
+
+      document.querySelectorAll('[data-phase]').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          document.querySelectorAll('[data-phase]').forEach(b=>b.classList.remove('active'));
+          btn.classList.add('active');
+          const k = btn.getAttribute('data-phase');
+          content.innerHTML = '<h3 style="margin:0">'+phases[k].title+'</h3><p style="margin:6px 0 0">'+phases[k].body+'</p>';
+        });
+      });
+
+      // Mood-to-method compact integration
+      const moods = {calm:'Book a gentle planning visit',anxious:'Choose a nervous-system focused visit',foggy:'Pick a clarity consult',stuck:'Select a momentum session'};
+      // Add a small floating selector
+      const float = document.createElement('div');
+      float.style.position='fixed';float.style.right='18px';float.style.bottom='18px';float.style.padding='10px';float.style.background='#fff';float.style.border='1px solid #eee';float.style.borderRadius='10px';float.style.boxShadow='0 8px 20px rgba(0,0,0,0.06)';
+      float.innerHTML = '<select id="miniMood"><option value="calm">gentle rest</option><option value="anxious">tense</option><option value="foggy">foggy</option><option value="stuck">stuck</option></select> <button id="miniGo" style="margin-left:8px;padding:6px 8px;border-radius:8px;border:0;background:var(--accent);color:#fff">Match</button>';
+      document.body.appendChild(float);
+
+      document.getElementById('miniGo').addEventListener('click',()=>{
+        const v = document.getElementById('miniMood').value;
+        alert(moods[v] || 'Try a short consult to start');
+      });
+    })();
+  </script>
+</body>
+</html>

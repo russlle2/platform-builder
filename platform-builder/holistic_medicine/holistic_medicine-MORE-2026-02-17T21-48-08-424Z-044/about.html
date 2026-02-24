@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fffdfb;--ink:#21312f;--accent:#4a8b78;--muted:#6b706b}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:var(--bg);color:var(--ink)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:linear-gradient(90deg, rgba(74,139,120,0.06), transparent)}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none}
+    .brand{font-weight:800;color:var(--accent)}
+    .wrap{max-width:980px;margin:28px auto;padding:0 18px}
+    .intro{display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start}
+    h1{margin:0 0 6px;font-size:26px}
+    .lead{color:var(--muted);margin:0 0 12px}
+    .bio{background:#fff;padding:18px;border-radius:12px;box-shadow:0 8px 20px rgba(16,24,20,0.04)}
+    .values{display:flex;gap:10px;margin-top:12px}
+    .pill{background:linear-gradient(180deg, rgba(74,139,120,0.06), transparent);padding:8px 10px;border-radius:999px;font-weight:600;color:var(--accent)}
+    .inventory-small{margin-top:16px;padding:12px;background:rgba(74,139,120,0.03);border-radius:8px}
+    .cta{display:inline-block;padding:10px 14px;background:var(--accent);color:#fff;border-radius:10px;text-decoration:none}
+    footer{max-width:980px;margin:24px auto;padding:18px;color:var(--muted);font-size:13px}
+    .try-small{background:transparent;border:1px solid var(--accent);padding:8px 12px;border-radius:8px;color:var(--accent);cursor:pointer}
+    .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(10,12,10,0.45);visibility:hidden;opacity:0;transition:opacity .18s}
+    .modal.open{visibility:visible;opacity:1}
+    .modal-dialog{width:540px;background:#fff;padding:16px;border-radius:12px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="approach.html">Our Way</a>
+      <a href="pricing.html">Plans</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+    <div><a class="cta" href="{{PRIMARY_CTA_URL}}">Say hello</a></div>
+  </header>
+
+  <main class="wrap">
+    <section class="intro">
+      <div>
+        <h1>We work with whole days, not just symptoms</h1>
+        <p class="lead">A quiet style of integrative care: evidence-minded, practical shifts, human-scaled plans that fit your routine. We listen first, then craft steps you can try right away.</p>
+
+        <div class="bio">
+          <strong>Our promise</strong>
+          <p class="small" style="color:var(--muted);margin-top:6px">We offer education, collaborative goals, and coordinated referrals when helpful. No cures promised — just a steady process of learning about what helps you.</p>
+
+          <div class="values">
+            <div class="pill">Curiosity</div>
+            <div class="pill">Practicality</div>
+            <div class="pill">Context</div>
+          </div>
+
+          <div class="inventory-small">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <strong>Quick map</strong>
+                <div class="small" style="color:var(--muted)">Check a couple of areas to preview a meeting arc.</div>
+              </div>
+              <div><button class="try-small" id="about-inv">Map now</button></div>
+            </div>
+          </div>
+
+        </div>
+
+        <p style="margin-top:12px">For local people: visits take place at our {{CITY}} office; remote visits welcome. Reach out at <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call {{PHONE}}.</p>
+      </div>
+
+      <aside>
+        <div style="background:linear-gradient(180deg, rgba(74,139,120,0.05), transparent);padding:18px;border-radius:12px">
+          <h3 style="margin:0 0 8px">A word on approach</h3>
+          <p class="small" style="color:var(--muted);margin:0">We blend clinical reasoning with lifestyle supports, brief home experiments, and coordination with other clinicians. It’s education plus practical steps — not a one-size solution.</p>
+          <div style="margin-top:12px"><a class="cta" href="book.html">Begin with a hello</a></div>
+        </div>
+      </aside>
+    </section>
+
+    <section style="margin-top:20px">
+      <h2 style="margin:0 0 8px">Team & story</h2>
+      <p class="small muted">A small team of clinicians and educators who mix conventional training with training in integrative practices. We collaborate with you and with any other clinicians you work with.</p>
+      <p class="small muted">Educational tone only: we do not promise cures. Our work focuses on tools, context, and achievable steps.</p>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="max-width:980px;margin:0 auto;display:flex;justify-content:space-between;align-items:center">
+      <div class="small">{{BUSINESS_NAME}} • {{CITY}}, {{STATE}}</div>
+      <div class="small">{{PHONE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </div>
+  </footer>
+
+  <!-- small inventory modal reused -->
+  <div class="modal" id="about-modal" aria-hidden="true">
+    <div class="modal-dialog">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <strong>Quick inventory</strong>
+        <button id="close-about" class="try-small">Close</button>
+      </div>
+      <div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px">
+          <label style="display:flex;align-items:center;gap:8px"><input type="checkbox" value="Sleep"> Sleep</label>
+          <label style="display:flex;align-items:center;gap:8px"><input type="checkbox" value="Stress"> Stress</label>
+          <label style="display:flex;align-items:center;gap:8px"><input type="checkbox" value="Digestion"> Digestion</label>
+          <label style="display:flex;align-items:center;gap:8px"><input type="checkbox" value="Movement"> Movement</label>
+        </div>
+        <div><button id="about-run" class="try-small">See a short agenda</button></div>
+        <div id="about-output" class="small" style="margin-top:10px;color:var(--muted)"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // reuse simple inventory logic (smaller)
+    const localMap = {
+      Sleep: {f:'Sleep rhythm and habits',c:'2-week check'},
+      Stress: {f:'Stress anchors and calming micro-practices',c:'2-week check'},
+      Digestion: {f:'Digestion review and simple steps',c:'4-week follow-up'},
+      Movement: {f:'Movement starters',c:'4-week review'}
+    };
+    document.getElementById('about-inv').addEventListener('click',()=>{ document.getElementById('about-modal').classList.add('open'); document.getElementById('about-modal').setAttribute('aria-hidden','false'); });
+    document.getElementById('close-about').addEventListener('click',()=>{ document.getElementById('about-modal').classList.remove('open'); document.getElementById('about-modal').setAttribute('aria-hidden','true'); });
+    document.getElementById('about-run').addEventListener('click',()=>{
+      const checked = Array.from(document.querySelectorAll('#about-modal input[type=checkbox]:checked')).map(i=>i.value);
+      if(!checked.length) { document.getElementById('about-output').textContent='Try checking one or two areas to see a short agenda.'; return; }
+      const items = checked.map(c=>localMap[c]?.f||c);
+      const cad = checked.includes('Sleep')||checked.includes('Stress') ? 'First follow-up: ~2 weeks' : 'First follow-up: ~4 weeks';
+      document.getElementById('about-output').innerHTML = '<strong>Agenda:</strong> '+items.join(', ')+' — '+cad+' <div style="margin-top:6px"><a href="book.html" class="try-small">Request a booking</a></div>';
+    });
+  </script>
+</body>
+</html>

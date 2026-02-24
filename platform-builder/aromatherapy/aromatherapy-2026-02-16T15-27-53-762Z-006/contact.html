@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{{BUSINESS_NAME}} — Connect</title>
+  <meta name="description" content="Get in touch with {{PRACTITIONER_NAME}} at {{BUSINESS_NAME}}. Safety-first aromatherapy guidance, consultations, and bespoke blends in {{CITY}}, {{STATE}}." />
+  <style>
+    :root{
+      --bg1:#f6f9f7; --bg2:#eaf3f0; --accent:#5a9a86; --muted:#6b6b6b; --card:#ffffff; --glass:rgba(255,255,255,0.6);
+      --radius:14px; --maxw:980px; font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg1),var(--bg2));color:#16342a;}
+    /* patterned layer using external svg asset for visual richness */
+    .pattern-layer{position:fixed;inset:0;pointer-events:none;background-image:url('assets/img/pattern.svg');background-repeat:repeat;opacity:0.18;mix-blend-mode:multiply}
+    .wrap{max-width:var(--maxw);margin:48px auto;padding:36px;display:grid;grid-template-columns:1fr;gap:24px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#7fd3b4);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:18px}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none;font-weight:600}
+    /* subtle card */
+    .hero{background:linear-gradient(180deg,rgba(255,255,255,0.6),var(--glass));backdrop-filter: blur(6px);border-radius:var(--radius);padding:22px;display:grid;grid-template-columns:1fr 360px;gap:22px;align-items:start}
+    .hero h1{margin:0;font-size:24px;letter-spacing:-0.2px}
+    .hero p{margin:10px 0 0;color:#25433a}
+    .contact-card{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 8px 24px rgba(24,36,30,0.06)}
+    .meta{font-size:13px;color:var(--muted);margin-top:8px}
+    /* form */
+    form{display:grid;gap:10px}
+    label{font-size:13px;color:#2c4b3f}
+    input[type=text],input[type=email],textarea,select{width:100%;padding:10px;border-radius:10px;border:1px solid #e1e8e5;background:transparent}
+    textarea{min-height:120px;resize:vertical}
+    .row{display:flex;gap:10px}
+    .row > *{flex:1}
+    .btn{display:inline-block;padding:12px 16px;border-radius:12px;background:linear-gradient(90deg,var(--accent),#4ea98e);color:white;border:none;font-weight:700;text-decoration:none}
+    .note{font-size:13px;color:var(--muted)}
+    /* sections */
+    section.card{background:linear-gradient(180deg,rgba(255,255,255,0.8),rgba(255,255,255,0.65));padding:18px;border-radius:12px}
+    .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .pillar{padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#f8fffb);box-shadow:0 6px 18px rgba(18,38,32,0.04)}
+    .mythlist{display:grid;gap:8px}
+    .myth{display:flex;gap:12px;align-items:flex-start}
+    .mt-badge{width:34px;height:34px;border-radius:8px;background:linear-gradient(180deg,#fff,#eef8f2);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent)}
+    footer{display:flex;justify-content:space-between;align-items:center;padding-top:12px;color:var(--muted);font-size:13px}
+    /* responsive */
+    @media (max-width:880px){.hero{grid-template-columns:1fr;padding:16px}nav{display:none}.pillars{grid-template-columns:1fr}.wrap{margin:20px}}
+  </style>
+</head>
+<body>
+  <div class="pattern-layer" aria-hidden="true"></div>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true">A</div>
+        <div>
+          <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav aria-label="Primary navigation">
+        <a href="index.html">Start</a>
+        <a href="services.html">Offerings</a>
+        <a href="blends.html">Blends</a>
+        <a href="shop.html">Boutique</a>
+        <a href="pricing.html">Memberships</a>
+        <a href="about.html">Story</a>
+        <a href="book.html">Reserve</a>
+        <a href="contact.html" style="color:var(--accent)">Connect</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="connect-heading">
+        <div>
+          <h1 id="connect-heading">Reach {{PRACTITIONER_NAME}} — thoughtful aromatherapy support</h1>
+          <p>Whether you have questions about blends, safety, or a bespoke consultation, use this page to connect. We prioritize evidence-informed, safety-forward guidance and clear next steps.</p>
+
+          <div style="margin-top:18px;display:grid;gap:12px">
+            <div class="contact-card">
+              <div style="font-weight:700">Quick contact</div>
+              <div class="meta">Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a> • Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+              <div style="margin-top:8px" class="note">Typical response time: 1–3 business days. For bookings, please use the Reserve page.</div>
+            </div>
+
+            <div class="card">
+              <div style="font-weight:700;margin-bottom:8px">In-person and virtual consultations</div>
+              <div class="note">Sessions available in {{CITY}}, {{STATE}} and online. Consultations focus on safe aromatic practice, scent education, and bespoke formulation (non-medical guidance).</div>
+            </div>
+          </div>
+        </div>
+
+        <aside>
+          <form class="contact-card" action="#" method="post" onsubmit="event.preventDefault();alert('Form would be sent to {{EMAIL}} — integrate your backend to enable sending.');">
+            <div style="font-weight:700;margin-bottom:8px">Send a message</div>
+            <input type="text" name="name" aria-label="Your name" placeholder="Your name" required />
+            <input type="email" name="email" aria-label="Your email" placeholder="you@example.com" required />
+            <input type="text" name="phone" aria-label="Phone (optional)" placeholder="Phone (optional)" />
+            <label for="contact-method" class="note">Preferred contact</label>
+            <select id="contact-method" name="method" aria-label="Preferred contact method">
+              <option>Email</option>
+              <option>Phone</option>
+              <option>Either</option>
+            </select>
+
+            <label class="note">Brief note</label>
+            <textarea name="message" placeholder="Tell me about what you're interested in (blend, consultation, safety question)..." required></textarea>
+
+            <!-- honeypot anti-spam -->
+            <input type="text" name="address_2" style="display:none" tabindex="-1" autocomplete="off" />
+
+            <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" required /> I consent to {{BUSINESS_NAME}} contacting me about my inquiry.</label>
+            <div style="display:flex;gap:8px;justify-content:space-between;align-items:center;margin-top:6px">
+              <button class="btn" type="submit">Send inquiry</button>
+              <span class="note">Or call <a href="tel:{{PHONE}}">{{PHONE}}</a></span>
+            </div>
+          </form>
+        </aside>
+      </section>
+
+      <section style="display:grid;gap:12px;margin-top:18px">
+        <div class="card" aria-labelledby="faq-heading">
+          <h2 id="faq-heading" style="margin-top:0">Safety & common questions</h2>
+          <div class="note">Below are short answers to frequently raised topics. These are general safety recommendations, not medical advice. If you are pregnant, nursing, under a physician's care, or managing a medical condition, please consult your healthcare provider before using essential oils.</div>
+
+          <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div>
+              <h3 style="margin:0 0 6px 0">Dilution & application</h3>
+              <p class="note">We recommend topical dilution for adults commonly at 1–3% for daily use. For sensitive skin or new oils, start lower. Always follow blend-specific recommendations and perform a patch test first.</p>
+            </div>
+
+            <div>
+              <h3 style="margin:0 0 6px 0">Patch test</h3>
+              <p class="note">Apply a small diluted drop on inner forearm, cover for 24 hours, and observe for irritation. Discontinue if irritation occurs. Patch testing is a simple and effective precaution.</p>
+            </div>
+
+            <div>
+              <h3 style="margin:0 0 6px 0">Pregnancy & nursing</h3>
+              <p class="note">Some oils are contraindicated or require caution in pregnancy and lactation. Consult your healthcare provider and mention pregnancy during any consultation. We will provide pregnancy-safe options when applicable.</p>
+            </div>
+
+            <div>
+              <h3 style="margin:0 0 6px 0">Pets in the home</h3>
+              <p class="note">Certain essential oils can be harmful to pets, especially cats and some small mammals. Use diffusers with care, avoid direct application to pets, and ensure separate, well-ventilated spaces when diffusing. Ask about pet-safe alternatives during a consult.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-top:0">Common myths — clarified</h3>
+          <div class="mythlist">
+            <div class="myth"><div class="mt-badge">M</div><div><strong>Myth:</strong> Natural always means safe.<br><span class="note">Truth: Natural substances can be potent. Dose, route, and quality matter. We emphasize dosing, testing, and contraindications.</span></div></div>
+            <div class="myth"><div class="mt-badge">M</div><div><strong>Myth:</strong> One blend fits everyone.<br><span class="note">Truth: We tailor blends to individual context, sensitivity, and goals. Customization reduces risk and increases satisfaction.</span></div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-top:0">Practice pillars</h3>
+          <div class="pillars">
+            <div class="pillar"><strong>Safety-first</strong><div class="note">Conservative dilution, patch testing, pregnancy/pet guidance.</div></div>
+            <div class="pillar"><strong>Education</strong><div class="note">Clear instructions, scent literacy, and approachable explanations.</div></div>
+            <div class="pillar"><strong>Transparency</strong><div class="note">Ingredient sourcing, potency, and suggested uses are always shared.</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-top:0">Case notes preview</h3>
+          <p class="note">Examples of past consults (de-identified): formulation for diffuse seasonal stress with respiratory-safe practices, creating a low-irritant sleep roll-on using a 1.5% total dilution, and designing a small-room diffuser rotation to respect household pets. Case notes are used for learning and are never shared without consent.</p>
+        </div>
+      </section>
+
+      <section style="margin-top:18px" class="card">
+        <h2 style="margin-top:0">Next steps & call to action</h2>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <div class="note">Prefer to ask a quick question first? Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a>.</div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div>&copy; <span id="year"></span> {{BUSINESS_NAME}} • {{CITY}}, {{STATE}}</div>
+      <div class="note">Designed for clear, safe aromatherapy guidance — not a medical service.</div>
+    </footer>
+  </div>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

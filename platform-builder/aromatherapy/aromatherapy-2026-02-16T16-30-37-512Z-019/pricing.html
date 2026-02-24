@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>{{BUSINESS_NAME}} — Membership Plans</title>
+  <style>
+    :root{
+      --earth-1:#2f2a25;--earth-2:#6b4423;--earth-3:#e7c9a9;--accent:#8fbf8f;--muted:#7a6b5a;
+      --glass: rgba(255,255,255,0.06);
+      font-family: 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--earth-3),#fff 60%);color:var(--earth-1)}
+    .bg-svg{position:fixed;inset:0;pointer-events:none;opacity:0.18}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:linear-gradient(90deg,rgba(255,255,255,0.35),transparent);backdrop-filter:blur(4px)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,var(--earth-2),var(--accent));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    nav a{margin:0 10px;color:var(--earth-1);text-decoration:none;font-weight:600}
+    main{max-width:980px;margin:36px auto;padding:24px}
+    .hero{display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:center;margin-bottom:20px}
+    .hero .intro{background:var(--glass);padding:24px;border-radius:12px;box-shadow:0 6px 18px rgba(43,34,27,0.06)}
+    h1{margin:0 0 8px 0;font-size:1.9rem;color:var(--earth-2)}
+    p.lead{margin:0;color:var(--muted)}
+    .aside{padding:16px;background:linear-gradient(180deg,#fff,transparent);border-radius:12px}
+    .tiers{display:flex;gap:16px;margin-top:18px}
+    .card{background:#fff;border-radius:12px;padding:18px;flex:1;border:1px solid rgba(0,0,0,0.04)}
+    .price{font-size:1.6rem;color:var(--earth-2);margin:10px 0}
+    .features{list-style:none;padding:0;margin:12px 0 16px 0;color:var(--muted)}
+    .features li{margin:8px 0}
+    .btn{display:inline-block;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,var(--earth-2),var(--accent));color:#fff;text-decoration:none;font-weight:700}
+    .muted-note{font-size:0.9rem;color:var(--muted);margin-top:12px}
+    .testimonials{margin-top:28px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .quote{background:linear-gradient(180deg,rgba(255,255,255,0.9),#fff);padding:16px;border-radius:10px;border-left:4px solid var(--earth-2)}
+    footer{padding:28px 24px;text-align:center;color:var(--muted);font-size:0.9rem}
+    @media(max-width:880px){.hero{grid-template-columns:1fr;}.testimonials{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <!-- decorative pattern SVG (earthy warm motif) -->
+  <svg class='bg-svg' viewBox='0 0 800 600' preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'>
+    <defs>
+      <linearGradient id='g' x1='0' x2='1'>
+        <stop offset='0' stop-color='#f5efe6'/>
+        <stop offset='1' stop-color='#fffdf9'/>
+      </linearGradient>
+      <pattern id='pt' width='60' height='60' patternUnits='userSpaceOnUse'>
+        <rect width='60' height='60' fill='transparent'></rect>
+        <circle cx='10' cy='10' r='2.5' fill='#e9d6c0' />
+        <rect x='0' y='30' width='60' height='12' fill='#f6e9dd' opacity='0.7'/>
+      </pattern>
+      <filter id='grain'><feTurbulence baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter>
+    </defs>
+    <rect width='100%' height='100%' fill='url(#g)' opacity='0.95'></rect>
+    <rect width='100%' height='100%' fill='url(#pt)' opacity='0.14'></rect>
+  </svg>
+
+  <header>
+    <div class='brand'>
+      <div class='logo'>A</div>
+      <div>
+        <div style='font-weight:700'>{{BUSINESS_NAME}}</div>
+        <div style='font-size:0.85rem;color:var(--muted)'>{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href='index.html'>Home</a>
+      <a href='services.html'>Services</a>
+      <a href='blends.html'>Blends</a>
+      <a href='shop.html'>Shop</a>
+      <a href='pricing.html' style='text-decoration:underline'>Membership</a>
+      <a href='about.html'>About</a>
+      <a href='book.html'>Book</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class='hero'>
+      <div class='intro'>
+        <h1>Memberships that invite ritual</h1>
+        <p class='lead'>Join an ongoing practice of scent, slow moments, and tools that support everyday wellbeing. Memberships are crafted with safety, seasonal blends, and practitioner guidance — no medical promises, only thoughtful care.</p>
+        <div class='tiers'>
+          <div class='card'>
+            <strong>Seedling</strong>
+            <div class='price'>$12/mo</div>
+            <ul class='features'>
+              <li>Monthly journal prompt & seasonal tip</li>
+              <li>10% off roll-ons</li>
+              <li>Access to members-only blend notes</li>
+            </ul>
+            <a class='btn' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a>
+          </div>
+          <div class='card'>
+            <strong>Bloom</strong>
+            <div class='price'>$38/mo</div>
+            <ul class='features'>
+              <li>Quarterly mini blend mailed</li>
+              <li>20% off 1:1 sessions</li>
+              <li>Priority booking</li>
+            </ul>
+            <a class='btn' href='{{PRIMARY_CTA_URL}}'>Join Bloom</a>
+          </div>
+          <div class='card'>
+            <strong>Sanctuary (annual)</strong>
+            <div class='price'>$380/yr</div>
+            <ul class='features'>
+              <li>Two custom blends per year</li>
+              <li>Free welcome roll-on</li>
+              <li>Exclusive workshops</li>
+            </ul>
+            <a class='btn' href='{{PRIMARY_CTA_URL}}'>Save with Sanctuary</a>
+          </div>
+        </div>
+        <div class='muted-note'>All memberships auto-renew. You can cancel anytime. Membership benefits are experiential; they do not replace medical care. For safety practices, review our guidelines in the booking section.</div>
+      </div>
+
+      <aside class='aside'>
+        <h3 style='margin-top:0'>Member Perks Snapshot</h3>
+        <ul style='color:var(--muted)'>
+          <li>Personalized scent notes and ritual ideas</li>
+          <li>Access to seasonal blends and scent education</li>
+          <li>Discounts on products and sessions</li>
+        </ul>
+        <div style='margin-top:12px'>
+          <strong style='color:var(--earth-2)'>Questions?</strong>
+          <div style='font-size:0.95rem;color:var(--muted)'>Call {{PHONE}} or email <a href='mailto:{{EMAIL}}' style='color:var(--earth-2)'>{{EMAIL}}</a></div>
+        </div>
+      </aside>
+    </section>
+
+    <section class='testimonials'>
+      <div class='quote'>
+        “The monthly rituals have quietly changed how I move through my week — small, steady practices that feel like coming home.”
+        <div style='margin-top:10px;font-weight:700;color:var(--earth-2)'>— L.S., {{CITY}}</div>
+      </div>
+      <div class='quote'>
+        “As a member I love the seasonal blends and the gentle reminders to breathe. The practitioner guidance feels safety-forward and thoughtful.”
+        <div style='margin-top:10px;font-weight:700;color:var(--earth-2)'>— M.G., {{STATE}}</div>
+      </div>
+    </section>
+
+    <section style='margin-top:22px;padding:18px;background:var(--glass);border-radius:12px'>
+      <h3 style='margin-top:0'>Still deciding?</h3>
+      <p style='color:var(--muted)'>Try a month of Seedling to explore scent rituals and member content. If you have specific sensitivities, we include clear guidance for patch testing and dilution with every blend.</p>
+      <a class='btn' href='{{PRIMARY_CTA_URL}}'>Start with a trial</a>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} — Gentle aromatherapy practice • {{CITY}}, {{STATE}}</div>
+    <div style='margin-top:8px'>Phone: {{PHONE}} • <a href='mailto:{{EMAIL}}' style='color:inherit;text-decoration:underline'>{{EMAIL}}</a></div>
+    <div style='margin-top:6px;color:var(--muted)'>© {{PRACTITIONER_NAME}} • Crafted with care • Safety-forward aromatherapy (not medical advice)</div>
+  </footer>
+
+</body>
+</html>

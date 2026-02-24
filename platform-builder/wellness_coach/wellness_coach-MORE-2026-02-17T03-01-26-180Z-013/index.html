@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{BUSINESS_NAME}} — Practical membership for steady wellbeing</title>
+  <meta name="description" content="A membership approach to outcomes, habits, and practical frameworks for everyday wellbeing in {{CITY}}, {{STATE}}.">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="logo" href="index.html">{{BUSINESS_NAME}}</a>
+      <nav class="main-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">Approach</a>
+        <a href="services.html">Offerings</a>
+        <a href="programs.html">Programs</a>
+        <a href="pricing.html">Membership</a>
+        <a href="testimonials.html">Stories</a>
+        <a href="book.html" class="cta">{{PRIMARY_CTA_LABEL}}</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <h1>Clear frameworks. Small, repeatable steps.</h1>
+          <p class="lead">A membership to build reliable routines, steady energy, and practical rituals that support meaningful outcomes without medical claims. Join a guided track for sustainable change in {{CITY}}, {{STATE}}.</p>
+          <div class="hero-actions">
+            <a class="btn primary" href="pricing.html">Explore membership</a>
+            <a class="btn" href="book.html">Schedule an intro</a>
+          </div>
+          <ul class="meta">
+            <li>Short diagnostics</li>
+            <li>Monthly coaching templates</li>
+            <li>7-day habit experiments</li>
+          </ul>
+        </div>
+        <div class="hero-art">
+          <svg class="pattern" width="320" height="240" viewBox="0 0 320 240" aria-hidden="true">
+            <defs>
+              <pattern id="p1" patternUnits="userSpaceOnUse" width="40" height="40">
+                <rect width="40" height="40" fill="#f3f7f5"></rect>
+                <path d="M0 40 L40 0" stroke="#dfeeea" stroke-width="1"/>
+              </pattern>
+            </defs>
+            <rect width="320" height="240" fill="url(#p1)"></rect>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- SESSION PLANNER (Plan section placed early) -->
+    <section id="session-planner" class="panel">
+      <div class="wrap">
+        <h2>Session Planner</h2>
+        <p>Build a focused session plan and export a clear summary to bring into your next meeting or practice.</p>
+        <div class="planner-grid">
+          <form id="planner-form" class="planner-form" onsubmit="return false;">
+            <label>Focus area
+              <select id="planner-focus">
+                <option>Energy & rhythm</option>
+                <option>Priority alignment</option>
+                <option>Stress navigation</option>
+                <option>Sleep & recovery</option>
+                <option>Custom</option>
+              </select>
+            </label>
+            <label>Session length
+              <select id="planner-length">
+                <option>20 minutes</option>
+                <option>45 minutes</option>
+                <option>60 minutes</option>
+              </select>
+            </label>
+            <label>Frequency
+              <select id="planner-frequency">
+                <option>Weekly</option>
+                <option>Biweekly</option>
+                <option>Monthly</option>
+              </select>
+            </label>
+            <label>Primary objective
+              <input type="text" id="planner-objective" placeholder="e.g., reduce afternoon distraction" />
+            </label>
+            <label>Key micro-habits (comma separated)
+              <input type="text" id="planner-habits" placeholder="e.g., 10-min walk, 2-min breathing" />
+            </label>
+            <div class="form-actions">
+              <button class="btn" id="planner-build">Build plan</button>
+              <button class="btn" id="planner-copy">Copy summary</button>
+            </div>
+          </form>
+          <div class="planner-preview">
+            <h3>Plan summary</h3>
+            <pre id="planner-output" aria-live="polite">Use the form to create a short, exportable plan.</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DIAGNOSTIC -->
+    <section id="diagnostic" class="panel alt">
+      <div class="wrap">
+        <h2>Quick diagnostic</h2>
+        <p>Answer a few quick prompts to clarify what matters most for the coming month.</p>
+        <ol class="diagnostic-list">
+          <li>What's one resource you can commit this week (time, place, tool)?</li>
+          <li>Which single habit would make the most noticeable difference?</li>
+          <li>What small friction can you remove today to make the habit stick?</li>
+        </ol>
+        <a class="btn" href="services.html">Take the diagnostic</a>
+      </div>
+    </section>
+
+    <!-- MICRO HABITS: 7-day challenge generator -->
+    <section id="habit-builder" class="panel">
+      <div class="wrap">
+        <h2>7-Day Challenge Builder</h2>
+        <p>Create a short, printable challenge to test a habit for one week. Trackable and simple.</p>
+        <div class="habit-grid">
+          <form id="habit-form" onsubmit="return false;">
+            <label>Habit name
+              <input id="habit-name" placeholder="e.g., Morning hydration" />
+            </label>
+            <label>Daily target
+              <input id="habit-target" placeholder="e.g., 2 glasses" />
+            </label>
+            <label>Start on
+              <select id="habit-start">
+                <option>Monday</option>
+                <option>Tuesday</option>
+                <option>Wednesday</option>
+                <option>Thursday</option>
+                <option>Friday</option>
+                <option>Saturday</option>
+                <option>Sunday</option>
+              </select>
+            </label>
+            <div class="form-actions">
+              <button id="habit-generate" class="btn">Generate checklist</button>
+              <button id="habit-print" class="btn">Print</button>
+            </div>
+          </form>
+          <div class="habit-preview">
+            <h3>Your 7-day checklist</h3>
+            <div id="habit-output">No challenge created yet.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING (framed as membership tiers) -->
+    <section id="pricing" class="panel alt">
+      <div class="wrap">
+        <h2>Membership plans</h2>
+        <p>Simple access tiers focused on practical progress and steady accountability. Membership includes monthly templates, group check-ins, and a private planner.</p>
+        <div class="pricing-grid">
+          <div class="card">
+            <h3>Starter Track</h3>
+            <p class="price">$19 / month</p>
+            <ul>
+              <li>Weekly micro-plans</li>
+              <li>One 30-min session / month</li>
+              <li>7-day challenge templates</li>
+            </ul>
+            <a class="btn" href="pricing.html">Choose Starter</a>
+          </div>
+          <div class="card featured">
+            <h3>Practice Track</h3>
+            <p class="price">$49 / month</p>
+            <ul>
+              <li>Full session planner access</li>
+              <li>Biweekly 45-min coaching</li>
+              <li>Goal-setting frameworks</li>
+            </ul>
+            <a class="btn primary" href="pricing.html">Join Practice</a>
+          </div>
+          <div class="card">
+            <h3>Guided Track</h3>
+            <p class="price">$99 / month</p>
+            <ul>
+              <li>Weekly coaching</li>
+              <li>Custom habit scaffolds</li>
+              <li>Priority booking</li>
+            </ul>
+            <a class="btn" href="pricing.html">Explore Guided</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CALL TO ACTION -->
+    <section class="cta-band">
+      <div class="wrap">
+        <h3>Ready to try a focused month?</h3>
+        <p>Join a membership that emphasizes outcomes, small habits, and frameworks you can keep using.</p>
+        <a class="btn large primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div>
+        <strong>{{BUSINESS_NAME}}</strong>
+        <address>{{CITY}}, {{STATE}} &middot; <a href="tel:{{PHONE}}">{{PHONE}}</a>
+      </div>
+      <div>
+        <a href="privacy.html">Privacy</a> &middot; <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

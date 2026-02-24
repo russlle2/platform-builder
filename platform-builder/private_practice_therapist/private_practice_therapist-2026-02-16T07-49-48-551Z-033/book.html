@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Start — Book a Session with {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--ink:#081123;--muted:#6b7280;--accent:#ff6b6b;--accent-2:#06b6d4}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,#fff 0%,#fbfdff 100%);color:var(--ink)}
+    .wrap{max-width:920px;margin:36px auto;padding:24px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    .nav{display:flex;gap:12px}
+    a{color:var(--ink);text-decoration:none}
+    h1{font-size:28px;margin:8px 0}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:20px;margin-top:20px}
+    .panel{background:#fff;border-radius:12px;padding:18px;border:1px solid rgba(11,19,32,0.04)}
+    label{display:block;margin:10px 0 6px;font-weight:700}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9ee}
+    .btn{display:inline-block;padding:11px 16px;border-radius:12px;background:var(--accent);color:#fff;font-weight:700;text-decoration:none}
+    .secondary{background:var(--accent-2);color:#04303b}
+    .note{font-size:13px;color:var(--muted);margin-top:8px}
+    footer{margin-top:24px;font-size:13px;color:var(--muted)}
+    svg{display:block;margin:8px auto}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <nav class="nav"><a href="index.html">Home</a><a href="about.html">About</a><a href="specialties.html">Services</a><a href="approach.html">Method</a><a href="faq.html">FAQs</a></nav>
+      </div>
+      <div><a class="btn" href="fees.html">View rates</a></div>
+    </header>
+
+    <main class="grid">
+      <div>
+        <h1>Book a session</h1>
+        <p class="note">Choose the option that matches your current need. If you're unsure, select a single session and we can plan together.</p>
+
+        <section class="panel">
+          <h2 style="margin:0 0 8px">Intake & Scheduling</h2>
+          <p class="note">Complete this form to request a time. I will respond within two business days to confirm availability and next steps.</p>
+
+          <form action="{{PRIMARY_CTA_URL}}" method="post" aria-label="Booking form">
+            <label for="name">Full name</label>
+            <input id="name" name="name" type="text" placeholder="Your name" required />
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="you@example.com" required />
+
+            <label for="phone">Phone (optional)</label>
+            <input id="phone" name="phone" type="tel" placeholder="Preferred contact number" />
+
+            <label for="option">Booking option</label>
+            <select id="option" name="option">
+              <option>Single Session — 50 min</option>
+              <option>6-Session Momentum</option>
+              <option>Reset Intensive — 3 hours</option>
+              <option>20-min Inquiry Call</option>
+            </select>
+
+            <label for="goals">What would you like to work on? (brief)</label>
+            <textarea id="goals" name="goals" rows="4" placeholder="Anxiety, transitions, relationships, burnout..." required></textarea>
+
+            <label for="insurance">Billing preference</label>
+            <select id="insurance" name="insurance">
+              <option>Pay privately (credit/debit)</option>
+              <option>Out-of-network reimbursement (I provide superbill)</option>
+              <option>Sliding scale request</option>
+            </select>
+
+            <div style="margin-top:12px">
+              <button class="btn" type="submit">Request appointment</button>
+              <a class="btn secondary" href="mailto:{{EMAIL}}" style="margin-left:8px">Email directly</a>
+            </div>
+          </form>
+
+          <p class="note" style="margin-top:12px">If you prefer, you can call {{PHONE}}. I schedule new clients weekly and reserve a few urgent slots.</p>
+        </section>
+
+        <section class="panel" style="margin-top:14px">
+          <h3 style="margin:0">What to expect after you request</h3>
+          <ol class="note">
+            <li>I’ll reply with available times and any intake forms to complete.</li>
+            <li>We’ll confirm a first session and briefly review goals.</li>
+            <li>In-session: we’ll orient to priorities and create a tentative plan for next steps.</li>
+          </ol>
+        </section>
+      </div>
+
+      <aside>
+        <div class="panel">
+          <h3 style="margin:0">Why book here</h3>
+          <p class="note">I bring a pragmatic, evidence-attentive approach with a coaching lens—helping you translate insight into action. Modalities: {{MODALITIES}}.</p>
+
+          <div style="margin-top:12px">
+            <!-- unique pattern SVG -->
+            <svg width="280" height="140" viewBox="0 0 280 140" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="pat">
+              <title id="pat">Decorative pattern</title>
+              <rect x="0" y="0" width="280" height="140" rx="12" fill="#f0fdff" stroke="#e6fbff"/>
+              <g fill="#06b6d4" opacity="0.08">
+                <circle cx="36" cy="36" r="20" />
+                <rect x="90" y="16" width="120" height="24" rx="6" />
+                <circle cx="230" cy="100" r="28" />
+              </g>
+            </svg>
+          </div>
+
+          <div style="margin-top:12px">
+            <strong>Fees & logistics</strong>
+            <p class="note">I do not bill insurance directly; superbills are available. Sliding scale is available by request and offered to a small number of clients each month.</p>
+          </div>
+
+          <div style="margin-top:12px">
+            <strong>Privacy</strong>
+            <p class="note">All intake information is stored per professional confidentiality standards. Communications are not appropriate for emergencies.</p>
+          </div>
+        </div>
+
+        <div style="margin-top:14px;border-radius:12px;padding:12px;background:linear-gradient(90deg,#fff8f0,transparent);border:1px solid rgba(255,107,107,0.06)">
+          <strong>Quick links</strong>
+          <ul class="note">
+            <li><a href="fees.html">See detailed rates</a></li>
+            <li><a href="faq.html">FAQ & policies</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      <div style="margin-top:20px">{{THERAPIST_NAME}} • {{LICENSE}} • {{CITY}}, {{STATE}}</div>
+      <div class="note" style="margin-top:8px">Confidentiality reminder: Sessions and client information are protected except where required by law. Crisis response: If you are at immediate risk, call local emergency services or 988 (U.S.).</div>
+    </footer>
+  </div>
+</body>
+</html>

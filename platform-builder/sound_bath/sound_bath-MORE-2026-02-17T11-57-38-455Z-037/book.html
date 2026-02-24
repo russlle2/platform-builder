@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book a Session</title>
+  <style>
+    body{font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:#041026;color:#e8f6ff;margin:0;padding:28px}
+    .card{max-width:760px;margin:0 auto;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:22px;border-radius:12px;background-image:url("assets/img/pattern.svg")}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{color:#bfe8ff;text-decoration:none;margin-left:12px}
+    h1{margin:10px 0}
+    form{margin-top:14px}
+    label{display:block;margin-top:10px;font-weight:600}
+    select,input,textarea{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.01);color:#eaf6ff}
+    .row{display:flex;gap:10px}
+    .col{flex:1}
+    .submit{margin-top:12px;display:flex;gap:10px}
+    .btn{background:#0ea5a4;color:#061118;padding:10px 12px;border-radius:8px;text-decoration:none;font-weight:700;border:none}
+    .alt{background:transparent;color:#bfe8ff;border:1px solid rgba(255,255,255,0.04);padding:10px;border-radius:8px}
+    .note{font-size:13px;color:#9fb3c7;margin-top:8px}
+    .program-info{margin-top:10px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.02)}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <header>
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="events.html">Gatherings</a>
+        <a href="pricing.html">Invest</a>
+        <a href="contact.html">Reach</a>
+      </nav>
+    </header>
+
+    <main>
+      <h1>Reserve a session</h1>
+      <p style="color:#b9d6ea">Choose a program and select the sound intensity that fits you. We use suggested contributions rather than fixed price tiers.</p>
+
+      <form id="book-form" action="{{PRIMARY_CTA_URL}}" method="post">
+        <label for="name">Full name</label>
+        <input id="name" name="name" required placeholder="Your name">
+
+        <div class="row">
+          <div class="col">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required placeholder="you@example.com">
+          </div>
+          <div class="col">
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" placeholder="{{PHONE}}">
+          </div>
+        </div>
+
+        <label for="program">Select program</label>
+        <select id="program" name="program">
+          <option value="resonant-drift">Resonant Drift — short group, suggested $20–30</option>
+          <option value="harmonic-cradle">Harmonic Cradle — medium group, suggested $30–45</option>
+          <option value="deep-tuning">Deep Tuning — extended, suggested $45–70</option>
+          <option value="private">Private Attunement — custom, inquire</option>
+        </select>
+
+        <label>Sound preference</label>
+        <div style="display:flex;gap:8px;margin-top:6px">
+          <label style="flex:1"><input type="radio" name="intensity" value="gentle" checked> Gentle</label>
+          <label style="flex:1"><input type="radio" name="intensity" value="medium"> Medium</label>
+          <label style="flex:1"><input type="radio" name="intensity" value="intense"> Intense</label>
+        </div>
+
+        <div class="program-info" id="prog-info">
+          <strong>Recommended elements</strong>
+          <p id="prog-desc" style="margin:8px 0;color:#cfeafc">Resonant Drift: ambient bowls, light chimes. Best for winding down and steady attention.</p>
+        </div>
+
+        <label for="date">Preferred date/time</label>
+        <input id="date" name="date" placeholder="e.g., Mon Apr 12, 6:30pm">
+
+        <label for="notes">Notes / health info</label>
+        <textarea id="notes" name="notes" rows="3" placeholder="Mention implants, pregnancy, or other considerations"></textarea>
+
+        <div class="note">If you have a pacemaker, epilepsy, or are in active psychiatric care, please consult your clinician before booking. Inform the facilitator in advance.</div>
+
+        <div class="submit">
+          <button type="submit" class="btn">Reserve a place</button>
+          <button type="button" class="alt" id="contact-btn">Contact first</button>
+        </div>
+      </form>
+
+      <section style="margin-top:16px">
+        <h3 style="margin-bottom:6px">Pricing note</h3>
+        <p style="color:#b9d6ea;margin:0">We present a suggested contribution for each format. If cost is a barrier, reach out — limited sliding-scale spots are available.</p>
+      </section>
+    </main>
+
+    <footer style="margin-top:14px;color:#9fb3c7">Questions? Email <a href="mailto:{{EMAIL}}" style="color:#dff4ff">{{EMAIL}}</a> or call {{PHONE}}</footer>
+  </div>
+
+  <script>
+    // Update program description based on selection + intensity
+    (function(){
+      const program = document.getElementById('program');
+      const radios = Array.from(document.querySelectorAll('input[name="intensity"]'));
+      const desc = document.getElementById('prog-desc');
+
+      const base = {
+        'resonant-drift':'Resonant Drift: ambient bowls, light chimes. Best for winding down and steady attention.',
+        'harmonic-cradle':'Harmonic Cradle: layered bowls, gentle harp. Suited for mid-length tuning and breath work.',
+        'deep-tuning':'Deep Tuning: extended soundscape with gongs and overtone play. For deeper integration and release.',
+        'private':'Private Attunement: a custom blend tailored to your needs; book a consult.'
+      };
+
+      function update(){
+        const p = program.value;
+        const intensity = radios.find(r=>r.checked).value;
+        let text = base[p];
+        if(intensity==='gentle') text += ' (Gentle: minimal percussive impact; soft dynamics.)';
+        if(intensity==='medium') text += ' (Medium: clear tonal layers, moderate dynamics.)';
+        if(intensity==='intense') text += ' (Intense: sustained overtones, deeper vibrational depth.)';
+        desc.textContent = text;
+      }
+
+      program.addEventListener('change',update);
+      radios.forEach(r=>r.addEventListener('change',update));
+      update();
+
+      document.getElementById('contact-btn').addEventListener('click',function(){
+        window.location.href = 'mailto:{{EMAIL}}?subject=Question about booking';
+      });
+
+      // Prevent accidental submission for demo: show confirmation then proceed
+      document.getElementById('book-form').addEventListener('submit',function(e){
+        // Allow real form action when PRIMARY_CTA_URL is set; otherwise simulate
+        if('{{PRIMARY_CTA_URL}}' === ''){
+          e.preventDefault();
+          alert('Booking submitted (demo). We\'ll follow up at the email provided.');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Services — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#efe7db;--accent:#6b4f36;--muted:#7a6a60;--card:#fff;--accent-2:#b68b52}
+    html,body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:var(--bg);color:#34251f}
+    body{background-image:url('assets/img/pattern.svg');background-repeat:repeat}
+    .container{max-width:1100px;margin:28px auto;padding:22px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    .logo{font-weight:800;color:var(--accent)}
+    nav a{margin-left:14px;color:var(--accent);text-decoration:none}
+    .hero{margin-top:18px;background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,255,255,0.98));padding:22px;border-radius:12px}
+    .hero h2{margin:0 0 6px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px}
+    .card{background:var(--card);padding:16px;border-radius:10px;box-shadow:0 8px 20px rgba(45,30,20,0.04)}
+    .service{border-left:4px solid rgba(107,79,54,0.08);padding:12px;margin-bottom:10px}
+    .price{font-weight:800;color:var(--accent-2)}
+
+    /* Session planner */
+    .planner label{display:block;font-size:13px;color:#49362c;margin-top:8px}
+    .planner input[type=text],.planner select{width:100%;padding:8px;border-radius:8px;border:1px solid #e9dfd6}
+    .planner .row{display:flex;gap:8px}
+    .planner .row input{flex:1}
+    .generate{margin-top:12px;background:var(--accent);color:#fff;padding:9px 12px;border-radius:8px;border:none;cursor:pointer}
+    .plan-output{white-space:pre-wrap;background:#fbf8f5;border-radius:8px;padding:12px;margin-top:12px;border:1px solid #efe6dd}
+    .copy-btn{background:var(--accent-2);border:none;padding:8px 10px;border-radius:8px;cursor:pointer}
+    @media (max-width:860px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html">Roots</a>
+        <a href="about.html">About</a>
+        <a href="services.html">Offerings</a>
+        <a href="programs.html">Paths</a>
+        <a href="pricing.html">Rates</a>
+        <a href="testimonials.html">Reviews</a>
+        <a href="book.html">Reserve</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <h2>Carefully scaffolded options — choose the scale that fits your life</h2>
+      <p style="color:var(--muted);margin-top:6px">My services are modular: short focused sessions, multi-week mentorships, or practical add-on kits you can use between meetings.</p>
+    </section>
+
+    <div class="grid" style="margin-top:18px">
+      <main>
+        <section class="card">
+          <h3 style="color:var(--accent)">What I offer</h3>
+
+          <div class="service">
+            <strong>Foundations Tune‑Up</strong>
+            <p style="margin:6px 0;color:var(--muted)">A single, deep session to map your current patterns and leave with 3 immediate experiments. Perfect when life feels scattered.</p>
+            <div class="price">Starting investment: From $120</div>
+          </div>
+
+          <div class="service">
+            <strong>Rhythm Sessions</strong>
+            <p style="margin:6px 0;color:var(--muted)">A bundle of focused sessions across 6–12 weeks to install durable rhythms and simple tracking methods.</p>
+            <div class="price">Bundle pricing available</div>
+          </div>
+
+          <div class="service">
+            <strong>Sustain Kits (retail add‑on)</strong>
+            <p style="margin:6px 0;color:var(--muted)">Guides, checklists and small at-home tools that extend the coaching between meetings. Buy as an add-on to any plan.</p>
+            <div class="price">Add-on packs from $39</div>
+          </div>
+
+          <p style="margin-top:12px;color:var(--muted)">All offerings are practical, habit-focused and framed around measurable outcomes like sleep consistency, stress signals, and energy windows. No medical claims — just steady habits.</p>
+        </section>
+
+        <section class="card" style="margin-top:12px">
+          <h3 style="color:var(--accent)">Practical extras</h3>
+          <ul style="margin:8px 0 0;padding-left:18px;color:var(--muted)">
+            <li>Session notes and one follow-up email</li>
+            <li>Custom habit checklist</li>
+            <li>Printable rhythms calendar</li>
+          </ul>
+        </section>
+      </main>
+
+      <aside>
+        <section class="card planner">
+          <h3 style="color:var(--accent)">Session Planner</h3>
+          <p style="color:var(--muted);margin-top:6px">Design a brief coaching arc: choose focus areas, session count and length; get a copy‑ready plan you can paste into email or notes.</p>
+
+          <label for="client-name">Name (optional)</label>
+          <input id="client-name" type="text" placeholder="Client or household name" />
+
+          <label for="focus-areas">Focus areas</label>
+          <select id="focus-areas" multiple size="3">
+            <option>Sleep & rhythm</option>
+            <option>Movement & energy</option>
+            <option>Stress management</option>
+            <option>Meal patterns</option>
+            <option>Focus windows</option>
+          </select>
+
+          <div class="row" style="margin-top:8px">
+            <div style="flex:1">
+              <label for="sessions">Number of sessions</label>
+              <input id="sessions" type="text" placeholder="e.g., 4" />
+            </div>
+            <div style="width:120px">
+              <label for="length">Length</label>
+              <input id="length" type="text" placeholder="45 min" />
+            </div>
+          </div>
+
+          <label style="margin-top:8px">Preferred cadence</label>
+          <select id="cadence">
+            <option>Weekly</option>
+            <option>Biweekly</option>
+            <option>Monthly</option>
+          </select>
+
+          <button class="generate" id="build-plan">Build plan</button>
+
+          <div id="plan" class="plan-output" style="display:none"></div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="copy-btn" id="copy-plan" style="display:none">Copy plan</button>
+          </div>
+        </section>
+
+        <section class="card" style="margin-top:12px">
+          <h3 style="color:var(--accent)">Need a quick consult?</h3>
+          <p style="color:var(--muted)">Message me at <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <strong>{{PHONE}}</strong> to arrange a short intro session.</p>
+        </section>
+      </aside>
+    </div>
+
+    <footer style="margin-top:18px;display:flex;justify-content:space-between;align-items:center">
+      <div style="color:var(--muted);font-size:13px">Location: {{CITY}}, {{STATE}}</div>
+      <a href="{{PRIMARY_CTA_URL}}" class="generate" style="background:var(--accent)">{{PRIMARY_CTA_LABEL}}</a>
+    </footer>
+  </div>
+
+  <script>
+    // Session planner: build a simple plan and allow copy
+    function buildPlanText(name, focuses, sessions, length, cadence){
+      var header=(name?('Plan for '+name+'\n'):'Coaching Plan\n');
+      header+=('Cadence: '+cadence+' • Sessions: '+sessions+' • Length: '+length+'\n\n');
+      header+='Focus areas:\n';
+      focuses.forEach(function(f,i){header+=(i+1)+'. '+f+'\n'});
+      header+='\nSession breakdown:\n';
+      var sCount=parseInt(sessions)||4;
+      for(var i=1;i<=sCount;i++){
+        header+='Session '+i+': ';
+        var aim = focuses[(i-1)%focuses.length] || 'Integration';
+        header+= 'Aim: '+aim+' — deliverables: ';
+        if(i===1) header+='map current rhythms, baseline tracking.';
+        else if(i===sCount) header+='review progress, plan for maintenance.';
+        else header+='introduce targeted habit, trial and adjust.';
+        header+='\n';
+      }
+      header+='\nNotes: Short, measurable homework after each session; one follow-up email included.';
+      header+='\n\nCreated by {{BUSINESS_NAME}}';
+      return header;
+    }
+
+    document.getElementById('build-plan').addEventListener('click',function(){
+      var name=document.getElementById('client-name').value.trim();
+      var focuses=Array.from(document.getElementById('focus-areas').selectedOptions).map(function(o){return o.text});
+      if(focuses.length===0) focuses=['Sleep & rhythm'];
+      var sessions=document.getElementById('sessions').value.trim()||'4';
+      var length=document.getElementById('length').value.trim()||'45 min';
+      var cadence=document.getElementById('cadence').value;
+      var text=buildPlanText(name,focuses,sessions,length,cadence);
+      var out=document.getElementById('plan');
+      out.style.display='block';
+      out.textContent=text;
+      document.getElementById('copy-plan').style.display='inline-block';
+    });
+
+    document.getElementById('copy-plan').addEventListener('click',function(){
+      var text=document.getElementById('plan').textContent;
+      navigator.clipboard.writeText(text).then(function(){
+        alert('Plan copied to clipboard');
+      },function(){alert('Copy failed.');});
+    });
+  </script>
+</body>
+</html>

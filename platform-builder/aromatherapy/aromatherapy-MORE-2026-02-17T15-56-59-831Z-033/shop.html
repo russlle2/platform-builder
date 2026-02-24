@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Boutique — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff6f0;--card:#fffaf7;--accent:#a46b50;--muted:#6b625d;--radius:12px;--maxw:1100px}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:var(--bg);color:var(--muted)}
+    .wrap{max-width:var(--maxw);margin:0 auto;padding:24px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:12px;text-decoration:none;color:var(--muted);font-weight:700}
+    h1{margin:8px 0;color:#3b2f2f}
+
+    .products{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:18px}
+    .product{background:var(--card);padding:14px;border-radius:var(--radius);border:1px solid rgba(107,98,93,0.06)}
+    .price{font-weight:800;color:var(--accent)}
+
+    .filterbar{display:flex;gap:8px;align-items:center;margin-top:6px}
+    .btn{background:var(--accent);color:white;padding:8px 12px;border-radius:8px;border:none;font-weight:700}
+
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity .5s ease,transform .5s ease}
+    .reveal.revealed{opacity:1;transform:none}
+    @media (prefers-reduced-motion: reduce){.reveal{opacity:1;transform:none;transition:none}}
+
+    footer{margin-top:30px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="services.html">Offerings</a>
+        <a href="blends.html">Formulas</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="reveal">
+        <h1>Shop small-batch blends & kits</h1>
+        <p style="color:var(--muted)">Prepared blends and starter kits with clear dilution and patch-test notes. Packaged locally with recyclable materials.</p>
+      </section>
+
+      <section class="reveal" style="margin-top:12px">
+        <div class="filterbar">
+          <div style="color:var(--muted)">Sort:</div>
+          <select id="sort">
+            <option value="popular">Most popular</option>
+            <option value="calm">Gentle & calming</option>
+            <option value="focus">Focus blends</option>
+          </select>
+          <div style="margin-left:auto"><button class="btn" id="openTry">Try a sample practice</button></div>
+        </div>
+
+        <div class="products" id="productGrid">
+          <div class="product">
+            <div style="font-weight:700">Evening Mist — 30ml</div>
+            <div class="price">$28</div>
+            <div style="color:var(--muted);margin-top:8px">Soft florals with grounding base. Use as a room mist; avoid direct contact with eyes and keep away from small children.</div>
+            <div style="margin-top:10px"><button class="btn" onclick="addToCart('Evening Mist')">Add</button></div>
+          </div>
+
+          <div class="product">
+            <div style="font-weight:700">Pocket Roll — Focus Blend</div>
+            <div class="price">$22</div>
+            <div style="color:var(--muted);margin-top:8px">Scent intended for short, mindful use. Recommended 0.5–1% skin-safe dilution for roll-on.</div>
+            <div style="margin-top:10px"><button class="btn" onclick="addToCart('Pocket Roll')">Add</button></div>
+          </div>
+
+          <div class="product" id="evening">
+            <div style="font-weight:700">Starter Kit — Home Rituals</div>
+            <div class="price">$58</div>
+            <div style="color:var(--muted);margin-top:8px">Includes dilution guide, tester vial, and a short practice card for a 3-step evening routine.</div>
+            <div style="margin-top:10px"><button class="btn" onclick="addToCart('Starter Kit')">Add</button></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="reveal" style="margin-top:18px">
+        <h3>Cart</h3>
+        <div id="cart" style="color:var(--muted)">No items yet.</div>
+      </section>
+
+    </main>
+
+    <footer>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="color:var(--muted)">Shipping across {{STATE}}. Questions: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+        <div style="color:var(--muted);font-weight:700">Call <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+      </div>
+    </footer>
+  </div>
+
+  <div id="tryBackdrop" class="modal-backdrop" style="display:none;position:fixed;inset:0;background:rgba(11,10,9,0.45);align-items:center;justify-content:center;padding:20px">
+    <div style="background:white;padding:18px;border-radius:12px;max-width:560px;width:100%">
+      <button id="closeModal" style="float:right;border:none;background:none;font-weight:700">✕</button>
+      <h3>Short practice</h3>
+      <p style="color:var(--muted)">Two-minute anchoring: follow a short inhale/exhale guidance or set a quick intention.</p>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn" id="startBreath">Breath 2m</button>
+        <button class="btn" id="setIntent">One-line intention</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Cart (simple)
+    const cart=[]; function addToCart(item){cart.push(item); renderCart();}
+    function renderCart(){ const el=document.getElementById('cart'); if(cart.length===0) el.textContent='No items yet.'; else el.textContent=cart.length+' item(s): '+cart.join(', ');} 
+
+    // Try modal
+    const tryBackdrop = document.getElementById('tryBackdrop'); document.getElementById('openTry').addEventListener('click',()=>tryBackdrop.style.display='flex'); document.getElementById('closeModal').addEventListener('click',()=>tryBackdrop.style.display='none'); tryBackdrop.addEventListener('click', (e)=>{ if(e.target===tryBackdrop) tryBackdrop.style.display='none'; });
+
+    // small breath for shop
+    let brTimer=null; document.getElementById('startBreath').addEventListener('click',()=>{
+      if(brTimer) return; let cycles=0; alert('A short breathing exercise will begin.'); brTimer=setInterval(()=>{cycles++; if(cycles>6){clearInterval(brTimer);brTimer=null;alert('Finished.');}},20000); // simulated
+    });
+    document.getElementById('setIntent').addEventListener('click',()=>{const v=prompt('Write a short intention for your next hour:','I will focus on one task.'); if(v) alert('Intent set: '+v); tryBackdrop.style.display='none'});
+
+    // reveal
+    function initReveal(){const prefersReduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; const items=document.querySelectorAll('.reveal'); if(prefersReduce){items.forEach(i=>i.classList.add('revealed'));return;} const obs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('revealed');obs.unobserve(e.target)}}),{threshold:0.12}; items.forEach(i=>obs.observe(i));}
+    document.addEventListener('DOMContentLoaded',initReveal);
+  </script>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — Sound Bath Immersives</title>
+  <style>
+    :root{--bg:#04060a;--muted:#9aa0a6;--accent:#7dd3fc;--accent-dark:#04616f}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial;background:linear-gradient(180deg,#02030a,#041018);color:#e6eef6}
+    header{display:flex;justify-content:space-between;padding:20px 28px}
+    nav a{margin:0 10px;color:var(--muted);font-size:14px}
+    main{max-width:980px;margin:28px auto;padding:18px}
+    h1{margin:0 0 6px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px}
+    .switch{display:flex;gap:8px;align-items:center;margin-top:12px}
+    .toggle{background:rgba(255,255,255,0.03);padding:6px;border-radius:999px;display:inline-flex}
+    .toggle button{background:none;border:0;padding:8px 12px;border-radius:999px;color:var(--muted);cursor:pointer}
+    .toggle button.active{background:var(--accent);color:#012}
+    .pricing-grid{display:flex;gap:12px;margin-top:18px}
+    .plan{flex:1;padding:14px;border-radius:10px;background:rgba(255,255,255,0.01);text-align:center}
+    .price{font-size:28px;font-weight:700;margin:8px 0}
+    .small{color:var(--muted);font-size:13px}
+    .book-form{margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .book-form input, .book-form select{padding:10px;border-radius:8px;border:0;background:rgba(255,255,255,0.02);color:#e8f6ff}
+    .btn-primary{background:var(--accent);color:#012;padding:10px 14px;border-radius:10px;border:0;font-weight:700;cursor:pointer}
+    .note{color:var(--muted);font-size:13px;margin-top:10px}
+    footer{padding:18px;text-align:center;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">Sound Bath Immersives</div>
+    <nav>
+      <a href="index.html">Gatherings</a>
+      <a href="events.html">Calendar</a>
+      <a href="private-sessions.html">Private</a>
+      <a href="pricing.html">Investment</a>
+      <a href="about.html">The Team</a>
+      <a href="faq.html">Questions</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Reach Out</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Reserve your place</h1>
+    <p style="color:var(--muted)">Choose a simple trial or a focused package. Toggle between Monthly and Package modes to compare.</p>
+
+    <section class="card">
+      <div class="switch">
+        <div>Billing view:</div>
+        <div class="toggle" role="tablist" aria-label="Billing toggle">
+          <button id="opt-monthly" class="active" aria-pressed="true">Monthly</button>
+          <button id="opt-package" aria-pressed="false">Package</button>
+        </div>
+      </div>
+
+      <div class="pricing-grid" id="pricing">
+        <div class="plan">
+          <div class="small">Trial Session</div>
+          <div class="price" data-month="30" data-package="85" id="p1">$30</div>
+          <div class="small">30–40 minutes • Introductory</div>
+          <div style="margin-top:10px"><button class="btn-primary" data-plan="trial">Book Trial</button></div>
+        </div>
+
+        <div class="plan">
+          <div class="small">Focused Series</div>
+          <div class="price" data-month="60" data-package="320" id="p2">$60</div>
+          <div class="small">Four sessions • Consistency priced</div>
+          <div style="margin-top:10px"><button class="btn-primary" data-plan="series">Reserve Series</button></div>
+        </div>
+
+        <div class="plan">
+          <div class="small">Private Session</div>
+          <div class="price" data-month="140" data-package="480" id="p3">$140</div>
+          <div class="small">One-to-one • Tailored space</div>
+          <div style="margin-top:10px"><button class="btn-primary" data-plan="private">Book Private</button></div>
+        </div>
+      </div>
+
+      <div class="note">Numbers animate when you toggle. Package rates are presented as per-package totals (not monthly). Monthly rates show per-session pricing when billed monthly.</div>
+
+      <form class="book-form" id="bookingForm" action="{{PRIMARY_CTA_URL}}" method="post">
+        <input name="name" placeholder="Your name" required />
+        <input name="email" placeholder="Email" required />
+        <select name="option" id="selOption">
+          <option value="trial">Trial Session</option>
+          <option value="series">Focused Series</option>
+          <option value="private">Private Session</option>
+        </select>
+        <input name="phone" placeholder="Phone" />
+        <div style="grid-column:1 / -1;text-align:right">
+          <button type="submit" class="btn-primary">{{PRIMARY_CTA_LABEL}}</button>
+        </div>
+      </form>
+
+      <div class="note">By booking you confirm you have read the contraindications on the Questions page. If in doubt, contact us at <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</div>
+    </section>
+  </main>
+
+  <footer>
+    <div style="color:var(--muted)">Questions? Call <a href="tel:{{PHONE}}">{{PHONE}}</a> • Serving {{CITY}}, {{STATE}}</div>
+  </footer>
+
+  <script>
+    // Pricing comparator: monthly vs package with animated numbers
+    (function(){
+      const btnMonthly = document.getElementById('opt-monthly');
+      const btnPackage = document.getElementById('opt-package');
+      const prices = [document.getElementById('p1'), document.getElementById('p2'), document.getElementById('p3')];
+      let mode = 'monthly';
+
+      function animateTo(el, target){
+        const start = parseFloat(el.textContent.replace(/[^0-9\.]/g,'')) || 0;
+        const end = target;
+        const duration = 420;
+        const startTime = performance.now();
+        function step(t){
+          const p = Math.min(1,(t-startTime)/duration);
+          const v = start + (end - start) * (1 - Math.cos(p * Math.PI)) / 2; // ease
+          el.textContent = '$' + Math.round(v);
+          if(p < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+
+      function updatePrices(){
+        prices.forEach(p => {
+          const m = parseFloat(p.getAttribute('data-month'));
+          const pkg = parseFloat(p.getAttribute('data-package'));
+          animateTo(p, mode === 'monthly' ? m : pkg);
+        });
+      }
+
+      btnMonthly.addEventListener('click', ()=>{ if(mode==='monthly') return; mode='monthly'; btnMonthly.classList.add('active'); btnMonthly.setAttribute('aria-pressed','true'); btnPackage.classList.remove('active'); btnPackage.setAttribute('aria-pressed','false'); updatePrices(); });
+      btnPackage.addEventListener('click', ()=>{ if(mode==='package') return; mode='package'; btnPackage.classList.add('active'); btnPackage.setAttribute('aria-pressed','true'); btnMonthly.classList.remove('active'); btnMonthly.setAttribute('aria-pressed','false'); updatePrices(); });
+
+      // initial animate on load
+      document.addEventListener('DOMContentLoaded', updatePrices);
+
+      // form quick behaviour: map plan buttons to select
+      document.querySelectorAll('.btn-primary[data-plan]').forEach(btn=>{
+        btn.addEventListener('click', (e)=>{
+          const plan = btn.getAttribute('data-plan');
+          document.getElementById('selOption').value = plan;
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

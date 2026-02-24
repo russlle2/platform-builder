@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Method — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f6fff9;--card:#fff;--accent:#2a6f54;--ink:#0c2218;--muted:#46624d}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:var(--bg);color:var(--ink)}
+    .container{max-width:1100px;margin:28px auto;padding:18px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none;font-weight:700}
+
+    .intro{display:flex;gap:18px;align-items:center}
+    .intro .panel{flex:1;padding:18px;border-radius:12px;background:linear-gradient(180deg,var(--card),#fbfffc);border:1px solid rgba(12,34,24,.04)}
+
+    .framework{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+    .tile{background:var(--card);padding:14px;border-radius:10px;border:1px solid rgba(0,0,0,.03)}
+
+    .reveal{opacity:0;transform:translateY(12px);transition:opacity .45s ease,transform .45s ease}
+    .reveal.reveal--visible{opacity:1;transform:none}
+
+    /* subtle svg accent built inline */
+    .accent-svg{width:100%;height:80px;margin-top:10px}
+
+    .planner-wrap{margin-top:18px}
+    label{font-weight:700}
+    input,select,textarea{width:100%;padding:9px;border-radius:8px;border:1px solid rgba(0,0,0,.06);background:white}
+    .checks{display:flex;gap:8px;flex-wrap:wrap}
+    .checks label{background:#f2fbf6;padding:8px 10px;border-radius:8px}
+    button{background:var(--accent);color:white;padding:10px 12px;border-radius:9px;border:none;cursor:pointer}
+    .secondary{background:#eaf7ef;color:var(--accent);border:1px solid rgba(42,111,84,.06)}
+    .output{white-space:pre-wrap;background:#fff;padding:12px;border-radius:8px;border:1px dashed rgba(0,0,0,.04)}
+
+    footer{margin-top:20px;color:var(--muted)}
+
+    @media(max-width:880px){.framework{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="services.html">Services</a>
+        <a href="approach.html" aria-current="page">Method</a>
+        <a href="pricing.html">Investment</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="intro card reveal" data-reveal>
+        <div class="panel">
+          <h2 style="margin:0">Our method: small, testable adjustments with clear check-ins</h2>
+          <p class="muted" style="margin-top:8px">We call it an iterative pathway: map, try, measure, adjust. The goal is to make simple changes you can live with and judge by how they affect your day-to-day function.</p>
+
+          <svg class="accent-svg" viewBox="0 0 600 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#e8f7ef"/><stop offset="1" stop-color="#f6fff9"/></linearGradient>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#g)"/>
+            <path d="M0 70 C120 10 240 120 360 60 C420 30 520 80 600 50 L600 100 L0 100 Z" fill="#dff6ea" opacity="0.9"/>
+          </svg>
+        </div>
+        <div style="width:320px;display:flex;flex-direction:column;gap:12px">
+          <div class="card">
+            <strong>Core promise</strong>
+            <div class="muted">Clear actions after visits; measurable checkpoints; humane pacing.</div>
+          </div>
+
+          <div class="card">
+            <strong>Where we do not replace</strong>
+            <div class="muted">Emergency care, specialized surgical decisions, and urgent medication management.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="framework reveal" data-reveal>
+        <div class="tile">
+          <strong>Map</strong>
+          <div class="muted">Pattern discovery — your rhythms, triggers, and constraints.</div>
+        </div>
+        <div class="tile">
+          <strong>Experiment</strong>
+          <div class="muted">One or two low-burden changes to test for 7–14 days.</div>
+        </div>
+        <div class="tile">
+          <strong>Measure</strong>
+          <div class="muted">Simple metrics you can track — sleep logs, symptom notes, brief scales.</div>
+        </div>
+      </section>
+
+      <section class="planner-wrap reveal card" data-reveal>
+        <h3 style="margin-top:0">Session Planner (method-focused)</h3>
+        <p class="muted">Use this to outline a method-driven visit focusing on experiments and measures.</p>
+
+        <div style="display:grid;grid-template-columns:1fr 300px;gap:12px">
+          <div>
+            <label for="aim">Aim for the session</label>
+            <input id="aim" type="text" placeholder="e.g., improve night waking, shorten midday fatigue">
+
+            <div style="margin-top:8px">
+              <label>Targeted checks</label>
+              <div class="checks">
+                <label><input type="checkbox" value="Sleep log"> Sleep log</label>
+                <label><input type="checkbox" value="Diet pattern tracker"> Diet tracker</label>
+                <label><input type="checkbox" value="Symptom VAS"> Symptom VAS</label>
+                <label><input type="checkbox" value="Step/activity"> Activity check</label>
+                <label><input type="checkbox" value="Lab review"> Lab review prompt</label>
+              </div>
+            </div>
+
+            <div style="margin-top:8px;display:flex;gap:8px">
+              <div style="flex:1">
+                <label>Duration</label>
+                <select id="dur">
+                  <option value="25">25 minutes — Focus</option>
+                  <option value="50">50 minutes — Full</option>
+                </select>
+              </div>
+              <div style="width:130px">
+                <label>Follow-up</label>
+                <select id="follow"><option>1–2 weeks</option><option>3–4 weeks</option><option>As needed</option></select>
+              </div>
+            </div>
+
+            <div style="margin-top:8px">
+              <label for="context">Context</label>
+              <textarea id="context" rows="3" placeholder="Relevant context for method selection"></textarea>
+            </div>
+
+            <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
+              <button id="compose">Compose method note</button>
+              <button id="reset" class="secondary" type="button">Reset</button>
+            </div>
+          </div>
+
+          <aside class="card">
+            <div style="font-weight:800">Composed Method Summary</div>
+            <div class="muted" style="margin-bottom:8px">Copy this plain-text plan to bring to your appointment.</div>
+            <div class="output" id="methodOutput">No plan yet. Use "Compose method note" to build a short summary.</div>
+            <div style="margin-top:8px;display:flex;gap:8px">
+              <button id="copyMethod">Copy</button>
+              <button id="dlMethod" class="secondary">Download</button>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="reveal card" data-reveal style="margin-top:14px">
+        <h3 style="margin-top:0">When we consider testing or referral</h3>
+        <p class="muted">Tests and referrals are used selectively — to clarify an unclear pattern or to rule out concerning signals. We discuss benefits, limits, and costs before any testing.</p>
+      </section>
+
+      <section class="reveal" data-reveal style="margin-top:14px;display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <strong>Ready to plan a method-driven visit?</strong>
+          <div class="muted">Book a short Focus Session to create a simple, measurable experiment.</div>
+        </div>
+        <div>
+          <a href="book.html" style="background:var(--accent);color:white;padding:10px 12px;border-radius:10px;text-decoration:none;font-weight:800">Plan a Focus Visit</a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="muted">{{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </footer>
+  </div>
+
+  <script>
+    (function(){
+      // reveal behavior
+      var rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var els = document.querySelectorAll('[data-reveal]');
+      if(rm){els.forEach(function(e){e.classList.add('reveal--visible')});} else {var io = new IntersectionObserver(function(entries){entries.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add('reveal--visible'); io.unobserve(en.target);} });},{threshold:0.1}); els.forEach(function(e){io.observe(e)});} 
+
+      // Planner (method-focused)
+      var compose = document.getElementById('compose');
+      var reset = document.getElementById('reset');
+      var copyBtn = document.getElementById('copyMethod');
+      var dlBtn = document.getElementById('dlMethod');
+      var out = document.getElementById('methodOutput');
+
+      function gather(){
+        var aim = document.getElementById('aim').value.trim();
+        var dur = document.getElementById('dur').value;
+        var follow = document.getElementById('follow').value;
+        var context = document.getElementById('context').value.trim();
+        var checks = Array.from(document.querySelectorAll('.checks input:checked')).map(function(i){return i.value});
+        return {aim,dur,follow,context,checks};
+      }
+      function build(){
+        var g = gather();
+        var parts = [];
+        parts.push('Method note — local export');
+        parts.push('======================');
+        if(g.aim) parts.push('Aim: ' + g.aim);
+        parts.push('Duration: ' + g.dur + ' minutes');
+        parts.push('Suggested follow-up: ' + g.follow);
+        if(g.checks.length) parts.push('Checks to use: ' + g.checks.join(', '));
+        if(g.context) parts.push('\nContext:\n' + g.context);
+        parts.push('\nProposed small experiments:');
+        parts.push('- Select 1 clear variable to change for 7–14 days');
+        parts.push('- Choose 1 simple metric to track response');
+        parts.push('- Plan one brief check-in to review progress');
+        return parts.join('\n');
+      }
+      compose.addEventListener('click',function(){ out.textContent = build(); });
+      reset.addEventListener('click',function(){ document.getElementById('aim').value=''; document.getElementById('context').value=''; document.querySelectorAll('.checks input').forEach(function(i){i.checked=false}); out.textContent='No plan yet. Use "Compose method note" to build a short summary.'; });
+
+      copyBtn.addEventListener('click',function(){ var text = out.textContent; if(!text) return; navigator.clipboard && navigator.clipboard.writeText(text).then(function(){ copyBtn.textContent='Copied'; setTimeout(function(){copyBtn.textContent='Copy'},1100); }).catch(function(){ var ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy'); copyBtn.textContent='Copied'; setTimeout(function(){copyBtn.textContent='Copy'},1100);}catch(e){} document.body.removeChild(ta); }); });
+
+      dlBtn.addEventListener('click',function(){ var text = out.textContent; if(!text) return; var blob = new Blob([text],{type:'text/plain'}); var url = URL.createObjectURL(blob); var a = document.createElement('a'); a.href = url; a.download = 'method-note.txt'; document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(url); document.body.removeChild(a); },300); });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Programs — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f5fbff;--card:#ffffff;--muted:#425056;--accent:#206a8b;--accent-2:#9ed3e3;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+    body{margin:0;background:var(--bg);color:#052b33}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px}
+    .logo{background:var(--accent);width:44px;height:44px;border-radius:8px;color:#fff;display:flex;align-items:center;justify-content:center}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none;font-size:14px}
+    .wrap{max-width:980px;margin:18px auto;padding:0 18px}
+    .grid{display:grid;grid-template-columns:2fr 1fr;gap:18px}
+    .card{background:var(--card);padding:16px;border-radius:12px;border:1px solid #e5f2f6}
+    h1{margin:0 0 8px 0}
+    .program{border-radius:10px;padding:12px;margin-bottom:12px;border-left:4px solid transparent}
+    .prog-title{display:flex;justify-content:space-between;align-items:center}
+    .price{font-weight:800;color:var(--accent)}
+    .desc{color:var(--muted);font-size:14px}
+    .cta{padding:10px 12px;border-radius:10px;border:0;background:var(--accent);color:#fff;cursor:pointer}
+    .meter{margin-top:12px;padding:12px;background:linear-gradient(90deg,#f7feff,#ffffff);border-radius:10px;border:1px solid #e2f7fb}
+    .timeline{display:flex;gap:8px;margin-top:8px}
+    .block{flex:1;height:12px;border-radius:6px;background:#e6f7fb}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo">W</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">Program catalog</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="services.html">Services</a>
+      <a href="pricing.html">Plans</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <div class="grid">
+      <section class="card">
+        <h1>Offerings built around what changes habit</h1>
+        <p class="desc">Each program pairs measurable outcomes with daily micro-steps and weekly reflection. Pick a lane and the onboarding map adapts to your priorities.</p>
+
+        <div id="programList">
+          <div class="program" data-plan="rhythm" style="border-left-color:#9ed3e3">
+            <div class="prog-title"><div>
+              <div style="font-weight:800">Rhythm Membership</div>
+              <div class="desc">Ongoing templates, monthly tuning calls, and a library of short labs.</div>
+            </div><div class="price">Member</div></div>
+            <div style="margin-top:8px">
+              <button class="cta join" data-plan="rhythm">Join — Start with a 30-day map</button>
+            </div>
+          </div>
+
+          <div class="program" data-plan="reset" style="border-left-color:#c9e9d9">
+            <div class="prog-title"><div>
+              <div style="font-weight:800">Reset Two-Week Lab</div>
+              <div class="desc">A focused 14-day protocol with daily prompts and two live sessions.</div>
+            </div><div class="price">Short</div></div>
+            <div style="margin-top:8px"><button class="cta join" data-plan="reset">Reserve spot</button></div>
+          </div>
+
+          <div class="program" data-plan="momentum" style="border-left-color:#ffd9b3">
+            <div class="prog-title"><div>
+              <div style="font-weight:800">Momentum Cycle — 12 weeks</div>
+              <div class="desc">Build toward a specific outcome with weekly milestones and deliverables.</div>
+            </div><div class="price">Intensive</div></div>
+            <div style="margin-top:8px"><button class="cta join" data-plan="momentum">Request onboarding</button></div>
+          </div>
+        </div>
+
+        <div style="margin-top:14px" class="meter">
+          <div style="font-weight:700">Design your next 30 days</div>
+          <div style="margin-top:8px">Choose two goals and a rhythm below to see a tailored path map.</div>
+
+          <div style="display:flex;gap:10px;margin-top:12px">
+            <select id="primaryGoal" style="padding:8px;border-radius:8px;border:1px solid #dfeff4">
+              <option value="energy">Steady energy</option>
+              <option value="sleep">Sleep pattern</option>
+              <option value="stress">Stress handling</option>
+              <option value="focus">Focus blocks</option>
+            </select>
+            <select id="secondaryGoal" style="padding:8px;border-radius:8px;border:1px solid #dfeff4">
+              <option value="movement">Move more</option>
+              <option value="habits">Form a single habit</option>
+              <option value="timing">Better daily timing</option>
+              <option value="mini">Micro-rests</option>
+            </select>
+          </div>
+
+          <div class="timeline" id="progTimeline">
+            <div class="block"></div>
+            <div class="block"></div>
+            <div class="block"></div>
+            <div class="block"></div>
+            <div class="block"></div>
+            <div class="block"></div>
+          </div>
+
+          <div id="planBlurb" style="margin-top:10px;color:var(--muted)">Pick goals to preview a day-by-day micro-plan and arrival markers.</div>
+
+        </div>
+
+      </section>
+
+      <aside class="card">
+        <div style="font-weight:700">Program quick view</div>
+        <div style="margin-top:8px;color:var(--muted)">Select a program to see a 30-day starter and the recommended pace.</div>
+
+        <div id="programPreview" style="margin-top:14px;padding:10px;border-radius:10px;background:linear-gradient(180deg,#f7feff,#fff)"></div>
+
+        <div style="margin-top:12px">
+          <button id="contactBtn" class="cta" onclick="location.href='contact.html'">Ask about availability</button>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    (function(){
+      var joins = Array.from(document.querySelectorAll('.join'));
+      var preview = document.getElementById('programPreview');
+      var timeline = document.getElementById('progTimeline');
+      var planBlurb = document.getElementById('planBlurb');
+      var primary = document.getElementById('primaryGoal');
+      var secondary = document.getElementById('secondaryGoal');
+
+      function showProgram(plan){
+        var templates = {
+          rhythm:'Rhythm Membership: Monthly templates + 1 tuning call. Start with two anchors and a weekly check-in — ideal for gradual change.',
+          reset:'Reset Two-Week Lab: Daily micro-prompts, short practices, and two live sessions. Designed for quick recalibration.',
+          momentum:'Momentum Cycle: 12-week goal-driven program with concrete weekly deliverables and accountability touchpoints.'
+        };
+        preview.textContent = templates[plan] || 'Select a program to preview details.';
+      }
+
+      joins.forEach(function(b){b.addEventListener('click',function(){
+        var plan = b.getAttribute('data-plan');
+        showProgram(plan);
+        // navigate with plan
+        location.href = '{{PRIMARY_CTA_URL}}?offer='+encodeURIComponent(plan);
+      })});
+
+      function updateTimeline(){
+        var a = primary.value; var b = secondary.value;
+        // build simple micro-habit schedule text
+        var lines = [];
+        lines.push('Primary target: '+a+'. Secondary target: '+b+'.');
+        lines.push('Days 1–7: Establish anchors (5–10 minutes daily).');
+        lines.push('Days 8–14: Link new action to existing routine.');
+        lines.push('Days 15–21: Add a micro-review and small adjustment.');
+        lines.push('Days 22–30: Solidify and plan a maintenance rhythm.');
+        planBlurb.textContent = lines.join(' ');
+        // color blocks according to selections
+        var blocks = Array.from(timeline.children);
+        var colors = {'energy':'#bfe8e9','sleep':'#cfe4ff','stress':'#ffe8d6','focus':'#e8fbe8','movement':'#ffe9f0','habits':'#f0f7ff','timing':'#fff6e0','mini':'#f7fff4'};
+        var primaryColor = colors[a] || '#e6f7fb';
+        var secondaryColor = colors[b] || '#f0e0e0';
+        blocks.forEach(function(el,i){
+          el.style.background = (i%2===0)?primaryColor:secondaryColor;
+        });
+      }
+
+      primary.addEventListener('change',updateTimeline);
+      secondary.addEventListener('change',updateTimeline);
+      updateTimeline();
+
+    })();
+  </script>
+</body>
+</html>

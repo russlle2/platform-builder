@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FAQ — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfbfe;--ink:#0f172a;--muted:#64748b;--accent:#6b46c1}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;background:var(--bg);color:var(--ink)}
+    .wrap{max-width:900px;margin:34px auto;padding:26px}
+    header{display:flex;gap:16px;align-items:center}
+    .logo{width:52px;height:52px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#8b5cf6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    nav{margin-left:auto}
+    nav a{color:var(--muted);margin-left:12px;text-decoration:none;font-weight:600}
+    h1{margin-top:18px}
+    .q{margin-top:14px}
+    .qa{background:#fff;padding:14px;border-radius:10px;box-shadow:0 8px 20px rgba(15,23,42,0.04)}
+    .q button{width:100%;text-align:left;border:0;background:transparent;padding:8px;font-weight:700;cursor:pointer}
+    .a{color:var(--muted);padding:8px 2px}
+    .small{font-size:13px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">TP</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div class="small">Care offered in {{CITY}}, {{STATE}}</div>
+      </div>
+      <nav>
+        <a href="index.html">Start</a>
+        <a href="about.html">My Story</a>
+        <a href="specialties.html">Focus Areas</a>
+        <a href="approach.html">How I Work</a>
+        <a href="fees.html">Fees</a>
+        <a href="faq.html">Questions</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html">Get in Touch</a>
+      </nav>
+    </header>
+
+    <main>
+      <h1>Frequently asked questions</h1>
+      <p class="small">Below you'll find practical answers about sessions, privacy, and how I approach care. If your question isn’t listed, reach out — I welcome short intro calls to see if we’re a good fit.</p>
+
+      <section class="q">
+        <div class="qa">
+          <button aria-expanded="false" aria-controls="ans1">How long does a session last?</button>
+          <div id="ans1" class="a" hidden>Most sessions are 50 minutes. Longer sessions (e.g., 90 minutes) are available for a focused reset. We’ll talk about timing on our first visit and adjust as needed.</div>
+        </div>
+      </section>
+
+      <section class="q">
+        <div class="qa">
+          <button aria-expanded="false" aria-controls="ans2">Do you take insurance?</button>
+          <div id="ans2" class="a" hidden>I do not bill insurance directly. I provide a receipt (superbill) you may submit to your insurer. If you’d like help navigating that process, I’ll explain what the receipt includes.</div>
+        </div>
+      </section>
+
+      <section class="q">
+        <div class="qa">
+          <button aria-expanded="false" aria-controls="ans3">What is your approach?</button>
+          <div id="ans3" class="a" hidden>My work blends thoughtful listening with practical tools. I draw from several evidence-informed approaches and tailor them to your situation, always attending to safety, values, and the realities of your life.</div>
+        </div>
+      </section>
+
+      <section class="q">
+        <div class="qa">
+          <button aria-expanded="false" aria-controls="ans4">How do cancellations work?</button>
+          <div id="ans4" class="a" hidden>Generally I appreciate at least 48 hours’ notice. Late cancellations or missed sessions may be billed; if life intervenes, please contact me and we’ll discuss options.</div>
+        </div>
+      </section>
+
+      <section style="margin-top:18px">
+        <h2 style="margin-bottom:8px">Confidentiality, limits, and safety</h2>
+        <div class="qa">
+          <button aria-expanded="false" aria-controls="policyA">Privacy and limits of confidentiality</button>
+          <div id="policyA" class="a" hidden>What we discuss is private within the limits required by law and professional ethics. Those limits include situations of imminent danger to self or others, suspected abuse, or court orders. If you have specific privacy concerns, we can address them directly before beginning care.</div>
+        </div>
+
+        <div class="qa" style="margin-top:8px">
+          <button aria-expanded="false" aria-controls="policyB">Scope and emergency care</button>
+          <div id="policyB" class="a" hidden>I provide psychotherapy and will help coordinate referrals when appropriate. I do not provide emergency services; if you are in immediate danger, call emergency services or your local crisis line. For U.S. callers, 988 connects you to the Suicide & Crisis Lifeline.</div>
+        </div>
+      </section>
+
+      <div style="margin-top:18px;color:var(--muted);font-size:14px">Still have a question? Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a> for a brief introductory conversation.</div>
+
+    </main>
+  </div>
+
+  <script>
+    document.querySelectorAll('.qa button').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.getAttribute('aria-controls');
+        var panel = document.getElementById(id);
+        var open = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', String(!open));
+        panel.hidden = open;
+      });
+    });
+  </script>
+</body>
+</html>

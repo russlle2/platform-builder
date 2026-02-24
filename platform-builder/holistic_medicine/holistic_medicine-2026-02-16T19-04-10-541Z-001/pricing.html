@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Pricing — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{
+      --bg-1:#F7F3EE; /* warm cream */
+      --bg-2:#F1E6DC; /* soft sand */
+      --accent:#9B5E4A; /* terracotta */
+      --accent-2:#7A9A6E; /* sage */
+      --muted:#6B6B6B;
+      --card:#FFFFFF;
+      --glass:rgba(255,255,255,0.6);
+      --radius:14px;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, 'Helvetica Neue', Arial;
+      color:var(--accent-2);
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg-1),var(--bg-2));background-image: url('assets/img/pattern.svg'), linear-gradient(180deg,var(--bg-1),var(--bg-2));background-repeat:repeat;}
+    .wrap{max-width:1100px;margin:40px auto;padding:28px;}
+    header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:linear-gradient(90deg,rgba(255,255,255,0.65),rgba(255,255,255,0.45));backdrop-filter: blur(6px);border-radius:12px;box-shadow:0 6px 20px rgba(155,94,74,0.08)}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;box-shadow:0 6px 14px rgba(122,154,110,0.12)}
+    nav a{margin-left:14px;text-decoration:none;color:var(--muted);font-weight:600}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:22px;margin-top:22px}
+    .hero-left{padding:28px;background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,255,255,0.8));border-radius:var(--radius)}
+    h1{margin:0 0 8px 0;color:var(--accent)}
+    p.lead{margin:0 0 16px 0;color:var(--muted)}
+    .hero-right{padding:18px;border-radius:12px;background:linear-gradient(135deg,rgba(151,115,98,0.08),rgba(122,154,110,0.05));display:flex;flex-direction:column;gap:12px;align-items:stretch}
+    .tier{background:var(--card);padding:12px;border-radius:10px;border:1px solid rgba(155,94,74,0.06)}
+    .tier h3{margin:0;color:var(--accent-2)}
+    .price{font-size:20px;font-weight:700;color:var(--accent)}
+    .features{font-size:14px;color:var(--muted);margin:8px 0}
+    .btn{display:inline-block;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;text-decoration:none;font-weight:700}
+    .note{font-size:13px;color:var(--muted)}
+
+    /* Sections */
+    section{margin-top:20px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .card{padding:18px;border-radius:12px;background:var(--glass);border:1px solid rgba(122,154,110,0.06)}
+    .muted{color:var(--muted)}
+    footer{margin-top:28px;padding:18px;border-radius:12px;background:rgba(255,255,255,0.6);display:flex;justify-content:space-between;align-items:center}
+
+    /* Responsive */
+    @media(max-width:900px){
+      .hero{grid-template-columns:1fr;}
+      .grid-3{grid-template-columns:1fr}
+      nav{display:none}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">HM</div>
+        <div>
+          <div style="font-weight:800;color:var(--accent)">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:var(--muted)">Whole-person wellness with clear options</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="services.html">Offerings</a>
+        <a href="conditions.html">Concerns</a>
+        <a href="about.html">About</a>
+        <a href="book.html" style="margin-left:18px;">Book</a>
+      </nav>
+    </header>
+
+    <div class="hero">
+      <div class="hero-left">
+        <h1>Transparent, compassionate pricing for integrative care</h1>
+        <p class="lead">We design guided plans rooted in lifestyle, nutrition, and evidence-informed therapies. Choose a path that fits your life—no promises of miracles, only clear steps and supportive coaching.</p>
+        <p class="note">All sessions focus on education, symptom navigation, and individualized planning. Additional labs are optional and discussed during intake.</p>
+        <p><a class="btn" href="book.html">{{PRIMARY_CTA_LABEL}}</a></p>
+      </div>
+
+      <div class="hero-right">
+        <div class="tier">
+          <h3>Discovery Visit — Single</h3>
+          <div class="price">$150 — 60 minutes</div>
+          <div class="features">Initial intake, history review, & health goals. Planning overview and shared next steps.</div>
+          <div style="display:flex;gap:8px;margin-top:10px"><a class="btn" href="book.html">Book Discovery</a><a class="btn" style="background:transparent;color:var(--accent);border:1px solid rgba(155,94,74,0.12);">Details</a></div>
+        </div>
+
+        <div class="tier">
+          <h3>Integrative Plan — Package</h3>
+          <div class="price">$420 — 3 sessions</div>
+          <div class="features">Initial + two follow-ups. Includes educational resources, personalized lifestyle plan, and care coordination.</div>
+          <div style="display:flex;gap:8px;margin-top:10px"><a class="btn" href="book.html">Start Plan</a><a class="btn" style="background:transparent;color:var(--accent);border:1px solid rgba(155,94,74,0.12);">Learn More</a></div>
+        </div>
+
+        <div class="tier">
+          <h3>Intensive — Deep Dive</h3>
+          <div class="price">$850 — full day / multi-hour</div>
+          <div class="features">Extended assessment, comprehensive coaching session, and a tailored short-term action plan. Ideal for complex, layered concerns.</div>
+          <div style="display:flex;gap:8px;margin-top:10px"><a class="btn" href="book.html">Reserve Intensive</a><a class="btn" style="background:transparent;color:var(--accent);border:1px solid rgba(155,94,74,0.12);">Ask About It</a></div>
+        </div>
+      </div>
+    </div>
+
+    <section>
+      <h2 style="color:var(--accent)">What these prices include — the essentials</h2>
+      <div class="grid-3" style="margin-top:12px">
+        <div class="card">
+          <strong>Whole-person review</strong>
+          <p class="muted">We cover history, sleep, stress, digestion, movement, and social context—so recommendations fit your life.</p>
+        </div>
+        <div class="card">
+          <strong>Evidence-focused education</strong>
+          <p class="muted">We prioritize approaches with supporting data and explain trade-offs and uncertainties transparently.</p>
+        </div>
+        <div class="card">
+          <strong>Care plan & follow-up</strong>
+          <p class="muted">Actionable steps, optional labs, referrals when appropriate, and scheduled check-ins to adapt your plan.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 style="color:var(--accent)">Common misconceptions</h2>
+      <p class="muted">Myth: "Integrative care promises cure." — Truth: Our goal is to educate and support improved function and resilience. Results vary and are not guaranteed. Pricing reflects the time and expertise devoted to planning and coaching.</p>
+    </section>
+
+    <section>
+      <h2 style="color:var(--accent)">Brief case notes (anonymized)</h2>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px">
+        <div class="card" style="flex:1;min-width:240px">
+          <strong>Client A — Sleep & Stress</strong>
+          <p class="muted">Built a stepwise evening routine, adjusted workload, and introduced breath practices. Sleep improved over 8 weeks; habits shift was the priority.</p>
+        </div>
+        <div class="card" style="flex:1;min-width:240px">
+          <strong>Client B — Digestion</strong>
+          <p class="muted">Diet pattern review and targeted testing were discussed; incremental changes reduced bloating and improved energy. Education on triggers was central.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 style="color:var(--accent)">FAQs</h2>
+      <div style="margin-top:10px">
+        <p><strong>Do you accept insurance?</strong> <span class="muted">Some services may be reimbursable; we provide superbills on request. Check your policy for out-of-network coverage.</span></p>
+        <p><strong>Are labs required?</strong> <span class="muted">No. Labs are optional and discussed when clinically informative. Many plans begin with lifestyle and observation.</span></p>
+        <p><strong>What if I need more time?</strong> <span class="muted">We offer follow-ups and packages to deepen support when needed.</span></p>
+      </div>
+    </section>
+
+    <footer>
+      <div>
+        <div style="font-weight:800;color:var(--accent)">{{PRACTITIONER_NAME}}, {{CREDENTIALS}}</div>
+        <div class="muted">Serving {{CITY}}, {{STATE}} — <a href="contact.html" style="color:var(--accent)">{{EMAIL}}</a></div>
+      </div>
+      <div>
+        <a class="btn" href="book.html">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

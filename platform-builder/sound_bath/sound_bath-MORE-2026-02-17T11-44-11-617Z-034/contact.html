@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reach out to arrange an immersive sound practice, private offering, or a quick guided reset.">
+  <style>
+    :root{
+      --bg:#f6efe6; /* warm earth */
+      --card:#fffaf6;
+      --accent:#9b6b45;
+      --muted:#6a5a4a;
+      --glass:rgba(255,255,255,0.6);
+      --focus: #d9b69a;
+      --maxw:980px;
+    }
+    html,body{height:100%;}
+    body{
+      margin:0; font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background:linear-gradient(180deg,var(--bg),#efe6dd);
+      color:var(--muted);
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+      line-height:1.45;
+    }
+    header{padding:28px 20px;display:flex;align-items:center;justify-content:space-between;max-width:var(--maxw);margin:0 auto}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#b97e62);display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    nav a{margin-left:18px;color:var(--muted);text-decoration:none;font-weight:600}
+    .hero{max-width:var(--maxw);margin:18px auto;padding:40px 20px 28px;display:grid;grid-template-columns:1fr 320px;gap:26px;align-items:center}
+    .lead-card{background:var(--card);padding:28px;border-radius:12px;box-shadow:0 6px 20px rgba(50,30,20,0.06)}
+    h1{margin:0 0 8px;font-size:24px;color:#4a362c}
+    p.lead{margin:0;color:var(--muted)}
+    .cta-wrap{display:flex;flex-direction:column;gap:12px}
+    .primary{background:var(--accent);color:white;padding:12px 14px;border-radius:8px;border:none;font-weight:700;cursor:pointer}
+    .secondary{background:transparent;color:var(--accent);padding:10px;border-radius:8px;border:2px solid var(--accent);cursor:pointer}
+    .card{background:linear-gradient(180deg,var(--glass),rgba(255,255,255,0.85));padding:20px;border-radius:12px;border:1px solid rgba(150,120,100,0.06)}
+
+    .content{max-width:var(--maxw);margin:18px auto;padding:20px;display:grid;grid-template-columns:1fr 360px;gap:26px}
+
+    form{display:flex;flex-direction:column;gap:12px}
+    label{font-size:13px;color:#503b30}
+    input[type=text],input[type=email],textarea,select{padding:10px;border-radius:8px;border:1px solid #e3d8cf;background:white}
+    textarea{min-height:120px;resize:vertical}
+    .hint{font-size:13px;color:#786050}
+
+    .info{font-size:14px}
+    footer{max-width:var(--maxw);margin:30px auto;padding:20px;color:#644f43;font-size:14px}
+
+    /* modal */
+    .overlay{position:fixed;inset:0;background:rgba(10,8,6,0.45);display:none;align-items:center;justify-content:center;padding:20px}
+    .overlay.active{display:flex}
+    .modal{background:linear-gradient(180deg,#fffaf5, #fff9f2);padding:20px;border-radius:12px;max-width:720px;width:100%;box-shadow:0 20px 60px rgba(40,30,20,0.35)}
+    .modal h3{margin:0 0 6px}
+    .exercise-stage{display:grid;grid-template-columns:1fr 220px;gap:18px}
+    .meter{width:200px;height:200px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 30% 30%, #fff, #f6e9e0);box-shadow:inset 0 6px 18px rgba(160,120,90,0.08)}
+    .pulse{width:80%;height:80%;border-radius:50%;background:transparent;border:6px solid rgba(155,107,69,0.18);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent)}
+    .meta{font-size:13px;color:#6b5446}
+    .exercise-controls{display:flex;gap:8px;align-items:center}
+    .small{font-size:13px;color:#7a6454}
+
+    /* reveal animation */
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity 560ms ease,transform 560ms ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){
+      .reveal{transition:none;opacity:1;transform:none}
+    }
+
+    /* responsive */
+    @media (max-width:880px){
+      .hero{grid-template-columns:1fr}
+      .content{grid-template-columns:1fr}
+      .exercise-stage{grid-template-columns:1fr}
+      .meter{margin:0 auto}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">SB</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="events.html">Gatherings</a>
+      <a href="private-sessions.html">Private Offerings</a>
+      <a href="pricing.html">Investment</a>
+      <a href="faq.html">Help</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html" aria-current="page" style="font-weight:800">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="hero">
+      <div class="lead-card reveal">
+        <h1>Connect & arrange a session</h1>
+        <p class="lead">Send a note to ask about group evenings, private bookings, or a short guided reset you can try right now. Responses aim to be within two business days.</p>
+        <div style="height:12px"></div>
+        <div style="display:flex;gap:10px">
+          <a class="primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <button class="secondary" id="open-exercise">Try a 3-minute reset</button>
+        </div>
+      </div>
+
+      <aside class="card reveal">
+        <div style="font-size:14px;font-weight:700;color:#4c372c">Quick contact</div>
+        <div style="margin-top:8px" class="info">
+          <div>Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+          <div>Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+          <div style="margin-top:8px;font-size:13px;color:#6b5446">We welcome questions about accessibility, group needs, and private events.</div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="content">
+      <div class="reveal">
+        <div class="card">
+          <h2 style="margin:0 0 10px">Send a message</h2>
+          <form id="contact-form" novalidate>
+            <div>
+              <label for="name">Your name</label>
+              <input id="name" name="name" type="text" required placeholder="Full name">
+            </div>
+            <div>
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" required placeholder="name@domain.com">
+            </div>
+            <div>
+              <label for="role">Interested in</label>
+              <select id="role" name="role">
+                <option>Group evening</option>
+                <option>Private session</option>
+                <option>Corporate / retreat</option>
+                <option>General question</option>
+              </select>
+            </div>
+            <div>
+              <label for="date">Preferred date or range</label>
+              <input id="date" name="date" type="text" placeholder="e.g. Weeknights, mid-April">
+            </div>
+            <div>
+              <label for="message">Message</label>
+              <textarea id="message" name="message" placeholder="Tell us a little about what you need"></textarea>
+            </div>
+            <div class="hint">By sending you agree we may use your contact info to follow up about scheduling. Read more on the booking page.</div>
+            <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+              <button class="primary" type="submit">Send inquiry</button>
+              <button type="button" id="clear" class="secondary">Clear</button>
+            </div>
+          </form>
+        </div>
+
+        <div style="height:18px"></div>
+
+        <div style="margin-top:18px;font-size:13px;color:#5f4a3f">
+          <strong>Health & safety</strong>
+          <p style="margin:8px 0 0">Sound practices can use sustained tones and deep vibrations. Please note the following contraindications: recent concussion, uncontrolled epilepsy, severe psychiatric distress, pregnancy (consult provider), and implanted medical devices that might be sensitive to vibration. If in doubt, consult a clinician before attending. Inform the facilitator of any concerns prior to a session.</p>
+        </div>
+      </div>
+
+      <aside class="card reveal">
+        <h3 style="margin:0 0 8px">Need a quick reset?</h3>
+        <p class="small">Open the guided exercise to try a short breathing, brief journaling prompt, or an intention-setting moment. It runs locally — no accounts, no audio files.</p>
+        <div style="height:12px"></div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <button class="primary" id="open-exercise-2">Open the 3-min reset</button>
+          <a href="book.html" class="secondary">Book a private session</a>
+        </div>
+        <div style="margin-top:12px;font-size:13px;color:#6b5446">Office hours: weekdays by appointment. Weekend group evenings listed on the Gatherings page.</div>
+      </aside>
+    </section>
+
+    <section class="reveal" style="max-width:var(--maxw);margin:8px auto;padding:20px">
+      <h3 style="margin:0 0 8px">How contact works</h3>
+      <ol style="color:#6b5446">
+        <li>Tell us the kind of offering you want and any accessibility needs.</li>
+        <li>We reply with available dates, pricing, and a short intake note.</li>
+        <li>Reservation secures the date; payment links and details follow.</li>
+      </ol>
+      <div style="margin-top:10px;color:#7a6454;font-size:13px">If you prefer, phone or email as listed at top.</div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+      <div>&copy; <span id="year"></span> {{BUSINESS_NAME}} — <span style="font-weight:700">Connect</span></div>
+      <div style="display:flex;gap:12px;align-items:center">
+        <div>Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+        <div>Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modal / Guided exercise -->
+  <div class="overlay" id="overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="exercise-title">
+      <div style="display:flex;justify-content:space-between;align-items:start">
+        <div>
+          <h3 id="exercise-title">3-minute reset</h3>
+          <div class="meta">Choose a short practice: breathing, a journaling prompt, or an intention pause.</div>
+        </div>
+        <div><button id="close-exercise" aria-label="Close" style="background:transparent;border:none;font-size:18px;cursor:pointer;color:var(--muted)">✕</button></div>
+      </div>
+      <div style="height:12px"></div>
+      <div class="exercise-stage">
+        <div>
+          <div style="display:flex;gap:8px;margin-bottom:8px">
+            <button class="secondary" data-mode="breath">Breathing</button>
+            <button class="secondary" data-mode="journal">Journal</button>
+            <button class="secondary" data-mode="intent">Intention</button>
+          </div>
+          <div id="stage-content">
+            <p style="margin:0 0 8px">Select a mode to begin. The practice runs locally and will show a simple timer and guidance.</p>
+          </div>
+          <div style="height:12px"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="small">Time left: <span id="timer">00:00</span></div>
+            <div class="exercise-controls"><button id="start" class="primary">Start</button><button id="pause" class="secondary">Pause</button></div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;align-items:center">
+          <div class="meter" aria-hidden="true">
+            <div class="pulse" id="pulse-text">Ready</div>
+          </div>
+          <div style="font-size:13px;color:#6b5446;text-align:center">Follow the visual pulse and text cues. No sound required.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Simple utilities
+    const el = (s) => document.querySelector(s);
+    const els = (s) => Array.from(document.querySelectorAll(s));
+
+    // Date in footer
+    el('#year').textContent = new Date().getFullYear();
+
+    // Scroll reveal with prefers-reduced-motion support
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const items = els('.reveal');
+      if(prefersReduced){ items.forEach(i => i.classList.add('visible')); return; }
+      const obs = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); } });
+      },{root:null,threshold:0.12});
+      items.forEach(i => obs.observe(i));
+    })();
+
+    // Modal and guided exercise
+    (function(){
+      const overlay = el('#overlay');
+      const openBtns = [el('#open-exercise'), el('#open-exercise-2')].filter(Boolean);
+      const closeBtn = el('#close-exercise');
+      const startBtn = el('#start');
+      const pauseBtn = el('#pause');
+      const timerEl = el('#timer');
+      const pulseText = el('#pulse-text');
+      const stageContent = el('#stage-content');
+      let mode = 'breath';
+      let total = 180; // 3 minutes default
+      let remaining = total;
+      let running = false;
+      let tick = null;
+
+      function open(){ overlay.classList.add('active'); overlay.setAttribute('aria-hidden','false'); trapFocus(overlay); }
+      function close(){ overlay.classList.remove('active'); overlay.setAttribute('aria-hidden','true'); stop(); releaseFocus(); }
+
+      openBtns.forEach(b => b && b.addEventListener('click', ()=>{ open(); }));
+      closeBtn.addEventListener('click', close);
+
+      // Mode buttons
+      els('[data-mode]').forEach(btn => btn.addEventListener('click', ()=>{
+        mode = btn.getAttribute('data-mode');
+        remaining = 180;
+        updateStage();
+      }));
+
+      function formatTime(s){ const m = Math.floor(s/60); const sec = s%60; return String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0'); }
+      function updateTimer(){ timerEl.textContent = formatTime(remaining); }
+
+      function updateStage(){
+        updateTimer();
+        if(mode==='breath'){
+          stageContent.innerHTML = '<p style="margin:0 0 8px">Slow breathing: inhale 4s — hold 1s — exhale 6s. Repeat and let the chest soften. Visual pulse expands on inhale and contracts on exhale.</p>';
+          pulseText.textContent = 'Breathe';
+        } else if(mode==='journal'){
+          stageContent.innerHTML = '<p style="margin:0 0 8px">Prompt: "What do I most need to release or invite right now?" Spend about three minutes writing freely; let sentences flow without editing.</p>';
+          pulseText.textContent = 'Write';
+          // shorten time for journaling if preferred
+          remaining = 120;
+        } else {
+          stageContent.innerHTML = '<p style="margin:0 0 8px">Intention setting: name one short phrase that will guide your next hour. Repeat it silently while breathing slowly.</p>';
+          pulseText.textContent = 'Set';
+          remaining = 90;
+        }
+      }
+
+      function step(){
+        if(remaining<=0){ stop(); pulseText.textContent='Done'; return; }
+        remaining--; updateTimer();
+        // Update visual pulse text and simple size effect
+        const pct = 0.6 + 0.4*Math.sin((Date.now()/1000)*2*Math.PI/6);
+        const pulse = el('.pulse');
+        if(pulse){ pulse.style.transform = 'scale('+ (1 + (1-pct)/6) +')'; }
+      }
+
+      function start(){ if(running) return; running=true; tick = setInterval(step,1000); startBtn.textContent='Running'; startBtn.disabled=true; }
+      function stop(){ running=false; clearInterval(tick); tick=null; startBtn.textContent='Start'; startBtn.disabled=false; }
+
+      startBtn.addEventListener('click', ()=>{ if(!overlay.classList.contains('active')) open(); start(); });
+      pauseBtn.addEventListener('click', ()=>{ if(running) stop(); else start(); });
+
+      // initialize
+      updateStage();
+
+      // keyboard: esc to close
+      document.addEventListener('keydown',(e)=>{ if(e.key==='Escape' && overlay.classList.contains('active')) close(); });
+
+      // simple focus trap
+      let lastFocused = null;
+      function trapFocus(container){ lastFocused = document.activeElement; const focusables = Array.from(container.querySelectorAll('button,a,input,select,textarea,[tabindex]')).filter(n=>!n.hasAttribute('disabled')); if(focusables.length) focusables[0].focus(); document.addEventListener('focus', maintainFocus, true); }
+      function maintainFocus(e){ if(overlay.classList.contains('active') && !overlay.contains(e.target)){ e.stopPropagation(); overlay.querySelector('button, [tabindex]') && overlay.querySelector('button, [tabindex]').focus(); } }
+      function releaseFocus(){ document.removeEventListener('focus', maintainFocus, true); if(lastFocused) lastFocused.focus(); }
+
+    })();
+
+    // Basic contact form behaviour (local only)
+    (function(){
+      const form = el('#contact-form');
+      const clear = el('#clear');
+      form.addEventListener('submit', function(e){ e.preventDefault(); alert('Thank you — your message has been captured locally for demo. Replace this with server integration.'); form.reset(); });
+      clear.addEventListener('click', ()=>form.reset());
+    })();
+  </script>
+</body>
+</html>

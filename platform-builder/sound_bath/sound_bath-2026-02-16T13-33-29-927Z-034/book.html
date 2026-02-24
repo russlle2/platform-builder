@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reserve a seat, private session, or VIP Day with {{FACILITATOR_NAME}}.">
+  <style>
+    :root{--bg:#011623;--glass:#ffffff14;--accentA:#7ee3c6;--accentB:#9a80ff}
+    body{margin:0;background:radial-gradient(600px 400px at 10% 10%,#063046 0%,var(--bg) 40%,#00131a 100%);font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:#e9fbf6}
+    .max{max-width:980px;margin:32px auto;padding:18px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{color:#bff7eb;text-decoration:none;margin-left:14px}
+    h1{margin:10px 0 6px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));border-radius:12px;padding:16px;border:1px solid rgba(255,255,255,0.04);backdrop-filter:blur(8px)}
+    label{display:block;font-size:13px;margin-top:12px}
+    input,select,textarea{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:inherit}
+    .btn{display:inline-block;margin-top:12px;padding:12px 16px;border-radius:12px;background:linear-gradient(90deg,var(--accentA),var(--accentB));color:#042233;font-weight:700;text-decoration:none}
+    .note{font-size:13px;color:#9fb0bd;margin-top:8px}
+    .offer{background:linear-gradient(90deg,rgba(126,227,198,0.06),rgba(154,128,255,0.06));padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
+    .small{font-size:13px;color:#9fb0bd}
+  </style>
+</head>
+<body>
+  <div class="max">
+    <header>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:46px;height:46px;border-radius:12px;background:linear-gradient(90deg,var(--accentA),var(--accentB));display:flex;align-items:center;justify-content:center;color:#042233;font-weight:800">SB</div>
+        <div>
+          <div style="font-weight:700">Reserve with {{BUSINESS_NAME}}</div>
+          <div style="font-size:12px;color:#9fb0bd">Plan a session, book a private, or secure a VIP Day</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Start</a>
+        <a href="events.html">Calendar</a>
+        <a href="private-sessions.html">Private</a>
+        <a href="faq.html">Help</a>
+      </nav>
+    </header>
+
+    <main style="margin-top:18px" class="grid">
+      <section>
+        <h1>Book a session</h1>
+        <div class="panel">
+          <form id="bookForm" action="{{PRIMARY_CTA_URL}}" method="POST">
+            <label>Full name<input type="text" name="name" placeholder="Your name" required></label>
+            <label>Email<input type="email" name="email" placeholder="you@domain.com" required></label>
+            <label>Phone<input type="tel" name="phone" placeholder="Optional"></label>
+
+            <label>Type of booking
+              <select name="session_type" required>
+                <option value="group">Group event (ticket)</option>
+                <option value="one_on_one">1:1 private session</option>
+                <option value="couples">Couples session</option>
+                <option value="corporate">Corporate / team reset</option>
+                <option value="vip_day">VIP Day – full immersion (deposit required)</option>
+              </select>
+            </label>
+
+            <label>Preferred dates / notes<textarea name="notes" rows="4" placeholder="Dates, accessibility needs, intentions"></textarea></label>
+
+            <div class="note">We will respond within 48 hours to confirm availability and next steps. Payments for private and VIP Day bookings use a deposit to secure your date.</div>
+
+            <button class="btn" type="submit">{{PRIMARY_CTA_LABEL}}</button>
+          </form>
+        </div>
+
+        <div style="margin-top:16px" class="panel">
+          <h3 style="margin:0 0 6px 0">Booking guidance</h3>
+          <p class="small">For VIP Day bookings include the preferred scope in the form and we’ll schedule a planning call. For corporate sessions we include pre-session alignment and optional guided breathing sequences to support teamwork and creative recalibration.</p>
+        </div>
+
+        <div style="margin-top:16px" class="panel">
+          <h3 style="margin:0 0 6px 0">Session palette (examples)</h3>
+          <p class="small">To set expectations: private sessions lean into intimate, low-volume textures — soft crystal bowls, monochord, and reed chime accents. Group events often layer larger crystal bowls and a gong for spacious grounding.</p>
+        </div>
+      </section>
+
+      <aside>
+        <div class="panel offer">
+          <strong>VIP Day — a focused reset</strong>
+          <p class="small">Our VIP Day is a bespoke, full-day immersion with private sound, integrative coaching, and a tailored itinerary. Ideal for leadership teams, creators, or anyone seeking an extended reset. Deposit required to hold date.</p>
+          <div style="margin-top:10px"><a href="mailto:{{EMAIL}}" class="small" style="color:#dffbf2;text-decoration:none">Inquire: {{EMAIL}}</a></div>
+        </div>
+
+        <div class="panel" style="margin-top:14px">
+          <strong>Next steps</strong>
+          <p class="small">After you submit, we confirm availability and share payment options. For group event tickets you will receive a calendar invite; for private sessions we’ll schedule the full session time and pre-call.</p>
+        </div>
+
+        <div class="panel" style="margin-top:14px;text-align:center">
+          <div style="font-weight:700">Need a hand?</div>
+          <div style="margin-top:8px"><a href="tel:{{PHONE}}" style="color:#dffbf2;text-decoration:none">Call {{PHONE}}</a></div>
+          <div style="margin-top:6px"><a href="mailto:{{EMAIL}}" style="color:#dffbf2;text-decoration:none">{{EMAIL}}</a></div>
+        </div>
+      </aside>
+    </main>
+
+    <footer style="margin-top:20px;text-align:center;color:#9fb0bd">
+      By submitting you agree to our booking terms. For health-related contraindications see the FAQ or contact us prior to booking.
+    </footer>
+  </div>
+
+  <script>
+    // lightweight client-side confirmation
+    document.getElementById('bookForm').addEventListener('submit',function(e){
+      // allow normal submit but show small confirmation
+      localStorage.setItem('lastBooking', new Date().toISOString());
+    });
+  </script>
+</body>
+</html>

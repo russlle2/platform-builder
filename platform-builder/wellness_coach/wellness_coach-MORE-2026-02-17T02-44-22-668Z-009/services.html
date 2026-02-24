@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Services: focused sessions, package support, and VIP Day options for busy professionals.">
+  <style>
+    :root{--accent:#e28f7a;--glass:#ffffff10;--bg:#f6f8f7;--text:#082a28}
+    html,body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;color:var(--text);background:var(--bg) url('assets/img/pattern.svg')}
+    .nav{display:flex;justify-content:space-between;align-items:center;padding:14px 22px;background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01));backdrop-filter:blur(8px)}
+    .nav a{margin-left:14px;text-decoration:none;color:inherit}
+    .wrap{max-width:1100px;margin:30px auto;padding:18px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02));padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.04);backdrop-filter:blur(8px)}
+    h1{margin:0 0 8px 0}
+    .services-list{display:flex;flex-direction:column;gap:12px}
+    .service{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;background:rgba(255,255,255,0.02)}
+    .service .meta{max-width:66%}
+    .service h4{margin:0 0 6px 0}
+    .price{font-weight:800;color:var(--accent);min-width:120px;text-align:right}
+    .toggle{display:flex;gap:12px;align-items:center;margin:12px 0}
+    .switch{position:relative;width:56px;height:30px;border-radius:20px;background:#ffffff22;cursor:pointer}
+    .knob{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:white;transition:left 260ms}
+    .switch.on{background:linear-gradient(90deg,var(--accent),#9ed8c9)}
+    .switch.on .knob{left:29px}
+    .promo{margin-top:10px;color:#0b2f2d}
+    .small{font-size:13px;color:#06322f}
+
+    @media(max-width:880px){.grid{grid-template-columns:1fr}.nav{padding:12px}}
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <div class="links">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="services.html">Offerings</a>
+      <a href="programs.html">Programs</a>
+      <a href="pricing.html">Invest</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <section class="grid">
+      <div>
+        <div class="card">
+          <h1>Offerings & sessions</h1>
+          <p class="small">Pick the cadence that fits your schedule — single sessions, a guided package, or an immersive VIP Day.</p>
+
+          <div style="margin-top:16px" class="card">
+            <h3 style="margin:0 0 8px 0">Pricing comparator</h3>
+            <p class="small" style="margin:0 0 8px 0">Toggle between monthly/session and packaged pricing. Numbers animate.</p>
+            <div class="toggle">
+              <span style="font-size:14px">Per session</span>
+              <div id="switch" class="switch" role="button" aria-pressed="false">
+                <div class="knob"></div>
+              </div>
+              <span style="font-size:14px">Package</span>
+            </div>
+
+            <div id="services" class="services-list">
+              <div class="service">
+                <div class="meta">
+                  <h4>Clarity Session</h4>
+                  <div class="small">60-minute focused alignment and plan.</div>
+                </div>
+                <div class="price" data-per="250" data-pack="650">$250</div>
+              </div>
+
+              <div class="service">
+                <div class="meta">
+                  <h4>Momentum Package</h4>
+                  <div class="small">Four 50-minute check-ins across four weeks.</div>
+                </div>
+                <div class="price" data-per="220" data-pack="750">$220</div>
+              </div>
+
+              <div class="service">
+                <div class="meta">
+                  <h4>VIP Day Intensive</h4>
+                  <div class="small">One full-day deep-dive with planning deliverables.</div>
+                </div>
+                <div class="price" data-per="1800" data-pack="3200">$1,800</div>
+              </div>
+            </div>
+            <p class="promo">Note: package numbers reflect bundled pricing and follow-up support. Exact deliverables clarified during booking.</p>
+          </div>
+
+        </div>
+      </div>
+
+      <aside>
+        <div class="card">
+          <h4>Quick notes</h4>
+          <p style="margin:8px 0">No quick-fixes. Work targets habits and structure. Outcomes focus on energy, priorities, and repeatable practices — not medical advice.</p>
+          <a style="display:inline-block;margin-top:8px;padding:8px 12px;border-radius:8px;background:var(--accent);color:white;text-decoration:none;font-weight:700" href="{{PRIMARY_CTA_URL}}">Start the conversation</a>
+        </div>
+
+        <div style="height:14px"></div>
+
+        <div class="card">
+          <h4>Logistics</h4>
+          <p style="margin:8px 0">Sessions via video or in-person in {{CITY}}, {{STATE}}. Scheduling after intake form.</p>
+        </div>
+      </aside>
+
+    </section>
+
+    <section style="margin-top:18px" class="card">
+      <h3 style="margin:0 0 8px 0">Service framing</h3>
+      <p style="margin:0 0 8px 0">Pricing above is framed to reflect the depth of support: single sessions are targeted interventions; packages are rhythm-building sequences; VIP Day is hands-on creation of an executable weekly plan.</p>
+    </section>
+
+    <section style="margin-top:12px" class="card" id="contact-card">
+      <h3 style="margin:0 0 8px 0">Still unsure?</h3>
+      <p style="margin:0 0 8px 0">Book a short 20-minute exploratory call to confirm the best fit.</p>
+      <a style="padding:8px 12px;border-radius:8px;background:var(--accent);color:white;text-decoration:none;font-weight:700" href="{{PRIMARY_CTA_URL}}">Book exploratory call</a>
+    </section>
+
+  </main>
+
+  <script>
+    (function(){
+      const sw = document.getElementById('switch');
+      const prices = Array.from(document.querySelectorAll('.price'));
+      let mode = 'per';
+
+      function animateNumber(el, from, to, suffix=''){
+        const duration = 480;
+        const start = performance.now();
+        function step(now){
+          const t = Math.min(1,(now-start)/duration);
+          const val = Math.round(from + (to-from)*t);
+          el.textContent = (val>=1000? '$' + val.toLocaleString() : '$' + val) + suffix;
+          if(t<1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+
+      function update(toMode){
+        prices.forEach(p=>{
+          const per = Number(p.getAttribute('data-per'));
+          const pack = Number(p.getAttribute('data-pack'));
+          const current = parseInt(p.textContent.replace(/[^0-9]/g,''),10);
+          const target = toMode==='pack'? pack : per;
+          animateNumber(p, current, target);
+        });
+      }
+
+      sw.addEventListener('click', ()=>{
+        const on = sw.classList.toggle('on');
+        sw.setAttribute('aria-pressed', on? 'true':'false');
+        mode = on? 'pack':'per';
+        update(mode);
+      });
+
+      // init ensure displayed values match data-per
+      prices.forEach(p=>{
+        const per = p.getAttribute('data-per');
+        p.textContent = '$' + per;
+      });
+    })();
+  </script>
+</body>
+</html>

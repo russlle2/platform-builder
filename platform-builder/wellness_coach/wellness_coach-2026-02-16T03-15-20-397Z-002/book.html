@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book a Discovery — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfefe;--text:#0b1620;--muted:#5a6a70;--accent:#0b8a72}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:var(--bg);color:var(--text)}
+    .wrap{max-width:760px;margin:48px auto;padding:28px}
+    nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px}
+    a.logo{font-weight:600;text-decoration:none;color:var(--text)}
+    .navlinks a{margin-left:14px;color:var(--muted);text-decoration:none}
+    .hero{padding:26px;border-radius:12px;background:linear-gradient(180deg,rgba(11,138,114,0.04),transparent)}
+    h1{margin:0 0 6px 0}
+    p.lead{color:var(--muted);margin:0}
+    form{margin-top:20px;background:#fff;border-radius:10px;padding:18px;box-shadow:0 10px 24px rgba(9,18,20,0.04)}
+    label{display:block;font-weight:600;margin-top:12px}
+    input,textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef0;margin-top:6px;font-size:15px}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .note{font-size:13px;color:var(--muted);margin-top:10px}
+    .btn{margin-top:14px;padding:10px 14px;background:var(--accent);color:#fff;border-radius:8px;border:none;cursor:pointer}
+    .pill{display:inline-block;background:rgba(11,138,114,0.08);color:var(--accent);padding:6px 8px;border-radius:999px;font-weight:600}
+    .myth{margin-top:18px;padding:14px;border-radius:8px;background:#fff}
+    .case{margin-top:12px;padding:12px;background:#fff;border-radius:8px}
+    @media (max-width:700px){.row{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <a class="logo" href="index.html">{{BUSINESS_NAME}}</a>
+      <div class="navlinks">
+        <a href="services.html">Work With Me</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="testimonials.html">Stories</a>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <span class="pill">Discovery</span>
+      <h1>Reserve a short diagnostic conversation</h1>
+      <p class="lead">A 30-minute clarity call to define goals, constraints, and an initial habit experiment. No pressure, only practical next steps.</p>
+    </section>
+
+    <main>
+      <section style="margin-top:18px">
+        <div class="myth">
+          <strong>Quick myth check</strong>
+          <p class="note" style="margin-top:8px">Myth: Coaching fixes everything quickly. Reality: Coaching is a structured process for designing repeatable behavior — we measure and iterate. The discovery call clarifies the first reliable micro-experiment.</p>
+        </div>
+
+        <form id="bookForm" novalidate>
+          <label for="name">Your name</label>
+          <input id="name" name="name" type="text" required placeholder="First and last name">
+
+          <div class="row">
+            <div>
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" required placeholder="you@example.com">
+            </div>
+            <div>
+              <label for="phone">Phone (optional)</label>
+              <input id="phone" name="phone" type="tel" placeholder="(555) 555-5555">
+            </div>
+          </div>
+
+          <label for="focus">Primary focus for coaching</label>
+          <select id="focus" name="focus">
+            <option>Sleep & Routine</option>
+            <option>Daily Movement</option>
+            <option>Work-Life Rhythm</option>
+            <option>Stress and Recovery</option>
+            <option>Other</option>
+          </select>
+
+          <label for="notes">Brief context (current routines, constraints, goals)</label>
+          <textarea id="notes" name="notes" rows="4" placeholder="A few sentences is fine"></textarea>
+
+          <p class="note">By booking you agree to receive scheduling communications from {{BUSINESS_NAME}}. If you need an invoice or accessibility accommodations, email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</p>
+
+          <button type="submit" class="btn">Request a Discovery Call</button>
+          <div id="formMessage" class="note" aria-live="polite"></div>
+        </form>
+      </section>
+
+      <section style="margin-top:18px">
+        <div class="case">
+          <h4 style="margin:0">What to expect in 30 minutes</h4>
+          <ol style="margin-top:8px" class="note">
+            <li>Clear articulation of the problem and constraints.</li>
+            <li>One micro-experiment you can start immediately.</li>
+            <li>Recommendations for an appropriate program path (if fit).</li>
+          </ol>
+        </div>
+      </section>
+
+      <section style="margin-top:18px" class="case">
+        <h4 style="margin:0">Refunds & rescheduling</h4>
+        <p class="note" style="margin-top:8px">If you need to reschedule, please notify at least 24 hours in advance by emailing {{EMAIL}}. Discovery calls are complimentary; paid programs have standard terms discussed upon contracting.</p>
+      </section>
+
+      <section style="margin-top:18px;display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <strong>{{COACH_NAME}}, {{CREDENTIALS}}</strong>
+          <div class="note">Based in {{CITY}}, {{STATE}} — evidence-informed coaching and behavior design.</div>
+        </div>
+        <div>
+          <a class="btn" href="mailto:{{EMAIL}}">Contact via Email</a>
+        </div>
+      </section>
+
+    </main>
+
+    <footer style="margin-top:22px;color:var(--muted);font-size:13px">{{BUSINESS_NAME}} • {{TAGLINE}} • <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></footer>
+  </div>
+
+  <script>
+    (function(){
+      var form=document.getElementById('bookForm');
+      var msg=document.getElementById('formMessage');
+      form.addEventListener('submit',function(e){
+        e.preventDefault();
+        var name=form.name.value.trim();
+        var email=form.email.value.trim();
+        if(!name||!email){ msg.textContent='Please provide your name and email.'; msg.style.color='crimson'; return; }
+        msg.style.color=''; msg.textContent='Thanks — a scheduling link will be sent to ' + email + ' shortly.';
+        // graceful local redirect to booking confirmation (placeholder)
+        setTimeout(function(){ window.location.href='thank-you.html'; },1200);
+      });
+    })();
+  </script>
+</body>
+</html>

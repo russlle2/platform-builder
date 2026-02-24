@@ -1,0 +1,51 @@
+/* Modern clinic-modest design for aromatherapy practice */
+:root{
+  --bg:#F6F2EE;--card:#ffffff;--muted:#6B6B6B;--accent:#7AA48C;--accent-2:#D6B89B;--text:#1A1A1A;--radius:12px;--glass:rgba(255,255,255,0.6);
+}
+*{box-sizing:border-box}
+body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;line-height:1.45;color:var(--text);background:linear-gradient(180deg,var(--bg),#F1ECE7);margin:0}
+.wrap{max-width:1100px;margin:0 auto;padding:2rem}
+.site-header{background:linear-gradient(90deg,rgba(255,255,255,0.6), rgba(250,248,247,0.6));backdrop-filter: blur(6px);position:sticky;top:0;z-index:30;border-bottom:1px solid rgba(0,0,0,0.04)}
+.site-header .wrap{display:flex;align-items:center;gap:1rem}
+.brand{font-weight:700;color:var(--text);text-decoration:none;font-size:1.05rem}
+.nav ul{list-style:none;margin:0;padding:0;display:flex;gap:1rem}
+.nav a{color:var(--text);text-decoration:none;padding:0.5rem 0}
+.nav .cta{background:transparent;border:1px solid var(--accent);padding:0.4rem 0.7rem;border-radius:999px;color:var(--accent)}
+.nav-toggle{display:none}
+.hero{padding:3rem 0;position:relative;overflow:hidden}
+.hero-pattern{position:absolute;inset:0;opacity:0.12;pointer-events:none}
+.hero-inner{display:grid;grid-template-columns:1fr 320px;gap:2rem;align-items:center}
+.eyebrow{color:var(--accent-2);text-transform:uppercase;font-weight:700;margin:0}
+h2{font-size:1.75rem;margin:0.4rem 0}
+.lead{color:var(--muted)}
+.hero-info .card{background:linear-gradient(180deg,var(--card),#fbf9f7);padding:1rem;border-radius:var(--radius);box-shadow:0 6px 18px rgba(30,30,30,0.06)}
+.btn{display:inline-block;padding:0.6rem 1rem;border-radius:10px;text-decoration:none;border:1px solid transparent;background:transparent;color:var(--text)}
+.btn.primary{background:linear-gradient(90deg,var(--accent),#6aa781);color:white;border-color:transparent}
+.btn.ghost{border-color:rgba(0,0,0,0.06)}
+.btn.large{padding:0.9rem 1.2rem;font-size:1.05rem}
+.section{padding:3rem 0}
+.ritual .split{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.card{background:var(--card);padding:1rem;border-radius:12px;box-shadow:0 6px 20px rgba(50,50,50,0.04)}
+.muted{color:var(--muted);font-size:0.95rem}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.price-figure{font-weight:700;font-size:1.25rem}
+.faq-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+.faq-item{background:linear-gradient(180deg,var(--card),#fff);border-radius:12px;padding:0.6rem}
+.faq-q{background:none;border:none;width:100%;text-align:left;padding:0.6rem 0;font-weight:600}
+.faq-a{max-height:0;overflow:hidden;transition:all 220ms ease}
+.cta-inner{text-align:center}
+.footer-grid{display:flex;justify-content:space-between;gap:1rem;align-items:start}
+@media(max-width:900px){
+  .hero-inner{grid-template-columns:1fr;}
+  .nav ul{display:none}
+  .nav-toggle{display:inline-block;margin-left:auto}
+  .cards-grid, .pricing-grid{grid-template-columns:1fr}
+  .faq-grid{grid-template-columns:1fr}
+  .footer-grid{flex-direction:column;gap:0.6rem}
+}
+/* subtle accent lines using svg mask */
+.hero-pattern img{width:120%;transform:translateX(-8%);filter:hue-rotate(-5deg) saturate(0.9)}
+/* small utilities */
+.highlight{border:2px solid rgba(122,164,140,0.12)}
+.price{font-weight:700}

@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Stories — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7f4f1;--accent:#6b4b35;--accent-2:#b78a67;--muted:#6d6d6d;--card:#fff;font-family:Inter,system-ui,Segoe UI,Roboto,Arial}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#efe7dd);color:#2b2b2b}
+    .container{max-width:980px;margin:28px auto;padding:20px}
+    header{display:flex;align-items:center;justify-content:space-between}
+    .logo{display:flex;gap:10px;align-items:center}
+    .logo .mark{width:48px;height:48px;background:linear-gradient(135deg,var(--accent),var(--accent-2));border-radius:8px;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none;font-weight:600}
+    .hero{background:var(--card);padding:18px;border-radius:12px;margin-top:16px}
+    .hero h1{margin:0;color:var(--accent)}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
+    .reviews{display:flex;flex-direction:column;gap:12px}
+    .review{background:var(--card);padding:12px;border-radius:10px;border:1px solid rgba(0,0,0,0.04)}
+    .meta{display:flex;align-items:center;gap:10px}
+    .avatar{width:44px;height:44px;border-radius:8px;background:#efe0d6;display:flex;align-items:center;justify-content:center;font-weight:700;color:#7a4d34}
+    .stars{color:#c47a4b}
+    .carousel{position:relative}
+    .carousel > button{position:absolute;top:50%;transform:translateY(-50%);background:transparent;border:0;font-size:22px;color:var(--muted);cursor:pointer}
+    .left{left:-10px}
+    .right{right:-10px}
+    .aside-card{background:linear-gradient(180deg,#fff,rgba(255,250,247,0.9));padding:12px;border-radius:12px}
+    .btn{padding:10px 12px;border-radius:10px;border:none;cursor:pointer;font-weight:700}
+    .btn-primary{background:var(--accent);color:#fff}
+    .btn-outline{background:transparent;border:2px solid var(--accent-2);color:var(--accent)}
+    footer{margin-top:22px;text-align:center;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo"><div class="mark">W</div><div><div style="font-weight:800">{{BUSINESS_NAME}}</div><div style="font-size:13px;color:var(--muted)">{{CITY}}, {{STATE}}</div></div></div>
+      <nav>
+        <a href="index.html">Start</a>
+        <a href="services.html">Offerings</a>
+        <a href="pricing.html">Invest</a>
+        <a href="book.html">Plan</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <h1>Real shifts from small experiments</h1>
+      <p style="color:var(--muted);margin-top:6px">Client reflections on what changed when they introduced one steady practice at a time.</p>
+      <div style="margin-top:12px"><button class="btn btn-primary" onclick="openModal()">Try a short exercise</button></div>
+    </section>
+
+    <div class="grid">
+      <main>
+        <div class="carousel">
+          <button class="left" onclick="prev()">◀</button>
+          <div id="slides">
+            <div class="review" data-index="0">
+              <div class="meta"><div class="avatar">AM</div><div><strong>A. Morgan</strong><div class="small" style="color:var(--muted)">Founder, remote team</div></div><div style="margin-left:auto" class="stars">★★★★★</div></div>
+              <p style="margin-top:10px;color:var(--muted)">"We turned three scattered actions into a single reliable rhythm. The mornings feel quieter and I get more clear work done before lunch."</p>
+            </div>
+
+            <div class="review" data-index="1" style="display:none">
+              <div class="meta"><div class="avatar">LJ</div><div><strong>L. Jones</strong><div class="small" style="color:var(--muted)">Designer</div></div><div style="margin-left:auto" class="stars">★★★★★</div></div>
+              <p style="margin-top:10px;color:var(--muted)">"The checklist approach made tiny wins visible. Habits stuck because they felt possible. The sessions guided how to adjust, not just what to do."</p>
+            </div>
+
+            <div class="review" data-index="2" style="display:none">
+              <div class="meta"><div class="avatar">CR</div><div><strong>C. Ruiz</strong><div class="small" style="color:var(--muted)">Teacher</div></div><div style="margin-left:auto" class="stars">★★★★★</div></div>
+              <p style="margin-top:10px;color:var(--muted)">"My energy felt scattered. The coach helped me frame a single daily practice that changed how I arrived to each day."</p>
+            </div>
+          </div>
+          <button class="right" onclick="next()">▶</button>
+        </div>
+
+        <section style="margin-top:16px;background:var(--card);padding:12px;border-radius:10px">
+          <h3 style="margin:0;color:var(--accent)">Stories that matter</h3>
+          <p style="color:var(--muted);margin-top:8px">Each testimonial maps to small, repeatable actions and the adjustments that kept them in place. No quick fixes — steady shaping.</p>
+        </section>
+
+        <section style="margin-top:12px">
+          <h4 style="margin:0 0 8px;color:var(--accent)">Share your progress</h4>
+          <p class="small" style="margin:0 0 8px;color:var(--muted)">If you've worked together and want to be featured, send a note with a short quote.</p>
+          <button class="btn btn-outline" onclick="location.href='contact.html'">Share a story</button>
+        </section>
+      </main>
+
+      <aside>
+        <div class="aside-card">
+          <h4 style="margin:0;color:var(--accent)">Try a mini practice</h4>
+          <p class="small" style="margin-top:8px">Open a two-minute guided pause to notice shift now.</p>
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <button class="btn btn-primary" onclick="openModal()">Open practice</button>
+            <button class="btn btn-outline" onclick="generateChallenge()">7-day starter</button>
+          </div>
+        </div>
+
+        <div style="margin-top:14px;background:linear-gradient(180deg,#fff,rgba(255,250,247,0.95));padding:12px;border-radius:12px">
+          <h4 style="margin:0">Sources of trust</h4>
+          <ul style="padding-left:18px;color:var(--muted);margin-top:8px"><li>Detailed check-ins</li><li>Shared short experiments</li><li>Adaptation, not prescription</li></ul>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      <div>Contact: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • Call {{PHONE}}</div>
+    </footer>
+  </div>
+
+  <!-- shared modal + habit builder scripts -->
+  <div id="modal" style="display:none;position:fixed;inset:0;background:rgba(9,6,5,0.5);align-items:center;justify-content:center;padding:20px"> 
+    <div style="max-width:600px;width:100%;background:#fff;padding:18px;border-radius:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0;color:var(--accent)">Guided practice</h3><button onclick="closeModal()" style="background:transparent;border:0;font-weight:700;cursor:pointer">Close</button></div>
+      <div id="modal-body" style="margin-top:12px"></div>
+    </div>
+  </div>
+
+  <script>
+    // Carousel
+    let current = 0;
+    const slides = document.querySelectorAll('.review');
+    function show(i){ slides.forEach(s=>s.style.display='none'); slides[i].style.display='block'; }
+    function next(){ current = (current + 1) % slides.length; show(current); }
+    function prev(){ current = (current - 1 + slides.length) % slides.length; show(current); }
+
+    // Modal + exercises (same functionality as pricing but concise variant)
+    function openModal(){ document.getElementById('modal').style.display='flex'; renderModalOptions(); }
+    function closeModal(){ document.getElementById('modal').style.display='none'; document.getElementById('modal-body').innerHTML=''; }
+    function renderModalOptions(){ const body=document.getElementById('modal-body'); body.innerHTML = '<div style="display:flex;gap:8px"><button class="btn btn-outline" onclick="start(120,\'breath\')">Breath 2m</button><button class="btn btn-outline" onclick="start(180,\'journal\')">Journal 3m</button><button class="btn btn-outline" onclick="start(120,\'intent\')">Intend 2m</button></div><div id="mini-area" style="margin-top:12px"></div>'; }
+    let miniTimer = null;
+    function start(seconds,type){ clearInterval(miniTimer); const area=document.getElementById('mini-area'); let s=seconds; area.innerHTML = '<div style="display:flex;align-items:center;gap:12px"><div class="timer" id="mini-t">'+String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')+'</div><div style="flex:1"><div style="font-weight:700">'+(type==='breath'?'Box breathing':type==='journal'?'Free write':'Set an intention')+'</div><div class="small">Follow the prompt until the timer ends.</div></div></div>';
+      miniTimer = setInterval(()=>{ s--; const t = document.getElementById('mini-t'); if(t) t.textContent = String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); if(s<=0){clearInterval(miniTimer); alert('Complete — notice one small change.'); closeModal(); } },1000);
+    }
+
+    // Habit builder shared function (re-use simple generator)
+    function generateChallenge(){
+      const focus = 'Starter focus';
+      const items = ['Micro-breath 1m','Tiny movement 5m','One priority written','Hydrate','Two-minute reflection','No screens 30m before sleep','Evening note'];
+      let text = focus + ' — 7 day checklist\n\n';
+      items.forEach((it,i)=> text += (i+1)+'. '+it+'\n');
+      // show quick download
+      const blob = new Blob([text],{type:'text/plain'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='7-day-starter.txt'; document.body.appendChild(a); a.click(); a.remove();
+      alert('Checklist downloaded. Adjust in a notebook to make it yours.');
+    }
+  </script>
+</body>
+</html>

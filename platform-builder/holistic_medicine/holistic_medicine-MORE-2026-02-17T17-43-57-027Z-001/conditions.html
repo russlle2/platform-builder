@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Conditions — Care & Guidance</title>
+  <style>
+    :root{--bg:#fbfff8;--accent:#00a896;--muted:#666;--card:#fff;--glass:rgba(255,255,255,0.85);font-family:Georgia, 'Times New Roman', serif}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#f4fff9);color:#102a26}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px}
+    .logo{font-weight:800;color:var(--accent)}
+    nav{display:flex;gap:14px}
+    nav a{text-decoration:none;color:#0b2b27;padding:6px 10px;border-radius:8px;font-weight:600}
+    .wrap{max-width:960px;margin:24px auto;padding:18px}
+    .hero{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 26px rgba(12,30,28,0.06)}
+    .grid{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-top:16px}
+    .card{background:var(--card);padding:14px;border-radius:10px}
+    .condition-list{list-style:none;padding:0;margin:0}
+    .condition-list li{padding:10px 0;border-bottom:1px dashed rgba(0,0,0,0.04)}
+    .disclaimer{font-size:13px;color:var(--muted);margin-top:12px}
+    .cta{display:inline-block;margin-top:12px;background:var(--accent);color:white;padding:10px 12px;border-radius:10px;text-decoration:none}
+    .faq{margin-top:12px}
+    @media(max-width:880px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Programs</a>
+      <a href="approach.html">Method</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <h1>Conditions we often support — framed with care</h1>
+      <p style="color:var(--muted);margin-top:6px">Educational support and integrative strategies for common challenges. We work alongside your existing medical team when appropriate.</p>
+    </section>
+
+    <div class="grid">
+      <div>
+        <div class="card">
+          <h3>Areas of supportive focus</h3>
+          <ul class="condition-list">
+            <li><strong>Chronic stress & burnout</strong> — breathwork, pacing plans, sleep-friendly rhythms.</li>
+            <li><strong>Sleep disturbances</strong> — routines, stimulus control techniques, evening rituals.</li>
+            <li><strong>Digestive discomfort</strong> — food & symptom journaling, regularity support, referral guidance.</li>
+            <li><strong>Pain with everyday activity</strong> — movement mapping and graded exposure practice.</li>
+            <li><strong>Anxiety & low mood</strong> — grounding practices, behavioral activation, mindful attention training.</li>
+          </ul>
+
+          <div class="disclaimer">
+            Important: Our offerings are educational and supportive in nature. We do not promise cures. If you have an urgent or serious medical concern, please contact your primary provider or emergency services. When needed, we coordinate care with clinicians and refer to specialist services.
+          </div>
+
+          <a class="cta" href="{{PRIMARY_CTA_URL}}">Book an exploratory chat</a>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h3>How we tailor plans</h3>
+          <p style="color:var(--muted)">We use a simple intake to map your priorities, then co-design small, testable steps. Expect practical homework, short group learning, and personalized touchpoints.</p>
+        </div>
+      </div>
+
+      <aside>
+        <div class="card">
+          <h4>Quick notes for choosing support</h4>
+          <ol style="color:var(--muted)">
+            <li>If you need medication advice, consult your prescriber first.</li>
+            <li>If symptoms escalate, seek urgent care; we will support transitional planning.</li>
+            <li>Bring any relevant reports to your first session for coordinated planning.</li>
+          </ol>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4>Common questions</h4>
+          <div class="faq">
+            <strong>Will this replace therapy or medical care?</strong>
+            <p style="color:var(--muted)">No — our work complements clinical care and can be coordinated when helpful.</p>
+            <strong>Is this safe for everyone?</strong>
+            <p style="color:var(--muted)">Most exercises are low-risk; if you have specific health concerns please mention them before beginning new practices.</p>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <section style="margin-top:14px">
+      <div class="card">
+        <h3>Try a short grounding routine</h3>
+        <p style="color:var(--muted)">Two small practices to briefly reset. These are educational and safe for most people; stop if you feel uncomfortable.</p>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="cta" id="breathBtn">Breath Reset</button>
+          <button class="cta" id="reflectBtn">Reflective Minute</button>
+        </div>
+      </div>
+    </section>
+
+    <footer style="margin-top:18px;color:var(--muted);text-align:center">
+      <div>Contact: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    </footer>
+  </main>
+
+  <!-- Reuse same modal pattern as site (self-contained) -->
+  <div id="overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;padding:20px">
+    <div id="modal" style="background:white;padding:18px;border-radius:12px;max-width:560px;margin:auto;position:relative">
+      <button id="closeModal" style="position:absolute;right:10px;top:10px;border:none;background:none;font-size:18px;cursor:pointer">✕</button>
+      <div id="modalInner"></div>
+    </div>
+  </div>
+
+  <script>
+    // Simple modal reuse for two guided exercises
+    (function(){
+      const overlay = document.getElementById('overlay');
+      const modalInner = document.getElementById('modalInner');
+      const closeModal = document.getElementById('closeModal');
+      const breathBtn = document.getElementById('breathBtn');
+      const reflectBtn = document.getElementById('reflectBtn');
+      let t=null;
+
+      function open(html){ modalInner.innerHTML=html; overlay.style.display='flex'; }
+      function close(){ overlay.style.display='none'; clearInterval(t); t=null; }
+      closeModal.addEventListener('click', close);
+      overlay.addEventListener('click', e=>{ if(e.target===overlay) close(); });
+
+      breathBtn.addEventListener('click', ()=>{
+        open('<h3>Breath mini-sequence</h3><p style="color:#666">Follow a gentle 2-minute paced breathing. Inhale for 4, hold 1, exhale 5.</p><div style="text-align:center;margin-top:12px"><div id="count" style="font-weight:700;color:var(--accent)">Ready</div><div style="margin-top:10px"><button id="start" style="padding:8px 12px;border-radius:8px;background:#00a896;color:white;border:none">Begin</button></div></div>');
+        const start = document.getElementById('start');
+        const count = document.getElementById('count');
+        start.addEventListener('click', ()=>{
+          let phase=0, cycles=0;
+          count.textContent='Start';
+          clearInterval(t);
+          t=setInterval(()=>{ phase=(phase+1)%2; if(phase){ count.textContent='Inhale'; } else { count.textContent='Exhale'; cycles++; } if(cycles>=8){ clearInterval(t); count.textContent='Complete'; } },3000);
+        });
+      });
+
+      reflectBtn.addEventListener('click', ()=>{
+        open('<h3>One minute reflection</h3><p style="color:#666">Answer silently: What small action matters today? Notice one thing you can sense right now.</p><div style="text-align:center;margin-top:12px"><div id="clock" style="font-weight:700;color:var(--accent)">60s</div><div style="margin-top:10px"><button id="go" style="padding:8px 12px;border-radius:8px;background:#00a896;color:white;border:none">Start</button></div></div>');
+        const go = document.getElementById('go');
+        const clock = document.getElementById('clock');
+        go.addEventListener('click', ()=>{
+          let s=60; clock.textContent=s+'s'; clearInterval(t); t=setInterval(()=>{ s--; clock.textContent=s+'s'; if(s<=0){ clearInterval(t); clock.textContent='Done'; } },1000);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

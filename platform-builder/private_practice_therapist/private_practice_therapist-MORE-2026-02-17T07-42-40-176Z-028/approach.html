@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Method — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f5f8fb;--card:#fff;--accent:#0f6fb8;--muted:#56606b}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:var(--bg);color:#071124}
+    .wrap{max-width:1050px;margin:0 auto;padding:26px}
+    header{padding-bottom:12px}
+    nav{display:flex;gap:14px}
+    nav a{color:var(--muted);text-decoration:none;font-weight:700}
+    h1{margin:6px 0;font-size:26px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:20px}
+    .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 8px 24px rgba(7,17,36,0.04)}
+    .muted{color:var(--muted)}
+    .pill{background:rgba(15,111,184,0.06);color:var(--accent);padding:6px 10px;border-radius:999px;font-weight:700}
+    .section{margin-top:16px}
+    .btn{background:var(--accent);color:#fff;border:none;padding:10px 12px;border-radius:8px}
+    .secondary{background:transparent;border:1px solid rgba(7,17,36,0.06);padding:9px;border-radius:8px}
+    .testimonial{font-style:italic;color:var(--muted);padding-left:8px;border-left:3px solid rgba(15,111,184,0.08)}
+    pre{background:#f2f6fb;padding:10px;border-radius:8px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">Practice</a>
+        <a href="specialties.html">Areas</a>
+        <a class="active" href="approach.html">Method</a>
+        <a href="fees.html">Fees</a>
+        <a href="faq.html">Help</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <main class="grid">
+      <div>
+        <div class="card">
+          <div class="pill">Practical clinical sequence</div>
+          <h1>How I typically work with people</h1>
+          <p class="muted">My method is collaborative and time-conscious. Each series begins with clearer goals and ends with an actionable plan. Interventions are chosen to match your current priorities, and we review progress along the way.</p>
+
+          <div class="section">
+            <h3>Framework</h3>
+            <ol class="muted">
+              <li>Clarify: set a shared, practical goal for this work.</li>
+              <li>Try: practice one small change between sessions.</li>
+              <li>Reflect: review what's helped and adjust the plan.</li>
+            </ol>
+          </div>
+
+          <div class="section">
+            <h3>Clinical boundaries & privacy</h3>
+            <p class="muted">Sessions are confidential within ethical and legal limits. I do not provide emergency care; if you are at immediate risk of harm, contact local emergency services or a crisis resource in {{CITY}}, {{STATE}}.</p>
+          </div>
+
+          <div class="section">
+            <h3>Program options — framed as helpful structures</h3>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px">
+              <div class="card" style="padding:10px">
+                <strong>Orientation</strong>
+                <div class="muted">One assessment session + short summary</div>
+              </div>
+              <div class="card" style="padding:10px">
+                <strong>Focused Series</strong>
+                <div class="muted">4–6 sessions for a concrete problem</div>
+              </div>
+              <div class="card" style="padding:10px">
+                <strong>Ongoing Consultation</strong>
+                <div class="muted">Monthly sessions for maintenance and planning</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <h3>Testimonials</h3>
+            <div class="testimonial">"Clear goals and usable steps—helped me make choices without feeling lost."</div>
+            <div style="height:8px"></div>
+            <div class="testimonial">"Practical, calm guidance that respected my boundaries and schedule."</div>
+          </div>
+
+        </div>
+
+        <div class="card section" style="margin-top:14px">
+          <h3>Self-screening intake (non-diagnostic)</h3>
+          <p class="muted">A guided set of questions you can complete now. The tool will produce a list you can copy and bring to your first appointment to make the initial meeting more focused.</p>
+          <div id="approach-wizard"></div>
+        </div>
+
+      </div>
+
+      <aside>
+        <div class="card">
+          <h3>Make a plan — Session Planner</h3>
+          <p class="muted">Create a short, plain-text session plan to bring to a booking or to keep for yourself.</p>
+          <div id="approach-planner"></div>
+          <div style="margin-top:12px"><a class="btn" href="book.html">Reserve a time</a></div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <h4>Scope & crisis note</h4>
+          <p class="muted">This practice focuses on outpatient psychotherapy and consultation for adults. If you are experiencing a crisis or are in immediate danger, call emergency services or a crisis hotline in {{CITY}}, {{STATE}}.</p>
+        </div>
+      </aside>
+
+    </main>
+  </div>
+
+  <script>
+    // Combined Session Planner and Intake Wizard for Approach page
+    (function(){
+      // Planner
+      const pm = document.getElementById('approach-planner');
+      pm.innerHTML = `\n        <label>Presenting concern</label>\n        <input id="p-focus" style="width:100%;padding:8px;margin-bottom:8px" placeholder="eg. Decision fatigue">\n        <label>Recommended structure</label>\n        <select id="p-format" style="width:100%;padding:8px;margin-bottom:8px">\n          <option value="orientation">Orientation (1-2 sessions)</option>\n          <option value="focused">Focused Series (4-6)</option>\n          <option value="ongoing">Ongoing (monthly)</option>\n        </select>\n        <label>Key outcomes (3)</label>\n        <input id="p-goals" style="width:100%;padding:8px;margin-bottom:8px" placeholder="eg. clearer priorities, reduced reactivity">\n        <button id="p-gen" class="btn">Create plan</button>\n        <pre id="p-out" style="margin-top:8px;background:#f5f9ff;padding:10px;border-radius:8px"></pre>\n        <div style="display:flex;gap:8px;margin-top:8px">\n          <button id="p-copy" class="btn">Copy</button>\n          <button id="p-download" class="secondary">Download</button>\n        </div>\n      `;
+      const pGen = document.getElementById('p-gen');
+      const pOut = document.getElementById('p-out');
+      pGen.addEventListener('click',()=>{
+        const f = document.getElementById('p-focus').value||'—';
+        const fmt = document.getElementById('p-format').value;
+        const goals = document.getElementById('p-goals').value || '—';
+        const mapping = {orientation:'Orientation: assessment and planning', focused:'Focused Series: targeted practice and review', ongoing:'Ongoing consultation: maintenance and planning'};
+        const txt = `Session plan:\n\nFocus: ${f}\nFormat: ${mapping[fmt]}\nGoals: ${goals}\n\nSuggested rhythm:\n- Week 1: assessment and prioritized goal\n- Week 2: skill adoption and feedback\n- Week 3: review and next steps\n\nNotes: This is a planning tool; it does not replace clinical assessment.`;
+        pOut.textContent = txt;
+      });
+      document.getElementById('p-copy').addEventListener('click',()=>{
+        navigator.clipboard.writeText(pOut.textContent||'').then(()=>alert('Plan copied'));
+      });
+      document.getElementById('p-download').addEventListener('click',()=>{
+        const blob = new Blob([pOut.textContent||''],{type:'text/plain'});
+        const url = URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='plan.txt'; a.click(); URL.revokeObjectURL(url);
+      });
+
+      // Intake Wizard (approach)
+      const iw = document.getElementById('approach-wizard');
+      function startIntake(){
+        iw.innerHTML='';
+        const steps = [
+          {q:'In one sentence, what would you most like to see change?', type:'text'},
+          {q:'How long have you been dealing with this?', type:'text'},
+          {q:'What helps you cope in difficult moments? (brief list)', type:'text'},
+          {q:'Are there logistical constraints for sessions? (times, location, technology)', type:'text'}
+        ];
+        let idx=0; const ans=[];
+        const box = document.createElement('div'); box.className='card'; box.style.padding='12px';
+        const q = document.createElement('div'); const input = document.createElement('textarea'); input.style.width='100%'; input.style.height='70px'; input.style.marginTop='8px';
+        const nav = document.createElement('div'); nav.style.marginTop='10px';
+        const back = document.createElement('button'); back.textContent='Back'; back.className='secondary'; back.style.marginRight='8px';
+        const next = document.createElement('button'); next.textContent='Next'; next.className='btn';
+        nav.appendChild(back); nav.appendChild(next);
+        box.appendChild(q); box.appendChild(input); box.appendChild(nav);
+        iw.appendChild(box);
+        function render(){
+          q.textContent = (idx+1) + '. ' + steps[idx].q;
+          input.value = ans[idx]||'';
+          back.disabled = idx===0;
+          next.textContent = idx===steps.length-1 ? 'Finish' : 'Next';
+        }
+        back.addEventListener('click',()=>{ ans[idx]=input.value; idx=Math.max(0,idx-1); input.value = ans[idx]||''; render(); });
+        next.addEventListener('click',()=>{ ans[idx]=input.value; if(idx < steps.length-1){ idx++; input.value = ans[idx]||''; render(); } else { finish(); } });
+        render();
+        function finish(){
+          iw.innerHTML='';
+          const out = document.createElement('div'); out.className='card';
+          const h = document.createElement('h4'); h.textContent='Things to bring to your first visit';
+          const pre = document.createElement('pre'); pre.style.whiteSpace='pre-wrap';
+          let txt='Intake summary to share with clinician:\n\n';
+          steps.forEach((s,i)=>{ txt += s.q + '\n' + (ans[i]||'—') + '\n\n'; });
+          txt += 'Suggested prompts to discuss at the appointment:\n- Prioritized goals\n- Recent patterns that matter most\n- What has helped in the past\n';
+          pre.textContent = txt;
+          const copy = document.createElement('button'); copy.className='btn'; copy.textContent='Copy';
+          copy.addEventListener('click',()=>{ navigator.clipboard.writeText(txt).then(()=>copy.textContent='Copied'); setTimeout(()=>copy.textContent='Copy',1200); });
+          out.appendChild(h); out.appendChild(pre); out.appendChild(copy);
+          iw.appendChild(out);
+        }
+      }
+      // start immediately
+      startIntake();
+    })();
+  </script>
+</body>
+</html>

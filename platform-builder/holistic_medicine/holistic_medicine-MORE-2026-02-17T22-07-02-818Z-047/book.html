@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book a Visit — Schedule an Orientation — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Schedule orientation, follow-ups, and membership onboarding in {{CITY}}, {{STATE}}.">
+  <style>
+    :root{--bg:#f7fffb;--accent:#2a7a6f;--muted:#5e7570}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:var(--bg);color:#05221e}
+    header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none}
+    .container{max-width:920px;margin:26px auto;padding:0 18px}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
+    .card{background:#fff;padding:18px;border-radius:12px;box-shadow:0 8px 20px rgba(7,24,21,0.04)}
+    form label{display:block;margin-top:10px;font-size:14px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(7,24,21,0.06);margin-top:6px}
+    .cta{display:inline-block;padding:10px 14px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none}
+    .mood-panel{margin-top:12px;padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(127,195,178,0.04),transparent)}
+    .timeline{margin-top:14px;display:flex;gap:12px}
+    .phase{flex:1;padding:10px;border-radius:10px;background:#fff;border-left:4px solid rgba(127,195,178,0.12)}
+    .muted{color:var(--muted)}
+    footer{margin:24px 0;text-align:center;color:var(--muted);font-size:13px}
+    @media(max-width:860px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:10px"><div style="width:40px;height:40px;background:#e8fbf6;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--accent)">B</div><div style="font-weight:700">{{BUSINESS_NAME}}</div></div>
+    <nav>
+      <a href="index.html">Overview</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">States</a>
+      <a href="approach.html">Method</a>
+      <a href="pricing.html">Membership</a>
+      <a href="about.html">Story</a>
+      <a href="book.html">Schedule</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div class="grid">
+      <div class="card">
+        <h2 style="margin:0 0 6px">Schedule an orientation</h2>
+        <div class="muted">Choose a visit type and tell us a bit about your current priority.</div>
+
+        <form id="bookingForm" action="{{PRIMARY_CTA_URL}}" method="get">
+          <label>Full name<input name="name" placeholder="Your name" required></label>
+          <label>Phone<input name="phone" placeholder="Preferred contact number"></label>
+          <label>Email<input name="email" type="email" placeholder="you@example.com" required></label>
+
+          <label>Visit type
+            <select name="visit">
+              <option value="orientation">Orientation — 50 min</option>
+              <option value="followup">Follow-up — 25 min</option>
+              <option value="deep_review">Extended review — 75 min</option>
+            </select>
+          </label>
+
+          <div class="mood-panel" id="moodPanelBook">
+            <div style="font-weight:700">How are you right now?</div>
+            <div style="margin-top:8px" class="mood-options">
+              <button type="button" class="mood-btn active" data-key="stressed">Tense & Overloaded</button>
+              <button type="button" class="mood-btn" data-key="fatigued">Flat energy</button>
+              <button type="button" class="mood-btn" data-key="curious">Want clarity</button>
+            </div>
+            <input type="hidden" name="mood" id="moodInput" value="stressed">
+            <div class="recommend" id="recBook" style="margin-top:8px">
+              <strong id="recTitleBook">Orientation + focused practical tools</strong>
+              <div id="recDescBook" class="muted" style="margin-top:6px">A clear first visit to set a few fast, usable practices.</div>
+            </div>
+          </div>
+
+          <label style="margin-top:10px">Notes<textarea name="notes" rows="3" placeholder="Anything you'd like the clinician to know"></textarea></label>
+
+          <div style="margin-top:12px"><button class="cta" type="submit">Book orientation</button></div>
+        </form>
+
+        <div class="timeline" aria-hidden="false">
+          <div class="phase">
+            <strong>Phase 1</strong>
+            <div class="muted">Baseline measures and fast, achievable routines.</div>
+          </div>
+          <div class="phase">
+            <strong>Phase 2</strong>
+            <div class="muted">Iterative habit shaping and weekly touchpoints.</div>
+          </div>
+          <div class="phase">
+            <strong>Phase 3</strong>
+            <div class="muted">Maintenance and periodic review.</div>
+          </div>
+        </div>
+        <div class="muted" style="margin-top:10px">This plan is an educational framework, not a guaranteed outcome. Personal medical needs may require different pacing.</div>
+
+      </div>
+
+      <aside class="card">
+        <h3 style="margin-top:0">Quick scheduling</h3>
+        <p class="muted">If you prefer, call <a href="tel:{{PHONE}}">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> and our coordinator will assist with times.</p>
+        <div style="margin-top:12px">
+          <div style="font-weight:700">Need a specific lane?</div>
+          <div style="margin-top:8px;display:flex;gap:8px;flex-direction:column">
+            <a class="cta" href="{{PRIMARY_CTA_URL}}?intent=orientation">Quick orientation</a>
+            <a class="cta" href="{{PRIMARY_CTA_URL}}?intent=cohort" style="background:#7fc3b2">Join a cohort</a>
+            <a class="cta" href="{{PRIMARY_CTA_URL}}?intent=consult" style="background:#9fd6c8">Request consult</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <section style="margin-top:18px" class="card">
+      <h3 style="margin:0 0 8px">Booking notes</h3>
+      <p class="muted">We offer telehealth and in-person options depending on service type. Visit lengths are approximate; care is educational and collaborative. If you are experiencing a medical emergency, call local emergency services immediately.</p>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+  </footer>
+
+  <script>
+    (function(){
+      const map = {
+        stressed:{title:'Orientation + focused practical tools',desc:'A fast visit to identify stress drivers and start useful micro-practices.',mood:'stressed'},
+        fatigued:{title:'Energy-focused orientation',desc:'A visit that prioritizes sleep, movement, and gentle nutrition steps.',mood:'fatigued'},
+        curious:{title:'Clarity visit',desc:'Longer intake to investigate contributing factors and build an initial plan.',mood:'curious'}
+      };
+      const panel = document.getElementById('moodPanelBook');
+      const moodInput = document.getElementById('moodInput');
+      panel.addEventListener('click',function(e){
+        const btn = e.target.closest('.mood-btn'); if(!btn) return;
+        panel.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        const key = btn.getAttribute('data-key');
+        const info = map[key] || map.stressed;
+        document.getElementById('recTitleBook').textContent = info.title;
+        document.getElementById('recDescBook').textContent = info.desc;
+        moodInput.value = info.mood;
+      });
+      (function(){ const b = panel.querySelector('.mood-btn.active'); if(b) b.click(); })();
+
+      // Simple client-side form handler to append mood to action URL for demo
+      const form = document.getElementById('bookingForm');
+      form.addEventListener('submit',function(e){
+        // For demo, allow default submission. In a real site we'd post to a scheduling API.
+      });
+    })();
+  </script>
+</body>
+</html>

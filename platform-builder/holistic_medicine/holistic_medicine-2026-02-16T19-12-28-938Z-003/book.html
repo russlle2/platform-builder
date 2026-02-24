@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Book a discovery or multi-week program. Learn what to expect at your first visit.">
+  <style>
+    :root{--bg:#ffffff;--accent:#7c3aed;--muted:#666}
+    *{box-sizing:border-box}
+    body{font-family:Inter,system-ui,Arial;color:#0b1020;margin:0;background:linear-gradient(180deg,#fff,#fbfdff)}
+    header{padding:12px 18px;background:rgba(255,255,255,0.9);border-bottom:1px solid rgba(0,0,0,0.04);position:sticky;top:0}
+    .nav{display:flex;justify-content:space-between;align-items:center;max-width:1100px;margin:0 auto}
+    .nav a{color:var(--muted);margin-left:12px}
+
+    .container{max-width:980px;margin:28px auto;padding:18px}
+    .split{display:grid;grid-template-columns:1fr 340px;gap:18px}
+    .panel{background:white;padding:18px;border-radius:12px;border:1px solid rgba(0,0,0,0.04)}
+    h1{margin:0 0 8px}
+    .muted{color:var(--muted)}
+    form{display:flex;flex-direction:column;gap:10px}
+    input,select,textarea{padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.08)}
+    .btn{background:linear-gradient(90deg,var(--accent),#a78bfa);color:white;padding:10px 14px;border-radius:10px;border:none;font-weight:700}
+    .what-to-bring{font-size:14px;color:var(--muted)}
+
+    .note{font-size:13px;color:var(--muted);margin-top:8px}
+
+    .pattern{position:absolute;right:6px;top:120px;width:260px;height:260px;opacity:0.08;pointer-events:none}
+
+    @media (max-width:880px){.split{grid-template-columns:1fr}.pattern{display:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+      <div>
+        <a href="index.html">Return</a>
+        <a href="services.html">Offerings</a>
+        <a href="conditions.html">Issues</a>
+        <a href="approach.html">How it works</a>
+        <a href="pricing.html">Fees</a>
+        <a href="about.html">About</a>
+        <a style="background:linear-gradient(90deg,var(--accent),#a78bfa);color:#fff;padding:8px 12px;border-radius:10px" href="#book-form">Reserve</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="split">
+      <div>
+        <div class="panel">
+          <h1>Reserve your Discovery</h1>
+          <p class="muted">A Discovery session is a practical first visit — history, priorities, and an educational plan. No cures promised; just clear options and next steps.</p>
+
+          <form id="book-form" action="{{PRIMARY_CTA_URL}}" method="get">
+            <label>Full name<input name="name" required></label>
+            <label>Email<input name="email" type="email" required placeholder="you@example.com"></label>
+            <label>Phone<input name="phone" placeholder="{{PHONE}}"></label>
+            <label>Service<select name="service">
+              <option>Discovery - 45–60min</option>
+              <option>60-min follow-up</option>
+              <option>Reset program inquiry</option>
+            </select></label>
+            <label>Brief concerns/notes<textarea name="notes" rows="4" placeholder="What brings you here?"></textarea></label>
+            <div style="display:flex;gap:10px;align-items:center">
+              <button class="btn" type="submit">Request appointment</button>
+              <div class="muted">Or call <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+            </div>
+            <div class="note">By submitting you agree to be contacted by {{BUSINESS_NAME}}. Any testing discussed is optional and may have separate costs. We do not promise specific outcomes.</div>
+          </form>
+        </div>
+
+        <div class="panel" style="margin-top:14px">
+          <h3>How booking works</h3>
+          <ol style="color:var(--muted)">
+            <li>Complete the request form.</li>
+            <li>We confirm availability and next steps by email.</li>
+            <li>First session focuses on education and a clear plan.</li>
+          </ol>
+          <p class="note">If you prefer a virtual visit, note it in the form. For in-person appointments, directions and parking info will be provided.</p>
+        </div>
+      </div>
+
+      <aside>
+        <div class="panel">
+          <h3>Before your first visit</h3>
+          <ul class="what-to-bring">
+            <li>Recent labs or records (if available)</li>
+            <li>A list of medications and supplements</li>
+            <li>Photos of commonly eaten meals (optional)</li>
+            <li>Questions you want answered</li>
+          </ul>
+          <p class="note">If labs are suggested, they are for education and the decision is yours. Insurance varies; receipts provided for out-of-network reimbursement on request.</p>
+        </div>
+
+        <div class="panel" style="margin-top:12px">
+          <h4>Need help choosing?</h4>
+          <p class="muted">If unsure, choose Discovery. It’s a focused session to learn your options and map a realistic plan.</p>
+          <a class="btn" href="pricing.html" style="display:inline-block;margin-top:10px">View fees</a>
+        </div>
+      </aside>
+    </div>
+
+    <svg class="pattern" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <linearGradient id="bG" x1="0" x2="1"><stop offset="0" stop-color="#fff2fb"/><stop offset="1" stop-color="#eef6ff"/></linearGradient>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#bG)" rx="18"/>
+      <g fill="#7c3aed" opacity="0.14">
+        <path d="M20 60c16-24 56-36 96-24s64 48 36 84-104 20-132-12"/>
+      </g>
+    </svg>
+
+    <section style="margin-top:20px">
+      <div class="panel">
+        <h3>Common questions</h3>
+        <p class="muted"><strong>What if I need labs?</strong> Labs may be offered as educational tools. They are optional and billed separately. <br><strong>Do you guarantee outcomes?</strong> No. We provide education and personalized plans; outcomes vary by individual.</p>
+      </div>
+    </section>
+  </div>
+
+  <footer style="padding:18px;text-align:center;color:var(--muted)">
+    <div>{{BUSINESS_NAME}} • {{PRACTITIONER_NAME}}, {{CREDENTIALS}}</div>
+    <div style="margin-top:8px">Contact: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+  </footer>
+</body>
+</html>

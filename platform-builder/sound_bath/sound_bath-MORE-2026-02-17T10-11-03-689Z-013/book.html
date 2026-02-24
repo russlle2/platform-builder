@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7f1ea;--accent:#6f4b38;--muted:#8e6f59;--card:#fff}
+    body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:0;background:var(--bg);color:var(--accent)}
+    .wrap{max-width:1100px;margin:24px auto;padding:20px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    header a{color:var(--muted);text-decoration:none;margin-left:10px}
+    h1{margin:6px 0}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.04)}
+    .seat-map{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+    .seat{height:56px;border-radius:8px;background:#f3eadf;display:flex;align-items:center;justify-content:center;color:var(--accent);cursor:pointer}
+    .seat.taken{background:#e7d1c4;color:#a07a6b;cursor:not-allowed;opacity:0.7}
+    .seat.selected{background:linear-gradient(180deg,var(--accent),#a36e53);color:#fff}
+    .summary{margin-top:12px}
+    .packing{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+    .btn{background:var(--accent);color:#fff;padding:10px;border-radius:8px;border:0;cursor:pointer}
+    .outline{background:transparent;border:1px solid rgba(111,75,56,0.12);padding:8px;border-radius:8px}
+    .packing-result{background:#fff3e9;padding:10px;border-radius:8px;color:#6f4b38}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div style="font-weight:700">Reserve a place</div>
+      <div>
+        <a href="index.html">Home</a>
+        <a href="events.html">Events</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </header>
+
+    <main class="grid">
+      <section>
+        <div class="card">
+          <h1 style="margin-top:0">Choose your seat</h1>
+          <p style="color:var(--muted)">Click open seats to select one or more. This selector is local and demonstrative — final availability is confirmed on checkout.</p>
+
+          <div id="map" class="seat-map" aria-label="Seat selector" role="grid"></div>
+
+          <div class="summary">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div><strong id="count">0</strong> selected</div>
+              <div><button id="clear" class="outline">Clear</button></div>
+            </div>
+            <div style="margin-top:10px;color:var(--muted);font-size:14px">Selected seats: <span id="list">none</span></div>
+            <div style="margin-top:12px;display:flex;gap:8px"><button id="proceed" class="btn">Proceed to booking</button><a class="outline" href="pricing.html">See rates</a></div>
+          </div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="card">
+          <h2 style="margin-top:0">Packing list generator</h2>
+          <p style="color:var(--muted)">Tell us about the session you plan to join and we’ll suggest what to bring.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+            <label style="display:block;width:150px">Session length
+              <select id="length" style="width:100%;padding:8px;margin-top:6px;border-radius:8px;border:1px solid #eee">
+                <option value="45">45 minutes</option>
+                <option value="60" selected>60 minutes</option>
+                <option value="90">90 minutes</option>
+              </select>
+            </label>
+            <label style="display:block;width:180px">Intention
+              <select id="intention" style="width:100%;padding:8px;margin-top:6px;border-radius:8px;border:1px solid #eee">
+                <option value="rest">Rest & sleep</option>
+                <option value="release">Emotional release</option>
+                <option value="focus">Centering / focus</option>
+                <option value="recovery">Physical recovery</option>
+              </select>
+            </label>
+          </div>
+          <div class="packing">
+            <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="mat" checked> Comfortable mat / yoga mat</label>
+            <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="blanket" checked> Warm blanket</label>
+            <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="pillow"> Small pillow or bolster</label>
+            <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="water" checked> Water bottle</label>
+            <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="mask"> Eye mask</label>
+            <button id="generate" class="btn">Create list</button>
+          </div>
+
+          <div id="result" style="margin-top:12px"></div>
+        </div>
+
+      </section>
+
+      <aside>
+        <div class="card">
+          <h3 style="margin-top:0">Next steps</h3>
+          <p style="color:var(--muted)">After selecting seats and generating your list, hit proceed. You will be taken to the confirmation step and payment channel.</p>
+          <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px">
+            <a class="btn" id="cta-pay" href="{{PRIMARY_CTA_URL}}">Complete reservation</a>
+            <a class="outline" href="contact.html">Need help?</a>
+          </div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="card">
+          <h4 style="margin-top:0">Policies</h4>
+          <p style="color:var(--muted);font-size:13px">Cancellations up to 48 hours in advance receive a full credit. Late cancellations are subject to a fee. For private sessions, contact us directly at <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</p>
+        </div>
+      </aside>
+    </main>
+
+    <footer style="text-align:center;margin-top:18px;color:var(--muted)">Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> · {{PHONE}}</footer>
+  </div>
+
+  <script>
+    // Seat selector demo
+    const map = document.getElementById('map');
+    const countEl = document.getElementById('count');
+    const listEl = document.getElementById('list');
+    const clearBtn = document.getElementById('clear');
+    const proceed = document.getElementById('proceed');
+    const seats = [];
+    const total = 15; // demo seats
+
+    // Randomly mark some as taken to simulate availability
+    const takenSet = new Set();
+    while(takenSet.size < 4){ takenSet.add(Math.floor(Math.random()*total)); }
+
+    for(let i=0;i<total;i++){
+      const div = document.createElement('div'); div.className='seat'; div.tabIndex=0; div.textContent = 'Seat ' + (i+1);
+      if(takenSet.has(i)){ div.classList.add('taken'); }
+      div.addEventListener('click', ()=>toggleSeat(i));
+      map.appendChild(div);
+      seats.push({el:div,selected:false,taken:takenSet.has(i)});
+    }
+
+    function toggleSeat(i){ const s=seats[i]; if(s.taken) return; s.selected=!s.selected; s.el.classList.toggle('selected',s.selected); updateSummary(); }
+    function updateSummary(){ const selected = seats.filter(s=>s.selected).map((s,i)=>map.children[[...map.children].indexOf(s.el)].textContent); countEl.textContent = selected.length; listEl.textContent = selected.length? selected.join(', ') : 'none'; }
+    clearBtn.addEventListener('click', ()=>{ seats.forEach(s=>{if(!s.taken){s.selected=false;s.el.classList.remove('selected')}}); updateSummary(); });
+    proceed.addEventListener('click', ()=>{
+      const selected = seats.filter(s=>s.selected).map((s,i)=>[...map.children].indexOf(s.el)+1);
+      if(selected.length===0){alert('Choose at least one seat to continue.');return}
+      // fake booking flow: persist to sessionStorage and redirect to pay placeholder
+      sessionStorage.setItem('selectedSeats', JSON.stringify(selected));
+      window.location.href = '{{PRIMARY_CTA_URL}}';
+    });
+
+    // Packing list generator
+    const gen = document.getElementById('generate');
+    const result = document.getElementById('result');
+    gen.addEventListener('click', ()=>{
+      const length = parseInt(document.getElementById('length').value,10);
+      const intention = document.getElementById('intention').value;
+      const wants = {mat:document.getElementById('mat').checked, blanket:document.getElementById('blanket').checked, pillow:document.getElementById('pillow').checked, water:document.getElementById('water').checked, mask:document.getElementById('mask').checked};
+      const items = [];
+      if(wants.mat) items.push('Mat or mat-sized padding');
+      if(wants.blanket) items.push('Warm blanket (rooms can feel cool)');
+      if(wants.pillow) items.push('Small bolster or folded towel for under knees');
+      if(wants.water) items.push('Water bottle');
+      if(wants.mask) items.push('Optional eye mask');
+
+      if(length>=90 && !wants.blanket) items.push('Extra wrap for long sessions');
+      if(intention==='rest' && !wants.mask) items.push('Consider an eye mask for deeper rest');
+      if(intention==='recovery') items.push('Props (blocks, straps) if you use them');
+
+      // Packing guidance
+      let html = '<div class="packing-result"><strong>Suggested list</strong><ul style="margin:8px 0;padding-left:18px">';
+      items.forEach(it=>{html += '<li>'+it+'</li>'});
+      html += '</ul><div style="font-size:13px;color:#7a4f3a">Tip: label small items and keep jewelry off to rest comfortably.</div></div>';
+      result.innerHTML = html;
+    });
+
+  </script>
+</body>
+</html>

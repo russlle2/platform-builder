@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>How I Work — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--twig:#5f4636;--sand:#ecd9c6;--leaf:#9fb2a0;--bg:#fffdfb}
+    body{margin:0;font-family:Georgia,serif;background:var(--bg);color:#2a2a2a}
+    header{padding:16px 22px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(0,0,0,.04)}
+    .nav a{margin-left:12px;color:#2a2a2a;text-decoration:none;font-weight:600}
+    .hero{padding:22px 24px;max-width:980px;margin:20px auto;background:linear-gradient(180deg,rgba(255,255,255,.7),rgba(250,246,241,.9));border-radius:12px;background-image:url('assets/img/pattern.svg');background-size:420px}
+    h1{color:var(--twig);margin:0}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:20px;max-width:980px;margin:18px auto;padding:0 24px}
+    .panel{background:#fff;padding:18px;border-radius:10px}
+    .steps{display:flex;flex-direction:column;gap:12px}
+    .step{padding:10px;border-left:4px solid var(--leaf);background:linear-gradient(180deg,#fff,#fbf9f7);border-radius:8px}
+    .reveal-on-scroll{opacity:0;transform:translateY(12px);transition:opacity .6s ease,transform .6s ease}
+    .reveal-on-scroll.revealed{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){ .reveal-on-scroll{transition:none} }
+    footer{max-width:980px;margin:26px auto;color:#666;padding:0 24px}
+    .cta{display:flex;gap:10px;margin-top:12px}
+    .btn{padding:10px 12px;border-radius:8px;border:0;background:var(--twig);color:#fff;font-weight:700}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div style="width:40px;height:40px;background:linear-gradient(135deg,var(--twig),var(--leaf));border-radius:8px;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">W</div>
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+    </div>
+    <nav class="nav">
+      <a href="index.html">Welcome</a>
+      <a href="about.html">Who I Am</a>
+      <a href="specialties.html">Focus Areas</a>
+      <a href="approach.html">How I Work</a>
+      <a href="fees.html">Investment</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero reveal-on-scroll" aria-labelledby="approach-title">
+      <h1 id="approach-title">My approach: practical curiosity and steady presence</h1>
+      <p class="muted" style="margin-top:8px">I combine structured tools with reflective conversation. We work together to name patterns, test small changes, and anchor choices that fit your life.</p>
+      <div class="cta">
+        <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        <button class="btn" id="try-btn">Try a short practice</button>
+      </div>
+    </section>
+
+    <div class="grid">
+      <div>
+        <section class="panel reveal-on-scroll">
+          <h2 style="margin-top:0;color:var(--twig)">Core elements</h2>
+          <div class="steps">
+            <div class="step">
+              <strong>Curiosity</strong>
+              <p class="muted">We explore patterns without blame, building clarity about what keeps things stuck.</p>
+            </div>
+            <div class="step">
+              <strong>Practical work</strong>
+              <p class="muted">Skill practice and small experiments are central — tools that are easy to try between sessions.</p>
+            </div>
+            <div class="step">
+              <strong>Values alignment</strong>
+              <p class="muted">Choices are weighed against what you want your days to feel like, not just what feels urgent now.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel reveal-on-scroll" style="margin-top:14px">
+          <h2 style="color:var(--twig)">Session rhythm</h2>
+          <p class="muted">Sessions are collaborative. Typical engagements are flexible: a single focused consultation, a short series for a specific goal, or ongoing meetings by agreement.</p>
+          <ol>
+            <li>Intake — identify priorities and timeline.</li>
+            <li>Work — practice strategies and reflect on what helps.</li>
+            <li>Review — evaluate progress and plan aftercare or follow-up.</li>
+          </ol>
+        </section>
+
+        <section class="panel reveal-on-scroll" style="margin-top:14px">
+          <h2 style="color:var(--twig)">Boundaries & safety</h2>
+          <p class="muted">Confidentiality is respected within legal and ethical limits. This practice is not an emergency or crisis service. If you are in immediate danger, call local emergency services or your regional crisis line.</p>
+        </section>
+      </div>
+
+      <aside class="panel reveal-on-scroll">
+        <h3 style="margin-top:0;color:var(--twig)">Useful to know</h3>
+        <p class="muted">I aim for clarity about what each session will address. If you prefer practical worksheets, short homework, or a reflective space, we can combine elements to suit you.</p>
+        <div style="margin-top:12px">
+          <a class="btn" href="book.html">Schedule a first meeting</a>
+        </div>
+      </aside>
+    </div>
+
+    <section style="max-width:980px;margin:20px auto;padding:0 24px" class="reveal-on-scroll">
+      <h2 style="color:var(--twig)">A note on expectations</h2>
+      <p class="muted">Therapy is collaborative work. I cannot promise outcomes. We can, however, agree on focus, track progress, and pause or change direction as needed.</p>
+    </section>
+
+    <footer>
+      <p class="muted">For questions about availability or to learn more: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></p>
+      <p class="muted">If you are experiencing a mental health emergency, call local emergency services or your crisis hotline. This practice provides non-emergency clinical support.</p>
+    </footer>
+  </main>
+
+  <div class="modal-backdrop" id="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);align-items:center;justify-content:center;padding:20px">
+    <div style="background:#fff;padding:18px;border-radius:12px;max-width:640px;width:100%">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <strong>Try a short practice</strong>
+        <button id="close-modal">Close</button>
+      </div>
+      <p class="muted">Choose a brief exercise to notice your breath or set one small intention. This is a momentary practice and not therapy itself.</p>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button id="breath-start" class="btn">Breathing</button>
+        <button id="intention-start" class="btn" style="background:var(--leaf);color:#000">Intention</button>
+      </div>
+      <div id="mini-area" style="margin-top:12px"></div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      // Scroll reveal
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const nodes = document.querySelectorAll('.reveal-on-scroll');
+      if(reduced) nodes.forEach(n=>n.classList.add('revealed'));
+      else if('IntersectionObserver' in window){
+        const io = new IntersectionObserver((es)=>{ es.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('revealed') }) },{threshold:.12});
+        nodes.forEach(n=>io.observe(n));
+      } else nodes.forEach(n=>n.classList.add('revealed'));
+
+      // Modal mini-practice
+      const modal = document.getElementById('modal');
+      const tryBtn = document.getElementById('try-btn');
+      const closeModal = document.getElementById('close-modal');
+      const mini = document.getElementById('mini-area');
+
+      tryBtn.addEventListener('click',()=>{ modal.style.display='flex' });
+      closeModal.addEventListener('click',()=>{ modal.style.display='none'; mini.innerHTML=''; });
+
+      document.getElementById('breath-start').addEventListener('click',()=>{
+        mini.innerHTML = '<div style="text-align:center">\n  <div style="width:84px;height:84px;border-radius:50%;background:linear-gradient(135deg,var(--leaf),var(--twig));margin:10px auto;transform-origin:center;transition:transform .9s ease"></div>\n  <p class="muted">Breathe: in 4, hold 4, out 6. Repeat slowly for one minute.</p>\n</div>';
+        // simple animation loop
+        const c = mini.querySelector('div');
+        let scaleUp = true;
+        const t = setInterval(()=>{ c.style.transform = scaleUp? 'scale(1.25)':'scale(.85)'; scaleUp = !scaleUp; },900);
+        modal.addEventListener('click',function clear(){ clearInterval(t); modal.removeEventListener('click',clear); },{once:true});
+      });
+
+      document.getElementById('intention-start').addEventListener('click',()=>{
+        mini.innerHTML = '<div><p class="muted">Pick a short, kind intention. Example: "I will notice one small success today."</p><div style="display:flex;gap:8px;margin-top:8px"><button class="btn">Choose</button></div></div>';
+      });
+    })();
+  </script>
+</body>
+</html>

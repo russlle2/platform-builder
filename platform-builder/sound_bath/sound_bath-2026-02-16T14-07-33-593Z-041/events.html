@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Gatherings — {{BUSINESS_NAME}} • Sound Bath Events</title>
+  <meta name="description" content="Sensorial sound bath gatherings in {{CITY}}, {{STATE}} — layered with crystal bowls, gong, chimes, and tuning forks. Next event: {{NEXT_EVENT_DATE}}.">
+  <style>
+    :root{
+      --bg1:#f6efe6;--bg2:#efe6d9;--accent:#b26a3b;--muted:#7b6b5a;--card:#fffdf9;--glass:rgba(255,255,255,0.6);
+      --radius:14px;--max:1100px;--frame:18px;--shadow:0 8px 30px rgba(43,39,33,0.08);
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg1),var(--bg2));color:#3d352b}
+    .wrap{max-width:var(--max);margin:48px auto;padding:28px;border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,0.6),rgba(255,250,244,0.6));box-shadow:var(--shadow);position:relative;overflow:hidden}
+    /* embedded svg pattern sits behind content */
+    .pattern{position:absolute;inset:0;opacity:0.28;mix-blend-mode:multiply;pointer-events:none}
+    nav{display:flex;gap:14px;align-items:center;margin-bottom:22px}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:10px;font-weight:600}
+    nav a.cta{background:linear-gradient(90deg,rgba(178,106,59,0.14),rgba(178,106,59,0.06));color:var(--accent)}
+    header.hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+    .lead{padding:22px;background:var(--card);border-radius:var(--radius);box-shadow:0 6px 22px rgba(46,34,23,0.05)}
+    h1{margin:0 0 8px 0;font-size:28px;letter-spacing:-0.02em}
+    .tagline{color:var(--muted);margin-bottom:12px}
+    .meta{display:flex;flex-direction:column;gap:6px;color:#6a5848;font-size:14px}
+    .next-card{background:linear-gradient(180deg,#fffaf6,#fff7f0);border-radius:12px;padding:18px;text-align:left}
+    .next-card h3{margin:0;color:var(--accent)}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
+    section.card{background:var(--card);padding:18px;border-radius:12px}
+    .flow dt{font-weight:700;margin-top:10px}
+    .flow dd{margin:6px 0 0 0;color:#5c4d41}
+    .what-to-bring ul{margin:6px 0 0 16px}
+    .small{font-size:13px;color:#8b7a6b}
+    .cta-row{display:flex;gap:10px;align-items:center;margin-top:18px}
+    .btn{background:var(--accent);color:#fff;padding:12px 16px;border-radius:10px;text-decoration:none;font-weight:700}
+    .btn.ghost{background:transparent;border:1px solid rgba(66,54,42,0.08);color:var(--muted)}
+    footer{margin-top:28px;color:var(--muted);font-size:13px}
+    @media (max-width:880px){header.hero{grid-template-columns:1fr;}
+      .grid{grid-template-columns:1fr}
+      nav{flex-wrap:wrap}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <svg class="pattern" viewBox="0 0 800 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#f7efe2"/><stop offset="1" stop-color="#efe7d9"/></linearGradient>
+        <pattern id="p" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(12)">
+          <rect width="40" height="40" fill="url(#g)" />
+          <circle cx="6" cy="6" r="1.6" fill="#d9b89a" opacity="0.65" />
+          <circle cx="26" cy="26" r="1.4" fill="#cfa47f" opacity="0.58" />
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#p)" />
+      <g fill="#fff" opacity="0.04">
+        <circle cx="120" cy="620" r="220" />
+        <circle cx="700" cy="100" r="160" />
+      </g>
+    </svg>
+
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="events.html" class="cta">Gatherings</a>
+      <a href="private-sessions.html">Private</a>
+      <a href="pricing.html">Rates</a>
+      <a href="about.html">Story</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+
+    <header class="hero">
+      <div class="lead">
+        <h1>Community Sound Baths — slow, warm, centered</h1>
+        <div class="tagline">An evening of layered resonance and guided breath — held at {{VENUE_NAME}} in {{CITY}}.</div>
+        <div class="meta">
+          <div>Facilitator: {{FACILITATOR_NAME}}</div>
+          <div>Atmosphere: intimate • candle-lit • 60–75 min</div>
+          <div class="small">Instruments vary by session — expect crystal bowls, gong, chimes, and tuning forks.</div>
+        </div>
+        <div class="cta-row">
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <a class="btn ghost" href="book.html">Reserve a spot</a>
+        </div>
+      </div>
+
+      <aside class="next-card">
+        <h3>Next event</h3>
+        <p class="small">{{NEXT_EVENT_DATE}} — doors 6:30pm, sound begins 7:00pm</p>
+        <p class="small">Location: {{VENUE_NAME}}, {{CITY}}, {{STATE}}</p>
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <a class="btn" href="book.html">Book seat</a>
+          <a class="btn ghost" href="#calendar">Full schedule</a>
+        </div>
+      </aside>
+    </header>
+
+    <main style="margin-top:18px">
+      <section class="grid">
+        <section class="card">
+          <h2>How an evening unfolds</h2>
+          <dl class="flow">
+            <dt>Arrival & ground</dt>
+            <dd>We welcome you with a short centering and intention-setting — soft tea available.</dd>
+            <dt>Guided breath & gentle movement</dt>
+            <dd>Simple breathwork and gentle stretches create receptive space for listening.</dd>
+            <dt>The sound immersion</dt>
+            <dd>Layered instruments build a sound field: polished crystal bowls, sustained gong tones, delicate chimes and harmonic tuning forks.
+            The journey moves from a cradle of textures toward a broad, immersive wash and a gentle return.</dd>
+            <dt>Return & integration</dt>
+            <dd>We close with silence and a short sharing, time to rest before leaving.</dd>
+          </dl>
+        </section>
+
+        <section class="card what-to-bring">
+          <h2>What to bring</h2>
+          <ul>
+            <li>Yoga mat or meditation cushion</li>
+            <li>Blanket and sweater (rooms are kept cool)</li>
+            <li>Reusable water bottle</li>
+            <li>Optional: eye mask or scarf</li>
+          </ul>
+          <p class="small" style="margin-top:10px">We provide bolsters on request. Please arrive 10–15 minutes early to settle in.</p>
+        </section>
+
+        <section class="card">
+          <h2>Contraindications & safety</h2>
+          <p class="small">Sound baths are safe for most people, but not recommended during the first trimester of pregnancy, for people with epilepsy, or those with certain acute psychiatric conditions. If you have a pacemaker or other implanted electronic device, consult your healthcare provider before attending. Contact us at {{EMAIL}} for questions.</p>
+        </section>
+      </section>
+
+      <section style="margin-top:18px" class="card">
+        <h2 id="calendar">Upcoming calendar</h2>
+        <p class="small">A seasonal series of gatherings — we rotate instrument focus and pacing so each visit feels distinct.</p>
+        <ul style="margin-top:12px;color:#5b4c3f">
+          <li><strong>{{NEXT_EVENT_DATE}}</strong> — Evening Sound Bath (crystal bowls + chimes)</li>
+          <li>2026-03-07 — Deep Gong Wave (gong + low tuning fork drones)</li>
+          <li>2026-03-21 — Spring Resonance (monochord + crystal bowls)</li>
+          <li>2026-04-04 — Gentle Tones (tuning forks, chimes, and soft bowls)</li>
+        </ul>
+        <div style="margin-top:14px" class="small">Tickets: pay-what-you-can sliding scale, early-bird discounts available. Group blocks available on request.</div>
+      </section>
+
+      <section style="margin-top:18px" class="card">
+        <h2>A note on instruments</h2>
+        <p class="small">Each event is an interplay of acoustics: shimmering crystal bowls, resonant gong washes, bright chimes, and precisely-tuned forks. For certain evenings we introduce a monochord for a continuous harmonic bed.</p>
+      </section>
+
+      <section style="margin-top:18px;display:flex;gap:12px" class="card">
+        <div style="flex:1">
+          <h3>Pricing snapshot</h3>
+          <p class="small">Suggested: $25–45. Student and low-income passes available. See full rates on the Rates page.</p>
+        </div>
+        <div style="width:220px">
+          <a class="btn" href="pricing.html">See rates</a>
+        </div>
+      </section>
+
+    </main>
+
+    <footer>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div>Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+        <div class="small">© {{BUSINESS_NAME}} — held at {{VENUE_NAME}} in {{CITY}}, {{STATE}}</div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

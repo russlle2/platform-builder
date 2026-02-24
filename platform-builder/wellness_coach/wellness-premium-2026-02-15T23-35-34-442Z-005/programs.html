@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Explore signature coaching programs from Drift & Glow Studio — playful, premium wellness designed to fit real life. Reset routines, build flow, and feel radiant." />
+  <meta name="theme-color" content="#0e3b3e" />
+  <title>Programs | {{BUSINESS_NAME}}</title>
+  <style>
+    :root{
+      --teal-900:#0e3b3e; /* deep teal */
+      --teal-700:#11565a;
+      --teal-600:#126b6f;
+      --sand:#e9dccb; /* sand */
+      --off:#f7f6f2; /* off-white */
+      --ink:#1b2b2c;
+      --accent:#ff6b5d; /* playful coral */
+      --mint:#cfe9e4;
+      --ring:#a7c9c7;
+      --shadow: 0 10px 25px rgba(0,0,0,.08);
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body{
+      margin:0; color:var(--ink); background:var(--off);
+      font: 16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased;
+    }
+    a{ color:var(--teal-700); text-decoration: none; }
+    a:hover{ text-decoration: underline; }
+    .container{ width: min(1100px, 92vw); margin-inline:auto; }
+    .btn{ display:inline-block; padding:14px 18px; border-radius:999px; border:2px solid transparent; font-weight:600; letter-spacing:.2px; }
+    .btn-primary{ background:var(--accent); color:white; box-shadow: var(--shadow); }
+    .btn-primary:hover{ filter: brightness(.96); text-decoration:none; }
+    .btn-ghost{ background:transparent; color:var(--teal-700); border-color:var(--teal-700); }
+    .pill{ background:var(--sand); color:var(--teal-900); border-radius:999px; padding:6px 12px; font-size:.85rem; font-weight:600; letter-spacing:.3px; }
+    header{ position:sticky; top:0; z-index:50; background:linear-gradient(180deg, rgba(247,246,242,.9), rgba(247,246,242,.8)); backdrop-filter: saturate(150%) blur(8px); border-bottom:1px solid rgba(17,86,90,.08); }
+    .nav{ display:flex; align-items:center; justify-content:space-between; padding:14px 0; }
+    .brand{ display:flex; align-items:center; gap:12px; font-weight:800; color:var(--teal-900); letter-spacing:.3px; }
+    .brand-dot{ width:14px; height:14px; border-radius:50%; background: radial-gradient(circle at 30% 30%, var(--accent), var(--teal-600)); box-shadow:0 3px 8px rgba(0,0,0,.12); }
+    nav ul{ display:flex; align-items:center; gap:20px; list-style:none; margin:0; padding:0; }
+    nav a{ padding:8px 10px; border-radius:999px; }
+    nav a[aria-current="page"]{ background:var(--sand); }
+    .nav-cta{ margin-left:8px; }
+    .menu-toggle{ display:none; background:white; border:1px solid rgba(17,86,90,.15); padding:10px 12px; border-radius:10px; }
+
+    .hero{ position:relative; overflow:hidden; }
+    .hero::before{ content:""; position:absolute; inset:-20% -10% auto -10%; height:70%; background: url('assets/img/pattern.svg') center/260px repeat, radial-gradient(1200px 400px at right -10% top -10%, var(--mint), transparent 60%); opacity:.35; pointer-events:none; }
+    .hero .wrap{ display:grid; grid-template-columns: 1.15fr .85fr; gap:40px; align-items:center; padding: min(8vw, 84px) 0; }
+    .eyebrow{ display:inline-flex; align-items:center; gap:10px; background:white; border:1px dashed var(--ring); padding:8px 12px; border-radius:999px; color:var(--teal-700); font-weight:700; }
+    h1{ font-size: clamp(32px, 4vw, 50px); line-height:1.1; margin:14px 0 12px; color:var(--teal-900); }
+    .hero p.lead{ font-size: clamp(16px, 1.3vw, 19px); color:#264142; }
+    .hero-visual{ position:relative; aspect-ratio: 4/3; border-radius: 28px; background: linear-gradient(160deg, var(--teal-700), var(--teal-900)); box-shadow: var(--shadow); overflow:hidden; }
+    .hero-visual img{ width:100%; height:100%; object-fit: cover; mix-blend: screen; opacity:.85; }
+
+    .benefits{ padding:60px 0; }
+    .benefit-grid{ display:grid; grid-template-columns: repeat(4,1fr); gap:16px; }
+    .card{ background:white; border:1px solid rgba(17,86,90,.08); border-radius: var(--radius); box-shadow: var(--shadow); padding:22px; }
+    .icon{ width:36px; height:36px; border-radius:50%; display:grid; place-items:center; background: conic-gradient(from 180deg at 50% 50%, var(--accent), var(--teal-600)); color:white; font-weight:700; }
+
+    .programs{ padding:20px 0 70px; }
+    .tier-grid{ display:grid; grid-template-columns: repeat(3,1fr); gap:20px; align-items:stretch; }
+    .tier{ position:relative; overflow:hidden; }
+    .tier h3{ margin:0 0 6px; font-size:1.4rem; color:var(--teal-900); }
+    .tier .badge{ position:absolute; top:16px; right:16px; }
+    .tier ul{ margin:12px 0 0; padding-left:18px; }
+    .tier .foot{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:18px; }
+    .incl{ font-size:.9rem; color:#35585a; }
+
+    .addons{ margin-top:26px; display:grid; grid-template-columns: repeat(3,1fr); gap:16px; }
+    .addon{ background:var(--off); border:1px dashed var(--ring); border-radius:14px; padding:16px; }
+
+    .testimonials{ background: linear-gradient(180deg, rgba(201,224,220,.36), rgba(201,224,220,.16)); padding:60px 0; position:relative; }
+    .testi-grid{ display:grid; grid-template-columns: repeat(3,1fr); gap:18px; }
+    .quote{ background:white; border:1px solid rgba(17,86,90,.08); border-radius:18px; padding:20px; box-shadow: var(--shadow); }
+    .quote p{ margin:4px 0 10px; }
+    .avatar{ display:flex; align-items:center; gap:10px; }
+    .avatar img{ width:38px; height:38px; border-radius:50%; background:var(--sand); }
+
+    .faq{ padding:70px 0; }
+    .accordion{ display:grid; gap:12px; }
+    .accordion button{ width:100%; text-align:left; background:white; border:1px solid rgba(17,86,90,.14); border-radius:14px; padding:16px 18px; font-weight:700; color:var(--teal-900); display:flex; align-items:center; justify-content:space-between; }
+    .accordion .panel{ border:1px solid rgba(17,86,90,.14); border-top:none; border-radius:0 0 14px 14px; background:white; padding:0 18px 16px; display:none; }
+    .accordion button[aria-expanded="true"] + .panel{ display:block; }
+
+    .newsletter{ position:relative; overflow:hidden; background:linear-gradient(135deg, var(--sand), #f1eee5); border-top:1px solid rgba(17,86,90,.08); border-bottom:1px solid rgba(17,86,90,.08); }
+    .newsletter::after{ content:""; position:absolute; right:-8%; bottom:-30%; width:520px; height:520px; background:url('assets/img/pattern.svg') center/260px repeat; opacity:.25; transform: rotate(18deg); }
+    .newsletter .wrap{ padding:60px 0; display:grid; grid-template-columns: 1.3fr .7fr; gap:28px; align-items:center; }
+    .newsletter form{ display:grid; grid-template-columns: 1fr auto; gap:10px; background:white; border:1px solid rgba(17,86,90,.14); padding:8px; border-radius:999px; box-shadow: var(--shadow); }
+    .newsletter input[type="email"]{ border:0; outline:0; padding:12px 14px; border-radius:999px; min-width: 180px; }
+    .hint{ font-size:.85rem; color:#7a8f90; margin-top:8px; }
+    .error{ color:#b44331; }
+
+    .cta-band{ background:linear-gradient(160deg, var(--teal-700), var(--teal-900)); color:white; position:relative; overflow:hidden; }
+    .cta-band::before{ content:""; position:absolute; left:-10%; top:-40%; width:520px; height:520px; background:url('assets/img/hero.svg') center/contain no-repeat; opacity:.25; }
+    .cta-band .wrap{ padding:50px 0; display:grid; grid-template-columns: 1fr auto; align-items:center; gap:20px; }
+
+    footer{ background:white; border-top:1px solid rgba(17,86,90,.1); padding:30px 0; }
+    .foot-grid{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap:20px; }
+    .muted{ color:#5c7375; }
+
+    /* Responsive */
+    @media (max-width: 960px){
+      .hero .wrap{ grid-template-columns: 1fr; }
+      .benefit-grid{ grid-template-columns: repeat(2,1fr); }
+      .tier-grid{ grid-template-columns: 1fr; }
+      .addons{ grid-template-columns: 1fr; }
+      .testi-grid{ grid-template-columns: 1fr; }
+      .newsletter .wrap{ grid-template-columns: 1fr; }
+      .cta-band .wrap{ grid-template-columns: 1fr; text-align:center; }
+      .foot-grid{ grid-template-columns: 1fr; }
+      .menu-toggle{ display:inline-flex; }
+      nav ul{ position:absolute; inset: calc(100% + 8px) 4% auto 4%; background:white; border:1px solid rgba(17,86,90,.14); border-radius:16px; padding:14px; box-shadow:var(--shadow); flex-direction:column; gap:8px; display:none; }
+      nav[data-open="true"] ul{ display:flex; }
+      .nav-cta{ width:100%; text-align:center; }
+    }
+    .skip-link{ position:absolute; left:-9999px; }
+    .skip-link:focus{ left:12px; top:12px; background:var(--accent); color:white; padding:8px 10px; border-radius:8px; z-index:100; }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header>
+    <div class="container nav" role="navigation" aria-label="Primary">
+      <a class="brand" href="index.html" aria-label="Home">
+        <span class="brand-dot" aria-hidden="true"></span>
+        <span>Drift & Glow Studio</span>
+      </a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="site-menu" id="menuToggle">Menu</button>
+      <nav id="site-menu" data-open="false">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="programs.html" aria-current="page">Programs</a></li>
+          <li><a href="pricing.html">Pricing</a></li>
+          <li><a href="testimonials.html">Testimonials</a></li>
+          <li><a class="btn btn-primary nav-cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <div class="container wrap">
+        <div>
+          <span class="eyebrow">Playful. Premium. Personal.</span>
+          <h1>Programs at {{BUSINESS_NAME}}</h1>
+          <p class="lead">{{TAGLINE}} — crafted by Drift & Glow Studio to turn tiny habits into tidal change. Choose a container that fits your season and your nervous system.</p>
+          <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:14px;">
+            <a class="btn btn-primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            <a class="btn btn-ghost" href="#tiers">Explore tiers</a>
+            <span class="pill" aria-hidden="true">1:1 + small group</span>
+          </div>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <img src="assets/img/hero.svg" alt="" />
+        </div>
+      </div>
+    </section>
+
+    <section class="benefits" aria-labelledby="benefits-heading">
+      <div class="container">
+        <h2 id="benefits-heading" style="margin-top:0; margin-bottom:18px; color:var(--teal-900);">Why these programs work</h2>
+        <div class="benefit-grid">
+          <div class="card">
+            <div class="icon" aria-hidden="true">✓</div>
+            <h3 style="margin:10px 0 6px;">Habit stacking that sticks</h3>
+            <p>Five-minute actions layered with science-backed sequencing so change feels natural, not forced.</p>
+          </div>
+          <div class="card">
+            <div class="icon" aria-hidden="true">★</div>
+            <h3 style="margin:10px 0 6px;">Coaching with compassion</h3>
+            <p>Warm accountability, clear next steps, and space to be human on the messy days.</p>
+          </div>
+          <div class="card">
+            <div class="icon" aria-hidden="true">⚑</div>
+            <h3 style="margin:10px 0 6px;">Designed for busy lives</h3>
+            <p>Flexible sessions, bite-size lessons, and templates you can actually reuse.</p>
+          </div>
+          <div class="card">
+            <div class="icon" aria-hidden="true">☼</div>
+            <h3 style="margin:10px 0 6px;">Nervous-system smart</h3>
+            <p>Restore energy with breath, rhythm, and recovery — because rest is a growth strategy.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tiers" class="programs" aria-labelledby="programs-heading">
+      <div class="container">
+        <h2 id="programs-heading" style="margin:0 0 16px; color:var(--teal-900);">Signature program tiers</h2>
+        <p class="muted" style="margin:0 0 22px;">Every tier includes personalized coaching from {{COACH_NAME}}, {{CREDENTIALS}}, plus access to our client portal. See detailed prices on the Pricing page.</p>
+        <div class="tier-grid">
+          <article class="card tier">
+            <span class="badge pill">4 weeks</span>
+            <h3>RESET Starter</h3>
+            <p class="incl">Kickstart energy with a playful, structured reset.</p>
+            <ul>
+              <li>1 x 60-min onboarding + 3 x 45-min weekly calls</li>
+              <li>Custom Reset Map + daily micro-habits</li>
+              <li>Breath + mobility mini library</li>
+              <li>Light accountability via chat (weekdays)</li>
+            </ul>
+            <div class="foot">
+              <a class="btn btn-primary" href="pricing.html#plans">View pricing</a>
+              <a class="btn btn-ghost" href="{{PRIMARY_CTA_URL}}">Join RESET</a>
+            </div>
+          </article>
+          <article class="card tier" style="outline:3px solid var(--mint)">
+            <span class="badge pill" style="background:var(--accent); color:white;">Popular</span>
+            <h3>FLOW Foundations</h3>
+            <p class="incl">Build sustainable routines and feel grounded.</p>
+            <ul>
+              <li>1 x 75-min deep dive + 7 x 45-min sessions</li>
+              <li>Nutrition & recovery rhythm plan</li>
+              <li>Habit experiments + weekly reflections</li>
+              <li>Priority coach messaging (24–48h)</li>
+            </ul>
+            <div class="foot">
+              <a class="btn btn-primary" href="pricing.html#plans">View pricing</a>
+              <a class="btn btn-ghost" href="{{PRIMARY_CTA_URL}}">Apply to FLOW</a>
+            </div>
+          </article>
+          <article class="card tier">
+            <span class="badge pill">12 weeks</span>
+            <h3>RADIANCE Intensive</h3>
+            <p class="incl">High-touch coaching for whole-life glow.</p>
+            <ul>
+              <li>1 x 90-min strategy + 11 x 60-min sessions</li>
+              <li>Personalized strength + stress plan</li>
+              <li>Bi-weekly progress labs + metrics review</li>
+              <li>Unlimited voice notes (business hours)</li>
+            </ul>
+            <div class="foot">
+              <a class="btn btn-primary" href="pricing.html#plans">View pricing</a>
+              <a class="btn btn-ghost" href="{{PRIMARY_CTA_URL}}">Apply to RADIANCE</a>
+            </div>
+          </article>
+        </div>
+
+        <div class="addons" aria-label="Optional add-ons">
+          <div class="addon">
+            <strong>Lab Panel Review</strong>
+            <p class="muted" style="margin:6px 0 0;">Optional review of recent basic labs with lifestyle recommendations. Not medical advice.</p>
+          </div>
+          <div class="addon">
+            <strong>Grocery Walk or Pantry Refresh</strong>
+            <p class="muted" style="margin:6px 0 0;">Virtual or in-person walkthrough to simplify choices and declutter decisions.</p>
+          </div>
+          <div class="addon">
+            <strong>Breathwork Private</strong>
+            <p class="muted" style="margin:6px 0 0;">A 45-min guided session tailored to energy, focus, or rest.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="testimonials" aria-labelledby="testi-heading">
+      <div class="container">
+        <h2 id="testi-heading" style="margin:0 0 18px; color:var(--teal-900);">Client wins</h2>
+        <div class="testi-grid">
+          <figure class="quote">
+            <blockquote>
+              <p>Two weeks in and my afternoons stopped crashing. The tiny habit ladder made consistency weirdly easy.</p>
+            </blockquote>
+            <figcaption class="avatar">
+              <img src="assets/img/avatar.svg" alt="" />
+              <div>
+                <strong>Amina R.</strong>
+                <div class="muted">FLOW Foundations</div>
+              </div>
+            </figcaption>
+          </figure>
+          <figure class="quote">
+            <blockquote>
+              <p>I came for energy; I left with confidence. The nervous-system focus changed everything for my sleep.</p>
+            </blockquote>
+            <figcaption class="avatar">
+              <img src="assets/img/avatar.svg" alt="" />
+              <div>
+                <strong>Devon P.</strong>
+                <div class="muted">RADIANCE Intensive</div>
+              </div>
+            </figcaption>
+          </figure>
+          <figure class="quote">
+            <blockquote>
+              <p>The reset felt playful, not punitive. I finally enjoy my mornings again.</p>
+            </blockquote>
+            <figcaption class="avatar">
+              <img src="assets/img/avatar.svg" alt="" />
+              <div>
+                <strong>Lia K.</strong>
+                <div class="muted">RESET Starter</div>
+              </div>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq" aria-labelledby="faq-heading">
+      <div class="container">
+        <h2 id="faq-heading" style="margin:0 0 10px; color:var(--teal-900);">Program FAQ</h2>
+        <div class="accordion" id="faq-accordion">
+          <div>
+            <button aria-expanded="false" aria-controls="faq1" id="faq1-btn">How do I choose the right tier? <span aria-hidden="true">▾</span></button>
+            <div class="panel" id="faq1" role="region" aria-labelledby="faq1-btn">
+              <p>Pick by support level and timeline. RESET is best for momentum, FLOW for routines, and RADIANCE for full lifestyle change. We can also recommend during a quick intro call.</p>
+            </div>
+          </div>
+          <div>
+            <button aria-expanded="false" aria-controls="faq2" id="faq2-btn">Are sessions virtual or in person? <span aria-hidden="true">▾</span></button>
+            <div class="panel" id="faq2" role="region" aria-labelledby="faq2-btn">
+              <p>Most sessions are virtual via secure video. Limited in-person options are available in {{CITY}}, {{STATE}}.</p>
+            </div>
+          </div>
+          <div>
+            <button aria-expanded="false" aria-controls="faq3" id="faq3-btn">What if I miss a week? <span aria-hidden="true">▾</span></button>
+            <div class="panel" id="faq3" role="region" aria-labelledby="faq3-btn">
+              <p>Life happens. We provide one rollover session per month with 24-hour notice. Your habit map keeps you progressing between calls.</p>
+            </div>
+          </div>
+          <div>
+            <button aria-expanded="false" aria-controls="faq4" id="faq4-btn">Is there homework? <span aria-hidden="true">▾</span></button>
+            <div class="panel" id="faq4" role="region" aria-labelledby="faq4-btn">
+              <p>Short, doable actions only — 5 to 15 minutes a day. Think breath ladders, snack swaps, and one-keystone routine.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="newsletter" aria-labelledby="news-heading">
+      <div class="container wrap">
+        <div>
+          <h2 id="news-heading" style="margin:0 0 8px; color:var(--teal-900);">Get the Energy Rituals Checklist</h2>
+          <p class="muted">A playful 1-page guide to mornings that don’t spiral. Join the studio list for the download and occasional tips. No spam, just glow.</p>
+        </div>
+        <div>
+          <form id="newsForm" novalidate>
+            <input type="email" name="email" id="newsEmail" placeholder="you@example.com" required aria-describedby="newsHint" />
+            <button class="btn btn-primary" type="submit">Send the checklist</button>
+          </form>
+          <p id="newsHint" class="hint">We’ll email your guide. Unsubscribe anytime.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-band" aria-labelledby="cta-heading">
+      <div class="container wrap">
+        <div>
+          <h2 id="cta-heading" style="margin:0 0 6px;">Ready to begin?</h2>
+          <p style="margin:0; opacity:.9;">Book a friendly intro with {{COACH_NAME}} to map your next best step.</p>
+        </div>
+        <div>
+          <a class="btn btn-primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container foot-grid">
+      <div>
+        <div class="brand" aria-label="Studio brand">
+          <span class="brand-dot" aria-hidden="true"></span>
+          <span>Drift & Glow Studio</span>
+        </div>
+        <p class="muted" style="margin:10px 0 0;">A boutique wellness brand creating playful, premium coaching experiences that feel like you.</p>
+      </div>
+      <div>
+        <strong>Contact</strong>
+        <p class="muted" style="margin:8px 0 0;">
+          {{PHONE}}<br/>
+          <a href="mailto:{{EMAIL}}">{{EMAIL}}</a><br/>
+          {{ADDRESS}}, {{CITY}}, {{STATE}} {{ZIP}}<br/>
+          <span aria-label="Hours">{{HOURS}}</span>
+        </p>
+      </div>
+      <div>
+        <strong>Quick Links</strong>
+        <p class="muted" style="margin:8px 0 0; display:grid; gap:4px;">
+          <a href="#tiers">Program tiers</a>
+          <a href="pricing.html">Pricing</a>
+          <a href="contact.html">Contact</a>
+          <a href="book.html">Book</a>
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile nav toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const nav = document.getElementById('site-menu');
+    menuToggle?.addEventListener('click', () => {
+      const open = nav.getAttribute('data-open') === 'true';
+      nav.setAttribute('data-open', String(!open));
+      menuToggle.setAttribute('aria-expanded', String(!open));
+    });
+
+    // Smooth scroll for in-page anchors (no hashchange)
+    document.addEventListener('click', (e)=>{
+      const a = e.target.closest('a[href^="#"]');
+      if(!a) return;
+      const id = a.getAttribute('href').slice(1);
+      const el = document.getElementById(id);
+      if(el){ e.preventDefault(); el.scrollIntoView({behavior:'smooth', block:'start'}); }
+    });
+
+    // Accordion
+    document.querySelectorAll('.accordion button').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        // close others for tidy UI
+        document.querySelectorAll('.accordion button[aria-expanded="true"]').forEach(b=>{
+          if(b!==btn) b.setAttribute('aria-expanded','false');
+        });
+        btn.setAttribute('aria-expanded', String(!expanded));
+      });
+    });
+
+    // Newsletter validation
+    const form = document.getElementById('newsForm');
+    const email = document.getElementById('newsEmail');
+    const hint = document.getElementById('newsHint');
+    form?.addEventListener('submit', (e)=>{
+      if(!email.checkValidity()){
+        e.preventDefault();
+        hint.classList.add('error');
+        hint.textContent = 'Please enter a valid email to receive your checklist.';
+        email.focus();
+      } else {
+        hint.classList.remove('error');
+        hint.textContent = 'Thanks! If this were live, your checklist would arrive shortly.';
+      }
+    });
+  </script>
+</body>
+</html>

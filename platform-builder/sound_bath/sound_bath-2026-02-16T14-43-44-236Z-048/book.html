@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Book a Session | {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--accent:#0ea5a4;--ink:#112;--muted:#6c6c76}
+    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial;background:linear-gradient(180deg,#fbfbff,#fff);color:var(--ink)}
+    .wrap{max-width:1000px;margin:28px auto;padding:22px}
+    header{display:flex;justify-content:space-between;align-items:center;padding:10px 0}
+    header a{margin-left:12px;text-decoration:none;color:var(--ink);font-weight:700}
+    h1{margin:0 0 6px}
+    .lead{color:var(--muted);margin-bottom:12px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    form{background:#fff;padding:18px;border-radius:12px;box-shadow:0 10px 30px rgba(17,17,23,0.06)}
+    label{display:block;font-weight:700;margin-top:12px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #eee;margin-top:6px}
+    .submit{margin-top:14px;background:var(--accent);color:#fff;padding:10px 12px;border-radius:8px;border:none;font-weight:800}
+    .aside{background:linear-gradient(180deg,#fff,#fbfffe);padding:18px;border-radius:12px}
+    .note{font-size:13px;color:var(--muted)}
+    .flow{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+    .instrument{padding:10px;border-radius:10px;background:#fff;border:1px solid rgba(14,165,164,0.06)}
+    footer{margin-top:28px;text-align:center;color:#9b9aa8}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <header>
+      <div style='font-weight:900'>{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href='index.html'>Start</a>
+        <a href='events.html'>Calendar</a>
+        <a href='private-sessions.html'>Private</a>
+        <a href='pricing.html'>Plans</a>
+      </nav>
+    </header>
+
+    <main>
+      <h1>Reserve your spot</h1>
+      <p class='lead'>Choose a group circle or private session. Membership credits can be applied at checkout for recurring access.</p>
+
+      <div class='grid'>
+        <form action='{{PRIMARY_CTA_URL}}' method='post' aria-label='booking form'>
+          <label for='type'>Session type</label>
+          <select id='type' name='type'>
+            <option value='group'>Group sound bath</option>
+            <option value='private'>1:1 private session</option>
+            <option value='couple'>Couple session</option>
+            <option value='corporate'>Corporate / team workshop</option>
+          </select>
+
+          <label for='date'>Preferred date</label>
+          <input id='date' name='date' type='date' required />
+
+          <label for='time'>Preferred time</label>
+          <select id='time' name='time'>
+            <option>Evening circle 6:30pm</option>
+            <option>Afternoon 2:00pm</option>
+            <option>Morning 10:30am</option>
+          </select>
+
+          <label for='name'>Your full name</label>
+          <input id='name' name='name' placeholder='Jane Doe' required />
+
+          <label for='email'>Email</label>
+          <input id='email' name='email' type='email' placeholder='you@domain.com' required />
+
+          <label for='notes'>Notes, accessibility needs, or contra-indications</label>
+          <textarea id='notes' name='notes' rows='4' placeholder='Let us know about hearing devices, seizures, pregnancy, or anything else we should consider'></textarea>
+
+          <label style='margin-top:12px'><input type='checkbox' name='member' /> I am a member and want to apply credits</label>
+
+          <button class='submit' type='submit'>Book now</button>
+        </form>
+
+        <aside class='aside'>
+          <div style='display:flex;justify-content:space-between;align-items:center'>
+            <div>
+              <div style='font-weight:800'>What to bring</div>
+              <div class='note' style='margin-top:6px'>A mat or pad, a warm blanket, and an eye pillow. Loose, comfortable clothing is best.</div>
+            </div>
+            <svg width='56' height='56' viewBox='0 0 100 100' aria-hidden='true'>
+              <defs>
+                <linearGradient id='bG' x1='0' x2='1'>
+                  <stop offset='0' stop-color='#0ea5a4' />
+                  <stop offset='1' stop-color='#34d399' />
+                </linearGradient>
+              </defs>
+              <rect width='100' height='100' rx='18' fill='url(#bG)' opacity='0.14'/>
+              <path d='M20 60c18-30 60-34 64 0' stroke='#0ea5a4' stroke-width='6' fill='none' stroke-linecap='round'/>
+            </svg>
+          </div>
+
+          <div style='margin-top:12px'>
+            <strong style='display:block'>Contraindications</strong>
+            <div class='note' style='margin-top:6px'>If you have a history of seizures, recent head trauma, or hardware that may be sensitive to vibrations, contact your physician first and tell us before booking. Pregnant people should consult their care provider.</div>
+          </div>
+
+          <div style='margin-top:12px'>
+            <strong style='display:block'>Session flow</strong>
+            <div class='flow'>
+              <div class='instrument'><strong>Arrival</strong> — 10–15 minutes for check-in and settling.</div>
+              <div class='instrument'><strong>Main immersion</strong> — 40–60 minutes layered sound using a field of instruments like a monochord, planet bowls, and soft percussion.</div>
+              <div class='instrument'><strong>Integration</strong> — 10–15 minutes of gentle return and tea.</div>
+            </div>
+          </div>
+
+          <div style='margin-top:12px'>
+            <strong style='display:block'>Private sessions</strong>
+            <div class='note' style='margin-top:6px'>1:1 sessions are tailored to navigate trauma-sensitive approaches and therapeutic aims. Couple and corporate offerings can be customized on request.</div>
+          </div>
+
+          <div style='margin-top:14px;display:flex;gap:10px'>
+            <a class='submit' href='{{PRIMARY_CTA_URL}}' style='display:inline-block;text-align:center;text-decoration:none'>Confirm</a>
+            <a style='padding:10px;border-radius:8px;background:#fff;border:1px solid rgba(0,0,0,0.06);text-decoration:none;color:var(--muted)' href='events.html'>See schedule</a>
+          </div>
+        </aside>
+      </div>
+
+      <section style='margin-top:18px;background:#fff;padding:16px;border-radius:12px'>
+        <h3 style='margin-top:0'>Instruments you may hear</h3>
+        <p class='note'>We rotate instruments to shape different textures. Recent sessions emphasized the monochord for deep harmonic drones, oceanic steel tongue drums, and crystal bowls to add shimmering overtones. Each facilitator curates with intention.</p>
+      </section>
+
+    </main>
+
+    <footer>
+      <div class='note'>Questions? Call <a href='tel:{{PHONE}}'>{{PHONE}}</a> or email <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a>. Facilitated by {{FACILITATOR_NAME}} at {{VENUE_NAME}}.</div>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>About — {{PRACTITIONER_NAME}} at {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#FFFDFB;--accent:#7B5E4E;--muted:#7C7C7C}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#F8F6F5);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;color:#2b2b2b}
+    header{padding:22px 20px;display:flex;justify-content:space-between;align-items:center}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none}
+    .hero{padding:36px 20px;background:linear-gradient(90deg,#FFF7F2,#F7FAF8);display:flex;gap:20px;align-items:center}
+    .photo{width:120px;height:120px;border-radius:16px;background:linear-gradient(135deg,#FEEBD9,#DCEDE1);display:grid;place-items:center;font-weight:700}
+    h1{margin:0;font-size:26px}
+    .story{padding:26px 20px;display:grid;grid-template-columns:1fr 320px;gap:20px}
+    .bio{background:#fff;padding:18px;border-radius:12px;box-shadow:0 10px 30px rgba(31,35,33,0.04)}
+    .side-card{background:linear-gradient(180deg,#FFFFFF,#FFF8F6);padding:16px;border-radius:12px}
+    .framework{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+    .pill{padding:8px 10px;background:#FFF5F0;border-radius:8px;font-weight:700;color:var(--accent);display:inline-block}
+    footer{padding:20px;color:var(--muted);font-size:13px}
+    .pattern{position:absolute;left:-120px;bottom:-80px;opacity:0.18;pointer-events:none}
+    @media(max-width:880px){.story{grid-template-columns:1fr}.hero{flex-direction:column;align-items:flex-start}.photo{width:96px;height:96px}}
+  </style>
+</head>
+<body>
+  <svg class='pattern' width='420' height='420' viewBox='0 0 420 420' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'>
+    <defs>
+      <linearGradient id='ag' x1='0' x2='1'><stop offset='0' stop-color='#FFF1E6'/><stop offset='1' stop-color='#EAF6EE'/></linearGradient>
+      <pattern id='pt' width='70' height='70' patternUnits='userSpaceOnUse'>
+        <rect width='70' height='70' fill='url(#ag)' rx='8'/>
+        <path d='M10 50 Q35 20 60 50' stroke='#E0D1C6' stroke-width='3' fill='none' opacity='0.45'/>
+      </pattern>
+    </defs>
+    <rect width='420' height='420' fill='url(#pt)' rx='36'/>
+  </svg>
+
+  <header>
+    <div style='font-weight:800'>{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href='index.html'>Home</a>
+      <a href='services.html'>Services</a>
+      <a href='blends.html'>Blends</a>
+      <a href='shop.html'>Shop</a>
+      <a href='pricing.html'>Memberships</a>
+      <a href='about.html' style='text-decoration:underline;color:var(--accent)'>About</a>
+      <a href='book.html'>Schedule</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class='hero'>
+      <div class='photo' aria-hidden='true'>{{PRACTITIONER_NAME.split(' ')[0]}}</div>
+      <div>
+        <h1>Hello — I'm {{PRACTITIONER_NAME}}</h1>
+        <div style='color:var(--muted);margin-top:8px'>I guide gentle aromatherapy practices rooted in safety, intention, and seasonal rhythm. My work is educational and ritual-focused, not medical advice.</div>
+        <div style='margin-top:12px'><span class='pill'>{{TAGLINE}}</span></div>
+      </div>
+    </section>
+
+    <section class='story'>
+      <article class='bio'>
+        <h2 style='margin-top:0'>A scent-led story</h2>
+        <p style='color:var(--muted)'>My path began with curiosity and a small bottle of lavender. Over years I studied extraction notes, safe dilution, and how scent sits with memory. I craft blends with an emphasis on honest sourcing and clear guidance so you can use aroma in ways that are intentional and well-informed.</p>
+        <p style='color:var(--muted)'>I prioritize safety: dilution charts, patch testing, and tailored notes if you live with pets, are pregnant, or caring for infants. If you're ever unsure, we begin with a brief consultation to make a plan together.</p>
+        <div style='margin-top:12px;font-weight:700'>Philosophy</div>
+        <div class='framework'>
+          <div><strong>Listen:</strong> Tune into how scent affects your body and mood.</div>
+          <div><strong>Layer:</strong> Create moments through small rituals — a diffuser, a roll-on, a linen mist.</div>
+          <div><strong>Learn:</strong> Practice safe dilution, store oils carefully, and patch test.</div>
+        </div>
+      </article>
+
+      <aside class='side-card'>
+        <h3 style='margin:0'>Offerings</h3>
+        <ul style='color:var(--muted);margin-top:8px'>
+          <li>Private consultations (virtual & in-person)</li>
+          <li>Memberships & monthly blends</li>
+          <li>Workshops & small-group classes</li>
+        </ul>
+        <div style='margin-top:12px'>
+          <a href='book.html' style='display:inline-block;padding:10px 12px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none'>Book a consult</a>
+        </div>
+        <div style='margin-top:12px;font-size:13px;color:var(--muted)'>I keep a small client list to ensure focused care. If you have health concerns, we will collaborate with your care team.</div>
+      </aside>
+    </section>
+
+    <section style='padding:24px 20px'>
+      <h2>My craft: the scent framework</h2>
+      <p style='color:var(--muted)'>A simple checklist I use for every blend: Sourcing, Safety, Notes, & Use-case. Below are short definitions I share with members and clients.</p>
+      <div style='display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px'>
+        <div style='background:#fff;padding:14px;border-radius:10px;'>
+          <strong>Notes</strong>
+          <div style='color:var(--muted);margin-top:8px'>Top, middle and base — how the scent unfolds through time.</div>
+        </div>
+        <div style='background:#fff;padding:14px;border-radius:10px;'>
+          <strong>Safety</strong>
+          <div style='color:var(--muted);margin-top:8px'>Dilution ratios, patch testing, and fragrance-safe use around people and pets.</div>
+        </div>
+        <div style='background:#fff;padding:14px;border-radius:10px;'>
+          <strong>Context</strong>
+          <div style='color:var(--muted);margin-top:8px'>Suggested ritual usage: sleep, focus, or simple presence.</div>
+        </div>
+      </div>
+    </section>
+
+
+    <section style='padding:24px 20px'>
+      <h2>Testimonials</h2>
+      <div style='display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px'>
+        <div style='background:#fff;padding:12px;border-radius:10px'>"{{PRACTITIONER_NAME}} helped me learn safe ways to use aroma around my children."<div style='color:var(--muted);margin-top:8px'>— L.</div></div>
+        <div style='background:#fff;padding:12px;border-radius:10px'>"The seasonal blend felt like a small ceremony I could return to."<div style='color:var(--muted);margin-top:8px'>— R.</div></div>
+      </div>
+    </section>
+
+    <section style='padding:24px 20px'>
+      <h2>Learn with me</h2>
+      <p style='color:var(--muted)'>If you'd like tailored guidance, book a consult. I offer gentle, safety-first instruction and materials for crafting at home.</p>
+      <a href='book.html' style='display:inline-block;padding:10px 12px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none'>Schedule a consult</a>
+    </section>
+  </main>
+
+  <footer>
+    <div style='display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap'>
+      <div>&copy; {{BUSINESS_NAME}} — {{PRACTITIONER_NAME}}. <span style='color:var(--muted)'>{{TAGLINE}}</span></div>
+      <div style='color:var(--muted)'>Contact: <a href='mailto:{{EMAIL}}' style='color:inherit;text-decoration:underline'>{{EMAIL}}</a> • <a href='tel:{{PHONE}}' style='color:inherit;text-decoration:underline'>{{PHONE}}</a></div>
+    </div>
+  </footer>
+</body>
+</html>

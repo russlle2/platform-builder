@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Investment — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#071017;--card:#08151b;--accent:#ffb86b;--muted:#9cb1bb;--txt:#f6efe9}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial;background:linear-gradient(180deg,#04121a,#071017);color:var(--txt)}
+    header{padding:16px 22px;display:flex;justify-content:space-between;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;margin-left:14px}
+    .wrap{max-width:980px;margin:28px auto;padding:18px}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
+    .card{background:var(--card);padding:16px;border-radius:10px}
+    h1{margin:0 0 10px}
+    .price{font-weight:800;font-size:22px;margin-top:8px}
+    .row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid rgba(255,255,255,0.03)}
+    .muted{color:var(--muted)}
+    .calc input[type=number]{width:80px;padding:8px;border-radius:8px;border:none;background:#03141a;color:var(--txt)}
+    .btn{background:var(--accent);color:#2a1606;padding:10px 12px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
+    .note{font-size:13px;color:var(--muted);margin-top:8px}
+    .disclaimer{margin-top:12px;color:#f4b4b4;font-size:13px}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="events.html">Gatherings</a>
+      <a href="private-sessions.html">Private Immersions</a>
+      <a href="pricing.html">Investment</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <h1>Investment & Packages</h1>
+    <p class="muted">Clear pricing, modular add-ons, and a VIP Day offering for teams and deep renewal.</p>
+
+    <div class="grid">
+      <section>
+        <div class="card">
+          <h3 style="margin:0">Pulse Intro</h3>
+          <div class="price">$45 — 45 minutes</div>
+          <p class="note">A concise group practice for beginners or a focused top-up.</p>
+          <div style="margin-top:10px"><a class="btn" href="book.html">Book Intro</a></div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <h3 style="margin:0">Deep Field</h3>
+          <div class="price">$95 — 90 minutes</div>
+          <p class="note">Expanded sound arc with space for integration and brief reflection.</p>
+          <div style="margin-top:10px"><a class="btn" href="book.html">Reserve Deep Field</a></div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <h3 style="margin:0">Focused Resonance — VIP Day</h3>
+          <div class="price">Custom pricing — full day</div>
+          <p class="note">A tailored, off-calendar day: team installations, private sound steering, and hands-on practice design. This is our VIP Day model.</p>
+          <div style="margin-top:10px"><a class="btn" href="book.html?vip=1">Request VIP Day</a></div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <h3 style="margin:0">Private Session (Solo)</h3>
+          <div class="price">Base $150 — 60 minutes</div>
+          <p class="note">Includes intake and optional recording. Add travel for off-site work.</p>
+        </div>
+
+        <div class="disclaimer">Contraindications: If you have implanted medical devices, uncontrolled epilepsy, are pregnant without medical approval, or have recent surgical wounds, please check with a clinician before attending. We will always accommodate questions and adapt practice where possible.</div>
+      </section>
+
+      <aside class="card">
+        <h3 style="margin-top:0">Price calculator</h3>
+        <div class="calc" style="margin-top:10px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div>Session type</div><select id="pkg"><option value="intro">Pulse Intro</option><option value="deep">Deep Field</option><option value="private">Private 60m</option><option value="vip">VIP Day</option></select></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div>Participants</div><input id="participants" type="number" min="1" value="1"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div>Recording</div><input id="recording" type="checkbox"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div>Travel fee</div><input id="travel" type="checkbox"></div>
+
+          <div class="row"><div style="color:var(--muted)">Estimated total</div><div id="total" style="font-weight:800">$0</div></div>
+
+          <div style="margin-top:12px">
+            <button id="calcBtn" class="btn">Calculate</button>
+            <a id="ctaBtn" class="btn" style="background:#9bc95a;margin-left:8px" href="book.html">Proceed to Book</a>
+          </div>
+
+          <div class="note">VIP Day pricing is custom; calculation will show an estimated deposit. For exact scope and timing, request a proposal.</div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    const base = {intro:45,deep:95,private:150,vip:1200}; // vip is a base-day estimate
+    function compute(){
+      const pkg = document.getElementById('pkg').value;
+      const pCount = Math.max(1,parseInt(document.getElementById('participants').value||1,10));
+      const rec = document.getElementById('recording').checked;
+      const travel = document.getElementById('travel').checked;
+      let total = 0;
+      if(pkg==='intro') total = base.intro;
+      if(pkg==='deep') total = base.deep;
+      if(pkg==='private') total = base.private + (pCount>1?(pCount-1)*20:0);
+      if(pkg==='vip') total = base.vip + (pCount-1)*75;
+      if(rec) total += 25;
+      if(travel) total += 40;
+      return total;
+    }
+
+    document.getElementById('calcBtn').addEventListener('click', ()=>{
+      const total = compute();
+      document.getElementById('total').textContent = '$'+total;
+    });
+  </script>
+</body>
+</html>

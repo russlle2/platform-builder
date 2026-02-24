@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="A sensory, premium sound bath experience led by {{FACILITATOR_NAME}} in {{CITY}}, {{STATE}}.">
+  <style>
+    :root{
+      --bg1:#0f1724; --bg2:#071024; --accent:#b9f2ff; --muted:#9fb3c8; --card:#0b1220; --glass:rgba(255,255,255,0.04);
+      --radius:14px; --pad:22px; --maxw:960px;
+    }
+    html,body{height:100%;margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; color:#e6f7ff;background:linear-gradient(180deg,var(--bg1) 0%,var(--bg2) 60%);}
+    .canvas{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+    .pattern-svg{width:160%;height:160%;opacity:0.12;transform:translate(-10%,-8%) rotate(6deg)}
+    header{max-width:var(--maxw);margin:36px auto 24px;padding:0 20px;display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#b9f2ff22,#7de0ff11);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent);font-size:20px;box-shadow:0 6px 24px rgba(6,10,20,0.6)}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-size:15px}
+    nav a:hover{color:var(--accent)}
+    main{max-width:var(--maxw);margin:22px auto;padding:28px;}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);border:1px solid rgba(255,255,255,0.04);padding:26px;border-radius:var(--radius);box-shadow:0 8px 30px rgba(2,6,12,0.6)}
+    h1{margin:0 0 6px;font-size:28px;letter-spacing:-0.6px;color:#e9fbff}
+    .kicker{color:var(--accent);font-weight:600;font-size:13px}
+    p.lead{color:var(--muted);margin-top:8px;line-height:1.5}
+    .facilitator{font-weight:700;color:#f7ffff;margin-top:12px}
+    .venue{color:var(--muted);font-size:14px;margin-top:6px}
+    .meta small{display:block;color:var(--muted);margin-top:10px}
+    .instruments{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .chip{background:var(--glass);padding:8px 12px;border-radius:999px;color:var(--accent);font-size:13px;border:1px solid rgba(255,255,255,0.03)}
+    .side-cta{position:relative}
+    .price-pill{background:linear-gradient(90deg,#102034,#1a2738);padding:18px;border-radius:12px;text-align:center}
+    .price-pill h3{color:var(--accent);margin:0;font-size:18px}
+    .btn{display:inline-block;margin-top:12px;padding:12px 16px;border-radius:10px;background:linear-gradient(90deg,#7de0ff,#b9f2ff);color:#04202a;font-weight:700;text-decoration:none}
+    .section{margin-top:20px}
+    footer{max-width:var(--maxw);margin:28px auto;padding:18px;color:var(--muted);text-align:center}
+    /* small responsive */
+    @media(max-width:880px){.hero{grid-template-columns:1fr}.side-cta{order:2}.pattern-svg{display:none}}
+  </style>
+</head>
+<body>
+  <div class="canvas" aria-hidden="true">
+    <!-- Unique inline SVG pattern for about page (original) -->
+    <svg class="pattern-svg" viewBox="0 0 800 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="gA" x1="0" x2="1"><stop offset="0" stop-color="#84e6ff" stop-opacity="0.12"/><stop offset="1" stop-color="#b6f5ff" stop-opacity="0.04"/></linearGradient>
+        <pattern id="pA" width="120" height="120" patternUnits="userSpaceOnUse" patternTransform="rotate(18)">
+          <rect width="120" height="120" fill="transparent"/>
+          <circle cx="16" cy="16" r="3" fill="#b9f2ff" opacity="0.14"/>
+          <circle cx="64" cy="64" r="2.2" fill="#7de0ff" opacity="0.09"/>
+          <rect x="0" y="80" width="120" height="6" fill="#b9f2ff" opacity="0.03"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#gA)"/>
+      <rect width="100%" height="100%" fill="url(#pA)"/>
+    </svg>
+  </div>
+
+  <header>
+    <div class="brand">
+      <div class="logo">SB</div>
+      <div>
+        <div style="color:var(--accent);font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav aria-label="Primary navigation">
+      <a href="index.html">Home</a>
+      <a href="events.html">Gatherings</a>
+      <a href="private-sessions.html">Private Sessions</a>
+      <a href="pricing.html">Rates</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="hero">
+      <section class="card">
+        <div class="kicker">Our Story</div>
+        <h1>Slow sound, precise care — a curated journey</h1>
+        <p class="lead">We craft sensory landscapes using resonant instruments and intentional pacing. {{FACILITATOR_NAME}} blends breath, sound, and space to guide groups toward deep restoration in {{VENUE_NAME}}, {{CITY}}.</p>
+        <div class="facilitator">Led by {{FACILITATOR_NAME}}</div>
+        <div class="venue">Hosted at {{VENUE_NAME}} • {{CITY}}, {{STATE}}</div>
+
+        <div class="section">
+          <h3 style="color:var(--accent);margin:0 0 8px">What we weave</h3>
+          <p style="color:var(--muted);margin:0 0 10px">Sessions are layered: grounding breathwork, an invitation, sonic immersion, and a gentle re-entry. Expect subtle dynamics that support a meditative, premium sensory experience.</p>
+          <div class="instruments">
+            <div class="chip">Crystal singing bowls</div>
+            <div class="chip">Wind chimes (hand-tuned)</div>
+            <div class="chip">Monochord drone</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3 style="color:var(--accent);margin:0 0 8px">The flow, briefly</h3>
+          <ol style="color:var(--muted);margin:0 0 0 18px;line-height:1.6">
+            <li>Arrive & settle: soft light and gentle orientation.</li>
+            <li>Grounding: breath + intention (5–8 minutes).</li>
+            <li>Main immersion: layered soundscapes (30–45 minutes).</li>
+            <li>Transition: a guided reawakening and reflection (8–12 minutes).</li>
+          </ol>
+        </div>
+
+      </section>
+
+      <aside class="card side-cta">
+        <div class="price-pill">
+          <h3>Next gathering</h3>
+          <div style="color:var(--muted);margin-top:6px">{{NEXT_EVENT_DATE}}</div>
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+
+        <div style="margin-top:18px;color:var(--muted);font-size:14px">
+          <strong style="color:var(--accent)">What to bring</strong>
+          <ul style="margin:8px 0 0 18px;color:var(--muted)">
+            <li>Yoga mat or floor cushion</li>
+            <li>Light blanket and eye cover</li>
+            <li>Water bottle & an open mind</li>
+          </ul>
+        </div>
+
+        <div style="margin-top:12px;color:var(--muted);font-size:13px">
+          <strong style="color:var(--accent)">Accessibility note</strong>
+          <p style="margin:8px 0 0;color:var(--muted)">We welcome sensory needs—reach out at {{EMAIL}} or {{PHONE}} for accommodations.</p>
+        </div>
+      </aside>
+    </div>
+
+    <section class="card section">
+      <h3 style="color:var(--accent);margin:0 0 10px">Our philosophy</h3>
+      <p style="color:var(--muted);line-height:1.6">Sound is a vessel. We design each moment so that sound leads, but you remain in control. The environment is intentionally minimal: soft lighting, warm floor mats, and subtle aromas when requested. Each session balances precision and spaciousness to invite a premium, sensory-first experience.</p>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} — Gentle sound experiences in {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a></div>
+  </footer>
+</body>
+</html>

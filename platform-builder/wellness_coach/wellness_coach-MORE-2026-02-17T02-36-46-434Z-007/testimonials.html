@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Stories — Testimonials</title>
+  <style>
+    :root{--bg:#fbf6f1;--card:#fff;--accent:#8b5a3a;--text:#4e3526}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--text);background:var(--bg) url('/assets/img/pattern.svg') repeat}
+    .wrap{max-width:980px;margin:0 auto;padding:22px}
+    header{padding:18px 0}
+    nav{display:flex;gap:12px;flex-wrap:wrap}
+    nav a{color:var(--text);text-decoration:none;padding:6px 8px;border-radius:6px;font-weight:600}
+    main h1{font-size:28px;margin:6px 0 12px;color:#3b2315}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:16px}
+    .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 14px rgba(14,10,8,0.04);border:1px solid rgba(139,94,60,0.06)}
+    .quote{font-style:italic;color:#5b4133}
+    .meta{margin-top:10px;font-size:13px;color:#7b5a44}
+    .reveal{opacity:0;transform:translateY(10px);transition:opacity .6s ease,transform .6s ease}
+    .reveal.revealed{opacity:1;transform:none}
+    .cta{margin-top:20px}
+    .btn{background:var(--accent);color:white;padding:10px 14px;border-radius:9px;text-decoration:none;font-weight:700}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <nav aria-label="primary navigation">
+        <a href="index.html">Home</a>
+        <a href="about.html">Roots</a>
+        <a href="services.html">Offerings</a>
+        <a href="programs.html">Rhythms</a>
+        <a href="pricing.html">Investments</a>
+        <a href="testimonials.html" aria-current="page">Stories</a>
+        <a href="book.html">Begin</a>
+        <a href="contact.html">Reach</a>
+      </nav>
+    </header>
+
+    <main>
+      <h1 class="reveal">People I work with — excerpts</h1>
+      <p class="reveal">Short reflections on the patterns people built and the habits that stayed. Names changed for privacy.</p>
+
+      <section class="grid">
+        <article class="card reveal">
+          <div class="quote">"A clearer nightly system removed the fog from my mornings. The sessions gave me a few, repeatable moves I still use."</div>
+          <div class="meta">— M., product lead, {{CITY}}, {{STATE}}</div>
+        </article>
+
+        <article class="card reveal">
+          <div class="quote">"Instead of chasing energy I learned how to protect it. Small boundaries became a practical toolkit rather than a vague ideal."</div>
+          <div class="meta">— R., educator</div>
+        </article>
+
+        <article class="card reveal">
+          <div class="quote">"We mapped a weekly rhythm that fit the team and my own pace. The plan is simple and durable."</div>
+          <div class="meta">— S., creative director</div>
+        </article>
+
+        <article class="card reveal">
+          <div class="quote">"The coaching focused on choices I could keep. I stopped burning energy on decisions that didn't matter."</div>
+          <div class="meta">— L., entrepreneur</div>
+        </article>
+      </section>
+
+      <div class="cta reveal" style="margin-top:22px">
+        <a class="btn" href="book.html">Book a short intro</a>
+      </div>
+    </main>
+
+    <footer style="margin-top:28px;color:#6b4f3d;font-size:13px">Contact: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • {{PHONE}}</footer>
+  </div>
+
+  <script>
+    // Scroll reveal with prefers-reduced-motion
+    (function(){
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const nodes = document.querySelectorAll('.reveal');
+      if(reduced){ nodes.forEach(n=>n.classList.add('revealed')); return; }
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('revealed'); io.unobserve(e.target); } });
+      },{threshold:0.1});
+      nodes.forEach(n=>io.observe(n));
+    })();
+  </script>
+</body>
+</html>

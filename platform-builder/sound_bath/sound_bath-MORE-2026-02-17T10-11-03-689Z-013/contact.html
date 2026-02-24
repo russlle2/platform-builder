@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reach out to reserve, inquire, or try a brief guided practice. Warm, simple pathways to participation.">
+  <style>
+    :root{
+      --bg:#f6efe8; --card:#fff8f3; --accent:#7a5a3a; --muted:#8b806f; --glass:rgba(255,255,255,0.6);
+      --radius:14px; --max-width:980px; --flow:1.25rem;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      color:var(--accent);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#fbf7f3);min-height:100vh;}
+    header{position:sticky;top:0;background:linear-gradient(180deg,rgba(255,255,255,0.6),transparent);backdrop-filter:blur(4px);border-bottom:1px solid rgba(122,90,58,0.06)}
+    .nav{max-width:var(--max-width);margin:0 auto;display:flex;align-items:center;gap:12px;padding:18px;}
+    .brand{font-weight:600;font-size:18px;letter-spacing:0.4px}
+    nav{margin-left:auto;display:flex;gap:8px;align-items:center}
+    a{color:var(--accent);text-decoration:none;padding:8px 10px;border-radius:8px}
+    a:hover{background:var(--glass)}
+    .hero{max-width:var(--max-width);margin:28px auto;padding:28px;background:linear-gradient(180deg,var(--card),#fff);border-radius:var(--radius);box-shadow:0 6px 18px rgba(120,96,72,0.06);display:grid;grid-template-columns:1fr 360px;gap:20px;align-items:start}
+    .hero h1{margin:0;font-size:28px}
+    .lead{color:var(--muted);margin-top:8px;line-height:1.4}
+    .aside{padding:16px;border-radius:12px;background:linear-gradient(180deg,rgba(122,90,58,0.04),transparent);font-size:14px}
+    .muted{color:var(--muted);font-size:13px}
+    form.contact{display:flex;flex-direction:column;gap:12px}
+    input,textarea,select{padding:10px;border-radius:10px;border:1px solid rgba(122,90,58,0.12);font-size:14px}
+    .row{display:flex;gap:10px}
+    button.cta{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;border:0;font-weight:600}
+    .secondary{background:transparent;border:1px solid rgba(122,90,58,0.08);padding:8px 12px;border-radius:10px}
+    .tools{display:flex;flex-direction:column;gap:12px}
+    .card{background:#fff;border-radius:12px;padding:12px;box-shadow:0 3px 10px rgba(120,96,72,0.04)}
+    .small{font-size:13px;color:var(--muted)}
+    footer{max-width:var(--max-width);margin:28px auto;padding:18px;text-align:center;color:var(--muted)}
+    /* Pattern SVG placement */
+    .pattern-wrap{position:fixed;inset:0;pointer-events:none;opacity:0.12}
+    .pattern-svg{width:100%;height:100%;}
+    /* Modal */
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(12,10,8,0.4);z-index:60}
+    .modal.open{display:flex}
+    .modal-card{width:min(720px,96%);background:linear-gradient(180deg,#fff,#fff8f3);border-radius:14px;padding:18px;box-shadow:0 30px 80px rgba(20,12,8,0.3)}
+    .controls{display:flex;gap:8px;flex-wrap:wrap}
+    .breath-circle{width:140px;height:140px;border-radius:50%;background:radial-gradient(circle at 30% 30%,rgba(122,90,58,0.14),transparent 40%);display:flex;align-items:center;justify-content:center;margin:auto}
+    .muted-block{background:linear-gradient(180deg,rgba(122,90,58,0.02),transparent);padding:12px;border-radius:10px}
+    @media (max-width:880px){.hero{grid-template-columns:1fr;}.aside{order:2}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <nav aria-label="Primary">
+        <a href="index.html">Gatherings</a>
+        <a href="events.html">Upcoming</a>
+        <a href="private-sessions.html">Private</a>
+        <a href="pricing.html">Rates</a>
+        <a href="about.html">About</a>
+        <a href="faq.html">Answers</a>
+        <a href="book.html">Reserve</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="pattern-wrap" aria-hidden="true">
+    <svg class="pattern-svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g1" x1="0" x2="1">
+          <stop offset="0" stop-color="#f6efe8" />
+          <stop offset="1" stop-color="#fff" />
+        </linearGradient>
+      </defs>
+      <rect width="1200" height="800" fill="url(#g1)" />
+      <g fill-opacity="0.08" fill="#7a5a3a">
+        <circle cx="80" cy="60" r="48" />
+        <circle cx="240" cy="200" r="30" />
+        <circle cx="420" cy="86" r="18" />
+        <circle cx="980" cy="120" r="60" />
+        <circle cx="1020" cy="540" r="90" />
+        <circle cx="300" cy="620" r="50" />
+      </g>
+      <g stroke="#7a5a3a" stroke-opacity="0.04">
+        <path d="M0 400 C200 300 400 500 600 400 S1000 300 1200 400" fill="none" stroke-width="40" />
+      </g>
+    </svg>
+  </div>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h1>Connect — ask, reserve, or try a short practice</h1>
+        <p class="lead">A simple form for questions, bookings, and a brief guided exercise. If you prefer to speak, call us at <strong>{{PHONE}}</strong> or send a note to <strong>{{EMAIL}}</strong>.</p>
+
+        <div class="card" style="margin-top:12px">
+          <form class="contact" id="contactForm" action="#" onsubmit="return false;">
+            <label class="small">Your name</label>
+            <input name="name" placeholder="First and last" required />
+            <label class="small">Email or phone</label>
+            <input name="contact" placeholder="you@domain or +1..." required />
+            <label class="small">How can we help?</label>
+            <select name="topic">
+              <option>Questions about events</option>
+              <option>Private session inquiry</option>
+              <option>Accessibility request</option>
+              <option>Other</option>
+            </select>
+            <label class="small">Message</label>
+            <textarea name="message" rows="4" placeholder="Tell us briefly"></textarea>
+
+            <div class="row">
+              <button class="cta" id="sendBtn">Send request</button>
+              <button class="secondary" id="reserveNow">{{PRIMARY_CTA_LABEL}}</button>
+              <button class="secondary" id="tryNow">Try it now</button>
+            </div>
+
+            <p class="small muted">We respond in 1–3 business days. For urgent scheduling, call <strong>{{PHONE}}</strong>.</p>
+          </form>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">
+          <div class="muted-block small muted">Prefer to book? Use "Reserve" to move directly to our quick booking flow. If unsure, send a note and we can guide you.</div>
+          <div class="muted-block small muted">Contraindications: Sound sessions may not be appropriate for those in first trimester of pregnancy, with uncontrolled epilepsy, recent brain or ear surgery, or certain implanted devices. Please consult your clinician and disclose health history when booking.</div>
+        </div>
+      </div>
+
+      <aside class="aside">
+        <div class="tools">
+          <div class="card">
+            <strong>Next event</strong>
+            <div id="nextEvent" style="margin-top:8px"></div>
+          </div>
+
+          <div class="card">
+            <strong>Pick seats</strong>
+            <div style="margin-top:8px">
+              <label class="small">Event</label>
+              <select id="eventSelect"></select>
+              <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+                <button id="dec" class="secondary">–</button>
+                <div id="seatCount">1</div>
+                <button id="inc" class="secondary">+</button>
+              </div>
+              <div style="margin-top:8px" class="small muted">Seats left: <span id="seatsLeft">—</span></div>
+              <div style="margin-top:10px;display:flex;gap:8px">
+                <button id="holdSeats" class="cta">Reserve seats</button>
+                <button id="packBtn" class="secondary">What to bring</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <strong>Packing list</strong>
+            <div style="margin-top:8px" id="packingList">Choose a session and press "What to bring".</div>
+          </div>
+
+        </div>
+      </aside>
+    </section>
+
+    <section style="max-width:var(--max-width);margin:18px auto;padding:18px;display:grid;gap:12px">
+      <div class="card">
+        <strong>Calendar preview</strong>
+        <div id="calendarList" style="margin-top:8px" class="small muted"></div>
+      </div>
+
+      <div class="card">
+        <strong>Direct contact</strong>
+        <p class="small muted">Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a> — Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+        <p class="small muted">Location: {{CITY}}, {{STATE}} — Please include accessibility needs in your message.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="small muted">© <span id="year"></span> {{BUSINESS_NAME}} • A simple, practical rhythm of gatherings and private work. <a href="privacy.html">Privacy</a> • <a href="terms.html">Terms</a></div>
+  </footer>
+
+  <!-- Modal: Guided exercise (breathing / journaling / intention) -->
+  <div class="modal" id="modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-card" role="document">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <strong id="modalTitle">Try a short practice</strong>
+        <div style="display:flex;gap:8px">
+          <button class="secondary" id="modalClose">Close</button>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:14px;align-items:center">
+        <div style="width:280px">
+          <label class="small">Choose</label>
+          <div class="controls" style="margin-top:8px">
+            <button class="secondary" id="modeBreath">Breathing</button>
+            <button class="secondary" id="modeJournal">Journaling</button>
+            <button class="secondary" id="modeIntent">Intention</button>
+          </div>
+
+          <div id="modeDesc" class="small muted" style="margin-top:12px">A quiet, guided moment. No account, no sound—just a paced companion in your browser.</div>
+        </div>
+
+        <div style="flex:1">
+          <div id="breathArea" style="display:none;text-align:center">
+            <div class="breath-circle" id="circle">&nbsp;</div>
+            <div style="margin-top:10px;font-weight:600" id="breathText">Ready</div>
+            <div class="small muted" style="margin-top:8px">Follow the circle. Inhale — hold — exhale. Adjustable pace below.</div>
+            <div style="display:flex;gap:8px;justify-content:center;margin-top:10px">
+              <label class="small">Pace</label>
+              <input id="pace" type="range" min="3" max="9" value="5" />
+            </div>
+          </div>
+
+          <div id="journalArea" style="display:none">
+            <div class="small muted">Write without judgment. A timer gives you space.</div>
+            <textarea id="journalText" rows="6" style="width:100%;margin-top:8px;border-radius:10px;padding:10px"></textarea>
+            <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+              <button class="cta" id="startJournal">Start 3-minute prompt</button>
+              <div id="journalTimer" class="small muted">00:00</div>
+            </div>
+          </div>
+
+          <div id="intentArea" style="display:none">
+            <div class="small muted">Set a brief intention. Keep it present tense and simple.</div>
+            <input id="intentInput" placeholder="I will..." style="width:100%;margin-top:8px;border-radius:10px;padding:10px" />
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button class="cta" id="saveIntent">Save intention</button>
+              <button class="secondary" id="readIntent">Read saved</button>
+              <div id="intentSaved" class="small muted" style="margin-left:auto"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Utilities
+    const now = new Date();
+    document.getElementById('year').textContent = now.getFullYear();
+
+    // Fake events data (this page demonstrates the seat selector and calendar preview)
+    const events = [
+      {id:1,title:'Evening Resonance',date:addDays(now,3),'time':'19:00',capacity:18,booked:11,price:20},
+      {id:2,title:'Midday Reset',date:addDays(now,7),'time':'12:30',capacity:14,booked:5,price:15},
+      {id:3,title:'Weekend Immersion',date:addDays(now,10),'time':'16:00',capacity:22,booked:20,price:28},
+    ];
+
+    function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}
+
+    // Render next event
+    function renderNext(){
+      const next = events[0];
+      const el = document.getElementById('nextEvent');
+      const opts = {weekday:'short',month:'short',day:'numeric'};
+      el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div><div style=\"font-weight:600\">${next.title}</div><div class=\"small muted\">${next.date.toLocaleDateString(undefined,opts)} · ${next.time}</div></div><div style=\"text-align:right\"><div style=\"font-weight:700\">${Math.max(0,next.capacity-next.booked)} left</div><div class=\"small muted\">$${next.price}</div></div></div>`;
+    }
+    renderNext();
+
+    // Populate event select and calendar list
+    const eventSelect = document.getElementById('eventSelect');
+    const cal = document.getElementById('calendarList');
+    events.forEach(e=>{
+      const opt = document.createElement('option');
+      opt.value = e.id; opt.textContent = `${e.title} — ${e.date.toDateString().slice(4,15)} @ ${e.time}`;
+      eventSelect.appendChild(opt);
+    });
+    cal.innerHTML = events.map(e=>{const d=e.date.toLocaleDateString();return `<div style=\"padding:8px 0;border-bottom:1px dashed rgba(122,90,58,0.06)\"><strong>${e.title}</strong><div class=\"small muted\">${d} · ${e.time} — ${Math.max(0,e.capacity-e.booked)} seats</div></div>`}).join('');
+
+    // Seat selector logic
+    let chosenEvent = events[0];
+    let count = 1;
+    function updateSeatUI(){
+      document.getElementById('seatCount').textContent = count;
+      document.getElementById('seatsLeft').textContent = Math.max(0, chosenEvent.capacity - chosenEvent.booked);
+    }
+    eventSelect.addEventListener('change',e=>{
+      chosenEvent = events.find(ev=>ev.id==e.target.value);
+      count = 1; updateSeatUI();
+    });
+    document.getElementById('inc').addEventListener('click',()=>{ if(count < (chosenEvent.capacity-chosenEvent.booked)) count++; updateSeatUI();});
+    document.getElementById('dec').addEventListener('click',()=>{ if(count>1) count--; updateSeatUI();});
+    document.getElementById('holdSeats').addEventListener('click',()=>{
+      if(count > (chosenEvent.capacity-chosenEvent.booked)){
+        alert('Not enough seats left.'); return;
+      }
+      chosenEvent.booked += count;
+      renderNext(); updateSeatUI(); alert(`Reserved ${count} seat(s) for ${chosenEvent.title}.`);
+    });
+    updateSeatUI();
+
+    // Packing list generator
+    const packBtn = document.getElementById('packBtn');
+    const packOut = document.getElementById('packingList');
+    packBtn.addEventListener('click',()=>{
+      const id = parseInt(eventSelect.value,10);
+      const e = events.find(x=>x.id===id);
+      const type = e.title.toLowerCase();
+      const base = ['mat or blanket','small pillow or bolster','water bottle','socks','light layer to stay warm'];
+      let extras = [];
+      if(type.includes('evening')) extras = ['eye mask','notebook for after-session notes','earplugs (if sensitive)'];
+      else if(type.includes('midday')) extras = ['light snack for after','portable cushion','phone on silent'];
+      else if(type.includes('immersion')) extras = ['larger blanket','layered clothing','extra water'];
+      packOut.innerHTML = `<ul style=\"margin:8px 0 0 18px;\"><li>${base.concat(extras).join('</li><li>')}</li></ul>`;
+    });
+
+    // Simple contact form send (local only)
+    document.getElementById('sendBtn').addEventListener('click',()=>{
+      alert('Message queued. We will reply to the contact you provided.');
+      document.getElementById('contactForm').reset();
+    });
+
+    // Modal guided practice
+    const modal = document.getElementById('modal');
+    const tryNow = document.getElementById('tryNow');
+    const modalClose = document.getElementById('modalClose');
+    const modeBreath = document.getElementById('modeBreath');
+    const modeJournal = document.getElementById('modeJournal');
+    const modeIntent = document.getElementById('modeIntent');
+
+    const breathArea = document.getElementById('breathArea');
+    const journalArea = document.getElementById('journalArea');
+    const intentArea = document.getElementById('intentArea');
+
+    tryNow.addEventListener('click',openModal);
+    document.getElementById('reserveNow').addEventListener('click',()=>{window.location.href='book.html'});
+    modalClose.addEventListener('click',closeModal);
+    window.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+    function openModal(){ modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); setMode('breath'); }
+    function closeModal(){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); stopBreath(); stopJournal(); }
+
+    function setMode(m){
+      breathArea.style.display = m==='breath'? 'block':'none';
+      journalArea.style.display = m==='journal'? 'block':'none';
+      intentArea.style.display = m==='intent'? 'block':'none';
+      document.getElementById('modalTitle').textContent = m==='breath' ? 'Breathing practice' : m==='journal' ? 'Journaling prompt' : 'Set an intention';
+      if(m==='breath') startBreath(); else stopBreath();
+      if(m==='journal') stopBreath();
+    }
+
+    modeBreath.addEventListener('click',()=>setMode('breath'));
+    modeJournal.addEventListener('click',()=>setMode('journal'));
+    modeIntent.addEventListener('click',()=>setMode('intent'));
+
+    // Breathing: simple expanding circle + phases
+    let breathTimer = null;
+    const circle = document.getElementById('circle');
+    const breathText = document.getElementById('breathText');
+    const paceInput = document.getElementById('pace');
+    function startBreath(){
+      stopBreath();
+      const cycleSec = parseInt(paceInput.value,10); // total inhale+hold+exhale approx
+      const phases = [ {label:'Inhale',frac:0.45},{label:'Hold',frac:0.1},{label:'Exhale',frac:0.45} ];
+      let phase=0; let phaseTime=0; let phaseDur = Math.round(cycleSec * phases[phase].frac*1000);
+      breathText.textContent = phases[phase].label;
+      circle.style.transition = `transform ${phaseDur}ms ease-in-out`;
+      circle.style.transform = 'scale(1.6)';
+      breathTimer = setInterval(()=>{
+        phaseTime += 200;
+        if(phaseTime >= phaseDur){
+          phase = (phase+1)%phases.length; phaseTime=0; phaseDur = Math.round(cycleSec * phases[phase].frac*1000);
+          breathText.textContent = phases[phase].label;
+          if(phases[phase].label==='Inhale'){ circle.style.transition = `transform ${phaseDur}ms ease-in-out`; circle.style.transform='scale(1.6)'; }
+          else if(phases[phase].label==='Hold'){ circle.style.transition = `transform ${phaseDur}ms linear`; }
+          else if(phases[phase].label==='Exhale'){ circle.style.transition = `transform ${phaseDur}ms ease-in-out`; circle.style.transform='scale(0.8)'; }
+        }
+      },200);
+      paceInput.oninput = ()=>{ startBreath(); };
+    }
+    function stopBreath(){ if(breathTimer){ clearInterval(breathTimer); breathTimer=null; circle.style.transform='scale(1)'; breathText.textContent='Ready'; } }
+
+    // Journaling: simple 3-minute timer with prompts
+    const startJournal = document.getElementById('startJournal');
+    const journalTimerEl = document.getElementById('journalTimer');
+    const journalText = document.getElementById('journalText');
+    let journalInterval=null; let journalRemaining=0;
+    const prompts = ['What would I like to release after today?','Name one small thing you are grateful for.','Where would I like calm in my body right now?'];
+    startJournal.addEventListener('click',()=>{
+      if(journalInterval) { stopJournal(); return; }
+      journalText.value = prompts[Math.floor(Math.random()*prompts.length)] + "\n\n";
+      journalRemaining = 180;
+      journalTimerEl.textContent = formatTime(journalRemaining);
+      journalInterval = setInterval(()=>{
+        journalRemaining--; journalTimerEl.textContent = formatTime(journalRemaining);
+        if(journalRemaining<=0){ stopJournal(); alert('Time.') }
+      },1000);
+      startJournal.textContent = 'Stop';
+    });
+    function stopJournal(){ if(journalInterval){ clearInterval(journalInterval); journalInterval=null; startJournal.textContent='Start 3-minute prompt'; journalTimerEl.textContent='00:00'; } }
+    function formatTime(s){ const m = Math.floor(s/60).toString().padStart(2,'0'); const sec = (s%60).toString().padStart(2,'0'); return `${m}:${sec}` }
+
+    // Intention save (localStorage)
+    const intentInput = document.getElementById('intentInput');
+    const saveIntent = document.getElementById('saveIntent');
+    const readIntent = document.getElementById('readIntent');
+    const intentSaved = document.getElementById('intentSaved');
+    function loadIntent(){ const t=localStorage.getItem('sb_intent'); if(t){ intentSaved.textContent='Saved'; intentSaved.title=t; } else { intentSaved.textContent=''; }}
+    saveIntent.addEventListener('click',()=>{ const v=intentInput.value.trim(); if(!v) return alert('Keep it short and simple.'); localStorage.setItem('sb_intent',v); loadIntent(); alert('Intent kept. You can review it later.'); intentInput.value=''; });
+    readIntent.addEventListener('click',()=>{ const t=localStorage.getItem('sb_intent'); if(t) alert('Saved intention:\n\n'+t); else alert('No saved intention.'); });
+    loadIntent();
+
+    // small helpers
+    function alertOnce(msg){ console.log(msg); }
+
+    // Accessibility: trap focus when modal open (light)
+    document.addEventListener('focusin',e=>{ if(modal.classList.contains('open') && !modal.contains(e.target)) modal.querySelector('.modal-card').focus(); });
+
+  </script>
+</body>
+</html>

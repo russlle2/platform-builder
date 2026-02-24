@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Book — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#081016;--card:#07141a;--muted:#96aeb4;--accent:#6be0c9}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;color:#e6fbf7;background:linear-gradient(180deg,var(--bg),#021018)}
+    header{display:flex;gap:12px;align-items:center;padding:12px 18px;background:rgba(2,8,12,0.5);position:sticky;top:0;z-index:14}
+    .logo{width:42px;height:42px;background:linear-gradient(135deg,#6be0c9,#39c1aa);border-radius:10px;display:grid;place-items:center;font-weight:700;color:#042425}
+    nav{margin-left:auto}
+    nav a{margin-left:10px;color:var(--muted);text-decoration:none}
+    main{max-width:900px;margin:28px auto;padding:0 18px}
+    .card{background:var(--card);padding:16px;border-radius:12px}
+    h1{margin:0 0 10px 0;color:#eafffb}
+    form{display:grid;grid-template-columns:1fr 320px;gap:18px}
+    label{display:block;color:var(--muted);font-size:13px;margin-bottom:6px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#e6fbf7}
+    .actions{display:flex;gap:10px;margin-top:12px}
+    button{padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#e6fbf7}
+    button.primary{background:var(--accent);color:#072423;border:none}
+    .disclaimer{font-size:13px;color:var(--muted);margin-top:12px}
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity 520ms cubic-bezier(.2,.9,.2,1),transform 520ms cubic-bezier(.2,.9,.2,1)}
+    .reveal.in{opacity:1;transform:none}
+    .calendar{display:flex;flex-direction:column;gap:8px}
+    .slot{padding:10px;border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);display:flex;justify-content:space-between;align-items:center}
+  </style>
+</head>
+<body>
+  <header>
+    <div class='logo' aria-hidden='true'>SB</div>
+    <div style='font-weight:700;color:#eafffb'>{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href='index.html'>Home</a>
+      <a href='events.html'>Gatherings</a>
+      <a href='pricing.html'>Invest</a>
+      <a href='faq.html'>FAQ</a>
+      <a href='contact.html'>Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class='card reveal'>
+      <h1>Reserve a session</h1>
+      <div style='color:var(--muted)'>Choose your session format and tell us about anything we should know to make the practice safe and useful for you.</div>
+    </section>
+
+    <section style='margin-top:16px'>
+      <div class='card reveal'>
+        <form id='bookingForm' onsubmit='return false;'>
+          <div>
+            <label for='name'>Full name</label>
+            <input id='name' name='name' required>
+
+            <label for='email' style='margin-top:10px'>Email</label>
+            <input id='email' name='email' type='email' required>
+
+            <label for='session' style='margin-top:10px'>Session type</label>
+            <select id='session' name='session'>
+              <option value='echo'>Echo Session — 45 minutes</option>
+              <option value='root'>Root Session — 75 minutes</option>
+              <option value='private'>Private Consultation — 60 minutes</option>
+            </select>
+
+            <label for='notes' style='margin-top:10px'>Anything we should know? (health notes, accessibility, audio sensitivity)</label>
+            <textarea id='notes' name='notes' rows='4'></textarea>
+
+            <div class='actions'>
+              <button class='primary' id='submitBtn'>Request reservation</button>
+              <button id='tryNow' type='button'>Try short focus</button>
+            </div>
+
+            <div class='disclaimer'>
+              Contraindications: If you are pregnant, have epilepsy, recent head injury, severe vestibular or cardiovascular conditions, or are under any medical treatment that could be affected by sustained tones, consult your physician before attending. For clarity, please include relevant notes when you book and we will follow up with guidance.
+            </div>
+
+          </div>
+
+          <aside>
+            <div style='display:flex;flex-direction:column;gap:10px'>
+              <div style='font-weight:700;color:#eafffb'>Upcoming availability</div>
+              <div class='calendar' aria-live='polite' id='upcoming'>
+                <div class='slot'>
+                  <div>
+                    <div style='font-weight:700'>Next: Echo Session</div>
+                    <div style='color:var(--muted);font-size:13px'>Sat, 10:00 AM — {{CITY}}</div>
+                  </div>
+                  <div><button onclick='selectSlot("Sat 10:00", "echo")'>Choose</button></div>
+                </div>
+                <div class='slot'>
+                  <div>
+                    <div style='font-weight:700'>Root Session</div>
+                    <div style='color:var(--muted);font-size:13px'>Sun, 2:30 PM — limited seats</div>
+                  </div>
+                  <div><button onclick='selectSlot("Sun 14:30", "root")'>Choose</button></div>
+                </div>
+                <div class='slot'>
+                  <div>
+                    <div style='font-weight:700'>Private consult</div>
+                    <div style='color:var(--muted);font-size:13px'>Weekdays — by request</div>
+                  </div>
+                  <div><button onclick='selectSlot("Weekday", "private")'>Request</button></div>
+                </div>
+              </div>
+
+              <div style='color:var(--muted);font-size:13px'>We will confirm availability and secure your place after a short email exchange. Payment details are handled on confirmation.</div>
+
+            </div>
+          </aside>
+        </form>
+      </div>
+    </section>
+
+    <section class='card reveal' style='margin-top:14px'>
+      <h3 style='margin-top:0;color:#eafffb'>Booking notes</h3>
+      <ul style='color:var(--muted)'>
+        <li>We cap group sizes to preserve focus and safety.</li>
+        <li>Late arrivals may be admitted at the facilitators discretion and may miss portions of the practice.</li>
+        <li>Refund and reschedule policies are provided with confirmation.</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <div id='modalBackdrop' class='modal-backdrop' style='display:none;position:fixed;inset:0;z-index:60;align-items:center;justify-content:center;background:linear-gradient(0deg,rgba(2,6,11,0.6),rgba(2,6,11,0.85))'>
+    <div class='card' style='max-width:640px;width:100%'>
+      <button style='float:right' id='closeModal'>✕</button>
+      <h3 style='margin-top:0;color:#eafffb'>Try a short focus</h3>
+      <div style='color:var(--muted)'>Three short phases: breath, note, intention. Designed to be gentle and helpful while you decide.</div>
+      <div style='margin-top:10px' class='meter'><i id='progressBar' style='width:0%'></i></div>
+      <div id='stepText' style='margin-top:10px;color:var(--muted)'>Ready</div>
+      <div style='margin-top:12px;display:flex;gap:8px'>
+        <button id='startExercise' class='primary'>Start</button>
+        <button id='cancelExercise'>Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // reveal
+    (function(){
+      const prefers = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const nodes = document.querySelectorAll('.reveal');
+      if(prefers){nodes.forEach(n=>n.classList.add('in'));return}
+      const io = new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:0.12});
+      nodes.forEach(n=>io.observe(n));
+    })();
+
+    // small booking interactions
+    document.getElementById('submitBtn').addEventListener('click',()=>{
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      if(!name || !email){alert('Please enter name and email');return}
+      alert('Thanks. We will follow up to confirm and complete your reservation.');
+      document.getElementById('bookingForm').reset();
+    });
+
+    function selectSlot(slot, type){
+      document.getElementById('session').value = type;
+      alert('Selected '+slot+'. Please submit the form to request this slot.');
+    }
+
+    // guided exercise modal same core as other pages
+    (function(){
+      const tryBtns = document.querySelectorAll('#tryNow');
+      const backdrop = document.getElementById('modalBackdrop');
+      const close = document.getElementById('closeModal');
+      const start = document.getElementById('startExercise');
+      const cancel = document.getElementById('cancelExercise');
+      const text = document.getElementById('stepText');
+      const bar = document.getElementById('progressBar');
+      let timer;
+      const steps = [
+        {label:'3 slow breaths. In 4, hold 2, out 6.', dur:30},
+        {label:'One minute: write a single sentence about how you feel.', dur:60},
+        {label:'30 seconds: choose an intention to carry out this hour.', dur:30}
+      ];
+      function open(){backdrop.style.display='flex'}
+      function closeModal(){backdrop.style.display='none';clearInterval(timer);bar.style.width='0%';text.textContent='Ready'}
+      tryBtns.forEach(b=>b.addEventListener('click',open));
+      close.addEventListener('click',closeModal);
+      cancel.addEventListener('click',closeModal);
+      start.addEventListener('click',()=>{let i=0;open();run(i);function run(idx){const s=steps[idx];let t=0;bar.style.width='0%';text.textContent=s.label;timer=setInterval(()=>{t++;bar.style.width=Math.round(100*(t/s.dur))+'%';if(t>=s.dur){clearInterval(timer);if(idx+1<steps.length)setTimeout(()=>run(idx+1),300);else{setTimeout(()=>{text.textContent='Complete';setTimeout(closeModal,900)},200)}}},1000)}});
+    })();
+  </script>
+</body>
+</html>

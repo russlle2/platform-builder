@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Rates — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Transparent session packages and self-care add-ons for a balanced life.">
+  <style>
+    :root{--bg:#fbfaf7;--muted:#6b655f;--accent:#6a9a7a;--card:#ffffff;--glass:rgba(255,255,255,0.6);--shadow:0 6px 20px rgba(17,15,13,0.06)}
+    *{box-sizing:border-box}
+    html,body{height:100%}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#2b2b2b;background-color:var(--bg);line-height:1.45}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:linear-gradient(180deg,rgba(255,255,255,0.6),transparent);backdrop-filter:blur(6px)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#d7e8dd);display:grid;place-items:center;color:white;font-weight:700}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-weight:600}
+    .container{max-width:980px;margin:36px auto;padding:0 20px}
+    .hero{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='200' viewBox='0 0 800 200' preserveAspectRatio='none'><defs><linearGradient id='g' x1='0' x2='1'><stop offset='0' stop-color='%23f0efe9'/><stop offset='1' stop-color='%23eef6ef'/></linearGradient></defs><rect width='800' height='200' fill='url(%23g)'/><g fill='%236a9a7a' opacity='0.06'><circle cx='120' cy='40' r='80'/><circle cx='460' cy='120' r='120'/></g></svg>");border-radius:12px;padding:28px 22px;box-shadow:var(--shadow);display:grid;grid-template-columns:1fr auto;gap:20px}
+    .title{font-size:20px;color:#123;line-height:1.2}
+    .lead{color:var(--muted);margin-top:8px}
+    .cta-group{display:flex;gap:10px;align-items:center}
+    .btn{background:var(--accent);color:white;padding:10px 14px;border-radius:8px;border:0;cursor:pointer;font-weight:700}
+    .btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(106,154,122,0.18)}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:20px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:var(--shadow);border:1px solid rgba(12,12,12,0.03)}
+    .card h3{margin:0 0 8px 0}
+    .price{font-size:20px;color:var(--accent);font-weight:800}
+    .muted{color:var(--muted);font-size:14px}
+    .addons{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+    .addon{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(250,250,250,0.6),transparent);border:1px dashed rgba(106,154,122,0.12)}
+
+    footer{max-width:980px;margin:40px auto;padding:20px;color:var(--muted);font-size:13px}
+
+    /* scroll reveal */
+    .reveal-on-scroll{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+    .reveal-on-scroll.revealed{opacity:1;transform:translateY(0)}
+    @media (prefers-reduced-motion:reduce){
+      .reveal-on-scroll{transition:none;opacity:1;transform:none}
+      .animated-circle{animation:none}
+    }
+
+    /* breathing circle for modal */
+    .breath-circle{width:120px;height:120px;border-radius:50%;display:grid;place-items:center;background:rgba(106,154,122,0.12);border:6px solid rgba(106,154,122,0.18)}
+    .breath-circle .inner{width:70px;height:70px;border-radius:50%;background:var(--accent);}
+    @keyframes breathe{0%{transform:scale(0.85)}50%{transform:scale(1.12)}100%{transform:scale(0.85)}}
+    .animated-circle .inner{animation:breathe 4s ease-in-out infinite}
+
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(10,10,10,0.35);display:none;align-items:center;justify-content:center;padding:20px}
+    .modal{background:white;border-radius:12px;max-width:720px;width:100%;padding:20px;box-shadow:0 30px 80px rgba(10,10,10,0.25)}
+    .modal header{display:flex;justify-content:space-between;align-items:center}
+    .close{background:transparent;border:0;font-size:18px}
+
+    /* pricing table */
+    .list{list-style:none;padding:0;margin:12px 0 0 0}
+    .list li{padding:8px 0;border-top:1px dashed rgba(0,0,0,0.04)}
+
+    @media (max-width:880px){.grid{grid-template-columns:1fr}.hero{grid-template-columns:1fr}.brand .logo{width:40px;height:40px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">HM</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav aria-label="Main navigation">
+      <a href="index.html">Welcome</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Conditions</a>
+      <a href="approach.html">Our Way</a>
+      <a href="pricing.html" style="color:var(--accent)">Rates</a>
+      <a href="about.html">Meet</a>
+      <a href="book.html">Schedule</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="hero reveal-on-scroll">
+      <div>
+        <div class="title">Simple, honest pricing for whole-life support</div>
+        <div class="lead">No jargon. Choose short-term guidance, focused cycles, or a steady plan to integrate new habits into busy days. All offerings are educational and supportive — not promises of cure.</div>
+        <div style="margin-top:14px" class="cta-group">
+          <button class="btn" id="open-modal">Try a mini practice</button>
+          <a class="btn ghost" href="book.html">Book a first visit</a>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;flex-direction:column;min-width:220px">
+        <div style="text-align:right;color:var(--muted);font-size:13px">Need an invoice or package? Call <strong>{{PHONE}}</strong></div>
+        <div style="background:var(--glass);padding:12px;border-radius:10px;border:1px solid rgba(12,12,12,0.03)">Prefer a short intro? Try the 20-minute clarity session — a lower-commitment entry to planning.</div>
+      </div>
+    </section>
+
+    <section style="margin-top:26px" class="reveal-on-scroll">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h2 style="margin:0">Packages & sessions</h2>
+        <div class="muted">Educational, supportive, and tailored.</div>
+      </div>
+      <div class="grid" style="margin-top:16px">
+        <div class="card">
+          <h3>Clarity Visit</h3>
+          <div class="muted">20-minute short consult</div>
+          <div style="margin-top:12px" class="price">$55</div>
+          <p class="muted" style="margin-top:8px">An efficient check-in to orient priorities and next steps. Ideal for quick troubleshooting and planning.</p>
+          <ul class="list">
+            <li>Focused agenda</li>
+            <li>Practical takeaways</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Foundations Session</h3>
+          <div class="muted">60-minute integrative visit</div>
+          <div style="margin-top:12px" class="price">$160</div>
+          <p class="muted" style="margin-top:8px">A deeper session to review history, co-create priorities, and start an approachable plan for daily life.</p>
+          <ul class="list">
+            <li>Assessment & priorities</li>
+            <li>Initial plan</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Rhythm Program</h3>
+          <div class="muted">4-session guided cycle</div>
+          <div style="margin-top:12px" class="price">$580 (save $60)</div>
+          <p class="muted" style="margin-top:8px">A sequential plan to build habits, adjust guidance, and track changes with short weekly check-ins.</p>
+          <ul class="list">
+            <li>Personalized steps</li>
+            <li>Homework & reflections</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:22px" class="reveal-on-scroll">
+      <h3 style="margin-bottom:8px">Add-ons & at-home supports</h3>
+      <div class="addons">
+        <div class="addon"><div><strong>Starter Herbal Kit</strong><div class="muted">A curated set of supportive herbs and usage notes.</div></div><div style="font-weight:700;color:var(--accent)">$38</div></div>
+        <div class="addon"><div><strong>At-home Toolkit</strong><div class="muted">Breathing guides, journals, and two short recorded practices.</div></div><div style="font-weight:700;color:var(--accent)">$22</div></div>
+        <div class="addon"><div><strong>Extended message</strong><div class="muted">A printed summary of your plan with resources and links.</div></div><div style="font-weight:700;color:var(--accent)">$12</div></div>
+      </div>
+      <p class="muted" style="margin-top:12px">We can also adapt plans for sliding scale or bundled payment; email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> for details.</p>
+    </section>
+
+    <section style="margin-top:26px" class="reveal-on-scroll">
+      <h3>Policies & notes</h3>
+      <p class="muted">Sessions are educational and supportive. Outcomes vary — these offerings are framed to help you learn, adapt, and regain momentum. Payments due at time of service; packages can be scheduled across months. Cancellation policy: please notify 24 hours ahead.</p>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>{{BUSINESS_NAME}} — <span class="muted">Call</span> <strong>{{PHONE}}</strong></div>
+      <div class="muted">Primary contact: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </div>
+  </footer>
+
+  <!-- Modal for guided micro-practice -->
+  <div id="modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document">
+      <header>
+        <strong>Try a mini practice</strong>
+        <button class="close" id="close-modal" aria-label="Close">✕</button>
+      </header>
+      <div style="margin-top:12px;display:grid;grid-template-columns:1fr 220px;gap:14px">
+        <div>
+          <p class="muted">Choose a short guided practice to explore how small moments can anchor your day. These are brief supportive exercises — not medical treatment.</p>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button class="btn" data-practice="breath">Breathing</button>
+            <button class="btn ghost" data-practice="journ">Journaling</button>
+            <button class="btn ghost" data-practice="intend">Set an intention</button>
+          </div>
+
+          <div id="practice-area" style="margin-top:12px">
+            <p class="muted">Select a practice to begin.</p>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+          <div class="breath-circle animated-circle" aria-hidden="true" id="breath-visual"><div class="inner"></div></div>
+          <div class="muted" style="font-size:13px;text-align:center">A small breathing cue and a short prompt to register how you are right now.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      'use strict';
+      // Modal logic
+      var modal = document.getElementById('modal');
+      var open = document.getElementById('open-modal');
+      var close = document.getElementById('close-modal');
+      var practiceArea = document.getElementById('practice-area');
+      var breathVisual = document.getElementById('breath-visual');
+
+      function prefersReduced(){return window.matchMedia('(prefers-reduced-motion: reduce)').matches}
+
+      open.addEventListener('click', function(){
+        modal.style.display='flex';
+        modal.setAttribute('aria-hidden','false');
+      });
+      close.addEventListener('click', closeModal);
+      modal.addEventListener('click', function(e){ if(e.target===modal) closeModal(); });
+      function closeModal(){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); stopTimers(); }
+
+      // Guided practices
+      var timers = [];
+      function stopTimers(){ timers.forEach(clearInterval); timers=[] }
+
+      document.querySelectorAll('[data-practice]').forEach(function(btn){
+        btn.addEventListener('click', function(){
+          var which = btn.getAttribute('data-practice');
+          stopTimers();
+          if(which==='breath') startBreathing();
+          if(which==='journ') startJournaling();
+          if(which==='intend') startIntention();
+        });
+      });
+
+      function startBreathing(){
+        practiceArea.innerHTML = '';
+        var p = document.createElement('p'); p.className='muted'; p.textContent='Follow a gentle 2-cycle breathing: inhale for 4, hold 2, exhale 6. Repeat for one minute.';
+        var timer = document.createElement('div'); timer.style.marginTop='10px'; timer.style.fontWeight='700'; timer.textContent='60s';
+        practiceArea.appendChild(p); practiceArea.appendChild(timer);
+        var remaining = 60; timer.textContent = remaining + 's';
+        if(prefersReduced()){ breathVisual.style.display='none'; timer.textContent='A short minute of mindful breathing'; return }
+        breathVisual.style.display='grid';
+        timers.push(setInterval(function(){ remaining--; if(remaining<=0){ clearInterval(timers.pop()); timer.textContent='Done — notice how that felt.'; return } timer.textContent=remaining+'s'; },1000));
+      }
+
+      function startJournaling(){
+        practiceArea.innerHTML='';
+        var p = document.createElement('p'); p.className='muted'; p.textContent='Free-write for two minutes on: "A small thing that matters to me today."';
+        var ta = document.createElement('textarea'); ta.style.width='100%'; ta.style.height='120px'; ta.style.marginTop='8px'; ta.placeholder='Write here if you like...';
+        practiceArea.appendChild(p); practiceArea.appendChild(ta);
+        var remaining = 120; var timer = document.createElement('div'); timer.style.marginTop='8px'; timer.style.fontWeight='700'; timer.textContent='120s'; practiceArea.appendChild(timer);
+        if(prefersReduced()){ timer.textContent='Two minutes of writing suggested'; return }
+        timers.push(setInterval(function(){ remaining--; if(remaining<=0){ clearInterval(timers.pop()); timer.textContent='Complete — closing prompt.'; return } timer.textContent=remaining+'s'; },1000));
+      }
+
+      function startIntention(){
+        practiceArea.innerHTML='';
+        var p = document.createElement('p'); p.className='muted'; p.textContent='Set a short, kind intention for the next hour. Try: "I will notice one moment of calm."';
+        var input = document.createElement('input'); input.type='text'; input.style.width='100%'; input.style.marginTop='8px'; input.placeholder='Type an intention...';
+        var save = document.createElement('button'); save.className='btn'; save.textContent='Save'; save.style.marginTop='8px';
+        save.addEventListener('click', function(){ if(input.value.trim()){ practiceArea.innerHTML='<div style="font-weight:700;color:var(--accent)">Saved: "'+escapeHtml(input.value.trim())+'"</div><div class="muted" style="margin-top:8px">You can bring this quietly into the next hour.</div>' } });
+        practiceArea.appendChild(p); practiceArea.appendChild(input); practiceArea.appendChild(save);
+      }
+
+      function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') }
+
+      // Scroll reveal
+      var revealEls = Array.prototype.slice.call(document.querySelectorAll('.reveal-on-scroll'));
+      function onScroll(){
+        if(prefersReduced()){ revealEls.forEach(function(el){ el.classList.add('revealed') }); window.removeEventListener('scroll', onScroll); return }
+        var h = window.innerHeight || document.documentElement.clientHeight;
+        revealEls.forEach(function(el){
+          var r = el.getBoundingClientRect();
+          if(r.top < h - 80) el.classList.add('revealed');
+        });
+      }
+      window.addEventListener('scroll', onScroll); window.addEventListener('load', onScroll);
+    })();
+  </script>
+</body>
+</html>

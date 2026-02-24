@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Blends Lab — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7f5f1;--card:#fff;--muted:#6d655c;--accent:#8f5b3a;--green:#5f8a5f}
+    *{box-sizing:border-box}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:var(--bg);margin:0;color:#2b2b2b}
+    header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:linear-gradient(90deg,rgba(255,255,255,0.6),transparent)}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    .wrap{max-width:980px;margin:26px auto;padding:0 20px}
+    .hero{display:flex;gap:18px;align-items:flex-start}
+    .panel{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(80,60,40,0.06);flex:1}
+    h1{margin:0 0 6px}
+    .lead{color:var(--muted);margin:0 0 12px}
+    .lab-grid{display:grid;grid-template-columns:1fr 320px;gap:16px;margin-top:12px}
+    .picker{display:grid;gap:10px}
+    label{font-size:0.9rem;color:var(--muted)}
+    select,input[type=range]{width:100%}
+    .result-card{border-radius:10px;padding:12px;border:1px solid #efe7df;background:linear-gradient(180deg,#fff,#fffaf6)}
+    .safety{font-size:0.9rem;color:#5b4638}
+    .btn{padding:10px 12px;background:var(--accent);color:#fff;border-radius:8px;border:none;font-weight:600}
+    .copy{background:#fff;border:1px solid #e8dfd6;color:var(--muted)}
+    .blend-list{display:flex;flex-direction:column;gap:8px}
+    .blend-item{padding:10px;border-radius:8px;border:1px dashed #efe0d6}
+    .small{font-size:0.9rem;color:var(--muted)}
+    footer{max-width:980px;margin:28px auto;padding:12px 20px;color:var(--muted);font-size:0.9rem}
+    @media(max-width:880px){.lab-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div style="width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,#9b6b3d,#6b8a5f);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">B</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:0.85rem;color:var(--muted)">Blends Lab</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Welcome</a>
+      <a href="services.html">Sessions</a>
+      <a href="blends.html">Blends Lab</a>
+      <a href="shop.html">Herbarium Shop</a>
+      <a href="about.html">Our Story</a>
+      <a href="book.html">Reserve</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="panel">
+        <h1>Blend Builder — craft a home blend</h1>
+        <p class="lead">Choose a scent vibe and we’ll suggest a simple, safety-focused dilution plus a printable blend card. Always follow patch-test guidance.</p>
+
+        <div class="lab-grid">
+          <div>
+            <div class="picker">
+              <label for="vibe">Desired vibe</label>
+              <select id="vibe">
+                <option value="calm">Calm & grounding</option>
+                <option value="focus">Clear thinking</option>
+                <option value="cheer">Bright uplift</option>
+                <option value="sleepy">Evening wind-down</option>
+              </select>
+
+              <label for="intensity">Intensity</label>
+              <input type="range" id="intensity" min="1" max="5" value="3">
+
+              <label for="skinType">Skin sensitivity</label>
+              <select id="skinType">
+                <option value="normal">Normal</option>
+                <option value="sensitive">Sensitive</option>
+                <option value="pregnant">Pregnant/breastfeeding</option>
+                <option value="pets">Have cats/birds</option>
+              </select>
+
+              <label for="carrier">Carrier size</label>
+              <select id="carrier">
+                <option value="10">10 mL (roller or bottle)</option>
+                <option value="30">30 mL</option>
+                <option value="100">100 mL</option>
+              </select>
+
+              <div style="display:flex;gap:8px;margin-top:8px">
+                <button class="btn" id="makeBlend">Generate Blend</button>
+                <button class="btn copy" id="copyBlend">Copy Card</button>
+              </div>
+            </div>
+          </div>
+
+          <aside>
+            <div class="result-card">
+              <h3 id="blendTitle">Blend preview</h3>
+              <div id="blendDesc" class="small">Choose options to see a suggested blend and a safe dilution guide.</div>
+              <hr style="margin:8px 0">
+              <div id="dilution" class="safety"></div>
+              <div style="height:8px"></div>
+              <div id="ingredients"></div>
+              <div style="height:8px"></div>
+              <div class="small"><strong>Quick safety:</strong> Perform a patch test before skin use. Avoid direct application to sensitive areas. This is not medical advice.</div>
+            </div>
+
+            <div style="height:12px"></div>
+
+            <div class="panel">
+              <h4>Popular starter blends</h4>
+              <div class="blend-list" id="popular">
+                <div class="blend-item"><strong>Gentle Calm</strong> — Lavender + Sweet Marjoram + Carrier (0.5-1% dilution)</div>
+                <div class="blend-item"><strong>Clear Focus</strong> — Rosemary + Lemon + Carrier (1-2% dilution)</div>
+                <div class="blend-item"><strong>Midsummer Bright</strong> — Sweet Orange + Bergamot + Carrier (1-2% dilution)</div>
+              </div>
+              <div style="margin-top:8px"><a class="btn" href="shop.html">Buy carriers & kits</a></div>
+            </div>
+          </aside>
+        </div>
+
+      </div>
+    </section>
+
+    <section style="margin-top:16px;display:grid;grid-template-columns:1fr 300px;gap:16px">
+      <div class="panel">
+        <h3>How dilution is calculated</h3>
+        <p class="small">Dilution is given as percent concentration and approximate drops per volume. We choose conservative ranges when sensitivity, pregnancy, or pets are noted. Use mild dilutions for rollers and topical use; inhalation in a diffuser typically uses fewer drops.</p>
+
+        <h4 style="margin-top:12px">Export and use</h4>
+        <p class="small">Click "Copy Card" to copy a plain-text blend card you can print or store in notes. The card includes the ingredient list, dilution, and safety reminders.</p>
+      </div>
+
+      <aside class="panel">
+        <h3>Safety corner</h3>
+        <p class="small">This tool provides guidance only. If pregnant, nursing, or under clinical care, consult a qualified clinician before topical or internal use. Keep blends out of reach of children and avoid use on pets without veterinary advice.</p>
+      </aside>
+    </section>
+  </main>
+
+  <footer>
+    <div style="max-width:980px;margin:0 auto;padding:12px 20px;color:var(--muted)">Questions? <a href="contact.html">Get in touch</a> • <a href="services.html">Book a session</a></div>
+  </footer>
+
+  <script>
+    const vibes = {
+      calm:{title:'Calm & grounding', oils:['Lavender','Cedarwood','Frankincense'],notes:'Earthy, soft, settling'},
+      focus:{title:'Clear thinking', oils:['Rosemary (cineole)','Basil','Lemon'],notes:'Crisp, clearing'},
+      cheer:{title:'Bright uplift', oils:['Sweet Orange','Bergamot','Grapefruit'],notes:'Sunny, expressive'},
+      sleepy:{title:'Evening wind-down', oils:['Lavender','Chamomile','Vetiver'],notes:'Warm, settling'}
+    };
+
+    function computeDilution(skinType, intensity, carrierMl){
+      // base percent by intensity: 1->0.5%, 3->1.5%, 5->3%
+      const base = {1:0.5,2:1,3:1.5,4:2.5,5:3}[intensity];
+      let pct = base;
+      if(skinType==='sensitive') pct = Math.min(1, pct);
+      if(skinType==='pregnant') pct = Math.min(0.5, pct);
+      if(skinType==='pets') pct = Math.min(1, pct);
+      // drops per 10mL approximation: 1% ~ 3 drops per 10mL
+      const dropsPer10 = Math.round(pct*3);
+      const dropsTotal = Math.round(dropsPer10 * (carrierMl/10));
+      return {pct: pct.toFixed(1)+'%',dropsPer10:`${dropsPer10} drops per 10 mL`,dropsTotal:dropsTotal};
+    }
+
+    function makeBlend(){
+      const vibe = document.getElementById('vibe').value;
+      const intensity = Number(document.getElementById('intensity').value);
+      const skinType = document.getElementById('skinType').value;
+      const carrier = Number(document.getElementById('carrier').value);
+
+      const spec = vibes[vibe];
+      const dilution = computeDilution(skinType,intensity,carrier);
+
+      const oils = spec.oils.slice(0,3);
+      const oilsList = oils.map((o,i)=>`${o} — ${i===0? 'primary' : 'support'}`).join('\n');
+
+      const title = `${spec.title} — ${carrier} mL`;
+      const desc = `${spec.notes} · ${oils.join(', ')}`;
+
+      const cardText = `Blend Card\n\nTitle: ${title}\nProfile: ${desc}\n\nIngredients:\n${oilsList}\n\nCarrier: ${carrier} mL\nDilution: ${dilution.pct} (${dilution.dropsPer10}; approx ${dilution.dropsTotal} drops total)\n\nUse: For topical use, perform a patch test. For inhalation, begin with 1-3 drops in diffuser. This information may support routine aromatherapy; it is not medical advice.`;
+
+      document.getElementById('blendTitle').textContent = title;
+      document.getElementById('blendDesc').textContent = desc;
+      document.getElementById('dilution').textContent = `Suggested dilution: ${dilution.pct} — ${dilution.dropsPer10} (${dilution.dropsTotal} drops total)`;
+      document.getElementById('ingredients').innerHTML = '<strong>Ingredients</strong><div class="small" style="margin-top:6px;white-space:pre-wrap">'+oilsList+'</div>';
+      document.getElementById('copyBlend').dataset.card = cardText;
+    }
+
+    document.getElementById('makeBlend').addEventListener('click', makeBlend);
+
+    document.getElementById('copyBlend').addEventListener('click', async (e)=>{
+      const txt = e.currentTarget.dataset.card;
+      if(!txt){alert('Generate a blend first');return}
+      try{await navigator.clipboard.writeText(txt);alert('Blend card copied');}catch(e){alert('Copy failed — select and copy manually');}
+    });
+
+    // initialize
+    makeBlend();
+  </script>
+</body>
+</html>

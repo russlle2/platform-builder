@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Rates — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1724;--card:rgba(255,255,255,0.06);--glass:rgba(255,255,255,0.08);--accent:#7dd3fc;--muted:#cbd5e1}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--muted);background:radial-gradient(1200px 600px at 10% 10%, rgba(34,197,94,0.03), transparent),url('assets/img/pattern.svg');background-color:var(--bg);-webkit-font-smoothing:antialiased}
+    header{backdrop-filter:blur(6px);background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-bottom:1px solid rgba(255,255,255,0.03);position:sticky;top:0}
+    .nav{display:flex;gap:18px;align-items:center;padding:18px 28px}
+    .brand{font-weight:600;color:#fff}
+    .nav a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:8px}
+    .nav a:hover{background:rgba(255,255,255,0.02);color:var(--accent)}
+    main{max-width:980px;margin:36px auto;padding:0 20px}
+    .hero{display:grid;grid-template-columns:1fr;gap:18px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:28px;border-radius:14px;border:1px solid rgba(255,255,255,0.04)}
+    h1{color:#fff;margin:0 0 6px;font-size:22px}
+    p.lead{margin:0;color:var(--muted);line-height:1.5}
+    .plans{display:flex;gap:16px;margin-top:18px;flex-wrap:wrap}
+    .card{flex:1 1 260px;background:var(--card);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .price{font-size:20px;color:#fff;margin:10px 0}
+    .features{font-size:14px;color:var(--muted);line-height:1.5}
+    .cta{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:10px;background:var(--accent);color:#002;} 
+    .note{font-size:13px;color:var(--muted);margin-top:12px}
+    .small{font-size:13px;color:var(--muted)}
+    footer{margin:36px 0 120px;color:var(--muted);font-size:13px}
+    .mood{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+    .mood button{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);padding:8px 10px;border-radius:999px}
+    .mood button.active{background:rgba(125,211,252,0.12);border-color:rgba(125,211,252,0.2);color:var(--accent)}
+    @media(max-width:560px){.plans{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="nav" aria-label="Primary">
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <a href="index.html">Start</a>
+      <a href="specialties.html">Offerings</a>
+      <a href="approach.html">Method</a>
+      <a href="fees.html">Rates</a>
+      <a href="faq.html">FAQ</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+  <main>
+    <section class="hero" aria-labelledby="rates-heading">
+      <div>
+        <h1 id="rates-heading">Practical options for regular and short-term support</h1>
+        <p class="lead">I offer ongoing membership-style support and smaller, time-limited packages. Pick the structure that fits the kind of work you want: steady presence or a focused series to address a specific question.</p>
+        <div class="mood" aria-hidden="false" id="moodBtns">
+          <button data-mood="overwhelmed">Overwhelmed</button>
+          <button data-mood="stuck">Stuck in a pattern</button>
+          <button data-mood="transition">Transitioning</button>
+          <button data-mood="focus">Seeking focus</button>
+        </div>
+      </div>
+      <div>
+        <div class="plans" id="plans">
+          <div class="card" data-plan="ongoing">
+            <strong>Ongoing Support Plan</strong>
+            <div class="price">$160 / session (monthly membership)</div>
+            <div class="features">Regular weekly or biweekly sessions, flexible scheduling, priority booking window, and check-ins via secure messaging between sessions.</div>
+            <a class="cta" href="{{PRIMARY_CTA_URL}}">Join the Plan</a>
+            <div class="note">Membership billed monthly. Cancel any time with 30 days' notice. Not a crisis service.</div>
+          </div>
+          <div class="card" data-plan="series">
+            <strong>Focused Series — 4 sessions</strong>
+            <div class="price">$600 for four 50-minute sessions</div>
+            <div class="features">A contained series for a defined question or skill practice. Scheduled over 4–8 weeks depending on need.</div>
+            <a class="cta" href="{{PRIMARY_CTA_URL}}">Reserve a Series</a>
+            <div class="note">Intended for time-limited goals; may be followed by transitioning to the ongoing plan.</div>
+          </div>
+          <div class="card" data-plan="single">
+            <strong>Single Sessions</strong>
+            <div class="price">$190 for a one-time 50-minute session</div>
+            <div class="features">Good for check-ins, information-gathering, or to get a sense of the work. No obligation to continue.</div>
+            <a class="cta" href="{{PRIMARY_CTA_URL}}">Book a Session</a>
+            <div class="note">Single sessions available as scheduling permits. Sliding scale considered case-by-case.</div>
+          </div>
+        </div>
+      </div>
+      <div style="grid-column:1/-1;margin-top:8px" class="small">If finances are a barrier, please mention this when you contact me; I offer occasional reduced-rate openings. Sessions are confidential within legal limits; see the FAQ for more on boundaries and crisis guidance.</div>
+    </section>
+    <section style="margin-top:18px" class="hero">
+      <h2 style="color:#fff;margin:0 0 8px">How I think about pricing</h2>
+      <p class="lead">I aim to make decisions about care straightforward: membership supports ongoing, skills-focused work and continuity; series packages give a clear container for concentrated effort; single sessions are available when you need a one-off appointment. There are no promises of specific outcomes — therapy is collaborative and depends on many factors.</p>
+    </section>
+    <footer>
+      <div>Questions? Call <a href="tel:{{PHONE}}" style="color:var(--accent)">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}" style="color:var(--accent)">{{EMAIL}}</a>.</div>
+      <div style="margin-top:8px">Office located in {{CITY}}, {{STATE}}. All care follows professional confidentiality with limits (detailed in FAQ).</div>
+    </footer>
+  </main>
+  <script>
+    (function(){
+      const moodBtns=document.getElementById('moodBtns');
+      const planCards=document.querySelectorAll('.card');
+      const accent='var(--accent)';
+      moodBtns.addEventListener('click',e=>{
+        if(e.target.tagName!=='BUTTON')return;
+        document.querySelectorAll('#moodBtns button').forEach(b=>b.classList.remove('active'));
+        e.target.classList.add('active');
+        const mood=e.target.dataset.mood;
+        // simple mapping
+        const map={overwhelmed:'ongoing',stuck:'series',transition:'ongoing',focus:'series'};
+        const match=map[mood]||'single';
+        planCards.forEach(card=>{
+          if(card.dataset.plan===match){
+            card.style.borderColor='rgba(125,211,252,0.25)';
+            card.style.boxShadow='0 8px 20px rgba(2,6,23,0.6)';
+          }else{card.style.borderColor='rgba(255,255,255,0.03)';card.style.boxShadow='none';}
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

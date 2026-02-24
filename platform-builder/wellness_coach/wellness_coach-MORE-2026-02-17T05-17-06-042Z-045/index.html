@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{BUSINESS_NAME}} — Practical coaching for steady wellbeing</title>
+  <meta name="description" content="A practical 30-day map to steady habits, outcomes, and daily frameworks. Events + guided practices for sustained change.">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="page-root">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="/">{{BUSINESS_NAME}}</a>
+      <nav class="main-nav" aria-label="Main">
+        <a href="/about.html">Who I Am</a>
+        <a href="/programs.html">Pathways</a>
+        <a href="/services.html">Workshops</a>
+        <a href="/pricing.html">Costs</a>
+        <a href="/testimonials.html">Proof</a>
+        <a href="/book.html" class="cta-nav">Book Time</a>
+        <a href="/contact.html">Connect</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <h1 class="hero-title">A practical path to steady wellbeing — small, trackable shifts.</h1>
+          <p class="hero-sub">Join guided events and a 30-day framework designed to turn intentions into measurable rhythms without extra stress.</p>
+          <div class="hero-actions">
+            <a class="btn primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            <a class="btn ghost" href="/programs.html">Explore Pathways</a>
+          </div>
+          <p class="contact-line">Questions? Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</p>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <svg class="pattern" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <pattern id="p" patternUnits="userSpaceOnUse" width="40" height="40">
+                <rect width="40" height="40" fill="rgba(255,255,255,0.02)"></rect>
+                <path d="M0 20 L20 0 L40 20" stroke="rgba(255,255,255,0.04)" fill="none"></path>
+              </pattern>
+            </defs>
+            <rect width="600" height="400" fill="url(#p)"></rect>
+          </svg>
+          <div class="visual-card">
+            <h3>Plan + Practice</h3>
+            <p>Pick 1–3 outcomes. We turn them into a daily, 30-step map you can follow from day one.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLAN (overview & proof gallery) -->
+    <section class="plan wrap">
+      <div class="section-head"><h2>How the 30-day path works</h2>
+      <p class="muted">Outcomes first. Micro-habits next. Events and check-ins to keep you steady.</p></div>
+      <div class="columns">
+        <div class="col">
+          <h3>Choose what matters</h3>
+          <p>Select the outcomes that matter today; the map adapts to those priorities and suggests daily focus points.</p>
+          <ul>
+            <li>No complex rules — one small action per day.</li>
+            <li>Weekly themed events to practice the habit with others.</li>
+            <li>Simple diagnostics to keep adjustments gentle and effective.</li>
+          </ul>
+        </div>
+        <div class="col">
+          <h3>Proof Gallery</h3>
+          <div id="proof-gallery" class="proof-gallery" aria-live="polite">
+            <div class="testimonial" data-index="0">
+              <p class="quote">"I finally had a map I could follow — it made the daily work feel doable."</p>
+              <p class="from">— J., participant</p>
+            </div>
+            <div class="testimonial" data-index="1" hidden>
+              <p class="quote">"The events and weekly frames are what kept me consistent."</p>
+              <p class="from">— K., attendee</p>
+            </div>
+            <div class="testimonial" data-index="2" hidden>
+              <p class="quote">"Simple nudges that added up to a clearer routine."</p>
+              <p class="from">— R., client</p>
+            </div>
+            <div class="proof-controls">
+              <button id="proof-prev" aria-label="Previous testimonial">‹</button>
+              <button id="proof-next" aria-label="Next testimonial">›</button>
+            </div>
+            <div class="badges">
+              <button class="badge" data-tip="Led 40+ small-group events">Events Leader</button>
+              <button class="badge" data-tip="Three-year community program">Community Care</button>
+              <button class="badge" data-tip="Practical frameworks used in live workshops">Workshop Methods</button>
+            </div>
+            <div id="badge-tip" class="badge-tip" aria-hidden="true"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DIAGNOSTIC (progress meter: select goals) -->
+    <section class="diagnostic wrap">
+      <div class="section-head"><h2>Start your 30-day path</h2>
+      <p class="muted">Pick up to three outcomes and see the path we suggest for your first month.</p></div>
+      <form id="goal-form" class="goal-form" aria-describedby="goal-help">
+        <div id="goal-help" class="muted">Select goals below — the map will update live.</div>
+        <fieldset>
+          <label><input type="checkbox" name="goals" value="sleep"> Better sleep rhythm</label>
+          <label><input type="checkbox" name="goals" value="movement"> Gentle daily movement
+          </label>
+          <label><input type="checkbox" name="goals" value="focus"> Clearer focus blocks</label>
+          <label><input type="checkbox" name="goals" value="stress"> Manage daily tension</label>
+          <label><input type="checkbox" name="goals" value="nutrition"> Simple meal patterns</label>
+        </fieldset>
+      </form>
+
+      <div class="path-map" aria-hidden="false">
+        <div class="map-head">
+          <h3>Your 30-day map</h3>
+          <p class="muted">Days filled: <span id="days-filled">0</span>/30</p>
+        </div>
+        <svg id="timeline" class="timeline" viewBox="0 0 900 60" role="img" aria-label="30 day timeline"></svg>
+        <div id="micro-list" class="micro-list"></div>
+      </div>
+    </section>
+
+    <!-- MICRO HABITS -->
+    <section class="micro_habits wrap">
+      <div class="section-head"><h2>Micro-habits to anchor your days</h2>
+      <p class="muted">Tiny, repeatable practices that build the outcome you chose.</p></div>
+      <div class="habit-grid">
+        <article>
+          <h4>Night reset</h4>
+          <p>Three actions that prep the next day: wind-down, plan, set one priority.</p>
+        </article>
+        <article>
+          <h4>Movement anchor</h4>
+          <p>Short, guided movement breaks (5–12 minutes) embedded into your day.</p>
+        </article>
+        <article>
+          <h4>Focus block ritual</h4>
+          <p>Micro rituals that protect a 25–45 minute focused period.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- PRICING -->
+    <section class="pricing wrap">
+      <div class="section-head"><h2>Options — framed around outcomes, not features</h2>
+      <p class="muted">Choose a pathway that matches how much guided structure you want.</p></div>
+      <div class="price-cards">
+        <div class="card">
+          <h3>Self Path</h3>
+          <p class="price">$49</p>
+          <p>Access to the 30-day map, weekly email prompts, and one self-paced event.</p>
+          <a class="btn" href="/pricing.html">View details</a>
+        </div>
+        <div class="card featured">
+          <h3>Guided Path</h3>
+          <p class="price">$199</p>
+          <p>Includes live event series, small-group check-ins, and custom adjustments.</p>
+          <a class="btn primary" href="/book.html">Reserve a spot</a>
+        </div>
+        <div class="card">
+          <h3>Team / Group</h3>
+          <p class="price">Custom</p>
+          <p>Tailored event series for workplaces and communities. Group pricing and schedule.</p>
+          <a class="btn" href="/contact.html">Request a quote</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta wrap">
+      <div class="cta-inner">
+        <h2>Ready to map your next month?</h2>
+        <p class="muted">Sign up for an event series or book a guided start. Small actions, steady results.</p>
+        <div class="cta-actions">
+          <a class="btn primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <a class="btn ghost" href="/book.html">Schedule a consult</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-left">
+        <strong>{{BUSINESS_NAME}}</strong>
+        <div class="muted">Serving {{CITY}}, {{STATE}}. Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      </div>
+      <nav class="footer-nav">
+        <a href="/about.html">About</a>
+        <a href="/programs.html">Pathways</a>
+        <a href="/pricing.html">Pricing</a>
+        <a href="/contact.html">Contact</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

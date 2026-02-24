@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Pricing — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Practical aromatherapy experiences that may support calm and energy — transparent pricing and a VIP Day offering.">
+  <style>
+    :root{
+      --bg:#f6efe6;--card:#fff7f0;--ink:#2b2b2b;--muted:#6b6b6b;--accent:#7a4b2d;--accent-2:#b78a59;--glass:rgba(255,255,255,0.6);
+      --radius:12px;--pad:20px;--max:960px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;line-height:1.45;color:var(--ink);background:linear-gradient(180deg,var(--bg),#fff);padding:28px}
+    .wrap{max-width:var(--max);margin:0 auto}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent-2),var(--accent));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none;font-weight:600}
+    nav a.active{color:var(--accent)}
+    .hero{background:var(--card);padding:28px;border-radius:var(--radius);display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:center;margin-bottom:20px}
+    .hero h1{margin:0;font-size:1.6rem}
+    .hero p{margin:8px 0;color:var(--muted)}
+    .hero .cta{display:inline-block;padding:10px 14px;border-radius:8px;background:var(--accent);color:#fff;text-decoration:none;font-weight:700}
+    .tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:18px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.75),var(--glass));padding:20px;border-radius:12px;box-shadow:0 6px 18px rgba(120,80,60,0.08)}
+    .price{font-size:1.4rem;font-weight:800;color:var(--accent)}
+    .muted{color:var(--muted);font-size:0.95rem}
+    .feature-list{margin:10px 0;padding-left:18px}
+    .small{font-size:0.85rem;color:var(--muted)}
+    .notice{background:#fff6ee;padding:12px;border-radius:10px;border:1px solid rgba(122,75,45,0.06);}
+
+    /* Session Planner widget */
+    .planner{margin-top:18px;padding:18px;background:#fff;border-radius:12px;border:1px solid rgba(0,0,0,0.03)}
+    .planner label{display:block;font-weight:700;margin-bottom:6px;font-size:0.95rem}
+    .planner .row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+    .planner select,.planner input[type="text"],.planner textarea{padding:8px;border-radius:8px;border:1px solid #e5dcd1;background:transparent;min-width:160px}
+    .tags button{padding:6px 10px;border-radius:8px;border:1px solid #e6d6c8;background:transparent;color:var(--ink);cursor:pointer}
+    .tags button.active{background:var(--accent);color:#fff;border-color:transparent}
+    .planner .actions{display:flex;gap:8px;align-items:center}
+    .btn{padding:8px 12px;border-radius:8px;border:0;background:var(--accent);color:#fff;font-weight:700;cursor:pointer}
+    .btn.secondary{background:var(--accent-2)}
+    .summary{white-space:pre-wrap;background:#fffdf8;padding:12px;border-radius:8px;border:1px dashed rgba(122,75,45,0.12);margin-top:10px}
+
+    /* Reveal animations */
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity 500ms ease,transform 500ms ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion: reduce){
+      .reveal{transition:none;opacity:1;transform:none}
+    }
+
+    footer{margin-top:28px;color:var(--muted);font-size:0.9rem}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">A</div>
+        <div>
+          <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+          <div class="muted" style="font-size:0.85rem">Gentle scent strategies for focused life</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="services.html">Offerings</a>
+        <a href="blends.html">Blends Lab</a>
+        <a href="shop.html">Shoppe</a>
+        <a href="pricing.html" class="active">Rates</a>
+        <a href="about.html">About</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <section class="hero reveal" id="hero">
+      <div>
+        <h1>Transparent options for practiced scent work</h1>
+        <p>Choose a focused session, a custom blend kit, or elevate your experience with a one-day VIP immersion. Our offers are safety-minded and designed to be practical — scent may support mood and clarity when used thoughtfully.</p>
+        <p class="muted">Questions about pregnancy, pets, or sensitivities? See our FAQ below.</p>
+        <p><a class="cta" href="book.html">Start a plan</a></p>
+      </div>
+      <aside class="notice">
+        <strong>VIP Day</strong>
+        <div class="muted">An intensive collaborative day to design a seasonal routine and 3 bespoke blends (virtual follow-up included).</div>
+        <div style="margin-top:8px;font-weight:800;color:var(--accent)">$1,800 — limited bookings</div>
+      </aside>
+    </section>
+
+    <section aria-labelledby="pricing" class="reveal" id="pricing">
+      <h2 style="margin-bottom:8px">Current options</h2>
+      <div class="tiers">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-weight:800">Focused Session</div>
+              <div class="muted">45–60 minutes, remote or in-studio</div>
+            </div>
+            <div class="price">$150</div>
+          </div>
+          <ul class="feature-list">
+            <li>Intake + scent exploration</li>
+            <li>Suggested home ritual & dilution guide</li>
+            <li>Email aftercare summary (48 hrs)</li>
+          </ul>
+          <div class="small">A single, practical appointment for a pressing intention.</div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-weight:800">Essentials Bundle</div>
+              <div class="muted">3 sessions + starter blends</div>
+            </div>
+            <div class="price">$420</div>
+          </div>
+          <ul class="feature-list">
+            <li>Three guided sessions across 6 weeks</li>
+            <li>Two travel blends included</li>
+            <li>Simple tracking prompts</li>
+          </ul>
+          <div class="small">For steady practice with clear check-ins.</div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-weight:800">Bespoke VIP Day</div>
+              <div class="muted">Full-day design intensive</div>
+            </div>
+            <div class="price">$1,800</div>
+          </div>
+          <ul class="feature-list">
+            <li>Custom blends (3) + routine mapping</li>
+            <li>Hands-on creation + kit provided</li>
+            <li>Two-week virtual follow-up</li>
+          </ul>
+          <div class="small">A focused deep-dive to reset routine and build takeaways you can use immediately.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card reveal" style="margin-top:16px">
+      <h3 style="margin-top:0">Plan a session — quick builder</h3>
+      <div class="planner" id="planner">
+        <label for="goal">Primary intention</label>
+        <input id="goal" type="text" placeholder="e.g., clearer sleep routine, morning focus" />
+
+        <label>Preferred scent families</label>
+        <div class="tags row">
+          <button type="button" data-val="Citrus">Citrus</button>
+          <button type="button" data-val="Floral">Floral</button>
+          <button type="button" data-val="Woody">Woody</button>
+          <button type="button" data-val="Herbal">Herbal</button>
+          <button type="button" data-val="Spicy">Spicy</button>
+        </div>
+
+        <div class="row">
+          <div style="flex:1">
+            <label for="length">Session length</label>
+            <select id="length"><option>30 minutes</option><option selected>60 minutes</option><option>VIP Day</option></select>
+          </div>
+          <div style="flex:1">
+            <label for="sensitivity">Scent sensitivity</label>
+            <select id="sensitivity"><option>Low</option><option>Moderate</option><option>High</option></select>
+          </div>
+        </div>
+
+        <div class="row" style="align-items:center">
+          <input id="pets" type="checkbox" /> <label for="pets" style="margin:0 0 0 6px">I have pets in the home</label>
+          <input id="preg" type="checkbox" style="margin-left:12px" /> <label for="preg" style="margin:0 0 0 6px">Pregnancy considerations</label>
+        </div>
+
+        <div class="actions">
+          <button class="btn" id="build">Build plan</button>
+          <button class="btn secondary" id="clear">Reset</button>
+          <div style="margin-left:auto" class="muted">Copy a summary to share with your practitioner.</div>
+        </div>
+
+        <div id="summary" class="summary" aria-live="polite">No plan yet — add your details and click Build plan.</div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="btn" id="copy">Copy summary</button>
+          <a class="btn secondary" href="book.html">Proceed to booking</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="reveal" style="margin-top:16px">
+      <h3>Notes on safety</h3>
+      <p class="muted">We avoid medical claims. Aromatherapy may support subjective comfort or focus when used responsibly. Always perform a patch test and follow dilution guidance. If pregnant, nursing, or living with pets, consult before use.</p>
+    </section>
+
+    <footer>
+      <div class="muted">Ready to book? Call <strong>{{PHONE}}</strong> or <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>. Located in {{CITY}}, {{STATE}}.</div>
+    </footer>
+  </div>
+
+  <script>
+    // Scroll-triggered reveal (prefers-reduced-motion honored)
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const items = document.querySelectorAll('.reveal');
+      if(prefersReduced){ items.forEach(i=>i.classList.add('visible')); return; }
+      const obs = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+      },{threshold:0.12});
+      items.forEach(i=>obs.observe(i));
+    })();
+
+    // Session Planner logic
+    (function(){
+      const tags = document.querySelectorAll('.tags button');
+      const build = document.getElementById('build');
+      const clear = document.getElementById('clear');
+      const copyBtn = document.getElementById('copy');
+      const summary = document.getElementById('summary');
+      const goal = document.getElementById('goal');
+      const length = document.getElementById('length');
+      const sensitivity = document.getElementById('sensitivity');
+      const pets = document.getElementById('pets');
+      const preg = document.getElementById('preg');
+
+      tags.forEach(t=>t.addEventListener('click',()=>t.classList.toggle('active')));
+
+      function currentPlan(){
+        const chosen = Array.from(tags).filter(t=>t.classList.contains('active')).map(t=>t.dataset.val).join(', ') || 'None listed';
+        const p = [];
+        p.push('Intention: '+(goal.value||'—'));
+        p.push('Preferred families: '+chosen);
+        p.push('Session: '+length.value);
+        p.push('Sensitivity: '+sensitivity.value);
+        p.push('Pets present: '+(pets.checked? 'Yes':'No'));
+        p.push('Pregnancy considerations: '+(preg.checked? 'Yes':'No'));
+        p.push('\nSafety notes: Perform a patch test. Use recommended dilution. Avoid essential oils around cats and consult with a healthcare provider if pregnant or nursing.');
+        return p.join('\n');
+      }
+
+      build.addEventListener('click',()=>{ summary.textContent = currentPlan(); });
+      clear.addEventListener('click',()=>{
+        goal.value=''; tags.forEach(t=>t.classList.remove('active')); length.selectedIndex=1; sensitivity.selectedIndex=0; pets.checked=false; preg.checked=false; summary.textContent='No plan yet — add your details and click Build plan.';
+      });
+
+      copyBtn.addEventListener('click',async ()=>{
+        const text = summary.textContent;
+        try{ await navigator.clipboard.writeText(text); copyBtn.textContent='Copied'; setTimeout(()=>copyBtn.textContent='Copy summary',1500);}catch(e){ alert('Copy unavailable — select and copy manually.'); }
+      });
+    })();
+  </script>
+</body>
+</html>

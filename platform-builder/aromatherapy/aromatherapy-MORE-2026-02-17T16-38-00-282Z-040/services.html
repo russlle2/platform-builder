@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Offerings — {{BUSINESS_NAME}}</title>
+<style>
+:root{--brand:#6b4f3a;--accent:#d9a066;--muted:#6d6d6d;--bg:#fffdf9}
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;margin:0;color:#2b2b2b;background:var(--bg);line-height:1.4}
+.header{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:1px solid rgba(0,0,0,0.05);position:relative}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:46px;height:46px;border-radius:8px;background:linear-gradient(135deg,var(--brand),var(--accent));display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+nav a{margin-left:14px;text-decoration:none;color:var(--muted);font-weight:600;font-size:14px}
+.hero{display:grid;grid-template-columns:1fr 360px;gap:28px;padding:48px 24px;background-image:linear-gradient(180deg,rgba(255,255,255,0.9),transparent);position:relative;overflow:hidden}
+.pattern{position:absolute;right:-120px;top:-40px;opacity:0.08;width:420px;height:420px;pointer-events:none}
+.hero h1{margin:0;color:var(--brand);font-size:28px}
+.hero p{color:var(--muted);margin-top:12px}
+.card{background:white;border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(32,24,20,0.06)}
+.service-list{display:flex;flex-direction:column;gap:12px}
+.service{display:flex;justify-content:space-between;align-items:center;padding:12px;border:1px dashed rgba(0,0,0,0.04);border-radius:10px}
+.service h3{margin:0;font-size:16px}
+.price{font-weight:700;color:var(--brand)}
+.toggle{display:flex;gap:10px;align-items:center;padding:8px;background:#f7f5f3;border-radius:999px}
+.switch{width:44px;height:24px;background:#eee;border-radius:16px;position:relative;cursor:pointer}
+.knob{width:18px;height:18px;background:white;border-radius:50%;position:absolute;top:3px;left:3px;transition:left .28s cubic-bezier(.2,.9,.3,1)}
+.switch.on{background:var(--accent)}
+.switch.on .knob{left:23px}
+.small{font-size:13px;color:var(--muted)}
+.fineprint{font-size:12px;color:#8c8c8c;margin-top:10px}
+.cta{display:inline-block;padding:10px 14px;background:var(--brand);color:white;border-radius:8px;text-decoration:none;font-weight:700}
+.footer{padding:28px 24px;color:var(--muted);font-size:13px;border-top:1px solid rgba(0,0,0,0.04)}
+.badge-row{display:flex;gap:10px;margin-top:14px}
+.badge{background:#fff2e8;color:var(--brand);padding:6px 8px;border-radius:8px;font-size:13px;position:relative}
+.tooltip{position:absolute;bottom:110%;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:8px;border-radius:6px;font-size:12px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .18s}
+.badge:hover .tooltip{opacity:1}
+</style>
+</head>
+<body>
+<header class="header">
+<div class="brand">
+<div class="logo">A</div>
+<div>
+<div style="font-weight:700">{{BUSINESS_NAME}}</div>
+<div class="small">A modern approach to botanical ritual</div>
+</div>
+</div>
+<nav>
+<a href="index.html">Nest</a>
+<a href="services.html">Offerings</a>
+<a href="blends.html">Blends</a>
+<a href="shop.html">Boutique</a>
+<a href="pricing.html">Invest</a>
+<a href="about.html">The Story</a>
+<a href="book.html">{{PRIMARY_CTA_LABEL}}</a>
+<a href="contact.html">Say Hi</a>
+</nav>
+</header>
+
+<main>
+<section class="hero">
+<div>
+<h1>Sessions & scent coaching that may support calmer rhythms</h1>
+<p>I offer thoughtful, safety-minded sessions and small education moments for people curious about scent as a supportive ritual. Sessions blend practical guidance, dilution safety, and a selection of botanicals to suit your daily rhythm.</p>
+<div style="margin-top:18px" class="card">
+<div style="display:flex;justify-content:space-between;align-items:center">
+<strong>Book a first session</strong>
+<a class="cta" href="{{PRIMARY_CTA_URL}}">Reserve a welcome visit</a>
+</div>
+<p class="small fineprint">Sessions are informational and may support wellbeing; they are not medical care. Please review the FAQ for safety notes.</p>
+</div>
+</div>
+
+<aside class="card">
+<div style="display:flex;justify-content:space-between;align-items:center">
+<div>
+<div style="font-weight:700">Quick pricing view</div>
+<div class="small">Toggle between single-session and package pricing</div>
+</div>
+<div class="toggle">
+<div class="small">Single</div>
+<div id="switch" class="switch" role="button" aria-pressed="false"><div class="knob"></div></div>
+<div class="small">Package</div>
+</div>
+</div>
+
+<div style="margin-top:12px" class="service-list">
+<div class="service">
+<h3>Intro session — 50 minutes</h3>
+<div><div class="price" data-single="95" data-package="350">—</div></div>
+</div>
+<div class="service">
+<h3>Focused check-in — 25 minutes</h3>
+<div><div class="price" data-single="60" data-package="220">—</div></div>
+</div>
+<div class="service">
+<h3>Home practice consult — 35 minutes</h3>
+<div><div class="price" data-single="75" data-package="280">—</div></div>
+</div>
+</div>
+
+<p class="fineprint">Package numbers animate when you toggle. Packages offer a saving and may be used over a season.</p>
+</aside>
+</section>
+
+<section style="padding:36px 24px">
+<div class="card">
+<h2 style="margin-top:0">What I focus on</h2>
+<ul style="margin:12px 0 0 18px;color:var(--muted)">
+<li>Gentle scent introductions and scent-safety education.</li>
+<li>Practical dilution guidance, patch test steps, and storage tips.</li>
+<li>Guidance on using aroma for simple daily rituals that may support mood or transitions.</li>
+</ul>
+<div class="badge-row">
+<div class="badge">Certified Aromatherapist<div class="tooltip">Training in botanical chemistry and safety-forward guidance.</div></div>
+<div class="badge">Safety-first protocols<div class="tooltip">Includes dilution charts and patch test guidance.</div></div>
+</div>
+</div>
+</section>
+
+<section style="padding:12px 24px">
+<div class="card">
+<h2 style="margin-top:0">Notes on safety</h2>
+<p class="small">I prioritize safety: I avoid strong medical claims and always discuss dilution for adults, children, and pets. If you are pregnant, breastfeeding, or have complex medical issues, we will review appropriateness and consult patch-testing. Essential oils are potent — a patch test is encouraged before topical use.</p>
+</div>
+</section>
+
+</main>
+
+<footer class="footer">
+<div>Call: {{PHONE}} • Email: {{EMAIL}}</div>
+<div style="margin-top:8px">Serving {{CITY}}, {{STATE}} • <a href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+</footer>
+
+<script>
+/* Pricing comparator logic */
+(function(){
+const switchEl=document.getElementById('switch');
+let packageMode=false;
+const prices=document.querySelectorAll('.price');
+function animateNumber(el,start,end,duration=400){
+const startNum=parseFloat(start)||0;
+const endNum=parseFloat(end)||0;
+const startTime=performance.now();
+function tick(now){
+const t=Math.min(1,(now-startTime)/duration);
+const val = startNum + (endNum-startNum)*t;
+el.textContent= Math.round(val);
+if(t<1) requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+}
+function toggle(mode){
+prices.forEach(p=>{
+const single=p.dataset.single.replace(/[^0-9.]/g,'')||0;
+const pack=p.dataset.package.replace(/[^0-9.]/g,'')||0;
+const from = parseFloat(p.textContent)|| (mode?single:pack);
+const to = mode?pack:single;
+animateNumber(p,from,to,500);
+});
+}
+switchEl.addEventListener('click',function(){
+packageMode=!packageMode;
+switchEl.classList.toggle('on',packageMode);
+switchEl.setAttribute('aria-pressed',String(packageMode));
+toggle(packageMode);
+});
+// initialize to single
+prices.forEach(p=>{p.textContent = p.dataset.single.replace(/[^0-9.]/g,'')});
+})();
+</script>
+</body>
+</html>

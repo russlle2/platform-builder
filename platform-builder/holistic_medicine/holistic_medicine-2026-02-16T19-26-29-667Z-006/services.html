@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{{BUSINESS_NAME}} — Offerings</title>
+  <style>
+    :root{--brand:#7C3AED;--accent:#F97316;--bg1:linear-gradient(180deg,#FFF7ED 0%, #FFFBEB 50%);--glass:rgba(255,255,255,0.7);--muted:#6B7280;--card:#ffffff;}
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,'Helvetica Neue',Arial}
+    body{background:var(--bg1);color:#0f172a;display:flex;flex-direction:column;min-height:100vh}
+    header{position:sticky;top:0;z-index:30;background:rgba(255,255,255,0.6);backdrop-filter:blur(6px);border-bottom:1px solid rgba(15,23,42,0.04)}
+    .nav{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px}
+    .logo{display:flex;align-items:center;gap:12px}
+    .logo .mark{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--brand),#4F46E5);display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    nav a{margin-left:18px;color:var(--muted);text-decoration:none;font-weight:600}
+
+    main{flex:1;max-width:1200px;margin:28px auto;padding:28px;position:relative}
+    /* split diagonal layout */
+    .split{display:grid;grid-template-columns:1fr 480px;gap:28px;align-items:stretch}
+    .diagonal{position:relative;overflow:hidden;border-radius:18px}
+    .diagonal:before{content:'';position:absolute;inset:0;background:linear-gradient(120deg, rgba(124,58,237,0.06), rgba(249,115,22,0.04));transform:skewX(-12deg) translateX(-10%);pointer-events:none}
+    .card{background:var(--card);padding:24px;border-radius:14px;box-shadow:0 6px 30px rgba(15,23,42,0.06)}
+
+    /* inline SVG pattern background */
+    .hero{display:flex;flex-direction:column;justify-content:center;padding:40px;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400"><defs><linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="%237C3AED" stop-opacity="0.18"/><stop offset="1" stop-color="%23F97316" stop-opacity="0.08"/></linearGradient></defs><rect x="0" y="0" width="600" height="400" fill="white"/><g fill="none" stroke="%237C3AED" stroke-opacity="0.06" stroke-width="2"><path d="M0 100 Q150 50 300 100 T600 100"/></g><g transform="translate(40,40)" fill="url(%23g1)"><circle cx="90" cy="90" r="80"/></g></svg>');background-size:cover;border-radius:14px}
+
+    h1{font-size:28px;margin:0 0 8px}
+    p.lead{margin:0;color:var(--muted)}
+
+    .service-list{display:flex;flex-direction:column;gap:12px;margin-top:18px}
+    .service{display:flex;gap:14px;align-items:flex-start}
+    .service .dot{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--brand),#4F46E5);display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    .muted{color:var(--muted);font-size:14px}
+
+    .ripple{margin-top:18px;padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(124,58,237,0.04),rgba(249,115,22,0.02));border:1px solid rgba(124,58,237,0.04)}
+
+    .cta-row{display:flex;gap:12px;margin-top:20px}
+    .btn{padding:10px 16px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
+    .primary{background:linear-gradient(90deg,var(--brand),#4F46E5);color:white}
+    .secondary{background:transparent;border:1px solid rgba(15,23,42,0.06);color:var(--muted)}
+
+    .faq{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
+    .faq-item{padding:14px;border-radius:10px;border:1px solid rgba(15,23,42,0.04);background:var(--glass)}
+
+    footer{max-width:1100px;margin:28px auto 40px;padding:18px;color:var(--muted);text-align:center}
+
+    @media (max-width:900px){.split{grid-template-columns:1fr}.faq{grid-template-columns:1fr}.nav a{display:none}.logo{gap:8px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="logo"><div class="mark">HM</div><div><strong>{{BUSINESS_NAME}}</strong><div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div></div></div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="services.html">Offerings</a>
+        <a href="conditions.html">Concerns</a>
+        <a href="approach.html">How We Work</a>
+        <a href="book.html">Reserve</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="split">
+      <section class="diagonal card hero">
+        <h1>Whole-person care that meets you where life is right now</h1>
+        <p class="lead">We blend evidence-informed therapies, nutrition science, lifestyle medicine and gentle hands-on care to create targeted plans for busy people who want energy, clarity and resilience.</p>
+        <div class="service-list">
+          <div class="service"><div class="dot">1</div><div><strong>Personalized integrative care</strong><div class="muted">Tailored plans addressing mind, body, and environment.</div></div></div>
+          <div class="service"><div class="dot">2</div><div><strong>Precision nutrition & digestive resetting</strong><div class="muted">Food as medicine, intolerance guidance, and gut-support strategies.</div></div></div>
+          <div class="service"><div class="dot">3</div><div><strong>Stress resiliency & sleep coaching</strong><div class="muted">Tools to calm nervous system and restore restorative sleep.</div></div></div>
+        </div>
+        <div class="cta-row">
+          <a class="btn primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <a class="btn secondary" href="about.html">Meet {{PRACTITIONER_NAME}}</a>
+        </div>
+      </section>
+
+      <aside class="card">
+        <h3 style="margin-top:0">Service Snapshot</h3>
+        <div class="muted">Our intensive model focuses on short-term concentrated work to create momentum: an intake, a custom plan, and structured follow-ups. Optional labs and targeted therapies are discussed for education and planning.</div>
+
+        <div class="ripple">
+          <strong>Who benefits?</strong>
+          <p class="muted">People juggling career and health goals, those with chronic nagging symptoms, or anyone wanting a practical, science-forward route to feeling better.</p>
+        </div>
+
+        <div style="margin-top:12px">
+          <strong>Logistics</strong>
+          <p class="muted">Sessions are available in-person in {{CITY}}, {{STATE}} and via telehealth. Phone: {{PHONE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+        </div>
+      </aside>
+    </div>
+
+    <section class="card" style="margin-top:24px">
+      <h3>Myth vs Truth — clearing common confusions</h3>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+        <div style="flex:1;min-width:220px;padding:12px;border-radius:10px;border:1px solid rgba(15,23,42,0.04)"><strong>Myth:</strong> Holistic care rejects standard medicine.<div class="muted">Truth: We partner with conventional care, use labs wisely, and integrate therapies when evidence supports them.</div></div>
+        <div style="flex:1;min-width:220px;padding:12px;border-radius:10px;border:1px solid rgba(15,23,42,0.04)"><strong>Myth:</strong> It will fix everything instantly.<div class="muted">Truth: We set realistic steps; progress is measured, not promised.</div></div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:18px">
+      <h3>Core pillars of our approach</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:12px">
+        <div style="padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(124,58,237,0.02),transparent)"><strong>Assessment first</strong><div class="muted">Full intake, health history, lifestyle mapping.</div></div>
+        <div style="padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(249,115,22,0.02),transparent)"><strong>Education & empowerment</strong><div class="muted">Tools you can use: recipes, routines, and clear explanations.</div></div>
+        <div style="padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(16,185,129,0.02),transparent)"><strong>Evidence-informed tools</strong><div class="muted">Nutrition, movement, stress tools, targeted supplements when appropriate.</div></div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:18px">
+      <h3>Case Notes — a composite example</h3>
+      <p class="muted">A 38-year-old with fatigue, disrupted sleep, and bloating. Intake revealed high-stress job, irregular meals, and inconsistent sleep hygiene. The plan combined diet timing changes, guided sleep routine, short-term gut-support, and two follow-ups focused on measurable goals.</p>
+    </section>
+
+    <section class="card" style="margin-top:18px">
+      <h3>Frequently asked</h3>
+      <div class="faq">
+        <div class="faq-item"><strong>Do you accept insurance?</strong><div class="muted">We are primarily self-pay; we provide superbills for potential reimbursement where appropriate.</div></div>
+        <div class="faq-item"><strong>How long are visits?</strong><div class="muted">Initial visits average 60–90 minutes; follow-ups 30–45 minutes.</div></div>
+        <div class="faq-item"><strong>Are labs required?</strong><div class="muted">No — optional labs are educational and used selectively to refine plans.</div></div>
+        <div class="faq-item"><strong>Do you prescribe medication?</strong><div class="muted">We collaborate with your providers and will discuss pharmacologic options if clinically indicated.</div></div>
+      </div>
+    </section>
+
+    <section style="margin-top:18px" class="card">
+      <h3>Ready to begin a focused, practical plan?</h3>
+      <p class="muted">Our intensive offer is designed to jump-start change with clear milestones and follow-up. Ideal for people who want an actionable path without unnecessary delays.</p>
+      <div style="margin-top:12px" class="cta-row">
+        <a class="btn primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        <a class="btn secondary" href="contact.html">Ask a question</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+  </footer>
+</body>
+</html>

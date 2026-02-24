@@ -1,0 +1,72 @@
+/* Core layout and visual system */
+:root{
+  --bg:#fcfbf9;
+  --muted:#6b6b72;
+  --accent:#46707a;
+  --accent-2:#f0a987;
+  --card:#ffffff;
+  --radius:12px;
+  --max-width:1100px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;
+  background:var(--bg);
+  color:#222;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  line-height:1.5;
+}
+.container{max-width:var(--max-width);margin:0 auto;padding:40px 20px}
+.site-header{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;background:linear-gradient(180deg,rgba(255,255,255,0.6),transparent)}
+.brand a{font-weight:700;color:var(--accent);text-decoration:none}
+nav ul{display:flex;gap:12px;list-style:none;margin:0;padding:0}
+nav a{color:var(--muted);text-decoration:none;padding:6px 8px;border-radius:8px}
+nav a.cta{background:var(--accent);color:white}
+.hero{position:relative;padding:80px 0}
+.hero .pattern{position:absolute;inset:0;opacity:0.08;background-image:url('/assets/img/pattern.svg');background-size:340px}
+.hero .container{position:relative}
+.hero h1{margin:0 0 12px;font-size:clamp(24px,4vw,40px)}
+.lead{color:var(--muted);margin-bottom:18px}
+.primary{display:inline-block;background:var(--accent);color:white;padding:10px 16px;border-radius:8px;text-decoration:none}
+.pill-list{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0;padding:0}
+.pill-list li{background:var(--card);padding:8px 12px;border-radius:999px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:16px}
+.card{background:var(--card);padding:16px;border-radius:var(--radius);box-shadow:0 4px 18px rgba(28,40,40,0.04)}
+.card h3{margin-top:0}
+.price{font-weight:700;color:var(--accent-2)}
+.planner{margin-top:20px;background:linear-gradient(180deg,#ffffff, #fbfbfd);padding:16px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.03)}
+.planner form{display:grid;gap:8px}
+.planner label{display:block;font-size:14px;color:var(--muted)}
+.planner input,.planner select{width:100%;padding:8px;border-radius:8px;border:1px solid #e6e6ea;margin-top:6px}
+.form-row{display:flex;gap:8px}
+#plan-output{white-space:pre-wrap;background:#f7f8fb;padding:12px;border-radius:8px;border:1px solid #eef0f4;min-height:80px;margin-top:10px}
+.plan-actions{display:flex;gap:8px;margin-top:8px}
+.plan-actions button{padding:8px 12px;border-radius:8px;border:none;background:var(--accent);color:white}
+footer{padding:20px 0;background:transparent}
+footer .container{display:flex;justify-content:space-between;align-items:center}
+.footer-nav a{color:var(--muted);text-decoration:none;margin-left:12px}
+
+/* Reveal animations */
+.reveal{opacity:0;transform:translateY(18px);transition:opacity 520ms cubic-bezier(.2,.9,.3,1),transform 520ms cubic-bezier(.2,.9,.3,1)}
+.reveal.is-visible{opacity:1;transform:none}
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion:reduce){
+  .reveal{transition:none;opacity:1;transform:none}
+}
+
+/* Small responsive tweaks */
+@media (max-width:720px){
+  nav ul{display:none}
+  .container{padding:28px 16px}
+  .hero{padding:48px 0}
+}
+
+/* Asym masonry vibes for larger sections */
+@media (min-width:900px){
+  .story,.offers{display:grid;grid-template-columns:1fr 360px;gap:20px;align-items:start}
+  .story .bio{background:var(--card);padding:18px;border-radius:12px}
+}

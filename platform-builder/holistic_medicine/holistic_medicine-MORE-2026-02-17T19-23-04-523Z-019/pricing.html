@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Fees & Options — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbf6f0;--earth:#7a5a3a;--accent:#b85c38;--muted:#8b7a70;--card:#fff7f2;--glass:rgba(255,255,255,0.6)}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--earth);background-color:var(--bg);}
+    header{background:linear-gradient(180deg,rgba(248,244,240,0.9),transparent),url('assets/img/pattern.svg');background-size:400px;padding:28px 20px;box-shadow:0 2px 12px rgba(0,0,0,0.06);}    
+    .wrap{max-width:1050px;margin:0 auto}
+    nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+    nav a{color:var(--earth);text-decoration:none;padding:8px 10px;border-radius:8px}
+    nav a[href$="pricing.html"]{background:var(--accent);color:#fff}
+    .hero{display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .hero h1{margin:6px 0 0;font-size:28px}
+    .hero p{margin:6px 0 0;color:var(--muted)}
+    main{padding:36px 20px}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 20px rgba(120,80,40,0.06)}
+    .muted{color:var(--muted);font-size:14px}
+    .price{font-weight:700;color:var(--earth);font-size:20px}
+    .cta{display:inline-block;margin-top:12px;padding:10px 14px;background:var(--accent);color:#fff;border-radius:10px;text-decoration:none}
+    .widget{margin-top:22px;padding:16px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.85),var(--glass));}
+    label{display:block;margin-top:10px;font-size:14px}
+    input[type="text"],select,input[type="number"]{width:100%;padding:8px;border-radius:8px;border:1px solid #e6d8cf;margin-top:6px}
+    button.copy{margin-top:10px;padding:8px 10px;border-radius:8px;border:none;background:var(--earth);color:#fff}
+    .output{white-space:pre-wrap;background:#fff;padding:12px;border-radius:8px;margin-top:12px;border:1px dashed #f0e3dc}
+    footer{padding:20px;text-align:center;color:var(--muted);font-size:14px}
+    @media(max-width:900px){.grid{grid-template-columns:1fr} .hero{flex-direction:column;align-items:flex-start}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav>
+        <a href="index.html">Welcome</a>
+        <a href="services.html">Offerings</a>
+        <a href="conditions.html">Conditions</a>
+        <a href="approach.html">Philosophy</a>
+        <a href="pricing.html">Fees</a>
+        <a href="about.html">Our Story</a>
+        <a href="book.html">Reserve</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <div class="hero">
+        <div>
+          <h1>Fees & options shaped around your life</h1>
+          <p class="muted">Transparent tiers and short add-ons so you can choose a fit, not a package you outgrow.</p>
+        </div>
+        <div style="text-align:right">
+          <div class="muted">Call to discuss</div>
+          <div style="font-weight:700">{{PHONE}}</div>
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="wrap">
+    <section class="grid">
+      <div class="card">
+        <h3>Foundations Session</h3>
+        <div class="muted">A focused kickoff: history, priorities, and next steps.</div>
+        <div class="price">$145 — 60 min</div>
+        <ul class="muted">
+          <li>Whole-person intake</li>
+          <li>Initial home-based plan</li>
+        </ul>
+        <a class="cta" href="book.html">Begin with Foundations</a>
+      </div>
+      <div class="card">
+        <h3>Rhythm Renewal Track</h3>
+        <div class="muted">Short course to re-establish nourishing rhythms and measurable habits.</div>
+        <div class="price">$420 — 6-week track</div>
+        <ul class="muted">
+          <li>Weekly 30–45 min coaching</li>
+          <li>Personalized home plan & check-ins</li>
+        </ul>
+        <a class="cta" href="book.html">Reserve a Rhythm Slot</a>
+      </div>
+      <div class="card">
+        <h3>Sustained Balance Plan</h3>
+        <div class="muted">Steady, paced support designed for longer-term change.</div>
+        <div class="price">$1200 — 3 months</div>
+        <ul class="muted">
+          <li>Biweekly visits + messaging</li>
+          <li>Layered supports & specialist referrals</li>
+        </ul>
+        <a class="cta" href="book.html">Discuss a Plan</a>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:22px">
+      <h3>Session Planner (try a quick bespoke plan)</h3>
+      <div class="widget">
+        <label for="goal">Primary focus this season</label>
+        <select id="goal">
+          <option value="sleep">Sleep reliability</option>
+          <option value="digestion">Digestion & gut comfort</option>
+          <option value="energy">Steady energy</option>
+          <option value="stress">Stress and resilience</option>
+          <option value="movement">Movement & mobility</option>
+        </select>
+        <label for="duration">Commitment window (weeks)</label>
+        <input id="duration" type="number" min="1" max="24" value="6">
+        <label for="frequency">Check-in rhythm</label>
+        <select id="frequency">
+          <option value="weekly">Weekly</option>
+          <option value="biweekly">Every 2 weeks</option>
+          <option value="monthly">Monthly</option>
+        </select>
+        <label for="modalities">Prefered supports</label>
+        <select id="modalities" multiple size="4">
+          <option value="nutrition">Nutrition planning</option>
+          <option value="movement">Movement guidance</option>
+          <option value="sleep">Sleep strategies</option>
+          <option value="stress">Stress practices</option>
+        </select>
+        <button id="planBtn" class="copy">Create plan</button>
+        <button id="copyPlan" class="copy">Copy summary</button>
+        <div id="planOut" class="output">Your personalized plan will appear here.</div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:18px">
+      <h3>Whole-person inventory</h3>
+      <div class="muted">Check areas you want included in the first consultation.</div>
+      <form id="inventoryForm" class="widget">
+        <label><input type="checkbox" name="area" value="sleep"> Sleep patterns</label>
+        <label><input type="checkbox" name="area" value="nutrition"> Nutrition & digestion</label>
+        <label><input type="checkbox" name="area" value="movement"> Movement & mobility</label>
+        <label><input type="checkbox" name="area" value="stress"> Stress & emotional tone</label>
+        <label><input type="checkbox" name="area" value="work"> Work-life balance</label>
+        <label><input type="checkbox" name="area" value="relationships"> Relationships & support</label>
+        <label><input type="checkbox" name="area" value="environment"> Home & environment</label>
+        <button id="buildAgenda" class="copy">Build consultation agenda</button>
+        <div id="agendaOut" class="output">Agenda + cadence will appear here after you build it.</div>
+      </form>
+    </section>
+
+    <p class="muted" style="margin-top:14px">All guidance is educational and supportive. We do not offer guaranteed cures; we design practices and plans to support your clarity and capacity.</p>
+  </main>
+  <footer>
+    <div class="wrap">Contact: <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+  </footer>
+
+  <script>
+    function makePlan(){
+      const goal = document.getElementById('goal').value;
+      const duration = Number(document.getElementById('duration').value)||6;
+      const frequency = document.getElementById('frequency').value;
+      const modalities = Array.from(document.getElementById('modalities').selectedOptions).map(o=>o.text).join(', ') || 'discussion-based';
+      const weeks = duration;
+      let rhythm = frequency === 'weekly' ? 'weekly check-ins' : frequency === 'biweekly' ? 'every two weeks' : 'monthly check-ins';
+      let starter = '';
+      if(goal==='sleep') starter = 'Begin with a sleep-window experiment and simple evening rituals.';
+      if(goal==='digestion') starter = 'Start a three-day gentle food log and rhythm assessment.';
+      if(goal==='energy') starter = 'Map daily energy pockets and trial small movement breaks.';
+      if(goal==='stress') starter = 'Introduce short daily grounding practices and a 2-minute pause habit.';
+      if(goal==='movement') starter = 'Assess mobility baseline and introduce micro-sessions of mobility work.';
+      const planText = `Personal plan — focus: ${goal}\nCommitment window: ${weeks} weeks\nCheck-in rhythm: ${rhythm}\nModalities: ${modalities}\nStarter steps: ${starter}\nSuggested package: ${recommendPackage(weeks,frequency)}\nNotes: This is educational guidance; adjustments happen in conversation.`;
+      document.getElementById('planOut').textContent = planText;
+    }
+    function recommendPackage(weeks,frequency){
+      if(weeks<=1) return 'Single Foundations Session';
+      if(weeks<=6 && frequency!=='monthly') return 'Rhythm Renewal Track';
+      return 'Sustained Balance Plan';
+    }
+    document.getElementById('planBtn').addEventListener('click',function(e){e.preventDefault();makePlan();});
+    document.getElementById('copyPlan').addEventListener('click',function(e){
+      const txt = document.getElementById('planOut').textContent;
+      navigator.clipboard.writeText(txt).then(()=>{this.textContent='Copied'}).catch(()=>{this.textContent='Copy failed'});
+    });
+
+    document.getElementById('buildAgenda').addEventListener('click',function(e){
+      e.preventDefault();
+      const checks = Array.from(document.querySelectorAll('input[name="area"]:checked')).map(c=>c.value);
+      if(!checks.length){document.getElementById('agendaOut').textContent='Select areas to include.';return}
+      const agenda = checks.map((a,i)=>`${i+1}. ${pretty(a)} — 10–20 min discussion, observations, and tailored next steps.`).join('\n');
+      const cadence = determineCadence(checks);
+      document.getElementById('agendaOut').textContent = `Consultation agenda:\n${agenda}\n\nSuggested follow-up cadence:\n${cadence}\n\nBring: current meds/supplements list, recent sleep/eating notes.`;
+    });
+    function pretty(k){const map={sleep:'Sleep',nutrition:'Nutrition & digestion',movement:'Movement & mobility',stress:'Stress & emotional tone',work:'Work-life balance',relationships:'Relationships',environment:'Environment'};return map[k]||k}
+    function determineCadence(list){
+      if(list.includes('sleep')||list.includes('nutrition')) return 'Short check-ins weekly for 4–8 weeks, then taper to biweekly.';
+      if(list.includes('stress')) return 'Start with weekly coaching for 4 sessions, then review progress.';
+      if(list.length>=4) return 'Biweekly or weekly depending on preference; review at 6 weeks.';
+      return 'Biweekly check-ins with a 4–6 week review.';
+    }
+  </script>
+</body>
+</html>

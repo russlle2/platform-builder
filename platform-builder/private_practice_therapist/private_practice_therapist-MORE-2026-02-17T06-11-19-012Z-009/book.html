@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book a Session — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Request an appointment or ask a scheduling question.">
+  <style>
+    :root{--bg:#f9fdfb;--muted:#586a62;--accent:#5f8f78;--accent-2:#3f6a56;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+    body{margin:0;background:linear-gradient(180deg,#fbfdfc,#ffffff);color:#04221b}
+    header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #eaf3ef}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    main{padding:22px;display:grid;grid-template-columns:1fr 360px;gap:20px}
+    .card{background:white;padding:18px;border-radius:10px;box-shadow:0 8px 20px rgba(8,20,16,0.04)}
+    form{display:flex;flex-direction:column;gap:10px}
+    label{font-size:13px}
+    input,textarea,select{padding:10px;border:1px solid #e6efe8;border-radius:8px;font-size:15px}
+    .btn{padding:10px 14px;border-radius:8px;border:0;background:var(--accent);color:white;font-weight:700;text-decoration:none}
+    .small{font-size:13px;color:var(--muted)}
+    .hint{font-size:13px;color:var(--muted);margin-top:8px}
+    @media (max-width:880px){main{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:white;font-weight:700">T</div>
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="specialties.html">Specialties</a>
+      <a href="approach.html">How I Work</a>
+      <a href="fees.html">Investment</a>
+      <a href="faq.html">FAQ</a>
+      <a href="book.html" style="color:var(--accent-2);font-weight:600">Book</a>
+      <a href="contact.html">Reach Out</a>
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <div class="card">
+        <h1 style="margin-top:0">Book a session</h1>
+        <p class="small">Use this form to request an appointment. I will respond within a few business days with availability and next steps.</p>
+
+        <form id="booking-form" action="javascript:;" novalidate>
+          <div>
+            <label for="name">Your name</label>
+            <input id="name" name="name" required />
+          </div>
+
+          <div>
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required />
+          </div>
+
+          <div>
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" type="tel" />
+          </div>
+
+          <div>
+            <label for="mood-select">Which option describes how you’re feeling right now?</label>
+            <select id="mood-select" name="mood">
+              <option value="clarity">I want clarity on one issue</option>
+              <option value="coping">I need tools to cope</option>
+              <option value="ongoing">I think I need ongoing therapy</option>
+              <option value="urgent">I feel overwhelmed</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="notes">Brief note (what would you like to focus on?)</label>
+            <textarea id="notes" name="notes" rows="4"></textarea>
+          </div>
+
+          <input type="hidden" id="suggested-path" name="suggested_path" value="">
+
+          <div style="display:flex;gap:10px;align-items:center;margin-top:8px">
+            <button id="submit-btn" class="btn">{{PRIMARY_CTA_LABEL}}</button>
+            <div class="small">Or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+          </div>
+
+          <div class="hint">Your information will be kept private consistent with clinical practice. See details below about confidentiality.</div>
+        </form>
+
+        <div style="margin-top:12px">
+          <button class="acc-trigger" aria-expanded="false">Session boundaries & confidentiality</button>
+          <div class="acc-panel" style="display:none;color:var(--muted);margin-top:8px">
+            <p>Confidentiality is a core part of therapy. I keep secure clinical records. Exceptions to confidentiality include imminent risk of harm, mandated reporting, and legal processes. Please ask if you want more detail; I will explain how I manage records, telehealth, and secure messaging.</p>
+            <p class="small">If you are in immediate danger, call emergency services. If you do not feel safe, please call your local emergency number or crisis resources.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <aside>
+      <div class="card">
+        <h3 style="margin-top:0">Quick scheduling guide</h3>
+        <p class="small">I offer single sessions and short packages. If you need flexible timing or have accessibility needs, mention them in the note field.</p>
+
+        <div style="margin-top:12px">
+          <h4 style="margin:0 0 6px 0">Mood-to-Method</h4>
+          <p class="small">Pick your current state and the form will suggest a starting structure. This helps me prepare before our first conversation.</p>
+
+          <div style="margin-top:8px">
+            <button class="choice" data-key="clarity">Clarity</button>
+            <button class="choice" data-key="coping">Coping</button>
+            <button class="choice" data-key="ongoing">Ongoing</button>
+            <button class="choice" data-key="urgent">Stabilize</button>
+          </div>
+
+          <div id="side-suggest" style="margin-top:12px;font-weight:700;color:#123327">Select an option to see a suggested path.</div>
+
+          <div style="margin-top:12px;font-size:13px;color:var(--muted)">If you are in crisis and cannot keep yourself safe, call emergency services or your local crisis line now. This form is not monitored for emergencies.</div>
+        </div>
+      </div>
+
+      <div style="height:12px"></div>
+
+      <div class="card">
+        <h4 style="margin-top:0">When I will reply</h4>
+        <p class="small">I typically reply to booking requests within 2-3 business days. If you don’t hear back, please follow up or call <a href="tel:{{PHONE}}">{{PHONE}}</a>.</p>
+      </div>
+    </aside>
+  </main>
+
+  <footer style="padding:18px;border-top:1px solid #eef3ef;color:var(--muted)">
+    <div>&copy; {{BUSINESS_NAME}} — Not a medical provider network. For emergencies call local services.</div>
+  </footer>
+
+  <script>
+    (function(){
+      const map = {
+        clarity:{label:'Clarity Session',value:'clarity',cta:'Book Clarity Session'},
+        coping:{label:'Skills Block',value:'coping',cta:'Book a Skills Session'},
+        ongoing:{label:'Ongoing Therapy',value:'ongoing',cta:'Request Ongoing Sessions'},
+        urgent:{label:'Stabilization',value:'urgent',cta:'Request Stabilization Support'}
+      };
+
+      // side choices
+      document.querySelectorAll('.choice').forEach(b=>{
+        b.addEventListener('click',()=>{
+          const key = b.getAttribute('data-key');
+          const info = map[key];
+          document.getElementById('side-suggest').textContent = info.label + ' — ' + info.cta;
+          document.getElementById('suggested-path').value = info.value;
+          document.getElementById('submit-btn').textContent = info.cta;
+        });
+      });
+
+      // select sync
+      const sel = document.getElementById('mood-select');
+      sel.addEventListener('change', ()=>{
+        const v = sel.value;
+        let key = 'clarity';
+        if(v==='coping') key='coping';
+        if(v==='ongoing') key='ongoing';
+        if(v==='urgent') key='urgent';
+        const info = map[key];
+        document.getElementById('side-suggest').textContent = info.label + ' — ' + info.cta;
+        document.getElementById('suggested-path').value = info.value;
+        document.getElementById('submit-btn').textContent = info.cta;
+      });
+
+      // form submit (client-side only)
+      document.getElementById('booking-form').addEventListener('submit', function(e){
+        e.preventDefault();
+        const name = document.getElementById('name').value || '';
+        const email = document.getElementById('email').value || '';
+        const notes = document.getElementById('notes').value || '';
+        const path = document.getElementById('suggested-path').value || '';
+
+        // Compose a mailto as a graceful fallback so user can send request via their email client.
+        const subject = encodeURIComponent('Request: ' + (path || 'Appointment') + ' from ' + name);
+        const body = encodeURIComponent('Name: ' + name + '\nEmail: ' + email + '\nSuggested path: ' + path + '\nNotes:\n' + notes + '\n\n(Please reply with available times.)');
+        const mailto = 'mailto:{{EMAIL}}?subject=' + subject + '&body=' + body;
+
+        // Open mail client as a clear action and also show a quick confirmation.
+        window.location.href = mailto;
+      });
+
+      // accordion
+      document.querySelectorAll('.acc-trigger').forEach(t=>{
+        t.addEventListener('click', ()=>{
+          const expanded = t.getAttribute('aria-expanded') === 'true';
+          t.setAttribute('aria-expanded', String(!expanded));
+          const panel = t.nextElementSibling;
+          panel.style.display = expanded ? 'none' : 'block';
+        });
+      });
+
+    })();
+  </script>
+</body>
+</html>

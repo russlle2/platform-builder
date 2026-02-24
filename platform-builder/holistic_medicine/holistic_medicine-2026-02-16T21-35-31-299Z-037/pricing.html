@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Rates — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--muted:#9aa5b1;--accent1:#8ad3c7;--accent2:#a48ef7;--glass:rgba(255,255,255,0.04);--glass2:rgba(255,255,255,0.02);}    
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;color:#e6eef6;background:linear-gradient(180deg,#071226 0%, #07172b 60%);}
+    .wrap{max-width:1100px;margin:40px auto;padding:36px;border-radius:14px;background:linear-gradient(180deg,var(--glass),transparent);box-shadow:0 8px 40px rgba(3,6,10,0.7);position:relative;overflow:hidden}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent1),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:700;color:#042033}
+    nav a{color:#cfeaf0;text-decoration:none;margin-left:18px;font-size:14px}
+    nav a.cta{background:linear-gradient(90deg,var(--accent1),var(--accent2));padding:8px 12px;border-radius:8px;color:#021018;font-weight:600}
+    .hero{display:grid;grid-template-columns:1fr 340px;gap:28px;align-items:center;padding:22px 0}
+    .hero h1{margin:0;font-size:28px;line-height:1.05;color:#f4fbff}
+    .hero p{color:var(--muted);margin-top:8px}
+    .card{background:linear-gradient(180deg,var(--card),transparent);border-radius:12px;padding:18px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.02)}
+    .diag, .plan, .micro{display:flex;gap:12px;align-items:flex-start;margin-top:18px}
+    .diag svg, .plan svg{width:44px;height:44px;flex:0 0 44px}
+    .packages{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+    .pkg{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:16px;border-radius:10px}
+    .pkg h3{margin:0 0 8px 0;color:#f8feff}
+    .pkg p{margin:0 0 14px;color:var(--muted);font-size:14px}
+    .price{font-weight:700;font-size:20px;color:#e8fff9}
+    .retail{margin-top:18px;display:flex;gap:12px;flex-wrap:wrap}
+    .retail .item{padding:10px 12px;border-radius:10px;background:var(--glass2);color:#dff6f0}
+    footer{display:flex;justify-content:space-between;align-items:center;margin-top:22px}
+    .cta-btn{background:linear-gradient(90deg,var(--accent2),var(--accent1));padding:12px 18px;border-radius:10px;color:#031018;font-weight:700;text-decoration:none}
+    .muted{color:var(--muted);font-size:13px}
+    /* decorative svg */
+    .pattern{position:absolute;right:-80px;top:-80px;opacity:0.12;transform:rotate(12deg)}
+    @media(max-width:880px){.hero{grid-template-columns:1fr;}.packages{grid-template-columns:1fr}.wrap{margin:18px;padding:18px}}
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <header>
+      <div class='brand'>
+        <div class='logo' aria-hidden='true'>HM</div>
+        <div>
+          <div style='font-size:16px;color:#f6fffd;font-weight:700'>{{BUSINESS_NAME}}</div>
+          <div style='font-size:12px;color:var(--muted)'>Integrative care in {{CITY}}, {{STATE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href='index.html'>Home</a>
+        <a href='services.html'>Treatments</a>
+        <a href='conditions.html'>Concerns</a>
+        <a href='approach.html'>Method</a>
+        <a href='pricing.html' class='cta'>Rates</a>
+      </nav>
+    </header>
+
+    <svg class='pattern' width='420' height='420' viewBox='0 0 420 420' fill='none' xmlns='http://www.w3.org/2000/svg'>
+      <defs>
+        <linearGradient id='g1' x1='0' x2='1'><stop offset='0' stop-color='#8ad3c7'/><stop offset='1' stop-color='#a48ef7'/></linearGradient>
+        <filter id='f1' x='-20%' y='-20%' width='140%' height='140%'><feGaussianBlur stdDeviation='18' result='b'/></filter>
+      </defs>
+      <g filter='url(#f1)' opacity='0.9'>
+        <circle cx='80' cy='70' r='90' fill='url(#g1)'/>
+        <circle cx='300' cy='220' r='110' fill='url(#g1)' opacity='0.7'/>
+        <circle cx='180' cy='330' r='40' fill='url(#g1)' opacity='0.6'/>
+      </g>
+    </svg>
+
+    <section class='hero'>
+      <div>
+        <h1>Thoughtful pricing for whole-person care</h1>
+        <p>Transparent packages and careful add-ons so you can choose support that fits your life. No promises of cure—just clear guidance, personalized plans, and practical tools.</p>
+
+        <div class='diag card'>
+          <svg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'><path d='M12 2v20' stroke='#8ad3c7' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/><path d='M5 7c3 6 12 6 14 0' stroke='#a48ef7' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/></svg>
+          <div>
+            <strong style='color:#f4fbff'>What's included</strong>
+            <div class='muted'>Initial intake, individualized plan, optional lab review, and two follow-ups in every plan unless noted.</div>
+          </div>
+        </div>
+
+        <div class='plan card'>
+          <svg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'><rect x='3' y='4' width='18' height='16' rx='3' stroke='#a48ef7' stroke-width='1.5'/><path d='M8 11h8' stroke='#8ad3c7' stroke-width='1.5' stroke-linecap='round'/></svg>
+          <div>
+            <strong style='color:#f4fbff'>How billing works</strong>
+            <div class='muted'>Pay per package or pick a matched plan; add retail products or extended coaching as needed. Insurance varies—ask for a superbill.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <aside>
+        <div class='card'>
+          <h3 style='margin:0 0 6px 0;color:#f4fbff'>Quick rates</h3>
+          <div class='muted'>If you need help selecting, call {{PHONE}} or email {{EMAIL}}.</div>
+          <div style='margin-top:12px'>
+            <div style='display:flex;justify-content:space-between;align-items:center'><div class='muted'>Single Consult</div><div class='price'>$150</div></div>
+            <div style='display:flex;justify-content:space-between;align-items:center;margin-top:8px'><div class='muted'>90-min Intake</div><div class='price'>$240</div></div>
+            <div style='display:flex;justify-content:space-between;align-items:center;margin-top:8px'><div class='muted'>Follow-Up (30m)</div><div class='price'>$95</div></div>
+          </div>
+          <div style='margin-top:12px'><a class='cta-btn' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a></div>
+        </div>
+      </aside>
+    </section>
+
+    <section class='card' style='margin-top:18px'>
+      <h3 style='margin:0;color:#f4fbff'>Packages—practical roadmaps</h3>
+      <div class='packages'>
+        <div class='pkg'>
+          <h3>Starter Balance</h3>
+          <p>For a focused reset: intake + one follow-up + targeted resources.</p>
+          <div class='price'>$320</div>
+        </div>
+        <div class='pkg'>
+          <h3>Sustained Care</h3>
+          <p>Three months of guided support: intake + monthly follow-ups + habit toolkit.</p>
+          <div class='price'>$820</div>
+        </div>
+        <div class='pkg'>
+          <h3>Comprehensive Plan</h3>
+          <p>Deep-dive with optional lab review, nutrition guidance, and extended coaching.</p>
+          <div class='price'>$1,650</div>
+        </div>
+      </div>
+
+      <div style='margin-top:14px'>
+        <div class='muted'>Optional testing & labs are billed separately and are educational. Labs may be recommended to inform a plan; selection and interpretation are collaborative.</div>
+      </div>
+    </section>
+
+    <section class='card' style='margin-top:18px'>
+      <h3 style='margin:0;color:#f4fbff'>Retail + Add-ons</h3>
+      <div class='retail'>
+        <div class='item'>Herbal blends — $28</div>
+        <div class='item'>Supplements (starter kit) — $45</div>
+        <div class='item'>Extended coaching (monthly) — $180</div>
+        <div class='item'>In-depth lab analysis — starting $120</div>
+      </div>
+      <div class='muted' style='margin-top:10px'>Retail items are optional. Please notify us of allergies or interactions.</div>
+    </section>
+
+    <section class='card' style='margin-top:18px'>
+      <h3 style='margin:0;color:#f4fbff'>Small daily shifts</h3>
+      <div class='micro' style='flex-direction:column'>
+        <div><strong>Micro habit:</strong> Wake 15 minutes earlier twice a week for breathwork.</div>
+        <div><strong>Micro habit:</strong> Swap one processed snack for a whole-food option daily.</div>
+        <div><strong>Micro habit:</strong> Journal 3 things that went well each evening.</div>
+      </div>
+    </section>
+
+    <footer>
+      <div class='muted'>No guarantees are offered; our work emphasizes education, risk reduction, and supportive care across mind, body, and context.</div>
+      <div><a class='cta-btn' href='{{PRIMARY_CTA_URL}}'>Book a consult</a></div>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang='en'>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width,initial-scale=1'>
+<title>Schedule — {{BUSINESS_NAME}}</title>
+<style>
+:root{--bg:#fbfffd;--accent:#2f8f7a;--muted:#64706a}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,var(--bg),#f4fbf9);color:#0b2b25}
+.container{max-width:920px;margin:28px auto;padding:20px}
+.header{display:flex;align-items:center;justify-content:space-between}
+.logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,#57b693,#2f8f7a);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800}
+.content{margin-top:18px;display:grid;grid-template-columns:1fr 360px;gap:18px}
+.panel{background:#fff;padding:16px;border-radius:12px;box-shadow:0 8px 30px rgba(18,43,34,0.04)}
+.form-row{display:flex;gap:10px;margin-bottom:10px}
+.input,textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid #e9f3ef}
+.button{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;border:0;cursor:pointer}
+.availability{display:flex;flex-direction:column;gap:8px}
+.slot{padding:10px;border-radius:8px;background:#f5fff9;border:1px dashed #e1f4ea;cursor:pointer}
+.slot.selected{background:linear-gradient(90deg,#ecfff7,#e6faf1);border-style:solid}
+.note{font-size:13px;color:var(--muted)}
+@media (max-width:900px){.content{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class='container'>
+<header class='header'>
+<div style='display:flex;gap:12px;align-items:center'>
+<div class='logo'>W</div>
+<div>
+<div style='font-weight:800'>{{BUSINESS_NAME}}</div>
+<div class='note'>Schedule an intake to design your practice.</div>
+</div>
+</div>
+<nav aria-label='Primary'>
+<a href='index.html' style='margin-left:12px;color:var(--muted)'>Home</a>
+<a href='about.html' style='margin-left:12px;color:var(--muted)'>Philosophy</a>
+<a href='programs.html' style='margin-left:12px;color:var(--muted)'>Pathways</a>
+<a href='services.html' style='margin-left:12px;color:var(--muted)'>Offerings</a>
+<a href='pricing.html' style='margin-left:12px;color:var(--muted)'>Investment</a>
+<a href='testimonials.html' style='margin-left:12px;color:var(--muted)'>Proof</a>
+<a href='book.html' style='margin-left:12px;color:var(--muted)'>Schedule</a>
+<a href='contact.html' style='margin-left:12px;color:var(--muted)'>Connect</a>
+</nav>
+</header>
+<main class='content'>
+<section class='panel'>
+<h3 style='margin:0 0 8px'>Plan a 30-minute intro</h3>
+<p class='note'>A short planning call to clarify a starting point and outline the first month of practice. No medical advice — focus on habits, outcomes, and frameworks.</p>
+<form id='booking-form' action='{{PRIMARY_CTA_URL}}' method='get' onsubmit='return submitForm(event)'>
+<div class='form-row'><input class='input' name='name' placeholder='Your name' required></div>
+<div class='form-row'><input class='input' name='email' placeholder='Email' type='email' required></div>
+<div class='form-row'><input class='input' name='phone' placeholder='Phone (optional)'></div>
+<div class='form-row'><select name='service' class='input'>
+<option value='intro'>30-minute Planning Call</option>
+<option value='foundation'>Foundation membership inquiry</option>
+<option value='momentum'>Momentum membership inquiry</option>
+</select></div>
+<div style='margin-top:8px;display:flex;gap:8px;align-items:center'>
+<button class='button' type='submit'>Schedule a time</button>
+<a class='note' href='tel:{{PHONE}}' style='text-decoration:none;color:var(--muted)'>Or call {{PHONE}}</a>
+</div>
+</form>
+<div style='margin-top:12px'>
+<div style='font-weight:700;margin-bottom:6px'>What to expect</div>
+<ul style='margin:0;padding-left:18px;color:var(--muted)'>
+<li>15–30 minutes to map a starting practice</li>
+<li>Clarity on one measurable habit to try for 2–4 weeks</li>
+<li>A suggested next step you can opt into</li>
+</ul>
+</div>
+</section>
+<aside class='panel'>
+<h4 style='margin:0 0 10px'>Available times</h4>
+<div class='availability' id='availability'>
+<div class='slot' data-time='2026-02-19T09:00'>Thu 9:00 AM</div>
+<div class='slot' data-time='2026-02-19T11:00'>Thu 11:00 AM</div>
+<div class='slot' data-time='2026-02-20T14:00'>Fri 2:00 PM</div>
+<div class='slot' data-time='2026-02-22T10:00'>Sun 10:00 AM</div>
+</div>
+<div style='margin-top:12px' class='small note'>Select a slot to include it in the booking link. Times shown in {{CITY}}, {{STATE}} timezone.</div>
+</aside>
+</main>
+<script>
+// Simple booking helper: pick a slot and append to CTA URL as query
+(function(){
+const slots = document.querySelectorAll('.slot');
+let selected = null;
+slots.forEach(s=>{s.addEventListener('click',()=>{
+ slots.forEach(x=>x.classList.remove('selected'));
+ s.classList.add('selected');
+ selected = s.getAttribute('data-time');
+});
+});
+window.submitForm = function(e){
+ e.preventDefault();
+ const form = document.getElementById('booking-form');
+ const data = new FormData(form);
+ if(selected) data.append('slot', selected);
+ // Build a simple mailto or forward to PRIMARY_CTA_URL with params
+ const params = new URLSearchParams();
+ for(const pair of data.entries()) params.append(pair[0], pair[1]);
+ const url = '{{PRIMARY_CTA_URL}}' + ({{PRIMARY_CTA_URL}}.includes('?') ? '&' : '?') + params.toString();
+ // For local demo open link in new tab
+ window.open(url,'_blank');
+ // show minimal confirmation
+ alert('Thanks — your request was sent. We will reach out to confirm the time.');
+ return false;
+};
+})();
+</script>
+</body>
+</html>

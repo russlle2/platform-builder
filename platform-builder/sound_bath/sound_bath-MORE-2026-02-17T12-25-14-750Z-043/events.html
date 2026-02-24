@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Live Sound Gatherings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{
+      --bg:#F6EFE8; --card:#FFF7F0; --ink:#3A2F2A; --accent:#9C6B4A; --muted:#7B6A60;
+      --glass: rgba(255,255,255,0.6);
+      --radius:14px; --shadow: 0 6px 20px rgba(54,40,33,0.12);
+      --pattern:url('assets/img/pattern.svg');
+    }
+    *{box-sizing:border-box}
+    body{font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin:0; background:linear-gradient(180deg,var(--bg),#F2E9E1); color:var(--ink); -webkit-font-smoothing:antialiased;}
+    header{display:flex;align-items:center;justify-content:space-between;padding:22px 28px;background:transparent;position:sticky;top:0;backdrop-filter: blur(6px);z-index:30}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:54px;height:54px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#DAB6A1);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    nav a{margin:0 10px;text-decoration:none;color:var(--muted);font-weight:600}
+    .cta{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+    main{padding:28px;max-width:1100px;margin:18px auto}
+    .hero{display:grid;grid-template-columns:1fr 380px;gap:22px;align-items:start;margin-bottom:26px}
+    .card{background:var(--card);padding:22px;border-radius:var(--radius);box-shadow:var(--shadow)}
+    h1{margin:0 0 8px 0;font-size:28px}
+    p.lead{margin:0;color:var(--muted)}
+    /* Inline decorative SVG pattern */
+    .pattern-wrap{position:fixed;right:-120px;top:-80px;opacity:0.12;pointer-events:none;transform:rotate(8deg)}
+    /* Next event */
+    .next-event{display:flex;flex-direction:column;gap:10px}
+    .meta{font-size:13px;color:var(--muted)}
+    .btn{display:inline-block;padding:10px 12px;border-radius:10px;background:#FFF;box-shadow:0 4px 14px rgba(0,0,0,0.06);text-decoration:none;color:var(--accent);font-weight:700}
+    .calendar{margin-top:18px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+    .cal-item{padding:12px;border-radius:12px;background:linear-gradient(180deg,#fff,#FFF7F3);border:1px solid rgba(156,107,74,0.06)}
+    .small{font-size:13px;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start;margin-top:18px}
+    /* Reveal animation */
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity .64s ease,transform .64s cubic-bezier(.2,.9,.3,1)}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion: reduce){.reveal{transition:none;opacity:1;transform:none}}
+    /* Modal */
+    .overlay{position:fixed;inset:0;background:rgba(18,12,8,0.46);display:none;align-items:center;justify-content:center;padding:18px;z-index:60}
+    .overlay.open{display:flex}
+    .modal{width:760px;max-width:96vw;background:#FFF7F0;padding:18px;border-radius:14px}
+    .modal-header{display:flex;justify-content:space-between;align-items:center}
+    .exercise{display:flex;gap:18px;padding-top:14px}
+    .circle{width:220px;height:220px;border-radius:50%;background:radial-gradient(circle at 30% 20%, #FFEFE7, #FFF7F0);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--accent);box-shadow:inset 0 -10px 30px rgba(156,107,74,0.06)}
+    .controls{flex:1}
+    footer.cta-wrap{margin-top:20px;display:flex;justify-content:space-between;align-items:center}
+    .danger{color:#8D2B2B;font-size:13px}
+    /* small utilities */
+    .muted{color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">SB</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav aria-label="Primary">
+      <a href="index.html">Homebase</a>
+      <a href="events.html" style="color:var(--accent)">Live Gatherings</a>
+      <a href="private-sessions.html">Pods & Privates</a>
+      <a href="pricing.html">Investments</a>
+      <a href="about.html">Our Story</a>
+      <a href="faq.html">Qs & Answers</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Reach Out</a>
+      <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+    </nav>
+  </header>
+
+  <svg class="pattern-wrap" width="420" height="420" viewBox="0 0 420 420" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#EAD3C6"/><stop offset="1" stop-color="#F6EEE7"/></linearGradient>
+      <pattern id="p1" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(22)">
+        <rect width="40" height="40" fill="url(#g1)"/>
+        <circle cx="8" cy="8" r="2" fill="#9C6B4A" opacity="0.12"/>
+        <circle cx="28" cy="28" r="2" fill="#9C6B4A" opacity="0.08"/>
+      </pattern>
+    </defs>
+    <rect width="420" height="420" fill="url(#p1)" rx="40"/>
+  </svg>
+
+  <main>
+    <section class="hero card reveal" data-reveal>
+      <div>
+        <h1>Gather in tuned company — an evening of layered sound</h1>
+        <p class="lead">Join a hosted sound session crafted to unwind the chest, steady the thinking, and open a gentle margin in your day. We blend bowls, chimes, and voice to guide a calm arc through the hour.</p>
+        <p style="margin-top:12px" class="muted">Next group sizes are small on purpose — we keep room to breathe together.</p>
+        <div style="margin-top:14px;display:flex;gap:10px;align-items:center">
+          <a class="btn" href="#next-event">See next gathering</a>
+          <button id="try-now" class="btn" style="background:var(--accent);color:#fff">Try a 5‑minute intro</button>
+        </div>
+      </div>
+      <aside class="card next-event">
+        <div class="meta">Upcoming session</div>
+        <div style="font-weight:800;font-size:18px">Fireside Sound + Guided Pause</div>
+        <div class="small">Saturday • Feb 27 • 6:30 — 7:45pm</div>
+        <div class="small">{{CITY}}, {{STATE}} • Community Room</div>
+        <div style="margin-top:8px"><a class="btn" href="book.html">Reserve a seat</a></div>
+        <div style="border-top:1px dashed rgba(0,0,0,0.04);padding-top:12px;margin-top:12px">
+          <div class="muted small">Quick list — other nearby dates</div>
+          <div class="calendar" aria-hidden>
+            <div class="cal-item"><strong>Wed, Mar 3</strong><div class="small">Early evening • 6:15pm</div></div>
+            <div class="cal-item"><strong>Sun, Mar 7</strong><div class="small">Afternoon • 3:00pm</div></div>
+            <div class="cal-item"><strong>Fri, Mar 12</strong><div class="small">Night • 8:00pm</div></div>
+            <div class="cal-item"><strong>Mon, Mar 15</strong><div class="small">Lunchtime • 12:30pm</div></div>
+          </div>
+        </div>
+        <div class="small muted" style="margin-top:10px">Contraindications: Sound baths are deeply soothing but are not recommended without medical advice for people with epilepsy, recent head injury, implanted medical devices (eg pacemakers), or those in late pregnancy. If you have concerns, please consult a medical professional before attending.</div>
+      </aside>
+    </section>
+
+    <section class="grid">
+      <div class="card reveal" data-reveal>
+        <h3>How these gatherings flow</h3>
+        <ol style="margin-top:8px">
+          <li><strong>Welcome & settle:</strong> We orient, set intentions, and invite the body to land in the room.</li>
+          <li><strong>Layered sound:</strong> Bowls and tuned bells move through textures — not loud, always attentive.</li>
+          <li><strong>Return & share:</strong> Quiet closure with a short check-in or journaling prompt.</li>
+        </ol>
+        <p class="muted" style="margin-top:10px">Doors open 15 minutes early for arrival and light settling. We begin on time to preserve the group's container.</p>
+      </div>
+
+      <aside class="card reveal" data-reveal>
+        <h4 style="margin:0 0 6px 0">What to bring</h4>
+        <ul style="margin:0;padding-left:18px;color:var(--muted)">
+          <li>Yoga mat + blanket or comfortable chair</li>
+          <li>Water bottle</li>
+          <li>Optional journal or pen</li>
+        </ul>
+        <div style="margin-top:12px;">
+          <a class="btn" href="faq.html">Event FAQ</a>
+        </div>
+      </aside>
+    </section>
+
+    <section class="card reveal" style="margin-top:18px" data-reveal>
+      <h3>Upcoming calendar</h3>
+      <p class="muted">Monthly rhythm — evenings, a few weekends, and occasional mid-day gatherings to suit different schedules.</p>
+      <div style="margin-top:12px">
+        <table style="width:100%;border-collapse:collapse">
+          <thead style="text-align:left;color:var(--muted)"><tr><th>Date</th><th>Title</th><th>Time</th><th>Book</th></tr></thead>
+          <tbody>
+            <tr><td style="padding:10px 0">Feb 27</td><td>Fireside Sound + Guided Pause</td><td>6:30 — 7:45pm</td><td><a class="btn" href="book.html">Reserve</a></td></tr>
+            <tr><td style="padding:10px 0">Mar 3</td><td>Midweek Clearing</td><td>6:15 — 7:15pm</td><td><a class="btn" href="book.html">Reserve</a></td></tr>
+            <tr><td style="padding:10px 0">Mar 7</td><td>Afternoon Ease</td><td>3:00 — 4:15pm</td><td><a class="btn" href="book.html">Reserve</a></td></tr>
+            <tr><td style="padding:10px 0">Mar 12</td><td>Night Wind-Down</td><td>8:00 — 9:15pm</td><td><a class="btn" href="book.html">Reserve</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card reveal" style="margin-top:18px;display:flex;justify-content:space-between;gap:18px" data-reveal>
+      <div style="flex:1">
+        <h3>Why attend?</h3>
+        <p class="muted">Sessions are built to create a gentle arc that helps the nervous system down-regulate. People report clearer sleep, less rumination, and a renewed sense of spaciousness after one or two gatherings.</p>
+      </div>
+      <div style="width:260px">
+        <h4 style="margin-bottom:6px">Who this is for</h4>
+        <ul style="margin:0;padding-left:18px;color:var(--muted)">
+          <li>Curious first-timers</li>
+          <li>Busy professionals needing a reset</li>
+          <li>Anyone wanting a skillful pause</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="card reveal" style="margin-top:18px;text-align:center" data-reveal>
+      <h3 style="margin-bottom:6px">Ready to book your seat?</h3>
+      <p class="muted">Spaces are intentionally limited. Choose a date and secure your spot.</p>
+      <div style="margin-top:12px"><a class="btn" href="book.html">Pick your evening</a></div>
+    </section>
+  </main>
+
+  <!-- Guided exercise modal -->
+  <div id="overlay" class="overlay" aria-hidden="true">
+    <div role="dialog" aria-modal="true" class="modal">
+      <div class="modal-header">
+        <div>
+          <strong style="font-size:16px">Five minute sampler</strong>
+          <div class="muted small">A brief guided breath + journaling intro</div>
+        </div>
+        <button id="close-modal" aria-label="Close">✕</button>
+      </div>
+      <div class="exercise">
+        <div class="circle" id="breath-circle">Ready</div>
+        <div class="controls">
+          <div style="display:flex;gap:8px;align-items:center">
+            <label style="font-weight:700">Mode</label>
+            <select id="mode-select" style="margin-left:6px;padding:6px;border-radius:8px">
+              <option value="breath">Breathing</option>
+              <option value="journal">Journaling</option>
+              <option value="intention">Intention</option>
+            </select>
+          </div>
+          <div id="control-area" style="margin-top:14px">
+            <div id="breath-controls">
+              <p class="muted">Follow the circle: inhale, hold, exhale. 3 cycles.</p>
+              <div style="display:flex;gap:8px;margin-top:10px">
+                <button id="start-breath" class="btn">Begin breathing</button>
+                <button id="skip-breath" class="btn">Skip</button>
+              </div>
+            </div>
+            <div id="journal-controls" style="display:none">
+              <p class="muted">Prompt: "What would make this evening softer for you?" 3 minutes.</p>
+              <textarea id="journal-text" style="width:100%;height:110px;border-radius:8px;padding:10px;border:1px solid rgba(0,0,0,0.06)"></textarea>
+              <div style="display:flex;gap:8px;margin-top:8px"><button id="save-journal" class="btn">Save note</button></div>
+            </div>
+            <div id="intent-controls" style="display:none">
+              <p class="muted">Choose a short intention to carry into your evening.</p>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+                <button class="intent-btn btn">Softness</button>
+                <button class="intent-btn btn">Clarity</button>
+                <button class="intent-btn btn">Rest</button>
+                <button class="intent-btn btn">Open</button>
+              </div>
+              <div style="margin-top:8px"><button id="save-intent" class="btn">Set intention</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <footer class="cta-wrap">
+        <div class="muted small">This is a short non-clinical practice. If you have medical concerns, seek professional guidance.</div>
+        <div>
+          <a class="btn" href="book.html">Book a full session</a>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    // Scroll reveal with prefers-reduced-motion support
+    (function(){
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const els = document.querySelectorAll('[data-reveal]');
+      if(reduced){ els.forEach(e=>e.classList.add('visible')); return; }
+      const obs = new IntersectionObserver((entries)=>{
+        entries.forEach(en=>{
+          if(en.isIntersecting){ en.target.classList.add('visible'); obs.unobserve(en.target);} 
+        });
+      },{threshold:0.12});
+      els.forEach(e=>obs.observe(e));
+    })();
+
+    // Guided exercise modal logic
+    const overlay = document.getElementById('overlay');
+    const tryBtn = document.getElementById('try-now');
+    const closeBtn = document.getElementById('close-modal');
+    const modeSelect = document.getElementById('mode-select');
+    const breathControls = document.getElementById('breath-controls');
+    const journalControls = document.getElementById('journal-controls');
+    const intentControls = document.getElementById('intent-controls');
+    const circle = document.getElementById('breath-circle');
+    const startBreath = document.getElementById('start-breath');
+    const skipBreath = document.getElementById('skip-breath');
+    let breatheTimer = null;
+
+    tryBtn.addEventListener('click', openModal);
+    closeBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
+
+    function openModal(){ overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden'; }
+    function closeModal(){ overlay.classList.remove('open'); overlay.setAttribute('aria-hidden','true'); document.body.style.overflow='auto'; stopBreath(); }
+
+    modeSelect.addEventListener('change', ()=>{
+      breathControls.style.display='none'; journalControls.style.display='none'; intentControls.style.display='none';
+      if(modeSelect.value==='breath') breathControls.style.display='block';
+      if(modeSelect.value==='journal') journalControls.style.display='block';
+      if(modeSelect.value==='intention') intentControls.style.display='block';
+    });
+
+    function animateCircle(text, scale){ circle.textContent = text; circle.style.transform = `scale(${scale})`; }
+
+    function startBreathing(){
+      let cycle = 0; const total = 3;
+      startBreath.disabled=true; skipBreath.disabled=false;
+      function step(){
+        if(cycle>=total){ animateCircle('Done',1); startBreath.disabled=false; return; }
+        // inhale 4s, hold 2s, exhale 6s (timed)
+        animateCircle('Inhale',1.15);
+        breatheTimer = setTimeout(()=>{
+          animateCircle('Hold',1.02);
+          breatheTimer = setTimeout(()=>{
+            animateCircle('Exhale',0.86);
+            breatheTimer = setTimeout(()=>{ cycle++; step(); },6000);
+          },2000);
+        },4000);
+      }
+      step();
+    }
+    function stopBreath(){ clearTimeout(breatheTimer); startBreath.disabled=false; skipBreath.disabled=true; animateCircle('Ready',1); }
+
+    startBreath.addEventListener('click', startBreathing);
+    skipBreath.addEventListener('click', ()=>{ stopBreath(); overlay.classList.remove('open'); });
+
+    // Small accessibility: close when clicking overlay outside modal
+    overlay.addEventListener('click', (e)=>{ if(e.target===overlay) closeModal(); });
+
+    // Intent buttons
+    document.querySelectorAll('.intent-btn').forEach(b=>b.addEventListener('click', (e)=>{
+      document.querySelectorAll('.intent-btn').forEach(x=>x.style.opacity=0.6);
+      e.currentTarget.style.opacity=1; e.currentTarget.style.boxShadow='inset 0 -4px 0 rgba(0,0,0,0.06)';
+    }));
+
+    document.getElementById('save-intent').addEventListener('click', ()=>{
+      const chosen = Array.from(document.querySelectorAll('.intent-btn')).find(b=>b.style.opacity==1);
+      if(chosen){ alert('Intention set: '+chosen.textContent); closeModal(); }
+      else { alert('Pick an intention first.'); }
+    });
+
+    document.getElementById('save-journal').addEventListener('click', ()=>{
+      const t = document.getElementById('journal-text').value.trim();
+      if(t) { alert('Note saved'); closeModal(); } else { alert('Write a line or two, if you like.'); }
+    });
+  </script>
+</body>
+</html>

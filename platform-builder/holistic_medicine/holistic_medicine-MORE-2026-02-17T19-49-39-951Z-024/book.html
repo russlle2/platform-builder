@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f5fff8;--accent:#237a5a;--muted:#5a6b63}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:#123529}
+    .wrap{max-width:900px;margin:28px auto;padding:18px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    header a{color:var(--muted);text-decoration:none;margin-left:10px}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:16px;margin-top:18px}
+    .card{background:#fff;padding:16px;border-radius:12px;box-shadow:0 10px 30px rgba(6,22,10,0.04)}
+    h1{margin:0 0 6px}
+    .form-row{display:flex;flex-direction:column;margin-bottom:10px}
+    label{font-weight:700;font-size:13px;margin-bottom:6px}
+    input,select,textarea{padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);font-size:14px}
+    .mood-block{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+    .mood-block button{padding:8px 10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:#fff;cursor:pointer}
+    .submit{margin-top:12px;padding:10px 12px;border-radius:10px;background:var(--accent);color:#fff;text-decoration:none;border:none;font-weight:700}
+    .timeline{margin-top:12px;padding:10px;border-radius:10px;background:linear-gradient(180deg,rgba(35,122,90,0.04),transparent)}
+    .small{font-size:13px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div style="font-weight:800;color:var(--accent)">{{BUSINESS_NAME}} — Reserve</div>
+      <nav>
+        <a href="index.html">Gather</a>
+        <a href="services.html">Programs</a>
+        <a href="pricing.html">Tuition</a>
+      </nav>
+    </header>
+
+    <div class="grid">
+      <section class="card">
+        <h1>Reserve your place</h1>
+        <p class="small">Tell us a few basics and select a session. We’ll follow up with availability and a short onboarding note.</p>
+
+        <div style="margin-top:12px">
+          <div class="form-row">
+            <label for="name">Full name</label>
+            <input id="name" placeholder="Your name" />
+          </div>
+          <div class="form-row">
+            <label for="email">Email</label>
+            <input id="email" placeholder="you@example.com" />
+          </div>
+
+          <div class="form-row">
+            <label for="program">Select program</label>
+            <select id="program">
+              <option value="foundations">Foundational Series — 6 weeks</option>
+              <option value="intensive">Resync Intensive — weekend</option>
+              <option value="cohort">Continuity Cohort — monthly</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label>How are you feeling right now?</label>
+            <div class="mood-block" id="bookMood">
+              <button data-key="drained">Drained</button>
+              <button data-key="stressed">Stressed</button>
+              <button data-key="curious">Curious</button>
+              <button data-key="steady">Steady</button>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label for="notes">Notes (optional)</label>
+            <textarea id="notes" rows="3" placeholder="Any specifics to share about your goals or limits"></textarea>
+          </div>
+
+          <button class="submit" id="submitBtn">Complete reservation</button>
+          <div id="bookConfirm" class="small" style="margin-top:8px;color:var(--muted)"></div>
+        </div>
+
+        <div class="timeline" aria-live="polite">
+          <strong>Expected progression (example)</strong>
+          <div style="margin-top:8px" id="bookTimeline">
+            Phase 1: Intro & short practices — 4–6 weeks<br>
+            Phase 2: Consolidation — 8 weeks<br>
+            Phase 3: Integration — variable
+          </div>
+          <div class="small" style="margin-top:8px;color:#5f6f68">Reminder: the sequence is an educational roadmap. It is not medical advice. If you have health concerns, consult a licensed clinician before participating.</div>
+        </div>
+      </section>
+
+      <aside class="card">
+        <h3 style="margin-top:0">Quick pricing</h3>
+        <div style="margin-top:8px">Foundational Series — $420 per seat</div>
+        <div style="margin-top:6px">Resync Intensive — $180 per person</div>
+        <div style="margin-top:6px">Continuity Cohort — $60/month</div>
+
+        <div style="margin-top:12px">
+          <strong>Need help choosing?</strong>
+          <p class="small">Use the mood selector above to pick a starting point — we’ll include a recommended session in the reply.</p>
+        </div>
+
+        <div style="margin-top:12px">
+          <a href="mailto:{{EMAIL}}" style="display:inline-block;padding:8px 10px;border-radius:8px;background:var(--accent);color:#fff;text-decoration:none">Email to ask</a>
+        </div>
+      </aside>
+    </div>
+
+  </div>
+
+  <script>
+    (function(){
+      const moodMap = {
+        drained:{suggest:'Resync Intensive',note:'Short, focused reset with low daily friction.'},
+        stressed:{suggest:'Foundational Series',note:'A steady sequence to build predictable habits.'},
+        curious:{suggest:'Resync Intensive',note:'Try a single session to see what lands.'},
+        steady:{suggest:'Continuity Cohort',note:'Long-term refinement and monthly check-ins.'}
+      };
+
+      const moodEl = document.getElementById('bookMood');
+      const submitBtn = document.getElementById('submitBtn');
+      const confirm = document.getElementById('bookConfirm');
+      let selectedMood = 'curious';
+
+      moodEl.addEventListener('click',function(e){
+        if(e.target.tagName!=='BUTTON') return;
+        const key = e.target.getAttribute('data-key');
+        selectedMood = key;
+        // visual
+        moodEl.querySelectorAll('button').forEach(b=>b.style.boxShadow='none');
+        e.target.style.boxShadow='inset 0 0 0 2px rgba(35,122,90,0.12)';
+      });
+
+      submitBtn.addEventListener('click',function(){
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const program = document.getElementById('program').value;
+        if(!name || !email){
+          confirm.textContent = 'Please provide your name and email to reserve a spot.';
+          return;
+        }
+        const suggestion = moodMap[selectedMood] ? moodMap[selectedMood].suggest : 'a suitable session';
+        confirm.textContent = 'Thanks, ' + name + '. We received your request. Based on how you said you feel, we note: ' + suggestion + '. You will receive a confirmation at ' + email + ' with next steps.';
+        // simulate sending data to server (local-only)
+        submitBtn.textContent = 'Requested';
+        submitBtn.disabled = true;
+      });
+
+      // initialize
+      moodEl.querySelector('[data-key=curious]').click();
+    })();
+  </script>
+</body>
+</html>

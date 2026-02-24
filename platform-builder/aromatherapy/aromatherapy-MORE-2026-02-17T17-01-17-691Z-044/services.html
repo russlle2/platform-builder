@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#FBFAF8;--card:#FFFFFF;--muted:#6B6B6B;--accent:#6A8E78;--accent-2:#CDA06D;--glass:rgba(255,255,255,0.6);font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#FBFBFA 0%, #F3F6F4 100%);color:#213;}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:rgba(255,255,255,0.6);backdrop-filter:blur(6px);border-bottom:1px solid #eee}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    nav a{margin:0 10px;color:#264; text-decoration:none;font-weight:600}
+    .cta{background:var(--accent);color:#fff;padding:8px 12px;border-radius:8px;text-decoration:none}
+    main{max-width:980px;margin:28px auto;padding:22px}
+    .hero{display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:center}
+    .hero-card{background:var(--card);padding:20px;border-radius:12px;box-shadow:0 6px 18px rgba(33,36,40,0.06)}
+    .kicker{color:var(--accent);font-weight:700;font-size:13px}
+    h1{margin:6px 0 8px;font-size:28px}
+    p.lead{color:var(--muted);margin:0}
+    .side-cta{display:flex;flex-direction:column;gap:10px}
+    .pill{background:linear-gradient(90deg,rgba(106,142,120,0.12),rgba(205,160,109,0.06));padding:10px;border-radius:10px}
+    .offer-list{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:18px}
+    .offer{background:linear-gradient(180deg,#fff,#fbfbfb);padding:14px;border-radius:10px;border:1px solid #eee}
+    .muted{color:var(--muted)}
+    .member{border-left:4px solid var(--accent-2);padding-left:12px}
+    .micro{display:flex;gap:10px;align-items:center}
+    footer{margin:40px auto;max-width:980px;padding:18px;color:var(--muted);font-size:13px}
+    .faq{margin-top:20px;background:linear-gradient(180deg,#fff,#fafbf9);padding:12px;border-radius:10px;border:1px solid #eee}
+    .btn{display:inline-block;padding:10px 14px;border-radius:10px;background:var(--accent);color:#fff;text-decoration:none}
+    /* subtle pattern using inline svg -- embed via data URL in CSS */
+    .pattern-hero{background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><defs><linearGradient id="g" x1="0%" x2="100%"><stop offset="0%" stop-color="%236A8E78" stop-opacity="0.06"/><stop offset="100%" stop-color="%23CDA06D" stop-opacity="0.02"/></linearGradient></defs><rect width="200" height="200" fill="none"/><g fill="url(%23g)"><circle cx="30" cy="30" r="18"/><circle cx="80" cy="80" r="12"/><circle cx="160" cy="40" r="10"/><circle cx="120" cy="140" r="16"/></g></svg>');background-repeat:no-repeat;background-position:top right;background-size:220px}
+    /* modal */
+    .modal{position:fixed;inset:0;background:rgba(12,12,12,0.45);display:none;align-items:center;justify-content:center}
+    .modal.open{display:flex}
+    .modal-card{width:540px;background:#fff;border-radius:12px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,0.18)}
+    .steps{display:flex;gap:8px;align-items:center;margin:12px 0}
+    .timer{font-size:34px;font-weight:700;color:var(--accent)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand"><div class="logo">AR</div><div>
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+      <div class="muted" style="font-size:12px">Aroma care • membership + sessions</div>
+    </div></div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Recipes</a>
+      <a href="shop.html">Apothecary</a>
+      <a href="pricing.html">Plans</a>
+      <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-card pattern-hero">
+        <div class="kicker">Personal sessions & membership</div>
+        <h1>Intentful scent work that may support everyday balance</h1>
+        <p class="lead">Short consultations, curated blends, and a steady membership for gentle scent practices to fold into daily life. All guidance is safety-forward and supportive, not medical.</p>
+
+        <div style="margin-top:14px;display:flex;gap:10px">
+          <a class="btn" href="book.html">Reserve a short consult</a>
+          <button onclick="openTryNow()" class="btn" style="background:#CDA06D">Try a short exercise</button>
+        </div>
+
+        <div class="offer-list">
+          <div class="offer">
+            <div style="font-weight:700">Signature Intake</div>
+            <div class="muted">45 min — scent history, current rhythm, scent preferences</div>
+          </div>
+          <div class="offer member">
+            <div style="font-weight:700">Membership — Root</div>
+            <div class="muted">Monthly curated blends, two micro-coaching check-ins, 10% apothecary credit</div>
+          </div>
+          <div class="offer">
+            <div style="font-weight:700">Focused Session</div>
+            <div class="muted">25 min — single-focus blend + keeper ritual</div>
+          </div>
+          <div class="offer">
+            <div style="font-weight:700">Blend Design</div>
+            <div class="muted">Custom take-home blends with safe dilution guide</div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="hero-card side-cta">
+        <div class="pill">
+          <div style="font-size:12px;font-weight:700;color:var(--accent)">Membership Perk</div>
+          <div style="margin-top:6px;font-weight:700">Monthly mini blend</div>
+          <div class="muted" style="font-size:13px">Receive a small-strength blend and short ritual notes each month.</div>
+        </div>
+
+        <div style="margin-top:12px">
+          <div style="font-size:12px;color:var(--muted)">Quick diagnostic</div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn" onclick="location.href='blends.html'">Try Builder</button>
+            <a class="btn" href="contact.html" style="background:#8fae92">Ask a question</a>
+          </div>
+        </div>
+
+        <div style="margin-top:14px;font-size:13px;color:var(--muted)">
+          Call for a brief phone check: <a href="tel:{{PHONE}}">{{PHONE}}</a>
+        </div>
+      </aside>
+    </section>
+
+    <section style="margin-top:26px;display:grid;grid-template-columns:1fr 280px;gap:18px;align-items:start">
+      <div class="hero-card">
+        <h2 style="margin-top:0">How a session flows</h2>
+        <ol style="color:var(--muted);">
+          <li>Brief check-in and scent preferences</li>
+          <li>Collaborative blend selection or design</li>
+          <li>Simple ritual and home-use guide (including dilution & patch-test)</li>
+        </ol>
+
+        <div style="margin-top:12px">
+          <h3 style="margin:6px 0">Who this is for</h3>
+          <p class="muted">People who want scent as a deliberate sensory tool — short, repeatable practices that may support calm, focus, or restorative moments. Not a medical service.</p>
+        </div>
+
+        <div style="margin-top:12px">
+          <h3 style="margin:6px 0">Session bundles</h3>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <div class="pill">Three-session rhythm — slight saving</div>
+            <div class="pill">Seasonal tune-ups</div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="hero-card">
+        <h4 style="margin:6px 0">Quick plan</h4>
+        <div class="muted">Monthly membership is framed as a steadying loop rather than therapy — curated blends, short check-ins, and credits in the apothecary.</div>
+        <div style="margin-top:12px">
+          <a class="btn" href="pricing.html">View plans</a>
+        </div>
+      </aside>
+    </section>
+
+    <section style="margin-top:22px" class="hero-card">
+      <h3 style="margin-top:0">Micro practices you can try</h3>
+      <div class="micro" style="margin-top:8px">
+        <div style="flex:1">
+          <div style="font-weight:700">1-minute grounding</div>
+          <div class="muted">Take three slow inhales through the nose, hold for a moment, release. Pair with a single drop on a handkerchief.</div>
+        </div>
+        <div style="width:160px;text-align:center">
+          <button class="btn" onclick="openTryNow()">Try it now</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="hero-card faq">
+      <h4 style="margin:6px 0">Safety, dilution & common notes</h4>
+      <ul class="muted">
+        <li><strong>Dilution:</strong> Guidance is suggestive. Typical topical dilutions might be 0.5–2% depending on sensitivity and purpose — see the blend builder for drops-per-bottle examples.</li>
+        <li><strong>Patch test:</strong> Always do a patch test when trying a new topical blend: apply a small amount to the inner forearm and check after 24 hours.</li>
+        <li><strong>Pets & pregnancy:</strong> Essential oils can affect pets and pregnancy. Consult a professional before topical use if pregnant, nursing, or caring for animals.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <div>Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> · <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    <div style="margin-top:6px;color:var(--muted)">Serving {{CITY}}, {{STATE}} — sessions by appointment.</div>
+  </footer>
+
+  <!-- Try it now modal (breathing / journaling / intention) -->
+  <div id="tryModal" class="modal" aria-hidden="true">
+    <div class="modal-card">
+      <h3 id="tryTitle">Short Scent Pause</h3>
+      <div id="tryBody">
+        <div style="font-size:13px;color:var(--muted)">A guided 3-step mini practice: breathe, jot, set an intention. No scent required — add a personal aroma if you like.</div>
+        <div class="steps" style="margin-top:12px">
+          <div style="width:10px;height:10px;border-radius:50%;background:var(--accent)"></div>
+          <div style="width:10px;height:10px;border-radius:50%;background:#ddd"></div>
+          <div style="width:10px;height:10px;border-radius:50%;background:#ddd"></div>
+        </div>
+        <div id="stepArea" style="margin-top:14px">
+          <div id="step1">
+            <div style="font-weight:700">Breathe</div>
+            <div class="muted">Three rounds of slow breath. Inhale 4s — hold 2s — exhale 6s.</div>
+            <div style="margin-top:10px" class="timer" id="breathTimer">00:00</div>
+          </div>
+          <div id="step2" style="display:none;margin-top:8px;">
+            <div style="font-weight:700">Journal</div>
+            <textarea id="note" style="width:100%;height:80px;border-radius:8px;border:1px solid #eee;padding:8px;margin-top:8px" placeholder="A single line: what do you want more of today?"></textarea>
+          </div>
+          <div id="step3" style="display:none;margin-top:8px;">
+            <div style="font-weight:700">Set an intention</div>
+            <div class="muted" style="margin-top:6px">One short phrase to carry with you. Repeat it aloud once.</div>
+            <input id="intent" style="width:100%;padding:8px;border-radius:8px;border:1px solid #eee;margin-top:8px" placeholder="Example: "/>
+          </div>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
+          <button onclick="closeTryNow()" style="background:#eee;padding:8px 12px;border-radius:8px;border:0">Close</button>
+          <button id="nextBtn" class="btn">Start</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Modal guided exercise
+    let tryModal = document.getElementById('tryModal');
+    let nextBtn = document.getElementById('nextBtn');
+    let step = 0; let breathCount = 0; let breathTimer; let seconds=0;
+    function openTryNow(){ tryModal.classList.add('open'); tryModal.setAttribute('aria-hidden','false'); step=0; showStep(); }
+    function closeTryNow(){ tryModal.classList.remove('open'); tryModal.setAttribute('aria-hidden','true'); clearInterval(breathTimer); document.getElementById('breathTimer').textContent='00:00'; }
+    function showStep(){
+      document.getElementById('step1').style.display = step===0?'block':'none';
+      document.getElementById('step2').style.display = step===1?'block':'none';
+      document.getElementById('step3').style.display = step===2?'block':'none';
+      nextBtn.textContent = step===0?'Begin breathing':(step===1?'Save note':'Finish');
+    }
+    nextBtn.addEventListener('click',()=>{
+      if(step===0){ startBreathRoutine(); }
+      else if(step===1){ // save journal
+        let note = document.getElementById('note').value.trim(); if(note) localStorage.setItem('mini-note',note); step=2; showStep(); }
+      else{ let intent = document.getElementById('intent').value.trim(); if(intent) localStorage.setItem('mini-intent',intent); closeTryNow(); alert('Practice saved to your browser for now.'); }
+    });
+    function startBreathRoutine(){
+      seconds=0; breathCount=0; document.getElementById('breathTimer').textContent='00:00';
+      nextBtn.disabled=true; // lock until done
+      breathTimer = setInterval(()=>{
+        seconds++;
+        document.getElementById('breathTimer').textContent = (seconds<10? '00:0'+seconds : '00:'+seconds);
+        if(seconds>=12){ // 12 seconds ~ three cycles in simplified pace
+          clearInterval(breathTimer); nextBtn.disabled=false; step=1; showStep();
+        }
+      },1000);
+    }
+
+    // close modal on outside click
+    tryModal.addEventListener('click',(e)=>{ if(e.target===tryModal) closeTryNow(); });
+  </script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>How We Work — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f3fbff;--ink:#05262b;--muted:#4b6e70;--accent:#6fb8c5}
+    html,body{height:100%;margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:var(--ink);background:var(--bg)}
+    .wrap{max-width:1024px;margin:0 auto;padding:26px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:10px;color:var(--muted);text-decoration:none}
+    .intro{display:grid;grid-template-columns:1fr;gap:12px;margin-top:18px}
+    .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:18px}
+    .tile{background:#fff;padding:16px;border-radius:12px;box-shadow:0 10px 24px rgba(5,38,43,0.04);opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+    .tile.revealed{opacity:1;transform:none}
+    .emph{color:var(--accent);font-weight:700}
+
+    /* Planner small variant */
+    .mini-planner{background:linear-gradient(180deg,rgba(111,184,197,0.08),transparent);padding:14px;border-radius:10px;margin-top:16px}
+    .mini-planner label{font-weight:600;font-size:14px}
+    .mini-planner input[type=text]{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(5,38,43,0.06);margin-top:8px}
+    .mini-actions{display:flex;gap:8px;margin-top:10px}
+    .btn{padding:8px 10px;border-radius:8px;border:none;background:var(--ink);color:#fff;cursor:pointer}
+    .btn.ghost{background:transparent;border:1px solid rgba(5,38,43,0.06);color:var(--ink)}
+    .preview{background:#fff;padding:10px;border-radius:8px;margin-top:10px;border:1px dashed rgba(5,38,43,0.04);white-space:pre-wrap}
+
+    @media(min-width:900px){.intro{grid-template-columns:1fr 320px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="color:var(--muted)">A human-centered path to steadying daily rhythm</div>
+      </div>
+      <nav>
+        <a href="index.html">Welcome</a>
+        <a href="services.html">Offerings</a>
+        <a href="conditions.html">Conditions</a>
+        <a href="pricing.html">Rates</a>
+      </nav>
+    </header>
+
+    <main>
+      <div class="intro">
+        <section>
+          <h1>Our method is rooted in small experiments</h1>
+          <p class="muted">We favor short, practical tests you can fold into your life and refine. Each suggestion is framed as a trial with clear measures — duration, what to notice, and when to reassess.</p>
+
+          <div class="tiles">
+            <div class="tile" data-reveal>
+              <h3>Observe</h3>
+              <p class="muted">We start by mapping daily patterns, not by labeling. A simple 3-day rhythm log often reveals where tiny shifts matter most.</p>
+            </div>
+            <div class="tile" data-reveal>
+              <h3 class="emph">Try</h3>
+              <p class="muted">Short, practical steps are introduced — a bedtime cue, a 5-minute breath practice, or a mealtime tweak. The emphasis is on what you can sustain.</p>
+            </div>
+            <div class="tile" data-reveal>
+              <h3>Reflect</h3>
+              <p class="muted">At follow-up we review what changed, and whether the step fits your life. If a practice isn't useful, we adapt rather than persist.</p>
+            </div>
+          </div>
+        </section>
+
+        <aside>
+          <div class="mini-planner" id="miniPlanner">
+            <label for="miniGoal">Quick session suggestion</label>
+            <input id="miniGoal" type="text" placeholder="What would you like to focus on?">
+            <div style="font-size:13px;color:var(--muted);margin-top:8px">We will produce a short, plain-text suggestion you can copy into a calendar or message.</div>
+            <div class="mini-actions">
+              <button id="miniBuild" class="btn">Make</button>
+              <button id="miniCopy" class="btn ghost">Copy</button>
+            </div>
+            <div class="preview" id="miniPreview">A short suggestion will appear here.</div>
+          </div>
+        </aside>
+      </div>
+
+      <section style="margin-top:18px">
+        <h2>Shared language</h2>
+        <p class="muted">We use simple phrases so plans are easy to recall: "small daily cue," "evening unwind," or "two-minute reset." Language is practical and descriptive, not clinical.</p>
+      </section>
+
+      <section style="margin-top:18px">
+        <h2>Collaboration and boundaries</h2>
+        <p class="muted">Our role is to listen, provide evidence-informed strategies, and point to other supports when appropriate. We do not replace medical or psychiatric care. When needed, we help coordinate referrals.</p>
+      </section>
+    </main>
+
+    <footer style="margin-top:22px;color:var(--muted)">
+      <div>{{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • {{PHONE}}</div>
+    </footer>
+  </div>
+
+  <script>
+    // Reveal system with reduced-motion consideration
+    (function(){
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const nodes = document.querySelectorAll('[data-reveal]');
+      if(reduced){nodes.forEach(n=>n.classList.add('revealed'));return}
+      const observer = new IntersectionObserver((ents)=>{
+        ents.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('revealed'); observer.unobserve(e.target); } });
+      },{threshold:0.12});
+      nodes.forEach(n=>observer.observe(n));
+    })();
+
+    // Mini planner widget
+    (function(){
+      const miniBuild = document.getElementById('miniBuild');
+      const miniCopy = document.getElementById('miniCopy');
+      const miniPreview = document.getElementById('miniPreview');
+
+      function makeShort(){
+        const q = document.getElementById('miniGoal').value.trim();
+        const goal = q || 'General support';
+        const lines = [];
+        lines.push('Suggested visit');
+        lines.push('---------------');
+        lines.push('Focus: ' + goal);
+        lines.push('Format: 50-minute collaborative session with 1–2 practical takeaways.');
+        lines.push('\nNote: Educational support only; not a medical diagnosis.');
+        lines.push('Contact: ' + '{{EMAIL}}' + ' • ' + '{{PHONE}}');
+        return lines.join('\n');
+      }
+
+      miniBuild.addEventListener('click',()=>{ miniPreview.textContent = makeShort(); });
+      miniCopy.addEventListener('click',async ()=>{
+        const txt = makeShort();
+        try{ await navigator.clipboard.writeText(txt); miniCopy.textContent = 'Copied'; setTimeout(()=>miniCopy.textContent='Copy',1200);}catch(e){ const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove(); miniCopy.textContent='Copied'; setTimeout(()=>miniCopy.textContent='Copy',1200);}      });
+    })();
+  </script>
+</body>
+</html>

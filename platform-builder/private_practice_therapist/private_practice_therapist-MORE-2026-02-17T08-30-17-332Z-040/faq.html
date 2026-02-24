@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Questions — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7efe5;--accent:#6b4a38;--muted:#7a6356;--card:#fffaf6;--ink:#2a241f}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;background:var(--bg);color:var(--ink)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 26px;background:linear-gradient(90deg, rgba(107,74,56,0.05), transparent)}
+    .logo{font-weight:700;color:var(--accent)}
+    nav a{margin-left:14px;text-decoration:none;color:var(--muted)}
+    main{max-width:920px;margin:28px auto;padding:0 20px}
+    .intro{background:linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,250,246,0.7));padding:18px;border-radius:12px}
+    .faq-item{margin-top:14px;padding:14px;background:var(--card);border-radius:10px}
+    .faq-item h3{margin:0;color:var(--accent)}
+    .faq-item p{margin:8px 0 0;color:var(--muted)}
+    .wizard{margin-top:18px;padding:14px;background:#fff;border-radius:12px;border:1px solid #efe1d8}
+    .wizard label{display:block;margin-top:10px;font-weight:600;color:var(--accent)}
+    .wizard select,.wizard input[type=text],.wizard textarea{width:100%;padding:8px;border-radius:8px;border:1px solid #e8dcd3;margin-top:6px}
+    .wizard .actions{margin-top:12px;display:flex;gap:8px}
+    .copyBtn{background:var(--accent);color:#fff;padding:8px 10px;border-radius:8px;border:0}
+    .resultBox{margin-top:12px;padding:12px;border-radius:8px;background:#fff6f2;border:1px dashed #f0dcd2;color:var(--muted);white-space:pre-wrap}
+    footer{max-width:920px;margin:28px auto;padding:10px;color:var(--muted);font-size:13px}
+
+    .pattern{position:fixed;left:10px;bottom:10px;width:110px;height:110px;opacity:0.06}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Who I Am</a>
+      <a href="specialties.html">Specialties</a>
+      <a href="approach.html">Method</a>
+      <a href="fees.html">Investment</a>
+      <a href="faq.html" style="font-weight:700;color:var(--accent)">Questions</a>
+      <a href="book.html">Start</a>
+      <a href="contact.html">Reach Out</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="intro">
+      <h1 style="margin:0;color:var(--accent)">Common questions, and a gentle self-check you can bring to a first meeting</h1>
+      <p style="margin-top:8px;color:var(--muted)">Below are practical answers and a short intake wizard to help you notice priorities to discuss in your first session. This is not a diagnosis; it’s a way to prepare for focused conversation.</p>
+    </section>
+
+    <section style="margin-top:18px">
+      <div class="faq-item">
+        <h3>How do I know which format suits me?</h3>
+        <p>Think about whether you want a short, goal-focused engagement, a single intensive start, or ongoing sessions for steady progress. We’ll pick a format together after an intake conversation.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>Are sessions confidential?</h3>
+        <p>Yes. Sessions are confidential within legal and ethical boundaries. I will review confidentiality, its limits, and mandatory reporting exceptions during our first meeting.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>What if I’m in crisis?</h3>
+        <p>If you are in immediate danger, please call local emergency services or your local crisis line. I do not provide emergency services and will help connect you to suitable resources when needed.</p>
+      </div>
+    </section>
+
+    <section class="wizard" aria-labelledby="wizard-heading">
+      <h2 id="wizard-heading" style="margin:0;color:var(--accent)">Self-screening intake wizard</h2>
+      <p style="margin-top:8px;color:var(--muted)">Answer a few guided prompts to shape a short list of topics and questions to bring to a consultation. Non-diagnostic, reflective language.</p>
+
+      <label>Primary concern</label>
+      <select id="concern">
+        <option value="relationship">Relationship changes or conflict</option>
+        <option value="transition">Life transition (work, family, identity)</option>
+        <option value="mood">Mood, low motivation or irritability</option>
+        <option value="anxiety">Worry or heightened anxiety</option>
+        <option value="other">Other / Unsure</option>
+      </select>
+
+      <label>How long have you noticed this?</label>
+      <select id="duration">
+        <option value="weeks">A few weeks</option>
+        <option value="months">Several months</option>
+        <option value="years">A year or more</option>
+      </select>
+
+      <label>Intensity in your day-to-day (select one)</label>
+      <select id="intensity">
+        <option value="mild">Mild: noticeable but manageable</option>
+        <option value="moderate">Moderate: often gets in the way</option>
+        <option value="high">High: frequently interferes</option>
+      </select>
+
+      <label>What helps you now? (select any)</label>
+      <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap">
+        <button type="button" class="tag" data-val="exercise" style="padding:8px;border-radius:8px;border:1px solid #e8dcd3;background:#fff">Movement</button>
+        <button type="button" class="tag" data-val="friends" style="padding:8px;border-radius:8px;border:1px solid #e8dcd3;background:#fff">Friends or family</button>
+        <button type="button" class="tag" data-val="therapy" style="padding:8px;border-radius:8px;border:1px solid #e8dcd3;background:#fff">Previous therapy</button>
+        <button type="button" class="tag" data-val="sleep" style="padding:8px;border-radius:8px;border:1px solid #e8dcd3;background:#fff">Sleep routine</button>
+        <button type="button" class="tag" data-val="none" style="padding:8px;border-radius:8px;border:1px solid #e8dcd3;background:#fff">Not much</button>
+      </div>
+
+      <div class="actions">
+        <button id="generateBtn" class="copyBtn">Create questions to bring</button>
+        <button id="clearBtn" class="copyBtn" style="background:#9a7b69">Clear</button>
+      </div>
+
+      <div id="wizardOutput" class="resultBox" aria-live="polite"></div>
+    </section>
+
+    <section style="margin-top:18px">
+      <div style="font-weight:700">Scope & boundaries</div>
+      <div style="margin-top:8px;color:var(--muted)">I provide outpatient psychotherapy for adults. I do not provide forensic evaluations, court testimony, or emergency crisis response. If concerns fall outside my scope, I will help connect you with appropriate resources.</div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="max-width:920px;margin:0 auto;text-align:center;color:var(--muted)">For scheduling: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> · Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+  </footer>
+
+  <img class="pattern" src="assets/img/pattern.svg" alt="pattern">
+
+  <script>
+    // small tag toggle
+    (function(){
+      var tags=document.querySelectorAll('.tag');
+      tags.forEach(function(t){t.addEventListener('click',function(){t.classList.toggle('active'); if(t.classList.contains('active')){t.style.background='#efe3db'}else{t.style.background='#fff'}})});
+
+      function buildQuestions(){
+        var concern=document.getElementById('concern').value;
+        var duration=document.getElementById('duration').value;
+        var intensity=document.getElementById('intensity').value;
+        var activeTags=Array.from(document.querySelectorAll('.tag.active')).map(function(n){return n.dataset.val});
+        var lines=[];
+        lines.push('Brief summary for the first meeting:');
+        lines.push('- Primary concern: ' + ({relationship:'Relationship changes or conflict', transition:'Life transition', mood:'Mood or low motivation', anxiety:'Worry or anxiety', other:'Other / Unsure'})[concern]);
+        lines.push('- Duration: ' + duration);
+        lines.push('- Intensity: ' + intensity);
+        if(activeTags.length) lines.push('- Current supports/strategies: ' + activeTags.join(', '));
+        lines.push('\nSuggested questions to bring to the consultation:');
+
+        // generate gentle questions
+        var q=[];
+        q.push('What might a 4–8 session focus look like for this concern?');
+        q.push('How would we measure early progress between sessions?');
+        q.push('Are there practical tools or experiments to try between meetings?');
+        if(concern==='relationship') q.push('How can couples or family patterns be included safely if relevant?');
+        if(concern==='transition') q.push('What supports could help with this transition and what pacing might feel sustainable?');
+        if(intensity==='high') q.push('What safety planning or immediate supports would be helpful to consider?');
+
+        q.forEach(function(s){lines.push('- ' + s)});
+        return lines.join('\n');
+      }
+
+      document.getElementById('generateBtn').addEventListener('click',function(){
+        var out=buildQuestions();
+        document.getElementById('wizardOutput').textContent=out;
+      });
+
+      document.getElementById('clearBtn').addEventListener('click',function(){
+        document.getElementById('wizardOutput').textContent='';
+        document.querySelectorAll('.tag.active').forEach(function(n){n.classList.remove('active');n.style.background='#fff'});
+      });
+    })();
+  </script>
+</body>
+</html>

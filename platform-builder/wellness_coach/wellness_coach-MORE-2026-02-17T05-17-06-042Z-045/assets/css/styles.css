@@ -1,0 +1,60 @@
+/* Core layout */
+:root{--bg:#0f1720;--card:#0b1220;--muted:#9aa6b2;--accent:#6ad1b6;--accent-2:#60b5ff;--text:#f6fbff}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;color:var(--text);background:linear-gradient(180deg, #08101a 0%, #06121a 100%);}
+.wrap{max-width:1100px;margin:0 auto;padding:28px}
+.site-header{background:linear-gradient(90deg, rgba(255,255,255,0.02), transparent);backdrop-filter:blur(4px)}
+.site-header .wrap{display:flex;align-items:center;justify-content:space-between}
+.brand{font-weight:700;color:var(--text);text-decoration:none}
+.main-nav a{margin-left:18px;color:var(--muted);text-decoration:none}
+.main-nav .cta-nav{background:rgba(255,255,255,0.03);padding:8px 12px;border-radius:6px;color:var(--text);}
+.hero{padding:48px 0}
+.hero-grid{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:center}
+.hero-title{font-size:28px;margin:0 0 12px}
+.hero-sub{color:var(--muted);margin:0 0 18px}
+.btn{display:inline-block;padding:10px 16px;border-radius:8px;text-decoration:none;color:var(--text);border:1px solid rgba(255,255,255,0.04);background:transparent}
+.btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#042029;font-weight:700;border:none}
+.btn.ghost{border:1px solid rgba(255,255,255,0.06)}
+.hero-visual{position:relative;height:220px;border-radius:12px;overflow:hidden;background:linear-gradient(135deg,#07121a 0%,#08242a 100%);display:flex;align-items:center;justify-content:center}
+.visual-card{position:absolute;right:18px;bottom:20px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:16px;border-radius:10px;width:46%}
+.section-head h2{margin:10px 0 6px}
+.muted{color:var(--muted)}
+.columns{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:start}
+.proof-gallery{background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);padding:16px;border-radius:10px}
+.testimonial{min-height:76px}
+.testimonial .quote{font-style:italic;margin:0 0 8px}
+.proof-controls{display:flex;gap:8px;margin:12px 0}
+.proof-controls button{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--text);padding:6px 10px;border-radius:6px}
+.badges{display:flex;gap:8px;flex-wrap:wrap}
+.badge{background:rgba(255,255,255,0.02);border:none;color:var(--text);padding:6px 10px;border-radius:20px;cursor:pointer}
+.badge-tip{position:absolute;background:#042029;padding:8px 12px;border-radius:6px;color:#bff0e6;transform:translateY(8px);box-shadow:0 6px 20px rgba(0,0,0,0.6);display:none}
+.diagnostic{padding-top:18px}
+.goal-form fieldset{border:0;padding:0;margin:12px 0;display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.goal-form label{background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;display:flex;align-items:center;gap:10px}
+.path-map{margin-top:14px;background:rgba(255,255,255,0.01);padding:16px;border-radius:10px}
+.map-head{display:flex;justify-content:space-between;align-items:center}
+.timeline{width:100%;height:60px}
+.micro-list{margin-top:12px;color:var(--muted)}
+.habit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+.habit-grid article{background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);padding:12px;border-radius:8px}
+.price-cards{display:flex;gap:12px;margin-top:12px}
+.card{background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);padding:16px;border-radius:10px;flex:1}
+.card.featured{border:1px solid rgba(255,255,255,0.04);box-shadow:0 6px 24px rgba(0,0,0,0.6)}
+.price{font-weight:700;font-size:20px;margin:6px 0}
+.cta{margin-top:22px;padding:20px;background:linear-gradient(90deg, rgba(106,209,182,0.06), rgba(96,181,255,0.03));border-radius:10px}
+.cta-actions{margin-top:12px}
+.site-footer{margin-top:26px;padding:18px 0;border-top:1px solid rgba(255,255,255,0.02)}
+.footer-left{float:left}
+.footer-nav{float:right}
+.footer-nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+
+/* Responsive */
+@media (max-width:900px){
+  .hero-grid,.columns{grid-template-columns:1fr}
+  .goal-form fieldset{grid-template-columns:1fr}
+  .price-cards{flex-direction:column}
+  .habit-grid{grid-template-columns:1fr}
+}
+
+/* Decorative background using external svg file */
+body::after{content:"";position:fixed;right:-120px;top:-80px;width:520px;height:520px;background:url('../assets/img/pattern.svg') no-repeat center/contain;opacity:0.06;pointer-events:none}

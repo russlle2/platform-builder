@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Blends — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--accent:#7a5f9e;--bg:#fffafc;--muted:#666}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:var(--bg);color:#111}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 26px;background:rgba(255,255,255,0.7);backdrop-filter:blur(6px)}
+    .logo{width:44px;height:44px;background:var(--accent);border-radius:8px;color:white;display:grid;place-items:center;font-weight:800}
+    nav a{margin-left:16px;text-decoration:none;color:var(--muted);font-weight:700}
+    main{max-width:1100px;margin:26px auto;padding:22px}
+    .hero{background:#fff;padding:18px;border-radius:12px;border:1px solid #f0e9f6}
+    .hero h1{margin:0;font-size:26px}
+    .muted{color:var(--muted)}
+
+    .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
+    .card{background:#fff;padding:14px;border-radius:10px;border:1px solid #efe7f6;display:flex;flex-direction:column;gap:8px}
+    .scentSwatch{height:72px;border-radius:8px}
+    .blendName{font-weight:800}
+    .blendNote{font-size:13px;color:var(--muted)}
+    .cta{margin-top:8px;padding:8px 12px;border-radius:10px;background:var(--accent);color:#fff;text-decoration:none;font-weight:700;display:inline-block}
+
+    .moodPanel{margin-top:18px;background:#fff;padding:12px;border-radius:10px;border:1px solid #efe7f6}
+    .moods{display:flex;gap:8px;flex-wrap:wrap}
+    .moodBtn{padding:8px 12px;border-radius:999px;background:#fff;border:1px solid #efe7f6;cursor:pointer}
+    .moodBtn.selected{background:var(--accent);color:#fff}
+    .recommend{margin-top:12px}
+
+    @media(max-width:900px){.gallery{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:600px){.gallery{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo">B</div>
+      <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Shop</a>
+      <a href="about.html">About</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Blends crafted for small moments</h1>
+      <p class="muted">A curated collection of blends — travel-friendly roll-ons, inhalers, and household spritzes. Descriptions focus on sensory notes and ritual uses that may support calm or clarity.</p>
+
+      <div class="moodPanel">
+        <strong>Choose a state to see recommended blends</strong>
+        <div class="moods" style="margin-top:8px">
+          <button class="moodBtn" data-key="calm">Need calm</button>
+          <button class="moodBtn" data-key="wake">Wake up</button>
+          <button class="moodBtn" data-key="focus">Focus</button>
+          <button class="moodBtn" data-key="ease">Digest emotions</button>
+        </div>
+        <div class="recommend" id="blendRecommend">
+          <div style="font-weight:700">No mood selected</div>
+          <div class="muted">Select a mood to see a tailored blend pick and a suggested size.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="gallery" aria-label="Blends gallery">
+      <div class="card" data-key="calm">
+        <div class="scentSwatch" style="background:linear-gradient(180deg,#f8fdfb,#e6f4ee)"></div>
+        <div class="blendName">Evening Wrap</div>
+        <div class="blendNote">Lavender, roman chamomile, sweet orange — a gentle roll-on. Intended to support a wind-down routine.</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div style="font-weight:700">$18</div>
+          <a class="cta" href="{{PRIMARY_CTA_URL}}?blend=evening-wrap">Select</a>
+        </div>
+      </div>
+
+      <div class="card" data-key="wake">
+        <div class="scentSwatch" style="background:linear-gradient(180deg,#fff7e6,#ffe8b8)"></div>
+        <div class="blendName">Morning Lift</div>
+        <div class="blendNote">Grapefruit, rosemary, petitgrain — an inhaler or spritz to invite clarity and movement.</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div style="font-weight:700">$16</div>
+          <a class="cta" href="{{PRIMARY_CTA_URL}}?blend=morning-lift">Select</a>
+        </div>
+      </div>
+
+      <div class="card" data-key="focus">
+        <div class="scentSwatch" style="background:linear-gradient(180deg,#eef9ff,#d9f0ff)"></div>
+        <div class="blendName">Clear Line</div>
+        <div class="blendNote">Black pepper, bergamot, basil — a compact inhaler meant to help steady attention.</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div style="font-weight:700">$20</div>
+          <a class="cta" href="{{PRIMARY_CTA_URL}}?blend=clear-line">Select</a>
+        </div>
+      </div>
+
+      <div class="card" data-key="ease">
+        <div class="scentSwatch" style="background:linear-gradient(180deg,#fff6fb,#ffeef6)"></div>
+        <div class="blendName">Soft Harbor</div>
+        <div class="blendNote">Ylang-ylang, bergamot, vetiver — a small bottle for gentle heart-opening rituals.</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div style="font-weight:700">$22</div>
+          <a class="cta" href="{{PRIMARY_CTA_URL}}?blend=soft-harbor">Select</a>
+        </div>
+      </div>
+
+      <div class="card" data-key="calm">
+        <div class="scentSwatch" style="background:linear-gradient(180deg,#eefaf6,#dff2ea)"></div>
+        <div class="blendName">Quiet Cup</div>
+        <div class="blendNote">Cardamom, cedarwood, orange — a softly spicy, warming inhaler blend.</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div style="font-weight:700">$14</div>
+          <a class="cta" href="{{PRIMARY_CTA_URL}}?blend=quiet-cup">Select</a>
+        </div>
+      </div>
+
+      <div class="card" data-key="focus">
+        <div class="scentSwatch" style="background:linear-gradient(180deg,#fffdf0,#fff4d6)"></div>
+        <div class="blendName">Workspace Crisp</div>
+        <div class="blendNote">Lemon, clary sage, hinoki — a spritz for focused stretches of work.</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div style="font-weight:700">$19</div>
+          <a class="cta" href="{{PRIMARY_CTA_URL}}?blend=workspace-crisp">Select</a>
+        </div>
+      </div>
+
+    </section>
+
+    <div style="margin-top:20px">
+      <a class="cta" href="shop.html">See all sizes & packs</a>
+    </div>
+
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded',function(){
+      const moodBtns = document.querySelectorAll('.moodBtn');
+      const recommend = document.getElementById('blendRecommend');
+      const cards = Array.from(document.querySelectorAll('.card'));
+
+      const map = {
+        calm: {title:'Evening & calm picks', note:'Blends chosen for a quieting practice: roll-ons and inhalers that may support relaxation.'},
+        wake: {title:'Wake & brighten', note:'Bright, citrus-forward blends for mornings or low-energy windows.'},
+        focus: {title:'Focus selections', note:'Inhalers and spritzes that may help steady attention and reduce distraction.'},
+        ease: {title:'Emotional ease', note:'Gentle, grounding blends for navigating harder moments.'}
+      };
+
+      function showFor(key){
+        const m = map[key];
+        recommend.innerHTML = '<div style="font-weight:700">'+m.title+'</div><div class="muted">'+m.note+'</div>';
+        cards.forEach(c=>c.style.display = (c.getAttribute('data-key') === key ? 'flex' : 'none'));
+      }
+
+      moodBtns.forEach(b=>b.addEventListener('click',function(){
+        moodBtns.forEach(x=>x.classList.remove('selected'));
+        this.classList.add('selected');
+        showFor(this.getAttribute('data-key'));
+      }));
+
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Investment — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Practical, integrated session options for busy adults seeking balanced health and clarity.">
+  <style>
+    :root{--bg:#fbfbfa;--muted:#6b6b6b;--accent:#2b6b5b;--card:#ffffff;--glass:rgba(255,255,255,0.6)}
+    *{box-sizing:border-box}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; margin:0; color:#111; background:linear-gradient(180deg,var(--bg),#f3f6f5); min-height:100vh;}
+    header{display:flex;align-items:center;justify-content:space-between;padding:22px 28px;position:sticky;top:0;background:rgba(255,255,255,0.6);backdrop-filter:blur(6px);border-bottom:1px solid #eee}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#1f4f3e);display:grid;place-items:center;color:white;font-weight:700}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none;font-size:15px}
+    nav a.active{color:var(--accent);font-weight:600}
+    main{max-width:980px;margin:36px auto;padding:18px}
+    .hero{display:grid;grid-template-columns:1fr;gap:18px;align-items:center}
+    .panel{background:var(--card);border-radius:12px;padding:20px;box-shadow:0 6px 18px rgba(20,30,30,0.05)}
+    h1{margin:0 0 8px;font-size:28px}
+    p.lead{margin:0;color:var(--muted)}
+    .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:18px}
+    .card{padding:18px;border-radius:10px;background:linear-gradient(180deg,var(--glass),#fff);border:1px solid #eee}
+    .price{font-size:20px;color:var(--accent);font-weight:700}
+    .muted{color:var(--muted);font-size:14px}
+    footer{max-width:980px;margin:36px auto;padding:18px;color:var(--muted);font-size:13px}
+
+    /* Session Planner */
+    .planner{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:22px}
+    .planner .form{padding:18px}
+    label{display:block;font-size:13px;margin:10px 0 6px}
+    input[type=text],select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e6e6}
+    textarea{min-height:90px}
+    .controls{display:flex;gap:10px;align-items:center;margin-top:12px}
+    button.btn{background:var(--accent);color:white;padding:10px 14px;border-radius:8px;border:0;cursor:pointer}
+    .output{padding:14px;background:#f7fffb;border-radius:8px;border:1px dashed #dbeee4}
+    pre{white-space:pre-wrap;margin:0}
+
+    /* reveal animation */
+    .reveal{opacity:0;transform:translateY(12px);transition:opacity .6s ease,transform .6s ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion: reduce){.reveal{transition:none}}
+
+    .meta{display:flex;justify-content:space-between;align-items:center}
+    .pill{background:#eef6f2;color:var(--accent);padding:6px 10px;border-radius:999px;font-weight:600}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">HM</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="approach.html">Philosophy</a>
+      <a href="pricing.html" class="active">Investment</a>
+      <a href="about.html">About</a>
+      <a href="book.html">Book A Day</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero panel" aria-labelledby="service-title">
+      <div>
+        <h1 id="service-title">Options for focused, integrative care</h1>
+        <p class="lead">Choose a pace and depth that fits your schedule — from a decisive single-day intensive to a paced integration pathway.</p>
+      </div>
+      <div class="meta">
+        <div class="pill">Evidence-minded • Whole-context</div>
+        <div class="muted">Phone: {{PHONE}} • {{CITY}}, {{STATE}}</div>
+      </div>
+    </section>
+
+    <section class="panel reveal" data-reveal>
+      <h2 style="margin-top:0">Programs and fees</h2>
+      <div class="cards">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <strong>Focused Day</strong>
+              <div class="muted" style="margin-top:6px">A single intensive session to clarify priorities and leave with an action plan.</div>
+            </div>
+            <div style="text-align:right">
+              <div class="price">$950</div>
+              <div class="muted">8–10 hour focused day</div>
+            </div>
+          </div>
+          <ul style="margin-top:12px;color:var(--muted);padding-left:18px">
+            <li>Comprehensive intake & focused interventions</li>
+            <li>One concise plan with daily practices</li>
+            <li>Email follow-up within 7 days</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <strong>Integration Series</strong>
+              <div class="muted" style="margin-top:6px">Three sessions over 8 weeks to test small changes and refine what fits.</div>
+            </div>
+            <div style="text-align:right">
+              <div class="price">$1,800</div>
+              <div class="muted">3 x 60–90 min</div>
+            </div>
+          </div>
+          <ul style="margin-top:12px;color:var(--muted);padding-left:18px">
+            <li>Stepwise implementation & metrics</li>
+            <li>Short check-ins and adjustments</li>
+            <li>Personalized toolkit</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <strong>VIP Path</strong>
+              <div class="muted" style="margin-top:6px">More hands-on collaboration for complex needs and coordinated supports.</div>
+            </div>
+            <div style="text-align:right">
+              <div class="price">Custom</div>
+              <div class="muted">Bespoke timeline</div>
+            </div>
+          </div>
+          <ul style="margin-top:12px;color:var(--muted);padding-left:18px">
+            <li>Priority scheduling & coordination</li>
+            <li>Multi-modal planning and referrals</li>
+            <li>Flexible check-ins and metrics</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel reveal" data-reveal style="margin-top:18px">
+      <h2 style="margin-top:0">Is this right for you?</h2>
+      <p class="muted">We focus on measurable, practical adjustments rather than promises of cure. If you want clear next steps, tailored tracking, and a clinician who considers lifestyle, mindset, and medical context together, pick a program that matches the time and support you prefer.</p>
+    </section>
+
+    <section class="panel reveal" data-reveal style="margin-top:18px">
+      <h2 style="margin-top:0">Session Planner</h2>
+      <div class="planner">
+        <form class="form" id="plannerForm" onsubmit="return false;">
+          <label for="concern">Primary concern</label>
+          <input id="concern" name="concern" type="text" placeholder="e.g., chronic fatigue, stress, insomnia">
+
+          <label for="length">Preferred session style</label>
+          <select id="length" name="length">
+            <option>Single Focused Day (8-10h)</option>
+            <option>One 60–90 minute visit</option>
+            <option>Integration Series (3 visits)</option>
+            <option>VIP Path (custom)</option>
+          </select>
+
+          <label>Modalities you'd like included</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <label style="font-size:13px"><input type="checkbox" name="mods" value="Nutrition"> Nutrition</label>
+            <label style="font-size:13px"><input type="checkbox" name="mods" value="Movement"> Movement</label>
+            <label style="font-size:13px"><input type="checkbox" name="mods" value="Sleep"> Sleep support</label>
+            <label style="font-size:13px"><input type="checkbox" name="mods" value="Stress"> Stress tools</label>
+            <label style="font-size:13px"><input type="checkbox" name="mods" value="Supplements"> Supplements review</label>
+          </div>
+
+          <label for="goal">Top target for the next 8 weeks</label>
+          <input id="goal" name="goal" type="text" placeholder="What would success look like?">
+
+          <div class="controls">
+            <button class="btn" id="buildBtn">Build plan</button>
+            <button class="btn" id="copyBtn" type="button">Copy summary</button>
+            <div style="margin-left:auto;color:var(--muted);font-size:13px">Free preview</div>
+          </div>
+        </form>
+
+        <aside style="padding:14px">
+          <div class="output">
+            <strong style="display:block;margin-bottom:8px">Plan summary</strong>
+            <pre id="planOutput">Complete the form and press "Build plan" to see a clear, exportable summary.</pre>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} • {{EMAIL}} • {{PHONE}}</div>
+  </footer>
+
+  <script>
+    // Scroll reveal
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const targets = document.querySelectorAll('[data-reveal]');
+      if(prefersReduced){ targets.forEach(el=>el.classList.add('visible')) ; return }
+      const obs = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{
+          if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target) }
+        })
+      },{threshold:0.12});
+      targets.forEach(t=>{ t.classList.add('reveal'); obs.observe(t) });
+    })();
+
+    // Session Planner logic
+    (function(){
+      const form = document.getElementById('plannerForm');
+      const buildBtn = document.getElementById('buildBtn');
+      const copyBtn = document.getElementById('copyBtn');
+      const output = document.getElementById('planOutput');
+
+      function collect(){
+        const data = {};
+        data.concern = form.concern.value.trim() || 'Not specified';
+        data.length = form.length.value;
+        data.goal = form.goal.value.trim() || 'Goal not specified';
+        const mods = Array.from(form.querySelectorAll('input[name="mods"]:checked')).map(i=>i.value);
+        data.mods = mods.length?mods.join(', '):'None selected';
+        return data;
+      }
+
+      function makeSummary(d){
+        return [
+          'Personalized session plan',
+          '-------------------------',
+          'Primary concern: ' + d.concern,
+          'Chosen session style: ' + d.length,
+          'Priority target (8 weeks): ' + d.goal,
+          'Preferred modalities: ' + d.mods,
+          '',
+          'Suggested next steps:',
+          '- Baseline measures & brief intake',
+          '- Two small behavioral tests in first 2 weeks',
+          '- One clearly tracked metric (e.g., sleep hours, energy diary)',
+          '',
+          'Notes: This is an educational plan and not a medical guarantee. For medical concerns, follow up with a licensed clinician.'
+        ].join('\n');
+      }
+
+      buildBtn.addEventListener('click', function(e){
+        e.preventDefault();
+        const data = collect();
+        output.textContent = makeSummary(data);
+      });
+
+      copyBtn.addEventListener('click', function(){
+        const text = output.textContent || '';
+        if(!text) return;
+        navigator.clipboard && navigator.clipboard.writeText(text).then(()=>{
+          const prev = copyBtn.textContent;
+          copyBtn.textContent = 'Copied';
+          setTimeout(()=>copyBtn.textContent = prev,1200);
+        }).catch(()=>{ alert('Copy failed — select and copy manually.'); });
+      });
+    })();
+  </script>
+</body>
+</html>

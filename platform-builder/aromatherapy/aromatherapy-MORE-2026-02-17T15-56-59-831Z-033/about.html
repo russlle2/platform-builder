@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>About — Our Approach</title>
+  <style>
+    :root{--earth:#7a5a4d;--warm:#c87a4e;--bg:#fff8f5;--card:#fff2ea;font-family:Georgia,serif;color:var(--earth)}
+    body{margin:0;background:var(--bg);}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;background:linear-gradient(180deg,rgba(200,122,78,0.04),transparent);position:sticky;top:0}
+    .logo{width:46px;height:46px;border-radius:10px;display:grid;place-items:center;background:var(--card);color:var(--warm);font-weight:800}
+    nav a{margin:0 10px;color:var(--earth);text-decoration:none;font-weight:600}
+    main{max-width:980px;margin:24px auto;padding:20px}
+    .lead{background:linear-gradient(90deg,rgba(232,184,158,0.12),transparent);padding:22px;border-radius:12px}
+    h1{margin:0;font-family:Georgia,serif}
+    .section{margin-top:20px}
+    .profile{display:flex;gap:14px;align-items:center}
+    .avatar{width:96px;height:96px;border-radius:12px;background:linear-gradient(180deg,#fff,#f6e9e3);display:grid;place-items:center;color:var(--warm);font-weight:700}
+    .cite{font-style:italic;color:#6b4a3a}
+    .process{display:flex;flex-direction:column;gap:10px}
+    .step{background:var(--card);padding:12px;border-radius:10px}
+    .muted{color:#6b4a3a}
+    footer{margin-top:28px;padding:18px;text-align:center;color:#6b4a3a}
+    .reveal{opacity:0;transform:translateY(12px);transition:opacity .5s ease,transform .5s ease}
+    .reveal--visible{opacity:1;transform:none}
+    .overlay{position:fixed;inset:0;background:rgba(20,10,8,0.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:60}
+    .overlay.open{display:flex}
+    .modal{background:white;border-radius:12px;padding:20px;max-width:540px;width:100%;}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="logo">A</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--earth)">Handmade blends and thoughtful sessions</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Shop</a>
+      <a href="pricing.html">Invest</a>
+      <a href="about.html" style="text-decoration:underline">Story</a>
+      <a class="primary" href="book.html">Book a session</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="lead" aria-labelledby="about-heading">
+      <h1 id="about-heading">Why we craft scent with care</h1>
+      <p class="muted">We combine plant knowledge and practical, safe guidance so scent can be an accessible, everyday tool. Our work centers on clear instructions, thoughtful ingredient choices, and respect for diverse bodies and households.</p>
+    </section>
+
+    <section class="section profile reveal" data-reveal>
+      <div class="avatar">ME</div>
+      <div>
+        <h3>Meet the practitioner</h3>
+        <p class="muted">Aromatic practice built on study and lived experience. Training in safe dilution, allergy awareness, and practical blending informs every offering.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Our method</h2>
+      <div class="process">
+        <div class="step reveal" data-reveal>
+          <strong>1. Gentle intake</strong>
+          <div class="muted">We listen to your priorities and any sensitivities, then map options that are low-risk and practical.</div>
+        </div>
+        <div class="step reveal" data-reveal>
+          <strong>2. Tailored options</strong>
+          <div class="muted">Choices are concrete: suggested dilutions, how to store, how to use around pets, and what to avoid during pregnancy or with certain medications.</div>
+        </div>
+        <div class="step reveal" data-reveal>
+          <strong>3. Take-home clarity</strong>
+          <div class="muted">You leave with written notes and labels that make safe use straightforward.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal" data-reveal>
+      <h2>Voices from sessions</h2>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:8px">
+        <blockquote class="step">
+          "Clear guidance and a simple blend that I actually use." — L.
+        </blockquote>
+        <blockquote class="step">
+          "Practical, low-fuss tools for my mornings." — R.
+        </blockquote>
+      </div>
+    </section>
+
+    <section class="section reveal" data-reveal>
+      <h2>Values we hold</h2>
+      <ul class="muted">
+        <li>Practical safety: clear dilution and testing instructions.</li>
+        <li>Transparency: what’s in blends and why each ingredient is used.</li>
+        <li>Respect: tailoring guidance for households with pets, children, or pregnancy concerns.</li>
+      </ul>
+    </section>
+
+    <section class="section" style="margin-top:18px">
+      <h2>Try a short practice</h2>
+      <p class="muted">Take a moment with our short guided exercise to see how a handful of minutes can shift attention.</p>
+      <button id="try-btn-about">Try it now</button>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="muted">Questions or press? Reach out at <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call {{PHONE}}. Serving {{CITY}}, {{STATE}}.</div>
+  </footer>
+
+  <div class="overlay" id="exercise-overlay-about" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal">
+      <h3>Try a short practice</h3>
+      <p class="muted">A brief guided breath or journal prompt — no products required.</p>
+      <div style="display:flex;gap:10px;margin-top:8px">
+        <button id="about-breathe">Breath</button>
+        <button id="about-journal">Journal</button>
+      </div>
+      <div id="about-area" style="margin-top:10px"></div>
+      <div style="display:flex;justify-content:flex-end;margin-top:10px"><button id="about-close">Close</button></div>
+    </div>
+  </div>
+
+  <script>
+    // reveal behavior
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const items = document.querySelectorAll('[data-reveal]');
+      if(prefersReduced){ items.forEach(i=>i.classList.add('reveal--visible')); return }
+      const io = ('IntersectionObserver' in window) ? new IntersectionObserver((es)=>{ es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('reveal--visible'); io.unobserve(e.target) } })},{threshold:0.12}) : null;
+      items.forEach(el=> io ? io.observe(el) : el.classList.add('reveal--visible'));
+    })();
+
+    // simple overlay reuse
+    const overlay = document.getElementById('exercise-overlay-about');
+    const area = document.getElementById('about-area');
+    function open(){ overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden'; }
+    function close(){ overlay.classList.remove('open'); overlay.setAttribute('aria-hidden','true'); area.innerHTML=''; document.body.style.overflow=''; }
+    document.getElementById('try-btn-about').addEventListener('click',open);
+    document.getElementById('about-close').addEventListener('click',close);
+    document.getElementById('about-breathe').addEventListener('click',()=>{
+      area.innerHTML='<div style="padding:10px;border-radius:8px;background:#fff2ea">Breathe: 3 counts in, 2 hold, 4 out. Repeat for one minute and notice the pause.</div>';
+    });
+    document.getElementById('about-journal').addEventListener('click',()=>{
+      area.innerHTML='<div style="padding:10px;border-radius:8px;background:#fff2ea"><textarea rows="5" style="width:100%" placeholder="What matters most for this week?"></textarea></div>';
+    });
+  </script>
+</body>
+</html>

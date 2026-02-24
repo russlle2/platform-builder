@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1724;--card:rgba(255,255,255,0.06);--glass:linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));--accent:#8bd3c7;--muted:rgba(255,255,255,0.65);--glass-border:rgba(255,255,255,0.08);}    
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial;color:#e6eef0;background:radial-gradient(1200px 600px at 10% 10%, rgba(139,211,199,0.06), transparent), radial-gradient(800px 400px at 90% 90%, rgba(140,190,240,0.03), transparent), var(--bg);}
+    header{position:sticky;top:18px;display:flex;justify-content:space-between;align-items:center;padding:18px 28px;backdrop-filter:blur(8px) saturate(120%);}
+    .nav-card{background:var(--card);border:1px solid var(--glass-border);padding:10px 14px;border-radius:12px;display:flex;gap:12px;align-items:center}
+    .brand{font-weight:600;color:var(--accent)}
+    nav a{color:var(--muted);text-decoration:none;font-size:14px;padding:8px;border-radius:8px}
+    nav a:hover{background:rgba(255,255,255,0.02)}
+    main{max-width:980px;margin:48px auto;padding:28px}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:center}
+    .panel{background:var(--glass);border:1px solid var(--glass-border);padding:26px;border-radius:16px;box-shadow:0 6px 24px rgba(2,6,23,0.6)}
+    h1{margin:0 0 8px 0;font-size:26px}
+    p.lead{margin:0 0 12px 0;color:var(--muted);line-height:1.5}
+    .meta{font-size:13px;color:var(--muted);margin-top:8px}
+    .cta{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#6fbfb5);color:#042026;text-decoration:none;font-weight:600}
+    .trust{display:flex;flex-direction:column;gap:10px}
+    .testimonial{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02);font-size:14px}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:18px}
+    .benefit{padding:14px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);border:1px solid rgba(255,255,255,0.02)}
+    .process{margin-top:18px}
+    .step{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px dashed rgba(255,255,255,0.02)}
+    .step:first-child{border-top:0}
+    .small{font-size:13px;color:var(--muted)}
+    .accordion{margin-top:18px;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.04)}
+    .acc-item{background:rgba(255,255,255,0.02);padding:14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+    .acc-body{padding:12px 14px;background:#061018;color:var(--muted);display:none}
+    footer{margin-top:28px;padding:18px 14px;background:rgba(0,0,0,0.2);border-radius:12px;font-size:13px;color:var(--muted);border:1px solid rgba(255,255,255,0.02)}
+    .danger{color:#ffd8d2;background:linear-gradient(180deg, rgba(255,60,60,0.04), transparent);padding:10px;border-radius:8px}
+    @media (max-width:880px){.hero{grid-template-columns:1fr;}.panel{padding:18px}.trust{flex-direction:row;gap:12px;flex-wrap:wrap}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav-card">
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <div class="small" style="margin-left:8px;color:var(--muted)">{{TAGLINE}}</div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Why Work Together</a>
+      <a href="specialties.html">Offerings</a>
+      <a href="approach.html">How I Work</a>
+      <a href="fees.html">Investment</a>
+      <a href="faq.html">FAQ</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="panel">
+        <h1>About the practice</h1>
+        <p class="lead">I offer focused, time-limited therapeutic intensives designed for people navigating a particular knot of experience. We map a clear intention, attend to the felt body and narrative, and leave with practical, gentle skills that can be carried forward.</p>
+        <div class="meta">Clinical therapist serving {{CITY}}, {{STATE}} • Telehealth and limited in-person slots • Sessions scheduled by appointment</div>
+
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+
+        <div class="process">
+          <div class="step"><div style="font-weight:700;color:var(--accent);min-width:36px">1</div><div><div style="font-weight:600">Intake & focus</div><div class="small">We clarify what matters now and set a short, achievable goal for the intensive.</div></div></div>
+          <div class="step"><div style="font-weight:700;color:var(--accent);min-width:36px">2</div><div><div style="font-weight:600">In-session work</div><div class="small">A concentrated therapeutic hour or series using somatic, relational, and cognitive approaches tailored to your needs.</div></div></div>
+          <div class="step"><div style="font-weight:700;color:var(--accent);min-width:36px">3</div><div><div style="font-weight:600">Integration plan</div><div class="small">Short, pragmatic strategies to practice between sessions so insights translate into daily life.</div></div></div>
+        </div>
+      </div>
+
+      <aside class="panel trust">
+        <div style="font-weight:700">Client reflections</div>
+        <div class="testimonial">"A single intensive helped me clarify the next month instead of feeling muddled for a year." — K.</div>
+        <div class="testimonial">"Calm, clear, and practical — I left with a plan I could actually use." — S.</div>
+        <div style="margin-top:6px;font-size:13px;color:var(--muted)">Insurance: Not accepted. Sliding scale available for select slots. Contact for details: <a href="mailto:{{EMAIL}}" style="color:var(--accent)">{{EMAIL}}</a></div>
+      </aside>
+    </section>
+
+    <section class="panel" style="margin-top:22px">
+      <h2 style="margin-top:0">What I offer</h2>
+      <div class="grid">
+        <div class="benefit"><strong>Single-session clarity</strong><div class="small">60–90 minute focused session to unstick a specific problem or decision.</div></div>
+        <div class="benefit"><strong>Focused intensives</strong><div class="small">One- to three-session intensives that pair assessment with direct practice and a short integration plan.</div></div>
+        <div class="benefit"><strong>Short-term consultation</strong><div class="small">A small bundle of check-ins after an intensive to support skill integration.</div></div>
+        <div class="benefit"><strong>Referrals & coordination</strong><div class="small">If your needs are outside my scope I will offer appropriate referrals and coordinate care respectfully.</div></div>
+      </div>
+    </section>
+
+    <section class="panel" style="margin-top:18px">
+      <h2 style="margin-top:0">My approach</h2>
+      <p class="small">I combine attention to bodily experience, relational patterns, and practical behavior change. Sessions are collaborative; you remain the author of your experience. I aim to offer a gentle structure and clear practices rather than prolonged interpretation.</p>
+
+      <div class="accordion" id="confidentiality-accordion">
+        <div class="acc-item" data-target="b1">Session boundaries & confidentiality <span class="small">+</span></div>
+        <div class="acc-body" id="b1">Conversations are confidential within legal and ethical limits. I will explain limits to confidentiality, record-keeping, and how I handle requests for records during intake. If coordination with other professionals is helpful, we will discuss consent explicitly.</div>
+
+        <div class="acc-item" data-target="b2">Scope & referrals <span class="small">+</span></div>
+        <div class="acc-body" id="b2">I work with adults on mood, transitions, relationship concerns, and stress. If you need medication management, emergency psychiatric care, or specialized services for complex trauma beyond short-term intensives, I will help connect you with appropriate clinicians.</div>
+      </div>
+
+      <div style="margin-top:12px" class="small">If you are in crisis and there is immediate risk of harm to yourself or others, call your local emergency number or community crisis line. If you are in the United States, you can call or text 988 for the Suicide & Crisis Lifeline. If you are outside the U.S., please use your local emergency resources.</div>
+    </section>
+
+    <footer>
+      <div style="font-weight:700">Professional note</div>
+      <div class="small">I hold a current clinical license and adhere to professional standards. Nothing here is a guarantee of outcome. Sessions do not replace emergency services.</div>
+      <div style="margin-top:8px" class="danger">Confidentiality reminder: If you disclose imminent intent to harm yourself or others or there is suspected abuse of a minor, I am legally obligated to act to protect safety.</div>
+      <div style="margin-top:10px;text-align:right"><a href="{{PRIMARY_CTA_URL}}" class="cta">{{PRIMARY_CTA_LABEL}}</a></div>
+    </footer>
+  </main>
+
+  <script>
+    // Simple accordion for confidentiality
+    document.querySelectorAll('.acc-item').forEach(function(item){
+      item.addEventListener('click', function(){
+        var target = document.getElementById(this.dataset.target);
+        var showing = target.style.display === 'block';
+        document.querySelectorAll('.acc-body').forEach(function(b){b.style.display='none'});
+        if(!showing) target.style.display='block';
+      })
+    })
+  </script>
+</body>
+</html>

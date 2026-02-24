@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Schedule — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--accent:#7c3aed;--muted:#475569}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:#0b1220;background:linear-gradient(180deg,#fbfdff,#f3f6ff);}
+    .bar{display:flex;justify-content:space-between;align-items:center;padding:16px 20px}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    .container{max-width:720px;margin:18px auto;padding:18px}
+    h1{margin:0 0 6px}
+    .muted{color:var(--muted)}
+    form{margin-top:14px;background:#fff;padding:16px;border-radius:12px;box-shadow:0 8px 24px rgba(12,14,26,0.06)}
+    label{display:block;margin-top:10px;font-weight:600}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef9;margin-top:6px}
+    .row{display:flex;gap:10px}
+    .row > *{flex:1}
+    .cta{display:inline-block;background:var(--accent);color:white;padding:10px 14px;border-radius:10px;text-decoration:none;border:none;font-weight:700;margin-top:12px}
+    .accordion{margin-top:14px}
+    .item{background:#fff;border-radius:10px;padding:12px;margin-top:8px;border:1px solid #eef2f7}
+    .crisis{margin-top:12px;padding:10px;background:#fff7ed;border-left:4px solid #f97316;border-radius:6px}
+    .small{font-size:13px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="bar">
+    <div><strong>{{BUSINESS_NAME}}</strong></div>
+    <nav>
+      <a href="index.html">Welcome</a>
+      <a href="specialties.html">Services</a>
+      <a href="faq.html">FAQ</a>
+    </nav>
+  </div>
+
+  <main class="container">
+    <h1>Book a visit</h1>
+    <p class="muted">Choose a style of visit that fits your current needs. If you prefer, we can adapt after the first appointment.</p>
+
+    <form id="bookingForm" action="{{PRIMARY_CTA_URL}}" method="get">
+      <label for="name">Your name</label>
+      <input id="name" name="name" required placeholder="First and last name">
+
+      <div class="row">
+        <div>
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required placeholder="you@example.com">
+        </div>
+        <div>
+          <label for="phone">Phone</label>
+          <input id="phone" name="phone" placeholder="(optional)" >
+        </div>
+      </div>
+
+      <label for="moodBook">Which best describes how you’re doing now?</label>
+      <select id="moodBook" name="mood">
+        <option value="stuck">Stuck — want a clearer direction</option>
+        <option value="overwhelmed">Overwhelmed — need immediate strategies</option>
+        <option value="planning">Planning — transition or decision</option>
+        <option value="maintenance">Maintenance — regular check-ins</option>
+        <option value="one">One focused question</option>
+      </select>
+
+      <label for="notes">Brief note (what would you like to focus on?)</label>
+      <textarea id="notes" name="notes" rows="4" placeholder="A sentence or two is enough."></textarea>
+
+      <input type="hidden" id="serviceType" name="serviceType" value="Focus Series">
+
+      <button id="submitBtn" class="cta" type="submit">Request a Focus Series</button>
+
+      <div class="small" style="margin-top:10px">By submitting, you agree to be contacted to arrange an appointment. Calls may come from a clinical scheduling line.</div>
+    </form>
+
+    <div class="accordion">
+      <div class="item">
+        <strong>Confidentiality & limits</strong>
+        <p class="small">Sessions are confidential within legal limits. These exceptions are narrowly defined: if there is an imminent risk of harm, suspected abuse of a minor or vulnerable adult, or a court order, confidentiality may be breached to keep people safe. I will explain these limits and answer any questions before we begin.</p>
+      </div>
+
+      <div class="item">
+        <strong>Session boundaries</strong>
+        <p class="small">I am available during scheduled visits. Outside of sessions I respond to messages with reasonable timing but do not provide crisis response or continuous monitoring. If you need urgent help, contact local emergency services or your local crisis resources.</p>
+      </div>
+    </div>
+
+    <div class="crisis">
+      <strong>If you are in immediate danger:</strong>
+      <div class="small">Call local emergency services right now. I am not an emergency provider and cannot guarantee immediate responses outside of scheduled appointments.</div>
+    </div>
+
+  </main>
+
+  <script>
+    (function(){
+      const map = {
+        stuck:{type:'Focus Series',btn:'Request a Focus Series'},
+        overwhelmed:{type:'Stabilization Visit',btn:'Request a Stabilization Visit'},
+        planning:{type:'Practical Planning',btn:'Request Practical Planning'},
+        maintenance:{type:'Care Continuity',btn:'Start Care Continuity'},
+        one:{type:'Single Session',btn:'Book a Single Session'}
+      };
+      const sel = document.getElementById('moodBook');
+      const hidden = document.getElementById('serviceType');
+      const btn = document.getElementById('submitBtn');
+      function update(){const val=sel.value;const m=map[val];hidden.value=m.type;btn.textContent=m.btn;}
+      sel.addEventListener('change',update);update();
+
+      const form = document.getElementById('bookingForm');
+      form.addEventListener('submit', function(e){
+        // For demo, let the form navigate to PRIMARY_CTA_URL with query params.
+        // No real booking occurs here.
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{
+      --accent:#6a5cff;
+      --accent-2:#ff7ab6;
+      --muted:#6b7280;
+      --bg:#fffdfb;
+      --card:#fff;
+      --radius:14px;
+      --glass: rgba(255,255,255,0.6);
+      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    html,body{height:100%;background:linear-gradient(180deg, #fbfbff 0%, #fffaf6 100%);margin:0;color:#111}
+    .site{min-height:100vh;display:flex;flex-direction:column}
+    header{background:var(--bg) url('assets/img/pattern.svg') center/cover no-repeat;padding:28px 20px;border-bottom:1px solid rgba(17,17,17,0.04)}
+    .nav{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none;font-weight:600}
+    nav a.active{color:var(--accent)}
+    main{max-width:1100px;margin:28px auto;padding:0 20px;display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:start}
+    .panel{background:var(--card);border-radius:var(--radius);padding:22px;box-shadow:0 6px 18px rgba(18,18,24,0.04)}
+    .hero{display:flex;flex-direction:column;gap:10px}
+    h1{margin:0;font-size:28px}
+    p.lead{margin:0;color:var(--muted)}
+
+    /* Mood selector */
+    .moods{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .mood{background:linear-gradient(180deg,#fff,#fbfbff);border:1px solid rgba(90,90,120,0.06);padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:600;color:#222}
+    .mood[data-selected="true"]{outline:3px solid rgba(106,92,255,0.12);box-shadow:0 6px 18px rgba(106,92,255,0.08)}
+
+    /* Right column */
+    .contact-card{position:sticky;top:28px}
+    form .row{display:flex;gap:8px}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input,textarea,select{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(17,17,17,0.06);font-size:15px}
+    textarea{min-height:110px;resize:vertical}
+    .cta{display:inline-block;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;padding:12px 18px;border-radius:12px;text-decoration:none;font-weight:700}
+
+    /* Aroma wheel */
+    .wheel-wrap{display:flex;flex-direction:column;gap:14px}
+    .wheel{width:100%;max-width:560px;height:420px;background:linear-gradient(180deg,#fff,#fff9);border-radius:16px;padding:12px;display:flex;align-items:center;justify-content:center}
+    svg{max-width:100%;height:auto}
+    .note-info{padding:12px;border-radius:12px;background:var(--glass);backdrop-filter:blur(6px);border:1px solid rgba(17,17,17,0.04)}
+    .meta{display:flex;gap:8px;align-items:center}
+    .pill{background:#fff;padding:6px 10px;border-radius:999px;border:1px solid rgba(17,17,17,0.04);font-weight:700}
+    .faq{margin-top:18px}
+    .faq h3{margin:8px 0}
+    footer{max-width:1100px;margin:28px auto;padding:18px 20px;color:var(--muted);font-size:14px}
+
+    @media(max-width:980px){main{grid-template-columns:1fr;}
+      .contact-card{position:relative;top:0}
+      .wheel{height:320px}
+    }
+  </style>
+</head>
+<body>
+  <div class="site">
+    <header>
+      <div class="nav">
+        <div class="brand">
+          <div class="logo">A</div>
+          <div>
+            <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+            <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+          </div>
+        </div>
+        <nav aria-label="Main navigation">
+          <a href="index.html">Home</a>
+          <a href="services.html">Offerings</a>
+          <a href="blends.html">Signature Blends</a>
+          <a href="shop.html">Apothecary</a>
+          <a href="pricing.html">Memberships</a>
+          <a href="about.html">About</a>
+          <a href="book.html">Book</a>
+          <a class="active" href="contact.html">Connect</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="panel hero" aria-labelledby="contact-heading">
+        <div>
+          <h1 id="contact-heading">Tell us what you need right now</h1>
+          <p class="lead">Choose how you feel and we’ll suggest a way forward with scent. The recommendations may support relaxation, focus, or gentle uplift—not medical treatment.</p>
+        </div>
+
+        <div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+            <div class="meta">
+              <div class="pill">Membership: Ongoing care</div>
+              <div style="color:var(--muted);font-size:13px;margin-left:8px">Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+            </div>
+            <div style="font-size:13px;color:var(--muted)">Prefer email? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+          </div>
+
+          <div style="margin-top:14px">
+            <div style="font-weight:700;margin-bottom:8px">How are you right now?</div>
+            <div class="moods" role="list" aria-label="Mood selector">
+              <button class="mood" data-mood="calm" aria-pressed="false">Calm</button>
+              <button class="mood" data-mood="focused" aria-pressed="false">Focused</button>
+              <button class="mood" data-mood="anxious" aria-pressed="false">Anxious</button>
+              <button class="mood" data-mood="sleepy" aria-pressed="false">Sleepy</button>
+              <button class="mood" data-mood="energized" aria-pressed="false">Energized</button>
+            </div>
+          </div>
+
+          <div style="margin-top:16px;display:flex;gap:12px;align-items:center">
+            <div style="flex:1">
+              <div style="font-weight:700">Recommended approach</div>
+              <div id="method-title" style="font-size:15px;margin-top:6px">Select a mood to see a method</div>
+              <div id="method-desc" style="color:var(--muted);margin-top:8px">We highlight safe practices and a suggested format. You can ask for a customized plan when you connect.</div>
+            </div>
+            <div>
+              <a href="{{PRIMARY_CTA_URL}}" class="cta" id="primary-cta">{{PRIMARY_CTA_LABEL}}</a>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:18px">
+          <div style="font-weight:700;margin-bottom:8px">A quick note on safety</div>
+          <div style="color:var(--muted);font-size:14px">Always patch-test new blends, dilute essential oils appropriately, and tell us about pregnancy, nursing, medications, or pets so we can recommend safe options. Our guidance may support wellbeing but is not a substitute for medical advice.</div>
+        </div>
+
+      </section>
+
+      <aside class="contact-card panel" aria-labelledby="form-heading">
+        <h2 id="form-heading" style="margin-top:0">Connect & Request</h2>
+        <form id="contact-form" method="post" action="{{PRIMARY_CTA_URL}}">
+          <div class="row">
+            <div style="flex:1">
+              <label for="name">Your name</label>
+              <input id="name" name="name" placeholder="First & last" required>
+            </div>
+            <div style="width:130px">
+              <label for="phone">Phone</label>
+              <input id="phone" name="phone" placeholder="{{PHONE}}">
+            </div>
+          </div>
+          <div style="margin-top:10px">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="{{EMAIL}}" required>
+          </div>
+
+          <div style="margin-top:10px">
+            <label for="intent">Quick preference</label>
+            <select id="intent" name="intent">
+              <option value="one-off">One-time session</option>
+              <option value="membership">Membership planning</option>
+              <option value="blend">Order a blend</option>
+            </select>
+          </div>
+
+          <div style="margin-top:10px">
+            <label for="message">How can we help?</label>
+            <textarea id="message" name="message" placeholder="Tell us a brief sense of what you’d like"></textarea>
+          </div>
+
+          <input type="hidden" id="selected-mood" name="selected_mood">
+          <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+            <button type="submit" class="cta" id="submit-cta">Send request</button>
+            <div style="color:var(--muted);font-size:13px">We aim to reply within 2 business days.</div>
+          </div>
+
+          <div class="faq" style="margin-top:14px">
+            <h3 style="margin:0">Common safety steps</h3>
+            <ul style="color:var(--muted);margin:8px 0 0 18px">
+              <li>Always dilute essential oils; follow recommended ratios and store safely.</li>
+              <li>Perform a patch test on skin before regular topical use.</li>
+              <li>Inform us about pregnancy, nursing, medications, or medical conditions.</li>
+              <li>We provide pet-safe alternatives on request; some oils are toxic to animals.</li>
+            </ul>
+          </div>
+        </form>
+      </aside>
+
+      <section class="panel wheel-wrap" aria-labelledby="wheel-heading">
+        <h2 id="wheel-heading">Aroma wheel: notes & roles</h2>
+        <div class="wheel" id="aroma-wheel" role="application" aria-label="Aroma wheel">
+          <!-- SVG wheel with interactive sectors -->
+          <svg viewBox="0 0 600 420" xmlns="http://www.w3.org/2000/svg" aria-hidden="false" role="img">
+            <defs>
+              <linearGradient id="g1" x1="0" x2="1">
+                <stop offset="0" stop-color="#fff" stop-opacity="1"></stop>
+                <stop offset="1" stop-color="#f7f3ff" stop-opacity="1"></stop>
+              </linearGradient>
+            </defs>
+            <rect x="6" y="6" width="588" height="408" rx="12" fill="url(#g1)" stroke="rgba(17,17,17,0.03)"/>
+
+            <!-- center labels -->
+            <g transform="translate(300,210)">
+              <circle r="72" fill="#fff" stroke="rgba(17,17,17,0.04)"></circle>
+              <text x="0" y="-8" text-anchor="middle" style="font-weight:800;fill:#222;font-size:18px">Aroma map</text>
+              <text id="wheel-role" x="0" y="16" text-anchor="middle" style="fill:var(--muted);font-size:13px">Hover a note</text>
+            </g>
+
+            <!-- Top notes (small, quick) -->
+            <g id="top-notes" transform="translate(300,210)">
+              <path class="sector" data-note="Bergamot" data-desc="Bright citrus that lifts the mood; often used near the nose." d="M0,-72 L120,-180 A200,200 0 0,0 -120,-180 Z" fill="#ffefc7" stroke="#f2d7a0"></path>
+              <path class="sector" data-note="Grapefruit" data-desc="A tart, energizing top note that adds clarity to blends." d="M0,-72 L120,-180 A200,200 0 0,1 120,-180 Z" transform="rotate(30)" fill="#fff1f7" stroke="#ffd0e5"></path>
+              <path class="sector" data-note="Peppermint" data-desc="Crisp menthol note for alertness; use diluted and sparingly." d="M0,-72 L60,-220 A230,230 0 0,0 -60,-220 Z" transform="rotate(-30)" fill="#e9fff9" stroke="#bfeee0"></path>
+            </g>
+
+            <!-- Middle notes -->
+            <g id="middle-notes" transform="translate(300,210)">
+              <path class="sector" data-note="Lavender" data-desc="Soothing floral with balancing qualities; versatile in many formulas." d="M0,-72 L180,0 A220,220 0 0,0 -180,0 Z" fill="#f7f2ff" stroke="#e6dffb" transform="rotate(30)"></path>
+              <path class="sector" data-note="Rosemary" data-desc="Herbaceous, clearing aroma often used for a focused environment." d="M0,-72 L180,0 A220,220 0 0,1 180,0 Z" transform="rotate(-10)" fill="#f0fff7" stroke="#d8f5e7"></path>
+            </g>
+
+            <!-- Base notes -->
+            <g id="base-notes" transform="translate(300,210)">
+              <path class="sector" data-note="Cedarwood" data-desc="Warm, grounding base that helps anchors blends over time." d="M0,72 L-140,220 A260,260 0 0,0 140,220 Z" fill="#fff6ee" stroke="#f0d7be"></path>
+              <path class="sector" data-note="Vanilla" data-desc="Soft, sweet base note that adds comfort; often used in very small amounts." d="M0,72 L-140,220 A260,260 0 0,1 -140,220 Z" transform="rotate(20)" fill="#fff6f5" stroke="#f2d7e5"></path>
+            </g>
+
+          </svg>
+        </div>
+
+        <div class="note-info" id="note-panel" aria-live="polite">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-weight:800" id="note-name">Hover a note</div>
+              <div id="note-desc" style="color:var(--muted);margin-top:6px">Top = quick, Middle = character, Base = lingering</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:12px;color:var(--muted);">Role</div>
+              <div id="note-role" style="font-weight:700">--</div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+    <footer>
+      <div style="max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="color:var(--muted)">Serving {{CITY}}, {{STATE}} — Confidential consultations and membership options. <a href="privacy.html">Privacy</a></div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Mood-to-Method mapping
+    const methods = {
+      calm: {title: 'Mini grounding inhale', desc: 'A focused 3-breath micropractice with a gentle floral-citrus inhalation. Suggest: diffuse lightly or do a single inhalation near the nose. May support a sense of calm.', cta: 'Try Calm Micropractice', ctaUrl: '{{PRIMARY_CTA_URL}}#calm'},
+      focused: {title: 'Focus roll-on', desc: 'A small roll-on with herbaceous top notes for desk clarity. Apply to wrists or temples after dilution. May support attention in short bursts.', cta: 'Get Focus Roll-on', ctaUrl: '{{PRIMARY_CTA_URL}}#focus'},
+      anxious: {title: 'Soothing evening protocol', desc: 'A diffuse-and-breath routine with calming middle notes to aid winding down. Use a low diffusion setting and keep windows open for circulation. May support relaxation.', cta: 'Start Soothing Routine', ctaUrl: '{{PRIMARY_CTA_URL}}#soothe'},
+      sleepy: {title: 'Gentle sleep blend', desc: 'A bedside diffuser plan emphasizing warm base notes and low volume. Keep essential oils away from bedding and pets. May support restful transitions.', cta: 'Preview Sleep Blend', ctaUrl: '{{PRIMARY_CTA_URL}}#sleep'},
+      energized: {title: 'Uplift spritz', desc: 'A light spritzable mist with bright top notes to refresh movement or morning routines. Shake before use and patch-test first. May support a quick uplift.', cta: 'Make Uplift Spritz', ctaUrl: '{{PRIMARY_CTA_URL}}#energize'}
+    };
+
+    // Mood selector handling
+    const moodButtons = document.querySelectorAll('.mood');
+    const methodTitle = document.getElementById('method-title');
+    const methodDesc = document.getElementById('method-desc');
+    const primaryCta = document.getElementById('primary-cta');
+    const selectedMoodInput = document.getElementById('selected-mood');
+    const submitCta = document.getElementById('submit-cta');
+
+    moodButtons.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        moodButtons.forEach(b=>{b.dataset.selected='false';b.setAttribute('aria-pressed','false')});
+        btn.dataset.selected='true';btn.setAttribute('aria-pressed','true');
+        const mood = btn.dataset.mood;
+        selectedMoodInput.value = mood;
+        const m = methods[mood] || {};
+        methodTitle.textContent = m.title || 'Select a mood to see a method';
+        methodDesc.textContent = m.desc || '';
+        primaryCta.textContent = m.cta || '{{PRIMARY_CTA_LABEL}}';
+        primaryCta.href = m.ctaUrl || '{{PRIMARY_CTA_URL}}';
+        submitCta.textContent = 'Send request: ' + (m.cta || 'Request');
+        highlightNotesForMood(mood);
+      });
+
+      // keyboard accessibility
+      btn.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') { e.preventDefault(); btn.click(); }});
+    });
+
+    // Aroma wheel interactions
+    const sectors = document.querySelectorAll('.sector');
+    const noteName = document.getElementById('note-name');
+    const noteDesc = document.getElementById('note-desc');
+    const noteRole = document.getElementById('note-role');
+    const wheelRole = document.getElementById('wheel-role');
+
+    sectors.forEach(s=>{
+      s.style.cursor='pointer';
+      s.addEventListener('mouseenter', ()=>{
+        const name = s.dataset.note || 'Note';
+        const desc = s.dataset.desc || '';
+        noteName.textContent = name;
+        noteDesc.textContent = desc;
+        // determine role by parent group id
+        let role = 'Middle';
+        let p = s.parentNode;
+        while(p && p.id!==undefined){ if(p.id==='top-notes') role='Top'; if(p.id==='middle-notes') role='Middle'; if(p.id==='base-notes') role='Base'; p = p.parentNode; }
+        noteRole.textContent = role;
+        wheelRole.textContent = role + ' note';
+        s.setAttribute('fill-opacity','0.9');
+      });
+      s.addEventListener('mouseleave', ()=>{
+        noteName.textContent = 'Hover a note';
+        noteDesc.textContent = 'Top = quick, Middle = character, Base = lingering';
+        noteRole.textContent = '--';
+        wheelRole.textContent = 'Hover a note';
+        s.removeAttribute('fill-opacity');
+      });
+      // click to add to message quick snippet
+      s.addEventListener('click', ()=>{
+        const formMsg = document.getElementById('message');
+        const snippet = '[' + s.dataset.note + '] ' + s.dataset.desc;
+        formMsg.value = (formMsg.value?formMsg.value + '\n' : '') + snippet;
+      });
+    });
+
+    // Highlight notes when mood selected (simple mapping)
+    function highlightNotesForMood(mood){
+      // reset styles
+      sectors.forEach(s=>{ s.style.filter='none'; s.style.opacity='0.95'; });
+      const map = {
+        calm:['Lavender','Cedarwood','Vanilla'],
+        focused:['Peppermint','Rosemary','Bergamot'],
+        anxious:['Lavender','Bergamot','Cedarwood'],
+        sleepy:['Vanilla','Lavender','Cedarwood'],
+        energized:['Grapefruit','Peppermint','Bergamot']
+      };
+      const list = map[mood] || [];
+      sectors.forEach(s=>{
+        if(list.includes(s.dataset.note)){
+          s.style.filter='drop-shadow(0 6px 18px rgba(106,92,255,0.12))';
+          s.style.opacity='1';
+        } else {
+          s.style.opacity='0.52';
+        }
+      });
+    }
+
+    // Progressive enhancement: set initial selected mood if provided
+    (function(){
+      const initial = document.querySelector('.mood[data-selected="true"]');
+      if(initial) initial.click();
+    })();
+
+    // Simple form handler stub
+    document.getElementById('contact-form').addEventListener('submit', function(e){
+      // Allow actual submit in production; here just prevent for demo
+      // e.preventDefault();
+      // alert('Form submitted (demo)');
+    });
+  </script>
+</body>
+</html>

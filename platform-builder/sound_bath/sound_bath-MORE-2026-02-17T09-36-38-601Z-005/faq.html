@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Queries — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#071020;--muted:#9fb2bf;--accent:#7dd3fc}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:linear-gradient(180deg,#031119 0%, #071020 100%);color:#eaf6ff}
+    header{display:flex;justify-content:space-between;align-items:center;padding:14px 22px;background:rgba(2,6,10,0.4)}
+    nav a{color:var(--muted);margin-left:16px;text-decoration:none}
+    .wrap{max-width:980px;margin:32px auto;padding:18px}
+
+    .faq-grid{display:grid;grid-template-columns:1fr 320px;gap:20px}
+    .faqs{background:rgba(255,255,255,0.02);padding:16px;border-radius:10px}
+    .faqs h2{margin-top:0}
+    details{background:transparent;padding:10px;border-radius:8px;margin-bottom:8px}
+    summary{font-weight:600;cursor:pointer}
+    .aside{background:linear-gradient(180deg,rgba(125,211,252,0.03),transparent);padding:14px;border-radius:10px}
+
+    .proof-mini{margin-top:12px;background:rgba(255,255,255,0.02);padding:12px;border-radius:8px}
+    .test{font-size:14px;color:#dceffd}
+    .cta{display:inline-block;margin-top:12px;padding:8px 12px;background:var(--accent);color:#03121a;border-radius:8px;text-decoration:none;font-weight:700}
+
+    .contra{margin-top:14px;padding:12px;border-left:4px solid rgba(255,200,120,0.12);border-radius:8px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="events.html">Gatherings</a>
+      <a href="about.html">Origins</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="faq-grid">
+      <div class="faqs">
+        <h2>Common Questions</h2>
+        <details>
+          <summary>What should I bring?</summary>
+          <div style="color:var(--muted);margin-top:8px">A mat or blanket, a pillow, and anything that helps you feel settled. We provide bolsters on request.</div>
+        </details>
+
+        <details>
+          <summary>How long is a session?</summary>
+          <div style="color:var(--muted);margin-top:8px">Most gatherings run 60–75 minutes. Our short format sits at 45 minutes when listed as "Pulse" events.</div>
+        </details>
+
+        <details>
+          <summary>Is this therapy?</summary>
+          <div style="color:var(--muted);margin-top:8px">No — these are guided sound practices and are not a replacement for mental health treatment. If you are in active treatment, please consult your provider before joining.</div>
+        </details>
+
+        <details>
+          <summary>Can I attend if I'm pregnant or have medical devices?</summary>
+          <div style="color:var(--muted);margin-top:8px">Please contact us prior to booking at {{EMAIL}}. Some vibrations can be contraindicated for specific conditions; we will help you decide.</div>
+        </details>
+
+      </div>
+
+      <aside class="aside">
+        <h3>Small proof gallery</h3>
+        <div class="proof-mini" id="mini-proof">
+          <div class="test" id="mini-text">"A quiet container where I could finally relax — every time I go, it's consistent."</div>
+          <div style="color:var(--muted);margin-top:8px" id="mini-meta">— N. Vargas</div>
+        </div>
+
+        <a class="cta" href="book.html">Reserve a Seat</a>
+
+        <div class="contra" style="margin-top:14px">
+          <strong>Safety note:</strong> If you have recent head trauma, uncontrolled seizures, or rely on implanted medical devices, reach out before attending: {{EMAIL}}.
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    (function(){
+      // Small testimonial rotator for FAQ
+      const items = [
+        {t:'"Consistent, steady, and quietly profound."', m:'— E. Liao'},
+        {t:'"I appreciate the low-lit, calm approach — very accessible."', m:'— R. Morgan'},
+        {t:'"Short sessions helped me reintroduce regular rest."', m:'— K. Silva'}
+      ];
+      let i=0;
+      const el=document.getElementById('mini-text');
+      const meta=document.getElementById('mini-meta');
+      setInterval(()=>{i=(i+1)%items.length; el.textContent=items[i].t; meta.textContent=items[i].m},4200);
+    })();
+  </script>
+</body>
+</html>

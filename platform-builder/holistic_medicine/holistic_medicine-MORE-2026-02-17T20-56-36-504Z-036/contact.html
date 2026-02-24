@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Get in touch, plan a gentle roadmap, and see social proof for our cohort-style integrative programs." />
+  <style>
+    :root{
+      --bg:#fbfbfa; --accent:#2b7a78; --muted:#6b6b6b; --card:#ffffff; --glass: rgba(255,255,255,0.8);
+      --shadow: 0 8px 24px rgba(33,33,33,0.08); --radius:14px; --radius-sm:10px;
+      --brand-2:#f4a261; --brand-3:#264653;
+      font-synthesis: none;
+    }
+    html,body{height:100%;}
+    body{margin:0;font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:linear-gradient(180deg,#ffffff 0%,var(--bg) 100%); color:#111; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale}
+    /* subtle poster hero using an external SVG pattern (local file) */
+    .hero{
+      padding:48px 20px 56px; background:linear-gradient(120deg,rgba(43,122,120,0.06),rgba(36,70,83,0.02));
+      border-bottom:1px solid rgba(16,24,32,0.04);
+      display:flex; align-items:flex-start; gap:28px; position:relative; overflow:hidden;
+    }
+    .hero::after{content:""; position:absolute; inset:0; background-image:url('assets/img/pattern.svg'); opacity:0.08; background-size:520px; background-repeat:repeat; transform:rotate(6deg);}
+    .container{max-width:1100px; margin:0 auto; width:100%; position:relative; z-index:2}
+    .nav{display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:18px}
+    .brand{font-weight:700; color:var(--brand-3)}
+    .navlinks{display:flex; gap:12px; flex-wrap:wrap}
+    .navlinks a{color:#173737; text-decoration:none; font-weight:600; padding:8px 10px; border-radius:8px}
+    .navlinks a:hover{background:rgba(43,122,120,0.06)}
+    .hero-grid{display:grid; grid-template-columns:1fr 420px; gap:28px; align-items:start}
+    .lead{background:linear-gradient(180deg,rgba(255,255,255,0.9),var(--glass)); border-radius:var(--radius); padding:28px; box-shadow:var(--shadow)}
+    h1{margin:0 0 8px 0; font-size:28px; letter-spacing:-0.02em}
+    p.lede{margin:0; color:var(--muted)}
+    .cta-row{margin-top:18px; display:flex; gap:12px; align-items:center}
+    .btn{background:var(--accent); color:#fff; padding:12px 16px; border-radius:12px; border:0; cursor:pointer; font-weight:700}
+    .btn.secondary{background:transparent; color:var(--accent); border:1px solid rgba(43,122,120,0.12)}
+
+    /* main area */
+    main{max-width:1100px;margin:26px auto;padding:0 20px 80px}
+    .split{display:grid; grid-template-columns:1fr 420px; gap:22px}
+    .card{background:var(--card); border-radius:var(--radius); padding:18px; box-shadow:var(--shadow)}
+
+    /* Timeline planner */
+    .timeline h3{margin:0 0 6px 0}
+    .phase{display:flex; gap:12px; align-items:center; margin:12px 0}
+    .phase .meta{width:90px; font-weight:700; color:var(--brand-3)}
+    .phase input[type=range]{flex:1}
+    .timeline .summary{margin-top:12px; padding:12px; border-radius:10px; background:linear-gradient(180deg,#fbfffe,#ffffff)}
+    .disclaimer{font-size:12px;color:var(--muted); margin-top:8px}
+
+    /* Proof gallery */
+    .proof{display:flex; flex-direction:column; gap:12px}
+    .testimonial{padding:14px; border-radius:12px; background:linear-gradient(180deg,#fff,#fbfbfb); min-height:140px; position:relative}
+    .quote{font-style:italic; color:#0f2b2b}
+    .who{margin-top:10px; font-weight:700; color:var(--muted); font-size:13px}
+    .rotator{display:flex; justify-content:space-between; align-items:center; gap:8px}
+    .badges{display:flex; gap:8px; flex-wrap:wrap}
+    .badge{background:linear-gradient(180deg,#fff,#f7f7f7); padding:8px 10px; border-radius:10px; font-size:12px; cursor:default; position:relative}
+    .badge:hover{transform:translateY(-3px); transition:all .18s ease}
+    /* tooltip */
+    .tt{position:absolute; left:50%; transform:translateX(-50%) translateY(-8px); top:-8px; background:#0b2b2b; color:#fff; padding:6px 8px; border-radius:8px; font-size:12px; white-space:nowrap; display:none}
+    .badge[data-tooltip]:hover .tt{display:block}
+
+    /* contact form */
+    form{display:flex; flex-direction:column; gap:10px}
+    label{font-size:13px;color:var(--muted)}
+    input,textarea,select{padding:10px;border-radius:8px;border:1px solid rgba(16,24,32,0.06); width:100%; box-sizing:border-box}
+    textarea{min-height:110px}
+    .row{display:flex; gap:10px}
+    .muted{font-size:13px;color:var(--muted)}
+
+    footer{max-width:1100px;margin:40px auto 80px;padding:0 20px;color:var(--muted)}
+    @media (max-width:900px){.hero-grid,.split{grid-template-columns:1fr} .navlinks{display:none} .hero{padding:28px} }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="container">
+      <nav class="nav">
+        <div class="brand">{{BUSINESS_NAME}}</div>
+        <div class="navlinks">
+          <a href="index.html">Discover</a>
+          <a href="services.html">Sessions</a>
+          <a href="conditions.html">Conditions</a>
+          <a href="approach.html">Method</a>
+          <a href="pricing.html">Investment</a>
+          <a href="about.html">Team</a>
+          <a href="book.html">Schedule</a>
+          <a href="contact.html">Connect</a>
+        </div>
+      </nav>
+      <div class="hero-grid">
+        <div class="lead">
+          <h1>Design a manageable, evidence-aware rhythm for the next few months</h1>
+          <p class="lede">Join a cohort-style program where we layer learning, self-tracking, and gentle adjustments so you can test what works — without pressure. Our approach is educational and supportive, not prescriptive medical treatment.</p>
+          <div class="cta-row">
+            <button class="btn" id="primaryCta">{{PRIMARY_CTA_LABEL}}</button>
+            <a class="btn secondary" href="{{PRIMARY_CTA_URL}}">See cohorts</a>
+            <div style="margin-left:auto; font-size:13px; color:var(--muted)">Call <a href="tel:{{PHONE}}">{{PHONE}}</a> · <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div class="card" style="text-align:left">
+            <strong style="display:block">Quick booking</strong>
+            <p class="muted" style="margin:8px 0 12px 0">Tell us how you prefer to connect and we'll follow up with next steps for the cohort intake.</p>
+            <div style="display:flex;gap:8px">
+              <a class="btn" href="book.html">Book a preview</a>
+              <a class="btn secondary" href="about.html">Meet the team</a>
+            </div>
+          </div>
+          <div class="card" style="text-align:left">
+            <strong style="display:block">Location</strong>
+            <p class="muted" style="margin-top:8px">{{CITY}}, {{STATE}} · Remote-friendly cohorts</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="split">
+      <section class="card timeline">
+        <h3>Roadmap planner — map out three phases</h3>
+        <p class="muted">Slide each phase to allocate weeks. Click "Preview Roadmap" to get a suggested schedule. This is a planning tool and educational only; not medical advice.</p>
+
+        <div class="phase">
+          <div class="meta">Phase 1</div>
+          <input type="range" min="1" max="12" value="4" id="p1">
+          <div class="meta" style="width:60px;text-align:right" id="p1v">4w</div>
+        </div>
+        <div class="phase">
+          <div class="meta">Phase 2</div>
+          <input type="range" min="2" max="16" value="8" id="p2">
+          <div class="meta" style="width:60px;text-align:right" id="p2v">8w</div>
+        </div>
+        <div class="phase">
+          <div class="meta">Phase 3</div>
+          <input type="range" min="4" max="24" value="12" id="p3">
+          <div class="meta" style="width:60px;text-align:right" id="p3v">12w</div>
+        </div>
+
+        <div style="margin-top:12px; display:flex; gap:10px; align-items:center">
+          <button class="btn" id="preview">Preview Roadmap</button>
+          <button class="btn secondary" id="reset">Reset</button>
+          <div style="margin-left:auto; font-size:13px; color:var(--muted)">Estimated total: <strong id="totalWeeks">24</strong> weeks</div>
+        </div>
+
+        <div class="summary" id="roadmapSummary" style="display:none">
+          <div id="roadmapText" style="font-size:14px"></div>
+          <div class="disclaimer">This planner is informational. It is not a diagnosis or treatment plan. Please discuss health decisions with a licensed clinician.</div>
+        </div>
+
+      </section>
+
+      <aside class="card proof">
+        <h3 style="margin:0 0 6px 0">Proof gallery</h3>
+        <p class="muted" style="margin-top:0">A rotating selection of cohort feedback and credentials that highlight trust without overclaiming.</p>
+
+        <div class="testimonial" id="testimonial">
+          <div class="quote" id="quote">"Our weekly check-ins turned ideas into small, measurable changes. I learned to test one thing at a time."</div>
+          <div class="who" id="who">— A. Rivera, teacher</div>
+        </div>
+
+        <div class="rotator">
+          <div style="display:flex; gap:8px; align-items:center">
+            <button id="prev" class="btn secondary">←</button>
+            <button id="next" class="btn">→</button>
+            <div class="muted" style="margin-left:8px">Autoplay</div>
+            <label style="display:inline-flex;align-items:center;margin-left:8px;gap:6px"><input type="checkbox" id="autoplay" checked /> <span class="muted">On</span></label>
+          </div>
+          <div class="badges" id="badges">
+            <div class="badge" data-tooltip="NCCIH-aligned educational practices"><span>NCCIH-informed</span><span class="tt">NCCIH-aligned educational practices</span></div>
+            <div class="badge" data-tooltip="Functional approach to nutrition education"><span>Functional Nutrition</span><span class="tt">Functional approach to nutrition education</span></div>
+            <div class="badge" data-tooltip="Cohort facilitation and group learning"><span>Cohort-Facilitated</span><span class="tt">Cohort facilitation & group learning</span></div>
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
+          <div class="muted">Verified participants: <strong id="verified">332</strong></div>
+          <div class="muted">Avg satisfaction <strong id="sats">4.6</strong>/5</div>
+        </div>
+      </aside>
+    </div>
+
+    <section style="margin-top:20px" class="card">
+      <h3>Get in touch</h3>
+      <p class="muted">Prefer to join a cohort intake? Tell us a bit and we'll reach out with dates and the welcome packet. This form is for educational program interest; it does not establish a therapeutic relationship.</p>
+
+      <form id="contactForm" action="#" onsubmit="return false">
+        <div class="row">
+          <div style="flex:1">
+            <label for="name">Name</label>
+            <input id="name" name="name" required />
+          </div>
+          <div style="width:180px">
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" />
+          </div>
+        </div>
+        <div class="row">
+          <div style="flex:1">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required />
+          </div>
+          <div style="width:220px">
+            <label for="interest">I'm interested in</label>
+            <select id="interest" name="interest">
+              <option>Next cohort (intro)</option>
+              <option>Targeted deep-dive track</option>
+              <option>Private intake + follow-up</option>
+            </select>
+          </div>
+        </div>
+        <label for="message">Notes or questions</label>
+        <textarea id="message" name="message" placeholder="Share a few priorities or concerns"></textarea>
+        <div style="display:flex;gap:10px;align-items:center">
+          <button class="btn" id="submitBtn">Request info & dates</button>
+          <div class="muted">Or call <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+        </div>
+        <div id="formNote" class="muted" style="margin-top:10px;display:none">Thanks — we'll email you next steps.</div>
+      </form>
+
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+      <div class="muted">© <span id="year"></span> {{BUSINESS_NAME}} · Education-first programs · <a href="conditions.html">Conditions & disclaimers</a></div>
+      <div class="muted">Contact: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> · <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    </div>
+  </footer>
+
+  <script>
+    // small utilities
+    const el = id => document.getElementById(id);
+    // timeline sliders
+    const p1 = el('p1'), p2 = el('p2'), p3 = el('p3');
+    const p1v = el('p1v'), p2v = el('p2v'), p3v = el('p3v'), totalWeeks = el('totalWeeks');
+    function updateVals(){
+      p1v.textContent = p1.value + 'w'; p2v.textContent = p2.value + 'w'; p3v.textContent = p3.value + 'w';
+      totalWeeks.textContent = (+p1.value + +p2.value + +p3.value);
+    }
+    [p1,p2,p3].forEach(i=>i.addEventListener('input', updateVals));
+    updateVals();
+
+    el('preview').addEventListener('click', ()=>{
+      const w1=+p1.value, w2=+p2.value, w3=+p3.value;
+      const total = w1+w2+w3;
+      const start = new Date();
+      const msWeek = 7*24*60*60*1000;
+      const p1end = new Date(start.getTime() + w1*msWeek);
+      const p2end = new Date(start.getTime() + (w1+w2)*msWeek);
+      const p3end = new Date(start.getTime() + total*msWeek);
+      function fmt(d){ return d.toLocaleDateString(); }
+      const txt = `Suggested schedule:\nPhase 1 (Foundations): ${fmt(start)} → ${fmt(p1end)} (${w1} wk)\nPhase 2 (Practice & data): ${fmt(p1end)} → ${fmt(p2end)} (${w2} wk)\nPhase 3 (Integration): ${fmt(p2end)} → ${fmt(p3end)} (${w3} wk)\nTotal: ${total} weeks.`;
+      el('roadmapSummary').style.display = 'block';
+      el('roadmapText').textContent = txt;
+      el('roadmapText').style.whiteSpace = 'pre-wrap';
+    });
+    el('reset').addEventListener('click', ()=>{p1.value=4;p2.value=8;p3.value=12;updateVals();el('roadmapSummary').style.display='none';});
+
+    // Proof gallery rotation
+    const testimonials = [
+      {q:'I appreciated the pace and structure — it felt like a lab where small experiments added up.', who:'— Maya, nonprofit leader'},
+      {q:'Group sessions were warm and focused; I learned ways to measure what mattered to me.', who:'— Jordan, engineer'},
+      {q:'Clear prompts, gentle accountability, and practical tracking helped me sleep and move better.', who:'— L. Chen, artist'},
+      {q:'The cohort brought compassion and curiosity — no pressure, just useful steps.', who:'— R. Park, parent'}
+    ];
+    let ix=0, timer=null;
+    function showTest(i){
+      const t = testimonials[i%testimonials.length];
+      el('quote').textContent = '"' + t.q + '"';
+      el('who').textContent = t.who;
+    }
+    el('next').addEventListener('click', ()=>{ ix=(ix+1)%testimonials.length; showTest(ix); resetTimer(); });
+    el('prev').addEventListener('click', ()=>{ ix=(ix-1+testimonials.length)%testimonials.length; showTest(ix); resetTimer(); });
+
+    function rotate(){ ix=(ix+1)%testimonials.length; showTest(ix); }
+    function resetTimer(){ if(el('autoplay').checked){ clearInterval(timer); timer=setInterval(rotate,4200); } }
+    el('autoplay').addEventListener('change', ()=>{ resetTimer(); if(!el('autoplay').checked) clearInterval(timer); });
+    showTest(0); timer=setInterval(rotate,4200);
+
+    // form submission (local only)
+    el('submitBtn').addEventListener('click', ()=>{
+      const name = el('name').value.trim(); const email = el('email').value.trim();
+      if(!name || !email){ alert('Please include name and email so we can follow up.'); return; }
+      // simulate submission
+      el('formNote').style.display='block';
+      el('submitBtn').textContent = 'Request sent'; el('submitBtn').disabled=true;
+    });
+
+    // small dynamic bits
+    el('year').textContent = new Date().getFullYear();
+
+    // accessibility: allow badge tooltips via keyboard focus
+    document.querySelectorAll('.badge').forEach(b=>{
+      b.tabIndex = 0;
+      b.addEventListener('keydown', e=>{ if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); const tt = b.querySelector('.tt'); tt.style.display = (tt.style.display==='block') ? 'none' : 'block'; setTimeout(()=>tt.style.display='none',2800); } });
+    });
+
+    // primary CTA navigates to cohort booking
+    el('primaryCta').addEventListener('click', ()=>{ window.location.href='{{PRIMARY_CTA_URL}}'; });
+  </script>
+</body>
+</html>

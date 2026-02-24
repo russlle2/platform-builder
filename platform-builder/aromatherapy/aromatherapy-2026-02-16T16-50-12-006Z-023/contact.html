@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{{BUSINESS_NAME}} — Connect</title>
+  <meta name="description" content="Reach out to {{PRACTITIONER_NAME}} at {{BUSINESS_NAME}} for memberships, custom blends, and gentle aromatherapy guidance. Safety-first, scent-forward." />
+  <style>
+    :root{
+      --bg-1: #F6F4FF;
+      --bg-2: #FFF9F2;
+      --accent: #6C4CF5;
+      --muted: #6b6b7a;
+      --card: #ffffff;
+      --glass: rgba(255,255,255,0.6);
+      --shadow: 0 8px 30px rgba(17,24,39,0.08);
+      --maxw: 1100px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      color-scheme: light;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:linear-gradient(180deg,var(--bg-1),var(--bg-2));
+      -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;color:#111827}
+    .site{max-width:var(--maxw);margin:36px auto;padding:28px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#9EE7E3);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;box-shadow:var(--shadow)}
+    nav{display:flex;gap:12px;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:10px;font-weight:600}
+    nav a.cta{background:linear-gradient(90deg,var(--accent),#00C2A8);color:white}
+
+    /* Hero */
+    .hero{display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:stretch;margin-top:22px}
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.8),rgba(255,255,255,0.6));border-radius:18px;padding:28px;box-shadow:var(--shadow)}
+    .hero h1{margin:0 0 12px 0;font-size:28px;color:#0f172a}
+    .hero p.lead{margin:0 0 18px 0;color:var(--muted);line-height:1.45}
+    .cta-row{display:flex;gap:12px;align-items:center}
+    .btn{padding:10px 14px;border-radius:12px;border:0;cursor:pointer;font-weight:700}
+    .btn-primary{background:linear-gradient(90deg,var(--accent),#00C2A8);color:white}
+    .btn-ghost{background:transparent;border:1px solid rgba(15,23,42,0.06);color:#0f172a}
+
+    /* Story */
+    .story{display:flex;gap:18px;margin-top:18px}
+    .story .text{flex:1}
+    .story .sig{width:160px}
+
+    /* Framework */
+    .grid-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+    .step{padding:16px;border-radius:12px;background:linear-gradient(180deg,#fff,rgba(255,255,255,0.9));border:1px solid rgba(12,17,35,0.04)}
+    .step h4{margin:0 0 6px 0}
+    .step p{margin:0;color:var(--muted);font-size:14px}
+
+    /* Offers & Pricing */
+    .offers{display:flex;gap:12px;margin-top:18px}
+    .offers .offer{flex:1;padding:14px;border-radius:12px;background:var(--card);box-shadow:var(--shadow)}
+    .pricing-cards{display:flex;gap:12px;margin-top:12px}
+    .price{flex:1;padding:18px;border-radius:14px;background:linear-gradient(180deg,#fff,#fbfbff);box-shadow:var(--shadow);text-align:center}
+    .price h3{margin:4px 0}
+    .price .amount{font-size:22px;font-weight:800;color:var(--accent)}
+
+    /* Testimonials */
+    .testimonials{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+    .t{padding:14px;border-radius:12px;background:linear-gradient(180deg,#fff,#fff7fb);border:1px solid rgba(12,17,35,0.04)}
+    .t p{margin:0 0 10px 0;color:var(--muted)}
+
+    /* Contact column */
+    .contact-card{position:relative;display:flex;flex-direction:column;gap:12px}
+    form{display:flex;flex-direction:column;gap:10px}
+    input,textarea,select{padding:10px;border-radius:10px;border:1px solid rgba(12,17,35,0.06);font-size:14px}
+    textarea{min-height:110px;resize:vertical}
+    .meta{font-size:13px;color:var(--muted)}
+
+    footer{margin-top:26px;padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.7),rgba(255,255,255,0.5));display:flex;justify-content:space-between;align-items:center}
+
+    /* Decorative SVG */
+    .bg-svg{position:fixed;right:-8%;top:-6%;width:720px;height:720px;opacity:0.12;pointer-events:none;transform:rotate(12deg)}
+
+    @media (max-width:980px){
+      .hero{grid-template-columns:1fr}
+      .bg-svg{display:none}
+      .grid-steps{grid-template-columns:1fr}
+      .testimonials{grid-template-columns:1fr}
+      .pricing-cards{flex-direction:column}
+    }
+  </style>
+</head>
+<body>
+  <svg class="bg-svg" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1">
+        <stop offset="0%" stop-color="#6C4CF5" />
+        <stop offset="100%" stop-color="#00C2A8" />
+      </linearGradient>
+      <pattern id="dots" width="40" height="40" patternUnits="userSpaceOnUse">
+        <circle cx="4" cy="4" r="2" fill="rgba(255,255,255,0.25)" />
+      </pattern>
+      <filter id="blur"><feGaussianBlur stdDeviation="18" /></filter>
+    </defs>
+    <g filter="url(#blur)" fill="url(#g1)">
+      <circle cx="120" cy="100" r="120" opacity="0.9" />
+      <circle cx="420" cy="240" r="160" opacity="0.7" />
+      <rect x="0" y="0" width="600" height="600" fill="url(#dots)" opacity="0.12" />
+    </g>
+  </svg>
+
+  <div class="site">
+    <header>
+      <div class="brand">
+        <div class="logo">A</div>
+        <div>
+          <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Welcome</a>
+        <a href="services.html">Offerings</a>
+        <a href="blends.html">Blends</a>
+        <a href="shop.html">Boutique</a>
+        <a href="pricing.html">Plans</a>
+        <a href="about.html">About</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html" class="cta">Connect</a>
+      </nav>
+    </header>
+
+    <main>
+      <!-- HERO -->
+      <section class="hero">
+        <div class="panel">
+          <h1>Let's craft your scent story together</h1>
+          <p class="lead">Whether you're curious about a seasonal roll-on, want to join a supportive membership, or need a custom aroma profile for your sanctuary, I meet you where you are—with safety, curiosity, and a gentle creative hand.</p>
+          <div class="cta-row">
+            <button class="btn btn-primary" onclick="location.href='{{PRIMARY_CTA_URL}}'">{{PRIMARY_CTA_LABEL}}</button>
+            <button class="btn btn-ghost" onclick="document.getElementById('contactForm').scrollIntoView({behavior:'smooth'})">Send a note</button>
+          </div>
+          <div style="margin-top:14px;font-size:13px;color:var(--muted)">Prefer phone? Call <strong>{{PHONE}}</strong> — I respond to messages within 48 business hours.</div>
+        </div>
+
+        <aside class="contact-card panel">
+          <div style="font-weight:700">Reach me</div>
+          <div class="meta">{{PRACTITIONER_NAME}} — {{BUSINESS_NAME}}</div>
+          <div style="display:flex;gap:10px;align-items:center">
+            <div style="font-size:13px;color:var(--muted)">Phone</div>
+            <div style="font-weight:700">{{PHONE}}</div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center">
+            <div style="font-size:13px;color:var(--muted)">Email</div>
+            <div style="font-weight:700">{{EMAIL}}</div>
+          </div>
+          <div style="font-size:13px;color:var(--muted)">Location</div>
+          <div style="font-weight:700">{{CITY}}, {{STATE}}</div>
+
+          <form id="contactForm" onsubmit="submitForm(event)">
+            <input name="name" placeholder="Your name" required />
+            <input name="email" placeholder="Your email" required />
+            <input name="phone" placeholder="Phone (optional)" />
+            <select name="interest" aria-label="Area of interest">
+              <option value="inquire">General inquiry</option>
+              <option value="membership">Membership</option>
+              <option value="blend">Custom blend</option>
+              <option value="workshop">Workshop</option>
+            </select>
+            <textarea name="message" placeholder="Tell me a little about what you're hoping for"></textarea>
+            <label style="font-size:13px;color:var(--muted)"><input type="checkbox" name="agree" required /> I understand aromatic products are complementary wellness tools and not medical treatments.</label>
+            <button type="submit" class="btn btn-primary">Send message</button>
+            <div id="formResult" style="font-size:13px;color:var(--muted)"></div>
+          </form>
+        </aside>
+      </section>
+
+      <!-- STORY -->
+      <section class="story">
+        <div class="text panel">
+          <h2>A few words from {{PRACTITIONER_NAME}}</h2>
+          <p>I believe scent is a quiet storyteller. For years I built blends in a small studio, listening for what people needed—clarity to focus, softness to unwind, a gentle nudge back to ritual. My approach is safety-first: we always discuss dilution, do patch tests, and adapt blends for life stage and household needs (including pets and pregnancy considerations).</p>
+          <p style="margin-top:10px;color:var(--muted)">If you're wondering whether aromatherapy could be a gentle companion for your daily rituals, start with a short consult. No pressure—only curiosity and practical guidance.</p>
+        </div>
+        <div class="sig panel" style="display:flex;flex-direction:column;align-items:flex-start;justify-content:center">
+          <div style="font-weight:700">{{PRACTITIONER_NAME}}</div>
+          <div style="font-size:13px;color:var(--muted)">Aromatherapist & membership host</div>
+          <div style="margin-top:10px;font-size:13px;color:var(--muted)">Favorite blend: <em>{{FAVORITE_BLEND}}</em></div>
+        </div>
+      </section>
+
+      <!-- FRAMEWORK -->
+      <section>
+        <h3 style="margin-top:20px">The Aroma Framework — how I work</h3>
+        <div class="grid-steps">
+          <div class="step">
+            <h4>Listen & Learn</h4>
+            <p>We start with your story. Habits, sensitivities, and safe use around household members guide every choice.</p>
+          </div>
+          <div class="step">
+            <h4>Safety & Dilution</h4>
+            <p>Clear guidance on dilution rates, patch tests, and red flags for pregnancy or pets—no assumptions, only clarity.</p>
+          </div>
+          <div class="step">
+            <h4>Create & Tweak</h4>
+            <p>Samples, small batches, and a follow-up check-in so blends fit real life, not just theory.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- OFFERS -->
+      <section class="offers">
+        <div class="offer panel">
+          <h4>Membership — The scent circle</h4>
+          <p class="meta">Monthly gatherings, seasonal blends, and first access to small-batch roll-ons.</p>
+          <ul style="margin:10px 0;padding-left:18px;color:var(--muted)">
+            <li>Monthly mini-blend</li>
+            <li>Member-only shop access</li>
+            <li>Quarterly workshop invite</li>
+          </ul>
+          <div style="margin-top:10px"><button class="btn btn-primary" onclick="location.href='{{PRIMARY_CTA_URL}}'">Join the Circle</button></div>
+        </div>
+
+        <div class="offer panel">
+          <h4>Custom Blends</h4>
+          <p class="meta">Small-batch, safety-informed blends created with your needs in mind. Patch-test guidance included.</p>
+          <div style="margin-top:10px"><button class="btn btn-ghost" onclick="document.getElementById('contactForm').scrollIntoView({behavior:'smooth'})">Request a blend</button></div>
+        </div>
+
+        <div class="offer panel">
+          <h4>Workshops</h4>
+          <p class="meta">Hands-on sessions exploring scent families, safe blending, and mindful rituals—perfect for beginners.</p>
+          <div style="margin-top:10px"><button class="btn btn-ghost" onclick="location.href='book.html'">See dates</button></div>
+        </div>
+      </section>
+
+      <!-- PRICING -->
+      <section>
+        <h3 style="margin-top:20px">Plans that meet you where you are</h3>
+        <div class="pricing-cards">
+          <div class="price panel">
+            <h3>Starter</h3>
+            <div class="amount">$9 / mo</div>
+            <p style="color:var(--muted)">Monthly newsletters, a seasonal tip sheet, and first dibs on shop drops.</p>
+            <div style="margin-top:10px"><button class="btn btn-primary">Join Starter</button></div>
+          </div>
+
+          <div class="price panel">
+            <h3>Circle</h3>
+            <div class="amount">$29 / mo</div>
+            <p style="color:var(--muted)">The full membership: mini-blends, early access, and quarterly workshops.</p>
+            <div style="margin-top:10px"><button class="btn btn-primary">Join Circle</button></div>
+          </div>
+
+          <div class="price panel">
+            <h3>Supporter</h3>
+            <div class="amount">$65 / mo</div>
+            <p style="color:var(--muted)">All Circle benefits + seasonal gift box and a private consult each year.</p>
+            <div style="margin-top:10px"><button class="btn btn-ghost">Contact for perks</button></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TESTIMONIALS -->
+      <section>
+        <h3 style="margin-top:20px">What people mention most</h3>
+        <div class="testimonials">
+          <div class="t">
+            <strong>"A gentle nudge back to calm"</strong>
+            <p>"The monthly blend feels like a tiny ritual—simple, safe, and unexpectedly comforting."</p>
+            <div style="font-size:13px;color:var(--muted)">— L. from {{CITY}}</div>
+          </div>
+          <div class="t">
+            <strong>"Practical and kind guidance"</strong>
+            <p>"I appreciated learning about dilution and how to safely use oils around my cat. No pressure—just practical tips."</p>
+            <div style="font-size:13px;color:var(--muted)">— M. in {{STATE}}</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA / FOOTER -->
+      <footer>
+        <div>
+          <div style="font-weight:800">Ready to begin?</div>
+          <div style="font-size:13px;color:var(--muted)">Join the membership or book a quick consult to explore safe aromatic support.</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <button class="btn btn-primary" onclick="location.href='{{PRIMARY_CTA_URL}}'">{{PRIMARY_CTA_LABEL}}</button>
+          <a href="mailto:{{EMAIL}}" style="font-size:13px;color:var(--muted);text-decoration:none">{{EMAIL}}</a>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    function submitForm(e){
+      e.preventDefault();
+      var f = e.target;
+      var result = document.getElementById('formResult');
+      var name = f.name.value || 'Friend';
+      result.textContent = 'Thanks, ' + name + '! Your message was sent. I typically reply in 48 business hours.';
+      f.reset();
+    }
+  </script>
+</body>
+</html>

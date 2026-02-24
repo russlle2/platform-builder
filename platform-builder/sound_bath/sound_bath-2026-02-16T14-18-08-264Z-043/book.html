@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reserve a spot for our upcoming sound bath or inquire about private sessions in {{CITY}}.">
+  <style>
+    :root{--bg:#021118;--card:#071720;--accent:#9be7d8;--muted:#8fb0b6}
+    body{margin:0;min-height:100vh;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:whitesmoke;background:linear-gradient(180deg,#00131a 0%,#041520 100%)}
+    .container{max-width:900px;margin:32px auto;padding:28px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent)}
+    nav{margin-bottom:18px}
+    nav a{color:var(--muted);text-decoration:none;margin-right:12px}
+    header h1{margin:4px 0 6px}
+    .meta{color:var(--muted);margin-bottom:14px}
+    .form-grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
+    .panel{background:var(--card);padding:16px;border-radius:12px}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#eafffb}
+    button{margin-top:10px;background:linear-gradient(90deg,#6ee7c8,#7ad7ff);border:none;padding:12px 14px;border-radius:10px;font-weight:700;color:#042}
+    .small{font-size:13px;color:var(--muted)}
+    .package{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:10px;margin-top:8px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent)}
+    .svgForm{position:absolute;right:24px;top:-46px;opacity:0.08}
+    @media(max-width:880px){.form-grid{grid-template-columns:1fr}.svgForm{display:none}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="events.html">Upcoming</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="faq.html">Q&amp;A</a>
+    </nav>
+
+    <header>
+      <h1>Reserve a place — quiet appointment</h1>
+      <div class="meta">Secure a mat for the next ceremony or book a private session with {{FACILITATOR_NAME}} at {{VENUE_NAME}}. We offer 1:1, couples, and corporate sound sessions.</div>
+    </header>
+
+    <div style="position:relative">
+      <svg class="svgForm" width="220" height="220" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+        <defs>
+          <linearGradient id="pB" x1="0" x2="1"><stop offset="0" stop-color="#7ae0ff"/><stop offset="1" stop-color="#9be7d8"/></linearGradient>
+        </defs>
+        <g fill="none" stroke="url(#pB)" stroke-width="1.6">
+          <circle cx="110" cy="110" r="64" opacity="0.9"/>
+          <path d="M46 160 C86 110 134 110 174 160" opacity="0.5"/>
+        </g>
+      </svg>
+
+      <div class="form-grid" style="margin-top:14px">
+        <form class="panel" action="{{PRIMARY_CTA_URL}}" method="post">
+          <label for="name">Full name</label>
+          <input id="name" name="name" placeholder="Your name" required>
+
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="you@domain.com" required>
+
+          <label for="phone">Phone</label>
+          <input id="phone" name="phone" type="tel" placeholder="{{PHONE}}">
+
+          <label for="type">Session type</label>
+          <select id="type" name="type">
+            <option>Group — Next event ({{NEXT_EVENT_DATE}})</option>
+            <option>Private 1:1 session (60m)</option>
+            <option>Couples session (60m)</option>
+            <option>Corporate sound journey (90m)</option>
+          </select>
+
+          <label for="notes">Notes & accessibility</label>
+          <textarea id="notes" name="notes" rows="4" placeholder="Anything we should know (mobility, pregnancy, devices)"></textarea>
+
+          <button type="submit">{{PRIMARY_CTA_LABEL}}</button>
+
+          <div class="small" style="margin-top:10px">We will confirm time and payment by email. For urgent requests call <a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none">{{PHONE}}</a>.</div>
+        </form>
+
+        <aside class="panel">
+          <h3 style="margin-top:0">Packages & rates</h3>
+          <div class="package"><div><strong>Group session</strong><div class="small">One evening, shared mat</div></div><div class="small">$35</div></div>
+          <div class="package"><div><strong>Private 1:1</strong><div class="small">60 minutes — bespoke sound arc with crystal bowls and gong</div></div><div class="small">$150</div></div>
+          <div class="package"><div><strong>Couples</strong><div class="small">60 minutes — shared restorative format</div></div><div class="small">$220</div></div>
+          <div class="package"><div><strong>Corporate</strong><div class="small">90 minutes — tailored group ceremony, travel fees may apply</div></div><div class="small">Contact</div></div>
+
+          <h4 style="margin-top:12px">What to bring</h4>
+          <ul class="small">
+            <li>Layered clothing</li>
+            <li>Mat / blanket / cushion</li>
+            <li>Optional: eye mask</li>
+          </ul>
+
+          <h4 style="margin-top:10px">Contraindications & safety</h4>
+          <p class="small">If you are pregnant, have a pacemaker, or recent surgery, contact your physician and message us at {{EMAIL}} before booking. For hearing sensitivity, earplugs are available on request.</p>
+
+          <div style="margin-top:12px"><a href="faq.html" style="color:var(--accent);text-decoration:none;font-weight:600">Read full FAQ</a></div>
+        </aside>
+      </div>
+    </div>
+
+    <div style="margin-top:18px;color:var(--muted);font-size:13px">By booking you agree to our cancellation policy: full refund up to 72 hours before the event; 50% between 72 and 24 hours; no refund within 24 hours. For private sessions cancellation terms vary—we will confirm by email.</div>
+  </div>
+</body>
+</html>

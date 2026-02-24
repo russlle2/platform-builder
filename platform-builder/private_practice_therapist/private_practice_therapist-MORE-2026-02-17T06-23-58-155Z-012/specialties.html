@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Areas of Focus — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--accent:#ff6b6b;--muted:#50545b;--bg:#fffdfb}
+    html,body{margin:0;height:100%;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:#111;background:var(--bg);padding:24px}
+    .container{max-width:980px;margin:0 auto}
+    .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    .nav{display:flex;gap:12px}
+    .nav a{color:var(--muted);text-decoration:none;padding:8px;border-radius:8px}
+    .nav a.active{color:var(--accent);font-weight:700}
+    h1{margin:0;font-size:28px}
+    p.lead{color:var(--muted);margin-top:8px}
+
+    .selector{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+    .mood{padding:10px 12px;border-radius:999px;background:#fff;border:1px solid #eee;cursor:pointer;color:var(--muted);transition:all 220ms}
+    .mood.active{background:linear-gradient(90deg,rgba(255,107,107,0.12),transparent);color:var(--accent);transform:translateY(-4px);box-shadow:0 6px 18px rgba(255,107,107,0.06)}
+
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
+    .cards{display:grid;gap:12px}
+    .card{background:#fff;padding:14px;border-radius:12px;border:1px solid #f0f0f0}
+    .method{background:linear-gradient(180deg,#fff,rgba(255,255,255,0.8));padding:16px;border-radius:12px;transition:all 420ms}
+    .method .title{font-weight:700;color:var(--accent);margin-bottom:6px}
+    .mood-note{color:var(--muted);font-size:14px}
+    .cta{display:inline-block;margin-top:12px;background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+
+    @media (max-width:860px){.grid{grid-template-columns:1fr}.topbar{flex-direction:column;align-items:flex-start}}
+  </style>
+</head>
+<body>
+  <div class='container'>
+    <div class='topbar'>
+      <div>
+        <nav class='nav'>
+          <a href='index.html'>Home</a>
+          <a href='specialties.html' class='active'>Focus Areas</a>
+          <a href='about.html'>About</a>
+          <a href='approach.html'>Approach</a>
+        </nav>
+        <h1>What people often bring</h1>
+        <p class='lead'>Short descriptions and thoughtful next steps. Pick what feels closest to you and see a recommended method below.</p>
+      </div>
+      <div style='text-align:right'>
+        <div class='muted-small' style='color:var(--muted)'>Contact: <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a></div>
+      </div>
+    </div>
+
+    <div class='selector' role='list' aria-label='Mood selector' id='moodList'>
+      <button class='mood' data-key='overwhelmed'>Overwhelmed</button>
+      <button class='mood' data-key='stuck'>Stuck</button>
+      <button class='mood' data-key='anxious'>Anxious</button>
+      <button class='mood' data-key='grieving'>Grieving</button>
+      <button class='mood' data-key='transition'>In Transition</button>
+      <button class='mood' data-key='burnout'>Burned out</button>
+    </div>
+
+    <div class='grid'>
+      <div>
+        <div class='cards'>
+
+          <div class='card'>
+            <h3 style='margin-top:0'>Short-term work</h3>
+            <div class='mood-note'>Focused bundles to address a clear complication — 6 sessions or a 3-session mini-plan for practical shifts.</div>
+          </div>
+
+          <div class='card'>
+            <h3 style='margin-top:0'>Cohort cycles</h3>
+            <div class='mood-note'>Small groups across 6–8 weeks for shared learning, peer practice, and clinician guidance. Best for relational patterns and life transitions.</div>
+          </div>
+
+          <div class='card'>
+            <h3 style='margin-top:0'>Ongoing care</h3>
+            <div class='mood-note'>Open-ended therapy for deeper personality-level work, consistent support, and chronic stress management.</div>
+          </div>
+
+        </div>
+      </div>
+
+      <aside>
+        <div class='method' id='methodCard'>
+          <div class='title' id='methodTitle'>Choose how you feel</div>
+          <div id='methodDesc' style='color:var(--muted);margin-top:6px'>Select a state above and I'll suggest a practical starting point — plus a tailored next step.</div>
+          <a id='moodCta' class='cta' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+
+        <div style='margin-top:12px;padding:12px;background:#fff;border-radius:12px;border:1px solid #f1f1f1'>
+          <div style='font-weight:700'>Need a different pace?</div>
+          <div style='color:var(--muted);margin-top:6px'>I offer single-session consultations and cohort starts throughout the year. If you aren't sure, choose "Let's talk" as a mood and we can clarify together.</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    // Mood-to-Method mapping
+    var map = {
+      'overwhelmed':{
+        title:'Micro-structure plan',
+        desc:'Short-cycle work (4–6 sessions) to make small environmental and scheduling shifts that reduce daily churn. Practical experiments between meetings.',
+        ctaText:'Request a short plan',
+        ctaUrl:'{{PRIMARY_CTA_URL}}?mood=overwhelmed'
+      },
+      'stuck':{
+        title:'One-topic intensive',
+        desc:'A focused 3-session intensive to create momentum on one stuck area — decision, conversation, or boundary. Includes brief pre-session planning.',
+        ctaText:'Book a 3-session intensive',
+        ctaUrl:'{{PRIMARY_CTA_URL}}?mood=stuck'
+      },
+      'anxious':{
+        title:'Practical calm toolkit',
+        desc:'A blend of skills, short exposures, and values work across 6 sessions to reduce moment-to-moment anxiety and build tolerable routines.',
+        ctaText:'Start a calm toolkit series',
+        ctaUrl:'{{PRIMARY_CTA_URL}}?mood=anxious'
+      },
+      'grieving':{
+        title:'Companion cohort',
+        desc:'A small cohort (6–8 weeks) focused on loss and adjustment. Shared stories, small practices, and clinician-led check-ins to help with meaning and daily function.',
+        ctaText:'Join the next cohort',
+        ctaUrl:'{{PRIMARY_CTA_URL}}?mood=grieving'
+      },
+      'transition':{
+        title:'Decision-focused sessions',
+        desc:'Work across 4–8 sessions to weigh options, test assumptions, and support transitional moves with concrete planning tools.',
+        ctaText:'Book a transition consult',
+        ctaUrl:'{{PRIMARY_CTA_URL}}?mood=transition'
+      },
+      'burnout':{
+        title:'Capacity reset',
+        desc:'A paced plan mixing boundary practice, values clarification, and small behavior changes to restore manageable energy levels.',
+        ctaText:'Begin a capacity reset',
+        ctaUrl:'{{PRIMARY_CTA_URL}}?mood=burnout'
+      }
+    };
+
+    var moods = document.querySelectorAll('.mood');
+    var titleEl = document.getElementById('methodTitle');
+    var descEl = document.getElementById('methodDesc');
+    var ctaEl = document.getElementById('moodCta');
+
+    function clearActive(){
+      moods.forEach(function(b){b.classList.remove('active')});
+    }
+
+    moods.forEach(function(btn){
+      btn.addEventListener('click',function(){
+        var key = this.getAttribute('data-key');
+        clearActive();
+        this.classList.add('active');
+        var item = map[key];
+        // Visual morph: update title, desc, cta
+        titleEl.textContent = item.title;
+        descEl.textContent = item.desc;
+        ctaEl.textContent = item.ctaText;
+        ctaEl.setAttribute('href', item.ctaUrl);
+        // small animation
+        var card = document.getElementById('methodCard');
+        card.style.transform = 'scale(0.998)';
+        setTimeout(function(){card.style.transform='scale(1)';},220);
+      });
+    });
+
+    // Accessibility: choose default if param provided
+    (function(){
+      var qs = new URLSearchParams(window.location.search);
+      var mood = qs.get('mood');
+      if(mood && document.querySelector(".mood[data-key='"+mood+"']")){
+        document.querySelector(".mood[data-key='"+mood+"']").click();
+      }
+    })();
+  </script>
+</body>
+</html>

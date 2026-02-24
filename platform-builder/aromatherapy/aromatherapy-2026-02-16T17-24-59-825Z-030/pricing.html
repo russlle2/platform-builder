@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Rates — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg1:linear-gradient(135deg,rgba(216,231,255,0.15),rgba(236,255,243,0.08));--glass:rgba(255,255,255,0.06);--glass-2:rgba(255,255,255,0.1);--accent:#6aa6a7;--muted:#9ea6ad;--card-radius:16px}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;color:#0b1b1b;background:radial-gradient(1200px 600px at 10% 10%, rgba(106,166,167,0.08), transparent), radial-gradient(800px 400px at 90% 90%, rgba(120,160,200,0.05), transparent), #f6fbfb;}
+    /* subtle, unique inline svg pattern sits under content */
+    .bg-svg{position:fixed;inset:0;pointer-events:none;opacity:0.12}
+    .nav{display:flex;gap:18px;align-items:center;padding:20px 28px;background:transparent}
+    .brand{font-weight:700;color:#05313a}
+    header .nav a{color:#05313a;text-decoration:none;padding:8px 12px;border-radius:10px}
+    header .nav a[href$='pricing.html']{background:linear-gradient(90deg,rgba(106,166,167,0.12),rgba(106,166,167,0.06))}
+    .container{max-width:1100px;margin:28px auto;padding:28px}
+    .hero{backdrop-filter:blur(10px);background:linear-gradient(180deg,var(--glass),var(--glass-2));border-radius:18px;padding:28px;display:grid;grid-template-columns:1fr 330px;gap:20px;align-items:center}
+    .hero h1{margin:0;font-size:28px;color:#02303a}
+    .lead{color:var(--muted);margin-top:8px}
+    .card{background:rgba(255,255,255,0.05);padding:18px;border-radius:14px;box-shadow:0 6px 18px rgba(11,27,27,0.06)}
+    .pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px}
+    .plan{padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04)}
+    .plan h3{margin:0 0 6px 0}
+    .price{font-size:20px;color:var(--accent);font-weight:700}
+    .small{color:var(--muted);font-size:13px}
+    ul.features{padding-left:18px;margin:10px 0}
+    .faq{margin-top:22px}
+    .faq details{background:rgba(255,255,255,0.03);margin-bottom:10px;padding:12px;border-radius:10px}
+    .cta-row{display:flex;gap:12px;align-items:center;margin-top:18px}
+    .btn{display:inline-block;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#4b9da0);color:white;text-decoration:none}
+    .ghost{background:transparent;border:1px solid rgba(5,49,58,0.08);color:#05313a;padding:9px 12px}
+    footer{margin-top:28px;padding:18px;color:var(--muted);font-size:13px}
+    @media(max-width:860px){.hero{grid-template-columns:1fr;}.pricing-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <!-- unique inline svg pattern for this page -->
+  <svg class='bg-svg' viewBox='0 0 1200 800' preserveAspectRatio='xMidYMid slice' xmlns='http://www.w3.org/2000/svg'>
+    <defs>
+      <linearGradient id='g1' x1='0' x2='1'>
+        <stop offset='0' stop-color='#d8e7ff'/>
+        <stop offset='1' stop-color='#eafff6'/>
+      </linearGradient>
+      <pattern id='p1' width='80' height='80' patternUnits='userSpaceOnUse'>
+        <rect width='80' height='80' fill='transparent'/>
+        <circle cx='12' cy='12' r='2.6' fill='#6aa6a7'/>
+        <path d='M0 60 L80 20' stroke='#cbe9e6' stroke-opacity='0.6' stroke-width='1'/>
+      </pattern>
+    </defs>
+    <rect width='1200' height='800' fill='url(#p1)' opacity='0.75'/>
+    <g transform='translate(200,100)'>
+      <ellipse cx='400' cy='200' rx='380' ry='160' fill='url(#g1)' opacity='0.08'/>
+    </g>
+  </svg>
+
+  <header class='container'>
+    <nav class='nav'>
+      <span class='brand'>{{BUSINESS_NAME}}</span>
+      <a href='index.html'>Home</a>
+      <a href='services.html'>Offerings</a>
+      <a href='blends.html'>Blends</a>
+      <a href='shop.html'>Store</a>
+      <a href='pricing.html' aria-current='page'>Rates</a>
+      <a href='about.html'>Our Approach</a>
+      <a href='book.html'>Reserve</a>
+      <a href='contact.html'>Contact</a>
+    </nav>
+  </header>
+
+  <main class='container'>
+    <section class='hero'>
+      <div>
+        <h1>Transparent, safety-forward pricing for aromatherapy sessions</h1>
+        <p class='lead'>Calm, clinical clarity — pricing designed to be simple and supportive for clients in {{CITY}}, {{STATE}}.</p>
+        <div class='card'>
+          <p class='small'>Sessions are hybrid: in-person and digital options are available. If you have specific safety questions, please contact <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a> or call <a href='tel:{{PHONE}}'>{{PHONE}}</a>.</p>
+          <div class='cta-row'>
+            <a class='btn' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a>
+            <a class='ghost' href='about.html'>Meet the practitioner</a>
+          </div>
+        </div>
+      </div>
+
+      <aside>
+        <div class='card'>
+          <strong>Quick booking</strong>
+          <p class='small'>30–90 minute sessions; custom blends available.</p>
+          <p style='margin:10px 0' class='price'>$85<span class='small'> starting</span></p>
+          <a class='btn' href='book.html'>Reserve a time</a>
+        </div>
+      </aside>
+    </section>
+
+    <section class='card' style='margin-top:20px'>
+      <h2>Packages & session types</h2>
+      <p class='small'>All sessions include a safety review, aroma preference session, and a tailored blend sample. No medical claims — focuses on comfort, relaxation, and scent education.</p>
+
+      <div class='pricing-grid'>
+        <div class='plan'>
+          <h3>Intro Consultation</h3>
+          <p class='price'>$85</p>
+          <p class='small'>30–45 minutes • ideal for new clients</p>
+          <ul class='features'><li>Safety screening & preferences</li><li>Mini blend sample</li></ul>
+        </div>
+
+        <div class='plan'>
+          <h3>Full Aromatherapy Session</h3>
+          <p class='price'>$160</p>
+          <p class='small'>60–75 minutes • deep scent profiling</p>
+          <ul class='features'><li>Comprehensive intake</li><li>Personalized blend & usage guide</li></ul>
+        </div>
+
+        <div class='plan'>
+          <h3>Follow-up Visit</h3>
+          <p class='price'>$95</p>
+          <p class='small'>30–45 minutes • refine blends</p>
+          <ul class='features'><li>Adjustments, dilution guidance</li><li>Small refill blend</li></ul>
+        </div>
+      </div>
+    </section>
+
+    <section class='card' style='margin-top:18px'>
+      <h2>How sessions are structured</h2>
+      <ol>
+        <li>Pre-session intake and safety review, including medications and sensitivities.</li>
+        <li>Scent exploration: guided smelling of safe sample sets.</li>
+        <li>Blend creation and dilution instructions for at-home use.</li>
+        <li>Documentation and follow-up plan.</li>
+      </ol>
+    </section>
+
+    <section class='faq card' aria-label='FAQ'>
+      <h2>Common questions</h2>
+      <details open>
+        <summary>How should I dilute essential oils?</summary>
+        <p class='small'>Dilution depends on purpose, age, and skin sensitivity. Typical topical dilutions for adults are 1–3% for regular use; for children or sensitive skin, lower dilutions apply. We provide clear dilution guidance with every blend.</p>
+      </details>
+      <details>
+        <summary>What is a patch test?</summary>
+        <p class='small'>A patch test is applying a small amount of diluted blend to a discrete area of skin for 24 hours to check for irritation. We recommend patch testing new blends before regular topical use.</p>
+      </details>
+      <details>
+        <summary>Are essential oils safe around pets?</summary>
+        <p class='small'>Some oils can be irritating to pets. We avoid suggesting topical use of known risky oils for animals and provide guidance for diffusing safely (short intervals, leaving the room available to your pet). Always consult your veterinarian for pet-specific concerns.</p>
+      </details>
+      <details>
+        <summary>Pregnancy and aromatherapy</summary>
+        <p class='small'>Pregnancy involves special considerations. We use a safety-forward approach and will adapt or avoid certain oils. Always share pregnancy status during intake; we will not make medical claims.</p>
+      </details>
+    </section>
+
+    <section class='card' style='margin-top:18px'>
+      <h2>Billing & refunds</h2>
+      <p class='small'>Payments accepted by card and e-transfer. Cancellations with 48 hours notice are refunded minus a small processing fee. Packages may have non-refundable elements; details provided at booking.</p>
+      <div style='margin-top:10px'>
+        <a class='btn' href='book.html'>Book now</a>
+        <a class='ghost' href='contact.html'>Questions? Email {{EMAIL}}</a>
+      </div>
+    </section>
+
+    <footer>
+      <div>{{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • Phone: <a href='tel:{{PHONE}}'>{{PHONE}}</a> • <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a></div>
+    </footer>
+  </main>
+</body>
+</html>

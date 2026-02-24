@@ -1,0 +1,65 @@
+/* Earthy warm palette, modern-mystic tone */
+:root{
+  --bg:#FBF6F0;
+  --muted:#8C6B50;
+  --accent:#B7763E;
+  --accent-2:#D9B89A;
+  --panel:#FFF8F2;
+  --text:#2F2A26;
+  --radius:12px;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;font-size:16px;color:var(--text);background:var(--bg);}
+.site-header{display:flex;justify-content:space-between;align-items:center;padding:1rem 2rem;border-bottom:1px solid rgba(140,107,80,0.08);background:linear-gradient(180deg,#FFF 0%,var(--panel) 100%)}
+.brand{display:flex;gap:0.75rem;align-items:center}
+.brand .logo{flex:0 0 auto}
+.business{font-weight:700}
+.strap{font-size:0.85rem;color:var(--muted)}
+.main-nav a{margin-left:1rem;text-decoration:none;color:var(--muted)}
+.main-nav a.cta{background:var(--accent);color:#fff;padding:0.55rem 0.9rem;border-radius:8px}
+.hero{display:grid;grid-template-columns:1fr 320px;gap:2rem;padding:2.25rem;align-items:center;overflow:hidden}
+.hero-content h1{font-size:1.75rem;margin:0 0 0.5rem}
+.hero-content p{margin:0 0 1rem;color:#44362d}
+.hero-actions{display:flex;gap:0.75rem;align-items:center}
+.btn{border:1px solid transparent;padding:0.6rem 0.9rem;border-radius:8px;cursor:pointer}
+.btn.primary{background:var(--accent);color:#fff}
+.btn.secondary{background:#fff;border-color:rgba(140,107,80,0.12);color:var(--muted)}
+.btn.ghost{background:transparent;border-color:rgba(140,107,80,0.06);color:var(--muted)}
+.meta{list-style:none;padding:0;margin:1rem 0 0;color:var(--muted);font-size:0.9rem}
+.hero-pattern{background-image:url('/assets/img/pattern.svg');background-size:cover;border-radius:12px;height:220px}
+.section{padding:2rem}
+.social-proof,.benefits,.process,.faq,.cta{padding:2rem;border-top:1px dashed rgba(140,107,80,0.06)}
+.proof-grid{display:flex;gap:1rem}
+.proof-grid blockquote{background:linear-gradient(180deg,#FFF8F0, #FFF4EA);padding:1rem;border-radius:8px;flex:1}
+.benefit-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;list-style:none;padding:0}
+.process-steps{list-style:none;padding:0;display:grid;grid-auto-flow:row;gap:1rem}
+.faq details{background:var(--panel);padding:1rem;border-radius:8px;margin:0.5rem 0}
+.cta{display:flex;align-items:center;justify-content:space-between}
+.cta-inner{max-width:720px}
+.site-footer{padding:1rem 2rem;border-top:1px solid rgba(140,107,80,0.06);display:flex;justify-content:space-between;align-items:center}
+.footer-nav a{margin-left:1rem;color:var(--muted);text-decoration:none}
+/* Modal */
+.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:60}
+.modal[aria-hidden="false"]{display:flex}
+.backdrop{position:fixed;inset:0;background:rgba(15,10,8,0.4);z-index:50;display:none}
+.backdrop[aria-hidden="false"]{display:block}
+.modal-panel{background:var(--panel);padding:1.25rem;border-radius:12px;max-width:520px;width:calc(100% - 2rem);box-shadow:0 10px 30px rgba(45,30,25,0.12)}
+.modal-close{background:transparent;border:none;font-size:1.25rem;position:absolute;right:1rem;top:1rem}
+.exercise-controls{display:grid;gap:0.75rem}
+#exercise-area{min-height:140px;display:flex;align-items:center;justify-content:center}
+/* Simple circle animation for breathing */
+.breath-circle{width:160px;height:160px;border-radius:50%;background:radial-gradient(circle at 30% 30%,var(--accent-2),var(--accent));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+.breathing{transition:transform 3s ease-in-out}
+/* Reveal animations */
+.reveal{opacity:0;transform:translateY(18px);transition:opacity 520ms ease,transform 520ms cubic-bezier(.2,.9,.3,1)}
+.revealed{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){
+  .reveal{opacity:1;transform:none;transition:none}
+  .breathing{transition:none}
+}
+/* Responsive */
+@media (max-width:800px){
+  .hero{grid-template-columns:1fr;padding:1rem}
+  .hero-pattern{height:160px}
+  .main-nav{display:none}
+}

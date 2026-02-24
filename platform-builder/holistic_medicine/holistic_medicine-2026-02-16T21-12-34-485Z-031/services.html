@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Services — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{
+      --bg-1: linear-gradient(135deg,#f6fffb 0%,#e8f8f0 40%,#fffaf6 100%);
+      --accent:#6bbf95;
+      --muted:#6b6b6b;
+      --card:#ffffff;
+      --glass: rgba(255,255,255,0.7);
+      --radius:18px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%;margin:0;background:var(--bg-1);color:#0b2a23}
+    .page{min-height:100vh;display:flex;flex-direction:column}
+    header{position:sticky;top:0;backdrop-filter:blur(6px);background:linear-gradient(180deg,rgba(255,255,255,0.6),rgba(255,255,255,0.45));box-shadow:0 4px 18px rgba(12,20,16,0.06);padding:18px 28px;display:flex;align-items:center;justify-content:space-between;border-bottom-left-radius:16px;border-bottom-right-radius:16px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:52px;height:52px;border-radius:12px;display:grid;place-items:center;color:white;font-weight:700;background:conic-gradient(from 180deg at 50% 50%,#e6fff5,#caf2e0,#fff2e8)}
+    nav a{margin-left:18px;text-decoration:none;color:var(--muted);font-weight:600}
+    nav a.primary{color:var(--accent)}
+    main{flex:1;padding:36px 28px;max-width:1200px;margin:0 auto;width:100%}
+
+    /* hero */
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:center;margin-bottom:28px}
+    .hero-card{background:var(--card);border-radius:var(--radius);padding:28px;box-shadow:0 10px 30px rgba(7,19,15,0.06);position:relative;overflow:hidden}
+    .hero h1{margin:0 0 10px;font-size:28px;letter-spacing:-0.02em}
+    .tag{color:var(--accent);font-weight:700}
+    .hero p{margin:6px 0 18px;color:var(--muted)}
+    .cta{display:inline-block;padding:12px 18px;background:linear-gradient(90deg,var(--accent),#4da97a);color:white;border-radius:12px;text-decoration:none;font-weight:700}
+
+    /* pattern svg overlay */
+    .pattern{position:absolute;right:-60px;top:-40px;opacity:0.18;width:420px;height:420px;pointer-events:none}
+
+    /* services grid */
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:18px}
+    .service{background:linear-gradient(180deg,rgba(255,255,255,0.8),var(--glass));border-radius:14px;padding:18px;display:flex;gap:14px;align-items:flex-start}
+    .icon{width:56px;height:56px;border-radius:12px;flex:0 0 56px;display:grid;place-items:center;color:white;font-weight:700}
+    .body h3{margin:0 0 6px}
+    .muted{color:var(--muted);font-size:14px}
+
+    /* story & framework */
+    .story{display:flex;gap:18px;margin-top:28px}
+    .story .panel{flex:1;border-radius:14px;padding:18px;background:linear-gradient(180deg,rgba(255,255,255,0.9),#fff);box-shadow:0 12px 30px rgba(9,18,14,0.04)}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(107,191,149,0.12);color:var(--accent);font-weight:700;margin-bottom:8px}
+
+    /* offers/pricing snippet */
+    .offers{display:flex;gap:12px;margin-top:22px}
+    .offer{flex:1;padding:16px;border-radius:12px;background:#fffefc;border:1px solid rgba(107,191,149,0.06)}
+    .price{font-weight:800;color:#0b2a23}
+
+    footer{padding:28px;text-align:center;color:var(--muted);font-size:14px}
+
+    /* responsive */
+    @media (max-width:900px){
+      .hero{grid-template-columns:1fr}
+      .grid{grid-template-columns:1fr}
+      main{padding:20px}
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="brand">
+        <div class="logo">HM</div>
+        <div>
+          <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="services.html" class="primary">What We Do</a>
+        <a href="conditions.html">Conditions</a>
+        <a href="pricing.html">Plans</a>
+        <a href="book.html">Book</a>
+      </nav>
+    </header>
+
+    <main>
+      <!-- HERO -->
+      <section class="hero">
+        <div class="hero-card">
+          <div class="pill">Personalized integrative care</div>
+          <h1>Services that meet you where you are — body, mind & rhythm.</h1>
+          <p>We blend modern evidence-focused methods with time-honored whole-person strategies to help you feel better and learn how to stay that way. Services are educational and supportive, not one-size-fits-all medical promises.</p>
+          <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+
+          <div style="margin-top:16px;display:flex;gap:10px;align-items:center;font-size:13px;color:var(--muted)">
+            <div>Phone: <strong>{{PHONE}}</strong></div>
+            <div style="border-left:1px solid rgba(0,0,0,0.06);padding-left:10px">Email: <strong>{{EMAIL}}</strong></div>
+          </div>
+        </div>
+
+        <aside style="position:relative">
+          <div class="hero-card" style="height:100%;display:flex;flex-direction:column;justify-content:center;align-items:flex-start">
+            <svg class="pattern" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+              <defs>
+                <linearGradient id="g1" x1="0" x2="1">
+                  <stop offset="0" stop-color="#e7fff7"/>
+                  <stop offset="1" stop-color="#d6f7ea"/>
+                </linearGradient>
+                <pattern id="p1" width="20" height="20" patternUnits="userSpaceOnUse">
+                  <rect width="20" height="20" fill="url(#g1)" />
+                  <circle cx="6" cy="6" r="1.6" fill="#bcead2" />
+                  <circle cx="14" cy="14" r="1.6" fill="#bdeed8" />
+                </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill="url(#p1)"/>
+            </svg>
+            <h3 style="margin:0 0 6px">Quick snapshot</h3>
+            <p class="muted">Short, focused sessions to educate, align, and plan. Add-on options let you test, track, and adapt as we go.</p>
+            <div style="margin-top:12px;display:flex;gap:8px;width:100%">
+              <div style="flex:1;text-align:center;padding:10px;border-radius:10px;background:rgba(107,191,149,0.08)"><div style="font-weight:800">60+</div><div class="muted">Clients helped</div></div>
+              <div style="flex:1;text-align:center;padding:10px;border-radius:10px;background:rgba(107,191,149,0.04)"><div style="font-weight:800">4–12wks</div><div class="muted">Typical plans</div></div>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <!-- SERVICES GRID (offers) -->
+      <section>
+        <div style="display:flex;justify-content:space-between;align-items:end">
+          <h2 style="margin:0">Our core services</h2>
+          <div class="muted">Choose a starting point — we’ll design the sequence together.</div>
+        </div>
+
+        <div class="grid">
+          <div class="service">
+            <div class="icon" style="background:linear-gradient(135deg,#6bbf95,#3fa474)">C</div>
+            <div class="body">
+              <h3>Integrative Consultations</h3>
+              <div class="muted">A deep intake to map symptoms, lifestyle, labs, and goals. Educational and collaborative — we co-create plans, not prescriptions alone.</div>
+            </div>
+          </div>
+
+          <div class="service">
+            <div class="icon" style="background:linear-gradient(135deg,#ffd59e,#ffb86b)">N</div>
+            <div class="body">
+              <h3>Functional Nutrition</h3>
+              <div class="muted">Personalized, practical nourishment strategies to support digestion, energy, and inflammation control—rooted in evidence and applied with care.</div>
+            </div>
+          </div>
+
+          <div class="service">
+            <div class="icon" style="background:linear-gradient(135deg,#b9d7ff,#7fb3ff)">H</div>
+            <div class="body">
+              <h3>Herbal & Botanical Guidance</h3>
+              <div class="muted">Thoughtful botanical support for resilience and symptom relief. Herbs are suggested with safety, interactions, and your whole context in mind.</div>
+            </div>
+          </div>
+
+          <div class="service">
+            <div class="icon" style="background:linear-gradient(135deg,#ffd1e6,#ff9ec3)">M</div>
+            <div class="body">
+              <h3>Mind-Body & Movement</h3>
+              <div class="muted">Stress resilience, breathwork, sleep coaching, and gentle movement plans to restore rhythm and rest. Education-focused — learn tools to practice daily.</div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- STORY (case vignette, editorial tone) -->
+      <section class="story">
+        <div class="panel">
+          <div class="pill">A short story</div>
+          <h3>When small changes add up</h3>
+          <p class="muted">One client started with disrupted sleep and bloating. Through paced nutrition adjustments, a targeted sleep routine, and weekly check-ins, they reported more restful nights and steadier energy. We track patterns, not just endpoints.</p>
+          <p style="margin:12px 0 0"><a href="about.html">Meet the team »</a></p>
+        </div>
+
+        <div class="panel">
+          <div class="pill">Clinical framework</div>
+          <h3>How we structure care</h3>
+          <ol class="muted">
+            <li>Comprehensive intake & history</li>
+            <li>Education + immediate strategies</li>
+            <li>Personalized plan with measurable targets</li>
+            <li>Regular follow-ups and optional lab reviews</li>
+          </ol>
+          <p class="muted" style="margin-top:8px;font-size:13px">We emphasize learning so you keep progress after the plan ends.</p>
+        </div>
+      </section>
+
+      <!-- OFFERS / pricing teaser -->
+      <section class="offers">
+        <div class="offer">
+          <h4 style="margin:0 0 6px">Starter Visit</h4>
+          <div class="muted">60–75 min intake to build your initial plan.</div>
+          <div style="margin-top:10px;font-size:18px" class="price">Starting at $195</div>
+        </div>
+        <div class="offer">
+          <h4 style="margin:0 0 6px">Follow-ups</h4>
+          <div class="muted">30–45 min focused progress visits.</div>
+          <div style="margin-top:10px;font-size:18px" class="price">Starting at $95</div>
+        </div>
+      </section>
+
+      <!-- CTA + testimonials small -->
+      <section style="margin-top:26px;display:flex;gap:18px;align-items:center;justify-content:space-between;flex-wrap:wrap">
+        <div style="flex:1;min-width:260px">
+          <h3 style="margin:0">Ready to begin?</h3>
+          <p class="muted">Book a discovery visit to see if our approach fits your needs.</p>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center">
+          <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <div class="muted">Or call <strong>{{PHONE}}</strong></div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer>
+      <div>{{BUSINESS_NAME}} — Holistic & Integrative Care • {{CITY}}, {{STATE}}</div>
+      <div style="margin-top:6px">Practitioner: {{PRACTITIONER_NAME}}, {{CREDENTIALS}}</div>
+    </footer>
+  </div>
+</body>
+</html>

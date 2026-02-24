@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book a Session — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reserve an aromatherapy session with {{PRACTITIONER_NAME}}. Fast online booking and VIP day options. Safety-first consultations.">
+  <style>
+    :root{--bg:#fcfff8;--accent:#3b6b8f;--muted:#444}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:#0b1220;background:linear-gradient(180deg,var(--bg),#ffffff)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid rgba(11,18,32,0.04)}
+    .brand{font-weight:800}
+    nav a{margin:0 8px;text-decoration:none;color:#233}
+    nav a[href$="book.html"]{color:var(--accent);font-weight:700}
+    main{max-width:980px;margin:28px auto;padding:0 20px}
+    .split{display:grid;grid-template-columns:1fr 360px;gap:20px}
+    .panel{background:#fff;padding:16px;border-radius:12px;box-shadow:0 8px 28px rgba(15,30,45,0.06)}
+    h1{margin:0 0 6px 0}
+    p.lead{color:var(--muted)}
+    .steps{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+    .step{padding:10px;border-radius:8px;border:1px dashed rgba(11,18,32,0.06)}
+    form label{display:block;margin-top:10px;font-size:13px}
+    input,select,textarea{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)}
+    .submit{margin-top:12px;background:var(--accent);color:#fff;padding:10px 12px;border-radius:8px;border:none;font-weight:700}
+    .note{font-size:13px;color:var(--muted);margin-top:10px}
+    .testimonial{margin-top:12px;padding:10px;border-radius:8px;background:linear-gradient(90deg,#f7fbff,#fff);}
+    @media(max-width:920px){.split{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Welcome</a>
+      <a href="services.html">Services</a>
+      <a href="blends.html">Blends</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="split">
+      <section class="panel">
+        <h1>Reserve your appointment</h1>
+        <p class="lead">Book a consult with {{PRACTITIONER_NAME}}. Sessions emphasize scent exploration, practical blending, and clear safety instructions. We keep things simple and mindful.</p>
+
+        <div class="steps">
+          <div class="step"><strong>1.</strong> Pick a session type (Intro, Full, VIP).</div>
+          <div class="step"><strong>2.</strong> Complete short intake and disclose sensitivities/medications.</div>
+          <div class="step"><strong>3.</strong> Receive a dilution and patch-test plan during the session.</div>
+        </div>
+
+        <div style="margin-top:12px">
+          <form action="{{PRIMARY_CTA_URL}}" method="get">
+            <label for="service">Session</label>
+            <select id="service" name="service">
+              <option>Intro Session — 45 min</option>
+              <option>Full Aromatherapy Session — 90 min</option>
+              <option>VIP Day — 6 hrs</option>
+            </select>
+
+            <label for="name">Full name</label>
+            <input id="name" name="name" placeholder="Your name" required />
+
+            <label for="email">Email</label>
+            <input id="email" name="email" placeholder="you@example.com" type="email" required />
+
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" placeholder="Optional" />
+
+            <label for="notes">Brief notes (sensitivities, pregnancy, pets)</label>
+            <textarea id="notes" name="notes" rows="4" placeholder="Any known sensitivities or concerns"></textarea>
+
+            <button class="submit" type="submit">Continue to scheduling</button>
+          </form>
+
+          <div class="note">By booking you acknowledge that aromatherapy is offered as a wellness practice. We do not provide medical diagnoses or treatments. Please consult your healthcare provider for medical concerns.</div>
+        </div>
+      </section>
+
+      <aside>
+        <div class="panel">
+          <h3>Need immediate help booking?</h3>
+          <div style="color:var(--muted);margin-top:6px">Call <strong>{{PHONE}}</strong> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>. For VIP Day inquiries, please include your goals and approximate dates.</div>
+          <div style="margin-top:12px">
+            <a class="submit" href="tel:{{PHONE}}" style="background:#2b5f7f;display:inline-block;text-decoration:none;">Call to book</a>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:12px">
+          <h4>Before your visit</h4>
+          <ul style="color:var(--muted)">
+            <li>Note current medications and allergies.</li>
+            <li>Bring any products you use regularly.</li>
+            <li>Plan for a patch test after we create a blend — instructions provided.</li>
+          </ul>
+        </div>
+
+        <div class="panel" style="margin-top:12px">
+          <h4>Safety FAQs</h4>
+          <div style="color:var(--muted);font-size:14px">
+            <strong>Dilution?</strong> Recommended per client; typically 1–3% for adults for regular topical blends.<br>
+            <strong>Patch test?</strong> Yes — small diluted test area and 24–48 hour wait if skin-sensitive.<br>
+            <strong>Pets?</strong> We provide pet-safe guidance and oils to avoid around cats & dogs.<br>
+            <strong>Pregnancy?</strong> Conservative recommendations; several oils avoided unless cleared by provider.
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:12px">
+          <h4>Sample testimonial</h4>
+          <div class="testimonial">"Booking was straightforward and the practitioner walked me through safe use—super practical." — M.</div>
+        </div>
+
+        <div class="panel" style="margin-top:12px">
+          <h4>Lead magnet</h4>
+          <p style="color:var(--muted)">Reserve and receive the "Home Blending Starter Pack" PDF with dilution charts and label templates.</p>
+          <a class="submit" href="#">Send me the pack</a>
+        </div>
+      </aside>
+    </div>
+
+    <footer style="margin-top:20px;text-align:center;color:var(--muted)">Questions? Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call {{PHONE}} • {{BUSINESS_NAME}} — {{CITY}}, {{STATE}}</footer>
+  </main>
+</body>
+</html>

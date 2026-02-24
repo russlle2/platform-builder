@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Voices — Client stories | {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Stories from clients who reshaped routines and regained time, clarity, and momentum." />
+  <style>
+    :root{--bg:#fcfdfa;--accent:#2b7a62;--muted:#6b7280;--card:#fff;--shadow:0 10px 30px rgba(16,24,40,0.06)}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:#071127}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#0b5e4b);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    nav a{margin-left:14px;color:var(--muted);font-weight:700}
+    .hero{padding:36px 24px;background-image:url('assets/img/pattern.svg');background-position:top right;background-size:420px}
+    .hero h1{margin:8px 0}
+    .grid{max-width:1100px;margin:20px auto;padding:0 20px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:var(--shadow);min-height:140px;display:flex;flex-direction:column;gap:12px}
+    .quote{font-size:16px;flex:1}
+    .meta{display:flex;justify-content:space-between;align-items:center;font-weight:700;color:var(--muted);font-size:13px}
+    .star{color:#f6b042}
+
+    .reveal{opacity:0;transform:translateY(14px);transition:opacity 580ms cubic-bezier(.2,.9,.3,1),transform 580ms cubic-bezier(.2,.9,.3,1)}
+    @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none!important}}
+    .reveal.revealed{opacity:1;transform:none}
+
+    .try{display:flex;justify-content:center;margin:18px 0}
+    .btn{padding:10px 14px;border-radius:10px;background:var(--accent);color:#fff;border:none;font-weight:800}
+
+    @media (max-width:980px){.grid{grid-template-columns:repeat(2,1fr)}.nav{display:none}}
+    @media (max-width:640px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand"><div class="logo">W</div><div>{{BUSINESS_NAME}}</div></div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="pricing.html">Invest</a>
+      <a href="book.html">Book</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="hero">
+      <h1>Client stories: practical shifts, steady returns</h1>
+      <p class="muted">Short accounts from people who reduced friction, reclaimed time, and started a new pattern that stuck.</p>
+    </div>
+
+    <div class="try"><button class="btn" id="try-now">Try a 2-minute practice</button></div>
+
+    <section class="grid">
+      <article class="card reveal">
+        <div class="quote">"We designed a 15-minute evening routine that cut morning overwhelm in half. The plan felt so simple we actually followed it."</div>
+        <div class="meta"><div>— A. (Marketing Director)</div><div class="star">★★★★☆</div></div>
+      </article>
+
+      <article class="card reveal">
+        <div class="quote">"After one day I had a clear weekly plan and two small habit anchors that stabilized my energy through late afternoons."</div>
+        <div class="meta"><div>— M. (Founder)</div><div class="star">★★★★★</div></div>
+      </article>
+
+      <article class="card reveal">
+        <div class="quote">"The templates and rehearsal made it possible to keep momentum without overhauling my calendar."</div>
+        <div class="meta"><div>— R. (Consultant)</div><div class="star">★★★★☆</div></div>
+      </article>
+
+      <article class="card reveal">
+        <div class="quote">"I stopped burning time on vague goals and started tracking two meaningful outcomes. That clarity made the biggest difference."</div>
+        <div class="meta"><div>— S. (Product Manager)</div><div class="star">★★★★★</div></div>
+      </article>
+
+      <article class="card reveal">
+        <div class="quote">"Practical, short, and precise — the best investment I've made in my week."</div>
+        <div class="meta"><div>— L. (Executive)</div><div class="star">★★★★★</div></div>
+      </article>
+
+      <article class="card reveal">
+        <div class="quote">"I learned how to keep a simple routine that supports meetings, deep work, and family time."</div>
+        <div class="meta"><div>— K. (Architect)</div><div class="star">★★★★☆</div></div>
+      </article>
+    </section>
+
+    <div style="max-width:900px;margin:28px auto;padding:0 20px">
+      <section class="reveal">
+        <h2>How people describe the change</h2>
+        <p class="muted">Clients talk about fewer decision points, clearer next steps, and routines that actually sit inside a busy week. We focus on habits and frameworks — not promises of cure.</p>
+      </section>
+
+      <section class="reveal">
+        <h2>Ready to try a short practice?</h2>
+        <p class="muted">Use the guided exercise to feel a small shift in 1–5 minutes. You can also book a VIP Day to co-design durable systems.</p>
+        <a class="btn" href="book.html" style="margin-top:12px;display:inline-block">Book a Day</a>
+      </section>
+    </div>
+  </main>
+
+  <footer style="padding:18px 24px;background:#fff;border-top:1px solid #eef2f4;display:flex;justify-content:space-between">
+    <div class="muted">{{BUSINESS_NAME}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    <div class="muted">{{CITY}}, {{STATE}}</div>
+  </footer>
+
+  <!-- Modal reused -->
+  <div id="modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true" style="display:none;align-items:center;justify-content:center;position:fixed;inset:0;background:rgba(2,6,23,0.45);z-index:100">
+    <div style="background:#fff;padding:18px;border-radius:12px;max-width:560px;width:96%">
+      <h3 id="modal-title">Quick guided practice</h3>
+      <p class="muted">Choose a simple exercise to try now.</p>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn" data-mode="breath">Breath (2 min)</button>
+        <button class="btn" data-mode="intent">Intention (1 min)</button>
+        <button class="btn" id="close-modal">Close</button>
+      </div>
+      <div id="exercise" style="margin-top:12px"></div>
+    </div>
+  </div>
+
+  <script>
+    // Reveal
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if(prefersReduced){document.querySelectorAll('.reveal').forEach(r=>r.classList.add('revealed'));return}
+      const obs = new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('revealed');obs.unobserve(e.target)}}),{threshold:0.15});
+      document.querySelectorAll('.reveal').forEach(n=>obs.observe(n));
+    })();
+
+    // Guided modal
+    (function(){
+      const modal = document.getElementById('modal');const exerciseBox=document.getElementById('exercise');let timer;
+      document.getElementById('try-now').addEventListener('click',()=>{modal.style.display='flex';modal.setAttribute('aria-hidden','false')});
+      modal.addEventListener('click',e=>{if(e.target===modal)close()});
+      document.getElementById('close-modal').addEventListener('click',close);
+      document.querySelectorAll('#modal .btn[data-mode]').forEach(b=>b.addEventListener('click',()=>start(b.getAttribute('data-mode'))));
+      function close(){modal.style.display='none';modal.setAttribute('aria-hidden','true');exerciseBox.innerHTML='';if(timer)clearInterval(timer)}
+      function start(mode){if(timer)clearInterval(timer);exerciseBox.innerHTML='';if(mode==='breath'){let t=0;const total=120;exerciseBox.innerHTML='<div style="font-weight:700">Box breathing</div><div id="count" style="font-size:20px;color:var(--accent)">Ready</div>';const c=document.getElementById('count');timer=setInterval(()=>{t++;const p=t%12;if(p===1)c.textContent='In';if(p===5)c.textContent='Hold';if(p===9)c.textContent='Out';if(t>=total){clearInterval(timer);c.textContent='Done'}},1000)}
+      if(mode==='intent'){exerciseBox.innerHTML='<div style="font-weight:700">One-minute intention</div><input id="i1" placeholder="One word" style="width:100%;padding:8px;margin-top:8px;border-radius:8px;border:1px solid #e6eef0"/><button id="save" class="btn" style="margin-top:8px">Save</button>';document.getElementById('save').addEventListener('click',()=>{exerciseBox.innerHTML='<div class="muted">Saved: '+document.getElementById('i1').value+'</div>'})}}
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Schedule an initial intake or reserve a pathway.">
+  <style>
+    :root{--bg:#fffefc;--muted:#6a6a6a;--accent:#6b8f6b}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:var(--bg);color:#111}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 26px}
+    .logo{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#b6d1b6);display:grid;place-items:center;color:white;font-weight:700}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none}
+    main{padding:18px 26px}
+    .hero{display:flex;gap:20px;align-items:flex-start}
+    .panel{background:#fff;padding:16px;border-radius:12px;box-shadow:0 6px 20px rgba(18,18,18,0.04)}
+    .planner{width:680px}
+    .phases{display:flex;gap:10px}
+    .phase{flex:1;padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#f7faf7);border:1px solid rgba(100,120,100,0.06)}
+    .phase h4{margin:0 0 6px 0}
+    .controls{display:flex;gap:8px;margin-top:8px}
+    input[type=range]{width:100%}
+    .summary{margin-top:12px;padding:12px;background:linear-gradient(90deg,rgba(107,143,107,0.04),transparent);border-radius:8px}
+    .disclaimer{font-size:13px;color:var(--muted);margin-top:8px}
+    form{display:flex;flex-direction:column;gap:8px}
+    label{font-size:13px;color:var(--muted)}
+    input,select,textarea{padding:10px;border-radius:8px;border:1px solid #e6e6e6}
+    button{background:linear-gradient(90deg,var(--accent),#9fbf9f);color:white;padding:10px;border-radius:8px;border:0}
+    .pattern{position:fixed;right:10px;top:100px;opacity:0.12;width:260px;height:260px;background-image:url('assets/img/pattern.svg');background-size:cover;pointer-events:none}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="logo">HM</div>
+      <div>
+        <div style="font-weight:600">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">Reserve a session or a pathway</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Conditions</a>
+      <a href="approach.html">Method</a>
+      <a href="pricing.html">Tariff</a>
+      <a href="about.html">Story</a>
+      <a href="book.html" style="color:var(--accent)">Book</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="panel planner">
+        <h2>Plan your first three phases</h2>
+        <p style="color:var(--muted)">Choose cadence and intensity for Phase 1 (foundations), Phase 2 (integration), and Phase 3 (maintenance). This planner creates a suggested roadmap; it is educational and illustrative only.</p>
+
+        <div class="phases">
+          <div class="phase" data-phase="1">
+            <h4>Phase 1 — Foundations</h4>
+            <div class="controls">
+              <label style="flex:1">Weeks: <span class="val weeks">4</span></label>
+            </div>
+            <input class="weeksInput" type="range" min="1" max="8" value="4">
+            <div style="font-size:13px;color:var(--muted);margin-top:8px">Primary aims: stabilize sleep, reduce urgent stressors, start simple habits.</div>
+          </div>
+
+          <div class="phase" data-phase="2">
+            <h4>Phase 2 — Integration</h4>
+            <div class="controls">
+              <label style="flex:1">Weeks: <span class="val weeks">6</span></label>
+            </div>
+            <input class="weeksInput" type="range" min="2" max="12" value="6">
+            <div style="font-size:13px;color:var(--muted);margin-top:8px">Primary aims: build routines, coordinate therapies, refine nutrition and movement.</div>
+          </div>
+
+          <div class="phase" data-phase="3">
+            <h4>Phase 3 — Maintenance</h4>
+            <div class="controls">
+              <label style="flex:1">Weeks: <span class="val weeks">8</span></label>
+            </div>
+            <input class="weeksInput" type="range" min="4" max="24" value="8">
+            <div style="font-size:13px;color:var(--muted);margin-top:8px">Primary aims: sustain gains, plan for relapses, transition to self-led practice.</div>
+          </div>
+        </div>
+
+        <div class="summary" id="summary">
+          <strong>Suggested roadmap</strong>
+          <div id="roadmap" style="margin-top:8px;color:var(--muted)">Phase 1: 4 weeks • Phase 2: 6 weeks • Phase 3: 8 weeks — Total 18 weeks</div>
+          <div class="disclaimer">This roadmap is a planner tool for orientation. It does not replace individualized clinical assessment. Adjust with your care team as needed.</div>
+        </div>
+
+      </div>
+
+      <aside style="width:360px">
+        <div class="panel">
+          <h3>Reserve a session</h3>
+          <form id="bookingForm" action="{{PRIMARY_CTA_URL}}" method="post">
+            <label>Full name</label>
+            <input name="name" required>
+            <label>Email</label>
+            <input type="email" name="email" required>
+            <label>Phone</label>
+            <input name="phone">
+            <label>Choose option</label>
+            <select name="plan">
+              <option>Seed Session — single intake</option>
+              <option>Root Cycle — 6 weeks</option>
+              <option>Bloom Mentorship — 3 months</option>
+            </select>
+            <label>Preferred times or notes</label>
+            <textarea name="notes" rows="3"></textarea>
+            <div style="display:flex;gap:8px;margin-top:8px"><button type="submit">Plan a Meeting</button><a href="contact.html" style="align-self:center;color:var(--muted);font-size:14px">Ask a question</a></div>
+            <div style="font-size:12px;color:var(--muted);margin-top:8px">By booking you agree to our educational care model. No guaranteed cures. If you have urgent medical needs, contact your local emergency services.</div>
+          </form>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="panel">
+          <h4>Quick timeline preview</h4>
+          <div id="miniRoad" style="font-size:13px;color:var(--muted)">Loading…</div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <footer style="padding:18px 26px;color:var(--muted)">
+    <div>Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    <div>© <span id="year"></span> {{BUSINESS_NAME}}</div>
+  </footer>
+
+  <div class="pattern" aria-hidden="true"></div>
+
+  <script>
+    // Timeline planner logic
+    (function(){
+      const weeksInputs = Array.from(document.querySelectorAll('.weeksInput'));
+      const weekSpans = Array.from(document.querySelectorAll('.phase .weeks'));
+      const roadmapEl = document.getElementById('roadmap');
+      const mini = document.getElementById('miniRoad');
+
+      function update(){
+        const values = weeksInputs.map((el,i)=>{ const v=Number(el.value); weekSpans[i].textContent = v; return v; });
+        const total = values.reduce((a,b)=>a+b,0);
+        roadmapEl.textContent = `Phase 1: ${values[0]} weeks • Phase 2: ${values[1]} weeks • Phase 3: ${values[2]} weeks — Total ${total} weeks`;
+        // mini timeline
+        const p1 = Math.round((values[0]/total)*100);
+        const p2 = Math.round((values[1]/total)*100);
+        const p3 = 100 - p1 - p2;
+        mini.innerHTML = `<div style=\"display:flex;gap:6px;align-items:center\"><div style=\"width:12px;height:12px;border-radius:3px;background:#9fbf9f\"></div>Phase1 ${p1}%</div><div style=\"display:flex;gap:6px;align-items:center;margin-top:6px\"><div style=\"width:12px;height:12px;border-radius:3px;background:#c7d9c7\"></div>Phase2 ${p2}%</div><div style=\"display:flex;gap:6px;align-items:center;margin-top:6px\"><div style=\"width:12px;height:12px;border-radius:3px;background:#eaf3ea\"></div>Phase3 ${p3}%</div>`;
+      }
+
+      weeksInputs.forEach(i=>i.addEventListener('input',update));
+      update();
+    })();
+
+    // Simple submit handler to simulate booking
+    document.getElementById('bookingForm').addEventListener('submit',function(e){
+      e.preventDefault();
+      alert('Thanks — your request was sent. We will follow up to confirm.');
+      this.reset();
+    });
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

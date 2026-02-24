@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve &amp; Plan — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Begin by creating a short session plan, then reserve a time that fits your needs.">
+  <style>
+    :root{--bg:#f7efe6;--accent:#5b4136;--muted:#7b6d66;--card:#fffdf9;--accent2:#c28a6c}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:linear-gradient(180deg,#faf4ec,var(--bg));color:var(--accent)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px}
+    .logo{width:46px;height:46px;background:linear-gradient(135deg,var(--accent2),var(--accent));border-radius:10px;color:#fff;display:grid;place-items:center;font-weight:700}
+    main{max-width:980px;margin:18px auto;padding:18px}
+    .two{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .panel{background:var(--card);padding:16px;border-radius:12px;border:1px solid rgba(91,65,54,0.06)}
+    h1{margin-top:0}
+    label{display:block;margin-top:10px;font-weight:600}
+    input[type=text],textarea,select{width:100%;padding:8px;margin-top:6px;border-radius:8px;border:1px solid rgba(91,65,54,0.12)}
+    textarea{min-height:90px}
+    .small{font-size:13px;color:var(--muted)}
+    .btn{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:10px;background:var(--accent);color:#fff;text-decoration:none;border:none;cursor:pointer}
+    .summary{white-space:pre-wrap;background:#fff;padding:12px;border-radius:10px;border:1px dashed rgba(91,65,54,0.08);min-height:120px}
+    .reveal{opacity:0;transform:translateY(12px);transition:opacity .55s ease,transform .55s ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none;opacity:1;transform:none}}
+    .note{font-size:13px;color:var(--muted);margin-top:10px}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="logo">TP</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html" style="margin-right:10px;color:var(--accent)">Home</a>
+      <a href="specialties.html" style="margin-right:10px;color:var(--accent)">Focus</a>
+      <a href="fees.html" style="margin-right:10px;color:var(--accent)">Rates</a>
+      <a href="contact.html" style="color:var(--accent)">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="two">
+      <section class="panel reveal" id="planner">
+        <h1>Session Planner</h1>
+        <p class="small">Build a compact plan that frames what you want to work on. Use it to guide a single session, a short course, or an intensive.</p>
+
+        <form id="planForm" onsubmit="return false;">
+          <label for="focus">Primary focus (one line)</label>
+          <input id="focus" name="focus" type="text" placeholder="e.g., navigating a career shift" required>
+
+          <label for="goal">What outcome feels meaningful to you?</label>
+          <input id="goal" name="goal" type="text" placeholder="e.g., clarity about next steps" required>
+
+          <label for="format">Preferred format</label>
+          <select id="format" name="format">
+            <option>Single exploratory session (55 min)</option>
+            <option>Short series — 3 sessions</option>
+            <option>Focused intensive (half-day)</option>
+            <option>Unsure — want your recommendation</option>
+          </select>
+
+          <label for="length">If you chose a series or intensive, what pace fits you?</label>
+          <select id="length" name="length">
+            <option>Weekly</option>
+            <option>Biweekly</option>
+            <option>Block scheduling (monthly)</option>
+          </select>
+
+          <label for="barriers">Current barriers or considerations (brief)</label>
+          <textarea id="barriers" name="barriers" placeholder="e.g., childcare, energy, access concerns"></textarea>
+
+          <label for="notes">Anything else to share before booking</label>
+          <textarea id="notes" name="notes" placeholder="Optional details, triggers, or preferences"></textarea>
+
+          <button class="btn" id="buildBtn">Build plan</button>
+        </form>
+
+        <div class="note">The planner helps guide our work together. It is not a clinical record until you schedule and consent to intake paperwork.</div>
+      </section>
+
+      <aside class="panel reveal" id="preview">
+        <h2>Plan preview</h2>
+        <div id="summary" class="summary">Use the form to create a short, shareable plan. Click "Copy plan" to copy the plaintext summary to your clipboard.</div>
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button class="btn" id="copyBtn">Copy plan</button>
+          <a class="btn" id="bookNow" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+        <div id="copyMsg" class="small" style="margin-top:8px;color:var(--muted)"></div>
+
+        <div style="margin-top:14px" class="small">If you prefer, you can call {{PHONE}} or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> to discuss scheduling or accommodations.</div>
+      </aside>
+    </div>
+
+    <section class="panel reveal" style="margin-top:18px">
+      <h3>Before we meet</h3>
+      <p class="small">I'll ask you a few intake questions ahead of a first appointment so we can use our time well. I keep conversations confidential, with the exceptions required by law for safety. I do not provide emergency services; if you are in danger or require immediate help, contact emergency services in {{CITY}}, {{STATE}}.</p>
+    </section>
+  </main>
+
+  <script>
+    // Reveal behavior
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      function revealAll(){document.querySelectorAll('.reveal').forEach(el=>el.classList.add('visible'))}
+      if(prefersReduced){revealAll();return}
+      const obs = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}});
+      },{threshold:0.08});
+      document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+    })();
+
+    // Session Planner logic
+    (function(){
+      const form = document.getElementById('planForm');
+      const buildBtn = document.getElementById('buildBtn');
+      const summaryEl = document.getElementById('summary');
+      const copyBtn = document.getElementById('copyBtn');
+      const copyMsg = document.getElementById('copyMsg');
+
+      function trim(s){return s?String(s).trim():''}
+
+      function makePlan(data){
+        // Compose a plaintext plan that feels clinician-informed and grounded
+        const lines = [];
+        lines.push('Session Plan')
+        lines.push('-------------')
+        lines.push('Primary focus: ' + data.focus)
+        lines.push('Meaningful outcome: ' + data.goal)
+        lines.push('Preferred format: ' + data.format)
+        if(data.format.toLowerCase().includes('series')||data.format.toLowerCase().includes('intensive')){
+          lines.push('Pacing preference: ' + data.length)
+        }
+        if(data.barriers) lines.push('\nBarriers / access notes: ' + data.barriers)
+        if(data.notes) lines.push('\nAdditional notes: ' + data.notes)
+        lines.push('\nSuggested pre-session steps:')
+        lines.push('- A short list of 2–3 concrete questions you want to explore')
+        lines.push('- Anything you wish me to be mindful of (pronouns, triggers, energy patterns)')
+        lines.push('\nNext steps: Bring this plan to the session; we will refine goals and set a practical first step together.')
+        lines.push('\nContact: ' + '{{PHONE}}' + ' • ' + '{{EMAIL}}')
+        return lines.join('\n')
+      }
+
+      function showPlan(text){summaryEl.textContent = text}
+
+      buildBtn.addEventListener('click', function(){
+        const data = {
+          focus: trim(document.getElementById('focus').value),
+          goal: trim(document.getElementById('goal').value),
+          format: trim(document.getElementById('format').value),
+          length: trim(document.getElementById('length').value),
+          barriers: trim(document.getElementById('barriers').value),
+          notes: trim(document.getElementById('notes').value)
+        };
+        if(!data.focus || !data.goal){
+          summaryEl.textContent = 'Please add a primary focus and what outcome would feel meaningful.';return;
+        }
+        const text = makePlan(data);
+        showPlan(text);
+        copyMsg.textContent = '';
+      });
+
+      copyBtn.addEventListener('click', async function(){
+        const text = summaryEl.textContent;
+        if(!text) return;
+        try{
+          await navigator.clipboard.writeText(text);
+          copyMsg.textContent = 'Plan copied to clipboard.';
+        }catch(e){
+          // fallback
+          const ta = document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();
+          try{document.execCommand('copy');copyMsg.textContent = 'Plan copied to clipboard.'}catch(e2){copyMsg.textContent = 'Could not copy — please select and copy manually.'}
+          ta.remove();
+        }
+        setTimeout(()=>copyMsg.textContent='',4000);
+      });
+
+      // Preload a gentle example
+      document.addEventListener('DOMContentLoaded',function(){
+        const sample = {
+          focus:'Navigating a career transition',
+          goal:'Make a clear first 90-day plan',
+          format:'Short series — 3 sessions',
+          length:'Weekly',
+          barriers:'Work schedule limits evenings; prefers remote sessions',
+          notes:''
+        };
+        const text = makePlan(sample);
+        showPlan(text);
+      });
+    })();
+  </script>
+</body>
+</html>

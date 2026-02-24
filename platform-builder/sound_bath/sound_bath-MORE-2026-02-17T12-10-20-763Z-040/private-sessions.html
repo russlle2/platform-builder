@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Private Sound — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#05050a;--card:#0d0d10;--accent:#8a6bff;--muted:#9b9ba6}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial;background:linear-gradient(180deg,var(--bg),#030305);color:#eef0ff}
+    header{display:flex;justify-content:space-between;padding:18px 24px;align-items:center}
+    .logo{width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#ff8f7a);display:grid;place-items:center;font-weight:800}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none}
+    main{padding:28px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:24px}
+    .card{padding:20px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);box-shadow:0 8px 30px rgba(2,2,6,0.6)}
+    h2{margin:0 0 8px}
+    .benefits{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+    .benefit{display:flex;gap:10px;align-items:flex-start}
+    .muted{color:var(--muted)}
+    .form-row{display:flex;gap:8px;margin-top:10px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;background:#070709;border:1px solid rgba(255,255,255,0.03);color:#fff}
+    .btn{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
+    .small{font-size:13px;color:var(--muted)}
+    .cta-area{display:flex;flex-direction:column;gap:12px}
+    .muted-note{font-size:13px;color:#d0d0e8}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="logo">PS</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div class="muted" style="font-size:13px">Personalized sound work & alignment</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="events.html">Gatherings</a>
+      <a href="private-sessions.html">Private Sound</a>
+      <a href="pricing.html">Investment</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="grid">
+      <div class="card">
+        <h2>Private Sessions — One-on-one resonance</h2>
+        <p class="muted">Tailored sessions focused on a single intention: recovering sleep, easing anxiety, or a deep somatic reset. We combine tuned instruments, guided breath, gentle movement and reflective prompts.</p>
+
+        <div class="benefits">
+          <div class="benefit"><div style="width:8px;height:8px;border-radius:4px;background:var(--accent);margin-top:6px"></div><div><strong>Personalized plan</strong><div class="muted">We design a 2–3 session arc focused on measurable change.</div></div></div>
+          <div class="benefit"><div style="width:8px;height:8px;border-radius:4px;background:#ff9f7d;margin-top:6px"></div><div><strong>Coherent practices</strong><div class="muted">Simple daily cues to carry the session forward.</div></div></div>
+          <div class="benefit"><div style="width:8px;height:8px;border-radius:4px;background:#8af3d6;margin-top:6px"></div><div><strong>Private timetables</strong><div class="muted">Flexible scheduling around your week.</div></div></div>
+        </div>
+
+        <div style="margin-top:16px;">
+          <strong>How it works</strong>
+          <ol class="muted" style="margin-top:8px">
+            <li>Brief intake form by email</li>
+            <li>60–90 minute session in a calm studio space (or remote)</li>
+            <li>Two short practices to continue between sessions</li>
+          </ol>
+        </div>
+
+        <div style="margin-top:12px;color:var(--muted)">
+          Contraindications: If you are pregnant, have a history of seizures, severe cardiovascular conditions, or other serious medical concerns, consult your provider before booking. For implanted medical devices sensitive to vibration, reach out to discuss adaptations: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.
+        </div>
+
+        <div style="margin-top:18px" class="cta-area">
+          <a href="book.html" class="btn">Request a private session</a>
+          <button class="btn" id="tryQuick">Try a 2-minute reset</button>
+          <div class="muted-note">Sessions are offered in focused cohorts and as private bookings. Sliding scale available for qualifying learners.</div>
+        </div>
+      </div>
+
+      <aside class="card">
+        <div style="font-weight:800">Book a time</div>
+        <div class="muted" style="margin-top:8px">We’ll confirm availability and intake questions after you request.</div>
+        <div style="margin-top:12px">
+          <input id="name" placeholder="Your name" />
+          <div class="form-row">
+            <input id="email" placeholder="Email" />
+            <input id="phone" placeholder="Phone" />
+          </div>
+          <div class="form-row">
+            <select id="type"><option>60 min — Single session</option><option>90 min — Deep reset</option><option>3-session arc — Short course</option></select>
+          </div>
+          <textarea id="notes" placeholder="Brief intention or goal"></textarea>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button class="btn" id="submitReq">Request</button>
+            <button class="btn" id="callBtn">Call us</button>
+          </div>
+        </div>
+
+        <div style="margin-top:14px;color:var(--muted);font-size:13px">Prefer to talk? Call <strong>{{PHONE}}</strong> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</div>
+      </aside>
+    </div>
+  </main>
+
+  <div id="quickModal" style="display:none;position:fixed;inset:0;background:rgba(2,2,6,0.7);place-items:center;display:grid">
+    <div style="width:520px;background:#08080b;padding:18px;border-radius:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><strong>Two-minute reset</strong><div class="muted" style="font-size:13px">Breath + short intention</div></div>
+        <button class="btn" id="closeQuick">Close</button>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:12px;align-items:center">
+        <div style="width:90px;height:90px;border-radius:999px;background:radial-gradient(circle at 30% 30%,rgba(138,107,255,0.18),transparent);display:grid;place-items:center"><div id="qPulse" style="width:48px;height:48px;border-radius:999px;background:var(--accent);display:grid;place-items:center;color:#fff">2</div></div>
+        <div style="flex:1">
+          <div id="qText" style="font-weight:700">Gentle inhale for 4, soft exhale for 6.</div>
+          <div class="muted" style="margin-top:8px">After the breathing, type one word that names what you want to carry forward.</div>
+          <input id="qInput" placeholder="One word" style="margin-top:10px" />
+          <div style="margin-top:10px;display:flex;gap:8px;justify-content:flex-end"><button class="btn" id="qStart">Begin</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('callBtn').addEventListener('click', ()=>{
+      location.href = 'tel:'+encodeURIComponent('{{PHONE}}');
+    });
+    document.getElementById('submitReq').addEventListener('click', ()=>{
+      const nm = document.getElementById('name').value || 'Guest';
+      alert('Thanks '+nm+" — we'll follow up at the email you provided to set your private session.");
+    });
+
+    // quick modal
+    const quick = document.getElementById('quickModal');
+    document.getElementById('tryQuick').addEventListener('click', ()=>{quick.style.display='grid'});
+    document.getElementById('closeQuick').addEventListener('click', ()=>{quick.style.display='none'});
+
+    let qCycle;
+    document.getElementById('qStart').addEventListener('click', ()=>{
+      let phases = [{label:'Inhale — 4s',sec:4},{label:'Exhale — 6s',sec:6}];
+      let i=0; let t=phases[0].sec; const qText = document.getElementById('qText'); const qPulse = document.getElementById('qPulse');
+      qCycle && clearInterval(qCycle);
+      qPulse.style.transform='scale(1)';
+      qCycle = setInterval(()=>{
+        t--; qPulse.textContent = t;
+        if(t<=0){ i=(i+1)%phases.length; t=phases[i].sec; }
+        qText.textContent = phases[i].label+' — '+t+'s';
+      },1000);
+      setTimeout(()=>{ clearInterval(qCycle); qText.textContent='Soft close — type your word and save.'; qPulse.textContent='✓'; },11000);
+    });
+  </script>
+</body>
+</html>

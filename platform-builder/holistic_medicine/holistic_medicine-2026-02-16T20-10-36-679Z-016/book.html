@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book an Appointment — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--accent:#2f6e5b;--bg:#f8fdfb;--card:#ffffff;--muted:#51635c}
+    html,body{margin:0;padding:0;height:100%;font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,Arial;color:var(--muted);background:linear-gradient(180deg,var(--bg),#f1fbf7)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:20px 28px}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#55a081);display:flex;align-items:center;justify-content:center;color:white;font-weight:800}
+    nav a{margin-left:10px;text-decoration:none;color:var(--muted)}
+    nav a[href$="book.html"]{color:var(--accent);font-weight:700}
+
+    main{max-width:980px;margin:18px auto;padding:18px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .card{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 10px 30px rgba(24,40,36,0.05)}
+    h1{margin:0;color:#113329}
+    .muted{color:#59716a}
+
+    .form-row{display:flex;gap:8px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(80,97,92,0.12);font-size:1rem}
+    label{font-size:0.92rem;color:#425251}
+    .submit{background:var(--accent);color:white;padding:12px 14px;border-radius:10px;text-decoration:none;border:none;font-weight:700}
+
+    .note{font-size:0.9rem;color:#6b7a73}
+    .faq{margin-top:12px}
+    .faq details{margin-bottom:8px}
+
+    footer{max-width:980px;margin:18px auto;padding:12px;color:#8c9b95}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo">HM</div>
+      <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Services</a>
+      <a href="conditions.html">Conditions</a>
+      <a href="approach.html">Approach</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="about.html">About</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="grid">
+      <section class="card">
+        <h1>Schedule your visit</h1>
+        <p class="muted">Choose the appointment type that aligns with your needs. We’ll follow up with intake forms and, if appropriate, educational lab options.</p>
+
+        <form action="{{PRIMARY_CTA_URL}}" method="get" style="margin-top:12px">
+          <div style="margin-bottom:10px">
+            <label>Appointment type</label>
+            <select name="type">
+              <option>Initial Comprehensive Visit — 90 min</option>
+              <option>Follow-up — 45 min</option>
+              <option>Brief Check-in — 20 min</option>
+              <option>Telehealth visit</option>
+            </select>
+          </div>
+
+          <div class="form-row" style="margin-bottom:10px">
+            <div style="flex:1">
+              <label>First name</label>
+              <input name="first" required>
+            </div>
+            <div style="flex:1">
+              <label>Last name</label>
+              <input name="last" required>
+            </div>
+          </div>
+
+          <div style="margin-bottom:10px">
+            <label>Email</label>
+            <input name="email" type="email" required>
+          </div>
+
+          <div style="margin-bottom:10px">
+            <label>Phone</label>
+            <input name="phone" type="tel">
+          </div>
+
+          <div style="margin-bottom:10px">
+            <label>Brief reason for visit (symptoms / goals)</label>
+            <textarea name="reason" rows="3"></textarea>
+          </div>
+
+          <div style="display:flex;gap:10px;align-items:center">
+            <button class="submit" type="submit">Request appointment</button>
+            <div class="note">Or call <strong>{{PHONE}}</strong></div>
+          </div>
+        </form>
+
+        <div class="card" style="margin-top:12px;background:#fbfffc">
+          <h3 style="margin-top:0">What to expect after booking</h3>
+          <ol style="margin:0;color:#556a62">
+            <li>We send an intake packet and consent form.</li>
+            <li>Optional labs may be discussed; ordering is shared decision-making.</li>
+            <li>Follow-up plan is scheduled in collaboration with you.</li>
+          </ol>
+        </div>
+
+        <div class="faq">
+          <h4 style="margin-bottom:6px">Booking FAQs</h4>
+          <details><summary>Do you accept insurance?</summary><div class="muted">We are often out-of-network. Superbills are available for reimbursement; coverage depends on your plan.</div></details>
+          <details><summary>Can I switch to telehealth?</summary><div class="muted">Yes. Telehealth is available for most visits unless in-person evaluation is recommended.</div></details>
+          <details><summary>What if I need urgent care?</summary><div class="muted">This practice is not for emergencies. For urgent issues, contact local emergency services or your primary care provider.</div></details>
+        </div>
+      </section>
+
+      <aside>
+        <div class="card">
+          <h3 style="margin-top:0">Visit options &amp; fees</h3>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+            <div><strong>Initial (90 min)</strong><div class="muted">Comprehensive intake — $240</div></div>
+            <div><strong>Follow-up (45 min)</strong><div class="muted">$90</div></div>
+            <div><strong>Brief (20 min)</strong><div class="muted">$50</div></div>
+          </div>
+          <div style="margin-top:12px" class="note">Lab fees not included. We recommend tests only when they will change care decisions.</div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0">Important notes</h4>
+          <p class="muted">Holistic care emphasizes education and gradual change. We will not represent unproven or guaranteed cures. Clinical decisions are individualized, evidence-informed, and made collaboratively.</p>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0">Need help?</h4>
+          <p class="muted">Contact <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call {{PHONE}}. For cancellations, please notify us 48 hours in advance.</p>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <div style="max-width:980px;margin:14px auto;color:#8d9c97;text-align:center">Appointments are educational and supportive — not emergency medical care. For urgent conditions, contact local emergency services. © {{BUSINESS_NAME}} • {{PRACTITIONER_NAME}}, {{CREDENTIALS}}</div>
+  </footer>
+</body>
+</html>

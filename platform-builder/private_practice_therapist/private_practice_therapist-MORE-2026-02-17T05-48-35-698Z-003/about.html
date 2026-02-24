@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>About — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="About the therapist — a calm, experienced clinician offering membership-based ongoing psychotherapy and short-term supports in {{CITY}}, {{STATE}}." />
+  <style>
+    :root{
+      --bg:#fbf7f2; --ink:#2b2b2b; --accent:#8a5a3f; --muted:#6b6b6b; --card:#fff; --radius:12px;
+      --max-width:900px;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%;}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#fff);color:var(--ink);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
+    header{background:linear-gradient(90deg,rgba(138,90,63,0.06),transparent);border-bottom:1px solid rgba(138,90,63,0.06);}
+    .wrap{max-width:var(--max-width);margin:0 auto;padding:28px;}
+    nav{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#c68b6d);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    .navlinks{display:flex;gap:12px;align-items:center}
+    .navlinks a{color:var(--muted);text-decoration:none;font-size:15px}
+    .cta{background:var(--accent);color:white;padding:10px 14px;border-radius:10px;text-decoration:none}
+
+    main{padding:34px 28px}
+    .hero{display:grid;grid-template-columns:1fr;gap:18px;align-items:center}
+    .panel{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:0 6px 18px rgba(20,20,20,0.04)}
+    h1{margin:0;font-size:26px}
+    p.lead{color:var(--muted);margin-top:8px}
+
+    .two-up{display:grid;grid-template-columns:1fr 340px;gap:18px;margin-top:18px}
+    .bio{line-height:1.6}
+    .aside{position:relative}
+
+    .meta{display:flex;flex-direction:column;gap:10px}
+    .pill{background:#fff7f3;border:1px solid rgba(138,90,63,0.08);padding:10px;border-radius:9px;color:var(--accent)}
+
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity 450ms ease, transform 450ms ease}
+    .reveal.is-visible{opacity:1;transform:none}
+
+    .planner{margin-top:18px}
+    label{display:block;font-size:13px;margin-bottom:6px;color:var(--muted)}
+    input[type=text],textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e2df;font-size:15px;background:transparent}
+    button{background:var(--accent);color:#fff;border:0;padding:10px 12px;border-radius:9px;cursor:pointer}
+    .output{white-space:pre-wrap;background:#f7f4f2;padding:12px;border-radius:8px;border:1px dashed rgba(0,0,0,0.04);margin-top:10px}
+
+    footer{padding:26px;border-top:1px solid rgba(0,0,0,0.04);color:var(--muted)}
+
+    /* decorative pattern */
+    .pattern{position:absolute;inset:0;pointer-events:none;background-image:url('assets/img/pattern.svg');background-repeat:no-repeat;background-position:right top;background-size:280px;opacity:0.08}
+
+    @media (max-width:980px){.two-up{grid-template-columns:1fr}.pattern{display:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav aria-label="Main navigation">
+        <div class="brand">
+          <div class="logo" aria-hidden>PT</div>
+          <div>
+            <div style="font-weight:600">{{BUSINESS_NAME}}</div>
+            <div style="font-size:13px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+          </div>
+        </div>
+        <div class="navlinks">
+          <a href="index.html">Start</a>
+          <a href="about.html" aria-current="page">About</a>
+          <a href="specialties.html">Areas</a>
+          <a href="approach.html">Method</a>
+          <a href="book.html">Schedule</a>
+          <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="hero">
+      <div class="panel reveal" data-reveal>
+        <h1>About the clinician</h1>
+        <p class="lead">I’m a licensed therapist offering membership-based ongoing care and time-limited support, thoughtfully paced to fit busy lives. I work collaboratively to help you identify practical shifts that feel sustainable.</p>
+      </div>
+
+      <div class="two-up">
+        <section class="panel bio reveal" data-reveal>
+          <h2>My approach to working together</h2>
+          <p>I aim for clear, humane guidance. In sessions we ground your concerns in present patterns, set manageable aims, and practice small adaptations that build momentum. I draw from relational, cognitive, and behavioral techniques, recommending what seems useful while keeping your values central.</p>
+
+          <h3 style="margin-top:14px">Clinical orientation</h3>
+          <p class="meta">I hold a pragmatic stance: therapy is a process of understanding patterns and experimenting with new responses. I prioritize safety, collaboration, and measurable steps you can try between meetings. Interventions are selected with attention to your context—workload, relationships, sleep, and cultural background.</p>
+
+          <div style="margin-top:14px">
+            <strong>Confidentiality & scope</strong>
+            <p class="lead" style="margin-top:6px;color:var(--muted)">All sessions are confidential within legal and ethical limits. I do not provide emergency services. If you are in crisis or at risk of harming yourself or others, please contact local emergency services or a crisis line immediately.</p>
+          </div>
+        </section>
+
+        <aside class="panel aside reveal" data-reveal>
+          <div class="pattern" aria-hidden></div>
+          <div class="meta">
+            <div class="pill">Licensed clinician — outpatient private practice</div>
+            <div style="font-size:13px;color:var(--muted)">Membership and a la carte options available.</div>
+            <div>
+              <strong>Contact</strong>
+              <div style="font-size:13px;color:var(--muted)">Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+              <div style="font-size:13px;color:var(--muted)">Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+            </div>
+            <a class="cta" href="{{PRIMARY_CTA_URL}}">Begin a membership</a>
+          </div>
+
+          <div style="margin-top:16px">
+            <strong style="display:block;margin-bottom:8px">Session Planner</strong>
+            <div class="planner">
+              <label for="concern">Main concern</label>
+              <input id="concern" type="text" placeholder="e.g., sleep & stress, relationship tension" />
+              <label for="frequency">Preferred rhythm</label>
+              <select id="frequency"><option value="weekly">Weekly</option><option value="biweekly">Biweekly</option><option value="monthly">Monthly check-ins</option></select>
+              <label for="goal">One‑sentence goal</label>
+              <input id="goal" type="text" placeholder="What would feel different?" />
+              <label for="tech">Comfort with approaches</label>
+              <select id="tech"><option value="talk">Talk-based reflection</option><option value="skills">Skills practice (breathing, scheduling)</option><option value="structured">Structured tasks & tracking</option></select>
+              <div style="display:flex;gap:8px;margin-top:10px">
+                <button id="planBtn">Build plan</button>
+                <button id="copyBtn" style="background:#556b5f">Copy summary</button>
+              </div>
+              <div id="planOut" class="output" aria-live="polite">No plan created yet.</div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div style="font-size:14px">&copy; <strong>{{BUSINESS_NAME}}</strong>. New patient info available on request.</div>
+        <div style="font-size:13px;color:var(--muted)">This page describes typical services; it is not a crisis resource. Confidentiality, scope boundaries, and emergency procedures apply.</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Scroll reveal with prefers-reduced-motion support
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const revealEls = document.querySelectorAll('[data-reveal]');
+      if(prefersReduced){ revealEls.forEach(el=>el.classList.add('is-visible')); return; }
+      const obs = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{ if(e.isIntersecting) { e.target.classList.add('is-visible'); obs.unobserve(e.target); } });
+      },{threshold:0.12});
+      revealEls.forEach(el=>obs.observe(el));
+    })();
+
+    // Session Planner widget
+    (function(){
+      const planBtn = document.getElementById('planBtn');
+      const copyBtn = document.getElementById('copyBtn');
+      const out = document.getElementById('planOut');
+      function buildSummary(){
+        const concern = document.getElementById('concern').value.trim() || '[not specified]';
+        const freq = document.getElementById('frequency').value;
+        const goal = document.getElementById('goal').value.trim() || '[no goal stated]';
+        const tech = document.getElementById('tech').value;
+        const timestamp = new Date().toLocaleString();
+        const lines = [];
+        lines.push('Session Planner — ' + timestamp);
+        lines.push('Main concern: ' + concern);
+        lines.push('One-sentence goal: ' + goal);
+        lines.push('Recommended rhythm: ' + (freq==='weekly'? 'Weekly' : freq==='biweekly'? 'Every two weeks' : 'Monthly check-ins'));
+        lines.push('Preferred approach: ' + (tech==='talk'? 'Reflective conversation' : tech==='skills'? 'Skills practice & brief exercises' : 'Structured tasks and monitoring'));
+        lines.push('Suggested short-term plan:');
+        lines.push('- Focus area this month: ' + (concern!== '[not specified]' ? concern : 'Identify a single pattern to track'));
+        lines.push('- Pillar practices: 10–20 minutes, 3–5x per week (brief journaling, a single grounding skill, or a scheduling check-in)');
+        lines.push('- Check-in strategy: Bring one example of progress/obstacle to each session');
+        lines.push('Next steps: Book a first consultation or select a membership level that matches your desired weekly support.');
+        return lines.join('\n');
+      }
+      planBtn.addEventListener('click', function(){ out.textContent = buildSummary(); });
+      copyBtn.addEventListener('click', function(){
+        const text = out.textContent || buildSummary();
+        if(navigator.clipboard && window.isSecureContext){ navigator.clipboard.writeText(text).then(()=>{ copyBtn.textContent='Copied'; setTimeout(()=>copyBtn.textContent='Copy summary',1200); }); }
+        else{ const ta = document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); copyBtn.textContent='Copied'; setTimeout(()=>copyBtn.textContent='Copy summary',1200);}catch(e){} ta.remove(); }
+      });
+    })();
+  </script>
+</body>
+</html>

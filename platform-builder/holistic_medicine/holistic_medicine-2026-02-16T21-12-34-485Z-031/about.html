@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fffefc;--teal:#18a58a;--soft:#f4fbfa;--ink:#05243b}
+    body{margin:0;background:linear-gradient(180deg,var(--soft),#fffefc);font-family:Inter, system-ui, -apple-system,'Segoe UI',Roboto,Arial;color:var(--ink)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:20px 28px}
+    .nav a{margin-left:14px;color:#375b57;text-decoration:none;font-weight:600}
+    main{max-width:980px;margin:28px auto;padding:22px}
+    .hero{background:linear-gradient(90deg,#fff,#f6fffb);padding:22px;border-radius:14px;display:flex;gap:16px;align-items:center}
+    .badge{width:64px;height:64px;border-radius:12px;background:linear-gradient(90deg,#18a58a,#5bd1ab);display:grid;place-items:center;color:#fff;font-weight:800}
+    h1{margin:0;font-size:24px}
+    .meta{color:#6b7280;margin-top:6px}
+    .story{margin-top:18px;padding:18px;border-radius:12px;background:#fff;box-shadow:0 6px 20px rgba(5,36,59,0.04)}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
+    .panel{padding:14px;border-radius:12px;background:linear-gradient(180deg,#fff,#f7fffb)}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(24,165,138,0.12);color:var(--teal);font-weight:700;margin-bottom:10px}
+    .quote{font-style:italic;color:#214143}
+    footer.cta{margin-top:18px;padding:16px;border-radius:12px;background:linear-gradient(90deg,#f8fffe,#ffffff);display:flex;justify-content:space-between;align-items:center}
+    @media (max-width:860px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <svg style='position:fixed;left:-6%;bottom:-5%;width:420px;height:420px;opacity:0.12;pointer-events:none' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <defs>
+      <linearGradient id='gg' x1='0' x2='1'>
+        <stop offset='0' stop-color='#c7ffe6'/>
+        <stop offset='1' stop-color='#bfe8ff'/>
+      </linearGradient>
+    </defs>
+    <rect width='220' height='220' x='-10' y='-10' rx='36' fill='url(#gg)' />
+    <g fill='#fff' opacity='0.14'>
+      <rect x='30' y='30' width='40' height='40' rx='8'/>
+      <circle cx='140' cy='80' r='22'/>
+      <rect x='70' y='130' width='70' height='24' rx='12'/>
+    </g>
+  </svg>
+
+  <header>
+    <div style='display:flex;gap:12px;align-items:center'>
+      <div class='badge'>HM</div>
+      <div>
+        <div style='font-weight:800'>{{BUSINESS_NAME}}</div>
+        <div style='font-size:13px;color:#6b7280'>Holistic & integrative care</div>
+      </div>
+    </div>
+    <nav class='nav'>
+      <a href='index.html'>Welcome</a>
+      <a href='services.html'>Care</a>
+      <a href='conditions.html'>Concerns</a>
+      <a href='pricing.html'>Pricing</a>
+      <a href='book.html'>Schedule</a>
+      <a href='contact.html'>Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class='hero'>
+      <div style='flex:1'>
+        <h1>Meet {{PRACTITIONER_NAME}}, {{CREDENTIALS}}</h1>
+        <div class='meta'>A compassionate clinician blending evidence-informed tools with whole-person coaching. We center your context, not just symptoms.</div>
+      </div>
+      <div style='width:240px;text-align:right'>
+        <div style='font-weight:700;color:#2a6b5f'>Based in {{CITY}}, {{STATE}}</div>
+        <div style='color:#6b7280;margin-top:6px'>Phone: {{PHONE}}</div>
+      </div>
+    </section>
+
+    <div class='grid'>
+      <div>
+        <article class='story panel'>
+          <div class='pill'>Why holistic?</div>
+          <p>People are complex. We look beyond a single lab value or symptom and explore sleep, stress, relationships, movement, and digestion to create a sustainable plan. Our work is educational, personalized, and collaborative.</p>
+
+          <h3 style='margin-top:14px'>Clinical background</h3>
+          <p style='color:#6b7280'>{{PRACTITIONER_NAME}} trained in integrative approaches, with experience in primary care settings, nutritional strategies, and behavior-focused coaching. Ongoing learning in labs, botanical supports, and mind-body practices informs the practice.</p>
+
+          <h3 style='margin-top:12px'>What to expect</h3>
+          <ol style='color:#6b7280;margin-top:6px'>
+            <li>Meaningful intake — your story in focus</li>
+            <li>A personalized plan with practical steps</li>
+            <li>Follow-ups and adjustments — small wins add up</li>
+          </ol>
+
+          <small style='color:#6b7280'>We do not claim cures. We focus on education and tools that support your health journey alongside your medical team.</small>
+        </article>
+
+        <article class='panel' style='margin-top:14px'>
+          <h3>Philosophy in a sentence</h3>
+          <p class='quote'>Human-first care: test thoughtfully, listen deeply, and build routines you actually keep.</p>
+        </article>
+      </div>
+
+      <aside>
+        <div class='panel'>
+          <h4 style='margin:0'>Credentials</h4>
+          <p style='color:#6b7280;margin-top:8px'>{{CREDENTIALS}} with specialized training in integrative modalities and lifestyle medicine.</p>
+          <div style='margin-top:12px'><a class='btn' href='contact.html' style='background:linear-gradient(90deg,#18a58a,#53d0a6);padding:8px 12px;border-radius:10px;color:#fff;text-decoration:none;font-weight:700'>Get in touch</a></div>
+        </div>
+
+        <div class='panel' style='margin-top:12px'>
+          <h4 style='margin:0'>Short bio</h4>
+          <p style='color:#6b7280;margin-top:6px'>A clinician, curious about systems and stories, who prefers shared decision-making and realistic plans over one-size-fits-all solutions.</p>
+        </div>
+      </aside>
+    </div>
+
+    <section style='margin-top:18px' class='panel'>
+      <h3 style='margin:0 0 8px 0'>Client reflections</h3>
+      <div style='color:#214143'>"I appreciated the clear steps and practical tools — no judgement, just steady progress."</div>
+      <small style='color:#6b7280'>— Client</small>
+    </section>
+
+    <footer class='cta'>
+      <div>
+        <div style='font-weight:800'>Interested in a consult?</div>
+        <div style='color:#6b7280'>We offer single visits and packages. Start with a conversation to find the right path.</div>
+      </div>
+      <div>
+        <a href='{{PRIMARY_CTA_URL}}' style='background:linear-gradient(90deg,#18a58a,#3bd19a);padding:10px 14px;border-radius:12px;color:#fff;text-decoration:none;font-weight:800'>{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Gatherings — Events | {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1724;--card:rgba(255,255,255,0.06);--glass:rgba(255,255,255,0.08);--accent:#8bd3c7;--muted:#cbd5e1}
+    *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    body{margin:0;background:radial-gradient(1200px 600px at 10% 20%,rgba(139,211,199,0.06),transparent),linear-gradient(180deg,#071028 0%,#071827 60%),var(--bg);color:#e6eef2;min-height:100vh}
+    header{backdrop-filter:blur(8px);background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-bottom:1px solid rgba(255,255,255,0.03);position:sticky;top:0;z-index:40}
+    .nav{display:flex;align-items:center;gap:20px;padding:18px 28px;max-width:1150px;margin:0 auto}
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand .logo{width:44px;height:44;border-radius:10px;background:linear-gradient(135deg,var(--accent),#5e9fb3);display:grid;place-items:center;font-weight:700;color:#042;box-shadow:0 6px 18px rgba(11,22,30,0.6)}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:8px}
+    nav a:hover{color:#fff;background:rgba(255,255,255,0.03)}
+    .nav-actions{margin-left:auto;display:flex;gap:12px;align-items:center}
+    .cta{background:var(--accent);color:#042;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}
+
+    main{max-width:1150px;margin:30px auto;padding:0 20px}
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:26px;align-items:start}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:22px;border-radius:14px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 8px 30px rgba(3,7,12,0.6)}
+    .hero h1{margin:0 0 8px;font-size:28px;color:#f1fbfa}
+    .hero p{margin:0 0 18px;color:var(--muted)}
+    .next-event{display:flex;flex-direction:column;gap:12px}
+    .next-event .date{font-weight:700;font-size:20px;color:#eafdfa}
+    .meta{display:flex;gap:10px;color:var(--muted);font-size:13px}
+    .actions{display:flex;gap:10px}
+
+    .calendar-list{margin-top:18px;display:grid;gap:10px}
+    .slot{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);border:1px solid rgba(255,255,255,0.02)}
+    .slot .when{font-weight:600}
+    .slot .venue{color:var(--muted);font-size:13px}
+
+    .mixer{margin-top:22px;padding:14px;border-radius:12px;background:linear-gradient(90deg,rgba(139,211,199,0.03),rgba(94,159,179,0.02));display:flex;flex-direction:column;gap:12px}
+    .mixer .levels{display:flex;gap:10px}
+    .level{flex:1;padding:10px;border-radius:9px;text-align:center;cursor:pointer;border:1px solid rgba(255,255,255,0.02)}
+    .level.active{background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));box-shadow:0 6px 18px rgba(2,6,10,0.6)}
+
+    .recommendations{margin-top:12px;display:grid;gap:10px}
+    .rec{padding:12px;border-radius:9px;background:linear-gradient(180deg,rgba(0,0,0,0.06),transparent);border:1px solid rgba(255,255,255,0.02)}
+    .rec h4{margin:0 0 6px}
+    .rec p{margin:0;color:var(--muted);font-size:14px}
+
+    .proof{margin-top:24px;display:grid;grid-template-columns:1fr 220px;gap:16px}
+    .testimonials{position:relative;padding:14px;border-radius:12px}
+    .testimonial{min-height:120px;display:none;flex-direction:column;gap:10px}
+    .testimonial.active{display:flex}
+    .quote{font-style:italic;color:#e9fbfa}
+    .by{color:var(--muted);font-size:13px}
+
+    .badges{display:flex;flex-direction:column;gap:10px}
+    .badge{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:rgba(255,255,255,0.02);cursor:default}
+    .badge svg{width:34px;height:34px;flex-shrink:0}
+    .tooltip{position:fixed;background:#021018;color:#bfeee7;padding:8px 10px;border-radius:8px;font-size:13px;display:none;pointer-events:none;z-index:80}
+
+    .contra{margin-top:22px;padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);border-left:3px solid #e07c7c;color:#ffdfe0}
+
+    footer{max-width:1150px;margin:30px auto;padding:22px;text-align:center;color:var(--muted);font-size:14px}
+
+    /* small screens */
+    @media(max-width:880px){.hero{grid-template-columns:1fr}.proof{grid-template-columns:1fr}nav{overflow:auto}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class='nav'>
+      <div class='brand'>
+        <div class='logo'>SB</div>
+        <div>
+          <div style='font-weight:700'>{{BUSINESS_NAME}}</div>
+          <div style='font-size:12px;color:var(--muted)'>{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav style='margin-left:22px'>
+        <a href='index.html'>Home</a>
+        <a href='events.html' style='color:#fff'>Gatherings</a>
+        <a href='private-sessions.html'>Sessions</a>
+        <a href='pricing.html'>Plans</a>
+        <a href='about.html'>Story</a>
+        <a href='faq.html'>Questions</a>
+        <a href='book.html'>Reserve</a>
+        <a href='contact.html'>Reach</a>
+      </nav>
+      <div class='nav-actions'>
+        <a class='cta' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class='hero card'>
+      <div>
+        <h1>Community sound gatherings — weekly, curated for presence</h1>
+        <p>Join a focused session—layers of bowls, voice, and breath set to a level you choose. Sessions emphasize steady rhythm and practical calm for busy lives.</p>
+        <div class='meta'>
+          <div>In-person · {{CITY}}, {{STATE}}</div>
+          <div>Contact: <a href='tel:{{PHONE}}' style='color:var(--accent);text-decoration:none'>{{PHONE}}</a></div>
+        </div>
+        <div style='margin-top:16px' class='card'>
+          <div class='next-event'>
+            <div class='date'>Next gathering — Sun, Feb 22 · 6:30pm</div>
+            <div class='meta'><div>Venue: Orchard Studio</div><div>Suggested: bring a mat & water</div></div>
+            <div class='actions'>
+              <a class='cta' href='book.html'>Reserve a Seat</a>
+              <a href='events.html#calendar' style='color:var(--muted);padding:10px 12px;border-radius:8px;background:rgba(255,255,255,0.01)'>See schedule</a>
+            </div>
+          </div>
+        </div>
+
+        <div class='mixer' aria-hidden='false'>
+          <div style='font-weight:700'>Choose your wave</div>
+          <div style='font-size:13px;color:var(--muted)'>Select how you prefer the session to land — the system will suggest which gatherings match.</div>
+          <div class='levels' role='tablist'>
+            <div class='level active' data-level='gentle' role='button' tabindex='0'>Gentle</div>
+            <div class='level' data-level='medium' role='button' tabindex='0'>Medium</div>
+            <div class='level' data-level='intense' role='button' tabindex='0'>Intense</div>
+          </div>
+          <div class='recommendations' id='recs'>
+            <!-- JS inserts recs -->
+          </div>
+        </div>
+
+      </div>
+
+      <aside style='position:relative'>
+        <div class='card' style='height:100%'>
+          <svg viewBox='0 0 200 200' width='100%' preserveAspectRatio='none' style='border-radius:12px;display:block;margin-bottom:10px'>
+            <defs>
+              <pattern id='p1' x='0' y='0' width='20' height='20' patternUnits='userSpaceOnUse'>
+                <rect width='20' height='20' fill='rgba(255,255,255,0.01)'></rect>
+                <path d='M0 10 C5 8 15 12 20 10' stroke='rgba(139,211,199,0.08)' fill='none' stroke-width='1'></path>
+                <circle cx='6' cy='6' r='1.2' fill='rgba(94,159,179,0.06)'></circle>
+              </pattern>
+            </defs>
+            <rect width='100%' height='100%' fill='url(#p1)'></rect>
+          </svg>
+          <div style='font-weight:700;margin-bottom:6px'>Why attend</div>
+          <div style='color:var(--muted);font-size:14px'>Live layering of tone helps redirect attention away from stress circuitry. Choose the session strength that matches how much support you want.</div>
+          <div style='margin-top:12px' class='card'>
+            <div style='font-weight:700'>Practical details</div>
+            <div class='meta' style='margin-top:8px'>
+              <div>Duration: 60–75 minutes</div>
+              <div>Capacity: 12–22 people</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section id='calendar' class='card' style='margin-top:20px'>
+      <div style='display:flex;justify-content:space-between;align-items:center'>
+        <div>
+          <div style='font-weight:700;font-size:18px'>Upcoming gatherings</div>
+          <div style='color:var(--muted);font-size:13px'>Pick a date below — small groups prioritized for focus.</div>
+        </div>
+        <div style='color:var(--muted);font-size:13px'>Full calendar available when logged in</div>
+      </div>
+
+      <div class='calendar-list' style='margin-top:12px'>
+        <div class='slot'><div><div class='when'>Sun, Feb 22 · 6:30pm</div><div class='venue'>Orchard Studio</div></div><div><a href='book.html' class='cta'>Reserve</a></div></div>
+        <div class='slot'><div><div class='when'>Wed, Mar 4 · 7:00pm</div><div class='venue'>River House</div></div><div><a href='book.html' style='color:var(--muted)'>Waitlist</a></div></div>
+        <div class='slot'><div><div class='when'>Sun, Mar 15 · 5:00pm</div><div class='venue'>Maple Hall</div></div><div><a href='book.html' class='cta'>Reserve</a></div></div>
+        <div class='slot'><div><div class='when'>Sat, Apr 4 · 9:30am</div><div class='venue'>Studio A</div></div><div><a href='book.html' style='color:var(--muted)'>Seats</a></div></div>
+      </div>
+
+    </section>
+
+    <section class='proof card'>
+      <div class='testimonials'>
+        <div style='font-weight:700;margin-bottom:8px'>Voices from sessions</div>
+        <div class='testimonial active' data-id='1'>
+          <div class='quote'>"The cadence helped me finish a week that felt too full. I left steadier than I anticipated."</div>
+          <div class='by'>— E, designer</div>
+        </div>
+        <div class='testimonial' data-id='2'>
+          <div class='quote'>"I started with gentle and moved to deeper tones across a few weeks — real shifts to sleep quality."</div>
+          <div class='by'>— R, teacher</div>
+        </div>
+        <div class='testimonial' data-id='3'>
+          <div class='quote'>"Small group, thoughtful pacing. The facilitator read the room skillfully."</div>
+          <div class='by'>— T, nurse</div>
+        </div>
+        <div style='display:flex;gap:8px;margin-top:10px'>
+          <button id='prev' style='background:transparent;border:1px solid rgba(255,255,255,0.03);color:var(--muted);padding:8px;border-radius:8px'>Prev</button>
+          <button id='next' style='background:transparent;border:1px solid rgba(255,255,255,0.03);color:var(--muted);padding:8px;border-radius:8px'>Next</button>
+        </div>
+      </div>
+
+      <div class='badges'>
+        <div style='font-weight:700'>Trust markers</div>
+        <div class='badge' data-tip='Led by certified sound practitioners with 200+ sessions led.'>
+          <svg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'><rect x='2' y='3' width='20' height='18' rx='3' stroke='rgba(139,211,199,0.14)' fill='rgba(139,211,199,0.02)'></rect><path d='M7 10h10M7 14h6' stroke='rgba(139,211,199,0.4)' stroke-width='1.2'></path></svg>
+          <div>
+            <div style='font-weight:700'>Practitioner-led</div>
+            <div style='font-size:13px;color:var(--muted)'>Certification & hours logged</div>
+          </div>
+        </div>
+        <div class='badge' data-tip='Evidence-aligned practices, not medical treatment. Contraindications are screened.'>
+          <svg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'><circle cx='12' cy='12' r='9' stroke='rgba(94,159,179,0.14)' fill='rgba(94,159,179,0.02)'></circle><path d='M9 12l2 2 4-4' stroke='rgba(139,211,199,0.4)' stroke-width='1.2'></path></svg>
+          <div>
+            <div style='font-weight:700'>Care-first</div>
+            <div style='font-size:13px;color:var(--muted)'>Screened attendees</div>
+          </div>
+        </div>
+        <div class='badge' data-tip='Local community partnerships and shared studio codes of practice.'>
+          <svg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'><rect x='3' y='6' width='18' height='12' rx='2' stroke='rgba(139,211,199,0.14)' fill='rgba(139,211,199,0.02)'></rect><path d='M7 10h10' stroke='rgba(94,159,179,0.4)' stroke-width='1.2'></path></svg>
+          <div>
+            <div style='font-weight:700'>Community</div>
+            <div style='font-size:13px;color:var(--muted)'>Local partners</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class='card' style='margin-top:20px'>
+      <div style='font-weight:700'>Safety & contraindications</div>
+      <div class='contra'>
+        This offering is a supportive audio experience, not medical treatment. Please inform us if you are pregnant, have epilepsy, pacemakers, serious cardiovascular conditions, or are acutely unwell. Individuals with recent head injury, uncontrolled seizures, or sound sensitivity should consult a physician before attending.
+      </div>
+    </section>
+
+    <section class='card' style='margin-top:18px;display:flex;justify-content:space-between;align-items:center'>
+      <div>
+        <div style='font-weight:700'>Ready to try a gathering?</div>
+        <div style='color:var(--muted);font-size:13px'>Small groups, repeated practice. Choose your next seat.</div>
+      </div>
+      <div>
+        <a class='cta' href='book.html'>Book Now — Pay or Reserve</a>
+      </div>
+    </section>
+
+  </main>
+
+  <div class='tooltip' id='tooltip'></div>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} • <a href='mailto:{{EMAIL}}' style='color:var(--accent);text-decoration:none'>{{EMAIL}}</a> • {{CITY}}, {{STATE}}</div>
+  </footer>
+
+  <script>
+    // Sound preference mixer
+    const recsEl = document.getElementById('recs');
+    const levels = document.querySelectorAll('.level');
+    const recData = {
+      gentle:[
+        {title:'Evening Ease — Intro wave',desc:'Slow bowls, breath cues, voice hums. Best for first-timers and those seeking subtle settling.'},
+        {title:'Guided Pause — 60m',desc:'Short instruction and a gentle 40-minute sound set.'}
+      ],
+      medium:[
+        {title:'Focused Flow — Mid-line',desc:'Layered bowls with rhythmic pulses. Useful for re-setting attention.'},
+        {title:'Half-Deep Session — 75m',desc:'Moderate intensity, longer resonant passages.'}
+      ],
+      intense:[
+        {title:'Deep Resonance — Sustained',desc:'Denser ringing and vocal textures. For those wanting a stronger somatic response.'},
+        {title:'Resonant Intensive — 90m',desc:'Extended layover of tones with guided transitions.'}
+      ]
+    };
+    function renderRecs(level){
+      recsEl.innerHTML='';
+      (recData[level]||[]).forEach(r=>{
+        const div=document.createElement('div');div.className='rec';
+        div.innerHTML=`<h4>${r.title}</h4><p>${r.desc}</p>`;
+        recsEl.appendChild(div);
+      });
+    }
+    levels.forEach(l=>{l.addEventListener('click',()=>{levels.forEach(x=>x.classList.remove('active'));l.classList.add('active');renderRecs(l.dataset.level)})});
+    renderRecs('gentle');
+
+    // Proof gallery rotation and badges tooltip
+    let idx=0;const items=document.querySelectorAll('.testimonial');
+    function show(i){items.forEach((it,ii)=>{it.classList.toggle('active',ii===i)});}
+    function next(){idx=(idx+1)%items.length;show(idx)}
+    document.getElementById('next').addEventListener('click',next);
+    document.getElementById('prev').addEventListener('click',()=>{idx=(idx-1+items.length)%items.length;show(idx)});
+    let rot=setInterval(next,7000);
+    document.querySelectorAll('.testimonial').forEach(t=>t.addEventListener('mouseover',()=>clearInterval(rot)));
+    document.querySelectorAll('.testimonial').forEach(t=>t.addEventListener('mouseleave',()=>rot=setInterval(next,7000)));
+
+    const tooltip=document.getElementById('tooltip');
+    document.querySelectorAll('.badge').forEach(b=>{
+      b.addEventListener('mouseenter',e=>{
+        tooltip.textContent=b.dataset.tip||'';tooltip.style.display='block';
+      });
+      b.addEventListener('mousemove',e=>{tooltip.style.left=(e.pageX+14)+'px';tooltip.style.top=(e.pageY+14)+'px'});
+      b.addEventListener('mouseleave',()=>{tooltip.style.display='none'});
+    });
+
+  </script>
+</body>
+</html>

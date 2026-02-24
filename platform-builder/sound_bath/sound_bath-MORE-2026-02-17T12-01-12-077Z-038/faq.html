@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Help &amp; FAQ — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#08121a;--muted:#98a6b2;--card:#071018;--accent:#ffd6a6}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#eaf4ff;background:linear-gradient(180deg,#04101a, #08121a)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 26px}
+    nav a{color:var(--muted);text-decoration:none;margin-left:12px}
+    .container{max-width:1000px;margin:32px auto;padding:0 20px}
+    h1{margin:0 0 6px 0}
+    .grid{display:grid;grid-template-columns:2fr 1fr;gap:18px}
+    .faq-card{background:rgba(255,255,255,0.02);padding:18px;border-radius:10px}
+    .qa{margin-bottom:12px}
+    .q{font-weight:700}
+    .a{color:var(--muted);margin-top:6px}
+    .aside{padding:14px;background:rgba(255,255,255,0.02);border-radius:10px;color:var(--muted)}
+    .btn{display:inline-block;padding:10px 12px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--accent);cursor:pointer}
+    .seat-note{font-size:13px;color:var(--muted);margin-top:10px}
+    .danger{color:#ffb3b3}
+    footer{color:var(--muted);text-align:center;padding:26px}
+    /* small modal reused */
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(0deg,rgba(0,0,0,0.6),rgba(0,0,0,0.6));z-index:60}
+    .modal.show{display:flex}
+    .modal-panel{width:560px;background:#07111a;padding:18px;border-radius:10px}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Welcome</a>
+      <a href="events.html">Gatherings</a>
+      <a href="private-sessions.html">Solo Sessions</a>
+      <a href="pricing.html">Rates</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">Help</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <h1>Questions & practicals</h1>
+    <p style="color:var(--muted);margin:6px 0 18px 0">Answers for what to expect, safety notes, and how to prepare.</p>
+
+    <div class="grid">
+      <div>
+        <div class="faq-card">
+          <div class="qa"><div class="q">Do I need experience?</div><div class="a">No. Our sessions are designed for first-timers and regulars alike. Guidance is minimal but precise.</div></div>
+          <div class="qa"><div class="q">How long is a cohort session?</div><div class="a">Most gatherings run 60–75 minutes, with time to arrive and settle beforehand.</div></div>
+          <div class="qa"><div class="q">What should I wear?</div><div class="a">Comfortable, layered clothing is ideal. The room is kept at a cool, comfortable temperature.</div></div>
+
+          <div class="qa"><div class="q">Contraindications — important</div><div class="a">If you are pregnant, have uncontrolled epilepsy, severe cardiovascular disease, recent head injury, or use an implanted medical device (e.g., pacemaker), please consult your clinician and let us know before booking. Some auditory patterns and low-frequency sounds may be intense for certain conditions. If in doubt, contact your healthcare provider or reach out to us at <a href="mailto:{{EMAIL}}" style="color:var(--muted)">{{EMAIL}}</a>.</div></div>
+
+          <div class="qa"><div class="q">Do you offer private bookings?</div><div class="a">Yes — see Solo Sessions on the site and reach out for custom scheduling and space options.</div></div>
+
+          <div style="margin-top:10px"><button class="btn" id="open-try">Try a 2-minute breath</button></div>
+        </div>
+      </div>
+
+      <aside class="aside">
+        <div style="font-weight:700">Quick links</div>
+        <ul style="padding-left:18px;margin-top:8px;color:var(--muted)">
+          <li><a href="book.html" style="color:var(--muted);text-decoration:none">Reserve a mat</a></li>
+          <li><a href="events.html" style="color:var(--muted);text-decoration:none">See calendar</a></li>
+          <li><a href="pricing.html" style="color:var(--muted);text-decoration:none">Rates & passes</a></li>
+        </ul>
+        <div style="margin-top:14px;font-size:13px;color:var(--muted)">Emergency contacts: In the case of a medical emergency during a session, staff will call emergency services and follow safety protocol.</div>
+      </aside>
+    </div>
+  </div>
+
+  <footer>
+    <div style="color:var(--muted)">{{BUSINESS_NAME}} • <a href="tel:{{PHONE}}" style="color:var(--muted);text-decoration:none">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}" style="color:var(--muted);text-decoration:none">{{EMAIL}}</a></div>
+  </footer>
+
+  <!-- Tiny breathing modal -->
+  <div class="modal" id="mini-modal">
+    <div class="modal-panel">
+      <h3 style="margin:0 0 8px 0">Two-minute breath</h3>
+      <div id="mini-stage" style="color:var(--muted);margin-bottom:10px">Get comfortable. Follow the prompts.</div>
+      <div style="display:flex;gap:8px;justify-content:flex-end"><button id="mini-start" class="btn">Start</button><button id="mini-close" class="btn">Close</button></div>
+    </div>
+  </div>
+
+  <script>
+    // Mini breathing script
+    (function(){
+      const open = document.getElementById('open-try');
+      const modal = document.getElementById('mini-modal');
+      const start = document.getElementById('mini-start');
+      const close = document.getElementById('mini-close');
+      const stage = document.getElementById('mini-stage');
+      let timer=null, remaining=120;
+
+      open.addEventListener('click',()=>{modal.classList.add('show');stage.textContent='Ready when you are.'});
+      close.addEventListener('click',()=>{modal.classList.remove('show');clearInterval(timer);remaining=120});
+
+      start.addEventListener('click',()=>{
+        remaining=120;stage.textContent='Begin: gentle inhale.';clearInterval(timer);
+        timer=setInterval(()=>{
+          remaining--;if(remaining%6===0) stage.textContent='Inhale — lengthen for 3 counts';
+          else if(remaining%6<=3) stage.textContent='Exhale — soften out';
+          if(remaining<=0){clearInterval(timer);stage.textContent='Complete. Sit quietly for a moment.'}
+        },1000);
+      });
+      window.addEventListener('keydown',e=>{if(e.key==='Escape') modal.classList.remove('show')});
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1720;--card:#0b1220;--muted:#9aa4b2;--accent:#7dd3fc;--glass:rgba(255,255,255,0.04);--pill:#112229}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;line-height:1.45;background:linear-gradient(180deg,#07111a 0%,#0b1620 60%);color:#e6eef6}
+    header{display:flex;align-items:center;justify-content:space-between;padding:22px 28px}
+    nav a{color:var(--muted);text-decoration:none;margin:0 12px;font-weight:600}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:48px;height:48px;background:linear-gradient(135deg,#123 0%,#045 100%);display:flex;align-items:center;justify-content:center;border-radius:8px}
+    .logo svg{width:28px;height:28px}
+    main{max-width:980px;margin:28px auto;padding:28px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:12px;box-shadow:0 6px 18px rgba(2,6,23,0.6)}
+    .hero{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start}
+    h1{margin:0 0 8px 0;font-size:28px;color:#e8f8ff}
+    p.lead{color:var(--muted);margin:0 0 16px}
+    .bio{background:var(--glass);padding:18px;border-radius:10px}
+    .cards{display:flex;flex-direction:column;gap:12px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:14px;border-radius:10px}
+    .method-title{font-weight:700;color:#cfeffd;margin-bottom:6px}
+    .cta{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:8px;background:linear-gradient(90deg,var(--accent),#3fb6e2);color:#042028;text-decoration:none;font-weight:700}
+    .muted{color:var(--muted);font-size:13px}
+    /* Mood-to-Method */
+    .mood{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .mood button{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:10px;border-radius:8px;color:var(--muted);cursor:pointer}
+    .mood button.active{background:linear-gradient(180deg,rgba(125,211,252,0.12),transparent);border-color:rgba(125,211,252,0.18);color:#e6fbff}
+    .method-detail{margin-top:12px;color:var(--muted);font-size:14px}
+    footer{margin-top:22px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.02);color:var(--muted);font-size:13px}
+    /* small screens */
+    @media (max-width:880px){.hero{grid-template-columns:1fr;}.brand span{display:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.12)"/><path d="M8 14s2-3 4-3 4 3 4 3" stroke="#7dd3fc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Welcome</a>
+      <a href="about.html">The Guide</a>
+      <a href="specialties.html">Focus Areas</a>
+      <a href="approach.html">How I Work</a>
+      <a href="fees.html">Investment</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h1>About the clinician</h1>
+        <p class="lead">I offer concentrated, carefully-held sessions for people moving through turning points. My work pairs relational clinical listening with clear, small practices that support daily life.</p>
+
+        <div class="bio card">
+          <div style="font-weight:700;margin-bottom:8px">A little about me</div>
+          <div class="muted">I’m a licensed clinician with experience in adult mood concerns, transitions, grief, and relationship patterns. My style is collaborative: we notice, name patterns, and try short experiments to see what changes. Sessions are private, clinically informed, and paced to what you bring.</div>
+          <div style="margin-top:12px">
+            <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          </div>
+        </div>
+
+        <div style="margin-top:14px" class="card">
+          <div style="font-weight:700">Clinical scope & boundaries</div>
+          <div class="muted" style="margin-top:8px">I provide outpatient psychotherapy for adults. I do not provide emergency or inpatient care. If you are in crisis or risk immediate harm to yourself or others, contact local emergency services or your crisis hotline. Confidentiality is respected; limits to confidentiality include harm to self/others, abuse of minors/elderly, and court-ordered disclosures.</div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="cards">
+          <div class="card">
+            <div style="font-weight:700">A short way to know the style</div>
+            <div class="muted" style="margin-top:8px">I tend toward calm curiosity: we slow down what’s urgent, outline what’s useful, and pick one small next step you can try between sessions.</div>
+          </div>
+
+          <div class="card">
+            <div style="font-weight:700">Mood to Method</div>
+            <div class="mood" id="mood-control">
+              <button data-key="fog">Overwhelmed</button>
+              <button data-key="stuck">Stuck</button>
+              <button data-key="sad">Sad</button>
+              <button data-key="rebuild">Rebuilding</button>
+            </div>
+            <div class="method-detail" id="method-text">Choose the feeling that fits now; the recommended focus and the CTA below will shift to match.</div>
+            <a href="{{PRIMARY_CTA_URL}}" id="mood-cta" class="cta" style="display:inline-block;margin-top:10px">{{PRIMARY_CTA_LABEL}}</a>
+          </div>
+
+        </div>
+      </aside>
+    </section>
+
+    <footer>
+      <div style="font-weight:700">Confidentiality & practice note</div>
+      <div class="muted" style="margin-top:8px">Messages sent through forms or email are treated as part of your clinical record. I offer evidence-informed psychotherapy; therapy experiences vary and outcomes cannot be guaranteed. For urgent safety concerns, call local emergency services or a crisis line. Insurance coverage varies; contact your carrier for details.</div>
+    </footer>
+  </main>
+
+  <script>
+    (function(){
+      const options = {
+        fog:{title:'Stabilize and slow the swirl',cta:'Request a Stabilizing Intake',text:'When things feel like too much, we focus on immediate regulation and short practices you can use between sessions.'},
+        stuck:{title:'Map the stuck pattern',cta:'Book a Mapping Session',text:'When patterns loop, we map the cycle, try a focused experiment, and choose one manageable next step.'},
+        sad:{title:'Tender, paced grief work',cta:'Schedule a Tender Session',text:'When loss sits heavy, we create a steadied space for the emotion and practical steps for daily rhythm.'},
+        rebuild:{title:'Plan steady rebuilds',cta:'Start a Rebuilding Plan',text:'When you are rebuilding, we set small goals, check for obstacles, and support sustainable change.'}
+      };
+
+      const container = document.getElementById('mood-control');
+      const detail = document.getElementById('method-text');
+      const cta = document.getElementById('mood-cta');
+      container.addEventListener('click', (e)=>{
+        const b = e.target.closest('button');
+        if(!b) return;
+        const key = b.dataset.key;
+        [...container.querySelectorAll('button')].forEach(btn=>btn.classList.remove('active'));
+        b.classList.add('active');
+        const o = options[key];
+        detail.textContent = o.text;
+        cta.textContent = o.cta;
+        // subtle animation
+        cta.animate([{opacity:0.4,transform:'translateY(6px)'},{opacity:1,transform:'translateY(0)'}],{duration:300,easing:'ease'});
+      });
+    })();
+  </script>
+</body>
+</html>

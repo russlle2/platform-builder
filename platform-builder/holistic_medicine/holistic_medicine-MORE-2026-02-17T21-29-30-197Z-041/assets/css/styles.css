@@ -1,0 +1,85 @@
+:root{
+  --bg:#fbfdfb;
+  --muted:#6b7770;
+  --accent:#7aa78f;
+  --accent-dark:#557b63;
+  --card:#ffffff;
+  --glass:rgba(255,255,255,0.7);
+  --radius:12px;
+  --max-width:1100px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+  background:var(--bg);color:#1d2b26;line-height:1.45;-webkit-font-smoothing:antialiased;
+}
+.site-header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;max-width:var(--max-width);margin:0 auto}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:48px;height:48px}
+.business{display:block;font-size:1.05rem}
+.tag{font-size:0.85rem;color:var(--muted)}
+.main-nav{display:flex;gap:12px;align-items:center}
+.main-nav a{color:inherit;text-decoration:none;padding:8px;border-radius:8px}
+.main-nav a.cta{background:var(--accent);color:white;padding:8px 12px}
+
+/* Hero split diagonal */
+.hero{display:grid;grid-template-columns:1fr 1fr;align-items:stretch;gap:0;max-width:1200px;margin:28px auto;padding:0;height:360px;position:relative;overflow:hidden;border-radius:16px}
+.hero-left{padding:48px 56px;background:linear-gradient(180deg,rgba(255,255,255,0.8),rgba(255,255,255,0.9));z-index:2}
+.hero-right{position:relative}
+.hero-right .pattern{width:100%;height:100%;display:block}
+.hero h1{margin:0 0 12px;font-size:1.9rem}
+.hero p{color:var(--muted);margin:0 0 18px}
+.hero-actions{display:flex;gap:10px}
+
+/* diagonal edge using pseudo element */
+.hero::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:100%;background:linear-gradient(135deg, rgba(122,167,143,0.12), transparent);transform:skewX(-12deg);transform-origin:left;z-index:1}
+
+.section{max-width:var(--max-width);margin:28px auto;padding:18px}
+.gallery{padding:28px 24px;background:transparent;border-radius:10px}
+.gallery h2{margin-top:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:16px}
+.card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(25,38,33,0.06)}
+.card h3{margin:0 0 8px}
+.card .meta{color:var(--muted);font-size:0.9rem;margin-top:8px}
+
+.what-to-expect{padding:28px 24px}
+.lede{color:var(--muted);max-width:70ch}
+.planner-wrap{display:flex;gap:18px;margin-top:18px;align-items:flex-start}
+.planner{width:320px;background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(20,30,25,0.06)}
+.planner h3{margin-top:0}
+.planner label{display:block;margin-top:10px;font-size:0.85rem;color:var(--muted)}
+.planner input,.planner select{width:100%;padding:8px;margin-top:6px;border-radius:8px;border:1px solid #e6eee6}
+.planner fieldset{border:0;padding:0;margin-top:10px}
+.planner fieldset label{display:block;margin-top:6px}
+.planner-actions{display:flex;gap:8px;margin-top:12px}
+.button{appearance:none;border:0;padding:10px 14px;border-radius:10px;background:#eef6ef;color:var(--accent-dark);cursor:pointer}
+.button.primary{background:var(--accent);color:white}
+.button.ghost{background:transparent;border:1px solid #dfeee1}
+.button.large{padding:14px 18px;font-size:1.05rem}
+.plan-output{flex:1;background:linear-gradient(180deg,#fff,#fbfdfb);padding:16px;border-radius:12px;border:1px solid #eef6ee}
+.plan-output pre{white-space:pre-wrap;word-break:break-word;margin:0;min-height:160px;padding:8px;color:#163126;background:var(--glass);border-radius:8px}
+
+.objections{padding:28px}
+.faq details{background:var(--card);padding:12px;border-radius:10px;margin-top:8px}
+
+.final-cta{padding:28px;background:linear-gradient(180deg,#f6f9f7,#fff);border-radius:12px;text-align:center}
+
+.site-footer{max-width:var(--max-width);margin:28px auto;padding:18px;display:flex;justify-content:space-between;align-items:center;color:var(--muted)}
+
+/* reveal animations */
+[data-reveal]{opacity:0;transform:translateY(12px);transition:opacity 520ms cubic-bezier(.2,.9,.2,1),transform 520ms cubic-bezier(.2,.9,.2,1)}
+[data-reveal].revealed{opacity:1;transform:none}
+
+/* reduced motion */
+@media (prefers-reduced-motion: reduce){
+  [data-reveal]{transition:none;opacity:1;transform:none}
+}
+
+/* responsive */
+@media (max-width:860px){
+  .hero{grid-template-columns:1fr;padding:0;height:auto}
+  .hero::before{display:none}
+  .planner-wrap{flex-direction:column}
+  .planner{width:100%}
+}

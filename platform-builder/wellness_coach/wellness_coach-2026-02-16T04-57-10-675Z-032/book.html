@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book a Session — {{BUSINESS_NAME}}</title>
+  <style>
+    /* Aura Editorial — booking focused */
+    :root{--bg:#08121a;--card:#071017;--muted:#98a9b3;--accent:#ffb86b;--white:#fff}
+    body{margin:0;font-family:Georgia, serif;background:linear-gradient(180deg,var(--bg),#031218);color:var(--white)}
+    .frame{max-width:880px;margin:40px auto;padding:28px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;margin-left:14px}
+    h1{font-size:36px;margin:12px 0}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:20px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px}
+    label{display:block;font-weight:700;margin-top:10px}
+    input,select,textarea{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:#04121a;color:var(--white)}
+    .btn{display:inline-block;background:var(--accent);color:#071018;padding:10px 14px;border-radius:8px;text-decoration:none;font-weight:700;margin-top:12px}
+    .muted{color:var(--muted)}
+    .steps{margin-top:14px}
+    .step{background:#06141a;padding:10px;border-radius:8px;margin-bottom:8px}
+    .faq dt{font-weight:700;margin-top:10px}
+    .pattern{opacity:0.06;position:fixed;right:8px;top:16px;width:140px}
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <header>
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="services.html">Services</a>
+        <a href="programs.html">Programs</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="testimonials.html">Testimonials</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <!-- HERO -->
+    <h1>Book your complimentary clarity call</h1>
+    <p class="muted">A focused 30-minute conversation to map what's getting in the way and outline a simple, habit-driven plan. No salesy pitch — just options.</p>
+
+    <div class="grid" style="margin-top:18px">
+      <div>
+        <!-- BOOKING FORM (simple placeholder form) -->
+        <div class="card">
+          <form action="{{PRIMARY_CTA_URL}}" method="get">
+            <label for="name">Your name</label>
+            <input id="name" name="name" placeholder="First & last" required>
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="you@email.com" required>
+
+            <label for="phone">Phone (optional)</label>
+            <input id="phone" name="phone" placeholder="Mobile number">
+
+            <label for="focus">Primary focus for our call</label>
+            <select id="focus" name="focus">
+              <option>Energy & sleep</option>
+              <option>Daily routine & productivity</option>
+              <option>Stress reduction & recovery</option>
+              <option>Other</option>
+            </select>
+
+            <label for="notes">Short note (what matters most)</label>
+            <textarea id="notes" name="notes" rows="4" placeholder="A sentence or two helps me prepare"></textarea>
+
+            <button class="btn" type="submit">Schedule call</button>
+          </form>
+
+          <div class="muted" style="margin-top:10px">After you request a time, you’ll receive a confirmation email with next steps. If you prefer, call <strong>{{PHONE}}</strong> or email <a href="mailto:{{EMAIL}}" style="color:var(--muted)">{{EMAIL}}</a>.</div>
+        </div>
+
+        <!-- LEAD MAGNET -->
+        <div style="margin-top:14px" class="card">
+          <h3 style="margin:0 0 8px">Free: Micro-Habit Starter Kit</h3>
+          <p class="muted">A simple PDF to pick one habit for 21 days and track progress. Perfect before your first call.</p>
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">Send me the kit</a>
+        </div>
+
+      </div>
+
+      <aside>
+        <div class="card">
+          <h4 style="margin:0 0 8px">What to expect</h4>
+          <div class="steps">
+            <div class="step">1) A clear 30-min conversation to surface priorities.</div>
+            <div class="step">2) A one-page plan with 2–3 focus areas.</div>
+            <div class="step">3) Suggested next-steps with program matches.</div>
+          </div>
+
+          <h4 style="margin:12px 0 6px">Availability</h4>
+          <p class="muted">Typical booking windows: Mon–Thu mornings and late afternoons. If those times don’t fit, include availability in your note.</p>
+
+          <div style="margin-top:12px">
+            <a class="btn" href="{{PRIMARY_CTA_URL}}">Request a time</a>
+          </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0 0 8px">Quick FAQ</h4>
+          <dl class="faq">
+            <dt>Is this a medical consultation?</dt>
+            <dd class="muted">No. Coaching focuses on habits, frameworks, and behavior change — not medical diagnosis or treatment.</dd>
+            <dt>How long are follow-ups?</dt>
+            <dd class="muted">Follow-up options range from weekly 30-min sessions to bi-weekly 1-hour sessions depending on the program.</dd>
+          </dl>
+        </div>
+      </aside>
+    </div>
+
+    <!-- SOCIAL PROOF -->
+    <section id="social_proof" style="margin-top:18px">
+      <div class="card">
+        <h4 style="margin:0 0 8px">Recent feedback</h4>
+        <p class="muted">"The clarity call quickly revealed where I was wasting energy — the plan was achievable and followed up in weekly check-ins." — Client, {{CITY}}</p>
+      </div>
+    </section>
+
+    <!-- BENEFITS -->
+    <section id="benefits" style="margin-top:18px">
+      <div class="card">
+        <h4 style="margin:0 0 8px">Why people book</h4>
+        <ul class="muted">
+          <li>To reduce overwhelm with a simple framework</li>
+          <li>To form habits that stick with accountability</li>
+          <li>To get a clear, time-bound plan</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section id="cta" style="margin-top:18px">
+      <div class="card">
+        <h4 style="margin:0 0 8px">Not ready to book?</h4>
+        <p class="muted">Download the Micro-Habit Starter Kit and try one habit for a week.</p>
+        <a class="btn" href="{{PRIMARY_CTA_URL}}">Get the kit</a>
+      </div>
+    </section>
+
+    <footer style="margin-top:22px;color:var(--muted)">
+      <div>{{BUSINESS_NAME}} • {{TAGLINE}} • {{COACH_NAME}}, {{CREDENTIALS}}</div>
+      <div>Phone: {{PHONE}} • <a href="mailto:{{EMAIL}}" style="color:var(--muted)">{{EMAIL}}</a></div>
+    </footer>
+
+    <img src="assets/img/pattern.svg" class="pattern" alt="pattern">
+  </div>
+</body>
+</html>

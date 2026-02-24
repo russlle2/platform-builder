@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Method & Approach — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#04121a;--glass:rgba(255,255,255,0.03);--accent:#7fe2c0;--muted:#bcded0}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto;color:var(--muted);background:linear-gradient(180deg,#03141b 0%,#071926 100%);-webkit-font-smoothing:antialiased}
+    header{display:flex;align-items:center;justify-content:space-between;padding:16px 22px}
+    .logo{width:44px;height:44px;border-radius:9px;background:linear-gradient(135deg,#78e0b1,#5c98ff);display:flex;align-items:center;justify-content:center;font-weight:800;color:#032}
+    nav a{color:var(--muted);text-decoration:none;margin:0 10px}
+    main{max-width:980px;margin:22px auto;padding:18px}
+    .hero{padding:18px;border-radius:12px;background:linear-gradient(180deg,var(--glass),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03)}
+    h1{color:#dcfff5;margin:0}
+    .pill{display:inline-block;background:linear-gradient(90deg,#053834,#0a524b);padding:6px 10px;border-radius:999px;color:#caffef;font-weight:700;font-size:13px;margin-top:8px}
+    .steps{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap}
+    .step{flex:1;min-width:200px;padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent)}
+    .step strong{display:block;color:#e8fff7;margin-bottom:6px}
+    .micro{margin-top:16px;padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent)}
+
+    /* proof gallery and badges */
+    .cred-line{display:flex;gap:12px;align-items:center;margin-top:12px}
+    .cred-item{padding:8px;border-radius:8px;background:linear-gradient(90deg,rgba(255,255,255,0.01),transparent);display:flex;gap:10px;align-items:center}
+    .cred-item svg{width:28px;height:28px}
+    .cred-item .txt{font-size:13px;color:#cfeee1}
+    .cred-item:hover{transform:translateY(-4px);transition:all 220ms}
+
+    .comparator{margin-top:18px}
+    .price{font-size:26px;color:#eafff5;font-weight:800}
+
+    footer{margin-top:28px;text-align:center;color:#9fbfb0}
+    @media(max-width:880px){.steps{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="logo">HM</div>
+      <div>
+        <div style="color:#e8fff7;font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:#bfe6d5">A practical, person-centered path</div>
+      </div>
+    </div>
+    <nav aria-label="Main nav">
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Concerns</a>
+      <a href="approach.html" aria-current="page">Method</a>
+      <a href="pricing.html">Rates</a>
+      <a href="about.html">Story</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
+        <div style="flex:1;min-width:260px">
+          <h1>How we shape a supportive plan</h1>
+          <div class="pill">Cohort + individual options</div>
+          <p style="color:#cfeee1;margin-top:10px">We blend brief one-on-one work with small-group learning so you have tailored guidance plus shared practice and accountability. Our emphasis is on doable experiments and measurable signals that help you choose what to keep.</p>
+        </div>
+        <div style="width:320px">
+          <div style="padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent)">
+            <strong style="color:#e8fff7">Micro pricing snapshot</strong>
+            <div style="margin-top:10px" class="comparator">
+              <div style="display:flex;gap:8px;align-items:center">
+                <button id="mBtn" class="act" style="padding:8px 10px;border-radius:8px;background:#053b34;color:#dfffe9;border:0;cursor:pointer">Monthly</button>
+                <button id="pBtn" style="padding:8px 10px;border-radius:8px;background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.03);cursor:pointer">Pack</button>
+              </div>
+              <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:end">
+                <div style="text-align:left">
+                  <div style="font-size:13px;color:#bfe6d5">Private consult</div>
+                  <div class="price" data-month="110" data-package="490">$110</div>
+                </div>
+                <div style="text-align:left">
+                  <div style="font-size:13px;color:#bfe6d5">Cohort rate</div>
+                  <div class="price" data-month="45" data-package="250">$45</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent)">
+            <strong style="color:#e8fff7">Credibility & notes</strong>
+            <div class="cred-line">
+              <div class="cred-item" data-tip="Faculty and training collaborations" title="Faculty and training collaborations"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="8" r="3" fill="#0b5344"/><path d="M5 20c1.8-4.6 6.2-6 11-6" stroke="#8de0c8" stroke-width="1.6" stroke-linecap="round"/></svg><div class="txt">Training partners</div></div>
+              <div class="cred-item" data-tip="Practical outcome summaries" title="Practical outcome summaries"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="18" height="18" rx="4" fill="#0b5344"/><path d="M7 12l3 3 7-7" stroke="#aef0db" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="txt">Outcome notes</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <strong>Convene</strong>
+          <div>Short initial intake to map priorities and possible starting experiments. We keep paperwork minimal and focused on what matters.</div>
+        </div>
+        <div class="step">
+          <strong>Practice</strong>
+          <div>Guided experiments, small habit shifts, and measurable signals to help you decide what to continue.</div>
+        </div>
+        <div class="step">
+          <strong>Integrate</strong>
+          <div>Gradual integration of helpful options into daily life and connection to other clinicians when indicated.</div>
+        </div>
+      </div>
+
+      <div style="margin-top:18px" class="micro">
+        <strong style="color:#e8fff7">What to expect from a session</strong>
+        <ol style="color:#bfe6d5">
+          <li>Brief check-in and focused exploration of the most burdensome symptom.</li>
+          <li>Two small, testable strategies to try before the next visit.</li>
+          <li>Clear notes and a short plan for follow-up or referral if needed.</li>
+        </ol>
+        <div style="margin-top:8px"><a href="book.html" style="padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,#0fa078,#0bb29e);color:#022;text-decoration:none;font-weight:700">Start here</a></div>
+      </div>
+
+    </section>
+  </main>
+
+  <footer>
+    <div>Questions? Reach us at <a href="mailto:{{EMAIL}}" style="color:#c8f3df">{{EMAIL}}</a> or call {{PHONE}}</div>
+    <div style="margin-top:8px">Serving {{CITY}}, {{STATE}} — considered, honest support</div>
+  </footer>
+
+  <script>
+    // Minimal comparator for this page
+    (function(){
+      const mBtn = document.getElementById('mBtn');
+      const pBtn = document.getElementById('pBtn');
+      const prices = Array.from(document.querySelectorAll('.price'));
+      let mode = 'month';
+
+      function animate(el, from, to){
+        const start = performance.now();
+        function tick(now){
+          const t = Math.min((now-start)/600,1);
+          const val = Math.round(from + (to-from) * (1 - Math.pow(1-t,3)));
+          el.textContent = '$' + val;
+          if(t < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      }
+
+      function set(modeKey){
+        prices.forEach(el=>{
+          const cur = parseInt(el.textContent.replace(/[^0-9]/g,''),10)||0;
+          const target = parseInt(el.getAttribute(modeKey==='month'?'data-month':'data-package'),10)||0;
+          animate(el,cur,target);
+        })
+      }
+
+      mBtn.addEventListener('click',()=>{ if(mode==='month') return; mode='month'; mBtn.style.background='#053b34'; mBtn.style.color='#dfffe9'; pBtn.style.background='transparent'; pBtn.style.color='var(--muted)'; set('month'); });
+      pBtn.addEventListener('click',()=>{ if(mode==='package') return; mode='package'; pBtn.style.background='#053b34'; pBtn.style.color='#dfffe9'; mBtn.style.background='transparent'; mBtn.style.color='var(--muted)'; set('package'); });
+    })();
+
+    // Small interactive tooltip behavior (enhanced hover)
+    (function(){
+      const items = document.querySelectorAll('[data-tip]');
+      items.forEach(it=>{
+        it.addEventListener('mouseenter',()=>{it.style.transform='translateY(-4px)';});
+        it.addEventListener('mouseleave',()=>{it.style.transform='none';});
+      });
+    })();
+  </script>
+</body>
+</html>

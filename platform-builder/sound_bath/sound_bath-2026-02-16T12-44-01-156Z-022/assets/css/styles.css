@@ -1,0 +1,70 @@
+/* Sensory, premium CSS for clinic_modern layout. No external fonts. */\n:root{\n  --bg:#fbfcfe;\n  --muted:#667085;\n  --accent:#6eaef7;\n  --accent-2:#a7f3d0;\n  --text:#0b1724;\n  --card:#ffffff;\n  --glass:rgba(255,255,255,0.6);\n  --max:1100px;\n}\n*{box-sizing:border-box}html,body{height:100%}body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;line-height:1.5;color:var(--text);background:linear-gradient(180deg,var(--bg),#f7fbff);-webkit-font-smoothing:antialiased}
+.inner{max-width:var(--max);margin:0 auto;padding:2rem}
+.site-header{position:relative;padding:1rem 0}
+.logo{font-weight:700;color:var(--text);text-decoration:none;font-size:1.05rem}
+.main-nav{display:flex;align-items:center}
+#navToggle{display:none}
+.main-nav ul{list-style:none;margin:0;padding:0;display:flex;gap:1rem}
+.main-nav a{color:var(--text);text-decoration:none;padding:0.3rem 0.5rem;border-radius:6px}
+.main-nav a.primary{background:linear-gradient(90deg,var(--accent),#c8e6ff);color:#032;box-shadow:0 6px 18px rgba(110,174,247,0.18)}
+.ripple-wrap{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.ripple-wrap .bg-pattern{position:absolute;right:-10%;top:-20%;width:140%;opacity:0.65;mix-blend-mode:soft-light}
+.ripple{position:absolute;left:0;top:0;width:100%;height:100%}
+
+/* HERO */
+.hero{padding:6rem 0 4rem;display:flex;align-items:center;background:linear-gradient(180deg,rgba(255,255,255,0.6),transparent)}
+.hero-inner{max-width:780px;background:linear-gradient(180deg,rgba(255,255,255,0.7),var(--glass));padding:2.2rem;border-radius:14px;backdrop-filter:blur(6px);box-shadow:0 12px 40px rgba(7,22,45,0.06)}
+.eyebrow{font-size:0.95rem;color:var(--muted);margin:0 0 0.5rem}
+.title{font-size:2rem;margin:0 0 0.8rem}
+.lead{color:var(--muted);margin:0 0 1.2rem}
+.cta-row{display:flex;gap:0.8rem}
+.btn{display:inline-block;padding:0.75rem 1.1rem;border-radius:10px;text-decoration:none;font-weight:600}
+.btn.primary{background:linear-gradient(90deg,var(--accent),#9fdbff);color:#012}
+.btn.ghost{border:1px solid rgba(7,22,45,0.06);background:transparent;color:var(--text)}
+
+/* Myth vs Truth */
+.myth-truth{padding:3rem 0}
+.section-title{font-size:1.05rem;color:var(--muted);margin-bottom:1rem}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.card{background:var(--card);padding:1rem;border-radius:12px;box-shadow:0 6px 22px rgba(10,18,35,0.04)}
+.card h4{margin:0 0 0.4rem}
+
+/* Pillars */
+.pillars{padding:3rem 0}
+.pillars-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.icon{width:36px;height:36px;fill:transparent;stroke:var(--accent);stroke-width:1.5;margin-bottom:0.6rem}
+
+/* Case notes */
+.case-notes{padding:2.5rem 0}
+.notes{display:flex;gap:1rem}
+blockquote{background:linear-gradient(180deg,rgba(255,255,255,0.85),#fff);padding:1rem;border-radius:10px;box-shadow:0 8px 28px rgba(11,23,40,0.04);margin:0}
+blockquote cite{display:block;margin-top:0.6rem;color:var(--muted);font-size:0.9rem}
+
+/* FAQ */
+.faq{padding:2.5rem 0}
+details{background:var(--card);padding:1rem;margin:0.6rem 0;border-radius:10px}
+summary{font-weight:600;cursor:pointer}
+.answer{color:var(--muted);margin-top:0.6rem}
+
+/* CTA */
+.cta{padding:3rem 0;text-align:center}
+.btn.large{padding:1rem 1.4rem;font-size:1.05rem}
+
+/* Footer */
+.site-footer{border-top:1px solid rgba(10,18,35,0.04);padding:2rem 0;background:transparent}
+.site-footer .inner{display:flex;justify-content:space-between;align-items:center}
+.site-footer a{color:var(--muted)}
+
+/* Responsive */
+@media(max-width:900px){
+  .grid,.pillars-grid{grid-template-columns:1fr}
+  .notes{flex-direction:column}
+  .hero{padding:3.5rem 0}
+  .main-nav ul{display:none}
+  #navToggle{display:inline-block}
+  #navToggle[aria-expanded="true"] + #navList{display:flex;flex-direction:column;position:absolute;right:1rem;top:3.6rem;background:var(--card);padding:0.8rem;border-radius:8px;box-shadow:0 8px 24px rgba(2,8,23,0.08)}
+}
+
+/* Subtle animation for ripple */
+@keyframes pan{0%{transform:translateY(0)}50%{transform:translateY(-8px)}100%{transform:translateY(0)}}
+.ripple{animation:pan 12s ease-in-out infinite}

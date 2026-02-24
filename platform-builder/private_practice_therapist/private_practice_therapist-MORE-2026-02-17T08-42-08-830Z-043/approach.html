@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Approach — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7fbfc;--accent:#173f4a;--muted:#5a6b6f;--card:#ffffff;--accent-2:#a7c7d1}
+    html,body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto;color:var(--accent);background:var(--bg)}
+    .nav{display:flex;justify-content:space-between;align-items:center;padding:16px 22px}
+    .nav .links{display:flex;gap:12px;font-size:14px}
+    header{padding:26px 22px;background:linear-gradient(180deg, rgba(167,199,209,0.06), transparent);border-bottom:1px solid rgba(23,63,74,0.04)}
+    h1{margin:0;font-size:26px}
+    main{display:grid;grid-template-columns:1fr 360px;gap:22px;padding:22px}
+    .stack{display:flex;flex-direction:column;gap:16px}
+    .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 10px 28px rgba(23,63,74,0.04)}
+    .muted{color:var(--muted)}
+    .pill{display:inline-block;padding:6px 10px;background:var(--accent-2);color:white;border-radius:999px;font-size:13px}
+    .reveal{opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s cubic-bezier(.2,.9,.2,1)}
+    .reveal.is-revealed{opacity:1;transform:none}
+    @media(max-width:980px){main{grid-template-columns:1fr}}
+    label{display:block;margin-top:10px;font-size:13px}
+    input,select,textarea{width:100%;padding:8px;border-radius:8px;border:1px solid #e6f0f2}
+    button.primary{background:var(--accent);color:white;border:none;padding:10px 12px;border-radius:8px;margin-top:12px}
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <div class="links">
+      <a href="index.html">Home</a>
+      <a href="about.html">Practice</a>
+      <a href="specialties.html">Care Areas</a>
+      <a href="approach.html" aria-current="page">Approach</a>
+      <a href="fees.html">Investment</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </div>
+  </nav>
+
+  <header>
+    <h1>How I work</h1>
+    <p class="muted">A clear, pragmatic method: assessment, focused practice, review, and adjustment. We keep the process measurable and humane.</p>
+  </header>
+
+  <main>
+    <div class="stack">
+      <section class="card reveal">
+        <h2 style="margin-top:0">Assessment and prioritized goals</h2>
+        <p class="muted">Early sessions focus on clarifying what matters most—safety, immediate functioning, and the behaviours that most reliably move the needle. From there we set a small number of measurable targets to track progress.</p>
+      </section>
+
+      <section class="card reveal">
+        <h2 style="margin-top:0">Short experiments and skills</h2>
+        <p class="muted">I emphasize short, testable experiments between sessions: concrete skills you can try, observe, and report back on. This keeps therapy active and oriented toward change.</p>
+      </section>
+
+      <section class="card reveal">
+        <h2 style="margin-top:0">Adaptive planning</h2>
+        <p class="muted">We review what’s working and what’s not, and we adjust. Therapy is iterative—small course corrections are expected and useful.</p>
+      </section>
+
+      <section class="card reveal">
+        <h2 style="margin-top:0">Collaboration & scope</h2>
+        <p class="muted">I aim to be transparent about methods, limits of practice, and what I can and cannot provide clinically. If specialized or immediate crisis care is needed, I will help connect you to appropriate services.</p>
+      </section>
+
+    </div>
+
+    <aside>
+      <div class="card reveal">
+        <h3 style="margin-top:0">Tools I draw on</h3>
+        <ul class="muted">
+          <li>Brief, skills-focused interventions</li>
+          <li>Evidence-informed psychotherapy approaches</li>
+          <li>Values-based planning and behavioral activation</li>
+          <li>Collaborative problem solving and communication tools</li>
+        </ul>
+        <div style="margin-top:8px"><span class="pill">Session lengths: 50 / 80 minutes</span></div>
+      </div>
+
+      <div class="card reveal" style="margin-top:16px">
+        <h3 style="margin-top:0">Session Planner</h3>
+        <p class="muted">A short tool to prepare for a focused first meeting. Write a few lines and copy to bring into session.</p>
+        <label for="a_concerns">Primary concern</label>
+        <input id="a_concerns" type="text" placeholder="Brief description">
+        <label for="a_goal">Top short-term goal</label>
+        <input id="a_goal" type="text" placeholder="What should change first?">
+        <label for="a_freq">Preferred cadence</label>
+        <select id="a_freq"><option>Weekly</option><option>Every 2 weeks</option><option>Short block (3–6 sessions)</option></select>
+        <button class="primary" id="a_build">Make summary</button>
+        <button id="a_copy" style="margin-left:8px;padding:8px;border-radius:8px">Copy</button>
+        <pre id="a_out" style="white-space:pre-wrap;margin-top:8px;background:#fbffff;padding:8px;border-radius:8px;border:1px dashed rgba(23,63,74,0.06)"></pre>
+      </div>
+
+      <div class="card reveal" style="margin-top:16px">
+        <h4 style="margin-top:0">Contact & scheduling</h4>
+        <p class="muted">For an initial conversation, click the button below to reserve a time or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</p>
+        <p style="margin-top:10px"><a class="primary" href="book.html">Plan a first meeting</a></p>
+      </div>
+    </aside>
+  </main>
+
+  <footer style="padding:18px;text-align:center;color:var(--muted)">Licensed clinician. This practice does not provide emergency services. Confidentiality applies within legal limits. For urgent help call local emergency services.</footer>
+
+  <script>
+    (function(){
+      // reveal
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const reveals = document.querySelectorAll('.reveal');
+      if(prefersReduced){reveals.forEach(r=>r.classList.add('is-revealed'));}
+      else if('IntersectionObserver' in window){
+        const io = new IntersectionObserver((entries, obs)=>{entries.forEach(en=>{if(en.isIntersecting){en.target.classList.add('is-revealed');obs.unobserve(en.target);}});},{threshold:0.12});
+        reveals.forEach(r=>io.observe(r));
+      } else {reveals.forEach(r=>r.classList.add('is-revealed'))}
+
+      // planner in aside
+      function aBuild(){
+        const c = document.getElementById('a_concerns').value.trim();
+        const g = document.getElementById('a_goal').value.trim();
+        const f = document.getElementById('a_freq').value;
+        const out = ['Planner — '+(new Date()).toLocaleDateString(), 'Primary concern: '+(c||'[none]'), 'Short-term goal: '+(g||'[none]'), 'Cadence: '+f, 'Prepared for: {{BUSINESS_NAME}}'].join('\n');
+        document.getElementById('a_out').textContent = out;
+        return out;
+      }
+      document.getElementById('a_build').addEventListener('click', aBuild);
+      document.getElementById('a_copy').addEventListener('click', async function(){
+        const text = aBuild();
+        try{await navigator.clipboard.writeText(text);this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1400);}catch(e){this.textContent='Copy failed';setTimeout(()=>this.textContent='Copy',1400);} 
+      });
+    })();
+  </script>
+</body>
+</html>

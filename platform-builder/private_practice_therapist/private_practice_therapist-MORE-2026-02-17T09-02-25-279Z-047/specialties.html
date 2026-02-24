@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Focus Areas — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#07122a;--card:#071426;--accent:#8ee3d0;--muted:#9fb1cc}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#061021,#071426);color:#eaf6f2}
+    .wrap{max-width:980px;margin:28px auto;padding:20px}
+    header{display:flex;justify-content:space-between;align-items:center;padding:14px 0}
+    nav a{color:#cfeee3;margin:0 10px;text-decoration:none;font-weight:600}
+    h1{margin:0 0 10px 0;color:#c9fff5}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px}
+    .spec{padding:12px;border-radius:10px;background:rgba(255,255,255,0.02);margin-bottom:10px}
+    .spec h3{margin:0;font-size:16px}
+    .spec p{margin:6px 0 0;color:var(--muted)}
+    .moodbox{margin-top:12px}
+    select{padding:10px;border-radius:8px;border:0;background:#061424;color:#e6fbf6}
+    .recommend{margin-top:12px;padding:12px;border-radius:10px;background:linear-gradient(180deg,#06202a,transparent)}
+    a.cta{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:10px;background:var(--accent);color:#022b27;text-decoration:none;font-weight:800}
+    .accordion{margin-top:16px}
+    .acc-item{margin-bottom:8px}
+    .acc-btn{width:100%;text-align:left;padding:12px;border-radius:9px;background:transparent;border:0;color:#dff7ee;font-weight:700}
+    .acc-body{padding:10px;color:#bfeee6;display:none}
+    .crisis{margin-top:12px;padding:12px;border-radius:9px;background:#3a2020;color:#ffeaea;font-size:13px}
+    @media(max-width:840px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <strong style="color:var(--accent)">{{BUSINESS_NAME}}</strong>
+        <div style="color:var(--muted);font-size:13px">Private sessions & small cohorts • {{CITY}}, {{STATE}}</div>
+      </div>
+      <nav>
+        <a href="index.html">Welcome</a>
+        <a href="about.html">Story</a>
+        <a href="specialties.html">Focus Areas</a>
+        <a href="approach.html">How I Work</a>
+        <a href="book.html">Reserve</a>
+      </nav>
+    </header>
+
+    <main class="grid">
+      <section>
+        <h1>What I commonly work on</h1>
+        <p style="color:var(--muted);margin-top:6px">Practical, evidence-informed support for life’s knottier spots. Pick a tile to read more or use the mood selector to get a quick recommendation.</p>
+
+        <div class="card">
+          <div class="spec">
+            <h3>Transitions & Life Changes</h3>
+            <p>Starting, stopping, or rearranging life. Short plans and cohort work to practice decision steps and manage uncertainty.</p>
+          </div>
+          <div class="spec">
+            <h3>Anxiety & Worry</h3>
+            <p>Skills-focused work to reduce reactivity and build tolerance: breathing, experiments, and cognitive framing.</p>
+          </div>
+          <div class="spec">
+            <h3>Relationship Patterns</h3>
+            <p>Communication practices, boundary-setting, and mapping patterns that repeat across relationships.</p>
+          </div>
+          <div class="spec">
+            <h3>Grief & Loss</h3>
+            <p>Respectful pacing, meaning-making, and safety checks—often in brief focused sequences.</p>
+          </div>
+        </div>
+
+        <div class="accordion card">
+          <h3 style="margin-top:0">Session boundaries & confidentiality</h3>
+          <div class="acc-item">
+            <button class="acc-btn" data-acc="sp-bound">Session boundaries ▸</button>
+            <div class="acc-body" id="sp-bound">Sessions are typically 45–55 minutes. I’ll set expectations for cancellations, rescheduling, and contact. If you join a cohort, attendance norms will be reviewed in advance.</div>
+          </div>
+          <div class="acc-item">
+            <button class="acc-btn" data-acc="sp-conf">Confidentiality & limits ▸</button>
+            <div class="acc-body" id="sp-conf">Your notes are private. Exceptions include imminent risk of harm, mandated reporting, or court orders. We’ll discuss documentation and limits before we begin.</div>
+          </div>
+
+          <div class="crisis">If you are in immediate danger or a medical emergency, call local emergency services. For urgent emotional crisis in the U.S., call 988 or your local crisis number. I cannot provide crisis management via email.</div>
+        </div>
+
+      </section>
+
+      <aside>
+        <div class="card">
+          <label for="mood">How are you today?</label>
+          <div class="moodbox">
+            <select id="mood" aria-label="Choose current mood">
+              <option value="anxious">Anxious or restless</option>
+              <option value="stuck">Stuck / indecisive</option>
+              <option value="sad">Low / grieving</option>
+              <option value="relationship">Relationship stress</option>
+              <option value="curious">Curious about cohort or skills</option>
+            </select>
+          </div>
+
+          <div class="recommend" id="recommend">
+            <strong>Recommended focus</strong>
+            <p id="recommend-text" style="margin:8px 0;color:var(--muted)">Choose a mood to see a tailored suggestion and the best next step.</p>
+            <a id="spec-cta" class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <strong style="color:var(--accent)">Cohort offering</strong>
+          <p style="color:var(--muted);margin-top:8px">Small groups meet for 6 weeks with skill practice and check-ins. Not for crisis care; cohorts have clear attendance and confidentiality guidelines.</p>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    // Accordion
+    document.querySelectorAll('.acc-btn').forEach(b=>b.addEventListener('click',()=>{
+      const id = b.getAttribute('data-acc');
+      const el = document.getElementById(id.replace('sp-','')) || document.getElementById(id);
+      // map to element ids
+      const map = { 'sp-bound':'sp-bound','sp-conf':'sp-conf' };
+      const target = document.getElementById(id.replace('sp-','')) || document.getElementById(id);
+      const body = document.getElementById(id.replace('sp-',''));
+      // simpler toggle using nextElement
+      const next = b.nextElementSibling;
+      const open = next.style.display === 'block';
+      document.querySelectorAll('.acc-body').forEach(x=>x.style.display='none');
+      document.querySelectorAll('.acc-btn').forEach(x=>x.textContent = x.textContent.replace('▾','▸'));
+      if(!open){ next.style.display='block'; b.textContent = b.textContent.replace('▸','▾'); }
+    }));
+
+    // Mood-to-method mapping
+    const map = {
+      anxious:{text:'Short-term sessions emphasizing grounding skills, pacing, and experiments to reduce worry. Good fit: a 4-session skills plan or weekly support.',cta:'Request a skills consult'},
+      stuck:{text:'Decision-focused work and small action steps to test possibilities—often a 3-session focused series.',cta:'Start a 3-session plan'},
+      sad:{text:'Paced support with attention to safety, loss, and reconnection strategies. Consider individual sessions with brief check-ins.',cta:'Book a supportive consult'},
+      relationship:{text:'Communications mapping and boundary practice; sometimes short couples work or individual pattern mapping.',cta:'Schedule a relationship session'},
+      curious:{text:'Join a time-limited cohort to practice together and learn concrete tools in a supportive group.',cta:'Learn about cohorts'}
+    };
+
+    const sel = document.getElementById('mood');
+    const textEl = document.getElementById('recommend-text');
+    const cta = document.getElementById('spec-cta');
+    sel.addEventListener('change',()=>{
+      const v = sel.value;
+      const pick = map[v]||map.curious;
+      textEl.textContent = pick.text;
+      cta.textContent = pick.cta + ' — ' + cta.textContent;
+    });
+  </script>
+</body>
+</html>

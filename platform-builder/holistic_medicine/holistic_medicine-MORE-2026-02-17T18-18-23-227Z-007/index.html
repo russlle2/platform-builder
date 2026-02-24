@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{BUSINESS_NAME}} — Integrative membership care</title>
+  <meta name="description" content="Gentle integrative membership model for steady progress across mind, body, and daily systems.">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="/">{{BUSINESS_NAME}}</a>
+      <nav class="main-nav">
+        <a href="/services.html">Programs</a>
+        <a href="/conditions.html">Conditions</a>
+        <a href="/approach.html">Method</a>
+        <a href="/pricing.html">Investment</a>
+        <a href="/about.html">About</a>
+        <a href="/book.html">Start</a>
+        <a href="/contact.html">Connect</a>
+      </nav>
+      <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero">
+      <div class="pattern"></div>
+      <div class="wrap hero-inner">
+        <div class="hero-copy">
+          <h1>{{TAGLINE}}</h1>
+          <p class="lead">A membership approach that listens to how your life flows — small, practical adjustments guided by integrative clinicians.</p>
+          <div class="hero-actions">
+            <a class="primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            <a class="ghost" href="/about.html">Learn about our method</a>
+          </div>
+        </div>
+        <aside class="hero-card">
+          <h3>Quick intake</h3>
+          <p class="muted">A short self-check to frame your first conversation.</p>
+          <form id="quick-intake" class="card-form">
+            <label>Preferred focus
+              <select id="qi-focus">
+                <option>Energy & sleep</option>
+                <option>Digestive rhythm</option>
+                <option>Stress & mood</option>
+                <option>Chronic pain</option>
+              </select>
+            </label>
+            <label>Availability
+              <select id="qi-availability">
+                <option>Weekdays</option>
+                <option>Evenings</option>
+                <option>Weekend</option>
+              </select>
+            </label>
+            <button type="button" id="qi-submit">Prepare my starter note</button>
+          </form>
+        </aside>
+      </div>
+    </section>
+
+    <!-- DIAGNOSTIC: Whole-person inventory -->
+    <section class="diagnostic wrap">
+      <h2>Whole-person inventory</h2>
+      <p class="muted">Check areas you'd like to address. We'll translate selections into a focused consultation agenda and a suggested follow-up cadence.</p>
+      <div class="inventory-grid">
+        <form id="inventory-form">
+          <label><input type="checkbox" name="areas" value="Sleep"> Sleep & nightly rhythm</label>
+          <label><input type="checkbox" name="areas" value="Nutrition"> Nutrition & digestive regularity</label>
+          <label><input type="checkbox" name="areas" value="Movement"> Movement & gentle conditioning</label>
+          <label><input type="checkbox" name="areas" value="Stress"> Stress response & recovery</label>
+          <label><input type="checkbox" name="areas" value="Relationships"> Relationships & communication</label>
+          <label><input type="checkbox" name="areas" value="Environment"> Home & sensory environment</label>
+          <label><input type="checkbox" name="areas" value="Work"> Work pace & boundaries</label>
+          <label><input type="checkbox" name="areas" value="Meaning"> Values & meaning</label>
+          <div class="inventory-actions">
+            <button type="button" id="inventory-build">Build agenda</button>
+            <button type="button" id="inventory-reset">Reset</button>
+          </div>
+        </form>
+        <div class="inventory-output" id="inventory-output" aria-live="polite">
+          <h3>Consultation agenda</h3>
+          <pre id="agenda-text">Select areas to see a draft agenda and follow-up plan.</pre>
+          <div class="copy-row">
+            <button id="copy-agenda">Copy agenda</button>
+            <button id="download-agenda">Download .txt</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLAN: Session Planner widget -->
+    <section class="plan wrap">
+      <h2>Session Planner</h2>
+      <p class="muted">Create a personalized care rhythm. Export a plain-text summary you can share or keep in your notes.</p>
+      <div class="planner">
+        <form id="planner-form">
+          <label>Participant name
+            <input id="planner-name" placeholder="Your name or initials">
+          </label>
+          <label>Primary goal
+            <input id="planner-goal" placeholder="E.g., better sleep consistency">
+          </label>
+          <label>Session length
+            <select id="planner-length">
+              <option value="30">30 minutes</option>
+              <option value="45">45 minutes</option>
+              <option value="60" selected>60 minutes</option>
+            </select>
+          </label>
+          <label>Sessions per month
+            <input id="planner-frequency" type="number" min="1" max="8" value="2">
+          </label>
+          <label>Planned program length (months)
+            <input id="planner-months" type="number" min="1" max="12" value="3">
+          </label>
+          <fieldset>
+            <legend>Focus areas (pick up to 4)</legend>
+            <label><input type="checkbox" name="focus" value="Sleep"> Sleep</label>
+            <label><input type="checkbox" name="focus" value="Digestion"> Digestion</label>
+            <label><input type="checkbox" name="focus" value="Movement"> Movement</label>
+            <label><input type="checkbox" name="focus" value="Stress"> Stress & resilience</label>
+            <label><input type="checkbox" name="focus" value="Respiration"> Breath & calming</label>
+            <label><input type="checkbox" name="focus" value="Habits"> Habit building</label>
+            <label><input type="checkbox" name="focus" value="Medications"> Medication review</label>
+          </fieldset>
+          <div class="planner-actions">
+            <button type="button" id="build-plan">Build plan</button>
+            <button type="button" id="clear-plan">Clear</button>
+          </div>
+        </form>
+        <div class="planner-output">
+          <h3>Plan summary</h3>
+          <pre id="plan-summary">No plan yet. Fill the form and choose Build plan.</pre>
+          <div class="copy-row">
+            <button id="copy-plan">Copy plan</button>
+            <button id="download-plan">Download .txt</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MICRO_HABITS -->
+    <section class="micro_habits wrap">
+      <h2>Daily micro-practices</h2>
+      <p class="muted">Small, doable actions that support the plan. They are educational and optional; none promise specific outcomes.</p>
+      <ul class="micro-list">
+        <li><strong>Evening cue:</strong> A five-minute wind-down sequence—gentle stretches, dim lights, and a brief breath practice.</li>
+        <li><strong>Midday reset:</strong> Three mindful breaths and a standing stretch break to interrupt long sittings.</li>
+        <li><strong>Digestive pause:</strong> Two mindful chews and a brief hydration ritual before meals.</li>
+        <li><strong>Boundary note:</strong> A short end-of-shift checklist to close the workday mentally.</li>
+      </ul>
+    </section>
+
+    <!-- PRICING -->
+    <section class="pricing wrap">
+      <h2>Membership options</h2>
+      <p class="muted">Rather than one-off visits, our memberships are designed to sustain progress across systems over time.</p>
+      <div class="pricing-grid">
+        <article class="tier">
+          <h3>Starter Rhythm</h3>
+          <p class="price">$89 / month</p>
+          <ul>
+            <li>1 consult / month (30 min)</li>
+            <li>Priority messaging</li>
+            <li>Monthly micro-practice handout</li>
+          </ul>
+          <a class="select" href="/pricing.html#starter">Select</a>
+        </article>
+        <article class="tier featured">
+          <h3>Steady Path</h3>
+          <p class="price">$199 / month</p>
+          <ul>
+            <li>2 consults / month (45–60 min)</li>
+            <li>Care planning & adjustments</li>
+            <li>Quarterly progress review</li>
+          </ul>
+          <a class="select" href="/pricing.html#steady">Select</a>
+        </article>
+        <article class="tier">
+          <h3>Continuum Care</h3>
+          <p class="price">$349 / month</p>
+          <ul>
+            <li>Weekly touchbase options</li>
+            <li>Comprehensive coordination</li>
+            <li>Personalized micro-habit program</li>
+          </ul>
+          <a class="select" href="/pricing.html#continuum">Select</a>
+        </article>
+      </div>
+      <p class="muted">All memberships include an initial intake and ongoing care adjustments. No guarantees; outcomes vary by person.</p>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta wrap final-cta">
+      <h2>Begin a steady path</h2>
+      <p class="muted">If you'd like structured guidance that respects your daily rhythm, start with a membership consultation.</p>
+      <div class="cta-actions">
+        <a class="primary large" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        <a class="ghost" href="/contact.html">Contact team</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-left">
+        <strong>{{BUSINESS_NAME}}</strong>
+        <small>{{CITY}}, {{STATE}}</small>
+      </div>
+      <div class="footer-right">
+        <a href="tel:{{PHONE}}">{{PHONE}}</a>
+        <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reach Out — Contact • {{BUSINESS_NAME}}</title>
+  <style>
+    :root{
+      --bg:#0f1721;
+      --card:#0b1220;
+      --muted:#9aa4b2;
+      --accent:#a78bfa;
+      --glass:rgba(255,255,255,0.04);
+      --accent-2:#60a5fa;
+      --maxw:980px;
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      color-scheme: dark;
+    }
+    html,body{height:100%;}
+    body{
+      margin:0;background:linear-gradient(180deg,#071025 0%, var(--bg) 60%);
+      color:#e6eef8;line-height:1.45;-webkit-font-smoothing:antialiased;
+      background-image: url('assets/img/pattern.svg');background-repeat:repeat;
+    }
+    .wrap{max-width:var(--maxw);margin:28px auto;padding:28px;border-radius:16px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 8px 40px rgba(2,6,23,0.6);}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:56px;height:56px;background:linear-gradient(135deg,var(--accent),var(--accent-2));border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#021025}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-size:14px}
+    nav a:hover{color:#fff}
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:22px;align-items:start}
+    .lead{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    h1{margin:0 0 8px 0;font-size:26px}
+    p.lead-text{margin:0;color:var(--muted)}
+    .aside{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .muted{color:var(--muted);font-size:13px}
+    .cta{display:inline-block;padding:10px 14px;border-radius:10px;background:var(--accent);color:#021025;font-weight:600;text-decoration:none}
+
+    /* Session Planner */
+    .planner{margin-top:16px;padding:14px;border-radius:12px;background:linear-gradient(180deg, rgba(167,139,250,0.06), rgba(96,165,250,0.02));border:1px solid rgba(167,139,250,0.08)}
+    .row{display:flex;gap:10px;margin-top:10px}
+    label{font-size:13px;color:var(--muted)}
+    input[type=text],input[type=number],select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+    button{cursor:pointer;border:0;padding:10px 12px;border-radius:10px;background:var(--accent);color:#021025;font-weight:600}
+    .small{font-size:13px;color:var(--muted)}
+
+    /* Events mini & selector */
+    .events{margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .card{padding:14px;border-radius:12px;background:var(--card);border:1px solid rgba(255,255,255,0.02)}
+    .event-list{max-height:200px;overflow:auto;margin-top:10px}
+    .event{padding:10px;border-radius:8px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+    .pill{font-size:12px;padding:6px 8px;border-radius:999px;background:rgba(255,255,255,0.03)}
+
+    .notice{font-size:13px;color:#ffd7d7;background:rgba(255,210,210,0.06);padding:10px;border-radius:8px;margin-top:12px}
+    footer{margin-top:24px;font-size:13px;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+
+    /* copy feedback */
+    .copied{display:inline-block;margin-left:10px;font-size:13px;color:#a6efb0}
+
+    @media (max-width:920px){
+      .hero{grid-template-columns:1fr;}
+      .events{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">SB</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div class="muted" style="margin-top:4px">Gentle sound gatherings in {{CITY}}, {{STATE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="events.html">Gatherings</a>
+        <a href="private-sessions.html">Private Sessions</a>
+        <a href="pricing.html">Investment</a>
+        <a href="about.html">Who We Are</a>
+        <a href="faq.html">Questions</a>
+        <a href="book.html">Reserve</a>
+        <a href="contact.html">Reach Us</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="lead">
+        <h1>Reach us — shape your next session</h1>
+        <p class="lead-text">A brief note, a plan, or a book: tell us what you need and we’ll reply with timing, accessibility details, and a tailored suggestion. Use the planner below to draft a session and copy it for your records.</p>
+
+        <div class="planner" aria-labelledby="planner-title">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-weight:700">Session Planner</div>
+              <div class="small">Build a simple plan for a single session — share it when you book.</div>
+            </div>
+            <div class="small muted">Export plain-text summary • local only</div>
+          </div>
+
+          <div class="row" style="margin-top:12px">
+            <div style="flex:1">
+              <label for="sp-focus">Primary focus</label>
+              <select id="sp-focus">
+                <option value="relaxation">Deep relaxation</option>
+                <option value="sleep">Restful sleep support</option>
+                <option value="stress">Stress & tension release</option>
+                <option value="creativity">Creativity & clarity</option>
+                <option value="recovery">Physical recovery & muscle ease</option>
+              </select>
+            </div>
+            <div style="width:120px">
+              <label for="sp-length">Length (mins)</label>
+              <input id="sp-length" type="number" min="20" max="120" value="60">
+            </div>
+          </div>
+
+          <div class="row">
+            <div style="flex:1">
+              <label for="sp-attendees">Number of participants</label>
+              <input id="sp-attendees" type="number" min="1" max="40" value="10">
+            </div>
+            <div style="width:160px">
+              <label for="sp-addons">Add-ons</label>
+              <select id="sp-addons" multiple size="3">
+                <option value="aroma">Aroma blend</option>
+                <option value="lighting">Soft lighting</option>
+                <option value="crystal">Crystal layout</option>
+                <option value="guided">Extended guided intro</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-top:10px">
+            <label for="sp-notes">Notes or intent</label>
+            <textarea id="sp-notes" rows="3" placeholder="A brief intention or detail to share with the facilitator"></textarea>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
+            <button id="sp-build">Create plan</button>
+            <button id="sp-copy" disabled>Copy plan</button>
+            <div id="sp-feedback" class="copied" aria-live="polite" style="visibility:hidden">Copied ✓</div>
+          </div>
+
+          <pre id="sp-output" style="margin-top:12px;background:rgba(255,255,255,0.01);padding:12px;border-radius:8px;max-height:220px;overflow:auto;font-family:monospace;font-size:13px"></pre>
+        </div>
+
+      </div>
+
+      <aside class="aside">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-weight:700">Quick contact</div>
+            <div class="muted" style="margin-top:6px">Reach by phone or email — we typically reply within 48 hours.</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-weight:700">{{PHONE}}</div>
+            <div class="muted">{{EMAIL}}</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <form id="contact-form">
+            <label for="c-name">Name</label>
+            <input id="c-name" type="text" placeholder="Your name">
+            <label for="c-email">Email</label>
+            <input id="c-email" type="text" placeholder="you@example.com">
+            <label for="c-message">Message</label>
+            <textarea id="c-message" rows="4" placeholder="Tell us what you're hoping to receive"></textarea>
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button type="submit">Send message</button>
+              <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            </div>
+          </form>
+          <div id="contact-feedback" class="muted" style="margin-top:8px;display:none">Thanks — a human will reply soon.</div>
+        </div>
+
+        <div class="notice">
+          A note on safety: sound sessions may not be appropriate for everyone. Please consult your healthcare provider before attending if you are pregnant (first trimester), have a history of seizures or uncontrolled epilepsy, have an implanted medical device (e.g., pacemaker), are recovering from recent head injury, or are experiencing acute psychiatric symptoms. If in doubt, reach out at {{EMAIL}} before booking.
+        </div>
+      </aside>
+    </section>
+
+    <!-- Events + Seat selector modules (two variants) -->
+    <section class="events">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-weight:700">Next community gathering</div>
+            <div class="muted" style="font-size:13px">A nearby group session — quick reserve and packing list</div>
+          </div>
+          <div class="pill">Next • Sat</div>
+        </div>
+
+        <div style="margin-top:12px"> 
+          <div style="font-weight:600">Evening Sound Pause — Saturday, 7:00pm</div>
+          <div class="muted" style="margin-top:6px">Location: Downtown studio</div>
+        </div>
+
+        <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
+          <label class="small">Seat</label>
+          <select id="mini-seat-type">
+            <option value="mat">Floor mat</option>
+            <option value="cushion">Meditation cushion</option>
+            <option value="chair">Chair</option>
+          </select>
+          <input id="mini-seat-qty" type="number" min="1" max="6" value="1" style="width:70px;padding:8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04)">
+          <button id="mini-reserve">Reserve</button>
+        </div>
+
+        <div id="mini-packing" style="margin-top:10px;display:none">
+          <div style="font-weight:600;margin-bottom:6px">What to bring</div>
+          <ul id="mini-packing-list" style="margin:0 0 8px 18px;color:var(--muted)"></ul>
+          <button id="mini-copy">Copy list</button>
+          <span id="mini-copied" class="copied" style="visibility:hidden">Copied ✓</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-weight:700">Seat selector & packing generator</div>
+          <div class="muted">Pick a date and seats</div>
+        </div>
+
+        <div class="event-list" aria-live="polite" style="margin-top:8px">
+          <!-- Fake calendar list populated by JS -->
+          <div id="calendar-list"></div>
+        </div>
+
+        <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
+          <label class="small">Date</label>
+          <select id="evt-date"></select>
+          <label class="small">Seat type</label>
+          <select id="evt-seat-type">
+            <option value="mat">Mat</option>
+            <option value="cushion">Cushion</option>
+            <option value="chair">Chair</option>
+          </select>
+          <input id="evt-qty" type="number" min="1" max="20" value="1" style="width:70px;padding:8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04)">
+          <button id="evt-check">Check & List</button>
+        </div>
+
+        <div id="evt-result" style="margin-top:12px;display:none">
+          <div style="font-weight:600">Packing list</div>
+          <ul id="evt-packing" style="margin:6px 0 0 18px;color:var(--muted)"></ul>
+          <div style="margin-top:8px">
+            <button id="evt-copy">Copy packing list</button>
+            <span id="evt-ok" class="copied" style="visibility:hidden">Copied ✓</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <footer>
+      <div>Prefer the phone? <strong>{{PHONE}}</strong></div>
+      <div><a href="mailto:{{EMAIL}}" style="color:var(--muted);text-decoration:none">{{EMAIL}}</a></div>
+    </footer>
+  </div>
+
+  <script>
+    // Session Planner logic
+    function buildPlan(){
+      var focusMap={
+        relaxation:'Gentle, continuous supports with emphasis on low-frequency bowls and breath-led guidance.',
+        sleep:'Long, slow harmonics; emphasis on grounding and cues to shift toward sleep-ready physiology.',
+        stress:'Focused release sections with shorter pulses, interspersed with space for body-scan and guided release.',
+        creativity:'Opening sequence to invite sensory looseness, with intervals that allow imaginative responses.',
+        recovery:'Structured sound for muscle ease, with pauses for simple somatic checks and grounding cues.'
+      };
+      var focus=document.getElementById('sp-focus').value;
+      var length=document.getElementById('sp-length').value;
+      var attendees=document.getElementById('sp-attendees').value;
+      var addonsSel=document.getElementById('sp-addons');
+      var addons=[];
+      for(var i=0;i<addonsSel.options.length;i++){if(addonsSel.options[i].selected)addons.push(addonsSel.options[i].value)}
+      var notes=document.getElementById('sp-notes').value.trim();
+
+      var plan=[];
+      plan.push('Session Planner — {{BUSINESS_NAME}}');
+      plan.push('Primary focus: '+document.getElementById('sp-focus').selectedOptions[0].text);
+      plan.push('Length: '+length+' minutes');
+      plan.push('Participants: '+attendees);
+      plan.push('Suggested structure:');
+      var sugg=focusMap[focus] || '';
+      plan.push('- '+sugg);
+      if(addons.length){plan.push('Add-ons: '+addons.join(', '));}
+      if(notes){plan.push('Notes: '+notes);}else{plan.push('Notes: —');}
+      plan.push('Contact: '+ '{{EMAIL}}');
+
+      var out=plan.join('\n');
+      document.getElementById('sp-output').textContent=out;
+      document.getElementById('sp-copy').disabled=false;
+    }
+
+    document.getElementById('sp-build').addEventListener('click',function(e){buildPlan();});
+    document.getElementById('sp-copy').addEventListener('click',function(){
+      var text=document.getElementById('sp-output').textContent;
+      if(!text) return;
+      navigator.clipboard.writeText(text).then(function(){
+        var fb=document.getElementById('sp-feedback');fb.style.visibility='visible';setTimeout(function(){fb.style.visibility='hidden';},1800);
+      });
+    });
+
+    // Contact form fake submit
+    document.getElementById('contact-form').addEventListener('submit',function(e){
+      e.preventDefault();
+      document.getElementById('contact-feedback').style.display='block';
+      setTimeout(function(){document.getElementById('contact-feedback').textContent='Message received. If your request is urgent please call '+ '{{PHONE}}';},800);
+    });
+
+    // Mini seat selector & packing list
+    function miniReserve(){
+      var type=document.getElementById('mini-seat-type').value;
+      var qty=parseInt(document.getElementById('mini-seat-qty').value,10)||1;
+      var list=document.getElementById('mini-packing-list');list.innerHTML='';
+      var items=['Water bottle','Light blanket','Yoga mat (if you chose a mat)','Cushion if preferred (for chairs)'];
+      // tailored
+      var tailored=[];
+      if(type==='mat') tailored=['Yoga mat or thin pad','Small bolster or folded blanket','Water bottle'];
+      if(type==='cushion') tailored=['Meditation cushion or small pillow','Light shawl','Water bottle'];
+      if(type==='chair') tailored=['Comfortable chair (or request provided)','Small blanket for warmth','Water bottle'];
+      tailored.forEach(function(it){var li=document.createElement('li');li.textContent=it;list.appendChild(li);});
+      var li2=document.createElement('li');li2.textContent='Quantity reserved: '+qty;list.appendChild(li2);
+      document.getElementById('mini-packing').style.display='block';
+      document.getElementById('mini-copy').focus();
+    }
+    document.getElementById('mini-reserve').addEventListener('click',miniReserve);
+    document.getElementById('mini-copy').addEventListener('click',function(){
+      var items=document.querySelectorAll('#mini-packing-list li');
+      var lines=[];items.forEach(function(i){lines.push(i.textContent);});
+      var txt='Packing list for {{BUSINESS_NAME}} event:\n'+lines.join('\n');
+      navigator.clipboard.writeText(txt).then(function(){document.getElementById('mini-copied').style.visibility='visible';setTimeout(function(){document.getElementById('mini-copied').style.visibility='hidden';},1600)});
+    });
+
+    // Full calendar + seat availability simulation
+    var fakeEvents=[];
+    (function buildFakeEvents(){
+      var now=new Date();
+      for(var i=1;i<=8;i++){
+        var d=new Date(now.getFullYear(),now.getMonth(),now.getDate()+i);
+        var label=d.toDateString().slice(0,10)+ ' — ' + ((i%2===0)?'Evening 7pm':'Morning 10am');
+        fakeEvents.push({id:i,date:d.toISOString().slice(0,10),label:label,availability:{mat:12,cushion:8,chair:10}});
+      }
+      var list=document.getElementById('calendar-list');
+      var select=document.getElementById('evt-date');
+      fakeEvents.forEach(function(ev){
+        var div=document.createElement('div');div.className='event';div.innerHTML='<div style="font-weight:600">'+ev.label+'</div><div class="pill">'+ev.date+'</div>';
+        list.appendChild(div);
+        var opt=document.createElement('option');opt.value=ev.id;opt.textContent=ev.label+' ('+ev.date+')';select.appendChild(opt);
+      });
+    })();
+
+    document.getElementById('evt-check').addEventListener('click',function(){
+      var id=parseInt(document.getElementById('evt-date').value,10);
+      var type=document.getElementById('evt-seat-type').value;
+      var qty=parseInt(document.getElementById('evt-qty').value,10)||1;
+      var ev=fakeEvents.find(function(x){return x.id===id});
+      if(!ev) return;
+      var avail=ev.availability[type]||0;
+      var packing=document.getElementById('evt-packing');packing.innerHTML='';
+      var lines=[];
+      if(qty>avail){
+        var note=document.createElement('div');note.className='notice';note.textContent='Only '+avail+' '+type+' seats left for this date.';document.getElementById('evt-result').insertBefore(note,packing);
+      }
+      // generate list
+      if(type==='mat') lines=['Yoga mat or large towel','Thin blanket','Head cushion/rolled towel','Water bottle'];
+      if(type==='cushion') lines=['Meditation cushion','Socks for warmth','Light shawl','Water bottle'];
+      if(type==='chair') lines=['Sturdy chair (or request one)','Cushion for lower back','Light sweater','Water bottle'];
+      lines.push('Quantity: '+qty);
+      lines.forEach(function(l){var li=document.createElement('li');li.textContent=l;packing.appendChild(li);});
+      document.getElementById('evt-result').style.display='block';
+    });
+
+    document.getElementById('evt-copy').addEventListener('click',function(){
+      var items=document.querySelectorAll('#evt-packing li');
+      var lines=[];items.forEach(function(i){lines.push(i.textContent);});
+      var txt='Packing list for {{BUSINESS_NAME}} event:\n'+lines.join('\n');
+      navigator.clipboard.writeText(txt).then(function(){document.getElementById('evt-ok').style.visibility='visible';setTimeout(function(){document.getElementById('evt-ok').style.visibility='hidden';},1600)});
+    });
+  </script>
+</body>
+</html>

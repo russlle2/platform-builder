@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7f5f2;--ink:#1b1b1d;--muted:#63676b;--accent:#8c69ff;--max:980px}
+    body{margin:0;font-family:Inter,system-ui,Arial;background:var(--bg);color:var(--ink)}
+    .shell{max-width:var(--max);margin:28px auto;padding:28px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{color:var(--ink);text-decoration:none;margin-left:14px}
+    .hero{display:flex;gap:18px;align-items:center;margin-top:18px}
+    .hero img{width:120px;height:120px;border-radius:12px}
+    .panel{background:#fff;border-radius:12px;padding:18px;margin-top:16px}
+    .form-row{display:flex;gap:8px;margin-top:10px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e6e6}
+    .submit{background:var(--accent);color:#fff;padding:10px 12px;border-radius:10px;border:none;margin-top:12px}
+    .small{color:var(--muted);font-size:13px}
+    .testi{background:linear-gradient(90deg,#fff,#f8f6ff);padding:12px;border-radius:8px;margin-top:12px}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="specialties.html">Services</a>
+        <a href="approach.html">Approach</a>
+        <a href="fees.html">Fees</a>
+        <a href="faq.html">Help</a>
+        <a href="book.html">Reserve</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <div class="hero">
+      <img src="assets/img/pattern.svg" alt="pattern" />
+      <div>
+        <h1 style="margin:0;font-size:28px">Reserve an introductory conversation</h1>
+        <p class="small">A 20-minute consult to talk about goals, availability, and next steps. No obligation.</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2 style="margin:0 0 8px">Booking options</h2>
+      <p class="small">Choose the type of session you’d like to start with. If you’re unsure, select "Introductory Call" and we’ll discuss further.</p>
+
+      <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap">
+        <div style="flex:1;min-width:220px;background:#fff;border:1px solid #f0eff5;padding:12px;border-radius:8px">
+          <strong>Introductory Call</strong>
+          <div class="small" style="margin-top:6px">20 minutes. Free. Brief conversation to assess fit and logistics.</div>
+        </div>
+        <div style="flex:1;min-width:220px;background:#fff;border:1px solid #f0eff5;padding:12px;border-radius:8px">
+          <strong>Standard Session</strong>
+          <div class="small" style="margin-top:6px">50 minutes. Regular session for therapy work.</div>
+        </div>
+        <div style="flex:1;min-width:220px;background:#fff;border:1px solid #f0eff5;padding:12px;border-radius:8px">
+          <strong>Short-Term Series — Pilot</strong>
+          <div class="small" style="margin-top:6px">6-session structured track for defined goals. Payment options available.</div>
+        </div>
+      </div>
+
+      <form style="margin-top:16px" action="{{PRIMARY_CTA_URL}}" method="get">
+        <label class="small">Your name</label>
+        <input type="text" name="name" required />
+
+        <div class="form-row">
+          <div style="flex:1">
+            <label class="small">Email</label>
+            <input type="email" name="email" required />
+          </div>
+          <div style="width:200px">
+            <label class="small">Phone</label>
+            <input type="tel" name="phone" />
+          </div>
+        </div>
+
+        <label class="small" style="margin-top:8px">Select a session</label>
+        <select name="session_type">
+          <option>Introductory Call (20 min)</option>
+          <option>Standard Session (50 min)</option>
+          <option>Short-Term Series intake</option>
+        </select>
+
+        <label class="small" style="margin-top:8px">Preferred days/times</label>
+        <input type="text" name="availability" placeholder="e.g., Tue mornings, Wed evenings" />
+
+        <label class="small" style="margin-top:8px">Brief note about what brings you here</label>
+        <textarea name="note" rows="4" placeholder="Optional"></textarea>
+
+        <div style="display:flex;gap:10px;align-items:center;margin-top:12px">
+          <button class="submit" type="submit">Request this time</button>
+          <div class="small">Or call: <strong>{{PHONE}}</strong></div>
+        </div>
+
+      </form>
+
+      <div class="testi">
+        <strong>Lower barrier option</strong>
+        <div class="small" style="margin-top:6px">If cost is a concern, ask about limited reduced-fee slots at your consult. I reserve a small number of these to maintain fairness and availability.</div>
+      </div>
+
+      <div style="margin-top:12px;color:var(--muted);font-size:13px">
+        Confidentiality & limits: Messages and scheduling info are treated as part of the clinical record. Exceptions to confidentiality include imminent risk, suspected abuse, and legal orders. Scope: outpatient psychotherapy for adults. If you are in crisis, call emergency services immediately.
+      </div>
+
+      <div style="margin-top:12px;color:var(--muted);font-size:12px">By submitting this request you consent to be contacted via email or phone by {{THERAPIST_NAME}} to arrange the appointment.</div>
+
+    </div>
+
+    <div style="margin-top:18px;display:flex;gap:12px;align-items:center">
+      <div style="flex:1">
+        <div style="font-weight:700">Need help picking a time?</div>
+        <div class="small" style="margin-top:6px">If you’re unsure which option fits, choose the Introductory Call. We’ll use that time to clarify goals and next steps.</div>
+      </div>
+      <div>
+        <a href="{{PRIMARY_CTA_URL}}" class="submit">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </div>
+
+    <footer style="margin-top:22px;color:var(--muted);font-size:13px">{{THERAPIST_NAME}}, {{LICENSE}} — {{CITY}}, {{STATE}} | <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Questions — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#071225;--card:rgba(255,255,255,0.03);--accent:#8be9fd;--muted:#cbd5e1}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto; background:linear-gradient(180deg,#041426,#071225);color:#e6f3fb}
+    .wrap{max-width:900px;margin:28px auto;padding:18px}
+    header{display:flex;justify-content:space-between;align-items:center;padding:8px 0}
+    nav a{color:var(--muted);text-decoration:none;margin-left:12px}
+
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
+    @media(max-width:880px){.grid{grid-template-columns:1fr}}
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:16px;border-radius:12px}
+    h1{margin:0 0 8px 0}
+
+    .faq-item{border-radius:10px;padding:12px;margin-bottom:10px;background:rgba(255,255,255,0.01)}
+    .q{display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+    .a{margin-top:8px;color:var(--muted);display:none}
+
+    .proof-mini{margin-top:12px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.02)}
+    .btn{background:linear-gradient(90deg,var(--accent),#7ef1c7);color:#04212a;padding:8px 12px;border-radius:8px;border:none;cursor:pointer}
+    .muted{color:var(--muted);font-size:13px}
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div style="display:flex;gap:12px;align-items:center">
+        <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#06b6d4,#7c3aed);display:flex;align-items:center;justify-content:center;font-weight:700;color:#022">PP</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div class="muted">Helpful details about working together</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Welcome</a>
+        <a href="fees.html">Rates & Plans</a>
+        <a href="book.html">Schedule</a>
+      </nav>
+    </header>
+
+    <main class="grid">
+      <section class="panel">
+        <h1>Common Questions</h1>
+        <p class="muted">Short answers to practical questions before you book. If you don't see what you need, reach out: <a href="mailto:{{EMAIL}}" style="color:inherit">{{EMAIL}}</a></p>
+
+        <div id="faqs" style="margin-top:16px">
+          <div class="faq-item">
+            <div class="q"> <div>How do I know if therapy is right now?</div> <button class="toggle">+</button></div>
+            <div class="a">I can help you explore that. A single session can be a low-commitment way to get a sense of fit and next steps.</div>
+          </div>
+
+          <div class="faq-item">
+            <div class="q"> <div>Do you accept insurance?</div> <button class="toggle">+</button></div>
+            <div class="a">I am out-of-network but provide a receipt (superbill) you can submit to many insurers for reimbursement. We can discuss billing at intake.</div>
+          </div>
+
+          <div class="faq-item">
+            <div class="q"> <div>What is the cohort experience?</div> <button class="toggle">+</button></div>
+            <div class="a">A small group that meets regularly with focused learning prompts and optional individual check-ins. It’s structured for shared learning, not group therapy.</div>
+          </div>
+
+          <div class="faq-item">
+            <div class="q"> <div>How long are sessions?</div> <button class="toggle">+</button></div>
+            <div class="a">Standard sessions are 50 minutes. Some focused sessions or administrative check-ins may be shorter; we'll confirm in scheduling.</div>
+          </div>
+
+          <div class="faq-item">
+            <div class="q"> <div>Is this confidential?</div> <button class="toggle">+</button></div>
+            <div class="a">Yes. Notes and session content are confidential within professional and legal limits. We'll review limits of confidentiality during intake.</div>
+          </div>
+        </div>
+      </section>
+
+      <aside>
+        <div class="panel">
+          <strong>Need a quick sense of fit?</strong>
+          <p class="muted" style="margin-top:8px">Book a single session to discuss priorities and options. No long-term commitment required.</p>
+          <div style="margin-top:12px"><button class="btn" onclick="location.href='book.html'">Arrange a First Visit</button></div>
+
+          <div class="proof-mini" id="mini-proof" style="margin-top:14px">
+            <strong>Voices</strong>
+            <div id="mini-quote" style="margin-top:8px;color:#dff7ff">"Calm, practical, and constructive — I left with a clear next step."</div>
+            <div style="margin-top:8px" class="muted">— M. R., series client</div>
+          </div>
+
+          <div style="margin-top:12px" class="muted">If you are in crisis, call 911 or local emergency services. This site is not a crisis resource.</div>
+        </div>
+      </aside>
+    </main>
+
+    <script>
+      // FAQ expand/collapse logic + small testimonial rotation
+      document.querySelectorAll('.faq-item').forEach(item=>{
+        const btn = item.querySelector('.toggle');
+        const ans = item.querySelector('.a');
+        btn.addEventListener('click', ()=>{
+          const open = ans.style.display === 'block';
+          ans.style.display = open ? 'none' : 'block';
+          btn.textContent = open ? '+' : '−';
+        });
+      });
+
+      const miniQuotes = [
+        '"Calm, practical, and constructive — I left with a clear next step." — M. R.',
+        '"Small experiments that fit my life — not extra pressure." — J. S.',
+        '"The cohort kept me curious and accountable in a kind way." — L. P.'
+      ];
+      const mqEl = document.getElementById('mini-quote');
+      let mq = 0; setInterval(()=>{ mq = (mq+1)%miniQuotes.length; mqEl.textContent = miniQuotes[mq]; },4000);
+    </script>
+  </div>
+</body>
+</html>

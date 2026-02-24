@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FAQ — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#061019;--card:#071424;--accent:#caa4ff;--muted:#9fb0c6;--text:#e9f1fb}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial;background:var(--bg);color:var(--text)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px}
+    nav a{color:var(--text);text-decoration:none;margin:0 10px}
+    main{padding:18px 22px}
+    .lead{color:var(--muted);max-width:720px}
+    .faq-grid{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
+    .faq-list{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:18px;border-radius:12px}
+    .q{padding:12px;border-bottom:1px solid rgba(255,255,255,0.02)}
+    .q button{background:none;border:0;color:var(--text);font-weight:700;cursor:pointer}
+    .a{color:var(--muted);margin-top:8px}
+    .side{background:rgba(255,255,255,0.02);padding:14px;border-radius:12px}
+
+    /* Pricing comparator */
+    .comparator{display:flex;flex-direction:column;gap:12px}
+    .switch{display:flex;gap:8px;align-items:center}
+    .toggle{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.03);display:inline-flex}
+    .toggle button{background:none;border:0;padding:6px 10px;border-radius:999px;cursor:pointer}
+    .toggle button.active{background:var(--accent);color:#081024}
+    .prices{display:flex;gap:10px;align-items:baseline}
+    .price{font-size:22px;font-weight:800}
+
+    footer{padding:18px 22px;color:var(--muted);font-size:13px;margin-top:18px}
+    @media(max-width:880px){.faq-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div style="width:42px;height:42px;border-radius:8px;background:linear-gradient(180deg,#caa4ff,#9b7bff)"></div>
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="events.html">Gatherings</a>
+      <a href="private-sessions.html">Private</a>
+      <a href="about.html">About</a>
+      <a href="book.html">Reserve</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Questions people ask before they come</h1>
+    <p class="lead">Practical answers about attendance, preparation, and safety. If you need a direct consult, email us at {{EMAIL}} or call {{PHONE}}.</p>
+
+    <section class="faq-grid">
+      <div class="faq-list" aria-live="polite">
+
+        <div class="q">
+          <button aria-expanded="false" data-id="q1">What should I expect in a typical session?</button>
+          <div class="a" id="q1" hidden>Sessions start with a welcome and short orientation, followed by a guided sonic sequence (15–45 minutes depending on format). We end with a brief settling and practical tips to carry the effect forward.</div>
+        </div>
+
+        <div class="q">
+          <button aria-expanded="false" data-id="q2">How should I prepare?</button>
+          <div class="a" id="q2" hidden>Wear comfortable clothes, hydrate, and avoid heavy meals just before. Bring eye covering if you prefer darkness. We provide blankets and cushions on site.</div>
+        </div>
+
+        <div class="q">
+          <button aria-expanded="false" data-id="q3">Are there any contraindications?</button>
+          <div class="a" id="q3" hidden>Yes. Please check with us before attending if you are pregnant, have an implanted neurostimulator or cardiac device, have epilepsy, recent head/neck injury, severe psychiatric diagnoses, or are under the influence of mind-altering substances. We will recommend private alternatives if needed.</div>
+        </div>
+
+        <div class="q">
+          <button aria-expanded="false" data-id="q4">Can I bring friends?</button>
+          <div class="a" id="q4" hidden>You can attend with friends; group sessions are pre-booked and limited in size to preserve the experience. Private bookings are available for groups that want a dedicated time.</div>
+        </div>
+
+        <div class="q">
+          <button aria-expanded="false" data-id="q5">What if I fall asleep?</button>
+          <div class="a" id="q5" hidden>Falling asleep is an acceptable and normal response. The session still supports restorative processes. If staying awake is important, let the facilitator know — we can offer variations.</div>
+        </div>
+
+      </div>
+
+      <aside class="side">
+        <h3 style="margin-top:0">Quick booking & pricing</h3>
+        <div class="comparator">
+          <div class="switch">
+            <div style="font-size:13px;color:var(--muted)">View:</div>
+            <div class="toggle" role="tablist" aria-label="Pricing toggle">
+              <button id="tab-package" class="active">Single / Package</button>
+              <button id="tab-monthly">Subscription</button>
+            </div>
+          </div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-size:13px;color:var(--muted)">Starter</div>
+              <div class="prices"><div class="price" id="price-a">$45</div><div style="color:var(--muted);font-size:13px">/session</div></div>
+            </div>
+            <div>
+              <div style="font-size:13px;color:var(--muted)">Series</div>
+              <div class="prices"><div class="price" id="price-b">$170</div><div style="color:var(--muted);font-size:13px">/4 sessions</div></div>
+            </div>
+          </div>
+
+          <div style="margin-top:8px"><a id="bookingLink" href="book.html" style="display:inline-block;padding:9px 12px;background:var(--accent);color:#04101a;border-radius:8px;text-decoration:none;font-weight:700">Reserve now</a></div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <footer>
+    <div style="padding:12px 22px;color:var(--muted)">If something here doesn’t answer your question, email {{EMAIL}} or call {{PHONE}}. We’re glad to help you choose the right offering.</div>
+  </footer>
+
+  <script>
+    // FAQ toggle
+    document.querySelectorAll('.q button').forEach(btn => {
+      btn.addEventListener('click', ()=>{
+        const id = btn.dataset.id;
+        const panel = document.getElementById(id);
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', String(!expanded));
+        panel.hidden = expanded;
+      });
+    });
+
+    // Pricing comparator logic with animated numbers
+    const prices = {
+      package: {a:45, b:170},
+      monthly: {a:30, b:120}
+    };
+    let mode = 'package';
+    const elA = document.getElementById('price-a');
+    const elB = document.getElementById('price-b');
+    const link = document.getElementById('bookingLink');
+
+    function animateNumber(el, start, end, duration=450){
+      const startTime = performance.now();
+      function frame(now){
+        const t = Math.min(1,(now-startTime)/duration);
+        const val = Math.round(start + (end-start)*t);
+        el.textContent = '$'+val;
+        if(t<1) requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+    }
+
+    document.getElementById('tab-package').addEventListener('click', ()=>{
+      if(mode==='package') return; mode='package';
+      document.getElementById('tab-package').classList.add('active');
+      document.getElementById('tab-monthly').classList.remove('active');
+      animateNumber(elA, parseInt(elA.textContent.replace(/\D/g,''))||0, prices.package.a);
+      animateNumber(elB, parseInt(elB.textContent.replace(/\D/g,''))||0, prices.package.b);
+      link.href='book.html?plan=package';
+    });
+
+    document.getElementById('tab-monthly').addEventListener('click', ()=>{
+      if(mode==='monthly') return; mode='monthly';
+      document.getElementById('tab-monthly').classList.add('active');
+      document.getElementById('tab-package').classList.remove('active');
+      animateNumber(elA, parseInt(elA.textContent.replace(/\D/g,''))||0, prices.monthly.a);
+      animateNumber(elB, parseInt(elB.textContent.replace(/\D/g,''))||0, prices.monthly.b);
+      link.href='book.html?plan=monthly';
+    });
+  </script>
+</body>
+</html>

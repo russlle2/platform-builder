@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Reserve — Session Planner — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#071018;--muted:#9aa2a6;--accent:#c7f3e6;--panel:rgba(255,255,255,0.02)}
+    body{margin:0;font-family:Inter,system-ui,Roboto,Arial;color:var(--accent);background:radial-gradient(1200px 400px at 20% 10%,#08343a10,transparent),#061015}
+    .wrap{max-width:980px;margin:36px auto;padding:20px}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    nav a{color:var(--muted);text-decoration:none;margin-left:12px}
+    h1{margin:0 0 6px}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:18px}
+    .panel{background:var(--panel);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    select,input[type=checkbox]{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--accent)}
+    .btn{background:linear-gradient(180deg,#76ead5,#59c3ff);border:none;padding:10px 12px;border-radius:10px;color:#012;cursor:pointer;font-weight:600}
+    .summary{white-space:pre-wrap;background:rgba(0,0,0,0.3);padding:10px;border-radius:10px;color:var(--muted);margin-top:10px}
+    .seat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+    .seat{padding:10px;border-radius:8px;text-align:center;background:rgba(255,255,255,0.03);cursor:pointer}
+    .seat.sel{background:#76ead5;color:#012}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div style="font-weight:600">Reserve — {{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html">Gatherings</a>
+        <a href="events.html">Calendar</a>
+        <a href="private-sessions.html">Private</a>
+        <a href="pricing.html">Invest</a>
+        <a href="about.html">About</a>
+        <a href="faq.html">Answers</a>
+        <a href="book.html">Reserve</a>
+        <a href="contact.html">Reach</a>
+      </nav>
+    </header>
+
+    <main class="grid">
+      <div>
+        <section class="panel">
+          <h1 style="margin-bottom:6px">Session Planner</h1>
+          <p style="margin:0 0 12px;color:var(--muted)">Build a focused session and copy a simple plan you can send or save.</p>
+
+          <form id="planner">
+            <label>Format</label>
+            <select id="format">
+              <option value="group">Community Session (shared)</option>
+              <option value="private">Private Guidance</option>
+              <option value="micro">Micro (30 min)</option>
+            </select>
+
+            <label style="margin-top:10px">Length</label>
+            <select id="length">
+              <option>30</option>
+              <option selected>60</option>
+              <option>90</option>
+            </select>
+
+            <label style="margin-top:10px">Intention</label>
+            <select id="intention">
+              <option value="rest">Rest & reset</option>
+              <option value="focus">Return to focus</option>
+              <option value="release">Release tension</option>
+            </select>
+
+            <label style="margin-top:10px">Instrument set</label>
+            <select id="instruments">
+              <option>Singing bowls & bells</option>
+              <option>Soft gong & voice</option>
+              <option>Chimes & subtle drones</option>
+            </select>
+
+            <div style="margin-top:10px">
+              <label><input type="checkbox" id="aroma"/> Add subtle aromatherapy</label>
+            </div>
+
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <button class="btn" id="build" type="button">Create plan</button>
+              <button class="btn" id="reserve" type="button">{{PRIMARY_CTA_LABEL}}</button>
+            </div>
+
+            <div class="summary" id="planOut" aria-live="polite">No plan yet. Use the controls and click Create plan.</div>
+
+            <div style="margin-top:8px;display:flex;gap:8px">
+              <button class="btn" id="copyPlan" type="button">Copy text</button>
+              <button class="btn" id="emailPlan" type="button">Email to {{EMAIL}}</button>
+            </div>
+          </form>
+
+          <div style="margin-top:12px;color:var(--muted)">Note: Please tell us about any medical conditions or sensitivities when you reserve. See Answers for contraindications.</div>
+        </section>
+
+        <section class="panel" style="margin-top:14px">
+          <h3 style="margin:0 0 8px">Quick booking note</h3>
+          <p style="margin:0;color:var(--muted)">After you create a plan, reserve a specific date on the calendar page or {{$PRIMARY_CTA_LABEL}} via the button to secure a private session.</p>
+        </section>
+      </div>
+
+      <aside>
+        <section class="panel">
+          <h3 style="margin:0 0 8px">Seat selector (reserve a place)</h3>
+          <div class="seat-grid" id="seatGrid"></div>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button class="btn" id="seatClear">Clear</button>
+            <button class="btn" id="seatSuggest">Suggest seat</button>
+            <div style="margin-left:auto;color:var(--muted)">Selected: <strong id="selCount">0</strong></div>
+          </div>
+          <div style="margin-top:10px;color:var(--muted)" id="bring">Packing list: —</div>
+        </section>
+
+        <section class="panel" style="margin-top:14px">
+          <h4 style="margin:0 0 8px">Need help?</h4>
+          <p style="margin:0;color:var(--muted)">Call <a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a></p>
+          <div style="margin-top:8px"><a href="events.html" class="btn">See next dates</a></div>
+        </section>
+      </aside>
+    </main>
+
+  <script>
+    // Session planner
+    (function(){
+      const build = document.getElementById('build');
+      const planOut = document.getElementById('planOut');
+      const copyBtn = document.getElementById('copyPlan');
+      const emailBtn = document.getElementById('emailPlan');
+      const reserveBtn = document.getElementById('reserve');
+
+      function createPlan(){
+        const fmt = document.getElementById('format').value;
+        const len = document.getElementById('length').value;
+        const intent = document.getElementById('intention').value;
+        const instr = document.getElementById('instruments').value;
+        const aroma = document.getElementById('aroma').checked ? 'Yes' : 'No';
+        const arrival = (fmt==='private') ? 'Arrive 10 minutes early for intake.' : 'Arrive 10–15 minutes early to choose a seat.';
+
+        const text = [];
+        text.push('Session plan');
+        text.push('Format: '+fmt);
+        text.push('Length: '+len+' minutes');
+        text.push('Intention: '+intent);
+        text.push('Instruments: '+instr);
+        text.push('Aromatherapy: '+aroma);
+        text.push('Arrival: '+arrival);
+        text.push('\nSuggested packing: Mat or blanket, small cushion, water, warm layer.');
+        text.push('\nContraindications: If pregnant, have heart conditions, epilepsy, or sensitivity to vibration, consult a clinician before attending.');
+
+        return text.join('\n');
+      }
+
+      build.addEventListener('click',()=>{planOut.textContent = createPlan()});
+      copyBtn.addEventListener('click',()=>{
+        navigator.clipboard.writeText(planOut.textContent).then(()=>{copyBtn.textContent='Copied'}).catch(()=>{copyBtn.textContent='Copy failed'})
+        setTimeout(()=>copyBtn.textContent='Copy text',1000);
+      });
+      emailBtn.addEventListener('click',()=>{
+        const body = encodeURIComponent(planOut.textContent || createPlan());
+        window.location = 'mailto:{{EMAIL}}?subject='+encodeURIComponent('Planned session')+'&body='+body;
+      });
+      reserveBtn.addEventListener('click',()=>{window.location = '{{PRIMARY_CTA_URL}}';});
+    })();
+
+    // Seat selector with packing list
+    (function(){
+      const grid = document.getElementById('seatGrid');
+      const selCount = document.getElementById('selCount');
+      const bring = document.getElementById('bring');
+      const clear = document.getElementById('seatClear');
+      const suggest = document.getElementById('seatSuggest');
+      const seats = 12; let selected = new Set();
+
+      function render(){
+        grid.innerHTML='';
+        for(let i=1;i<=seats;i++){
+          const el = document.createElement('div');
+          el.className = 'seat'+(selected.has(i)?' sel':'');
+          el.textContent = i;
+          el.addEventListener('click',()=>toggle(i,el));
+          grid.appendChild(el);
+        }
+        selCount.textContent = selected.size;
+        updateBring();
+      }
+      function toggle(i,el){
+        if(selected.has(i)) selected.delete(i); else selected.add(i);
+        render();
+      }
+      function updateBring(){
+        const n = selected.size || 1;
+        const items = ['Mat or blanket','Pillow','Water'];
+        if(n>6) items.push('Extra blanket');
+        bring.textContent = 'Packing list for '+n+' person'+(n>1?'s: ':' : ')+items.join(', ');
+      }
+      clear.addEventListener('click',()=>{selected.clear();render()});
+      suggest.addEventListener('click',()=>{selected.clear();selected.add(2);render()});
+      render();
+    })();
+  </script>
+</body>
+</html>

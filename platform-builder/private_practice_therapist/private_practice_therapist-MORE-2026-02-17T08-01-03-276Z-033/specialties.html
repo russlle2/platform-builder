@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Areas I Work With — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--muted:#5e6a6f;--accent:#1873b3;--card:#fff;--radius:14px}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:#0b2228}
+    header{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid #eef3f5}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#1f6fa0,#3aa0d7);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none}
+    main{max-width:980px;margin:22px auto;padding:18px}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+    .spec{background:#f9fbfc;border-radius:12px;padding:14px;border:1px solid #e8f3f7}
+    h1{margin:0 0 8px}
+    .muted{color:var(--muted)}
+    .tag{font-size:13px;color:#0b6fa0;border:1px solid #e2f1fb;padding:6px 8px;border-radius:8px;background:#f0fbff}
+    .cta-row{display:flex;gap:10px;margin-top:16px}
+    button{background:var(--accent);color:white;padding:8px 12px;border-radius:8px;border:0}
+    footer{margin-top:22px;padding:18px;text-align:center;color:var(--muted)}
+    @media(max-width:820px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="logo">TP</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Who I Am</a>
+      <a href="specialties.html">Focus Areas</a>
+      <a href="approach.html">Method</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+      <div>
+        <h1>Focus areas</h1>
+        <p class="muted">Common themes I support people with. If you don't see exactly what you need listed, that's okay — bring it to the consult and we'll clarify together.</p>
+      </div>
+      <div>
+        <div class="tag">Membership-style clinical support</div>
+      </div>
+    </section>
+
+    <section style="margin-top:16px">
+      <div class="grid">
+        <div class="spec">
+          <h3>Transition & life change</h3>
+          <p class="muted">Career shifts, relationship changes, relocation, or new caregiving roles. We work to make meaning of transitions and plan steps that respect your values.</p>
+        </div>
+
+        <div class="spec">
+          <h3>Anxiety and persistent worry</h3>
+          <p class="muted">Practical tools for noticing patterns, responding differently to worry, and widening possibilities for action.</p>
+        </div>
+
+        <div class="spec">
+          <h3>Low mood and motivation</h3>
+          <p class="muted">Small, manageable experiments to build momentum and reconnect with purposeful activity while honoring pace.</p>
+        </div>
+
+        <div class="spec">
+          <h3>Relationship patterns</h3>
+          <p class="muted">Exploring communication, boundaries, and what you want from important connections — whether individual or couples work is recommended.</p>
+        </div>
+
+        <div class="spec">
+          <h3>Stress from caregiving or work</h3>
+          <p class="muted">Techniques for steadying daily functioning, preserving energy, and identifying realistic supports.</p>
+        </div>
+
+        <div class="spec">
+          <h3>Identity & life stage questions</h3>
+          <p class="muted">Spaces to consider identity, values, and next steps without judgment — practical clarity rather than labels.</p>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:18px;display:flex;gap:12px;align-items:center">
+      <button onclick="openExercise()">Try a short practice</button>
+      <button onclick="document.getElementById('wizardLink').scrollIntoView()">Prepare for consult</button>
+    </section>
+
+    <section class="spec" style="margin-top:18px" id="wizardLink">
+      <h3>Short self-check to bring to the first meeting</h3>
+      <p class="muted">A few focused prompts you can fill out before a consult — it helps clarify priorities and saves time in our first meeting.</p>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <a href="about.html#wizard" style="text-decoration:none"><button>Open the self-check</button></a>
+        <a href="book.html" style="text-decoration:none"><button style="background:#ddd;color:#0b2228">Request a consult</button></a>
+      </div>
+    </section>
+
+    <section style="margin-top:18px">
+      <h3>Notes about safety & scope</h3>
+      <p class="muted">My work is supportive and aimed at steady change. I do not provide emergency care; if you are in immediate danger, contact emergency services or your local crisis line. Some circumstances may require referral to other providers with different specialties.</p>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="max-width:980px;margin:0 auto;padding:12px;text-align:center;color:var(--muted)">Contact: {{EMAIL}} • {{PHONE}} • {{CITY}}, {{STATE}}</div>
+  </footer>
+
+  <div style="display:none" id="overlay"></div>
+  <script>
+    // Reuse guided exercise from other pages; lightweight duplicate implementation
+    function openExercise(){
+      const modal = window.open('','exercise','width=520,height=560');
+      if(!modal) return alert('Pop-up blocked — try the practice inside the site.');
+      modal.document.body.style.fontFamily='system-ui,Segoe UI,Roboto,Arial';
+      modal.document.title='Short practice';
+      modal.document.body.innerHTML=''< + '';
+      // Simpler fallback: render a basic breathing instruction
+      modal.document.body.innerHTML = '<div style="padding:18px"><h3>Breathing practice</h3><p style="color:#55666a">Simple 4-1-6 cycle: inhale 4s, hold 1s, exhale 6s. Repeat 4 times, at your own pace.</p><button onclick="window.close()">Close</button></div>';
+    }
+  </script>
+</body>
+</html>

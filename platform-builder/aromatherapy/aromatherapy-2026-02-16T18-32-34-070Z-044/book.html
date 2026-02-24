@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Book a Session — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Schedule your aromatherapy intensive with {{PRACTITIONER_NAME}} in {{CITY}}, {{STATE}}. Safety-first, bespoke blends and guidance." />
+  <style>
+    :root{--bg:#FFF9F6;--accent:#8A5C43;--muted:#725748;--card:#FFFFFF}
+    body{margin:0;font-family: 'Helvetica Neue', Arial, sans-serif;background:linear-gradient(180deg,#FFF9F6,#FFF3EA);color:var(--muted)}
+    .container{max-width:920px;margin:36px auto;padding:26px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:14px;text-decoration:none;color:var(--muted)}
+    nav a[href$="book.html"]{color:var(--accent);font-weight:700}
+
+    .intro{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 8px 26px rgba(138,92,64,0.06);display:flex;gap:14px}
+    .intro h1{margin:0;font-size:22px}
+    .intro p{margin:6px 0 0;color:#876857}
+
+    .scheduler{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px}
+    .panel{background:var(--card);padding:16px;border-radius:12px;border:1px solid rgba(138,92,64,0.06)}
+    .calendar{height:360px;border-radius:10px;background:linear-gradient(180deg,#FFFDFB,#FFF6F0);display:flex;align-items:center;justify-content:center;color:#A67A5F}
+
+    form{display:flex;flex-direction:column;gap:10px}
+    input,textarea,select{padding:10px;border-radius:8px;border:1px solid rgba(130,90,62,0.08)}
+    .submit{background:var(--accent);color:#fff;padding:10px;border-radius:10px;border:none;font-weight:800}
+
+    .process{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap}
+    .process .item{padding:8px 10px;border-radius:10px;background:linear-gradient(90deg,#FFF8F5,#FFF1E8);border:1px solid rgba(138,92,64,0.06)}
+
+    .faq{margin-top:18px}
+    details{background:#FFF;padding:12px;border-radius:10px;border:1px solid rgba(138,92,64,0.06);margin-top:8px}
+
+    .lead-magnet{margin-top:18px;padding:14px;border-radius:12px;background:linear-gradient(90deg,#FFF8F3,#FFF1EA);display:flex;justify-content:space-between;align-items:center}
+
+    .bottom-cta{text-align:center;margin-top:18px}
+    .bottom-cta a{padding:12px 16px;border-radius:12px;background:#7A4E36;color:#fff;text-decoration:none}
+
+    @media (max-width:900px){.scheduler{grid-template-columns:1fr}.calendar{height:220px}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="services.html">Services</a>
+        <a href="book.html">Schedule</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <section class="intro">
+      <div style="flex:1">
+        <h1>Book an Intensive</h1>
+        <p>Choose a focused 90–120 minute session for custom blending, sensory exploration, and safe-use instruction. No medical advice — just thoughtful aromatherapy.</p>
+      </div>
+      <div style="min-width:260px;text-align:right;color:#8A6A53">
+        <div style="font-weight:800">{{PRACTITIONER_NAME}}</div>
+        <div style="font-size:13px">{{CITY}}, {{STATE}}</div>
+        <div style="margin-top:8px">Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+      </div>
+    </section>
+
+    <div class="scheduler">
+      <div class="panel">
+        <div class="calendar" aria-hidden="true">[Static calendar mock — select date on form]</div>
+
+        <form action="{{PRIMARY_CTA_URL}}" method="get" style="margin-top:12px">
+          <label for="service">Service</label>
+          <select id="service" name="service">
+            <option>Starter Ritual — 60 min</option>
+            <option selected>Intensive Session — 90–120 min</option>
+            <option>3-Session Series</option>
+          </select>
+
+          <label for="date">Preferred date</label>
+          <input id="date" name="date" type="date" required />
+
+          <label for="time">Preferred time</label>
+          <input id="time" name="time" type="time" />
+
+          <label for="notes">Notes & sensitivities</label>
+          <textarea id="notes" name="notes" rows="4" placeholder="Tell me about scent dislikes, skin sensitivities, pets, pregnancy, or anything else..."></textarea>
+
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="you@example.com" required />
+
+          <button class="submit" type="submit">Request booking</button>
+        </form>
+
+        <div style="margin-top:12px;font-size:13px;color:#876857">After you request a booking, we will follow up to confirm details and share a safety checklist and pre-appointment patch-test instructions.</div>
+      </div>
+
+      <aside class="panel">
+        <h4>How booking works</h4>
+        <div class="process">
+          <div class="item"><strong>1.</strong> Request a slot</div>
+          <div class="item"><strong>2.</strong> Confirm & complete intake</div>
+          <div class="item"><strong>3.</strong> Come for your session — we craft your blend</div>
+          <div class="item"><strong>4.</strong> Receive safe-use & storage notes</div>
+        </div>
+
+        <h4 style="margin-top:12px">What to bring</h4>
+        <ul style="margin:8px 0 0 16px;color:#725748">
+          <li>List of current medications (if any)</li>
+          <li>Notes on allergies & pregnancy</li>
+          <li>Questions about household pets</li>
+        </ul>
+
+        <div style="margin-top:12px;font-size:13px">Need a different time? Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call {{PHONE}}.</div>
+      </aside>
+    </div>
+
+    <section class="faq">
+      <h4>Booking FAQ</h4>
+      <details><summary>Dilution guidance — will I receive exact ratios?</summary><div style="margin-top:8px">Yes. For every topical product you receive, we include precise dilution percentages and instructions for safe application.</div></details>
+      <details><summary>Patch test — when should I do one?</summary><div style="margin-top:8px">Perform a patch test 24–48 hours before regular use of a topical blend. We'll include a step-by-step in your confirmation email.</div></details>
+      <details><summary>Pets in the home — what should I tell you?</summary><div style="margin-top:8px">Let us know species and typical behaviors. We avoid certain oils for households with dogs, cats, or birds and suggest safer diffusion and cleaning practices.</div></details>
+      <details><summary>Pregnancy & sessions</summary><div style="margin-top:8px">If you are pregnant or nursing, mention this in the notes field. We will offer pregnancy-safe alternatives and avoid oils that are commonly contraindicated.</div></details>
+    </section>
+
+    <section class="lead-magnet">
+      <div>
+        <strong>Quick guide:</strong> "How to patch test" — short, practical steps included with every booking confirmation.
+      </div>
+      <div>
+        <a href="contact.html" style="background:#7A4E36;color:#fff;padding:8px 12px;border-radius:8px;text-decoration:none">Contact for help</a>
+      </div>
+    </section>
+
+    <div class="bottom-cta">
+      <div style="font-weight:800;margin-bottom:6px">Ready to build your scent?</div>
+      <a href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+    </div>
+
+  </div>
+</body>
+</html>

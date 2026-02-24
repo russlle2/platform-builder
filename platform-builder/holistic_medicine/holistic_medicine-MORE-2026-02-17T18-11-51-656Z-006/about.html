@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Studio & Story — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--muted:#666;--accent:#7a9d74;--card:#fff;--shadow:0 8px 24px rgba(12,12,12,0.06)}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:#1f1f1f;background:linear-gradient(180deg,#fbfbfa,#f6f7f6)}
+    header{position:sticky;top:0;background:rgba(255,255,255,0.9);backdrop-filter:blur(6px);border-bottom:1px solid rgba(0,0,0,0.04);z-index:40}
+    .nav{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:18px;padding:12px}
+    .brand{font-weight:700;color:var(--accent)}
+    nav{margin-left:18px;flex:1}
+    nav a{padding:8px 10px;border-radius:8px;text-decoration:none;color:#333}
+    nav a.active{background:var(--accent);color:#fff}
+    .container{max-width:1100px;margin:30px auto;padding:0 20px}
+
+    .story{display:grid;grid-template-columns:1fr 340px;gap:22px;align-items:start}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:var(--shadow)}
+    h1{margin:0;font-size:26px}
+    .byline{color:var(--muted);margin-top:8px}
+
+    .mosaic{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+    .mosaic .item{background:#f4f6f4;padding:14px;border-radius:10px}
+
+    .quote{font-style:italic;color:#555;padding:14px;border-left:3px solid var(--accent);background:linear-gradient(90deg,rgba(122,157,116,0.04),transparent);border-radius:8px}
+
+    .reveal{opacity:0;transform:translateY(12px);transition:opacity 520ms ease,transform 520ms ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none;opacity:1;transform:none}}
+
+    @media (max-width:880px){.story{grid-template-columns:1fr}.mosaic{grid-template-columns:1fr 1fr}}
+    @media (max-width:560px){.mosaic{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class='nav'>
+      <div class='brand'>{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href='index.html'>Home</a>
+        <a href='services.html'>Offerings</a>
+        <a href='conditions.html'>Ailments</a>
+        <a href='approach.html'>Method</a>
+        <a href='pricing.html'>Fees</a>
+        <a href='about.html' class='active'>Studio</a>
+        <a href='book.html'>Schedule</a>
+        <a href='contact.html'>Connect</a>
+      </nav>
+      <a href='{{PRIMARY_CTA_URL}}' class='btn' style='background:var(--accent);color:#fff;padding:8px 12px;border-radius:10px;text-decoration:none'>{{PRIMARY_CTA_LABEL}}</a>
+    </div>
+  </header>
+
+  <main class='container'>
+    <section class='story'>
+      <div class='card reveal'>
+        <h1>Where practical wisdom meets everyday living</h1>
+        <div class='byline'>A place for small, reliable changes and clear, usable guidance.</div>
+        <p style='margin-top:12px;color:var(--muted)'>We favor modest routines you can return to across seasons — ideas that slot into your day rather than upend it. Each visit is a conversation that yields clear, usable steps and optional at-home supports you can purchase if helpful.</p>
+
+        <div style='margin-top:14px'>
+          <h3 style='margin:0 0 8px 0'>Background</h3>
+          <p style='margin:0;color:var(--muted)'>Practitioner training blends clinical foundations with plant-centered practices and behavior-focused coaching. The aim is to scaffold lived routines that feel achievable.</p>
+        </div>
+
+        <div style='margin-top:14px'>
+          <h3 style='margin:0 0 8px 0'>Philosophy</h3>
+          <p style='margin:0;color:var(--muted)'>We work with the whole of your day — sleep, meals, movement, and simple sensory anchors — to support steadier patterns rather than dramatic interventions.</p>
+        </div>
+      </div>
+
+      <aside class='card reveal' aria-labelledby='studio-side'>
+        <h3 id='studio-side'>Studio details</h3>
+        <p style='color:var(--muted);margin:6px 0'>Located in {{CITY}}, {{STATE}}. Remote sessions are available when appropriate. Accessibility notes and parking instructions are provided at booking.</p>
+        <div style='margin-top:12px'><a href='contact.html' class='btn' style='background:var(--accent);color:#fff;text-decoration:none;padding:8px 10px;border-radius:8px'>Ask a question</a></div>
+      </aside>
+    </section>
+
+    <section style='margin-top:18px'>
+      <div class='mosaic'>
+        <div class='item reveal'>
+          <h4 style='margin:0 0 6px 0'>Core skill: attention</h4>
+          <p style='margin:0;color:var(--muted)'>We practice noticing the triggers and patterns that shape a day — then choose one small pivot to try before the next visit.</p>
+        </div>
+        <div class='item reveal'>
+          <h4 style='margin:0 0 6px 0'>Tools that support</h4>
+          <p style='margin:0;color:var(--muted)'>Light-touch companions such as roll-ons or inhalers are presented as optional aids, with clear guidance on safe use.</p>
+        </div>
+        <div class='item reveal'>
+          <h4 style='margin:0 0 6px 0'>Tailored pacing</h4>
+          <p style='margin:0;color:var(--muted)'>Every plan is paced to fit your life — frequency and intensity set to keep momentum without overwhelm.</p>
+        </div>
+      </div>
+
+      <div style='margin-top:18px' class='reveal'>
+        <div class='quote'>"Care that listens first makes room for change to feel meaningful."</div>
+      </div>
+    </section>
+
+    <section style='margin-top:20px' class='reveal'>
+      <h3 style='margin:0 0 8px 0'>A gentle policy note</h3>
+      <p style='color:var(--muted);margin:0'>Services are educational and supportive. They are not a replacement for medical treatment. If you have urgent health concerns, please follow advice from your healthcare provider or emergency services.</p>
+    </section>
+
+  </main>
+
+  <script>
+    // simple reveal observer used across pages
+    (function(){
+      var prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var reveals = document.querySelectorAll('.reveal');
+      if(prefersReduced){reveals.forEach(function(r){r.classList.add('visible')}); return}
+      if('IntersectionObserver' in window){
+        var io = new IntersectionObserver(function(entries){entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target) } })},{threshold:0.12});
+        reveals.forEach(function(r){io.observe(r)});
+      } else {reveals.forEach(function(r){r.classList.add('visible')})}
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Elixirs & Blends — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff9f4;--accent:#b07e5a;--muted:#6b5a52;--card:#ffffff;--cta:#b36b46}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#2b2b2b;background:var(--bg)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 24px}
+    .brand{font-weight:800}
+    nav{display:flex;gap:12px}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:8px}
+    nav a[href$="blends.html"]{color:var(--cta)}
+    .container{max-width:1100px;margin:20px auto;padding:18px}
+    .intro{display:flex;gap:18px;align-items:center}
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 8px 20px rgba(45,30,20,0.06)}
+
+    /* unique radial SVG motif */
+    .svg-motif{width:100%;height:90px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='90' viewBox='0 0 600 90'><defs><radialGradient id='r' cx='0.2' cy='0.5'><stop offset='0' stop-color='%23b07e5a' stop-opacity='0.12'/><stop offset='1' stop-color='%23b36b46' stop-opacity='0.02'/></radialGradient></defs><rect width='600' height='90' fill='transparent'/><g fill='url(%23r)'><circle cx='60' cy='45' r='36'/><circle cx='200' cy='30' r='22'/><circle cx='420' cy='50' r='46' opacity='0.65'/></g></svg>");background-repeat:no-repeat;background-position:left center;background-size:cover}
+
+    .blend-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:14px}
+    .blend{padding:12px;border-radius:12px;background:linear-gradient(180deg,#fff,#fffaf4);border:1px solid #f2e9e2}
+    .blend h4{margin:6px 0}
+    .blend .notes{font-size:13px;color:var(--muted)}
+
+    /* mood selector with morphing details */
+    .picker{display:flex;gap:10px;margin-top:10px}
+    .chip{padding:8px 12px;border-radius:999px;background:#fff;border:1px solid #f1dcca;cursor:pointer}
+    .chip.active{background:var(--cta);color:white}
+
+    .hero-cta{display:flex;gap:10px;align-items:center;margin-top:12px}
+    .cta{background:var(--cta);color:white;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+
+    footer{margin-top:18px;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">{{BUSINESS_NAME}} — Elixirs</div>
+    <nav>
+      <a href="index.html">Explore</a>
+      <a href="services.html">Therapies</a>
+      <a href="blends.html">Elixirs</a>
+      <a href="shop.html">Shop</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="card svg-motif">
+      <h2 style="margin:8px 0">Blends crafted to pair with daily moments</h2>
+      <p class="small" style="color:var(--muted);margin:0">Choose a mood and the page will suggest a blend type, safe dilution, and how to carry it with you.</p>
+      <div class="picker" id="blendPicker">
+        <div class="chip" data-key="bright">Brighten</div>
+        <div class="chip" data-key="calm">Ground</div>
+        <div class="chip" data-key="clarity">Clarify</div>
+        <div class="chip" data-key="rest">Rest</div>
+      </div>
+      <div class="hero-cta" id="blendHero">
+        <div>
+          <strong id="blendTitle">Try a gentle roll-on</strong>
+          <div id="blendNote" class="small" style="color:var(--muted)">Select a mood to see the blend notes and dilution.</div>
+        </div>
+        <a id="blendCta" class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </section>
+
+    <section style="margin-top:14px">
+      <h3 class="card" style="padding:12px;display:inline-block">Featured blends</h3>
+      <div class="blend-grid" style="margin-top:10px">
+        <div class="blend card">
+          <h4>Citrus Lift — 10ml roll-on</h4>
+          <div class="notes">Bergamot, sweet orange, petitgrain. 2% dilution suggestion; carry in a pocket inhaler.</div>
+        </div>
+        <div class="blend card">
+          <h4>Quiet Root — 10ml roll-on</h4>
+          <div class="notes">Lavender, vetiver, cedarwood. 3% dilution; patch-test recommended.</div>
+        </div>
+        <div class="blend card">
+          <h4>Focus Mist — 30ml spray</h4>
+          <div class="notes">Rosemary, lemon, cardamom. 0.5–1% dilution for room mist; avoid continuous diffusion near pets.</div>
+        </div>
+        <div class="blend card">
+          <h4>Evening Veil — 10ml roll-on</h4>
+          <div class="notes">Chamomile CO2, lavender, frankincense. Use lightly at pulse points before bedtime.</div>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:16px" class="card">
+      <h4 style="margin-top:0">Blend safety snapshots</h4>
+      <ul style="color:var(--muted);padding-left:18px">
+        <li>All products include dilution notes and a suggested patch-test (24 hours).</li>
+        <li>We provide pet-sensitive alternatives; some oils are not recommended around cats or small animals.</li>
+        <li>If pregnant or nursing, always consult your healthcare provider; we will adapt blends where needed.</li>
+      </ul>
+    </section>
+
+    <footer>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div class="small">Want a custom blend? Book a blend consultation and receive safety and dilution instructions.</div>
+        <div><a class="cta" href="{{PRIMARY_CTA_URL}}">Request a custom blend</a></div>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    (function(){
+      const map = {
+        bright:{title:'Citrus Lift roll-on',note:'Bergamot + sweet orange. Suggested 2% dilution. Great as a pocket inhaler or roll-on for quick uplifts.',cta:'Choose Citrus Lift'},
+        calm:{title:'Quiet Root blend',note:'Lavender + vetiver. Suggested 3% dilution. Roll-on application for grounding pauses.',cta:'Choose Quiet Root'},
+        clarity:{title:'Focus Mist',note:'Rosemary + lemon. For room spray at 0.5–1% dilution; avoid near pets.',cta:'Choose Focus Mist'},
+        rest:{title:'Evening Veil roll-on',note:'Chamomile + lavender. Light application at pulse points to support evening routine.',cta:'Choose Evening Veil'}
+      };
+      const picker = document.getElementById('blendPicker');
+      const chips = Array.from(picker.children);
+      const title = document.getElementById('blendTitle');
+      const note = document.getElementById('blendNote');
+      const cta = document.getElementById('blendCta');
+      picker.addEventListener('click', function(e){
+        const chip = e.target.closest('.chip'); if(!chip) return;
+        chips.forEach(c=>c.classList.remove('active'));
+        chip.classList.add('active');
+        const key = chip.getAttribute('data-key');
+        const data = map[key];
+        title.textContent = data.title;
+        note.textContent = data.note + ' Includes dilution and patch-test guidance.';
+        cta.textContent = data.cta + ' — ' + '{{PRIMARY_CTA_LABEL}}';
+        cta.animate([{transform:'translateY(0)'},{transform:'translateY(-4px)'},{transform:'translateY(0)'}],{duration:280,iterations:1});
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contact • {{BUSINESS_NAME}}</title>
+  <style>
+    :root{
+      --bg:#fff8f2; --accent:#ff6f61; --muted:#6b6b6b; --card:#ffffff; --glass: rgba(255,255,255,0.6);
+      --radius:14px; --shadow: 0 8px 30px rgba(15,15,15,0.08);
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#fff);color:#222}
+    header{display:flex;align-items:center;justify-content:space-between;padding:28px 36px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#ffb199);display:grid;place-items:center;color:#fff;font-weight:700}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none;font-weight:600}
+    .hero{display:flex;gap:32px;align-items:center;padding:34px 36px}
+    .hero .left{max-width:720px}
+    h1{margin:0 0 12px 0;font-size:28px;letter-spacing:-0.2px}
+    p.lead{margin:0;color:var(--muted);}    
+    .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px}
+
+    /* pattern area */
+    .pattern-rail{flex:1;height:140px;border-radius:12px;background:linear-gradient(180deg,rgba(255,111,97,0.06),transparent);display:flex;align-items:center;justify-content:center}
+    .pattern-rail svg{width:90%;height:110px;opacity:0.16}
+
+    /* form layout */
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:24px;padding:0 36px 56px}
+    form{display:flex;flex-direction:column;gap:12px}
+    label{font-size:13px;color:var(--muted)}
+    input,textarea,select{padding:10px;border-radius:10px;border:1px solid #eee;font-size:15px}
+    textarea{min-height:120px}
+    .right .card{position:sticky;top:28px}
+
+    /* Mood-to-Method */
+    .mood-panel{display:flex;flex-direction:column;gap:10px}
+    .mood-buttons{display:flex;gap:8px;flex-wrap:wrap}
+    .mood-buttons button{padding:8px 12px;border-radius:999px;border:1px solid #f0dede;background:#fff;cursor:pointer}
+    .mood-buttons button.active{background:linear-gradient(90deg,var(--accent),#ff9c88);color:#fff;border:none}
+    .approach{margin-top:12px}
+    .cta{display:inline-block;padding:12px 16px;background:var(--accent);color:#fff;border-radius:10px;text-decoration:none;font-weight:700}
+
+    /* accordion */
+    .accordion{margin-top:18px}
+    .acc-item{border-top:1px solid #f2f2f2;padding:12px 0}
+    .acc-summary{display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+    .acc-detail{max-height:0;overflow:hidden;transition:max-height .28s ease;padding-top:0}
+    .acc-detail.open{max-height:420px;padding-top:12px}
+    .muted{color:var(--muted);font-size:13px}
+
+    footer{padding:28px 36px;border-top:1px dashed #f2f2f2;color:var(--muted);font-size:13px}
+    .danger{background:#fff4f4;border-left:4px solid #ff9c88;padding:12px;border-radius:8px}
+
+    @media (max-width:880px){
+      .grid{grid-template-columns:1fr;padding:0 18px 48px}
+      .hero{flex-direction:column;align-items:flex-start}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">{{BUSINESS_NAME}}[B]</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{CITY}}, {{STATE}} • {{PHONE}}</div>
+      </div>
+    </div>
+    <nav aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="about.html">My Story</a>
+      <a href="specialties.html">What I Help With</a>
+      <a href="approach.html">My Way</a>
+      <a href="fees.html">Rates & Options</a>
+      <a href="faq.html">Questions</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html" style="color:var(--accent)">Reach</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="left">
+      <h1>Reach out — we can chart one practical next step together.</h1>
+      <p class="lead">I provide short and ongoing sessions designed to help you manage what feels urgent while keeping long-term goals in view. Use this page to tell me what matters right now and choose an approach that fits your immediate need.</p>
+      <div style="margin-top:14px" class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <strong id="suggest-title">Stabilizing Conversation</strong>
+            <div class="muted" id="suggest-sub">A brief session to address what feels most urgent and leave with a clear first step.</div>
+          </div>
+          <div style="text-align:right">
+            <a id="primary-cta" class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pattern-rail card" aria-hidden="true">
+      <!-- Decorative SVG pattern, local asset -->
+      <svg viewBox="0 0 800 140" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+        <defs>
+          <linearGradient id="g1" x1="0" x2="1">
+            <stop offset="0" stop-color="#ffd3c6"/>
+            <stop offset="1" stop-color="#ff9c88"/>
+          </linearGradient>
+        </defs>
+        <path d="M0 80 Q120 20 260 60 T520 40 T800 70 V140 H0 Z" fill="url(#g1)"/>
+        <g fill-opacity="0.06" transform="translate(20,10)">
+          <circle cx="60" cy="30" r="28" fill="#000"/>
+          <circle cx="160" cy="70" r="18" fill="#000"/>
+          <circle cx="360" cy="40" r="25" fill="#000"/>
+        </g>
+      </svg>
+    </div>
+  </section>
+
+  <main class="grid">
+    <section>
+      <div class="card">
+        <h3 style="margin-top:0">Get in touch</h3>
+        <p class="muted">Share a little about what brings you here and any scheduling needs. I typically reply within 48–72 business hours. If you need faster help, please use the crisis note below.</p>
+
+        <form id="contactForm" onsubmit="return handleSubmit(event)">
+          <label>Name</label>
+          <input required name="name" placeholder="Your name">
+
+          <label>Email</label>
+          <input required name="email" type="email" placeholder="you@example.com">
+
+          <label>Phone (optional)</label>
+          <input name="phone" placeholder="(555) 555-5555">
+
+          <label>What would you like to focus on?</label>
+          <select name="focus" id="focusSelect">
+            <option>New concerns & orientation</option>
+            <option>Ongoing therapy planning</option>
+            <option>Shorter coordination/check-in</option>
+            <option>Brief consultation for another provider</option>
+          </select>
+
+          <label>Message</label>
+          <textarea name="message" placeholder="A few sentences about what matters most right now."></textarea>
+
+          <div style="display:flex;gap:10px;align-items:center;margin-top:6px">
+            <button type="submit" style="padding:10px 14px;border-radius:10px;background:var(--accent);color:#fff;border:none;font-weight:700">Send</button>
+            <div class="muted">Or call: <strong>{{PHONE}}</strong></div>
+          </div>
+        </form>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h4 style="margin:0 0 8px 0">Mood-to-Method</h4>
+        <div class="mood-panel">
+          <div class="mood-buttons" role="tablist" aria-label="Mood choices">
+            <button data-key="overwhelmed" class="active">Overwhelmed</button>
+            <button data-key="flat">Numb / Flat</button>
+            <button data-key="ruminating">Ruminating</button>
+            <button data-key="stuck">Stuck on a decision</button>
+            <button data-key="focus">Want practical next steps</button>
+          </div>
+
+          <div class="approach">
+            <strong id="method-title">Short Safety & Stabilization</strong>
+            <div class="muted" id="method-desc">We name what is most activating, build a small plan for the next 72 hours, and identify supports you can use between sessions.</div>
+            <div style="margin-top:10px"><a id="method-cta" class="cta" href="{{PRIMARY_CTA_URL}}">Schedule a 30–45 minute stabilizing session</a></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card accordion" style="margin-top:16px">
+        <h4 style="margin:0 0 8px 0">Session boundaries & confidentiality</h4>
+
+        <div class="acc-item">
+          <div class="acc-summary" role="button" tabindex="0" data-target="scope">
+            <div>
+              <strong>Scope of work</strong>
+              <div class="muted">What therapy covers and what it does not</div>
+            </div>
+            <div aria-hidden="true">+</div>
+          </div>
+          <div class="acc-detail" id="scope">
+            <p class="muted">Therapy here focuses on psychological, emotional, and relational concerns. I offer assessment, short-term interventions, and longer-term psychotherapy. Therapy is not a substitute for medical care when that is needed; if concerns would benefit from medical evaluation I will suggest coordination with appropriate providers.</p>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <div class="acc-summary" role="button" tabindex="0" data-target="confidential">
+            <div>
+              <strong>Confidentiality</strong>
+              <div class="muted">How your information is safeguarded</div>
+            </div>
+            <div aria-hidden="true">+</div>
+          </div>
+          <div class="acc-detail" id="confidential">
+            <p class="muted">Your sessions are treated with respect and discretion. I keep clinical notes and basic scheduling/contact information. I will not release your records without written permission except where required by law, such as if there is an immediate risk of serious harm to you or others, reasonable suspicion of abuse of a child, elder, or dependent adult, or if ordered by a court.</p>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <div class="acc-summary" role="button" tabindex="0" data-target="limits">
+            <div>
+              <strong>Limits & coordination</strong>
+              <div class="muted">When I may need to share information</div>
+            </div>
+            <div aria-hidden="true">+</div>
+          </div>
+          <div class="acc-detail" id="limits">
+            <p class="muted">If we agree to involve other professionals (e.g., medical providers, legal counsel), we will discuss what information is shared and obtain appropriate written consent. If safety concerns arise, I will work to keep you safe while following legal obligations.</p>
+          </div>
+        </div>
+
+        <div style="margin-top:12px" class="muted">If you would like to review a full copy of privacy practices before your first appointment, I can provide that upon request.</div>
+      </div>
+
+      <div style="margin-top:12px" class="danger">
+        <strong style="display:block;margin-bottom:6px">A note about immediate crisis</strong>
+        <div class="muted">If you are in immediate danger or feel you may harm yourself or someone else, please contact local emergency services right away (for example, 911 in the United States) or go to the nearest emergency room. If you are within the U.S. and need urgent support, calling or texting 988 connects you with the Suicide & Crisis Lifeline. If you are outside the U.S., please contact local emergency resources or crisis teams in your area.</div>
+      </div>
+
+    </section>
+
+    <aside class="right">
+      <div class="card">
+        <h4 style="margin-top:0">Quick contact</h4>
+        <div class="muted">Feel free to call or send a brief note. If you prefer, use the button below to request a time that fits your calendar.</div>
+        <div style="margin-top:12px">
+          <div class="muted">Phone</div>
+          <div style="font-weight:700;margin-bottom:10px">{{PHONE}}</div>
+          <div class="muted">Email</div>
+          <div style="font-weight:700;margin-bottom:14px">{{EMAIL}}</div>
+
+          <a id="book-link" class="cta" href="{{PRIMARY_CTA_URL}}?source=contact">Request an appointment</a>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h4 style="margin:0 0 8px 0">Practical policies</h4>
+        <div class="muted">Sessions typically run 45–55 minutes. I request 48 hours notice to reschedule when possible. Fees, insurance, and sliding scale options are explained on the Rates & Options page.</div>
+      </div>
+    </aside>
+  </main>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
+      <div class="muted">&copy; <span id="year"></span> {{BUSINESS_NAME}} • {{CITY}}, {{STATE}}</div>
+      <div class="muted">Made with care • <a href="privacy.html">Privacy</a></div>
+    </div>
+  </footer>
+
+  <script>
+    // set year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Mood-to-Method definitions
+    const methods = {
+      overwhelmed: {
+        title: 'Short Safety & Stabilization',
+        desc: 'We focus on immediate needs, identify supports, and make a short plan for the next few days. Useful when emotions are intense and you need a clear step forward.',
+        cta: 'Book a stabilizing visit',
+      },
+      flat: {
+        title: 'Re-engagement Check-in',
+        desc: 'A gentle session to assess low energy, interest, or numbness and to try small experiments that might help you feel more connected to daily life.',
+        cta: 'Schedule a 30-minute check-in',
+      },
+      ruminating: {
+        title: 'Focused Cognitive Work',
+        desc: 'We map recurring thoughts and identify shifts that lower repetitive worry. This is practical, skills-focused work you can use between sessions.',
+        cta: 'Start focused coping work',
+      },
+      stuck: {
+        title: 'Decision-Focused Session',
+        desc: 'A short, structured conversation that clarifies options, values, and next steps so you can move forward from indecision with more confidence.',
+        cta: 'Book a decision session',
+      },
+      focus: {
+        title: 'Action-Oriented Planning',
+        desc: 'We make a step-by-step plan with measurable short-term goals and simple practices tailored to your life and schedule.',
+        cta: 'Arrange a practical planning session',
+      }
+    };
+
+    // setup mood buttons
+    const buttons = document.querySelectorAll('.mood-buttons button');
+    buttons.forEach(btn=>btn.addEventListener('click', ()=>selectMood(btn.dataset.key)));
+
+    function selectMood(key){
+      // update active state
+      buttons.forEach(b=>b.classList.toggle('active', b.dataset.key===key));
+      const m = methods[key] || methods.overwhelmed;
+      document.getElementById('method-title').textContent = m.title;
+      document.getElementById('method-desc').textContent = m.desc;
+      const methodCta = document.getElementById('method-cta');
+      methodCta.textContent = m.cta;
+      // attach mood as query param, and update primary cta too
+      const ctaUrl = new URL('{{PRIMARY_CTA_URL}}', window.location.href);
+      ctaUrl.searchParams.set('mood', key);
+      methodCta.href = ctaUrl.toString();
+      document.getElementById('primary-cta').href = ctaUrl.toString();
+      // subtle microinteraction
+      const highlight = document.querySelector('.hero .card');
+      highlight.animate([{transform:'translateY(0)'},{transform:'translateY(-4px)'},{transform:'translateY(0)'}],{duration:340});
+    }
+
+    // Initialize default
+    selectMood('overwhelmed');
+
+    // Simple form handler (no external submission)
+    function handleSubmit(e){
+      e.preventDefault();
+      const form = e.target;
+      const name = form.name.value || 'Friend';
+      alert('Thank you, ' + name + '. I have received your message and will respond within 48–72 business hours.');
+      form.reset();
+      return false;
+    }
+
+    // Accordion behavior
+    document.querySelectorAll('.acc-summary').forEach(summary=>{
+      summary.addEventListener('click', ()=>toggle(summary.dataset.target));
+      summary.addEventListener('keypress', (ev)=>{ if(ev.key === 'Enter' || ev.key === ' ') toggle(summary.dataset.target); });
+    });
+
+    function toggle(id){
+      const el = document.getElementById(id);
+      el.classList.toggle('open');
+      // toggle plus/minus
+      const summary = document.querySelector('[data-target="'+id+'"] div[aria-hidden]');
+      if(summary) summary.textContent = el.classList.contains('open') ? '−' : '+';
+    }
+  </script>
+</body>
+</html>

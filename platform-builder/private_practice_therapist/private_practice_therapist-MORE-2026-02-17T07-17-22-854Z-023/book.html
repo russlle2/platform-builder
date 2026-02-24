@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Schedule • {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Choose what feels right and find the approach that fits your current state." />
+  <style>
+    :root{--bg:#071426;--muted:#9fb0c2;--card:#082134;--accent:#a3e9ff;--warm:#ffd6a5}
+    body{margin:0;font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;background:linear-gradient(180deg,var(--bg),#02121a);color:#ecfbff}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 26px}
+    nav a{margin-left:14px;color:var(--muted);font-size:15px}
+    main{max-width:980px;margin:22px auto;padding:0 20px}
+    .hero{padding:22px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:12px}
+    .mood-grid{display:flex;gap:12px;margin-top:16px;flex-wrap:wrap}
+    .mood{background:rgba(255,255,255,0.02);padding:12px 14px;border-radius:10px;cursor:pointer;border:1px solid rgba(255,255,255,0.02);min-width:140px}
+    .mood.active{outline:2px solid rgba(163,233,255,0.16);transform:translateY(-4px)}
+    .method{margin-top:18px;padding:16px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)}
+    .method h2{margin:0 0 6px}
+    .method p{color:var(--muted)}
+    .method ul{color:var(--muted);margin-top:8px}
+    .book-cta{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:10px;background:var(--accent);color:#02121a;font-weight:600}
+    .visual{height:120px;border-radius:10px;margin-top:12px;background:linear-gradient(90deg,#052026 0%,#052026 100%);position:relative;overflow:hidden}
+    .visual .shape{position:absolute;border-radius:50%;opacity:0.12}
+    .mood-overwhelmed .visual{background:linear-gradient(90deg,#03101a,#06202b)}
+    .mood-stuck .visual{background:linear-gradient(90deg,#1a0620,#2b0634)}
+    .mood-transition .visual{background:linear-gradient(90deg,#062018,#10302e)}
+    .mood-prepared .visual{background:linear-gradient(90deg,#17341a,#2b4a1a)}
+    .disclaimer{margin-top:16px;color:var(--muted);font-size:13px}
+    footer{max-width:980px;margin:22px auto;padding:0 20px;color:var(--muted)}
+    @media (max-width:700px){.mood{min-width:48%}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#b992f7);display:flex;align-items:center;justify-content:center;font-weight:700">T</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="specialties.html">Specialties</a>
+      <a href="approach.html">How I Work</a>
+      <a href="fees.html">Fees</a>
+      <a href="faq.html">FAQ</a>
+      <a href="book.html">Schedule</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="hero">
+      <h1 style="margin:0 0 6px">Find the kind of session that fits where you are</h1>
+      <p style="margin:0;color:var(--muted)">Choose a mood below; I’ll suggest an approach and update the button so the next step matches that offer.</p>
+
+      <div class="mood-grid" id="moodGrid">
+        <div class="mood" data-key="overwhelmed" tabindex="0">
+          <strong>Overwhelmed</strong>
+          <div style="font-size:13px;color:var(--muted);margin-top:6px">Urgent, scattered, too much on the plate.</div>
+        </div>
+        <div class="mood" data-key="stuck" tabindex="0">
+          <strong>Stuck</strong>
+          <div style="font-size:13px;color:var(--muted);margin-top:6px">Repeating patterns, slow progress.</div>
+        </div>
+        <div class="mood" data-key="transition" tabindex="0">
+          <strong>In transition</strong>
+          <div style="font-size:13px;color:var(--muted);margin-top:6px">A life change asking for a plan.</div>
+        </div>
+        <div class="mood" data-key="prepared" tabindex="0">
+          <strong>Preparing</strong>
+          <div style="font-size:13px;color:var(--muted);margin-top:6px">Ready to map goals and practice new skills.</div>
+        </div>
+      </div>
+
+      <div class="method" id="method">
+        <h2 id="methodTitle">Choose how you feel to see a suggested approach</h2>
+        <p id="methodDesc" class="desc" style="color:var(--muted)">Selecting a mood will change the recommended format and the call-to-action to reflect that next step.</p>
+        <ul id="methodBullets"></ul>
+        <div class="visual" id="visual">
+          <div class="shape" style="width:220px;height:220px;left:-40px;top:-60px;background:linear-gradient(90deg,var(--accent),#b992f7)"></div>
+        </div>
+        <a id="bookCta" class="book-cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        <div class="disclaimer">Sessions are confidential within ethical and legal limits. Not a crisis service. If you are at immediate risk, contact emergency services or local crisis resources.</div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div style="max-width:980px;margin:0 auto;padding:18px 20px;color:var(--muted)">Questions about fit: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+  </footer>
+
+  <script>
+    // Mood-to-Method selector
+    (function(){
+      const map = {
+        overwhelmed: {
+          title: 'Stabilize & Prioritize — Single intensive',
+          desc: 'A brief, concentrated session set to reduce immediate overwhelm and create a simple action plan.',
+          bullets: ['One 90-minute focused session OR two 50-minute sessions','Concrete steps to reduce immediate load','Follow-up items you can use between meetings'],
+          cta: 'Request an Intensive'
+        },
+        stuck: {
+          title: 'Untangle Patterns — Short series',
+          desc: 'A sequence of sessions to notice patterns and test small changes with hands-on support.',
+          bullets: ['Four 50-minute sessions over 4–8 weeks','Practical experiments to shift habitual reactions','Reflections and skills to practice at home'],
+          cta: 'Begin a Short Series'
+        },
+        transition: {
+          title: 'Chart the Next Phase — Bridge package',
+          desc: 'Targeted sessions for transitions: assess options, clarify values, and choose next steps.',
+          bullets: ['Three to six sessions tailored to your timeline','Decision-focused conversations and planning','Tools to manage the change with less reactivity'],
+          cta: 'Plan a Bridge Package'
+        },
+        prepared: {
+          title: 'Practice & Grow — Monthly partnership',
+          desc: 'Ongoing weekly or biweekly meetings to practice new skills and track steady progress.',
+          bullets: ['Regular sessions for skill building','Space to test and refine long-term goals','A predictable rhythm of support'],
+          cta: 'Start a Monthly Rhythm'
+        }
+      };
+
+      const moodGrid = document.getElementById('moodGrid');
+      const methodTitle = document.getElementById('methodTitle');
+      const methodDesc = document.getElementById('methodDesc');
+      const bulletsEl = document.getElementById('methodBullets');
+      const bookCta = document.getElementById('bookCta');
+      const hero = document.getElementById('hero');
+      const visuals = document.getElementById('visual');
+
+      function setMood(key){
+        const data = map[key];
+        methodTitle.textContent = data.title;
+        methodDesc.textContent = data.desc;
+        bulletsEl.innerHTML = '';
+        data.bullets.forEach(b=>{ const li=document.createElement('li'); li.textContent=b; bulletsEl.appendChild(li); });
+        bookCta.textContent = data.cta;
+        // visual morph: adjust class on body or hero
+        hero.classList.remove('mood-overwhelmed','mood-stuck','mood-transition','mood-prepared');
+        hero.classList.add('mood-'+key);
+        // subtle motion effect on visual
+        visuals.querySelectorAll('.shape').forEach(s=>s.remove());
+        const s1 = document.createElement('div'); s1.className='shape';
+        s1.style.width='220px'; s1.style.height='220px'; s1.style.left='-40px'; s1.style.top='-60px';
+        if(key==='overwhelmed'){ s1.style.background='radial-gradient(circle,#ff9b9b,#ff7a7a)'; }
+        if(key==='stuck'){ s1.style.background='radial-gradient(circle,#9b9bff,#7a7aff)'; }
+        if(key==='transition'){ s1.style.background='radial-gradient(circle,#9bffcf,#7affd6)'; }
+        if(key==='prepared'){ s1.style.background='radial-gradient(circle,#ffd6a5,#ffb86b)'; }
+        visuals.appendChild(s1);
+      }
+
+      moodGrid.addEventListener('click',function(e){
+        const tgt = e.target.closest('.mood');
+        if(!tgt) return;
+        Array.from(moodGrid.children).forEach(n=>n.classList.remove('active'));
+        tgt.classList.add('active');
+        setMood(tgt.dataset.key);
+      });
+
+      // keyboard accessible
+      moodGrid.addEventListener('keydown',function(e){
+        if(e.key==='Enter' || e.key===' '){
+          const tgt = e.target.closest('.mood');
+          if(tgt){ tgt.click(); e.preventDefault(); }
+        }
+      });
+
+      // initialize with a gentle default
+      setMood('transition');
+      Array.from(moodGrid.children).forEach(n=>{ if(n.dataset.key==='transition') n.classList.add('active'); });
+    })();
+  </script>
+</body>
+</html>

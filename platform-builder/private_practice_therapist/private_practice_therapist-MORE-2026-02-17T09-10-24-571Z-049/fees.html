@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Investment — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{
+      --bg:#f6efe6; --accent:#7a5a3a; --muted:#6b6b62; --card:#fff; --glass:rgba(255,255,255,0.6);
+      --radius:14px; font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#efe6da);}    
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:transparent;position:sticky;top:0;z-index:10}
+    .logo{display:flex;align-items:center;gap:12px}
+    .brand{font-weight:700;color:var(--accent);letter-spacing:0.4px}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none;font-weight:600}
+    .wrap{max-width:960px;margin:36px auto;padding:28px}
+    .hero{display:grid;grid-template-columns:1fr;gap:18px;background:linear-gradient(180deg,rgba(255,255,255,0.7),rgba(255,255,255,0.9));padding:28px;border-radius:var(--radius);box-shadow:0 6px 30px rgba(116,86,65,0.08);background-image:url('assets/img/pattern.svg');background-repeat:repeat;margin-bottom:22px}
+    h1{margin:0;color:var(--accent)}
+    p.lead{margin:6px 0 0;color:var(--muted)}
+
+    .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:18px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(120,90,60,0.06);min-height:120px}
+    .price{font-size:20px;color:var(--accent);font-weight:700}
+    .meta{color:var(--muted);font-size:14px}
+
+    .policies{margin-top:20px;background:var(--glass);padding:16px;border-radius:10px;color:var(--muted);font-size:15px}
+    footer{margin:28px 0 60px;color:var(--muted);font-size:13px}
+
+    .cta{display:inline-block;background:var(--accent);color:white;padding:10px 16px;border-radius:10px;text-decoration:none;font-weight:700}
+
+    /* reveal effect */
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity 500ms ease,transform 500ms ease}
+    .reveal.is-visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion: reduce){
+      .reveal{transition:none;transform:none;opacity:1}
+    }
+
+    /* modal styles */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(8,6,4,0.45);display:flex;align-items:center;justify-content:center;z-index:40}
+    .modal{background:var(--card);padding:20px;border-radius:12px;max-width:520px;width:calc(100% - 40px);box-shadow:0 18px 50px rgba(0,0,0,0.3)}
+    .modal h3{margin-top:0}
+    .exercise-controls{display:flex;gap:8px;margin-top:12px}
+    .btn{background:#efe6da;border:0;padding:8px 12px;border-radius:8px;cursor:pointer}
+    .btn.primary{background:var(--accent);color:white}
+
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="44" height="44" rx="10" fill="#efe3d6"/><path d="M11 28c3-8 14-10 18-6" stroke="#7a5a3a" stroke-width="2.5" stroke-linecap="round"/></svg>
+      <div>
+        <div class="brand">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Philosophy</a>
+      <a href="specialties.html">Horizons</a>
+      <a href="approach.html">Pathways</a>
+      <a href="fees.html" style="color:var(--accent)">Investment</a>
+      <a href="faq.html">Questions</a>
+      <a href="book.html">Begin</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="hero reveal">
+      <div>
+        <h1>Investment & session options</h1>
+        <p class="lead">Practical, concentrated work that meets you where you are. Choose an offering that fits time, focus, and the kind of attention you need.</p>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+        <a class="cta" href="book.html">Reserve a Focus Session</a>
+        <button class="btn" id="try-btn">Try it now — short exercise</button>
+      </div>
+    </section>
+
+    <section class="reveal">
+      <div class="cards">
+        <div class="card">
+          <div class="meta">Mini Tune</div>
+          <div class="price">45 minutes — $125</div>
+          <p style="color:var(--muted)">A targeted session for an immediate problem: planning, brief check-ins, or focused coping strategies.</p>
+        </div>
+
+        <div class="card">
+          <div class="meta">Focus Session</div>
+          <div class="price">90 minutes — $240</div>
+          <p style="color:var(--muted)">Deep, practical work to get clear on next steps. Useful for transitions, problem-mapping, and intensive skill practice.</p>
+        </div>
+
+        <div class="card">
+          <div class="meta">Bridge Intensive</div>
+          <div class="price">Three 60-min sessions (2 weeks) — $680</div>
+          <p style="color:var(--muted)">A short sequence designed to make measurable forward movement: plan, implement, review.</p>
+        </div>
+
+        <div class="card">
+          <div class="meta">Dedicated Starter</div>
+          <div class="price">Intake + 60 min — $190</div>
+          <p style="color:var(--muted)">A thorough intake and a focused session to set direction. Often used when beginning a new phase of work together.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="reveal policies" aria-labelledby="policies-title">
+      <h3 id="policies-title" style="margin-top:0;color:var(--accent)">Policies & practical notes</h3>
+      <ul>
+        <li>Payment is due at the time of the session. I accept card and bank transfer.</li>
+        <li>Sliding scale: a limited number of reduced-fee spots are available. Please inquire; I’ll be glad to talk through options honestly.</li>
+        <li>Cancellation: please give 48-hour notice when possible. Late cancellations or missed sessions may be charged up to the full session fee.</li>
+        <li>Confidentiality: sessions are confidential within legal and ethical limits. Information is kept secure; I will discuss limits (e.g., harm, court orders) if relevant.</li>
+        <li>Scope & boundaries: I provide psychotherapy and counseling. If concerns fall outside my scope (e.g., certain medical issues), I will help with appropriate referrals.</li>
+        <li>Crisis note: I am not available for emergencies. If you are in crisis or feel you may harm yourself or others, call emergency services or your local crisis line immediately.</li>
+      </ul>
+    </section>
+
+    <section class="reveal" style="margin-top:18px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div>
+          <div style="color:var(--muted)">Ready for a focused conversation?</div>
+          <a class="cta" href="book.html">Begin a Bridge Intensive</a>
+        </div>
+        <div style="color:var(--muted)">Questions? Call <strong>{{PHONE}}</strong> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      </div>
+    </section>
+
+    <footer>
+      <div>Confidentiality, scope, and crisis information are described above. Nothing here is a substitute for urgent care. If you have immediate safety concerns, contact emergency services.</div>
+    </footer>
+  </main>
+
+  <script>
+    // scroll reveal with prefers-reduced-motion support
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const revealEls = document.querySelectorAll('.reveal');
+      if(prefersReduced){ revealEls.forEach(el=>el.classList.add('is-visible')); return; }
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('is-visible'); });
+      },{threshold:0.15});
+      revealEls.forEach(el=>io.observe(el));
+    })();
+
+    // Guided "Try it now" exercise modal
+    (function(){
+      const tryBtn = document.getElementById('try-btn');
+      if(!tryBtn) return;
+      tryBtn.addEventListener('click', openModal);
+
+      function openModal(){
+        const backdrop = document.createElement('div'); backdrop.className='modal-backdrop'; backdrop.tabIndex= -1;
+        const modal = document.createElement('div'); modal.className='modal';
+        modal.innerHTML = `
+          <h3>Short guided practice</h3>
+          <p style="color:var(--muted)">Choose a brief practice to ground or clarify your thinking. This is a self-guided exercise and not a substitute for therapy sessions.</p>
+          <label style="display:block;margin-top:8px">Practice
+            <select id="practice-select" style="margin-left:8px;padding:6px;border-radius:8px">
+              <option value="breath">Breathing rhythm (2 minutes)</option>
+              <option value="journaling">Micro-journal (5 minutes)</option>
+              <option value="intention">Set an intention (3 minutes)</option>
+            </select>
+          </label>
+          <div id="exercise-area" style="margin-top:12px"></div>
+          <div class="exercise-controls">
+            <button class="btn" id="close-ex">Close</button>
+            <button class="btn primary" id="start-ex">Begin</button>
+          </div>
+        `;
+        backdrop.appendChild(modal);
+        document.body.appendChild(backdrop);
+        const startBtn = modal.querySelector('#start-ex');
+        const closeBtn = modal.querySelector('#close-ex');
+        const select = modal.querySelector('#practice-select');
+        const area = modal.querySelector('#exercise-area');
+
+        let timerId = null; let step = 0;
+
+        startBtn.addEventListener('click', ()=>{
+          const p = select.value;
+          startBtn.disabled = true; closeBtn.disabled = false;
+          if(p==='breath') runBreath(area);
+          if(p==='journaling') runJournaling(area);
+          if(p==='intention') runIntention(area);
+        });
+        closeBtn.addEventListener('click', ()=>{ cleanup(); backdrop.remove(); });
+
+        function cleanup(){ if(timerId) clearInterval(timerId); }
+
+        function runBreath(container){
+          container.innerHTML = '<div style="font-weight:700;color:var(--accent)">Breathing rhythm — follow the circle</div><div id="circle" style="width:160px;height:160px;border-radius:80px;margin:12px auto;background:linear-gradient(180deg,#fff,#efe6da);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--accent)">Breathe</div><div style="color:var(--muted);font-size:14px;text-align:center;margin-top:8px">Inhale 4 — Hold 4 — Exhale 6</div>';
+          const circ = container.querySelector('#circle');
+          let phase = 0; // 0 inhale,1 hold,2 exhale
+          let cycles = 0;
+          function stepFn(){
+            if(phase===0){ circ.style.transform='scale(1.18)'; circ.textContent='Inhale'; timerId = setTimeout(()=>{ phase=1; stepFn(); },4000); }
+            else if(phase===1){ circ.style.transform='scale(1.05)'; circ.textContent='Hold'; timerId = setTimeout(()=>{ phase=2; stepFn(); },4000); }
+            else { circ.style.transform='scale(0.86)'; circ.textContent='Exhale'; timerId = setTimeout(()=>{ cycles++; if(cycles>=4){ cleanup(); circ.textContent='Done'; document.querySelector('#start-ex').disabled=false; } else { phase=0; stepFn(); } },6000); }
+          }
+          stepFn();
+        }
+
+        function runJournaling(container){
+          container.innerHTML = '<div style="font-weight:700;color:var(--accent)">Micro-journal</div><p style="color:var(--muted);font-size:14px">You will have 5 minutes. Three prompts will appear; write freely for each. Use your own pen and paper or type in the box.</p><textarea id="journal-box" rows="6" style="width:100%;padding:10px;border-radius:8px;border:1px solid #e7dfd3"></textarea><div id="prompt" style="color:var(--muted);margin-top:8px"></div>';
+          const prompts = ['What matters most today?','What small step can you take?','What would be kind to yourself?'];
+          const promptEl = container.querySelector('#prompt');
+          const box = container.querySelector('#journal-box');
+          let i=0; box.placeholder = prompts[i]; promptEl.textContent = 'Prompt: ' + prompts[i];
+          timerId = setInterval(()=>{
+            i++;
+            if(i>=prompts.length){ clearInterval(timerId); document.querySelector('#start-ex').disabled=false; promptEl.textContent='Finished. Close when ready.'; }
+            else { box.placeholder = prompts[i]; promptEl.textContent = 'Prompt: ' + prompts[i]; }
+          },150000); // 2.5 min per prompt -> total ~7.5m; user can stop earlier
+        }
+
+        function runIntention(container){
+          container.innerHTML = '<div style="font-weight:700;color:var(--accent)">Set an intention</div><p style="color:var(--muted);font-size:14px">Take three breaths. Then choose one intention you can commit to today.</p><div style="display:flex;gap:8px;margin-top:10px"><input id="intent-input" placeholder="My intention is..." style="flex:1;padding:8px;border-radius:8px;border:1px solid #e7dfd3"/><button id="save-int" class="btn primary">Save</button></div><div id="intent-saved" style="margin-top:8px;color:var(--muted)"></div>';
+          container.querySelector('#save-int').addEventListener('click', ()=>{
+            const val = container.querySelector('#intent-input').value.trim();
+            container.querySelector('#intent-saved').textContent = val ? ('Saved: "' + val + '"') : 'No intention entered.';
+            document.querySelector('#start-ex').disabled=false;
+          });
+        }
+      }
+    })();
+
+  </script>
+</body>
+</html>

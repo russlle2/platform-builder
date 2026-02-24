@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Team & Approach</title>
+  <style>
+    :root{--bg:#fffdfb;--muted:#666;--accent:#7d9a75}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:#111;background:var(--bg);}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;background:#fff;border-bottom:1px solid #eee}
+    nav a{margin:0 10px;text-decoration:none;color:#333;font-weight:600}
+    .wrap{max-width:980px;margin:28px auto;padding:18px}
+    .hero{display:grid;grid-template-columns:2fr 1fr;gap:18px;align-items:start}
+    h1{margin:0 0 8px 0;font-size:26px}
+    p.lead{margin:0;color:var(--muted)}
+    .bio{background:#fff;padding:16px;border-radius:10px;box-shadow:0 8px 20px rgba(10,10,10,0.04)}
+    .selector{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+    .mood{padding:8px 12px;border-radius:999px;background:#f6f6f6;border:1px solid #eee;cursor:pointer;font-weight:600}
+    .mood.active{background:linear-gradient(90deg,var(--accent),#b07c6c);color:white}
+    .method{margin-top:14px;padding:12px;background:linear-gradient(180deg,rgba(255,255,255,0.9),#fff);border-radius:8px}
+    .cta{display:inline-block;margin-top:12px;padding:10px 14px;background:var(--accent);color:white;border-radius:8px;text-decoration:none;font-weight:700}
+    details.faq{margin-top:14px}
+    .note{font-size:13px;color:var(--muted);margin-top:8px}
+    @media(max-width:820px){.hero{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:700">Welcome</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Practices</a>
+      <a href="blends.html">Bespoke Blends</a>
+      <a href="shop.html">Marketplace</a>
+      <a href="pricing.html">Investments</a>
+      <a href="about.html">Team</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div>
+        <h1>Philosophy & practitioner notes</h1>
+        <p class="lead">A practice rooted in scent literacy and pragmatic routines. We craft methods that may support short- and longer-term rhythms: inhalation tools, topical roll-ons, and at-home mists.</p>
+
+        <div class="bio">
+          <strong>Lead practitioner</strong>
+          <p class="note">A licensed aromatherapist with a background in botanical formulation and safety protocols. Consultations include dilution guidance and a recommended patch test.</p>
+
+          <div style="margin-top:10px">
+            <strong>Choose how you feel</strong>
+            <div class="selector" role="list">
+              <div class="mood" data-method="inhalation">Tense</div>
+              <div class="mood" data-method="roll-on">Foggy</div>
+              <div class="mood" data-method="mist">Overwhelmed</div>
+              <div class="mood" data-method="blend-kit">Low Energy</div>
+            </div>
+
+            <div id="recommend" class="method" aria-live="polite">
+              <strong>Recommended approach</strong>
+              <p id="recText">Select a state to see a suggested method and the best next step.</p>
+              <a id="recCta" class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            </div>
+          </div>
+        </div>
+
+        <details class="faq">
+          <summary style="font-weight:700">Safety & common questions</summary>
+          <div style="margin-top:8px">
+            <p class="note">Dilution: topical products are formulated to safe dilution ranges; you will receive clear instructions. Always perform a patch test on a small area and wait 24 hours before broader use.</p>
+            <p class="note">Pets: certain essential oils can affect animals. We provide pet-safe alternatives and guidance when needed.</p>
+            <p class="note">Pregnancy: some oils are not recommended during pregnancy. Notify your practitioner and we will design pregnancy-appropriate options.</p>
+          </div>
+        </details>
+      </div>
+
+      <aside>
+        <div style="background:#fff;padding:16px;border-radius:10px;box-shadow:0 10px 24px rgba(10,10,10,0.05)">
+          <strong>How we name methods</strong>
+          <p class="note">Methods are framed by delivery (inhalation, topical, ambient) and intention. No promises — phrasing centers on what the approach may support.</p>
+          <div style="margin-top:12px">
+            <strong>Contact</strong>
+            <p class="note">Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or <a href="mailto:{{EMAIL}}">Email</a> for practitioner availability.</p>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    // Mood-to-Method selector
+    (function(){
+      const moods = document.querySelectorAll('.mood');
+      const recText = document.getElementById('recText');
+      const recCta = document.getElementById('recCta');
+
+      const map = {
+        'inhalation':{title:'Short inhalation sequence',desc:'A focused inhalation practice with a small personal inhaler; quick to use and portable.',cta:'Reserve an Inhalation Session'},
+        'roll-on':{title:'Topical roll-on ritual',desc:'A pre-diluted roll-on for targeted application and practical reapplication throughout the day.',cta:'Request a Roll-On Formula'},
+        'mist':{title:'Ambient mist + micro-practice',desc:'A room mist paired with a 3-minute guided routine for a calmer environment.',cta:'Order a Mist Session'},
+        'blend-kit':{title:'Mini blend kit',desc:'A curated kit to support low-energy moments: easy instructions and refill guidance.',cta:'Get a Mini Kit'}
+      };
+
+      moods.forEach(m=>{
+        m.addEventListener('click', ()=>{
+          moods.forEach(x=>x.classList.remove('active'));
+          m.classList.add('active');
+          const method = m.dataset.method;
+          const data = map[method];
+          // animate text swap
+          recText.style.opacity = 0; recCta.style.opacity = 0;
+          setTimeout(()=>{
+            recText.innerHTML = '<strong>'+data.title+'</strong><br>'+data.desc;
+            recCta.textContent = data.cta;
+            // attach method hint to CTA
+            const base = '{{PRIMARY_CTA_URL}}';
+            recCta.href = base + '?method=' + encodeURIComponent(method);
+            recText.style.opacity = 1; recCta.style.opacity = 1;
+          },220);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

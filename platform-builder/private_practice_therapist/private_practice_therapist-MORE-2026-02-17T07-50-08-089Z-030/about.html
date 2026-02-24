@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f6f7f9;--card:#ffffff;--accent:#2b6cb0;--muted:#6b7280;--glass:rgba(255,255,255,0.7)}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#111}
+    body{background:var(--bg) url('assets/img/pattern.svg') repeat;line-height:1.4}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:linear-gradient(180deg,rgba(255,255,255,0.85),rgba(255,255,255,0.6));backdrop-filter:blur(6px)}
+    .brand{display:flex;flex-direction:column}
+    .brand .title{font-weight:700;color:var(--accent)}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none;font-size:14px}
+    .wrap{max-width:920px;margin:28px auto;padding:22px}
+    .hero{background:linear-gradient(180deg,rgba(43,108,176,0.06),transparent);padding:22px;border-radius:10px}
+    .hero h1{margin:0 0 6px 0;font-size:22px}
+    .lede{color:var(--muted);margin:0}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
+    .card{background:var(--card);padding:18px;border-radius:10px;box-shadow:0 6px 22px rgba(12,24,40,0.04)}
+    .meta{font-size:13px;color:var(--muted);margin-bottom:8px}
+    .pill{display:inline-block;background:#eef6ff;color:var(--accent);padding:6px 10px;border-radius:999px;font-weight:600;font-size:13px}
+    .expect li{margin:8px 0}
+    .cta{display:inline-block;background:var(--accent);color:#fff;padding:12px 16px;border-radius:8px;text-decoration:none}
+    .small{font-size:13px;color:var(--muted)}
+    .mood{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .mood button{padding:8px 12px;border-radius:8px;border:1px solid #e6edf8;background:white;cursor:pointer}
+    .mood button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+    footer{margin-top:22px;color:var(--muted);font-size:13px}
+    @media(max-width:860px){.grid{grid-template-columns:1fr}.wrap{padding:12px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="title">{{BUSINESS_NAME}}</div>
+      <div class="small">Private practice • {{CITY}}, {{STATE}}</div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="specialties.html">Services</a>
+      <a href="approach.html">How I Work</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="hero card">
+      <div class="pill">Clinician-led therapeutic work</div>
+      <h1>About the clinician</h1>
+      <p class="lede">I offer time-limited and ongoing therapeutic options for adults and older adolescents focused on clearer decision-making, more stable daily functioning, and skills you can use outside sessions.</p>
+    </section>
+
+    <div class="grid">
+      <div class="card">
+        <h3>Training, values, and blend</h3>
+        <p class="meta">Licensed clinician with integrative, evidence-informed practice</p>
+        <p>I draw from relational frameworks, CBT-derived skills, and brief structured approaches to tailor work to the specific episode that brought you here. My attention is practical: mapping the few changes that create forward movement while keeping a careful eye on safety and privacy.</p>
+
+        <h4 style="margin-top:14px">What to expect</h4>
+        <ul class="expect">
+          <li>An initial intake to clarify goals and routine</li>
+          <li>Collaborative plan: short series or weekly sessions depending on need</li>
+          <li>Options for telehealth and limited in-person availability</li>
+        </ul>
+
+        <h4 style="margin-top:14px">Confidentiality & scope</h4>
+        <p class="small">Sessions and records are private within legal and ethical limits. I do not provide emergency services. If you are in crisis or have any immediate safety concerns, contact local emergency services or your crisis line. Therapy is not a substitute for urgent medical care.</p>
+      </div>
+
+      <aside class="card">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div>
+            <div class="meta">Contact</div>
+            <div><strong>{{PHONE}}</strong></div>
+            <div class="small">Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+          </div>
+
+          <div>
+            <div class="meta">Book a first step</div>
+            <a id="mainCta" class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          </div>
+
+          <div>
+            <div class="meta">Quick check—where are you now?</div>
+            <div class="mood" id="moodSelect">
+              <button data-key="overwhelmed">Overwhelmed</button>
+              <button data-key="stuck">Stuck</button>
+              <button data-key="sad">Grieving</button>
+              <button data-key="curious">Curious</button>
+            </div>
+            <div id="moodRec" style="margin-top:10px;color:var(--muted)">Select a state to see a suggested next step.</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <section class="card" style="margin-top:18px">
+      <h3>Some common questions</h3>
+      <p class="small">Insurance, length, and practical details</p>
+      <ul>
+        <li><strong>Insurance:</strong> I do not bill insurance directly in all cases. I can provide receipts for out-of-network reimbursement on request.</li>
+        <li><strong>Session length:</strong> Standard sessions are 50 minutes; other formats available by arrangement.</li>
+        <li><strong>Limits:</strong> Therapy may involve emotional discomfort while addressing difficult topics. We discuss progress and adjust the plan over time.</li>
+      </ul>
+    </section>
+
+    <footer>
+      <p class="small">No guarantees are made about outcomes. For urgent matters call your local emergency number or seek immediate help. This site is for informational purposes and does not replace a full clinical evaluation.</p>
+    </footer>
+  </main>
+
+  <script>
+    (function(){
+      const mapping = {
+        overwhelmed: {text:'Short focus sessions to reduce load', cta:'Request a short consult'},
+        stuck: {text:'A 6-week clarity series to test next moves', cta:'Start a clarity series'},
+        sad: {text:'Space for loss and coping strategies', cta:'Schedule a grief-focused visit'},
+        curious: {text:'Exploratory meeting to map options', cta:'Arrange a discovery call'}
+      };
+      const container = document.getElementById('moodSelect');
+      const rec = document.getElementById('moodRec');
+      const mainCta = document.getElementById('mainCta');
+      container.addEventListener('click', function(e){
+        if(e.target.tagName!=='BUTTON') return;
+        const key = e.target.getAttribute('data-key');
+        Array.from(container.querySelectorAll('button')).forEach(b=>b.classList.remove('active'));
+        e.target.classList.add('active');
+        const item = mapping[key];
+        rec.style.opacity=0;
+        setTimeout(()=>{rec.textContent = item.text; mainCta.textContent = item.cta; rec.style.opacity=1},220);
+      });
+    })();
+  </script>
+</body>
+</html>

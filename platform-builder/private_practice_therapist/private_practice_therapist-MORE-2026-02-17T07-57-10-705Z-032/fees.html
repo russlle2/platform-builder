@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Investment & Membership — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Membership-based psychotherapy offerings and investment overview for ongoing, focused care.">
+  <style>
+    :root{
+      --bg:#fbfcfd;--ink:#0b2545;--muted:#5b6b7a;--accent:#6aa6c9;--card:#ffffff;--glass:rgba(255,255,255,0.6);
+      --maxw:980px;
+    }
+    html,body{height:100%;}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:var(--ink);background:linear-gradient(180deg,#f7fbfd 0%,#fbfcfe 60%);-webkit-font-smoothing:antialiased;}
+    header{position:relative;padding:28px 20px;max-width:var(--maxw);margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:54px;height:54px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#9bd3e8);display:grid;place-items:center;color:#042a42;font-weight:700}
+    nav a{color:var(--ink);text-decoration:none;margin-left:18px;font-size:15px}
+    nav a.small{font-size:14px;color:var(--muted)}
+    .hero{max-width:var(--maxw);margin:12px auto 40px;position:relative;overflow:visible;padding:48px 20px}
+    .hero-inner{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:center}
+    .split{background:linear-gradient(135deg,rgba(106,166,201,0.12),rgba(154,211,232,0.06));padding:36px;border-radius:14px;position:relative;overflow:hidden}
+    .split:before{content:"";position:absolute;left:-20%;top:-30%;height:220%;width:140%;background-image:url('assets/img/pattern.svg');opacity:0.08;transform:rotate(-12deg)}
+    h1{margin:0 0 8px;font-size:24px}
+    p.lead{margin:0;color:var(--muted);line-height:1.5}
+    .panel{background:var(--card);padding:22px;border-radius:12px;box-shadow:0 6px 18px rgba(11,37,69,0.06)}
+
+    .tiers{display:flex;flex-direction:column;gap:16px}
+    .tier{display:flex;justify-content:space-between;align-items:center;padding:14px;border-radius:10px;border:1px solid rgba(11,37,69,0.06)}
+    .tier .meta{display:flex;flex-direction:column}
+    .tier h3{margin:0;font-size:16px}
+    .price{font-weight:700;color:var(--ink)}
+    .note{font-size:13px;color:var(--muted)}
+    .cta{display:inline-block;background:var(--accent);color:white;padding:10px 14px;border-radius:8px;text-decoration:none}
+
+    .fineprint{font-size:13px;color:var(--muted);margin-top:10px}
+
+    .reveal{opacity:0;transform:translateY(12px);transition:opacity .6s ease,transform .6s ease}
+    .reveal.visible{opacity:1;transform:none}
+
+    footer{max-width:var(--maxw);margin:40px auto;padding:18px 20px;color:var(--muted);font-size:13px}
+
+    /* modal styles */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(6,20,34,0.45);display:none;align-items:center;justify-content:center;padding:20px;z-index:60}
+    .modal{background:var(--card);width:100%;max-width:720px;border-radius:12px;padding:20px;box-shadow:0 18px 50px rgba(11,37,69,0.25)}
+    .modal h2{margin:0 0 8px}
+    .modal .controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+    .btn{padding:8px 12px;border-radius:8px;border:1px solid rgba(11,37,69,0.06);background:white;cursor:pointer}
+    .btn.primary{background:var(--accent);color:white;border:0}
+    .exercise-area{height:220px;border-radius:10px;background:linear-gradient(180deg,#fbffff,#f6fbfd);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--ink)}
+    .hidden{display:none}
+
+    @media (max-width:880px){.hero-inner{grid-template-columns:1fr}nav a{display:none}}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">TP</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{CITY}}, {{STATE}} • Therapy by membership</div>
+      </div>
+    </div>
+    <nav aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="specialties.html">Focus Areas</a>
+      <a href="approach.html">How I Work</a>
+      <a href="fees.html" class="small">Investment</a>
+      <a href="faq.html" class="small">FAQs</a>
+      <a href="book.html" class="small">Schedule</a>
+    </nav>
+  </header>
+
+  <main class="hero">
+    <div class="hero-inner">
+      <section class="split">
+        <h1>Membership options for ongoing therapeutic care</h1>
+        <p class="lead">A membership frames care as an ongoing resource — regular sessions, continuity, and a predictable way to work through challenges over time. Below are options to match different rhythms of work together.</p>
+        <div style="height:18px"></div>
+        <div class="panel reveal" data-delay="0">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+            <div>
+              <div style="font-size:13px;color:var(--muted);">Quick access</div>
+              <div style="font-weight:700">Initial orientation & planning</div>
+            </div>
+            <a class="cta" href="book.html">{{PRIMARY_CTA_LABEL}}</a>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel" aria-labelledby="investment">
+        <div id="investment" style="font-size:13px;color:var(--muted);margin-bottom:8px">Choose a membership</div>
+        <div class="tiers">
+          <div class="tier reveal" data-delay="80">
+            <div class="meta">
+              <h3>Foundations Membership</h3>
+              <div class="note">Weekly 45-min session cadence; private messaging within agreed boundaries</div>
+            </div>
+            <div style="text-align:right">
+              <div class="price">$280 / week*</div>
+              <div class="note">Billed monthly</div>
+            </div>
+          </div>
+
+          <div class="tier reveal" data-delay="160">
+            <div class="meta">
+              <h3>Steady Support</h3>
+              <div class="note">Biweekly 50-min sessions; focused planning and tracking between sessions</div>
+            </div>
+            <div style="text-align:right">
+              <div class="price">$520 / month*</div>
+              <div class="note">Most common for ongoing work</div>
+            </div>
+          </div>
+
+          <div class="tier reveal" data-delay="240">
+            <div class="meta">
+              <h3>Focused Path</h3>
+              <div class="note">Shorter, time-limited plan (6–12 sessions) with goal-focused work</div>
+            </div>
+            <div style="text-align:right">
+              <div class="price">$3200 – program rate*</div>
+              <div class="note">Single upfront payment or split billing</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="fineprint">*Rates reflect membership investments and administrative services. Sliding-fee options considered; reach out for a confidential conversation about fit. Not a substitute for emergency services.</div>
+        <div style="margin-top:12px"><a class="cta" href="book.html">Request a membership conversation</a></div>
+      </aside>
+    </div>
+
+    <div style="max-width:var(--maxw);margin:22px auto 0;padding:0 20px">
+      <div class="panel reveal" data-delay="320">
+        <h3 style="margin-top:0">How membership works</h3>
+        <p class="note">A membership sets expectations: session frequency, billing cadence, and how we handle messages between sessions. Memberships include scheduling priority and administrative coordination so sessions can focus on clinical work.</p>
+        <ul style="color:var(--muted);margin-top:10px">
+          <li>We’ll start with a 30–50 minute orientation to identify goals and matches.</li>
+          <li>Each membership includes a set number of sessions per month; extra sessions can be added when available.</li>
+          <li>Messaging is available for brief check-ins; full clinical content is reserved for sessions.</li>
+        </ul>
+      </div>
+    </div>
+  </main>
+
+  <div style="max-width:var(--maxw);margin:22px auto;padding:0 20px">
+    <div class="panel reveal" data-delay="400">
+      <h3 style="margin-top:0">Practical notes</h3>
+      <p class="note">Confidentiality is central. I follow professional ethical standards for record-keeping and privacy. There are legal limits to confidentiality (e.g., imminent risk, court orders). I do not provide crisis services; in emergencies, contact local emergency services or your crisis line.</p>
+      <p class="note">Memberships are not insurance-based billing here; I provide receipts you may share with your insurer. We’ll discuss what fits your needs and boundaries of care during intake.</p>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-top:12px;align-items:center">
+      <button class="btn" id="tryNowBtn">Try a guided exercise</button>
+      <a class="btn" href="book.html">Schedule a conversation</a>
+    </div>
+  </div>
+
+  <footer>
+    <div style="max-width:var(--maxw);margin:0 auto">Confidentiality, scope, and crisis note: Communications here are part of arranging care. Clinical work begins after informed consent. If you are in crisis or at risk of harm, contact local emergency services or your crisis line immediately. This website does not offer emergency care or guarantee specific outcomes.</div>
+  </footer>
+
+  <div class="modal-backdrop" id="modalBackdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h2 id="modalTitle">Try a guided exercise</h2>
+      <p style="margin:0 0 12px;color:var(--muted)">Choose a brief practice: breathing, journaling prompt, or a simple intention-setting pause.</p>
+
+      <div class="controls">
+        <button class="btn" data-mode="breath">Guided breathing</button>
+        <button class="btn" data-mode="journal">Journaling prompt</button>
+        <button class="btn" data-mode="intention">Set an intention</button>
+        <button class="btn primary" id="startBtn">Start</button>
+        <button class="btn" id="closeModal">Close</button>
+      </div>
+
+      <div class="exercise-area" id="exerciseArea">Select a practice and press Start.</div>
+    </div>
+  </div>
+
+  <script>
+    // Scroll reveal with prefers-reduced-motion support
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const revealEls = document.querySelectorAll('.reveal');
+      if(prefersReduced){
+        revealEls.forEach(el=>el.classList.add('visible'));
+        return;
+      }
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting){
+            const el = entry.target;
+            const delay = parseInt(el.getAttribute('data-delay')||0,10);
+            setTimeout(()=>el.classList.add('visible'), delay);
+            io.unobserve(el);
+          }
+        });
+      },{threshold:0.12});
+      revealEls.forEach(el=>io.observe(el));
+    })();
+
+    // Guided exercise modal
+    (function(){
+      const backdrop = document.getElementById('modalBackdrop');
+      const tryBtn = document.getElementById('tryNowBtn');
+      const closeBtn = document.getElementById('closeModal');
+      const startBtn = document.getElementById('startBtn');
+      const exerciseArea = document.getElementById('exerciseArea');
+      let selectedMode = 'breath';
+
+      document.querySelectorAll('[data-mode]').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          selectedMode = btn.getAttribute('data-mode');
+          document.querySelectorAll('[data-mode]').forEach(b=>b.style.outline='');
+          btn.style.outline='2px solid rgba(106,166,201,0.28)';
+        });
+      });
+
+      function open(){backdrop.style.display='flex';backdrop.setAttribute('aria-hidden','false');}
+      function close(){backdrop.style.display='none';backdrop.setAttribute('aria-hidden','true');exerciseArea.textContent='Select a practice and press Start.'}
+
+      tryBtn.addEventListener('click',open);
+      closeBtn.addEventListener('click',close);
+
+      startBtn.addEventListener('click',()=>{
+        if(selectedMode==='breath') return startBreathing();
+        if(selectedMode==='journal') return startJournaling();
+        if(selectedMode==='intention') return startIntention();
+      });
+
+      // Simple accessible breathing exercise
+      let breathTimer = null;
+      function startBreathing(){
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        exerciseArea.innerHTML = '';
+        const circle = document.createElement('div');
+        circle.setAttribute('aria-hidden','true');
+        circle.style.width='130px';circle.style.height='130px';circle.style.borderRadius='50%';circle.style.background='radial-gradient(circle at 30% 30%, #d7f1fb, #a7dff0)';circle.style.display='flex';circle.style.alignItems='center';circle.style.justifyContent='center';circle.style.fontWeight='700';
+        exerciseArea.appendChild(circle);
+        let step=0;const phases=['Breathe in','Hold','Breathe out','Pause'];
+        const timings = [4000,2000,4000,2000];
+        if(prefersReduced){circle.textContent='Breathe slowly for a minute.';return}
+        function tick(){
+          circle.textContent = phases[step%phases.length];
+          circle.style.transform = (step%2===0)?'scale(1.18)':'scale(0.92)';
+          step++;
+          breathTimer = setTimeout(tick,timings[(step-1)%timings.length]);
+        }
+        tick();
+      }
+
+      function startJournaling(){
+        exerciseArea.innerHTML='';
+        const prompt = document.createElement('div');
+        prompt.style.maxWidth='100%';prompt.style.padding='12px';prompt.style.textAlign='left';prompt.style.color='var(--muted)';
+        const suggestions = [
+          'Write for five minutes about a small win from the last week.',
+          'Describe one feeling you notice right now and where you feel it in your body.',
+          'Name a worry and list one small step that might reduce it.'
+        ];
+        const choice = suggestions[Math.floor(Math.random()*suggestions.length)];
+        prompt.textContent = 'Journaling prompt: "' + choice + '"';
+        const area = document.createElement('textarea');
+        area.style.width='100%';area.style.height='110px';area.style.marginTop='8px';area.style.padding='8px';area.style.borderRadius='8px';area.placeholder='Write freely...';
+        exerciseArea.appendChild(prompt);exerciseArea.appendChild(area);
+      }
+
+      function startIntention(){
+        exerciseArea.innerHTML='';
+        const label = document.createElement('div');
+        label.style.color='var(--muted)';label.style.marginBottom='8px';label.textContent='Set a short, realistic intention for the next 24 hours.';
+        const input = document.createElement('input');
+        input.type='text';input.style.width='100%';input.style.padding='10px';input.style.borderRadius='8px';input.placeholder='Example: Take a 10-minute walk after lunch.';
+        const save = document.createElement('button');
+        save.className='btn primary';save.textContent='Save intention';save.style.marginTop='8px';
+        save.addEventListener('click',()=>{
+          save.textContent='Saved';setTimeout(()=>save.textContent='Save intention',1200);
+        });
+        exerciseArea.appendChild(label);exerciseArea.appendChild(input);exerciseArea.appendChild(save);
+      }
+
+      // close modal on backdrop click
+      backdrop.addEventListener('click',(e)=>{if(e.target===backdrop) close();});
+    })();
+  </script>
+</body>
+</html>

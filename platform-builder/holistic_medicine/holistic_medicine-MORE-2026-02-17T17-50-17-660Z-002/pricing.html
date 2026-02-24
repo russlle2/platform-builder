@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Plans — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfbfa;--card:#ffffff;--accent:#6c4eff;--muted:#6b7280;--glass:rgba(255,255,255,0.6);font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial}
+    html,body{height:100%}
+    body{margin:0;background:linear-gradient(180deg,#f7f6ff 0%,#fbfbfa 60%);color:#0f172a}
+    header{display:flex;align-items:center;justify-content:space-between;padding:22px 28px;background:transparent}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#00c2ff);display:grid;place-items:center;color:white;font-weight:700}
+    nav a{margin-left:14px;text-decoration:none;color:var(--muted);font-weight:600}
+    .hero{padding:48px 28px 36px;display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+    .hero h1{margin:0;font-size:28px}
+    .hero p{color:var(--muted);margin-top:8px}
+
+    .cards{display:flex;gap:18px;flex-wrap:wrap}
+    .card{background:var(--card);border-radius:14px;padding:20px;box-shadow:0 6px 18px rgba(15,23,42,0.06);width:320px}
+    .price{font-size:20px;color:var(--accent);font-weight:700}
+    .meta{color:var(--muted);margin-top:6px}
+
+    .planner{background:linear-gradient(180deg,rgba(108,78,255,0.06),transparent);padding:18px;border-radius:12px}
+    label{display:block;font-size:13px;margin-top:10px;color:#0f172a}
+    input[type=text],select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e7ee;margin-top:6px}
+    button.primary{background:var(--accent);color:white;border:none;padding:10px 12px;border-radius:8px;margin-top:12px;cursor:pointer}
+    .copy-msg{font-size:13px;color:green;margin-left:8px}
+
+    footer{padding:28px;text-align:center;color:var(--muted)}
+
+    /* reveal animation */
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity 520ms cubic-bezier(.2,.9,.2,1),transform 520ms cubic-bezier(.2,.9,.2,1)}
+    .revealed{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){
+      .reveal{transition:none;opacity:1;transform:none}
+    }
+
+    /* small utilities */
+    .muted{color:var(--muted)}
+    .pill{display:inline-block;background:rgba(6,95,70,0.06);padding:6px 10px;border-radius:999px;font-weight:600;color:#065f46}
+
+    /* subtle patterned corner */
+    .pattern{position:absolute;right:6px;top:6px;opacity:0.08;width:260px;height:260px;pointer-events:none}
+  </style>
+</head>
+<body>
+  <svg class="pattern" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <defs>
+      <linearGradient id="g" x1="0" x2="1">
+        <stop offset="0" stop-color="#6c4eff" />
+        <stop offset="1" stop-color="#00c2ff" />
+      </linearGradient>
+    </defs>
+    <rect x="0" y="0" width="200" height="200" fill="url(#g)" rx="20"/>
+    <g fill="white" opacity="0.06">
+      <circle cx="30" cy="30" r="16"/>
+      <circle cx="70" cy="50" r="10"/>
+      <rect x="110" y="20" width="12" height="40" rx="3"/>
+      <path d="M40 120c10-18 30-28 52-24" stroke="white" stroke-width="2" fill="none" opacity="0.06"/>
+    </g>
+  </svg>
+
+  <header>
+    <div class="brand">
+      <div class="logo">HM</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div class="muted" style="font-size:13px">Integrative sessions with an evidence-forward, kind lens</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="approach.html">Approach</a>
+      <a href="services.html">Services</a>
+      <a href="pricing.html">Plans</a>
+      <a href="book.html">Book</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero reveal" data-reveal>
+      <div>
+        <h1>Plan paths that fit into your life — choose a rhythm, not a prescription</h1>
+        <p>Options designed for progressive steadying: short sprints when you need a reset, ongoing tracks for layered change, and maintenance plans for durable wellbeing. Educational, collaborative, and personalized.</p>
+        <div style="margin-top:14px;display:flex;gap:12px;align-items:center">
+          <a class="primary" href="{{PRIMARY_CTA_URL}}" style="text-decoration:none;background:var(--accent);color:white;padding:10px 14px;border-radius:10px;font-weight:700">{{PRIMARY_CTA_LABEL}}</a>
+          <span class="pill">Phone: {{PHONE}}</span>
+        </div>
+      </div>
+
+      <aside>
+        <div class="planner reveal" data-reveal>
+          <div style="font-weight:800">Session Planner</div>
+          <div class="muted" style="font-size:13px">Quickly sketch a short plan and copy a plaintext summary to bring to your booking.</div>
+          <label>Primary goal</label>
+          <input type="text" id="goal" placeholder="Calm evening routine, chronic fatigue support...">
+
+          <label>Preferred session length</label>
+          <select id="length">
+            <option>30 minutes</option>
+            <option>45 minutes</option>
+            <option>60 minutes</option>
+          </select>
+
+          <label>Frequency</label>
+          <select id="frequency">
+            <option>One session</option>
+            <option>Weekly for 6 weeks</option>
+            <option>Biweekly for 3 months</option>
+          </select>
+
+          <label>Modalities of interest</label>
+          <select id="modalities" multiple size="4">
+            <option>Nutrition planning</option>
+            <option>Herbal education</option>
+            <option>Movement & somatic work</option>
+            <option>Breath & regulation practices</option>
+          </select>
+
+          <label style="margin-top:8px">Notes / sensitivities</label>
+          <textarea id="notes" rows="3" placeholder="Allergies, time constraints, current meds..."></textarea>
+
+          <button class="primary" id="build">Build plan</button>
+          <button id="copy" style="margin-left:8px;padding:9px 12px;border-radius:8px;border:1px solid #e6e7ee;background:#fff;cursor:pointer">Copy summary</button>
+          <span id="copyMsg" class="copy-msg" aria-live="polite"></span>
+        </div>
+      </aside>
+    </section>
+
+    <section style="padding:18px 28px">
+      <div class="cards">
+        <div class="card reveal" data-reveal>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-weight:800">Rhythm Track</div>
+              <div class="muted" style="font-size:13px">Structured six-session pathway focused on practical routines</div>
+            </div>
+            <div class="price">$720</div>
+          </div>
+          <div class="meta">Weekly visits, prioritized home practices, and a closing synthesis session.</div>
+        </div>
+
+        <div class="card reveal" data-reveal>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-weight:800">Renew Sprint</div>
+              <div class="muted" style="font-size:13px">Three focused sessions for a reset and short-term plan</div>
+            </div>
+            <div class="price">$240</div>
+          </div>
+          <div class="meta">Good for focused questions, onboarding to practices, or a mini-reset.</div>
+        </div>
+
+        <div class="card reveal" data-reveal>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-weight:800">Steady Path</div>
+              <div class="muted" style="font-size:13px">Monthly partnership for ongoing support and adjustments</div>
+            </div>
+            <div class="price">$160 / mo</div>
+          </div>
+          <div class="meta">A lighter cadence with message check-ins and monthly touchpoints.</div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;color:var(--muted);font-size:13px">
+        Pricing examples reflect typical pathways. Final plans are personalized after an initial assessment. This site offers educational and supportive care; individual outcomes vary and no guarantees are made.
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>Questions? Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call {{PHONE}}</div>
+    <div style="margin-top:10px">Serving {{CITY}}, {{STATE}}</div>
+  </footer>
+
+  <script>
+    // Scroll-triggered reveal with prefers-reduced-motion support
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const items = document.querySelectorAll('[data-reveal]');
+      if(prefersReduced){ items.forEach(it=>it.classList.add('revealed')); return; }
+
+      const obs = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{
+          if(e.isIntersecting){
+            e.target.classList.add('revealed');
+            obs.unobserve(e.target);
+          }
+        });
+      },{threshold:0.12});
+      items.forEach(it=>{ it.classList.add('reveal'); obs.observe(it); });
+    })();
+
+    // Session Planner logic
+    (function(){
+      function buildPlainText(){
+        const goal = document.getElementById('goal').value.trim() || 'No primary goal entered';
+        const length = document.getElementById('length').value;
+        const freq = document.getElementById('frequency').value;
+        const notes = document.getElementById('notes').value.trim() || 'No additional notes';
+        const modal = Array.from(document.getElementById('modalities').selectedOptions).map(o=>o.value).join(', ') || 'Not specified';
+
+        const lines = [];
+        lines.push('Session Plan — ' + new Date().toLocaleDateString());
+        lines.push('Primary goal: ' + goal);
+        lines.push('Session length: ' + length);
+        lines.push('Frequency: ' + freq);
+        lines.push('Modalities: ' + modal);
+        lines.push('Notes: ' + notes);
+        lines.push('Suggested micro-habits:');
+        // Simple micro-habit suggestions derived from selected modalities and goal
+        if(modal.includes('Breath')) lines.push('- Daily 3-min breath practice on waking');
+        if(modal.includes('Movement')) lines.push('- Gentle 7-minute evening movement sequence 3x/week');
+        if(modal.includes('Nutrition')) lines.push('- Add one high-fiber meal at midday');
+        if(modal.includes('Herbal')) lines.push('- Short herbal tea ritual in the evening if tolerated');
+        if(!modal || modal==='Not specified') lines.push('- 3-minute grounding practice after waking');
+
+        lines.push('Notes for first visit: Bring a short medication list and recent sleep pattern notes.');
+        return lines.join('\n');
+      }
+
+      document.getElementById('build').addEventListener('click', function(){
+        const text = buildPlainText();
+        // show in an alert for quick preview (also placed in copy buffer on click)
+        window.alert('Plan preview:\n\n' + text);
+      });
+
+      document.getElementById('copy').addEventListener('click', async function(){
+        const text = buildPlainText();
+        try{
+          await navigator.clipboard.writeText(text);
+          const msg = document.getElementById('copyMsg');
+          msg.textContent = 'Copied!';
+          setTimeout(()=>{ msg.textContent=''; },2200);
+        }catch(e){
+          alert('Copy failed. You can select and copy manually:\n\n' + text);
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

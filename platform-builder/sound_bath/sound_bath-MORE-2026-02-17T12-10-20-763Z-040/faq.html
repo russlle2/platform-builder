@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Answers — FAQ — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#07101a;--muted:#9fb3c4;--card:#071824;--accent:#ffd2a0}
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:#eaf6ff;background-image:url('assets/img/pattern.svg');background-size:540px}
+    .site{max-width:980px;margin:40px auto;padding:20px}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    .logo{display:flex;gap:10px;align-items:center}
+    .logo .mark{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#9ad8ff);display:flex;align-items:center;justify-content:center;font-weight:700;color:#052033}
+    nav{display:flex;gap:10px;flex-wrap:wrap}
+    nav a{color:var(--muted);text-decoration:none;padding:6px 10px;border-radius:8px}
+    nav a:hover{background:rgba(255,255,255,0.02);color:var(--accent)}
+    main{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px}
+    h1{color:var(--accent);margin:0 0 8px}
+    .faq{display:grid;grid-template-columns:1fr 320px;gap:18px}
+    .q{background:#071c2a;padding:14px;border-radius:10px;margin-bottom:10px}
+    .q h3{margin:0;font-size:15px}
+    .q p{margin:8px 0 0;color:var(--muted)}
+    .right{background:rgba(255,255,255,0.01);padding:14px;border-radius:10px}
+    .btn{background:var(--accent);border:none;padding:8px 12px;border-radius:8px;color:#052033;cursor:pointer}
+    .muted{color:var(--muted)}
+    .disclaimer{margin-top:12px;padding:10px;border-radius:8px;background:rgba(255,0,0,0.03);color:#ffcdc0}
+    @media(max-width:880px){.faq{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="site">
+    <header>
+      <div class="logo">
+        <div class="mark">SB</div>
+        <div>
+          <div style="font-weight:700;color:#dff6ff">{{BUSINESS_NAME}}</div>
+          <div class="muted">Answers &amp; Guidance</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="events.html">Calendar</a>
+        <a href="private-sessions.html">Private Work</a>
+        <a href="pricing.html">Investments</a>
+        <a href="about.html">About</a>
+        <a href="faq.html" style="background:rgba(255,255,255,0.02);color:var(--accent);">Answers</a>
+        <a href="book.html">Reserve</a>
+        <a href="contact.html">Say Hello</a>
+      </nav>
+    </header>
+
+    <main>
+      <h1>Questions people actually ask</h1>
+      <div style="color:var(--muted);margin-bottom:12px">Short answers, clear boundaries. If you need personal guidance, contact our team.</div>
+
+      <div class="faq">
+        <div>
+          <div class="q">
+            <h3>What should I expect the first time?</h3>
+            <p class="muted">A calm entry with a brief orientation, a guided settling, then layered sound. You can rest, breathe, or lightly open your eyes. You won't be asked to perform.</p>
+          </div>
+
+          <div class="q">
+            <h3>Is it therapeutic?</h3>
+            <p class="muted">Our program supports regulation and presence but is not psychotherapy. If you are in active mental health treatment, consult with your provider about complementary practices.</p>
+          </div>
+
+          <div class="q">
+            <h3>Are recordings used?</h3>
+            <p class="muted">We sometimes record for training; informed consent is requested for any captures. No cameras during sessions unless explicitly permitted.</p>
+          </div>
+
+          <div class="q">
+            <h3>Accessibility</h3>
+            <p class="muted">Our space is single-floor, with comfortable cushions and chairs. Let us know any needs when booking so we can prepare seating and entry.</p>
+          </div>
+
+          <div class="q">
+            <h3>What about contraindications?</h3>
+            <p class="muted">Contraindications: seizure disorders, uncontrolled blood pressure issues, pregnancy complications, or extreme sensitivity to vibration. If any apply, consult medical care before attending.</p>
+          </div>
+
+        </div>
+
+        <aside class="right">
+          <h3 style="margin-top:0;color:var(--accent)">Still unsure?</h3>
+          <p class="muted">Try a short practice to sense whether the approach fits you.</p>
+          <button class="btn" id="open-try">Try a quick exercise</button>
+
+          <div class="disclaimer">
+            <strong>Health note</strong>
+            <div class="muted" style="margin-top:6px">Attending is not a medical intervention. If you have any serious health concerns, please consult your clinician prior to booking.</div>
+          </div>
+
+          <div style="margin-top:12px">
+            <a href="book.html" class="btn" style="display:inline-block">Reserve a Seat</a>
+          </div>
+        </aside>
+      </div>
+
+    </main>
+
+    <footer style="margin-top:14px;color:var(--muted);font-size:13px">Contact: <a class="muted" href="mailto:{{EMAIL}}">{{EMAIL}}</a> • {{CITY}}, {{STATE}}</footer>
+  </div>
+
+  <!-- Reuse guided modal here too -->
+  <div id="mini-guide" style="display:none;position:fixed;inset:0;background:rgba(2,6,23,0.7);align-items:center;justify-content:center;z-index:40">
+    <div style="background:linear-gradient(180deg,#072033,#07243b);padding:16px;border-radius:10px;color:#e6f9ff;max-width:560px;margin:40px auto;">
+      <h4 style="margin:0 0 8px 0">One-minute centering</h4>
+      <div id="mini-text" style="color:var(--muted)">Press Start to breathe with a short count. No timers needed.</div>
+      <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+        <button id="mini-start" class="btn" style="background:#ffd2a0;color:#052033;border:none;padding:8px 12px;border-radius:8px">Start</button>
+        <button id="mini-close" style="padding:8px 12px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // tiny guided modal for FAQ
+    (function(){
+      const open = document.getElementById('open-try');
+      const modal = document.getElementById('mini-guide');
+      const start = document.getElementById('mini-start');
+      const close = document.getElementById('mini-close');
+      const text = document.getElementById('mini-text');
+      let iv;
+      open.addEventListener('click',()=>{ modal.style.display='flex' });
+      close.addEventListener('click',()=>{ modal.style.display='none'; clearInterval(iv); text.textContent='Press Start to breathe with a short count. No timers needed.' });
+      start.addEventListener('click',()=>{
+        let cycle=0; text.textContent='Follow the count: Inhale 4, hold 2, exhale 6.'; start.disabled=true;
+        iv = setInterval(()=>{ cycle++; if(cycle>3){ clearInterval(iv); text.textContent='End. Notice how you feel.'; start.disabled=false } },4200);
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Rates & Pathways — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1720;--card:#0b1220;--muted:#9aa7b2;--accent:#9bd5c7;--glass:rgba(255,255,255,0.04)}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#e6eef1;background:linear-gradient(180deg,#061018 0%,#071522 60%);}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);backdrop-filter:blur(6px)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:48px;height:48px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#7bd3f0);display:grid;place-items:center;color:#072032;font-weight:700}
+    nav a{color:var(--muted);text-decoration:none;margin:0 10px;font-size:14px}
+    .primary-cta{background:linear-gradient(90deg,#3be3c4,#6fd7ff);border:none;padding:10px 14px;border-radius:8px;color:#042026;font-weight:600}
+    .hero{padding:48px 28px;display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:center}
+    .hero-card{background:linear-gradient(180deg,var(--glass),rgba(255,255,255,0.02));padding:28px;border-radius:14px;box-shadow:0 6px 30px rgba(2,6,23,0.6)}
+    .pattern{height:220px;border-radius:12px;overflow:hidden;display:block;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='400'><defs><linearGradient id='g' x1='0' x2='1'><stop offset='0' stop-color='%239bd5c7'/><stop offset='1' stop-color='%237bd3f0'/></linearGradient><pattern id='p' width='80' height='80' patternUnits='userSpaceOnUse' patternTransform='rotate(18)'><rect width='80' height='80' fill='rgba(255,255,255,0.02)'/><path d='M0 20 L20 0 M60 80 L80 60 M40 0 L80 40 M0 40 L40 0' stroke='%23ffffff' stroke-opacity='0.04' stroke-width='2'/></pattern></defs><rect width='800' height='400' fill='url(%23p)'/><g opacity='0.18'><rect width='800' height='400' fill='url(%23g)'/></g></svg>");background-size:cover}
+    h1{margin:0 0 10px 0;font-size:28px;color:#e8fbf6}
+    p.lead{color:var(--muted);margin:0 0 18px 0}
+    .toggle{display:flex;align-items:center;gap:10px;margin:12px 0}
+    .switch{width:58px;height:30px;border-radius:20px;background:#07232a;position:relative;padding:4px;cursor:pointer}
+    .knob{width:22px;height:22px;border-radius:50%;background:linear-gradient(180deg,#fff,#dceff0);position:absolute;left:4px;top:4px;transition:all 300ms cubic-bezier(.2,.9,.2,1)}
+    .switch.on{background:linear-gradient(90deg,#2eb89f,#4fd3f9)}
+    .switch.on .knob{left:32px}
+    .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}
+    .tier{background:rgba(255,255,255,0.02);padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .tier h3{margin:0 0 8px 0;color:#dffbf6}
+    .price{font-size:28px;color:var(--accent);font-weight:700}
+    .per{color:var(--muted);font-size:13px}
+    .features{margin-top:12px;color:var(--muted);font-size:14px}
+    .badge-row{display:flex;gap:8px;margin-top:12px;align-items:center}
+    .cred{background:#071a1f;padding:6px 10px;border-radius:8px;color:var(--muted);font-size:13px;position:relative}
+    .cred:hover{background:#0d2a2b;color:#dffbf6}
+    .tooltip{position:absolute;bottom:110%;left:50%;transform:translateX(-50%);white-space:nowrap;background:#021416;color:#c6fff5;padding:6px 8px;border-radius:6px;font-size:12px;opacity:0;pointer-events:none;transition:200ms;box-shadow:0 6px 16px rgba(2,10,12,0.6)}
+    .cred:hover .tooltip{opacity:1}
+    .proof{margin-top:22px}
+    .testimonial{background:linear-gradient(180deg,rgba(255,255,255,0.015),transparent);padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.02);color:var(--muted)}
+    footer{padding:28px;text-align:center;color:var(--muted);font-size:14px}
+    @media(max-width:880px){.hero{grid-template-columns:1fr;}.tiers{grid-template-columns:1fr}}  
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">HM</div>
+      <div>
+        <div style="font-weight:700;color:#e8fbf6">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Start</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Conditions</a>
+      <a href="approach.html">Method</a>
+      <a href="pricing.html" style="color:#bff0e8">Rates</a>
+      <a href="about.html">Studio</a>
+      <a href="book.html">Book</a>
+      <a class="primary-cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-card">
+        <div class="pattern"></div>
+        <h1>Rates & Pathways</h1>
+        <p class="lead">Conscious frameworks for multi-visit care and single-session clarity. Choose a cadence that fits your life and budget; our pricing encourages sustained curiosity as much as decisive action.</p>
+        <div class="toggle" aria-hidden="false">
+          <div style="font-size:13px;color:var(--muted)">Monthly</div>
+          <div id="billingToggle" class="switch" role="switch" aria-checked="true" tabindex="0">
+            <div class="knob"></div>
+          </div>
+          <div style="font-size:13px;color:var(--muted)">Package</div>
+        </div>
+
+        <div class="tiers" id="tiers">
+          <div class="tier">
+            <h3>Nourish Path</h3>
+            <div><span class="price" data-month="120" data-package="320">$120</span> <span class="per">/session</span></div>
+            <div class="features">Monthly alignment sessions; home practices; concise notes.</div>
+            <div class="badge-row">
+              <div class="cred">Clinic-Grade<input class="tooltip" readonly value="Community clinic standards" /></div>
+              <div class="cred">Peer Mention<div class="tooltip">Named in practitioner roundups</div></div>
+            </div>
+          </div>
+
+          <div class="tier">
+            <h3>Restore Course</h3>
+            <div><span class="price" data-month="240" data-package="620">$240</span> <span class="per">/session</span></div>
+            <div class="features">Deeper intake, lab guidance, coordinated visits.</div>
+            <div class="badge-row">
+              <div class="cred">Integrative Association<div class="tooltip">Member of a national integrative network</div></div>
+              <div class="cred">Continuing Ed<div class="tooltip">Ongoing professional education</div></div>
+            </div>
+          </div>
+
+          <div class="tier">
+            <h3>Align Intensive</h3>
+            <div><span class="price" data-month="480" data-package="1400">$480</span> <span class="per">/session</span></div>
+            <div class="features">Extended sessions, collaborative planning, priority booking.</div>
+            <div class="badge-row">
+              <div class="cred">Accredited Clinic<div class="tooltip">Meets recognized care standards</div></div>
+              <div class="cred">Research-Aligned<div class="tooltip">Approach referenced in case discussions</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:16px">
+          <button class="primary-cta" onclick="location.href='{{PRIMARY_CTA_URL}}'">Begin Your Path</button>
+        </div>
+      </div>
+
+      <aside class="hero-card">
+        <h2 style="margin-top:0;color:#dffbf6">Proof & Perspective</h2>
+        <div class="proof">
+          <div id="testimonial" class="testimonial">Loading testimonial…</div>
+          <div style="margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <div class="cred" title="Verified excellence">Badge • A<div class="tooltip">Clinical verification badge</div></div>
+            <div class="cred" title="Published citation">Badge • B<div class="tooltip">Mentioned in practitioner literature</div></div>
+            <div class="cred" title="Member network">Badge • C<div class="tooltip">Network membership verified</div></div>
+          </div>
+        </div>
+        <div style="margin-top:18px;color:var(--muted);font-size:13px">Testimonials rotate automatically to give a sense of ongoing care and outcomes. These are patient reflections; results are individual and educational in nature.</div>
+      </aside>
+    </section>
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} — A careful, integrative approach to support your well-being. Call <a href="tel:{{PHONE}}" style="color:#9bd5c7">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}" style="color:#9bd5c7">{{EMAIL}}</a></div>
+    <div style="margin-top:8px;color:var(--muted);font-size:13px">Please note: we provide educational guidance and integrative suggestions; not a substitute for medical diagnosis.</div>
+  </footer>
+
+  <script>
+    // Pricing comparator with animated numbers
+    (function(){
+      const toggle = document.getElementById('billingToggle');
+      const prices = Array.from(document.querySelectorAll('.price'));
+      let isPackage = false;
+
+      function animateValue(el, start, end, duration){
+        const startTime = performance.now();
+        function tick(now){
+          const t = Math.min(1, (now - startTime) / duration);
+          const eased = t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2; // ease
+          const val = Math.round(start + (end - start) * eased);
+          el.textContent = '$' + val;
+          if(t < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      }
+
+      function updatePrices(){
+        prices.forEach(function(el){
+          const m = parseInt(el.getAttribute('data-month'),10);
+          const p = parseInt(el.getAttribute('data-package'),10);
+          const current = parseInt(el.textContent.replace(/[^0-9]/g,'')) || (isPackage ? m : p);
+          const target = isPackage ? p : m;
+          animateValue(el, current, target, 650);
+        });
+      }
+
+      function setVisual(){
+        if(isPackage){
+          toggle.classList.add('on');
+          toggle.setAttribute('aria-checked','true');
+        } else {
+          toggle.classList.remove('on');
+          toggle.setAttribute('aria-checked','false');
+        }
+      }
+
+      toggle.addEventListener('click',function(){ isPackage = !isPackage; setVisual(); updatePrices(); });
+      toggle.addEventListener('keydown',function(e){ if(e.key==='Enter' || e.key===' ') { e.preventDefault(); isPackage = !isPackage; setVisual(); updatePrices(); }});
+
+      // initialize displayed values to monthly
+      prices.forEach(function(el){ el.textContent = '$' + el.getAttribute('data-month'); });
+
+      // Proof gallery rotator
+      const testimonials = [
+        {text:'An approach that met me where I was — thoughtful and steady. Follow-up notes made real changes to my routine.', who:'— L.M.'},
+        {text:'My lab review was clear and practical. The plan felt collaborative, not prescriptive.', who:'— R.A.'},
+        {text:'Warm, systematic, and mindful. We found small shifts that compounded into bigger relief.', who:'— S.K.'}
+      ];
+      let idx = 0;
+      const tEl = document.getElementById('testimonial');
+      function rotate(){
+        tEl.style.opacity = '0';
+        setTimeout(()=>{
+          tEl.innerHTML = '<div style="font-weight:600;color:#cffcf1">"'+testimonials[idx].text+'"</div><div style="margin-top:8px;color:var(--muted);font-size:13px">'+testimonials[idx].who+'</div>';
+          tEl.style.opacity = '1';
+          idx = (idx+1) % testimonials.length;
+        },300);
+      }
+      rotate();
+      setInterval(rotate,4500);
+    })();
+  </script>
+</body>
+</html>

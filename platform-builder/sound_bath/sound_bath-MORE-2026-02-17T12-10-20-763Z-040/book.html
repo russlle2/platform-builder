@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — Book a Session — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#041018;--muted:#9ec3d8;--card:#072033;--accent:#ffe2b3}
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;color:#e9fbff;background:var(--bg);background-image:url('assets/img/pattern.svg');background-size:520px}
+    .page{max-width:980px;margin:36px auto;padding:18px}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+    .nav a{color:var(--muted);text-decoration:none;padding:6px 10px;border-radius:8px}
+    .nav a.active{background:rgba(255,255,255,0.02);color:var(--accent)}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:20px}
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:14px;border-radius:12px}
+    h1{color:var(--accent);margin:6px 0}
+    .field{margin-bottom:10px}
+    label{display:block;margin-bottom:6px;color:var(--muted)}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#dff7ff}
+    .seat-select{display:flex;align-items:center;gap:8px}
+    .seat-select button{padding:6px 10px;border-radius:8px;border:none;background:var(--accent);color:#042032;cursor:pointer}
+    .muted{color:var(--muted)}
+    .list{margin-top:10px}
+    .packing{background:rgba(255,255,255,0.01);padding:10px;border-radius:8px}
+    .calendar{background:rgba(255,255,255,0.01);padding:10px;border-radius:8px;margin-top:10px}
+    .cta{display:inline-block;padding:10px 12px;background:var(--accent);color:#042032;border-radius:10px;text-decoration:none;font-weight:700}
+    .disclaimer{margin-top:12px;padding:12px;border-radius:8px;background:rgba(255,255,255,0.01);color:#ffd6d6}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div style="font-weight:700;color:#dffbff">{{BUSINESS_NAME}}</div>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="events.html">Calendar</a>
+        <a href="private-sessions.html">Private Work</a>
+        <a href="pricing.html">Investments</a>
+        <a href="about.html">About</a>
+        <a href="faq.html">Answers</a>
+        <a href="book.html" class="active">Reserve</a>
+        <a href="contact.html">Say Hello</a>
+      </nav>
+    </header>
+
+    <main class="grid">
+      <div>
+        <div class="panel">
+          <h1>Reserve your place</h1>
+          <p class="muted">Choose a date and the number of seats. Availability here is simulated locally for demo; finalize with our confirmation email.</p>
+
+          <div class="field">
+            <label for="date-select">Choose date</label>
+            <select id="date-select"></select>
+          </div>
+
+          <div class="field">
+            <label>Seats</label>
+            <div class="seat-select">
+              <button id="seat-decrease">−</button>
+              <div style="min-width:64px;text-align:center;color:#cff6ff;font-weight:700" id="seat-count">1</div>
+              <button id="seat-increase">+</button>
+              <div class="muted" style="margin-left:10px">Available: <span id="seat-available">—</span></div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="name">Your name</label>
+            <input id="name" placeholder="First & last" />
+          </div>
+
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" placeholder="you@domain.com" />
+          </div>
+
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="cta" id="book-now">Request Hold</button>
+            <button id="pack-btn" class="muted" style="background:transparent;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:8px">Generate packing list</button>
+          </div>
+
+          <div id="book-result" style="margin-top:12px;color:var(--muted)"></div>
+
+          <div class="disclaimer">
+            <strong>Health & safety</strong>
+            <div class="muted" style="margin-top:8px">Contraindications: seizure disorders, pregnancy complications, and severe cardiovascular conditions — consult your physician before attending.</div>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:12px">
+          <h3 style="margin:0 0 8px 0;color:#ffeccf">Live-ish availability</h3>
+          <div id="calendar-list" class="calendar">
+            <!-- filled by JS -->
+          </div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="panel">
+          <h3 style="margin-top:0;color:#ffeccf">Packing suggestions</h3>
+          <p class="muted">Tell us whether you bring a mat, blanket, or prefer chair seating — we create a concise list.</p>
+
+          <div style="margin-top:10px" class="packing">
+            <label><input type="checkbox" id="opt-mat" checked /> I will bring a yoga mat or cushion</label><br>
+            <label><input type="checkbox" id="opt-blanket" checked /> I will bring a blanket</label><br>
+            <label><input type="checkbox" id="opt-water" checked /> I will bring water</label><br>
+            <label><input type="checkbox" id="opt-notebook" /> I will bring a notebook</label>
+          </div>
+
+          <div style="margin-top:12px">
+            <button id="gen-list" class="cta" style="background:#9ad8ff;color:#052033">Create list</button>
+          </div>
+
+          <div id="packing-result" style="margin-top:12px;color:var(--muted)">Nothing generated yet.</div>
+
+          <div style="margin-top:12px">
+            <button id="try-quick" class="muted" style="background:transparent;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:8px">Try a short centering</button>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:12px">
+          <h4 style="margin:0;color:#ffeccf">Contact & policy</h4>
+          <div class="muted" style="margin-top:8px">We’ll confirm availability via <strong>{{EMAIL}}</strong>. Payments handled after confirmation.</div>
+        </div>
+      </aside>
+    </main>
+
+    <footer style="margin-top:16px;color:var(--muted)">Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • Call <a href="tel:{{PHONE}}">{{PHONE}}</a></footer>
+  </div>
+
+  <!-- Quick centering modal -->
+  <div id="book-guide" style="display:none;position:fixed;inset:0;background:linear-gradient(180deg,rgba(2,6,23,0.6),rgba(2,6,23,0.9));align-items:center;justify-content:center;z-index:60">
+    <div style="background:linear-gradient(180deg,#071827,#072433);padding:18px;border-radius:12px;color:#e9fbff;max-width:620px;">
+      <h3 style="margin:0 0 8px 0">Two-minute breath + intention</h3>
+      <div id="book-guide-text" style="color:var(--muted)">Start when ready.</div>
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button id="book-start" class="cta" style="background:#ffe2b3;color:#042032">Start</button>
+        <button id="book-close" style="padding:8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Fake event data and seat selector
+    (function(){
+      const events = [
+        {id:1,date:'2026-03-01 18:00',title:'Sunday Sound Cohort — Week 1',capacity:16,booked:10},
+        {id:2,date:'2026-03-08 18:00',title:'Sunday Sound Cohort — Week 2',capacity:16,booked:5},
+        {id:3,date:'2026-03-15 18:00',title:'Midweek Short Immersion',capacity:12,booked:2},
+        {id:4,date:'2026-03-22 18:00',title:'Open Evening',capacity:20,booked:18}
+      ];
+
+      const select = document.getElementById('date-select');
+      const list = document.getElementById('calendar-list');
+      const avail = document.getElementById('seat-available');
+      const seatCount = document.getElementById('seat-count');
+      const dec = document.getElementById('seat-decrease');
+      const inc = document.getElementById('seat-increase');
+      const bookNow = document.getElementById('book-now');
+      const result = document.getElementById('book-result');
+
+      // populate
+      events.forEach((e,idx)=>{
+        const opt = document.createElement('option'); opt.value = e.id; opt.text = new Date(e.date).toLocaleString(); select.appendChild(opt);
+        const el = document.createElement('div'); el.style.marginBottom='8px'; el.innerHTML = '<strong>'+e.title+'</strong><div style="color:#9ec3d8">'+new Date(e.date).toLocaleString()+" — Seats: "+(e.capacity-e.booked)+' available</div>';
+        list.appendChild(el);
+      });
+
+      function updateAvailability(){
+        const id = parseInt(select.value,10); const ev = events.find(x=>x.id===id);
+        const remaining = Math.max(0, ev.capacity - ev.booked);
+        avail.textContent = remaining;
+        // ensure seat count <= remaining
+        let sc = parseInt(seatCount.textContent,10);
+        if(sc>remaining){ seatCount.textContent = remaining || 0; }
+      }
+
+      select.addEventListener('change',updateAvailability);
+      dec.addEventListener('click',()=>{ let n=parseInt(seatCount.textContent,10); if(n>1) seatCount.textContent = n-1; });
+      inc.addEventListener('click',()=>{ let n=parseInt(seatCount.textContent,10); const id=parseInt(select.value,10); const ev = events.find(x=>x.id===id); if(n < ev.capacity-ev.booked) seatCount.textContent = n+1; });
+
+      bookNow.addEventListener('click',()=>{
+        const id = parseInt(select.value,10); const ev = events.find(x=>x.id===id);
+        const seats = parseInt(seatCount.textContent,10);
+        if(seats <=0){ result.textContent='Choose at least one seat.'; return; }
+        if(seats > ev.capacity-ev.booked){ result.textContent='Not enough availability for that date.'; return; }
+        // simulate booking hold
+        ev.booked += seats;
+        result.textContent = 'Hold requested for '+seats+' seat(s) on '+new Date(ev.date).toLocaleString()+'. We will confirm availability via email.';
+        // refresh
+        list.innerHTML=''; events.forEach(e=>{ const el = document.createElement('div'); el.style.marginBottom='8px'; el.innerHTML = '<strong>'+e.title+'</strong><div style="color:#9ec3d8">'+new Date(e.date).toLocaleString()+" — Seats: "+(e.capacity-e.booked)+' available</div>'; list.appendChild(el); });
+        updateAvailability();
+      });
+
+      // initial
+      select.selectedIndex = 0; updateAvailability();
+    })();
+
+    // Packing list generator
+    (function(){
+      const gen = document.getElementById('gen-list');
+      const out = document.getElementById('packing-result');
+      const packBtn = document.getElementById('pack-btn');
+      const optMat = document.getElementById('opt-mat');
+      const optBlanket = document.getElementById('opt-blanket');
+      const optWater = document.getElementById('opt-water');
+      const optNotebook = document.getElementById('opt-notebook');
+
+      function buildList(){
+        const items = [];
+        if(optMat.checked) items.push('Mat or comfortable cushion');
+        else items.push('Consider requesting a seat or chair');
+        if(optBlanket.checked) items.push('Light blanket for warmth');
+        if(optWater.checked) items.push('Water bottle (hydrate before)');
+        if(optNotebook.checked) items.push('Small notebook & pen for post-session notes');
+        items.push('Wear loose, layered clothing');
+        return items;
+      }
+
+      gen.addEventListener('click',()=>{ const l = buildList(); out.innerHTML = '<ul style="margin:0;padding-left:18px;color:#dffbff">'+l.map(i=>'<li>'+i+'</li>').join('')+'</ul>'; });
+      packBtn.addEventListener('click',()=>{ const l = buildList(); alert('Packing list:\n- '+l.join('\n- ')); });
+    })();
+
+    // Short guided centering for booking page
+    (function(){
+      const modal = document.getElementById('book-guide');
+      const start = document.getElementById('book-start');
+      const close = document.getElementById('book-close');
+      const text = document.getElementById('book-guide-text');
+      const tryBtn = document.getElementById('try-quick');
+      let iv;
+
+      tryBtn.addEventListener('click',()=>{ modal.style.display='flex'; });
+      close.addEventListener('click',()=>{ modal.style.display='none'; clearInterval(iv); text.textContent='Start when ready.'; start.disabled=false; });
+
+      start.addEventListener('click',()=>{
+        start.disabled = true; let stage=0; text.textContent='Breathe in for 4 — out for 6. Follow the count.';
+        let counts = [4000,6000,6000];
+        let total = 0; iv = setInterval(()=>{ stage++; if(stage>3){ clearInterval(iv); text.textContent='Soft close. Notice one intention you take with you.'; start.disabled=false } },counts.reduce((a,b)=>a+b,0)/1000);
+      });
+    })();
+  </script>
+</body>
+</html>

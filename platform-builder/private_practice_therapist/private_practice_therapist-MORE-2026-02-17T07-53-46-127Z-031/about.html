@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--muted:#64707a;--accent:#6b4eff;--card:#f7f9fb;--panel:#ffffff}
+    *{box-sizing:border-box}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;line-height:1.5;color:#16313b;margin:0;background:linear-gradient(180deg,#f6fbff 0%,#fff 60%);}
+    header{display:flex;align-items:center;justify-content:space-between;padding:28px 24px;border-bottom:1px solid rgba(22,49,59,0.06);background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160"><defs><pattern id="p" width="32" height="32" patternUnits="userSpaceOnUse"><rect width="32" height="32" fill="%23ffffff"/><circle cx="8" cy="8" r="2" fill="%236b4eff" opacity="0.06"/></pattern></defs><rect width="100%" height="100%" fill="url(%23p)"/></svg>');}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#2bb7c6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    nav a{margin-left:18px;color:var(--muted);text-decoration:none;font-weight:600}
+    .hero{max-width:880px;margin:36px auto;padding:28px;background:linear-gradient(180deg,rgba(107,78,255,0.06),rgba(43,183,198,0.03));border-radius:12px;box-shadow:0 6px 30px rgba(17,31,40,0.04)}
+    h1{margin:0 0 8px 0;font-size:28px}
+    p.lead{margin:0;color:var(--muted)}
+    .columns{display:grid;grid-template-columns:1fr 360px;gap:20px;margin-top:22px}
+    .card{background:var(--card);padding:18px;border-radius:10px}
+    .muted{color:var(--muted);font-size:14px}
+    .section-title{font-weight:700;margin-bottom:8px}
+    footer{padding:28px 24px;color:var(--muted);font-size:13px;text-align:center}
+    /* widgets */
+    .widget{margin-top:12px}
+    label{display:block;font-size:13px;margin-bottom:6px}
+    input[type=range]{width:100%}
+    select,input[type=text],textarea{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(22,49,59,0.08)}
+    button.cta{background:var(--accent);color:#fff;padding:10px 14px;border-radius:8px;border:0;cursor:pointer}
+    .output{white-space:pre-wrap;background:#fff;padding:12px;border-radius:8px;border:1px dashed rgba(22,49,59,0.06);margin-top:10px}
+    .note{font-size:13px;color:var(--muted);margin-top:12px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">TP</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About the Practice</a>
+      <a href="specialties.html">What I Help With</a>
+      <a href="approach.html">Therapeutic Way</a>
+      <a href="book.html">Schedule</a>
+      <a href="contact.html">Reach Out</a>
+    </nav>
+  </header>
+
+  <main class="hero">
+    <h1>About this private practice</h1>
+    <p class="lead">I provide focused, confidential psychotherapy for adults in {{CITY}}, {{STATE}}. My practice centers on practical tools and careful listening so you can move from feeling stuck to clearer steps you can take in daily life.</p>
+
+    <div class="columns">
+      <div>
+        <div class="card">
+          <div class="section-title">A therapist's note</div>
+          <p class="muted">My approach is collaborative: I listen for the threads that connect what you say with how you live, then co-design small experiments and routines that feel manageable. I aim to create a private space where you can think aloud and practice new ways of responding to life's demands.</p>
+
+          <div style="margin-top:12px">
+            <strong>Confidentiality & boundaries</strong>
+            <p class="muted">Sessions are confidential except where required by law. I will discuss limits to confidentiality and scope of care during our first meeting. If you are experiencing a crisis or are in immediate danger, contact local emergency services or crisis resources—this site is not a crisis service.</p>
+          </div>
+        </div>
+
+        <div class="card widget" style="margin-top:14px">
+          <div class="section-title">Session Planner</div>
+          <p class="muted">Build a short, personalized session plan to bring to our first meeting.</p>
+          <label for="focus">Primary focus for therapy</label>
+          <select id="focus">
+            <option>Stress & overload</option>
+            <option>Relationship patterns</option>
+            <option>Transition & decision-making</option>
+            <option>Low mood or motivation</option>
+            <option>Anxiety or worry</option>
+          </select>
+          <label for="time">How many sessions would you like to plan?</label>
+          <input id="time" type="range" min="1" max="12" value="4" />
+          <div class="muted" id="timeVal">4 sessions</div>
+          <label for="goal">A short goal you'd like to work on (one sentence)</label>
+          <input id="goal" type="text" placeholder="Example: make choices that match my priorities" />
+          <button class="cta" id="buildPlan" style="margin-top:10px">Generate plan</button>
+          <div class="output" id="planOut">Your plan will appear here.</div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button id="copyPlan" class="cta" style="background:#3a9f99">Copy plan</button>
+            <button id="downloadPlan" class="cta" style="background:#ffaa3c">Download txt</button>
+          </div>
+        </div>
+      </div>
+
+      <aside class="card">
+        <div class="section-title">Intake: self-screening wizard</div>
+        <p class="muted">A few reflective prompts you can answer to prepare for a consultation. This is not a diagnosis—it's a way to orient our first conversation.</p>
+        <div style="margin-top:10px">
+          <label>What brings you here now?</label>
+          <textarea id="q1" rows="2" placeholder="Briefly describe the concern" ></textarea>
+          <label style="margin-top:8px">When did you first notice this?</label>
+          <input id="q2" type="text" placeholder="e.g., a few months ago, after a life change" />
+          <label style="margin-top:8px">What has helped in the past?</label>
+          <input id="q3" type="text" placeholder="e.g., routines, conversations, time off" />
+          <label style="margin-top:8px">What would be most helpful to have from therapy?</label>
+          <input id="q4" type="text" placeholder="e.g., clearer decisions, calmer nights" />
+          <button id="buildIntake" class="cta" style="margin-top:10px">Create intake notes</button>
+          <div class="output" id="intakeOut">Your intake prompts will appear here.</div>
+          <button id="copyIntake" class="cta" style="background:#5c6bc0;margin-top:8px">Copy prompts</button>
+        </div>
+
+        <p class="note">I will review intake notes during an initial meeting to help set shared goals. If you prefer, bring handwritten notes instead—whatever feels safest.</p>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <div>Contact: <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    <div style="margin-top:8px">Licensing, confidentiality, and scope of care will be discussed during intake. This practice does not provide emergency services.</div>
+  </footer>
+
+  <script>
+    // Session Planner
+    const time = document.getElementById('time');
+    const timeVal = document.getElementById('timeVal');
+    const buildPlan = document.getElementById('buildPlan');
+    const planOut = document.getElementById('planOut');
+    const copyPlan = document.getElementById('copyPlan');
+    const downloadPlan = document.getElementById('downloadPlan');
+    time.addEventListener('input',()=>{timeVal.textContent = time.value + ' sessions'});
+    buildPlan.addEventListener('click',()=>{
+      const focus = document.getElementById('focus').value;
+      const sessions = time.value;
+      const goal = document.getElementById('goal').value || '(no goal entered)';
+      const plan = `Session Plan\nPrimary focus: ${focus}\nTarget goal: ${goal}\nPlanned sessions: ${sessions}\nSuggested rhythm: weekly or biweekly, depending on availability.\nShort weekly practice: 1 small, practical exercise to try between sessions.`;
+      planOut.textContent = plan;
+    });
+    copyPlan.addEventListener('click',async()=>{
+      try{await navigator.clipboard.writeText(planOut.textContent);copyPlan.textContent='Copied'}catch(e){copyPlan.textContent='Copy failed'}
+      setTimeout(()=>copyPlan.textContent='Copy plan',1400);
+    });
+    downloadPlan.addEventListener('click',()=>{
+      const blob = new Blob([planOut.textContent],{type:'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'session-plan.txt'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    });
+
+    // Intake Wizard
+    const buildIntake = document.getElementById('buildIntake');
+    const intakeOut = document.getElementById('intakeOut');
+    const copyIntake = document.getElementById('copyIntake');
+    buildIntake.addEventListener('click',()=>{
+      const answers = [
+        {q:'What brings you here now?', a:document.getElementById('q1').value},
+        {q:'When did you first notice this?', a:document.getElementById('q2').value},
+        {q:'What has helped before?', a:document.getElementById('q3').value},
+        {q:'What would be most helpful?', a:document.getElementById('q4').value}
+      ];
+      const out = answers.map((item,i)=>`${i+1}. ${item.q}\n   ${item.a || '(no response)'}\n`).join('\n');
+      const promptList = 'Bring these prompts to consultation:\n\n' + out;
+      intakeOut.textContent = promptList;
+    });
+    copyIntake.addEventListener('click',async()=>{
+      try{await navigator.clipboard.writeText(intakeOut.textContent);copyIntake.textContent='Copied'}catch(e){copyIntake.textContent='Copy failed'}
+      setTimeout(()=>copyIntake.textContent='Copy prompts',1400);
+    });
+  </script>
+</body>
+</html>

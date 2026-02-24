@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Conditions & Supports — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fffdfb;--ink:#121212;--muted:#6b6b67;--accent:#4a86e8}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--ink)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;background-image:url('assets/img/pattern.svg');background-size:220px}
+    nav a{margin-left:16px;text-decoration:none;color:var(--ink)}
+    main{max-width:920px;margin:34px auto;padding:22px;background:#fff;border-radius:10px;box-shadow:0 8px 26px rgba(16,18,20,0.04)}
+    h1{margin:0 0 6px;font-size:26px}
+    p.lead{color:var(--muted);margin:0 0 18px}
+    .list{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .cond{padding:12px;border-radius:8px;background:#fbfbfc;border:1px solid #f2f2f3}
+    .cond h3{margin:0 0 6px;font-size:15px}
+    .cond p{margin:0;font-size:14px;color:var(--muted)}
+    .cta-row{display:flex;gap:12px;align-items:center;margin-top:16px}
+    button{padding:10px 14px;border-radius:9px;border:1px solid #eaeaea}
+    button.primary{background:var(--accent);color:white;border:0}
+    .disclaimer{margin-top:12px;color:var(--muted);font-size:13px}
+    .mood-box{margin-top:18px;padding:12px;border-radius:8px;background:linear-gradient(180deg,#fff,#f7fbff);border:1px solid rgba(74,134,232,0.12)}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:700">{{BUSINESS_NAME}} — Care Notes</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Services</a>
+      <a href="conditions.html">Support</a>
+      <a href="approach.html">Philosophy</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="about.html">About</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+  <main>
+    <h1>Conditions we commonly support</h1>
+    <p class="lead">Programs are educational and supportive. Below are areas where gentle integrative practices often add resilience alongside conventional care.</p>
+
+    <div class="list">
+      <div class="cond">
+        <h3>Anxiety & Tension</h3>
+        <p>Breath work, nervous system regulation, and short habit scaffolds focused on predictable anchors for the day.</p>
+      </div>
+      <div class="cond">
+        <h3>Sleep Difficulty</h3>
+        <p>Evening hygiene, stimulus control, and brief wind-down sequences tailored to your routine.</p>
+      </div>
+      <div class="cond">
+        <h3>Low Energy & Brain Fog</h3>
+        <p>Activity timing, light exposure, and tiny nutrition routines to support daytime clarity.</p>
+      </div>
+      <div class="cond">
+        <h3>Digestive Upset</h3>
+        <p>Gentle dietary patterns, paced eating, and movement strategies that respect individual tolerances.</p>
+      </div>
+    </div>
+
+    <section style="margin-top:18px;padding:14px;border-radius:8px;background:#fff;">
+      <strong>How we frame care</strong>
+      <p class="disclaimer">Support is educational. We do not offer medical diagnosis or guaranteed cures. If you have urgent medical concerns, please contact your primary care provider or emergency services.</p>
+    </section>
+
+    <div class="mood-box">
+      <strong>Quick match — pick what you feel</strong>
+      <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+        <select id="condMood">
+          <option value="anxious">Tense or anxious</option>
+          <option value="sleepless">Wide-awake at night</option>
+          <option value="foggy">Low focus</option>
+          <option value="gut">Upset stomach</option>
+        </select>
+        <button id="condSuggest" class="primary">Find a fitting support</button>
+      </div>
+      <div id="condResult" style="margin-top:12px;color:var(--muted)">Choose an option to see a suggested first step.</div>
+    </div>
+
+    <div style="margin-top:18px;padding:14px;border-radius:8px;background:#fff;border:1px solid #f0f0ef">
+      <strong>Simple roadmap (three phases)</strong>
+      <ol style="margin-top:8px;color:var(--muted)">
+        <li>Phase 1 — Clarify: intake and short-term supports.</li>
+        <li>Phase 2 — Practice: build small repeatable habits over weeks.</li>
+        <li>Phase 3 — Maintain: skills for resilience and relapse planning.</li>
+      </ol>
+      <div class="disclaimer">Each plan is personalized and not a replacement for specialist care. If you are on medication or have serious health conditions, coordinate with your clinician.</div>
+    </div>
+
+    <div class="cta-row">
+      <a id="condCtaLink" href="{{PRIMARY_CTA_URL}}"><button id="condCta">{{PRIMARY_CTA_LABEL}}</button></a>
+      <div style="color:var(--muted);font-size:13px">Or call <strong>{{PHONE}}</strong></div>
+    </div>
+  </main>
+
+  <script>
+    (function(){
+      const map = {
+        anxious:{text:'Suggested start: 20-minute grounding visit focusing on breath, posture, and a short night plan.',cta:'Book grounding visit',url:'{{PRIMARY_CTA_URL}}?focus=anxiety'},
+        sleepless:{text:'Suggested start: sleep scaffolding mini-series — 3 sessions with evening routines and light exposure adjustments.',cta:'Begin sleep track',url:'{{PRIMARY_CTA_URL}}?focus=sleep'},
+        foggy:{text:'Suggested start: clarity consult — activity timing and micro-break strategies to lift focus.',cta:'Start clarity consult',url:'{{PRIMARY_CTA_URL}}?focus=clarity'},
+        gut:{text:'Suggested start: digestive rhythm review — simple eating patterns and paced movement to support comfort.',cta:'Schedule digestion review',url:'{{PRIMARY_CTA_URL}}?focus=gut'}
+      };
+
+      const sel = document.getElementById('condMood');
+      const btn = document.getElementById('condSuggest');
+      const out = document.getElementById('condResult');
+      const cta = document.getElementById('condCta');
+      const ctaLink = document.getElementById('condCtaLink');
+
+      btn.addEventListener('click',()=>{
+        const v = sel.value;
+        const r = map[v] || {text:'A gentle consultation may help shape next steps.'};
+        out.textContent = r.text;
+        if(r.cta){ cta.textContent = r.cta; ctaLink.href = r.url; }
+      });
+    })();
+  </script>
+</body>
+</html>

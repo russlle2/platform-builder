@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Investment & Add-ons • {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#061018;--card:#071821;--muted:#9bb0b8;--accent:#c3a57a;--accent-dark:#8f6e4a}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial;background:linear-gradient(180deg,var(--bg),#071020);color:#eef6f8}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px}
+    h1{margin:0;font-size:22px}
+    .lead{color:var(--muted)}
+    main{max-width:1100px;margin:18px auto;padding:0 20px}
+    .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}
+    .plan{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px}
+    .price{font-size:20px;font-weight:800;color:var(--accent)}
+    .addon{display:flex;justify-content:space-between;padding:10px;background:rgba(255,255,255,0.02);border-radius:8px;margin-top:8px}
+
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity 520ms cubic-bezier(.2,.9,.2,1),transform 520ms cubic-bezier(.2,.9,.2,1)}
+    .reveal.revealed{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none;opacity:1;transform:none}}
+
+    footer{max-width:1100px;margin:30px auto;padding:18px;color:var(--muted)}
+    @media (max-width:900px){.plans{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+      <div style="font-size:13px;color:var(--muted)">Transparent pricing for sessions and practical add-ons</div>
+    </div>
+    <nav>
+      <a href="index.html" style="color:#eef6f8;text-decoration:none;margin-right:12px">Home</a>
+      <a href="events.html" style="color:#eef6f8;text-decoration:none;margin-right:12px">Gatherings</a>
+      <a href="private-sessions.html" style="color:#eef6f8;text-decoration:none;margin-right:12px">Private</a>
+      <a class="" href="{{PRIMARY_CTA_URL}}" style="color:var(--card);background:var(--accent);padding:8px 12px;border-radius:8px;text-decoration:none;margin-left:12px">{{PRIMARY_CTA_LABEL}}</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="reveal" data-reveal>
+      <h1>Investment options</h1>
+      <p class="lead">Pricing crafted around practical outcomes: single visits, short series, and a la carte items for daily practice.</p>
+    </div>
+
+    <section class="plans">
+      <div class="plan reveal" data-reveal>
+        <h3>Gathering Pass</h3>
+        <div style="color:var(--muted)">Single-seat access to a small-group session.</div>
+        <div class="price">$28</div>
+        <div style="margin-top:10px"><a class="btn" href="book.html">Buy a pass</a></div>
+      </div>
+
+      <div class="plan reveal" data-reveal>
+        <h3>Focused Series</h3>
+        <div style="color:var(--muted)">Three gatherings designed to build a brief, repeatable habit.</div>
+        <div class="price">$75</div>
+        <div style="margin-top:10px"><a class="btn" href="book.html">Purchase series</a></div>
+      </div>
+
+      <div class="plan reveal" data-reveal>
+        <h3>Private Session</h3>
+        <div style="color:var(--muted)">One-on-one work, tailored pacing and a short practice plan.</div>
+        <div class="price">From $120</div>
+        <div style="margin-top:10px"><a class="btn" href="private-sessions.html">Connect</a></div>
+      </div>
+    </section>
+
+    <section style="margin-top:20px">
+      <h2 class="reveal" data-reveal>Retail add-ons</h2>
+      <div class="reveal" data-reveal style="margin-top:10px">
+        <div class="addon"><div>Practice audio (download)</div><div style="font-weight:700">$12</div></div>
+        <div class="addon"><div>Printed micro-guide</div><div style="font-weight:700">$18</div></div>
+        <div class="addon"><div>Recorded excerpt (custom)</div><div style="font-weight:700">$36</div></div>
+      </div>
+      <p style="color:var(--muted);margin-top:12px">Add-ons are purchased separately and intended to support daily short practices between sessions.</p>
+    </section>
+
+    <section style="margin-top:22px" class="reveal" data-reveal>
+      <h2>Billing & gift options</h2>
+      <p style="color:var(--muted)">Invoices are available on request. Gift passes can be issued for gatherings and series — contact <a href="mailto:{{EMAIL}}" style="color:var(--accent)">{{EMAIL}}</a>.</p>
+    </section>
+
+    <section style="margin-top:22px" class="reveal" data-reveal>
+      <h2>Safety note</h2>
+      <p style="color:var(--muted)">Some sound practices and breathwork are not suitable for everyone. If you have a health condition such as epilepsy, heart device, uncontrolled psychiatric symptoms, or are pregnant, consult a clinician before booking.</p>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="max-width:1100px;margin:20px auto;padding:0 20px;color:var(--muted)">Questions or bulk purchase? Email <a href="mailto:{{EMAIL}}" style="color:var(--accent)">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}" style="color:var(--accent)">{{PHONE}}</a>.</div>
+  </footer>
+
+  <script>
+    // reveal behavior shared
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const nodes = document.querySelectorAll('[data-reveal]');
+      if(prefersReduced){ nodes.forEach(n=>n.classList.add('revealed')); return }
+      const observer = new IntersectionObserver((entries)=>{ entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('revealed'); observer.unobserve(en.target); } }); },{threshold:0.12});
+      nodes.forEach(n=>observer.observe(n));
+    })();
+  </script>
+</body>
+</html>

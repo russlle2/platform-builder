@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Book — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--glass: rgba(255,255,255,0.04);--accent1:#ffd6a5;--accent2:#c7fbff}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial;background:linear-gradient(180deg,#06111a 0%, #071427 100%);color:#f0fbff}
+    .frame{max-width:980px;margin:28px auto;padding:26px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    header a{color:#cfeaff;text-decoration:none;margin-left:14px}
+    .hero{margin-top:18px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:22px;border-radius:14px;border:1px solid rgba(255,255,255,0.06);display:flex;gap:18px;align-items:center}
+    .hero h1{margin:0;font-size:24px}
+    .lead{color:#cddff3}
+    .split{display:grid;grid-template-columns:1fr 420px;gap:18px;margin-top:18px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.04)}
+    label{display:block;font-size:13px;margin-bottom:6px}
+    input,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:rgba(7,20,30,0.4);color:#eaf6ff;margin-bottom:12px}
+    .row{display:flex;gap:10px}
+    .btn{background:linear-gradient(90deg,var(--accent2),#efe6ff);color:#041428;padding:12px 14px;border-radius:12px;border:none;font-weight:700;cursor:pointer}
+    .muted{color:#cfe9ff;font-size:13px}
+    .itinerary{margin-top:12px}
+    .it-step{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px}
+    .badge{width:42px;height:42px;border-radius:10px;background:linear-gradient(90deg,#ffd6a5,#ffe6f0);display:flex;align-items:center;justify-content:center;font-weight:700;color:#041428}
+    @media (max-width:920px){.split{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <header>
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <div class="hero">
+      <div>
+        <h1>Reserve a VIP Day or Private Session</h1>
+        <div class="lead">Tailored sound design for individual restoration, couples, or curated corporate sessions — book a focused VIP Day with deep planning and follow-up.</div>
+      </div>
+      <div style="margin-left:auto;text-align:right">
+        <div class="muted">Prefer to speak with us?</div>
+        <div style="font-weight:700;margin-top:6px"><a href="tel:{{PHONE}}" style="color:#ffe9d6;text-decoration:none">{{PHONE}}</a></div>
+      </div>
+    </div>
+
+    <div class="split">
+      <section class="card">
+        <h2 style="margin-top:0">VIP Day — immersive, intentional</h2>
+        <div class="muted">One focused day for transformation: consultation, tailored sound immersion, and integration support.</div>
+
+        <div class="itinerary">
+          <div class="it-step"><div class="badge">A</div><div><strong>Pre-day consultation</strong><div class="muted">Clarity call to align intentions and screening for contraindications.</div></div></div>
+          <div class="it-step"><div class="badge">B</div><div><strong>Session & sound design</strong><div class="muted">A long-form immersion (60–90+ minutes) using crystal bowls and precision tuning forks with intentional pauses for integration.</div></div></div>
+          <div class="it-step"><div class="badge">C</div><div><strong>Integration & takeaways</strong><div class="muted">Notes, curated post-session audio, and a short follow-up to support ongoing practice.</div></div></div>
+        </div>
+
+        <div style="margin-top:12px">
+          <strong>What to bring</strong>
+          <ul class="muted" style="margin-top:8px;margin-left:18px">
+            <li>Comfortable clothing, two-layered blankets, personal cushion</li>
+            <li>Any relevant medical info or medication list</li>
+            <li>Optional: journal and pen for integration notes</li>
+          </ul>
+        </div>
+
+        <div style="margin-top:12px">
+          <strong>Contraindications</strong>
+          <div class="muted" style="margin-top:6px">If you have an implanted electronic device (pacemaker), active seizures, or are in high-risk pregnancy, inform us before booking. We will guide whether an adapted session is safer.</div>
+        </div>
+
+        <div style="margin-top:14px;display:flex;gap:10px">
+          <a href="mailto:{{EMAIL}}?subject=VIP%20Day%20Inquiry" class="btn">Request VIP Day</a>
+          <a href="events.html" class="muted" style="align-self:center;text-decoration:none">See group events</a>
+        </div>
+      </section>
+
+      <aside class="card">
+        <h3 style="margin-top:0">Book now</h3>
+        <form action="{{PRIMARY_CTA_URL}}" method="post">
+          <label for="name">Full name</label>
+          <input id="name" name="name" placeholder="Your name" required />
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="you@domain.com" required />
+          <label for="phone">Phone</label>
+          <input id="phone" name="phone" placeholder="Optional phone" />
+
+          <label for="type">Session type</label>
+          <select id="type" name="type">
+            <option>VIP Day (full consult + immersion)</option>
+            <option>Private 1:1</option>
+            <option>Couples</option>
+            <option>Corporate / Team</option>
+          </select>
+
+          <label for="date">Preferred date</label>
+          <input id="date" name="date" type="date" value="{{NEXT_EVENT_DATE}}" />
+
+          <label for="notes">Notes / Contraindications</label>
+          <textarea id="notes" name="notes" rows="4" placeholder="Let us know about medical conditions, pregnancy, implants, or sensory needs"></textarea>
+
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn" type="submit">{{PRIMARY_CTA_LABEL}}</button>
+            <a class="muted" href="faq.html" style="align-self:center;text-decoration:none">Need help?</a>
+          </div>
+        </form>
+
+        <div style="margin-top:14px;font-size:13px;color:#cfe9ff">
+          <strong>Instruments on offer</strong>
+          <div style="margin-top:6px">We tailor the sonic palette — crystal singing bowls, soft gongs, and melodic chimes are commonly blended. Instrument choice is tuned to your intention and physical safety.</div>
+        </div>
+
+        <div style="margin-top:12px;font-size:13px;color:#bcd8f5">A confirmation and preparatory guide are sent after booking. For urgent scheduling, call {{PHONE}}.</div>
+      </aside>
+    </div>
+
+    <section style="margin-top:18px;padding:18px;border-radius:12px;border:1px dashed rgba(255,255,255,0.04);background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent)">
+      <h3 style="margin:0 0 8px 0">Lead magnet — integration guide</h3>
+      <div class="muted">When you reserve a VIP Day we provide a concise digital guide: a 7-step practice for integrating sound work into daily life. Enter your email on the booking form to receive it with your confirmation.</div>
+    </section>
+
+    <footer style="margin-top:18px;color:#bcd1e8;font-size:13px">Questions? Email <a href="mailto:{{EMAIL}}" style="color:#dbeafc;text-decoration:none">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}" style="color:#dbeafc">{{PHONE}}</a>.</footer>
+  </div>
+</body>
+</html>

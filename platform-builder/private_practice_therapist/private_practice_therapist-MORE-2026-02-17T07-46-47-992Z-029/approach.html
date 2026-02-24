@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>How I Work — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#ffffff;--accent:#215b49;--muted:#52645b;--card:#fbfffc;--radius:14px;--maxw:920px}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;background:var(--bg);color:#122b23}
+    header{padding:18px 20px;background:linear-gradient(180deg,#f6fbf9,transparent)}
+    .nav{max-width:var(--maxw);margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+    .brand{font-weight:700;color:var(--accent)}
+    nav a{color:var(--muted);text-decoration:none;margin-left:12px;padding:6px 8px;border-radius:8px}
+    .container{max-width:var(--maxw);margin:26px auto;padding:0 18px}
+    h1{margin:0 0 8px}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
+    .card{background:var(--card);padding:18px;border-radius:var(--radius);box-shadow:0 10px 30px rgba(17,33,27,0.04)}
+    .pillars{display:flex;flex-direction:column;gap:12px}
+    .pillar{display:flex;gap:12px;align-items:flex-start}
+    .pill-title{font-weight:600;color:var(--accent)}
+    .case-notes{margin-top:12px;font-size:14px;color:var(--muted)}
+
+    /* small pricing comparator variant */
+    .mini-toggle{display:flex;align-items:center;gap:8px;background:#fff;padding:6px;border-radius:999px;border:1px solid #edf7f0}
+    .mini-switch{width:40px;height:22px;background:#f0fbf7;border-radius:999px;position:relative;cursor:pointer}
+    .mini-knob{width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:left .22s}
+    .mini-switch.active{background:var(--accent)}
+    .mini-switch.active .mini-knob{left:20px}
+
+    @media (max-width:920px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html">Studio</a>
+        <a href="specialties.html">Offerings</a>
+        <a href="about.html">Who I Am</a>
+        <a href="approach.html" class="active">How I Work</a>
+        <a href="faq.html">Questions</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="grid">
+      <section class="card">
+        <h1>Clinical stance and structure</h1>
+        <p class="case-notes">My work blends observation, collaborative formulation, and skill practice. I orient to what’s practical and what is emotionally manageable: small experiments that map onto your real life. Sessions are confidential; I will discuss limits to confidentiality, and I do not provide emergency care.</p>
+
+        <div style="margin-top:14px" class="pillars">
+          <div class="pillar">
+            <div style="width:10px;height:40px;background:var(--accent);border-radius:6px"></div>
+            <div>
+              <div class="pill-title">Compassionate clarity</div>
+              <div class="muted">We work toward clearer descriptions of what is occurring so your choices are informed rather than anxious. This is a collaborative process.</div>
+            </div>
+          </div>
+
+          <div class="pillar">
+            <div style="width:10px;height:40px;background:#77b99e;border-radius:6px"></div>
+            <div>
+              <div class="pill-title">Practical steps</div>
+              <div class="muted">Short, doable tasks between sessions help turn insight into change. Plans are revisited and adjusted in session.</div>
+            </div>
+          </div>
+
+          <div class="pillar">
+            <div style="width:10px;height:40px;background:#cfeee0;border-radius:6px"></div>
+            <div>
+              <div class="pill-title">Ethical care</div>
+              <div class="muted">Documentation, referrals, and collaboration are handled with care. You will be informed about record-keeping and limits to confidentiality.</div>
+            </div>
+          </div>
+        </div>
+
+        <section style="margin-top:14px">
+          <h3 style="margin:0 0 8px">Clinical boundaries & crisis guidance</h3>
+          <p class="muted">I do not respond to crisis matters via email or text. If you or someone is at immediate risk, contact emergency services. For non-urgent needs, please contact {{EMAIL}} or call {{PHONE}} to arrange an appointment.</p>
+        </section>
+      </section>
+
+      <aside class="card">
+        <h3 style="margin-top:0">Session rhythm</h3>
+        <p class="muted">Many people benefit from consistent meetings over several months; others choose short packages to focus on a single issue. Below is a quick per-session comparison you can toggle.</p>
+
+        <div style="margin-top:12px;display:flex;align-items:center;justify-content:space-between">
+          <div class="mini-toggle" style="align-items:center">
+            <div style="font-size:13px;color:var(--muted);margin-right:6px">Monthly</div>
+            <div id="miniSwitch" class="mini-switch" role="switch" aria-checked="true" tabindex="0"><div class="mini-knob"></div></div>
+            <div style="font-size:13px;color:var(--muted);margin-left:6px">Package</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:13px;color:var(--muted)">Approx. per-session</div>
+            <div style="font-size:20px;color:var(--accent);font-weight:600">$<span id="miniPrice">160</span></div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px"><a href="{{PRIMARY_CTA_URL}}" style="background:var(--accent);color:#fff;padding:10px 12px;border-radius:10px;text-decoration:none">Begin with a short conversation</a></div>
+
+        <div style="margin-top:16px;font-size:13px;color:var(--muted)">
+          Session length is typically 50 minutes. Options for longer or shorter sessions may be discussed at intake. Payment details and insurance use are addressed during scheduling.
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    // Mini comparator with simple animation
+    (function(){
+      const sw = document.getElementById('miniSwitch');
+      const priceEl = document.getElementById('miniPrice');
+      let monthly = true;
+      const values = {monthly:160, package:95}; // package shows lower per-session when bought as block
+      function setPrice(toMonthly){
+        const from = parseInt(priceEl.textContent,10) || 0;
+        const to = toMonthly? values.monthly : values.package;
+        const start = performance.now();
+        const ms = 380;
+        function step(now){
+          const p = Math.min(1,(now-start)/ms);
+          const val = Math.round(from + (to-from)*p);
+          priceEl.textContent = val;
+          if(p<1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+      sw.addEventListener('click',()=>{ monthly = !monthly; sw.classList.toggle('active',!monthly); sw.setAttribute('aria-checked', String(!monthly)); setPrice(monthly); });
+      sw.addEventListener('keydown',(e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); sw.click(); } });
+      setPrice(monthly);
+    })();
+  </script>
+</body>
+</html>

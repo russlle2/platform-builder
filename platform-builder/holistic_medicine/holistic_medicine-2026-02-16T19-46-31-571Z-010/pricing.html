@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pricing — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Investment options for our events series and integrative care. Sliding scale available." />
+  <style>
+    :root{--bg:#fbfbfc;--ink:#0f1724;--muted:#6b7280;--accent1:#7dd3fc;--accent2:#fbcfe8;--card:#ffffff}
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;color:var(--ink);background:linear-gradient(180deg,var(--bg),#f8fafc);}
+    .wrap{max-width:980px;margin:36px auto;padding:28px}
+    nav{display:flex;justify-content:space-between;gap:12px;align-items:center}
+    .brand{font-weight:700;letter-spacing:0.2px}
+    .links{display:flex;gap:12px;font-size:14px}
+    .links a{color:var(--muted);text-decoration:none}
+    header.hero{display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start;margin-top:18px}
+    .lead{background:linear-gradient(135deg,var(--accent1),var(--accent2));padding:22px;border-radius:12px;color:#042;box-shadow:0 6px 24px rgba(15,23,36,0.06)}
+    .lead h1{margin:0 0 6px;font-size:20px}
+    .lead p{margin:0;color:var(--ink);opacity:0.9}
+    .aside{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 8px 30px rgba(2,6,23,0.04)}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:20px 0}
+    .tier{background:linear-gradient(180deg,#fff,rgba(255,255,255,0.85));padding:18px;border-radius:10px;border:1px solid rgba(2,6,23,0.04)}
+    .tier h3{margin:0 0 8px;font-size:16px}
+    .price{font-weight:700;font-size:18px;margin-bottom:8px}
+    .note{font-size:13px;color:var(--muted)}
+    .myth{display:flex;gap:14px;margin:28px 0}
+    .myth>div{flex:1;background:rgba(125,211,252,0.06);padding:14px;border-radius:10px}
+    .faqs{margin-top:20px}
+    .faq{background:var(--card);padding:14px;border-radius:10px;margin-bottom:10px;border-left:4px solid rgba(125,211,252,0.24)}
+    footer.cta{display:flex;justify-content:space-between;align-items:center;padding:18px;border-radius:12px;margin-top:22px;background:linear-gradient(90deg,rgba(123,31,162,0.04),rgba(14,165,233,0.03))}
+    .btn{display:inline-block;padding:10px 14px;border-radius:8px;background:#0ea5a0;color:white;text-decoration:none;font-weight:600}
+    small.helper{color:var(--muted);display:block;margin-top:6px}
+    /* decorative SVG overlay */
+    .pattern{position:fixed;right:-120px;top:-80px;opacity:0.12;pointer-events:none}
+    @media (max-width:820px){header.hero{grid-template-columns:1fr;}.grid{grid-template-columns:1fr}} 
+  </style>
+</head>
+<body>
+  <svg class="pattern" width="520" height="520" viewBox="0 0 520 520" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1">
+        <stop offset="0" stop-color="#7dd3fc" />
+        <stop offset="1" stop-color="#fbcfe8" />
+      </linearGradient>
+      <pattern id="p1" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(35)">
+        <rect width="40" height="40" fill="url(#g1)" />
+        <path d="M0 0 L40 0" stroke="#ffffff22" stroke-width="1" />
+        <circle cx="20" cy="20" r="2" fill="#ffffff44" />
+      </pattern>
+    </defs>
+    <rect width="520" height="520" rx="40" fill="url(#p1)" />
+  </svg>
+
+  <div class="wrap">
+    <nav>
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <div class="links">
+        <a href="index.html">Home</a>
+        <a href="services.html">Offerings</a>
+        <a href="conditions.html">Concerns</a>
+        <a href="approach.html">Method</a>
+        <a href="pricing.html" aria-current="page">Pricing</a>
+        <a href="about.html">About</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html">Reach</a>
+      </div>
+    </nav>
+
+    <header class="hero">
+      <div class="lead">
+        <h1>Series of gatherings, guided care</h1>
+        <p>Join a small cohort or book a one-off workshop. Each series is curated to honor body, mind, and circumstance — educational, not curative. Sliding scale and limited scholarships available.</p>
+        <p class="note">Hosted by {{PRACTITIONER_NAME}}, {{CREDENTIALS}} — phone: {{PHONE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+      </div>
+
+      <aside class="aside">
+        <strong>Upcoming format</strong>
+        <p class="note">6 weekly sessions (90 min), guided resources, optional check-ins. Labs may be suggested as educational options.</p>
+        <div style="margin-top:12px">
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <small class="helper">Or call {{PHONE}} to enquire about group slots.</small>
+        </div>
+      </aside>
+    </header>
+
+    <section>
+      <h2 style="margin-top:18px">Your investment — tiers to fit access</h2>
+      <p class="note">We offer cohort pricing and private add-ons. These figures are ranges; final cost adjusts for length, materials, and lab recommendations if any.</p>
+      <div class="grid">
+        <div class="tier">
+          <h3>Seed — community seat</h3>
+          <div class="price">$40–$80 per session</div>
+          <p class="note">Group-focused. Discussion, guided practices, shared resources. Ideal when learning and gentle accountability are the goal.</p>
+        </div>
+        <div class="tier">
+          <h3>Root — small cohort</h3>
+          <div class="price">$80–$160 per session</div>
+          <p class="note">Smaller groups, focused curriculum, short 1:1 check-ins optional. Good for sustained learning and habit work.</p>
+        </div>
+        <div class="tier">
+          <h3>Canopy — private series</h3>
+          <div class="price">$180–$360 per session</div>
+          <p class="note">Personalized attention: full intake, targeted plan, optional educational labs. No promises of cure — emphasis on understanding and whole-person support.</p>
+        </div>
+      </div>
+
+      <div class="myth" aria-hidden>
+        <div>
+          <strong>Myth</strong>
+          <p class="note">Stronger medicine always costs more.</p>
+        </div>
+        <div>
+          <strong>Truth</strong>
+          <p class="note">Value is about fit: group learning can be deeply transformative; private work is deeper but not inherently "better." We offer sliding scale for access.</p>
+        </div>
+      </div>
+
+      <section class="faqs">
+        <h3>Questions commonly asked</h3>
+        <div class="faq">
+          <strong>Is there financial help?</strong>
+          <p class="note">Yes. A limited number of sliding-scale spots and scholarship options are reserved for those with need. Contact {{EMAIL}}.</p>
+        </div>
+        <div class="faq">
+          <strong>Do you guarantee outcomes?</strong>
+          <p class="note">No. We provide education, tools, and whole-person support. Individual responses vary; this service complements, not replaces, medical care.</p>
+        </div>
+        <div class="faq">
+          <strong>Are labs included?</strong>
+          <p class="note">Labs are optional and educational; when suggested, they are billed separately and discussed before ordering.</p>
+        </div>
+      </section>
+
+      <footer class="cta">
+        <div>
+          <strong>Ready to join a series?</strong>
+          <div class="note">Reserve your spot or ask about scholarship seats.</div>
+        </div>
+        <div>
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">Reserve a spot</a>
+          <div style="font-size:13px;color:var(--muted);margin-top:6px">Or call {{PHONE}}</div>
+        </div>
+      </footer>
+    </section>
+
+  </div>
+</body>
+</html>

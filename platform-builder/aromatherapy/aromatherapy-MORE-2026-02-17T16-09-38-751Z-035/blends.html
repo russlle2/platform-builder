@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Custom Blends — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Made-to-order aromatherapy blends with safety-forward labeling and usage guidance.">
+  <style>
+    :root{--bg:#fffdf9;--accent:#8a4d34;--muted:#6e6056;--card:#fff8f2;--glass:rgba(255,255,255,0.7);font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;color:#2f2219}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#fff);}
+    .pattern{position:fixed;inset:0;background:url('assets/img/pattern.svg') repeat;opacity:0.05;pointer-events:none}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px}
+    .logo{font-weight:800;color:var(--accent);background:linear-gradient(135deg,#fdeee2,#f7d9c7);width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none}
+    .wrap{max-width:980px;margin:22px auto;padding:0 22px}
+    .intro{display:flex;gap:20px;align-items:center;background:var(--card);padding:22px;border-radius:12px;box-shadow:0 10px 22px rgba(138,77,52,0.08)}
+    .intro h1{margin:0;color:var(--accent)}
+    .muted{color:var(--muted)}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px}
+    .offers{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .offer{background:#fff;padding:12px;border-radius:10px;box-shadow:0 6px 16px rgba(0,0,0,0.04)}
+    .cta{display:inline-block;background:var(--accent);color:#fff;padding:8px 10px;border-radius:8px;text-decoration:none}
+    .reveal{opacity:0;transform:translateY(10px);transition:opacity 480ms ease,transform 480ms ease}
+    .reveal.visible{opacity:1;transform:none}
+    /* planner condensed */
+    .mini-planner{background:#fff;padding:14px;border-radius:10px;box-shadow:0 8px 18px rgba(0,0,0,0.04)}
+    select,input,textarea{width:100%;padding:8px;margin-top:8px;border-radius:8px;border:1px solid #efe7e0}
+    .btn{margin-top:10px;padding:10px;border-radius:8px;border:none;background:var(--accent);color:#fff;cursor:pointer}
+    .summary{margin-top:10px;padding:10px;background:#fbf7f3;border-radius:8px;font-family:monospace}
+    footer{margin:40px 0 80px;color:var(--muted);text-align:center}
+    @media(max-width:880px){.grid{grid-template-columns:1fr}.offers{grid-template-columns:1fr}} 
+  </style>
+</head>
+<body>
+  <div class="pattern" aria-hidden="true"></div>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo">B</div>
+      <div style="line-height:1">
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{CITY}} • Aromatherapy</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Custom Blends</a>
+      <a href="shop.html">Boutique</a>
+      <a href="about.html">Who we are</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="intro reveal" data-reveal>
+      <div>
+        <h1>Custom blends crafted to fit your routines</h1>
+        <p class="muted">We create small-batch blends with clear labeling and step-by-step use notes that may support specific daily rhythms.</p>
+        <p style="margin-top:10px"><a class="cta" href="book.html">Request a blend consultation</a></p>
+      </div>
+      <div style="text-align:right;color:var(--muted)">
+        <div style="font-weight:700;font-size:18px">Made locally</div>
+        <div style="font-size:13px">Small-batch + labeled instructions</div>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section class="offers reveal" data-reveal>
+        <div class="offer">
+          <strong>Intro Mix</strong>
+          <p class="muted">A 10ml tester vial and a short-use plan. Great for trying a scent profile at home.</p>
+        </div>
+        <div class="offer">
+          <strong>Home Ritual Blend</strong>
+          <p class="muted">A 30ml labeled blend and usage guide designed for evening or morning routines.</p>
+        </div>
+        <div class="offer">
+          <strong>Portable Inhaler</strong>
+          <p class="muted">Personal inhaler with a focused 3-oil profile and pocket instructions for safe use.</p>
+        </div>
+        <div class="offer">
+          <strong>VIP Blend Day</strong>
+          <p class="muted">Full-day work: intake, blend lab, ritual design, and multiple take-homes with labels.</p>
+        </div>
+      </section>
+
+      <aside class="reveal" data-reveal>
+        <div class="mini-planner">
+          <h3 style="margin:0;color:var(--accent)">Blend builder</h3>
+          <div class="muted" style="font-size:13px;margin-top:6px">Quickly outline a custom blend and copy the summary.</div>
+          <label style="margin-top:10px">Primary intent</label>
+          <select id="intent">
+            <option value="relax">Relaxation</option>
+            <option value="energize">Energize</option>
+            <option value="ground">Grounding</option>
+            <option value="clarity">Clarity</option>
+          </select>
+          <label>Preferred top note</label>
+          <select id="top">
+            <option>Lemon</option>
+            <option>Bergamot</option>
+            <option>Grapefruit</option>
+            <option>Lavender</option>
+          </select>
+          <label>Any sensitivities or pets?</label>
+          <input id="other" placeholder="note allergies, pets, pregnancy">
+          <button class="btn" id="make">Create blend summary</button>
+          <div id="blend-summary" class="summary">No blend yet.</div>
+          <button class="btn" id="copy-blend" style="background:#6b3f2b;margin-top:8px">Copy</button>
+        </div>
+      </aside>
+    </div>
+
+    <section class="reveal" data-reveal style="margin-top:18px">
+      <h2 class="section-title">Labeling & safety</h2>
+      <p class="muted">Every blend includes: ingredient list, dilution percentage for topical use (if applicable), patch-test instructions, storage notes, and pet/pregnancy advisories where needed.</p>
+    </section>
+
+    <section class="reveal" data-reveal style="margin-top:18px">
+      <h2 class="section-title">Pricing & availability</h2>
+      <p class="muted">Pricing varies by product size and consultation depth. Small batches are made to order; please allow up to 7 business days for custom blends. For immediate needs, see the Boutique.</p>
+      <p style="margin-top:10px"><a class="cta" href="shop.html">Browse ready-made</a></p>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="color:var(--muted)">Contact {{EMAIL}} or call {{PHONE}} for custom orders • {{BUSINESS_NAME}}</div>
+  </footer>
+
+  <script>
+    // reveal support
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const els = document.querySelectorAll('[data-reveal]');
+      if(prefersReduced){ els.forEach(e=>e.classList.add('visible')); return; }
+      const io = new IntersectionObserver((entries)=>{ entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('visible'); io.unobserve(en.target); } }); },{threshold:0.12});
+      els.forEach(e=>io.observe(e));
+    })();
+
+    // Blend builder
+    (function(){
+      function mapIntent(i){
+        const map={relax:['Lavender','Roman Chamomile','Vetiver'],energize:['Lemon','Peppermint','Ginger'],ground:['Cedarwood','Patchouli','Frankincense'],clarity:['Basil','Rosemary','Lemon']};
+        return map[i]||['Lavender','Sweet Orange'];
+      }
+      const makeBtn=document.getElementById('make');
+      const copyBtn=document.getElementById('copy-blend');
+      const summary=document.getElementById('blend-summary');
+      makeBtn.addEventListener('click',()=>{
+        const intent=document.getElementById('intent').value;
+        const top=document.getElementById('top').value;
+        const other=document.getElementById('other').value.trim()||'None';
+        const oils=mapIntent(intent);
+        if(!oils.includes(top)) oils.unshift(top);
+        const text=['Blend intent: '+intent.toUpperCase(), 'Primary oils: '+oils.join(', '), 'Suggested ratio: top note 30% / mid 50% / base 20%', 'Dilution: See notes (typical 1-2% for adults topical; adjust for sensitivity)', 'Client notes: '+other, 'Made by: {{BUSINESS_NAME}}'].join('\n');
+        summary.textContent=text;
+      });
+      copyBtn.addEventListener('click',async()=>{ try{ await navigator.clipboard.writeText(summary.textContent); copyBtn.textContent='Copied'; setTimeout(()=>copyBtn.textContent='Copy',1300);}catch(e){ alert('Unable to copy.'); } });
+    })();
+  </script>
+</body>
+</html>

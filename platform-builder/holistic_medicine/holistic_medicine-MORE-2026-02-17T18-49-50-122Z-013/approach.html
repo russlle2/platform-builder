@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Approach & method — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="A pragmatic, human-centered approach to integrative care with clear phases and collaborative planning.">
+  <style>
+    :root{--bg:#fffdf9;--ink:#24221d;--muted:#6b6157;--accent:#a07756;--card:#fff;--radius:16px}
+    body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:var(--bg);color:var(--ink)}
+    .wrap{max-width:980px;margin:34px auto;padding:26px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    .lead{margin:12px 0;color:var(--muted)}
+    .card{background:var(--card);padding:18px;border-radius:var(--radius);box-shadow:0 8px 30px rgba(20,16,12,0.04);margin:16px 0}
+
+    .steps{display:flex;gap:12px}
+    .step{flex:1;padding:12px;border-radius:12px;background:linear-gradient(180deg,rgba(255,250,247,0.6),rgba(255,250,247,0.9));border:1px solid rgba(170,130,95,0.06)}
+    .step strong{display:block;margin-bottom:8px;color:var(--accent)}
+
+    /* reveal */
+    .reveal{opacity:0;transform:translateY(12px);transition:opacity 520ms ease,transform 520ms ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none;opacity:1;transform:none}}
+
+    /* planner minimal */
+    .planner{margin-top:12px}
+    label{display:block;color:var(--muted);margin-top:8px}
+    input,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid #efe7df}
+    .controls{display:flex;gap:8px;margin-top:10px}
+    .btn{background:var(--accent);color:#fff;padding:10px 12px;border-radius:10px;border:0;cursor:pointer}
+    .copy{background:#6b5a4a;color:#fff;padding:10px;border-radius:10px;border:0;cursor:pointer}
+
+    @media(max-width:760px){.steps{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div class="lead">An earthy, pragmatic approach to whole-person care</div>
+      </div>
+      <nav aria-label="Main">
+        <a href="index.html">Home</a>
+        <a href="services.html">Offerings</a>
+        <a href="conditions.html">Conditions</a>
+        <a href="approach.html">How I work</a>
+        <a href="pricing.html">Pricing</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="card reveal">
+        <h1>How I work</h1>
+        <p class="muted">Care is an invitation: we look, listen, and choose small, practical steps together. Plans respect your life, not the other way around.</p>
+      </section>
+
+      <section class="card reveal">
+        <h2>Phases</h2>
+        <div class="steps">
+          <div class="step">
+            <strong>1. Map</strong>
+            <div class="muted">A compassionate intake to understand patterns and the most useful next moves.</div>
+          </div>
+          <div class="step">
+            <strong>2. Act</strong>
+            <div class="muted">Concrete, limited practices and adjustments you can integrate without feeling overwhelmed.</div>
+          </div>
+          <div class="step">
+            <strong>3. Tune</strong>
+            <div class="muted">Short check-ins to refine, adjust dosage, and support longer-term resilience.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card reveal">
+        <h2>What this means in a session</h2>
+        <ul class="muted">
+          <li>We prioritize clarity over complexity.</li>
+          <li>Suggestions are trialable and reversible.</li>
+          <li>Work is collaborative: you keep agency over choices.</li>
+        </ul>
+      </section>
+
+      <section class="card reveal" id="planner">
+        <h2>Session Planner (brief)</h2>
+        <p class="muted">Build a short-plan sketch to bring to a first visit or to refine over time.</p>
+        <div class="planner">
+          <label for="a_name">Name</label>
+          <input id="a_name" type="text" placeholder="Your name" />
+          <label for="a_goal">Primary goal</label>
+          <input id="a_goal" type="text" placeholder="What matters most?" />
+          <label for="a_tolerance">Pace preference</label>
+          <select id="a_tolerance"><option>Slow and steady</option><option>Moderate changes</option><option>Active, measurable steps</option></select>
+          <label for="a_notes">Any constraints or notes</label>
+          <textarea id="a_notes" rows="3"></textarea>
+
+          <div class="controls">
+            <button class="btn" id="a_build">Make sketch</button>
+            <button class="copy" id="a_copy">Copy sketch</button>
+          </div>
+
+          <pre id="a_output" style="background:#fbf7f3;padding:12px;border-radius:10px;border:1px solid #efe6dd;margin-top:10px">Your plan sketch will appear here.</pre>
+        </div>
+      </section>
+
+      <section class="card reveal">
+        <h2>Working with other clinicians</h2>
+        <p class="muted">When appropriate, I coordinate with your primary care or specialists. Integrative work is most effective when it complements medical care rather than replaces it.</p>
+      </section>
+
+      <footer style="margin-top:12px;color:var(--muted);text-align:center">
+        <div>To schedule, use: <a href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    // reveal
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const nodes = document.querySelectorAll('.reveal');
+      if(prefersReduced){ nodes.forEach(n=>n.classList.add('visible')); return; }
+      const obs = new IntersectionObserver((entries)=>{ entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target);} }); },{threshold:0.1});
+      nodes.forEach(n=>obs.observe(n));
+    })();
+
+    // small planner
+    (function(){
+      const build = document.getElementById('a_build');
+      const copy = document.getElementById('a_copy');
+      const out = document.getElementById('a_output');
+      function make(){
+        const name = document.getElementById('a_name').value.trim() || 'Client';
+        const goal = document.getElementById('a_goal').value.trim() || 'General wellbeing';
+        const pace = document.getElementById('a_tolerance').value;
+        const notes = document.getElementById('a_notes').value.trim();
+        const lines = [];
+        lines.push(`${name} — Plan sketch`);
+        lines.push(`Goal: ${goal}`);
+        lines.push(`Preferred pace: ${pace}`);
+        if(notes) lines.push(`Notes: ${notes}`);
+        lines.push('Phases: 1) Map > 2) Act (2–3 small steps) > 3) Tune');
+        lines.push('Suggested next: Book a foundational visit and bring this sketch.');
+        return lines.join('\n');
+      }
+      build.addEventListener('click',function(e){ e.preventDefault(); out.textContent = make(); });
+      copy.addEventListener('click',async function(){ const text = out.textContent || make(); try{ await navigator.clipboard.writeText(text); copy.textContent='Copied'; setTimeout(()=>copy.textContent='Copy sketch',1200);}catch(e){ const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove(); alert('Copied');}});
+    })();
+  </script>
+</body>
+</html>

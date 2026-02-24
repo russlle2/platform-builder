@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{
+      --bg:#0f1724;--card:#0b1220;--accent:#7dd3fc;--muted:#94a3b8;--glass:rgba(255,255,255,0.04);
+      --glass-2:rgba(255,255,255,0.02);--radius:14px;--soft:18px;--mono:ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Segoe UI Mono", "PT Mono", monospace;
+    }
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial; background:linear-gradient(180deg,var(--bg),#06101a);color:#e6f2f8;}
+    .wrap{max-width:1100px;margin:40px auto;padding:28px;border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);box-shadow:0 6px 30px rgba(2,6,23,0.7);position:relative;overflow:hidden}
+    /* decorative SVG pattern */
+    .pattern{position:absolute;right:-120px;top:-120px;opacity:0.18;transform:rotate(12deg);filter:drop-shadow(0 20px 60px rgba(0,0,0,0.6));}
+    header{display:flex;align-items:center;justify-content:space-between;gap:18px}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#07263b,#083450);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent);font-family:var(--mono);box-shadow:inset 0 -6px 18px rgba(0,0,0,0.5)}
+    nav a{color:var(--muted);text-decoration:none;margin-left:14px;font-weight:600}
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:start;margin-top:26px}
+
+    .panel{background:linear-gradient(180deg,var(--card),var(--glass));padding:20px;border-radius:14px;box-shadow:0 6px 24px rgba(2,9,23,0.6);}
+    .intro h1{margin:0;font-size:24px;line-height:1.05}
+    .intro p{color:var(--muted);margin:12px 0 0}
+
+    /* contact form */
+    form .row{display:flex;gap:12px}
+    label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+    input[type=text],input[type=email],textarea,select{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;font-size:14px}
+    textarea{min-height:110px;resize:vertical}
+    .cta{display:inline-flex;align-items:center;gap:10px;padding:12px 16px;background:linear-gradient(90deg,var(--accent),#3b82f6);color:#042027;border-radius:10px;font-weight:700;text-decoration:none;border:none;cursor:pointer}
+
+    /* widgets */
+    .widgets{display:grid;gap:16px}
+    .pricing-toggle{display:flex;align-items:center;gap:12px}
+    .switch{width:58px;height:32px;background:var(--glass-2);border-radius:999px;padding:4px;display:inline-flex;align-items:center;cursor:pointer}
+    .knob{width:24px;height:24px;background:#001b25;border-radius:50%;box-shadow:0 4px 12px rgba(2,6,23,0.6);transition:transform 360ms cubic-bezier(.2,.9,.3,1)}
+    .switch.monthly .knob{transform:translateX(0)}
+    .switch.package .knob{transform:translateX(26px)}
+    .plans{display:flex;gap:10px;margin-top:10px}
+    .plan{flex:1;padding:14px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid rgba(255,255,255,0.03)}
+    .price{font-size:22px;font-weight:800;color:var(--accent)}
+    .meta{color:var(--muted);font-size:13px;margin-top:6px}
+
+    /* Mood-to-Method */
+    .mood{display:flex;gap:12px;align-items:center}
+    .badge{padding:8px 10px;border-radius:10px;background:rgba(255,255,255,0.03);font-weight:700;color:var(--muted)}
+    .method{padding:12px;border-radius:12px;background:linear-gradient(180deg,#051923,transparent);border:1px solid rgba(255,255,255,0.03)}
+    .method h3{margin:0 0 6px}
+    .method p{margin:0;color:var(--muted)}
+    .contact-meta{display:flex;gap:18px;margin-top:12px;color:var(--muted);font-size:14px}
+
+    footer{margin-top:20px;color:var(--muted);font-size:13px}
+    .disclaimer{background:linear-gradient(180deg,#081018,transparent);padding:12px;border-radius:10px;margin-top:12px;border:1px solid rgba(255,255,255,0.03);color:#cfe8f6}
+
+    @media(max-width:920px){.hero{grid-template-columns:1fr;}.pattern{display:none}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- decorative pattern (unique SVG inline) -->
+    <svg class="pattern" width="520" height="520" viewBox="0 0 520 520" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+      <defs>
+        <linearGradient id="g1" x1="0" x2="1">
+          <stop offset="0" stop-color="#07263b"/>
+          <stop offset="1" stop-color="#083450"/>
+        </linearGradient>
+        <pattern id="p1" x="0" y="0" width="26" height="26" patternUnits="userSpaceOnUse">
+          <rect width="26" height="26" fill="url(#g1)"/>
+          <circle cx="6" cy="6" r="1.8" fill="#063146"/>
+          <path d="M0 0 L26 26 M26 0 L0 26" stroke="#052231" stroke-opacity="0.25" stroke-width="0.8"/>
+        </pattern>
+      </defs>
+      <rect width="520" height="520" fill="url(#p1)" rx="40"/>
+      <g opacity="0.5">
+        <circle cx="140" cy="120" r="120" fill="#0b2e3a"/>
+        <circle cx="380" cy="360" r="90" fill="#08364a"/>
+      </g>
+    </svg>
+
+    <header>
+      <div class="brand">
+        <div class="logo">SB</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div style="color:var(--muted);font-size:13px">Recenter and prepare — group and private sound experiences</div>
+        </div>
+      </div>
+      <nav aria-label="primary">
+        <a href="/events.html">Gatherings</a>
+        <a href="/private-sessions.html">Private Sessions</a>
+        <a href="/pricing.html">Invest</a>
+        <a href="/about.html">Our Story</a>
+        <a href="/book.html">Reserve</a>
+        <a href="/contact.html" style="color:var(--accent)">Connect</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="panel intro">
+        <h1>Reach out, request, or simply say hello.</h1>
+        <p>Use this form to ask about upcoming gatherings, private sound work, or to map a tailored series. We'll respond within 48 hours — faster on weekdays.</p>
+
+        <div style="margin-top:16px" class="contact-meta">
+          <div>Phone: <strong style="color:var(--accent);">{{PHONE}}</strong></div>
+          <div>Email: <strong style="color:var(--accent);">{{EMAIL}}</strong></div>
+          <div>Location: <strong style="color:var(--accent);">{{CITY}}, {{STATE}}</strong></div>
+        </div>
+
+        <form id="contactForm" class="panel" style="margin-top:16px" action="mailto:{{EMAIL}}" method="post" enctype="text/plain">
+          <div style="display:flex;gap:12px;margin-bottom:12px">
+            <div style="flex:1">
+              <label for="name">Your name</label>
+              <input id="name" type="text" name="name" placeholder="First & last" required>
+            </div>
+            <div style="width:180px">
+              <label for="phone">Phone</label>
+              <input id="phone" type="text" name="phone" placeholder="Optional">
+            </div>
+          </div>
+          <div style="margin-bottom:12px">
+            <label for="email">Email</label>
+            <input id="email" type="email" name="email" placeholder="you@example.com" required>
+          </div>
+          <div style="margin-bottom:12px">
+            <label for="reason">What would you like?</label>
+            <select id="reason" name="reason">
+              <option>Ask about next public gathering</option>
+              <option>Book a private session</option>
+              <option>Plan a short series for a group</option>
+              <option>Press or collaboration inquiry</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div style="margin-bottom:12px">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" placeholder="Dates, accessibility needs, or context help us prepare"></textarea>
+          </div>
+
+          <div style="display:flex;gap:12px;align-items:center">
+            <button class="cta" type="submit">{{PRIMARY_CTA_LABEL}}</button>
+            <div style="color:var(--muted);font-size:13px">Or call <a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none">{{PHONE}}</a></div>
+          </div>
+        </form>
+
+        <div class="disclaimer">
+          Contraindications: Sound-based sessions are relaxing and restorative for many, but may not be suitable for everyone (e.g., certain seizure disorders, recent head injury, or implanted devices that are sensitive to vibration). If you have a medical condition, are pregnant, or take medication for a psychiatric condition, consult your physician and include that context in your inquiry. If immediate medical support is needed, contact local emergency services.
+        </div>
+      </div>
+
+      <aside style="position:relative">
+        <div class="panel widgets">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div class="badge">Pricing snapshot</div>
+              <div style="color:var(--muted);font-size:13px">Toggle between Monthly (ongoing) and Package (series) rates</div>
+            </div>
+            <div class="pricing-toggle">
+              <div id="labelMode" style="font-weight:700">Monthly</div>
+              <div id="switch" class="switch monthly" role="button" aria-pressed="false" tabindex="0">
+                <div class="knob"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="plans">
+            <div class="plan">
+              <div style="display:flex;justify-content:space-between;align-items:start">
+                <div>
+                  <div style="font-weight:800">Wave</div>
+                  <div class="meta">Monthly group access</div>
+                </div>
+                <div class="price" data-monthly="40" data-package="140">$<span class="num">40</span></div>
+              </div>
+              <div class="meta">Weekly gatherings + member notes</div>
+            </div>
+            <div class="plan">
+              <div style="display:flex;justify-content:space-between;align-items:start">
+                <div>
+                  <div style="font-weight:800">Tide</div>
+                  <div class="meta">Small-series support</div>
+                </div>
+                <div class="price" data-monthly="85" data-package="300">$<span class="num">85</span></div>
+              </div>
+              <div class="meta">Includes 4 sessions and check-in</div>
+            </div>
+            <div class="plan">
+              <div style="display:flex;justify-content:space-between;align-items:start">
+                <div>
+                  <div style="font-weight:800">Stillpoint</div>
+                  <div class="meta">Private focal work</div>
+                </div>
+                <div class="price" data-monthly="220" data-package="780">$<span class="num">220</span></div>
+              </div>
+              <div class="meta">One-to-one & tailored materials</div>
+            </div>
+          </div>
+
+          <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03);margin:12px 0">
+
+          <div>
+            <div class="badge">Mood → Method</div>
+            <div style="color:var(--muted);font-size:13px;margin-top:6px">Select how you feel; we suggest an approach and update the reserve button.
+            </div>
+
+            <div style="margin-top:10px" class="mood">
+              <select id="moodSelect">
+                <option value="neutral">Neutral / Curious</option>
+                <option value="anxious">Anxious / Wired</option>
+                <option value="tired">Tired / Overwhelmed</option>
+                <option value="sad">Sad / Heavy</option>
+                <option value="celebrate">Open / Celebratory</option>
+              </select>
+              <div class="badge">Recommended</div>
+            </div>
+
+            <div class="method" id="methodCard" style="margin-top:12px">
+              <h3 id="methodTitle">Group grounding — Gentle wave</h3>
+              <p id="methodDesc">A focused 40–50 minute communal session using grounding tones, breath cues, and a closing pause to restore steadiness. Best for curiosity or light fatigue.</p>
+              <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
+                <button id="moodCta" class="cta" data-url="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</button>
+                <div style="color:var(--muted);font-size:13px">Book a spot or ask for customization</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div style="margin-top:12px;color:var(--muted);font-size:13px">Prefer direct scheduling? Visit <a href="/book.html" style="color:var(--accent)">Reserve</a> or call <a href="tel:{{PHONE}}" style="color:var(--accent)">{{PHONE}}</a>.</div>
+      </aside>
+    </section>
+
+    <footer>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>© <span id="year"></span> {{BUSINESS_NAME}} — Local gatherings in {{CITY}}, {{STATE}}</div>
+        <div style="color:var(--muted);font-size:13px">Made for gentle usefulness — practical guidance, not a substitute for medical care</div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // set year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Pricing toggle micro-interaction with animated numbers
+    (function(){
+      const switchEl = document.getElementById('switch');
+      const labelMode = document.getElementById('labelMode');
+      let mode = 'monthly';
+      function setMode(next){
+        mode = next;
+        switchEl.className = 'switch ' + (mode);
+        switchEl.setAttribute('aria-pressed', mode==='package');
+        labelMode.textContent = mode==='monthly' ? 'Monthly' : 'Package';
+        // animate numbers
+        document.querySelectorAll('.price').forEach(function(p){
+          const span = p.querySelector('.num');
+          const from = parseInt(span.dataset.current || span.textContent.replace(/[^0-9]/g,''),10) || 0;
+          const to = parseInt(span.getAttribute('data-' + mode),10) || 0;
+          span.dataset.current = to;
+          animateNumber(span, from, to, 520);
+        });
+      }
+      function animateNumber(node, start, end, duration){
+        const startTime = performance.now();
+        function step(now){
+          const t = Math.min(1, (now - startTime)/duration);
+          const eased = 1 - Math.pow(1 - t, 3);
+          const value = Math.round(start + (end - start) * eased);
+          node.textContent = value;
+          if(t < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+      switchEl.addEventListener('click',function(){
+        setMode(mode==='monthly' ? 'package' : 'monthly');
+      });
+      switchEl.addEventListener('keydown',function(e){ if(e.key==='Enter' || e.key===' ') { e.preventDefault(); switchEl.click(); }});
+      // initialize prices from data-monthly
+      document.querySelectorAll('.price').forEach(function(p){
+        const span = p.querySelector('.num');
+        span.textContent = p.getAttribute('data-monthly');
+        span.dataset.current = span.textContent;
+      });
+    })();
+
+    // Mood-to-Method selector
+    (function(){
+      const moodSelect = document.getElementById('moodSelect');
+      const title = document.getElementById('methodTitle');
+      const desc = document.getElementById('methodDesc');
+      const cta = document.getElementById('moodCta');
+
+      const mapping = {
+        neutral: {
+          title: 'Group grounding — Gentle wave',
+          desc: 'A focused 40–50 minute communal session using grounding tones, breath cues, and a closing pause to restore steadiness. Best for curiosity or light fatigue.',
+          cta: '{{PRIMARY_CTA_LABEL}}'
+        },
+        anxious: {
+          title: 'Anchor protocol — Short calming set',
+          desc: 'A compact protocol emphasizing low-frequency tones and pacing to help down-regulate the sympathetic surge. Recommended for feeling wound-up or restless.',
+          cta: 'Request a calming session'
+        },
+        tired: {
+          title: 'Gentle restoration — Slow-lapse',
+          desc: 'Extended, slow layers and a soft close to support rest and recovery. Includes post-session suggestions for re-entry.',
+          cta: 'Reserve restorative time'
+        },
+        sad: {
+          title: 'Containment set — Warm tones',
+          desc: 'A holding sequence with resonant instruments and brief guided reflection to help move through heavy feelings with gentle structure.',
+          cta: 'Book a holding session'
+        },
+        celebrate: {
+          title: 'Open resonance — Bright set',
+          desc: 'An enlivening group experience with bright overtones, movement cues, and shared closing. Best for arrival and marked moments.',
+          cta: 'Join a bright set'
+        }
+      };
+
+      function applyMood(key){
+        const info = mapping[key] || mapping.neutral;
+        // subtle morph: fade out then in
+        title.style.opacity = 0; desc.style.opacity = 0; cta.style.opacity = 0;
+        setTimeout(()=>{
+          title.textContent = info.title;
+          desc.textContent = info.desc;
+          cta.textContent = info.cta;
+          // if CTAs are intended to change URL, set data-url or fallback to primary
+          cta.dataset.url = (info.url || '{{PRIMARY_CTA_URL}}');
+          title.style.opacity = 1; desc.style.opacity = 1; cta.style.opacity = 1;
+        },220);
+      }
+      moodSelect.addEventListener('change', function(){ applyMood(this.value); });
+      // initialize
+      applyMood(moodSelect.value);
+
+      // CTA click => navigate to data-url
+      cta.addEventListener('click', function(e){
+        const url = cta.dataset.url || '{{PRIMARY_CTA_URL}}';
+        if(url && url !== '#') window.location.href = url;
+      });
+    })();
+
+    // gentle accessibility focus state for keyboard users
+    (function(){
+      document.addEventListener('keydown',function(e){ if(e.key==='Tab') document.body.classList.add('tabbing'); });
+    })();
+  </script>
+</body>
+</html>

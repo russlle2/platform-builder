@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Group Rites — Events • {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7efe6;--accent:#7b4f3b;--muted:#8a7b6d;--card:#ffffff}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#2b2622;background:linear-gradient(180deg,var(--bg),#fbf7f2) fixed}
+    header{background:linear-gradient(90deg,rgba(123,79,59,.06),rgba(123,79,59,.02));backdrop-filter:blur(2px);border-bottom:1px solid rgba(43,38,34,.04)}
+    .nav{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:18px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;background:var(--accent);border-radius:8px;display:grid;place-items:center;color:#fff;font-weight:700}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none;font-weight:600}
+    nav a.active{color:var(--accent)}
+    main{max-width:1100px;margin:28px auto;padding:22px}
+    .hero{display:grid;grid-template-columns:1fr 380px;gap:26px;align-items:start}
+    .card{background:var(--card);border-radius:12px;padding:20px;box-shadow:0 6px 24px rgba(43,38,34,.06)}
+    h1{margin:0 0 8px 0;color:var(--accent);font-size:28px}
+    p.lead{margin:0;color:#4a4039}
+    .pattern{height:120px;border-radius:10px;background-image:url('assets/img/pattern.svg');background-repeat:repeat}
+
+    /* Next event / seat selector */
+    .event-next{display:flex;flex-direction:column;gap:12px}
+    .meta{font-size:13px;color:var(--muted)}
+    .seats{display:grid;grid-template-columns:repeat(8,34px);gap:8px;justify-content:start}
+    .seat{width:34px;height:34px;border-radius:6px;background:#efebe6;border:1px solid rgba(43,38,34,.04);display:grid;place-items:center;cursor:pointer;color:#6b5a50}
+    .seat.selected{background:linear-gradient(180deg,#7b4f3b,#6a3f2f);color:#fff}
+    .seat.unavailable{opacity:.28;cursor:not-allowed}
+    .seat-row{display:flex;gap:8px}
+    .controls{display:flex;gap:8px;align-items:center;justify-content:space-between}
+    button.cta{background:var(--accent);color:#fff;padding:8px 12px;border-radius:8px;border:0;cursor:pointer}
+    .calendar-list{margin-top:14px;display:flex;flex-direction:column;gap:8px}
+    .evt{display:flex;justify-content:space-between;padding:10px;border-radius:10px;background:linear-gradient(180deg,#fff,#fbfaf9);border:1px solid rgba(43,38,34,.04)}
+
+    /* packing list */
+    .packing{margin-top:16px}
+    .pill{display:inline-block;padding:6px 8px;border-radius:999px;background:#f0ece7;border:1px solid rgba(43,38,34,.03);margin:6px 6px 0 0}
+    .packing textarea{width:100%;height:120px;margin-top:8px;padding:10px;border-radius:8px;border:1px solid rgba(43,38,34,.06);resize:none}
+
+    /* other sections */
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:20px}
+    .benefits li{margin:10px 0}
+    footer{max-width:1100px;margin:26px auto;padding:16px;text-align:center;color:var(--muted)}
+    .note{font-size:13px;color:#6b5a50}
+
+    @media(max-width:880px){.hero{grid-template-columns:1fr}nav a{display:none}.nav{padding:10px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand">
+        <div class="logo">SB</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Gatherings</a>
+        <a href="events.html" class="active">Group Rites</a>
+        <a href="private-sessions.html">Bespoke Sessions</a>
+        <a href="pricing.html">Investment</a>
+        <a href="about.html">Origin</a>
+        <a href="faq.html">Compass</a>
+        <a href="book.html">Reserve</a>
+        <a href="contact.html">Reach</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <div class="card">
+          <h1>Group sound evenings — small, steady gatherings</h1>
+          <p class="lead">Join others for a guided sound experience designed around gentle tone, breath, and ease. Bring a mat, a blanket, and an intention. Seats are intentionally limited.</p>
+          <div style="margin-top:12px;color:var(--muted);font-size:14px">Next event:</div>
+          <div style="margin-top:8px" class="card">
+            <div class="event-next">
+              <div class="meta">Saturday, Mar 14 • 7:00–8:15pm • {{CITY}}, {{STATE}}</div>
+              <div style="font-weight:700">Evening: Lunar Ease — gentle bowls & breath</div>
+              <div style="margin-top:8px;color:var(--muted);font-size:13px">Choose your spot — visual layout below. Occupied places will show as unavailable.</div>
+              <div id="seatGrid" class="seats" aria-label="seat selector"></div>
+
+              <div class="controls">
+                <div style="font-size:13px;color:var(--muted)"><span id="selectedCount">0</span> selected</div>
+                <div>
+                  <button id="reserveBtn" class="cta">Reserve Spot</button>
+                </div>
+              </div>
+
+              <div class="packing card" style="margin-top:12px">
+                <div style="font-weight:700">What to bring — packing prompt</div>
+                <div style="font-size:13px;color:var(--muted);margin-top:6px">Pick options, then generate a suggested list tailored to your seat and items.</div>
+                <div style="margin-top:10px">
+                  <label><input type="checkbox" class="bring" value="Yoga mat"> Yoga mat</label>
+                  <label style="margin-left:12px"><input type="checkbox" class="bring" value="Blanket"> Blanket</label>
+                  <label style="margin-left:12px"><input type="checkbox" class="bring" value="Pillow"> Small pillow</label>
+                </div>
+                <div style="margin-top:8px">
+                  <select id="comfort" style="padding:6px;border-radius:8px;border:1px solid rgba(43,38,34,.06)">
+                    <option value="floor">I prefer floor seating</option>
+                    <option value="chair">I need a chair</option>
+                    <option value="near-exit">Close to exit</option>
+                  </select>
+                </div>
+                <button id="packBtn" class="cta" style="margin-top:10px">Create packing list</button>
+                <textarea id="packingOut" readonly placeholder="Your packing list will appear here"></textarea>
+                <div style="display:flex;gap:8px;margin-top:8px">
+                  <button id="copyPacking" class="cta">Copy</button>
+                  <button id="emailPacking" style="padding:8px;border-radius:8px;border:1px solid rgba(43,38,34,.06);background:#fff">Email to me</button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="grid" style="margin-top:18px">
+          <div class="card social">
+            <div style="font-weight:700">Community notes</div>
+            <div style="color:var(--muted);margin-top:8px">"A gentle wrap around the end of my week." — A.M.</div>
+            <div style="color:var(--muted);margin-top:8px">"I slept better after one session." — L.R.</div>
+          </div>
+
+          <div class="card benefits">
+            <div style="font-weight:700">Why come</div>
+            <ul style="padding-left:16px;margin:10px 0;color:var(--muted)">
+              <li>Short, guided listening to ease nervous energy.</li>
+              <li>Small groups so the space feels held.</li>
+              <li>Tools for settling into quiet after the event.</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
+      <aside>
+        <div class="card">
+          <div style="font-weight:700">Upcoming dates</div>
+          <div class="calendar-list" id="calendarList">
+            <!-- injected -->
+          </div>
+
+          <div style="margin-top:12px;color:var(--muted);font-size:13px">Prices and add-ons on the Investment page. For private gatherings, see Bespoke Sessions.</div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <div style="font-weight:700">Quick details</div>
+          <div class="meta" style="margin-top:6px">Doors: 30 min early • Sessions run ~75 minutes • Limited capacity</div>
+          <div style="margin-top:8px" class="note">Contraindications: If you are pregnant, have a pacemaker, recent head injury, an implanted medical device, or a history of seizures/epilepsy, speak with your clinician before attending. Sound work can be physically and emotionally intense; please reach out to the facilitator at {{EMAIL}} for a brief chat if uncertain.</div>
+        </div>
+      </aside>
+    </section>
+
+    <section style="margin-top:22px" class="card">
+      <div style="font-weight:700">How it will unfold</div>
+      <ol style="margin-top:8px;color:var(--muted)">
+        <li>Arrival and quick orientation (5–10 minutes).</li>
+        <li>Guided listening with tuned instruments and soft vocal tone (50–60 minutes).</li>
+        <li>Slow transition back with a brief closing and time to stand and drink water.</li>
+      </ol>
+    </section>
+
+    <section style="margin-top:18px" class="card">
+      <div style="font-weight:700">FAQ</div>
+      <div style="margin-top:8px;color:var(--muted)"><strong>What should I wear?</strong> Comfortable layers, something you can rest in. Shoes are removed in the practice area.</div>
+      <div style="margin-top:8px;color:var(--muted)"><strong>Can I bring a friend?</strong> Yes — select multiple seats, or reach out to reserve adjacent spots.</div>
+    </section>
+
+    <section style="margin-top:18px" class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-weight:700">Ready to join an evening?</div>
+          <div style="color:var(--muted);margin-top:6px">Reserve on the Book page or hold a tentative spot here and then complete checkout.</div>
+        </div>
+        <div>
+          <a href="book.html" class="cta">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} • <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+  </footer>
+
+  <script>
+    // seat grid
+    const seatGrid = document.getElementById('seatGrid');
+    const selectedCount = document.getElementById('selectedCount');
+    const reserveBtn = document.getElementById('reserveBtn');
+    const calendarList = document.getElementById('calendarList');
+    const packBtn = document.getElementById('packBtn');
+    const packingOut = document.getElementById('packingOut');
+    const copyPacking = document.getElementById('copyPacking');
+
+    let seats = [];
+    // create 24 seats, mark some unavailable
+    for(let i=1;i<=24;i++){
+      const s = document.createElement('div');
+      s.className='seat';
+      s.dataset.index=i;
+      s.textContent=i;
+      // random unavailable for demo consistency using seeded-like approach
+      const unavailable = [3,7,11,18].includes(i);
+      if(unavailable) s.classList.add('unavailable');
+      seatGrid.appendChild(s);
+      seats.push(s);
+    }
+
+    seatGrid.addEventListener('click', e=>{
+      const el = e.target.closest('.seat');
+      if(!el || el.classList.contains('unavailable')) return;
+      el.classList.toggle('selected');
+      updateCount();
+    });
+
+    function updateCount(){
+      const count = seats.filter(s=>s.classList.contains('selected')).length;
+      selectedCount.textContent = count;
+    }
+
+    reserveBtn.addEventListener('click', ()=>{
+      const chosen = seats.filter(s=>s.classList.contains('selected')).map(s=>s.dataset.index);
+      if(chosen.length===0){ alert('Pick a seat to reserve.'); return; }
+      alert('Reserved seats: ' + chosen.join(', ') + '. This is a local demo reservation. Please complete booking on the Reserve page.');
+    });
+
+    // calendar list (next events)
+    const upcoming = [
+      {date:'Sat Mar 14',title:'Lunar Ease',time:'7:00pm'},
+      {date:'Thu Mar 26',title:'Dawn Unwind',time:'6:30pm'},
+      {date:'Sun Apr 5',title:'Slow Evening',time:'5:00pm'}
+    ];
+    upcoming.forEach(u=>{
+      const el = document.createElement('div'); el.className='evt';
+      el.innerHTML = '<div><strong>'+u.date+'</strong><div style="font-size:13px;color:var(--muted)">'+u.title+'</div></div><div style="text-align:right"><div>'+u.time+'</div><div style="font-size:12px;color:var(--muted)">Seats open</div></div>';
+      calendarList.appendChild(el);
+    });
+
+    // packing list generator
+    packBtn.addEventListener('click', ()=>{
+      const brings = Array.from(document.querySelectorAll('.bring:checked')).map(n=>n.value);
+      const comfort = document.getElementById('comfort').value;
+      const chosenSeats = seats.filter(s=>s.classList.contains('selected')).map(s=>s.dataset.index);
+      let lines = [];
+      lines.push('Packing list for ' + (chosenSeats.length?('seat(s) '+chosenSeats.join(',')):'this event'));
+      lines.push('Location: {{CITY}}, {{STATE}}');
+      if(brings.length) lines.push('Bring: ' + brings.join(', '));
+      if(comfort==='floor') lines.push('Suggested: a mat and a blanket for warmth.');
+      if(comfort==='chair') lines.push('Suggested: a cushion or small pillow for chair comfort.');
+      if(comfort==='near-exit') lines.push('Suggested: a light blanket and water bottle for quick transit.');
+      lines.push('Wear: comfortable layers. No heavy perfumes.');
+      packingOut.value = lines.join('\n');
+    });
+
+    copyPacking.addEventListener('click', ()=>{
+      packingOut.select();
+      document.execCommand('copy');
+      copyPacking.textContent = 'Copied';
+      setTimeout(()=>copyPacking.textContent='Copy',1200);
+    });
+  </script>
+</body>
+</html>

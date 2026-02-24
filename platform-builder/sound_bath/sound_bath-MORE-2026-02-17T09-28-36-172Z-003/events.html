@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Gatherings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1720;--card:#0b1320;--accent:#9be7e8;--muted:#9aa6b2;--glass:rgba(255,255,255,0.03);--radius:14px}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#e6eef3;background:linear-gradient(180deg,#071024 0%, #071824 60%);}
+    header{display:flex;align-items:center;justify-content:space-between;padding:22px 28px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:48px;height:48px;border-radius:10px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='60'><rect width='100%' height='100%' rx='10' fill='%23081a2a'/><g fill='%239be7e8' opacity='0.12'><circle cx='18' cy='18' r='14'/><circle cx='36' cy='30' r='10'/></g></svg>");background-size:cover}
+    nav a{color:#cfeff0;text-decoration:none;margin:0 10px;font-weight:600;font-size:14px}
+    .hero{padding:40px;border-radius:20px;margin:12px 28px;background:linear-gradient(135deg,rgba(155,231,232,0.04),rgba(255,255,255,0.01));display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start;box-shadow:0 8px 30px rgba(2,8,23,0.6)}
+    .hero-left h1{margin:0 0 8px 0;font-size:36px;line-height:1.02;color:#e8fbfb}
+    .hero-left p{margin:0 0 18px 0;color:var(--muted)}
+    .cta-row{display:flex;gap:12px}
+    .btn{background:var(--accent);color:#042028;padding:12px 16px;border-radius:10px;border:0;font-weight:700;cursor:pointer}
+    .outline{background:transparent;border:1px solid rgba(155,231,232,0.12);color:var(--accent);padding:11px 14px;border-radius:10px}
+    .hero-right{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px}
+    .next-event{display:flex;flex-direction:column;gap:10px}
+    .next-event .date{font-weight:800;color:#dff9fa}
+    .calendar{margin:22px 28px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+    .card{background:var(--card);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+    .small{color:var(--muted);font-size:13px}
+    .mood-panel{margin:18px 0;padding:12px;background:var(--glass);border-radius:10px}
+    .mood-grid{display:flex;gap:8px;flex-wrap:wrap}
+    .mood-btn{padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:#d9eef0;cursor:pointer}
+    footer{padding:22px 28px;color:var(--muted);font-size:13px}
+    .disclaimer{font-size:12px;color:#a4b5bd;margin-top:8px}
+    /* animated SVG background strip */
+    .pattern-hero{height:84px;border-radius:10px;overflow:hidden;margin-top:10px}
+    .pattern-hero svg{width:100%;height:100%}
+    @media (max-width:880px){.hero{grid-template-columns:1fr;}.hero-right{order:2}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo" aria-hidden></div>
+      <div>
+        <strong style="display:block;color:#dff9fa">{{BUSINESS_NAME}}</strong>
+        <span style="font-size:12px;color:var(--muted)">{{TAGLINE}}</span>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Gatherings</a>
+      <a href="private-sessions.html">Private</a>
+      <a href="pricing.html">Rates</a>
+      <a href="about.html">Story</a>
+      <a href="faq.html">Help</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" role="region" aria-label="Upcoming sound gatherings">
+      <div class="hero-left">
+        <h1>Group Sound Journeys — Seasonal Series</h1>
+        <p>Short sessions, held with intention. Drop in, resurface calmer. Sessions blend tuned bowls, subtle voice layers, and guided transitions for approachable group immersion.</p>
+        <div class="cta-row">
+          <button class="btn" onclick="location.href='book.html'">{{PRIMARY_CTA_LABEL}}</button>
+          <button class="outline" onclick="location.href='about.html'">Learn the approach</button>
+        </div>
+
+        <div class="mood-panel" aria-hidden>
+          <div style="display:flex;justify-content:space-between;align-items:center"><strong>How are you right now?</strong><span class="small">Pick a mood — we'll suggest the best entry.</span></div>
+          <div class="mood-grid" id="moodGrid">
+            <button class="mood-btn" data-method="Soft Resonance">Anxious</button>
+            <button class="mood-btn" data-method="Grounding Drift">Tired</button>
+            <button class="mood-btn" data-method="Clear-Lining"">Overthinking</button>
+            <button class="mood-btn" data-method="Open Harbor">Curious</button>
+            <button class="mood-btn" data-method="Holding Space">Grief</button>
+          </div>
+          <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center">
+            <div id="methodSuggest" style="color:#dff9fa;font-weight:700">Choose a mood</div>
+            <button id="moodCta" class="btn" onclick="location.href='book.html'">Reserve a spot</button>
+          </div>
+        </div>
+
+      </div>
+
+      <aside class="hero-right">
+        <div class="next-event card">
+          <div class="small">Next session</div>
+          <div class="date" id="nextDate">Saturday • Feb 28 • 10:30am</div>
+          <div class="small">Location: {{CITY}}, {{STATE}}</div>
+          <div style="margin-top:8px;display:flex;gap:8px">
+            <button class="btn" onclick="location.href='book.html'">Reserve (drop-in)</button>
+            <button class="outline" onclick="addToCal()">Add to calendar</button>
+          </div>
+          <div class="disclaimer">Contraindications: Not suitable for people with unmanaged seizures, severe psychosis, or medical devices sensitive to vibration. If pregnant or with a heart condition, consult a clinician before booking.</div>
+        </div>
+
+        <div class="pattern-hero" aria-hidden>
+          <!-- Inline unique svg pattern -->
+          <svg viewBox="0 0 800 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="g1" x1="0" x2="1">
+                <stop offset="0" stop-color="#062331" stop-opacity="0.0"/>
+                <stop offset="1" stop-color="#072b37" stop-opacity="0.45"/>
+              </linearGradient>
+            </defs>
+            <rect width="800" height="120" fill="url(#g1)"/>
+            <!-- wave clusters -->
+            <g fill-opacity="0.08" fill="#9be7e8">
+              <path d="M0 80 C80 60 160 100 240 78 C320 56 400 90 480 74 C560 58 640 92 720 70 C800 48 880 86 960 68 L960 120 L0 120 Z"/>
+              <circle cx="120" cy="30" r="22"/>
+              <circle cx="320" cy="15" r="8"/>
+              <circle cx="560" cy="24" r="12"/>
+            </g>
+            <g fill="#000" fill-opacity="0.03">
+              <rect x="0" y="0" width="120" height="120" rx="8"/>
+            </g>
+          </svg>
+        </div>
+
+      </aside>
+    </section>
+
+    <section class="calendar" aria-label="Upcoming events list">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:start"><strong>March — Series dates</strong><span class="small">All sessions 75 minutes</span></div>
+        <ul style="margin:12px 0 0 0;padding-left:18px;color:var(--muted)">
+          <li>Mar 6 — Morning drift • 9:30am</li>
+          <li>Mar 12 — Evening tide • 6:30pm</li>
+          <li>Mar 20 — Solstice practice • 5:00pm</li>
+          <li>Mar 27 — Gentle reset • 10:30am</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div><strong>April — Bridge sessions</strong></div>
+        <ul style="margin:12px 0 0 0;padding-left:18px;color:var(--muted)">
+          <li>Apr 3 — Midweek pause • 7:00pm</li>
+          <li>Apr 17 — Slow listening • 9:00am</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div><strong>Private cohort nights</strong></div>
+        <p class="small" style="margin:10px 0 0 0">Limited seats. Closed groups available by request.</p>
+      </div>
+
+      <div class="card">
+        <div><strong>Community notice</strong></div>
+        <p class="small" style="margin:10px 0 0 0">Sliding scale available for 2 seats per session. Email <a href="mailto:{{EMAIL}}" style="color:var(--accent)">{{EMAIL}}</a> with subject "scale".</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-weight:700">Contact</div>
+        <div class="small">Phone: {{PHONE}} • <a href="mailto:{{EMAIL}}" style="color:var(--accent)">{{EMAIL}}</a></div>
+      </div>
+      <div class="small">© <span id="year"></span> {{BUSINESS_NAME}} — in {{CITY}}, {{STATE}}</div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Mood-to-Method selector
+    const moodGrid = document.getElementById('moodGrid');
+    const methodSuggest = document.getElementById('methodSuggest');
+    const moodCta = document.getElementById('moodCta');
+
+    moodGrid.addEventListener('click', (e) => {
+      const btn = e.target.closest('.mood-btn');
+      if(!btn) return;
+      document.querySelectorAll('.mood-btn').forEach(b=>b.style.outline='');
+      btn.style.outline='2px solid rgba(155,231,232,0.12)';
+      const method = btn.dataset.method || 'Group session';
+      methodSuggest.textContent = method;
+      moodCta.textContent = (method === 'Holding Space') ? 'Request a private seat' : 'Reserve in group';
+    });
+
+    function addToCal(){
+      // minimal add-to-calendar fallback
+      alert('Add to calendar: ' + document.getElementById('nextDate').textContent);
+    }
+  </script>
+</body>
+</html>

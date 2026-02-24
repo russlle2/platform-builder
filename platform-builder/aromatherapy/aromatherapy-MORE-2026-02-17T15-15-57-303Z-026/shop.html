@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{BUSINESS_NAME}} — Apothecary & Bundles</title>
+  <style>
+    :root{--accent:#FF8A65;--bg:#041018;--muted:#9bb3c4;font-family:Inter,system-ui}
+    body{margin:0;background:linear-gradient(180deg,#031018 0%,#041018 100%);color:#eef8ff}
+    .wrap{max-width:1100px;margin:28px auto;padding:20px}
+    header{display:flex;align-items:center;justify-content:space-between}
+    .nav a{color:#bbecff;margin:0 8px;text-decoration:none}
+    .products{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+    .card{background:rgba(255,255,255,0.02);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .price{font-weight:800;font-size:20px}
+    .small{color:var(--muted);font-size:13px}
+    .controls{display:flex;gap:8px;align-items:center;margin-top:12px}
+    .btn{padding:8px 12px;border-radius:10px;border:0;background:var(--accent);color:#061018;cursor:pointer}
+
+    .comparator{display:flex;gap:12px;align-items:center;justify-content:flex-end}
+    .toggle{background:#081218;padding:6px;border-radius:999px;border:1px solid rgba(255,255,255,0.03);display:inline-flex}
+    .toggle button{background:transparent;border:0;color:#bfeaff;padding:8px 12px;border-radius:999px;cursor:pointer}
+    .toggle button.active{background:linear-gradient(90deg,var(--accent),#ffd19a);color:#031018;font-weight:700}
+
+    .tooltip{position:relative}
+    .tooltip:hover::after{content:attr(data-tip);position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 8px);background:#061017;padding:6px 8px;border-radius:6px;color:#d7eeff;white-space:nowrap}
+
+    @media(max-width:900px){.products{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:600px){.products{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div style="display:flex;gap:12px;align-items:center">
+        <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#FF8A65,#FFD39A);display:flex;align-items:center;justify-content:center;font-weight:800">A</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="services.html">Offerings</a>
+        <a href="blends.html">Essences</a>
+        <a href="shop.html">Apothecary</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+
+      <div class="comparator">
+        <div class="small" style="margin-right:8px">Show prices as</div>
+        <div class="toggle" role="tablist">
+          <button id="singleBtn" class="active">Single</button>
+          <button id="subBtn">Subscribe</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section style="margin-top:18px">
+        <h2 style="margin:0 0 6px 0">Apothecary</h2>
+        <div class="small">Hand-blended roll-ons, diffuser blends, and small-batch extracts. Pricing shown below adjusts with the toggle — animated for clarity.</div>
+
+        <div class="products" id="productGrid">
+          <!-- products filled by JS -->
+        </div>
+      </section>
+
+      <section style="margin-top:18px;display:flex;gap:12px;align-items:center">
+        <div style="flex:1">
+          <h3 style="margin:0">Bundle & Save</h3>
+          <div class="small">Select a curated trio and save on refills. Subscription bundles deliver every 30 days with safe-use notes.</div>
+        </div>
+        <div>
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">Choose a Bundle</a>
+        </div>
+      </section>
+    </main>
+
+    <footer style="margin-top:26px;color:var(--muted)">Orders handled from {{CITY}}, {{STATE}} • Questions: <a href="mailto:{{EMAIL}}" style="color:#bfeaff">{{EMAIL}}</a></footer>
+  </div>
+
+  <script>
+    // Products
+    const products = [
+      {id:1,name:'Roll-On: Evening Ease',desc:'Calming blend in a 10ml roller',single:18,sub:15},
+      {id:2,name:'Diffuser Blend: Focus Drop',desc:'Concentrated drops for diffusers (10ml)',single:24,sub:19},
+      {id:3,name:'Pocket Mist: Midday Reset',desc:'Hydrosol-based mist (50ml)',single:22,sub:18},
+      {id:4,name:'Extract: Cedar Resin',desc:'Small-batch resin, 5g',single:35,sub:29},
+      {id:5,name:'Trio: Night Sequence',desc:'Three 5ml blends for evening',single:52,sub:44}
+    ];
+
+    const grid = document.getElementById('productGrid');
+    function render(list,mode='single'){
+      grid.innerHTML = '';
+      list.forEach(p=>{
+        const el = document.createElement('div'); el.className='card';
+        el.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center"><div><strong>'+p.name+'</strong><div class="small">'+p.desc+'</div></div><div><div class="price" data-price>'+formatPrice(p[mode])+'</div><div class="small">'+(mode==='single' ? 'one-time' : 'auto-delivered')+'</div></div></div><div class="controls"><button class="btn" onclick="location.href=\'{{PRIMARY_CTA_URL}}?product='+p.id+'\'">Buy</button><div class="tooltip small" data-tip="Safety: see product page">Info</div></div>';
+        grid.appendChild(el);
+      });
+    }
+    function formatPrice(v){return '$'+v}
+
+    render(products,'single');
+
+    // Toggle with animated numbers
+    const singleBtn = document.getElementById('singleBtn');
+    const subBtn = document.getElementById('subBtn');
+    let currentPrices = products.map(p=>p.single);
+
+    function animateAll(toMode){
+      const els = document.querySelectorAll('[data-price]');
+      products.forEach((p,i)=>{
+        const start = parseInt(currentPrices[i]);
+        const end = p[toMode];
+        const displayEl = els[i];
+        let startTime = null;
+        function frame(t){
+          if(!startTime) startTime = t;
+          const pT = Math.min(1,(t-startTime)/360);
+          const val = Math.round(start + (end-start) * (1 - Math.pow(1-pT,3)));
+          displayEl.textContent = '$'+val;
+          if(pT < 1) requestAnimationFrame(frame); else currentPrices[i]=end;
+        }
+        requestAnimationFrame(frame);
+      });
+    }
+
+    singleBtn.addEventListener('click', ()=>{
+      singleBtn.classList.add('active'); subBtn.classList.remove('active');
+      animateAll('single');
+      // also adjust descriptor under price
+      setTimeout(()=>render(products,'single'),420);
+    });
+    subBtn.addEventListener('click', ()=>{
+      subBtn.classList.add('active'); singleBtn.classList.remove('active');
+      animateAll('sub');
+      setTimeout(()=>render(products,'sub'),420);
+    });
+  </script>
+</body>
+</html>

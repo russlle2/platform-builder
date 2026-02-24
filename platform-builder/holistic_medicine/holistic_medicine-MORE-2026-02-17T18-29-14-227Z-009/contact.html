@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contact — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reach out to schedule a focused planning session or ask about our bespoke integrative offerings in {{CITY}}, {{STATE}}.">
+  <style>
+    :root{--accent:#00695c;--muted:#6b7280;--bg:#fbfbfd;--card:#ffffff;--glass:rgba(255,255,255,0.6)}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#0f172a;background:linear-gradient(180deg,#f7fafc 0%, #fbfbfd 100%);}
+    .wrap{max-width:1000px;margin:36px auto;padding:28px;border-radius:14px;box-shadow:0 10px 30px rgba(13,27,39,0.06);background:var(--card);position:relative;overflow:hidden}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:10px;background:var(--accent);display:grid;place-items:center;color:white;font-weight:700;font-size:20px}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none;font-weight:600}
+    h1{margin:6px 0 0 0;font-size:22px}
+    p.lead{color:var(--muted);margin:6px 0 18px}
+    .grid{display:grid;grid-template-columns:1fr 380px;gap:20px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.9),var(--glass));padding:18px;border-radius:12px;border:1px solid rgba(15,23,42,0.03)}
+
+    /* Timeline planner */
+    .timeline{display:flex;flex-direction:column;gap:12px}
+    .phase{display:flex;gap:12px;align-items:center;padding:12px;border-radius:10px;border:1px solid rgba(6,95,70,0.06)}
+    .phase .meta{flex:1}
+    .phase h3{margin:0;font-size:16px}
+    .phase p{margin:6px 0 0 0;color:var(--muted);font-size:13px}
+    .controls{display:flex;gap:10px;align-items:center;margin-top:8px}
+    input[type=range]{width:160px}
+    .summary{margin-top:12px;padding:10px;border-radius:8px;background:#f8fafc;font-size:14px;color:#0b1220}
+    .disclaimer{font-size:12px;color:#7b8794;margin-top:10px}
+
+    /* Proof gallery */
+    .proof{display:flex;flex-direction:column;gap:12px}
+    .testimonial{padding:12px;border-radius:10px;background:linear-gradient(180deg,#ffffff,#f7fcfb);border:1px solid rgba(1,52,45,0.04);min-height:84px}
+    .t-body{font-size:14px;color:#072023}
+    .t-author{margin-top:8px;font-weight:700;color:#023c34}
+    .badges{display:flex;gap:8px;align-items:center}
+    .badge{background:#e6fffa;padding:8px;border-radius:8px;font-size:12px;color:#064e45;border:1px solid rgba(3,72,60,0.06);position:relative}
+    .tooltip{position:absolute;top:-36px;left:50%;transform:translateX(-50%);background:#083;color:#fff;padding:6px 8px;border-radius:6px;font-size:12px;display:none}
+    .badge:hover .tooltip{display:block}
+    .controls-row{display:flex;gap:10px;align-items:center}
+    .btn{background:var(--accent);color:white;padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:700}
+    .ghost{background:transparent;border:1px solid rgba(6,95,70,0.12);color:var(--accent)}
+
+    /* form */
+    form{display:flex;flex-direction:column;gap:10px}
+    label{font-size:13px;color:var(--muted)}
+    input,textarea,select{padding:10px;border-radius:8px;border:1px solid rgba(12,23,31,0.06);font-size:14px}
+    textarea{min-height:110px;resize:vertical}
+    footer{margin-top:14px;text-align:center;color:var(--muted);font-size:13px}
+
+    /* subtle pattern using background SVG */
+    .pattern{position:absolute;right:-120px;top:-80px;opacity:0.06;width:420px;height:420px;background-image:url('assets/img/pattern.svg');background-size:contain;background-repeat:no-repeat;transform:rotate(18deg)}
+
+    @media(max-width:920px){.grid{grid-template-columns:1fr}.pattern{display:none}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="pattern" aria-hidden="true"></div>
+    <header>
+      <div class="brand">
+        <div class="logo">HM</div>
+        <div>
+          <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav aria-label="Primary">
+        <a href="index.html">Start</a>
+        <a href="services.html">Offerings</a>
+        <a href="conditions.html">Concerns</a>
+        <a href="approach.html">Path</a>
+        <a href="pricing.html">Rates</a>
+        <a href="about.html">Team</a>
+        <a href="book.html">Reserve</a>
+        <a href="contact.html" style="color:var(--accent)">Connect</a>
+      </nav>
+    </header>
+
+    <main class="grid">
+      <section>
+        <h1>Connect & Plan a fast-track visit</h1>
+        <p class="lead">Use this page to ask a question, request a VIP planning day, or sketch a three-phase timeline that fits into your life. We meet you where you are — practical, cautious, and respectful of clinical context.</p>
+
+        <div class="card timeline" id="timelinePlanner" aria-labelledby="plannerHeading">
+          <h2 id="plannerHeading" style="margin:0 0 8px 0;font-size:16px">Timeline planner — build a short roadmap</h2>
+
+          <div class="phase" data-phase="1">
+            <div class="meta">
+              <h3>Phase 1 — Stabilize</h3>
+              <p>Rapid assessment, priorities for safety, and immediate habit shifts. Typical focus: baseline measures and predictable supports.</p>
+              <div class="controls">
+                <label for="p1Weeks">Weeks</label>
+                <input id="p1Weeks" type="range" min="1" max="6" value="2">
+                <div id="p1Val">2 wk</div>
+              </div>
+            </div>
+            <div style="width:120px;text-align:center">
+              <strong id="p1Check">Check-in: week 2</strong>
+            </div>
+          </div>
+
+          <div class="phase" data-phase="2">
+            <div class="meta">
+              <h3>Phase 2 — Establish</h3>
+              <p>Build routines, refine supports, introduce tailored skills. Typical focus: consistent daily practices and measurable progress.</p>
+              <div class="controls">
+                <label for="p2Weeks">Weeks</label>
+                <input id="p2Weeks" type="range" min="2" max="12" value="6">
+                <div id="p2Val">6 wk</div>
+              </div>
+            </div>
+            <div style="width:120px;text-align:center">
+              <strong id="p2Check">Check-in: week 6</strong>
+            </div>
+          </div>
+
+          <div class="phase" data-phase="3">
+            <div class="meta">
+              <h3>Phase 3 — Integrate</h3>
+              <p>Move practices into daily life, consolidate gains, and prepare a maintenance plan. Typical focus: autonomy and relapse planning.</p>
+              <div class="controls">
+                <label for="p3Weeks">Weeks</label>
+                <input id="p3Weeks" type="range" min="4" max="24" value="12">
+                <div id="p3Val">12 wk</div>
+              </div>
+            </div>
+            <div style="width:120px;text-align:center">
+              <strong id="p3Check">Check-in: week 12</strong>
+            </div>
+          </div>
+
+          <div class="summary" id="planSummary">
+            Plan length: 20 weeks • Suggested check-ins: weeks 2, 6, 12
+          </div>
+
+          <div class="disclaimer">Educational planning tool only. This is not personalized medical advice. Timelines are illustrative and will be adjusted in clinical conversation. No promises of outcomes are made.</div>
+
+          <div style="display:flex;gap:10px;margin-top:12px">
+            <button class="btn" id="savePlan">Save snapshot</button>
+            <button class="ghost" id="resetPlan">Reset</button>
+            <div style="margin-left:auto;color:var(--muted);font-size:13px">Want a guided session? <a href="book.html">Reserve a VIP Day</a></div>
+          </div>
+        </div>
+
+        <div style="height:18px"></div>
+
+        <div class="card proof">
+          <h2 style="margin:0;font-size:16px">Proof gallery — voices & credibility</h2>
+          <p style="margin:6px 0 12px 0;color:var(--muted)">Rotating perspectives from clients and badges that explain our external recognitions.</p>
+
+          <div class="testimonial" id="testimonialArea">
+            <div class="t-body" id="tBody">"I appreciated the practical pacing and the focus on measurable steps. The planning session helped me set realistic goals."</div>
+            <div class="t-author" id="tAuthor">— A client in {{CITY}}</div>
+          </div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
+            <div class="badges" id="badges">
+              <div class="badge">Board-aligned
+                <div class="tooltip">Clinician team includes board-eligible practitioners.</div>
+              </div>
+              <div class="badge">Privacy-first
+                <div class="tooltip">HIPAA-aware processes and secure intake.</div>
+              </div>
+              <div class="badge">Peer-reviewed mentions
+                <div class="tooltip">Featured in professional roundtables and case reviews.</div>
+              </div>
+            </div>
+
+            <div class="controls-row">
+              <button class="ghost" id="prevT">Prev</button>
+              <button class="ghost" id="nextT">Next</button>
+              <button class="btn" id="shareC">{{PRIMARY_CTA_LABEL}}</button>
+            </div>
+          </div>
+
+          <div class="disclaimer" style="margin-top:10px">Testimonials reflect individual experiences and do not guarantee similar outcomes. Credibility badges summarize affiliations and public recognitions; verify details during intake.</div>
+        </div>
+
+      </section>
+
+      <aside>
+        <div class="card">
+          <h3 style="margin:0 0 8px 0">Quick contact</h3>
+          <p style="margin:0 0 12px 0;color:var(--muted)">Prefer email or phone? Reach us directly or use the form below to request availability.</p>
+
+          <div style="font-size:13px;color:var(--muted);margin-bottom:8px">
+            <strong>Phone:</strong> <a href="tel:{{PHONE}}">{{PHONE}}</a><br>
+            <strong>Email:</strong> <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>
+          </div>
+
+          <form id="contactForm" onsubmit="return false">
+            <label for="name">Your name</label>
+            <input id="name" name="name" placeholder="First and last" required>
+
+            <label for="method">Preferred contact</label>
+            <select id="method" name="method">
+              <option>Email</option>
+              <option>Phone</option>
+              <option>Message</option>
+            </select>
+
+            <label for="message">Message</label>
+            <textarea id="message" name="message" placeholder="Brief: reason for contact, best times, and any urgent notes"></textarea>
+
+            <label style="font-size:12px;color:var(--muted)"><input type="checkbox" id="consent"> I understand this form is for scheduling and intake questions only — not urgent medical care.</label>
+
+            <button class="btn" id="sendBtn">Send request</button>
+          </form>
+
+          <footer>
+            We are licensed to provide consultative care in {{STATE}}. For urgent medical needs, please contact emergency services or your primary care provider.
+          </footer>
+        </div>
+
+        <div style="height:16px"></div>
+
+        <div class="card">
+          <h4 style="margin:0 0 6px 0">Quick links</h4>
+          <nav aria-label="Secondary" style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+            <a href="about.html">Who we are</a>
+            <a href="services.html">Services & models</a>
+            <a href="pricing.html">Pricing overview</a>
+            <a href="book.html">Reserve a VIP Day</a>
+          </nav>
+        </div>
+      </aside>
+    </main>
+
+  </div>
+
+  <script>
+    // Timeline planner logic
+    function updateSummary(){
+      const p1 = +document.getElementById('p1Weeks').value;
+      const p2 = +document.getElementById('p2Weeks').value;
+      const p3 = +document.getElementById('p3Weeks').value;
+      const total = p1 + p2 + p3;
+      document.getElementById('p1Val').textContent = p1 + ' wk';
+      document.getElementById('p2Val').textContent = p2 + ' wk';
+      document.getElementById('p3Val').textContent = p3 + ' wk';
+      document.getElementById('p1Check').textContent = 'Check-in: week ' + p1;
+      document.getElementById('p2Check').textContent = 'Check-in: week ' + (p1 + p2);
+      document.getElementById('p3Check').textContent = 'Check-in: week ' + (p1 + p2 + Math.ceil(p3/2));
+      document.getElementById('planSummary').textContent = 'Plan length: ' + total + ' weeks • Suggested check-ins: weeks ' + p1 + ', ' + (p1 + p2) + ', ' + (p1 + p2 + Math.ceil(p3/2));
+    }
+    ['p1Weeks','p2Weeks','p3Weeks'].forEach(id=>document.getElementById(id).addEventListener('input', updateSummary));
+    document.getElementById('resetPlan').addEventListener('click', ()=>{document.getElementById('p1Weeks').value=2;document.getElementById('p2Weeks').value=6;document.getElementById('p3Weeks').value=12;updateSummary();});
+    document.getElementById('savePlan').addEventListener('click', ()=>{
+      const snapshot = document.getElementById('planSummary').textContent;
+      navigator.clipboard && navigator.clipboard.writeText(snapshot).then(()=>alert('Snapshot copied to clipboard'));
+    });
+    updateSummary();
+
+    // Proof gallery: rotating testimonials
+    const testimonials = [
+      {body:'"I appreciated the practical pacing and the attention to measurable steps. The planning session clarified next actions."', author:'— A client in {{CITY}}'},
+      {body:'"Focused, thoughtful guidance. The clinician helped me prioritize what mattered and plan follow-ups."', author:'— Healthcare colleague'},
+      {body:'"Respectful, evidence-minded approach. I valued the clear expectations and the structured check-ins."', author:'— Participant in a short program'}
+    ];
+    let tIndex = 0;
+    const tBody = document.getElementById('tBody');
+    const tAuthor = document.getElementById('tAuthor');
+    function showTest(i){
+      const t = testimonials[i];
+      tBody.textContent = t.body;
+      tAuthor.textContent = t.author;
+    }
+    document.getElementById('nextT').addEventListener('click', ()=>{tIndex=(tIndex+1)%testimonials.length;showTest(tIndex);});
+    document.getElementById('prevT').addEventListener('click', ()=>{tIndex=(tIndex-1+testimonials.length)%testimonials.length;showTest(tIndex);});
+    // auto-rotate
+    setInterval(()=>{tIndex=(tIndex+1)%testimonials.length;showTest(tIndex);},6000);
+
+    // Contact form simple handler
+    document.getElementById('sendBtn').addEventListener('click', ()=>{
+      const name = document.getElementById('name').value.trim();
+      const msg = document.getElementById('message').value.trim();
+      const consent = document.getElementById('consent').checked;
+      if(!name){alert('Please enter your name');return}
+      if(!consent){alert('Please confirm the acknowledgment');return}
+      // Simulate send: open mailto as fallback
+      const subject = encodeURIComponent('Inquiry from ' + name);
+      const body = encodeURIComponent(msg + '\n\nPreferred contact: ' + document.getElementById('method').value);
+      window.location.href = 'mailto:{{EMAIL}}?subject=' + subject + '&body=' + body;
+    });
+
+    // CTA: primary
+    document.getElementById('shareC').addEventListener('click', ()=>{window.location.href='{{PRIMARY_CTA_URL}}';});
+  </script>
+</body>
+</html>

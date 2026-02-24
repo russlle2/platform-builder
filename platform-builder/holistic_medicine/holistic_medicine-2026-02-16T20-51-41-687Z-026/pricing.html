@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Care Plans — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg1:#f6fffc;--bg2:#e8fbf4;--accent:#2a9d8f;--muted:#6b7280;--card:#ffffff;--glass:rgba(255,255,255,0.6)}
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;}
+    body{background:linear-gradient(180deg,var(--bg1),var(--bg2));background-image: url('assets/img/pattern.svg'), linear-gradient(180deg,var(--bg1),var(--bg2));background-repeat:repeat; color:#0f172a;}
+    header{display:flex;align-items:center;justify-content:space-between;padding:22px 4vw;background:linear-gradient(90deg,rgba(255,255,255,0.6),rgba(255,255,255,0.35));backdrop-filter:blur(6px);position:sticky;top:0;z-index:10;border-bottom:1px solid rgba(10,10,10,0.03)}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:700;color:var(--accent)}
+    .brand .logo{width:44px;height:44px;background:linear-gradient(135deg,#8ee3c2,#2a9d8f);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#063;box-shadow:0 6px 18px rgba(42,157,143,0.12)}
+    nav{display:flex;gap:18px;align-items:center}
+    nav a{color:#08303a;text-decoration:none;font-weight:600}
+    .btn{background:linear-gradient(90deg,var(--accent),#1f7a72);color:#fff;padding:10px 16px;border-radius:10px;text-decoration:none;font-weight:700}
+
+    main{max-width:1100px;margin:36px auto;padding:0 20px}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:center;margin-bottom:26px}
+    .hero .lead{background:var(--card);padding:28px;border-radius:14px;box-shadow:0 8px 30px rgba(10,20,30,0.06)}
+    h1{margin:0 0 8px 0;font-size:28px;line-height:1.05}
+    p.lead-sub{margin:0;color:var(--muted)}
+    .hero .aside{background:linear-gradient(180deg,rgba(255,255,255,0.65),var(--glass));padding:20px;border-radius:12px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.6)}
+
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:28px 0}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 18px rgba(16,24,40,0.06);border:1px solid rgba(12,14,20,0.02)}
+    .price{font-size:22px;font-weight:800;color:#08303a}
+    ul.features{padding-left:18px;margin:12px 0;color:var(--muted)}
+
+    .note{font-size:13px;color:var(--muted);margin-top:8px}
+    .pricing-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:28px}
+
+    .testimonial-wrap{display:flex;flex-direction:column;gap:12px}
+    .t{background:linear-gradient(180deg,#fff,rgba(255,255,255,0.98));padding:14px;border-radius:10px;border-left:4px solid rgba(42,157,143,0.16)}
+    footer{margin:40px 0;padding:24px;text-align:center;color:var(--muted);font-size:13px}
+
+    @media (max-width:900px){
+      .hero{grid-template-columns:1fr}
+      .cards{grid-template-columns:1fr}
+      .pricing-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand"><div class="logo">HM</div><div>{{BUSINESS_NAME}}</div></div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="approach.html">Our Ways</a>
+      <a href="pricing.html">Care Plans</a>
+      <a href="about.html">Who We Are</a>
+      <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="lead">
+        <h1>Transparent pricing for thoughtful, whole-person care</h1>
+        <p class="lead-sub">Clear plans and predictable support so you can focus on progress, not surprises. We blend clinical evaluation, lifestyle guidance, and optional lab testing into personalized care.</p>
+        <div style="margin-top:18px;display:flex;gap:12px;flex-wrap:wrap">
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">Schedule a discovery</a>
+          <a href="about.html" style="padding:10px 14px;border-radius:10px;background:transparent;border:1px solid rgba(6,48,58,0.06);text-decoration:none;color:#08303a;font-weight:700">Meet the practitioner</a>
+        </div>
+      </div>
+      <aside class="aside">
+        <strong>Quick guide</strong>
+        <p class="note">Typical timeline: Intake → 6–8 week plan → follow-ups. Optional diagnostic tests supported when helpful.</p>
+        <div style="margin-top:12px">
+          <div><strong>Phone</strong>: {{PHONE}}</div>
+          <div><strong>Email</strong>: {{EMAIL}}</div>
+        </div>
+      </aside>
+    </section>
+
+    <section>
+      <h2 style="margin-bottom:12px">Care packages</h2>
+      <div class="cards">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center"><div><strong>Discovery Visit</strong><div class="note">45–60 min</div></div><div class="price">$150</div></div>
+          <p class="note">Focused intake to understand history, priorities, and immediate steps. Ideal to begin care.</p>
+          <ul class="features"><li>Comprehensive history</li><li>Initial wellness recommendations</li><li>Plan outline</li></ul>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center"><div><strong>Integrative Plan</strong><div class="note">Personalized 8-week plan</div></div><div class="price">$480</div></div>
+          <p class="note">A blended plan of nutrition, movement, sleep, stress tools, and targeted supplements when appropriate.</p>
+          <ul class="features"><li>Weekly check-ins (4)</li><li>Customized nutrition & lifestyle plan</li><li>Educational resources</li></ul>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center"><div><strong>Ongoing Support</strong><div class="note">Monthly subscription</div></div><div class="price">$120 / month</div></div>
+          <p class="note">For clients seeking continued guidance: monthly follow-ups, messaging, and plan adjustments.</p>
+          <ul class="features"><li>1x monthly follow-up</li><li>Priority messaging</li><li>Care coordination support</li></ul>
+        </div>
+      </div>
+
+      <div class="pricing-grid">
+        <div class="card">
+          <h3 style="margin-top:0">Diagnostics & Labs</h3>
+          <p class="note">Optional: targeted labs (hormones, GI, micronutrients). Labs billed separately; we recommend only when it informs care.</p>
+          <div style="margin-top:8px"><strong>Typical range:</strong> $80–$420 depending on tests.</div>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0">Insurance & billing</h3>
+          <p class="note">We are hybrid (self-pay + select billing). Many clients use health savings accounts (HSA). We provide receipts to submit to insurance when possible.</p>
+        </div>
+      </div>
+
+      <p class="note">We focus on education and whole-person strategies; individual responses vary and outcomes are not guaranteed. Treatment decisions are collaborative and tailored to each person.</p>
+    </section>
+
+    <section style="margin-top:22px">
+      <h2 style="margin-bottom:12px">What to expect after you book</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="card"><strong>Before visit</strong><p class="note">Secure a short intake form and any relevant records so we can use time efficiently.</p></div>
+        <div class="card"><strong>During visit</strong><p class="note">We review history, set priorities, and create an initial set of steps you can start right away.</p></div>
+      </div>
+    </section>
+
+    <section style="margin-top:26px">
+      <h2 style="margin-bottom:12px">Client voices</h2>
+      <div class="testimonial-wrap">
+        <div class="t"><strong>A. R.</strong> — "I appreciated the clear plan and practical steps. The follow-ups kept me accountable."</div>
+        <div class="t"><strong>J. P.</strong> — "The practitioner listens and explains options; I felt seen as a whole person."</div>
+        <div class="t"><strong>S. K.</strong> — "Labs helped clarify a missing piece; recommendations were realistic and sustainable."</div>
+      </div>
+    </section>
+
+    <section style="margin-top:28px;text-align:center">
+      <a class="btn" href="{{PRIMARY_CTA_URL}}">Book a discovery visit</a>
+      <p class="note" style="margin-top:10px">Prefer a quick question? Call {{PHONE}} or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+    </section>
+
+    <footer>
+      <div>{{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • {{PRACTITIONER_NAME}}, {{CREDENTIALS}}</div>
+    </footer>
+  </main>
+</body>
+</html>

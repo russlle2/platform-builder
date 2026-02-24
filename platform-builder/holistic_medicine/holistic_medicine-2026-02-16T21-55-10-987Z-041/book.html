@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--ink:#112;--accent:#68a;--card:#fff}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#fbfff9,#f7fbff);color:var(--ink)}
+    .container{max-width:880px;margin:36px auto;padding:28px;background:rgba(255,255,255,0.9);border-radius:12px;box-shadow:0 12px 30px rgba(10,20,30,0.05);position:relative}
+    header{display:flex;align-items:baseline;gap:16px}
+    h1{margin:0;font-size:24px}
+    nav{margin-left:auto;display:flex;gap:12px}
+    nav a{text-decoration:none;color:var(--ink);font-weight:600}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:22px;margin-top:18px}
+    form.card{background:var(--card);padding:16px;border-radius:10px;border:1px solid rgba(0,0,0,0.04)}
+    label{display:block;font-size:13px;margin-top:10px;color:#335}
+    input,select,textarea{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);font-size:14px}
+    .metas{font-size:13px;color:#456;margin-top:12px}
+    .submit{margin-top:12px;background:linear-gradient(90deg,var(--accent),#56b);color:white;padding:12px 14px;border-radius:10px;border:none;font-weight:700;cursor:pointer}
+    .aside{background:linear-gradient(180deg,rgba(104,136,170,0.03),transparent);padding:14px;border-radius:10px}
+    .lead{color:#334}
+    .faq{margin-top:12px}
+    .faq details{background:#fff;padding:10px;border-radius:8px;margin-bottom:8px}
+    .notice{font-size:13px;color:#445;margin-top:12px}
+    .wrap::before{content:'';position:absolute;inset:0;background-image:url('assets/img/pattern.svg');opacity:0.05}
+    .svg-deco{position:absolute;right:-80px;top:-80px;opacity:0.06}
+    @media(max-width:820px){.grid{grid-template-columns:1fr}} 
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Reserve a session or series seat</h1>
+      <nav>
+        <a href="index.html">Studio</a>
+        <a href="services.html">Offerings</a>
+        <a href="approach.html">How it works</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <div class="grid">
+      <form class="card" method="post" action="{{PRIMARY_CTA_URL}}">
+        <label for="name">Your full name</label>
+        <input id="name" name="name" type="text" placeholder="First Last" required />
+
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" placeholder="you@example.com" required />
+
+        <label for="phone">Phone</label>
+        <input id="phone" name="phone" type="tel" placeholder="(555) 555-5555" />
+
+        <label for="type">I am booking</label>
+        <select id="type" name="type">
+          <option>Intro Session — 50–60 min</option>
+          <option>Follow-up — 30–40 min</option>
+          <option>Monthly Series — cohort seat</option>
+        </select>
+
+        <label for="notes">Brief notes / goals (optional)</label>
+        <textarea id="notes" name="notes" rows="4" placeholder="What brings you here? What would you like to learn?"></textarea>
+
+        <div class="metas">Sessions focus on education, measurable steps, and collaboration. No cure promises. Optional labs discussed as educational tools.</div>
+
+        <button class="submit" type="submit">{{PRIMARY_CTA_LABEL}}</button>
+
+        <div class="notice">By reserving you consent to contact at the details provided. For cancellations or questions contact <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a>.</div>
+      </form>
+
+      <aside class="aside">
+        <div>
+          <div class="lead" style="font-weight:700">Need help choosing?</div>
+          <p class="lead" style="margin-top:8px">Intro sessions map your needs; series are for experiential learning with small groups. Follow-ups keep momentum.</p>
+
+          <div style="margin-top:12px">
+            <strong>When to book</strong>
+            <div class="muted" style="color:#345;margin-top:6px">If sleep, digestion, stress, or ongoing low energy are present, an intake helps align steps. We do not offer diagnostic guarantees—education is primary.</div>
+          </div>
+
+          <div class="faq">
+            <details>
+              <summary>What if I need billing help?</summary>
+              <div style="margin-top:8px;color:#445">Receipts and codes are available for many clients. Sliding scale may be discussed—please ask.</div>
+            </details>
+            <details>
+              <summary>Can I join a cohort late?</summary>
+              <div style="margin-top:8px;color:#445">We prefer full-series attendance for cohesion, but contact us about partial access.</div>
+            </details>
+          </div>
+
+          <div style="margin-top:12px">
+            <a href="pricing.html" style="display:inline-block;background:linear-gradient(90deg,#6fa,#78a);color:white;padding:10px 12px;border-radius:8px;text-decoration:none;font-weight:700">See fees & plans</a>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;font-size:13px;color:#445">
+          <strong>Quick contact</strong>
+          <div style="margin-top:6px">Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+          <div style="margin-top:6px">Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+        </div>
+      </aside>
+    </div>
+
+    <svg class="svg-deco" width="320" height="320" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+      <defs>
+        <linearGradient id="lg2" x1="0" x2="1"><stop offset="0" stop-color="#bde" /><stop offset="1" stop-color="#cfe" /></linearGradient>
+      </defs>
+      <rect width="200" height="200" fill="url(#lg2)" opacity="0.06" rx="40" />
+      <g fill="white" opacity="0.05">
+        <path d="M20 100c40-40 80-40 120 0" />
+        <circle cx="80" cy="60" r="6" />
+      </g>
+    </svg>
+
+    <footer style="margin-top:18px;color:#445;font-size:13px">Questions about sessions or suitability? We emphasize education and context—email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a>.</footer>
+  </div>
+</body>
+</html>

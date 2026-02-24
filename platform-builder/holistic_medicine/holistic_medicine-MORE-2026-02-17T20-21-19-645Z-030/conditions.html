@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Conditions — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#071022;--glass:rgba(255,255,255,0.04);--accent:#f6b67a;--muted:#9fb0c3}
+    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial; margin:0; color:#e8f3fb; background:linear-gradient(180deg,#041026 0%, #081427 60%)}
+    .wrap{max-width:980px; margin:0 auto; padding:34px}
+    header{display:flex; align-items:center; gap:14px}
+    nav a{color:var(--muted); text-decoration:none; padding:8px; border-radius:8px}
+    nav a:hover{color:#fff}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:12px; padding:18px; margin-top:18px; border:1px solid rgba(255,255,255,0.03)}
+    h1{margin:0}
+    .grid{display:grid; grid-template-columns:1fr 320px; gap:18px}
+    .condition{padding:12px; border-radius:10px; background:rgba(255,255,255,0.02); margin-bottom:10px}
+    .muted{color:var(--muted)}
+    .disclaimer{background:rgba(255,255,255,0.02); padding:10px; border-radius:8px; font-size:13px; color:#d7e9ff}
+    footer{margin-top:22px; color:var(--muted)}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+      <nav style="margin-left:18px">
+        <a href="index.html">Home</a>
+        <a href="approach.html">Our Way</a>
+        <a href="services.html">Care Options</a>
+        <a href="conditions.html">Concerns</a>
+        <a href="pricing.html">Plans</a>
+        <a href="about.html">Team</a>
+        <a href="book.html">Schedule</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <div style="margin-left:auto; color:var(--muted)">Questions? <a href="mailto:{{EMAIL}}" style="color:var(--accent); text-decoration:none">{{EMAIL}}</a></div>
+    </header>
+
+    <main class="grid">
+      <section>
+        <h1>What we support</h1>
+        <p class="muted">We provide educational, integrative support for common concerns. Nothing here is a promise of cure — care is individualized and may include referrals.</p>
+
+        <div class="card">
+          <h3>Digestive & metabolic patterns</h3>
+          <div class="condition"><strong>Symptoms:</strong> bloating, irregular bowel habits, fluctuating weight, post-meal fatigue.</div>
+          <div class="condition"><strong>Approach:</strong> dietary experiments, targeted labs, gentle elimination trials, and pacing plans.</div>
+        </div>
+
+        <div class="card">
+          <h3>Sleep, energy, and circadian alignment</h3>
+          <div class="condition"><strong>Symptoms:</strong> difficulty falling asleep, frequent waking, daytime exhaustion.</div>
+          <div class="condition"><strong>Approach:</strong> tailored sleep routines, light and activity scheduling, and pragmatic habit shifts.</div>
+        </div>
+
+        <div class="card">
+          <h3>Mental load & stress resilience</h3>
+          <div class="condition"><strong>Symptoms:</strong> persistent worry, overwhelm, difficulty with focus.</div>
+          <div class="condition"><strong>Approach:</strong> short behavioral experiments, pacing strategies, and collaboratively chosen coping tools. When needed, we coordinate with mental health specialists.</div>
+        </div>
+
+        <div class="card">
+          <h3>Chronic pain & movement</h3>
+          <div class="condition"><strong>Symptoms:</strong> recurring joint or back discomfort, movement avoidance, postural fatigue.</div>
+          <div class="condition"><strong>Approach:</strong> functional movement assessments, gentle plan building, and referrals to PT or specialists as appropriate.</div>
+        </div>
+
+        <div class="disclaimer" style="margin-top:12px">
+          Important: This information is educational. We do not promise specific outcomes. Our work is a process of exploration — tests, thoughtful changes, and frequent adjustments. If you are experiencing an emergency, seek immediate medical care. For conditions that require specialist care, we will coordinate or refer.
+        </div>
+
+        <section style="margin-top:14px" class="card">
+          <h4>How we decide what to try</h4>
+          <ul class="muted">
+            <li>Start with low-risk, high-relevance experiments.</li>
+            <li>Use tests selectively to reduce guesswork.</li>
+            <li>Keep plans simple and trackable so you can see what changes.</li>
+          </ul>
+        </section>
+      </section>
+
+      <aside>
+        <div class="card">
+          <h3>When to reach out</h3>
+          <p class="muted">If a pattern is interfering with your work, relationships, or daily routines, an initial conversation can help map next steps.</p>
+          <div style="margin-top:12px"><a href="{{PRIMARY_CTA_URL}}" class="cta" style="display:inline-block;padding:10px 12px;border-radius:8px;background:linear-gradient(90deg,var(--accent), #d99559);color:#081418;font-weight:700;text-decoration:none">Connect about my concern</a></div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4>Notes on medication & specialist care</h4>
+          <p class="muted">We collaborate with existing prescribers and specialists. We do not stop critical medications without a supervising clinician. If medication management is needed, we coordinate or refer.</p>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4>Accessibility</h4>
+          <p class="muted">We strive to make care usable for people with busy lives. If you need adjustments (timing, remote visits, summaries), tell us on booking.</p>
+        </div>
+
+      </aside>
+    </main>
+
+    <footer style="margin-top:24px; color:var(--muted); display:flex; justify-content:space-between; align-items:center">
+      <div>Phone: <a href="tel:{{PHONE}}" style="color:var(--accent); text-decoration:none">{{PHONE}}</a></div>
+      <div>© <span id="yr2"></span> {{BUSINESS_NAME}}</div>
+    </footer>
+  </div>
+
+  <script>
+    document.getElementById('yr2').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

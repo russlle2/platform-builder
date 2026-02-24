@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Programs — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7efe2;--accent:#5d3e2b;--muted:#7c6a60;--card:#fff;--accent-2:#d4a969}
+    html,body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:var(--bg);color:#31251f}
+    body{background-image:url('assets/img/pattern.svg');background-repeat:repeat}
+    .site{max-width:1000px;margin:28px auto;padding:20px}
+    header{display:flex;align-items:center;justify-content:space-between}
+    nav a{margin-left:12px;text-decoration:none;color:var(--accent)}
+    .hero{margin-top:14px;padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.96),rgba(255,255,255,0.9))}
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
+    .card{background:var(--card);padding:14px;border-radius:10px;box-shadow:0 8px 20px rgba(40,25,14,0.04)}
+    .card h4{margin:0 0 8px;color:var(--accent)}
+    .muted{color:var(--muted);font-size:14px}
+    .cta{display:inline-block;margin-top:10px;background:var(--accent-2);padding:8px 10px;border-radius:8px;color:#2f1f14;text-decoration:none;font-weight:700}
+    @media (max-width:920px){.cards{grid-template-columns:1fr}}
+
+    /* mini habit builder (printable checklist) */
+    .mini{margin-top:16px;padding:12px;border-radius:10px;background:#fff}
+    .mini input[type=text]{width:100%;padding:8px;border-radius:8px;border:1px solid #e9dfd6}
+    .mini button{margin-top:10px;background:var(--accent);color:#fff;padding:9px 12px;border-radius:8px;border:none}
+  </style>
+</head>
+<body>
+  <div class="site">
+    <header>
+      <div style="font-weight:800;color:var(--accent)">{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html">Return</a>
+        <a href="about.html">Our Story</a>
+        <a href="services.html">Services</a>
+        <a href="programs.html">Packages</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="testimonials.html">Testimonials</a>
+        <a href="book.html">Schedule</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <h2 style="margin:0;color:var(--accent)">Programs designed around rhythm, not willpower</h2>
+      <p class="muted" style="margin-top:8px">Pick a path and get tools for the next steps: short intensives, steady mentorships, or self-guided kits with clear checklists.</p>
+    </section>
+
+    <div class="cards">
+      <div class="card">
+        <h4>Seven‑Week Renewal</h4>
+        <p class="muted">An outcome-focused sequence for rebuilding a reliable weekly structure: weekly sessions, habit experiments, and tracking templates.</p>
+        <div style="margin-top:10px;color:var(--muted);font-weight:700">Fixed-term engagement — investment applies</div>
+        <a class="cta" href="book.html">Reserve a spot</a>
+      </div>
+
+      <div class="card">
+        <h4>Mini Reset Trio</h4>
+        <p class="muted">Three focused sessions to realign sleep, movement and stress signals. Quick to implement, useful to keep.</p>
+        <div style="margin-top:10px;color:var(--muted);font-weight:700">Perfect as a concentrated review</div>
+        <a class="cta" href="book.html">Book a mini reset</a>
+      </div>
+
+      <div class="card">
+        <h4>Habit Hearth — Self‑guided</h4>
+        <p class="muted">A downloadable kit with guided experiments, journaling prompts and a printable 7‑day checklist for repeated use.</p>
+        <div style="margin-top:10px;color:var(--muted);font-weight:700">Retail add‑on available</div>
+        <a class="cta" href="pricing.html">View details</a>
+      </div>
+    </div>
+
+    <section class="card" style="margin-top:16px">
+      <h3 style="color:var(--accent)">Mini habit builder</h3>
+      <p class="muted">Generate a focused 7‑day checklist and print or copy it. Use it as a warm-up before a program starts.</p>
+      <div class="mini">
+        <label style="font-size:13px;color:#493922">Name your focus</label>
+        <input id="mini-habit" type="text" placeholder="e.g., afternoon walk" />
+        <button id="mini-gen">Generate checklist</button>
+        <div id="mini-output" style="margin-top:12px;display:none;background:#fbf8f5;padding:10px;border-radius:8px;border:1px solid #efe6dd"></div>
+        <div style="margin-top:8px"><button id="mini-print" style="display:none;background:var(--accent-2);border:none;padding:8px 10px;border-radius:8px">Print</button> <button id="mini-copy" style="display:none;background:var(--accent);color:#fff;border:none;padding:8px 10px;border-radius:8px">Copy</button></div>
+      </div>
+    </section>
+
+    <footer style="margin-top:20px;display:flex;justify-content:space-between;align-items:center;color:var(--muted)">
+      <div>Serving {{CITY}}, {{STATE}}</div>
+      <a href="{{PRIMARY_CTA_URL}}" class="cta" style="background:var(--accent)">{{PRIMARY_CTA_LABEL}}</a>
+    </footer>
+  </div>
+
+  <script>
+    // Mini habit builder (simple variant of the bigger tool)
+    function makeMiniChecklist(focus){
+      var lines=[];
+      lines.push(focus+' — 7 day checklist');
+      lines.push('Focus: '+focus);
+      lines.push('');
+      var base=['Start small: 3–10 minutes','Anchor to an existing routine','Note one concrete change','Reflect briefly on feelings','Repeat the exact cue','Adjust if it feels too hard','Celebrate the week and pick one tweak'];
+      for(var i=0;i<7;i++) lines.push((i+1)+'. '+base[i]);
+      lines.push('');
+      lines.push('Created by {{BUSINESS_NAME}}');
+      return lines.join('\n');
+    }
+
+    document.getElementById('mini-gen').addEventListener('click',function(){
+      var focus=document.getElementById('mini-habit').value.trim()||'A small habit';
+      var text=makeMiniChecklist(focus);
+      var out=document.getElementById('mini-output');
+      out.style.display='block';
+      out.textContent=text;
+      document.getElementById('mini-print').style.display='inline-block';
+      document.getElementById('mini-copy').style.display='inline-block';
+    });
+
+    document.getElementById('mini-print').addEventListener('click',function(){
+      var content=document.getElementById('mini-output').textContent;
+      var w=window.open('','print','width=600,height=800');
+      w.document.write('<pre style="font-family:Arial;padding:18px">'+content+'</pre>');
+      w.document.close();
+      w.print();
+    });
+
+    document.getElementById('mini-copy').addEventListener('click',function(){
+      var text=document.getElementById('mini-output').textContent;
+      navigator.clipboard.writeText(text).then(function(){alert('Checklist copied');},function(){alert('Copy failed');});
+    });
+  </script>
+</body>
+</html>

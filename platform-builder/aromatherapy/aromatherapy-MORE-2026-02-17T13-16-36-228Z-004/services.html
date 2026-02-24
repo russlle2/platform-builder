@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Cohort-style aromatherapy learning and guided sessions that may support calm, clarity, and curiosity.">
+  <style>
+    :root{--bg:#fcfbf8;--card:#fff;--muted:#6b6b6b;--accent:#6a8b6f;--accent-2:#c7d9c9;--glass:rgba(255,255,255,0.6)}
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#213;background:var(--bg);-webkit-font-smoothing:antialiased}
+    header{display:flex;align-items:center;justify-content:space-between;padding:22px 28px;background:linear-gradient(180deg,transparent,rgba(0,0,0,0.02));position:sticky;top:0;backdrop-filter:blur(6px);z-index:10}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent-2),var(--accent));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none;font-weight:600}
+    nav a.active{color:var(--accent)}
+    main{padding:36px 20px;max-width:980px;margin:0 auto}
+
+    /* Hero */
+    .hero{display:grid;grid-template-columns:1fr;gap:18px;align-items:center;padding:28px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.8),var(--card));box-shadow:0 6px 22px rgba(24,38,29,0.06);overflow:hidden}
+    .hero h1{margin:0;font-size:clamp(22px,4vw,34px)}
+    .hero p{margin:0;color:var(--muted)}
+    .hero .cta{margin-top:12px;display:flex;gap:10px}
+    .btn{padding:10px 14px;border-radius:8px;border:0;background:var(--accent);color:#fff;font-weight:700;cursor:pointer}
+    .btn.ghost{background:transparent;border:1px solid var(--accent);color:var(--accent)}
+
+    /* Sections */
+    section{margin-top:26px;opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+    section.revealed{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){section{transition:none;opacity:1;transform:none}}
+
+    .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+    .card{background:var(--card);padding:18px;border-radius:10px;box-shadow:0 6px 18px rgba(28,36,30,0.04)}
+    .muted{color:var(--muted);font-size:0.95rem}
+
+    footer{margin:40px 0 80px;text-align:center;color:var(--muted)}
+
+    /* Modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(8,10,8,0.45);display:none;align-items:center;justify-content:center;padding:20px}
+    .modal{background:var(--card);padding:20px;border-radius:12px;max-width:720px;width:100%;box-shadow:0 10px 40px rgba(4,6,5,0.4)}
+    .modal h3{margin:0 0 8px}
+    .modal .controls{display:flex;gap:8px;margin-top:12px}
+    .step-box{min-height:80px;display:flex;align-items:center;justify-content:center;font-size:1rem}
+
+    /* tiny helper */
+    .note{font-size:0.9rem;color:var(--muted)}
+
+    /* simple pattern area */
+    .pattern-clip{position:absolute;right:-80px;top:-80px;opacity:0.08;pointer-events:none}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">A</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="services.html" class="active">Offerings</a>
+      <a href="blends.html">Essences</a>
+      <a href="shop.html">Boutique</a>
+      <a href="pricing.html">Invest</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="hero card">
+      <div>
+        <h1>Small-group cohorts & hands-on sessions that may support your daily calm</h1>
+        <p>Short, practical trainings and guided scent practices designed around rhythm, not perfection. Safe-first aromatherapy for home use and group exploration.</p>
+        <div class="cta">
+          <button class="btn" id="tryNow">Try it now — guided exercise</button>
+          <a class="btn ghost" href="book.html">Reserve a spot</a>
+        </div>
+        <div class="note" style="margin-top:10px">Phone: {{PHONE}} • Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      </div>
+      <svg class="pattern-clip" width="220" height="220" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <pattern id="p1" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+            <rect width="10" height="10" fill="#cfe6d3" />
+            <rect x="10" y="10" width="10" height="10" fill="#edf6ef" />
+          </pattern>
+        </defs>
+        <rect width="200" height="200" fill="url(#p1)" rx="8"/>
+      </svg>
+    </div>
+
+    <!-- Pillars: different ordering: practice, cohorts, private -->
+    <section id="pillars" aria-labelledby="pillars-h">
+      <h2 id="pillars-h">Ways we work together</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Foundations Cohort</h3>
+          <p class="muted">A 6-week small-group course for people who want structured learning. Each week covers a safety practice, blending habit, and a ritual to try at home. Cohorts are limited to 12 participants.</p>
+          <p class="note">Investment: two monthly payments — introductory cohorts listed on the pricing page.</p>
+        </div>
+        <div class="card">
+          <h3>Practice Sessions</h3>
+          <p class="muted">Drop-in guided group sessions: short breathwork + scent ritual + reflection. Great for establishing a consistent micro-practice.</p>
+          <p class="note">Offered in daytime and evening cohorts.</p>
+        </div>
+        <div class="card">
+          <h3>Private Consults</h3>
+          <p class="muted">One-on-one scent coaching focusing on safe selection and at-home blending. Sessions include a follow-up plan you can repeat.</p>
+          <p class="note">Packages available — see booking for details.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Myth vs truth (reframed) -->
+    <section id="myths" aria-labelledby="myths-h">
+      <h2 id="myths-h">A few notes about aromatherapy</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Myth: Essential oils fix feelings instantly</h3>
+          <p class="muted">Reality: Scents may support shifts in attention and mood for some people, especially when paired with a mindful routine. They complement — not replace — other supports.</p>
+        </div>
+        <div class="card">
+          <h3>Myth: More is better</h3>
+          <p class="muted">Reality: Dilution is essential. Proper dilution and a patch test help reduce sensitivity and irritation.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Case notes / social proof -->
+    <section id="case" aria-labelledby="case-h">
+      <h2 id="case-h">Stories from cohorts</h2>
+      <div class="grid">
+        <div class="card">
+          <strong>"I learned a simple nightly routine that stuck."</strong>
+          <p class="muted">— A participant from last season's Foundations cohort. Small group learning helped the habit become practical.</p>
+        </div>
+        <div class="card">
+          <strong>"The guided practice was an easy reset between meetings."</strong>
+          <p class="muted">— Drop-in attendee. Short sessions that fit busy days.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" aria-labelledby="faq-h">
+      <h2 id="faq-h">Frequently asked — safety & use</h2>
+      <div class="grid">
+        <div class="card">
+          <h4>How should I dilute oils?</h4>
+          <p class="muted">For topical blends, common dilutions range from 0.5–3% for everyday adult use. Children, older adults, and sensitive skin often do well with lower dilutions. We always encourage a patch test before wider skin use.</p>
+        </div>
+        <div class="card">
+          <h4>Do I need to patch test?</h4>
+          <p class="muted">Yes. Apply a properly diluted single drop on your inner forearm and observe for 24 hours. Discontinue if irritation occurs.</p>
+        </div>
+        <div class="card">
+          <h4>What about pets & pregnancy?</h4>
+          <p class="muted">Some oils may be irritating to pets or contraindicated in pregnancy. We will counsel safer choices in cohort sessions; always consult your healthcare provider for individual medical guidance.</p>
+        </div>
+      </div>
+    </section>
+
+    <section aria-label="Call to action">
+      <div class="card" style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+        <div>
+          <strong>Ready to join a cohort?</strong>
+          <div class="muted">Spaces are limited to keep the group intimate. We open enrollment seasonally.</div>
+        </div>
+        <div>
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="muted">Serving {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    </footer>
+  </main>
+
+  <!-- Modal for Try it now -->
+  <div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document" aria-labelledby="modalTitle">
+      <h3 id="modalTitle">Guided micro-practice</h3>
+      <p class="muted">Choose a short practice to try now. These are non-clinical, attention-based exercises paired with scent awareness.</p>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn" data-mode="breath">Breathing</button>
+        <button class="btn" data-mode="journal">Journaling</button>
+        <button class="btn" data-mode="intend">Set an intention</button>
+        <button class="btn ghost" id="closeModal">Close</button>
+      </div>
+      <div style="margin-top:14px">
+        <div id="stepArea" class="step-box">Select a practice to begin.</div>
+        <div class="controls">
+          <button class="btn ghost" id="prevStep">Back</button>
+          <button class="btn" id="nextStep">Start</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Modal logic
+    (function(){
+      const tryBtn = document.getElementById('tryNow');
+      const backdrop = document.getElementById('modalBackdrop');
+      const closeBtn = document.getElementById('closeModal');
+      const stepArea = document.getElementById('stepArea');
+      const nextBtn = document.getElementById('nextStep');
+      const prevBtn = document.getElementById('prevStep');
+      let mode = null; let idx = 0; let steps = [];
+
+      const PRACTICES = {
+        breath: [
+          'Find a comfortable seat. Place one hand on your belly.',
+          'Breathe in gently for 4 counts (inhale)…',
+          'Pause for 1–2 counts…',
+          'Exhale for 6 counts. Repeat this cycle 4 times.',
+          'Notice any scent nearby. Name it silently, then return to the breath.'
+        ],
+        journal: [
+          'Grab a page and a pen. Set a gentle timer for 5 minutes.',
+          'Prompt: "Today I noticed…" Write without judgment. Let sentences flow.',
+          'When time ends, read one line that feels true and close the page.',
+          'Take three slow breaths, and notice how you feel.'
+        ],
+        intend: [
+          'Close your eyes and breathe naturally for a few moments.',
+          'Think of one small intention for the next hour — a practical, kind aim.',
+          'Phrase it as "I will…" Repeat it silently three times.',
+          'Open your eyes and carry that sentence as a gentle cue.'
+        ]
+      };
+
+      function openModal(){backdrop.style.display='flex';backdrop.setAttribute('aria-hidden','false');}
+      function closeModalFn(){backdrop.style.display='none';backdrop.setAttribute('aria-hidden','true');reset();}
+      function reset(){mode=null;idx=0;steps=[];stepArea.textContent='Select a practice to begin.';nextBtn.textContent='Start'}
+
+      tryBtn.addEventListener('click',openModal);
+      closeBtn.addEventListener('click',closeModalFn);
+      backdrop.addEventListener('click',e=>{if(e.target===backdrop)closeModalFn();});
+
+      document.querySelectorAll('[data-mode]').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          mode = btn.getAttribute('data-mode');
+          steps = PRACTICES[mode].slice();
+          idx = 0;
+          renderStep();
+          nextBtn.textContent = 'Next';
+        });
+      });
+
+      prevBtn.addEventListener('click',()=>{
+        if(!mode) return; idx = Math.max(0, idx-1); renderStep();
+      });
+
+      nextBtn.addEventListener('click',()=>{
+        if(!mode){openModal();return}
+        if(idx < steps.length -1){ idx++; renderStep(); } else { stepArea.textContent = 'Practice complete. Take a breath. You can repeat or close.'; nextBtn.textContent='Done'; }
+      });
+
+      function renderStep(){
+        // Respect reduced motion: avoid auto-stepping or timers
+        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        stepArea.textContent = steps[idx];
+        nextBtn.disabled = false;
+      }
+
+      // Keyboard accessibility
+      document.addEventListener('keydown', e=>{
+        if(backdrop.style.display==='flex'){
+          if(e.key==='Escape') closeModalFn();
+          if(e.key==='ArrowRight') nextBtn.click();
+          if(e.key==='ArrowLeft') prevBtn.click();
+        }
+      });
+
+    })();
+
+    // Scroll reveal with prefers-reduced-motion support
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if(prefersReduced){ document.querySelectorAll('section').forEach(s=>s.classList.add('revealed')); return; }
+      const obs = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{
+          if(e.isIntersecting){ e.target.classList.add('revealed'); obs.unobserve(e.target); }
+        });
+      },{threshold:0.12});
+      document.querySelectorAll('section').forEach(s=>obs.observe(s));
+    })();
+  </script>
+</body>
+</html>

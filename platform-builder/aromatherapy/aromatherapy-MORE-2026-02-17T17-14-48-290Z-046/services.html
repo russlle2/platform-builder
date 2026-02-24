@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Therapies — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#FBFAF6;--accent:#7AA17A;--muted:#6B6B6B;--card:#ffffff;--glass:rgba(255,255,255,0.6);--shadow:0 6px 18px rgba(30,30,30,0.08);--cta:#5A8C7B}
+    *{box-sizing:border-box}
+    html,body{height:100%}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#2b2b2b;background:linear-gradient(180deg,var(--bg),#f6f6f3);}
+    header{display:flex;align-items:center;justify-content:space-between;padding:22px 28px;background:transparent}
+    .logo{display:flex;flex-direction:column}
+    .brand{font-weight:700;letter-spacing:0.2px}
+    nav{display:flex;gap:14px}
+    nav a{color:var(--muted);text-decoration:none;font-weight:600;padding:8px 10px;border-radius:8px}
+    nav a[href$="services.html"]{color:var(--cta);}
+    .wrap{max-width:1100px;margin:20px auto;padding:24px}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+    .card{background:var(--card);border-radius:12px;padding:22px;box-shadow:var(--shadow)}
+    .hero h1{margin:0 0 10px;font-size:28px}
+    .lead{color:var(--muted);margin:0 0 18px}
+    .meta{display:flex;gap:10px;flex-wrap:wrap}
+    .pill{background:linear-gradient(180deg,#f7fff8,#eef7ef);padding:6px 10px;border-radius:999px;font-weight:600;color:#2a5b3b}
+
+    /* SVG pattern as background */
+    .pattern-hero{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='120' viewBox='0 0 320 120'><defs><linearGradient id='g' x1='0' x2='1'><stop offset='0' stop-color='%237aa17a' stop-opacity='0.12'/><stop offset='1' stop-color='%235a8c7b' stop-opacity='0.06'/></linearGradient></defs><rect width='320' height='120' fill='transparent'/><g fill='url(%23g)'><circle cx='40' cy='40' r='32'/><circle cx='120' cy='20' r='18'/><rect x='200' y='10' width='110' height='110' rx='18' opacity='0.85'/></g></svg>");background-repeat:no-repeat;background-position:right top;background-size:420px}
+
+    /* diagnostic / mood selector */
+    .mood-grid{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px}
+    .mood{padding:12px 14px;border-radius:12px;background:#fff;border:1px solid #eee;cursor:pointer;display:flex;align-items:center;gap:10px;min-width:120px}
+    .mood.active{border-color:var(--accent);box-shadow:0 6px 20px rgba(90,140,123,0.08)}
+    .mood .emoji{font-size:20px}
+
+    /* plan and micro habits */
+    .grid-2{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
+    .plan h3{margin:0 0 8px}
+    .habit{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px}
+    .habit .dot{width:8px;height:8px;border-radius:99px;background:var(--accent);margin-top:6px}
+
+    /* pricing comparator */
+    .pricing{display:flex;gap:12px;align-items:center}
+    .toggle{background:#fff;padding:6px;border-radius:999px;display:inline-flex;align-items:center;gap:6px;border:1px solid #e6e6e6}
+    .toggle button{background:transparent;border:0;padding:8px 12px;border-radius:999px;cursor:pointer;font-weight:700}
+    .toggle button.active{background:var(--cta);color:white}
+    .price{font-size:20px;font-weight:800}
+    .small{color:var(--muted);font-size:13px}
+
+    footer{margin:26px 0;padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(90,140,123,0.06),transparent)}
+    .cta{display:inline-flex;gap:10px;align-items:center;padding:12px 16px;border-radius:10px;background:var(--cta);color:white;font-weight:700;text-decoration:none}
+
+    @media(max-width:880px){.hero{grid-template-columns:1fr}.grid-2{grid-template-columns:1fr}.wrap{padding:16px}} 
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo"><div class="brand">{{BUSINESS_NAME}}</div><div class="small">Comfort in scent, thoughtfully guided</div></div>
+    <nav>
+      <a href="index.html">Explore</a>
+      <a href="services.html">Therapies</a>
+      <a href="blends.html">Elixirs</a>
+      <a href="shop.html">Shop</a>
+      <a href="pricing.html">Rates</a>
+      <a href="about.html">Our Story</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="hero card pattern-hero">
+      <div>
+        <h1>Guided scent sessions & at-home supports that may support wellbeing</h1>
+        <p class="lead">Short, focused consultations and personalized blends crafted to meet how you feel today — with guidance on safety and gentle at-home use.</p>
+        <div class="meta">
+          <div class="pill">Consultations & blends</div>
+          <div class="pill">Patch test + dilution guidance</div>
+        </div>
+
+        <div style="margin-top:18px">
+          <strong>Start from how you feel:</strong>
+          <div class="mood-grid" id="moodGrid">
+            <div class="mood" data-key="calm"><div class="emoji">🌿</div><div><strong>Need to unwind</strong><div class="small">Breath-focused blends</div></div></div>
+            <div class="mood" data-key="focus"><div class="emoji">🪴</div><div><strong>Sharpen focus</strong><div class="small">Clarity-forward notes</div></div></div>
+            <div class="mood" data-key="lift"><div class="emoji">☀️</div><div><strong>Lift mood</strong><div class="small">Bright citrus hints</div></div></div>
+            <div class="mood" data-key="sleep"><div class="emoji">🌙</div><div><strong>Ease into rest</strong><div class="small">Gentle, grounding oils</div></div></div>
+          </div>
+        </div>
+
+        <div id="methodCard" class="card" style="margin-top:16px">
+          <h3 id="methodTitle">Recommended approach</h3>
+          <p id="methodDesc" class="small">Select how you feel above to see a recommended path — short consult, blend suggestion, and at-home micro-practices.</p>
+          <div style="margin-top:10px;display:flex;gap:10px;align-items:center">
+            <a id="moodCta" class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            <div class="small">Or call <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+          </div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="card">
+          <h4 style="margin-top:0">Quick Session Formats</h4>
+          <ul style="padding-left:18px;margin:8px 0 0;color:var(--muted)">
+            <li>10-min Scent Check — a targeted mini-assessment</li>
+            <li>30-min Focus Consult — blend & use plan</li>
+            <li>60-min Deep Mapping — holistic plan + bespoke blend</li>
+          </ul>
+          <div style="margin-top:12px;font-size:13px;color:var(--muted)">All sessions include dilution and patch-test guidance; we discuss pets and pregnancy safety where relevant.</div>
+        </div>
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0 0 8px">FAQ snapshots</h4>
+          <div style="font-size:13px;color:var(--muted)">
+            <strong>Are oils safe for pets?</strong>
+            <div>We provide pet-safe recommendations; some oils are best avoided around animals.</div>
+            <strong>Pregnancy & nursing?</strong>
+            <div>We adapt guidance; always check with a provider before use during pregnancy.</div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="grid-2">
+      <div class="card plan">
+        <h3>What a short plan looks like</h3>
+        <p class="small">Simple, stepwise recommendations with safe dilution ratios and clear at-home micro-habits you can try today.</p>
+        <div style="margin-top:12px">
+          <div class="habit"><div class="dot"></div><div><strong>Blend note</strong><div class="small">A calming roll-on: lavender + vetiver (3% dilution)</div></div></div>
+          <div class="habit"><div class="dot"></div><div><strong>Patch test</strong><div class="small">Instructions to test a small area for 24 hours</div></div></div>
+          <div class="habit"><div class="dot"></div><div><strong>Micro-practice</strong><div class="small">3 deep breaths with a scent inhaler before a meeting</div></div></div>
+        </div>
+      </div>
+
+      <aside class="card">
+        <h4 style="margin-top:0">Micro-habits</h4>
+        <div class="small">Short scent pauses you can integrate into daily life — suggested durations, dosage, and safety notes included with every plan.</div>
+        <ul style="padding-left:18px;margin-top:10px;color:var(--muted)">
+          <li>2–3 deep inhalations from a personal inhaler (avoid continuous diffusion around pets)</li>
+          <li>Roll-on applied to inner wrist or chest at 2–4% dilution</li>
+          <li>Keep blends sealed and labeled; store away from heat</li>
+        </ul>
+      </aside>
+    </section>
+
+    <section style="margin-top:18px" class="card">
+      <h3 style="margin-top:0">Compare pricing</h3>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div class="pricing">
+          <div class="toggle" role="tablist" aria-label="Pricing toggle">
+            <button id="btnSingle" class="active">Per session</button>
+            <button id="btnPack">Package</button>
+          </div>
+          <div style="margin-left:12px;font-size:13px;color:var(--muted)">Animated totals</div>
+        </div>
+        <div style="text-align:right">
+          <div class="small">Estimated cost</div>
+          <div class="price" id="priceValue">$120</div>
+          <div class="small">Includes guidance & safety notes</div>
+        </div>
+      </div>
+      <div style="margin-top:12px;color:var(--muted);font-size:13px">Toggle to see package savings for a set of sessions. All prices are retail and include blend recipe notes.</div>
+    </section>
+
+    <footer>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div>
+          <div style="font-weight:700">Ready to begin?</div>
+          <div class="small">A short consultation may support clearer next steps.</div>
+        </div>
+        <div>
+          <a id="footerCta" class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    (function(){
+      // Mood-to-Method selector
+      const moods = {"calm":{title:"Calming mini-plan",desc:"A brief session + grounding roll-on and 3 breathing micro-habits.",cta:"Book a calming consult"},"focus":{title:"Focus support plan",desc:"Short consult, an inhaler mix for concentration, and work-break cues.",cta:"Schedule focus support"},"lift":{title:"Uplift pathway",desc:"Bright, mood-lifting notes with safe dilution and carry-along options.",cta:"Try an uplifting session"},"sleep":{title:"Evening ease plan",desc:"Slow-down routine, gentle diffuser recipe, and patch test guidance.",cta:"Book a restful consult"}};
+      const grid = document.getElementById('moodGrid');
+      const methodTitle = document.getElementById('methodTitle');
+      const methodDesc = document.getElementById('methodDesc');
+      const moodCta = document.getElementById('moodCta');
+      grid.addEventListener('click', function(e){
+        const el = e.target.closest('.mood'); if(!el) return;
+        Array.from(grid.querySelectorAll('.mood')).forEach(m=>m.classList.remove('active'));
+        el.classList.add('active');
+        const key = el.getAttribute('data-key');
+        const data = moods[key];
+        methodTitle.textContent = data.title;
+        methodDesc.textContent = data.desc + ' We will cover dilution, patch testing, and any pet or pregnancy considerations relevant to you.';
+        moodCta.textContent = data.cta + ' — ' + '{{PRIMARY_CTA_LABEL}}';
+        // subtle pulse animation
+        moodCta.animate([{transform:'scale(1)'},{transform:'scale(1.03)'},{transform:'scale(1)'}],{duration:420,iterations:1});
+      });
+
+      // Pricing comparator with animated numbers
+      const btnSingle = document.getElementById('btnSingle');
+      const btnPack = document.getElementById('btnPack');
+      const priceEl = document.getElementById('priceValue');
+      let current = 120; // default
+      let raf;
+      function animateTo(target){
+        cancelAnimationFrame(raf);
+        const start = current; const diff = target - start; const startTime = performance.now();
+        function step(t){
+          const p = Math.min(1,(t-startTime)/420);
+          const ease = 1 - Math.pow(1-p,3);
+          const val = Math.round((start + diff*ease));
+          priceEl.textContent = '$' + val;
+          if(p<1){ raf = requestAnimationFrame(step);} else { current = target; }
+        }
+        raf = requestAnimationFrame(step);
+      }
+      btnSingle.addEventListener('click',function(){ btnSingle.classList.add('active'); btnPack.classList.remove('active'); animateTo(120); });
+      btnPack.addEventListener('click',function(){ btnPack.classList.add('active'); btnSingle.classList.remove('active'); animateTo(320); });
+
+      // initialize
+      priceEl.textContent = '$' + current;
+
+    })();
+  </script>
+</body>
+</html>

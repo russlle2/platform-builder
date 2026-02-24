@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{BUSINESS_NAME}} — Boutique</title>
+  <meta name="description" content="Shop aromatherapy kits, roll-ons, and diffusers. Safety notes included with each product.">
+  <style>
+    :root{--bg:#f7feff;--accent:#178187;--muted:#5f7376;--card:#ffffffaa;--radius:12px}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto}
+    body{background:linear-gradient(180deg,#f8ffff,#eefbfb);padding:26px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    header .logo{display:flex;gap:10px;align-items:center}
+    .logo div{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,#7fc6ce,#4da7ad);display:flex;align-items:center;justify-content:center;color:white;font-weight:800}
+    nav a{margin-left:10px;color:var(--accent);text-decoration:none;font-weight:600}
+    main{margin-top:18px}
+    .hero{display:flex;justify-content:space-between;align-items:center;padding:16px;border-radius:14px;background:var(--card);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.45)}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+    .product{background:linear-gradient(180deg,rgba(255,255,255,0.7),rgba(255,255,255,0.5));padding:14px;border-radius:12px;border:1px solid rgba(6,45,49,0.03);box-shadow:0 8px 24px rgba(6,45,49,0.04)}
+    .product h4{margin:0}
+    .price{font-weight:800;color:#0b5560}
+    .tag{display:inline-block;padding:6px 8px;border-radius:8px;background:#f0fbfb;color:var(--muted);font-size:12px;margin-top:8px}
+    .buy{margin-top:12px;display:flex;gap:8px}
+    .btn{padding:8px 12px;border-radius:9px;border:none;font-weight:700}
+    .btn.primary{background:var(--accent);color:white}
+    .btn.ghost{background:transparent;border:1px solid rgba(23,129,135,0.12)}
+    footer{margin-top:22px;color:var(--muted);font-size:13px}
+    @media (max-width:980px){.grid{grid-template-columns:1fr 1fr}}@media (max-width:640px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <div>B</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">A safety-first collection</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Blends</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h1 style="margin:0">Boutique — curated kit selection</h1>
+        <div style="color:var(--muted);margin-top:6px">Each product page includes use and dilution guidance. If pregnant, nursing, or caring for pets, review product notes or contact us.</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:13px;color:var(--muted)">Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+        <div style="margin-top:8px"><a class="btn primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+      </div>
+    </section>
+
+    <section class="grid" aria-label="Products">
+      <!-- Product 1 -->
+      <article class="product" aria-labelledby="p1">
+        <h4 id="p1">Starter Kit — Diffuser + 3 Blends</h4>
+        <div class="price">$79</div>
+        <div class="tag">Includes Calm Protocol, Focus Breeze, Night Ease</div>
+        <p style="font-size:13px;color:var(--muted)">A compact ultrasonic diffuser with three travel-size blends. Includes usage & dilution leaflet.</p>
+        <div class="buy">
+          <button class="btn primary" onclick="alert('Added Starter Kit to cart')">Add to cart</button>
+          <button class="btn ghost" onclick="location.href='contact.html'">Ask about safety</button>
+        </div>
+      </article>
+
+      <!-- Product 2 -->
+      <article class="product" aria-labelledby="p2">
+        <h4 id="p2">Calm Roll-on (10ml)</h4>
+        <div class="price">$18</div>
+        <div class="tag">1% topical dilution — adult recommendation</div>
+        <p style="font-size:13px;color:var(--muted)">Pre-diluted blend for wrists and temples. Patch testing recommended. Not for use on broken skin.</p>
+        <div class="buy">
+          <button class="btn primary" onclick="alert('Added Calm Roll-on to cart')">Add to cart</button>
+          <button class="btn ghost" onclick="alert('Patch test guidance: apply small amount to inner forearm and observe 24 hours')">Patch test info</button>
+        </div>
+      </article>
+
+      <!-- Product 3 -->
+      <article class="product" aria-labelledby="p3">
+        <h4 id="p3">Focus Pocket Roller</h4>
+        <div class="price">$16</div>
+        <div class="tag">0.8% dilution — travel size</div>
+        <p style="font-size:13px;color:var(--muted)">Designed for brief inhalation from an inhaler or roller. Keep away from pets and children.</p>
+        <div class="buy">
+          <button class="btn primary" onclick="alert('Added Focus Pocket Roller to cart')">Add to cart</button>
+          <button class="btn ghost" onclick="location.href='blends.html'">View notes</button>
+        </div>
+      </article>
+
+      <!-- Product 4 -->
+      <article class="product" aria-labelledby="p4">
+        <h4 id="p4">Aroma Diffuser — Tabletop (USB)</h4>
+        <div class="price">$49</div>
+        <div class="tag">Ultrasonic, quiet</div>
+        <p style="font-size:13px;color:var(--muted)">Compact diffuser suitable for small rooms. Use intermittent diffusion and ventilate the space.</p>
+        <div class="buy">
+          <button class="btn primary" onclick="alert('Added Diffuser to cart')">Add to cart</button>
+          <button class="btn ghost" onclick="alert('Diffusion guidance: 30–60 minute intervals, ventilate well')">Usage tips</button>
+        </div>
+      </article>
+
+      <!-- Product 5 -->
+      <article class="product" aria-labelledby="p5">
+        <h4 id="p5">Sleep Duo — Pillow Spray + Roller</h4>
+        <div class="price">$34</div>
+        <div class="tag">Low dilution for linen use</div>
+        <p style="font-size:13px;color:var(--muted)">Linen spray diluted to safe fabric use levels and a bedside roller. Not for body application.</p>
+        <div class="buy">
+          <button class="btn primary" onclick="alert('Added Sleep Duo to cart')">Add to cart</button>
+          <button class="btn ghost" onclick="location.href='services.html'">Consult for alternatives</button>
+        </div>
+      </article>
+
+      <!-- Product 6 -->
+      <article class="product" aria-labelledby="p6">
+        <h4 id="p6">Gift Set — Mini Rollers (3)</h4>
+        <div class="price">$29</div>
+        <div class="tag">Travel-safe sizes</div>
+        <p style="font-size:13px;color:var(--muted)">Three pre-diluted mini rollers. Ideal as an introductory set. Each includes labels with dilution and patch-test reminders.</p>
+        <div class="buy">
+          <button class="btn primary" onclick="alert('Added Gift Set to cart')">Add to cart</button>
+          <button class="btn ghost" onclick="alert('Each roller includes safety label and dilution info')">Product details</button>
+        </div>
+      </article>
+
+      <!-- Product 7 -->
+      <article class="product" aria-labelledby="p7">
+        <h4 id="p7">Refresh Mist (100ml)</h4>
+        <div class="price">$22</div>
+        <div class="tag">Room spray — follow linen dilution</div>
+        <p style="font-size:13px;color:var(--muted)">A light, alcohol-free mist for surfaces and fabrics. Test a small area first and avoid direct contact with skin.</p>
+        <div class="buy">
+          <button class="btn primary" onclick="alert('Added Refresh Mist to cart')">Add to cart</button>
+          <button class="btn ghost" onclick="location.href='blends.html'">See blend notes</button>
+        </div>
+      </article>
+
+      <!-- Product 8 -->
+      <article class="product" aria-labelledby="p8">
+        <h4 id="p8">Travel Diffuser + Pocket Blend</h4>
+        <div class="price">$39</div>
+        <div class="tag">USB + 5ml blend</div>
+        <p style="font-size:13px;color:var(--muted)">Portable kit for short diffusion sessions; suitable for travel with mindful ventilation.</p>
+        <div class="buy">
+          <button class="btn primary" onclick="alert('Added Travel Diffuser to cart')">Add to cart</button>
+          <button class="btn ghost" onclick="location.href='book.html'">Book a usage consult</button>
+        </div>
+      </article>
+
+    </section>
+
+    <!-- FAQ section placed uniquely here: short shop-focused notes -->
+    <section style="margin-top:18px;background:var(--card);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.35)" aria-labelledby="shop-faq">
+      <h3 id="shop-faq">Product safety reminders</h3>
+      <ul style="color:var(--muted);line-height:1.5">
+        <li><strong>Dilution:</strong> Follow the labelled dilution. If in doubt, choose a lower concentration and consult a practitioner.</li>
+        <li><strong>Patch test:</strong> Always patch test new topical products as described on labels and in our guides.</li>
+        <li><strong>Pets:</strong> Avoid using products with potentially toxic oils in enclosed spaces where pets sleep or eat.</li>
+        <li><strong>Pregnancy/nursing:</strong> Some products are not recommended. Contact us to verify suitability before purchase.</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer style="margin-top:22px;color:var(--muted);display:flex;justify-content:space-between;align-items:center">
+    <div>&copy; {{BUSINESS_NAME}} • {{CITY}}, {{STATE}}</div>
+    <div style="font-size:13px">Customer support: <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+  </footer>
+
+</body>
+</html>

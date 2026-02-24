@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Book HVAC Service | {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Book your HVAC repair, maintenance, or installation with {{BUSINESS_NAME}}. Quick online request.">
+  <meta property="og:title" content="Book Service | {{BUSINESS_NAME}}">
+  <meta property="og:description" content="Fast online booking for trusted HVAC service.">
+  <meta property="og:image" content="/assets/img/hero-abstract.svg">
+  <link rel="icon" href="/assets/img/hero-abstract.svg">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <script defer src="/assets/js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header" data-scroll-header>
+    <div class="topbar">
+      <div class="container topbar-inner">
+        <p class="topbar-item"><strong>{{BUSINESS_NAME}}</strong> — {{TAGLINE}}</p>
+        <ul class="topbar-list" role="list">
+          <li><a class="link tel" href="tel:{{PHONE}}">Call {{PHONE}}</a></li>
+          <li><a class="link email" href="mailto:{{EMAIL}}">{{EMAIL}}</a></li>
+          <li><span class="hours">Hours: {{HOURS}}</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="nav-wrap">
+      <div class="container nav-inner">
+        <a class="brand" href="/">
+          <span class="brand-mark" aria-hidden="true">HV</span>
+          <span class="brand-text">{{BUSINESS_NAME}}</span>
+        </a>
+        <nav class="nav" aria-label="Primary">
+          <button class="nav-toggle" aria-expanded="false" aria-controls="primary-menu">
+            <span class="nav-toggle-box" aria-hidden="true"></span>
+            <span class="nav-toggle-label">Menu</span>
+          </button>
+          <ul id="primary-menu" class="menu" role="list">
+            <li><a href="/services.html">Services</a></li>
+            <li><a href="/pricing.html">Pricing</a></li>
+            <li><a href="/financing.html">Financing</a></li>
+            <li><a href="/reviews.html">Reviews</a></li>
+            <li><a href="/about.html">About</a></li>
+            <li class="is-active"><a class="btn btn-primary btn-small" href="/book.html" aria-current="page">Book</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero hero-sub" style="--hero-image: url('/assets/img/hero-abstract.svg');">
+      <div class="container hero-inner">
+        <div class="hero-content">
+          <h1>Book your visit</h1>
+          <p class="lead">Tell us what you need. We’ll confirm your appointment quickly during {{HOURS}}.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <form class="booking-form" action="#" method="post" onsubmit="return false" aria-describedby="book-note">
+          <fieldset>
+            <legend>Contact details</legend>
+            <div class="grid form-grid">
+              <div>
+                <label for="b-name">Full name</label>
+                <input id="b-name" name="name" autocomplete="name" required>
+              </div>
+              <div>
+                <label for="b-phone">Phone</label>
+                <input id="b-phone" name="phone" type="tel" autocomplete="tel" required>
+              </div>
+              <div>
+                <label for="b-email">Email</label>
+                <input id="b-email" name="email" type="email" autocomplete="email" required>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Service details</legend>
+            <div class="grid form-grid">
+              <div class="full">
+                <label for="b-address">Service address</label>
+                <input id="b-address" name="address" autocomplete="street-address" placeholder="{{ADDRESS}}, {{CITY}}, {{STATE}} {{ZIP}}" required>
+              </div>
+              <div>
+                <label for="b-city">City</label>
+                <input id="b-city" name="city" value="{{CITY}}">
+              </div>
+              <div>
+                <label for="b-zip">ZIP</label>
+                <input id="b-zip" name="zip" inputmode="numeric" pattern="[0-9]*" value="{{ZIP}}">
+              </div>
+              <div>
+                <label for="b-service">Service needed</label>
+                <select id="b-service" name="service">
+                  <option>AC Repair</option>
+                  <option>Furnace Repair</option>
+                  <option>New System Install</option>
+                  <option>Maintenance / Tune‑Up</option>
+                  <option>Indoor Air Quality</option>
+                </select>
+              </div>
+              <div>
+                <label for="b-date">Preferred date</label>
+                <input id="b-date" name="date" type="date">
+              </div>
+              <div>
+                <label for="b-time">Preferred time</label>
+                <select id="b-time" name="time">
+                  <option>Any time</option>
+                  <option>8–11am</option>
+                  <option>11am–2pm</option>
+                  <option>2–5pm</option>
+                </select>
+              </div>
+              <div class="full">
+                <label for="b-notes">Notes</label>
+                <textarea id="b-notes" name="notes" rows="4" placeholder="Tell us what’s happening (e.g., AC blowing warm, furnace noise, last maintenance)"></textarea>
+              </div>
+            </div>
+          </fieldset>
+
+          <div class="consent">
+            <input id="b-consent" type="checkbox" required>
+            <label for="b-consent">I agree to be contacted at the number and email provided about my service request.</label>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Request Appointment</button>
+            <p id="book-note" class="form-note">We’ll confirm by phone from {{PHONE}} fast during {{HOURS}}.</p>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section class="section cta-section">
+      <div class="container cta-inner">
+        <div>
+          <h2>Need help right now?</h2>
+          <p>For emergencies, call us for the fastest response.</p>
+        </div>
+        <div class="cta-buttons">
+          <a class="btn btn-primary" href="tel:{{PHONE}}">Call {{PHONE}}</a>
+          <a class="btn btn-ghost" href="mailto:{{EMAIL}}">Email {{EMAIL}}</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <a class="brand brand-footer" href="/">
+          <span class="brand-mark" aria-hidden="true">HV</span>
+          <span class="brand-text">{{BUSINESS_NAME}}</span>
+        </a>
+        <p>{{TAGLINE}}</p>
+        <p><strong>Phone:</strong> <a href="tel:{{PHONE}}">{{PHONE}}</a><br>
+        <strong>Email:</strong> <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+        <address>
+          <strong>Address:</strong><br>
+          {{ADDRESS}}<br>
+          {{CITY}}, {{STATE}} {{ZIP}}
+        </address>
+        <p><strong>Hours:</strong> {{HOURS}}</p>
+      </div>
+      <nav aria-label="Footer">
+        <h3 class="footer-heading">Company</h3>
+        <ul class="footer-list" role="list">
+          <li><a href="/about.html">About</a></li>
+          <li><a href="/reviews.html">Reviews</a></li>
+          <li><a href="/services.html">Services</a></li>
+          <li><a href="/pricing.html">Pricing</a></li>
+          <li><a href="/financing.html">Financing</a></li>
+          <li><a href="/contact.html">Contact</a></li>
+          <li><a href="/book.html" aria-current="page">Book Now</a></li>
+        </ul>
+      </nav>
+      <div>
+        <h3 class="footer-heading">Service Areas</h3>
+        <p>Based in {{CITY}}, serving {{CITY}} metro and surrounding neighborhoods across {{STATE}}.</p>
+        <h3 class="footer-heading">Guarantees</h3>
+        <ul class="checks" role="list">
+          <li>1‑Year Workmanship Warranty</li>
+          <li>Upfront, No‑Surprise Pricing</li>
+          <li>Respect for Your Home</li>
+        </ul>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p>© <span id="year"></span> {{BUSINESS_NAME}}. All rights reserved.</p>
+      <a class="cta-link" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+    </div>
+  </footer>
+
+  <a class="sticky-cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reserve a session or schedule a private visit. Membership options available.">
+  <style>
+    :root{--bg:#f3fbfb;--panel:#ffffff;--accent:#165c5c;--muted:#5f7c7b;--shadow:0 10px 30px rgba(8,30,30,0.06);font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial}
+    body{margin:0;background:var(--bg);color:#042d2d}
+    header{padding:18px 0;border-bottom:1px solid rgba(0,0,0,0.04)}
+    .wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+    nav{display:flex;gap:12px;align-items:center}
+    .brand{font-weight:800;color:var(--accent)}
+    nav a{color:#063238;text-decoration:none;padding:6px 8px;border-radius:8px}
+    nav a.active{background:var(--accent);color:white}
+
+    main{max-width:1100px;margin:28px auto;padding:0 20px}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:20px}
+    .panel{background:var(--panel);padding:20px;border-radius:12px;box-shadow:var(--shadow)}
+    h1{margin:0 0 6px}
+    p.lead{color:var(--muted);margin-top:6px}
+
+    form{display:grid;gap:12px}
+    label{font-weight:700;font-size:13px}
+    input,select,textarea{padding:10px;border-radius:8px;border:1px solid #e6f0ef;font-size:14px}
+    .row{display:flex;gap:10px}
+    button{background:var(--accent);color:white;padding:10px 14px;border-radius:10px;border:0;font-weight:800;cursor:pointer}
+
+    /* pricing comparator */
+    .comparator{display:flex;gap:12px;align-items:center;margin-top:8px}
+    .seg{display:flex;background:#eefbf9;padding:6px;border-radius:999px}
+    .seg button{background:transparent;border:0;padding:8px 12px;border-radius:999px;cursor:pointer;font-weight:700}
+    .seg button.active{background:var(--accent);color:white}
+    .pricebox{padding:12px 14px;border-radius:10px;background:linear-gradient(180deg,#ffffff,#f2fbfa);font-weight:800}
+
+    .calendar{display:flex;flex-direction:column;gap:8px}
+    .event{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:10px;background:#fbffff}
+    .badge{background:#e9fffd;padding:6px 8px;border-radius:8px;color:var(--accent);font-weight:800}
+
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav>
+        <div class="brand">{{BUSINESS_NAME}}</div>
+        <div style="flex:1"></div>
+        <a href="index.html">Home</a>
+        <a href="events.html">Sessions</a>
+        <a href="private-sessions.html">Private</a>
+        <a href="pricing.html">Rates</a>
+        <a href="about.html">About</a>
+        <a href="faq.html">FAQ</a>
+        <a href="book.html" class="active">Reserve</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="grid wrap">
+      <section>
+        <div class="panel">
+          <h1>Reserve your place</h1>
+          <p class="lead">Choose a session or a private consult. Memberships offer the best value for regular attendees.</p>
+
+          <div style="margin-top:12px">
+            <strong>Choose option</strong>
+            <div class="comparator">
+              <div class="seg" role="tablist">
+                <button id="btn-single" class="active" role="tab">Single</button>
+                <button id="btn-pack" role="tab">Pack</button>
+                <button id="btn-member" role="tab">Member</button>
+              </div>
+              <div class="pricebox" id="pricebox">$35</div>
+            </div>
+          </div>
+
+          <form id="book-form" style="margin-top:16px">
+            <div class="row">
+              <div style="flex:1">
+                <label for="name">Full name</label>
+                <input id="name" name="name" required>
+              </div>
+              <div style="flex:1">
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" required>
+              </div>
+            </div>
+            <div class="row">
+              <div style="flex:1">
+                <label for="date">Choose date</label>
+                <select id="date" name="date"></select>
+              </div>
+              <div style="flex:1">
+                <label for="spots">Spots</label>
+                <select id="spots" name="spots"><option>1</option><option>2</option><option>3</option></select>
+              </div>
+            </div>
+            <label for="note">Notes or accessibility needs</label>
+            <textarea id="note" name="note" rows="3"></textarea>
+
+            <div style="display:flex;gap:10px;align-items:center;margin-top:12px">
+              <button type="submit">Confirm & hold</button>
+              <div style="color:var(--muted);font-size:13px">You will receive an email confirmation. Need help? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+            </div>
+          </form>
+
+          <div style="margin-top:14px;font-size:13px;color:var(--muted)">
+            <strong>Contraindications:</strong> If you have recent cranial injury, uncontrolled epilepsy, or are in acute psychiatric crisis, please consult your clinician before attending. Email any concerns to <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.
+          </div>
+        </div>
+
+      </section>
+
+      <aside>
+        <div class="panel">
+          <h3>Next events</h3>
+          <div class="calendar" id="calendar">
+            <!-- events populated by JS -->
+          </div>
+          <div style="margin-top:12px;font-size:13px;color:var(--muted)">See the full calendar on <a href="events.html">Sessions</a>.</div>
+        </div>
+
+        <div style="height:18px"></div>
+
+        <div class="panel">
+          <h3>Credibility & quick proof</h3>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;gap:8px;align-items:center">
+              <div style="width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:white;font-weight:800">TS</div>
+              <div>
+                <div style="font-weight:800">Trustworthy sessions</div>
+                <div style="color:var(--muted);font-size:13px">Low-volume, consistent cues.</div>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:8px">
+              <div class="badge" tabindex="0" data-tip="Recommended by two local therapists">Therapist-referred</div>
+              <div class="badge" tabindex="0" data-tip="Background checks on staff">Vetted Team</div>
+            </div>
+
+            <div style="margin-top:12px">
+              <strong>Testimonials</strong>
+              <div id="mini-t" style="margin-top:8px;color:var(--muted)">"Consistent, restful — I book around my work schedule." — S.</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    // Pricing toggle with animated number (three options)
+    (function(){
+      const btnSingle=document.getElementById('btn-single');
+      const btnPack=document.getElementById('btn-pack');
+      const btnMember=document.getElementById('btn-member');
+      const pricebox=document.getElementById('pricebox');
+
+      const plans={single:35,pack:150,member:28};
+      function animateTo(target){
+        const start=Number(pricebox.textContent.replace(/[^0-9.]/g,''))||0;const end=target;const dur=420;const t0=performance.now();
+        function p(t){return Math.min(1,t/dur)}
+        function step(now){const t=p(now-t0);const cur=Math.round((start+(end-start)*t)*100)/100;pricebox.textContent='$'+(cur%1?cur.toFixed(2):cur.toFixed(0));if(t<1)requestAnimationFrame(step)}
+        requestAnimationFrame(step);
+      }
+
+      function select(el,which){[btnSingle,btnPack,btnMember].forEach(b=>b.classList.remove('active'));
+        el.classList.add('active');animateTo(plans[which]);}
+
+      btnSingle.addEventListener('click',()=>select(btnSingle,'single'));
+      btnPack.addEventListener('click',()=>select(btnPack,'pack'));
+      btnMember.addEventListener('click',()=>select(btnMember,'member'));
+    })();
+
+    // Populate next-events and date select
+    (function(){
+      const events=[
+        {id:1,date:'2026-02-20 18:30',label:'Evening group — Bowls & voice'},
+        {id:2,date:'2026-02-24 10:00',label:'Saturday morning gentle session'},
+        {id:3,date:'2026-03-03 18:30',label:'Member night — extended calm'}
+      ];
+      const cal=document.getElementById('calendar');const sel=document.getElementById('date');
+      events.forEach(e=>{const el=document.createElement('div');el.className='event';el.innerHTML='<div><strong>'+e.label+'</strong><div style="font-size:13px;color:#5f7c7b">'+e.date+'</div></div><div class="badge">Book</div>';cal.appendChild(el);
+        const opt=document.createElement('option');opt.value=e.id;opt.textContent=e.date+' — '+e.label;sel.appendChild(opt)});
+
+      // clicking a book badge scrolls to form
+      document.querySelectorAll('.badge').forEach(b=>{b.addEventListener('click',()=>{document.getElementById('name').focus()})});
+    })();
+
+    // form handler (mock)
+    document.getElementById('book-form').addEventListener('submit',function(e){e.preventDefault();alert('Thank you — a confirmation will be sent to '+(document.getElementById('email').value||'your email')+'.');this.reset();});
+
+    // keyboard tooltips behaviour
+    document.querySelectorAll('[data-tip]').forEach(el=>{el.addEventListener('focus',()=>el.classList.add('hover'));el.addEventListener('blur',()=>el.classList.remove('hover'))});
+  </script>
+</body>
+</html>

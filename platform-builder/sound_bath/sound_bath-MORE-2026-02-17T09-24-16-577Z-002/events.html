@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Gatherings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1720;--card:#0b1220;--accent:#8be0d5;--muted:#9aa6b2;--glass:rgba(255,255,255,0.04)}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#e6f0ef;background:linear-gradient(180deg,#071018 0%,#07182a 100%)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px}
+    nav a{color:var(--muted);text-decoration:none;margin:0 10px;font-weight:600}
+    nav a:hover{color:var(--accent)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:56px;height:56px;background:linear-gradient(135deg,#072a2b,#08323c);border-radius:12px;display:flex;align-items:center;justify-content:center}
+    .logo svg{filter:drop-shadow(0 6px 20px rgba(0,0,0,0.6))}
+    main{max-width:1100px;margin:28px auto;padding:28px}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:22px;align-items:start}
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:20px;border-radius:12px;box-shadow:0 6px 30px rgba(2,6,12,0.6)}
+    h1{margin:0 0 8px 0;color:#e8fbf6}
+    p.lead{color:var(--muted);margin:0 0 10px}
+
+    /* SVG pattern background */
+    .pattern-wrap{position:absolute;inset:0;pointer-events:none;opacity:0.06}
+    .next-event{border-left:4px solid var(--accent);padding:14px;display:flex;flex-direction:column;gap:8px}
+    .next-event .when{font-weight:700;color:#e8fbf6}
+    .events-list{margin-top:18px;display:grid;gap:10px}
+    .event-row{display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--glass);border-radius:8px}
+    .seatmap{display:grid;grid-template-columns:repeat(8,1fr);gap:8px;padding:12px;background:linear-gradient(180deg,#071722, #04101a);border-radius:8px}
+    .seat{height:26px;background:#13252a;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#8fe7d9;font-size:12px;cursor:pointer}
+    .seat.selected{background:var(--accent);color:#002226;font-weight:700}
+    .seat.sold{background:#223640;color:#091012;cursor:not-allowed;opacity:0.5}
+    .packing{margin-top:12px}
+    .cta{display:inline-block;padding:10px 14px;background:var(--accent);color:#072426;border-radius:8px;text-decoration:none;font-weight:700}
+    .disclaimer{font-size:12px;color:#cbd5d9;margin-top:12px}
+    footer{color:var(--muted);font-size:13px;margin-top:28px;text-align:center}
+    .muted{color:var(--muted)}
+    .small{font-size:13px}
+    label.checkbox{display:flex;gap:10px;align-items:center}
+  </style>
+</head>
+<body>
+  <div class="pattern-wrap" aria-hidden>
+    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="p1" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse" patternTransform="rotate(15)">
+          <rect width="80" height="80" fill="transparent" />
+          <path d="M0 60 L20 40 L40 60 L60 40 L80 60" stroke="#00a897" stroke-opacity="0.18" stroke-width="1" fill="none" />
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#p1)" />
+    </svg>
+  </div>
+
+  <header>
+    <div class="brand">
+      <div class="logo" aria-hidden>
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="9" fill="#07262a"/>
+          <path d="M6 12c2-4 8-6 12-2" stroke="#8be0d5" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div>
+        <div style="color:#dff6f1;font-weight:700">{{BUSINESS_NAME}}</div>
+        <div class="small muted">Gatherings & sessions in {{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="events.html">Gatherings</a>
+      <a href="private-sessions.html">Close Sessions</a>
+      <a href="pricing.html">Invest</a>
+      <a href="about.html">Story</a>
+      <a href="faq.html">Q&A</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Talk</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="panel">
+        <h1>Upcoming group sound journeys</h1>
+        <p class="lead">Small circles of sound, breath, and guided pauses. Pick a night, claim a seat, and leave lighter.</p>
+        <div id="nextEventCard" class="panel next-event">
+          <div class="when">Loading next event…</div>
+          <div class="muted small" id="nextEventDesc"></div>
+          <div style="display:flex;gap:10px;margin-top:6px">
+            <a id="joinBtn" class="cta" href="book.html">{{PRIMARY_CTA_LABEL}}</a>
+            <button id="remindBtn" class="cta" style="background:#1b3440">Remind me</button>
+          </div>
+        </div>
+
+        <div class="events-list" id="eventsList">
+          <!-- calendar list generated by JS -->
+        </div>
+
+        <div class="disclaimer">
+          Contraindications: Sound sessions can be powerful. If you are pregnant, have a pacemaker, serious cardiovascular conditions, epilepsy, or recent surgery, consult a medical professional before attending. If you have strong trauma histories, notify the practitioner before booking. This is not a medical treatment.
+        </div>
+      </div>
+
+      <aside class="panel">
+        <h3 style="margin:0 0 8px 0">Pick seats — claim the space</h3>
+        <div class="small muted">Click to toggle a seat. Sold seats are disabled.</div>
+        <div id="seatmap" class="seatmap" aria-label="seat map"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+          <div class="small muted">Selected: <span id="selectedCount">0</span></div>
+          <button id="reserveSeats" class="cta">Reserve seats</button>
+        </div>
+
+        <div class="packing">
+          <h4 style="margin:10px 0 6px 0">What to bring</h4>
+          <div class="small muted">Tick what you want included in your packing list.</div>
+          <div style="display:grid;gap:8px;margin-top:8px">
+            <label class="checkbox"><input type="checkbox" id="chkBlanket"> <span>Blanket</span></label>
+            <label class="checkbox"><input type="checkbox" id="chkCushion"> <span>Cushion</span></label>
+            <label class="checkbox"><input type="checkbox" id="chkMask"> <span>Eye mask</span></label>
+            <label class="checkbox"><input type="checkbox" id="chkWater"> <span>Water bottle</span></label>
+            <label class="checkbox"><input type="checkbox" id="chkJournal"> <span>Journal + pen</span></label>
+          </div>
+          <button id="genPacking" class="cta" style="margin-top:10px">Make my packing list</button>
+          <pre id="packingOut" style="background:#031016;color:#cfeee8;padding:10px;border-radius:8px;margin-top:8px;font-size:13px;white-space:pre-wrap"></pre>
+        </div>
+      </aside>
+    </section>
+
+    <footer>
+      <div class="small muted">For questions: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • Call <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    </footer>
+  </main>
+
+  <script>
+    // Sample events data
+    const events = [
+      {id:1, title:"Evening Drift — gentle sound", date:"2026-03-05T19:00:00", location:"Studio A", seats:24, sold:6},
+      {id:2, title:"Full-Body Resonance", date:"2026-03-12T18:30:00", location:"Studio B", seats:20, sold:18},
+      {id:3, title:"Saturday Slow Flow", date:"2026-03-21T10:00:00", location:"Garden Room", seats:30, sold:12},
+      {id:4, title:"Moonlit Cohort — 4-week series", date:"2026-04-02T19:00:00", location:"Studio A", seats:12, sold:4}
+    ];
+
+    function humanDate(iso){
+      const d=new Date(iso);return d.toLocaleString(undefined,{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'numeric'});
+    }
+
+    function renderEvents(){
+      const list=document.getElementById('eventsList');list.innerHTML='';
+      events.forEach(e=>{
+        const remaining = Math.max(0,e.seats - e.sold);
+        const row=document.createElement('div');row.className='event-row';
+        row.innerHTML = `<div>
+            <div style=\"font-weight:700;color:#e8fbf6\">${e.title}</div>
+            <div class=\"small muted\">${humanDate(e.date)} • ${e.location}</div>
+          </div>
+          <div style=\"text-align:right\">${remaining>0?'<div style=\\"font-weight:700;color:#8be0d5\\">'+remaining+' seats</div>':'<div class=\\"muted\\">Sold out</div>'}
+          <div style=\"margin-top:6px\"><button class=\"cta\" onclick=\"focusOnEvent(${e.id})\">View / Claim</button></div></div>`;
+        list.appendChild(row);
+      });
+    }
+
+    function focusOnEvent(id){
+      alert('Opening event ' + id + '. You can reserve seats from the seat map on this page.');
+      // scroll to seatmap
+      document.getElementById('seatmap').scrollIntoView({behavior:'smooth'});
+    }
+
+    // Next event module: earliest upcoming
+    function renderNextEvent(){
+      const now=Date.now();
+      const upcoming = events.filter(e=>new Date(e.date).getTime()>now).sort((a,b)=>new Date(a.date)-new Date(b.date));
+      const card=document.getElementById('nextEventCard');
+      if(upcoming.length===0){
+        document.querySelector('.next-event .when').textContent='No upcoming events listed';
+        return;
+      }
+      const next=upcoming[0];
+      document.querySelector('.next-event .when').textContent = humanDate(next.date);
+      document.getElementById('nextEventDesc').textContent = next.title + ' • ' + next.location;
+      document.getElementById('joinBtn').href = 'book.html?event=' + next.id;
+    }
+
+    // Seat map mock
+    const seatmapEl=document.getElementById('seatmap');
+    const rows=3, cols=8; // 24 seats
+    const soldSet = new Set([2,5,9,10,14,21]); // some sold
+    const selected = new Set();
+
+    function buildSeatMap(){
+      seatmapEl.innerHTML='';
+      let id=1;
+      for(let r=0;r<rows;r++){
+        for(let c=0;c<cols;c++){
+          const s=document.createElement('div');s.className='seat';s.dataset.id = id;
+          if(soldSet.has(id)){s.classList.add('sold');s.textContent='×';} else {s.textContent=id}
+          s.addEventListener('click',()=>{
+            if(s.classList.contains('sold')) return;
+            if(s.classList.contains('selected')){s.classList.remove('selected');selected.delete(id);} else {s.classList.add('selected');selected.add(id)}
+            document.getElementById('selectedCount').textContent = selected.size;
+          });
+          seatmapEl.appendChild(s);id++;
+        }
+      }
+    }
+
+    document.getElementById('reserveSeats').addEventListener('click',()=>{
+      if(selected.size===0){alert('Choose at least one seat.');return}
+      const seats=[...selected].join(', ');
+      const confirmText = `Reserve seats ${seats} for the next event?`;
+      if(confirm(confirmText)){
+        alert('Seats reserved (mock). Proceed to booking.');
+        location.href='book.html';
+      }
+    });
+
+    // Packing list generator
+    document.getElementById('genPacking').addEventListener('click',()=>{
+      const items=[];
+      if(document.getElementById('chkBlanket').checked) items.push('Blanket — cozy and warm');
+      if(document.getElementById('chkCushion').checked) items.push('Cushion or yoga bolster');
+      if(document.getElementById('chkMask').checked) items.push('Comfortable eye mask');
+      if(document.getElementById('chkWater').checked) items.push('Water bottle (hydration)');
+      if(document.getElementById('chkJournal').checked) items.push('Journal and pen for after-session notes');
+      if(selected.size>0) items.unshift(`Seats chosen: ${[...selected].join(', ')}`);
+      if(items.length===0) items.push('No items selected — bring yourself and a willingness to rest.');
+      document.getElementById('packingOut').textContent = items.join('\n- ');
+    });
+
+    // remind button (local) stores in localStorage
+    document.getElementById('remindBtn').addEventListener('click',()=>{
+      const next = events[0];
+      localStorage.setItem('remindEvent', JSON.stringify({id:next.id,title:next.title,date:next.date}));
+      alert('Reminder saved locally. You will see it next time you visit this page.');
+    });
+
+    // init
+    renderEvents();renderNextEvent();buildSeatMap();
+  </script>
+</body>
+</html>

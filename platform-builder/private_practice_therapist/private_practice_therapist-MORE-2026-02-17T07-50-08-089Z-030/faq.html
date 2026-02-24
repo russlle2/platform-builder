@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Q&A — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Common questions about how sessions work, payment, confidentiality, and what to expect in therapy in {{CITY}}.">
+  <style>
+    :root{--bg:#ffffff;--muted:#6b7280;--accent:#0f172a;--card:#fff;--radius:12px}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;color:#0f172a;background:linear-gradient(180deg,#fbfdff,#ffffff)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 26px}
+    nav a{margin-left:14px;color:#0f172a;text-decoration:none}
+    .wrap{max-width:900px;margin:12px auto;padding:18px}
+    h1{margin:6px 0;font-size:20px}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
+    .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 10px 30px rgba(2,6,23,0.04)}
+    .faq-list{display:flex;flex-direction:column;gap:12px}
+    .qa{padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#fbfdff)}
+    .q{font-weight:700}
+    .a{color:var(--muted);margin-top:6px}
+    /* small radial mood selector */
+    .radial{display:flex;flex-direction:column;gap:10px;align-items:center}
+    .radial .dot{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;color:white;font-weight:700;cursor:pointer}
+    .dot.small{width:48px;height:48px}
+    .hint{font-size:13px;color:var(--muted)}
+    footer{padding:18px;text-align:center;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Meet</a>
+      <a href="specialties.html">Focus Areas</a>
+      <a href="approach.html">How I Work</a>
+      <a href="fees.html">Investment</a>
+      <a href="faq.html" style="text-decoration:underline">Q&A</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section>
+      <h1>Frequently asked questions</h1>
+      <p style="color:var(--muted);margin-top:6px">Short, direct answers to practical questions. If I missed something, please get in touch at <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <strong>{{PHONE}}</strong>.</p>
+    </section>
+
+    <div class="grid" style="margin-top:12px">
+      <div>
+        <div class="card">
+          <div class="faq-list">
+            <div class="qa">
+              <div class="q">How do I know if therapy is right for me?</div>
+              <div class="a">Therapy can help when patterns, stress, or transitions make it hard to move forward. An initial conversation clarifies fit and expected work; there is no pressure to commit beyond that.</div>
+            </div>
+            <div class="qa">
+              <div class="q">How long are sessions and how often?</div>
+              <div class="a">Standard sessions are ~50 minutes. Frequency is collaborative — weekly, biweekly, or a short series depending on need.</div>
+            </div>
+            <div class="qa">
+              <div class="q">What about privacy and records?</div>
+              <div class="a">Clinical notes are kept according to professional standards. Communications by email/phone are used for scheduling and administrative details. Exceptions to confidentiality are limited by law (risk of harm, subpoena).</div>
+            </div>
+            <div class="qa">
+              <div class="q">Do you take insurance?</div>
+              <div class="a">I am currently a private-pay clinician. I can provide a superbill you may submit to your insurer; reimbursement depends on your plan.</div>
+            </div>
+            <div class="qa">
+              <div class="q">What if I need urgent help?</div>
+              <div class="a">This practice does not provide emergency services. If you are in immediate danger, please call local emergency services or your regional crisis line.</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px" class="card">
+          <h3 style="margin:0 0 8px 0">Short answers about meetings</h3>
+          <p style="color:var(--muted);margin:0">If you are booking a short series, we will agree on spacing and intended focus. For ongoing work, we revisit goals periodically. Cancellation policies are discussed at first contact.</p>
+        </div>
+      </div>
+
+      <aside>
+        <div class="card radial" aria-hidden="false">
+          <div style="font-weight:700">Mood quick-check</div>
+          <div class="hint">Select a color to see suggested starting format</div>
+          <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;justify-content:center">
+            <div class="dot" data-key="stability" style="background:linear-gradient(135deg,#06b6d4,#3b82f6)">S</div>
+            <div class="dot" data-key="choice" style="background:linear-gradient(135deg,#34d399,#60a5fa)">T</div>
+            <div class="dot" data-key="pattern" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">P</div>
+            <div class="dot small" data-key="grief" style="background:linear-gradient(135deg,#9ca3af,#6b7280)">G</div>
+          </div>
+
+          <div id="radialResult" style="margin-top:12px;text-align:center">
+            <div style="font-weight:700">Short series recommended</div>
+            <div style="color:var(--muted);font-size:13px;margin-top:6px">A compact, time-limited set of sessions works well if you want steady focus without committing to open-ended work yet.</div>
+            <a id="radialCta" class="cta" href="{{PRIMARY_CTA_URL}}" style="margin-top:10px;display:inline-block;padding:8px 12px;border-radius:8px;background:#0f172a;color:white;text-decoration:none">Reserve</a>
+          </div>
+        </div>
+
+        <div style="margin-top:12px" class="card">
+          <div style="font-weight:700">Practical details</div>
+          <div style="color:var(--muted);font-size:13px;margin-top:8px">First steps: a brief intake conversation, choose a format, schedule the first session. Payments via card; receipts available.</div>
+        </div>
+      </aside>
+    </div>
+
+    <section style="margin-top:12px" class="card">
+      <h3 style="margin:0 0 8px 0">Confidentiality and limits</h3>
+      <p style="color:var(--muted);margin:0">Our work is confidential within legal limits. If there is concern for safety, I will act to ensure protection and will discuss steps with you as appropriate. If you need immediate crisis support, use emergency services or local crisis resources.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div style="max-width:900px;margin:0 auto;padding:10px;color:var(--muted)">If you have questions beyond these, email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <strong>{{PHONE}}</strong>.</div>
+  </footer>
+
+  <script>
+    // radial mood selector updates suggestion and CTA label
+    (function(){
+      const dots = document.querySelectorAll('.dot');
+      const result = document.getElementById('radialResult');
+      const resultTitle = result.querySelector('div');
+      const resultDesc = result.querySelector('div + div');
+      const cta = document.getElementById('radialCta');
+      const suggestions = {
+        stability: {title: 'Short check-ins', desc: 'A few meetings focused on stabilization and practical strategies.', cta: 'Book stabilizing sessions'},
+        choice: {title: 'Transition series', desc: 'Sessions that give space for decision-making and practical next steps.', cta: 'Book transition support'},
+        pattern: {title: 'Pattern work', desc: 'A sequence aimed at identifying repeating reactions and testing small shifts.', cta: 'Reserve pattern sessions'},
+        grief: {title: 'Supportive sessions', desc: 'Paced companionate work to hold experiences of loss and change.', cta: 'Book supportive sessions'}
+      };
+
+      dots.forEach(d => d.addEventListener('click', ()=>{
+        const key = d.getAttribute('data-key');
+        const s = suggestions[key];
+        resultTitle.textContent = s.title;
+        resultDesc.textContent = s.desc;
+        cta.textContent = s.cta;
+      }));
+
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Journeys — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f6fbfb;--card:#fff;--muted:#5b6b68;--accent:#7bb68b;font-family:Inter,system-ui,Roboto,Arial}
+    body{margin:0;background:var(--bg);color:#081}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;background:linear-gradient(180deg,rgba(255,255,255,0.6),rgba(255,255,255,0.3));}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;border-radius:8px;background-image:url('assets/img/pattern.svg');background-size:56px}
+    nav a{margin-left:16px;color:#163;text-decoration:none;font-weight:600}
+    .container{max-width:1100px;margin:22px auto;padding:0 20px}
+    .grid{display:grid;grid-template-columns:2fr 360px;gap:20px}
+    .cards{display:flex;flex-direction:column;gap:14px}
+    .card{background:var(--card);padding:14px;border-radius:12px;box-shadow:0 10px 20px rgba(12,14,12,0.05)}
+    .tag{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(123,182,139,0.12);font-weight:700;color:var(--accent)}
+
+    /* unique program names and pricing framing */
+    .program-price{font-size:18px;font-weight:800;color:#102;margin-top:8px}
+    .program-list{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+
+    /* progress mini on this page */
+    .mini-progress{display:flex;gap:10px;align-items:center;margin-top:12px}
+    .meter{width:120px;height:120px;border-radius:999px;background:conic-gradient(var(--accent) var(--pct), #e9f2ee 0);display:flex;align-items:center;justify-content:center;font-weight:800}
+
+    /* Proof gallery repeated with badges + rotate */
+    .proof{margin-top:14px}
+    .rot{display:flex;gap:10px;align-items:center}
+    .rot .quote{flex:1;padding:10px;border-radius:8px;background:#fff}
+    .cred{display:flex;gap:8px}
+    .cred .badge{background:#fff;padding:8px;border-radius:8px;border:1px solid rgba(0,0,0,0.04)}
+
+    @media(max-width:920px){.grid{grid-template-columns:1fr}.container{padding:0 14px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo" aria-hidden="true"></div>
+      <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+    </div>
+    <nav>
+      <a href="index.html">Start</a>
+      <a href="about.html">Who</a>
+      <a href="services.html">Services</a>
+      <a href="programs.html">Journeys</a>
+      <a href="pricing.html">Costs</a>
+      <a href="testimonials.html">Proof</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="grid">
+      <main>
+        <h1>Structured paths, named for the outcome</h1>
+        <p style="color:var(--muted)">Programs described by what they help you do, not by duration alone. Each journey includes clear checkpoints and a habit list to practice daily.</p>
+
+        <div class="cards">
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div class="tag">Clarity Track</div>
+                <h3 style="margin:8px 0 0">Sharpen a daily focus window</h3>
+              </div>
+              <div class="program-price">$220 — program pack</div>
+            </div>
+            <div class="program-list">
+              <div style="color:var(--muted)">Week 1: Tiny focus anchors • Week 2: Ritualized start • Checkpoint: sustained 90-minute focus block</div>
+            </div>
+            <a class="cta" href="book.html" style="display:inline-block;margin-top:10px;padding:10px 12px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none">Begin clarity</a>
+          </div>
+
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div class="tag">Rhythm Course</div>
+                <h3 style="margin:8px 0 0">Establish a practical daily rhythm</h3>
+              </div>
+              <div class="program-price">Custom pricing</div>
+            </div>
+            <p style="color:var(--muted);margin-top:8px">Includes weekly check-ins, micro-tasks, and a simple calendar redesign you can keep.</p>
+            <a class="cta" href="contact.html" style="display:inline-block;margin-top:10px;padding:10px 12px;background:#4a90e2;color:#fff;border-radius:8px;text-decoration:none">Ask about rhythm</a>
+          </div>
+
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div class="tag">Reset Sprint</div>
+                <h3 style="margin:8px 0 0">Tackle one stubborn habit</h3>
+              </div>
+              <div class="program-price">$420 — focused sprint</div>
+            </div>
+            <p style="color:var(--muted);margin-top:8px">Two weeks of check-ins and micro-accountability designed to shift a single pattern without overwhelming your week.</p>
+            <a class="cta" href="book.html" style="display:inline-block;margin-top:10px;padding:10px 12px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none">Join a sprint</a>
+          </div>
+        </div>
+
+      </main>
+
+      <aside>
+        <div class="card">
+          <strong>Where you are today</strong>
+          <div style="color:var(--muted);margin-top:8px">Choose a target below and see a simple readiness meter for the next 30 days.</div>
+
+          <div style="margin-top:12px">
+            <select id="target" style="width:100%;padding:10px;border-radius:8px">
+              <option value="focus">Improve focus windows</option>
+              <option value="sleep">Stabilize sleep rhythm</option>
+              <option value="movement">Consistent movement</option>
+            </select>
+
+            <div class="mini-progress">
+              <div id="meter" class="meter" style="--pct: 0%">0%</div>
+              <div style="flex:1">
+                <div id="readout" style="font-weight:700">Ready check</div>
+                <div style="color:var(--muted);font-size:13px;margin-top:6px" id="suggest">Pick a target to get a short plan.</div>
+              </div>
+            </div>
+
+            <a class="cta" href="{{PRIMARY_CTA_URL}}" style="display:inline-block;margin-top:12px">{{PRIMARY_CTA_LABEL}}</a>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <strong>Proof Gallery</strong>
+          <div class="proof">
+            <div class="rot">
+              <div class="quote" id="prog-quote">“A short sprint produced clear habits I could keep.” — A.</div>
+              <div class="cred">
+                <div class="badge" data-tip="Applied in workplace briefings">Workshop badge</div>
+                <div class="badge" data-tip="Community referral program">Community pick</div>
+              </div>
+            </div>
+
+            <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+              <button id="q-prev">‹</button>
+              <button id="q-next">›</button>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    // Mini readiness meter: maps choices to a quick % and suggested plan
+    const meter = document.getElementById('meter');
+    const readout = document.getElementById('readout');
+    const suggest = document.getElementById('suggest');
+    const target = document.getElementById('target');
+
+    function updateMeter(){
+      const t = target.value;
+      // naive heuristic: look for local factors in storage (simulated)
+      const known = JSON.parse(localStorage.getItem('wc_status')||'{}');
+      let score = 50; // baseline
+      if(known[t]) score = Math.min(90, Math.max(30, known[t]));
+      // pick color and message
+      let pct = score + '%';
+      meter.style.setProperty('--pct', pct);
+      meter.textContent = pct;
+      if(score>75){ readout.textContent = 'High readiness'; suggest.textContent = 'You can begin with a focused two-week practice.'; }
+      else if(score>50){ readout.textContent = 'Good readiness'; suggest.textContent = 'Start with a one-week trial and three micro-tasks.'; }
+      else{ readout.textContent = 'Low readiness'; suggest.textContent = 'Begin with tiny daily experiments to build momentum.'; }
+    }
+
+    // Simulate stored status for demo
+    if(!localStorage.getItem('wc_status')){
+      localStorage.setItem('wc_status', JSON.stringify({focus:68,sleep:42,movement:55}));
+    }
+    target.addEventListener('change', updateMeter);
+    updateMeter();
+
+    // Rotating program quotes
+    const quotes = [
+      '“The Clarity Track gave me a usable focus block.” — R.',
+      '“Reset Sprint moved one habit without collapsing my schedule.” — J.',
+      '“Team templates brought a shared language to our week.” — L.'
+    ];
+    let qidx = 0;
+    const qEl = document.getElementById('prog-quote');
+    function showQuote(i){ qEl.textContent = quotes[i]; }
+    document.getElementById('q-prev').addEventListener('click',()=>{ qidx=(qidx-1+quotes.length)%quotes.length; showQuote(qidx); });
+    document.getElementById('q-next').addEventListener('click',()=>{ qidx=(qidx+1)%quotes.length; showQuote(qidx); });
+    setInterval(()=>{ qidx=(qidx+1)%quotes.length; showQuote(qidx); },4000);
+  </script>
+</body>
+</html>

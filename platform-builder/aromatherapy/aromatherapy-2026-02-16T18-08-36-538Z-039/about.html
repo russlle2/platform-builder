@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>About — {{BUSINESS_NAME}}</title>
+  <meta name='description' content='Learn about our practitioner, our approach to aromatherapy, and safety-first principles.'>
+  <style>
+    :root{--bg:#ffffff;--muted:#5f6a64;--accent:#7ba18a;--alt:#cfeee0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto}
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,#fcfffc 0%,#ffffff 40%);color:#15221f}
+    .wrap{max-width:1000px;margin:28px auto;padding:22px}
+    header{display:flex;justify-content:space-between;align-items:center;padding:10px 0}
+    .nav{display:flex;gap:12px}
+    .nav a{text-decoration:none;color:var(--muted);padding:8px;border-radius:8px}
+    .nav a[href$='about.html']{background:rgba(123,161,138,0.12);color:var(--accent);font-weight:700}
+    .hero{display:flex;gap:18px;align-items:center}
+    .portrait{width:120px;height:120px;border-radius:14px;background:linear-gradient(180deg,#f6f9f6,#eef6ef);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--accent)}
+    h1{margin:0;font-size:26px}
+    .lead{color:var(--muted);margin-top:6px}
+    section{margin-top:20px}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
+    .card{background:white;border-radius:12px;padding:16px;box-shadow:0 8px 24px rgba(38,50,44,0.04)}
+    .pillars{display:flex;flex-direction:column;gap:10px}
+    .pill{padding:10px;border-radius:10px;background:linear-gradient(90deg,#fbfff9,var(--alt));border-left:4px solid var(--accent)}
+    .case-note{font-style:italic;color:var(--muted);padding-left:10px}
+    .faq dt{font-weight:700;margin-top:12px}
+    .cta{margin-top:18px;display:flex;gap:10px}
+    .btn{padding:10px 14px;border-radius:10px;border:none;cursor:pointer}
+    .btn-primary{background:var(--accent);color:white}
+
+    svg#pattern{position:fixed;left:-6%;bottom:-8%;width:48vw;height:48vh;opacity:0.08;pointer-events:none}
+    @media (max-width:880px){.grid{grid-template-columns:1fr}.portrait{width:96px;height:96px}}
+  </style>
+</head>
+<body>
+  <svg id='pattern' viewBox='0 0 600 600' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'>
+    <defs>
+      <radialGradient id='rg' cx='30%' cy='30%'>
+        <stop offset='0' stop-color='#eaf7f0'/>
+        <stop offset='1' stop-color='#ffffff'/>
+      </radialGradient>
+    </defs>
+    <rect width='100%' height='100%' fill='url(#rg)' rx='80'/>
+    <g fill='none' stroke='#e6f2ea' stroke-width='3' opacity='0.9'>
+      <path d='M50 500 C150 300 450 400 550 200'/>
+      <path d='M0 320 C120 200 420 300 600 160'/>
+    </g>
+  </svg>
+
+  <div class='wrap'>
+    <header>
+      <div style='display:flex;gap:12px;align-items:center'>
+        <div style='font-weight:800'>{{BUSINESS_NAME}}</div>
+        <div style='color:var(--muted);font-size:13px'>{{TAGLINE}}</div>
+      </div>
+      <nav class='nav'>
+        <a href='index.html'>Welcome</a>
+        <a href='services.html'>Programs</a>
+        <a href='blends.html'>Our Blends</a>
+        <a href='about.html'>About</a>
+        <a href='book.html'>Book</a>
+      </nav>
+    </header>
+
+    <div class='hero'>
+      <div class='portrait'>{{PRACTITIONER_NAME}}</div>
+      <div>
+        <h1>Practical aromatherapy, designed around safety and clarity</h1>
+        <div class='lead'>I combine plant oil knowledge with stepwise guidance so you can use scent safely at home. My approach centers on education, gentle testing, and documented aftercare.</div>
+      </div>
+    </div>
+
+    <div class='grid'>
+      <main>
+        <section class='card'>
+          <h3>Why a safety-first practice matters</h3>
+          <p style='color:var(--muted)'>Essential oils are potent. My role is to help you understand concentration, interactions, and when to consult your primary care provider. I provide clear dilution charts and patch-test protocols with every plan.</p>
+        </section>
+
+        <section class='card' style='margin-top:12px'>
+          <h3>Misconceptions — quick clarifications</h3>
+          <div style='display:grid;gap:8px'>
+            <div style='background:#fbfff9;padding:10px;border-radius:8px'>
+              <strong>Myth:</strong> More oil = better results.
+              <div style='color:var(--muted)'>Truth: Use the minimum effective dose. Higher concentrations increase risk of irritation.</div>
+            </div>
+            <div style='background:#fbfff9;padding:10px;border-radius:8px'>
+              <strong>Myth:</strong> Natural always means safe.
+              <div style='color:var(--muted)'>Truth: Natural extracts can be sensitizing. Context, dose, and individual history matter.</div>
+            </div>
+          </div>
+        </section>
+
+        <section class='card' style='margin-top:12px'>
+          <h3>PRACTICE PILLARS</h3>
+          <div class='pillars'>
+            <div class='pill'><strong>Education</strong> — Clear instructions and rationale for every blend.</div>
+            <div class='pill'><strong>Testing</strong> — Patch testing and stepped exposures to reduce risk.</div>
+            <div class='pill'><strong>Context</strong> — Consideration of medications, pregnancy, and pets.</div>
+            <div class='pill'><strong>Documentation</strong> — Written recipes and dilution notes with each session.</div>
+          </div>
+        </section>
+
+        <section class='card' style='margin-top:12px'>
+          <h3>Anonymized case notes</h3>
+          <div class='case-note'>"Client A reported reduced nighttime restlessness after a low-concentration bedtime roll-on and structured patch-testing plan."</div>
+          <div class='case-note' style='margin-top:8px'>"Client B preferred inhalation supports; we co-developed a near-field inhaler and stepwise exposure log."</div>
+          <div style='color:var(--muted);font-size:13px;margin-top:8px'>Notes are educational and not medical advice.</div>
+        </section>
+      </main>
+
+      <aside>
+        <div class='card'>
+          <h4>Quick facts</h4>
+          <ul style='color:var(--muted)'>
+            <li>In-person: {{CITY}}, {{STATE}}</li>
+            <li>Hybrid consults available</li>
+            <li>Safe supply lists provided</li>
+          </ul>
+        </div>
+
+        <div class='card' style='margin-top:12px'>
+          <h4>FAQs</h4>
+          <dl class='faq' style='color:var(--muted)'>
+            <dt>How do you handle dilution?</dt>
+            <dd>I give precise dilution percentages and step-by-step mixing instructions based on age, exposure route, and sensitivity.</dd>
+            <dt>What about pets?</dt>
+            <dd>We review safe use around animals and avoid nebulizing in shared spaces without consulting a vet.</dd>
+          </dl>
+        </div>
+
+        <div class='card' style='margin-top:12px'>
+          <h4>Connect</h4>
+          <div style='color:var(--muted)'>Email: <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a></div>
+          <div style='margin-top:8px'><button class='btn btn-primary' onclick='location.href="book.html"'>Schedule with {{PRACTITIONER_NAME}}</button></div>
+        </div>
+      </aside>
+    </div>
+
+    <section style='margin-top:18px;display:flex;gap:12px;align-items:center'>
+      <div style='flex:1' class='card'>
+        <h4 style='margin:0 0 8px 0'>Want a plain-language introduction?</h4>
+        <p style='margin:0;color:var(--muted)'>I offer a concise 30-minute orientation to safe home blending that covers dilution, patch testing, and basic storage.</p>
+      </div>
+      <div>
+        <button class='btn btn-primary' onclick='location.href="book.html"'>Book orientation</button>
+      </div>
+    </section>
+
+    <footer style='margin-top:24px;color:var(--muted);font-size:13px'>
+      {{BUSINESS_NAME}} — practicing with a focus on safety, clarity, and usable guidance. Phone: {{PHONE}} • {{CITY}}, {{STATE}}
+    </footer>
+  </div>
+</body>
+</html>

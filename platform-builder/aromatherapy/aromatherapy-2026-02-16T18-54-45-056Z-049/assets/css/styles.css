@@ -1,0 +1,71 @@
+/* Glass morphism aromatherapy theme - no external fonts */
+:root{
+  --bg:#0f1724;
+  --glass-bg:rgba(255,255,255,0.06);
+  --glass-border:rgba(255,255,255,0.08);
+  --accent:#9be7c4;
+  --accent-2:#7cc7ff;
+  --muted:rgba(255,255,255,0.75);
+  --card:#0b1220;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body.theme{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:linear-gradient(180deg,var(--bg),#07111a); color:#e6f1ee; margin:0; -webkit-font-smoothing:antialiased}
+.container{max-width:1100px;margin:0 auto;padding:24px}
+.site-header{backdrop-filter:blur(6px);position:sticky;top:0;z-index:40}
+.nav-wrap{display:flex;align-items:center;justify-content:space-between;padding:12px 0}
+.brand{font-weight:700;color:var(--accent);text-decoration:none;font-size:1.05rem}
+.main-nav{display:flex;gap:16px}
+.main-nav a{color:var(--muted);text-decoration:none;font-size:0.95rem}
+.cta-row{display:flex;gap:12px;align-items:center}
+.hamburger{display:none;background:transparent;border:0;color:var(--muted);font-size:1.2rem}
+.btn{display:inline-block;padding:10px 14px;border-radius:10px;border:1px solid transparent;text-decoration:none;color:inherit;cursor:pointer}
+.btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#052028;border:1px solid rgba(255,255,255,0.06);font-weight:600}
+.btn.ghost{background:transparent;border:1px solid var(--glass-border);color:var(--muted)}
+.lead{color:rgba(230,241,238,0.9);margin-top:8px}
+.hero{position:relative;padding:56px 0 80px;overflow:hidden}
+.hero-pattern{position:absolute;inset:0;width:100%;height:100%;opacity:0.08;pointer-events:none}
+.hero-inner{display:flex;gap:28px;align-items:stretch;padding:28px;border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid var(--glass-border);box-shadow:0 6px 30px rgba(2,6,23,0.6)}
+.glass{background:var(--glass-bg);border:1px solid var(--glass-border);backdrop-filter:blur(8px);padding:20px;border-radius:14px}
+.hero-copy{flex:1}
+.hero-copy h1{font-size:2rem;margin:6px 0 12px;color:#ffffff}
+.hero-actions{display:flex;gap:12px;margin-top:14px}
+.hero-card{width:340px}
+.card-top h3{margin:0 0 6px}
+.diag-form label{display:block;margin:8px 0;color:var(--muted);font-size:0.95rem}
+.diag-actions{display:flex;gap:8px;margin-top:12px}
+.diag-result{margin-top:12px;padding:10px;border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);color:#cfeee6}
+.ripple{position:absolute;inset:0;pointer-events:none}
+
+.section{padding:56px 0}
+.plan-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
+.plan-card{padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid var(--glass-border)}
+.plan-cta{margin-top:18px}
+.micro-habits .habits{margin-top:18px;list-style:none;padding:0;display:grid;gap:12px}
+.safety-note{margin-top:12px;color:#c9e8d9}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}
+.price-card{padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.015),transparent);border:1px solid var(--glass-border);text-align:center}
+.price-card.featured{transform:scale(1.03);box-shadow:0 10px 30px rgba(7,17,24,0.6)}
+.price{font-size:1.6rem;margin:8px 0;color:var(--accent)}
+.cta-bar{padding:32px 0}
+.cta-bar .compact{display:flex;align-items:center;justify-content:space-between;gap:18px}
+.footer-grid{display:grid;grid-template-columns:1fr auto auto;gap:18px;padding:28px 24px}
+.site-legal{padding:10px 24px;border-top:1px solid rgba(255,255,255,0.03)}
+.muted{color:var(--muted)}
+.small{font-size:0.85rem}
+
+/* Responsive */
+@media (max-width:900px){
+  .hero-inner{flex-direction:column}
+  .plan-grid,.pricing-grid{grid-template-columns:1fr}
+  .main-nav{display:none}
+  .hamburger{display:block}
+  .footer-grid{grid-template-columns:1fr}
+}
+
+/* Ripple effect helper */
+.ripple .drop{position:absolute;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;mix-blend-mode:screen;opacity:0.35}
+
+/* Accessibility */
+.btn:focus{outline:2px solid rgba(155,231,196,0.25);outline-offset:2px}
+.diag-result:focus{outline:2px dashed rgba(255,255,255,0.06);}

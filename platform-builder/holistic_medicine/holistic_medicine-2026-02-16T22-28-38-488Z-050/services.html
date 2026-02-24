@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{{BUSINESS_NAME}} — Services</title>
+  <style>
+    :root{
+      --bg1:#0f1724;--bg2:#06202a;--accent1:#7be495;--accent2:#a78bfa;--glass:rgba(255,255,255,0.06);
+      --card:rgba(255,255,255,0.04);--muted:rgba(255,255,255,0.6);
+      --radius:16px;--padding:24px;
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg1),var(--bg2));color:#e6f7ef}
+    .wrap{max-width:1100px;margin:48px auto;padding:24px}
+    header{display:flex;gap:18px;align-items:center;justify-content:space-between}
+    .logo{display:flex;gap:12px;align-items:center}
+    .logo-badge{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent1),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:700;color:#012;box-shadow:0 8px 30px rgba(0,0,0,0.5)}
+    nav a{color:#e2fff0;text-decoration:none;margin:0 10px;font-weight:600;opacity:0.95}
+    nav a:hover{text-decoration:underline}
+    /* hero */
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:24px;margin-top:28px}
+    .hero-card{background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.02));padding:28px;border-radius:var(--radius);backdrop-filter:blur(6px);box-shadow:0 10px 30px rgba(5,10,15,0.6)}
+    h1{margin:0;font-size:30px;letter-spacing:-0.02em}
+    .eyebrow{color:var(--accent1);font-weight:700;font-size:13px}
+    p.lead{color:var(--muted);margin-top:12px;line-height:1.5}
+    .cta{display:inline-block;margin-top:18px;padding:12px 16px;border-radius:12px;background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#022; font-weight:800;text-decoration:none}
+    /* services grid */
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:18px}
+    .service{background:var(--card);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .service h3{margin:0 0 8px 0}
+    .price{color:var(--accent2);font-weight:700}
+    .addons{margin-top:12px;padding-top:12px;border-top:1px dashed rgba(255,255,255,0.04)}
+    .pill{display:inline-block;margin:6px 6px 0 0;padding:8px 10px;border-radius:999px;background:rgba(255,255,255,0.02);font-size:13px}
+    footer{margin-top:36px;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+    /* testimonial strip */
+    .testimonials{margin-top:28px;display:flex;gap:12px;overflow:auto}
+    .t{min-width:240px;background:rgba(255,255,255,0.02);padding:14px;border-radius:12px}
+    /* subtle SVG spotlight */
+    .pattern{position:fixed;right:-200px;top:-120px;opacity:0.16;pointer-events:none;transform:rotate(18deg)}
+    small.disclaimer{display:block;color:#9dd6b5;margin-top:8px;font-size:13px}
+  </style>
+</head>
+<body>
+  <!-- Unique decorative SVG pattern (assets/img/pattern.svg conceptual) -->
+  <svg class="pattern" width="680" height="680" viewBox="0 0 680 680" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#7be495" stop-opacity="0.95"/>
+        <stop offset="1" stop-color="#a78bfa" stop-opacity="0.95"/>
+      </linearGradient>
+      <pattern id="p1" width="40" height="40" patternUnits="userSpaceOnUse">
+        <rect width="20" height="20" fill="rgba(255,255,255,0.02)"/>
+      </pattern>
+    </defs>
+    <circle cx="340" cy="340" r="320" fill="url(#g1)" filter="url(#f0)" opacity="0.18"/>
+    <rect x="0" y="0" width="680" height="680" fill="url(#p1)" opacity="0.06"/>
+    <g fill="rgba(255,255,255,0.06)">
+      <path d="M120 60c50 30 140 0 200 40s120 120 60 220-170 120-240 60S40 190 120 60z"/>
+    </g>
+  </svg>
+
+  <div class="wrap">
+    <header>
+      <div class="logo">
+        <div class="logo-badge">HM</div>
+        <div>
+          <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav aria-label="Main">
+        <a href="index.html">Home</a>
+        <a href="services.html">Offerings</a>
+        <a href="conditions.html">What We Treat</a>
+        <a href="approach.html">How We Work</a>
+        <a href="book.html">Book</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="hero-card">
+        <div class="eyebrow">Services &amp; Add‑Ons</div>
+        <h1>Practical, whole-person care — therapies, education, and curated supplements</h1>
+        <p class="lead">We blend evidence-informed modalities and lifestyle coaching to support balanced health. Choose clinical visits, therapeutic packages, or retail add-ons to support your plan. Nothing here guarantees a cure — education and partnership are our promise.</p>
+        <a class="cta" href="book.html">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+
+      <aside style="align-self:start">
+        <div class="hero-card" style="padding:18px">
+          <strong>Quick info</strong>
+          <p style="margin:8px 0;color:var(--muted)">Sessions by appointment in {{CITY}}, {{STATE}} — telehealth available. Phone: {{PHONE}}</p>
+          <a href="contact.html" style="color:var(--accent1);text-decoration:underline">Contact &amp; hours</a>
+        </div>
+      </aside>
+    </section>
+
+    <section class="grid" aria-labelledby="services-heading">
+      <h2 id="services-heading" style="grid-column:1 / -1;font-size:18px;margin-top:12px">Core Services</h2>
+      <div class="service">
+        <h3>Comprehensive Intake &amp; Plan</h3>
+        <div class="price">60–90 min consult — $185</div>
+        <p style="color:var(--muted)">An initial, whole-person evaluation covering history, lifestyle, and goal-setting. Includes personalized plan and educational resources.</p>
+      </div>
+      <div class="service">
+        <h3>Follow-up &amp; Coaching</h3>
+        <div class="price">30–45 min — $95</div>
+        <p style="color:var(--muted)">Shorter visits to review progress, refine goals, and adjust non-pharmacologic strategies. Ideal for ongoing support.</p>
+      </div>
+
+      <div class="service">
+        <h3>Therapeutic Visits (Hands-on / Modalities)</h3>
+        <div class="price">45–60 min — $120</div>
+        <p style="color:var(--muted)">Integrative modalities may be used where appropriate — e.g., gentle manual therapies, guided breathwork, or movement coaching.</p>
+      </div>
+      <div class="service">
+        <h3>Telehealth Education Session</h3>
+        <div class="price">30 min — $75</div>
+        <p style="color:var(--muted)">Focused education on sleep hygiene, stress tools, or digestive self-care. Practical takeaways and worksheets provided.</p>
+      </div>
+
+      <div class="service" style="grid-column:1 / -1">
+        <h3>Add‑On Retail &amp; Kits (optional)</h3>
+        <p class="lead" style="color:var(--muted)">Carefully selected supplements, herbal kits, and at-home tools are available as adjuncts. These are optional purchases and not required for treatment.</p>
+        <div class="addons">
+          <span class="pill">Herbal Starter Kit</span>
+          <span class="pill">Digestive Support Bundle</span>
+          <span class="pill">Sleep Ritual Kit</span>
+          <span class="pill">At‑home Breathwork Guide</span>
+        </div>
+        <small class="disclaimer">Retail items are educational and supportive. They are not guaranteed cures and are offered as part of a broader plan when appropriate.</small>
+      </div>
+    </section>
+
+    <section class="testimonials">
+      <div class="t">
+        <strong>"Grounding and practical"</strong>
+        <p style="color:var(--muted);margin:6px 0">The plan felt realistic — small steps that actually changed my sleep. — J.</p>
+      </div>
+      <div class="t">
+        <strong>"Support with clarity"</strong>
+        <p style="color:var(--muted);margin:6px 0">Helpful education on digestion and stress management. — A.</p>
+      </div>
+      <div class="t">
+        <strong>"Helpful add-ons"</strong>
+        <p style="color:var(--muted);margin:6px 0">The herbal starter kit complemented my plan well. — R.</p>
+      </div>
+    </section>
+
+    <footer>
+      <div>Phone: <a href="tel:{{PHONE}}" style="color:var(--accent1);text-decoration:none">{{PHONE}}</a> &middot; Email: <a href="mailto:{{EMAIL}}" style="color:var(--accent1);text-decoration:none">{{EMAIL}}</a></div>
+      <div>&copy; <strong>{{BUSINESS_NAME}}</strong></div>
+    </footer>
+  </div>
+</body>
+</html>

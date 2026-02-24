@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FAQs — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7fbff;--card:#ffffff;--muted:#6b7280;--accent:#4f5bff}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:#07103a}
+    .wrap{max-width:920px;margin:32px auto;padding:22px}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+    nav a{margin-left:12px;color:#07103a;text-decoration:none;font-weight:600}
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,255,255,0.7));border-radius:12px;padding:18px;border:1px solid rgba(10,14,30,0.06)}
+    .faq-list{margin-top:12px}
+    .qa{border-top:1px dashed rgba(10,14,30,0.06);padding:12px 0}
+    .qa button{background:none;border:none;padding:0;font-size:15px;font-weight:700;cursor:pointer;color:#07103a}
+    .answer{margin-top:8px;color:var(--muted);font-size:14px}
+    .confidentiality{margin-top:16px;padding:12px;background:rgba(79,91,255,0.06);border-radius:10px}
+    .crisis{margin-top:10px;padding:12px;border-radius:8px;background:#fff2;border-left:4px solid #ff7043;color:#4b2b00}
+    .proof{margin-top:18px;display:flex;gap:12px;align-items:flex-start}
+    .testimonials{flex:1}
+    .badges{display:flex;gap:10px}
+    .badge{padding:8px;border-radius:8px;background:#fff;border:1px solid rgba(10,14,30,0.06)}
+    footer{margin-top:18px;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <strong>{{BUSINESS_NAME}}</strong>
+        <div style="font-size:13px;color:var(--muted)">Clinical practice — {{CITY}}, {{STATE}}</div>
+      </div>
+      <nav>
+        <a href="index.html">Start</a>
+        <a href="about.html">Practice</a>
+        <a href="specialties.html">Focus Areas</a>
+        <a href="approach.html">Method</a>
+        <a href="fees.html">Fees</a>
+        <a href="faq.html">FAQs</a>
+        <a href="book.html">Schedule</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </header>
+
+    <section class="panel">
+      <h2 style="margin:0 0 6px">Common questions</h2>
+      <p style="margin:0 0 12px;color:var(--muted)">Short answers to typical practical questions. If you need personalized clarification, use the Schedule page to request a consult.</p>
+
+      <div class="faq-list" id="faqs">
+        <div class="qa">
+          <button aria-expanded="false" aria-controls="a1" onclick="toggle(this,'a1')">What happens in a typical session?</button>
+          <div id="a1" class="answer" hidden>We use a focused clinical conversation to identify priorities, reflect on patterns, and build small experiments or plans you can use between meetings. Sessions are practical and collaborative; they’re shaped by what you bring.</div>
+        </div>
+
+        <div class="qa">
+          <button aria-expanded="false" aria-controls="a2" onclick="toggle(this,'a2')">Do you accept insurance?</button>
+          <div id="a2" class="answer" hidden>At present, services are offered privately. We can provide a superbill on request; reimbursement depends on your insurer and is not guaranteed.</div>
+        </div>
+
+        <div class="qa">
+          <button aria-expanded="false" aria-controls="a3" onclick="toggle(this,'a3')">How do I cancel or reschedule?</button>
+          <div id="a3" class="answer" hidden>Appointments canceled with at least 48 hours notice are typically rescheduled without fee. Late cancellations or missed sessions may incur the full session fee; details are reviewed during booking.</div>
+        </div>
+
+        <div class="qa">
+          <button aria-expanded="false" aria-controls="boundaries" onclick="toggle(this,'boundaries')">Session boundaries & confidentiality</button>
+          <div id="boundaries" class="answer" hidden>
+            <div class="confidentiality">
+              <strong>Confidentiality</strong>
+              <p style="margin:6px 0;color:var(--muted)">Conversations within therapy are private and shared only with your consent, except when legal or safety limits apply (for example, imminent risk of harm, suspected abuse of a vulnerable person, or court-ordered disclosure). Please ask for clarification about specific scenarios — I’ll explain scope and limits during intake.</p>
+
+              <strong>Session boundaries</strong>
+              <p style="margin:6px 0;color:var(--muted)">Standard sessions are 50 minutes. The VIP Focus Day is an extended format with pre-brief and post-session summary. Emergency outreach outside scheduled sessions may be limited; phone contacts are for scheduling and urgent administrative needs only.</p>
+            </div>
+
+            <div class="crisis" role="note">
+              <strong>If you or someone is in immediate danger:</strong>
+              <p style="margin:6px 0;color:inherit">Call your local emergency number right away or go to the nearest emergency department. If you are within the United States, you may dial 988 for mental health crisis support. If you are elsewhere, use your local emergency resources. This practice is not an emergency service.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="qa">
+          <button aria-expanded="false" aria-controls="a5" onclick="toggle(this,'a5')">What modalities do you use?</button>
+          <div id="a5" class="answer" hidden>I draw from evidence-informed approaches tailored to your needs, including relational and skills-focused work. We collaborate to choose strategies that fit your goals and life context.</div>
+        </div>
+      </div>
+
+      <div class="proof">
+        <div class="testimonials">
+          <strong style="display:block">Proof Gallery</strong>
+          <div id="faq-quote" style="margin-top:8px;font-size:15px;color:#07103a">"Thoughtful guidance that respected my pace and priorities."</div>
+          <div id="faq-author" style="margin-top:6px;color:var(--muted)">— recent client</div>
+        </div>
+
+        <div class="badges" aria-hidden="false">
+          <div class="badge" title="Licensed clinician">LIC</div>
+          <div class="badge" title="Telehealth and in-person">TELE</div>
+          <div class="badge" title="Work with adults and young adults">ADULT</div>
+        </div>
+      </div>
+
+    </section>
+
+    <footer>
+      <p style="margin-top:12px;color:var(--muted)">For questions not listed here, contact <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a>. Please note: messages received via email are responded to within business hours; use emergency services for urgent safety needs.</p>
+    </footer>
+  </div>
+
+  <script>
+    function toggle(btn,id){
+      const el=document.getElementById(id);
+      const open=!el.hidden;
+      el.hidden = open;
+      btn.setAttribute('aria-expanded', String(!open));
+    }
+
+    // Rotate short testimonial on this page as well
+    (function(){
+      const arr=[
+        ['"Clear, practical steps I could apply quickly."','— participant'],
+        ['"Respectful, steady clinical perspective."','— client']
+      ];
+      let i=0;
+      const q=document.getElementById('faq-quote');
+      const a=document.getElementById('faq-author');
+      setInterval(()=>{
+        i=(i+1)%arr.length;
+        q.style.opacity=0;a.style.opacity=0;
+        setTimeout(()=>{q.textContent=arr[i][0];a.textContent=arr[i][1];q.style.opacity=1;a.style.opacity=1;},180);
+      },5200);
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Ways We Help — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Cohort-based programs and guided sessions for integrative wellbeing in {{CITY}}, {{STATE}}.">
+  <style>
+    :root{--bg:#fbf9f6;--card:#ffffff;--muted:#6b6b6b;--accent:#6f4e9b;--accent-2:#f08a5d;--glass:rgba(255,255,255,0.6);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#fff 60%);color:#222}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:linear-gradient(90deg,rgba(111,78,155,0.06),rgba(240,138,93,0.04));backdrop-filter:blur(4px)}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none;font-weight:600}
+    nav a.primary{background:var(--accent);color:#fff;padding:8px 12px;border-radius:8px}
+    main{padding:28px}
+    .hero{display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:center;margin:20px 0}
+    .hero .lead{background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,255,255,0.75));padding:28px;border-radius:14px;box-shadow:0 6px 24px rgba(85,63,106,0.08)}
+    h1{margin:0 0 10px;font-size:28px;color:var(--accent)}
+    p.lead{margin:0;color:#333}
+    .aside{background:url('assets/img/pattern.svg'),linear-gradient(90deg,var(--accent-2),var(--accent));border-radius:12px;color:white;padding:20px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:18px}
+    .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 20px rgba(20,20,20,0.04)}
+    .muted{color:var(--muted);font-size:14px}
+    .cta-row{display:flex;gap:12px;margin-top:14px}
+    button, .btn{cursor:pointer;border:0;padding:10px 14px;border-radius:10px;font-weight:700}
+    .btn-ghost{background:transparent;border:2px solid var(--accent);color:var(--accent)}
+    .btn-primary{background:var(--accent);color:#fff}
+    footer{padding:20px;text-align:center;color:var(--muted);font-size:14px}
+    .reveal{opacity:0;transform:translateY(12px);transition:opacity .6s ease,transform .6s ease}
+    .reveal.visible{opacity:1;transform:none}
+    .program-list{list-style:none;padding:0;margin:0}
+    .program{display:flex;flex-direction:column;gap:8px}
+    .price{font-size:18px;color:var(--accent);font-weight:800}
+    .small{font-size:13px;color:var(--muted)}
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(10,10,10,0.45);display:none;align-items:center;justify-content:center;padding:20px}
+    .modal{background:var(--card);width:100%;max-width:720px;border-radius:12px;padding:20px;box-shadow:0 18px 60px rgba(40,20,60,0.2)}
+    .modal.active{display:block}
+    .modal .cols{display:grid;grid-template-columns:1fr 260px;gap:16px}
+    .timer{font-size:28px;font-weight:800;color:var(--accent)}
+    input[type='range']{width:100%}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    @media(max-width:880px){.hero{grid-template-columns:1fr;}.modal .cols{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">H</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div class="small">Cohort care for curious, busy lives</div>
+      </div>
+    </div>
+    <nav aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="services.html" aria-current="page">Ways We Help</a>
+      <a href="conditions.html">Conditions</a>
+      <a href="approach.html">Our Method</a>
+      <a href="book.html" class="primary">{{PRIMARY_CTA_LABEL}}</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="lead" data-reveal>
+        <h1 id="hero-title">Small-group journeys, practical skills</h1>
+        <p class="lead">We run short cohort cycles that teach breathing, sleep scaffolding, gut-friendly routines and mindful intention so you can build habits that fit work, family and life ebbs.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="book.html">Join a cohort</a>
+          <button class="btn btn-ghost" id="try-btn">Try it now — quick practice</button>
+        </div>
+      </div>
+
+      <aside class="aside" data-reveal>
+        <h3 style="margin-top:0">Next cohort</h3>
+        <div style="font-size:20px;font-weight:800">Foundations: Balanced Rhythm</div>
+        <p class="small">6 weekly sessions · Peer circle · Live Q&amp;A</p>
+        <div style="margin-top:12px" class="price">Early access: $297</div>
+        <p class="small">Cohorts are priced per participant. Scholarships available.</p>
+      </aside>
+    </section>
+
+    <section aria-labelledby="offer-title" style="margin-top:20px">
+      <h2 id="offer-title" data-reveal>Signature pathways</h2>
+      <p class="muted" data-reveal>Programs designed as short, teachable arcs — not endless therapy. Each runs with a cohort, homework prompts, and a facilitator.</p>
+
+      <div class="grid" style="margin-top:12px">
+        <div class="card reveal" data-reveal>
+          <h3>Rhythm Reset (6 weeks)</h3>
+          <p class="small">Sleep-support strategies, circadian-friendly planning, evening rituals.</p>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px"><div class="price">$297</div><a class="btn btn-ghost" href="book.html">Reserve spot</a></div>
+        </div>
+
+        <div class="card reveal" data-reveal>
+          <h3>Gut & Calm (5 weeks)</h3>
+          <p class="small">Nutrition basics, stress-swings and gentle movement to steady digestion.</p>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px"><div class="price">$247</div><a class="btn btn-ghost" href="book.html">Reserve spot</a></div>
+        </div>
+
+        <div class="card reveal" data-reveal>
+          <h3>Clarity Lab (4 weeks)</h3>
+          <p class="small">Focused journaling, intention setting and habit packaging to simplify choices.</p>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px"><div class="price">$197</div><a class="btn btn-ghost" href="book.html">Reserve spot</a></div>
+        </div>
+
+      </div>
+    </section>
+
+    <section aria-labelledby="how-title" style="margin-top:28px">
+      <h2 id="how-title" data-reveal>How a cohort runs</h2>
+      <div data-reveal class="card" style="margin-top:12px">
+        <ol>
+          <li><strong>Live weekly session</strong> (90 minutes): skill teaching + peer practice.</li>
+          <li><strong>Micro-assignments</strong>: short daily practices, 5–15 minutes.</li>
+          <li><strong>Private chat</strong> for the group for questions and accountability.</li>
+        </ol>
+        <p class="small">Cohorts are educational and community-focused. They are not a substitute for individualized medical care.</p>
+      </div>
+    </section>
+
+    <section aria-labelledby="test-title" style="margin-top:28px">
+      <h2 id="test-title" data-reveal>What people say</h2>
+      <div class="grid" style="margin-top:12px">
+        <div class="card reveal" data-reveal>
+          <div style="font-weight:800">"I re-built my evenings"</div>
+          <div class="small">The cohort tools felt manageable and I slept better within two weeks.</div>
+        </div>
+        <div class="card reveal" data-reveal>
+          <div style="font-weight:800">"Practical and kind"</div>
+          <div class="small">Short sessions, no jargon — the group kept me honest.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="small">Call: {{PHONE}} · Email: {{EMAIL}} · Serving {{CITY}}, {{STATE}}</div>
+  </footer>
+
+  <!-- Guided practice modal -->
+  <div class="modal-backdrop" id="modal-backdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <h3 id="modal-title">Try a 5-minute practice</h3>
+        <button id="modal-close" aria-label="Close">✕</button>
+      </div>
+
+      <div class="cols">
+        <div>
+          <label for="practice-select" class="small">Pick a short practice</label>
+          <select id="practice-select" style="width:100%;padding:8px;border-radius:8px;border:1px solid #eee">
+            <option value="breath">Guided breathing</option>
+            <option value="journal">Prompted journaling</option>
+            <option value="intention">Set an intention</option>
+          </select>
+
+          <div id="panel-breath" class="panel" style="margin-top:12px">
+            <div class="small">Breath cycles: set length and follow the timer.</div>
+            <div style="margin-top:12px"><label class="small">Duration (minutes)</label>
+              <input id="breath-min" type="range" min="1" max="10" value="3"></div>
+            <div style="margin-top:12px"><div class="timer" id="breath-timer">03:00</div></div>
+            <div style="margin-top:12px"><button class="btn btn-primary" id="breath-start">Start breathing</button></div>
+          </div>
+
+          <div id="panel-journal" class="panel" style="display:none;margin-top:12px">
+            <div class="small">A 5-minute guided prompt to notice and jot.</div>
+            <div style="margin-top:8px;font-style:italic;color:var(--muted);">Prompt: What one small shift would make today easier?</div>
+            <div style="margin-top:12px"><textarea id="journal-text" rows="6" style="width:100%;padding:8px;border-radius:8px;border:1px solid #eee"></textarea></div>
+            <div style="margin-top:8px;display:flex;gap:8px"><button class="btn btn-primary" id="journal-start">Start timer</button><button class="btn btn-ghost" id="journal-save">Save note</button></div>
+          </div>
+
+          <div id="panel-intent" class="panel" style="display:none;margin-top:12px">
+            <div class="small">Choose a short intention to carry forward.</div>
+            <div style="margin-top:8px"><input id="intent-input" placeholder="Today I will..." style="width:100%;padding:8px;border-radius:8px;border:1px solid #eee"></div>
+            <div style="margin-top:8px;display:flex;gap:8px"><button class="btn btn-primary" id="intent-save">Save intention</button><button class="btn btn-ghost" id="intent-copy">Copy</button></div>
+            <div style="margin-top:8px;color:var(--muted);font-size:13px">Saved intentions are stored locally on this device.</div>
+          </div>
+        </div>
+
+        <aside style="background:linear-gradient(180deg,rgba(111,78,155,0.08),rgba(240,138,93,0.04));border-radius:8px;padding:12px">
+          <div style="font-weight:800">Mini guide</div>
+          <ol style="padding-left:18px;margin-top:8px">
+            <li class="small">Pick a practice.</li>
+            <li class="small">Follow the gentle cues.</li>
+            <li class="small">Bring the pattern to your day.</li>
+          </ol>
+          <div style="margin-top:12px"><button id="modal-skip" class="btn btn-ghost">Close practice</button></div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Scroll reveal with reduced motion support
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const reveals = document.querySelectorAll('[data-reveal]');
+      if(prefersReduced){
+        reveals.forEach(el=>el.classList.add('visible'));
+        return;
+      }
+      const obs = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}},{threshold:0.12});
+      });
+      reveals.forEach(el=>obs.observe(el));
+    })();
+
+    // Modal logic for guided practice
+    (function(){
+      const backdrop = document.getElementById('modal-backdrop');
+      const tryBtn = document.getElementById('try-btn');
+      const close = document.getElementById('modal-close');
+      const skip = document.getElementById('modal-skip');
+      const select = document.getElementById('practice-select');
+      const panels = {breath:document.getElementById('panel-breath'),journal:document.getElementById('panel-journal'),intention:document.getElementById('panel-intent')};
+      const breathTimerEl = document.getElementById('breath-timer');
+      const breathMin = document.getElementById('breath-min');
+      const breathStart = document.getElementById('breath-start');
+      let breathInterval;
+
+      function open(){backdrop.style.display='flex';backdrop.setAttribute('aria-hidden','false')}
+      function closeModal(){backdrop.style.display='none';backdrop.setAttribute('aria-hidden','true');stopBreathing()}
+      tryBtn.addEventListener('click',open);close.addEventListener('click',closeModal);skip.addEventListener('click',closeModal);
+      backdrop.addEventListener('click',e=>{if(e.target===backdrop)closeModal()});
+
+      select.addEventListener('change',()=>{
+        Object.keys(panels).forEach(k=>panels[k].style.display = k===select.value? 'block':'none');
+      });
+
+      function formatTime(s){const mm=Math.floor(s/60).toString().padStart(2,'0');const ss=(s%60).toString().padStart(2,'0');return mm+':'+ss}
+
+      breathMin.addEventListener('input',()=>{
+        breathTimerEl.textContent = formatTime(breathMin.value*60);
+      });
+
+      function stopBreathing(){ if(breathInterval){clearInterval(breathInterval);breathInterval=null} }
+
+      breathStart.addEventListener('click',()=>{
+        stopBreathing();
+        let total = Math.max(1,parseInt(breathMin.value,10))*60; // seconds
+        breathTimerEl.textContent = formatTime(total);
+        // cycle inhale(4)-hold(2)-exhale(6) until done: guiding vibrations via text
+        let phase = 'inhale'; let phaseCount=0; const pattern=[{name:'Inhale',sec:4},{name:'Hold',sec:2},{name:'Exhale',sec:6}];
+        const start = Date.now();
+        breathInterval = setInterval(()=>{
+          const elapsed = Math.floor((Date.now()-start)/1000);
+          const remain = Math.max(0,total-elapsed);
+          breathTimerEl.textContent = formatTime(remain);
+          // simple console guidance (visual cue could be added)
+          const cycleSec = (elapsed % 12);
+          let p='';
+          if(cycleSec<4)p='Inhale';else if(cycleSec<6)p='Hold';else p='Exhale';
+          breathTimerEl.setAttribute('aria-label',p);
+          if(remain<=0){stopBreathing();breathTimerEl.textContent='Done';}
+        },250);
+      });
+
+      // journaling
+      const journalStart = document.getElementById('journal-start');
+      const journalText = document.getElementById('journal-text');
+      let journalTimer;
+      journalStart.addEventListener('click',()=>{
+        let duration = 5*60; let then=Date.now()+duration*1000; journalStart.disabled=true; journalStart.textContent='Writing...';
+        journalTimer = setInterval(()=>{
+          const remain = Math.max(0,Math.floor((then-Date.now())/1000));
+          journalStart.textContent = 'Writing — '+Math.ceil(remain/60)+':'+(String(remain%60).padStart(2,'0'));
+          if(remain<=0){clearInterval(journalTimer);journalStart.disabled=false;journalStart.textContent='Start timer'}
+        },500);
+      });
+      document.getElementById('journal-save').addEventListener('click',()=>{
+        if(journalText.value.trim()){
+          const notes = JSON.parse(localStorage.getItem('mini-journal')||'[]');
+          notes.push({text:journalText.value.trim(),time:new Date().toISOString()});
+          localStorage.setItem('mini-journal',JSON.stringify(notes));
+          journalText.value='';alert('Saved locally.');
+        } else alert('Write something first.');
+      });
+
+      // intention
+      document.getElementById('intent-save').addEventListener('click',()=>{
+        const v=document.getElementById('intent-input').value.trim();
+        if(!v){alert('Write a short intention.');return}
+        localStorage.setItem('intent',v);alert('Intention saved.');
+      });
+      document.getElementById('intent-copy').addEventListener('click',()=>{
+        const v=document.getElementById('intent-input').value.trim()||localStorage.getItem('intent')||'';
+        navigator.clipboard?.writeText(v).then(()=>alert('Copied to clipboard.'));
+      });
+
+      // cleanup when modal hides
+      backdrop.addEventListener('transitionend',()=>{});
+    })();
+  </script>
+</body>
+</html>

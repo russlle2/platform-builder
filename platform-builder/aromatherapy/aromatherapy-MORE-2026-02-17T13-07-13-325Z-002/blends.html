@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Blends Lab — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--ink:#0f1720;--muted:#55606a;--accent:#9fbf94}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:var(--ink);background:linear-gradient(180deg,#fbfdfb 0%,#ffffff 40%)}
+    .container{max-width:980px;margin:28px auto;padding:28px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    .nav a{margin:0 8px;color:var(--muted);text-decoration:none;font-weight:700}
+    .lab{display:grid;grid-template-columns:1fr 380px;gap:24px;margin-top:20px}
+    .card{background:#fff;padding:18px;border-radius:12px;border:1px solid #eef3ec}
+    h1{margin:0 0 4px}
+    p.lead{color:var(--muted);margin:0}
+    label{display:block;margin-top:12px;font-weight:700}
+    select,input[type=number]{width:100%;padding:10px;border-radius:8px;border:1px solid #e9efe6;margin-top:8px}
+    .vibes{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .vibe{padding:8px 10px;border-radius:8px;border:1px solid #e9efe6;background:#fbfefb;cursor:pointer}
+    .vibe.active{background:var(--accent);color:white;border-color:var(--accent)}
+    .result{margin-top:12px}
+    .blend-card{border-radius:10px;padding:12px;background:linear-gradient(180deg,#ffffff,#f8fff8);border:1px dashed #e6efe1}
+    .muted{color:var(--muted);font-size:13px}
+    .cta{margin-top:12px;padding:10px;border-radius:10px;border:none;background:var(--accent);color:white;font-weight:700;cursor:pointer}
+    .faq{margin-top:18px;font-size:14px;color:var(--muted)}
+    @media(max-width:900px){.lab{grid-template-columns:1fr}.pattern{display:none}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <div style="font-size:13px;color:var(--muted)">Blends & Safe Use</div>
+        <h1>Blends Lab</h1>
+        <p class="lead">Create a personal aromatic formula and get a safety-focused dilution guide you can print or copy.</p>
+      </div>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="services.html">Offerings</a>
+        <a href="blends.html">Blends Lab</a>
+        <a href="shop.html">Shop</a>
+        <a href="about.html">Meet</a>
+        <a href="book.html">Reserve</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </header>
+
+    <div class="lab">
+      <main class="card">
+        <label>Pick a vibe</label>
+        <div class="vibes" id="vibes">
+          <div class="vibe" data-v="calm">Calm</div>
+          <div class="vibe" data-v="sleep">Sleep</div>
+          <div class="vibe" data-v="focus">Focus</div>
+          <div class="vibe" data-v="uplift">Uplift</div>
+          <div class="vibe" data-v="ground">Ground</div>
+        </div>
+
+        <label style="margin-top:14px">Container size</label>
+        <select id="size">
+          <option value="5">5 mL</option>
+          <option value="10" selected>10 mL</option>
+          <option value="30">30 mL</option>
+        </select>
+
+        <label>Dilution strength</label>
+        <select id="strength">
+          <option value="0.5">0.5% — very low (sensitive skin, pregnancy guidance)</option>
+          <option value="1">1% — low (children 2-6, cautious use)</option>
+          <option value="2">2% — standard daily use (adults)</option>
+          <option value="3">3% — short-term support (adults)</option>
+        </select>
+
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="cta" id="make">Generate Blend</button>
+          <button id="reset" style="padding:10px;border-radius:10px;border:1px solid #e9efe6;background:white;cursor:pointer">Reset</button>
+        </div>
+
+        <div class="result" id="result" style="display:none">
+          <div style="font-weight:700;margin-top:12px">Blend Card</div>
+          <div class="blend-card" id="blendCard"></div>
+          <div class="muted" style="margin-top:10px">This is a non-medical, safety-focused suggestion. Always fragrance-test, keep blends away from eyes, and consult a provider if pregnant or nursing.</div>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button class="cta" id="copyBlend">Copy Card</button>
+            <a class="cta" id="printLink" href="#" onclick="window.print();return false;">Print</a>
+          </div>
+        </div>
+      </main>
+
+      <aside class="card">
+        <h3>Common ingredient notes</h3>
+        <ul style="padding-left:18px;color:var(--muted)">
+          <li>Lavender: gentle, broadly tolerated.</li>
+          <li>Chamomile: calming; may be sensitizing for some.</li>
+          <li>Citrus (sweet orange, bergamot): uplifting; avoid skin sun exposure after use if phototoxic oils were chosen.</li>
+          <li>Peppermint: strong; avoid in young children and during pregnancy.</li>
+        </ul>
+
+        <div class="faq">
+          <strong>Pet & pregnancy safety</strong>
+          <p style="margin:6px 0;color:var(--muted)">Some essential oils can affect pets or be contraindicated in pregnancy. Choose low dilutions and discuss specifics at booking.</p>
+          <strong>Patch test</strong>
+          <p style="margin:6px 0;color:var(--muted)">Apply a small amount of diluted blend to inner forearm and wait 24 hours for irritation signs before regular use.</p>
+        </div>
+      </aside>
+    </div>
+
+    <footer style="margin-top:20px;color:var(--muted);font-size:13px">Questions? Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a></footer>
+  </div>
+
+  <script>
+    // Simple Blend Builder
+    const vibes = document.querySelectorAll('.vibe')
+    let selectedVibe = null
+    vibes.forEach(v=>v.addEventListener('click', ()=>{
+      vibes.forEach(x=>x.classList.remove('active'))
+      v.classList.add('active')
+      selectedVibe = v.getAttribute('data-v')
+    }))
+
+    const recipes = {
+      calm: {name:'Calm', notes:['Lavender','Roman Chamomile','Sweet Orange'], carrierHint:'Jojoba or fractionated coconut oil'},
+      sleep: {name:'Sleep', notes:['Lavender','Cedarwood','Bergamot (non-phototoxic selection)'], carrierHint:'Light almond or jojoba'},
+      focus: {name:'Focus', notes:['Rosemary (touch)','Peppermint (minimal)','Lemon'], carrierHint:'Fractionated coconut'},
+      uplift: {name:'Uplift', notes:['Sweet Orange','Grapefruit','Bergamot'], carrierHint:'Grapeseed or jojoba'},
+      ground: {name:'Ground', notes:['Vetiver (small amount)','Patchouli','Cedarwood'], carrierHint:'Fractionated coconut'}
+    }
+
+    function dropsForSize(sizeMl, strengthPct){
+      // common approximation: 1 mL = ~20 drops
+      const dropsPerMl = 20
+      const totalDrops = Math.round(sizeMl * dropsPerMl)
+      const eoDrops = Math.max(1, Math.round(totalDrops * (strengthPct/100)))
+      return {totalDrops, eoDrops}
+    }
+
+    document.getElementById('make').addEventListener('click', ()=>{
+      const size = parseInt(document.getElementById('size').value,10)
+      const strength = parseFloat(document.getElementById('strength').value) // percent
+      if(!selectedVibe){alert('Please choose a vibe to start');return}
+      const recipe = recipes[selectedVibe]
+      const d = dropsForSize(size, strength)
+      // Distribute drops among primary notes (simple even split)
+      const parts = recipe.notes.length
+      const per = Math.max(1, Math.round(d.eoDrops / parts))
+      let details = 'Blend: ' + recipe.name + '\nContainer: ' + size + ' mL\nDilution: ' + (strength) + '%\nTotal EO drops: ' + d.eoDrops + '\n\nIngredients (suggested drops):\n'
+      recipe.notes.forEach((n,i)=>{details += ' - ' + n + ': ' + (i===0 ? per : per) + ' drops\n'})
+      details += '\nCarrier suggestion: ' + recipe.carrierHint + '\n\nSafety notes:\n - Patch test prior to regular use.\n - Keep away from eyes; use low doses around children and pets.\n - If pregnant or nursing, select very low dilutions and consult a practitioner.'
+      const card = document.getElementById('blendCard')
+      card.textContent = details
+      document.getElementById('result').style.display = 'block'
+    })
+
+    document.getElementById('reset').addEventListener('click', ()=>{
+      vibes.forEach(x=>x.classList.remove('active'))
+      selectedVibe = null
+      document.getElementById('size').value='10'
+      document.getElementById('strength').value='2'
+      document.getElementById('result').style.display='none'
+      document.getElementById('blendCard').textContent=''
+    })
+
+    document.getElementById('copyBlend').addEventListener('click', ()=>{
+      const text = document.getElementById('blendCard').textContent
+      if(!text) return
+      navigator.clipboard.writeText(text).then(()=>{
+        const btn = document.getElementById('copyBlend')
+        btn.textContent='Copied'
+        setTimeout(()=>btn.textContent='Copy Card',900)
+      })
+    })
+  </script>
+</body>
+</html>

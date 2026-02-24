@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Investment — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbf9f6;--card:#fff;--accent:#6aa84f;--muted:#6b6b6b;--glass:rgba(255,255,255,0.6);--shadow:0 6px 18px rgba(27,31,35,0.08)}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#222;background:var(--bg);}
+    .page{min-height:100%;display:flex;flex-direction:column}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:linear-gradient(180deg,rgba(255,255,255,0.6),transparent);backdrop-filter:blur(6px)}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:46px;height:46px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),#8fbf69);color:#fff;font-weight:700}
+    nav a{margin-left:16px;color:#333;text-decoration:none;font-weight:600}
+    main{flex:1;padding:36px 28px;max-width:1100px;margin:0 auto;}
+    .hero{display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start}
+    .hero .lead{background:var(--card);padding:22px;border-radius:14px;box-shadow:var(--shadow)}
+    h1{margin:0 0 8px;font-size:22px}
+    p.lead-desc{margin:0;color:var(--muted)}
+    .aside{background:linear-gradient(180deg,rgba(255,255,255,0.9),var(--glass));padding:18px;border-radius:12px;box-shadow:var(--shadow)}
+    .tiers{display:flex;flex-direction:column;gap:16px;margin-top:18px}
+    .tier{display:flex;justify-content:space-between;align-items:center;padding:16px;border-radius:12px;background:var(--card);box-shadow:var(--shadow)}
+    .tier .meta{max-width:62%}
+    .price{font-weight:800;color:var(--accent);font-size:20px}
+    .badge-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .cred{display:inline-flex;align-items:center;gap:8px;background:#fff;padding:8px 10px;border-radius:999px;border:1px solid rgba(0,0,0,0.04);cursor:default}
+    .cred svg{width:18px;height:18px}
+    .gallery{margin-top:28px;background:var(--card);padding:18px;border-radius:12px;box-shadow:var(--shadow)}
+    .test-panel{display:flex;align-items:center;gap:12px}
+    .quote{font-style:italic;color:#333}
+    footer{padding:20px 28px;text-align:center;color:var(--muted);font-size:14px}
+    /* rotating testimonials */
+    .testimonial-rotator{position:relative}
+    .test-item{display:none}
+    .test-item.active{display:block}
+    .controls{display:flex;gap:8px;margin-top:12px}
+    .btn{background:var(--accent);color:#fff;padding:8px 12px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
+    .secondary{background:#fff;color:var(--accent);border:1px solid rgba(0,0,0,0.06)}
+    /* small tooltip */
+    .tooltip{position:relative}
+    .tooltip[data-tip]:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);white-space:nowrap;background:#222;color:#fff;padding:6px 8px;border-radius:6px;font-size:12px}
+    @media(max-width:880px){.hero{grid-template-columns:1fr;}.brand .logo{width:40px;height:40px}}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="brand">
+        <div class="logo">W</div>
+        <div>
+          <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+          <div style="font-size:12px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">Story</a>
+        <a href="services.html">Offerings</a>
+        <a href="programs.html">Paths</a>
+        <a href="pricing.html">Investment</a>
+        <a href="testimonials.html">Proof</a>
+        <a href="book.html">Begin</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="lead">
+          <h1>Flexible pathways priced to meet your stage</h1>
+          <p class="lead-desc">Choose how much structure you want and how much support fits your life. Each pathway centers on repeated, measurable micro-choices — habits that compound into steadier weeks.</p>
+
+          <div class="tiers">
+            <div class="tier">
+              <div class="meta">
+                <div style="font-weight:700">Starter Path</div>
+                <div style="font-size:13px;color:var(--muted)">4 weeks of guided habit building, weekly check-ins and a simple daily rhythm.</div>
+              </div>
+              <div style="text-align:right">
+                <div class="price">$249</div>
+                <div style="font-size:12px;color:var(--muted)">One-time</div>
+              </div>
+            </div>
+
+            <div class="tier">
+              <div class="meta">
+                <div style="font-weight:700">Momentum Plan</div>
+                <div style="font-size:13px;color:var(--muted)">8 weeks with bespoke habit cycles, mid-week check-ins and habit lab experiments.</div>
+              </div>
+              <div style="text-align:right">
+                <div class="price">$480</div>
+                <div style="font-size:12px;color:var(--muted)">Billed once</div>
+              </div>
+            </div>
+
+            <div class="tier">
+              <div class="meta">
+                <div style="font-weight:700">Keeper Membership</div>
+                <div style="font-size:13px;color:var(--muted)">Ongoing support, access to micro-systems, monthly review and flexible check-ins.</div>
+              </div>
+              <div style="text-align:right">
+                <div class="price">$65/mo</div>
+                <div style="font-size:12px;color:var(--muted)">Recurring</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:18px;display:flex;gap:10px">
+            <button class="btn" onclick="location.href='book.html'">Reserve a Starter Session</button>
+            <button class="secondary" onclick="location.href='contact.html'">Ask a Question</button>
+          </div>
+        </div>
+
+        <aside class="aside">
+          <div style="font-weight:800">Proof Gallery</div>
+          <div class="gallery">
+            <div class="testimonial-rotator">
+              <div class="test-item active" data-id="0">
+                <div class="test-panel">
+                  <div style="flex:1">
+                    <div style="font-weight:700">"I finally keep morning habits that last beyond a week."</div>
+                    <div class="quote" style="margin-top:6px;color:var(--muted)">— L.M., designer</div>
+                  </div>
+                  <div style="width:90px;text-align:right">
+                    <div style="font-weight:800;color:var(--accent)">+3 habits</div>
+                    <div style="font-size:12px;color:var(--muted)">sustained in 6 weeks</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="test-item" data-id="1">
+                <div class="test-panel">
+                  <div style="flex:1">
+                    <div style="font-weight:700">"Small practices that feel doable and actually move the needle."</div>
+                    <div class="quote" style="margin-top:6px;color:var(--muted)">— R.S., educator</div>
+                  </div>
+                  <div style="width:90px;text-align:right">
+                    <div style="font-weight:800;color:var(--accent)">+12 sessions</div>
+                    <div style="font-size:12px;color:var(--muted)">over 3 months</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="controls">
+                <button class="secondary" id="prev">Prev</button>
+                <button class="secondary" id="next">Next</button>
+              </div>
+
+              <div class="badge-row" style="margin-top:12px">
+                <div class="cred tooltip" data-tip="Featured in a wellness newsletter"> 
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="#c0e0a8" stroke-width="2" fill="#eef8e9"/></svg>
+                  Press
+                </div>
+                <div class="cred tooltip" data-tip="350+ hours of coaching logged"> 
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="18" height="18" rx="4" stroke="#8fc080" stroke-width="2" fill="#f3fbf2"/></svg>
+                  Hours
+                </div>
+                <div class="cred tooltip" data-tip="Client-rated: 4.9 / 5"> 
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3l2.6 5.3L20 9l-4 3.6L17 20l-5-2.6L7 20l1-7.4L4 9l5.4-.7L12 3z" stroke="#6aa84f" stroke-width="1" fill="#f7fff6"/></svg>
+                  Rating
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section style="margin-top:26px">
+        <div style="display:flex;gap:18px;align-items:center;justify-content:space-between;background:transparent">
+          <div>
+            <div style="font-weight:800">Want a tailored estimate?</div>
+            <div style="color:var(--muted);font-size:13px">Tell me where you are and what you need, and I'll propose a plan that fits.</div>
+          </div>
+          <div>
+            <a class="btn" href="book.html">Claim a Personalized Quote</a>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer>
+      <div>{{BUSINESS_NAME}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    </footer>
+  </div>
+
+  <script>
+    (function(){
+      // Rotator logic
+      const items = Array.from(document.querySelectorAll('.test-item'));
+      let idx = 0;
+      const show = i =>{
+        items.forEach(it=>it.classList.remove('active'));
+        items[i].classList.add('active');
+      };
+      document.getElementById('next').addEventListener('click',()=>{idx=(idx+1)%items.length;show(idx)});
+      document.getElementById('prev').addEventListener('click',()=>{idx=(idx-1+items.length)%items.length;show(idx)});
+      let auto = setInterval(()=>{idx=(idx+1)%items.length;show(idx)},5000);
+      ['next','prev'].forEach(id=>document.getElementById(id).addEventListener('mouseover',()=>clearInterval(auto)));
+    })();
+  </script>
+</body>
+</html>

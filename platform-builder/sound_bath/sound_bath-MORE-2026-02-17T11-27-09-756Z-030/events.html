@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Gatherings — Sound Offerings</title>
+  <style>
+    :root{--bg:#fbf9f6;--ink:#202020;--muted:#6b6b6b;--accent:#6a8b8a;--glass:rgba(255,255,255,0.6);--card:#fff}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:linear-gradient(180deg,transparent,rgba(0,0,0,0.02));position:sticky;top:0;backdrop-filter:blur(6px);z-index:10}
+    nav a{margin:0 12px;color:var(--muted);text-decoration:none;font-weight:600}
+    nav a.active{color:var(--ink)}
+    .wrap{max-width:980px;margin:34px auto;padding:0 20px}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+    .panel{background:var(--card);border-radius:12px;padding:22px;box-shadow:0 6px 20px rgba(45,45,45,0.06)}
+    h1{margin:0 0 8px;font-weight:700;letter-spacing:-0.02em}
+    p.lead{margin:0;color:var(--muted)}
+    .next-event{background:linear-gradient(180deg,rgba(106,139,138,0.06),transparent);padding:18px;border-radius:10px}
+    .badge{display:inline-block;padding:8px 12px;background:var(--accent);color:#fff;border-radius:999px;font-weight:700}
+    .calendar{margin-top:16px}
+    .event-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px dashed #eee}
+    .event-row:last-child{border-bottom:none}
+    .seatmap{display:grid;place-items:center;padding:18px}
+    .seats{display:grid;grid-template-columns:repeat(8,34px);gap:8px}
+    .seat{width:34px;height:34px;border-radius:6px;background:#f1f1f1;display:grid;place-items:center;cursor:pointer;font-size:12px}
+    .seat.taken{background:#ddd;cursor:not-allowed;opacity:0.7}
+    .seat.selected{background:var(--accent);color:#fff}
+    .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    button{background:var(--accent);color:#fff;border:none;padding:10px 12px;border-radius:8px;cursor:pointer}
+    .outline{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .muted{color:var(--muted);font-size:13px}
+    .pill{display:inline-block;padding:6px 8px;background:#fff;border-radius:999px;border:1px solid #eee;font-size:13px}
+    .disclaimer{font-size:13px;color:#8a2b2b;background:#fff1f0;padding:10px;border-radius:8px;margin-top:12px}
+    footer{padding:30px 0;text-align:center;color:var(--muted);font-size:13px}
+    .cta-row{display:flex;gap:12px;align-items:center;margin-top:14px}
+    .packing{margin-top:12px}
+    .packing ul{margin:8px 0 0 20px}
+    .pattern{position:fixed;inset:0;background-image:url('assets/img/pattern.svg');opacity:0.06;pointer-events:none}
+    @media(max-width:880px){.hero{grid-template-columns:1fr}.panel{padding:16px}.seats{grid-template-columns:repeat(6,34px)}}
+  </style>
+</head>
+<body>
+  <div class="pattern" aria-hidden></div>
+  <header>
+    <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a class="active" href="events.html">Gatherings</a>
+      <a href="private-sessions.html">Bespoke</a>
+      <a href="pricing.html">Rates</a>
+      <a href="about.html">Origins</a>
+      <a href="faq.html">Need-to-know</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div>
+        <div class="panel">
+          <h1>Gatherings in measured sound</h1>
+          <p class="lead">A short, carefully arranged session for settling the day and refining attention. Spaces are limited—arrive with an intention.</p>
+
+          <div style="margin-top:16px" class="grid-2">
+            <div>
+              <div class="badge">Next: Live Offering</div>
+              <div class="muted" style="margin-top:8px">Join other listeners in a 60-minute field of tuned overtones</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-weight:700">{{CITY}}, {{STATE}}</div>
+              <div class="muted">+ Local schedule</div>
+            </div>
+          </div>
+
+          <div style="margin-top:18px" class="cta-row">
+            <a class="pill" href="book.html">Save a mat</a>
+            <a href="pricing.html" class="outline">See rates</a>
+          </div>
+
+        </div>
+
+        <div class="panel" style="margin-top:18px">
+          <h3 style="margin:0">Calendar
+          </h3>
+          <div class="calendar" id="calendarList">
+            <!-- events injected -->
+          </div>
+          <div class="muted" style="margin-top:10px">Arrive 15 minutes early. Limited walk-ins when available.</div>
+
+          <div class="disclaimer">
+            Contraindications: If you have a history of seizures, uncontrolled hypertension, pregnancy complications, recent surgery, or are under clinical supervision for serious psychiatric conditions, consult a healthcare provider before attending. If in doubt, email {{EMAIL}} or call {{PHONE}}.
+          </div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="panel">
+          <h4 style="margin:0">Next event</h4>
+          <div id="nextEvent" style="margin-top:8px"></div>
+
+          <div style="margin-top:12px">
+            <div class="pill">60 min · Guided wave</div>
+            <div class="muted" style="margin-top:8px">Soft lights · Cushions provided · Limited capacity</div>
+          </div>
+
+          <div style="margin-top:12px" class="seatmap">
+            <div class="seats" id="seatMap" aria-hidden></div>
+            <div class="muted" id="seatCount">Loading seats…</div>
+            <div class="controls" style="margin-top:10px">
+              <button id="reserveBtn">Reserve selection</button>
+              <button class="outline" id="clearSelection">Clear</button>
+            </div>
+
+            <div class="packing" id="packingPanel">
+              <h5 style="margin:8px 0">Packing suggestions</h5>
+              <div>
+                <label><input type="checkbox" id="bringMat" checked> Mat (we provide if needed)</label><br>
+                <label><input type="checkbox" id="bringBlanket" checked> Blanket</label><br>
+                <label><input type="checkbox" id="bringPillow"> Small pillow</label><br>
+                <label><input type="checkbox" id="bringWater" checked> Water bottle</label>
+              </div>
+              <div style="margin-top:10px">
+                <select id="eventType">
+                  <option value="gentle">Gentle - restorative</option>
+                  <option value="vibrant">Vibrant - energetic</option>
+                  <option value="silent">Silent accompaniment</option>
+                </select>
+              </div>
+
+              <div style="margin-top:12px">
+                <button id="generatePacking">Generate list</button>
+                <button class="outline" id="copyPacking">Copy</button>
+              </div>
+
+              <div id="packingList" class="muted" style="margin-top:10px">No list yet.</div>
+            </div>
+
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section style="margin-top:22px" class="panel">
+      <h3 style="margin:0">Questions, myths & clarifications</h3>
+      <div style="margin-top:12px" class="grid-2">
+        <div>
+          <h4 style="margin:0 0 6px 0">Common misreadings</h4>
+          <p class="muted">This is not a medical treatment nor a replacement for clinical care. Sound supports settling and breath awareness; it is not designed to diagnose or cure.</p>
+        </div>
+        <div>
+          <h4 style="margin:0 0 6px 0">Practical notes</h4>
+          <p class="muted">Wear layers. Avoid heavy perfumes. Silence phones. We recommend avoiding stimulants before sessions for clearer reception.</p>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:18px" class="panel">
+      <h3 style="margin:0">Foundations</h3>
+      <div style="margin-top:10px" class="grid-2">
+        <div>
+          <p class="muted">Intent: short rituals tuned to breath and presence. Tools: singing bowls, chimes, voice, subtle percussion. Design: steady layers, slow shifts, quiet returns.</p>
+        </div>
+        <div>
+          <p class="muted">Outcomes we notice: calmer pulse, clearer attention, muscular easing. Results vary; gentle practice increases access over time.</p>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:18px" class="panel">
+      <h3 style="margin:0">Stories from listeners</h3>
+      <div style="margin-top:10px">
+        <div class="muted">“A tidy pause that helped me re-enter my week with less tension.” — A.</div>
+        <div class="muted" style="margin-top:8px">“I slept better after the offering.” — R.</div>
+      </div>
+    </section>
+
+    <section style="margin-top:18px;text-align:center">
+      <a href="book.html" style="text-decoration:none"><button>Reserve a place</button></a>
+      <div class="muted" style="margin-top:8px">Or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> to inquire about group bookings.</div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="muted">Questions? Call {{PHONE}} · <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+  </footer>
+
+  <script>
+    // Fake events data
+    const events = [
+      {id:1,date:addDays(1),time:'19:00',title:'Evening Field: gentle wave',cap:24},
+      {id:2,date:addDays(3),time:'11:00',title:'Midday Pause: bright tones',cap:18},
+      {id:3,date:addDays(7),time:'18:00',title:'Guided Return: slow release',cap:20}
+    ];
+
+    function addDays(n){const d=new Date();d.setDate(d.getDate()+n);return d}
+
+    function formatDate(d){return d.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}
+
+    // Calendar list
+    const cal = document.getElementById('calendarList');
+    events.forEach(e=>{
+      const el=document.createElement('div');el.className='event-row';
+      el.innerHTML=`<div><strong>${formatDate(e.date)} · ${e.time}</strong><div class="muted">${e.title}</div></div><div><button class=outline data-id="${e.id}">Book</button></div>`;
+      cal.appendChild(el);
+    });
+
+    // Next event module
+    const nextEvent = document.getElementById('nextEvent');
+    (function showNext(){
+      const e=events[0];
+      nextEvent.innerHTML=`<div style="font-weight:700">${formatDate(e.date)} • ${e.time}</div><div class=muted style="margin-top:6px">${e.title} — ${e.cap} seats</div>`;
+    })();
+
+    // Seat selector
+    const seatMap = document.getElementById('seatMap');
+    const seatCount = document.getElementById('seatCount');
+    const reserveBtn = document.getElementById('reserveBtn');
+    const clearSelection = document.getElementById('clearSelection');
+
+    const cols = 8; const rows = 3;
+    const seats = [];
+    function randTaken(){return Math.random()<0.2}
+    for(let r=0;r<rows;r++){
+      for(let c=0;c<cols;c++){
+        const seat={id:`r${r}c${c}`,row:r+1,col:c+1,taken:randTaken(),selected:false};
+        seats.push(seat);
+      }
+    }
+
+    function renderSeats(){
+      seatMap.innerHTML='';
+      seats.forEach(s=>{
+        const d=document.createElement('div');d.className='seat'+(s.taken?' taken':'')+(s.selected&&!s.taken?' selected':'');d.textContent=s.row+'-'+s.col;
+        if(!s.taken){d.addEventListener('click',()=>{s.selected=!s.selected;renderSeats();});}
+        seatMap.appendChild(d);
+      });
+      const available = seats.filter(s=>!s.taken).length;
+      const selected = seats.filter(s=>s.selected).length;
+      seatCount.textContent=`${available} available · ${selected} selected`;
+    }
+    renderSeats();
+
+    reserveBtn.addEventListener('click',()=>{
+      const selected = seats.filter(s=>s.selected && !s.taken);
+      if(!selected.length){alert('Select at least one seat.');return}
+      selected.forEach(s=>s.taken=true);
+      seats.forEach(s=>s.selected=false);
+      renderSeats();
+      alert('Reserved '+selected.length+' seats. Proceed to Reserve on the booking page.');
+    });
+    clearSelection.addEventListener('click',()=>{seats.forEach(s=>s.selected=false);renderSeats();});
+
+    // Packing list generator
+    const generatePacking = document.getElementById('generatePacking');
+    const copyPacking = document.getElementById('copyPacking');
+    const packingList = document.getElementById('packingList');
+
+    generatePacking.addEventListener('click',()=>{
+      const wants=[
+        document.getElementById('bringMat').checked? 'Mat (or we can supply one)':'',
+        document.getElementById('bringBlanket').checked? 'Blanket':'',
+        document.getElementById('bringPillow').checked? 'Small pillow':'',
+        document.getElementById('bringWater').checked? 'Water bottle':'',
+      ].filter(Boolean);
+      const type=document.getElementById('eventType').value;
+      const extra = type==='vibrant'? ['Earplugs optional for low-frequency comfort'] : type==='silent'? ['Comfortable clothing, avoid noisy zippers'] : ['Light layers recommended'];
+      const list = wants.concat(extra);
+      packingList.innerHTML = '<ul>' + list.map(i=>`<li>${i}</li>`).join('') + '</ul>';
+      packingList.dataset.text = list.join('\n');
+    });
+
+    copyPacking.addEventListener('click',()=>{
+      const t=packingList.dataset.text || '';
+      if(!t){alert('Generate the list first.');return}
+      navigator.clipboard.writeText(t).then(()=>alert('Packing list copied to clipboard.'));
+    });
+
+  </script>
+</body>
+</html>

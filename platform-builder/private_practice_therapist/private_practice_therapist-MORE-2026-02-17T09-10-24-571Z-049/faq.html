@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FAQ — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7f2ea;--accent:#6b4e36;--muted:#666257;--card:#fff;--radius:12px}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,Arial;background:linear-gradient(180deg,var(--bg),#efe9de);color:var(--muted)}
+    header{padding:18px 28px;display:flex;justify-content:space-between;align-items:center}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none}
+    .wrap{max-width:920px;margin:28px auto;padding:20px}
+    h1{color:var(--accent);margin-bottom:6px}
+    .qa{background:var(--card);padding:16px;border-radius:var(--radius);box-shadow:0 8px 30px rgba(120,90,60,0.05)}
+    .q{font-weight:700;color:var(--accent)}
+    .a{margin-top:6px;color:var(--muted)}
+    .try{margin-top:12px}
+    .btn{background:#efe6da;border:0;padding:8px 12px;border-radius:8px;cursor:pointer}
+
+    .reveal{opacity:0;transform:translateY(14px);transition:opacity 480ms ease,transform 480ms ease}
+    .reveal.is-visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion: reduce){.reveal{transition:none;opacity:1;transform:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <svg width="40" height="40" viewBox="0 0 44 44"><rect width="44" height="44" rx="10" fill="#efe3d6"/><path d="M14 30c4-8 16-9 19-5" stroke="#6b4e36" stroke-width="2.2" stroke-linecap="round"/></svg>
+      <div>
+        <div style="font-weight:700;color:var(--accent)">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Philosophy</a>
+      <a href="specialties.html">Horizons</a>
+      <a href="approach.html">Pathways</a>
+      <a href="fees.html">Investment</a>
+      <a href="faq.html" style="color:var(--accent);font-weight:700">Questions</a>
+      <a href="book.html">Begin</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="reveal">
+      <h1>Questions I often hear</h1>
+      <p style="color:var(--muted)">Below are practical answers that explain how I work, what to expect, and how to get started.</p>
+    </section>
+
+    <section class="reveal" style="margin-top:14px">
+      <div class="qa">
+        <div class="q">How do I know if we should start with a single session or an intensive?</div>
+        <div class="a">If you need focused, short-term help with a decision or an immediate problem, a single 90-minute Focus Session or a Mini Tune can be enough to plan practical next steps. If you want to make measurable change quickly, a Bridge Intensive (a short series) can provide structure and accountability. We can decide together after an initial conversation.</div>
+      </div>
+    </section>
+
+    <section class="reveal" style="margin-top:12px">
+      <div class="qa">
+        <div class="q">Is therapy confidential?</div>
+        <div class="a">Yes. I follow confidentiality standards consistent with clinical ethics and law. Some situations—like imminent risk of harm, suspected abuse of a dependent, or court orders—require breaking confidentiality; I will discuss limits with you during intake.</div>
+      </div>
+    </section>
+
+    <section class="reveal" style="margin-top:12px">
+      <div class="qa">
+        <div class="q">Do you work with insurance?</div>
+        <div class="a">I do not bill insurance directly. I provide receipts (superbills) that you may submit to your insurer. I’m happy to help you understand this process if you plan to seek reimbursement.</div>
+      </div>
+    </section>
+
+    <section class="reveal" style="margin-top:12px">
+      <div class="qa">
+        <div class="q">What if I’m in crisis?</div>
+        <div class="a">I am not a crisis service. If you are experiencing active suicidal thoughts, are in danger, or believe someone else is in immediate danger, please call your local emergency number or your local crisis line right now. If you are in {{STATE}}, you can also use your local resources for immediate help.</div>
+      </div>
+    </section>
+
+    <section class="reveal" style="margin-top:18px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+      <div style="flex:1">
+        <div style="color:var(--muted)">Still curious? Try a short guided grounding exercise.</div>
+        <div class="try"><button class="btn" id="try-btn">Try it now — short exercise</button></div>
+      </div>
+      <div style="color:var(--muted)">When ready to schedule, <a href="book.html">Begin</a> or call <strong>{{PHONE}}</strong>.</div>
+    </section>
+
+    <footer style="margin-top:26px;color:var(--muted);font-size:13px">
+      <div>Confidentiality, scope, and crisis notes: the practice keeps client information private except where required by law or safety concerns. This site is informational and not a substitute for emergency care.</div>
+    </footer>
+  </main>
+
+  <script>
+    // reveal
+    (function(){
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const els = document.querySelectorAll('.reveal');
+      if(reduce){ els.forEach(e=>e.classList.add('is-visible')); return; }
+      const obs = new IntersectionObserver((entries)=>{ entries.forEach(en=>{ if(en.isIntersecting) en.target.classList.add('is-visible'); }); },{threshold:0.12});
+      els.forEach(e=>obs.observe(e));
+    })();
+
+    // include the same guided modal from fees page
+    (function(){
+      function init(){
+        const tryBtn = document.getElementById('try-btn'); if(!tryBtn) return;
+        tryBtn.addEventListener('click', ()=>{
+          const evt = new Event('openGuidedExercise'); window.dispatchEvent(evt);
+        });
+      }
+      document.addEventListener('DOMContentLoaded', init);
+    })();
+
+    // listen for openGuidedExercise to create modal (shared global)
+    window.addEventListener('openGuidedExercise', function(){
+      // replicate light-weight modal logic used elsewhere
+      const existing = document.querySelector('.modal-backdrop'); if(existing) return;
+      const backdrop = document.createElement('div'); backdrop.className='modal-backdrop'; backdrop.style.position='fixed'; backdrop.style.inset=0; backdrop.style.display='flex'; backdrop.style.alignItems='center'; backdrop.style.justifyContent='center'; backdrop.style.background='rgba(8,6,4,0.45)';
+      const modal = document.createElement('div'); modal.className='modal'; modal.style.background='#fff'; modal.style.padding='18px'; modal.style.borderRadius='12px'; modal.style.maxWidth='520px'; modal.innerHTML = `<h3>Short guided practice</h3><p style="color:#666257">Choose a brief practice: breathing, journaling, or intention setting. This is a self-guided tool.</p><div style="display:flex;gap:8px;margin-top:8px"><button id="breath" class="btn">Breathing</button><button id="journ" class="btn">Journaling</button><button id="inten" class="btn">Intention</button></div><div style="margin-top:12px"><button id="close-ex" class="btn">Close</button></div>`;
+      backdrop.appendChild(modal); document.body.appendChild(backdrop);
+      modal.querySelector('#close-ex').addEventListener('click', ()=>backdrop.remove());
+      modal.querySelector('#breath').addEventListener('click', ()=>{ alert('Breathe in for 4, hold 4, exhale 6 — repeat a few times.'); });
+      modal.querySelector('#journ').addEventListener('click', ()=>{ alert('Take 3 prompts: What matters? What helps today? One small step? Write freely for 3–5 minutes.'); });
+      modal.querySelector('#inten').addEventListener('click', ()=>{ alert('Take three slow breaths. Name one intention for today and keep it brief.'); });
+    });
+  </script>
+</body>
+</html>

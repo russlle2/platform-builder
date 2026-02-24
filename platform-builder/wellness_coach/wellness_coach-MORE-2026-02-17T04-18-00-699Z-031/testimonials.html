@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Stories — Client Work | {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--muted:#4f5960;--accent:#0b6b5a;--card:#fbfdfb}
+    body{font-family:Inter, system-ui, -apple-system,"Segoe UI",Roboto,Arial;margin:0;background:linear-gradient(180deg,#ffffff, #f7fbf8);color:#0d1b18}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 26px;border-bottom:1px solid rgba(13,27,24,0.04)}
+    .logo{display:flex;align-items:center;gap:10px}
+    nav a{margin-left:14px;text-decoration:none;color:var(--muted);font-size:13px}
+    .hero{max-width:960px;margin:28px auto;padding:0 22px}
+    h1{font-size:24px;margin:0}
+    .intro{color:var(--muted);margin-top:8px}
+    .mood-slab{display:flex;gap:8px;margin-top:18px}
+    .mood-btn{padding:8px 12px;border-radius:999px;border:1px solid rgba(13,27,24,0.06);background:transparent;cursor:pointer;color:var(--muted)}
+    .mood-btn.active{background:var(--accent);color:#fff}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
+    .testimonial{background:var(--card);padding:16px;border-radius:10px;border:1px solid rgba(13,27,24,0.03)}
+    .quote{font-size:15px;margin:0 0 10px;color:#0b3328}
+    .who{font-size:13px;color:var(--muted)}
+    .cta-row{margin-top:18px;display:flex;gap:8px}
+    .btn{background:var(--accent);color:#fff;border:0;padding:10px 14px;border-radius:8px;text-decoration:none}
+    .ghost{background:transparent;border:1px solid rgba(13,27,24,0.06);padding:10px;border-radius:8px}
+    .pattern-svg{position:absolute;left:10px;top:120px;opacity:0.06;width:280px;height:280px}
+    @media(max-width:920px){.grid{grid-template-columns:1fr}.pattern-svg{display:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <div style="width:44px;height:44px;border-radius:9px;background:linear-gradient(135deg,#0b6b5a,#0a5d4e);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">WC</div>
+      <div>
+        <div style="font-weight:700">Stories</div>
+        <div style="font-size:12px;color:var(--muted)">{{BUSINESS_NAME}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/services.html">Offerings</a>
+      <a href="/programs.html">Programs</a>
+      <a href="/pricing.html">Investment</a>
+      <a href="/book.html">Reserve</a>
+    </nav>
+  </header>
+
+  <main class="hero">
+    <h1>Client notes — what shifts look like</h1>
+    <p class="intro">Short narratives about outcomes, practical routines and the frameworks clients kept using. Pick a starting mood and see which approach lands.</p>
+
+    <div class="mood-slab" role="tablist" aria-label="Mood selector">
+      <button class="mood-btn active" data-key="overwhelmed">Overwhelmed</button>
+      <button class="mood-btn" data-key="stuck">Stuck</button>
+      <button class="mood-btn" data-key="eager">Eager</button>
+      <button class="mood-btn" data-key="exploring">Exploring</button>
+    </div>
+
+    <div id="recommend" style="margin-top:18px;background:#fff;padding:14px;border-radius:10px;border:1px solid rgba(13,27,24,0.04);max-width:760px">
+      <strong style="display:block;color:var(--muted)">Recommended approach</strong>
+      <div id="recTitle" style="font-weight:700;margin-top:6px">Reset & Prioritize</div>
+      <div id="recCopy" style="color:var(--muted);margin-top:6px">A focused audit to free up decision energy and establish two daily anchors you can sustain this week.</div>
+      <div class="cta-row"><a id="recCta" class="btn" href="{{PRIMARY_CTA_URL}}?mood=overwhelmed">Reserve a short consult</a><a class="ghost" href="/programs.html">See related paths</a></div>
+    </div>
+
+    <div class="grid" id="testGrid">
+      <article class="testimonial" data-moods='["overwhelmed","stuck"]'>
+        <p class="quote">"After a single day, I had a two-step routine that kept my energy steady. The follow-up check made it possible to keep going."</p>
+        <div class="who">— A.C., operations lead</div>
+      </article>
+
+      <article class="testimonial" data-moods='["eager","exploring"]'>
+        <p class="quote">"We designed a full week I could actually live with. Small moves, big difference: focus, time to move, and a clear wrap-up each evening."</p>
+        <div class="who">— J.R., founder</div>
+      </article>
+
+      <article class="testimonial" data-moods='["stuck","exploring"]'>
+        <p class="quote">"The VIP Day helped me test a framework and leave with a living plan — not an abstract checklist. I still use it three months later."</p>
+        <div class="who">— S.L., educator</div>
+      </article>
+    </div>
+
+  </main>
+
+  <svg class="pattern-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <defs>
+      <pattern id="p1" width="20" height="20" patternUnits="userSpaceOnUse">
+        <circle cx="4" cy="4" r="3" fill="#0b6b5a" fill-opacity="0.08" />
+      </pattern>
+    </defs>
+    <rect width="200" height="200" fill="url(#p1)" />
+  </svg>
+
+  <script>
+    // Mood-to-Method: interactive selector morphs recommended approach and CTA
+    (function(){
+      const map = {
+        overwhelmed: {
+          title: 'Stabilize energy, reduce options',
+          copy: 'Short triage: clear commitments, a single daily anchor and two micro-habits to lower friction.',
+          cta: 'Book a 30-minute triage',
+          urlParam: 'overwhelmed'
+        },
+        stuck: {
+          title: 'Unblock patterns with a mini experiment',
+          copy: 'We design one small experiment you can run this week with concrete success markers.',
+          cta: 'Start an experiment',
+          urlParam: 'stuck'
+        },
+        eager: {
+          title: 'Amplify momentum with structure',
+          copy: 'A week-long framework that holds energy and channels it into daily deliverables.',
+          cta: 'Claim a momentum plan',
+          urlParam: 'eager'
+        },
+        exploring: {
+          title: 'Try methods with low commitment',
+          copy: 'A compact test-day and follow-up to see which frameworks actually fit your rhythm.',
+          cta: 'Try a test day',
+          urlParam: 'exploring'
+        }
+      };
+
+      const buttons = Array.from(document.querySelectorAll('.mood-btn'));
+      const titleEl = document.getElementById('recTitle');
+      const copyEl = document.getElementById('recCopy');
+      const ctaEl = document.getElementById('recCta');
+
+      function setMood(key){
+        buttons.forEach(b=>b.classList.toggle('active', b.getAttribute('data-key')===key));
+        const data = map[key];
+        // subtle morphing animation
+        titleEl.style.opacity = 0; copyEl.style.opacity = 0; ctaEl.style.opacity = 0;
+        setTimeout(()=>{
+          titleEl.textContent = data.title;
+          copyEl.textContent = data.copy;
+          ctaEl.textContent = data.cta;
+          ctaEl.href = '{{PRIMARY_CTA_URL}}?mood=' + data.urlParam;
+          titleEl.style.opacity = 1; copyEl.style.opacity = 1; ctaEl.style.opacity = 1;
+        }, 200);
+
+        // filter testimonials by mood
+        const cards = document.querySelectorAll('.testimonial');
+        cards.forEach(card=>{
+          const moods = JSON.parse(card.getAttribute('data-moods'));
+          card.style.display = moods.includes(key) ? 'block' : 'none';
+        });
+      }
+
+      buttons.forEach(btn=>btn.addEventListener('click', ()=>setMood(btn.getAttribute('data-key'))));
+
+      // init
+      setMood('overwhelmed');
+    })();
+  </script>
+</body>
+</html>

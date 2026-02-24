@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Schedule a planning call or book a series — select your scope and we'll confirm next steps." />
+  <style>
+    :root{--bg:#071421;--card:#071020;--accent:#8ee7c8;--muted:#9fb8c3;--maxw:980px}
+    body{margin:0;font-family:Inter,system-ui,Arial;color:#e6f7ef;background:linear-gradient(180deg,#021018 0%,#071421 100%)}
+    header{max-width:var(--maxw);margin:18px auto;padding:14px;display:flex;justify-content:space-between;align-items:center}
+    nav a{color:#cfe9e0;text-decoration:none;margin:0 8px;font-weight:600}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#6bd3ff);display:flex;align-items:center;justify-content:center;color:#012}
+    main{max-width:var(--maxw);margin:16px auto;padding:18px}
+
+    .split{display:grid;grid-template-columns:1fr 380px;gap:20px}
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    h1{margin:0;color:#e6fff4}
+    .muted{color:var(--muted)}
+
+    form{display:flex;flex-direction:column;gap:10px}
+    input,select,textarea{padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#e7fff6}
+    label{font-weight:700;color:#dfffe9}
+    .small{font-size:13px;color:var(--muted)}
+    .submit{background:var(--accent);color:#012;border:0;padding:12px 14px;border-radius:12px;font-weight:800}
+
+    .options{display:flex;flex-direction:column;gap:8px}
+    .option{padding:12px;border-radius:10px;background:rgba(255,255,255,0.01);display:flex;justify-content:space-between;align-items:center}
+
+    .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+    @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+
+    @media (max-width:920px){.split{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo">W</div>
+      <div>
+        <div style="font-weight:800;color:#e6fff4">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Philosophy</a>
+      <a href="services.html">Offerings</a>
+      <a href="programs.html">Paths</a>
+      <a href="pricing.html">Invest</a>
+      <a href="testimonials.html">Stories</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="split">
+      <section class="panel reveal">
+        <h1>Reserve time</h1>
+        <p class="muted">Choose a path and tell us what you want to focus on. We'll follow up with a short intake and confirmation.</p>
+
+        <div style="margin-top:12px">
+          <div class="options">
+            <label for="map" style="font-weight:800;color:#e6fff4">Mapping call — 30 min</label>
+            <div class="option small">A focused 30-minute plan to scope the right series. <strong>Free</strong> for first-time guests.</div>
+
+            <label for="found" style="font-weight:800;color:#e6fff4">Foundations Sprint — 4 weeks</label>
+            <div class="option small">Intake, weekly coaching, daily prompts — $1,100.</div>
+
+            <label for="rhythm" style="font-weight:800;color:#e6fff4">Rhythm Build — 8 weeks</label>
+            <div class="option small">Two deep coaching sessions and a weekly rhythm plan — $2,400.</div>
+          </div>
+        </div>
+
+        <div style="margin-top:18px">
+          <a class="submit" href="mailto:{{EMAIL}}?subject=Booking%20Request">Request a booking via email</a>
+        </div>
+      </section>
+
+      <aside class="panel reveal">
+        <h2 style="margin-top:0;color:#e6fff4">Quick booking form</h2>
+        <form id="bookingForm" action="#" method="post" onsubmit="return handleSubmit(event)">
+          <label for="name">Your name</label>
+          <input id="name" name="name" required placeholder="First & last" />
+
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required placeholder="you@domain.com" />
+
+          <label for="focus">Primary focus</label>
+          <select id="focus" name="focus">
+            <option value="clarity">Daily rhythm & focus</option>
+            <option value="habit">Habit architecture</option>
+            <option value="transition">Role transition or schedule change</option>
+            <option value="other">Other</option>
+          </select>
+
+          <label for="scope">Choose option</label>
+          <select id="scope" name="scope">
+            <option value="map">Mapping call — 30m</option>
+            <option value="found">Foundations Sprint — 4w</option>
+            <option value="rhythm">Rhythm Build — 8w</option>
+            <option value="steady">Steady Way — 16w</option>
+          </select>
+
+          <label for="notes">Short note (what would you like first)</label>
+          <textarea id="notes" name="notes" rows="4" placeholder="A sentence or two..." ></textarea>
+
+          <div style="display:flex;gap:8px;align-items:center;margin-top:12px">
+            <button class="submit" type="submit">Send request</button>
+            <button type="button" id="tryNow3" style="background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);padding:10px;border-radius:8px">Try a short practice</button>
+          </div>
+
+          <div id="status" class="small muted" style="margin-top:10px"></div>
+        </form>
+      </aside>
+    </div>
+
+    <section style="margin-top:18px" class="reveal">
+      <h3 style="color:#e6fff4">What to expect next</h3>
+      <ol class="muted">
+        <li>We confirm availability and send a brief intake.</li>
+        <li>During the mapping call we map outcomes and recommended scope.</li>
+        <li>We start with 1:1 coaching and daily micro-assignments to practice the plan.</li>
+      </ol>
+    </section>
+  </main>
+
+  <footer style="max-width:var(--maxw);margin:28px auto 60px;padding:18px;color:var(--muted);text-align:center">Questions? Email <a href="mailto:{{EMAIL}}" style="color:var(--muted)">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}" style="color:var(--muted)">{{PHONE}}</a></footer>
+
+  <!-- Modal reused for practice -->
+  <div id="modal" style="display:none;position:fixed;inset:0;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);z-index:60">
+    <div style="background:#021220;color:#e8f7f2;width:92%;max-width:700px;border-radius:12px;padding:18px">
+      <header style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <h3 style="margin:0;color:#012">Quick practice</h3>
+          <div class="muted">2–3 minute anchor to reset attention</div>
+        </div>
+        <button id="closeModal3" style="background:transparent;border:0;color:var(--muted);font-weight:700">Close</button>
+      </header>
+      <div style="margin-top:10px;display:flex;gap:8px">
+        <select id="exerciseSelect3" style="flex:1;padding:8px;border-radius:8px;border:1px solid rgba(1,6,10,.08)">
+          <option value="breath">Breath pause — 2m</option>
+          <option value="intent">Set an intention — 3 steps</option>
+        </select>
+        <button id="startBtn3" style="background:var(--accent);border-radius:10px;padding:8px 12px;border:0;color:#012;font-weight:700">Start</button>
+      </div>
+      <div id="exercise3" style="margin-top:12px"></div>
+    </div>
+  </div>
+
+  <script>
+    // Reveal
+    (function(){
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if(reduce){document.querySelectorAll('.reveal').forEach(e=>e.classList.add('visible'));return}
+      const observer = new IntersectionObserver((entries)=>{entries.forEach(en=>{if(en.isIntersecting){en.target.classList.add('visible');observer.unobserve(en.target)}}),{threshold:0.1});
+      document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+    })();
+
+    // Form submit (mock)
+    function handleSubmit(e){
+      e.preventDefault();
+      const status = document.getElementById('status');
+      status.textContent = 'Sending request...';
+      setTimeout(()=>{status.textContent = 'Request sent. We will follow up via email to confirm scheduling.'},900);
+      return false;
+    }
+
+    // Modal practice logic
+    (function(){
+      const modal = document.getElementById('modal');
+      const tryBtn = document.getElementById('tryNow3');
+      const close = document.getElementById('closeModal3');
+      const start = document.getElementById('startBtn3');
+      const select = document.getElementById('exerciseSelect3');
+      const out = document.getElementById('exercise3');
+      let t=null, idx=0, steps=[];
+      function open(){modal.style.display='flex';select.focus();out.innerHTML=''}
+      function closeModal(){modal.style.display='none';clearInterval(t)}
+      tryBtn.addEventListener('click',open);close.addEventListener('click',closeModal);
+      modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
+      start.addEventListener('click',()=>{
+        clearInterval(t);out.innerHTML='';idx=0;const v=select.value;
+        if(v==='breath'){steps=['Sit comfortably.','Breathe in 4s.','Hold 2s.','Exhale 6s.','Repeat for two minutes.'];t=setInterval(()=>{if(idx<steps.length){out.innerHTML+='<div>'+steps[idx]+'</div>';idx++}else{clearInterval(t);out.innerHTML+='<div class="muted">Done.</div>'}},1700)}
+        if(v==='intent'){steps=['Pause 15 seconds.','Name one focused outcome.','Choose the smallest next action.'];t=setInterval(()=>{if(idx<steps.length){out.innerHTML+='<div>'+steps[idx]+'</div>';idx++}else{clearInterval(t);out.innerHTML+='<div class="muted">Carry that forward.</div>'}},2000)}
+      });
+    })();
+  </script>
+</body>
+</html>

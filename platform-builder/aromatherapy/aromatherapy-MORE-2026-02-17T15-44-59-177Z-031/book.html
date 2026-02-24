@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Schedule — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--muted:#666;--accent:#00a3ff;--accent-2:#7a5cff;font-family:system-ui,-apple-system,'Segoe UI',Roboto}
+    body{margin:0;background:linear-gradient(180deg,#fff #f8fbff);color:#111}
+    header{display:flex;justify-content:space-between;align-items:center;padding:14px 22px;border-bottom:1px solid #efefef}
+    nav a{margin:0 8px;color:#333;text-decoration:none}
+    .wrap{max-width:980px;margin:30px auto;padding:0 18px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:20px}
+    .card{background:#fff;padding:18px;border-radius:12px;box-shadow:0 8px 20px rgba(20,20,30,0.04)}
+    h1{margin:0 0 8px}
+    label{display:block;font-weight:600;margin-top:10px}
+    input[type="text"],input[type="email"],select,textarea{width:100%;padding:10px;border:1px solid #eee;border-radius:8px;margin-top:6px}
+    button.cta{margin-top:12px;padding:12px 16px;border-radius:10px;background:linear-gradient(90deg,var(--accent),var(--accent-2));border:none;color:#fff;font-weight:700}
+    .mood-grid{display:flex;gap:8px;margin-top:8px}
+    .mood-btn{padding:8px 10px;border-radius:10px;border:1px solid #eee;background:#fff;cursor:pointer}
+    .mood-btn.active{background:linear-gradient(90deg,var(--accent-2),var(--accent));color:#fff;border-color:transparent}
+    .note-box{margin-top:14px;padding:12px;border-radius:10px;background:#fbfbff;border:1px solid #f0f2ff}
+    .small{font-size:13px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:900">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Shop</a>
+      <a href="pricing.html">Memberships</a>
+      <a href="about.html">About</a>
+      <a href="book.html">Schedule</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <div class="grid">
+      <div>
+        <div class="card">
+          <h1>Book a session</h1>
+          <p class="small">Choose a time and indicate what you want to work with. Sessions may support habitual scenting and practical guidance; they are not medical appointments.</p>
+
+          <form id="bookingForm">
+            <label for="name">Your name</label>
+            <input id="name" type="text" required>
+
+            <label for="email">Email</label>
+            <input id="email" type="email" required>
+
+            <label for="service">Service</label>
+            <select id="service">
+              <option value="intro">Intro Session (30m)</option>
+              <option value="custom">Customized Blend + Follow-up (60m)</option>
+              <option value="membership">Membership Planning (45m)</option>
+            </select>
+
+            <label>How are you feeling?</label>
+            <div class="mood-grid">
+              <button type="button" class="mood-btn" data-mood="calm">Calm</button>
+              <button type="button" class="mood-btn" data-mood="alert">Alert</button>
+              <button type="button" class="mood-btn" data-mood="sleep">Sleepy</button>
+              <button type="button" class="mood-btn" data-mood="ground">Grounded</button>
+            </div>
+
+            <div class="note-box">
+              <div style="font-weight:700" id="bookingMethod">Recommended: Short ritual</div>
+              <div id="bookingDesc" class="small">Select a mood to personalize the session focus and suggested starting blend.</div>
+            </div>
+
+            <label for="notes">Any notes (allergies, pets, pregnancy, etc.)</label>
+            <textarea id="notes" rows="4" placeholder="Let us know about pets, pregnancy, sensitivities, or anything else"></textarea>
+
+            <button class="cta" type="submit" id="submitBtn">Confirm appointment</button>
+          </form>
+
+          <div style="margin-top:12px;font-size:13px;color:var(--muted)">
+            <strong>Safety first:</strong> We recommend a patch test for topical blends, clear dilution guidance, and a conversation about pets or pregnancy before regular use.
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <strong>Quick notes</strong>
+          <p class="small">Sessions provide educational aroma guidance. If you are pregnant, nursing, or managing a health condition, please consult a healthcare professional and inform us prior to any topical application.</p>
+        </div>
+      </div>
+
+      <aside>
+        <div class="card">
+          <strong>Available times</strong>
+          <div id="slots" style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+            <button class="slot">Tomorrow • 10:00 AM</button>
+            <button class="slot">Tomorrow • 2:00 PM</button>
+            <button class="slot">Next Tue • 5:30 PM</button>
+          </div>
+
+          <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+            <a class="cta" href="pricing.html">View memberships</a>
+            <a class="small" href="contact.html" style="margin-left:auto">Need help?</a>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <strong>Explore notes</strong>
+          <svg id="miniWheel" viewBox="0 0 200 200" width="200" height="200" style="display:block;margin-top:10px">
+            <g transform="translate(100,100)">
+              <circle r="86" fill="#fff" stroke="#f3f3f7"/>
+              <path id="mTop" d="M0,-86 A86,86 0 0,1 73,-47 L0,0 Z" fill="#fff0f2"/>
+              <path id="mMid" d="M73,-47 A86,86 0 0,1 73,47 L0,0 Z" fill="#eff8ff"/>
+              <path id="mBase" d="M73,47 A86,86 0 0,1 0,86 L0,0 Z" fill="#f0fff0"/>
+              <circle r="42" fill="#fff"/>
+              <text x="0" y="6" text-anchor="middle" style="font-size:12px;fill:#333">Notes</text>
+            </g>
+          </svg>
+          <div style="margin-top:8px;font-size:13px;color:var(--muted)" id="miniName">Hover segments</div>
+          <div style="font-size:13px;color:var(--muted)" id="miniDesc">Top: bright. Middle: body. Base: anchor.</div>
+        </div>
+      </aside>
+    </div>
+
+    <footer style="margin-top:18px;text-align:center;color:var(--muted)">{{BUSINESS_NAME}} • <a href="contact.html">Contact</a> • {{CITY}}, {{STATE}}</footer>
+  </main>
+
+  <script>
+    // Mood-to-Method for booking
+    const moodBtns = document.querySelectorAll('.mood-btn');
+    const bookingMethod = document.getElementById('bookingMethod');
+    const bookingDesc = document.getElementById('bookingDesc');
+    const submitBtn = document.getElementById('submitBtn');
+
+    const prefs = {
+      calm:{title:'Short ritual: grounding inhale',desc:'Lavender + petitgrain in a diffused micro-session. Recommended diffusion for 8–12 minutes. Patch test if topical.',cta:'Reserve a calming slot'},
+      alert:{title:'Focus ritual: crisp lift',desc:'Citrus-forward blend in quick bursts; diffuse briefly for attention windows.',cta:'Reserve a focus slot'},
+      sleep:{title:'Pre-sleep routine',desc:'Warm base notes combined with soft florals; use as a diluted roll-on near bedtime.',cta:'Reserve a sleep session'},
+      ground:{title:'Rooting ritual',desc:'Warm, resinous oils used in a diluted roll and mindful breathing practice.',cta:'Reserve a grounding session'}
+    };
+
+    function setBookingMood(mood){
+      moodBtns.forEach(b=>b.classList.toggle('active', b.dataset.mood===mood));
+      const p = prefs[mood] || prefs.calm;
+      bookingMethod.textContent = 'Recommended: ' + p.title;
+      bookingDesc.textContent = p.desc;
+      submitBtn.textContent = p.cta;
+    }
+
+    moodBtns.forEach(b=>b.addEventListener('click', ()=>setBookingMood(b.dataset.mood)));
+    setBookingMood('calm');
+
+    // Mini wheel hover
+    const mTop = document.getElementById('mTop');
+    const mMid = document.getElementById('mMid');
+    const mBase = document.getElementById('mBase');
+    const miniName = document.getElementById('miniName');
+    const miniDesc = document.getElementById('miniDesc');
+
+    mTop.addEventListener('mouseenter', ()=>{ miniName.textContent='Top notes'; miniDesc.textContent='Bright, citrus and herbaceous; first impressions.' });
+    mMid.addEventListener('mouseenter', ()=>{ miniName.textContent='Middle notes'; miniDesc.textContent='Floral and spicy midtones that shape blends.' });
+    mBase.addEventListener('mouseenter', ()=>{ miniName.textContent='Base notes'; miniDesc.textContent='Long-lasting anchors: woods, resins and balsams.' });
+    [mTop,mMid,mBase].forEach(el=>el.addEventListener('mouseleave', ()=>{ miniName.textContent='Hover segments'; miniDesc.textContent='Top: bright. Middle: body. Base: anchor.' }))
+
+    // Simple booking handler (mock)
+    document.getElementById('bookingForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      alert('Thanks, ' + name + '. A confirmation will be sent to ' + email + '.');
+      this.reset();
+      setBookingMood('calm');
+    });
+  </script>
+</body>
+</html>

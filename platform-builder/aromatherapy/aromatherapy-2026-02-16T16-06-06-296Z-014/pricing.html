@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Plans — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg1:#073642;--bg2:#0a5f6b;--accent:#ffd166;--muted:#f7f7f8;--glass:rgba(255,255,255,0.06);--card:#0f1720;--radius:14px}
+    *{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    html,body{height:100%;margin:0;background:linear-gradient(160deg,var(--bg1),var(--bg2));color:var(--muted);}
+    .wrap{max-width:1100px;margin:40px auto;padding:36px;position:relative}
+    nav{display:flex;gap:18px;align-items:center;margin-bottom:28px}
+    .brand{font-weight:700;font-size:18px;color:var(--accent)}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:10px}
+    nav a:hover{background:var(--glass)}
+    header.hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start;margin-bottom:28px}
+    .hero .lead{background:linear-gradient(180deg,rgba(255,255,255,0.03),transparent);padding:26px;border-radius:16px}
+    .headline{font-size:28px;margin:0 0 8px;color:#fff}
+    p.lead-desc{margin:0;color:rgba(255,255,255,0.8)}
+    .aside-card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:20px;border-radius:12px;border:1px solid rgba(255,255,255,0.04)}
+    .tiers{display:flex;gap:18px;margin:22px 0}
+    .tier{background:linear-gradient(135deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.04);flex:1}
+    .tier h3{margin:0 0 8px;color:var(--accent)}
+    .price{font-weight:700;font-size:20px;margin-bottom:8px}
+    .btn{display:inline-block;padding:10px 14px;border-radius:12px;background:var(--accent);color:#052026;text-decoration:none;font-weight:700}
+    section{margin:28px 0;padding:18px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .pill{background:var(--card);padding:14px;border-radius:10px}
+    .muted{color:rgba(255,255,255,0.7);font-size:14px}
+    footer.cta{display:flex;justify-content:space-between;align-items:center;padding:18px;border-radius:12px;margin-top:18px}
+    .svg-bg{position:fixed;right:-120px;top:-80px;width:520px;height:520px;opacity:0.12;transform:rotate(12deg)}
+    @media(max-width:880px){header.hero{grid-template-columns:1fr;}.grid{grid-template-columns:1fr}.svg-bg{display:none}}
+  </style>
+</head>
+<body>
+  <svg class="svg-bg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1">
+        <stop offset="0" stop-color="#ffd166" />
+        <stop offset="1" stop-color="#ff7b7b" />
+      </linearGradient>
+      <pattern id="p1" width="20" height="20" patternUnits="userSpaceOnUse">
+        <rect width="10" height="10" fill="#0a5f6b" />
+        <rect x="10" y="10" width="10" height="10" fill="#073642" />
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#p1)" />
+    <circle cx="100" cy="100" r="80" fill="url(#g1)" opacity="0.85" />
+    <g fill="#fff" opacity="0.06">
+      <path d="M10 30c30-20 70 0 90 20s40 70 10 90c-30 20-70 0-90-20S-20 50 10 30z"/>
+    </g>
+  </svg>
+
+  <div class="wrap">
+    <nav>
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <a href="index.html">Start</a>
+      <a href="services.html">Services</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Shop</a>
+      <a href="pricing.html" aria-current="page">Plans</a>
+      <a href="about.html">About</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+
+    <header class="hero">
+      <div class="lead">
+        <h1 class="headline">Clear, transparent pricing for aromatic wellbeing</h1>
+        <p class="lead-desc">We offer modular options — single sessions, bundled consults, and at-home kits. All prices are designed for clarity; safety guidance included with every purchase. No medical claims, only thoughtful sensory support.</p>
+        <div class="tiers" role="list">
+          <div class="tier" role="listitem">
+            <h3>Starter Roll-On Kit</h3>
+            <div class="price">$29 — one-time</div>
+            <div class="muted">Three trial blends + dilution guides</div>
+            <div style="margin-top:12px"><a class="btn" href="shop.html">Shop kit</a></div>
+          </div>
+          <div class="tier" role="listitem">
+            <h3>Consult Bundle</h3>
+            <div class="price">$140 — 3 sessions</div>
+            <div class="muted">Intake, personalised blends, follow-up notes</div>
+            <div style="margin-top:12px"><a class="btn" href="book.html">Bundle details</a></div>
+          </div>
+          <div class="tier" role="listitem">
+            <h3>Subscription Care</h3>
+            <div class="price">$24 / month</div>
+            <div class="muted">Monthly mini-kit + seasonal guidance</div>
+            <div style="margin-top:12px"><a class="btn" href="contact.html">Join waitlist</a></div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="aside-card">
+        <h4 style="margin:0 0 8px;color:var(--accent)">What’s included</h4>
+        <p class="muted">Every paid consult includes a written safety brief, recommended dilutions, and a documented patch-test protocol. Products ship with usage and storage notes.</p>
+        <div style="margin-top:12px"><a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+      </aside>
+    </header>
+
+    <section aria-labelledby="pricing-myth">
+      <h2 id="pricing-myth">Pricing myths & practical truths</h2>
+      <div class="grid" style="margin-top:12px">
+        <div class="pill">
+          <strong>Myth:</strong> Higher price means safer.
+          <p class="muted">Truth: Safety depends on transparency, testing, and education. We prioritise clear dilution and sourcing info.</p>
+        </div>
+        <div class="pill">
+          <strong>Myth:</strong> All blends are interchangeable.
+          <p class="muted">Truth: Aroma composition, volatility, and phloem chemistry matter. We match blends to lifestyle and safety needs.</p>
+        </div>
+        <div class="pill">
+          <strong>Myth:</strong> You can skip patch tests.</p>
+          <p class="muted">Truth: Patch tests are low-effort, high-value safety checks for topical use; always recommended.</p>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="principles">
+      <h2 id="principles">Three pillars of how we price and deliver</h2>
+      <ol style="margin:12px 0 0;padding-left:18px;color:var(--muted)">
+        <li><strong>Evidence-aware sourcing</strong> — supplier transparency and GC/MS where available.</li>
+        <li><strong>Client-centred clarity</strong> — written guidance and dilutions bundled with services.</li>
+        <li><strong>Safety-first packaging</strong> — child-resistant closures and clear labels.</li>
+      </ol>
+    </section>
+
+    <section aria-labelledby="case-notes">
+      <h2 id="case-notes">Illustrative case notes (anonymised)</h2>
+      <p class="muted">Session note excerpt: Client reported preference for citrus top-notes. Adjusted recommendation to a 1.5% dilution for topical roll-on; patch test advised 24–48 hours. Follow-up: client noted improved sleep onset when diffusing <em>{{FAVORITE_BLEND}}</em> at 15 minutes pre-bed (no inhalation claims).</p>
+    </section>
+
+    <section aria-labelledby="faq">
+      <h2 id="faq">Common questions — safety first</h2>
+      <details open>
+        <summary style="cursor:pointer">How do you set dilutions?</summary>
+        <p class="muted">We provide conservative dilution ranges based on intended use (aromatherapy, topical, mild sensory support). We never recommend therapeutic dosing or clinical treatment levels.</p>
+      </details>
+      <details>
+        <summary style="cursor:pointer">What about patch tests?</summary>
+        <p class="muted">Always do a patch test for topical blends: apply a small amount (diluted) to forearm, observe 24–48 hours for irritation.</p>
+      </details>
+      <details>
+        <summary style="cursor:pointer">Are your products pet-safe?</summary>
+        <p class="muted">Certain oils can be irritating to pets; we provide pet-safety notes and recommend avoiding direct topical use on animals and ensuring ventilation when diffusing. Consult your veterinarian for animal health concerns.</p>
+      </details>
+      <details>
+        <summary style="cursor:pointer">Pregnancy and nursing note?</summary>
+        <p class="muted">Many oils are contraindicated in pregnancy or require modified dilutions. Always inform your practitioner; we will recommend avoidance and safer alternatives.</p>
+      </details>
+    </section>
+
+    <footer class="cta">
+      <div>
+        <strong style="color:var(--accent)">{{BUSINESS_NAME}}</strong>
+        <div class="muted">Transparent pricing and safety-forward aromatherapy services in {{CITY}}, {{STATE}}</div>
+      </div>
+      <div>
+        <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

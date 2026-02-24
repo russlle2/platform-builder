@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Sessions — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--card:#fff;--accent:#225d4a;--muted:#606060}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial;background:var(--bg);color:#111}
+    header{display:flex;justify-content:space-between;align-items:center;padding:14px 22px;border-bottom:1px solid #eee}
+    .logo{font-weight:800;color:var(--accent)}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none;font-weight:700}
+    main{max-width:1000px;margin:22px auto;padding:0 20px}
+    .lead{display:flex;gap:18px;background:linear-gradient(180deg,#fff,#f6fffb);padding:22px;border-radius:12px}
+    .lead h1{margin:0;font-size:20px}
+    .services{display:grid;grid-template-columns:1fr 300px;gap:18px;margin-top:18px}
+    .card{background:#fff;padding:16px;border-radius:10px;box-shadow:0 8px 30px rgba(10,10,10,0.04)}
+    .plan{margin-top:12px;background:#f8fdf9;padding:12px;border-radius:8px}
+    .btn{padding:10px 12px;border-radius:8px;background:var(--accent);color:#fff;border:none;font-weight:700}
+    .session-form label{display:block;margin-top:10px;font-weight:700}
+    .session-form input,.session-form select, .session-form textarea{width:100%;padding:8px;margin-top:6px;border-radius:8px;border:1px solid #eee}
+    pre{background:#fbfbfb;padding:10px;border-radius:8px}
+    .pattern{position:fixed;inset:0;opacity:0.05;pointer-events:none;background-image:url('assets/img/pattern.svg');background-repeat:repeat}
+  </style>
+</head>
+<body>
+  <div class="pattern" aria-hidden="true"></div>
+  <header>
+    <div class="logo">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Why Us</a>
+      <a href="services.html">Sessions</a>
+      <a href="programs.html">Programs</a>
+      <a href="pricing.html">Rates</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="lead">
+      <div style="flex:1">
+        <h1>Sessions designed to deliver a short, usable plan</h1>
+        <p style="margin-top:8px;color:var(--muted)">Select the time, focus, and cadence — walk away with a short weekly outline and 3 micro-habits to start tomorrow.</p>
+      </div>
+      <div style="width:260px;text-align:right">
+        <div style="font-weight:800">VIP Day available</div>
+        <div style="color:var(--muted);margin-top:6px">A concentrated session to leave with a full implementation plan.</div>
+        <div style="margin-top:12px"><a class="btn" href="book.html">Reserve day</a></div>
+      </div>
+    </section>
+
+    <div class="services">
+      <div>
+        <section class="card">
+          <h3 style="margin-top:0">Interactive Session Planner</h3>
+          <p style="color:var(--muted)">Build a short, personalized session plan. Copy the plaintext summary and take it to your calendar.</p>
+
+          <form id="planner" class="session-form" onsubmit="return false;">
+            <label>Primary outcome</label>
+            <input id="outcome" placeholder="Example: Sleep earlier; reduce afternoon dips">
+            <label>Session length</label>
+            <select id="length">
+              <option>60 minutes</option>
+              <option>90 minutes</option>
+              <option>Half-day (3 hours)</option>
+            </select>
+            <label>Days per week you can commit</label>
+            <select id="days">
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+              <option>5</option>
+            </select>
+            <label>Focus areas (comma-separated)</label>
+            <input id="focus" placeholder="e.g., sleep, movement, focus blocks">
+            <label style="margin-top:10px">Notes / constraints</label>
+            <textarea id="notes" rows="3" placeholder="Time windows, pre-existing routines, caring responsibilities"></textarea>
+            <div style="margin-top:12px;display:flex;gap:8px">
+              <button id="buildPlan" class="btn">Create plan</button>
+              <button id="downloadPlan" class="btn" style="background:#444">Download</button>
+            </div>
+          </form>
+
+          <div style="margin-top:12px">
+            <h4 style="margin:0 0 8px 0">Plan summary</h4>
+            <pre id="planOut">Fill the form and press Create plan.</pre>
+            <button id="copyPlan" style="margin-top:8px;padding:8px;border-radius:8px;border:none;background:var(--accent);color:#fff">Copy plaintext</button>
+          </div>
+        </section>
+
+        <section class="card" style="margin-top:18px">
+          <h4 style="margin-top:0">Session types</h4>
+          <ul style="color:var(--muted)">
+            <li><strong>Momentum Session</strong> — 60 minutes to unstick a recurring obstacle</li>
+            <li><strong>Structure Reset</strong> — 90 minutes to rearrange a week with actionable micro-habits</li>
+            <li><strong>VIP Day</strong> — Half-day intensive to rewrite a routine and leave with an implementation plan</li>
+          </ul>
+        </section>
+
+      </div>
+
+      <aside>
+        <div class="card">
+          <h4 style="margin-top:0">Quick pricing frame</h4>
+          <div class="muted">Momentum Session — sliding scale</div>
+          <div style="margin-top:8px;font-weight:800">VIP Day — custom quote</div>
+          <div style="margin-top:12px"><a class="btn" href="pricing.html">View rates</a></div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <h4 style="margin-top:0">Client process</h4>
+          <ol style="color:var(--muted)">
+            <li>Brief intake</li>
+            <li>Focused session</li>
+            <li>Short weekly plan + three micro-habits</li>
+          </ol>
+        </div>
+      </aside>
+    </div>
+
+  </main>
+
+  <footer style="padding:18px;text-align:center;color:var(--muted)">
+    <div>{{BUSINESS_NAME}} • <a href="contact.html">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+  </footer>
+
+<script>
+  // Simple planner algorithm
+  function recommendSchedule(days, outcome, focus){
+    var parts = [];
+    var focusList = focus.split(',').map(s=>s.trim()).filter(Boolean);
+    for(var i=1;i<=days;i++){
+      var block = 'Day ' + i + ': ';
+      block += (focusList[i-1] || focusList[0] || 'General alignment') + ' — ';
+      block += 'Short goal: ' + (outcome || 'clarify next step') + '. ';
+      block += 'Micro-habit: pick one tiny action.';
+      parts.push(block);
+    }
+    return parts.join('\n');
+  }
+
+  document.getElementById('buildPlan').addEventListener('click', function(e){
+    e.preventDefault();
+    var outcome = document.getElementById('outcome').value.trim();
+    var length = document.getElementById('length').value;
+    var days = parseInt(document.getElementById('days').value,10);
+    var focus = document.getElementById('focus').value;
+    var notes = document.getElementById('notes').value.trim();
+    var header = 'Session plan\nLength: '+length+'\nDays/week: '+days+'\nOutcome: '+(outcome||'—')+'\nFocus: '+(focus||'—')+'\nNotes: '+(notes||'—')+'\n\nWeek outline:\n';
+    var body = recommendSchedule(days,outcome,focus);
+    var summary = header + body + '\n\nThree starter micro-habits:\n- Habit 1: small and specific\n- Habit 2: tether to existing routine\n- Habit 3: track lightly each day';
+    document.getElementById('planOut').textContent = summary;
+  });
+
+  document.getElementById('copyPlan').addEventListener('click', function(){
+    var txt = document.getElementById('planOut').textContent;
+    if(!txt) return alert('No plan to copy');
+    navigator.clipboard.writeText(txt).then(function(){alert('Plan copied to clipboard')});
+  });
+
+  document.getElementById('downloadPlan').addEventListener('click', function(e){
+    e.preventDefault();
+    var txt = document.getElementById('planOut').textContent;
+    if(!txt) return alert('Create a plan first');
+    var blob = new Blob([txt],{type:'text/plain'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = 'session-plan.txt';
+    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  });
+</script>
+</body>
+</html>

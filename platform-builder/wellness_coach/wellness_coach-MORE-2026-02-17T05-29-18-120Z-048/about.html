@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff8f2;--card:#fff4ea;--accent:#b85c2b;--muted:#7a5a45;--glass:rgba(255,255,255,0.6);--shadow:0 6px 20px rgba(88,54,40,0.12);}body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,var(--bg),#fffdf9);color:#4a3426;line-height:1.45}
+    header{display:flex;justify-content:space-between;align-items:center;padding:20px 28px;background:transparent}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,#ffd9c6,#fff0ea);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent);box-shadow:var(--shadow)}
+    nav a{margin-left:18px;text-decoration:none;color:var(--muted);font-weight:600}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;padding:52px 28px;align-items:start}
+    .intro{background:var(--card);padding:28px;border-radius:14px;box-shadow:var(--shadow)}
+    h1{margin:0 0 12px 0;font-size:28px;color:#3e291f}
+    p.lead{margin:0 0 18px 0;color:#5b4033}
+    .cta-row{display:flex;gap:12px}
+    .btn{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+    .btn.ghost{background:transparent;border:2px solid var(--accent);color:var(--accent)}
+    .aside{padding:22px;border-radius:12px;background:linear-gradient(180deg,#fffefb,#fff7ef);box-shadow:var(--shadow)}
+    .meta{font-size:13px;color:#6a4f42}
+
+    section{padding:34px 28px}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:var(--shadow)}
+
+    .process{display:flex;gap:14px;flex-wrap:wrap}
+    .step{flex:1;min-width:200px;background:linear-gradient(180deg,#fff,#fff7f1);padding:16px;border-radius:10px}
+
+    footer{padding:28px;text-align:center;color:var(--muted)}
+
+    /* guided modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.35);display:none;align-items:center;justify-content:center;padding:24px}
+    .modal{background:#fff;padding:22px;border-radius:12px;max-width:640px;width:100%;box-shadow:0 18px 40px rgba(0,0,0,0.18)}
+    .exercise-type{display:flex;gap:8px;margin-bottom:12px}
+    .exercise-type button{flex:1;padding:10px;border-radius:8px;border:1px solid #eee;background:#fff}
+    .meter{height:8px;background:#efe0d7;border-radius:6px;overflow:hidden;margin-top:10px}
+    .meter > i{display:block;height:100%;background:linear-gradient(90deg,#ffb58a,#d66a3d);width:0%}
+
+    /* habit builder */
+    .builder{background:linear-gradient(180deg,#fff8f4,#fff3ec);padding:16px;border-radius:12px}
+    .days{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:12px}
+    .day{padding:8px;border-radius:8px;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;border:1px solid #f0d8c8}
+    .print{margin-top:12px;background:#fff;border:1px dashed #e1b99d;padding:10px;border-radius:8px}
+
+    @media(max-width:880px){.hero{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.days{grid-template-columns:repeat(2,1fr)}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">W</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Begin</a>
+      <a href="about.html" aria-current="page">Our Path</a>
+      <a href="services.html">Offerings</a>
+      <a href="programs.html">Cohorts</a>
+      <a href="pricing.html">Invest</a>
+      <a href="testimonials.html">Kind Words</a>
+      <a href="book.html">Book Time</a>
+      <a href="contact.html">Say Hello</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="intro">
+        <h1>Small practice loops that add up to steadier weeks</h1>
+        <p class="lead">I help busy people design pocket-sized routines — habits you actually keep, grouped into short cohort runs so you learn with others and stay on track.</p>
+        <div class="cta-row">
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">Join the next cohort</a>
+          <a class="btn ghost" href="#try-modal" id="open-exercise">Try a guided exercise</a>
+        </div>
+        <div style="margin-top:12px;font-size:13px;color:var(--muted)">Phone: {{PHONE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      </div>
+      <aside class="aside">
+        <div class="meta">A playful, premium approach to steady habits — cohort-style learning, weekly check-ins, and simple rituals.</div>
+        <div style="margin-top:12px;font-weight:700">Next cohort starts soon</div>
+        <div style="margin-top:10px"><a class="btn" href="{{PRIMARY_CTA_URL}}">Save your seat</a></div>
+      </aside>
+    </section>
+
+    <section>
+      <h2 style="margin-top:0">Why this works</h2>
+      <div class="grid">
+        <div class="card">
+          <strong>Outcome-first frames</strong>
+          <p style="margin:8px 0;color:var(--muted)">We name the real-life change you want, then pick tiny daily moves that reliably nudge you toward it.</p>
+        </div>
+        <div class="card">
+          <strong>Group momentum</strong>
+          <p style="margin:8px 0;color:var(--muted)">Cohorts provide rhythm and accountability — the kind that turns a new action into a habit.</p>
+        </div>
+        <div class="card">
+          <strong>Tools that travel</strong>
+          <p style="margin:8px 0;color:var(--muted)">Simple checklists, short micro-practices, and gentle routines you can do anywhere.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>How we move forward together</h2>
+      <div class="process">
+        <div class="step">
+          <strong>1. Map one goal</strong>
+          <div style="color:var(--muted);margin-top:8px">We pick a tangible outcome and a handful of minute-sized practices to support it.</div>
+        </div>
+        <div class="step">
+          <strong>2. Learn within a cohort</strong>
+          <div style="color:var(--muted);margin-top:8px">Weekly sessions, tiny experiments, and peer check-ins to keep it light and lively.</div>
+        </div>
+        <div class="step">
+          <strong>3. Habitize</strong>
+          <div style="color:var(--muted);margin-top:8px">Track seven-day loops, tweak, and repeat until it fits your life.</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Try the 7-day habit builder</h2>
+      <div class="builder">
+        <label style="font-weight:700">Pick one small practice</label>
+        <input id="habit-input" placeholder="e.g., Morning 3-minute breath, 2-minute journaling" style="width:100%;padding:10px;border-radius:8px;border:1px solid #efd4bf;margin-top:8px">
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <select id="start-day" style="padding:10px;border-radius:8px;border:1px solid #efe0d7">
+            <option>Start on: Today</option>
+            <option>Start on: Tomorrow</option>
+          </select>
+          <button class="btn" id="make-plan">Create 7-day plan</button>
+          <button class="btn ghost" id="print-plan">Print</button>
+        </div>
+        <div id="plan-output" style="margin-top:12px"></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Meet your guide</h2>
+      <div style="display:flex;gap:18px;align-items:center">
+        <div style="width:96px;height:96px;border-radius:16px;background:linear-gradient(135deg,#fff1e6,#ffe9dd);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent)">Hi</div>
+        <div>
+          <div style="font-weight:800">Lead Coach</div>
+          <div style="color:var(--muted);margin-top:6px">I design frameworks for tiny daily changes — no overhaul required. Expect concrete cues and friendly accountability.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>{{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • {{PHONE}}</div>
+    <div style="margin-top:8px">Ready to try cohort learning? <a href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+  </footer>
+
+  <!-- Guided exercise modal -->
+  <div class="modal-backdrop" id="modal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <h3 id="modal-title">Try a quick practice</h3>
+      <div class="exercise-type">
+        <button data-type="breath">Breathing</button>
+        <button data-type="journaling">Journaling</button>
+        <button data-type="intention">Intention</button>
+      </div>
+      <div id="exercise-area">
+        <p style="color:var(--muted)">Choose a practice above to begin a short guided exercise.</p>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+        <button id="close-modal" class="btn ghost">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Modal behavior and guided exercises
+    (function(){
+      const modal = document.getElementById('modal');
+      const openBtn = document.getElementById('open-exercise');
+      const closeBtn = document.getElementById('close-modal');
+      const exerciseArea = document.getElementById('exercise-area');
+      let runner = null;
+
+      function openModal(){ modal.style.display='flex'; }
+      function closeModal(){ modal.style.display='none'; stopRunner(); }
+
+      openBtn.addEventListener('click',function(e){ e.preventDefault(); openModal(); });
+      closeBtn.addEventListener('click',closeModal);
+
+      document.querySelectorAll('.exercise-type button').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          const type = btn.dataset.type; startExercise(type);
+        });
+      });
+
+      function stopRunner(){ if(runner && runner.cancel) runner.cancel(); runner=null; }
+
+      function startExercise(type){ stopRunner(); exerciseArea.innerHTML='';
+        if(type==='breath') runBreathing();
+        else if(type==='journaling') runJournaling();
+        else runIntention();
+      }
+
+      function runBreathing(){
+        const el = document.createElement('div');
+        el.innerHTML='\n          <div style="font-weight:700">Three-round box breath</div>\n          <div style="color:var(--muted);margin-top:8px">Follow the prompts: inhale 4s, hold 4s, exhale 6s. Repeat three times.</div>\n          <div class="meter" style="margin-top:12px"><i id="meter-bar"></i></div>\n          <div style="margin-top:12px;display:flex;justify-content:space-between"><button id="start-breath" class="btn">Start</button><button id="stop-breath" class="btn ghost">Stop</button></div>\n        ';
+        exerciseArea.appendChild(el);
+        const meter = document.getElementById('meter-bar');
+        let step = 0; let running = false; let timeout;
+        document.getElementById('start-breath').onclick = ()=>{ if(running) return; running=true; step=0; next(); };
+        document.getElementById('stop-breath').onclick = ()=>{ running=false; meter.style.width='0%'; clearTimeout(timeout); };
+        function next(){ if(!running) return; step++; const phase = (step%3); const width = Math.min(100,(step/9)*100); meter.style.width = width+'%';
+          // cycle durations: 4s,4s,6s => 14s per round; 3 rounds ~42s
+          const durations = [4000,4000,6000];
+          const d = durations[phase === 0 ? 0 : phase === 1 ? 1 : 2];
+          timeout = setTimeout(()=>{ if(step<9){ next(); } else { running=false; } }, d);
+        }
+        runner = { cancel: ()=>{ running=false; clearTimeout(timeout); }};
+      }
+
+      function runJournaling(){
+        const el = document.createElement('div');
+        el.innerHTML='\n          <div style="font-weight:700">Two-minute micro-journal</div>\n          <div style="color:var(--muted);margin-top:8px">Write for two minutes on one prompt. Press Start and stop when the timer ends.</div>\n          <div style="margin-top:10px"><textarea id="journal-text" style="width:100%;height:120px;border-radius:8px;padding:10px;border:1px solid #efd4bf"></textarea></div>\n          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><div id="timer">02:00</div><div><button id="start-journal" class="btn">Start</button><button id="stop-journal" class="btn ghost">Stop</button></div></div>\n        ';
+        exerciseArea.appendChild(el);
+        const timerEl = document.getElementById('timer');
+        let total = 120; let running=false; let t;
+        document.getElementById('start-journal').onclick = ()=>{ if(running) return; running=true; tick(); };
+        document.getElementById('stop-journal').onclick = ()=>{ running=false; clearInterval(t); };
+        function tick(){ timerEl.textContent = format(total); t = setInterval(()=>{ total--; timerEl.textContent = format(total); if(total<=0){ clearInterval(t); running=false; } },1000); }
+        function format(s){ const m = Math.floor(s/60); const sec = String(s%60).padStart(2,'0'); return '0'+m+':'+sec; }
+        runner = { cancel: ()=>{ running=false; clearInterval(t); }};
+      }
+
+      function runIntention(){
+        const el = document.createElement('div');
+        el.innerHTML='\n          <div style="font-weight:700">Set an intention (90 seconds)</div>\n          <div style="color:var(--muted);margin-top:8px">Choose a short sentence you can repeat today. We’ll guide you with brief prompts.</div>\n          <ol style="margin-top:10px;color:var(--muted)"><li>Clarify: What matters most today? (30s)</li><li>Condense: Turn that into one line. (30s)</li><li>Anchor: Repeat it quietly 3 times. (30s)</li></ol>\n          <div style="display:flex;justify-content:flex-end;margin-top:10px"><button id="start-intent" class="btn">Start</button><button id="stop-intent" class="btn ghost">Stop</button></div>\n        ';
+        exerciseArea.appendChild(el);
+        let stage=0; let t;
+        document.getElementById('start-intent').onclick = ()=>{ stage=0; nextStage(); };
+        document.getElementById('stop-intent').onclick = ()=>{ clearTimeout(t); };
+        function nextStage(){ stage++; if(stage>3) return; exerciseArea.querySelector('ol').children[stage-1].style.fontWeight='700'; t=setTimeout(nextStage,30000); }
+        runner = { cancel: ()=>{ clearTimeout(t); }};
+      }
+    })();
+
+    // Habit builder: create printable 7-day checklist
+    (function(){
+      const input = document.getElementById('habit-input');
+      const make = document.getElementById('make-plan');
+      const output = document.getElementById('plan-output');
+      const printBtn = document.getElementById('print-plan');
+
+      function renderPlan(text){ if(!text || !text.trim()){ output.innerHTML='<div style="color:var(--muted)">Enter a short practice to generate a 7-day checklist.</div>'; return; }
+        const days = ['Day 1','Day 2','Day 3','Day 4','Day 5','Day 6','Day 7'];
+        const box = document.createElement('div');
+        box.innerHTML='';
+        const grid = document.createElement('div'); grid.className='days';
+        days.forEach((d,i)=>{
+          const day = document.createElement('label'); day.className='day';
+          day.innerHTML = '<div style="font-weight:700">'+d+'</div><div style="font-size:13px;color:var(--muted);">'+text+'</div><input type="checkbox" style="width:18px;height:18px;margin-top:6px">';
+          grid.appendChild(day);
+        });
+        const meta = document.createElement('div'); meta.className='print'; meta.innerHTML = '<div style="font-weight:700">Printable checklist</div><div style="color:var(--muted);margin-top:6px">Tip: check a box each day. Click Print to create a paper copy.</div>';
+        box.appendChild(grid); box.appendChild(meta);
+        output.innerHTML=''; output.appendChild(box);
+      }
+
+      make.addEventListener('click',()=>{ renderPlan(input.value); });
+      printBtn.addEventListener('click',()=>{
+        // open a print window
+        const text = input.value || 'Your practice';
+        const w = window.open('','_blank');
+        const html = '<!doctype html><html><head><meta charset="utf-8"><title>7-day checklist</title><style>body{font-family:Arial;padding:20px} .day{margin:8px 0;padding:10px;border:1px solid #ddd;border-radius:6px}</style></head><body><h2>'+escapeHtml(text)+'</h2>'+
+          ['Day 1','Day 2','Day 3','Day 4','Day 5','Day 6','Day 7'].map(d=>'<div class="day"><input type="checkbox"> '+d+'</div>').join('')+'</body></html>';
+        w.document.write(html); w.document.close(); w.focus(); w.print();
+      });
+
+      function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+      // initial message
+      renderPlan('');
+    })();
+  </script>
+</body>
+</html>

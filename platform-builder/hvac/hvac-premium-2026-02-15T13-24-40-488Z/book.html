@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Book Online | {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Book your HVAC service online with {{BUSINESS_NAME}} in {{CITY}}, {{STATE}}. Fast scheduling for installs, repairs, and maintenance.">
+  <meta name="robots" content="index,follow">
+  <meta property="og:site_name" content="{{BUSINESS_NAME}}">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Book Online — {{BUSINESS_NAME}}">
+  <meta property="og:description" content="Schedule HVAC service in minutes. Choose a time that works for you.">
+  <meta property="og:image" content="assets/img/hero-abstract.svg">
+  <meta property="og:url" content="book.html">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="assets/img/hero-abstract.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script defer src="assets/js/main.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HVACBusiness",
+    "name": "{{BUSINESS_NAME}}",
+    "description": "{{TAGLINE}}",
+    "telephone": "{{PHONE}}",
+    "email": "{{EMAIL}}",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "{{ADDRESS}}",
+      "addressLocality": "{{CITY}}",
+      "addressRegion": "{{STATE}}",
+      "postalCode": "{{ZIP}}"
+    },
+    "areaServed": "{{CITY}}, {{STATE}}",
+    "openingHours": "{{HOURS}}",
+    "url": "book.html"
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header" data-enhance="sticky">
+    <div class="topbar">
+      <div class="container flex between center">
+        <span class="topbar-item">Serving {{CITY}}, {{STATE}}</span>
+        <nav class="topbar-contact" aria-label="Top contact">
+          <a class="topbar-item" href="tel:{{PHONE}}">Call {{PHONE}}</a>
+          <span class="divider" aria-hidden="true">•</span>
+          <a class="topbar-item" href="mailto:{{EMAIL}}">{{EMAIL}}</a>
+          <span class="divider" aria-hidden="true">•</span>
+          <span class="topbar-item">Hours: {{HOURS}}</span>
+        </nav>
+      </div>
+    </div>
+    <div class="navwrap">
+      <div class="container flex between center">
+        <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">HVAC</span><span class="brand-name">{{BUSINESS_NAME}}</span></a>
+        <button class="nav-toggle" aria-controls="site-menu" aria-expanded="false" aria-label="Toggle menu">
+          <span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span>
+        </button>
+        <nav id="site-menu" class="site-nav" aria-label="Primary">
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="pricing.html">Pricing</a></li>
+            <li><a href="financing.html">Financing</a></li>
+            <li><a href="reviews.html">Reviews</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+          <div class="nav-cta"><a class="btn btn-primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-hero slim">
+      <div class="container">
+        <h1>Book your service</h1>
+        <p class="lead">Choose a convenient time. We’ll confirm by phone or email.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container form-wrap">
+        <form id="booking-form" class="form" novalidate>
+          <fieldset>
+            <legend>Your service</legend>
+            <div class="grid form-grid">
+              <div class="field">
+                <label for="service">Service type</label>
+                <select id="service" name="service" required>
+                  <option value="" selected disabled>Select a service</option>
+                  <option>Repair</option>
+                  <option>Seasonal Tune-Up</option>
+                  <option>New System Estimate</option>
+                  <option>Indoor Air Quality</option>
+                </select>
+                <span class="error" id="service-error"></span>
+              </div>
+              <div class="field">
+                <label for="date">Preferred date</label>
+                <input type="date" id="date" name="date" required>
+                <span class="error" id="date-error"></span>
+              </div>
+              <div class="field">
+                <label for="time">Preferred time</label>
+                <select id="time" name="time" required>
+                  <option value="" selected disabled>Select a window</option>
+                  <option>8am–10am</option>
+                  <option>10am–12pm</option>
+                  <option>12pm–2pm</option>
+                  <option>2pm–4pm</option>
+                </select>
+                <span class="error" id="time-error"></span>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Contact details</legend>
+            <div class="grid form-grid">
+              <div class="field">
+                <label for="name">Full name</label>
+                <input type="text" id="name" name="name" autocomplete="name" required>
+                <span class="error" id="name-error"></span>
+              </div>
+              <div class="field">
+                <label for="phone">Phone</label>
+                <input type="tel" id="phone" name="phone" autocomplete="tel" required>
+                <span class="error" id="phone-error"></span>
+              </div>
+              <div class="field">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" autocomplete="email" required>
+                <span class="error" id="email-error"></span>
+              </div>
+              <div class="field full">
+                <label for="notes">Anything we should know?</label>
+                <textarea id="notes" name="notes" rows="4" placeholder="Tell us about the issue, equipment age, access notes, pets, etc."></textarea>
+              </div>
+              <div class="field full checkbox">
+                <input type="checkbox" id="agree" name="agree" required>
+                <label for="agree">I agree to be contacted about my appointment.</label>
+                <span class="error" id="agree-error"></span>
+              </div>
+            </div>
+          </fieldset>
+
+          <div class="actions">
+            <button class="btn btn-primary" type="submit">Request appointment</button>
+            <a class="btn btn-quiet" href="tel:{{PHONE}}">Or call {{PHONE}}</a>
+          </div>
+          <p class="small muted">Submitting this form does not confirm an appointment. Our team will reach out to finalize your time.</p>
+          <div id="form-status" class="form-status" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container grid footer-grid">
+      <div>
+        <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">HVAC</span><span class="brand-name">{{BUSINESS_NAME}}</span></a>
+        <p class="muted">{{TAGLINE}}</p>
+        <ul class="list-plain small">
+          <li><a href="tel:{{PHONE}}">{{PHONE}}</a></li>
+          <li><a href="mailto:{{EMAIL}}">{{EMAIL}}</a></li>
+          <li><address>{{ADDRESS}}, {{CITY}}, {{STATE}} {{ZIP}}</address></li>
+          <li>Hours: {{HOURS}}</li>
+        </ul>
+      </div>
+      <nav aria-label="Footer">
+        <h3 class="footer-title">Explore</h3>
+        <ul class="list-plain">
+          <li><a href="services.html">Services</a></li>
+          <li><a href="pricing.html">Pricing</a></li>
+          <li><a href="financing.html">Financing</a></li>
+          <li><a href="reviews.html">Reviews</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </nav>
+      <div>
+        <h3 class="footer-title">Service promises</h3>
+        <ul class="list-plain small">
+          <li>Upfront, written pricing</li>
+          <li>Clean home guarantee</li>
+          <li>Licensed, background-checked techs</li>
+          <li>Manufacturer-authorized</li>
+        </ul>
+      </div>
+    </div>
+    <div class="container footnote">
+      <p class="small muted">© <span id="year"></span> {{BUSINESS_NAME}}. All rights reserved.</p>
+    </div>
+  </footer>
+</body>
+</html>

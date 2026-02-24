@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book a session — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Schedule a consultation or session with {{PRACTITIONER_NAME}}. Safety-first intake and clear booking steps.">
+  <style>
+    :root{--bg:#021021;--glass:rgba(255,255,255,0.035);--accent:#8ee7ff;--muted:rgba(255,255,255,0.6)}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#00131f);color:#e9fbff;font-family:Inter,system-ui,Segoe UI,Roboto,Arial}
+    body::before{content:'';position:fixed;inset:0;z-index:0;opacity:0.11;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="700" height="700" viewBox="0 0 700 700"><defs><linearGradient id="g3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="%238ee7ff" stop-opacity="0.12"/><stop offset="1" stop-color="%2300b4ff" stop-opacity="0.04"/></linearGradient></defs><rect width="700" height="700" fill="url(%23g3)"/><g fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"><path d="M0 70 C140 0 280 140 420 70 C560 0 700 140 700 70"/><path d="M0 350 C140 280 280 420 420 350 C560 280 700 420 700 350"/></g></svg>');pointer-events:none}
+    .container{max-width:980px;margin:40px auto;padding:20px;position:relative;z-index:1}
+    header{display:flex;align-items:center;gap:12px}
+    .mark{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,rgba(142,231,255,0.12),rgba(0,180,255,0.06));display:grid;place-items:center}
+    nav{margin-left:auto;display:flex;gap:12px}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:8px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:16px;margin-top:18px}
+    .card{background:linear-gradient(180deg,var(--glass),rgba(255,255,255,0.02));padding:16px;border-radius:14px;border:1px solid rgba(255,255,255,0.04)}
+    label{display:block;font-size:13px;margin-bottom:6px}
+    input,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
+    button{background:linear-gradient(90deg,var(--accent),#66e0ff);border:0;padding:10px 12px;border-radius:10px;color:#002033;font-weight:700;cursor:pointer}
+    .info{color:var(--muted);font-size:13px}
+    .faq{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+    .faq .q{padding:10px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02)}
+    .safety{margin-top:12px;padding:10px;border-radius:10px;background:rgba(255,255,255,0.03);font-size:13px}
+    @media (max-width:880px){.grid{grid-template-columns:1fr} nav{display:none}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div style="display:flex;gap:10px;align-items:center">
+        <div class="mark" aria-hidden>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C14.2 5 18 6.8 18 11c0 3.2-2.5 6-6 7-3.5-1-6-3.8-6-7C6 6.8 9.8 5 12 2z" fill="#8EE7FF"/></svg>
+        </div>
+        <div>
+          <div style="font-weight:700">Book — {{BUSINESS_NAME}}</div>
+          <div class="info">Schedule a session or virtual consult with {{PRACTITIONER_NAME}}</div>
+        </div>
+      </div>
+
+      <nav>
+        <a href="index.html">Overview</a>
+        <a href="services.html">Sessions</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <main class="grid">
+      <section>
+        <div class="card">
+          <h2 style="margin:0 0 8px">Reserve a session</h2>
+          <p class="info">Please complete intake thoughtfully. This helps me tailor a safe, effective plan and recommend appropriate dilutions. If you have immediate safety concerns, contact your healthcare provider.</p>
+
+          <form action="{{PRIMARY_CTA_URL}}" method="POST" style="margin-top:12px">
+            <label for="name">Full name</label>
+            <input id="name" name="name" required placeholder="Your name">
+
+            <label for="email">Email</label>
+            <input id="email" type="email" name="email" required placeholder="you@example.com">
+
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" placeholder="Optional">
+
+            <label for="service">Select service</label>
+            <select id="service" name="service">
+              <option>Introductory Consultation — 45m</option>
+              <option>Therapeutic Session — 60m</option>
+              <option>Follow-up — 30m</option>
+            </select>
+
+            <label for="notes">Relevant notes (medications, pregnancy, pets, allergies)</label>
+            <textarea id="notes" name="notes" rows="4" placeholder="Please note any medications, pregnancy status, pets in the home, or allergies."></textarea>
+
+            <div style="display:flex;align-items:center;gap:8px;margin-top:10px">
+              <input id="consent" name="consent" type="checkbox" required>
+              <label for="consent" class="info" style="margin:0">I understand this is complementary aromatherapy; no medical promises are made. I consent to intake review and patch-test guidance.</label>
+            </div>
+
+            <div style="margin-top:12px;display:flex;gap:8px">
+              <button type="submit">{ {PRIMARY_CTA_LABEL} }</button>
+              <a href="contact.html" style="color:var(--muted);align-self:center;text-decoration:none">Ask a question</a>
+            </div>
+          </form>
+
+          <div class="safety">
+            <strong>Safety highlights</strong>
+            <ul style="margin:8px 0 0;color:var(--muted);line-height:1.6">
+              <li>All clients receive dilution guidance and patch-test instructions prior to topical use.</li>
+              <li>Discuss pregnancy, breastfeeding, medication use, and pets during intake so that recommendations are conservative.</li>
+              <li>We avoid clinical claims — aromatherapy is used to support personal sensory care and routines.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div style="margin-top:12px" class="card">
+          <h3 style="margin:0 0 8px">Session preparation</h3>
+          <p class="info">Wear comfortable clothing. If you are bringing an animal or have strong sensitivities at home, note this in your intake so we can plan low-impact exposure tests or virtual options.</p>
+        </div>
+      </section>
+
+      <aside>
+        <div class="card">
+          <h3 style="margin:0 0 8px">Quick availability</h3>
+          <div class="info">Weekdays: small blocks morning and afternoon. Weekend spots limited.</div>
+          <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+            <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:10px">Mon 10:00 — 14:00</div>
+            <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:10px">Wed 12:00 — 16:00</div>
+            <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:10px">Fri 9:00 — 12:00</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px" class="card">
+          <h3 style="margin:0 0 8px">FAQ — safety essentials</h3>
+          <div class="faq">
+            <div class="q"><strong>Dilution:</strong> Use conservative dilutions. Typical topical dilutions range 1–3% unless otherwise advised after intake.</div>
+            <div class="q"><strong>Patch test:</strong> A small patch-test is recommended for new topical blends. Instructions will be provided before application.</div>
+            <div class="q"><strong>Pets:</strong> Inform us about pets at intake. Some essential oils can be irritating to animals; recommendations will avoid risky compounds and suggest safer practices.</div>
+            <div class="q"><strong>Pregnancy & breastfeeding:</strong> Several oils are contraindicated. Always disclose pregnancy or breastfeeding so that guidance is strictly conservative.</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px" class="card">
+          <h3 style="margin:0 0 8px">Need help?</h3>
+          <div class="info">Email <a href="mailto:{{EMAIL}}" style="color:var(--muted);text-decoration:none">{{EMAIL}}</a> or call {{PHONE}} for booking support.</div>
+        </div>
+      </aside>
+    </main>
+
+    <footer style="max-width:980px;margin:22px auto;color:var(--muted);text-align:center">
+      <div>By booking you agree to receive intake materials. For urgent medical issues, contact your healthcare provider. Serving {{CITY}}, {{STATE}}.</div>
+    </footer>
+  </div>
+</body>
+</html>

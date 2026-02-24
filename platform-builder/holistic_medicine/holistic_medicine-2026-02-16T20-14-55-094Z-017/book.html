@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'/>
+  <meta name='viewport' content='width=device-width,initial-scale=1'/>
+  <title>Book — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7fffd;--accent:#0b7285;--muted:#475d66;--card:#ffffff;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#f1fbfa);color:#07323a}
+    .wrap{max-width:900px;margin:0 auto;padding:28px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    .hero{padding:18px;border-radius:12px;background:linear-gradient(90deg,rgba(11,114,133,0.06),#fff);display:flex;justify-content:space-between;align-items:center}
+    .hero h1{margin:0;font-size:24px}
+    .book-card{margin-top:18px;background:var(--card);padding:18px;border-radius:12px;border:1px solid rgba(7,50,58,0.04)}
+    label{display:block;margin-top:10px;font-weight:700}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6f0ef;margin-top:6px}
+    .row{display:flex;gap:12px}
+    .row > *{flex:1}
+    .note{font-size:13px;color:var(--muted);margin-top:8px}
+    .cta{display:inline-block;margin-top:12px;padding:10px 14px;background:var(--accent);color:#fff;border-radius:10px;text-decoration:none}
+    .social{margin-top:12px;color:var(--muted)}
+    .faq{margin-top:18px}
+    .pattern{position:fixed;right:-50px;bottom:-50px;opacity:0.08;width:420px;height:420px;pointer-events:none}
+    @media(max-width:700px){.row{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <svg class='pattern' viewBox='0 0 600 600' xmlns='http://www.w3.org/2000/svg'>
+    <defs>
+      <linearGradient id='lg2' x1='0' x2='1'>
+        <stop offset='0' stop-color='#e6fffb'/>
+        <stop offset='1' stop-color='#ffffff'/>
+      </linearGradient>
+    </defs>
+    <rect width='100%' height='100%' fill='url(#lg2)' rx='40'/>
+    <g fill='rgba(11,114,133,0.14)'>
+      <path d='M80 120c40 0 60-40 120-40s80 40 120 40 60-40 120-40v360H80V120z' />
+    </g>
+  </svg>
+
+  <div class='wrap'>
+    <header>
+      <div style='font-weight:800;color:var(--accent)'>{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href='index.html'>Home</a>
+        <a href='services.html'>Care</a>
+        <a href='pricing.html'>Plans</a>
+        <a href='about.html'>About</a>
+        <a href='contact.html'>Contact</a>
+      </nav>
+    </header>
+
+    <section class='hero'>
+      <div>
+        <h1>Book a consultation</h1>
+        <div class='note'>Choose a time to talk through your goals. We'll review what's helpful, what to test, and map a realistic first step.</div>
+      </div>
+      <div>
+        <div style='text-align:right'>
+          <div style='font-weight:800'>{{PRACTITIONER_NAME}}</div>
+          <div style='color:var(--muted);font-size:13px'>{{CREDENTIALS}}</div>
+        </div>
+      </div>
+    </section>
+
+    <section class='book-card'>
+      <form onsubmit='event.preventDefault();alert("Thanks — we\'ll contact you at " + (this.email.value||"your email") + " to finalize scheduling.");'>
+        <label for='name'>Full name</label>
+        <input id='name' name='name' required />
+
+        <div class='row'>
+          <div>
+            <label for='email'>Email</label>
+            <input id='email' name='email' type='email' required />
+          </div>
+          <div>
+            <label for='phone'>Phone</label>
+            <input id='phone' name='phone' type='tel' />
+          </div>
+        </div>
+
+        <label for='reason'>What would you like help with?</label>
+        <select id='reason' name='reason'>
+          <option>Sleep & energy</option>
+          <option>Stress & resilience</option>
+          <option>Digestion & gut health</option>
+          <option>Inflammation & pain</option>
+          <option>General wellness review</option>
+        </select>
+
+        <label for='notes'>Notes or questions (optional)</label>
+        <textarea id='notes' name='notes' rows='4' placeholder='Any relevant history, medications, or preferences'></textarea>
+
+        <div style='display:flex;gap:12px;align-items:center;margin-top:12px'>
+          <div style='flex:1'>
+            <label for='type'>Visit type</label>
+            <select id='type' name='type'>
+              <option>Intake (60–90 min)</option>
+              <option>Follow-up (30 min)</option>
+              <option>15-min clarity call</option>
+            </select>
+          </div>
+          <div style='flex:1'>
+            <label for='time'>Preferred dates</label>
+            <input id='time' name='time' placeholder='e.g. Tuesdays, mornings' />
+          </div>
+        </div>
+
+        <div class='note'>Note: For urgent medical concerns, please call your provider or emergency services. We use optional testing only as an educational aid.</div>
+
+        <button class='cta' type='submit'>Request booking</button>
+      </form>
+
+      <div style='margin-top:18px'>
+        <h4>What happens next?</h4>
+        <ol style='color:var(--muted)'>
+          <li>We review your form and check availability.</li>
+          <li>A coordinator confirms the appointment and sends a short intake packet.</li>
+          <li>You choose an online or in-person visit at the time of booking.</li>
+        </ol>
+      </div>
+
+      <div style='margin-top:16px;color:var(--muted)'>
+        <strong>Questions?</strong> Email <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a> or call {{PHONE}}.
+      </div>
+    </section>
+
+    <section class='faq'>
+      <h4>Quick FAQs</h4>
+      <details>
+        <summary>Do you take insurance?</summary>
+        <div class='note'>We provide statements for potential reimbursement but do not bill insurers directly. Coverage varies by plan.</div>
+      </details>
+      <details>
+        <summary>Are results guaranteed?</summary>
+        <div class='note'>No. We emphasize education and gradual change. Individual outcomes vary.</div>
+      </details>
+    </section>
+
+    <footer style='margin-top:20px;color:var(--muted);text-align:center'>
+      <div>{{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • <a href='tel:{{PHONE}}' style='color:var(--muted);text-decoration:none'>{{PHONE}}</a></div>
+    </footer>
+  </div>
+</body>
+</html>

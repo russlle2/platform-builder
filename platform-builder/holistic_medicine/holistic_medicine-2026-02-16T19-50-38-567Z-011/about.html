@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About | {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Meet the practitioner and learn our integrative perspective—rooted in education, gentle routines, and collaborative planning.">
+  <style>
+    :root{--bg:#fffdfb;--ink:#04151a;--muted:#6c757d;--accent:#b9f2e0;--card:#ffffff;--radius:12px;--max:900px}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,var(--bg),#f3fbf8);color:var(--ink);display:flex;justify-content:center}
+    .container{width:94%;max-width:var(--max);padding:36px 0}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    header a.logo{font-weight:700;color:var(--ink);text-decoration:none}
+    nav{display:flex;gap:10px}
+    nav a{color:var(--muted);text-decoration:none;padding:8px;border-radius:8px}
+    nav a:hover{background:#eef;}
+    .hero{padding:18px;border-radius:var(--radius);background:linear-gradient(180deg,#ffffff,#fbfffd);box-shadow:0 8px 24px rgba(2,6,23,0.04);display:flex;gap:18px;align-items:center}
+    .avatar{width:84px;height:84px;border-radius:14px;background:linear-gradient(135deg,#d6f7eb,#f0e7ff);display:flex;align-items:center;justify-content:center;font-weight:700;color:#033;}
+    h1{margin:0;font-size:1.4rem}
+    p.lead{margin:6px 0 0 0;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
+    .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 20px rgba(2,6,23,0.04)}
+    .muted{color:var(--muted)}
+    .micro{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+    .micro p{margin:0;padding:10px;border-radius:8px;background:linear-gradient(90deg,#fbfff8,#fffafc);}
+    .cta{margin-top:14px}
+    .btn{background:#7dd3fc;padding:10px 12px;border-radius:10px;color:#022;text-decoration:none;font-weight:600}
+    @media(max-width:920px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <!-- unique SVG pattern for about page -->
+  <svg style="position:fixed;inset:0;z-index:-1;opacity:0.12" viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="a" x1="0" x2="1"><stop offset="0" stop-color="#f0fff9"/><stop offset="1" stop-color="#fff6ff"/></linearGradient>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#a)"/>
+    <g transform="translate(40,40)" fill="#e6f7ef">
+      <circle cx="160" cy="80" r="90"/>
+      <circle cx="840" cy="460" r="140" fill="#f4e9ff"/>
+    </g>
+  </svg>
+
+  <div class="container">
+    <header>
+      <a class="logo" href="/">{{BUSINESS_NAME}}</a>
+      <nav>
+        <a href="/">Begin</a>
+        <a href="/services.html">Offerings</a>
+        <a href="/conditions.html">Concerns</a>
+        <a href="/pricing.html">Costs</a>
+        <a href="/book.html">Book</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="avatar">{{PRACTITIONER_NAME.split(' ')[0][0]}}</div>
+        <div>
+          <h1>Compassionate guidance, clinical curiosity</h1>
+          <p class="lead">{{PRACTITIONER_NAME}}, {{CREDENTIALS}} — an integrative practitioner teaching sustainable practices that meet your biology and rhythm.</p>
+        </div>
+      </section>
+
+      <div class="grid">
+        <div>
+          <div class="card">
+            <h3 style="margin:0 0 8px 0">A human-centered approach</h3>
+            <p class="muted">We blend evidence-informed interventions with lifestyle scaffolding: nutrition basics, sleep architecture, stress physiology, and movement—always adapted to your story. Care is education-forward: we teach, you practice, we adjust.</p>
+            <div class="micro">
+              <p><strong>Intake</strong> — detailed history, priorities, and context.</p>
+              <p><strong>Synthesis</strong> — a clear problem map and learning plan.</p>
+              <p><strong>Rhythms</strong> — small daily habits designed to compound into better balance.</p>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:12px">
+            <h4 style="margin:0 0 8px 0">Clinical philosophy</h4>
+            <p class="muted">Care is collaborative and iterative. We use optional labs or referrals as educational tools, not as a single authority. You remain the expert on your life; we provide structure, evidence, and accountability.</p>
+            <p class="muted" style="margin-top:10px">We do not offer guaranteed cures; outcomes vary and depend on many factors. Our commitment is to teach clear, manageable steps and support your agency.</p>
+          </div>
+        </div>
+
+        <aside>
+          <div class="card">
+            <h4 style="margin:0 0 8px 0">Quick details</h4>
+            <p class="muted">Location: {{CITY}}, {{STATE}}</p>
+            <p class="muted">Contact: <a href="tel:{{PHONE}}">{{PHONE}}</a> · <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+            <div class="cta"><a class="btn" href="{{PRIMARY_CTA_URL}}">Schedule a Visit</a></div>
+          </div>
+
+          <div class="card" style="margin-top:12px">
+            <h4 style="margin:0 0 8px 0">Micro-habits we teach</h4>
+            <ul style="padding-left:16px;color:var(--muted);margin:0">
+              <li>Evening wind-down ritual (20–30 min)</li>
+              <li>Two simple breath practices for pause</li>
+              <li>Meal timing suggestions for digestion</li>
+            </ul>
+            <p class="muted" style="margin-top:8px">These are offered as gentle experiments to discover what supports you.</p>
+          </div>
+        </aside>
+      </div>
+
+      <section style="margin-top:18px">
+        <div class="card">
+          <h3 style="margin:0 0 8px 0">Training & background</h3>
+          <p class="muted">{{PRACTITIONER_NAME}} holds clinical training in integrative disciplines and brings years of experience in patient-centered education. Ongoing study in nutrition, sleep, and behavioral medicine informs the work.</p>
+        </div>
+      </section>
+
+    </main>
+
+    <footer style="margin-top:18px;color:var(--muted)">
+      <div>{{BUSINESS_NAME}} · Teaching tools, plans, and steady support. Reach: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </footer>
+  </div>
+</body>
+</html>

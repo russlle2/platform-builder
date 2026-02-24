@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Shop — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fffdf8;--ink:#222;--muted:#6b6661;--accent:#6b9fb3;--maxw:1100px}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+    .wrap{max-width:var(--maxw);margin:32px auto;padding:20px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none}
+    h1{margin:6px 0}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:18px}
+    .item{background:white;padding:12px;border-radius:12px;box-shadow:0 8px 24px rgba(20,20,20,0.04)}
+    .item h3{margin:0 0 8px}
+    .price{font-weight:700;color:var(--accent)}
+    .small{font-size:13px;color:var(--muted)}
+    .btn{background:var(--accent);color:white;padding:8px 10px;border-radius:8px;border:none;cursor:pointer}
+    .footer-cta{margin-top:24px;display:flex;gap:10px}
+
+    section{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+    .reveal-visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){section{transition:none}}
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div style="font-weight:600">{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="services.html">Services</a>
+        <a href="blends.html">Blends</a>
+        <a href="shop.html">Shop</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="about.html">About</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <section data-reveal>
+        <h1>Shop — Ready blends & ritual kits</h1>
+        <p class="small">Everything ships with dilution instructions and patch-test guidance. Product notes include pet and pregnancy precautions when relevant.</p>
+      </section>
+
+      <section data-reveal>
+        <div class="grid">
+          <div class="item">
+            <h3>Morning Stitch — 10 mL</h3>
+            <p class="small">Bright citrus blend. Use in diffuser or inhaler. May support gentle alertness.</p>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px"><div class="price">$18</div><button class="btn add" data-sku="morning-10">Add</button></div>
+          </div>
+
+          <div class="item">
+            <h3>Quiet Harbor — 10 mL</h3>
+            <p class="small">Floral-woody blend for soft presence. May support settling and reflection.</p>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px"><div class="price">$20</div><button class="btn add" data-sku="quiet-10">Add</button></div>
+          </div>
+
+          <div class="item">
+            <h3>Mini Ritual Kit</h3>
+            <p class="small">Includes a 5 mL blend sample, a roller bottle, and brief ritual card with use notes and patch-test steps.</p>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px"><div class="price">$28</div><button class="btn add" data-sku="kit-mini">Add</button></div>
+          </div>
+
+          <div class="item">
+            <h3>Focus Thread — 10 mL</h3>
+            <p class="small">Herbaceous formula recommended for short attention practices. May support brief focus.</p>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px"><div class="price">$16</div><button class="btn add" data-sku="focus-10">Add</button></div>
+          </div>
+        </div>
+      </section>
+
+      <section data-reveal>
+        <h2>Cart & quick checkout</h2>
+        <div id="cart" class="item" style="margin-top:10px"><em class="small">No items yet.</em></div>
+        <div class="footer-cta">
+          <button class="btn" id="checkout">Proceed to Checkout</button>
+          <button class="btn" id="open-exercise">Try a centering practice</button>
+        </div>
+      </section>
+
+      <section data-reveal style="margin-top:20px">
+        <h2>Notes on safety</h2>
+        <p class="small">Products are labelled with dilution, patch-test steps, and recommended use. If pregnant, nursing, or caring for pets, consult product notes or a provider. These are aromatic practices and are not medical treatments.</p>
+      </section>
+
+    </main>
+
+    <footer style="margin-top:30px;color:var(--muted)">
+      <div>Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • {{PHONE}}</div>
+      <div style="margin-top:8px">Serves {{CITY}}, {{STATE}}</div>
+    </footer>
+  </div>
+
+  <script>
+    // Scroll reveal
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const elements = document.querySelectorAll('[data-reveal]');
+      if(prefersReduced){elements.forEach(e=>e.classList.add('reveal-visible'));return}
+      const observer = new IntersectionObserver((entries)=>{entries.forEach(ent=>{if(ent.isIntersecting){ent.target.classList.add('reveal-visible');observer.unobserve(ent.target)}})},{threshold:0.12});
+      elements.forEach(e=>observer.observe(e));
+    })();
+
+    // Simple cart interactions (local only)
+    (function(){
+      const cart = {};
+      const cartEl = document.getElementById('cart');
+      function renderCart(){
+        const keys = Object.keys(cart);
+        if(keys.length===0){cartEl.innerHTML='<em class="small">No items yet.</em>';return}
+        cartEl.innerHTML = '<ul style="padding-left:18px;margin:0">'+keys.map(k=>'<li>'+cart[k].name+' — '+cart[k].qty+' × $'+cart[k].price+'</li>').join('')+'</ul>';
+      }
+      document.querySelectorAll('.add').forEach(b=>b.addEventListener('click',e=>{
+        const sku = e.currentTarget.dataset.sku;
+        const map = { 'morning-10':{name:'Morning Stitch 10 mL',price:18}, 'quiet-10':{name:'Quiet Harbor 10 mL',price:20}, 'kit-mini':{name:'Mini Ritual Kit',price:28}, 'focus-10':{name:'Focus Thread 10 mL',price:16} };
+        if(!cart[sku]) cart[sku]={...map[sku],qty:1}; else cart[sku].qty++;
+        renderCart();
+      }));
+      document.getElementById('checkout').addEventListener('click',()=>{
+        if(Object.keys(cart).length===0){alert('Your cart is empty.');return}
+        // simple flow: link to PRIMARY_CTA_URL for checkout
+        if(confirm('Proceed to checkout?')) window.location.href = '{{PRIMARY_CTA_URL}}';
+      });
+
+      // Quick modal trigger: small centering
+      document.getElementById('open-exercise').addEventListener('click',()=>{
+        // reuse a minimal inline modal
+        const m = document.createElement('div');m.style.position='fixed';m.style.inset=0;m.style.background='rgba(0,0,0,0.45)';m.style.display='flex';m.style.alignItems='center';m.style.justifyContent='center';m.style.zIndex=9999;
+        const box=document.createElement('div');box.style.background='white';box.style.padding='14px';box.style.borderRadius='12px';box.style.maxWidth='480px';box.style.width='90%';
+        box.innerHTML = '<h3 style="margin-top:0">One-minute focus</h3><p style="color:#6b6661">Place a hand over your heart. Take three slow, even breaths. On the third, set one small, clear intention for the next 10 minutes.</p><div style="display:flex;justify-content:flex-end;margin-top:12px"><button id="mini-close" style="padding:8px 10px;border-radius:8px">Close</button></div>';
+        m.appendChild(box);document.body.appendChild(m);
+        document.getElementById('mini-close').addEventListener('click',()=>document.body.removeChild(m));
+      });
+
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Voices — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Participant stories and measurable outcomes from recent series and events.">
+  <style>
+    :root{--bg:#fcfcfb;--muted:#6b6b6b;--accent:#7bbf9e;--card:#fff}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto;line-height:1.45;color:#142029;background:var(--bg)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 26px;background:#fff;border-bottom:1px solid #f0f0f0}
+    .logo{width:44px;height:44px;border-radius:9px;background:linear-gradient(135deg,var(--accent),#4b8fa1);display:grid;place-items:center;color:white;font-weight:800}
+    nav a{margin-left:16px;text-decoration:none;color:#142029;font-weight:700}
+    main{max-width:980px;margin:32px auto;padding:20px}
+    .lead{display:flex;justify-content:space-between;align-items:flex-start;gap:20px}
+    .lead h1{margin:0}
+    .list{margin-top:18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+    .card{background:var(--card);border-radius:12px;padding:14px;box-shadow:0 8px 22px rgba(20,30,40,0.04);border:1px solid rgba(10,10,10,0.03)}
+    .avatar{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#fff,#f6fffb);display:grid;place-items:center;font-weight:800}
+    .meta{display:flex;gap:12px;align-items:center}
+    .quote{color:#1a3336;margin-top:10px}
+    .small{color:var(--muted);font-size:0.92rem}
+
+    /* reveal */
+    .reveal{opacity:0;transform:translateY(16px);transition:opacity 420ms ease,transform 420ms ease}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none;opacity:1;transform:none}}
+    .reveal.visible{opacity:1;transform:none}
+
+    .filter{display:flex;gap:8px;margin-top:12px}
+    .filter button{padding:8px 10px;border-radius:8px;border:1px solid #e6e6e6;background:white;cursor:pointer}
+    .filter button.active{border-color:var(--accent);background:linear-gradient(180deg,rgba(123,191,158,0.08),transparent)}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="logo">W</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:0.86rem;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="/index.html">Home</a>
+      <a href="/programs.html">Offerings</a>
+      <a href="/pricing.html">Invest</a>
+      <a href="/book.html">Book</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="reveal" id="top">
+      <div class="lead">
+        <div>
+          <h1>What participants say</h1>
+          <p class="small">Stories focused on outcomes and what changed in day-to-day life. Short, honest reflections from recent series.</p>
+        </div>
+        <div style="text-align:right">
+          <div style="font-weight:800">Events + Cohorts</div>
+          <div class="small">Peer-supported learning in small groups</div>
+        </div>
+      </div>
+
+      <div class="filter" role="tablist" aria-label="Filter testimonials">
+        <button data-filter="all" class="active">All</button>
+        <button data-filter="lab">Habit Lab</button>
+        <button data-filter="cohort">Cohort</button>
+        <button data-filter="reset">Reset</button>
+      </div>
+    </section>
+
+    <section class="list reveal" id="testList" style="margin-top:14px">
+      <article class="card" data-type="lab">
+        <div class="meta">
+          <div class="avatar">AB</div>
+          <div>
+            <div style="font-weight:800">Alex B.</div>
+            <div class="small">Habit Lab attendee — Productivity</div>
+          </div>
+        </div>
+        <p class="quote">"I came for the tools and left with a slim checklist that actually fits my mornings. Four weeks in and I don't have to will myself to start the day — the structure does the work."</p>
+      </article>
+
+      <article class="card" data-type="cohort">
+        <div class="meta">
+          <div class="avatar">MK</div>
+          <div>
+            <div style="font-weight:800">Maya K.</div>
+            <div class="small">Foundations Cohort — Energy</div>
+          </div>
+        </div>
+        <p class="quote">"The cohort format forced me to iterate. Each session, I tried a tweak, reported back, and adjusted. I can point to three habits that changed my afternoons for the better."</p>
+      </article>
+
+      <article class="card" data-type="reset">
+        <div class="meta">
+          <div class="avatar">JP</div>
+          <div>
+            <div style="font-weight:800">J. Park</div>
+            <div class="small">Seasonal Reset — Focus</div>
+          </div>
+        </div>
+        <p class="quote">"The reset workshop gave me a practical 5-step plan I trialed the next week. It's small and clear enough to stick."</p>
+      </article>
+
+      <article class="card" data-type="lab">
+        <div class="meta">
+          <div class="avatar">SR</div>
+          <div>
+            <div style="font-weight:800">S. Rivera</div>
+            <div class="small">Habit Lab — Sleep-friendly rhythms</div>
+          </div>
+        </div>
+        <p class="quote">"I learned a tiny evening practice that reduces tossing and turning. No miracle — just a practical habit I can repeat."</p>
+      </article>
+
+    </section>
+
+    <section class="reveal" style="margin-top:22px">
+      <h3>Share your experience</h3>
+      <p class="small">Want to add your voice? Send a note to <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> and we may include your reflection (first name + initials, unless you prefer full name).</p>
+    </section>
+
+  </main>
+
+  <script>
+    // reveal + prefers-reduced-motion (same pattern used across site)
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const revealEls = Array.from(document.querySelectorAll('.reveal'));
+      if(prefersReduced){ revealEls.forEach(el=>el.classList.add('visible')); return; }
+      const onScroll = ()=>{
+        const viewH = window.innerHeight || document.documentElement.clientHeight;
+        revealEls.forEach(el=>{
+          if(el.classList.contains('visible')) return;
+          const r = el.getBoundingClientRect();
+          if(r.top <= viewH - 80) el.classList.add('visible');
+        });
+      };
+      onScroll();
+      window.addEventListener('scroll', onScroll, {passive:true});
+    })();
+
+    // testimonial filter
+    (function(){
+      const buttons = Array.from(document.querySelectorAll('.filter button'));
+      const cards = Array.from(document.querySelectorAll('#testList .card'));
+      buttons.forEach(btn=>btn.addEventListener('click', ()=>{
+        buttons.forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        const f = btn.getAttribute('data-filter');
+        cards.forEach(c=>{
+          c.style.display = (f==='all' || c.getAttribute('data-type')===f)?'block':'none';
+        });
+      }));
+    })();
+  </script>
+</body>
+</html>

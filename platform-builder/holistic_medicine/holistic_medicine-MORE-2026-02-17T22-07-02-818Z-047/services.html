@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Care Catalog — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f6fbf8;--card:#ffffff;--muted:#556;--accent:#2a6b54;--accent-2:#4aa07a;--glass:rgba(255,255,255,0.6)}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--muted);background:var(--bg)}
+    body{display:flex;flex-direction:column;min-height:100vh;background-image:url('assets/img/pattern.svg');background-size:400px;background-repeat:repeat;}
+    header{background:linear-gradient(180deg,rgba(255,255,255,0.85),rgba(255,255,255,0.6));backdrop-filter:blur(6px);border-bottom:1px solid rgba(40,80,60,0.04)}
+    .wrap{max-width:1100px;margin:0 auto;padding:18px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand h1{font-size:1.05rem;margin:0;color:var(--accent)}
+    nav{margin-left:auto}
+    nav a{margin:0 8px;color:var(--accent);text-decoration:none;font-size:0.95rem}
+    .hero{padding:28px 0;display:grid;grid-template-columns:1fr 340px;gap:28px;align-items:start}
+    .panel{background:var(--card);padding:20px;border-radius:10px;box-shadow:0 6px 18px rgba(18,40,30,0.06)}
+    h2{margin:0 0 10px 0;color:#163a2e}
+    p.lead{margin:0 0 12px 0;color:#27483b}
+    .service-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+    .service{padding:14px;border-radius:8px;background:linear-gradient(180deg,var(--glass),#fff);border:1px solid rgba(40,80,60,0.04)}
+    .service h3{margin:0;color:#184033;font-size:1rem}
+    .service p{margin:8px 0 0 0;font-size:0.92rem;color:#334b45}
+    footer{margin-top:auto;padding:22px 0;color:#23423a;font-size:0.9rem}
+    .mood{display:flex;flex-direction:column;gap:10px}
+    .mood .choices{display:flex;gap:8px;flex-wrap:wrap}
+    .mood button{padding:8px 12px;border-radius:999px;border:1px solid rgba(20,60,50,0.08);background:#fff;color:var(--accent);cursor:pointer}
+    .mood button.active{background:var(--accent);color:white;border-color:transparent}
+    .recommend{margin-top:12px;padding:12px;border-radius:8px;background:linear-gradient(90deg,#eff8f3,#f6fffb)}
+    .cta{display:inline-block;margin-top:12px;padding:10px 16px;border-radius:8px;background:var(--accent);color:#fff;text-decoration:none}
+    @media(max-width:880px){.hero{grid-template-columns:1fr;}.service-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class='wrap' style='display:flex;align-items:center'>
+      <div class='brand'>
+        <svg width='40' height='40' viewBox='0 0 32 32' aria-hidden='true' focusable='false'>
+          <rect width='32' height='32' rx='6' fill='#2a6b54'></rect>
+          <path d='M8 18c2-4 8-6 12-4' stroke='#fff' stroke-width='2' fill='none' stroke-linecap='round'></path>
+        </svg>
+        <h1>{{BUSINESS_NAME}}</h1>
+      </div>
+      <nav style='margin-left:auto'>
+        <a href='index.html'>Home</a>
+        <a href='services.html'>Care Catalog</a>
+        <a href='conditions.html'>What We Address</a>
+        <a href='approach.html'>Method</a>
+        <a href='pricing.html'>Plans</a>
+        <a href='about.html'>Team</a>
+        <a href='book.html'>Reserve</a>
+        <a href='contact.html'>Reach</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class='wrap'>
+    <section class='hero'>
+      <div class='panel'>
+        <h2>Care Catalog — practical options that stack</h2>
+        <p class='lead'>Membership-based support and focused pathways to help steady daily function, manage symptoms, and restore rhythm without extra overwhelm.</p>
+
+        <div class='service-grid' aria-hidden='false'>
+          <div class='service'>
+            <h3>Foundational Mapping</h3>
+            <p>A concise intake with bloodwork review, lifestyle mapping, and a 6–8 week starter plan to establish priorities.</p>
+          </div>
+          <div class='service'>
+            <h3>Nourish & Reset</h3>
+            <p>Nutrition-forward modules, meal patterns, and practical support for digestion and metabolic steadiness.</p>
+          </div>
+          <div class='service'>
+            <h3>Pain & Movement Pathway</h3>
+            <p>Gentle movement prescriptions with pain-focused pacing and sleep alignment techniques.</p>
+          </div>
+          <div class='service'>
+            <h3>Resilience Sessions</h3>
+            <p>Short coaching + restorative practices for ongoing coping and stress buffering in daily life.</p>
+          </div>
+        </div>
+
+        <p style='margin-top:12px;font-size:0.92rem;color:#2b4a3f'>Most clients enroll in the membership to combine mapping, pathway work, and regular touchpoints. Details and tiers are on the Plans page.</p>
+      </div>
+
+      <aside class='panel'>
+        <h3>Mood-to-Method Selector</h3>
+        <p class='lead' style='margin-bottom:8px'>Tell us how you're feeling right now — we'll suggest the most helpful first step.</p>
+
+        <div class='mood' aria-live='polite'>
+          <div class='choices' role='tablist' aria-label='Current state'>
+            <button data-key='stressed' class='active' type='button'>Stressed & Wired</button>
+            <button data-key='fatigued' type='button'>Low Energy</button>
+            <button data-key='pain' type='button'>Persistent Pain</button>
+            <button data-key='prevent' type='button'>Want Prevention</button>
+          </div>
+
+          <div class='recommend' id='recommend'>
+            <strong id='rec-title'>Start with Foundational Mapping</strong>
+            <div id='rec-copy' style='margin-top:6px;font-size:0.95rem;color:#345a4a'>A short intake and focused plan to calm the nervous system and identify immediate, doable steps.</div>
+            <a id='rec-cta' class='cta' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a>
+          </div>
+        </div>
+
+        <script>
+          (function(){
+            const map = {
+              stressed: {title:'Start with Resilience Sessions',copy:'Short, regular sessions to downtrain the stress response and build daily recovery habits.',label:'Schedule a Starter Session',url:'{{PRIMARY_CTA_URL}}?focus=stress'},
+              fatigued: {title:'Begin Nourish & Reset',copy:'A nutrition-forward pathway and pacing plan to recover energy safely.',label:'Join Nourish Pathway',url:'{{PRIMARY_CTA_URL}}?focus=energy'},
+              pain: {title:'Enroll in Pain & Movement Pathway',copy:'Pacing-focused movement and sleep work to help reduce symptom flare and restore function.',label:'Explore Pain Pathway',url:'{{PRIMARY_CTA_URL}}?focus=pain'},
+              prevent: {title:'Foundational Mapping',copy:'A concise review and maintenance plan to keep you well and proactive.',label:'Start a Mapping Visit',url:'{{PRIMARY_CTA_URL}}?focus=prevent'}
+            };
+
+            const buttons = Array.from(document.querySelectorAll('.choices button'));
+            const recTitle = document.getElementById('rec-title');
+            const recCopy = document.getElementById('rec-copy');
+            const recCta = document.getElementById('rec-cta');
+
+            function setActive(key, btn){
+              buttons.forEach(b=>b.classList.remove('active'));
+              if(btn) btn.classList.add('active');
+              const info = map[key] || map.prevent;
+              recTitle.textContent = info.title;
+              recCopy.textContent = info.copy;
+              recCta.textContent = info.label;
+              recCta.setAttribute('href', info.url);
+            }
+
+            buttons.forEach(b=>{
+              b.addEventListener('click',()=>setActive(b.getAttribute('data-key'), b));
+            });
+
+            // initialize
+            setActive('stressed', document.querySelector("button[data-key='stressed']"));
+          })();
+        </script>
+
+      </aside>
+    </section>
+
+    <section style='margin-top:18px' class='panel'>
+      <h3>How membership is framed</h3>
+      <p style='margin:8px 0 0 0'>We offer membership to make sustained, layered care accessible and practical. Each tier bundles intake, follow-ups, and priority scheduling so changes fit your life — not the other way around.</p>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class='wrap' style='display:flex;justify-content:space-between;align-items:center'>
+      <div>Questions? Call <a href='tel:{{PHONE}}' style='color:var(--accent)'>{{PHONE}}</a> or email <a href='mailto:{{EMAIL}}' style='color:var(--accent)'>{{EMAIL}}</a></div>
+      <div style='font-size:0.85rem;color:#23423a'>Serving {{CITY}}, {{STATE}}</div>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Practical coaching services and single-session options focused on habits, routines, and small outcome-driven practices.">
+  <style>
+    :root{--bg:#f4efe8;--card:#fffaf6;--accent:#6b4a2f;--muted:#927a6b;--ink:#2f241f}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:linear-gradient(180deg,var(--bg),#fff);color:var(--ink)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:20px}
+    .nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    main{max-width:1000px;margin:18px auto;padding:18px}
+    .hero{padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(107,74,47,0.04),transparent);display:flex;gap:16px;align-items:center}
+    .hero h1{margin:0;color:var(--accent)}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+    .service{background:var(--card);padding:14px;border-radius:12px;border:1px solid rgba(60,30,10,0.04)}
+    .service h4{margin:0 0 8px;color:var(--accent)}
+    .price{font-weight:700;color:var(--accent);margin-top:8px}
+
+    /* Session Planner card */
+    .planner{margin-top:18px;padding:14px;border-radius:12px;background:#fff;border:1px solid rgba(100,60,40,0.05)}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input,select,textarea{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:transparent}
+    button{background:var(--accent);color:#fff;padding:10px 12px;border-radius:10px;border:0;cursor:pointer}
+    .output{white-space:pre-wrap;background:#fff;padding:12px;border-radius:8px;border:1px dashed rgba(100,60,40,0.08);margin-top:8px}
+
+    @media(max-width:900px){.grid{grid-template-columns:1fr}header{padding:12px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="about.html">Approach</a>
+      <a href="services.html">Offerings</a>
+      <a href="programs.html">Journeys</a>
+      <a href="book.html">Reserve</a>
+    </nav>
+  </header>
+  <main>
+    <section class="hero">
+      <div>
+        <h1>Current Offerings</h1>
+        <p style="color:var(--muted);margin-top:8px">Options shaped around outcomes, practice frequency, and support level. Choose what fits your schedule and scale up when it feels natural.</p>
+      </div>
+      <div style="width:260px" class="card" aria-hidden>
+        <!-- small inline SVG motif -->
+        <svg viewBox="0 0 120 80" width="100%" height="80">
+          <rect width="100%" height="100%" rx="10" fill="#fff8f3" stroke="#f0e3db"/>
+          <path d="M12 60 C40 22,80 22,108 60" stroke="#6b4a2f" stroke-width="3" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </section>
+
+    <section style="margin-top:16px">
+      <div class="grid">
+        <div class="service">
+          <h4>Single Session — Clarify</h4>
+          <p class="muted">A focused 50-minute exploration to map immediate next steps and a short practice to try over the following week.</p>
+          <div class="price">$120 / session</div>
+        </div>
+        <div class="service">
+          <h4>Compact Pact — Practice Plan</h4>
+          <p class="muted">Three sessions over three weeks with a simple maintenance plan and two check-in notes. Good for building a routine anchor.</p>
+          <div class="price">$320 / 3 sessions</div>
+        </div>
+        <div class="service">
+          <h4>Monthly Stewardship</h4>
+          <p class="muted">Ongoing monthly support with weekly short check-ins and a monthly reflective session for adjustments and planning.</p>
+          <div class="price">$650 / month</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="planner" aria-labelledby="planner-heading">
+      <h3 id="planner-heading">Session Planner</h3>
+      <p class="muted">Build a targeted session outline. Generate a short plaintext summary you can copy into a note or share.</p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div>
+          <label for="goal">Primary goal for the session</label>
+          <input id="goal" type="text" placeholder="E.g., build an evening wind-down" />
+        </div>
+        <div>
+          <label for="length">Session length (minutes)</label>
+          <select id="length"><option>30</option><option selected>50</option><option>75</option></select>
+        </div>
+        <div style="grid-column:1/3">
+          <label for="focusAreas">Focus areas (comma separated)</label>
+          <input id="focusAreas" type="text" placeholder="breath, movement, planning" />
+        </div>
+        <div style="grid-column:1/3">
+          <label for="notes">Context notes (brief)</label>
+          <textarea id="notes" rows="3" placeholder="What should the session respect? time, energy, environment"></textarea>
+        </div>
+      </div>
+
+      <div style="margin-top:10px;display:flex;gap:8px">
+        <button id="make-plan">Generate Plan</button>
+        <button id="copy-plan" class="small">Copy summary</button>
+        <button id="download-plan" class="small">Download TXT</button>
+      </div>
+
+      <div id="plan-output" class="output" aria-live="polite">No plan yet.</div>
+    </section>
+
+    <section style="margin-top:18px">
+      <h3>How the planner is used</h3>
+      <p class="muted">Use the outline during a session or keep it as a prompt for short practices between sessions. It creates a clear, plain-text summary — easy to archive in your notes.</p>
+    </section>
+
+    <section style="margin-top:18px;display:flex;gap:12px;align-items:center">
+      <div style="flex:1">
+        <h4>Next step</h4>
+        <p class="muted">If this aligns, book a single session to try the plan and iterate the practice after a week.</p>
+      </div>
+      <div>
+        <a href="book.html"><button>{{PRIMARY_CTA_LABEL}}</button></a>
+      </div>
+    </section>
+
+    <footer style="margin-top:28px;color:var(--muted);font-size:13px">Contact: {{EMAIL}} • {{PHONE}}</footer>
+  </main>
+
+<script>
+(function(){
+  // Session Planner logic
+  const makeBtn = document.getElementById('make-plan');
+  const copyBtn = document.getElementById('copy-plan');
+  const downloadBtn = document.getElementById('download-plan');
+  const out = document.getElementById('plan-output');
+
+  function buildPlan(){
+    const goal = (document.getElementById('goal').value || '').trim();
+    const length = (document.getElementById('length').value || '50');
+    const areas = (document.getElementById('focusAreas').value || '').trim();
+    const notes = (document.getElementById('notes').value || '').trim();
+
+    const timestamp = new Date().toLocaleString();
+    let lines = [];
+    lines.push('Session Plan — '+timestamp);
+    if(goal) lines.push('Goal: '+goal);
+    lines.push('Length: '+length+' min');
+    if(areas) lines.push('Focus areas: '+areas);
+    if(notes) lines.push('Context: '+notes);
+    lines.push('Outline:');
+    lines.push('- Opening (2-5 min): brief check-in and anchor');
+    lines.push('- Core practice ('+Math.max(5, Math.floor(length*0.5))+' min): targeted habit work');
+    lines.push('- Short reflection (5 min): write a single note on next step');
+    lines.push('Follow-up: one small practice to try between sessions.');
+
+    return lines.join('\n');
+  }
+
+  makeBtn.addEventListener('click',function(){
+    const text = buildPlan();
+    out.textContent = text;
+  });
+
+  copyBtn.addEventListener('click',function(){
+    const text = out.textContent || buildPlan();
+    navigator.clipboard.writeText(text).then(()=>{
+      copyBtn.textContent = 'Copied';
+      setTimeout(()=> copyBtn.textContent = 'Copy summary',1200);
+    }).catch(()=>{
+      alert('Copy failed — select the text and copy manually.');
+    });
+  });
+
+  downloadBtn.addEventListener('click',function(){
+    const text = out.textContent || buildPlan();
+    const blob = new Blob([text],{type:'text/plain'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'session-plan.txt';
+    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  });
+})();
+</script>
+</body>
+</html>

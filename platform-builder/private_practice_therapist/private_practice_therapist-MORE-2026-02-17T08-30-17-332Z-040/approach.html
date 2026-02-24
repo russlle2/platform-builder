@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Method — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f2ede6;--accent:#5b4034;--muted:#796c64}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:#2d2b29}
+    .frame{max-width:980px;margin:28px auto;padding:28px;background:linear-gradient(180deg,rgba(255,255,255,0.9),transparent),url('assets/img/pattern.svg');border-radius:14px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:10px;color:var(--muted);text-decoration:none}
+    h2{color:var(--accent)}
+    .two{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
+    .panel{background:white;padding:16px;border-radius:12px}
+    .step{padding:10px;border-left:4px solid rgba(91,64,52,0.06);margin-bottom:10px}
+    .muted{color:var(--muted);font-size:13px}
+    .btn{background:var(--accent);color:white;padding:9px 12px;border-radius:8px;border:none}
+    label{display:block;margin-top:8px;font-weight:600}
+    input,textarea,select{width:100%;padding:8px;border-radius:8px;border:1px solid #e9e1d8}
+    .copy-area{width:100%;height:84px;padding:10px;border-radius:8px;border:1px dashed #e6ded6;background:#fffdf9}
+    @media(max-width:880px){.two{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <header>
+      <div>
+        <h1>{{BUSINESS_NAME}}</h1>
+        <div class="muted">A grounded approach to practical change</div>
+      </div>
+      <nav>
+        <a href="index.html">Start</a>
+        <a href="about.html">About</a>
+        <a href="specialties.html">Offerings</a>
+        <a href="approach.html">Method</a>
+        <a href="fees.html">Rates</a>
+        <a href="faq.html">FAQ</a>
+        <a href="book.html">Reserve</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <h2>Therapeutic approach</h2>
+      <p class="muted">My work blends evidence-informed techniques with a pragmatic lens. I emphasize safety, clarity, and experiments you can test between sessions. The goal is to help you gather information about what works for you, rather than to force a single path.</p>
+
+      <div class="two">
+        <div>
+          <section class="panel">
+            <h3>Core commitments</h3>
+            <div class="step">
+              <strong>Collaborative framing</strong>
+              <p class="muted">We co-create an understanding of how difficulties develop and what small steps might shift patterns.</p>
+            </div>
+            <div class="step">
+              <strong>Skill + structure</strong>
+              <p class="muted">Therapy includes practical tools—communication templates, short behavioral experiments, and ways to track change.</p>
+            </div>
+            <div class="step">
+              <strong>Context-aware</strong>
+              <p class="muted">We work with life realities—time limits, caregiving, work demands—so plans fit your everyday life.</p>
+            </div>
+          </section>
+
+          <section class="panel" style="margin-top:12px">
+            <h3>Typical process</h3>
+            <ol class="muted">
+              <li>Intake & focused formulation: a clear map of current concerns</li>
+              <li>Initial plan: 3–6 steps to try between sessions</li>
+              <li>Review and adjust: regular calibration based on what helps</li>
+            </ol>
+            <p class="muted">This is a flexible sequence—some clients choose a single intensive, others prefer ongoing weekly work. We'll discuss fit in the first meeting.</p>
+          </section>
+
+          <section class="panel" style="margin-top:12px">
+            <h3>Boundaries & crisis guidance</h3>
+            <p class="muted">Confidentiality is upheld with attention to legal limits. I do not provide emergency services. If you are experiencing an emergency, please contact local emergency services or crisis resources immediately.</p>
+          </section>
+        </div>
+
+        <aside>
+          <div class="panel">
+            <h3>Session Planner</h3>
+            <div>
+              <label for="apConcern">What do you want to focus on?</label>
+              <input id="apConcern" type="text" placeholder="e.g., parenting, anxiety in meetings" />
+              <label for="apLength">Length</label>
+              <select id="apLength"><option>50 minutes</option><option>90 minutes</option></select>
+              <label for="apFreq">Frequency</label>
+              <select id="apFreq"><option>Weekly</option><option>Every other week</option></select>
+              <label for="apGoals">Primary goals (comma)</label>
+              <input id="apGoals" type="text" placeholder="e.g., calmer mornings, clearer boundaries" />
+              <div style="margin-top:10px;display:flex;gap:8px">
+                <button class="btn" id="buildAP">Make plan</button>
+                <button class="btn" id="clearAP" style="background:#eee;color:var(--accent)">Clear</button>
+              </div>
+              <label style="margin-top:8px">Plan</label>
+              <textarea id="apOutput" class="copy-area" readonly></textarea>
+              <div style="margin-top:8px"><button class="btn" id="copyAP">Copy</button></div>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top:12px">
+            <h3>Self-screening</h3>
+            <p class="muted">A short guided reflection to shape the first session.</p>
+            <label>Rate current distress (1 low — 10 high)</label>
+            <select id="distress"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select>
+            <label style="margin-top:8px">Recent triggers or events</label>
+            <input id="triggers" type="text" placeholder="Short note" />
+            <label style="margin-top:8px">What you hope to learn from therapy</label>
+            <textarea id="hopes" style="height:70px"></textarea>
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button class="btn" id="makeSelf">Create summary</button>
+              <button class="btn" id="clearSelf" style="background:#eee;color:var(--accent);">Clear</button>
+            </div>
+            <label style="margin-top:8px">Summary to bring</label>
+            <textarea id="selfOut" class="copy-area" readonly></textarea>
+            <div style="margin-top:8px"><button class="btn" id="copySelf">Copy</button></div>
+          </div>
+
+        </aside>
+      </div>
+
+      <p class="muted" style="margin-top:16px">If you have questions about fit or scope, contact <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call {{PHONE}}. Therapy here is collaborative and not a substitute for emergency help.</p>
+
+    </main>
+  </div>
+
+  <script>
+    // Planner on approach page
+    (function(){
+      const c = document.getElementById('apConcern');
+      const l = document.getElementById('apLength');
+      const f = document.getElementById('apFreq');
+      const g = document.getElementById('apGoals');
+      const b = document.getElementById('buildAP');
+      const out = document.getElementById('apOutput');
+      const copy = document.getElementById('copyAP');
+      const clear = document.getElementById('clearAP');
+
+      b.addEventListener('click', function(){
+        const goals = g.value.split(',').map(s=>s.trim()).filter(Boolean);
+        const lines = [];
+        lines.push('Plan for initial sessions');
+        lines.push('Focus: ' + (c.value.trim() || 'Not specified'));
+        lines.push('Length: ' + l.value + ' • ' + f.value);
+        if(goals.length) lines.push('\nGoals:\n- ' + goals.join('\n- '));
+        lines.push('\nNext steps:\n- Book an initial intake\n- Bring recent examples or notes');
+        out.value = lines.join('\n\n');
+      });
+      copy.addEventListener('click', function(){navigator.clipboard.writeText(out.value || '').then(()=>{copy.textContent='Copied';setTimeout(()=>copy.textContent='Copy',1200)})});
+      clear.addEventListener('click', function(){c.value='';g.value='';out.value='';l.selectedIndex=0;f.selectedIndex=0});
+    })();
+
+    // Self-screening on approach
+    (function(){
+      const distress = document.getElementById('distress');
+      const triggers = document.getElementById('triggers');
+      const hopes = document.getElementById('hopes');
+      const make = document.getElementById('makeSelf');
+      const clear = document.getElementById('clearSelf');
+      const out = document.getElementById('selfOut');
+      const copy = document.getElementById('copySelf');
+
+      make.addEventListener('click', function(){
+        const lines = [];
+        lines.push('Self-screening summary');
+        lines.push('Distress rating: ' + distress.value + ' / 10');
+        if(triggers.value.trim()) lines.push('\nRecent triggers: ' + triggers.value.trim());
+        if(hopes.value.trim()) lines.push('\nHopes for therapy: ' + hopes.value.trim());
+        lines.push('\nQuestions to bring:\n- How do we prioritize goals given my current stress level?\n- What short practices can I use during the week?');
+        out.value = lines.join('\n\n');
+      });
+      clear.addEventListener('click', function(){distress.selectedIndex=0;triggers.value='';hopes.value='';out.value=''});
+      copy.addEventListener('click', function(){navigator.clipboard.writeText(out.value || '').then(()=>{copy.textContent='Copied';setTimeout(()=>copy.textContent='Copy',1200)})});
+    })();
+  </script>
+</body>
+</html>

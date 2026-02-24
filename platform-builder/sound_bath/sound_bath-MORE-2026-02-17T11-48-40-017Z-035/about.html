@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0e0f12;--card:#0f1316;--accent:#b9e3d9;--muted:#9aa7a1;--glass:rgba(255,255,255,0.04);--warm:#ffd9bf}
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;color:#e8f0ea;background:linear-gradient(180deg,#061216 0%, #07181a 60%);-webkit-font-smoothing:antialiased}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;backdrop-filter:blur(6px)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:56px;height:56px;display:grid;place-items:center;border-radius:10px;background:linear-gradient(135deg,#0b2a2b,var(--card));box-shadow:0 6px 18px rgba(2,8,10,0.6);}
+    .logo svg{width:36px;height:36px}
+    nav a{color:#cfeee6;text-decoration:none;margin:0 10px;font-size:15px}
+    main{max-width:980px;margin:28px auto;padding:28px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:14px;box-shadow:0 12px 40px rgba(2,6,8,0.6)}
+    .hero{display:grid;grid-template-columns:1fr 320px;gap:22px;align-items:center}
+    h1{margin:0 0 8px 0;font-weight:700;color:#fff;letter-spacing:-0.4px}
+    p.lead{color:var(--muted);margin:0 0 18px 0}
+    .card{background:var(--card);padding:16px;border-radius:12px}
+    .meta{font-size:13px;color:var(--muted)}
+    .story{margin-top:18px;line-height:1.6;color:#dfeee6}
+    footer{margin-top:22px;color:var(--muted);font-size:13px}
+    .pattern{position:absolute;left:0;top:0;opacity:0.06;pointer-events:none}
+    /* guided modal */
+    .modal-backdrop{position:fixed;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.55),rgba(0,0,0,0.7));display:none;align-items:center;justify-content:center}
+    .modal{background:linear-gradient(180deg,#071b1b,#081414);padding:20px;border-radius:14px;min-width:320px;max-width:680px;color:#e6fbf6}
+    .breath-circle{width:180px;height:180px;border-radius:50%;background:radial-gradient(circle at 40% 30%,#9fe6d8 0,#6fc9b6 20%,transparent 60%);display:flex;align-items:center;justify-content:center;margin:12px auto;transition:all 600ms ease}
+    .modal .controls{display:flex;gap:10px;justify-content:center;margin-top:12px}
+    button.btn{background:var(--accent);border:none;padding:10px 14px;border-radius:10px;color:#04221f;font-weight:600;cursor:pointer}
+    .small{font-size:13px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <svg class="pattern" width="600" height="600" viewBox="0 0 600 600" aria-hidden>
+    <defs>
+      <pattern id="dots-unique" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+        <rect width="60" height="60" fill="transparent"></rect>
+        <circle cx="10" cy="10" r="2" fill="#0b2e2c" />
+        <circle cx="40" cy="40" r="2" fill="#083f3b" />
+      </pattern>
+      <linearGradient id="g1" x1="0" x2="1">
+        <stop offset="0%" stop-color="#062e2f" stop-opacity="0.85" />
+        <stop offset="100%" stop-color="#083a3a" stop-opacity="0.45" />
+      </linearGradient>
+    </defs>
+    <rect width="600" height="600" fill="url(#g1)" />
+    <rect width="600" height="600" fill="url(#dots-unique)" opacity="0.22"></rect>
+  </svg>
+
+  <header>
+    <div class="brand">
+      <div class="logo" aria-hidden>
+        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <rect x="6" y="10" width="52" height="44" rx="8" fill="#062929" />
+          <g fill="#b9e3d9">
+            <circle cx="20" cy="28" r="6" />
+            <circle cx="36" cy="20" r="9" />
+            <circle cx="46" cy="40" r="5" />
+          </g>
+        </svg>
+      </div>
+      <div>
+        <div style="color:#fff;font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="events.html">Gather</a>
+      <a href="private-sessions.html">Solo Rituals</a>
+      <a href="pricing.html">Costs</a>
+      <a href="about.html">About the Circle</a>
+      <a href="faq.html">FAQ</a>
+      <a href="book.html" style="font-weight:700">Reserve</a>
+      <a href="contact.html">Reach Out</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h1>We gather sound around simple beginnings</h1>
+        <p class="lead">A compact explanation of how we shape a session: tuned layers, a small script of intention, and a few held rules that keep everyone safe and clear.</p>
+        <div class="card">
+          <div class="meta">What to expect</div>
+          <p class="story">We open with a brief welcome, provide a short intention prompt, and offer 45–70 minutes of guided sound — bowls, chimes, and soft drones. Our focus is on supporting rest, reflection, and gentle re-patterning. If you arrive with expectations, we invite curiosity; if you arrive in need, we offer presence.</p>
+          <div style="display:flex;gap:10px;margin-top:10px">
+            <button class="btn" id="openTry">Try it now — 2 minutes</button>
+            <a class="btn" href="book.html">Reserve a space</a>
+          </div>
+        </div>
+        <div class="story">
+          <h3>Our approach</h3>
+          <p>We treat each event like a short ceremony: clear instructions, a small compass for intention, and sound arranged so each person can rest or attend. Facilitators are trained in listening, not in therapy; if you are working with medical or psychological needs, please consult your care provider before joining.</p>
+        </div>
+      </div>
+      <aside class="card">
+        <div style="font-weight:700;color:#e9fff8">Circle &amp; Sessions</div>
+        <div class="meta" style="margin-top:6px">A few signature offerings</div>
+        <ul style="padding-left:16px;margin-top:10px;color:#dceee7">
+          <li><strong>Gathering</strong> — shared evening sessions (comfortable seating).</li>
+          <li><strong>Grounding Private</strong> — 1:1 bespoke sessions for focused support.</li>
+          <li><strong>Intro Series</strong> — three-session pathway to feel the form.</li>
+        </ul>
+        <div style="margin-top:12px;font-size:13px;color:var(--muted)">Phone: {{PHONE}} • <a href="mailto:{{EMAIL}}" style="color:var(--accent)">{{EMAIL}}</a></div>
+      </aside>
+    </section>
+
+    <section style="margin-top:18px">
+      <h3>Why these rooms matter</h3>
+      <p class="story">We think of sound as a companion to attention: a way to hold stillness while feelings uncoil. The environment we architect is intentionally small — low lighting, guided pacing, and minimal talk. Our aim is to make it easy to arrive and to leave changed, if only by a degree.</p>
+    </section>
+
+    <section style="margin-top:18px" class="card">
+      <h4 style="margin:0 0 8px 0">Accessibility &amp; care notes</h4>
+      <p class="small">We welcome neurodiverse attendees and offer adaptations. However, some situations are contraindicated: if you have epilepsy (seizures triggered by sound or light), recent head/ear surgery, are in the first trimester of pregnancy without medical sign-off, or have implanted medical devices that might be affected by sustained vibrations, please consult your healthcare provider before attending. If you are managing severe anxiety, PTSD, or dissociation, consider joining with a support person or booking a private session to adapt pacing and proximity.</p>
+    </section>
+
+    <footer>
+      <div>Questions? Call {{PHONE}} or write <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>. To reserve, click Reserve or use the booking page.</div>
+    </footer>
+  </main>
+
+  <div class="modal-backdrop" id="modal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h3 id="modalTitle">Try it now — a two-minute breath guide</h3>
+      <div class="breath-circle" id="circle">Breathe</div>
+      <div style="text-align:center;color:var(--muted)" id="cue">Tap start to begin. Follow the circle.</div>
+      <div class="controls">
+        <button class="btn" id="startBtn">Start</button>
+        <button class="btn" id="stopBtn">Close</button>
+      </div>
+      <div style="margin-top:12px;text-align:center" class="small">A gentle paced inhale — hold — and longer exhale. No medical advice. If you feel faint, stop and sit down.</div>
+    </div>
+  </div>
+
+  <script>
+    // Guided breathing modal
+    (function(){
+      const modal = document.getElementById('modal');
+      const open = document.getElementById('openTry');
+      const startBtn = document.getElementById('startBtn');
+      const stopBtn = document.getElementById('stopBtn');
+      const circle = document.getElementById('circle');
+      const cue = document.getElementById('cue');
+      let timer=null; let phase=0; // 0 idle, 1 inhale,2 hold,3 exhale
+      const phases = [ {name:'Inhale',dur:4000,scale:1.35}, {name:'Hold',dur:2000,scale:1.45}, {name:'Exhale',dur:6000,scale:0.6} ];
+
+      open.addEventListener('click', ()=>{ modal.style.display='flex'; });
+      stopBtn.addEventListener('click', ()=>{ close(); });
+
+      function close(){ clearInterval(timer); timer=null; modal.style.display='none'; circle.style.transform='scale(1)'; cue.textContent='Tap start to begin. Follow the circle.' }
+
+      startBtn.addEventListener('click', ()=>{
+        if(timer){ clearInterval(timer); timer=null; startBtn.textContent='Start'; cue.textContent='Paused'; return; }
+        startBtn.textContent='Pause'; phase=0; runCycle(); timer=setInterval(runCycle, phases[0].dur+phases[1].dur+phases[2].dur);
+      });
+
+      function runCycle(){
+        // Inhale
+        cue.textContent = phases[0].name;
+        circle.style.transition='transform '+(phases[0].dur)+'ms ease-in-out, box-shadow 300ms';
+        circle.style.transform='scale('+phases[0].scale+')';
+        circle.style.boxShadow='0 0 40px rgba(175,245,227,0.15)';
+        setTimeout(()=>{
+          // Hold
+          cue.textContent = phases[1].name;
+          circle.style.transition='transform '+(phases[1].dur)+'ms linear';
+          circle.style.transform='scale('+phases[1].scale+')';
+          setTimeout(()=>{
+            // Exhale
+            cue.textContent = phases[2].name;
+            circle.style.transition='transform '+(phases[2].dur)+'ms ease-in-out';
+            circle.style.transform='scale('+phases[2].scale+')';
+          }, phases[1].dur);
+        }, phases[0].dur);
+      }
+    })();
+  </script>
+</body>
+</html>

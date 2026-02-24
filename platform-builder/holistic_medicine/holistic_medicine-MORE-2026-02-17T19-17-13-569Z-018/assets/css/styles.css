@@ -1,0 +1,67 @@
+/* Minimal poetic aesthetic, responsive layout */
+:root{
+  --bg:#fbfdf8;
+  --muted:#55605a;
+  --accent:#7aa3a3;
+  --accent-2:#c7d8be;
+  --card:#ffffff;
+  --radius:12px;
+  --shadow:0 6px 20px rgba(20,30,30,0.06);
+  --max-width:1100px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg); color:#21302d; margin:0; -webkit-font-smoothing:antialiased;}
+.site-wrap{min-height:100%; display:flex; flex-direction:column}
+.site-header{display:flex; align-items:center; justify-content:space-between; padding:18px 22px; max-width:var(--max-width); margin:18px auto; width:calc(100% - 48px)}
+.brand{display:flex; align-items:center; gap:12px}
+.logo-mark{width:48px; height:48px; border-radius:10px; background-image:url('/assets/img/pattern.svg'); background-size:cover; box-shadow:var(--shadow)}
+.brand-text .business{display:block; font-weight:700}
+.brand-text .tag{display:block; font-size:0.85rem; color:var(--muted)}
+.main-nav a{margin:0 8px; color:var(--muted); text-decoration:none}
+.contact-quick{display:flex; gap:10px; align-items:center}
+.contact-quick .phone{color:var(--muted); text-decoration:none}
+.btn{display:inline-block; padding:10px 14px; border-radius:10px; text-decoration:none; font-weight:600}
+.btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:white; box-shadow:var(--shadow)}
+.btn-ghost{background:transparent; border:1px solid rgba(33,48,45,0.06); color:var(--muted)}
+.hero{display:grid; grid-template-columns:1fr 320px; gap:24px; align-items:center; max-width:var(--max-width); margin:18px auto; padding:28px;}
+.hero-inner h1{margin:0 0 8px; font-size:clamp(1.8rem,3vw,2.6rem)}
+.hero-inner .lead{color:var(--muted); margin:0 0 16px}
+.hero-visual{justify-self:end}
+.hero-svg{width:260px; height:260px}
+.container{background:transparent; padding:28px;}
+.diagnostic{max-width:var(--max-width); margin:8px auto; background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.8)); border-radius:var(--radius); box-shadow:var(--shadow);}
+.diagnostic .container{padding:28px}
+.mood-grid{display:flex; gap:10px; flex-wrap:wrap; margin:12px 0}
+.mood{background:var(--card); border-radius:10px; padding:10px 14px; border:1px solid rgba(0,0,0,0.04); cursor:pointer}
+.mood[aria-checked="true"]{outline:3px solid rgba(122,163,163,0.18)}
+.method-card{margin-top:18px; padding:16px; background:linear-gradient(180deg,#fff,#fbfffb); border-radius:10px}
+.method-list{margin:8px 0 16px; padding-left:16px}
+.phases{display:flex; gap:14px; margin-top:12px}
+.phases article{flex:1; background:var(--card); padding:14px; border-radius:10px; box-shadow:var(--shadow)}
+.micro_habits{max-width:var(--max-width); margin:18px auto}
+.habits{display:flex; gap:10px; list-style:none; padding:0; margin:12px 0}
+.habits li{background:var(--card); padding:12px; border-radius:8px}
+.pricing{max-width:var(--max-width); margin:18px auto}
+.pricing-toggle{display:inline-flex; background:rgba(0,0,0,0.04); padding:6px; border-radius:999px}
+.pricing-toggle .toggle{padding:8px 14px; border-radius:999px; background:transparent; border:none; cursor:pointer}
+.pricing-toggle .toggle.active{background:white; box-shadow:var(--shadow)}
+.pricing-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; margin-top:16px}
+.plan-card{background:var(--card); padding:16px; border-radius:12px; box-shadow:var(--shadow)}
+.plan-card.highlighted{transform:translateY(-6px)}
+.price{font-size:1.6rem; margin:8px 0}
+.num{font-weight:800}
+.suffix{font-size:0.9rem; color:var(--muted); margin-left:6px}
+.note{font-size:0.9rem}
+.cta{max-width:var(--max-width); margin:28px auto; padding:28px; text-align:center}
+.cta .big{padding:14px 20px; font-size:1.05rem}
+.site-footer{margin-top:auto; padding:18px 22px; background:transparent}
+.footer-grid{display:flex; justify-content:space-between; gap:12px; max-width:var(--max-width); margin:0 auto; align-items:center}
+.footer-grid a{color:var(--muted); text-decoration:none}
+.muted{color:var(--muted)}
+@media (max-width:900px){
+  .hero{grid-template-columns:1fr; padding:18px}
+  .hero-visual{order:-1}
+  .phases{flex-direction:column}
+  .footer-grid{flex-direction:column; align-items:flex-start}
+}

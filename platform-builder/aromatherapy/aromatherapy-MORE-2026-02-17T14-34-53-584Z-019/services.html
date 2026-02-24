@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f6efe6;--accent:#8A5A44;--muted:#6a6a6a;--card:#fff7f1;--accent-2:#7b8a5a}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#3a3a3a;background-color:var(--bg)}
+    .site{min-height:100vh;display:flex;flex-direction:column}
+    header{background:linear-gradient(180deg,rgba(138,90,68,0.06),transparent);border-bottom:1px solid rgba(58,58,58,0.04)}
+    .wrap{max-width:1000px;margin:0 auto;padding:28px}
+    nav{display:flex;gap:18px;align-items:center}
+    nav a{color:var(--accent);text-decoration:none;font-weight:600}
+    .brand{font-weight:700;color:var(--accent);font-size:18px}
+    .hero{display:grid;grid-template-columns:1fr;gap:18px;padding:36px 0}
+    .lead{background:var(--card);padding:20px;border-radius:10px;box-shadow:0 6px 18px rgba(58,58,58,0.06)}
+    h1{margin:0 0 8px 0;color:var(--accent)}
+    p.lead-copy{margin:0;color:var(--muted)}
+    .columns{display:grid;grid-template-columns:1fr 380px;gap:22px;margin-top:18px}
+    .service-list{display:flex;flex-direction:column;gap:12px}
+    .service{background:#fff;padding:16px;border-radius:8px;border:1px solid rgba(58,58,58,0.04)}
+    .service h3{margin:0;color:var(--accent-2)}
+    .service p{margin:8px 0 0 0;color:var(--muted)}
+    .cta{display:inline-block;background:var(--accent);color:#fff;padding:10px 14px;border-radius:8px;text-decoration:none}
+    /* Session Planner */
+    .planner{background:#fff;padding:16px;border-radius:10px;border:1px solid rgba(58,58,58,0.04)}
+    label{display:block;font-size:13px;margin-top:10px;color:#5a5a5a}
+    input[type=text],select,textarea{width:100%;padding:8px;border-radius:6px;border:1px solid #e6e0da;background:#fff}
+    .small{font-size:13px;color:var(--muted)}
+    .plan-output{white-space:pre-wrap;background:#faf6f2;padding:12px;border-radius:6px;border:1px dashed rgba(58,58,58,0.06);margin-top:10px}
+    .btn-row{display:flex;gap:8px;margin-top:10px}
+    button{background:var(--accent);color:#fff;padding:8px 12px;border-radius:8px;border:0}
+    footer{margin-top:auto;padding:24px;text-align:center;color:var(--muted)}
+    /* Decorative pattern */
+    .pattern-bg{background-image:url('assets/img/pattern.svg');background-repeat:repeat;padding:18px;border-radius:8px}
+    @media(max-width:880px){.columns{grid-template-columns:1fr;}.wrap{padding:18px}}
+  </style>
+</head>
+<body>
+  <div class="site">
+    <header>
+      <div class="wrap">
+        <nav>
+          <div class="brand">{{BUSINESS_NAME}}</div>
+          <div style="flex:1"></div>
+          <a href="index.html">Home</a>
+          <a href="services.html">Offerings</a>
+          <a href="blends.html">Oil Lab</a>
+          <a href="shop.html">Shop</a>
+          <a href="book.html">Reserve</a>
+          <a href="contact.html">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="hero">
+        <div class="lead pattern-bg">
+          <h1>Personal scent sessions designed for the day ahead</h1>
+          <p class="lead-copy">Bespoke aromatherapy sessions that may support focus, rest, or an easing of momentum — delivered in a focused format for busy lives. Choose a guided plan and leave with practical scent steps you can use at home.</p>
+        </div>
+
+        <div class="columns">
+          <div>
+            <div class="service-list">
+              <div class="service">
+                <h3>Focused Session — 60 minutes</h3>
+                <p>A one-hour consult and blend creation, ideal for targeted short-term support. Includes a take-home sample and a 3-step home practice you can repeat.</p>
+                <div style="margin-top:10px"><a class="cta" href="book.html">Schedule a Consult</a></div>
+              </div>
+
+              <div class="service">
+                <h3>Reset Session — 90 minutes</h3>
+                <p>A deeper session with guided breathing and a crafted blend for evening and morning use. Includes notes on safe dilution and a patch-test plan.</p>
+                <div style="margin-top:10px"><a class="cta" href="book.html">Book Reset</a></div>
+              </div>
+
+              <div class="service">
+                <h3>VIP Day — Immersive</h3>
+                <p>An intensive half-day focused on ritual design and a small collection of custom blends. Best for teams or personal rhythm redesigns (VIP Day model).</p>
+                <div style="margin-top:10px"><a class="cta" href="pricing.html">Inquire VIP Day</a></div>
+              </div>
+            </div>
+
+            <section style="margin-top:20px" class="planner">
+              <h3 style="margin:0 0 8px 0;color:var(--accent)">Session Planner</h3>
+              <p class="small">Build a brief plan to bring to your session. This creates a single plain-text summary you can copy and paste anywhere.</p>
+
+              <label for="goal">Primary aim</label>
+              <select id="goal">
+                <option value="calm">Calm / Evening unwinding</option>
+                <option value="focus">Focus / Work flow</option>
+                <option value="sleep">Sleep support</option>
+                <option value="mood">Light mood lift</option>
+                <option value="custom">Custom (notes)</option>
+              </select>
+
+              <label for="format">Session format</label>
+              <select id="format">
+                <option>In-person ({{CITY}}, {{STATE}})</option>
+                <option>Virtual (video consult)</option>
+                <option>Blended — part virtual, part in-person</option>
+              </select>
+
+              <label for="duration">Preferred duration</label>
+              <select id="duration">
+                <option>30 minutes</option>
+                <option selected>60 minutes</option>
+                <option>90 minutes</option>
+              </select>
+
+              <label for="notes">Any notes (allergies, pregnant, pets at home)</label>
+              <textarea id="notes" rows="3" placeholder="Share anything to keep in mind"></textarea>
+
+              <div class="btn-row">
+                <button id="buildPlan">Create Plan</button>
+                <button id="copyPlan" style="background:#7b8a5a">Copy Summary</button>
+              </div>
+
+              <div id="planOutput" class="plan-output">Your plan will appear here.</div>
+            </section>
+
+          </div>
+
+          <aside>
+            <div class="service" style="position:sticky;top:20px">
+              <h3>Why work this way</h3>
+              <p class="small">A concentrated session with clear next steps helps make scent practice usable, not extra. Each plan includes a safe dilution guideline and patch-test instructions.</p>
+              <div style="margin-top:12px"><a class="cta" href="about.html">Meet the facilitator</a></div>
+            </div>
+
+            <div class="service" style="margin-top:12px">
+              <h3>Client Notes</h3>
+              <p class="small">Sessions follow a safety-first approach. We avoid claims; instead we offer sensory tools that may support shifts in mood and focus.</p>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap small">Questions? Call <strong>{{PHONE}}</strong> or <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>. <br/>Primary action: <a href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+    </footer>
+  </div>
+
+  <script>
+    (function(){
+      const goalMap = {
+        calm: 'Calm / Evening unwinding',
+        focus: 'Focus / Work flow',
+        sleep: 'Sleep support',
+        mood: 'Light mood lift',
+        custom: 'Custom'
+      };
+      const buildBtn = document.getElementById('buildPlan');
+      const copyBtn = document.getElementById('copyPlan');
+      const out = document.getElementById('planOutput');
+
+      function safeText(s){return (s||'').trim();}
+
+      buildBtn.addEventListener('click', function(){
+        const goal = document.getElementById('goal').value;
+        const format = document.getElementById('format').value;
+        const duration = document.getElementById('duration').value;
+        const notes = document.getElementById('notes').value;
+
+        const summaryLines = [];
+        summaryLines.push('{{BUSINESS_NAME}} — Session Planner');
+        summaryLines.push('Primary aim: ' + (goalMap[goal] || goal));
+        summaryLines.push('Format: ' + safeText(format));
+        summaryLines.push('Duration: ' + safeText(duration));
+        if(notes && notes.trim().length) summaryLines.push('Notes: ' + notes.trim());
+        summaryLines.push('Suggested next steps: 1) gentle inhalation practice; 2) 1:200 dilution for topical rollers (see session).');
+        summaryLines.push('Safety: patch test before topical use; avoid direct use during pregnancy without guidance; keep oils away from pets.');
+
+        out.textContent = summaryLines.join('\n');
+      });
+
+      copyBtn.addEventListener('click', function(){
+        const text = out.textContent || '';
+        if(!text){ alert('No plan to copy — create one first.'); return; }
+        navigator.clipboard.writeText(text).then(()=>{
+          copyBtn.textContent = 'Copied';
+          setTimeout(()=> copyBtn.textContent = 'Copy Summary',1500);
+        }).catch(()=>{ alert('Copy failed — select the text and press Ctrl+C.'); });
+      });
+    })();
+  </script>
+</body>
+</html>

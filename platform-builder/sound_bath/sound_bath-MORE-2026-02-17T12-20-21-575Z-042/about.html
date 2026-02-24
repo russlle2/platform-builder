@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f6efe6;--card:#fff7ef;--accent:#8b5e3c;--muted:#6b5848;--glass:rgba(255,255,255,0.6)}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;
+      color:var(--muted);background:linear-gradient(180deg,var(--bg),#fff);}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:transparent}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,#f9efe0,#efe1d0);box-shadow:0 6px 18px rgba(139,94,60,0.12);display:grid;place-items:center;font-weight:700;color:var(--accent)}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-weight:600}
+    main{max-width:1000px;margin:28px auto;padding:26px}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:26px;align-items:start}
+    .card{background:var(--card);padding:22px;border-radius:14px;box-shadow:0 8px 30px rgba(99,67,45,0.06)}
+    h1{margin:0 0 8px;font-size:28px;color:var(--accent)}
+    p.lead{margin:0 0 16px;color:#5b4839}
+    .meta{font-size:14px;color:#7a6a5a}
+    .divider{height:1px;background:linear-gradient(90deg,transparent,#e9dcd0,transparent);margin:18px 0}
+    .features{display:flex;flex-direction:column;gap:12px}
+    .feature{display:flex;gap:12px;align-items:flex-start}
+    .icon{width:44px;height:44px;border-radius:10px;background:linear-gradient(180deg,#fff,#f5ebe1);display:grid;place-items:center;color:var(--accent);font-weight:700}
+    footer.cta{margin-top:20px;padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(139,94,60,0.06),transparent)}
+
+    /* pattern: an earthy tile rendered as inline svg and usable as img */
+    .pattern-wrap{position:fixed;right:20px;bottom:20px;width:220px;height:220px;opacity:0.12;pointer-events:none}
+    /* Mini interactive widget */
+    .mini-planner{background:linear-gradient(180deg,#fff,#fff7f2);padding:16px;border-radius:10px}
+    .mini-planner label{display:block;font-size:13px;margin-top:8px;color:#634734}
+    .mini-planner input,.mini-planner select{width:100%;padding:8px;border-radius:8px;border:1px solid #e6ddd2;background:transparent}
+    .btn{display:inline-block;padding:10px 14px;border-radius:10px;background:var(--accent);color:#fff;text-decoration:none;border:none;cursor:pointer}
+    .muted-block{font-size:13px;color:#6b5848}
+    pre.export{white-space:pre-wrap;background:#fff7ef;padding:12px;border-radius:8px;border:1px solid #f0e3d7;margin-top:12px}
+    small.disclaimer{display:block;margin-top:12px;color:#6b5144;font-size:12px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">SB</div>
+      <div>
+        <div style="font-weight:700;color:var(--accent)">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:#7a6a5a">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="events.html">Gatherings</a>
+      <a href="private-sessions.html">Quiet Rooms</a>
+      <a href="pricing.html">Investment</a>
+      <a href="about.html">Story</a>
+      <a href="faq.html">Q&A</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Hello</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="hero">
+      <section class="card">
+        <h1>Who we are and how we work with sound</h1>
+        <p class="lead">We host slow, warm gatherings that use tuned instruments and gentle rhythm to create a soft container: attentive, relaxed, and open to small changes. Our practice is about shaping space for rest and clarity, not performance.</p>
+        <div class="divider"></div>
+        <div class="features">
+          <div class="feature"><div class="icon">G</div><div><strong>Grounded curation</strong><div class="muted-block">We blend bowls, subtle percussion and breath-led guidance to make a steady arc across the session.</div></div></div>
+          <div class="feature"><div class="icon">H</div><div><strong>Warm hospitality</strong><div class="muted-block">Small events, clear entry and exit, and guidance for what to bring so your experience is smooth.</div></div></div>
+          <div class="feature"><div class="icon">P</div><div><strong>Practical accessibility</strong><div class="muted-block">Quiet arrival, accessible seating options, and a considerate environment for diverse needs.</div></div></div>
+        </div>
+        <footer class="cta">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-weight:700;color:var(--accent)">Curious to join?</div>
+              <div style="font-size:13px;color:#6b5848">Plan a personal session below or head to Reserve to pick a gathering.</div>
+            </div>
+            <div>
+              <a class="btn" href="book.html">Plan with us</a>
+            </div>
+          </div>
+        </footer>
+      </section>
+
+      <aside class="card">
+        <h3 style="margin-top:0;color:var(--accent)">Session Planner (quick)</h3>
+        <div class="mini-planner" id="miniPlanner">
+          <label for="name">Your name</label>
+          <input id="name" placeholder="Maria" />
+          <label for="intent">What would you like to place attention on?</label>
+          <select id="intent"><option>Rest & reset</option><option>Sleep preparation</option><option>Creative focus</option><option>Transition & ritual</option></select>
+          <label for="length">Duration</label>
+          <select id="length"><option>30 minutes</option><option>45 minutes</option><option>60 minutes</option></select>
+          <button class="btn" id="miniBuild" style="margin-top:12px">Compose plan</button>
+          <pre class="export" id="miniExport" aria-live="polite">Your plan will appear here.</pre>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn" id="miniCopy">Copy</button>
+            <button style="background:#fff;border:1px solid #e6ddd2;padding:10px;border-radius:10px;cursor:pointer" id="miniOpen">Open full planner</button>
+          </div>
+          <small class="disclaimer">Health note: If you have a history of seizures, inner-ear conditions, or severe psychiatric episodes, consult a clinician before attending sound sessions.</small>
+        </div>
+      </aside>
+    </div>
+
+    <section style="margin-top:22px" class="card">
+      <h3 style="color:var(--accent);margin-top:0">Our approach — a brief process</h3>
+      <ol style="color:#6b5848">
+        <li><strong>Arrival & settling:</strong> Quiet check-in, choice of cushion or chair, 5–10 minutes of guided grounding.</li>
+        <li><strong>Sound arc:</strong> Instruments layered in a slow build and gentle resolution.</li>
+        <li><strong>Soft close:</strong> A brief recalibration and space for water and questions.</li>
+      </ol>
+      <div class="divider"></div>
+      <p style="color:#6b5848">We welcome questions about accessibility and welcome small changes to support everyone’s comfort. If uncertain, reach out: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a>.</p>
+    </section>
+
+  </main>
+
+  <div class="pattern-wrap" aria-hidden="true">
+    <!-- Inline decorative svg pattern: warm earthen tiles -->
+    <svg width="220" height="220" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="tile" width="44" height="44" patternUnits="userSpaceOnUse">
+          <rect width="44" height="44" fill="#efe1d0" />
+          <circle cx="22" cy="22" r="6" fill="#f9efe0" />
+          <path d="M2 22 Q22 6 42 22" stroke="#e0c7b0" stroke-width="1.5" fill="none"/>
+        </pattern>
+      </defs>
+      <rect width="220" height="220" fill="url(#tile)" opacity="0.9"/>
+    </svg>
+  </div>
+
+  <script>
+    // Mini planner logic
+    (function(){
+      const buildBtn = document.getElementById('miniBuild');
+      const copyBtn = document.getElementById('miniCopy');
+      const openBtn = document.getElementById('miniOpen');
+      const exportArea = document.getElementById('miniExport');
+      function compose(){
+        const name = document.getElementById('name').value || 'Friend';
+        const intent = document.getElementById('intent').value;
+        const length = document.getElementById('length').value;
+        const plan = [
+          `Session plan for: ${name}`,
+          `Focus: ${intent}`,
+          `Length: ${length}`,
+          `Structure:`,
+          ` • 5–10 min arrival & breath-led settling`,
+          ` • 50–70% of time in layered harmonic bowls and soft percussion`,
+          ` • slow resolution & 3-minute silence to finish`,
+          `Notes: Bring a cushion and a light blanket. Avoid heavy meals before arrival.`
+        ].join('\n');
+        exportArea.textContent = plan;
+      }
+      buildBtn.addEventListener('click',compose);
+      copyBtn.addEventListener('click',function(){
+        navigator.clipboard && navigator.clipboard.writeText(exportArea.textContent).then(()=>{
+          copyBtn.textContent='Copied'
+          setTimeout(()=>copyBtn.textContent='Copy',1200)
+        })
+      });
+      openBtn.addEventListener('click',function(){ location.href='book.html' });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Investment — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff9f6;--accent:#6a4a3c;--muted:#7b6b66;--card:#fff;--glass:rgba(255,255,255,0.6)}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--accent);background:linear-gradient(180deg,#fff 0%,#fff9f6 100%);}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:transparent}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,#e9dcd6,#fbf6f4);display:grid;place-items:center;font-weight:700;color:var(--accent)}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none;font-size:15px}
+    .cta{background:var(--accent);color:#fff;padding:10px 14px;border-radius:8px;text-decoration:none}
+    main{max-width:1100px;margin:28px auto;padding:30px}
+
+    /* Hero */
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:center}
+    .hero .lead{background:linear-gradient(180deg,rgba(106,74,60,0.06),rgba(106,74,60,0.03));padding:28px;border-radius:14px}
+    .pill{display:inline-block;background:var(--card);padding:6px 10px;border-radius:999px;font-size:13px;color:var(--muted);margin-bottom:12px}
+    h1{margin:6px 0 8px;font-size:28px}
+    p.lede{color:var(--muted);margin:0 0 18px}
+
+    /* Pricing cards */
+    .plans{display:flex;gap:18px;margin-top:18px}
+    .plan{flex:1;background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(102,80,72,0.06)}
+    .price{font-weight:700;font-size:22px;color:var(--accent)}
+    .plan ul{margin:10px 0 14px;padding-left:18px;color:var(--muted)}
+    .plan .action{display:inline-block;margin-top:8px;padding:10px 12px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#8a5f4f);color:#fff;text-decoration:none}
+
+    /* Aroma wheel */
+    .wheel-wrap{background:var(--card);padding:18px;border-radius:12px;display:flex;gap:18px;align-items:center;box-shadow:0 6px 18px rgba(102,80,72,0.04)}
+    .wheel{width:220px;height:220px}
+    .notes{flex:1}
+    .note-label{display:flex;gap:8px;align-items:center;margin:8px 0}
+    .note-dot{width:12px;height:12px;border-radius:50%}
+    .note-top .note-dot{background:#f6c6a6}
+    .note-mid .note-dot{background:#f1e0b8}
+    .note-base .note-dot{background:#cfd8d1}
+    .note-desc{color:var(--muted)}
+
+    /* Proof gallery */
+    .proof{margin-top:26px;background:linear-gradient(180deg,rgba(250,248,247,0.6),rgba(255,255,255,0.4));padding:18px;border-radius:12px}
+    .testi{min-height:72px;display:flex;flex-direction:column;justify-content:center}
+    .testi p{margin:0;color:var(--muted)}
+    .testi .who{margin-top:8px;font-size:13px;color:var(--accent)}
+    .badges{display:flex;gap:10px;margin-top:12px}
+    .badge{background:#fff;padding:8px;border-radius:8px;border:1px solid rgba(106,74,60,0.06);font-size:13px;position:relative}
+    .badge[data-tip]:hover::after{content:attr(data-tip);position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 8px);background:#222;color:#fff;padding:6px 8px;border-radius:6px;font-size:12px;white-space:nowrap}
+    .controls{display:flex;gap:8px;margin-top:10px}
+    .controls button{padding:8px 10px;border-radius:8px;border:1px solid rgba(106,74,60,0.08);background:transparent}
+
+    footer{margin-top:28px;padding:18px;text-align:center;color:var(--muted)}
+
+    @media (max-width:880px){
+      .hero{grid-template-columns:1fr}
+      .plans{flex-direction:column}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">A</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav aria-label="Primary">
+      <a href="index.html">Nest</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Apothecary</a>
+      <a href="pricing.html">Investment</a>
+      <a href="about.html">Origins</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Reach</a>
+      <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="lead">
+        <span class="pill">Tailored scent support</span>
+        <h1>Plans that meet the rhythm of your days</h1>
+        <p class="lede">Thoughtful aromatherapy offerings designed for simple integration. Each plan includes oil choices, safety guidance, and short scent rituals you can follow at home. No promises of cure — only scent practices that may support calm and clarity.</p>
+        <div class="plans" role="list">
+          <div class="plan" role="listitem">
+            <div style="font-size:13px;color:var(--muted);">Sampler Session</div>
+            <div class="price">$65 — single consult</div>
+            <ul>
+              <li>30-minute scent conversation</li>
+              <li>Home dilution notes + one blend suggestion</li>
+            </ul>
+            <a class="action" href="book.html#sampler">Choose this</a>
+          </div>
+          <div class="plan" role="listitem">
+            <div style="font-size:13px;color:var(--muted);">Seasonal Support</div>
+            <div class="price">$220 — 3-month rhythm</div>
+            <ul>
+              <li>Monthly check-ins, updated blends</li>
+              <li>Guided micro-habits for scent moments</li>
+            </ul>
+            <a class="action" href="book.html#seasonal">Choose this</a>
+          </div>
+          <div class="plan" role="listitem">
+            <div style="font-size:13px;color:var(--muted);">Signature Scent Plan</div>
+            <div class="price">$420 — bespoke program</div>
+            <ul>
+              <li>Full intake, custom scent profile</li>
+              <li>Personalized blend + dilution chart</li>
+            </ul>
+            <a class="action" href="book.html#signature">Choose this</a>
+          </div>
+        </div>
+      </div>
+
+      <aside>
+        <div style="max-width:360px">
+          <div style="background:var(--card);padding:14px;border-radius:12px;box-shadow:0 6px 18px rgba(106,74,60,0.04)">
+            <h3 style="margin:0 0 6px">Aroma wheel — try a note</h3>
+            <div class="wheel-wrap">
+              <svg class="wheel" viewBox="0 0 200 200" aria-hidden="true">
+                <defs>
+                  <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#f6c6a6"/><stop offset="1" stop-color="#f0b48c"/></linearGradient>
+                  <linearGradient id="g2" x1="0" x2="1"><stop offset="0" stop-color="#f1e0b8"/><stop offset="1" stop-color="#e6d39a"/></linearGradient>
+                  <linearGradient id="g3" x1="0" x2="1"><stop offset="0" stop-color="#cfd8d1"/><stop offset="1" stop-color="#bfc9c2"/></linearGradient>
+                </defs>
+                <!-- Top -->
+                <path class="seg top" d="M100 100 L100 10 A90 90 0 0 1 190 100 z" fill="url(#g1)" data-note="Top" data-desc="Bright, fleeting scents that appear first: citrus, herbaceous sparkles; may lift the first impression of a blend."/>
+                <!-- Middle -->
+                <path class="seg mid" d="M100 100 L190 100 A90 90 0 0 1 100 190 z" fill="url(#g2)" data-note="Middle" data-desc="The body of the scent: floral, spice, or green notes that give character and linger beyond the first breath."/>
+                <!-- Base -->
+                <path class="seg base" d="M100 100 L100 190 A90 90 0 0 1 10 100 z" fill="url(#g3)" data-note="Base" data-desc="Deep, grounding aromas: woods, resins, musk-like accords; they anchor a blend and persist longest."/>
+                <!-- center -->
+                <circle cx="100" cy="100" r="28" fill="#fff" stroke="#efe7e3"/>
+                <text x="100" y="105" text-anchor="middle" font-size="12" fill="#6a4a3c">Aroma Wheel</text>
+              </svg>
+              <div class="notes">
+                <div class="note-top note-label"><div class="note-dot"></div><strong>Top notes</strong></div>
+                <div class="note-mid note-label"><div class="note-dot"></div><strong>Middle notes</strong></div>
+                <div class="note-base note-label"><div class="note-dot"></div><strong>Base notes</strong></div>
+                <div class="note-desc" id="wheelDesc">Hover a segment to read its quality and examples.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="proof" style="margin-top:12px">
+            <div><strong>What people say</strong></div>
+            <div class="testi" id="testi"> 
+              <p id="testiText">"Subtle, careful suggestions — I found a ritual I use each morning."</p>
+              <div class="who" id="testiWho">— L., designer</div>
+            </div>
+            <div class="badges">
+              <div class="badge" data-tip="2+ decades curating essential oil safety">Practitioner vetted</div>
+              <div class="badge" data-tip="Guidance on dilution and patch testing">Safety-first guidance</div>
+              <div class="badge" data-tip="Local studio in {{CITY}}, {{STATE}}">Local studio</div>
+            </div>
+            <div class="controls">
+              <button id="prev">◀</button>
+              <button id="next">▶</button>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section style="margin-top:20px;background:var(--card);padding:18px;border-radius:12px">
+      <h3 style="margin:0 0 8px">Notes on safety</h3>
+      <p style="color:var(--muted);margin:0 0 6px">All recommendations include dilution suggestions and instructions for performing a patch test. If you are pregnant, nursing, have pets, or are under professional care, please mention this during booking — we will offer scent options and safety guidance. Recommendations may support comfort but are not medical advice.</p>
+    </section>
+
+    <section style="margin-top:16px;display:flex;gap:12px">
+      <a href="book.html" class="cta" style="padding:12px 16px">Reserve a consult</a>
+      <a href="contact.html" style="padding:12px 16px;border-radius:10px;border:1px solid rgba(106,74,60,0.06);text-decoration:none;color:var(--accent);background:#fff">Questions? Reach out</a>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} • <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+  </footer>
+
+  <script>
+    // Aroma wheel interactivity
+    (function(){
+      const segs = document.querySelectorAll('.wheel .seg');
+      const desc = document.getElementById('wheelDesc');
+      segs.forEach(s=>{
+        s.addEventListener('mouseenter', ()=>{
+          const d = s.getAttribute('data-desc');
+          const n = s.getAttribute('data-note');
+          desc.textContent = n + ' — ' + d;
+          s.style.opacity = '0.95';
+          s.style.filter = 'drop-shadow(0 6px 10px rgba(106,74,60,0.12))';
+        });
+        s.addEventListener('mouseleave', ()=>{
+          desc.textContent = 'Hover a segment to read its quality and examples.';
+          s.style.opacity = '1';
+          s.style.filter = 'none';
+        });
+      });
+    })();
+
+    // Proof gallery rotating testimonials
+    (function(){
+      const items = [
+        {text:'"Subtle, careful suggestions — I found a ritual I use each morning."', who:'L., designer'},
+        {text:'"I appreciated the safety notes and the clear dilution guide."', who:'R., parent'},
+        {text:'"Details that matter: travel-size options, and a scent I enjoy daily."', who:'M., educator'}
+      ];
+      let i=0;const tEl=document.getElementById('testiText');const wEl=document.getElementById('testiWho');
+      function show(idx){tEl.textContent=items[idx].text;wEl.textContent='— '+items[idx].who}
+      show(0);
+      let iv = setInterval(()=>{i=(i+1)%items.length;show(i)},5000);
+      document.getElementById('prev').addEventListener('click',()=>{i=(i-1+items.length)%items.length;show(i);clearInterval(iv);iv=setInterval(()=>{i=(i+1)%items.length;show(i)},5000)});
+      document.getElementById('next').addEventListener('click',()=>{i=(i+1)%items.length;show(i);clearInterval(iv);iv=setInterval(()=>{i=(i+1)%items.length;show(i)},5000)});
+    })();
+  </script>
+</body>
+</html>

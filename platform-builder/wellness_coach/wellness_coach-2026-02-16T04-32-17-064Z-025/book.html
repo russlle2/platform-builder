@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reserve a discovery call or session with {{COACH_NAME}}. Choose a pathway and schedule time to begin." />
+  <style>
+    :root{--bg:#f9fafb;--ink:#0f1724;--muted:#6b7280;--accent:#1f8cff;--panel:#ffffff}
+    body{margin:0;font-family:Inter,system-ui,Arial;color:var(--ink);background:var(--bg)}
+    .wrap{max-width:900px;margin:0 auto;padding:40px 20px}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none}
+    .hero{display:flex;gap:18px;align-items:center;background:linear-gradient(180deg, rgba(31,140,255,0.06), rgba(31,140,255,0.02));padding:18px;border-radius:12px}
+    .hero img{width:120px;height:120px;border-radius:10px}
+    .hero h2{margin:0;font-size:22px}
+    main{display:grid;grid-template-columns:1fr 360px;gap:22px;margin-top:22px}
+    form{background:var(--panel);padding:18px;border-radius:10px;box-shadow:0 6px 18px rgba(16,24,40,0.06)}
+    label{display:block;font-size:13px;margin-top:12px;color:var(--muted)}
+    input,textarea,select{width:100%;padding:10px;margin-top:6px;border:1px solid #e6edf3;border-radius:8px;box-sizing:border-box}
+    .submit{margin-top:14px;background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;border:none;font-weight:600}
+    .side{background:var(--panel);padding:16px;border-radius:10px}
+    .pill{display:inline-block;background:#eef2ff;color:#0a3ea6;padding:6px 10px;border-radius:8px;font-size:13px}
+    .note{color:var(--muted);font-size:13px;margin-top:10px}
+    @media (max-width:880px){main{grid-template-columns:1fr}.hero{flex-direction:column;align-items:flex-start}.hero img{width:88px;height:88px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">The Journey</a>
+        <a href="programs.html">Offerings</a>
+        <a href="pricing.html">Rates</a>
+        <a href="testimonials.html">Stories</a>
+        <a href="book.html">Book A Session</a>
+        <a href="contact.html">Reach Out</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <img src="assets/img/pattern.svg" alt="pattern illustration" />
+      <div>
+        <h2>Reserve your spot — discovery calls & session booking</h2>
+        <p style="color:var(--muted);margin-top:8px">Start with a 20-minute discovery call to explore fit, or book a single session to work on an immediate challenge. Packages available after that.</p>
+      </div>
+    </section>
+
+    <main>
+      <form action="{{PRIMARY_CTA_URL}}" method="post" aria-label="Booking form">
+        <h3 style="margin:0">Book a Discovery Call</h3>
+        <p style="color:var(--muted);margin-top:8px">Choose a time and tell me what you want to prioritize. I will follow up to confirm and share next steps.</p>
+
+        <label for="name">Full name</label>
+        <input id="name" name="name" placeholder="Your name" required />
+
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" placeholder="you@example.com" required />
+
+        <label for="phone">Phone (optional)</label>
+        <input id="phone" name="phone" placeholder="{{PHONE}}" />
+
+        <label for="type">Session type</label>
+        <select id="type" name="type">
+          <option>20-minute Discovery Call — free</option>
+          <option>60-minute Single Session — $150</option>
+          <option>90-minute Deep Session — $220</option>
+        </select>
+
+        <label for="goals">What are you hoping to change?</label>
+        <textarea id="goals" name="goals" rows="4" placeholder="Brief goals or obstacles"></textarea>
+
+        <label for="times">Preferred days/times</label>
+        <input id="times" name="times" placeholder="Weekday mornings, evenings, specific dates" />
+
+        <button class="submit" type="submit">Request booking</button>
+
+        <div class="note">By submitting you agree I may reach out via email to confirm scheduling. Cancellation policy: please give 24 hours notice to reschedule.</div>
+      </form>
+
+      <aside class="side">
+        <div class="pill">Quick options</div>
+        <h4 style="margin-top:12px">If you're unsure</h4>
+        <p style="color:var(--muted)">Pick the Discovery Call. We'll outline a 6–12 week plan together and choose a package that fits your tempo and budget.</p>
+
+        <h4 style="margin-top:12px">Sample programs</h4>
+        <ul style="color:var(--muted)">
+          <li><strong>Discovery Call</strong> — align on goals</li>
+          <li><strong>90-Day Pathways</strong> — structured weekly coaching</li>
+          <li><strong>Monthly Momentum</strong> — check-in & refinement</li>
+        </ul>
+
+        <h4 style="margin-top:12px">Need invoicing?</h4>
+        <p style="color:var(--muted)">Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> with your billing details and we will send an invoice.</p>
+
+        <div style="margin-top:12px">
+          <strong>Location</strong>
+          <p class="note">Virtual sessions based in {{CITY}}, {{STATE}}. Plans available globally while respecting time zones.</p>
+        </div>
+
+        <div style="margin-top:12px">
+          <strong>Contact</strong>
+          <p class="note">{{PHONE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+        </div>
+      </aside>
+    </main>
+
+    <section style="margin-top:22px">
+      <h4 style="margin-bottom:8px">What to expect in a Discovery Call</h4>
+      <ol style="color:var(--muted)">
+        <li>We clarify one or two immediate priorities.</li>
+        <li>I sketch an approach with micro-practices you can start tomorrow.</li>
+        <li>If helpful, we'll map a multi-session pathway and next steps.</li>
+      </ol>
+    </section>
+
+    <footer style="margin-top:28px;color:var(--muted);font-size:13px">
+      <div>&copy; {{BUSINESS_NAME}} • {{COACH_NAME}}, {{CREDENTIALS}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • {{PHONE}}</div>
+    </footer>
+  </div>
+</body>
+</html>

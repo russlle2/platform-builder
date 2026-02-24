@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gathering Events — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfaf8;--accent:#6c4bd1;--muted:#6b6b6b;--card:#fff;--glass:rgba(255,255,255,0.6);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#f4f3f8) no-repeat fixed;padding:0;color:#222}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:48px;height:48px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#8e5efc);display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none;font-size:15px}
+    .hero{max-width:960px;margin:18px auto;padding:28px;border-radius:14px;background:linear-gradient(180deg,rgba(108,75,209,0.06),rgba(140,114,255,0.03));box-shadow:0 8px 30px rgba(40,30,80,0.06);position:relative}
+    .hero h1{margin:0 0 10px 0;font-size:28px;color:#171725}
+    .hero p{margin:0 0 18px 0;color:var(--muted)}
+    .cta{display:inline-block;background:var(--accent);color:white;padding:10px 16px;border-radius:10px;text-decoration:none}
+    .layout{display:grid;grid-template-columns:1fr 360px;gap:20px;margin-top:20px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 4px 18px rgba(36,30,65,0.06)}
+    .next-event{border-left:4px solid var(--accent);padding-left:14px}
+
+    .mixer{display:flex;gap:10px;align-items:center}
+    .mixer button{padding:8px 12px;border-radius:8px;border:1px solid #eee;background:#fff;cursor:pointer}
+    .mixer button.active{background:linear-gradient(90deg,var(--accent),#8e5efc);color:white;border:none}
+
+    .programs li{margin:10px 0;padding:12px;border-radius:8px;background:linear-gradient(180deg,#fff,#fbfbff);list-style:none}
+    .calendar{margin-top:10px}
+    .calendar time{display:block;font-weight:600}
+    .badge-row{display:flex;gap:10px;align-items:center;margin-top:12px}
+    .badge{width:44px;height:44px;border-radius:8px;background:#f2f2ff;display:inline-flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent);position:relative;cursor:default}
+    .badge[data-tooltip]{position:relative}
+    .badge[data-tooltip]:hover::after{content:attr(data-tooltip);position:absolute;top:-38px;left:50%;transform:translateX(-50%);white-space:nowrap;background:#222;color:#fff;padding:6px 8px;border-radius:6px;font-size:12px}
+
+    .testimonials{margin-top:18px}
+    .testimonial{min-height:72px;display:flex;flex-direction:column;justify-content:center}
+
+    footer{margin-top:24px;padding:18px;text-align:center;color:var(--muted);font-size:13px}
+
+    /* subtle patterned background using local svg */
+    body::before{content:"";position:fixed;inset:0;background-image:url('assets/img/pattern.svg');opacity:0.06;pointer-events:none}
+
+    @media (max-width:880px){.layout{grid-template-columns:1fr}.hero{margin:12px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">SB</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Gather</a>
+      <a href="events.html">Sessions</a>
+      <a href="private-sessions.html">Private</a>
+      <a href="pricing.html">Rates</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQ</a>
+      <a href="book.html" style="background:#111;color:#fff;padding:8px 12px;border-radius:8px;text-decoration:none">{{PRIMARY_CTA_LABEL}}</a>
+    </nav>
+  </header>
+
+  <main class="hero">
+    <h1>Group sound evenings tuned to steady down and open up</h1>
+    <p>Join a guided session that layers tuned bowls, breath cues, and gentle movement to shift restless systems into simple ease. Choose a listening level below to see suggested events.</p>
+    <a class="cta" href="book.html">Reserve a seat</a>
+
+    <div class="layout" style="margin-top:22px">
+      <section>
+        <div class="card next-event">
+          <h3 style="margin:0 0 8px 0">Next event</h3>
+          <div id="nextEventBlock">
+            <time datetime="2026-03-05T19:00">Fri, Mar 5 • 7:00–8:15 PM</time>
+            <div style="color:var(--muted);margin-top:8px">Community round — gentle waves of harmonic bowls and vocal layers</div>
+            <div style="margin-top:12px"><a class="cta" href="book.html">Claim a space</a></div>
+          </div>
+          <div style="margin-top:12px;color:var(--muted);font-size:13px">Location: {{CITY}}, {{STATE}} • Bring a blanket and water</div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <h4 style="margin:0 0 8px 0">Choose how you want to land</h4>
+          <div class="mixer" role="tablist" aria-label="Sound intensity">
+            <button id="mixGentle" class="active" data-level="gentle">Gentle</button>
+            <button id="mixMedium" data-level="medium">Medium</button>
+            <button id="mixIntense" data-level="intense">Intense</button>
+          </div>
+
+          <ul class="programs" id="programList" style="margin-top:12px;padding:0">
+            <!-- program recommendations populated by JS -->
+          </ul>
+        </div>
+
+        <div class="card calendar" aria-live="polite" style="margin-top:14px">
+          <h4 style="margin:0 0 10px 0">Upcoming schedule</h4>
+          <div id="calendarList">
+            <!-- calendar items populated by JS -->
+          </div>
+        </div>
+
+      </section>
+
+      <aside>
+        <div class="card">
+          <h4 style="margin:0 0 8px 0">Proof and presence</h4>
+          <div class="badge-row">
+            <div class="badge" data-tooltip="Featured in The Local Wellness Journal">LW</div>
+            <div class="badge" data-tooltip="Partner studio: Solstice Rooms">SR</div>
+            <div class="badge" data-tooltip="Endorsed by local therapists">HT</div>
+          </div>
+
+          <div class="testimonials" id="testimonialArea" style="margin-top:12px">
+            <!-- rotating testimonial injected by JS -->
+            <div class="testimonial">Loading reflections...</div>
+          </div>
+
+          <div style="margin-top:12px;color:var(--muted);font-size:13px">A rotating selection of attendee notes and third-party recognitions. Hover a badge to learn more.</div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <h4 style="margin:0 0 8px 0">Safety & suitability</h4>
+          <div style="color:var(--muted);font-size:13px">Contraindications: If you are pregnant, have uncontrolled epilepsy, severe psychiatric conditions, or use a pacemaker/implanted device, consult a clinician before attending. If you feel uncomfortable with vibration or extended lying, we can adapt the session. Contact {{EMAIL}} for specific questions.</div>
+        </div>
+
+      </aside>
+    </div>
+
+    <div style="margin-top:18px;display:flex;gap:10px;align-items:center">
+      <a class="cta" href="book.html">Book a seat</a>
+      <a href="private-sessions.html" style="padding:10px 12px;border-radius:8px;text-decoration:none;border:1px solid #e6e6ee;color:var(--accent)">Explore private options</a>
+    </div>
+
+  </main>
+
+  <footer>
+    <div>Questions? Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+  </footer>
+
+  <script>
+    (function(){
+      // DATA
+      const events = [
+        {date:'2026-03-05T19:00',label:'Community round — harmonic bowls',level:'gentle'},
+        {date:'2026-03-12T19:30',label:'Deep Tones — layered gong textures',level:'intense'},
+        {date:'2026-03-19T18:00',label:'Midweek Reset — voice and chimes',level:'medium'},
+        {date:'2026-03-26T19:00',label:'Slow Evening — bowls and breath',level:'gentle'}
+      ];
+
+      const programsByLevel = {
+        gentle:[
+          {title:'Restful Waves',desc:'A softer pool of bowls and vocal harmonics for settling into sleep-like calm.'},
+          {title:'Near‑Silent Drift',desc:'Low-volume tones, staggered breath guidance, ideal for newcomers.'}
+        ],
+        medium:[
+          {title:'Layered Relief',desc:'Steady rhythmic frames with medium sustain for clearer mental spacing.'},
+          {title:'Vocal Loom',desc:'Combined bowls and gentle vocal layers to invite deeper attention.'}
+        ],
+        intense:[
+          {title:'Deep Resonance Field',desc:'Long-form gong and low bowls for tactile vibration and sustained release.'},
+          {title:'Intensive Wave',desc:'Extended tonal clusters for folks seeking a pronounced shift.'}
+        ]
+      };
+
+      const testimonials = [
+        {text:'The session loosened a persistent knot of anxiety — I slept deeper than I have in months.',author:'— Maya, attendee'},
+        {text:'I appreciated the clear cues and how the room was arranged to feel safe and unrushed.',author:'— Carlos, educator'},
+        {text:'An approachable experience that surprised me with how rested I felt the next day.',author:'— Priya, nurse'}
+      ];
+
+      // UI refs
+      const mixButtons = document.querySelectorAll('.mixer button');
+      const programList = document.getElementById('programList');
+      const calendarList = document.getElementById('calendarList');
+      const testimonialArea = document.getElementById('testimonialArea');
+
+      function renderPrograms(level){
+        programList.innerHTML='';
+        (programsByLevel[level]||[]).forEach(p=>{
+          const li=document.createElement('li');
+          li.innerHTML=`<strong>${p.title}</strong><div style=\"color:var(--muted);font-size:13px;margin-top:6px\">${p.desc}</div>`;
+          programList.appendChild(li);
+        });
+      }
+
+      function renderCalendar(){
+        calendarList.innerHTML='';
+        events.forEach(ev=>{
+          const d=new Date(ev.date);
+          const el=document.createElement('div');
+          el.style.padding='8px 0';
+          el.innerHTML=`<time datetime=\"${ev.date}\">${d.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})} • ${d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</time><div style=\"color:var(--muted);font-size:13px;margin-top:4px\">${ev.label} <span style=\"color:#999\">• ${ev.level}</span></div>`;
+          calendarList.appendChild(el);
+        });
+      }
+
+      // mixer control
+      mixButtons.forEach(b=>{
+        b.addEventListener('click',()=>{
+          mixButtons.forEach(x=>x.classList.remove('active'));
+          b.classList.add('active');
+          renderPrograms(b.dataset.level);
+        });
+      });
+
+      // testimonials rotation
+      let tIndex=0;
+      function showTestimonial(i){
+        const t=testimonials[i];
+        testimonialArea.innerHTML=`<div class=\"testimonial\"><div style=\"font-style:italic\">\"${t.text}\"</div><div style=\"margin-top:8px;font-weight:700;color:var(--muted);font-size:13px\">${t.author}</div></div>`;
+      }
+      showTestimonial(0);
+      setInterval(()=>{ tIndex=(tIndex+1)%testimonials.length; showTestimonial(tIndex); },5200);
+
+      // initial render
+      renderPrograms('gentle');
+      renderCalendar();
+
+      // Next-event dynamic: if the next event changes, update the block
+      const nextEv = events[0];
+      const nextBlock = document.getElementById('nextEventBlock');
+      nextBlock.setAttribute('aria-live','polite');
+
+    })();
+  </script>
+</body>
+</html>

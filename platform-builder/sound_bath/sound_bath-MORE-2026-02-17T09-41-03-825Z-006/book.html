@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#071018;--card:#07151a;--muted:#9bb0b8;--accent:#7ef0d0}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:#e9fbf6;background-image:url('assets/img/pattern.svg');background-size:280px}
+    .wrap{max-width:980px;margin:28px auto;padding:20px}
+    nav{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+    nav a{color:#cfeee6;text-decoration:none;padding:6px 8px;border-radius:8px}
+    .hero{display:flex;gap:18px;align-items:flex-start}
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:16px;border-radius:12px}
+    h1{margin:0 0 6px}
+    .note{color:var(--muted);font-size:14px}
+    .comparator{margin-top:12px;background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;display:flex;align-items:center;gap:14px}
+    .toggle{background:rgba(255,255,255,0.02);padding:6px;border-radius:999px;display:inline-flex;gap:6px}
+    .toggle button{border:0;background:transparent;color:var(--muted);padding:8px 12px;border-radius:8px;cursor:pointer}
+    .toggle button.active{background:linear-gradient(90deg,rgba(126,240,208,0.12),rgba(126,240,208,0.04));color:var(--accent);font-weight:700}
+    .prices{display:flex;gap:12px;align-items:baseline}
+    .price{padding:8px 10px;border-radius:8px;background:rgba(255,255,255,0.01)}
+    .num{font-size:22px;color:#e9fff9;font-weight:800}
+    .small{font-size:13px;color:var(--muted)}
+    .mood-section{margin-top:16px}
+    .mood-buttons{display:flex;gap:8px;flex-wrap:wrap}
+    .mood-buttons button{background:transparent;border:1px solid rgba(255,255,255,0.04);color:#dff7f0;padding:8px 10px;border-radius:8px;cursor:pointer}
+    .mood-buttons button.active{background:linear-gradient(90deg,rgba(126,240,208,0.12),rgba(126,240,208,0.04));font-weight:700}
+    .book-cta{margin-top:14px}
+    .btn{background:var(--accent);color:#03201a;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+    .meta{margin-top:10px;color:var(--muted);font-size:13px}
+    @media(max-width:880px){.hero{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <a href="index.html">Gatherings</a>
+      <a href="events.html">Calendar</a>
+      <a href="private-sessions.html">Solo Immersions</a>
+      <a href="pricing.html">Investment</a>
+      <a href="about.html">Our Approach</a>
+      <a href="faq.html">Questions</a>
+      <a href="book.html" class="active">Reserve</a>
+      <a href="contact.html">Reach Us</a>
+    </nav>
+
+    <main class="hero">
+      <div class="panel" style="flex:1">
+        <h1>Reserve your place</h1>
+        <p class="note">Choose the rhythm that suits you. Toggle between ongoing monthly and single-series pack pricing to compare cost and commitment. Prices animate so you can feel the difference in scale.</p>
+
+        <div class="comparator" aria-hidden="false">
+          <div class="toggle" role="tablist" aria-label="Pricing toggle">
+            <button id="optMonthly" class="active">Monthly</button>
+            <button id="optPack">Series Pack</button>
+          </div>
+          <div class="prices">
+            <div class="price">
+              <div class="small">Standard</div>
+              <div class="num" id="priceStandard">—</div>
+            </div>
+            <div class="price">
+              <div class="small">Preferred</div>
+              <div class="num" id="pricePreferred">—</div>
+            </div>
+            <div class="price">
+              <div class="small">Deep Series</div>
+              <div class="num" id="priceSeries">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mood-section">
+          <h3 style="margin:12px 0 8px">Which best describes you today?</h3>
+          <div class="mood-buttons" id="moodBtns">
+            <button data-key="reset">Need a reset</button>
+            <button data-key="sleep">Trouble sleeping</button>
+            <button data-key="focus">Need calm focus</button>
+            <button data-key="process">Processing loss / transition</button>
+          </div>
+
+          <div class="book-cta">
+            <a id="bookNow" class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            <div class="meta" id="bookMeta">Standard sessions last ~55 minutes. See contraindications in our FAQ.</div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="panel" style="width:320px">
+        <h3 style="margin-top:0">Quick notes</h3>
+        <p class="small">Monthly plans are best for a steady continuity of practice. Series Packs are framed as a short, focused course — 4 sessions over 6 weeks — suited to targeted change. Both routes include a brief prep guide and follow-up practices.</p>
+
+        <div style="margin-top:12px">
+          <strong>Need a private?</strong>
+          <p class="small">For one-on-one immersive sessions, see Solo Immersions or contact us at <a href="mailto:{{EMAIL}}" style="color:#cfeee6">{{EMAIL}}</a>.</p>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    // Pricing comparator with animated numbers
+    (function(){
+      const monthly = {standard:25,preferred:38,series:120};
+      const pack = {standard:80,preferred:120,series:320};
+      const els = {standard:document.getElementById('priceStandard'),preferred:document.getElementById('pricePreferred'),series:document.getElementById('priceSeries')};
+      let current = monthly;
+
+      function animateNumber(el, start, end){
+        const duration = 420; const startTs = performance.now();
+        function tick(now){
+          const t = Math.min(1,(now-startTs)/duration);
+          const v = Math.round(start + (end-start) * (1 - Math.cos(t*Math.PI))/2);
+          el.textContent = '$'+v;
+          if(t<1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      }
+
+      function updatePrices(to){
+        animateNumber(els.standard, parseInt(els.standard.textContent.replace(/\D/g,''))||0,to.standard);
+        animateNumber(els.preferred, parseInt(els.preferred.textContent.replace(/\D/g,''))||0,to.preferred);
+        animateNumber(els.series, parseInt(els.series.textContent.replace(/\D/g,''))||0,to.series);
+      }
+
+      document.getElementById('optMonthly').addEventListener('click',function(){
+        if(this.classList.contains('active')) return;
+        document.getElementById('optMonthly').classList.add('active');
+        document.getElementById('optPack').classList.remove('active');
+        current = monthly; updatePrices(monthly);
+      });
+      document.getElementById('optPack').addEventListener('click',function(){
+        if(this.classList.contains('active')) return;
+        document.getElementById('optPack').classList.add('active');
+        document.getElementById('optMonthly').classList.remove('active');
+        current = pack; updatePrices(pack);
+      });
+
+      // initial render
+      document.getElementById('priceStandard').textContent = '$'+monthly.standard;
+      document.getElementById('pricePreferred').textContent = '$'+monthly.preferred;
+      document.getElementById('priceSeries').textContent = '$'+monthly.series;
+
+      // Mood-to-Method selector
+      const moods = {
+        reset:{cta:'Book a reset session',meta:'A focused 40-minute session to interrupt stress and reset the nervous system.'},
+        sleep:{cta:'Book a sleep sequence',meta:'A sleep-oriented immersion with low-frequency tones and exhale-led breathing.'},
+        focus:{cta:'Book a focus blend',meta:'Shorter, mid-range tones to help anchor attention and calm habitual reactivity.'},
+        process:{cta:'Book a holding series',meta:'A longer-form series designed for transitions that benefit from continuity.'}
+      };
+      const moodButtons = document.getElementById('moodBtns');
+      const bookNow = document.getElementById('bookNow');
+      const bookMeta = document.getElementById('bookMeta');
+
+      moodButtons.addEventListener('click', function(e){
+        const btn = e.target.closest('button'); if(!btn) return;
+        moodButtons.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        const key = btn.getAttribute('data-key');
+        const info = moods[key];
+        bookNow.textContent = info.cta;
+        bookMeta.textContent = info.meta + ' Prices shown above.';
+        // subtle highlight
+        bookNow.animate([{opacity:0.9,transform:'translateY(0)'},{opacity:1,transform:'translateY(-2px)'},{opacity:1,transform:'translateY(0)'}],{duration:360,iterations:1});
+      });
+
+      // default selection for accessibility
+      moodButtons.querySelector('button[data-key="reset"]').classList.add('active');
+
+    })();
+  </script>
+</body>
+</html>

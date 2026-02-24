@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reach out, try a micro-ritual, or build a custom blend. Practical aromatherapy that may support everyday wellbeing." />
+  <style>
+    :root{
+      --earth-1:#2f2b24; /* deep clay */
+      --earth-2:#6b4f3b; /* warm brown */
+      --accent:#c18f59; /* soft gold */
+      --muted:#f5efe7; /* parchment */
+      --glass: rgba(255,255,255,0.06);
+      --card:#fff9f2;
+      --shadow: 0 6px 20px rgba(47,43,36,0.12);
+      --radius:14px;
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;
+      color:var(--earth-1);
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--muted),#fff);}
+    .pattern{
+      position:fixed;inset:0;opacity:0.14;pointer-events:none;background-image:url('assets/img/pattern.svg');background-size:450px 450px;background-repeat:repeat;mix-blend-mode:multiply;}
+    header{display:flex;align-items:center;justify-content:space-between;padding:28px 36px;}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--earth-2),var(--accent));box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;color:var(--card);font-weight:700}
+    nav a{margin:0 10px;color:var(--earth-2);text-decoration:none;font-weight:600}
+    .container{max-width:1100px;margin:18px auto;padding:24px}
+    .grid{display:grid;grid-template-columns:1fr 420px;gap:22px;align-items:start}
+    .card{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+    h1{margin:0 0 8px 0;font-size:28px;color:var(--earth-1)}
+    p.lead{margin:0 0 18px 0;color:#6a584c}
+
+    /* Blend builder */
+    .blend-row{display:flex;gap:8px;flex-wrap:wrap}
+    select,input[type=range]{width:100%;padding:10px;border-radius:10px;border:1px solid #eadfd1;background:white}
+    button.btn{background:var(--earth-2);color:white;border:none;padding:10px 14px;border-radius:10px;cursor:pointer}
+    button.ghost{background:transparent;border:1px solid #eadfd1;color:var(--earth-2)}
+    .blend-output{margin-top:12px;padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(193,143,89,0.08),rgba(107,79,59,0.04))}
+    .oil{display:flex;justify-content:space-between;padding:8px 6px}
+    .muted{color:#7b6a60;font-size:13px}
+
+    /* Form */
+    form .row{display:flex;gap:8px}
+    form input,form textarea{width:100%;padding:10px;border-radius:10px;border:1px solid #eadfd1}
+    textarea{min-height:120px}
+
+    /* Modals */
+    .overlay{position:fixed;inset:0;background:rgba(11,9,7,0.45);display:none;align-items:center;justify-content:center}
+    .modal{width:520px;background:white;border-radius:12px;padding:20px;box-shadow:0 20px 40px rgba(0,0,0,0.2)}
+    .modal h3{margin:0 0 8px}
+    .circle{width:140px;height:140px;border-radius:50%;margin:12px auto;background:conic-gradient(var(--accent),transparent 40%);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--earth-1)}
+
+    /* FAQ */
+    .faq dt{font-weight:700;margin-top:10px}
+    .faq dd{margin:6px 0 12px 0;color:#6a584c}
+
+    footer{padding:28px 36px;color:#6a584c;font-size:14px}
+
+    @media (max-width:940px){.grid{grid-template-columns:1fr;margin:0 16px}.modal{width:92%}}
+  </style>
+</head>
+<body>
+  <div class="pattern" aria-hidden="true"></div>
+  <header>
+    <div class="brand">
+      <div class="logo">AR</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:#7b6a60">Aromatherapy & mindful blends — in {{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Boutique</a>
+      <a href="pricing.html">Tiers</a>
+      <a href="about.html">Our Story</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html" style="font-weight:800;color:var(--earth-2)">Connect</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div class="grid">
+      <section>
+        <div class="card">
+          <h1>Let's make a small plan</h1>
+          <p class="lead">Reach out for a custom blend, ask about cohort programs, or try a short guided ritual right now. All scent work described here is non-medical and may support comfort, focus, or calm.</p>
+
+          <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+            <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            <button class="ghost" id="openBreath">Try a quick ritual</button>
+            <button class="ghost" id="openJournal">Guided micro-ritual</button>
+          </div>
+
+          <h3 style="margin-top:16px">Contact</h3>
+          <form id="contactForm" class="row" onsubmit="return handleContact(event)">
+            <div style="flex:1">
+              <input type="text" id="name" placeholder="Your name" required />
+            </div>
+            <div style="flex:1">
+              <input type="email" id="email" placeholder="Email" required />
+            </div>
+            <div style="margin-top:8px">
+              <textarea id="message" placeholder="Tell us what you’re after (custom blends, cohort interest, or a question)"></textarea>
+            </div>
+            <div style="margin-top:10px;display:flex;gap:8px">
+              <button class="btn" type="submit">Send message</button>
+              <button type="button" class="ghost" onclick="resetForm()">Reset</button>
+            </div>
+            <div id="contactFeedback" style="margin-top:8px;color:var(--earth-2);font-weight:600"></div>
+          </form>
+
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <h3>Why connect here?</h3>
+          <p class="muted">We run small cohort programs for practical scent practice (seasonal cycles, focus windows, evening rituals). If you’re curious about joining a cohort or commissioning a blend, this is the best place to start.</p>
+
+          <div style="margin-top:12px">
+            <strong>Phone</strong>
+            <div>{{PHONE}}</div>
+            <strong style="margin-top:8px;display:block">Email</strong>
+            <div>{{EMAIL}}</div>
+          </div>
+        </div>
+
+      </section>
+
+      <aside>
+        <div class="card">
+          <h3>Blend Builder</h3>
+          <p class="muted">Choose a mood and a strength. The small recipe below is a starter; always patch test and follow the guide for safe dilution.</p>
+
+          <label style="font-weight:700;margin-top:8px">Vibe</label>
+          <select id="vibe">
+            <option value="calm">Calm & Slow</option>
+            <option value="uplift">Uplift & Brighten</option>
+            <option value="focus">Focus & Ground</option>
+            <option value="sleep">Ease to Sleep</option>
+            <option value="ground">Grounding Ritual</option>
+          </select>
+
+          <label style="font-weight:700;margin-top:8px">Intensity</label>
+          <select id="intensity">
+            <option value="1">Gentle (0.5 - 1%)*</option>
+            <option value="2" selected>Everyday (1 - 2%)*</option>
+            <option value="3">Strong (2 - 3%)*</option>
+          </select>
+
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <button class="btn" id="buildBlend">Create blend</button>
+            <button class="ghost" id="copyBlend">Copy card</button>
+          </div>
+
+          <div id="blendCard" class="blend-output" aria-live="polite">
+            <strong>Blend card will appear here.</strong>
+            <div class="muted" style="font-size:13px;margin-top:6px">*Dilution ranges are suggested for adult topical use. See FAQ for safety notes.</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <h3>Quick details</h3>
+          <div class="muted">Cohort programs run seasonally and include guided scent practice, scent-making sessions, and group reflection. Pricing and schedule are shared when you inquire.</div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <h3>FAQ — Safety & notes</h3>
+          <dl class="faq">
+            <dt>Is this medical advice?</dt>
+            <dd>No. Content here is informational and non-medical. Aromatherapy may support comfort or routine but is not a replacement for medical care.</dd>
+            <dt>Dilution and patch tests</dt>
+            <dd>Begin with a small dilution and patch test on inner forearm. Typical adult topical ranges are shown in the blend builder (0.5%–3%). For sensitive people, children, pregnant or nursing people, or pets in the home, use lower dilutions or avoid topical application. Consult a qualified provider for personal guidance.</dd>
+            <dt>Pets</dt>
+            <dd>Some essential oils can affect animals. Use diffusers and topical products cautiously; keep oils away from pets and their bedding. If unsure, avoid use around sensitive species.</dd>
+            <dt>Pregnancy & medical conditions</dt>
+            <dd>Some oils are not recommended during pregnancy or with certain medical conditions. Please seek personalised guidance from a knowledgeable practitioner before use.</dd>
+          </dl>
+        </div>
+
+      </aside>
+    </div>
+  </main>
+
+  <!-- Modals -->
+  <div class="overlay" id="overlayBreath" role="dialog" aria-modal="true">
+    <div class="modal" role="document">
+      <h3>Breath + Intention (2 min)</h3>
+      <p class="muted">A short guided breath to settle. Use with a sitter aroma or a small inhaler if you like.</p>
+      <div class="circle" id="breathCircle">Ready</div>
+      <div style="text-align:center;margin-top:8px">
+        <div id="breathLabel" style="font-weight:700">3 cycles · 40s each</div>
+        <div style="margin-top:10px;display:flex;gap:8px;justify-content:center">
+          <button class="btn" id="startBreath">Start</button>
+          <button class="ghost" id="closeBreath">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="overlayJournal" role="dialog" aria-modal="true">
+    <div class="modal" role="document">
+      <h3>Journal Pause (3–5 min)</h3>
+      <p class="muted">A guided micro-ritual: breathe, reflect, note one intention.</p>
+      <div style="margin-top:8px">
+        <div id="journalStep">Step 1 of 3</div>
+        <div id="journalPrompt" style="margin-top:10px;padding:12px;border-radius:10px;background:var(--glass);text-align:center">Ready to begin</div>
+        <div style="margin-top:12px;display:flex;gap:8px;justify-content:center">
+          <button class="btn" id="startJournal">Begin</button>
+          <button class="ghost" id="closeJournal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container" style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <strong>{{BUSINESS_NAME}}</strong>
+        <div class="muted">Serving {{CITY}}, {{STATE}} — cohort-based learning and custom blends.</div>
+      </div>
+      <div>
+        <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> · <a href="tel:{{PHONE}}">{{PHONE}}</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Contact form (no server) — local feedback
+    function handleContact(e){
+      e.preventDefault();
+      var name = document.getElementById('name').value.trim();
+      var email = document.getElementById('email').value.trim();
+      var msg = document.getElementById('message').value.trim();
+      var out = document.getElementById('contactFeedback');
+      out.textContent = 'Thanks, ' + (name||'friend') + '. We received your note and will reply to ' + (email||'your email') + '.';
+      setTimeout(()=>out.textContent='',7000);
+      // Here a real site would send to a server. This is local-only placeholder.
+      return false;
+    }
+    function resetForm(){document.getElementById('contactForm').reset();document.getElementById('contactFeedback').textContent='';}
+
+    // Blend builder data (informational only - not medical advice)
+    var presets = {
+      calm:[{name:'Lavender',pct:40,notes:'calming floral'},{name:'Sweet Orange',pct:20,notes:'soft citrus'},{name:'Chamomile',pct:20,notes:'gentle'} ,{name:'Carrier (jojoba)',pct:20,notes:'carrier oil'}],
+      uplift:[{name:'Bergamot',pct:35,notes:'uplifting citrus'},{name:'Grapefruit',pct:25,notes:'bright'} ,{name:'Lavender',pct:15,notes:'balance'},{name:'Carrier (sweet almond)',pct:25,notes:'carrier oil'}],
+      focus:[{name:'Rosemary',pct:35,notes:'clarity'},{name:'Cedarwood',pct:25,notes:'grounding'},{name:'Lemon',pct:15,notes:'fresh'} ,{name:'Carrier (grapeseed)',pct:25,notes:'carrier oil'}],
+      sleep:[{name:'Lavender',pct:45,notes:'quieting'},{name:'Vetiver',pct:15,notes:'deep support'},{name:'Marjoram',pct:15,notes:'softening'},{name:'Carrier',pct:25,notes:'carrier oil'}],
+      ground:[{name:'Patchouli',pct:30,notes:'earthy'},{name:'Frankincense',pct:25,notes:'center'},{name:'Cedarwood',pct:20,notes:'steady'},{name:'Carrier',pct:25,notes:'carrier oil'}]
+    };
+
+    function buildBlend(){
+      var vibe = document.getElementById('vibe').value;
+      var intensity = document.getElementById('intensity').value;
+      var oils = presets[vibe].map(o=>Object.assign({},o));
+      // Adjust aroma percentages slightly by intensity but keep carrier proportion
+      var strengthMap = {1:0.6,2:1,3:1.35};
+      var factor = strengthMap[intensity];
+      // We'll compute recommended dilution for a 10ml bottle example
+      var bottleMl = 10;
+      var carrierPct = oils.find(o=>/carrier/i.test(o.name))?.pct || 25;
+      var essentialTotalPct = 100 - carrierPct;
+      var essentialMl = bottleMl * (essentialTotalPct/100);
+      // suggested dilution percent label
+      var dilutionLabel = intensity==1 ? '0.5%–1% suggested' : intensity==2 ? '1%–2% suggested' : '2%–3% suggested';
+      // Calculate mL per oil
+      var lines = oils.filter(o=>!/carrier/i.test(o.name)).map(o=>{
+        var ml = Math.round((o.pct/essentialTotalPct) * essentialMl * factor * 100)/100;
+        return {name:o.name,ml:ml,notes:o.notes,pct:o.pct};
+      });
+      var carrierMl = Math.round((carrierPct/100)*bottleMl*100)/100;
+      // Build card text
+      var card = document.createElement('div');
+      card.innerHTML = '';
+      var text = '';
+      text += '<div style="font-weight:700;margin-bottom:6px">'+(vibe.charAt(0).toUpperCase()+vibe.slice(1))+' blend — 10ml starter</div>';
+      text += '<div style="font-size:13px;color:#7b6a60;margin-bottom:8px">'+dilutionLabel+' • Patch test before topical use.</div>';
+      text += '<div style="font-weight:700;margin-bottom:6px">Ingredients</div>';
+      lines.forEach(function(l){
+        text += '<div class="oil"><div>'+l.name+' <span class="muted">('+l.notes+')</span></div><div style="font-weight:800">'+l.ml+' ml</div></div>';
+      });
+      text += '<div class="oil" style="border-top:1px dashed #eadfd1;margin-top:8px;padding-top:8px"><div>Carrier</div><div style="font-weight:800">'+carrierMl+' ml</div></div>';
+      text += '<div style="margin-top:8px;font-size:13px;color:#6a584c">Note: this recipe is a starting reference only and not a medical prescription. If pregnant, nursing, very young, or living with pets, consult a qualified advisor before topical application.</div>';
+
+      document.getElementById('blendCard').innerHTML = text;
+    }
+
+    document.getElementById('buildBlend').addEventListener('click',function(){buildBlend();});
+
+    // Copy blend card
+    document.getElementById('copyBlend').addEventListener('click',function(){
+      var el = document.getElementById('blendCard');
+      var txt = el.innerText || el.textContent;
+      navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(txt).then(function(){alert('Blend copied to clipboard.')}) : alert('Copy not supported in this browser.');
+    });
+
+    // Guided breath modal
+    var overlayBreath = document.getElementById('overlayBreath');
+    var breathCircle = document.getElementById('breathCircle');
+    var breathLabel = document.getElementById('breathLabel');
+    var breathTimer;
+    var cycle = 0;
+    var cycles = 3;
+    var phase = 0; // 0 inhale,1 hold,2 exhale
+    var phaseDur = [4,4,4]; // seconds for a single mini-cycle
+
+    document.getElementById('openBreath').addEventListener('click',function(){overlayBreath.style.display='flex';breathCircle.textContent='Ready';});
+    document.getElementById('closeBreath').addEventListener('click',function(){overlayBreath.style.display='none';stopBreath();});
+
+    document.getElementById('startBreath').addEventListener('click',function(){
+      if(breathTimer){stopBreath();return}
+      cycle=0;phase=0;startPhase();
+    });
+    function startPhase(){
+      var totalSeconds = (phaseDur[0]+phaseDur[1]+phaseDur[2]) * cycles;
+      breathLabel.textContent = cycles + ' cycles • ~' + Math.round(totalSeconds/1) + 's';
+      updateCircle();
+      breathTimer = setInterval(updatePhase,1000);
+    }
+    function updatePhase(){
+      var secs = phaseDur[phase];
+      // Use a simple countdown for each phase
+      if(!breathCircle._t) breathCircle._t = secs;
+      breathCircle.textContent = (phase==0?'Inhale':'Hold');
+      breathCircle.style.transform = phase==0? 'scale(1.05)':'scale(0.95)';
+      breathCircle._t--;
+      if(breathCircle._t<=0){
+        phase++;
+        if(phase>2){
+          cycle++;phase=0;
+          if(cycle>=cycles){ stopBreath(); breathCircle.textContent='Done'; return; }
+        }
+        breathCircle._t = phaseDur[phase];
+      }
+    }
+    function updateCircle(){ breathCircle.style.transition='transform 400ms ease'; }
+    function stopBreath(){ clearInterval(breathTimer); breathTimer=null; breathCircle._t=0; }
+
+    // Journal modal flow
+    var overlayJournal = document.getElementById('overlayJournal');
+    var journalPrompt = document.getElementById('journalPrompt');
+    var journalStep = document.getElementById('journalStep');
+    var journalIndex = 0;
+    var journalPrompts = [
+      {title:'Breathe 3 slow cycles',text:'Close your eyes. Inhale for 4, hold 4, exhale 6. Let the body settle.'},
+      {title:'Notice',text:'Name one thing that feels okay right now. Small is fine.'},
+      {title:'Set an intention',text:'Write one short intention for the next hour. Be kind to yourself.'}
+    ];
+
+    document.getElementById('openJournal').addEventListener('click',function(){overlayJournal.style.display='flex';journalIndex=0;renderJournal()});
+    document.getElementById('closeJournal').addEventListener('click',function(){overlayJournal.style.display='none'});
+    document.getElementById('startJournal').addEventListener('click',function(){advanceJournal()});
+
+    function renderJournal(){
+      journalStep.textContent = 'Step '+(journalIndex+1)+' of '+journalPrompts.length;
+      journalPrompt.textContent = journalPrompts[journalIndex].title + '\n\n' + journalPrompts[journalIndex].text;
+      if(journalIndex === journalPrompts.length-1){
+        document.getElementById('startJournal').textContent = 'Finish';
+      } else { document.getElementById('startJournal').textContent = 'Next'; }
+    }
+    function advanceJournal(){
+      if(journalIndex < journalPrompts.length-1){ journalIndex++; renderJournal(); }
+      else{ overlayJournal.style.display='none'; alert('Thanks for pausing. Small rituals may support steady attention.'); }
+    }
+
+    // Accessibility: close modals with escape
+    document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ overlayBreath.style.display='none'; overlayJournal.style.display='none'; }});
+
+    // Initialize small default blend
+    buildBlend();
+  </script>
+</body>
+</html>

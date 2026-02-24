@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#041018;--card:#071422;--muted:#9cc7c0;--accent:#8be3d6}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;color:#eaf7f4;background:linear-gradient(180deg,var(--bg),#021016);}
+    .container{max-width:860px;margin:36px auto;padding:28px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:12px;position:relative}
+    header{display:flex;align-items:center;justify-content:space-between}
+    nav a{color:rgba(234,247,244,0.88);text-decoration:none;margin-left:12px;font-size:13px}
+    h1{margin:6px 0 0;font-size:22px}
+    .sub{color:var(--muted);font-size:14px;margin-top:8px}
+    .split{display:grid;grid-template-columns:1fr 300px;gap:18px;margin-top:18px}
+    .card{background:rgba(255,255,255,0.02);padding:16px;border-radius:10px}
+    .pkg{display:flex;flex-direction:column;gap:10px}
+    .pkg button{background:linear-gradient(90deg,var(--accent),#7f8cff);border:none;color:#021016;padding:10px;border-radius:10px;font-weight:700;cursor:pointer}
+    label{display:block;margin-top:10px;font-size:13px;color:var(--muted)}
+    input,select,textarea{margin-top:6px;padding:10px;border-radius:8px;border:none;background:#081620;color:#eaf7f4;width:100%;box-sizing:border-box}
+    .note{font-size:12px;color:var(--muted);margin-top:8px}
+    .cta{display:inline-block;margin-top:12px;background:linear-gradient(90deg,var(--accent),#7f8cff);color:#021016;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+    .pattern{position:absolute;left:-80px;top:-40px;opacity:0.08}
+    @media(max-width:880px){.split{grid-template-columns:1fr}.pattern{display:none}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <svg class="pattern" width="360" height="360" viewBox="0 0 360 360" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="b1" x1="0" x2="1"><stop offset="0" stop-color="#8be3d6"/><stop offset="1" stop-color="#7f8cff"/></linearGradient>
+        <filter id="g2"><feTurbulence baseFrequency="0.6" numOctaves="1" result="noise"/><feColorMatrix type="saturate" values="0"/></filter>
+      </defs>
+      <rect width="360" height="360" rx="20" fill="url(#b1)" opacity="0.12"/>
+      <g opacity="0.06"><path d="M0 180 C80 120 140 220 360 120 L360 360 L0 360 Z" fill="#071019"/></g>
+    </svg>
+
+    <header>
+      <div>
+        <h1>Reserve a place</h1>
+        <div class="sub">Choose a group session, private package, or request a tailored experience.</div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="events.html">Events</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <div class="split">
+      <main>
+        <section class="card">
+          <h3 style="margin:0 0 8px">Next available</h3>
+          <p class="note">Upcoming group gathering: <strong>{{NEXT_EVENT_DATE}}</strong>. Reserve now to hold your spot.</p>
+
+          <div style="margin-top:12px">
+            <h4 style="margin:0 0 8px">Private sessions — options</h4>
+            <div class="pkg">
+              <div class="card" style="background:rgba(255,255,255,0.01);padding:12px">
+                <strong>1:1 Private Session</strong>
+                <div class="note">A focused one-to-one, 60 or 90 minutes. Personalized sound prescription.</div>
+                <button type="button">Book 60 min</button>
+              </div>
+              <div class="card" style="background:rgba(255,255,255,0.01);padding:12px">
+                <strong>Couples / Shared</strong>
+                <div class="note">Shared restorative session for two, gentle and intimate.</div>
+                <button type="button">Enquire</button>
+              </div>
+              <div class="card" style="background:rgba(255,255,255,0.01);padding:12px">
+                <strong>Corporate wellness</strong>
+                <div class="note">Tailored group offerings for teams: in-person facilitation or hybrid.</div>
+                <button type="button">Contact us</button>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:14px" class="card">
+            <h4 style="margin:0 0 8px">Flow — what to expect</h4>
+            <ol class="note" style="padding-left:18px;margin:0;line-height:1.6;color:var(--muted)">
+              <li>Arrival & gentle orientation (10 min)</li>
+              <li>Guided breathing & rest (8–12 min)</li>
+              <li>Main sonic immersion: layered instruments (25–45 min)</li>
+              <li>Return, time to integrate and hydrate (10 min)</li>
+            </ol>
+            <p class="note">Bring layers and anything that supports comfort; avoid heavy fragrances.</p>
+          </div>
+
+          <div style="margin-top:12px" class="card">
+            <h4 style="margin:0 0 8px">Contraindications & safety</h4>
+            <p class="note">If you have a pacemaker, are pregnant, have a recent concussion, seizures, or are sensitive to sustained vibration, contact us before booking. We prioritize safety and can adapt where possible.</p>
+          </div>
+        </section>
+
+        <section style="margin-top:12px" class="card">
+          <h4 style="margin:0 0 8px">What to bring</h4>
+          <ul class="note" style="padding-left:18px;margin:0;line-height:1.6;color:var(--muted)">
+            <li>Yoga mat or blanket</li>
+            <li>Pillow or bolster</li>
+            <li>Warm socks and a shawl/cover</li>
+            <li>Water bottle</li>
+          </ul>
+        </section>
+
+      </main>
+
+      <aside>
+        <div class="card">
+          <h4 style="margin:0 0 8px">Reserve now</h4>
+          <form action="{{PRIMARY_CTA_URL}}" method="post">
+            <label>Name<input name="name" required></label>
+            <label>Email<input name="email" type="email" required></label>
+            <label>Phone<input name="phone" type="tel"></label>
+            <label>Type of booking
+              <select name="type">
+                <option>Group event</option>
+                <option>1:1 private session</option>
+                <option>Couples</option>
+                <option>Corporate</option>
+              </select>
+            </label>
+            <label>Preferred date / notes
+              <textarea name="notes" rows="4" placeholder="If booking private, add details"></textarea>
+            </label>
+
+            <p class="note">By submitting you confirm you have read the safety guidelines and agree to our cancellation policy below.</p>
+
+            <button class="cta" type="submit">{{PRIMARY_CTA_LABEL}}</button>
+          </form>
+
+          <div style="margin-top:12px" class="note">
+            <strong>Cancellation</strong>: Please notify us 72 hours in advance for a full refund. Late cancellations may incur a fee. For private bookings, contact us directly.<br>
+            Questions: <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0 0 8px">Location & logistics</h4>
+          <p class="note">Sessions held at {{VENUE_NAME}}, {{CITY}}. Please arrive 10 minutes early to settle so we begin on time.</p>
+        </div>
+
+      </aside>
+    </div>
+
+  </div>
+</body>
+</html>

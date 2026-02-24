@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--ink:#0d1b2a;--accent:#ff6b6b;--muted:#5b6b76;--card:#fff6f6}
+    *{box-sizing:border-box}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial; margin:0;color:var(--ink);background:linear-gradient(180deg,#fff 0%,#fffefc 100%)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:28px 32px;border-bottom:1px solid #f1e9e9}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{display:inline-flex;align-items:center;gap:10px}
+    .nav{display:flex;gap:18px;font-weight:600}
+    a{color:var(--ink);text-decoration:none}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:32px;padding:56px 32px;align-items:center}
+    .hero h1{font-size:36px;margin:0 0 12px 0;color:var(--ink)}
+    .hero p{margin:0;color:var(--muted);max-width:60ch}
+    .card{background:var(--card);border-radius:12px;padding:20px;box-shadow:0 6px 24px rgba(17,24,39,0.06)}
+    .values{display:flex;gap:14px;margin:28px 32px}
+    .value{flex:1;background:linear-gradient(180deg,#fff 0%,#fff6f6 100%);padding:20px;border-radius:10px}
+    .methods{padding:28px 32px;border-top:1px dashed #f5eaea}
+    .methods h3{margin-top:0}
+    .testimonials{padding:24px 32px;display:flex;flex-direction:column;gap:12px}
+    .tm{background:#fff;padding:18px;border-radius:10px;box-shadow:0 4px 12px rgba(11,20,30,0.04)}
+    .lead{display:flex;gap:18px;padding:28px 32px;align-items:center}
+    .lead form{display:flex;gap:10px}
+    .btn{background:var(--accent);color:#fff;padding:10px 14px;border-radius:8px;border:0;font-weight:700}
+    footer{padding:20px 32px;color:var(--muted);font-size:13px;border-top:1px solid #faf0f0}
+    /* playful accent pattern */
+    .badge{background:linear-gradient(90deg,#ffdede,#ffefef);padding:6px 10px;border-radius:999px;color:#9b2226;font-weight:700}
+    .meta{font-size:13px;color:var(--muted)}
+    @media(max-width:880px){.hero{grid-template-columns:1fr;}.values{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">
+        <!-- assets/img/avatar.svg (inlined unique avatar for about.html) -->
+        <svg width="44" height="44" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect rx="12" width="64" height="64" fill="#fff0f0"/>
+          <circle cx="32" cy="24" r="10" fill="#ff6b6b"/>
+          <path d="M12 52c4-10 20-10 20-10s16 0 20 10" fill="#ffdede"/>
+        </svg>
+        <div>
+          <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+          <div class="meta">{{TAGLINE}}</div>
+        </div>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="specialties.html">What I Treat</a>
+      <a href="approach.html">How I Work</a>
+      <a href="contact.html">Get in touch</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <div class="badge">Clinician — {{LICENSE}}</div>
+        <h1>Hi, I’m {{THERAPIST_NAME}} — a private practice therapist in {{CITY}}, {{STATE}}.</h1>
+        <p>I combine clear, evidence-informed methods with warm, practical care to help you navigate anxiety, relationship struggles, life transitions, and long-standing patterns that get in the way of feeling like yourself. My work prioritizes safety, clarity, and usable change.</p>
+        <div style="margin-top:18px">
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <span style="margin-left:12px;color:var(--muted)">or call <strong>{{PHONE}}</strong></span>
+        </div>
+      </div>
+
+      <aside class="card">
+        <h4 style="margin:0 0 8px 0">Quick snapshot</h4>
+        <p class="meta" style="margin:0 0 12px 0">Private practice · {{MODALITIES}} · Virtual & in‑person</p>
+        <ul style="margin:0 0 12px 18px;color:var(--muted)">
+          <li>30–50 minute initial intake</li>
+          <li>Insurance info provided on request</li>
+          <li>Sliding scale availability</li>
+        </ul>
+        <a class="btn" href="book.html">Book a consult</a>
+      </aside>
+    </section>
+
+    <section class="values" aria-labelledby="values-heading">
+      <div class="value">
+        <h3 id="values-heading">Foundational commitments</h3>
+        <p class="meta">How I hold the work together.</p>
+        <ol style="margin:12px 0 0 18px;color:var(--muted)">
+          <li>Practical compassion — steady support, real-world tools.</li>
+          <li>Collaborative clarity — we set goals together and track progress.</li>
+          <li>Context‑sensitive care — therapy that respects your life and identity.</li>
+        </ol>
+      </div>
+      <div class="value">
+        <h3>What you can expect</h3>
+        <p class="meta">A predictable, respectful process.</p>
+        <ul style="margin:12px 0 0 18px;color:var(--muted)">
+          <li>Clear treatment plan after the first 3 sessions.</li>
+          <li>Homework only when it serves your goals.</li>
+          <li>Flexible pacing that honors limits and progress.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="methods">
+      <h3>Methods I frequently draw on</h3>
+      <p class="meta">Evidence-informed approaches blended to fit you.</p>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px">
+        <div class="card">
+          <strong>CBT & Skills Work</strong>
+          <div class="meta">Practical tools for managing thoughts, mood, and behavior.</div>
+        </div>
+        <div class="card">
+          <strong>Somatic & Regulation</strong>
+          <div class="meta">Body-focused strategies to calm nervous system activation.</div>
+        </div>
+        <div class="card">
+          <strong>Relational & Attachment</strong>
+          <div class="meta">Explores patterns in relationships and builds new options.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="testimonials">
+      <h3 style="margin:0">Client perspectives</h3>
+      <div class="tm">
+        “I could see concrete changes in my anxiety after a few weeks — practical steps I could use at work and at home.” — A.
+      </div>
+      <div class="tm">
+        “The care felt steady and not overwhelming. I learned how to set boundaries without losing myself.” — M.
+      </div>
+    </section>
+
+    <section class="lead">
+      <div style="flex:1">
+        <h3 style="margin:0">Free resource: "3 Steps to Calm the Overactive Mind"</h3>
+        <p class="meta" style="margin:6px 0 0 0">A concise worksheet you can use right away. Sent to your inbox.</p>
+      </div>
+      <form action="{{PRIMARY_CTA_URL}}" method="post" aria-label="lead magnet signup">
+        <input name="email" placeholder="Email" aria-label="email" required style="padding:10px;border-radius:8px;border:1px solid #efeaea" />
+        <button class="btn" type="submit">Send it</button>
+      </form>
+    </section>
+
+    <section style="padding:28px 32px;border-top:1px dashed #f5eaea">
+      <h4 style="margin-top:0">Confidentiality, scope, and safety</h4>
+      <p class="meta">All sessions are confidential except in situations required by law (risk of harm to self or others, or court orders). I do not provide emergency/crisis services. If you are in crisis now, please call your local emergency number or the crisis line in your area.</p>
+      <p class="meta">I practice within my licensing scope ({{LICENSE}}). If a concern falls outside my expertise I will discuss referrals and collaborative options.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div class="meta">© {{BUSINESS_NAME}} • {{CITY}}, {{STATE}}</div>
+      <div class="meta">Contact: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    </div>
+  </footer>
+</body>
+</html>

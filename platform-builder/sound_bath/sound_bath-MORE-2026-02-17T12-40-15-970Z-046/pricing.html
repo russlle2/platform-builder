@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Plans — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#071018;--card:#07121a;--muted:#9fafb2;--accent:#7be3d1;--accent-2:#6bd3ff;--radius:14px}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui, -apple-system, 'Segoe UI', Roboto, Arial;color:#e9f6f4;background:linear-gradient(180deg,#021014 0%,#041316 70%)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:20px 28px}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:#042;font-weight:900}
+    nav a{color:var(--muted);margin-left:12px;text-decoration:none}
+
+    .wrap{max-width:1100px;margin:24px auto;padding:20px}
+    h1{margin:6px 0 0}
+    .lead{color:var(--muted)}
+
+    .toggle{display:inline-flex;background:rgba(255,255,255,0.02);padding:6px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .toggle button{background:transparent;border:0;color:var(--muted);padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:700}
+    .toggle button.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#042;transform:translateY(-2px)}
+
+    .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}
+    .plan{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .plan .name{font-weight:900}
+    .price{font-size:28px;font-weight:900;margin-top:6px}
+    .muted{color:var(--muted)}
+    .features{margin-top:10px;color:var(--muted)}
+    .plan .cta{margin-top:12px;display:inline-block;padding:10px 12px;border-radius:10px;background:var(--accent);color:#042;font-weight:800;text-decoration:none}
+
+    .note{margin-top:16px;color:var(--muted);font-size:13px}
+    .contra{margin-top:12px;color:#f6c1c1;background:rgba(255,128,128,0.04);padding:10px;border-radius:10px}
+
+    @media(max-width:900px){.plans{grid-template-columns:1fr}header{padding:12px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="logo">PL</div>
+      <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="events.html">Calendar</a>
+      <a href="private-sessions.html">Private</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <h1>Memberships & Packs</h1>
+    <p class="lead">Choose a steady plan or a flexible package. Toggle between monthly billing and packaged sessions—numbers animate to show the effective rate.</p>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px">
+      <div class="toggle" role="tablist" id="billingToggle">
+        <button data-mode="monthly" class="active">Monthly</button>
+        <button data-mode="package">Package</button>
+      </div>
+      <div class="muted">All plans include early booking and a members-only drop-in each month.</div>
+    </div>
+
+    <div class="plans" id="plansGrid">
+      <div class="plan" data-key="basic">
+        <div class="name">Explorer Pass</div>
+        <div class="price"><span class="num" data-monthly="18" data-package="16">$18</span><span class="muted"> / session</span></div>
+        <div class="features">Access to weekly open sessions; 10% off private sessions.</div>
+        <a class="cta" href="book.html" data-cta="Join Explorer">Join Explorer</a>
+      </div>
+
+      <div class="plan" data-key="core">
+        <div class="name">Pulse Membership</div>
+        <div class="price"><span class="num" data-monthly="48" data-package="40">$48</span><span class="muted"> / month</span></div>
+        <div class="features">Two sessions monthly + members-only session each month; 20% off privates.</div>
+        <a class="cta" href="book.html" data-cta="Become a Pulse">Become a Pulse</a>
+      </div>
+
+      <div class="plan" data-key="anchor">
+        <div class="name">Anchor Pack</div>
+        <div class="price"><span class="num" data-monthly="99" data-package="320">$99</span><span class="muted"> / month</span></div>
+        <div class="features">All-access pass: unlimited weekly drop-ins (recommended for steady practice) or use as a shared staff credit.</div>
+        <a class="cta" href="book.html" data-cta="Select Anchor">Select Anchor</a>
+      </div>
+    </div>
+
+    <div class="note">Numbers animate between the two modes so you can feel how rate-per-session vs flat package affects cost. Packages tie you to a block of sessions at a better per-session price.</div>
+    <div class="contra">Contraindications reminder: If you have photosensitive epilepsy, active inner-ear conditions, recent head/neck injury, or concerns about implants/pacemakers, consult medical guidance before enrolling. Reach out at {{EMAIL}} or call {{PHONE}} for adaptation and medical questions.</div>
+  </main>
+
+  <script>
+    // Pricing comparator logic with animated numbers
+    const toggle = document.getElementById('billingToggle');
+    const buttons = toggle.querySelectorAll('button');
+    const nums = document.querySelectorAll('.num');
+
+    function animateNumber(el, start, end, duration=600){
+      const startTime = performance.now();
+      function frame(now){
+        const t = Math.min((now - startTime)/duration, 1);
+        const ease = t<0.5? 2*t*t : -1 + (4 - 2*t)*t; // simple ease
+        const val = start + (end - start)*ease;
+        el.textContent = '$' + (Math.round(val*100)/100).toLocaleString(undefined,{minimumFractionDigits: (end%1?2:0)}).replace('.00','');
+        if(t<1) requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+    }
+
+    function switchMode(mode){
+      nums.forEach(n=>{
+        const monthly = parseFloat(n.getAttribute('data-monthly'));
+        const pack = parseFloat(n.getAttribute('data-package'));
+        const from = parseFloat(n.textContent.replace(/[^0-9\.]/g,'')) || monthly;
+        const to = (mode==='monthly')? monthly : pack;
+        animateNumber(n, from, to);
+      });
+      // CTA phrasing shift
+      document.querySelectorAll('.plan .cta').forEach(a=>{
+        const base = a.getAttribute('data-cta');
+        a.textContent = (mode==='monthly')? base.replace(/(Explorer|Pulse|Anchor)/,'Join') : base.replace(/(Explorer|Pulse|Anchor)/,'Purchase');
+      });
+    }
+
+    buttons.forEach(b=>b.addEventListener('click', ()=>{
+      buttons.forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      const mode = b.getAttribute('data-mode');
+      switchMode(mode);
+    }));
+
+    // initial state
+    (function(){
+      // set initial displayed numbers from data-monthly
+      nums.forEach(n=>{
+        const val = n.getAttribute('data-monthly');
+        n.textContent = '$' + val;
+      });
+    })();
+  </script>
+</body>
+</html>

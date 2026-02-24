@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book a Visit — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f8fbfa;--accent:#1f6b52;--muted:#5f736b;font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial}
+    body{margin:0;background:var(--bg);color:#123}
+    header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px}
+    nav a{margin:0 8px;color:var(--accent);text-decoration:none}
+    .main{max-width:960px;margin:20px auto;padding:18px}
+    .stage{background:#fff;border-radius:12px;padding:16px;box-shadow:0 8px 24px rgba(14,30,24,0.04)}
+    h1{margin-top:0}
+    .flow{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    label{display:block;margin-top:8px}
+    input[type=text],textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid #e8f2ee}
+    .btn{background:var(--accent);color:#fff;padding:10px 12px;border-radius:9px;border:none;font-weight:700}
+    .muted{color:var(--muted);font-size:13px}
+    .tiny{font-size:12px;color:var(--muted)}
+    .sessionSummary{white-space:pre-wrap;background:#fbfffb;border:1px dashed #e6f6ef;padding:10px;border-radius:8px}
+    @media(max-width:900px){.flow{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:10px">
+      <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="34" height="34" rx="7" fill="#EAF6F0"/><path d="M17 8c1.8 0 3.2 1.4 3.2 3.2S18.8 14.4 17 14.4 13.8 13 13.8 11.2 15.2 8 17 8z" fill="#1F6B52"/></svg>
+      <strong>{{BUSINESS_NAME}}</strong>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Conditions</a>
+      <a href="approach.html">Method</a>
+      <a href="pricing.html">Invest</a>
+      <a href="about.html">Our Story</a>
+      <a href="book.html" style="text-decoration:underline">Book</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="main">
+    <section class="stage">
+      <h1>Plan your visit</h1>
+      <p class="muted">Choose a session length and build a short, shareable visit summary. All guidance is educational and individualized.</p>
+
+      <div class="flow" style="margin-top:12px">
+        <form id="bookingForm" style="display:block">
+          <label>Name</label>
+          <input id="b_name" type="text" placeholder="First & last">
+          <label>Email</label>
+          <input id="b_email" type="text" placeholder="your@email.com">
+          <label>Phone</label>
+          <input id="b_phone" type="text" placeholder="{{PHONE}}">
+          <label>Select duration</label>
+          <select id="b_length">
+            <option>25 minutes</option>
+            <option selected>50 minutes</option>
+            <option>80 minutes</option>
+          </select>
+
+          <label style="margin-top:10px">Focused goals (3 max)</label>
+          <input id="goal1" type="text" placeholder="Goal 1">
+          <input id="goal2" type="text" placeholder="Goal 2" style="margin-top:6px">
+          <input id="goal3" type="text" placeholder="Goal 3" style="margin-top:6px">
+
+          <label style="margin-top:10px">Modalities to consider</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <label class="tiny"><input type="checkbox" class="mb" value="nutrition"> Nutrition</label>
+            <label class="tiny"><input type="checkbox" class="mb" value="sleep"> Sleep</label>
+            <label class="tiny"><input type="checkbox" class="mb" value="movement"> Movement</label>
+            <label class="tiny"><input type="checkbox" class="mb" value="breath"> Breathwork</label>
+            <label class="tiny"><input type="checkbox" class="mb" value="herbal"> Botanicals</label>
+          </div>
+
+          <label style="margin-top:10px">Short timeline note</label>
+          <textarea id="timeline" rows="3" placeholder="When did this start? What makes it better/worse?"></textarea>
+
+          <div style="margin-top:12px;display:flex;gap:8px">
+            <button id="buildBtn" type="button" class="btn">Draft visit summary</button>
+            <button id="bookBtn" type="button" class="btn" style="background:#2f5">Confirm & request time</button>
+          </div>
+        </form>
+
+        <aside style="position:relative">
+          <div class="sessionSummary" id="summary" aria-live="polite">Your session summary will appear here.</div>
+
+          <div style="margin-top:12px" class="stage">
+            <h4 style="margin:6px 0">Whole-person inventory</h4>
+            <p class="tiny">Check all relevant areas; we will translate this into an agenda and a cadence for follow-up.</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px">
+              <label><input type="checkbox" class="inv3" value="sleep"> Sleep</label>
+              <label><input type="checkbox" class="inv3" value="nutrition"> Nutrition</label>
+              <label><input type="checkbox" class="inv3" value="movement"> Movement</label>
+              <label><input type="checkbox" class="inv3" value="stress"> Stress</label>
+              <label><input type="checkbox" class="inv3" value="work"> Work rhythm</label>
+              <label><input type="checkbox" class="inv3" value="environment"> Environment</label>
+              <label><input type="checkbox" class="inv3" value="relationships"> Relationships</label>
+              <label><input type="checkbox" class="inv3" value="meaning"> Meaning</label>
+            </div>
+            <div style="margin-top:10px;display:flex;gap:8px">
+              <button id="inv3_make" class="btn">Make agenda</button>
+              <button id="inv3_copy" class="btn" style="background:#3f8b6b">Copy</button>
+            </div>
+            <textarea id="inv3_out" rows="6" style="margin-top:10px;width:100%;border-radius:8px;border:1px solid #eef5ef;padding:8px"></textarea>
+          </div>
+
+        </aside>
+      </div>
+
+      <div style="margin-top:14px" class="muted">By requesting time you agree to receive scheduling communications. Care is educational and not a guarantee of outcome or cure.</div>
+    </section>
+  </main>
+
+  <script>
+    // Build visit summary and copy functionality
+    function collectModalitiesChecked(selector){return Array.from(document.querySelectorAll(selector+':checked')).map(function(i){return i.value})}
+
+    function makeSummary(){
+      var name = document.getElementById('b_name').value||'[no name]';
+      var email = document.getElementById('b_email').value||'[no email]';
+      var len = document.getElementById('b_length').value;
+      var goals = [document.getElementById('goal1').value,document.getElementById('goal2').value,document.getElementById('goal3').value].filter(Boolean);
+      var mods = collectModalitiesChecked('.mb');
+      var timeline = document.getElementById('timeline').value||'[no timeline provided]';
+      var out = 'Visit Request Summary\n-----------------------\nName: '+name+'\nEmail: '+email+'\nSession length: '+len+'\n\nGoals:\n';
+      if(goals.length){goals.forEach(function(g,i){out += (i+1)+'. '+g+'\n'})} else {out += '- No specific goals listed\n'}
+      out += '\nModalities: '+(mods.length?mods.join(', '):'none selected')+'\n\nTimeline: '+timeline+'\n\nPlease be ready to discuss recent patterns, simple experiments, and measurable next steps.';
+      return out;
+    }
+
+    document.getElementById('buildBtn').addEventListener('click', function(){
+      var out = makeSummary();
+      document.getElementById('summary').textContent = out;
+    });
+
+    document.getElementById('bookBtn').addEventListener('click', function(){
+      var out = makeSummary();
+      // Fake submission behavior: show confirmation message and allow copying
+      document.getElementById('summary').textContent = out + '\n\nRequest submitted. Our coordinator will follow up to confirm a time.';
+      alert('Request submitted — we will contact you via the email provided.');
+    });
+
+    // Copy utilities: copy content of summary or textarea
+    document.getElementById('summary').addEventListener('click', function(){
+      var range = document.createRange();var sel = window.getSelection();range.selectNodeContents(this);sel.removeAllRanges();sel.addRange(range);
+      try{document.execCommand('copy');alert('Summary copied') }catch(e){alert('Select and copy to copy the summary')}
+      sel.removeAllRanges();
+    });
+
+    // Inventory 3
+    function buildFromInv3(sel){
+      var map={
+        sleep:['Sleep timing review and environmental edits.','2-week check-in'],
+        nutrition:['Dietary pattern scan and a single testable change.','4-week check-in'],
+        movement:['Baseline mobility and short daily habit.','3-week check'],
+        stress:['Short stress mapping and a 1–3 minute reset practice.','2-week micro-check'],
+        work:['Schedule audit and timing adjustments.','3-week follow-up'],
+        environment:['Light/noise and workspace edits to test.','2–4 week review'],
+        relationships:['Boundary & communication mapping; a small experiment.','3–4 week check'],
+        meaning:['Values and reflection prompts; daily practice.','Monthly touchpoint']
+      };
+      var a=[];var c=[];
+      sel.forEach(function(s){if(map[s]){a.push('- '+map[s][0]);c.push(s+': '+map[s][1])}});
+      return {agenda:a.join('\n')||'No areas chosen',cadence:c.join('\n')||'No cadence defined'};
+    }
+
+    document.getElementById('inv3_make').addEventListener('click', function(){
+      var checked = Array.from(document.querySelectorAll('.inv3:checked')).map(function(i){return i.value});
+      var r = buildFromInv3(checked);
+      document.getElementById('inv3_out').value = 'Consultation agenda\n---------------------\n'+r.agenda+'\n\nRecommended follow-up cadence\n-----------------------------\n'+r.cadence;
+    });
+    document.getElementById('inv3_copy').addEventListener('click', function(){var t=document.getElementById('inv3_out');t.select();try{document.execCommand('copy');alert('Copied')}catch(e){alert('Copy issues') }});
+  </script>
+</body>
+</html>

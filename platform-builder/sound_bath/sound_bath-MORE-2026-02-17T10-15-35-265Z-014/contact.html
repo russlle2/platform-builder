@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contact — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#c7ffd8;--muted:#9aa5b1;--glass:rgba(255,255,255,0.03)}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:radial-gradient(1200px 600px at 10% 10%,rgba(20,35,50,0.35),transparent),#071020;color:#e7f6f0}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;backdrop-filter:blur(6px)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;background:linear-gradient(135deg,#05324f,#0f7a6b);border-radius:10px;display:grid;place-items:center;font-weight:700;color:#e8fff6}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-weight:600}
+    .wrap{max-width:1100px;margin:28px auto;padding:28px}
+    .hero{background:linear-gradient(180deg,rgba(12,28,40,0.6),rgba(6,10,18,0.7)),url('assets/img/pattern.svg');background-size:350px;border-radius:14px;padding:28px;display:grid;grid-template-columns:1fr 380px;gap:24px;align-items:start}
+    .hero h1{margin:0;font-size:28px;color:var(--accent);line-height:1.05}
+    .hero p{color:var(--muted);margin-top:10px;margin-bottom:18px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.5)}
+
+    /* widget */
+    .widget{display:flex;flex-direction:column;gap:12px}
+    .selector-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .mood-btn,.pref-btn{background:var(--glass);border:1px solid rgba(255,255,255,0.04);padding:12px;border-radius:10px;cursor:pointer;color:var(--accent);font-weight:700}
+    .mood-btn.active,.pref-btn.active{outline:2px solid rgba(199,255,216,0.12);background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.00))}
+    .muted{color:var(--muted);font-size:13px}
+    .reco{padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);border:1px solid rgba(255,255,255,0.03)}
+    form{display:flex;flex-direction:column;gap:10px}
+    input,textarea,select{padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+    .cta{display:inline-block;padding:12px 16px;border-radius:10px;background:linear-gradient(90deg,#0a6f5a,#093d6b);color:white;text-decoration:none;font-weight:800;border:0}
+    .notes{font-size:13px;color:var(--muted)}
+    footer{margin-top:18px;color:var(--muted);font-size:13px}
+    /* small screens */
+    @media(max-width:880px){
+      .hero{grid-template-columns:1fr;}
+      nav a{margin-left:12px}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">SB</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Gather</a>
+      <a href="events.html">Calendar</a>
+      <a href="private-sessions.html">Private</a>
+      <a href="pricing.html">Plans</a>
+      <a href="about.html">Story</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div>
+        <h1>Talk with us — or try a guided match.</h1>
+        <p>Share what you're carrying today and we'll suggest a short sound approach to meet it. Tinker with mood and intensity — watch the recommendation and call-to-action shift with you.</p>
+
+        <div class="card widget">
+          <div>
+            <div style="font-size:13px;color:var(--muted);font-weight:700">Mood-to-Method</div>
+            <div class="selector-grid" id="moodSelector">
+              <button class="mood-btn" data-mood="frayed">Frayed — Soothing Undercurrent</button>
+              <button class="mood-btn" data-mood="foggy">Foggy — Anchoring Clarity</button>
+              <button class="mood-btn" data-mood="wired">Wired — Ground & Release</button>
+              <button class="mood-btn" data-mood="curious">Curious — Exploratory Sound</button>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-size:13px;color:var(--muted);font-weight:700">Sound Preference Mixer</div>
+            <div class="selector-grid" id="prefSelector">
+              <button class="pref-btn" data-pref="gentle">Gentle</button>
+              <button class="pref-btn" data-pref="medium">Medium</button>
+              <button class="pref-btn" data-pref="intense">Intense</button>
+            </div>
+            <div style="margin-top:10px" class="muted">Try combos — a calm mood with an intense palette shapes a different program than an agitated mood with gentle sound.</div>
+          </div>
+
+          <div>
+            <div style="font-size:13px;color:var(--muted);font-weight:700;margin-top:6px">Recommended Approach</div>
+            <div id="recommendation" class="reco">Choose a mood and intensity to see a recommended short session or call.</div>
+          </div>
+
+          <div style="display:flex;gap:10px;align-items:center;justify-content:space-between">
+            <a id="primaryCta" class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            <div style="text-align:right">
+              <div class="muted" id="ctaSub">Direct booking or a quick consult.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <aside>
+        <div class="card">
+          <h3 style="margin:0 0 8px 0">Contact & Booking</h3>
+          <form id="contactForm" action="mailto:{{EMAIL}}" method="POST" enctype="text/plain">
+            <label class="muted">Name</label>
+            <input name="name" placeholder="Your name" required>
+            <label class="muted">Phone</label>
+            <input name="phone" placeholder="{{PHONE}}">
+            <label class="muted">Email</label>
+            <input name="email" placeholder="you@example.com" required>
+            <label class="muted">Which service?</label>
+            <select name="service">
+              <option>Find a public event</option>
+              <option>Private session</option>
+              <option>Group booking</option>
+              <option>Gift voucher</option>
+            </select>
+            <label class="muted">Tell us briefly what you need</label>
+            <textarea name="message" rows="4" placeholder="A short note about your intention or questions"></textarea>
+            <div style="display:flex;gap:8px">
+              <button type="submit" class="cta">Send</button>
+              <a href="tel:{{PHONE}}" class="cta" style="background:#163d3a">Call</a>
+            </div>
+          </form>
+
+          <footer>
+            <div style="font-weight:700">Quick help</div>
+            <div class="muted">Prefer a live match? Use the Mood-to-Method above and then tap the primary CTA. We'll align time, tone, and scale with what you pick.</div>
+          </footer>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="card">
+          <div style="font-weight:700;margin-bottom:8px">Important health notes</div>
+          <div class="muted">Sound sessions are supportive for many people. Please note: if you have a history of epilepsy with audio triggers, serious cardiovascular conditions, are pregnant with specific medical concerns, or have implanted medical devices that can be affected by strong vibrations, consult your healthcare provider and mention these at booking. We can tailor approaches or suggest alternatives.</div>
+        </div>
+      </aside>
+    </section>
+
+    <section style="margin-top:18px;display:grid;grid-template-columns:1fr 320px;gap:18px">
+      <div class="card">
+        <h3 style="margin-top:0">How the selector works</h3>
+        <p class="muted">The Mood-to-Method selector maps your emotional tone to a short, intentional structure. Paired with the sound preference mixer, it produces an approach name, what to expect, and the CTA phrasing that best fits — e.g., "Book a Short Grounding" vs "Reserve a Deep Resonance". This is a suggested match; we confirm details after you reach out.</p>
+
+        <div style="margin-top:8px;font-weight:700">Examples</div>
+        <ul class="muted">
+          <li>Frayed + Gentle → "Cocoon Ease" — 25-min calming sequence with soft bowls & breath cues.</li>
+          <li>Wired + Intense → "Root Release" — 40-min layered gong & drumming with periods of silence to land.</li>
+          <li>Foggy + Medium → "Clarity Loom" — 30-min focused harmonic tones with guided attention anchors.</li>
+        </ul>
+      </div>
+
+      <aside class="card">
+        <div style="font-weight:700">Still prefer email?</div>
+        <div class="muted">Write to <a style="color:var(--accent)" href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a style="color:var(--accent)" href="tel:{{PHONE}}">{{PHONE}}</a>. Mention the name of the suggested approach if you used the selector.</div>
+      </aside>
+    </section>
+
+  </main>
+
+  <script>
+    (function(){
+      const moods = document.querySelectorAll('.mood-btn');
+      const prefs = document.querySelectorAll('.pref-btn');
+      const reco = document.getElementById('recommendation');
+      const cta = document.getElementById('primaryCta');
+      const ctaSub = document.getElementById('ctaSub');
+
+      let state = {mood:null,pref:null};
+
+      function updateActive(list, key){
+        list.forEach(btn=>btn.classList.toggle('active',btn.dataset[key]===state[key]));
+      }
+
+      function computeRecommendation(){
+        const m = state.mood; const p = state.pref;
+        if(!m || !p){
+          reco.textContent = 'Choose a mood and intensity to see a recommended short session or call.'; 
+          cta.textContent = '{{PRIMARY_CTA_LABEL}}';
+          cta.href = '{{PRIMARY_CTA_URL}}';
+          ctaSub.textContent = 'Direct booking or a quick consult.';
+          return;
+        }
+        // Compose unique program naming & microcopy
+        const map = {
+          frayed: {gentle:['Cocoon Ease','A 25-min soft-bowl enclosing to ease frayed edges.'], medium:['Soothe Frame','30-min layered bowls with gentle vocal overtones.'], intense:['Deep Lull','A 35-min immersive vibration set with slow crescendos.']},
+          foggy: {gentle:['Lightline','20-min clarity tones with breath anchors.'], medium:['Clarity Loom','30-min harmonic weaving to sharpen attention.'], intense:['True North','40-min focused resonance for orientation.']},
+          wired: {gentle:['Tether Pause','20-min guided downshift with sparse tones.'], medium:['Ground Grid','30-min steady pulse and bowl pairing.'], intense:['Root Release','45-min dynamic gong & drum set with settling silence.']},
+          curious: {gentle:['Pebble Play','20-min exploratory tones and soft textures.'], medium:['Cartography','35-min mapping of timbre & attention.'], intense:['Deep Dive','50-min expansive experiment in scale and silence.']}
+        };
+
+        const pair = (map[m] && map[m][p]) || ['Balanced Session','A tailored experience.'];
+        const name = pair[0]; const desc = pair[1];
+        reco.innerHTML = '<strong style="color:var(--accent)">'+name+'</strong><div style="margin-top:6px;color:var(--muted)">'+desc+'</div>';
+
+        // CTA phrasing adapts to combination
+        const ctaMap = {gentle:'Schedule a Short Session',medium:'Reserve a Full Session',intense:'Book an Extended Experience'};
+        cta.textContent = ctaMap[p] || '{{PRIMARY_CTA_LABEL}}';
+        // Append query params for easier tracking (local only)
+        const urlBase = '{{PRIMARY_CTA_URL}}';
+        const q = '?mood='+encodeURIComponent(m)+'&pref='+encodeURIComponent(p)+'&approach='+encodeURIComponent(name);
+        cta.href = urlBase + q;
+
+        ctaSub.textContent = 'Suggested: ' + name + ' — ' + desc;
+      }
+
+      moods.forEach(btn=>btn.addEventListener('click',function(){
+        state.mood = this.dataset.mood;
+        updateActive(moods,'mood');
+        computeRecommendation();
+      }));
+
+      prefs.forEach(btn=>btn.addEventListener('click',function(){
+        state.pref = this.dataset.pref;
+        updateActive(prefs,'pref');
+        computeRecommendation();
+      }));
+
+      // small accessibility: keyboard select
+      document.addEventListener('keydown',e=>{
+        if(e.key==='1') moods[0].click();
+        if(e.key==='2') moods[1].click();
+        if(e.key==='3') moods[2].click();
+        if(e.key==='4') moods[3].click();
+        if(e.key==='q') prefs[0].click();
+        if(e.key==='w') prefs[1].click();
+        if(e.key==='e') prefs[2].click();
+      });
+
+      // initial state: nothing selected
+      computeRecommendation();
+    })();
+  </script>
+</body>
+</html>

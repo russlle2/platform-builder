@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#07121a;--card:#0b1722;--muted:#9fb0b9;--accent:#6ee7c8;--accent-dark:#04604a;--text:#eaf9f3}
+    body{margin:0;background:linear-gradient(180deg,#02060a 0%,var(--bg) 60%);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto}
+    header{display:flex;justify-content:space-between;padding:18px 28px}
+    nav a{color:var(--muted);margin-left:12px;text-decoration:none;font-weight:600}
+    main{padding:24px 28px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .card{background:var(--card);padding:18px;border-radius:12px}
+    .title{font-size:20px;font-weight:700}
+    .muted{color:var(--muted)}
+    .pricing{display:flex;gap:12px;align-items:center;margin-top:14px}
+    .toggle{background:rgba(255,255,255,0.03);padding:8px;border-radius:999px;display:flex;gap:8px}
+    .toggle button{background:transparent;border:0;padding:8px 10px;border-radius:999px;color:var(--muted);cursor:pointer}
+    .toggle button.active{background:linear-gradient(180deg,rgba(110,231,200,0.12),transparent);color:var(--text);font-weight:700}
+    .price{font-size:28px;font-weight:800}
+    .small{font-size:13px;color:var(--muted)}
+    .book-cta{display:inline-block;margin-top:12px;padding:10px 14px;background:var(--accent);color:var(--accent-dark);border-radius:10px;text-decoration:none;font-weight:800}
+    .form-row{display:flex;gap:8px;margin-top:10px}
+    label{font-size:13px;color:var(--muted)}
+    input,select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--text)}
+    .disclaimer{margin-top:12px;padding:12px;background:#2b0b0b;color:#ffd7cf;border-radius:8px;font-size:13px}
+    footer{padding:20px 28px;color:var(--muted)}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class='brand'>{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href='index.html'>Gatherings</a>
+      <a href='events.html'>Upcoming</a>
+      <a href='private-sessions.html'>One-on-One</a>
+      <a href='pricing.html'>Investment</a>
+      <a href='about.html'>Story</a>
+      <a href='faq.html'>Questions</a>
+      <a href='book.html'>Reserve</a>
+      <a href='contact.html'>Reach</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1 class='title'>Reserve a session</h1>
+    <p class='muted'>Select an approach, see pricing, and hold your spot. We adapt to what you bring.</p>
+
+    <div class='grid' style='margin-top:18px'>
+      <div class='card'>
+        <strong>Choose approach</strong>
+        <div style='display:flex;gap:10px;margin-top:12px;flex-wrap:wrap'>
+          <button class='approach' data-key='ground' style='padding:10px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02);cursor:pointer'>Grounding</button>
+          <button class='approach' data-key='release' style='padding:10px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02);cursor:pointer'>Release</button>
+          <button class='approach' data-key='restore' style='padding:10px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02);cursor:pointer'>Restore</button>
+          <button class='approach' data-key='explore' style='padding:10px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02);cursor:pointer'>Explore</button>
+        </div>
+
+        <div style='margin-top:16px'>
+          <div class='small'>Recommended approach</div>
+          <div id='recTitle' style='font-weight:800;margin-top:6px'>— pick an approach —</div>
+          <div id='recDesc' class='muted' style='margin-top:8px'>We offer immediate suggestions based on your selection and can tailor details when you arrive.</div>
+        </div>
+
+        <div style='margin-top:16px'>
+          <div class='small'>When?</div>
+          <div style='display:flex;gap:8px;margin-top:8px'>
+            <select id='dateSelect'><option>Choose a date</option><option>Fri 10:00 — {{CITY}}</option><option>Sat 18:30 — {{CITY}}</option></select>
+            <select id='timeSelect'><option>Choose a time</option><option>10:00</option><option>11:30</option><option>18:30</option></select>
+          </div>
+        </div>
+
+      </div>
+
+      <aside class='card'>
+        <div style='display:flex;justify-content:space-between;align-items:center'>
+          <div>
+            <div class='small'>Pricing view</div>
+            <div style='font-weight:800'>Choose billing</div>
+          </div>
+          <div class='toggle' role='tablist' aria-label='Pricing toggle'>
+            <button id='monthlyBtn' class='active' aria-pressed='true'>Monthly</button>
+            <button id='packBtn' aria-pressed='false'>Pack of 5</button>
+          </div>
+        </div>
+
+        <div style='margin-top:14px'>
+          <div class='small'>Selected offering</div>
+          <div class='price' id='priceDisplay' aria-live='polite'>$45</div>
+          <div class='small' id='priceNote'>per session billed monthly</div>
+          <a id='bookNow' class='book-cta' href='{{PRIMARY_CTA_URL}}'>Hold this slot</a>
+        </div>
+
+        <div style='margin-top:16px'>
+          <div class='small'>Your details</div>
+          <div class='form-row'>
+            <input id='name' placeholder='Your name' />
+            <input id='email' placeholder='Email' />
+          </div>
+        </div>
+
+        <div class='disclaimer'>
+          Contraindications: If you have a pacemaker, active seizures, recent head trauma, or significant psychiatric events, please consult a clinician before booking and contact us at <a href='mailto:{{EMAIL}}' style='color:var(--accent)'>{{EMAIL}}</a>.
+        </div>
+      </aside>
+    </div>
+
+    <section style='margin-top:18px' class='card'>
+      <strong>Booking summary</strong>
+      <p class='muted' style='margin-top:8px'>We'll confirm availability and send pre-visit guidance. Payment is processed securely through our system; cancellation policies are included on the confirmation email.</p>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style='display:flex;justify-content:space-between;padding:12px 28px;color:var(--muted)'>
+      <div>Questions? <a href='mailto:{{EMAIL}}' style='color:var(--accent)'>{{EMAIL}}</a> • <a href='tel:{{PHONE}}' style='color:var(--accent)'>{{PHONE}}</a></div>
+      <div>Serving {{CITY}}, {{STATE}}</div>
+    </div>
+  </footer>
+
+  <script>
+    // Pricing comparator with animated numbers
+    (function(){
+      const monthlyBtn = document.getElementById('monthlyBtn');
+      const packBtn = document.getElementById('packBtn');
+      const priceDisplay = document.getElementById('priceDisplay');
+      const priceNote = document.getElementById('priceNote');
+      const bookNow = document.getElementById('bookNow');
+
+      // Base values for different approaches (in cents to avoid float issues)
+      const base = { ground:4500, release:6000, restore:5200, explore:4800 };
+      let currentApproach = 'ground';
+      let mode = 'monthly'; // or 'pack'
+      const packMultiplier = 4; // pack of 5 gives discount equivalent to 4x single session price
+
+      // helpers
+      function centsToStr(c){ return '$' + (c/100).toFixed(0); }
+      function animatePrice(from, to){
+        const duration = 420; const start = performance.now();
+        function frame(now){
+          const t = Math.min(1,(now-start)/duration);
+          const val = Math.round(from + (to-from)*t);
+          priceDisplay.textContent = centsToStr(val);
+          if(t < 1) requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+      }
+
+      function updatePrice(){
+        const single = base[currentApproach];
+        if(mode==='monthly'){
+          animatePrice(parseInt(priceDisplay.textContent.replace('$',''))*100 || single, single);
+          priceNote.textContent = 'per session billed monthly';
+          bookNow.textContent = 'Hold this slot';
+          bookNow.href = '{{PRIMARY_CTA_URL}}?plan=monthly&approach='+currentApproach;
+        } else {
+          const packTotal = single * packMultiplier; // represent pack price
+          animatePrice(parseInt(priceDisplay.textContent.replace('$',''))*100 || single, packTotal);
+          priceNote.textContent = 'total for 5 sessions (best value)';
+          bookNow.textContent = 'Reserve pack';
+          bookNow.href = '{{PRIMARY_CTA_URL}}?plan=pack5&approach='+currentApproach;
+        }
+      }
+
+      monthlyBtn.addEventListener('click', ()=>{ mode='monthly'; monthlyBtn.classList.add('active'); monthlyBtn.setAttribute('aria-pressed','true'); packBtn.classList.remove('active'); packBtn.setAttribute('aria-pressed','false'); updatePrice(); });
+      packBtn.addEventListener('click', ()=>{ mode='pack'; packBtn.classList.add('active'); packBtn.setAttribute('aria-pressed','true'); monthlyBtn.classList.remove('active'); monthlyBtn.setAttribute('aria-pressed','false'); updatePrice(); });
+
+      // Approach selector updates both recommendation and price
+      document.querySelectorAll('.approach').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          document.querySelectorAll('.approach').forEach(b=>b.style.outline='none');
+          btn.style.outline='2px solid rgba(110,231,200,0.12)';
+          currentApproach = btn.getAttribute('data-key');
+          const map = {
+            ground:{title:'Grounding Focus',desc:'Low sustained tones and breath cues for recalibration.'},
+            release:{title:'Release Flow',desc:'Deeper vibrational textures with movement prompts.'},
+            restore:{title:'Restore Warmth',desc:'Harmonic layering to rebuild energy.'},
+            explore:{title:'Exploratory Resonance',desc:'Textural variety for attention practices.'}
+          };
+          document.getElementById('recTitle').textContent = map[currentApproach].title;
+          document.getElementById('recDesc').textContent = map[currentApproach].desc;
+          // animate the price to new approach
+          updatePrice();
+        });
+      });
+
+      // initialize
+      updatePrice();
+    })();
+
+    // Mood-to-Method (small variant): mutates CTA wording if user selects 'Restore' in the form
+    (function(){
+      const recTitle = document.getElementById('recTitle');
+      const bookNow = document.getElementById('bookNow');
+      // watch for changes on recTitle (as approaches change)
+      const obs = new MutationObserver(()=>{
+        const t = recTitle.textContent.toLowerCase();
+        if(t.includes('ground')){ bookNow.textContent = 'Hold this slot'; }
+        else if(t.includes('release')){ bookNow.textContent = 'Book release'; }
+        else if(t.includes('restore')){ bookNow.textContent = 'Book restorative'; }
+        else if(t.includes('explore')){ bookNow.textContent = 'Try exploratory'; }
+      });
+      obs.observe(recTitle,{childList:true});
+    })();
+  </script>
+</body>
+</html>

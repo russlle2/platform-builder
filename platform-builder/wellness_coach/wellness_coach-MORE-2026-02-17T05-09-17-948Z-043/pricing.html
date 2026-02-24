@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Rates — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7fbf9;--card:#ffffff;--muted:#6b7c7a;--accent:#2d7a66;--accent-2:#66a89a}
+    *{box-sizing:border-box}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;line-height:1.45;margin:0;background:var(--bg);color:#02302b}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;background:linear-gradient(135deg,rgba(45,122,102,.06),transparent)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;border-radius:8px;background:linear-gradient(180deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none;font-size:14px}
+    .cta{background:var(--accent);color:white;padding:8px 12px;border-radius:8px;text-decoration:none}
+    main{max-width:1000px;margin:28px auto;padding:0 20px}
+    .hero{display:grid;grid-template-columns:1fr;gap:12px;padding:28px;border-radius:12px;background:linear-gradient(180deg,#fff,rgba(255,255,255,.6));box-shadow:0 6px 20px rgba(2,48,43,.05)}
+    .hero h1{margin:0;font-size:26px}
+    .hero p{margin:6px 0;color:var(--muted)}
+
+    .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}
+    .plan{background:var(--card);padding:18px;border-radius:12px;border:1px solid rgba(2,48,43,.04)}
+    .plan h3{margin:0 0 6px 0}
+    .price{font-size:20px;color:var(--accent);margin-bottom:10px}
+    .features{color:var(--muted);font-size:14px;margin-bottom:12px}
+    .join{display:inline-block;padding:8px 10px;border-radius:8px;background:transparent;border:1px solid var(--accent);color:var(--accent);text-decoration:none}
+
+    /* Challenge */
+    .challenge{margin-top:24px;padding:18px;background:linear-gradient(90deg,rgba(102,168,154,.06),transparent);border-radius:12px}
+    .challenge-controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    select,input[type=checkbox]{padding:8px;border-radius:8px;border:1px solid #dfeeea}
+    button{cursor:pointer}
+    .checklist{margin-top:12px;background:#fff;padding:14px;border-radius:10px;border:1px dashed rgba(2,48,43,.06)}
+    .day{display:flex;align-items:center;gap:12px;padding:6px 0;border-bottom:1px solid rgba(2,48,43,.03)}
+    .day:last-child{border-bottom:0}
+    .day strong{width:84px}
+
+    /* Modal */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center}
+    .modal{background:white;padding:18px;border-radius:12px;width:92%;max-width:540px;box-shadow:0 12px 36px rgba(2,48,43,.18)}
+    .modal h4{margin:0 0 8px 0}
+    .exercise-area{min-height:120px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px}
+    .circle{width:120px;height:120px;border-radius:60px;background:radial-gradient(circle at 30% 30%,var(--accent-2),var(--accent));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;transition:transform 1s}
+    .controls{display:flex;gap:8px}
+
+    footer{padding:20px;text-align:center;color:var(--muted);font-size:13px;margin-top:22px}
+
+    @media (max-width:900px){.plans{grid-template-columns:1fr}}
+
+    @media print{body *:not(.print-section){display:none} .print-section{display:block} .checklist{border:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">WC</div>
+      <div>
+        <div style="font-weight:600">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Philosophy</a>
+      <a href="services.html">Offerings</a>
+      <a href="programs.html">Join</a>
+      <a href="pricing.html">Rates</a>
+      <a href="testimonials.html">Stories</a>
+      <a class="cta" href="book.html">Reserve</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h1>Flexible membership levels built around repeatable habits</h1>
+        <p>Choose a cadence that makes sense for the life you live. Memberships are framed as steady scaffolding for daily practices, not a one-time fix.</p>
+      </div>
+    </section>
+
+    <section class="plans" aria-label="pricing plans">
+      <div class="plan">
+        <h3>Anchor — Core</h3>
+        <div class="price">$19 / month</div>
+        <div class="features">Weekly check-ins · Habit templates · Member library</div>
+        <a class="join" href="{{PRIMARY_CTA_URL}}">Begin with Anchor</a>
+      </div>
+      <div class="plan" style="border:2px solid rgba(102,168,154,.12)">
+        <h3>Compass — Guided</h3>
+        <div class="price">$49 / month</div>
+        <div class="features">Everything in Core · Monthly workshop · Goal review</div>
+        <a class="join" href="{{PRIMARY_CTA_URL}}">Choose Compass</a>
+      </div>
+      <div class="plan">
+        <h3>Haven — Full Support</h3>
+        <div class="price">$99 / month</div>
+        <div class="features">Personal plan · Priority booking · Small-group check-ins</div>
+        <a class="join" href="{{PRIMARY_CTA_URL}}">Enter the Haven</a>
+      </div>
+    </section>
+
+    <section class="challenge" aria-labelledby="challenge-label">
+      <h3 id="challenge-label">7‑Day Habit Challenge — make one practice reliably yours</h3>
+      <p style="color:var(--muted)">Pick a theme, generate a simple 7-day plan, then print a checklist you can stick on the fridge.</p>
+      <div class="challenge-controls">
+        <label>
+          Theme
+          <select id="theme">
+            <option value="movement">Gentle movement</option>
+            <option value="breath">Micro-breathing</option>
+            <option value="morning">Morning reset</option>
+            <option value="evening">Evening wind-down</option>
+            <option value="journaling">Micro-journaling</option>
+          </select>
+        </label>
+        <label>
+          Daily target
+          <select id="target">
+            <option value="1">1 minute</option>
+            <option value="3">3 minutes</option>
+            <option value="5">5 minutes</option>
+            <option value="10">10 minutes</option>
+          </select>
+        </label>
+        <button id="generate">Create my 7‑day plan</button>
+        <button id="printBtn" style="margin-left:8px;">Print checklist</button>
+      </div>
+
+      <div id="checklist" class="checklist" aria-live="polite" style="margin-top:12px">
+        <div style="color:var(--muted);font-size:13px">Your checklist will appear here after generating.</div>
+      </div>
+
+      <div class="print-section" style="display:none"></div>
+    </section>
+
+    <section style="margin-top:18px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap">
+      <div>
+        <h4 style="margin:0">Try a guided exercise</h4>
+        <p style="margin:6px 0;color:var(--muted)">A short, interactive moment to test a breathing or micro-journaling practice.</p>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button id="tryBtn" class="join">Try it now</button>
+        <a class="join" href="book.html" style="background:var(--accent);color:#fff">Book a session</a>
+      </div>
+    </section>
+  </main>
+
+  <div id="overlay" class="overlay" role="dialog" aria-modal="true">
+    <div class="modal" role="document">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <h4>Guided micro-practice</h4>
+        <button id="closeModal" aria-label="Close">✕</button>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+        <button data-ex="breath">Breathing</button>
+        <button data-ex="journal">Journaling</button>
+        <button data-ex="intention">Intention</button>
+      </div>
+
+      <div class="exercise-area">
+        <div id="breathArea" style="display:none;flex-direction:column;align-items:center">
+          <div class="circle" id="breathCircle">3</div>
+          <div style="color:var(--muted);font-size:13px">Follow the expanding circle. 3 rounds.</div>
+        </div>
+
+        <div id="journalArea" style="display:none;flex-direction:column;align-items:center">
+          <textarea id="journalInput" placeholder="Write one sentence about how today felt..." style="width:100%;min-height:80px;padding:10px;border-radius:8px;border:1px solid #e6f0ec"></textarea>
+          <div style="color:var(--muted);font-size:13px">Time: 3 minutes (set a gentle timer)</div>
+        </div>
+
+        <div id="intentionArea" style="display:none;flex-direction:column;align-items:center">
+          <div style="font-size:16px;font-weight:600">Set a single intention</div>
+          <input id="intentInput" placeholder="I intend to..." style="padding:8px;width:100%;border-radius:8px;border:1px solid #e6f0ec" />
+        </div>
+
+      </div>
+
+      <div class="controls" style="margin-top:12px">
+        <button id="startBtn" class="join">Start</button>
+        <button id="stopBtn" style="display:none">Stop</button>
+        <button id="saveBtn" style="display:none">Save note</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div>{{CITY}}, {{STATE}} • <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    <div style="margin-top:6px;color:var(--muted)">Membership access and scheduling available. No medical advice provided.</div>
+  </footer>
+
+  <script>
+    // Habit challenge generator
+    (function(){
+      const themes = {
+        movement:["1 minute gentle stretch","2 knee lifts","1 minute shoulder rolls","1 minute neck release","short walk or step-in-place","light hip circles","deep breaths & gentle reach"],
+        breath:["Box breathing (4-4-4-4)","Long exhale focus (3x)","4-count inhale,6-count exhale","Alternate nostril (2 min)","3 full belly breaths","Paced 5-5 breathing","3 rounds of 6-6 breathing"],
+        morning:["Sip water + 1 min stretch","Set one small intention","5 breaths before phone","Open curtains + deep breath","Gentle movement for 3 min","Write one gratitude","Check posture & breathe"],
+        evening:["2 minute body scan","Journal one highlight","Slow breathing for 3 min","Turn off screens 30 min early","Warm drink & stretch","Reflect on wins","Prepare tomorrow with one task"],
+        journaling:["One-sentence reflection","Describe a win","Note a challenge + small next step","List 3 sensory details","Write a quick gratitude","What felt ok today?","Set a focus for tomorrow"]
+      };
+
+      const themeSel = document.getElementById('theme');
+      const targetSel = document.getElementById('target');
+      const genBtn = document.getElementById('generate');
+      const checklist = document.getElementById('checklist');
+      const printBtn = document.getElementById('printBtn');
+      const printSection = document.querySelector('.print-section');
+
+      function buildList(themeKey,target){
+        const items = themes[themeKey] || [];
+        const frag = document.createElement('div');
+        frag.innerHTML = '<div style="font-weight:600;margin-bottom:6px">7‑day checklist — '+(themeSel.options[themeSel.selectedIndex].text)+', '+target+' daily</div>';
+        items.slice(0,7).forEach((t,i)=>{
+          const d = document.createElement('div'); d.className='day';
+          d.innerHTML = '<strong>Day '+(i+1)+'</strong><label style="flex:1"><input type="checkbox"> '+t+' <span style="color:var(--muted);font-size:13px;display:block">Repeat for '+target+' each day</span></label>';
+          frag.appendChild(d);
+        });
+        frag.appendChild(document.createElement('div'));
+        return frag.innerHTML;
+      }
+
+      genBtn.addEventListener('click',function(){
+        const theme = themeSel.value;
+        const target = targetSel.value;
+        checklist.innerHTML = buildList(theme,target);
+        printSection.innerHTML = checklist.innerHTML;
+        printSection.style.display = 'none';
+      });
+
+      printBtn.addEventListener('click',function(){
+        // prepare a printable version
+        printSection.innerHTML = checklist.innerHTML;
+        document.querySelectorAll('body *').forEach(el=>el.classList.add('print-hide'));
+        printSection.classList.add('print-section');
+        printSection.style.display = 'block';
+        window.print();
+        printSection.style.display = 'none';
+      });
+    })();
+
+    // Guided modal logic
+    (function(){
+      const overlay = document.getElementById('overlay');
+      const tryBtn = document.getElementById('tryBtn');
+      const closeModal = document.getElementById('closeModal');
+      const startBtn = document.getElementById('startBtn');
+      const stopBtn = document.getElementById('stopBtn');
+      const saveBtn = document.getElementById('saveBtn');
+      const breathArea = document.getElementById('breathArea');
+      const journalArea = document.getElementById('journalArea');
+      const intentArea = document.getElementById('intentionArea');
+      const circle = document.getElementById('breathCircle');
+      let mode = 'breath';
+      let breathTimer=null, step=0, rounds=3;
+
+      function showMode(m){
+        mode=m;
+        breathArea.style.display = m==='breath'? 'flex':'none';
+        journalArea.style.display = m==='journal'? 'flex':'none';
+        intentArea.style.display = m==='intention'? 'flex':'none';
+        saveBtn.style.display = m==='journal'?'inline-block':'none';
+      }
+
+      document.querySelectorAll('[data-ex]').forEach(btn=>{
+        btn.addEventListener('click',()=> showMode(btn.getAttribute('data-ex')));
+      });
+
+      tryBtn.addEventListener('click',()=>{
+        overlay.style.display='flex';
+        showMode('breath');
+      });
+      closeModal.addEventListener('click',()=>{ overlay.style.display='none'; stop(); });
+
+      function breatheStep(){
+        step = (step%3)+1;
+        if(step===1){ circle.style.transform='scale(1.15)'; circle.textContent='In'; }
+        if(step===2){ circle.style.transform='scale(.85)'; circle.textContent='Hold'; }
+        if(step===3){ circle.style.transform='scale(1)'; circle.textContent='Out'; }
+      }
+
+      function start(){
+        if(mode==='breath'){
+          step=0; breatheStep(); breathTimer=setInterval(breatheStep,2000);
+          startBtn.style.display='none'; stopBtn.style.display='inline-block';
+        } else if(mode==='journal'){
+          startBtn.style.display='none'; stopBtn.style.display='inline-block';
+          // simple countdown 3 minutes
+          let t=180;
+          journalArea.querySelector('div') && (journalArea.querySelector('div').textContent='Time left: 3:00');
+          breathTimer = setInterval(()=>{
+            t--; const m=Math.floor(t/60); const s=t%60; journalArea.querySelector('div').textContent='Time left: '+m+':'+(s<10?'0'+s:s);
+            if(t<=0) stop();
+          },1000);
+        } else if(mode==='intention'){
+          // small flash and then close
+          intentArea.querySelector('input').style.background='#f1fff8';
+          setTimeout(()=>{ intentArea.querySelector('input').style.background=''; overlay.style.display='none'; },1200);
+        }
+      }
+      function stop(){
+        if(breathTimer) clearInterval(breathTimer); breathTimer=null; startBtn.style.display='inline-block'; stopBtn.style.display='none';
+      }
+      startBtn.addEventListener('click',()=>{ start(); });
+      stopBtn.addEventListener('click',()=>{ stop(); });
+      saveBtn.addEventListener('click',()=>{
+        const note = document.getElementById('journalInput').value;
+        if(note.trim()){
+          alert('Saved note to your local device: \n'+note.slice(0,200));
+          document.getElementById('journalInput').value='';
+          overlay.style.display='none';
+        } else alert('Write a quick sentence before saving.');
+      });
+
+      // close on Escape
+      window.addEventListener('keydown',e=>{ if(e.key==='Escape') overlay.style.display='none'; });
+    })();
+  </script>
+</body>
+</html>

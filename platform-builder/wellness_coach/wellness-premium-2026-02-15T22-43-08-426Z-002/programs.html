@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Programs | {{BUSINESS_NAME}} — {{TAGLINE}}</title>
+  <meta name="description" content="Signature wellness programs blending mindset, movement, and nourishment. Guided by {{COACH_NAME}}, {{CREDENTIALS}}." />
+  <meta name="theme-color" content="#6E60D9" />
+  <style>
+    :root {
+      --midnight: #0f172a;
+      --lavender: #6e60d9;
+      --lavender-soft: #9b8ff0;
+      --pearl: #f7f7fb;
+      --ink: #1f2937;
+      --muted: #6b7280;
+      --success: #10b981;
+      --danger: #ef4444;
+      --radius: 16px;
+      --shadow-1: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --shadow-2: 0 20px 60px rgba(15, 23, 42, 0.12);
+      --space-1: 6px; --space-2: 10px; --space-3: 14px; --space-4: 20px; --space-5: 28px; --space-6: 40px; --space-7: 64px; --space-8: 96px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --pearl: #0b1020; --ink: #e5e7eb; --muted: #aab0bb; }
+      body { background: linear-gradient(180deg, rgba(110,96,217,0.09), rgba(110,96,217,0.03)), var(--pearl); }
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; color: var(--ink); background: linear-gradient(180deg, #ffffff, var(--pearl)); -webkit-font-smoothing: antialiased; }
+    a { color: var(--lavender); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    img { max-width: 100%; display: block; height: auto; }
+    .container { width: min(1120px, 92vw); margin: 0 auto; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 18px; border-radius: 999px; font-weight: 600; border: 1px solid transparent; transition: transform .2s ease, box-shadow .2s ease, background .2s ease, color .2s ease; cursor: pointer; }
+    .btn:focus-visible { outline: 3px solid rgba(110,96,217,.35); outline-offset: 2px; }
+    .btn-primary { background: linear-gradient(135deg, var(--lavender), var(--lavender-soft)); color: #fff; box-shadow: var(--shadow-1); }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: var(--shadow-2); }
+    .btn-ghost { background: transparent; color: var(--lavender); border-color: rgba(110,96,217,.3); }
+    .eyebrow { letter-spacing: .12em; text-transform: uppercase; font-size: 12px; color: var(--muted); font-weight: 700; }
+
+    /* Header */
+    .skip-link { position: absolute; left: -9999px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+    .skip-link:focus { position: static; width: auto; height: auto; padding: 8px 12px; background: #fff; border-radius: 8px; box-shadow: var(--shadow-1); margin: var(--space-2); display: inline-block; }
+    header { position: sticky; top: 0; z-index: 50; backdrop-filter: saturate(180%) blur(10px); background: rgba(255,255,255,.7); border-bottom: 1px solid rgba(110,96,217,.12); }
+    @media (prefers-color-scheme: dark) { header { background: rgba(10,14,30,.6); } }
+    .nav { display: flex; align-items: center; justify-content: space-between; min-height: 72px; }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; color: var(--midnight); font-size: 18px; text-decoration: none; }
+    .brand-badge { width: 34px; height: 34px; border-radius: 10px; background: radial-gradient(120% 120% at 0% 0%, var(--lavender) 0%, var(--lavender-soft) 55%, #c6c1fa 100%); box-shadow: inset 0 0 0 2px rgba(255,255,255,.5), 0 6px 18px rgba(110,96,217,.35); }
+    nav ul { list-style: none; display: flex; gap: 18px; padding: 0; margin: 0; align-items: center; }
+    nav a { color: var(--ink); font-weight: 600; opacity: .88; }
+    nav a[aria-current="page"] { color: var(--lavender); }
+    .nav-cta { margin-left: 8px; }
+    .nav-toggle { display: none; background: transparent; border: 1px solid rgba(110,96,217,.25); padding: 8px 10px; border-radius: 10px; }
+    .nav-toggle svg { width: 22px; height: 22px; }
+    @media (max-width: 960px) {
+      nav ul { display: none; position: absolute; top: 72px; left: 0; right: 0; background: linear-gradient(180deg, rgba(255,255,255,.95), rgba(247,247,251,.98)); padding: 16px; flex-direction: column; gap: 10px; border-bottom: 1px solid rgba(110,96,217,.1); }
+      header.open nav ul { display: flex; }
+      .nav-toggle { display: inline-flex; }
+      .nav-cta { width: 100%; }
+    }
+
+    /* Hero */
+    .hero { position: relative; overflow: hidden; background:
+      radial-gradient(1200px 1200px at 90% -10%, rgba(110,96,217,.12), transparent 40%),
+      url('assets/img/pattern.svg');
+      background-size: auto, 340px;
+      background-repeat: repeat;
+      border-bottom: 1px solid rgba(110,96,217,.12);
+    }
+    .hero .wrap { display: grid; grid-template-columns: 1.1fr .9fr; gap: var(--space-7); align-items: center; padding: var(--space-8) 0 var(--space-7); }
+    .hero h1 { font-size: clamp(34px, 5vw, 56px); line-height: 1.02; margin: 10px 0 14px; color: var(--midnight); }
+    .hero p { font-size: clamp(16px, 2vw, 18px); color: var(--muted); max-width: 60ch; }
+    .hero-visual { filter: drop-shadow(0 30px 60px rgba(110,96,217,.18)); transform: translateZ(0); }
+    @media (max-width: 960px) { .hero .wrap { grid-template-columns: 1fr; gap: var(--space-5); padding: var(--space-7) 0 var(--space-6); } }
+
+    /* Section base */
+    section { padding: var(--space-7) 0; }
+    .section-header { margin-bottom: var(--space-5); }
+    .section-header h2 { font-size: clamp(26px, 3.6vw, 38px); margin: 10px 0; color: var(--midnight); }
+    .section-header p { color: var(--muted); max-width: 64ch; }
+
+    /* Benefits */
+    .benefits { background: linear-gradient(180deg, rgba(110,96,217,.06), rgba(110,96,217,.03)); border-top: 1px solid rgba(110,96,217,.1); border-bottom: 1px solid rgba(110,96,217,.08); }
+    .benefit-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-5); }
+    .benefit { background: #fff; border: 1px solid rgba(110,96,217,.12); border-radius: var(--radius); padding: var(--space-5); box-shadow: var(--shadow-1); transition: transform .25s ease, box-shadow .25s ease; }
+    .benefit:hover { transform: translateY(-2px); box-shadow: var(--shadow-2); }
+    .benefit h3 { margin: 0 0 8px; font-size: 18px; }
+    .benefit p { margin: 0; color: var(--muted); }
+    .tick { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 9px; background: linear-gradient(135deg, rgba(110,96,217,.18), rgba(110,96,217,.28)); color: var(--lavender); margin-bottom: 12px; font-weight: 900; }
+    @media (max-width: 960px) { .benefit-grid { grid-template-columns: 1fr; } }
+
+    /* Tiers */
+    .tiers-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-5); align-items: stretch; }
+    .tier { background: #fff; border: 1px solid rgba(110,96,217,.12); border-radius: calc(var(--radius) + 4px); padding: var(--space-5); box-shadow: var(--shadow-1); position: relative; overflow: hidden; display: flex; flex-direction: column; }
+    .tier.most { border-color: rgba(110,96,217,.4); box-shadow: 0 10px 40px rgba(110,96,217,.18); }
+    .badge { position: absolute; top: 14px; right: 14px; background: linear-gradient(135deg, var(--lavender), var(--lavender-soft)); color: #fff; font-weight: 700; font-size: 12px; padding: 6px 10px; border-radius: 999px; letter-spacing: .06em; }
+    .tier h3 { margin: 0 0 6px; font-size: 22px; color: var(--midnight); }
+    .meta { color: var(--muted); font-size: 14px; margin-bottom: 10px; }
+    .tier ul { list-style: none; padding: 0; margin: 0 0 var(--space-5); display: grid; gap: 8px; }
+    .tier ul li { padding-left: 28px; position: relative; }
+    .tier ul li:before { content: ""; position: absolute; left: 0; top: 5px; width: 18px; height: 18px; border-radius: 6px; background: radial-gradient(120% 120% at 0% 0%, var(--lavender) 0%, var(--lavender-soft) 100%); mask: url('assets/img/avatar.svg'); mask-size: cover; opacity: .85; }
+    .tier .foot { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .note { font-size: 12px; color: var(--muted); }
+    @media (max-width: 1080px) { .tiers-grid { grid-template-columns: 1fr; } }
+
+    /* Testimonials */
+    .testimonials { background: #fff; }
+    .t-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-5); }
+    .t-card { border: 1px solid rgba(110,96,217,.12); background: linear-gradient(180deg, #ffffff, rgba(247,247,251,.6)); border-radius: var(--radius); padding: var(--space-5); box-shadow: var(--shadow-1); }
+    .t-quote { font-size: 16px; line-height: 1.6; }
+    .t-author { margin-top: 12px; display: grid; grid-template-columns: 40px 1fr; gap: 12px; align-items: center; }
+    .t-author img { width: 40px; height: 40px; border-radius: 50%; background: #eee; }
+    .t-author strong { display: block; }
+    .t-author span { color: var(--muted); font-size: 12px; }
+    @media (max-width: 960px) { .t-grid { grid-template-columns: 1fr; } }
+
+    /* FAQ */
+    .faq { background: linear-gradient(180deg, rgba(110,96,217,.06), rgba(110,96,217,.03)); border-top: 1px solid rgba(110,96,217,.1); border-bottom: 1px solid rgba(110,96,217,.08); }
+    .faq-list { display: grid; gap: 12px; }
+    .faq-item { border: 1px solid rgba(110,96,217,.12); border-radius: var(--radius); background: #fff; overflow: hidden; }
+    .faq-item button { width: 100%; text-align: left; background: transparent; border: 0; padding: 18px 18px; font-weight: 700; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; cursor: pointer; }
+    .faq-item button span.icon { width: 26px; height: 26px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(110,96,217,.18), rgba(110,96,217,.28)); color: var(--lavender); font-weight: 900; }
+    .faq-panel { max-height: 0; overflow: hidden; transition: max-height .3s ease; padding: 0 18px; }
+    .faq-item[aria-expanded="true"] .faq-panel { padding: 0 18px 18px; }
+    .faq-item[aria-expanded="true"] .faq-panel-inner { padding-top: 10px; border-top: 1px dashed rgba(110,96,217,.22); }
+    .faq-panel p { color: var(--muted); }
+
+    /* Newsletter */
+    .lead { background: #fff; }
+    .lead .wrap { display: grid; grid-template-columns: 1.2fr .8fr; gap: var(--space-6); align-items: center; }
+    .lead form { display: grid; grid-template-columns: 1fr auto; gap: 10px; }
+    .input { padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(110,96,217,.22); background: #fff; font-size: 16px; }
+    .hint { font-size: 12px; color: var(--muted); margin-top: 6px; }
+    .error { color: var(--danger); font-weight: 600; display: none; }
+    .success { color: var(--success); font-weight: 700; display: none; }
+    @media (max-width: 980px) { .lead .wrap { grid-template-columns: 1fr; } .lead form { grid-template-columns: 1fr; } }
+
+    /* CTA */
+    .cta { position: relative; overflow: hidden; background: radial-gradient(100% 100% at 100% 0%, rgba(110,96,217,.22), rgba(110,96,217,.08)); border-top: 1px solid rgba(110,96,217,.12); }
+    .cta .box { background: linear-gradient(135deg, #ffffff, rgba(247,247,251,.8)); border: 1px solid rgba(110,96,217,.16); border-radius: calc(var(--radius) + 6px); padding: var(--space-6); box-shadow: var(--shadow-2); display: grid; grid-template-columns: 1fr auto; gap: var(--space-5); align-items: center; }
+    .cta h3 { margin: 0; font-size: clamp(22px, 3vw, 32px); }
+    @media (max-width: 880px) { .cta .box { grid-template-columns: 1fr; text-align: left; } }
+
+    /* Footer */
+    footer { padding: var(--space-7) 0 var(--space-6); background: #fff; border-top: 1px solid rgba(110,96,217,.12); }
+    .f-grid { display: grid; grid-template-columns: 1.2fr .8fr .8fr; gap: var(--space-5); }
+    .f-brand { display: flex; gap: 12px; align-items: center; }
+    .small { color: var(--muted); font-size: 14px; }
+    @media (max-width: 980px) { .f-grid { grid-template-columns: 1fr; } }
+
+    @media (prefers-reduced-motion: reduce) {
+      .btn, .benefit, .tier, .faq-panel { transition: none !important; }
+      html:focus-within { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header id="site-header">
+    <div class="container nav" role="navigation" aria-label="Primary">
+      <a class="brand" href="index.html" aria-label="{{BUSINESS_NAME}} home">
+        <span class="brand-badge" aria-hidden="true"></span>
+        <span>{{BUSINESS_NAME}}</span>
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="primary-menu" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+      <nav>
+        <ul id="primary-menu">
+          <li><a href="about.html">About</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="programs.html" aria-current="page">Programs</a></li>
+          <li><a href="pricing.html">Pricing</a></li>
+          <li><a href="testimonials.html">Testimonials</a></li>
+          <li><a href="book.html">Book</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li class="nav-cta"><a class="btn btn-primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <section class="hero">
+      <div class="container wrap">
+        <div>
+          <div class="eyebrow">Our Signature Approach</div>
+          <h1>Programs at {{BUSINESS_NAME}}</h1>
+          <p>Guided by {{COACH_NAME}}, {{CREDENTIALS}} — our programs weave together somatic breathwork, restorative movement, mindful nutrition, and science-backed habit design. The result is a nervous-system-first path to sustainable energy and calm focus.</p>
+          <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:18px;">
+            <a class="btn btn-primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            <a class="btn btn-ghost" href="#tiers">Explore tiers</a>
+          </div>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <img src="assets/img/hero.svg" alt="" />
+        </div>
+      </div>
+    </section>
+
+    <section class="benefits">
+      <div class="container">
+        <div class="section-header">
+          <div class="eyebrow">Why it works</div>
+          <h2>Calm Minimal meets measurable change</h2>
+          <p>We focus on less but better: a few powerful rituals you can repeat anywhere, anytime — supported by gentle accountability and clear metrics that show your progress week by week.</p>
+        </div>
+        <div class="benefit-grid" role="list">
+          <article class="benefit" role="listitem">
+            <div class="tick" aria-hidden="true">✓</div>
+            <h3>Nervous-system first</h3>
+            <p>Stabilize your baseline with breathwork and micro-recovery so the rest of your life feels lighter.</p>
+          </article>
+          <article class="benefit" role="listitem">
+            <div class="tick" aria-hidden="true">✓</div>
+            <h3>Habits that stick</h3>
+            <p>Tiny, high-leverage actions designed around your environment — not unrealistic willpower.</p>
+          </article>
+          <article class="benefit" role="listitem">
+            <div class="tick" aria-hidden="true">✓</div>
+            <h3>Whole-life fit</h3>
+            <p>Asynchronous support, flexible sessions, and templates that adapt to travel, family, and work rhythm.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="tiers">
+      <div class="container">
+        <div class="section-header">
+          <div class="eyebrow">Program tiers</div>
+          <h2>The Aurora Method — choose your depth</h2>
+          <p>Each tier blends coaching, practice, and reflection. Start with a focused reset or go deeper for lasting transformation. Pricing is transparent — see our pricing page for details when you’re ready.</p>
+        </div>
+        <div class="tiers-grid">
+          <article class="tier" aria-labelledby="t1">
+            <h3 id="t1">Aurora Reset</h3>
+            <div class="meta">14 days · gentle reboot</div>
+            <ul>
+              <li>2 one-on-one sessions (60 min each)</li>
+              <li>Daily 5–8 min breath rituals</li>
+              <li>Simple nourishment framework (no tracking)</li>
+              <li>Sleep wind-down audio toolkit</li>
+              <li>Secure client portal + recap notes</li>
+            </ul>
+            <div class="foot">
+              <a class="btn btn-ghost" href="pricing.html#plans">View pricing</a>
+              <a class="btn btn-primary" href="{{PRIMARY_CTA_URL}}">Start Reset</a>
+            </div>
+            <div class="note" style="margin-top:10px;">Best for: post-travel fatigue, decision fog, stress spikes.</div>
+          </article>
+
+          <article class="tier most" aria-labelledby="t2">
+            <div class="badge" aria-label="Most booked">Most booked</div>
+            <h3 id="t2">Lunar Balance</h3>
+            <div class="meta">6 weeks · habit foundations</div>
+            <ul>
+              <li>6 weekly sessions (45–60 min)</li>
+              <li>Custom micro-habits + calendar prompts</li>
+              <li>Movement snacks: 3 x 10 min weekly videos</li>
+              <li>Messaging support (Mon–Fri)</li>
+              <li>Baseline + progress well-being score</li>
+            </ul>
+            <div class="foot">
+              <a class="btn btn-ghost" href="pricing.html#plans">View pricing</a>
+              <a class="btn btn-primary" href="{{PRIMARY_CTA_URL}}">Begin Balance</a>
+            </div>
+            <div class="note" style="margin-top:10px;">Best for: building sustainable routines across work + home.</div>
+          </article>
+
+          <article class="tier" aria-labelledby="t3">
+            <h3 id="t3">Celestial Clarity</h3>
+            <div class="meta">12 weeks · full transformation</div>
+            <ul>
+              <li>12 weekly sessions + 2 integration weeks</li>
+              <li>Personalized nourishment protocol</li>
+              <li>Somatic release + guided reflections</li>
+              <li>On-demand check-ins (response within 24h)</li>
+              <li>Scope: focus, energy, sleep, boundaries</li>
+            </ul>
+            <div class="foot">
+              <a class="btn btn-ghost" href="pricing.html#plans">View pricing</a>
+              <a class="btn btn-primary" href="{{PRIMARY_CTA_URL}}">Claim Clarity</a>
+            </div>
+            <div class="note" style="margin-top:10px;">Best for: leaders and creatives navigating sustained change.</div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="testimonials">
+      <div class="container">
+        <div class="section-header">
+          <div class="eyebrow">Client stories</div>
+          <h2>Quiet confidence, tangible results</h2>
+          <p>Our clients tend to be high-responsibility humans. They come for energy and leave with a calmer mind, clearer focus, and kinder self-talk.</p>
+        </div>
+        <div class="t-grid" role="list">
+          <figure class="t-card" role="listitem">
+            <blockquote class="t-quote">“Two weeks into Aurora Reset I was sleeping through the night for the first time in years. The rituals are tiny but potent. I felt human again.”</blockquote>
+            <figcaption class="t-author">
+              <img src="assets/img/avatar.svg" alt="" />
+              <div><strong>Marin P.</strong><span>Product Manager, parent of 2</span></div>
+            </figcaption>
+          </figure>
+          <figure class="t-card" role="listitem">
+            <blockquote class="t-quote">“Lunar Balance finally made routines click. The check-ins kept me honest without shame. My afternoon crash is gone.”</blockquote>
+            <figcaption class="t-author">
+              <img src="assets/img/avatar.svg" alt="" />
+              <div><strong>Kenji L.</strong><span>Design Lead</span></div>
+            </figcaption>
+          </figure>
+          <figure class="t-card" role="listitem">
+            <blockquote class="t-quote">“Celestial Clarity was the reset I didn’t know I needed. Boundaries, breath, and food simplicity — now baked into my week.”</blockquote>
+            <figcaption class="t-author">
+              <img src="assets/img/avatar.svg" alt="" />
+              <div><strong>Anika R.</strong><span>Founder</span></div>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq" id="faq">
+      <div class="container">
+        <div class="section-header">
+          <div class="eyebrow">FAQ</div>
+          <h2>Your questions, calmly answered</h2>
+          <p>If you’re deciding how deep to go, start with what feels light. You can always extend your program and we’ll credit prior sessions.</p>
+        </div>
+        <div class="faq-list">
+          <div class="faq-item" aria-expanded="false">
+            <button aria-controls="p1" aria-expanded="false"><span>How are sessions delivered?</span><span class="icon" aria-hidden="true">+</span></button>
+            <div id="p1" class="faq-panel" role="region" aria-label="How are sessions delivered?">
+              <div class="faq-panel-inner">
+                <p>Most clients meet via secure video with optional in-person sessions in {{CITY}}, {{STATE}}. We provide a private portal for notes, resources, and check-ins.</p>
+              </div>
+            </div>
+          </div>
+          <div class="faq-item" aria-expanded="false">
+            <button aria-controls="p2" aria-expanded="false"><span>What results can I expect and when?</span><span class="icon" aria-hidden="true">+</span></button>
+            <div id="p2" class="faq-panel" role="region" aria-label="What results can I expect and when?">
+              <div class="faq-panel-inner">
+                <p>Most notice calmer afternoons and better sleep within 10–14 days. Deeper identity-level shifts typically land around weeks 5–8 with consistent practice.</p>
+              </div>
+            </div>
+          </div>
+          <div class="faq-item" aria-expanded="false">
+            <button aria-controls="p3" aria-expanded="false"><span>Can I pause or reschedule sessions?</span><span class="icon" aria-hidden="true">+</span></button>
+            <div id="p3" class="faq-panel" role="region" aria-label="Can I pause or reschedule sessions?">
+              <div class="faq-panel-inner">
+                <p>Yes. We ask for 24 hours’ notice to reschedule. You can pause once per tier for up to two weeks with message support maintained.</p>
+              </div>
+            </div>
+          </div>
+          <div class="faq-item" aria-expanded="false">
+            <button aria-controls="p4" aria-expanded="false"><span>Is this therapy?</span><span class="icon" aria-hidden="true">+</span></button>
+            <div id="p4" class="faq-panel" role="region" aria-label="Is this therapy?">
+              <div class="faq-panel-inner">
+                <p>No. We offer coaching and education. We’ll refer out when clinical care is appropriate and we’re happy to collaborate with your providers.</p>
+              </div>
+            </div>
+          </div>
+          <div class="faq-item" aria-expanded="false">
+            <button aria-controls="p5" aria-expanded="false"><span>Do you offer accessibility accommodations?</span><span class="icon" aria-hidden="true">+</span></button>
+            <div id="p5" class="faq-panel" role="region" aria-label="Do you offer accessibility accommodations?">
+              <div class="faq-panel-inner">
+                <p>Absolutely. Captions, transcripts, flexible pacing, trauma-informed options, and sensory-friendly practices are available on request.</p>
+              </div>
+            </div>
+          </div>
+          <div class="faq-item" aria-expanded="false">
+            <button aria-controls="p6" aria-expanded="false"><span>Can my employer sponsor this?</span><span class="icon" aria-hidden="true">+</span></button>
+            <div id="p6" class="faq-panel" role="region" aria-label="Can my employer sponsor this?">
+              <div class="faq-panel-inner">
+                <p>Yes. We provide receipts and simple outcomes reporting for wellness stipends. Team programs are available; see Services.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="lead" id="guide">
+      <div class="container wrap">
+        <div>
+          <div class="eyebrow">Free resource</div>
+          <h2>The Calm Kit</h2>
+          <p>A 7‑day email mini‑course with breath stacks, 10‑minute movement snacks, and a one‑page nourishment map. Built to fit busy weeks.</p>
+        </div>
+        <div>
+          <form class="validate" novalidate>
+            <label class="sr-only" for="lead-email">Email address</label>
+            <input id="lead-email" class="input" type="email" name="email" placeholder="you@domain.com" required aria-describedby="lead-hint lead-error" />
+            <button class="btn btn-primary" type="submit">Send me the kit</button>
+            <div id="lead-hint" class="hint">We’ll send 7 emails and one gentle check‑in. Unsubscribe anytime.</div>
+            <div id="lead-error" class="error" role="alert">Please enter a valid email so we can deliver your kit.</div>
+            <div class="success" role="status">Check your inbox — The Calm Kit is on the way.</div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta" aria-label="Book coaching">
+      <div class="container">
+        <div class="box">
+          <div>
+            <div class="eyebrow">Begin today</div>
+            <h3>Ready to create space for the you that isn’t rushed?</h3>
+            <p class="small">A 20‑minute fit call helps us map the lightest next step for you — no pressure, no prep.</p>
+          </div>
+          <div>
+            <a class="btn btn-primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container f-grid">
+      <div>
+        <div class="f-brand">
+          <span class="brand-badge" aria-hidden="true"></span>
+          <div>
+            <strong>{{BUSINESS_NAME}}</strong>
+            <div class="small">{{TAGLINE}}</div>
+          </div>
+        </div>
+        <p class="small" style="margin-top:10px;">This site shares educational information only and is not medical advice. If you’re under clinical care, coordinate changes with your provider.</p>
+      </div>
+      <div>
+        <strong>Visit</strong>
+        <div class="small" style="margin-top:8px;">{{ADDRESS}}<br />{{CITY}}, {{STATE}} {{ZIP}}</div>
+        <div class="small" style="margin-top:8px;">Hours: {{HOURS}}</div>
+      </div>
+      <div>
+        <strong>Contact</strong>
+        <div class="small" style="margin-top:8px;">Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+        <div class="small" style="margin-top:6px;">Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+        <div class="small" style="margin-top:12px;"><a href="book.html">Book a consult</a></div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function(){
+      const header = document.getElementById('site-header');
+      const toggle = header.querySelector('.nav-toggle');
+      const menu = document.getElementById('primary-menu');
+      toggle.addEventListener('click', () => {
+        const open = header.classList.toggle('open');
+        toggle.setAttribute('aria-expanded', String(open));
+      });
+      menu.addEventListener('click', (e) => {
+        if(e.target.tagName === 'A' && header.classList.contains('open')){
+          header.classList.remove('open');
+          toggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      // Smooth scroll for on-page anchors
+      document.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener('click', (e) => {
+          const id = a.getAttribute('href');
+          if(id && id.length > 1){
+            const el = document.querySelector(id);
+            if(el){ e.preventDefault(); el.scrollIntoView({ behavior: (matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'), block: 'start' }); }
+          }
+        });
+      });
+
+      // FAQ accordion
+      document.querySelectorAll('.faq-item').forEach(item => {
+        const btn = item.querySelector('button');
+        const panel = item.querySelector('.faq-panel');
+        btn.addEventListener('click', () => {
+          const expanded = btn.getAttribute('aria-expanded') === 'true';
+          document.querySelectorAll('.faq-item').forEach(i => {
+            i.setAttribute('aria-expanded','false');
+            const b = i.querySelector('button');
+            const p = i.querySelector('.faq-panel');
+            b.setAttribute('aria-expanded','false');
+            p.style.maxHeight = null;
+          });
+          if(!expanded){
+            item.setAttribute('aria-expanded','true');
+            btn.setAttribute('aria-expanded','true');
+            panel.style.maxHeight = panel.scrollHeight + 'px';
+          }
+        });
+      });
+
+      // Newsletter form validation
+      document.querySelectorAll('form.validate').forEach(form => {
+        const email = form.querySelector('input[type="email"]');
+        const err = form.querySelector('.error');
+        const ok = form.querySelector('.success');
+        const showError = (msg) => { if(msg) err.textContent = msg; err.style.display = 'block'; ok.style.display = 'none'; };
+        const showSuccess = () => { err.style.display = 'none'; ok.style.display = 'block'; };
+        email.addEventListener('input', () => { if(email.validity.valid){ err.style.display = 'none'; } });
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          if(!email.value || !email.validity.valid){
+            showError('Please enter a valid email so we can deliver your kit.');
+            email.focus();
+            return;
+          }
+          showSuccess();
+          form.reset();
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

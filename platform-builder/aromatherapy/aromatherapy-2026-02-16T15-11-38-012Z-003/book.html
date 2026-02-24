@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Schedule a virtual or in-person aromatherapy consultation with {{PRACTITIONER_NAME}}.">
+  <style>
+    :root{--bg:#fbfffe;--accent:#2ea79a;--muted:#6b6b6b}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;color:#0b3634}
+    body{background:linear-gradient(180deg,#f8fffd 0%,#ffffff 100%), url('assets/img/pattern.svg');background-repeat:repeat;padding:28px}
+    .container{max-width:980px;margin:0 auto}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+    .logo{display:flex;align-items:center;gap:12px}
+    .logo .mark{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,#2ea79a,#7fd8cf);display:flex;align-items:center;justify-content:center;color:white;font-weight:800}
+    nav a{margin-left:12px;color:#0b3634;text-decoration:none}
+    .panel{background:rgba(255,255,255,0.65);backdrop-filter:blur(6px);border-radius:14px;padding:22px;border:1px solid rgba(255,255,255,0.7);box-shadow:0 8px 30px rgba(10,30,30,0.05)}
+    h1{margin:0 0 6px 0}
+    .lead{color:var(--muted)}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:18px;margin-top:18px}
+    label{display:block;margin-bottom:8px;font-weight:700}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(20,20,20,0.06);margin-bottom:12px}
+    .btn{padding:10px 12px;border-radius:10px;border:0;background:linear-gradient(90deg,#2ea79a,#6fd6c9);color:white;font-weight:700;cursor:pointer}
+    .avail{display:flex;flex-direction:column;gap:8px}
+    .slot{padding:10px;border-radius:8px;background:rgba(255,255,255,0.9);border:1px solid rgba(20,20,20,0.04)}
+    .muted{color:var(--muted);font-size:14px}
+    .note{font-size:13px;color:var(--muted);margin-top:8px}
+    .disclaimer{margin-top:12px;font-size:13px;color:#6b6b6b}
+    @media(max-width:860px){.grid{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <div class="mark">{{BUSINESS_NAME}}</div>
+        <div>
+          <div style="font-weight:800">Book — {{BUSINESS_NAME}}</div>
+          <div class="muted">Sessions with {{PRACTITIONER_NAME}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Start</a>
+        <a href="services.html">Offerings</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <main class="panel">
+      <h1>Reserve your session</h1>
+      <p class="lead">Choose virtual or in-person. Appointments include a safety intake and guidance on dilution and use. If you have questions about pregnancy, pets, or medication interactions, include them in the form and we'll prepare appropriate guidance.</p>
+
+      <div class="grid">
+        <section>
+          <form action="{{PRIMARY_CTA_URL}}" method="post" novalidate>
+            <label for="name">Full name</label>
+            <input id="name" name="name" type="text" placeholder="Your name" required>
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="you@example.com" required>
+
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" type="tel" placeholder="Optional">
+
+            <label for="session">Session type</label>
+            <select id="session" name="session">
+              <option>Intro Consultation — 45 min</option>
+              <option>Comprehensive Session — 90 min</option>
+              <option>Follow-up — 30 min</option>
+            </select>
+
+            <label for="mode">Mode</label>
+            <select id="mode" name="mode">
+              <option>Virtual (video)</option>
+              <option>In-person ({{CITY}}, {{STATE}})</option>
+            </select>
+
+            <label for="when">Preferred dates & times</label>
+            <input id="when" name="when" type="text" placeholder="e.g. Weekdays after 3pm or specific dates">
+
+            <label for="notes">Notes (allergies / pregnancy / pets / medications)</label>
+            <textarea id="notes" name="notes" rows="4" placeholder="Any safety or context notes"></textarea>
+
+            <div style="display:flex;gap:12px;align-items:center">
+              <button type="submit" class="btn">Request booking</button>
+              <div class="muted">We will confirm and send a secure payment link.</div>
+            </div>
+
+            <div class="disclaimer">Aromatherapy consultations are educational. If you have health conditions, seek your medical provider's guidance alongside our suggestions.</div>
+          </form>
+        </section>
+
+        <aside>
+          <div style="background:rgba(255,255,255,0.9);padding:14px;border-radius:12px;border:1px solid rgba(0,0,0,0.04)">
+            <h4 style="margin:0 0 10px 0">Typical availability</h4>
+            <div class="avail">
+              <div class="slot"><strong>Mon — Wed</strong> 10:00 — 17:00</div>
+              <div class="slot"><strong>Thu</strong> 12:00 — 20:00</div>
+              <div class="slot"><strong>Fri</strong> 9:00 — 14:00</div>
+            </div>
+            <div class="note">Timezone: local to {{CITY}}. For remote appointments, please include your timezone in the notes.</div>
+          </div>
+
+          <div style="background:rgba(255,255,255,0.9);padding:14px;border-radius:12px;border:1px solid rgba(0,0,0,0.04);margin-top:12px">
+            <h4 style="margin:0 0 8px 0">What to prepare</h4>
+            <ol style="padding-left:18px;margin:0;color:#0d6a63">
+              <li>List of known allergies & medications</li>
+              <li>Info on pets at home or pregnancy status</li>
+              <li>Photos of current product labels (if relevant)</li>
+            </ol>
+          </div>
+
+          <div style="margin-top:12px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.6);border:1px solid rgba(0,0,0,0.03)">
+            <h4 style="margin:0 0 6px 0">Payment & cancellation</h4>
+            <div class="muted">A deposit or full payment may be requested to secure the booking. Cancellations with less than 24 hours' notice may be subject to a fee.</div>
+          </div>
+        </aside>
+      </div>
+
+      <section style="margin-top:18px">
+        <h4 style="margin:0 0 8px 0">Practical safety FAQs</h4>
+        <details>
+          <summary>What about dilution and patch testing?</summary>
+          <div class="muted">Dilution ratios are provided for each topical blend. A patch test is recommended for new topical products: apply a small amount to the inner arm and observe 24–48 hours.</div>
+        </details>
+        <details>
+          <summary>Are oils safe around pets?</summary>
+          <div class="muted">Some essential oils pose risks to animals. We ask about household pets during intake and recommend pet-safe options and application methods.</div>
+        </details>
+        <details>
+          <summary>PREGNANCY & breastfeeding considerations</summary>
+          <div class="muted">Certain oils are contraindicated in pregnancy. If you are pregnant or breastfeeding, note this in your booking and we will prepare pregnancy-appropriate alternatives. We do not provide medical advice — consult your healthcare provider for medical decisions.</div>
+        </details>
+      </section>
+
+      <footer style="margin-top:18px;display:flex;justify-content:space-between;align-items:center">
+        <div class="muted">Questions before booking? Email {{EMAIL}} or call {{PHONE}}</div>
+        <div>
+          <a href="pricing.html" style="text-decoration:none" class="btn">View rates</a>
+        </div>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

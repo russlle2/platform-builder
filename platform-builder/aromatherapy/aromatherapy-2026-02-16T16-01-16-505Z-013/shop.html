@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>{{BUSINESS_NAME}} Shop</title>
+  <style>
+    :root{--bg:#ffffff;--muted:#475047;--accent:#5da987;--card:#fcfffd}
+    body{font-family:Inter, system-ui, -apple-system,'Segoe UI', Roboto, Arial;margin:0;background:linear-gradient(180deg,#f8fffb,#f0f7f3);color:#123}
+    header{display:flex;justify-content:space-between;align-items:center;padding:12px 20px}
+    .logo{display:flex;gap:10px;align-items:center}
+    .logo div{width:40px;height:40px;background:linear-gradient(135deg,var(--accent),#4aa385);border-radius:8px;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
+    nav a{margin-left:12px;color:#19372f;text-decoration:none}
+    main{max-width:1100px;margin:0 auto;padding:18px}
+    .hero{display:flex;justify-content:space-between;align-items:center;padding:18px;background:linear-gradient(90deg,rgba(93,169,135,0.12),rgba(255,255,255,0.6));border-radius:12px}
+    .hero h1{margin:0}
+    .products{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+    .card{background:var(--card);padding:14px;border-radius:12px;box-shadow:0 10px 26px rgba(14,30,20,0.04);display:flex;flex-direction:column}
+    .media{height:120px;border-radius:10px;background:linear-gradient(135deg,#eaf6ef,#f2fff7);display:flex;align-items:center;justify-content:center;color:var(--muted);font-weight:700}
+    .price{margin-top:auto;font-weight:700;color:#14332b}
+    .buy{margin-top:10px;padding:10px;border-radius:10px;background:var(--accent);color:#fff;text-decoration:none;display:inline-block}
+    .muted{color:var(--muted);font-size:13px}
+    .pattern{position:fixed;right:-140px;bottom:-80px;opacity:0.08;width:540px;height:540px}
+    @media (max-width:900px){.products{grid-template-columns:repeat(2,1fr)}.hero{flex-direction:column;align-items:flex-start}}
+    @media (max-width:520px){.products{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <!-- unique SVG motif for shop -->
+  <svg class='pattern' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'>
+    <defs>
+      <linearGradient id='gSh' x1='0' x2='1'><stop offset='0' stop-color='%235da987'/><stop offset='1' stop-color='%234aa385'/></linearGradient>
+      <pattern id='pSh' width='18' height='18' patternUnits='userSpaceOnUse'>
+        <rect width='18' height='18' fill='none'/>
+        <circle cx='9' cy='9' r='2.5' fill='url(%23gSh)' opacity='0.12'/>
+      </pattern>
+    </defs>
+    <rect width='100%' height='100%' fill='url(%23pSh)'/>
+  </svg>
+
+  <header>
+    <div class='logo'><div>S</div><div style='font-weight:700'>{{BUSINESS_NAME}}</div></div>
+    <nav>
+      <a href='index.html'>Home</a>
+      <a href='services.html' style='margin-left:10px'>Services</a>
+      <a href='blends.html' style='margin-left:10px'>Blends</a>
+      <a href='contact.html' style='margin-left:10px'>Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class='hero'>
+      <div>
+        <h1>Shop — curated kits and ready blends</h1>
+        <div class='muted'>Thoughtfully packaged — each product includes safety & dilution notes. No medical claims.</div>
+      </div>
+      <div>
+        <a class='buy' href='{{PRIMARY_CTA_URL}}'>Checkout & custom orders</a>
+      </div>
+    </div>
+
+    <section class='products' aria-label='Products'>
+      <div class='card'>
+        <div class='media'>Starter Ritual Kit</div>
+        <div style='margin-top:12px;font-weight:700'>Starter Ritual Kit (3 blends)</div>
+        <div class='muted' style='margin-top:8px'>Includes three pre-diluted 10 mL rollers and a booklet with safe-use notes.</div>
+        <div class='price'>$48</div>
+        <a class='buy' href='{{PRIMARY_CTA_URL}}'>Buy kit</a>
+      </div>
+
+      <div class='card'>
+        <div class='media'>Roll-On — Cozy Evening</div>
+        <div style='margin-top:12px;font-weight:700'>Cozy Evening Roller (10 mL)</div>
+        <div class='muted' style='margin-top:8px'>Top: Sweet Orange / Mid: Lavender / Base: Cedarwood — pre-diluted to safe topical use.</div>
+        <div class='price'>$16</div>
+        <a class='buy' href='{{PRIMARY_CTA_URL}}'>Add to cart</a>
+      </div>
+
+      <div class='card'>
+        <div class='media'>Roll-On — Quiet Focus</div>
+        <div style='margin-top:12px;font-weight:700'>Quiet Focus Roller (10 mL)</div>
+        <div class='muted' style='margin-top:8px'>Lemon • Basil • Light Patchouli — crafted for short focus sessions; includes patch-test guide.</div>
+        <div class='price'>$16</div>
+        <a class='buy' href='{{PRIMARY_CTA_URL}}'>Add to cart</a>
+      </div>
+
+      <div class='card'>
+        <div class='media'>Mini Diffuser</div>
+        <div style='margin-top:12px;font-weight:700'>USB Mini Diffuser</div>
+        <div class='muted' style='margin-top:8px'>Portable diffuser with low-mist setting, suitable for small rooms and office desks.</div>
+        <div class='price'>$34</div>
+        <a class='buy' href='{{PRIMARY_CTA_URL}}'>Buy diffuser</a>
+      </div>
+
+      <div class='card'>
+        <div class='media'>Custom Blend Vial</div>
+        <div style='margin-top:12px;font-weight:700'>Custom Blend — 15 mL</div>
+        <div class='muted' style='margin-top:8px'>Order a tailored blend; includes dilution guidance and patch-test instructions. (Lead time applies.)</div>
+        <div class='price'>$58</div>
+        <a class='buy' href='book.html'>Request custom</a>
+      </div>
+
+      <div class='card'>
+        <div class='media'>Refill Oils</div>
+        <div style='margin-top:12px;font-weight:700'>Single Oil Refills</div>
+        <div class='muted' style='margin-top:8px'>Select popular oils in 10 mL sizes. All labeled with botanical names and safety notes.</div>
+        <div class='price'>From $9</div>
+        <a class='buy' href='{{PRIMARY_CTA_URL}}'>Shop oils</a>
+      </div>
+
+    </section>
+
+    <section style='margin-top:20px'>
+      <h2>Shop policies & safety</h2>
+      <p class='muted'>Products ship with ingredient lists, suggested dilution for topical use, and patch-test instructions. If pregnant, nursing, or caring for pets, consult product notes and reach out for alternatives.</p>
+
+      <div style='margin-top:12px'>
+        <a class='buy' href='contact.html'>Questions about safety?</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer style='padding:18px;text-align:center;color:var(--muted)'>
+    <div>{{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • {{EMAIL}} • {{PHONE}}</div>
+  </footer>
+</body>
+</html>

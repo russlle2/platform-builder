@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>How I Work — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#081226;--card:#0C1630;--accent:#C7FFBD;--muted:#9FB7C9}
+    body{margin:0;background:linear-gradient(180deg,#051224 0%,#071622 80%);color:#E8F8FF;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px}
+    nav a{color:#DFF6FF;text-decoration:none;margin-left:12px}
+
+    main{padding:22px}
+    .hero{display:flex;gap:18px;align-items:center}
+    .hero .left{flex:1}
+    .badge{background:linear-gradient(90deg,#81FFD1,#6BE3FF);padding:8px 12px;border-radius:999px;color:#022;font-weight:800}
+    h1{margin:6px 0}
+    p.lead{color:var(--muted);max-width:760px}
+
+    .model{display:flex;gap:14px;margin-top:18px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:14px;border-radius:12px;flex:1}
+    .card h4{margin:0 0 6px 0}
+
+    .mood-wrap{margin-top:18px}
+    .mood-row{display:flex;gap:10px}
+    .mood-btn{padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--muted);cursor:pointer}
+    .mood-btn.active{background:linear-gradient(180deg,#062433,rgba(255,255,255,0.01));color:var(--accent);border-color:rgba(199,255,189,0.16)}
+
+    .method{margin-top:12px;padding:14px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.012),transparent);transition:300ms ease}
+    .method h3{margin:0}
+    .method p{color:var(--muted)}
+
+    .cta{margin-top:14px}
+    .btn{background:var(--accent);padding:10px 14px;border-radius:10px;color:#021;font-weight:800;text-decoration:none}
+
+    .legal{font-size:13px;color:#ADC6DA;margin-top:14px}
+
+    @media (max-width:860px){.model{flex-direction:column}.hero{flex-direction:column;align-items:stretch}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="specialties.html">Focus</a>
+      <a href="fees.html">Fees</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div class="left">
+        <div class="badge">Clinical + Practical</div>
+        <h1>How I work with people</h1>
+        <p class="lead">The practice combines empathic listening, hypothesis-driven experiments, and practical tools you can use between sessions. We name patterns, try small changes, and track what moves you forward.</p>
+      </div>
+      <div style="width:260px" class="card">
+        <strong>Typical rhythm</strong>
+        <div style="color:var(--muted);margin-top:8px">Initial intake clarifies goals. Short blocks (4–8 sessions) test changes. Ongoing care available for sustained work.</div>
+      </div>
+    </div>
+
+    <div class="model">
+      <div class="card">
+        <h4>Relational focus</h4>
+        <p class="lead">We look at repeated interaction patterns and try small experiments that change the shape of conversations.</p>
+      </div>
+      <div class="card">
+        <h4>Behavioral experiments</h4>
+        <p class="lead">Short, practical tasks designed to reveal what helps and what hinders — then we revise the plan.</p>
+      </div>
+      <div class="card">
+        <h4>Reflective stance</h4>
+        <p class="lead">We track changes and make adjustments based on what you notice and report back between sessions.</p>
+      </div>
+    </div>
+
+    <div class="mood-wrap">
+      <strong>Choose how you feel — see a suggested method</strong>
+      <div class="mood-row" role="tablist" aria-label="Mood selector">
+        <button class="mood-btn active" data-key="tired">Tired</button>
+        <button class="mood-btn" data-key="stressed">Stressed</button>
+        <button class="mood-btn" data-key="curious">Curious</button>
+        <button class="mood-btn" data-key="sore">Sore</button>
+      </div>
+
+      <div class="method" id="method">
+        <h3 id="methodHead">If you're feeling tired</h3>
+        <p id="methodBody" style="color:var(--muted)">We focus on small pacing changes, sleep-friendly habits, and reducing decision friction so energy is less taxed. A short consult clarifies priorities and a 4-session block tests practical steps.</p>
+        <div class="cta"><a id="methodButton" class="btn" href="{{PRIMARY_CTA_URL}}">Book a pacing consult</a></div>
+      </div>
+    </div>
+
+    <div style="margin-top:18px" class="legal">
+      Confidentiality and scope: clinical notes are kept securely and conversations are confidential within legal and ethical limits. This practice does not provide emergency care; if you are at imminent risk, please contact local emergency services or a crisis line.
+    </div>
+  </main>
+
+  <script>
+    // Mood-to-Method for approach page
+    (function(){
+      const map = {
+        tired: {head:'If you\'re feeling tired', body:'We focus on pacing, small habit shifts, and lowering daily friction. A brief consult helps prioritize steps and a short series can test whether changes fit your life.', cta:'Book a pacing consult'},
+        stressed: {head:'If you\'re feeling stressed', body:'We identify pressure points and build quick strategies to reduce reactivity and increase clarity. Often 4–6 sessions are useful to introduce tools and review progress.', cta:'Start a short plan'},
+        curious: {head:'If you\'re curious', body:'We try quick experiments to learn what works for you. Short engagements let you gather data and return if more depth is helpful.', cta:'Try a short consult'},
+        sore: {head:'If you\'re feeling emotionally sore', body:'We make space for what\'s heavy while supporting steady steps toward engagement. Longer, gentler work can help rebuild strength.', cta:'Discuss ongoing support'}
+      };
+
+      const buttons = document.querySelectorAll('.mood-btn');
+      const head = document.getElementById('methodHead');
+      const body = document.getElementById('methodBody');
+      const btn = document.getElementById('methodButton');
+
+      buttons.forEach(b=> b.addEventListener('click', ()=>{
+        buttons.forEach(s=>s.classList.remove('active'));
+        b.classList.add('active');
+        const key = b.dataset.key;
+        const pick = map[key];
+        const cont = document.getElementById('method');
+        cont.style.transform='translateY(6px)'; cont.style.opacity='0.6';
+        setTimeout(()=>{
+          head.textContent = pick.head;
+          body.textContent = pick.body;
+          btn.textContent = pick.cta;
+          btn.setAttribute('href','{{PRIMARY_CTA_URL}}?mood='+encodeURIComponent(key));
+          cont.style.transform='translateY(0)'; cont.style.opacity='1';
+        },180);
+      }));
+    })();
+  </script>
+</body>
+</html>

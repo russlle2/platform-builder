@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f6efe6;--accent:#7a4f2a;--muted:#8b7b6c;--panel:#fffdf9;--glass:rgba(255,255,255,0.6)}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;color:#382a22;background:linear-gradient(180deg,var(--bg),#efe6db);}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:linear-gradient(180deg,rgba(255,255,255,0.6),transparent);backdrop-filter:blur(4px);position:sticky;top:0;z-index:20;border-bottom:1px solid rgba(58,44,33,0.04)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#b57544);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    nav a{margin:0 10px;color:#3d2c24;text-decoration:none;font-weight:600}
+    .hero{padding:48px 28px 36px;background-image:url('assets/img/pattern.svg');background-repeat:repeat;padding-bottom:56px}
+    .wrap{max-width:960px;margin:0 auto}
+    .hero-card{background:var(--panel);border-radius:14px;padding:30px;box-shadow:0 10px 30px rgba(46,34,30,0.06)}
+    h1{margin:0 0 8px;font-size:28px;color:var(--accent)}
+    p.lead{margin:0;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:24px;margin-top:22px}
+    .panel{background:var(--panel);padding:20px;border-radius:12px}
+    .meta{font-size:14px;color:var(--muted);margin-bottom:12px}
+    .cta{display:inline-block;padding:10px 14px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none;font-weight:700}
+
+    /* reveal animation */
+    .reveal{opacity:0;transform:translateY(20px);transition:opacity .55s ease,transform .55s ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none;opacity:1;transform:none}}
+
+    footer{padding:28px;border-top:1px solid rgba(58,44,33,0.04);text-align:center;color:var(--muted)}
+
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(11,9,8,0.45);display:none;align-items:center;justify-content:center;z-index:60}
+    .modal{background:linear-gradient(180deg,var(--panel),#fff);padding:20px;border-radius:12px;max-width:680px;width:92%}
+    .modal .controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .btn{background:#fff;border:1px solid #e8dfd6;padding:8px 12px;border-radius:8px;cursor:pointer}
+    .btn.primary{background:var(--accent);color:#fff;border:none}
+
+    /* small breathing circle */
+    .breath-circle{width:160px;height:160px;border-radius:50%;margin:14px auto;background:radial-gradient(circle at 35% 25%, rgba(122,79,42,0.18), rgba(122,79,42,0.06));display:flex;align-items:center;justify-content:center}
+    .breath-ball{width:36px;height:36px;border-radius:50%;background:var(--accent);}
+
+    @media(max-width:760px){.grid{grid-template-columns:1fr}.logo{width:40px;height:40px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">SB</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav aria-label="Primary navigation">
+      <a href="index.html">Home</a>
+      <a href="events.html">Gatherings</a>
+      <a href="private-sessions.html">Private</a>
+      <a href="pricing.html">Rates</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQ</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <div class="hero-card reveal" data-reveal>
+          <h1>How we shape sound into a steady pause</h1>
+          <p class="lead">We create guided gatherings that use tuned resonance, space for the breath, and framed intention. Sessions are intentionally structured for clarity and gentle reorganization of attention.</p>
+          <div style="margin-top:16px">
+            <a class="cta" href="book.html">Reserve a Spot</a>
+            <button class="btn" id="tryNowBtn" style="margin-left:10px">Try a short exercise</button>
+          </div>
+        </div>
+
+        <div class="grid" style="margin-top:18px">
+          <div class="panel reveal" data-reveal>
+            <h3 style="margin-top:0">Our approach</h3>
+            <p class="meta">A synthesis of tuned instruments, silence, and breath-led pacing</p>
+            <p>Sessions are composed into three parts: arrival and grounding, layered resonance, and a gentle re-integration. The facilitator holds a clear pacing so you can surrender into listening without needing to direct the process.</p>
+          </div>
+
+          <aside class="panel reveal" data-reveal>
+            <h4 style="margin-top:0">Facilitator</h4>
+            <p class="meta">Certified sound practitioner & somatic guide</p>
+            <p>Lead facilitator brings 12 years of practice in vibrational arts and trauma-aware facilitation. Every session includes an orientation and a closing check-in.</p>
+            <div style="margin-top:12px"><strong>Contact:</strong> <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+            <div style="font-size:13px;color:var(--muted);margin-top:8px">Note: Please review the contraindications before booking.</div>
+          </aside>
+        </div>
+
+        <section class="panel reveal" data-reveal style="margin-top:22px">
+          <h3 style="margin-top:0">What to expect</h3>
+          <ul>
+            <li>Arrival & settling—10–15 minutes for orientation</li>
+            <li>Resonant phase—40–55 minutes of constrained soundscapes</li>
+            <li>Return—10 minutes of re-acclimation and journaling prompts</li>
+          </ul>
+          <p style="font-size:13px;color:var(--muted);margin-top:8px">Contraindications: If you are pregnant, have a pacemaker or implanted electronic device, uncontrolled epilepsy, or are in acute psychiatric distress, sound events may not be appropriate. Consult your physician and contact us at <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> for guidance.</p>
+        </section>
+
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div style="max-width:960px;margin:0 auto;padding:12px 20px">Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    <div style="font-size:13px;color:var(--muted)">© <span id="year"></span> {{BUSINESS_NAME}} — Small-group gatherings & private VIP days</div>
+  </footer>
+
+  <!-- Modal for Try it now -->
+  <div class="modal-backdrop" id="modal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h3 id="modalTitle">A 3-minute guided pause</h3>
+      <p style="margin:6px 0 12px;color:var(--muted)">Select a short practice — breath, intention, or a micro-journal prompt. No audio required.</p>
+      <div id="exerciseArea">
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <button class="btn" data-mode="breath">Breathing</button>
+          <button class="btn" data-mode="intention">Set an intention</button>
+          <button class="btn" data-mode="journal">Micro-journal</button>
+        </div>
+
+        <div id="practice" style="margin-top:14px"></div>
+      </div>
+
+      <div style="margin-top:14px;text-align:right">
+        <button class="btn" id="closeModal">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Scroll reveal
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+      const revealEls = document.querySelectorAll('[data-reveal]');
+      if(prefersReduced){
+        revealEls.forEach(el=>el.classList.add('visible'));
+        return;
+      }
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{
+          if(e.isIntersecting){
+            e.target.classList.add('visible');
+            io.unobserve(e.target);
+          }
+        });
+      },{threshold:0.12});
+      revealEls.forEach(el=>io.observe(el));
+    })();
+
+    // Modal guided exercise
+    (function(){
+      const modal = document.getElementById('modal');
+      const tryBtn = document.getElementById('tryNowBtn');
+      const closeBtn = document.getElementById('closeModal');
+      const practice = document.getElementById('practice');
+
+      tryBtn.addEventListener('click',()=>{ modal.style.display='flex'; practice.innerHTML=''; });
+      closeBtn.addEventListener('click',()=>{ stopAll(); modal.style.display='none'; });
+
+      document.querySelectorAll('#exerciseArea button[data-mode]').forEach(btn=>{
+        btn.addEventListener('click',()=>startMode(btn.dataset.mode));
+      });
+
+      let intervalId=null, osc=null, audioCtx=null;
+
+      function stopAll(){
+        if(intervalId) clearInterval(intervalId); intervalId=null;
+        if(osc){osc.stop(); osc=null}
+        if(audioCtx){audioCtx.close(); audioCtx=null}
+      }
+
+      function startMode(mode){ stopAll(); practice.innerHTML='';
+        if(mode==='breath') renderBreath();
+        if(mode==='intention') renderIntention();
+        if(mode==='journal') renderJournal();
+      }
+
+      function renderBreath(){
+        const container = document.createElement('div');
+        container.innerHTML = '<div class="breath-circle"><div class="breath-ball" id="ball"></div></div><div style="text-align:center;color:var(--muted)"><div id="phase">Prepare</div><div id="count" style="font-weight:700;margin-top:8px">0</div></div>';
+        practice.appendChild(container);
+        let phaseIndex=0; // 0 inhale 1 hold 2 exhale 3 hold
+        const sequence=[{label:'Breathe in',secs:4},{label:'Hold',secs:4},{label:'Breathe out',secs:6},{label:'Rest',secs:4}];
+        let sec=sequence[phaseIndex].secs;
+        const ball = document.getElementById('ball');
+        const phaseLabel = document.getElementById('phase');
+        const countLabel = document.getElementById('count');
+
+        // gentle oscillator for tactile sense (optional)
+        try{ audioCtx = new (window.AudioContext||window.webkitAudioContext)(); osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type='sine'; osc.frequency.value=220; gain.gain.value=0.0005; osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); }catch(e){audioCtx=null}
+
+        phaseLabel.textContent = sequence[phaseIndex].label;
+        countLabel.textContent = sec;
+        intervalId = setInterval(()=>{
+          sec--; if(sec<=0){ phaseIndex=(phaseIndex+1)%sequence.length; sec=sequence[phaseIndex].secs; phaseLabel.textContent=sequence[phaseIndex].label; }
+          countLabel.textContent=sec;
+          // animate ball
+          const phase = sequence[phaseIndex].label;
+          if(phase==='Breathe in'){ ball.style.transform='scale(2)'} else if(phase==='Breathe out'){ ball.style.transform='scale(0.6)'} else { ball.style.transform='scale(1)'}
+        },1000);
+      }
+
+      function renderIntention(){
+        const el = document.createElement('div');
+        el.innerHTML = '<p style="color:var(--muted)">Take 90 seconds. Read each prompt and choose one to carry into the day.</p><ul><li>What quality do I want to cultivate today?</li><li>What small action would align with that quality?</li><li>How will I notice that I practiced it?</li></ul><div style="margin-top:8px"><button class="btn primary" id="chooseIntent">Choose one</button></div><div id="intentResult" style="margin-top:10px;font-weight:600"></div>';
+        practice.appendChild(el);
+        document.getElementById('chooseIntent').addEventListener('click',()=>{
+          const prompts=['gentleness','clear boundaries','focused care','simple curiosity','steady presence'];
+          const pick=prompts[Math.floor(Math.random()*prompts.length)];
+          document.getElementById('intentResult').textContent = 'Chosen: ' + pick + ' — keep it in view for the next hour.';
+        });
+      }
+
+      function renderJournal(){
+        const el = document.createElement('div');
+        el.innerHTML = '<p style="color:var(--muted)">A tiny writing prompt — 2 minutes. Type freely.</p><textarea id="micro" style="width:100%;height:90px;border:1px solid #e9e1d8;border-radius:8px;padding:8px"></textarea><div style="margin-top:8px;text-align:right"><button class="btn primary" id="saveMicro">Save</button></div><div id="saved" style="margin-top:8px;color:var(--muted)"></div>';
+        practice.appendChild(el);
+        document.getElementById('saveMicro').addEventListener('click',()=>{
+          const val = document.getElementById('micro').value.trim();
+          document.getElementById('saved').textContent = val? 'Saved locally to this session.' : 'No text entered.';
+        });
+      }
+
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Investment — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f0f10;--panel:#fff;--muted:#8a8a8a;--accent:#b98cff;--glass:rgba(255,255,255,0.06);--max:1100px}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--panel);background:linear-gradient(180deg,#0b0b0c 0%,#0f0f10 60%);-webkit-font-smoothing:antialiased}
+    .wrap{max-width:var(--max);margin:36px auto;padding:28px}
+    nav{display:flex;gap:18px;align-items:center;margin-bottom:28px}
+    nav a{color:rgba(255,255,255,0.85);text-decoration:none;padding:8px 12px;border-radius:8px}
+    nav a.active{background:rgba(255,255,255,0.04)}
+    header.hero{display:grid;grid-template-columns:1fr 420px;gap:36px;align-items:center;margin-bottom:36px}
+    .hero-left h1{font-size:clamp(22px,3.6vw,36px);margin:0 0 8px}
+    .hero-left p{margin:0;color:var(--muted)}
+    .card{background:var(--glass);padding:20px;border-radius:14px;backdrop-filter:blur(6px);box-shadow:0 6px 30px rgba(0,0,0,0.45)}
+    .pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:22px 0}
+    .price{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:18px;border-radius:12px}
+    .price h3{margin:0 0 8px;font-size:18px}
+    .price p{margin:0 0 12px;color:var(--muted);font-size:13px}
+    .price .rate{font-weight:700;font-size:20px}
+    .muted{color:var(--muted);font-size:14px}
+    .testimonial{display:flex;gap:12px;align-items:flex-start}
+    .avatar{width:56px;height:56px;border-radius:12px;flex:0 0 56px;overflow:hidden;background:linear-gradient(135deg,#e8d6ff,#f7f0ff);display:flex;align-items:center;justify-content:center}
+    .testimonial p{margin:0;color:var(--muted)}
+    footer{margin-top:30px;color:var(--muted);font-size:13px}
+    .cta{display:inline-block;margin-top:12px;background:var(--accent);color:#0b0b0c;padding:10px 16px;border-radius:10px;text-decoration:none;font-weight:600}
+    form.inline{display:flex;gap:8px;margin-top:14px}
+    input,select,textarea{padding:10px;border-radius:8px;border:none;font-size:14px}
+    input[type="email"]{flex:1}
+    .note{font-size:12px;color:var(--muted);margin-top:8px}
+    @media (max-width:880px){header.hero{grid-template-columns:1fr;}
+      .pricing-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="specialties.html">Work With Me</a>
+      <a href="fees.html" class="active">Investment</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+
+    <header class="hero">
+      <div class="hero-left">
+        <h1>Care you can afford to begin — thoughtful pricing for private practice therapy</h1>
+        <p>I’m {{THERAPIST_NAME}}, a licensed clinician ({{LICENSE}}) in {{STATE}}. I offer time-limited packages and open-ended therapy depending on your needs. Below are typical investments and options; if you need adjustments, I offer a limited sliding scale and brief consults to find the right fit.</p>
+
+        <div class="card" style="margin-top:18px">
+          <div class="muted">Typical modalities</div>
+          <div style="font-weight:700;margin-top:6px">{{MODALITIES}}</div>
+          <a href="book.html" class="cta">{{PRIMARY_CTA_LABEL}}</a>
+          <div class="note">Not a substitute for crisis care. If you are in danger or need immediate help, call local emergency services or a crisis line.</div>
+        </div>
+      </div>
+
+      <div>
+        <!-- Unique hero SVG for fees page: geometric gallery tile -->
+        <svg width="420" height="300" viewBox="0 0 420 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="abstract tiles">
+          <rect width="420" height="300" rx="18" fill="#0e0e10" />
+          <g fill-opacity="0.95">
+            <rect x="18" y="18" width="180" height="120" rx="12" fill="#1a1a1b" />
+            <rect x="222" y="18" width="180" height="120" rx="12" fill="#2a1b3a" />
+            <rect x="18" y="162" width="384" height="120" rx="12" fill="#23192a" />
+            <circle cx="312" cy="222" r="28" fill="#b98cff" />
+            <ellipse cx="86" cy="96" rx="28" ry="20" fill="#ffd8ff" opacity="0.08" />
+          </g>
+        </svg>
+      </div>
+    </header>
+
+    <section class="card">
+      <h2 style="margin:0 0 8px">Pricing options and what they include</h2>
+      <p class="muted" style="margin:0 0 16px">Packages are designed to support short-term goals, transitions, or ongoing relief. Sessions are 50 minutes unless noted.</p>
+
+      <div class="pricing-grid">
+        <div class="price">
+          <h3>Starter Support Package — "Begin"</h3>
+          <p class="muted">4 sessions focused on immediate tools and stabilization.</p>
+          <div class="rate">$480 — $560 (package)</div>
+          <p class="muted">Includes an intake planning call and a short emailed summary of resources.</p>
+        </div>
+
+        <div class="price">
+          <h3>Foundations Therapy Series — "Grow"</h3>
+          <p class="muted">8–12 sessions for deeper work on anxiety, life transitions, or relationship patterns.</p>
+          <div class="rate">$140 / session or $1,560 prepaid</div>
+          <p class="muted">Weekly cadence recommended for sustained progress.</p>
+        </div>
+
+        <div class="price">
+          <h3>Deep Work Intensive — "Reconnect"</h3>
+          <p class="muted">3-hour focused day for concentrated therapeutic processing and planning.</p>
+          <div class="rate">$720 (single session)</div>
+          <p class="muted">Useful for focused milestones or when continuity is limited.</p>
+        </div>
+      </div>
+
+      <p class="muted">I maintain a small number of reduced-fee slots. If cost is a barrier, please <a href="contact.html" style="color:#fff;text-decoration:underline">reach out</a> — we can often craft a short plan that fits your situation. Insurance processing may be possible with superbills; I can provide them but do not bill insurance directly from this practice.</p>
+    </section>
+
+    <section style="margin-top:18px" class="card">
+      <h3 style="margin:0 0 10px">How sessions and payment work</h3>
+      <ol class="muted" style="margin:0 0 12px;padding-left:18px">
+        <li>Begin with a 20-minute brief consult to confirm fit (free or low-cost as available).</li>
+        <li>Intake session to map goals and create a plan.</li>
+        <li>Packages prepaid save a modest amount and encourage continuity; single sessions billed per appointment.</li>
+      </ol>
+      <a href="book.html" class="cta">Schedule a consult</a>
+    </section>
+
+    <section style="margin-top:18px" class="card">
+      <h3 style="margin:0 0 10px">What others have said</h3>
+      <div class="testimonial" style="margin-top:12px">
+        <div class="avatar" aria-hidden>
+          <!-- small avatar svg unique to this page -->
+          <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" rx="8" fill="#f4ebff"/><circle cx="20" cy="14" r="7" fill="#e5c8ff"/><rect x="8" y="24" width="24" height="8" rx="4" fill="#e0bfff"/></svg>
+        </div>
+        <div>
+          <strong style="display:block">Julia, client</strong>
+          <p class="muted">"In three focused sessions I felt seen and left with tools that actually fit my life—gentle, practical, and steady."</p>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:18px" class="card">
+      <h3 style="margin:0 0 8px">Quick questions</h3>
+      <p class="muted" style="margin:0">Can I use insurance? I provide superbills on request; currently I do not bill insurance directly. For more, see <a href="faq.html" style="color:#fff;text-decoration:underline">full FAQs</a>.</p>
+    </section>
+
+    <section style="margin-top:18px" class="card">
+      <h3 style="margin:0 0 8px">Get the pricing guide</h3>
+      <p class="muted">Sign up for a short PDF that outlines what to expect in the first three sessions and how to prepare.</p>
+      <form class="inline" action="" onsubmit="event.preventDefault();alert('Thanks — a guide will be sent to ' + (document.getElementById('email').value || 'your inbox'))">
+        <input id="email" type="email" placeholder="your email" required />
+        <button class="cta" type="submit">Send the guide</button>
+      </form>
+      <div class="note">By sharing your email you agree to occasional practice updates. Privacy and confidentiality are respected; see footer for details.</div>
+    </section>
+
+    <footer>
+      <div class="muted">Confidentiality: Communications through this website are not secure therapy records. Once you become a client, I will review limits to confidentiality, record-keeping, and your rights. Scope: I provide psychotherapy and supportive counseling; I do not provide emergency services. If you are experiencing a crisis, call 911 or your local emergency number, or contact your nearest crisis center.</div>
+      <div style="margin-top:8px">Contact: {{EMAIL}} • {{PHONE}} • {{CITY}}, {{STATE}}</div>
+    </footer>
+  </div>
+</body>
+</html>

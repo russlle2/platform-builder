@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfcfd;--muted:#68717a;--accent:#2d6fa6;--card:#ffffff;--radius:12px}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#102025;background:var(--bg)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:linear-gradient(180deg,rgba(255,255,255,.6),transparent)}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#4aa0d5);display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none;font-weight:600}
+    .cta{background:var(--accent);color:#fff;padding:8px 12px;border-radius:8px;text-decoration:none}
+    .container{max-width:920px;margin:28px auto;padding:24px}
+    .hero{display:grid;grid-template-columns:1fr;gap:18px;align-items:center}
+    .card{background:var(--card);border-radius:var(--radius);box-shadow:0 6px 18px rgba(15,20,20,0.06);padding:20px}
+    h1{margin:0 0 6px;font-size:26px}
+    p.lead{margin:0;color:var(--muted)}
+    .two{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px}
+    aside .card{position:sticky;top:22px}
+    label{display:block;margin:10px 0 6px;font-weight:600}
+    input[type=text],textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid #e3e7ea}
+    button{background:var(--accent);color:white;border:0;padding:10px 12px;border-radius:8px;cursor:pointer}
+    footer{padding:28px;text-align:center;color:var(--muted);font-size:13px}
+    .micro{display:flex;gap:10px;flex-wrap:wrap}
+    .chip{background:#f6fbff;padding:10px;border-radius:10px;border:1px solid #e8f3fb;color:#094a66}
+    /* modal */
+    .overlay{position:fixed;inset:0;background:rgba(6,10,12,0.4);display:none;align-items:center;justify-content:center;z-index:60}
+    .modal{background:white;padding:18px;border-radius:12px;width:720px;max-width:94%;box-shadow:0 20px 40px rgba(8,12,16,0.28)}
+    .modal header{display:flex;justify-content:space-between;align-items:center}
+    .breath-circle{width:140px;height:140px;border-radius:999px;background:linear-gradient(135deg,#e6f4fb,#d6effa);margin:auto;display:flex;align-items:center;justify-content:center;font-weight:700;color:#094a66}
+    .steps{display:flex;gap:8px;margin-top:12px}
+    .wizard-progress{display:flex;gap:6px}
+    .wizard-step{flex:1;height:8px;background:#eef3f5;border-radius:6px}
+    .summary{white-space:pre-wrap;background:#f8f9fa;padding:10px;border-radius:8px;border:1px dashed #e3e7ea;margin-top:8px}
+    @media(max-width:840px){.two{grid-template-columns:1fr}.aside{order:-1}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">TP</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Who I Am</a>
+      <a href="specialties.html">Areas I Work With</a>
+      <a href="approach.html">How I Work</a>
+      <a href="book.html" class="cta">{{PRIMARY_CTA_LABEL}}</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="hero card">
+      <div>
+        <h1>About the clinician</h1>
+        <p class="lead">I offer dedicated, confidential support for people navigating life shifts, persistent worry, or transitions. My work is grounded in well-established clinical approaches and shaped around the practical realities you bring.</p>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:8px">
+        <button onclick="openExercise()">Try a brief exercise</button>
+        <a href="#wizard" style="align-self:center;color:var(--accent);font-weight:600">Start a quick intake</a>
+      </div>
+    </section>
+
+    <div class="two">
+      <div>
+        <section class="card">
+          <h2>Clinical orientation</h2>
+          <p style="color:var(--muted)">I combine cognitive, relational, and behavioral strategies to support clearer choices and steadier emotional balance. Treatment is collaborative: we set small, measurable steps and re-evaluate what helps across sessions.</p>
+
+          <h3 style="margin-top:14px">Confidentiality & limits</h3>
+          <p style="color:var(--muted);font-size:14px">Clinical conversations are treated as private. Mandatory reporting and safety concerns (imminent harm to self or others) are exceptions where I must act to ensure safety. This service is not crisis management; if you are in immediate danger call emergency services or a local crisis line.</p>
+        </section>
+
+        <section class="card" id="wizard" style="margin-top:14px">
+          <h3>Pre-consultation reflection (self-screening)</h3>
+          <p style="color:var(--muted)">A short set of guided prompts to help you notice patterns and prepare questions for a first conversation. This is not a diagnosis—it's a tool for clarity.</p>
+
+          <div id="wizardApp">
+            <div class="wizard-card">
+              <div class="wizard-progress" id="progress"></div>
+              <div id="qArea" style="margin-top:12px"></div>
+              <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
+                <button id="prevBtn" onclick="wizardPrev()" style="display:none;background:#f1f5f7;color:#064a66">Back</button>
+                <button id="nextBtn" onclick="wizardNext()">Next</button>
+                <button id="doneBtn" onclick="wizardFinish()" style="display:none">Finish &amp; Copy</button>
+              </div>
+              <div id="summary" class="summary" style="display:none"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card" style="margin-top:14px">
+          <h3>Practical support between sessions</h3>
+          <p class="lead">When helpful, I offer short, structured check-ins and simple practice tasks you can use between sessions. These are intended to support skill building, not to replace therapy time.</p>
+          <div class="micro" style="margin-top:10px">
+            <div class="chip">Weekly reflective prompts</div>
+            <div class="chip">Brief skills practice</div>
+            <div class="chip">Private scheduling</div>
+          </div>
+        </section>
+      </div>
+
+      <aside class="aside">
+        <div class="card">
+          <h3>Membership-style support</h3>
+          <p style="color:var(--muted)">Flexible monthly access to scheduled sessions and brief check-ins with steady clinical planning. To learn more, please book a consultation.</p>
+          <div style="margin-top:12px"><a class="cta" href="book.html">Request a consult</a></div>
+
+          <h4 style="margin-top:14px">Quick contact</h4>
+          <div style="color:var(--muted);font-size:14px">Phone: {{PHONE}}<br/>Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a><br/>Location: {{CITY}}, {{STATE}}</div>
+        </div>
+      </aside>
+    </div>
+
+  </main>
+
+  <footer>
+    <div style="max-width:920px;margin:0 auto">
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+      <div style="margin-top:6px;color:var(--muted)">Confidential care within agreed clinical limits. If you are in crisis, call local emergency services or a crisis line.</div>
+    </div>
+  </footer>
+
+  <div class="overlay" id="overlay">
+    <div class="modal" role="dialog" aria-modal="true">
+      <header>
+        <div style="font-weight:700">Guided practice</div>
+        <button onclick="closeExercise()">Close</button>
+      </header>
+      <div style="margin-top:12px;display:grid;grid-template-columns:1fr 240px;gap:12px">
+        <div>
+          <p style="color:var(--muted)">Choose a short practice to try now. These are simple, grounding skills you can use in daily life.</p>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button onclick="startBreath()">Breathing</button>
+            <button onclick="startJournal()">Journaling</button>
+            <button onclick="startIntention()">Set an intention</button>
+          </div>
+
+          <div id="exerciseArea" style="margin-top:14px"></div>
+        </div>
+        <div>
+          <div style="font-weight:700;margin-bottom:8px">Quick instructions</div>
+          <ul style="color:var(--muted);padding-left:18px">
+            <li>Choose one short practice.</li>
+            <li>Follow the prompts at your own pace — there's no wrong way.</li>
+            <li>Use this as a small reset; it's not a substitute for therapy.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Self-screening wizard ---
+    (function(){
+      const questions = [
+        {id:'q1',text:'What brings you to consider therapy now? (brief phrase)'} ,
+        {id:'q2',text:'How long have these concerns affected you?'} ,
+        {id:'q3',text:'What changes would feel most meaningful in the next 3 months?'} ,
+        {id:'q4',text:'What strategies have helped you in the past?'} ,
+        {id:'q5',text:'What are your most important values or priorities right now?'}
+      ];
+      let idx=0;const answers={};
+      const qArea=document.getElementById('qArea');
+      const progress=document.getElementById('progress');
+      function renderProgress(){progress.innerHTML='';questions.forEach((q,i)=>{const d=document.createElement('div');d.className='wizard-step';d.style.opacity= i<=idx?1:0.35;progress.appendChild(d)})}
+      function render(){renderProgress();qArea.innerHTML='';const q=questions[idx];const label=document.createElement('label');label.textContent=q.text;const ta=document.createElement('textarea');ta.rows=3;ta.value=answers[q.id]||'';ta.oninput=(e)=>answers[q.id]=e.target.value;qArea.appendChild(label);qArea.appendChild(ta);document.getElementById('prevBtn').style.display= idx? 'inline-block':'none';document.getElementById('nextBtn').style.display= idx<questions.length-1? 'inline-block':'none';document.getElementById('doneBtn').style.display= idx===questions.length-1? 'inline-block':'none';}
+      window.wizardNext=function(){idx=Math.min(questions.length-1,idx+1);render()}
+      window.wizardPrev=function(){idx=Math.max(0,idx-1);render()}
+      window.wizardFinish=function(){const summaryEl=document.getElementById('summary');let out='Pre-consultation summary:\n\n';questions.forEach(q=>{out+=q.text+"\n"+ (answers[q.id]||'-') +"\n\n"});out+='Questions I want to bring:\n- ';summaryEl.textContent=out;summaryEl.style.display='block';navigator.clipboard?.writeText(out).catch(()=>{});}
+      render();
+    })();
+
+    // --- Guided exercise modal ---
+    function openExercise(){document.getElementById('overlay').style.display='flex'}
+    function closeExercise(){document.getElementById('overlay').style.display='none'; stopBreath();}
+
+    // Breathing animation
+    let breathTimer=null;function startBreath(){const area=document.getElementById('exerciseArea');area.innerHTML='';const circle=document.createElement('div');circle.className='breath-circle';circle.textContent='Breathe';area.appendChild(circle);
+      let phase=0;const phases=[{label:'Inhale',ms:4000,scale:1.2},{label:'Hold',ms:1500,scale:1.2},{label:'Exhale',ms:5000,scale:0.7},{label:'Rest',ms:1500,scale:0.9}];
+      function step(){const p=phases[phase%phases.length];circle.textContent=p.label;circle.style.transition='transform '+(p.ms/1000)+'s ease-in-out';circle.style.transform='scale('+p.scale+')';phase++;breathTimer=setTimeout(step,p.ms)}
+      step();
+    }
+    function stopBreath(){if(breathTimer)clearTimeout(breathTimer);breathTimer=null}
+
+    // Journaling prompt
+    function startJournal(){stopBreath();const area=document.getElementById('exerciseArea');area.innerHTML='';const prompt=document.createElement('div');prompt.innerHTML='<div style="font-weight:700;margin-bottom:8px">A short journaling prompt</div>';const q=document.createElement('div');q.style.color='#475b63';q.textContent='Write for 6 minutes about a small thing that gave you relief recently. What happened? How did it feel?';prompt.appendChild(q);
+      const ta=document.createElement('textarea');ta.rows=6;ta.style.marginTop='8px';prompt.appendChild(ta);
+      const start=document.createElement('button');start.textContent='Start 6-minute timer';start.style.marginTop='8px';start.onclick=function(){let t=360;start.disabled=true;const tdiv=document.createElement('div');tdiv.style.marginTop='8px';prompt.appendChild(tdiv);const interval=setInterval(()=>{t--;const m=Math.floor(t/60);const s=t%60;tdiv.textContent='Time left: '+m+':'+(s<10?'0'+s:s);if(t<=0){clearInterval(interval);start.disabled=false;tdiv.textContent='Done — you can review your notes.';}},1000);};
+      prompt.appendChild(start);area.appendChild(prompt);
+    }
+
+    // Intention setting
+    function startIntention(){stopBreath();const area=document.getElementById('exerciseArea');area.innerHTML='';const h=document.createElement('div');h.style.fontWeight='700';h.textContent='Set a short intention';const form=document.createElement('div');form.style.marginTop='8px';const inp=document.createElement('input');inp.type='text';inp.placeholder='A brief intention (e.g., "Listen to my needs")';inp.style.width='100%';const save=document.createElement('button');save.textContent='Save to note';save.style.marginTop='8px';save.onclick=function(){const note='Intention: '+(inp.value||'—');const noteBox=document.createElement('div');noteBox.style.marginTop='8px';noteBox.className='summary';noteBox.textContent=note;form.appendChild(noteBox);};form.appendChild(inp);form.appendChild(save);area.appendChild(h);area.appendChild(form);}
+  </script>
+</body>
+</html>

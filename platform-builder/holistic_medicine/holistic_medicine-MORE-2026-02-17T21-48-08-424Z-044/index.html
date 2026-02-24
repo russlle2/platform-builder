@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{BUSINESS_NAME}} — gentle integrative guidance</title>
+  <meta name="description" content="Practical integrative care that honours the whole you. Short cycles, reflective practice, and clear next steps.">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand">
+      <div class="logo-mark" aria-hidden="true"></div>
+      <div class="brand-text">
+        <h1>{{BUSINESS_NAME}}</h1>
+        <p class="tagline">{{TAGLINE}}</p>
+      </div>
+    </div>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Conditions</a>
+      <a href="approach.html">Method</a>
+      <a href="pricing.html">Rates</a>
+      <a href="about.html">Story</a>
+      <a href="book.html" class="cta">{{PRIMARY_CTA_LABEL}}</a>
+      <a href="contact.html" class="muted">Reach</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero split-diagonal">
+      <div class="hero-left">
+        <h2 class="hero-title">A compass for everyday well-being</h2>
+        <p class="hero-sub">We listen, map, and make small, clear moves you can actually keep. You are more than a symptom chart — we build plans that meet your life.</p>
+        <p class="hero-actions">
+          <a class="btn primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <button class="btn outline" id="open-breathing">Try a guided breath</button>
+        </p>
+      </div>
+      <div class="hero-right">
+        <div class="pattern-holder" role="img" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <section class="gallery" aria-label="Snapshots">
+      <h3>Small practices, steady change</h3>
+      <ul class="shots">
+        <li><strong>Short cycles</strong><span>Focused 4–8 week steps.</span></li>
+        <li><strong>Reflective tools</strong><span>Journaling prompts and habit anchors.</span></li>
+        <li><strong>Blended care</strong><span>Integrative treatments and lifestyle plans.</span></li>
+      </ul>
+    </section>
+
+    <section class="what-to-expect" id="inventory">
+      <h3>Whole-person inventory</h3>
+      <p>Check areas that feel most relevant, then click "Generate". We'll suggest a consultation agenda and a follow-up cadence that fits your priorities.</p>
+      <form id="inventory-form" class="inventory-form">
+        <fieldset>
+          <legend>Choose areas to include</legend>
+          <label><input type="checkbox" name="areas" value="sleep"> Sleep & rest</label>
+          <label><input type="checkbox" name="areas" value="energy"> Energy & fatigue</label>
+          <label><input type="checkbox" name="areas" value="digestion"> Digestion</label>
+          <label><input type="checkbox" name="areas" value="movement"> Movement & strength</label>
+          <label><input type="checkbox" name="areas" value="mood"> Mood & resilience</label>
+          <label><input type="checkbox" name="areas" value="stress"> Stress & recovery</label>
+          <label><input type="checkbox" name="areas" value="relationships"> Relationships & support</label>
+          <label><input type="checkbox" name="areas" value="work"> Work & rhythm</label>
+          <label><input type="checkbox" name="areas" value="environment"> Environment & sensory load</label>
+          <label><input type="checkbox" name="areas" value="meaning"> Meaning & priorities</label>
+        </fieldset>
+        <div class="inventory-actions">
+          <button type="button" class="btn" id="generate-agenda">Generate agenda</button>
+          <button type="button" class="btn outline" id="open-journal">Try a guided journal</button>
+        </div>
+      </form>
+      <div id="agenda-output" class="agenda-output" aria-live="polite"></div>
+    </section>
+
+    <section class="objections">
+      <h3>What to expect in your first visit</h3>
+      <ul>
+        <li><strong>Practical clarity:</strong> We translate context into a short, trackable plan.</li>
+        <li><strong>No overpromises:</strong> Educational, collaborative, and realistic guidance.</li>
+        <li><strong>Flexible cadence:</strong> From a single review to biweekly coaching—built around your life.</li>
+      </ul>
+    </section>
+
+    <section class="cta-band">
+      <div>
+        <h4>Ready to start a thoughtful step?</h4>
+        <p>Book a short consult to map priorities and leave with a next-step plan.</p>
+      </div>
+      <div>
+        <a class="btn primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div>
+      <p>{{BUSINESS_NAME}} — {{CITY}}, {{STATE}}</p>
+      <p>Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a> • Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+    </div>
+    <small>Educational resources only. Not a substitute for medical care.</small>
+  </footer>
+
+  <!-- Breathing modal -->
+  <div id="modal-breath" class="modal" aria-hidden="true">
+    <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="breath-title">
+      <button class="modal-close" id="close-breath">×</button>
+      <h4 id="breath-title">Guided breathing — 2 minutes</h4>
+      <div class="breath-visual" id="breath-visual" aria-hidden="true"></div>
+      <p id="breath-instruction">Get comfortable. Follow the circle as it expands and contracts.</p>
+      <div class="modal-actions">
+        <button class="btn" id="start-breath">Start</button>
+        <button class="btn outline" id="reset-breath">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Journaling modal -->
+  <div id="modal-journal" class="modal" aria-hidden="true">
+    <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="journal-title">
+      <button class="modal-close" id="close-journal">×</button>
+      <h4 id="journal-title">A short guided journaling prompt</h4>
+      <p class="lead">Three prompts, ten minutes. Write freely; aim for insight not perfection.</p>
+      <ol class="prompts">
+        <li>Where does your attention rest most days? (2 minutes)</li>
+        <li>Which small change would ease that attention? (4 minutes)</li>
+        <li>What would you do tomorrow to test that change? (4 minutes)</li>
+      </ol>
+      <textarea id="journal-text" placeholder="Write here — your answers will remain local to this browser." rows="6"></textarea>
+      <div class="modal-actions">
+        <button class="btn" id="save-journal">Save locally</button>
+        <button class="btn outline" id="clear-journal">Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

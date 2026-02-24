@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbf7f3;--card:#fffaf6;--accent:#8a5a3a;--muted:#7b6352;--ink:#342925;--radius:12px;--maxWidth:980px}
+    body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial;color:var(--ink)}
+    .wrap{max-width:var(--maxWidth);margin:0 auto;padding:28px}
+    header{display:flex;align-items:center;justify-content:space-between}
+    nav a{color:var(--muted);text-decoration:none;margin-right:14px}
+    nav a.active{color:var(--accent);font-weight:700}
+    .hero{margin-top:18px;padding:28px;border-radius:16px;background:linear-gradient(180deg,rgba(138,90,58,0.04),transparent)}
+    .hero h1{margin:0}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:18px}
+    .service{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 10px 24px rgba(52,41,37,0.05)}
+    .price{font-weight:700;color:var(--accent);margin-top:8px}
+    .muted{color:var(--muted)}
+    .cta{display:inline-block;padding:10px 12px;background:var(--accent);color:white;border-radius:10px;text-decoration:none;margin-top:12px}
+
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity 420ms ease,transform 420ms ease}
+    .reveal.revealed{opacity:1;transform:none}
+    @media (prefers-reduced-motion: reduce){.reveal{transition:none;opacity:1;transform:none}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <nav>
+          <a href="index.html">Hearth</a>
+          <a href="about.html">Who</a>
+          <a href="services.html" class="active">Offerings</a>
+          <a href="programs.html">Paths</a>
+          <a href="pricing.html">Invest</a>
+          <a href="testimonials.html">Voices</a>
+          <a href="book.html">Book</a>
+          <a href="contact.html">Connect</a>
+        </nav>
+      </div>
+      <div style="text-align:right">
+        <a href="book.html" class="cta">Start a session</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero reveal" aria-labelledby="offerings-heading">
+        <h1 id="offerings-heading">Offerings tuned to outcomes</h1>
+        <p class="muted">Choose a shape of work that fits your calendar and the change you want to make. All offerings center on outcomes, measurable checks, and repeatable habits.</p>
+      </section>
+
+      <section class="grid">
+        <article class="service reveal">
+          <h3>Pulse Session</h3>
+          <p class="muted">A focused 50-minute session to clarify a single outcome and create a one-week experiment.</p>
+          <div class="price">$120 — one-off</div>
+          <a class="cta" href="book.html">Book a Pulse</a>
+        </article>
+
+        <article class="service reveal">
+          <h3>Compass Series</h3>
+          <p class="muted">Four sessions across 6 weeks. We set a target, shape routines, and review progress.</p>
+          <div class="price">$420 — phased plan</div>
+          <a class="cta" href="book.html">Begin a Compass</a>
+        </article>
+
+        <article class="service reveal">
+          <h3>Anchor Subscription</h3>
+          <p class="muted">Monthly check-ins and lightweight accountability for steady integration.</p>
+          <div class="price">$160 / month — rolling</div>
+          <a class="cta" href="pricing.html">Explore Anchor</a>
+        </article>
+
+        <article class="service reveal">
+          <h3>Custom Intensive</h3>
+          <p class="muted">A bespoke block (half-day or full-day) for teams or personal resets. Pricing by scope.</p>
+          <div class="price">Starting at $850</div>
+          <a class="cta" href="contact.html">Inquire</a>
+        </article>
+      </section>
+
+      <section style="margin-top:20px" class="reveal card">
+        <h3>What to expect</h3>
+        <p class="muted">Sessions are practical: we set one or two simple practices, add a measurement method, and plan a short review. The aim is durable change without heavy overhead.</p>
+        <ul>
+          <li>Clear session notes and a short plan after each meeting</li>
+          <li>Tools you can use in under five minutes per day</li>
+          <li>Flexible follow-ups to fit travel and busy weeks</li>
+        </ul>
+        <a class="cta" href="book.html">Schedule a conversation</a>
+      </section>
+    </main>
+
+    <footer style="margin-top:28px;color:var(--muted);font-size:13px">
+      <div>Questions? Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    </footer>
+  </div>
+
+  <script>
+    (function(){
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var items = document.querySelectorAll('.reveal');
+      if(prefersReduced){ items.forEach(function(i){i.classList.add('revealed')}); return; }
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('revealed'); io.unobserve(e.target); } });
+      },{threshold:0.12});
+      items.forEach(function(i){ io.observe(i); });
+    })();
+  </script>
+</body>
+</html>

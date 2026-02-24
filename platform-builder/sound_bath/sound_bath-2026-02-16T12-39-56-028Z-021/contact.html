@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Contact — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{
+      --bg:#0f1221;
+      --muted:#9aa0b4;
+      --accent:#a57cff;
+      --accent-2:#7be5d4;
+      --card:#0f1724;
+      --glass:rgba(255,255,255,0.04);
+      --max-width:1100px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      color: #eaf1ff;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:linear-gradient(120deg, rgba(165,124,255,0.08), rgba(123,229,212,0.03));
+      background-color:var(--bg);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.45;
+    }
+    /* split diagonal layout */
+    .wrap{
+      max-width:var(--max-width);
+      margin:48px auto;
+      position:relative;
+      padding:48px;
+      display:grid;
+      grid-template-columns: 1fr 420px;
+      gap:32px;
+      align-items:start;
+    }
+    .diagonal{
+      position:absolute;
+      left:-6%;
+      top:0;
+      width:120%;
+      height:100%;
+      transform:skewY(-4deg);
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
+      pointer-events:none;
+      z-index:0;
+      border-radius:16px;
+      overflow:hidden;
+    }
+    header{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    .brand{font-weight:600;letter-spacing:0.08em}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-size:14px}
+    nav a:first-child{margin-left:0}
+
+    .hero{
+      padding:36px 40px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:12px;
+      position:relative;
+      overflow:hidden;
+      box-shadow: 0 6px 30px rgba(2,6,23,0.6);
+      z-index:2;
+    }
+    .hero h1{margin:0 0 10px 0;font-size:28px;font-weight:600;letter-spacing:0.02em}
+    .hero p.lead{margin:0;color:var(--muted);font-size:15px}
+
+    /* pattern SVG sits visually behind content */
+    .pattern-svg{position:absolute;right:-120px;top:-40px;width:520px;height:520px;opacity:0.12;mix-blend-mode:screen;z-index:1}
+
+    .side{
+      backdrop-filter: blur(6px);
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+      border-radius:12px;
+      padding:26px;
+      color:var(--muted);
+      box-shadow: 0 10px 30px rgba(2,6,23,0.6);
+      z-index:2;
+    }
+
+    .contact-card{display:flex;flex-direction:column;gap:12px}
+    .meta{font-size:13px}
+    .btn{
+      display:inline-block;padding:10px 16px;border-radius:10px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#071028;text-decoration:none;font-weight:600;margin-top:6px
+    }
+
+    .section{margin-top:26px;padding:24px;background:var(--glass);border-radius:10px}
+    .section h3{margin:0 0 8px 0;font-size:16px}
+    .muted{color:var(--muted);font-size:14px}
+
+    form label{display:block;margin-bottom:6px;font-size:13px}
+    form input, form textarea, form select{
+      width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;font-size:14px
+    }
+    form textarea{min-height:100px;resize:vertical}
+    .row{display:flex;gap:10px}
+    .col{flex:1}
+
+    footer{margin-top:36px;text-align:center;color:var(--muted);font-size:13px}
+
+    /* small screens */
+    @media(max-width:880px){
+      .wrap{grid-template-columns:1fr;padding:20px;margin:20px}
+      .pattern-svg{display:none}
+      nav a{display:none}
+    }
+
+    /* FAQ accordion */
+    .faq-item{border-top:1px solid rgba(255,255,255,0.02);padding:12px 0}
+    .faq-q{cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+    .faq-a{margin-top:8px;color:var(--muted);display:none}
+    .faq-item.open .faq-a{display:block}
+  </style>
+</head>
+<body>
+  <div class="diagonal" aria-hidden="true"></div>
+  <div class="wrap">
+    <header>
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="/index.html">Gatherings</a>
+        <a href="/events.html">Rhythms</a>
+        <a href="/private-sessions.html">Private</a>
+        <a href="/pricing.html">Invest</a>
+        <a href="/about.html">About</a>
+        <a href="/faq.html">Answers</a>
+        <a href="/book.html">Reserve</a>
+        <a href="/contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <svg class="pattern-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="g1" x1="0" x2="1">
+              <stop offset="0" stop-color="#a57cff" stop-opacity="0.9"/>
+              <stop offset="1" stop-color="#7be5d4" stop-opacity="0.8"/>
+            </linearGradient>
+            <pattern id="p1" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M0 10h20" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+              <path d="M10 0v20" stroke="rgba(255,255,255,0.02)" stroke-width="1"/>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#p1)"/>
+          <circle cx="30" cy="30" r="50" fill="url(#g1)" opacity="0.18"/>
+          <circle cx="170" cy="150" r="40" fill="#7be5d4" opacity="0.08"/>
+        </svg>
+
+        <h1>Reach the space — connect with {{BUSINESS_NAME}}</h1>
+        <p class="lead">A gentle invitation to ask, book, or inquire. We answer with care and clarity — short notes, true attention.</p>
+
+        <div class="section" style="margin-top:18px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+          <div>
+            <div class="meta">Phone</div>
+            <div class="muted">{{PHONE}}</div>
+          </div>
+          <div>
+            <div class="meta">Email</div>
+            <div class="muted">{{EMAIL}}</div>
+          </div>
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </section>
+
+      <section class="section" style="margin-top:20px">
+        <h3>When you write</h3>
+        <p class="muted">Tell us what you need — a seat at the next group sound bath, a private 1:1, or an inquiry about events and corporate wellness. Mention dates, accessibility requirements, and any sensory considerations.</p>
+      </section>
+
+      <section class="section" style="margin-top:18px">
+        <h3>How a message becomes a booking</h3>
+        <p class="muted">We typically reply within 48 hours. For immediate matters please call. Confirmations include arrival details, what to bring, and a short pre-session checklist.</p>
+      </section>
+
+      <section class="section" style="margin-top:18px">
+        <h3>FAQ highlight</h3>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggle(this)">
+            <div style="font-weight:600">What should I bring?</div>
+            <div class="muted">soft blanket, water, pillow</div>
+          </div>
+          <div class="faq-a">Bring a yoga mat or blanket, a small pillow, two layers to stay warm, and a bottle of water. We provide props on request. If you need assistance with mobility or seating, include that in your note.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggle(this)">
+            <div style="font-weight:600">Contraindications</div>
+            <div class="muted">safety first</div>
+          </div>
+          <div class="faq-a">Sound baths are generally gentle but not suitable for everyone. Please consult us if you are pregnant, have a pacemaker or tinnitus, epilepsy, or recent head injury. We can adapt or recommend alternatives.</div>
+        </div>
+      </section>
+    </main>
+
+    <aside class="side" role="complementary">
+      <div class="contact-card">
+        <div style="font-size:13px;color:var(--muted)">Contact the facilitator</div>
+        <div style="font-weight:700">{{FACILITATOR_NAME}}</div>
+        <div class="meta">Venue: {{VENUE_NAME}} — {{CITY}}, {{STATE}}</div>
+
+        <div style="margin-top:10px">
+          <a class="btn" href="/book.html">Reserve a place</a>
+        </div>
+
+        <form action="{{PRIMARY_CTA_URL}}" method="post" style="margin-top:16px">
+          <label for="name">Your name</label>
+          <input id="name" name="name" placeholder="First & last" required />
+
+          <label for="email" style="margin-top:8px">Email</label>
+          <input id="email" name="email" type="email" placeholder="you@example.com" required />
+
+          <div class="row" style="margin-top:8px">
+            <div class="col">
+              <label for="phone">Phone</label>
+              <input id="phone" name="phone" placeholder="{{PHONE}}" />
+            </div>
+            <div class="col">
+              <label for="type">I am enquiring about</label>
+              <select id="type" name="type">
+                <option>Next event ticket</option>
+                <option>Private 1:1 session</option>
+                <option>Couples / duo session</option>
+                <option>Corporate wellness</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+
+          <label for="message" style="margin-top:8px">Message</label>
+          <textarea id="message" name="message" placeholder="Dates, accommodations, questions..." required></textarea>
+
+          <button type="submit" class="btn" style="width:100%;margin-top:12px">Send message</button>
+        </form>
+
+        <div style="margin-top:18px;font-size:13px;color:var(--muted)">
+          <div style="font-weight:600">Quick links</div>
+          <div style="margin-top:8px"><a style="color:var(--muted);text-decoration:none" href="/events.html">Next event & schedule</a></div>
+          <div style="margin-top:6px"><a style="color:var(--muted);text-decoration:none" href="/pricing.html">Pricing & packages</a></div>
+        </div>
+      </div>
+
+      <div class="section" style="margin-top:18px">
+        <h3>Studio address</h3>
+        <div class="muted">{{VENUE_NAME}} — {{CITY}}, {{STATE}}</div>
+        <div style="margin-top:8px"><a class="btn" href="tel:{{PHONE}}">Call</a></div>
+      </div>
+
+      <div class="section" style="margin-top:18px">
+        <h3>Policy note</h3>
+        <div class="muted">Please include accessibility needs in your message. Cancellations <strong style="color:var(--accent)">48 hours</strong> in advance for refunds. We will respond to all booking inquiries within two business days.</div>
+      </div>
+    </aside>
+
+    <footer style="grid-column:1/-1">
+      <div class="muted">© {{BUSINESS_NAME}} — tuned gatherings and restorative sound baths. For calendar and tickets see the Events page. Next event: {{NEXT_EVENT_DATE}}</div>
+    </footer>
+  </div>
+
+  <script>
+    function toggle(el){
+      var item = el.parentNode;
+      item.classList.toggle('open');
+    }
+  </script>
+</body>
+</html>

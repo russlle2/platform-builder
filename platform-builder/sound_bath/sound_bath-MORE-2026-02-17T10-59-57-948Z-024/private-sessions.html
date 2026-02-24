@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Private Sessions — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f8fafb;--card:#fff;--muted:#60646b;--accent:#ff6b6b}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;color:#222;background:var(--bg)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;background:#fff;border-bottom:1px solid rgba(7,7,7,0.04)}
+    .logo{width:44px;height:44px;border-radius:9px;background:linear-gradient(135deg,#ffd8e6,#dfe6ff);display:grid;place-items:center;font-weight:800}
+    nav a{margin-left:16px;text-decoration:none;color:var(--muted);font-weight:600}
+
+    main{max-width:980px;margin:24px auto;padding:18px}
+    .grid{display:grid;grid-template-columns:1fr 380px;gap:18px}
+    .card{background:var(--card);padding:18px;border-radius:12px;border:1px solid rgba(10,10,10,0.03)}
+
+    h1{margin:0 0 8px}
+    p.lead{color:var(--muted);margin-top:0}
+
+    /* Planner */
+    .planner label{display:block;font-size:13px;margin-top:12px}
+    .planner input,.planner select,.planner textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(11,11,11,0.06);margin-top:8px}
+    .row{display:flex;gap:10px}
+    .small{flex:1}
+    .btn{display:inline-block;padding:10px 14px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-weight:800;text-decoration:none;cursor:pointer}
+    .secondary{background:#fff;border:1px solid rgba(11,11,11,0.06);color:var(--muted)}
+    pre.output{white-space:pre-wrap;background:#f6f8fb;padding:12px;border-radius:8px;border:1px dashed rgba(11,11,11,0.04);margin-top:12px}
+
+    .reveal{opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+
+    .disclaimer{font-size:13px;color:#7a1212;background:rgba(255,235,235,0.8);padding:8px;border-radius:8px;margin-top:12px}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="logo">PS</div>
+      <div><div style="font-weight:800">{{BUSINESS_NAME}}</div><div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div></div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="events.html">Gatherings</a>
+      <a href="private-sessions.html">Personal Sessions</a>
+      <a href="pricing.html">Rates</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="card reveal" aria-labelledby="ps-title">
+      <h1 id="ps-title">Private sound sessions</h1>
+      <p class="lead">Tailored, quieter, and paced for your attention. Private work is ideal when you want a focus, a ceremony, or a paced series with personal continuity.</p>
+      <p style="margin-top:12px"><a class="btn" href="{{PRIMARY_CTA_URL}}">Request a private</a></p>
+    </section>
+
+    <div class="grid">
+      <section class="card reveal" aria-labelledby="planner-title">
+        <h2 id="planner-title">Session Planner</h2>
+        <p class="muted">Build a short brief for your session. You can copy the plain-text summary and paste it into the booking form or an email to us.</p>
+        <form id="planner" class="planner" onsubmit="return false;">
+          <label>Session format</label>
+          <select id="format">
+            <option value="solo">Solo — one person</option>
+            <option value="duo">Duo — two people</option>
+            <option value="small-group">Small group (3–6)</option>
+            <option value="couple">Couple / partnered session</option>
+          </select>
+
+          <div class="row">
+            <div class="small">
+              <label>Length</label>
+              <select id="length"><option value="30">30 minutes</option><option value="45">45 minutes</option><option value="60" selected>60 minutes</option><option value="90">90 minutes</option></select>
+            </div>
+            <div class="small">
+              <label>Frequency</label>
+              <select id="frequency"><option value="one">One-off</option><option value="weekly">Weekly</option><option value="biweekly">Bi-weekly</option><option value="monthly">Monthly</option></select>
+            </div>
+          </div>
+
+          <label>Primary focus / intention</label>
+          <textarea id="intent" rows="3" placeholder="e.g., regain calm after travel; prepare for a presentation; help a loved one with sleep"></textarea>
+
+          <label>Preferred instruments (optional)</label>
+          <select id="palette">
+            <option value="bowls">Crystal & metal bowls</option>
+            <option value="gong">Gong & low tones</option>
+            <option value="chimes">Light chimes & overtone work</option>
+            <option value="voice">Voice-led tuning & breath</option>
+            <option value="adaptive">Allow practitioner to choose</option>
+          </select>
+
+          <label>Notes / Accessibility needs</label>
+          <input id="notes" placeholder="Sensitivity to loud bangs, prefer dim lights, need a chair" />
+
+          <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+            <button id="build" class="btn" type="button">Create summary</button>
+            <button id="copy" class="btn secondary" type="button">Copy summary</button>
+            <button id="prefill" class="btn secondary" type="button">Prefill booking</button>
+          </div>
+
+          <pre id="output" class="output" aria-live="polite">No summary yet — click \"Create summary\".</pre>
+        </form>
+
+        <div class="disclaimer">Contraindications: People with photosensitive epilepsy or certain cardiac implants should consult a clinician before attending. If you are pregnant, recently had surgery, or have active psychiatric crisis, please speak with your provider first.</div>
+      </section>
+
+      <aside class="card reveal" aria-labelledby="why-title">
+        <h3 id="why-title">How a private session works</h3>
+        <ol class="muted" style="padding-left:18px;margin:0">
+          <li>Short intake — clarify intent and comfort preferences.</li>
+          <li>Gentle orientation to lying or seated position and optional mindfulness anchor.</li>
+          <li>Sound work — paced to your nervous system, with quiet pauses and gradual close.</li>
+        </ol>
+
+        <h4 style="margin-top:12px">Contact</h4>
+        <p class="muted">Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a> to discuss specific needs. Private sessions can be in-studio or arranged in a home visit within {{CITY}} area.</p>
+      </aside>
+    </div>
+
+    <footer style="text-align:center;margin-top:18px;color:var(--muted)">Prices start from a cohort-aware baseline. Use the planner to create a booking brief and paste it into the request form.</footer>
+  </main>
+
+  <script>
+    // Reveal with reduced motion
+    document.addEventListener('DOMContentLoaded',function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const els = document.querySelectorAll('.reveal');
+      if(prefersReduced) els.forEach(e=>e.classList.add('visible'));
+      else if('IntersectionObserver' in window){
+        const io = new IntersectionObserver((entries,obs)=>{
+          entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('visible'); obs.unobserve(en.target);} });
+        },{threshold:0.12});
+        els.forEach(e=>io.observe(e));
+      } else els.forEach(e=>e.classList.add('visible'));
+
+      // Planner logic
+      const build = document.getElementById('build');
+      const copy = document.getElementById('copy');
+      const prefill = document.getElementById('prefill');
+      const output = document.getElementById('output');
+
+      function recommendInstruments(palette){
+        const map = {bowls:'singing bowls and soft mallets',gong:'gongs and deep drone',chimes:'light chimes and subtle bells',voice:'voice-tuning and breath guidance',adaptive:'a custom mix tuned to you'};
+        return map[palette]||'a gentle mix';
+      }
+
+      function suggestPackage(format,length,frequency){
+        const base = parseInt(length,10);
+        let label = base<=30? 'Brief Focus':'Standard Session';
+        if(format==='small-group') label = 'Shared Private — small group';
+        if(frequency==='weekly') label += ' (series)';
+        return label;
+      }
+
+      function buildSummary(){
+        const format = document.getElementById('format').value;
+        const length = document.getElementById('length').value;
+        const frequency = document.getElementById('frequency').value;
+        const intent = document.getElementById('intent').value.trim();
+        const palette = document.getElementById('palette').value;
+        const notes = document.getElementById('notes').value.trim();
+
+        const instruments = recommendInstruments(palette);
+        const packageName = suggestPackage(format,length,frequency);
+
+        const lines = [];
+        lines.push('Private session brief');
+        lines.push('---------------------');
+        lines.push('Requested format: '+format.replaceAll('-',' '));
+        lines.push('Length: '+length+' minutes');
+        lines.push('Frequency: '+frequency);
+        lines.push('Focus / intention: '+(intent||'Not specified'));
+        lines.push('Suggested sound palette: '+instruments);
+        lines.push('Suggested package: '+packageName);
+        if(notes) lines.push('Accessibility / notes: '+notes);
+        lines.push('Contact: '+{{EMAIL ? '"'+String('{{EMAIL}}')+'"' : '"'+'{{EMAIL}}'+'"'}});
+        lines.push('Location: '+{{CITY ? '"'+String('{{CITY}}')+'"' : '"'+'{{CITY}}'+'"'}}+', '+{{STATE ? '"'+String('{{STATE}}')+'"' : '"'+'{{STATE}}'+'"'}});
+
+        return lines.join('\n');
+      }
+
+      build.addEventListener('click',function(){
+        const summary = buildSummary();
+        output.textContent = summary;
+      });
+
+      copy.addEventListener('click',async function(){
+        const text = output.textContent;
+        if(!text || text.includes('No summary')) return alert('Create a summary first');
+        try{
+          await navigator.clipboard.writeText(text);
+          copy.textContent = 'Copied!';
+          setTimeout(()=>copy.textContent='Copy summary',1300);
+        }catch(e){
+          // fallback
+          const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); alert('Copied'); }catch(err){ alert('Copy failed') } ta.remove();
+        }
+      });
+
+      prefill.addEventListener('click',function(){
+        const summary = encodeURIComponent(buildSummary());
+        const url = '{{PRIMARY_CTA_URL}}?brief='+summary;
+        window.location.href = url;
+      });
+    });
+  </script>
+</body>
+</html>

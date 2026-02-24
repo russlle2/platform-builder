@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Programs — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fafdfa;--card:#fff;--accent:#1f6b53;--muted:#666}
+    html,body{margin:0;font-family:Inter,system-ui,Arial;background:var(--bg);color:#111}
+    header{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid #efe}
+    .logo{font-weight:800;color:var(--accent)}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none;font-weight:700}
+    main{max-width:980px;margin:24px auto;padding:0 18px}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
+    .card{background:var(--card);padding:16px;border-radius:10px;box-shadow:0 8px 24px rgba(10,10,10,0.03)}
+    h1{margin:0}
+    .programs-list{display:flex;flex-direction:column;gap:12px;margin-top:12px}
+    .program{padding:12px;border-radius:8px;background:#fff;border:1px solid #f0f5f0}
+    .muted{color:var(--muted)}
+    .btn{padding:8px 10px;background:var(--accent);color:#fff;border-radius:8px;border:none}
+    .pattern{position:fixed;inset:0;opacity:0.06;pointer-events:none;background-image:url('assets/img/pattern.svg');background-repeat:repeat}
+  </style>
+</head>
+<body>
+  <div class="pattern" aria-hidden="true"></div>
+  <header>
+    <div class="logo">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Why Us</a>
+      <a href="services.html">Sessions</a>
+      <a href="programs.html">Programs</a>
+      <a href="pricing.html">Rates</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="card" style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <h1>Short programs built for reliable adoption</h1>
+        <p class="muted" style="margin-top:8px">Three modular programs that combine a short implementation plan with a focus on repeatable micro-habits.</p>
+      </div>
+      <div>
+        <a class="btn" href="book.html">Start with a short day</a>
+      </div>
+    </section>
+
+    <div class="grid" style="margin-top:16px">
+      <div>
+        <section class="card">
+          <h3 style="margin-top:0">Programs</h3>
+          <div class="programs-list">
+            <div class="program">
+              <strong>Foundations Sprint — 2 weeks</strong>
+              <div class="muted">A compact sequence to install one core habit and three micro-habits.</div>
+              <div style="margin-top:8px"><a class="btn" href="book.html">Enrol</a></div>
+            </div>
+
+            <div class="program">
+              <strong>Energy Balancer — 4 weeks</strong>
+              <div class="muted">Redistribute energy across the day with simple, repeatable practices.</div>
+              <div style="margin-top:8px"><a class="btn" href="book.html">Enrol</a></div>
+            </div>
+
+            <div class="program">
+              <strong>Flow Weeks — 6 weeks</strong>
+              <div class="muted">Sustainable attention with short weekly commitments and accountability check-ins.</div>
+              <div style="margin-top:8px"><a class="btn" href="book.html">Enrol</a></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card" style="margin-top:16px">
+          <h4 style="margin-top:0">Printable 7-day habit challenge</h4>
+          <p class="muted">Pick a focus and intensity. Create a printable checklist for your week.</p>
+          <label class="muted">Focus</label>
+          <select id="progHabit">
+            <option value="Morning alignment">Morning alignment — 5 minutes</option>
+            <option value="Lunch walk">Lunch walk — 12 minutes</option>
+            <option value="Evening wind-down">Evening wind-down — 30 minutes</option>
+            <option value="Focus block">Focus block — 45 minutes</option>
+          </select>
+          <label class="muted" style="margin-top:8px;display:block">Intensity</label>
+          <select id="progIntensity">
+            <option value="gentle">Gentle</option>
+            <option value="steady">Steady</option>
+            <option value="bold">Bold</option>
+          </select>
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <button id="progBuild" class="btn">Generate</button>
+            <button id="progPrint" style="padding:8px;border-radius:8px;background:#444;color:#fff;border:none">Print</button>
+          </div>
+          <pre id="progOut" style="margin-top:10px;background:#fbfbfb;padding:8px;border-radius:8px;max-height:220px;overflow:auto"></pre>
+          <button id="progCopy" style="margin-top:8px;padding:8px;border-radius:8px;background:var(--accent);color:#fff;border:none">Copy checklist</button>
+        </section>
+
+      </div>
+
+      <aside>
+        <div class="card">
+          <h4 style="margin-top:0">Program approach</h4>
+          <ul style="color:var(--muted)">
+            <li>Measure one outcome</li>
+            <li>Design three micro-habits to move that outcome</li>
+            <li>Iterate weekly, keep what works</li>
+          </ul>
+          <div style="margin-top:12px"><a class="btn" href="pricing.html">See commitments</a></div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <h4 style="margin-top:0">Small-group option</h4>
+          <div class="muted">A lightly coached cohort that meets weekly to align and adjust.</div>
+        </div>
+      </aside>
+    </div>
+
+    <section style="margin-top:18px;padding:14px;border-radius:10px;background:#fff;display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <strong>Prefer a one-day intensive?</strong>
+        <div class="muted">Book a VIP Day and leave with a clear calendar for the next four weeks.</div>
+      </div>
+      <div><a class="btn" href="book.html">Schedule VIP Day</a></div>
+    </section>
+
+  </main>
+
+  <footer style="padding:18px;text-align:center;color:var(--muted)">
+    <div>{{BUSINESS_NAME}} — <a href="contact.html">Contact</a></div>
+  </footer>
+
+<script>
+  // Reuse habit builder logic with slightly different language
+  function buildSeven(habit,intensity){
+    var map = {gentle:1,steady:2,bold:3};
+    var reps = map[intensity] || 2;
+    var lines = [];
+    for(var i=1;i<=7;i++){
+      var day = 'Day '+i+': ['+ (i<=4? 'core' : 'maintenance') +'] ' + habit + ' — ' + reps + 'x';
+      lines.push(day);
+    }
+    return lines.join('\n');
+  }
+
+  document.getElementById('progBuild').addEventListener('click', function(){
+    var habit = document.getElementById('progHabit').value;
+    var intensity = document.getElementById('progIntensity').value;
+    document.getElementById('progOut').textContent = buildSeven(habit,intensity);
+  });
+
+  document.getElementById('progCopy').addEventListener('click', function(){
+    var txt = document.getElementById('progOut').textContent;
+    if(!txt) return alert('Generate the checklist first');
+    navigator.clipboard.writeText(txt).then(function(){alert('Checklist copied')});
+  });
+
+  document.getElementById('progPrint').addEventListener('click', function(){
+    var out = document.getElementById('progOut').textContent;
+    if(!out) return alert('Generate the checklist first');
+    var w = window.open('', '_blank');
+    w.document.write('<pre>'+out.replace(/\n/g,'<br>')+'</pre>');
+    w.document.close();
+    w.print();
+  });
+</script>
+</body>
+</html>

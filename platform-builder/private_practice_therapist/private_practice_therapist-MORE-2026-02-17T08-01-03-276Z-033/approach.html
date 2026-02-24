@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>How I Work — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f8fbfc;--muted:#53676b;--accent:#1f79b4}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:#062024}
+    header{display:flex;justify-content:space-between;align-items:center;padding:14px 20px}
+    .nav a{margin:0 8px;color:var(--muted);text-decoration:none}
+    main{max-width:980px;margin:18px auto;padding:16px}
+    .lead-card{background:white;padding:18px;border-radius:14px;box-shadow:0 8px 30px rgba(7,12,14,0.04)}
+    h1{margin:0 0 6px}
+    .flow{display:flex;gap:12px;margin-top:14px}
+    .step{background:#fff;padding:12px;border-radius:10px;border:1px solid #e6f2f7}
+    .muted{color:var(--muted)}
+    .actions{display:flex;gap:10px;margin-top:14px}
+    button{background:var(--accent);border:0;color:white;padding:9px 12px;border-radius:8px}
+    footer{padding:18px;text-align:center;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#1f79b4,#3fb0e0);display:flex;align-items:center;justify-content:center;color:white;font-weight:700">TP</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="specialties.html">Focus Areas</a>
+      <a href="fees.html">Investment</a>
+      <a href="contact.html">Reach out</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="lead-card">
+      <h1>How sessions are structured</h1>
+      <p class="muted">My practice focuses on steady progress through collaborative planning, skill practice, and attention to real-world constraints. Each meeting is an opportunity to reflect, try something tangible, and plan the next step.</p>
+
+      <div class="flow">
+        <div class="step"><strong>1. Clarify</strong><div class="muted">We name what matters this week and what you'd like to test.</div></div>
+        <div class="step"><strong>2. Try</strong><div class="muted">We review practice, try a short in-session strategy, and notice what shifts.</div></div>
+        <div class="step"><strong>3. Plan</strong><div class="muted">Collaboratively set small, feasible steps to use between sessions.</div></div>
+      </div>
+
+      <div class="actions">
+        <button onclick="openExercise()">Try a brief practice</button>
+        <a href="book.html" style="text-decoration:none"><button style="background:#2b9c64">Book a consult</button></a>
+      </div>
+    </section>
+
+    <section style="margin-top:16px">
+      <div class="lead-card">
+        <h2>What to expect from membership</h2>
+        <p class="muted">Membership is a planning frame: regular sessions plus brief between-session touchpoints. It offers predictability while keeping clinical decisions flexible. Pricing and program details are shared on the Investment page.</p>
+        <ul style="color:var(--muted);padding-left:18px">
+          <li>Scheduled therapy sessions at a consistent cadence.</li>
+          <li>Short, pre-arranged check-ins when needed.</li>
+          <li>Clear boundaries about scope and crisis response.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section style="margin-top:16px;display:grid;grid-template-columns:1fr 320px;gap:12px">
+      <div class="lead-card">
+        <h3>Process and timing</h3>
+        <p class="muted">Early sessions focus on understanding patterns and making a realistic plan. We revisit goals every few sessions and adjust priorities. Progress is individualized and paced to what is sustainable for you.</p>
+
+        <h4 style="margin-top:12px">Boundaries & crisis note</h4>
+        <p class="muted">While I work to be responsive, this practice is not a crisis service. If you are at immediate risk, please contact emergency services or your local crisis line. Confidentiality is upheld within legal and ethical limits.</p>
+      </div>
+
+      <aside class="lead-card">
+        <h4>Before your first appointment</h4>
+        <p class="muted">If helpful, complete the short self-check to bring to the consult. It highlights priorities and helps us use the first session efficiently.</p>
+        <div style="margin-top:8px">
+          <a href="about.html#wizard" style="text-decoration:none"><button>Open the self-check</button></a>
+        </div>
+      </aside>
+    </section>
+
+    <section style="margin-top:16px" class="lead-card">
+      <h3>Micro-practices</h3>
+      <p class="muted">Small, repeatable moves can support momentum. Examples include a two-minute breathing pause, a brief check-in about values before a decision, or a single small behavioral experiment each week.</p>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <div style="background:#e9f6ff;padding:10px;border-radius:10px;color:#0b6fa0">2-minute breathing</div>
+        <div style="background:#fff7ec;padding:10px;border-radius:10px;color:#8a4f10">One micro-action</div>
+        <div style="background:#f4fff6;padding:10px;border-radius:10px;color:#1f7a3f">Brief reflection</div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div style="max-width:980px;margin:0 auto;padding:12px;text-align:center;color:var(--muted)">Email: {{EMAIL}} • Phone: {{PHONE}} • {{CITY}}, {{STATE}}</div>
+  </footer>
+
+  <div id="overlay" style="display:none"></div>
+  <script>
+    // Inline copy of exercise modal controls (keeps each page independent)
+    function openExercise(){
+      const modal = document.createElement('div');
+      modal.style.position='fixed';modal.style.inset='0';modal.style.background='rgba(6,10,12,0.36)';modal.style.display='flex';modal.style.alignItems='center';modal.style.justifyContent='center';modal.style.zIndex=9999;
+      modal.innerHTML = '<div style="background:white;padding:18px;border-radius:12px;width:520px;max-width:94%"><div style="display:flex;justify-content:space-between;align-items:center"><strong>Short practice</strong><button id="closeX">Close</button></div><div id="inner" style="margin-top:12px"><p style="color:#54696d">Choose a quick option.</p><div style="display:flex;gap:8px;margin-top:8px"><button id="breath">Breathing</button><button id="journal">Journaling</button><button id="intent">Set intention</button></div><div id="zone" style="margin-top:12px"></div></div></div>';
+      document.body.appendChild(modal);
+      modal.querySelector('#closeX').onclick = ()=>document.body.removeChild(modal);
+      modal.querySelector('#breath').onclick = ()=>{
+        const zone=modal.querySelector('#zone');zone.innerHTML='';const c=document.createElement('div');c.style.width='120px';c.style.height='120px';c.style.borderRadius='999px';c.style.margin='0 auto';c.style.display='flex';c.style.alignItems='center';c.style.justifyContent='center';c.style.background='linear-gradient(135deg,#e6f6ff,#d3eefb)';c.style.fontWeight='700';c.textContent='Breathe';zone.appendChild(c);let phase=0;const phases=[{ms:4000,scale:1.2,label:'Inhale'},{ms:1500,scale:1.2,label:'Hold'},{ms:5000,scale:0.7,label:'Exhale'},{ms:1500,scale:0.9,label:'Rest'}];let t;
+        function loop(){const p=phases[phase%phases.length];c.textContent=p.label;c.style.transition='transform '+(p.ms/1000)+'s ease-in-out';c.style.transform='scale('+p.scale+')';phase++;t=setTimeout(loop,p.ms)}
+        loop();
+        modal.querySelector('#closeX').onclick = ()=>{clearTimeout(t);document.body.removeChild(modal)};
+      };
+      modal.querySelector('#journal').onclick = ()=>{
+        const zone=modal.querySelector('#zone');zone.innerHTML='<div style="font-weight:700">Short journaling</div><textarea rows="6" style="width:100%;margin-top:8px"></textarea><div style="margin-top:8px"><button onclick="alert(\'Save your note locally in the browser.\')">Save note</button></div>';
+      };
+      modal.querySelector('#intent').onclick = ()=>{
+        const zone=modal.querySelector('#zone');zone.innerHTML='<div style="font-weight:700">Set an intention</div><input placeholder="A brief intention" style="width:100%;margin-top:8px" /><div style="margin-top:8px"><button onclick="alert(\'Intention recorded for this session.\')">Record</button></div>';
+      };
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Schedule & Intake — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f5efe3;--muted:#6b5b4b;--accent:#8c5a3c;--card:#fff;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    body{margin:0;background:var(--bg);color:var(--muted)}
+    header{padding:18px 20px;border-bottom:1px solid rgba(140,90,60,0.06)}
+    .nav{max-width:980px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none;font-weight:600}
+    main{max-width:980px;margin:28px auto;padding:0 20px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:20px}
+    .card{background:var(--card);padding:18px;border-radius:10px;box-shadow:0 8px 24px rgba(92,72,58,0.08)}
+    h1{color:#5b3f2e;margin:0 0 8px}
+    label{display:block;font-weight:700;color:#5b3f2e;margin-top:12px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(92,72,58,0.08);margin-top:6px}
+    .muted{font-size:13px;color:#7a6a5d}
+    .btn{background:var(--accent);color:#fff;padding:10px 14px;border-radius:8px;border:0;font-weight:700;margin-top:12px}
+    .secondary{background:transparent;border:1px solid rgba(92,72,58,0.08);padding:10px 12px;border-radius:8px;color:var(--muted);text-decoration:none}
+    #wizard{margin-top:10px}
+    .step{display:none}
+    .step.active{display:block}
+    .steps-nav{display:flex;gap:8px;margin-top:10px}
+    .step-btn{padding:8px 10px;border-radius:8px;border:1px solid rgba(92,72,58,0.06);background:transparent}
+    .summary{white-space:pre-wrap;background:#fbf7f3;padding:12px;border-radius:8px;border:1px dashed rgba(92,72,58,0.06);margin-top:10px}
+    footer{max-width:980px;margin:30px auto;padding:20px;color:#6b5b4b;font-size:14px}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div style="font-weight:800;color:#5b3f2e">{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">Who I Am</a>
+        <a href="specialties.html">Areas</a>
+        <a href="fees.html">Fees</a>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <div class="grid">
+      <div>
+        <div class="card">
+          <h1>Schedule an appointment</h1>
+          <p class="muted">Use the form to request a time. After you send your request, you’ll receive details by email about next steps and any intake paperwork.</p>
+
+          <form id="booking-form">
+            <label for="fullname">Full name</label>
+            <input id="fullname" name="fullname" required />
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required placeholder="{{EMAIL}}" />
+            <label for="phone">Phone (optional)</label>
+            <input id="phone" name="phone" placeholder="{{PHONE}}" />
+            <label for="type">Service</label>
+            <select id="type" name="type">
+              <option>Foundations Membership</option>
+              <option>Focus Package (3 sessions)</option>
+              <option>Pulse Session (single)</option>
+            </select>
+            <label for="notes">Brief note about what brings you here</label>
+            <textarea id="notes" name="notes" rows="4" placeholder="A few lines about what feels most important right now."></textarea>
+            <button class="btn" type="submit">Send request</button>
+            <div style="margin-top:8px;font-size:13px;color:#7a6a5d">We will follow up to confirm availability and complete intake paperwork. This communication is not a substitute for emergency services.</div>
+          </form>
+
+        </div>
+
+        <div class="card" style="margin-top:18px">
+          <h2 id="wizard">Self-screening intake wizard</h2>
+          <p class="muted">A brief, structured set of prompts to help you organize what to bring to the first appointment. This is non-diagnostic and for your use during intake.</p>
+
+          <div id="wizard-ui">
+            <div class="step active" data-step="1">
+              <label>What brought you here now? (select as many as apply)</label>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
+                <button class="step-btn" data-toggle="w-1">Stress</button>
+                <button class="step-btn" data-toggle="w-1">Low mood</button>
+                <button class="step-btn" data-toggle="w-1">Relationship strain</button>
+                <button class="step-btn" data-toggle="w-1">Life transition</button>
+                <button class="step-btn" data-toggle="w-1">Sleep or appetite change</button>
+                <button class="step-btn" data-toggle="w-1">Other</button>
+              </div>
+            </div>
+            <div class="step" data-step="2">
+              <label>What helps you feel steadier? (skills, people, practices)</label>
+              <textarea id="w-2" rows="3" placeholder="Examples: walking, talking with a friend, routines, breathing exercises"></textarea>
+            </div>
+            <div class="step" data-step="3">
+              <label>What do you hope to get from therapy in the next 3 months?</label>
+              <textarea id="w-3" rows="3" placeholder="A short, specific goal is helpful (e.g., manage anxiety in meetings, improve sleep, make a plan for a transition)"></textarea>
+            </div>
+            <div class="step" data-step="4">
+              <label>Practical barriers or preferences</label>
+              <textarea id="w-4" rows="3" placeholder="Timing preferences, access needs, technology, childcare notes"></textarea>
+            </div>
+            <div class="step" data-step="5">
+              <label>Current supports and safety</label>
+              <textarea id="w-5" rows="3" placeholder="Who supports you? Any current safety concerns? (If you are in immediate danger, call emergency services)"></textarea>
+            </div>
+
+            <div class="steps-nav" style="margin-top:10px">
+              <button id="prev-step" class="secondary">Back</button>
+              <button id="next-step" class="btn">Next</button>
+              <button id="download-summary" class="secondary">Download summary</button>
+            </div>
+
+            <div id="summary" class="summary" style="display:none;margin-top:12px"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <aside>
+        <div class="card">
+          <h3 style="margin-top:0">Availability</h3>
+          <p class="muted">I offer weekday morning and late-afternoon appointments. After you send a booking request, we’ll coordinate a time that fits your schedule.</p>
+          <div style="margin-top:12px"><a class="secondary" href="mailto:{{EMAIL}}?subject=Booking request">Request by email</a></div>
+
+          <h4 style="margin-top:16px">Notes on confidentiality</h4>
+          <p class="muted">Your information is treated confidentially. Exceptions: risk of harm, abuse, or legal obligations. For urgent danger, call emergency services. Records and messages are kept in secure systems.</p>
+
+          <div style="margin-top:12px"><button id="open-exercise-3" class="secondary">Try a short grounding practice</button></div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <div style="max-width:980px;margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;align-items:center">
+      <div>&copy; <span id="year"></span> {{BUSINESS_NAME}}</div>
+      <div class="muted">Confidential clinical services in {{CITY}}, {{STATE}}</div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    // Booking form basic handler (dummy)
+    document.getElementById('booking-form').addEventListener('submit',function(e){e.preventDefault();alert('Request sent. A member of the practice will follow up by email.');this.reset();});
+
+    // Wizard logic
+    const steps = Array.from(document.querySelectorAll('#wizard-ui .step'));
+    let current = 0;
+    const nextBtn = document.getElementById('next-step');
+    const prevBtn = document.getElementById('prev-step');
+    const summaryBox = document.getElementById('summary');
+
+    function showStep(i){steps.forEach(s=>s.classList.remove('active'));steps[i].classList.add('active');prevBtn.style.display=i===0?'none':'inline-block';nextBtn.textContent=i===steps.length-1?'Finish':'Next';}
+    showStep(0);
+
+    nextBtn.addEventListener('click',()=>{
+      if(current < steps.length -1){current++;showStep(current);}else{buildSummary();}
+    });
+    prevBtn.addEventListener('click',()=>{if(current>0){current--;showStep(current);}});
+
+    // Toggle buttons for step 1
+    document.querySelectorAll('[data-toggle="w-1"]').forEach(b=>{
+      b.addEventListener('click',()=>{b.classList.toggle('active');b.style.background=b.classList.contains('active')?'#efe0d6':'transparent';});
+    });
+
+    function buildSummary(){
+      const picks = Array.from(document.querySelectorAll('[data-toggle="w-1"].active')).map(n=>n.textContent.trim());
+      const s2 = document.getElementById('w-2').value.trim();
+      const s3 = document.getElementById('w-3').value.trim();
+      const s4 = document.getElementById('w-4').value.trim();
+      const s5 = document.getElementById('w-5').value.trim();
+      const text = [
+        'Self-screening summary',
+        '— what brought you here: ' + (picks.length? picks.join(', '): 'Not specified'),
+        '— what helps you steady: ' + (s2 || 'Not specified'),
+        '— 3-month goals: ' + (s3 || 'Not specified'),
+        '— practical preferences: ' + (s4 || 'Not specified'),
+        '— current supports / safety notes: ' + (s5 || 'Not specified'),
+        '',
+        'This summary is non-diagnostic and intended for discussion in a clinical intake. If you are in immediate danger, contact emergency services.'
+      ].join('\n');
+      summaryBox.style.display='block';summaryBox.textContent=text;
+    }
+
+    // Download summary
+    document.getElementById('download-summary').addEventListener('click',()=>{
+      buildSummary();
+      if(summaryBox.textContent.trim()=== ''){alert('Complete the wizard first.');return}
+      const blob = new Blob([summaryBox.textContent],{type:'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');a.href=url;a.download='intake-summary.txt';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+    });
+
+    // Simple exercise modal (same implementation style)
+    const exButton = document.getElementById('open-exercise-3');
+    const modal = document.createElement('div');modal.id='exercise-modal';modal.style.display='none';modal.style.position='fixed';modal.style.inset='0';modal.style.background='rgba(12,10,8,0.45)';modal.style.alignItems='center';modal.style.justifyContent='center';modal.style.padding='20px';
+    modal.innerHTML = '<div style="max-width:720px;width:100%;background:#fff;border-radius:12px;padding:18px;">'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'+
+      '<strong style="color:#5b3f2e">Try a short practice</strong>'+
+      '<button id="close-ex" aria-label="Close" style="background:transparent;border:0;font-size:18px">✕</button></div>'+
+      '<div style="display:flex;gap:12px"><div style="flex:1"><p style="margin:0 0 8px;color:#6b5b4b">Choose a brief practice to help you settle.</p>'+
+      '<div style="display:flex;gap:8px;margin-bottom:10px">'+
+      '<button class="secondary" data-mode="breathing">Breathing</button>'+
+      '<button class="secondary" data-mode="journaling">Journaling</button>'+
+      '<button class="secondary" data-mode="intention">Set an intention</button></div>'+
+      '<div id="exercise-area"></div></div></div></div>';
+    document.body.appendChild(modal);
+    exButton.addEventListener('click',()=>{modal.style.display='flex';startMode('breathing')});
+    modal.querySelector('#close-ex').addEventListener('click',()=>{modal.style.display='none';stopTimer()});
+    modal.querySelectorAll('.secondary').forEach(b=>b.addEventListener('click',e=>startMode(e.target.dataset.mode)));
+
+    let timer=null;
+    function startMode(mode){
+      const area = document.getElementById('exercise-area');
+      stopTimer();
+      if(mode==='breathing'){
+        area.innerHTML = '<div style="text-align:center;padding:12px"><div id="pulse" style="width:110px;height:110px;margin:10px auto;border-radius:55px;background:linear-gradient(180deg,#fff,#fff);display:flex;align-items:center;justify-content:center;color:#8c5a3c;font-weight:700">3</div><div style="color:#6b5b4b;margin-top:8px">Breathe: inhale 4, hold 4, exhale 6. Three rounds.</div></div>';
+        let phase=0; let count=4; let round=0; const seq=[4,4,6];
+        const pulse = document.getElementById('pulse');
+        timer=setInterval(()=>{pulse.textContent=count;count--;if(count<0){phase=(phase+1)%3;if(phase===0) round++;count=seq[phase];if(round>=3){stopTimer();pulse.textContent='Done';}}},1000);
+      } else if(mode==='journaling'){
+        area.innerHTML = '<div><label style="font-weight:700;color:#5b3f2e">Quick journal</label><textarea id="journal" rows="5" style="width:100%;margin-top:8px;padding:8px;border-radius:8px;border:1px solid rgba(92,72,58,0.08)" placeholder="Write freely for two minutes."></textarea><div style="display:flex;gap:8px;margin-top:8px"><button id="save-j" class="btn">Save</button></div></div>';
+        document.getElementById('save-j').addEventListener('click',()=>{const v=document.getElementById('journal').value.trim();if(v){localStorage.setItem('lastJournal',JSON.stringify({text:v,when:new Date().toISOString()}));alert('Saved locally.');}});
+      } else if(mode==='intention'){
+        area.innerHTML = '<div><label style="font-weight:700;color:#5b3f2e">Set a short intention</label><input id="int" style="width:100%;margin-top:8px;padding:8px;border-radius:8px;border:1px solid rgba(92,72,58,0.08)" placeholder="I intend to..." /><div style="display:flex;gap:8px;margin-top:8px"><button id="save-i" class="btn">Save</button></div></div>';
+        document.getElementById('save-i').addEventListener('click',()=>{const v=document.getElementById('int').value.trim();if(v){localStorage.setItem('intention',JSON.stringify({text:v,when:new Date().toISOString()}));alert('Intention saved.');}});
+      }
+    }
+    function stopTimer(){if(timer){clearInterval(timer);timer=null}}
+  </script>
+</body>
+</html>

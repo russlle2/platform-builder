@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0F4C49">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Inside the playful, premium Tidal Bloom Method created by {{COACH_NAME}}, {{CREDENTIALS}}. Discover how gentle habit design, nervous-system literacy, and rhythm-first planning help you thrive.">
+  <style>
+    :root{
+      --teal-900:#0B3D3A; /* deep */
+      --teal-800:#0E4743;
+      --teal-700:#0F4C49; /* brand base */
+      --teal-200:#B7D2CF;
+      --sand:#E7D9C4; /* warm sand */
+      --off:#FAF8F5; /* off-white */
+      --ink:#142523; /* near-black */
+      --accent:#FF6A5A; /* coral */
+      --amber:#DFA253; /* tasteful gold */
+      --shadow: 0 10px 30px rgba(10,38,36,.15);
+      --radius: 16px;
+      --radius-lg: 28px;
+      --gap: clamp(16px,2vw,28px);
+      --pad: clamp(18px,3vw,32px);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";color:var(--ink);background:linear-gradient(180deg,var(--off),#fff)}
+    img{max-width:100%;display:block;height:auto}
+    a{color:var(--teal-700);text-decoration:none}
+    a:hover{color:var(--teal-900)}
+    .wrap{width:min(1100px,92vw);margin-inline:auto}
+    .skip-link{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
+    .skip-link:focus{position:fixed;left:16px;top:16px;width:auto;height:auto;background:#fff;padding:10px 14px;border-radius:12px;box-shadow:var(--shadow);z-index:9999}
+
+    /* Header */
+    header.site-header{position:sticky;top:0;background:linear-gradient(0deg,var(--off),#fff);backdrop-filter:saturate(1.2) blur(6px);z-index:50;border-bottom:1px solid rgba(15,76,73,.08)}
+    .nav{display:flex;align-items:center;justify-content:space-between;padding:12px var(--pad)}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:700;letter-spacing:.2px}
+    .brand-mark{width:34px;height:34px;border-radius:12px;background:radial-gradient(circle at 30% 20%, var(--sand), var(--teal-200));position:relative;box-shadow:inset 0 0 0 2px rgba(15,76,73,.12)}
+    .brand-mark:after{content:"";position:absolute;inset:8px;border-radius:10px;background:conic-gradient(from 120deg at 60% 40%, transparent 0 40%, var(--accent) 40% 48%, transparent 48% 100%)}
+    .brand b{font-weight:800}
+    .menu{display:flex;align-items:center;gap:20px}
+    .menu a{padding:8px 10px;border-radius:10px}
+    .menu a[aria-current="page"]{background:rgba(15,76,73,.07)}
+    .nav-cta{margin-left:8px}
+    .btn{display:inline-flex;align-items:center;gap:10px;padding:12px 16px;border-radius:14px;border:2px solid transparent;font-weight:700;cursor:pointer;transition:.2s ease;line-height:1}
+    .btn--primary{background:linear-gradient(180deg,var(--accent),#ff5a49);color:#fff;box-shadow:0 8px 18px rgba(255,106,90,.28)}
+    .btn--primary:hover{transform:translateY(-1px)}
+    .btn--ghost{background:transparent;color:var(--teal-700);border-color:rgba(15,76,73,.18)}
+
+    .hamburger{display:none;background:#fff;border:2px solid rgba(15,76,73,.15);padding:10px 12px;border-radius:12px}
+    .hamburger span{display:block;width:22px;height:2px;background:var(--teal-800);margin:4px 0;border-radius:2px;transition:.25s}
+    .mobile-panel{display:none}
+
+    /* Hero */
+    .hero{position:relative;isolation:isolate}
+    .hero:before{content:"";position:absolute;inset:-20px -0 50% -0;background:radial-gradient(80% 120% at 10% 10%, var(--sand), transparent 60%), url(assets/img/pattern.svg);background-size:cover;opacity:.22;z-index:-1}
+    .hero .inner{display:grid;grid-template-columns:1.2fr .8fr;align-items:center;gap:var(--gap);padding:clamp(24px,4vw,56px) var(--pad)}
+    .eyebrow{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(223,162,83,.15);color:var(--teal-800);font-weight:700}
+    h1{font-size:clamp(32px,5vw,54px);margin:.4em 0 .2em;letter-spacing:-.02em}
+    .tagline{font-size:clamp(16px,2.2vw,20px);color:rgba(20,37,35,.86);max-width:52ch}
+    .hero-actions{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap}
+    .media-card{position:relative;border-radius:var(--radius-lg);overflow:hidden;background:linear-gradient(180deg,#fff,var(--off));box-shadow:var(--shadow)}
+    .media-card:after{content:"";position:absolute;inset:auto -40px -40px auto;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,var(--accent),transparent 60%);opacity:.2}
+    .media-card .figure{aspect-ratio:4/5;display:grid;place-items:end center;padding:10%}
+
+    /* Sections */
+    section{padding:clamp(40px,7vw,80px) var(--pad)}
+    .section-title{font-size:clamp(22px,3vw,32px);margin:0 0 6px}
+    .section-lead{color:rgba(20,37,35,.8);max-width:70ch;margin:0 0 28px}
+
+    /* Benefits */
+    .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--gap)}
+    .card{background:#fff;border:1px solid rgba(15,76,73,.08);border-radius:18px;padding:18px 18px 20px;box-shadow:0 4px 10px rgba(10,38,36,.06)}
+    .icon{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(180deg,var(--teal-200),#dceae8);color:var(--teal-900);font-weight:800}
+
+    /* Tiers */
+    .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gap)}
+    .tier{background:linear-gradient(180deg,#fff,var(--off));border:1px solid rgba(15,76,73,.1);border-radius:22px;padding:20px;box-shadow:var(--shadow);position:relative}
+    .tier .badge{position:absolute;top:14px;right:14px;background:var(--teal-700);color:#fff;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800;letter-spacing:.4px}
+    .price{font-weight:900;font-size:24px}
+    .features{margin:12px 0 14px;padding:0 0 0 18px}
+
+    /* Bio */
+    .bio{display:grid;grid-template-columns:1fr 1.2fr;gap:var(--gap);align-items:center}
+    .avatar{width:120px;height:120px;border-radius:50%;background:linear-gradient(180deg,#fff,var(--off));display:grid;place-items:center;border:2px solid rgba(15,76,73,.12);box-shadow:var(--shadow)}
+
+    /* Testimonials */
+    .quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gap)}
+    .quote{background:#fff;border-radius:20px;padding:20px;border:1px solid rgba(15,76,73,.08);box-shadow:0 6px 16px rgba(10,38,36,.07);position:relative}
+    .quote:before{content:"“";position:absolute;top:-14px;left:16px;font-size:48px;color:var(--sand)}
+
+    /* FAQ */
+    .accordion{display:grid;gap:12px}
+    .acc-item{border:1px solid rgba(15,76,73,.1);border-radius:16px;background:#fff;overflow:hidden}
+    .acc-btn{width:100%;text-align:left;background:transparent;border:0;padding:16px 18px;font-weight:800;display:flex;justify-content:space-between;align-items:center}
+    .acc-btn span{max-width:80%}
+    .acc-btn svg{transition:.25s}
+    .acc-panel{padding:0 18px 16px 18px;display:none;color:rgba(20,37,35,.86)}
+    .acc-item[aria-expanded="true"] .acc-panel{display:block}
+    .acc-item[aria-expanded="true"] .acc-btn svg{transform:rotate(180deg)}
+
+    /* Newsletter */
+    .newsletter{background:linear-gradient(180deg,var(--sand),#fff);border-radius:24px;border:1px solid rgba(15,76,73,.12);box-shadow:var(--shadow);padding:22px}
+    .form-grid{display:grid;grid-template-columns:2fr 2fr 1.2fr;gap:12px;margin-top:12px}
+    .input{background:#fff;border:2px solid rgba(15,76,73,.16);border-radius:14px;padding:12px 14px}
+    .input[data-error="true"]{border-color:#c0392b;background:#fff6f5}
+    .hint{font-size:12px;color:#c0392b;margin-top:6px;display:none}
+    .hint[aria-live]{display:block}
+
+    /* CTA Banner */
+    .cta{background:linear-gradient(90deg,var(--teal-700),var(--teal-900));border-radius:26px;padding:24px;color:#fff;display:grid;grid-template-columns:1fr auto;gap:var(--gap);align-items:center}
+    .cta .btn--primary{background:#fff;color:var(--teal-900);box-shadow:none}
+
+    /* Footer */
+    footer{padding:40px var(--pad);background:linear-gradient(180deg,#fff,var(--off));border-top:1px solid rgba(15,76,73,.1)}
+    .foot-grid{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:var(--gap)}
+    .foot-nav a{display:block;padding:6px 0}
+    .legal{display:flex;justify-content:space-between;gap:10px;padding-top:20px;color:rgba(20,37,35,.68);font-size:14px}
+
+    /* Responsive */
+    @media (max-width: 900px){
+      .hero .inner{grid-template-columns:1fr}
+      .cards{grid-template-columns:repeat(2,1fr)}
+      .tiers{grid-template-columns:1fr}
+      .bio{grid-template-columns:1fr}
+      .quotes{grid-template-columns:1fr 1fr}
+      .form-grid{grid-template-columns:1fr}
+      .cta{grid-template-columns:1fr}
+      .foot-grid{grid-template-columns:1fr}
+    }
+    @media (max-width: 760px){
+      .menu{position:fixed;inset:64px 16px auto 16px;background:#fff;border-radius:18px;padding:14px;border:1px solid rgba(15,76,73,.12);box-shadow:var(--shadow);display:none;flex-direction:column;gap:6px}
+      .mobile-panel{display:block}
+      .hamburger{display:inline-block}
+      .menu.open{display:flex}
+      .nav-cta{width:100%}
+    }
+    :focus-visible{outline:3px solid var(--amber);outline-offset:2px;border-radius:8px}
+  </style>
+</head>
+<body data-design-seed="2265793033">
+  <a href="#main" class="skip-link">Skip to content</a>
+  <header class="site-header" role="banner">
+    <div class="wrap nav">
+      <a class="brand" href="index.html" aria-label="Home">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span><b>{{BUSINESS_NAME}}</b></span>
+      </a>
+      <nav aria-label="Primary" class="mobile-panel">
+        <button class="hamburger" aria-expanded="false" aria-controls="menu"><span></span><span></span><span></span><span class="sr-only">Toggle navigation</span></button>
+      </nav>
+      <nav class="menu" id="menu" aria-label="Primary Navigation">
+        <a href="index.html">Home</a>
+        <a href="about.html" aria-current="page">About</a>
+        <a href="services.html">Services</a>
+        <a href="programs.html">Programs</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="testimonials.html">Testimonials</a>
+        <a href="contact.html">Contact</a>
+        <a class="btn btn--primary nav-cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <div class="wrap inner">
+        <div class="hero__content">
+          <span class="eyebrow">About & Approach</span>
+          <h1>{{BUSINESS_NAME}}</h1>
+          <p class="tagline">{{TAGLINE}}</p>
+          <p>Welcome to the Tidal Bloom Method — a playful, premium approach to wellness that meets your life where it actually happens. We blend circadian rhythm coaching, gentle nervous-system tools, and micro-play habit design so you feel better without hustling harder.</p>
+          <div class="hero-actions">
+            <a class="btn btn--primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            <a class="btn btn--ghost" href="#benefits">How it works</a>
+          </div>
+        </div>
+        <div class="hero__media">
+          <div class="media-card" aria-hidden="true">
+            <div class="figure">
+              <img src="assets/img/hero.svg" alt="Abstract waves and sun motif representing calm energy">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="benefits" class="wrap">
+      <h2 class="section-title">What makes the Tidal Bloom Method different</h2>
+      <p class="section-lead">Premium doesn’t have to feel pressure-y. We make sustainable change feel light, curious, and kind — while still delivering measurable outcomes you can feel in your mood, focus, and energy.</p>
+      <div class="cards">
+        <article class="card">
+          <div class="icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M12 6v6l4 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <h3>Rhythm-first planning</h3>
+          <p>Design your week around your natural energy tides — not against them. Flow > force.</p>
+        </article>
+        <article class="card">
+          <div class="icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="18" height="18" rx="4" stroke="currentColor" stroke-width="2"/><path d="M8 12l3 3 5-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h3>Micro-play habits</h3>
+          <p>Tiny, joyful reps that are easier to keep than to skip — no willpower theater required.</p>
+        </article>
+        <article class="card">
+          <div class="icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3c4.97 0 9 4.03 9 9s-4.03 9-9 9S3 16.97 3 12" stroke="currentColor" stroke-width="2"/><path d="M7 12a5 5 0 1010 0" stroke="currentColor" stroke-width="2"/></svg>
+          </div>
+          <h3>Nervous-system literacy</h3>
+          <p>Simple breath and body tools to reset stress in minutes — calm as a competitive edge.</p>
+        </article>
+        <article class="card">
+          <div class="icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2v20M2 12h20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <h3>Gentle accountability</h3>
+          <p>We anchor new habits with compassionate check-ins and playful progress markers.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="wrap">
+      <h2 class="section-title">Program tiers</h2>
+      <p class="section-lead">Choose your depth. Every tier includes a custom Rhythm Map, session notes, and between-session support.</p>
+      <div class="tiers">
+        <article class="tier">
+          <span class="badge">Starter</span>
+          <h3>Drift</h3>
+          <p class="price">$420 / month</p>
+          <ul class="features">
+            <li>2 x 45-min sessions</li>
+            <li>Rhythm Map + Habit Playbook</li>
+            <li>Light text support (48h)</li>
+          </ul>
+          <div class="hero-actions"><a class="btn btn--ghost" href="programs.html">See details</a><a class="btn btn--primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+        </article>
+        <article class="tier" style="border-color:rgba(255,106,90,.35)">
+          <span class="badge" style="background:var(--accent)">Best fit</span>
+          <h3>Current</h3>
+          <p class="price">$780 / month</p>
+          <ul class="features">
+            <li>4 x 50-min sessions</li>
+            <li>Habit experiments + protocols</li>
+            <li>Priority text/audio support (24h)</li>
+          </ul>
+          <div class="hero-actions"><a class="btn btn--ghost" href="programs.html">Compare tiers</a><a class="btn btn--primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+        </article>
+        <article class="tier">
+          <span class="badge" style="background:var(--amber)">VIP</span>
+          <h3>Deep Tide</h3>
+          <p class="price">$2,400 / 6 weeks</p>
+          <ul class="features">
+            <li>Weekly 60-min sessions + SOS drops</li>
+            <li>Labwork coordination (optional)</li>
+            <li>On-call support (same-day)</li>
+          </ul>
+          <div class="hero-actions"><a class="btn btn--ghost" href="programs.html">What’s inside</a><a class="btn btn--primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="wrap bio">
+      <div>
+        <div class="avatar">
+          <img src="assets/img/avatar.svg" alt="Portrait illustration of {{COACH_NAME}}">
+        </div>
+      </div>
+      <div>
+        <h2 class="section-title">Meet {{COACH_NAME}}, {{CREDENTIALS}}</h2>
+        <p class="section-lead">I built the Tidal Bloom Method after a decade coaching founders and creatives who were brilliant — and burnt. It turns out the secret isn’t more grit. It’s better rhythm.</p>
+        <p>My approach braids evidence-informed protocols with playful behavior design. I believe premium care feels deeply human: clear structure, generous presence, and a touch of delight. Outside sessions you’ll find me ocean-dipping at sunrise, testing tea blends, and turning science into stories you’ll actually remember.</p>
+      </div>
+    </section>
+
+    <section class="wrap">
+      <h2 class="section-title">Client notes</h2>
+      <p class="section-lead">Results that feel like relief — reported by busy professionals across product, design, and healthcare.</p>
+      <div class="quotes">
+        <figure class="quote">
+          <blockquote>Two weeks in and my afternoons no longer crash. The “energy tides” plan was freakishly accurate — and kind.</blockquote>
+          <figcaption>— Mira, Product Lead</figcaption>
+        </figure>
+        <figure class="quote">
+          <blockquote>I’ve tried so many systems. This one is the first that made me smile while doing it. Small, playful, effective.</blockquote>
+          <figcaption>— Ken, ER Nurse</figcaption>
+        </figure>
+        <figure class="quote">
+          <blockquote>The VIP support during my launch saved me. I felt held, not micromanaged. 10/10 recommend.</blockquote>
+          <figcaption>— Jules, Creative Director</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="wrap">
+      <h2 class="section-title">FAQ</h2>
+      <div class="accordion" id="faq">
+        <div class="acc-item" aria-expanded="false">
+          <button class="acc-btn" aria-controls="faq1" aria-expanded="false"><span>How fast will I notice changes?</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+          <div class="acc-panel" id="faq1">Most clients feel a calmer baseline in 1–2 weeks and see measurable energy/focus shifts by week 4. We prioritize tiny habits that immediately reduce friction.</div>
+        </div>
+        <div class="acc-item" aria-expanded="false">
+          <button class="acc-btn" aria-controls="faq2" aria-expanded="false"><span>Is this therapy or medical care?</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+          <div class="acc-panel" id="faq2">Coaching complements (but does not replace) therapy or medical treatment. We can collaborate with your providers if you’d like a team approach.</div>
+        </div>
+        <div class="acc-item" aria-expanded="false">
+          <button class="acc-btn" aria-controls="faq3" aria-expanded="false"><span>What’s the time commitment?</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+          <div class="acc-panel" id="faq3">Sessions are 45–60 minutes. Experiments take 5–15 minutes a day. We right-size the plan to your reality and season.</div>
+        </div>
+        <div class="acc-item" aria-expanded="false">
+          <button class="acc-btn" aria-controls="faq4" aria-expanded="false"><span>Do you offer corporate or team options?</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+          <div class="acc-panel" id="faq4">Yes — workshops and small-group circles are available for teams. See Services for details or reach out to design a bespoke engagement.</div>
+        </div>
+        <div class="acc-item" aria-expanded="false">
+          <button class="acc-btn" aria-controls="faq5" aria-expanded="false"><span>Can I pause or switch tiers?</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+          <div class="acc-panel" id="faq5">Absolutely. Life has seasons — your support should too. We’ll adjust your plan with clarity and care.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap newsletter" aria-labelledby="news-title">
+      <div>
+        <h2 id="news-title" class="section-title">Free guide: The 3-Min Energy Rituals</h2>
+        <p class="section-lead">Steady your mornings and soften your afternoons. Get the PDF and a friendly note each month — no spam, just useful care.</p>
+        <form id="newsletter-form" novalidate>
+          <div class="form-grid">
+            <div>
+              <label for="news-name">First name</label>
+              <input id="news-name" name="name" type="text" class="input" placeholder="Alex" aria-describedby="name-hint">
+              <div id="name-hint" class="hint" aria-live="polite"></div>
+            </div>
+            <div>
+              <label for="news-email">Email</label>
+              <input id="news-email" name="email" type="email" class="input" placeholder="you@example.com" required aria-describedby="email-hint">
+              <div id="email-hint" class="hint" aria-live="polite"></div>
+            </div>
+            <div>
+              <button class="btn btn--primary" type="submit">Send the guide</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section class="wrap cta" aria-labelledby="cta-title">
+      <div>
+        <h2 id="cta-title" style="margin:0">Ready to feel better — gently?</h2>
+        <p style="margin:.4em 0 0;opacity:.9">Book a complimentary consult to map your next best steps.</p>
+      </div>
+      <div>
+        <a class="btn btn--primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </section>
+  </main>
+
+  <footer role="contentinfo">
+    <div class="wrap foot-grid">
+      <div>
+        <div class="brand" style="margin-bottom:8px">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span><b>{{BUSINESS_NAME}}</b></span>
+        </div>
+        <p>{{ADDRESS}}, {{CITY}}, {{STATE}} {{ZIP}}</p>
+        <p><a href="tel:{{PHONE}}">{{PHONE}}</a> · <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+        <p>Hours: {{HOURS}}</p>
+      </div>
+      <div class="foot-nav">
+        <strong>Explore</strong>
+        <a href="about.html">About</a>
+        <a href="services.html">Services</a>
+        <a href="programs.html">Programs</a>
+        <a href="pricing.html">Pricing</a>
+      </div>
+      <div class="foot-nav">
+        <strong>Connect</strong>
+        <a href="testimonials.html">Testimonials</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html">Contact</a>
+        <a href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </div>
+    <div class="wrap legal">
+      <span>© <span id="year"></span> {{BUSINESS_NAME}}. All rights reserved.</span>
+      <span>Designed for playful premium wellness.</span>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile nav
+    const ham = document.querySelector('.hamburger');
+    const menu = document.getElementById('menu');
+    function toggleNav(force){
+      const open = typeof force === 'boolean' ? force : !menu.classList.contains('open');
+      menu.classList.toggle('open', open);
+      ham.setAttribute('aria-expanded', String(open));
+      document.body.style.overflow = open && window.matchMedia('(max-width:760px)').matches ? 'hidden' : '';
+    }
+    if(ham){
+      ham.addEventListener('click', ()=>toggleNav());
+      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') toggleNav(false); });
+      document.addEventListener('click', (e)=>{ if(menu.classList.contains('open') && !menu.contains(e.target) && e.target!==ham) toggleNav(false); });
+    }
+
+    // Smooth scroll with header offset
+    document.querySelectorAll('a[href^="#"]').forEach(a=>{
+      a.addEventListener('click', e=>{
+        const id = a.getAttribute('href');
+        if(id.length>1){
+          const el = document.querySelector(id);
+          if(el){
+            e.preventDefault();
+            const y = el.getBoundingClientRect().top + window.pageYOffset - 72;
+            window.scrollTo({top:y, behavior:'smooth'});
+          }
+        }
+      });
+    });
+
+    // Accordion
+    document.querySelectorAll('.acc-item').forEach(item=>{
+      const btn = item.querySelector('.acc-btn');
+      const panel = item.querySelector('.acc-panel');
+      btn.addEventListener('click', ()=>{
+        const expanded = item.getAttribute('aria-expanded') === 'true';
+        document.querySelectorAll('.acc-item').forEach(i=>i.setAttribute('aria-expanded','false'));
+        item.setAttribute('aria-expanded', String(!expanded));
+        btn.setAttribute('aria-expanded', String(!expanded));
+      });
+    });
+
+    // Newsletter validation
+    const form = document.getElementById('newsletter-form');
+    const email = document.getElementById('news-email');
+    const emailHint = document.getElementById('email-hint');
+    const nameInput = document.getElementById('news-name');
+    const nameHint = document.getElementById('name-hint');
+    function showError(input, hint, msg){
+      input.setAttribute('data-error','true');
+      hint.textContent = msg || '';
+      if(msg){ hint.setAttribute('aria-live','polite'); } else { hint.removeAttribute('aria-live'); }
+    }
+    function clearError(input, hint){
+      input.removeAttribute('data-error');
+      hint.textContent = '';
+      hint.removeAttribute('aria-live');
+    }
+    [email,nameInput].forEach(inp=>{
+      inp.addEventListener('input', ()=>{
+        if(inp===email){
+          if(email.validity.typeMismatch){ showError(email,emailHint,'Please enter a valid email.'); } else if(email.value.trim()===''){ showError(email,emailHint,'Email is required.'); } else { clearError(email,emailHint); }
+        } else {
+          if(nameInput.value.length>60){ showError(nameInput,nameHint,'Keep it under 60 characters.'); } else { clearError(nameInput,nameHint); }
+        }
+      });
+    });
+    form.addEventListener('submit', (e)=>{
+      let ok = true;
+      if(email.value.trim()==='' || email.validity.typeMismatch){ showError(email,emailHint, email.value.trim()==='' ? 'Email is required.' : 'Please enter a valid email.'); ok=false; }
+      if(nameInput.value.length>60){ showError(nameInput,nameHint,'Keep it under 60 characters.'); ok=false; }
+      if(!ok){ e.preventDefault(); }
+      else {
+        e.preventDefault();
+        form.innerHTML = '<p role="status">Thanks! Your guide is on the way to <b>'+email.value.replace(/[<>]/g,'')+'</b>.</p>';
+      }
+    });
+
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

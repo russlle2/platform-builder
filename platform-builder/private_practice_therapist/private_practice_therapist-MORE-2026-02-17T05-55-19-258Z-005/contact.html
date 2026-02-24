@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Contact the practice to start a thoughtful, clinician-led series of sessions or join a short cohort to learn steady skills.">
+  <style>
+    :root{
+      --glass-bg: rgba(255,255,255,0.08);
+      --glass-border: rgba(255,255,255,0.12);
+      --accent: #7c5cff;
+      --muted: rgba(255,255,255,0.75);
+      --glass-radius: 14px;
+      --shadow: 0 8px 24px rgba(12,13,20,0.45);
+      --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%;}
+    body{
+      margin:0;
+      font-family:var(--font-sans);
+      background: linear-gradient(180deg,#0f1724 0%, #061226 60%);
+      color: #eef2ff;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding:40px 20px;
+      box-sizing:border-box;
+      background-image: url('assets/img/pattern.svg');
+      background-repeat: no-repeat;
+      background-position: right top;
+      background-size: 40%;
+    }
+
+    .site{
+      width:100%;
+      max-width:1100px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius: 18px;
+      padding:28px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,0.04);
+      backdrop-filter: blur(10px) saturate(120%);
+    }
+
+    header{
+      display:flex;
+      gap:18px;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:18px;
+    }
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{
+      width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#42c3ff);display:flex;align-items:center;justify-content:center;color:#021028;font-weight:700;font-size:20px;box-shadow:0 6px 18px rgba(124,92,255,0.18);
+    }
+    nav a{color:rgba(255,255,255,0.8);text-decoration:none;margin-left:14px;font-weight:600}
+    nav a:hover{color:var(--accent)}
+
+    main{display:grid;grid-template-columns:1fr 430px;gap:24px;align-items:start}
+
+    .card{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--glass-radius);padding:18px}
+
+    .hero{padding:20px 12px;border-radius:12px;background:linear-gradient(180deg, rgba(124,92,255,0.08), rgba(66,195,255,0.03));border:1px solid rgba(124,92,255,0.06)}
+    .hero h1{margin:0;font-size:20px}
+    .hero p{margin:8px 0 0;color:var(--muted);font-size:14px}
+
+    .contact-form{display:flex;flex-direction:column;gap:10px}
+    label{font-size:13px;color:rgba(255,255,255,0.85);font-weight:600}
+    input,textarea,select{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:10px;border-radius:10px;color:#eef2ff}
+    textarea{min-height:120px;resize:vertical}
+    .row{display:flex;gap:10px}
+    .row .col{flex:1}
+
+    .muted{color:var(--muted);font-size:13px}
+
+    /* Pricing comparator */
+    .comparator{display:flex;flex-direction:column;gap:12px}
+    .toggle{display:inline-flex;background:rgba(255,255,255,0.04);padding:6px;border-radius:999px;border:1px solid rgba(255,255,255,0.03)}
+    .toggle button{border:0;background:transparent;padding:6px 12px;color:var(--muted);border-radius:999px;font-weight:700}
+    .toggle button.active{background:linear-gradient(90deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02));color:#fff}
+    .price-row{display:flex;gap:12px;align-items:end}
+    .plan{flex:1;padding:12px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03)}
+    .plan h4{margin:0 0 6px 0}
+    .big{font-size:28px;font-weight:800;color:#fff}
+    .small{font-size:13px;color:var(--muted)}
+
+    /* Mood-to-Method */
+    .moods{display:flex;flex-wrap:wrap;gap:8px}
+    .mood{padding:8px 10px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);cursor:pointer;font-weight:700}
+    .mood.active{background:linear-gradient(90deg,var(--accent),#42c3ff);color:#021028;border-color:transparent}
+
+    .recommend{padding:14px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03)}
+    .cta{display:inline-flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#42c3ff);color:#021028;font-weight:800;border:0;cursor:pointer}
+
+    footer{margin-top:16px;color:var(--muted);font-size:13px}
+
+    /* Responsive */
+    @media (max-width:980px){main{grid-template-columns:1fr;}
+      .site{padding:18px}
+    }
+  </style>
+</head>
+<body>
+  <div class="site" role="document">
+    <header>
+      <div class="brand">
+        <div class="logo">TP</div>
+        <div>
+          <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.75)">{{CITY}}, {{STATE}}</div>
+        </div>
+      </div>
+      <nav aria-label="Primary">
+        <a href="/index.html">Welcome</a>
+        <a href="/about.html">Therapist</a>
+        <a href="/specialties.html">Focus Areas</a>
+        <a href="/approach.html">Method</a>
+        <a href="/fees.html">Investment</a>
+        <a href="/faq.html">Answers</a>
+        <a href="/book.html">Book</a>
+        <a href="/contact.html">Connect</a>
+      </nav>
+    </header>
+
+    <main>
+      <section>
+        <div class="hero card">
+          <h1>Let’s plan a first step that fits your week.</h1>
+          <p>{{TAGLINE}} — a gentle invitation to explore what’s useful now, with clinical clarity and practical options.</p>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="card">
+          <h3 style="margin:0 0 8px 0">Mood-to-Method selector</h3>
+          <p class="muted">Pick how you feel and see a suggested path and a tailored first-step call-to-action.</p>
+          <div style="height:10px"></div>
+
+          <div class="moods" role="list">
+            <button class="mood" data-key="overwhelmed" role="listitem">Overwhelmed</button>
+            <button class="mood" data-key="stuck" role="listitem">Stuck / Stalled</button>
+            <button class="mood" data-key="anxious" role="listitem">Anxious</button>
+            <button class="mood" data-key="grief" role="listitem">Sad / Grieving</button>
+            <button class="mood" data-key="transition" role="listitem">Life Change</button>
+          </div>
+
+          <div style="height:12px"></div>
+          <div class="recommend" id="recommend">
+            <strong id="rec-title">A calm, short consultation</strong>
+            <p id="rec-desc" class="muted" style="margin-top:8px">If you're unsure where to begin, we can start with a 45-minute consultation focused on the most pressing piece. No pressure to continue — just clear options and a human plan.</p>
+            <div style="height:10px"></div>
+            <button id="primary-cta" class="cta" onclick="location.href='{{PRIMARY_CTA_URL}}'">{{PRIMARY_CTA_LABEL}}</button>
+          </div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="card">
+          <h3 style="margin:0 0 8px 0">Contact form</h3>
+          <form class="contact-form" id="contactForm" action="/book.html" method="get" onsubmit="return handleSubmit(event)">
+            <div class="row">
+              <div class="col">
+                <label for="name">Your name</label>
+                <input id="name" name="name" required placeholder="First & last">
+              </div>
+              <div class="col">
+                <label for="phone">Phone</label>
+                <input id="phone" name="phone" placeholder="{{PHONE}}">
+              </div>
+            </div>
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required placeholder="{{EMAIL}}">
+
+            <label for="interest">I am contacting about</label>
+            <select id="interest" name="interest">
+              <option>Single session</option>
+              <option>Short cohort</option>
+              <option>Ongoing therapy</option>
+              <option>Consultation for a team or program</option>
+            </select>
+
+            <label for="message">A few words about what’s happening</label>
+            <textarea id="message" name="message" placeholder="What feels most pressing?"></textarea>
+
+            <div style="display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:8px">
+              <div class="muted">I will respond to messages within 72 hours on weekdays. For urgent or emergency needs, see the note below.</div>
+              <button type="submit" class="cta">Send a note to the clinician</button>
+            </div>
+          </form>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="card">
+          <h4 style="margin:0">Confidentiality & scope</h4>
+          <p class="muted" style="margin-top:8px">This practice provides therapy within professional ethical boundaries and confidentiality limits. Sessions and communications are not a substitute for emergency services. If you are in crisis or at risk of harm, contact local emergency services or a crisis line immediately.</p>
+          <p class="muted" style="margin-top:6px">Insurance coverage varies; I can provide a superbill on request. I offer clinical therapy and cohort learning groups; these are therapeutic supports but don’t replace higher levels of care when needed.</p>
+        </div>
+
+      </section>
+
+      <aside>
+        <div class="card">
+          <h3 style="margin:0 0 8px 0">Quick contact</h3>
+          <div class="muted">Call or email to ask a scheduling question or request intake materials.</div>
+          <div style="height:10px"></div>
+          <div style="font-weight:800">Phone</div>
+          <div class="muted">{{PHONE}}</div>
+          <div style="height:8px"></div>
+          <div style="font-weight:800">Email</div>
+          <div class="muted">{{EMAIL}}</div>
+
+          <div style="height:12px"></div>
+
+          <div class="card" style="background:transparent;padding:0;border:none">
+            <h4 style="margin:0 0 10px 0">Pricing comparator</h4>
+            <div class="comparator">
+              <div class="toggle" role="tablist" aria-label="Pricing toggle">
+                <button class="active" id="opt-monthly">Monthly</button>
+                <button id="opt-package">Package</button>
+              </div>
+
+              <div class="price-row">
+                <div class="plan">
+                  <h4>Individual Sessions</h4>
+                  <div class="big" id="price-ind">$150</div>
+                  <div class="small">Standard 50-min session</div>
+                </div>
+
+                <div class="plan">
+                  <h4>Cohort Series</h4>
+                  <div class="big" id="price-cohort">$320</div>
+                  <div class="small">4-week live cohort — skill-focused</div>
+                </div>
+              </div>
+
+              <div style="height:10px"></div>
+              <div class="muted">Toggle between monthly pricing and discreet package pricing — numbers animate to show the difference.</div>
+            </div>
+          </div>
+
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="card">
+          <h4 style="margin:0 0 8px 0">How we’ll work</h4>
+          <ol class="muted" style="padding-left:18px;margin:0">
+            <li>Initial check-in: what matters most now.</li>
+            <li>Short plan: 2–8 sessions or a cohort with clear takeaways.</li>
+            <li>Review and next steps with referrals as needed.</li>
+          </ol>
+        </div>
+
+      </aside>
+    </main>
+
+    <footer>
+      <div>Licensed clinician in {{STATE}}. Responses are typically within 3 business days. For immediate risk, call local emergency services or a crisis line.</div>
+      <div style="height:6px"></div>
+      <div class="muted">This site is an invitation to care; it does not create a clinician-patient relationship until an intake is completed.</div>
+    </footer>
+  </div>
+
+  <script>
+    // Pricing comparator with animated numbers
+    (function(){
+      const monthBtn = document.getElementById('opt-monthly');
+      const packBtn = document.getElementById('opt-package');
+      const priceInd = document.getElementById('price-ind');
+      const priceCoh = document.getElementById('price-cohort');
+
+      // base values
+      const values = {
+        monthly: {ind:150, coh:320},
+        package: {ind:720, coh:280} // package: 6-session block vs cohort full price
+      };
+
+      let current = 'monthly';
+
+      function animateValue(el, start, end, duration){
+        const startTime = performance.now();
+        function frame(now){
+          const t = Math.min(1, (now - startTime) / duration);
+          const eased = t<0.5 ? 2*t*t : -1 + (4 - 2*t)*t; // ease
+          const val = Math.round(start + (end - start) * eased);
+          el.textContent = '$' + val;
+          if(t < 1) requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+      }
+
+      function setMode(mode){
+        if(mode === current) return;
+        const from = values[current];
+        const to = values[mode];
+        animateValue(priceInd, from.ind, to.ind, 640);
+        animateValue(priceCoh, from.coh, to.coh, 640);
+        current = mode;
+      }
+
+      monthBtn.addEventListener('click', ()=>{
+        monthBtn.classList.add('active'); packBtn.classList.remove('active');
+        setMode('monthly');
+      });
+      packBtn.addEventListener('click', ()=>{
+        packBtn.classList.add('active'); monthBtn.classList.remove('active');
+        setMode('package');
+      });
+
+    })();
+
+    // Mood-to-Method logic
+    (function(){
+      const map = {
+        overwhelmed: {
+          title: 'Short rhythm reset',
+          desc: 'We focus on immediate, doable adjustments — tools to reduce noise and increase clarity across your day. Often a 3–6 session arc with simple practices helps you feel steadier.',
+          cta: 'Schedule a short check-in'
+        },
+        stuck: {
+          title: 'Behavioral pairing plan',
+          desc: 'We map what isn’t changing, test small experiments, and build accountability into your life so movement is more likely. A few focused sessions can produce useful shifts.',
+          cta: 'Start an exploratory session'
+        },
+        anxious: {
+          title: 'Grounding and exposure scaffold',
+          desc: 'We mix immediate grounding strategies with manageable steps forward to reduce avoidance and increase agency. Sessions are collaborative and paced to your tolerance.',
+          cta: 'Book a stabilizing call'
+        },
+        grief: {
+          title: 'Space for gradual grieving',
+          desc: 'Therapy here is gentle and patient-focused: we track what helps you breathe, remember, and carry on. We outline a grief-sensitive timeline together.',
+          cta: 'Arrange a listening session'
+        },
+        transition: {
+          title: 'Plan for a reset',
+          desc: 'Big changes benefit from practical structure. We create a short plan with check-in points so decisions feel less overwhelming and more intentional.',
+          cta: 'Talk through a transition plan'
+        }
+      };
+
+      const moodButtons = document.querySelectorAll('.mood');
+      const recTitle = document.getElementById('rec-title');
+      const recDesc = document.getElementById('rec-desc');
+      const primaryCta = document.getElementById('primary-cta');
+
+      function clearActive(){
+        moodButtons.forEach(b=>b.classList.remove('active'));
+      }
+
+      moodButtons.forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const key = btn.getAttribute('data-key');
+          if(!map[key]) return;
+          clearActive();
+          btn.classList.add('active');
+          // morph text with a tiny crossfade
+          recTitle.style.opacity = 0; recDesc.style.opacity = 0; primaryCta.style.opacity = 0;
+          setTimeout(()=>{
+            recTitle.textContent = map[key].title;
+            recDesc.textContent = map[key].desc;
+            primaryCta.textContent = map[key].cta;
+            // keep CTA href to the primary url placeholder
+            recTitle.style.opacity = 1; recDesc.style.opacity = 1; primaryCta.style.opacity = 1;
+          },180);
+        });
+      });
+
+    })();
+
+    // Contact form small handler
+    function handleSubmit(e){
+      e.preventDefault();
+      const form = e.target;
+      // Minimal local validation
+      const name = form.name.value.trim();
+      const email = form.email.value.trim();
+      if(!name || !email){
+        alert('Please provide name and email.');
+        return false;
+      }
+      // Instead of sending, direct user to booking page with query params
+      const params = new URLSearchParams({name, email, interest: form.interest.value});
+      location.href = '/book.html?'+params.toString();
+      return false;
+    }
+  </script>
+</body>
+</html>

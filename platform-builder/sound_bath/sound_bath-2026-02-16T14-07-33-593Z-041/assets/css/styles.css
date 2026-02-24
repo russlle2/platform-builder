@@ -1,0 +1,83 @@
+/* Earthy warm palette, minimal poetic rhythm */
+:root{
+  --bg:#fff9f4;
+  --pane:#fffefc;
+  --ink:#2d2a25;
+  --muted:#8b7f74;
+  --accent:#b67a45; /* warm clay */
+  --accent-2:#9aa96b; /* sage */
+  --glass:rgba(255,255,255,0.6);
+  --radius:12px;
+  --max:1100px;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;line-height:1.45;color:var(--ink);background:linear-gradient(180deg,var(--bg),#fff);}
+.wrap{max-width:var(--max);margin:0 auto;padding:28px}
+.site-header{position:sticky;top:0;background:linear-gradient(180deg,rgba(255,249,244,0.9),rgba(255,249,244,0.7));backdrop-filter:blur(6px);border-bottom:1px solid rgba(45,42,37,0.04)}
+.site-header .wrap{display:flex;align-items:center;gap:18px}
+.brand{font-weight:600;color:var(--ink);text-decoration:none;font-size:1.05rem}
+.primary-nav{margin-left:18px;display:flex;gap:14px}
+.primary-nav a{color:var(--muted);text-decoration:none;padding:8px;border-radius:8px}
+.primary-nav a:hover{background:var(--glass);color:var(--ink)}
+.actions{margin-left:auto;display:flex;align-items:center;gap:10px}
+.cta{background:transparent;border:1px solid var(--accent);padding:8px 12px;border-radius:10px;color:var(--accent);text-decoration:none}
+.menu-toggle{background:none;border:0;font-size:18px}
+
+/* HERO */
+.hero{position:relative;padding:48px 0 36px;background:linear-gradient(120deg,rgba(182,122,69,0.05),rgba(154,169,107,0.03));overflow:hidden}
+.hero .pattern{position:absolute;inset:0;background-image:url('/assets/img/pattern.svg');background-repeat:no-repeat;background-size:cover;opacity:0.18;mix-blend-mode:multiply;}
+.hero-inner{display:grid;grid-template-columns:1fr 320px;gap:28px;align-items:start;position:relative}
+.title{font-size:2rem;margin:0 0 8px;color:var(--ink)}
+.lede{color:var(--muted);margin:0 0 12px}
+.meta{list-style:none;padding:0;margin:8px 0 0;color:var(--muted)}
+.meta li{font-size:0.92rem;margin-bottom:6px}
+.hero-aside .card{background:var(--pane);padding:18px;border-radius:var(--radius);box-shadow:0 6px 18px rgba(45,42,37,0.06)}
+.small{font-size:0.95rem;color:var(--muted)}
+
+/* DIAGNOSTIC */
+.diagnostic{padding:36px 0}
+.diagnostic header h2{margin:0 0 6px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.muted{color:var(--muted)}
+
+/* PLAN */
+.plan{padding:36px 0}
+.flow{list-style:none;padding:0;margin:12px 0 0}
+.flow li{background:linear-gradient(180deg,rgba(255,255,255,0.7),#fff);border-radius:10px;padding:14px;margin-bottom:12px;border:1px solid rgba(45,42,37,0.03)}
+
+/* MICRO HABITS */
+.micro-habits{padding:36px 0}
+.habits{display:flex;gap:14px;list-style:none;padding:0;margin:12px 0 0}
+.habits li{flex:1;background:var(--pane);padding:14px;border-radius:10px}
+
+/* PRICING */
+.pricing{padding:36px 0}
+.plans{display:flex;gap:16px}
+.plan-card{flex:1;padding:18px;border-radius:12px;background:linear-gradient(180deg,#fffefc,#fff);border:1px solid rgba(45,42,37,0.04)}
+.plan-card.featured{box-shadow:0 10px 30px rgba(154,169,107,0.08);border-color:rgba(182,122,69,0.12)}
+.price{font-size:1.6rem;color:var(--accent);margin:8px 0}
+.btn{display:inline-block;padding:8px 12px;border-radius:8px;border:1px solid var(--muted);text-decoration:none;color:var(--ink)}
+.btn-primary{background:linear-gradient(90deg,var(--accent),#b4743f);color:white;border-color:transparent}
+.disclaimer{font-size:0.9rem;margin-top:12px}
+
+/* CTA */
+.cta{padding:36px 0;text-align:center}
+.primary-cta{display:inline-block;background:linear-gradient(90deg,var(--accent),#b06b39);color:white;padding:10px 18px;border-radius:14px;text-decoration:none}
+.primary-cta.large{padding:14px 22px;font-size:1.05rem}
+.contact-line{margin-top:12px;color:var(--muted)}
+
+/* FOOTER */
+.site-footer{border-top:1px solid rgba(45,42,37,0.04);padding:18px 0;background:transparent}
+.site-footer .wrap{display:flex;align-items:center;gap:10px;justify-content:space-between}
+.foot-nav a{color:var(--muted);text-decoration:none;margin-left:12px}
+
+/* Responsive */
+@media(max-width:900px){
+  .hero-inner{grid-template-columns:1fr}
+  .primary-nav{display:none}
+}
+@media(max-width:520px){
+  .wrap{padding:16px}
+  .plans{flex-direction:column}
+  .habits{flex-direction:column}
+}

@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Private Sessions — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#06121a;--card:#071821;--accent:#ffd6a5;--muted:#9fb1b6}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#04131a,#031a20);color:#eaf6f2}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 28px;background:rgba(255,255,255,0.02)}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#ffb085);display:grid;place-items:center;color:#15221f;font-weight:800}
+    nav a{color:var(--muted);margin:0 8px;text-decoration:none}
+    main{max-width:980px;margin:30px auto;padding:22px}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:20px}
+    .card{background:var(--card);padding:18px;border-radius:12px}
+    h1{margin:0 0 8px 0}
+    p.lead{color:var(--muted)}
+    .options{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+    .option{padding:10px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.015),transparent);display:flex;justify-content:space-between;align-items:center}
+    .cta{background:var(--accent);color:#15221f;padding:10px 12px;border-radius:10px;text-decoration:none;font-weight:700}
+    .note{font-size:13px;color:#ffddcc;padding:10px;border-radius:8px;margin-top:12px}
+    .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,11,0.6);display:none;place-items:center;z-index:50}
+    .modal{width:92%;max-width:600px;background:linear-gradient(180deg,#051217,#052023);padding:18px;border-radius:12px}
+    .btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:8px;color:#dff7f0}
+  </style>
+</head>
+<body>
+  <header>
+    <div style='display:flex;gap:12px;align-items:center'>
+      <div class='logo'>PR</div>
+      <div>
+        <div style='font-weight:800'>{{BUSINESS_NAME}}</div>
+        <div style='font-size:12px;color:var(--muted)'>Tailored sessions for focused recalibration</div>
+      </div>
+    </div>
+    <nav>
+      <a href='index.html'>Home</a>
+      <a href='events.html'>Gatherings</a>
+      <a href='private-sessions.html'>Privates</a>
+      <a href='pricing.html'>Investment</a>
+      <a href='faq.html'>FAQ</a>
+      <a href='contact.html'>Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class='grid' style='max-width:1100px;margin:0 auto'>
+      <div class='card'>
+        <h1>Private resets & small groups</h1>
+        <p class='lead'>One-on-one or intimate group sessions designed as a focused experiential reset. Ideal when you want intentionality without the room energy of a group.</p>
+
+        <div style='margin-top:12px'>
+          <div style='font-weight:700'>Options</div>
+          <div class='options'>
+            <div class='option'>
+              <div>
+                <div style='font-weight:700'>Short Reset — 30 min</div>
+                <div style='font-size:13px;color:var(--muted)'>Meditative sound and guided reflection</div>
+              </div>
+              <div style='text-align:right'>
+                <div style='font-weight:800'>$85</div>
+                <button class='btn bookNow' data-type='short'>Book</button>
+              </div>
+            </div>
+
+            <div class='option'>
+              <div>
+                <div style='font-weight:700'>Deep Resonance — 75 min</div>
+                <div style='font-size:13px;color:var(--muted)'>Extended sound work, personalized intention setting</div>
+              </div>
+              <div style='text-align:right'>
+                <div style='font-weight:800'>$195</div>
+                <button class='btn bookNow' data-type='deep'>Book</button>
+              </div>
+            </div>
+
+            <div class='option'>
+              <div>
+                <div style='font-weight:700'>VIP Day — 180 min</div>
+                <div style='font-size:13px;color:var(--muted)'>Full day immersive and planning session (onsite or virtual)</div>
+              </div>
+              <div style='text-align:right'>
+                <div style='font-weight:800'>$950</div>
+                <button class='btn bookNow' data-type='vip'>Inquire</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class='note'>
+          Contraindications: We adapt work for many needs. Please disclose recent surgeries, pregnancy, or conditions affecting balance or hearing. Email {{EMAIL}} for a short pre-session form.
+        </div>
+
+        <div style='margin-top:16px'>
+          <a class='cta' href='{{PRIMARY_CTA_URL}}'>Schedule a Private Reset</a>
+          <button id='tryMini' class='btn' style='margin-left:10px'>Try a 3-step Pause</button>
+        </div>
+      </div>
+
+      <aside class='card'>
+        <h3 style='margin-top:0'>What to expect</h3>
+        <ul style='color:var(--muted)'>
+          <li>We begin with a brief intake to set intention.</li>
+          <li>Sound materials are tailored to your needs.</li>
+          <li>Aftercare suggestions and a short take-home ritual.</li>
+        </ul>
+
+        <div style='margin-top:12px'>
+          <div style='font-weight:700'>Contact</div>
+          <div style='color:var(--muted)'>{{PHONE}} • {{EMAIL}}</div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <div class='modal-backdrop' id='modal'>
+    <div class='modal'>
+      <h3>Guided Micro‑Practice</h3>
+      <p style='color:var(--muted)'>A simple three-step practice to sample the approach: breath, short note, intention. No sign-up required.</p>
+      <div style='margin-top:12px'>
+        <div style='font-weight:700'>1. Ground</div>
+        <div style='color:var(--muted);margin-top:6px'>Feet anchored. Inhale 4 — exhale 6. Do this three times.</div>
+        <div style='font-weight:700;margin-top:10px'>2. Notice</div>
+        <div style='color:var(--muted);margin-top:6px'>Name one sensation in a sentence.</div>
+        <div style='font-weight:700;margin-top:10px'>3. Carry</div>
+        <div style='color:var(--muted);margin-top:6px'>Choose one word to bring forward. Breathe it once aloud.</div>
+      </div>
+      <div style='display:flex;justify-content:flex-end;margin-top:12px'>
+        <button id='close' class='btn'>Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // small booking handlers (local)
+    document.querySelectorAll('.bookNow').forEach(function(b){ b.addEventListener('click', function(){ var type = b.getAttribute('data-type'); if(type==='vip'){ alert('Please use the contact form to inquire about VIP Day packages.'); } else { location.href = '{{PRIMARY_CTA_URL}}?session=' + type; } }); });
+
+    // simple modal for try-it
+    (function(){ var modal = document.getElementById('modal'); var tryBtn = document.getElementById('tryMini'); var close = document.getElementById('close'); tryBtn.addEventListener('click', function(){ modal.style.display='grid'; }); close.addEventListener('click', function(){ modal.style.display='none'; }); })();
+  </script>
+
+  <footer style='text-align:center;padding:18px;color:var(--muted)'>
+    {{BUSINESS_NAME}} • Call {{PHONE}} • Email {{EMAIL}}
+  </footer>
+</body>
+</html>

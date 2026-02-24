@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contact — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Connect with a calm plan. Contact {{BUSINESS_NAME}} for clarity, habits, and steady daily practices.">
+  <style>
+    :root{--bg:#f7f8f6;--card:#ffffff;--ink:#1f2933;--muted:#667080;--accent:#7aa89a;--glass:rgba(255,255,255,0.6)}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;line-height:1.4;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+    .site{min-height:100vh;display:flex;flex-direction:column;background-image:url('assets/img/pattern.svg');background-repeat:repeat;}
+    header{padding:28px 20px;display:flex;align-items:center;justify-content:space-between}
+    .brand{font-weight:600;letter-spacing:0.4px}
+    nav a{margin-left:14px;color:var(--ink);text-decoration:none;font-size:14px}
+    main{flex:1;padding:28px;max-width:980px;margin:0 auto;width:100%}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:28px}
+    .card{background:var(--card);border-radius:12px;padding:20px;box-shadow:0 6px 18px rgba(30,40,50,0.06)}
+    h1{margin:4px 0 8px;font-size:22px}
+    p.lead{margin:0;color:var(--muted)}
+    .meta{font-size:13px;color:var(--muted);margin-top:12px}
+    form{display:grid;gap:10px}
+    label{font-size:13px;color:var(--muted)}
+    input[type="text"],input[type="email"],textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9eb;background:transparent}
+    textarea{min-height:120px}
+    .row{display:flex;gap:10px}
+    .btn{display:inline-block;padding:10px 14px;border-radius:10px;background:var(--accent);color:white;border:0;cursor:pointer}
+    .ghost{background:transparent;border:1px solid #e6e9eb;color:var(--ink)}
+    .small{font-size:13px;color:var(--muted)}
+    .tools{display:flex;flex-direction:column;gap:12px}
+    .tool-cta{display:flex;gap:8px;align-items:center}
+    .try-now{background:transparent;border:1px dashed var(--accent);padding:10px;border-radius:9px;cursor:pointer;color:var(--accent)}
+    .checklist{margin-top:14px}
+    table.check{width:100%;border-collapse:collapse}
+    table.check td,table.check th{padding:8px;border-bottom:1px dashed #f0f0f0;text-align:left}
+    .print-btn{margin-top:10px}
+    footer{padding:18px;text-align:center;color:var(--muted);font-size:13px}
+    /* modal */
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(12,16,18,0.45);z-index:60}
+    .modal.open{display:flex}
+    .panel{background:white;border-radius:12px;padding:20px;max-width:720px;width:92%;box-shadow:0 20px 40px rgba(10,20,30,0.3)}
+    .modal .close{position:absolute;top:18px;right:18px;background:transparent;border:0;color:white;font-size:20px}
+    .mode-tabs{display:flex;gap:8px;margin-bottom:12px}
+    .mode-tabs button{padding:8px 10px;border-radius:8px;border:1px solid #eee;background:#fafafa;cursor:pointer}
+    .circle{width:160px;height:160px;border-radius:50%;background:radial-gradient(circle at 30% 30%,rgba(122,168,154,0.18),transparent 40%);display:flex;align-items:center;justify-content:center;margin:8px auto}
+    .big{font-size:18px}
+    .saved{margin-top:8px;font-size:13px;color:var(--muted)}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="site">
+    <header>
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <nav aria-label="Primary navigation">
+        <a href="index.html">Home</a>
+        <a href="about.html">Essence</a>
+        <a href="services.html">Offerings</a>
+        <a href="programs.html">Programs</a>
+        <a href="pricing.html">Plans</a>
+        <a href="testimonials.html">Stories</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <div class="grid">
+        <section>
+          <div class="card">
+            <h1>Connect & compose a steadier week</h1>
+            <p class="lead">A short note, a plan, or a first step — reach out and we'll co-create a reachable routine. Replace the hurry with a quiet scaffold.</p>
+            <p class="meta">Call: <a href="tel:{{PHONE}}">{{PHONE}}</a> • Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+
+            <form id="contactForm" class="mt">
+              <label for="name">Name</label>
+              <input id="name" name="name" type="text" placeholder="Your name">
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" placeholder="you@domain.com">
+              <label for="message">Message</label>
+              <textarea id="message" name="message" placeholder="A brief note about what you need — goals, timing, or questions"></textarea>
+              <div class="row">
+                <button type="button" class="btn" id="primaryCta">{{PRIMARY_CTA_LABEL}}</button>
+                <button type="button" class="ghost" id="openPractice">Try a practice</button>
+              </div>
+              <p class="small">Prefer a direct booking? <a href="{{PRIMARY_CTA_URL}}">Schedule time</a>.</p>
+            </form>
+
+            <div style="margin-top:14px">
+              <strong>Office</strong>
+              <div class="small">{{CITY}}, {{STATE}} — Sessions via video, phone, or quiet in-person meetings.</div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:18px">
+            <h2 style="margin:0 0 6px 0">Habit builder — 7-day challenge</h2>
+            <p class="small">Choose up to 7 small actions. We’ll make a printable checklist you can carry or pin.</p>
+
+            <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+              <select id="startDay">
+                <option>Start Monday</option>
+                <option>Start Tuesday</option>
+                <option>Start Wednesday</option>
+                <option>Start Thursday</option>
+                <option>Start Friday</option>
+                <option>Start Saturday</option>
+                <option>Start Sunday</option>
+              </select>
+              <button class="ghost" id="presetsBtn">Use gentle preset</button>
+              <button class="btn" id="generateBtn">Generate checklist</button>
+            </div>
+
+            <div class="checklist" id="checklistArea" aria-live="polite"></div>
+
+          </div>
+        </section>
+
+        <aside class="card tools">
+          <div>
+            <h3 style="margin:0 0 6px 0">Quick practices</h3>
+            <p class="small">Short practices to steady a moment. Open one and try it now; each is timed and guided.</p>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">
+              <div class="tool-cta">
+                <button class="try-now" data-mode="breathing">Try breathing</button>
+                <span class="small">(2–4 minutes)</span>
+              </div>
+              <div class="tool-cta">
+                <button class="try-now" data-mode="journaling">Try journaling</button>
+                <span class="small">(3–6 minutes)</span>
+              </div>
+              <div class="tool-cta">
+                <button class="try-now" data-mode="intention">Set an intention</button>
+                <span class="small">(1–3 minutes)</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="border-top:1px dashed #f0f0f0;padding-top:12px">
+            <h4 style="margin:0 0 6px 0">Need help deciding?</h4>
+            <p class="small">Share a quick note above and I’ll suggest a fitting 7-day practice aligned with your rhythm.</p>
+            <div style="margin-top:8px"><button class="btn" id="suggestBtn">Suggest a starter</button></div>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <footer>
+      <div>{{BUSINESS_NAME}} — quiet frameworks for daily steadiness • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </footer>
+  </div>
+
+  <!-- Modal: guided practice -->
+  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="panel" role="document">
+      <button class="close" id="closeModal" aria-label="Close">×</button>
+      <div id="modalInner">
+        <div class="mode-tabs" id="modeTabs">
+          <button data-mode="breathing">Breathing</button>
+          <button data-mode="journaling">Journaling</button>
+          <button data-mode="intention">Intention</button>
+        </div>
+
+        <div id="modeContent">
+          <!-- breathing -->
+          <div data-panel="breathing" class="mode-panel">
+            <h3 class="big">Centered breath</h3>
+            <p class="small">Follow a slow 4–4–4 cycle. Watch the circle breathe with you.</p>
+            <div class="circle" id="breathCircle"><div id="breathLabel">Ready</div></div>
+            <div style="display:flex;gap:8px;justify-content:center;margin-top:8px">
+              <button class="btn" id="startBreath">Start</button>
+              <button class="ghost" id="stopBreath">Stop</button>
+            </div>
+          </div>
+
+          <!-- journaling -->
+          <div data-panel="journaling" class="mode-panel" style="display:none">
+            <h3 class="big">Timed journaling</h3>
+            <p class="small">Choose a 3-minute prompt. Write freely; keep it simple.</p>
+            <select id="journalPrompt">
+              <option>What eased me today?</option>
+              <option>One small success I can celebrate</option>
+              <option>What I want to let go of before bed</option>
+              <option>Three things I can do tomorrow</option>
+            </select>
+            <div style="margin-top:8px"><textarea id="journalArea" placeholder="Write whatever comes…"></textarea></div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button class="btn" id="startJournal">Start 3-min timer</button>
+              <button class="ghost" id="saveJournal">Save entry</button>
+            </div>
+            <div class="saved" id="savedJournals"></div>
+          </div>
+
+          <!-- intention -->
+          <div data-panel="intention" class="mode-panel" style="display:none">
+            <h3 class="big">Set an intention</h3>
+            <p class="small">A few quick prompts to shape a clear, kind intention for the next day.</p>
+            <ol style="padding-left:18px">
+              <li>What would make tomorrow feel lighter?</li>
+              <li>What’s one small action that supports that?</li>
+              <li>How will you remind yourself gently?</li>
+            </ol>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <input id="intentAction" placeholder="I will…" type="text">
+              <button class="btn" id="saveIntent">Capture</button>
+            </div>
+            <div class="saved" id="intentSaved"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Accessibility helpers
+    const modal = document.getElementById('modal');
+    const modeTabs = document.getElementById('modeTabs');
+    const modePanels = document.querySelectorAll('[data-panel]');
+    function openModal(mode){
+      modal.classList.add('open'); modal.setAttribute('aria-hidden','false');
+      switchTo(mode || 'breathing');
+      document.body.style.overflow='hidden';
+    }
+    function closeModal(){
+      modal.classList.remove('open'); modal.setAttribute('aria-hidden','true');
+      document.body.style.overflow='';
+      stopBreathing();
+    }
+
+    document.getElementById('openPractice').addEventListener('click',()=>openModal());
+    document.getElementById('closeModal').addEventListener('click',closeModal);
+    document.querySelectorAll('.try-now').forEach(b=>b.addEventListener('click',e=>openModal(e.currentTarget.dataset.mode)));
+    document.getElementById('modeTabs').addEventListener('click',e=>{if(e.target.dataset.mode) switchTo(e.target.dataset.mode)});
+
+    function switchTo(mode){
+      modePanels.forEach(p=>p.style.display = p.dataset.panel===mode ? '' : 'none');
+    }
+
+    // Breathing practice (4-4-4 simple)
+    let breathTimer=null;let breathPhase=0;let breathCount=0;const breathLabel=document.getElementById('breathLabel');
+    const circle=document.getElementById('breathCircle');
+    function breatheStep(){
+      // phases: 0 inhale,1 hold,2 exhale,3 hold
+      const phaseOrder=['Inhale','Hold','Exhale','Hold'];
+      const duration=4; // seconds each
+      breathPhase = (breathPhase+1)%4; // progress
+      breathCount += 0;
+      const label = phaseOrder[breathPhase];
+      breathLabel.textContent = label;
+      // animate circle
+      if(label==='Inhale'){ circle.style.transform='scale(1.12)'; }
+      else if(label==='Exhale'){ circle.style.transform='scale(0.88)'; }
+      else { circle.style.transform='scale(1)'; }
+    }
+    function startBreathing(){
+      if(breathTimer) return;
+      breathPhase = -1; breatheStep();
+      breathTimer = setInterval(breatheStep,4000);
+    }
+    function stopBreathing(){
+      clearInterval(breathTimer); breathTimer=null; breatheLabelReset(); circle.style.transform='scale(1)';
+    }
+    function breatheLabelReset(){ breathLabel.textContent='Ready'; }
+    document.getElementById('startBreath').addEventListener('click',startBreathing);
+    document.getElementById('stopBreath').addEventListener('click',stopBreathing);
+
+    // Journaling simple timer/save
+    let journalTimer=null; let journalSeconds=0;
+    const journalArea=document.getElementById('journalArea');
+    document.getElementById('startJournal').addEventListener('click',()=>{
+      const total = 180; journalSeconds=0; if(journalTimer) clearInterval(journalTimer);
+      journalTimer = setInterval(()=>{
+        journalSeconds++;
+        const left = total - journalSeconds; document.getElementById('startJournal').textContent = left>0 ? 'Time left: '+left+'s' : 'Done';
+        if(left<=0){ clearInterval(journalTimer); journalTimer=null; document.getElementById('startJournal').textContent='Start 3-min timer'; }
+      },1000);
+    });
+    document.getElementById('saveJournal').addEventListener('click',()=>{
+      const txt = journalArea.value.trim(); if(!txt) return alert('Write a short note first.');
+      const wrap = document.createElement('div'); wrap.textContent = new Date().toLocaleString()+" — "+txt; document.getElementById('savedJournals').prepend(wrap); journalArea.value='';
+    });
+
+    // Intention capture
+    document.getElementById('saveIntent').addEventListener('click',()=>{
+      const val = document.getElementById('intentAction').value.trim(); if(!val) return;
+      const node = document.createElement('div'); node.textContent = '• '+val; document.getElementById('intentSaved').prepend(node); document.getElementById('intentAction').value='';
+    });
+
+    // Habit builder
+    const presetsBtn = document.getElementById('presetsBtn');
+    const generateBtn = document.getElementById('generateBtn');
+    const checklistArea = document.getElementById('checklistArea');
+    const startDaySel = document.getElementById('startDay');
+    const defaultPreset = ['5 min breathing','10 min walk','One glass of water','Write 3 things','Stretch shoulders','Plan tomorrow','Bed by 11pm'];
+
+    presetsBtn.addEventListener('click',()=>{
+      // show inputs to edit
+      checklistArea.innerHTML = '';
+      const container = document.createElement('div');
+      for(let i=0;i<7;i++){
+        const el = document.createElement('input'); el.type='text'; el.value = defaultPreset[i]||''; el.style.marginBottom='6px'; el.style.width='100%'; container.appendChild(el);
+      }
+      checklistArea.appendChild(container);
+    });
+
+    function dayNamesFrom(startIndex){
+      const days=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+      const idx = startIndex;
+      return days.slice(idx).concat(days.slice(0,idx));
+    }
+
+    generateBtn.addEventListener('click',()=>{
+      // collect habits
+      let inputs = checklistArea.querySelectorAll('input');
+      let habits = [];
+      if(inputs.length){ inputs.forEach(i=>habits.push(i.value.trim()||'—')); }
+      if(habits.length<7){ habits = defaultPreset.slice(0,7); }
+
+      const startIndex = startDaySel.selectedIndex || 0;
+      const days = dayNamesFrom(startIndex);
+
+      // build table
+      let html = '<table class="check"><thead><tr><th>Habit</th>';
+      days.forEach(d=>{ html += '<th>'+d+'</th>'; });
+      html += '</tr></thead><tbody>';
+      habits.forEach((h,hi)=>{
+        html += '<tr><td>'+(hi+1)+'. '+h+'</td>';
+        for(let d=0;d<7;d++) html += '<td><input type="checkbox" aria-label="'+h+' '+days[d]+'"></td>';
+        html += '</tr>';
+      });
+      html += '</tbody></table>';
+      html += '<div class="print-btn"><button class="btn" id="printChecklist">Print or save</button></div>';
+      checklistArea.innerHTML = html;
+      document.getElementById('printChecklist').addEventListener('click',()=>{
+        const win = window.open('', '_blank');
+        const doc = win.document;
+        doc.write('<!doctype html><html><head><meta charset="utf-8"><title>7-day checklist</title>');
+        doc.write('<style>body{font-family:system-ui;padding:20px;color:#111}table{width:100%;border-collapse:collapse}td,th{padding:8px;border:1px solid #ddd;text-align:left}</style>');
+        doc.write('</head><body>');
+        doc.write('<h2>'+ (document.querySelector('h1') ? document.querySelector('h1').textContent : '7-day checklist') +'</h2>');
+        doc.write(document.querySelector('#checklistArea').innerHTML);
+        doc.write('</body></html>');
+        doc.close();
+        win.focus();
+        // small delay to ensure content ready
+        setTimeout(()=>win.print(),300);
+      });
+    });
+
+    // Suggest starter (very simple heuristic)
+    document.getElementById('suggestBtn').addEventListener('click',()=>{
+      const note = (document.getElementById('message')||{}).value || '';
+      let suggested = ['5 min breathing','10 min walk','Hydrate: glass of water','Stretch 3 min','Write one gratitude','Prep one task','Sleep routine: wind down'];
+      if(/sleep|tired/i.test(note)) suggested[6] = 'Bed by a fixed hour';
+      if(/energy|motiva/i.test(note)) suggested[1] = 'Short movement burst';
+      checklistArea.innerHTML = '';
+      const container = document.createElement('div');
+      suggested.forEach(s=>{ const i = document.createElement('input'); i.type='text'; i.value=s; i.style.width='100%'; i.style.marginBottom='6px'; container.appendChild(i); });
+      checklistArea.appendChild(container);
+      window.scrollTo({top:document.getElementById('checklistArea').offsetTop,behavior:'smooth'});
+    });
+
+    // Primary CTA (simulate send)
+    document.getElementById('primaryCta').addEventListener('click',()=>{
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const message = document.getElementById('message').value.trim();
+      if(!email && !message) return alert('Please share an email or a short message so I can reply.');
+      alert('Thanks — I received your note. I’ll reply soon.');
+      // in a real site submit via AJAX or server
+    });
+
+    // close modal on backdrop click
+    modal.addEventListener('click',e=>{ if(e.target===modal) closeModal(); });
+    document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+  </script>
+</body>
+</html>

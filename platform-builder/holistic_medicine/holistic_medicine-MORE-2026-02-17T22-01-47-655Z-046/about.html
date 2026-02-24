@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Team & Story — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fffdfb;--muted:#666;--accent:#6a8b6b}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:var(--bg);color:#111}
+    .wrap{max-width:1000px;margin:0 auto;padding:28px}
+    header{display:flex;align-items:center;gap:12px}
+    .brand{font-weight:800;color:var(--accent)}
+    nav{display:flex;gap:12px;margin-top:10px}
+    nav a{color:var(--muted);text-decoration:none}
+
+    .lead{display:grid;grid-template-columns:2fr 1fr;gap:18px;align-items:start;margin-top:18px}
+    .panel{background:#fff;padding:18px;border-radius:12px;border:1px solid rgba(0,0,0,0.04)}
+    .panel h2{margin:0 0 8px}
+    .meta{color:var(--muted);font-size:14px}
+
+    .team{display:flex;flex-direction:column;gap:12px}
+    .person{display:flex;gap:12px;align-items:center}
+    .avatar{width:72px;height:72px;border-radius:12px;background:linear-gradient(135deg,#e6efe6,#f6faf6);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent)}
+    .bio{font-size:14px;color:var(--muted)}
+
+    .values{display:flex;gap:12px;margin-top:12px}
+    .value{background:linear-gradient(180deg,#fff,#f8fff8);padding:12px;border-radius:10px;border:1px solid rgba(0,0,0,0.04)}
+
+    footer{margin-top:22px;padding:14px;color:var(--muted);text-align:center}
+
+    @media(max-width:800px){.lead{grid-template-columns:1fr} .values{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <div style="flex:1"></div>
+      <div>{{CITY}}, {{STATE}}</div>
+    </header>
+
+    <nav>
+      <a href="index.html">Welcome</a>
+      <a href="services.html">Offerings</a>
+      <a href="pricing.html">Rates</a>
+      <a href="approach.html">Approach</a>
+      <a href="book.html">Reserve</a>
+    </nav>
+
+    <main class="lead">
+      <section class="panel" aria-labelledby="story">
+        <h2 id="story">Why we teach and guide</h2>
+        <p class="meta">We run short series and practical group sessions because habit change happens in practice, not lecture. Our team focuses on skills you can try between sessions and adjust with support.</p>
+
+        <div class="values">
+          <div class="value"><strong>Practicality</strong><div class="bio">Actionable steps, not abstract plans.</div></div>
+          <div class="value"><strong>Person-first</strong><div class="bio">Tools fit the life you already lead.</div></div>
+          <div class="value"><strong>Community</strong><div class="bio">Learning together increases follow-through.</div></div>
+        </div>
+      </section>
+
+      <aside class="panel" aria-labelledby="contact">
+        <h2 id="contact">Quick contact</h2>
+        <div class="meta">If you want to ask about an upcoming series or team teaching, call <a href="tel:{{PHONE}}">{{PHONE}}</a> or <a href="mailto:{{EMAIL}}">email us</a>.</div>
+        <div style="margin-top:12px"><a href="book.html">Reserve a friendly phone check</a></div>
+      </aside>
+    </main>
+
+    <section class="panel" style="margin-top:18px">
+      <h2>Our Team</h2>
+      <div class="team" role="list">
+        <div class="person" role="listitem">
+          <div class="avatar">A
+          </div>
+          <div>
+            <div style="font-weight:700">Alex Rivera</div>
+            <div class="bio">Lead practitioner and educator. Focused on practical behavioral strategies and calming, skill-based routines.</div>
+          </div>
+        </div>
+
+        <div class="person" role="listitem">
+          <div class="avatar">J
+          </div>
+          <div>
+            <div style="font-weight:700">Jamie Chen</div>
+            <div class="bio">Workshop facilitator and community coordinator who designs hands-on learning sequences for groups.</div>
+          </div>
+        </div>
+
+        <div class="person" role="listitem">
+          <div class="avatar">S
+          </div>
+          <div>
+            <div style="font-weight:700">Samir Patel</div>
+            <div class="bio">Integrative consultant focused on nutrition, lifestyle, and practical adjustments you can keep for months.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" style="margin-top:18px">
+      <h2>How we measure value</h2>
+      <p class="meta">We track small, concrete shifts: improved sleep nights, fewer midday energy crashes, or clearer routines for medication and meals. These are educated measures, not promises. Every program includes check-ins so we can adapt together.</p>
+    </section>
+
+    <footer>
+      <div>&copy; <span id="year"></span> {{BUSINESS_NAME}} • <a href="contact.html">Contact</a> • <a href="pricing.html">Rates</a></div>
+    </footer>
+  </div>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

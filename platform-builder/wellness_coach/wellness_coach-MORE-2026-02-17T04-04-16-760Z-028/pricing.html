@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Invest — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f6fbf9;--card:#ffffff;--muted:#6b7280;--accent:#176f6b;--glass:rgba(255,255,255,0.6)}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;color:#0f172a;background:var(--bg) url('assets/img/pattern.svg');-webkit-font-smoothing:antialiased}
+    header{backdrop-filter:blur(6px);background:linear-gradient(180deg,rgba(255,255,255,0.6),rgba(255,255,255,0.4));position:sticky;top:0;z-index:40;border-bottom:1px solid rgba(15,23,42,0.06)}
+    .nav{display:flex;max-width:1100px;margin:0 auto;padding:14px 20px;align-items:center;gap:18px}
+    .brand{font-weight:700;color:var(--accent)}
+    .nav a{color:#0f172a;text-decoration:none;padding:8px 10px;border-radius:8px;font-size:15px}
+    .nav a:hover{background:rgba(23,111,107,0.06)}
+    .cta{margin-left:auto}
+    .hero{max-width:1100px;margin:36px auto;padding:28px;background:linear-gradient(180deg,transparent,rgba(0,0,0,0.02));border-radius:12px}
+    .row{display:grid;grid-template-columns:1fr 360px;gap:24px}
+    h1{margin:0 0 8px;font-size:28px;color:#05282a}
+    p.lead{margin:0;color:var(--muted)}
+
+    /* Pricing cards */
+    .cards{display:flex;gap:16px;margin-top:20px}
+    .card{background:var(--card);padding:18px;border-radius:10px;box-shadow:0 6px 18px rgba(9,30,32,0.04);flex:1;border:1px solid rgba(10,20,20,0.03)}
+    .card h3{margin:0 0 6px;color:#083233}
+    .price{font-size:20px;font-weight:700;color:var(--accent)}
+    .features{margin:12px 0 0;color:var(--muted);font-size:14px}
+    .btn{display:inline-block;background:var(--accent);color:white;padding:10px 14px;border-radius:8px;text-decoration:none;margin-top:12px}
+
+    /* Mini planner */
+    .planner{background:linear-gradient(180deg,#ffffff, #fbfffd);padding:14px;border-radius:10px;border:1px solid rgba(23,111,107,0.06)}
+    .field{display:flex;flex-direction:column;margin-bottom:10px}
+    label{font-size:13px;color:#083233;margin-bottom:6px}
+    input[type=text],select,textarea{padding:8px;border:1px solid rgba(10,20,20,0.06);border-radius:8px}
+    .small{font-size:13px;color:var(--muted)}
+    .plan-output{white-space:pre-wrap;background:#f8fffe;padding:10px;border-radius:8px;border:1px dashed rgba(10,20,20,0.04);margin-top:10px;font-family:Menlo,monospace;font-size:13px}
+
+    footer{max-width:1100px;margin:40px auto;padding:20px;color:var(--muted)}
+
+    /* Reveal animation */
+    .reveal{opacity:0;transform:translateY(12px);transition:opacity 500ms ease,var(--transform,transform) 500ms ease}
+    .revealed{opacity:1;transform:none}
+
+    @media (max-width:900px){.row{grid-template-columns:1fr}.cards{flex-direction:column}.nav{padding:12px}}
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="nav">
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <a href="index.html">Overview</a>
+      <a href="about.html">Approach</a>
+      <a href="services.html">Offerings</a>
+      <a href="programs.html">Journeys</a>
+      <a href="pricing.html" aria-current="page">Invest</a>
+      <a href="testimonials.html">Stories</a>
+      <a href="book.html">Plan a Session</a>
+      <a href="contact.html">Reach</a>
+      <div class="cta"><a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero reveal" data-reveal>
+      <div class="row">
+        <div>
+          <h1>Memberships for steady practice and measurable habits</h1>
+          <p class="lead">Choose a recurring rhythm that fits your tempo. Each tier blends coaching touchpoints with habit frameworks you can keep returning to.</p>
+
+          <div class="cards" style="margin-top:18px">
+            <div class="card">
+              <h3>Starter Cycle</h3>
+              <div class="price">$29 / month</div>
+              <div class="features">Guided habit set, monthly check-in, library access</div>
+              <a class="btn" href="book.html">Begin with a consult</a>
+            </div>
+            <div class="card">
+              <h3>Rhythm Membership</h3>
+              <div class="price">$79 / month</div>
+              <div class="features">Weekly briefings, personalized micro-habits, planner review</div>
+              <a class="btn" href="book.html">Start a 14-day trial</a>
+            </div>
+            <div class="card">
+              <h3>Sustained Practice</h3>
+              <div class="price">$199 / month</div>
+              <div class="features">Biweekly sessions, priority booking, deeper frameworks</div>
+              <a class="btn" href="book.html">Request an intake</a>
+            </div>
+          </div>
+
+          <p class="small" style="margin-top:12px">All plans include a concise habit library and actionable tracking templates — no dense manuals, just usable steps.</p>
+        </div>
+
+        <aside class="planner reveal" data-reveal>
+          <h3 style="margin-top:0">Mini Session Planner</h3>
+          <div class="field">
+            <label for="goal">Primary focus for the next 4 weeks</label>
+            <input id="goal" type="text" placeholder="e.g., get more consistent sleep" />
+          </div>
+          <div class="field">
+            <label for="days">Sessions per week</label>
+            <select id="days">
+              <option>1</option>
+              <option selected>2</option>
+              <option>3</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="length">Typical session length</label>
+            <select id="length">
+              <option>20 minutes</option>
+              <option selected>40 minutes</option>
+              <option>60 minutes</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="focus">Focus areas</label>
+            <select id="focus" multiple size="3">
+              <option>Energy rhythms</option>
+              <option>Movement habits</option>
+              <option>Sleep and rest</option>
+              <option>Daily planning</option>
+            </select>
+            <small class="small">(use Ctrl/Cmd to select multiple)</small>
+          </div>
+          <button id="build-plan" class="btn">Build plan</button>
+          <div id="planner-result" class="plan-output" aria-live="polite" style="display:none"></div>
+          <button id="copy-plan" class="btn" style="display:none;margin-top:8px">Copy summary</button>
+        </aside>
+      </div>
+    </section>
+
+    <section class="reveal" data-reveal style="max-width:1100px;margin:18px auto;padding:18px;background:var(--card);border-radius:10px">
+      <h2 style="margin-top:0">How membership value is framed</h2>
+      <p class="small">We set clear outcomes, structure small repeatable habits, and provide a feedback loop each month. You get a steady scaffold rather than one-off fixes.</p>
+      <ul class="small" style="margin-top:8px">
+        <li>Monthly mapping and checkpoints</li>
+        <li>Short, implementable habits not long curricula</li>
+        <li>Templates you can reuse across weeks</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>Contact: <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    <div style="margin-top:8px;font-size:13px">Serving people in {{CITY}}, {{STATE}} and remote members.</div>
+  </footer>
+
+  <script>
+    // Scroll reveal with reduced-motion support
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const reveals = document.querySelectorAll('[data-reveal]');
+      if(prefersReduced){ reveals.forEach(el=>el.classList.add('revealed')); return }
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{
+          if(e.isIntersecting){ e.target.classList.add('revealed'); io.unobserve(e.target) }
+        })
+      }, {threshold:0.12});
+      reveals.forEach(r=>io.observe(r));
+    })();
+
+    // Mini Session Planner logic
+    (function(){
+      const build = document.getElementById('build-plan');
+      const copyBtn = document.getElementById('copy-plan');
+      const out = document.getElementById('planner-result');
+      function summarize(data){
+        const header = ['Session Plan Summary','---------------'].join('\n');
+        const meta = `Goal: ${data.goal || 'General consistency'}\nSessions/week: ${data.days}\nSession length: ${data.length}\nFocus: ${data.focus.join(', ') || 'General'}`;
+        const habits = data.focus.map((f,i)=>`${i+1}. Habit for ${f}: ${habitFor(f)}`).join('\n');
+        return [header,meta,'',"Suggested weekly pattern:",patternFor(data.days,data.length),"",'Suggested micro-habits:',habits].join('\n');
+      }
+      function habitFor(focus){
+        const map = {
+          'Energy rhythms':'Anchor a 10-minute morning reset to tune energy windows',
+          'Movement habits':'Three brief movement prompts spread across the day',
+          'Sleep and rest':'A pre-bed 20-minute wind-down ritual',
+          'Daily planning':'Evening 8-minute review to plan the next day'
+        };
+        return map[focus]||'A single small behaviour tied to an existing routine';
+      }
+      function patternFor(days,len){
+        if(days==1) return `One focused session of ${len} with two short follow-ups (10 min) mid-week`;
+        if(days==2) return `Two sessions of ${len} — one planning, one review; small daily micro-checks`;
+        return `Three sessions of ${len} to alternate themes across the week`;
+      }
+
+      build.addEventListener('click',()=>{
+        const goal = document.getElementById('goal').value.trim();
+        const days = document.getElementById('days').value;
+        const length = document.getElementById('length').value;
+        const focusEl = document.getElementById('focus');
+        const focus = Array.from(focusEl.selectedOptions).map(o=>o.text);
+        const data = {goal,days,length,focus};
+        const text = summarize(data);
+        out.textContent = text; out.style.display='block'; copyBtn.style.display='inline-block';
+      });
+
+      copyBtn.addEventListener('click', async ()=>{
+        const text = out.textContent || '';
+        try{
+          await navigator.clipboard.writeText(text);
+          copyBtn.textContent = 'Copied';
+          setTimeout(()=>copyBtn.textContent='Copy summary',1200);
+        }catch(e){
+          // Fallback: select and let user copy
+          const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta);
+          ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+          copyBtn.textContent='Copied'; setTimeout(()=>copyBtn.textContent='Copy summary',1200);
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

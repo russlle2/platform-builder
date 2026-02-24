@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#FFFDF9;--accent:#8FBF9A;--muted:#6F7972;--ink:#172724}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto;line-height:1.5;color:var(--ink);background:linear-gradient(180deg,var(--bg),#F6FBF7)}
+    header{padding:22px 20px;display:flex;align-items:center;justify-content:space-between}
+    .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,#E6F7EE,#F9FFFB);display:grid;place-items:center;color:var(--accent);font-weight:800}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none}
+    nav a.active{color:var(--ink);font-weight:700}
+    .pattern{position:absolute;left:-10%;top:-6%;width:600px;height:600px;opacity:0.08;z-index:0}
+    main{position:relative;z-index:2;max-width:980px;margin:12px auto;padding:0 20px}
+    .hero{padding:34px;margin-top:6px;background:#fff;border-radius:14px;box-shadow:0 10px 30px rgba(23,39,34,0.04);display:flex;gap:18px}
+    .hero .text{flex:1}
+    h1{margin:0 0 6px;font-size:26px}
+    .muted{color:var(--muted)}
+    .ritual{margin-top:18px;background:linear-gradient(180deg,#FFFFFF,#FAFFFB);padding:18px;border-radius:12px}
+    .what{display:grid;grid-template-columns:1fr 220px;gap:16px;margin-top:18px}
+    .bio{background:#fff;padding:18px;border-radius:12px}
+    .cta{display:inline-block;padding:9px 12px;border-radius:10px;background:var(--accent);color:white;text-decoration:none;font-weight:700}
+    .faq{margin-top:18px;display:grid;gap:10px}
+    .faq-item{background:#fff;padding:12px;border-radius:10px;border:1px solid rgba(23,39,34,0.03)}
+    @media (max-width:760px){.what{grid-template-columns:1fr}.hero{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <!-- unique floral sweep for about -->
+  <svg class="pattern" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+      <radialGradient id="rg"><stop offset="0" stop-color="#EAF9EE"/><stop offset="1" stop-color="#F7FFF9"/></radialGradient>
+    </defs>
+    <circle cx="80" cy="100" r="220" fill="url(#rg)" />
+  </svg>
+
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="logo">{{BUSINESS_NAME.substring(0,1)}}</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Sessions</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Shop</a>
+      <a href="pricing.html">Rates</a>
+      <a href="about.html" class="active">Story</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Contact</a>
+      <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="text">
+        <h1>We name the plants, then listen</h1>
+        <p class="muted">A quiet introduction to scented practice. I blend and teach with a safety-first hand—no cures promised, only careful craft and fragrant company.</p>
+        <div style="margin-top:12px">
+          <a class="cta" href="book.html">Join a circle</a>
+        </div>
+      </div>
+      <div style="width:240px">
+        <div style="background:#fff;padding:14px;border-radius:12px;box-shadow:0 8px 24px rgba(21,33,29,0.04)">
+          <div style="font-size:13px;color:var(--muted)">Lead practitioner</div>
+          <div style="font-weight:700;margin-top:6px">{{PRACTITIONER_NAME}}</div>
+          <div class="muted" style="margin-top:8px;font-size:13px">Certified aromatherapist (safety-focused) • Facilitator of group rituals.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ritual" aria-labelledby="ritual">
+      <h2 id="ritual">A typical ritual</h2>
+      <p class="muted">Our gatherings move from gentle arrival to shared scent exploration. Each session includes a short grounding, a participatory blending moment, and optional take-home care. Expect simple prompts, soft music, and generous explanation of dilution and safe use.</p>
+    </section>
+
+    <section class="what" aria-labelledby="expectations">
+      <div class="bio">
+        <h3 id="expectations">What to expect</h3>
+        <ul class="muted">
+          <li>Clear guidance on patch testing and topical safety</li>
+          <li>Discussion of scent profiles and botanical notes (top, middle, base)</li>
+          <li>Hands-on blending with measured, labeled bottles</li>
+        </ul>
+      </div>
+      <aside style="background:linear-gradient(180deg,#FFFFFF,#FBFFFB);padding:14px;border-radius:12px">
+        <div style="font-size:13px;color:var(--muted)">Bring</div>
+        <div style="font-weight:700;margin-top:6px">An open heart and any questions</div>
+        <div class="muted" style="margin-top:10px">If you have allergies, are pregnant, or have pets at home, please mention this before booking so we can prioritize safety.</div>
+      </aside>
+    </section>
+
+    <section class="faq" aria-labelledby="faq">
+      <h3 id="faq">Safety &amp; common questions</h3>
+      <div class="faq-item">
+        <strong>Dilution guidance</strong>
+        <div class="muted">I demonstrate recommended dilutions and provide labeled blends at safe concentrations for adults. Children and sensitive skin require further modifications—ask for guidance.</div>
+      </div>
+      <div class="faq-item">
+        <strong>Patch testing</strong>
+        <div class="muted">Before applying any new blend, we perform a small patch test. This is part of every hands-on session.</div>
+      </div>
+      <div class="faq-item">
+        <strong>Pets</strong>
+        <div class="muted">Some essential oils can be unpleasant or unsafe for animals. We cover pet-safe practices and storage so your blends remain companion-friendly.</div>
+      </div>
+      <div class="faq-item">
+        <strong>Pregnancy &amp; special conditions</strong>
+        <div class="muted">Certain oils are avoided in pregnancy. If pregnant or breastfeeding, please contact me ahead of booking to discuss safe alternatives.</div>
+      </div>
+    </section>
+
+    <section style="margin-top:18px;text-align:center">
+      <a class="cta" href="pricing.html">View packages</a>
+      <div class="muted" style="margin-top:10px">Or call {{PHONE}} to talk through options.</div>
+    </section>
+  </main>
+
+  <footer style="text-align:center;padding:30px 20px;color:var(--muted)">
+    {{BUSINESS_NAME}} — Gentle scentwork in {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>
+  </footer>
+</body>
+</html>

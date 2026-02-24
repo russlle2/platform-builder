@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Method — Our Way of Working</title>
+  <style>
+    :root{--bg:#f9fbff;--muted:#65707a;--accent:#3b8ea5;--card:#fff}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:#1f2933}
+    .site{max-width:980px;margin:26px auto;padding:20px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
+    .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 8px 24px rgba(30,40,60,0.05)}
+    .framework{display:flex;flex-direction:column;gap:12px}
+    .step{display:flex;gap:12px;align-items:flex-start}
+    .step .num{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#76b79a);color:white;display:flex;align-items:center;justify-content:center;font-weight:800}
+    .muted{color:var(--muted)}
+    .pricing-mini{margin-top:12px;padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,rgba(255,255,255,0.98))}
+    .toggle{display:flex;gap:10px;align-items:center}
+    .switch{width:52px;height:28px;background:#e6eef2;border-radius:20px;position:relative;cursor:pointer}
+    .knob{position:absolute;width:24px;height:24px;background:white;border-radius:50%;top:2px;left:2px;transition:left .28s}
+    .switch.on{background:linear-gradient(90deg,#3b8ea5,#76b79a)}
+    .switch.on .knob{left:26px}
+    .proof{margin-top:14px;padding:12px;border-radius:10px}
+    footer{margin-top:20px;color:var(--muted);font-size:13px}
+    @media(max-width:880px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="site">
+    <header>
+      <div style="font-weight:800">Holistic Pathways</div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="services.html">Offerings</a>
+        <a href="approach.html">Method</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </header>
+
+    <div class="grid">
+      <main>
+        <div class="card">
+          <h2 style="margin-top:0">A gentle method for steady change</h2>
+          <p class="muted">We use an iterative approach: understand, try, refine. Short cycles help reveal what actually works in your life.</p>
+
+          <div class="framework" style="margin-top:12px">
+            <div class="step"><div class="num">1</div><div><strong>Clarify the pattern</strong><div class="muted">A focused intake to find leverage points.</div></div></div>
+            <div class="step"><div class="num">2</div><div><strong>Try compact practices</strong><div class="muted">Micro-practices you can test between sessions.</div></div></div>
+            <div class="step"><div class="num">3</div><div><strong>Adjust and scale</strong><div class="muted">Refine what fits and add supports that stick.</div></div></div>
+          </div>
+
+          <div class="card pricing-mini" style="margin-top:12px">
+            <div style="display:flex;justify-content:space-between;align-items:center"><strong>Compare session views</strong>
+              <div class="toggle"><div style="font-size:13px;color:var(--muted)">Per session</div><div id="switch2" class="switch" role="button" tabindex="0"><div class="knob"></div></div><div style="font-size:13px;color:var(--muted)">Program</div></div></div>
+            <div style="margin-top:10px"><div style="font-weight:800;font-size:22px" id="amt">$180</div><div class="muted" id="label">/session</div></div>
+            <div style="margin-top:10px"><a href="book.html" style="display:inline-block;padding:9px 12px;background:var(--accent);color:white;border-radius:8px;text-decoration:none">Begin with a chat</a></div>
+          </div>
+
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin-top:0">Practitioner roles</h4>
+          <p class="muted">We coordinate and share notes with your other providers when requested, and focus on practical home strategies to make care more cohesive.</p>
+        </div>
+      </main>
+
+      <aside>
+        <div class="card proof">
+          <strong>What people say</strong>
+          <div id="testimonial">""</div>
+          <div style="display:flex;gap:8px;margin-top:10px" id="badges"></div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <strong>Ready to start?</strong>
+          <p class="muted">A short consult can map next steps. No pressure — just clarity.</p>
+          <a href="{{PRIMARY_CTA_URL}}" style="display:inline-block;margin-top:8px;padding:10px 12px;background:#3b8ea5;color:white;border-radius:8px;text-decoration:none">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      <div class="muted">Serving {{CITY}}, {{STATE}} • <a href="contact.html">Contact</a></div>
+    </footer>
+  </div>
+
+  <script>
+    // small pricing toggle with animated number (second instance of comparator)
+    (function(){
+      const switchEl = document.getElementById('switch2'); const amt = document.getElementById('amt'); const label = document.getElementById('label');
+      let mode='single'; const values={single:180, program:950};
+      function animate(from,to){
+        const dur=480; const start=performance.now();
+        function frame(now){
+          const t=Math.min(1,(now-start)/dur); const v = Math.round(from + (to-from)*t);
+          amt.textContent = '$'+v; if(t<1) requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+      }
+      switchEl.addEventListener('click',toggle); switchEl.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' ') {e.preventDefault();toggle();}});
+      function toggle(){
+        const prev=mode; mode = mode==='single'?'program':'single'; switchEl.classList.toggle('on', mode==='program');
+        animate(values[prev], values[mode]); label.textContent = mode==='single'?'/session':'/program (6)';
+      }
+    })();
+
+    // Proof gallery re-used
+    (function(){
+      const pool = [
+        {t:'"A practical pathway that respected my schedule."', badges:[{label:'Client Rating',tip:'4.7/5'},{label:'Clinical Review',tip:'Peer-reviewed notes'}]},
+        {t:'"Helped me make small changes that lasted."', badges:[{label:'Follow-up',tip:'Positive 3-month feedback'}]},
+        {t:'"Clear structure, compassionate coaching."', badges:[{label:'Training',tip:'Ongoing professional development'}]}
+      ];
+      let i=0; const t=5200; const el=document.getElementById('testimonial'); const badgesEl=document.getElementById('badges');
+      function show(idx){ el.style.opacity=0; badgesEl.innerHTML=''; setTimeout(()=>{ el.textContent = pool[idx].t; pool[idx].badges.forEach(b=>{ const s=document.createElement('span'); s.className='badge'; s.style.padding='6px 8px'; s.style.background='#f3f6f8'; s.style.borderRadius='8px'; s.tabIndex=0; s.textContent=b.label; s.title=b.tip; badgesEl.appendChild(s); }); el.style.opacity=1; },200); }
+      show(0); setInterval(()=>{i=(i+1)%pool.length;show(i);},t);
+    })();
+  </script>
+</body>
+</html>

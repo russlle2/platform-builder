@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Schedule — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#041022;--glass:#ffffff14;--accent:#ffd6a5;--muted:#bcd0da}
+    body{margin:0;font-family:Inter,system-ui,Arial;background:linear-gradient(180deg,#021522,#041022);color:#eaf8ff}
+    .wrap{max-width:900px;margin:28px auto;padding:18px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    .nav a{color:var(--muted);text-decoration:none;margin-left:12px}
+    .hero{padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03)}
+    form{margin-top:14px;display:grid;grid-template-columns:1fr 280px;gap:12px}
+    .field{margin-bottom:10px}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input,textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:rgba(255,255,255,0.02);color:#e8fbff}
+    button{padding:10px 12px;border-radius:10px;border:0;background:linear-gradient(90deg,var(--accent),#ffb4a2);color:#2b1b0f;font-weight:700;cursor:pointer}
+    .small{font-size:13px;color:var(--muted)}
+    .proof{margin-top:18px;display:flex;gap:12px;align-items:center}
+
+    @media (max-width:820px){form{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <nav class="nav">
+          <a href="index.html">Home</a>
+          <a href="services.html">Services</a>
+          <a href="pricing.html">Rates</a>
+          <a href="about.html">About</a>
+        </nav>
+      </div>
+      <div class="small">Questions? <a href="mailto:{{EMAIL}}" style="color:var(--muted);text-decoration:none">Email us</a></div>
+    </header>
+
+    <section class="hero">
+      <h2 style="margin:0 0 6px 0">Schedule time for a first conversation</h2>
+      <p class="small" style="margin:0">Start with an orientation to match on priorities, duration, and what support might look like.</p>
+    </section>
+
+    <form id="bookingForm" class="card" style="margin-top:12px">
+      <div>
+        <div class="field"><label for="name">Full name</label><input id="name" name="name" required></div>
+        <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" required></div>
+        <div class="field"><label for="phone">Phone</label><input id="phone" name="phone"></div>
+        <div class="field"><label for="reason">What would you like to focus on?</label><textarea id="reason" name="reason" rows="4" placeholder="Brief description" required></textarea></div>
+
+        <div class="field"><label for="type">Type of session</label>
+          <select id="type" name="type">
+            <option value="orientation">15-min orientation (complimentary)</option>
+            <option value="single">Single session (50 min)</option>
+            <option value="package">Package series</option>
+          </select>
+        </div>
+
+        <div class="field"><label for="timeframe">Preferred timeframe</label><input id="timeframe" name="timeframe" placeholder="Morning / Afternoons / Flexible"></div>
+
+        <div class="field" style="margin-top:8px"><label></label><button type="submit">Request appointment</button></div>
+
+        <div class="small" style="margin-top:8px;color:var(--muted)">A member of the team will follow up to confirm availability. This request is not a confirmed appointment.</div>
+      </div>
+
+      <aside style="padding-left:10px">
+        <div style="background:rgba(255,255,255,0.02);padding:12px;border-radius:10px">
+          <div style="font-weight:700">Quick select</div>
+          <div style="margin-top:8px;display:flex;flex-direction:column;gap:8px">
+            <button type="button" class="quick" data-type="orientation">15-min orientation</button>
+            <button type="button" class="quick" data-type="single">Single 50-min</button>
+            <button type="button" class="quick" data-type="package">Package inquiry</button>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;background:rgba(255,255,255,0.02);padding:12px;border-radius:10px">
+          <div style="font-weight:700">Need to prepare?</div>
+          <div class="small" style="margin-top:8px">Bring a short timeline of what you\'ve tried and the outcomes you\'ve noticed — that helps focus the first visit.</div>
+        </div>
+      </aside>
+    </form>
+
+    <section class="proof" style="margin-top:14px">
+      <div style="width:72px;height:72px;border-radius:8px;background:linear-gradient(135deg,#2d3d4b,#1b2b3a);display:flex;align-items:center;justify-content:center">R</div>
+      <div>
+        <div style="font-weight:700">From people who booked</div>
+        <div class="small" id="rotTest">"Helpful and practical — the orientation cleared the fog." — K.</div>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:8px">
+        <div class="badge" title="Recognized by a local wellness circle">Community</div>
+        <div class="badge" title="Listed in professional registry">Registry</div>
+      </div>
+    </section>
+
+    <footer style="margin-top:18px;color:var(--muted)">By submitting, you agree to be contacted to coordinate scheduling. The information shared is for coordination and clinical preparation. For urgent matters, please call your local emergency services or contact primary care.</footer>
+  </div>
+
+  <script>
+    // Set quick buttons
+    (function(){
+      document.querySelectorAll('.quick').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const t = btn.getAttribute('data-type');
+          document.getElementById('type').value = t;
+          document.getElementById('name').focus();
+        });
+      });
+
+      // tiny rotating testimonial
+      const messages = ['"Helpful and practical — the orientation cleared the fog." — K.','"I left with clear next steps I could try between visits." — M.','"Friendly and organized — follow-up was timely." — R.'];
+      let ix=0; const el = document.getElementById('rotTest');
+      setInterval(()=>{ ix=(ix+1)%messages.length; el.style.opacity=0; setTimeout(()=>{ el.textContent=messages[ix]; el.style.opacity=1; },180); },5000);
+
+      // Mock form submission
+      const form = document.getElementById('bookingForm');
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        const btn = form.querySelector('button[type="submit"]');
+        const orig = btn.textContent;
+        btn.textContent = 'Sending...'; btn.disabled=true;
+        setTimeout(()=>{ btn.textContent = 'Request recorded'; setTimeout(()=>{ btn.textContent = orig; btn.disabled=false; },1600); },1200);
+      });
+    })();
+  </script>
+</body>
+</html>

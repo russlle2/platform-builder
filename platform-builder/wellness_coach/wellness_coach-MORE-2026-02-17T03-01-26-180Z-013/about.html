@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfbfb;--muted:#6b7280;--accent:#2b8a7a;--card:#ffffff;--glass:rgba(255,255,255,0.7);}html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#0f172a;background:var(--bg);}a{color:var(--accent);text-decoration:none}
+    header{background:linear-gradient(180deg,rgba(43,138,122,0.06),transparent);border-bottom:1px solid rgba(15,23,42,0.04)}
+    .container{max-width:980px;margin:0 auto;padding:28px}
+    nav{display:flex;gap:18px;align-items:center;justify-content:space-between}
+    .brand{font-weight:700;color:#0f172a}
+    .navlinks{display:flex;gap:14px;font-size:15px}
+    .hero{display:grid;grid-template-columns:1fr;gap:20px;padding:28px 0}
+    .card{background:var(--card);border-radius:12px;padding:20px;box-shadow:0 6px 18px rgba(12,18,28,0.06)}
+    h1{margin:0 0 8px;font-size:26px}
+    p.lead{margin:0;color:var(--muted)}
+    .split{display:flex;gap:20px;flex-wrap:wrap;margin-top:18px}
+    .col{flex:1;min-width:260px}
+    .meta{font-size:13px;color:var(--muted);margin-bottom:12px}
+
+    /* Session planner */
+    .planner{padding:16px;border-radius:10px;background:linear-gradient(180deg,rgba(43,138,122,0.04),transparent);}
+    label{display:block;font-size:13px;margin:10px 0 6px}
+    input[type=text],select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(15,23,42,0.06);font-size:14px}
+    .row{display:flex;gap:10px}
+    .row .col-2{flex:1}
+    button{background:var(--accent);color:#fff;border:0;padding:10px 14px;border-radius:8px;cursor:pointer}
+
+    /* Habit builder */
+    .habit{padding:16px;border-radius:10px;background:linear-gradient(180deg,rgba(43,138,122,0.02),transparent);}
+    .checklist{margin-top:12px}
+    .checklist ul{list-style:none;padding:0}
+    .checklist li{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px dashed rgba(15,23,42,0.03)}
+    .small{font-size:13px;color:var(--muted)}
+
+    footer{padding:24px;text-align:center;font-size:13px;color:var(--muted)}
+
+    /* printable area styling */
+    .print-only{display:none}
+    @media print{body *{visibility:hidden}#print-area, #print-area *{visibility:visible}#print-area{position:fixed;left:0;top:0;width:100%} .no-print{display:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <nav>
+        <div style="display:flex;align-items:center;gap:14px">
+          <div class="brand">{{BUSINESS_NAME}}</div>
+          <div class="small" style="color:var(--muted)">{{CITY}}, {{STATE}}</div>
+        </div>
+        <div class="navlinks">
+          <a href="index.html">Start</a>
+          <a href="about.html">About</a>
+          <a href="services.html">Offerings</a>
+          <a href="programs.html">Paths</a>
+          <a href="pricing.html">Rates</a>
+          <a href="testimonials.html">Stories</a>
+          <a href="book.html">Reserve</a>
+          <a href="contact.html">Contact</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="card">
+        <h1>About the practice</h1>
+        <p class="lead">A practical partnership for people aiming to steady daily energy, unlock sustainable routines, and define meaningful priorities. We blend outcome-focused planning with habit scaffolds tailored to your rhythm.</p>
+        <div class="split">
+          <div class="col">
+            <div class="meta">Who I work with</div>
+            <p>Professionals and caretakers who want an approachable coaching loop: clear objectives, action steps for the week, and measurable micro-habits to practice reliably.</p>
+          </div>
+          <div class="col">
+            <div class="meta">Approach</div>
+            <p>We form short, practical experiments — not rigid regimens. Sessions produce an actionable plan you can try for 1–4 weeks and refine based on what fits your life.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:20px;display:grid;grid-template-columns:1fr 380px;gap:20px;align-items:start">
+      <div class="card">
+        <h2 style="margin-top:0">Session Planner</h2>
+        <p class="small">Build a personalized agenda for a single coaching session and get a plain-text summary you can save or paste into notes.</p>
+
+        <div class="planner" id="planner">
+          <label for="goal">Main goal for the session</label>
+          <input id="goal" type="text" placeholder="e.g., clarify morning routine obstacles">
+
+          <label for="focus">Top focus area</label>
+          <select id="focus">
+            <option>Energy patterns</option>
+            <option>Prioritization</option>
+            <option>Sleep & recovery</option>
+            <option>Movement & microbreaks</option>
+            <option>Mindful transitions</option>
+          </select>
+
+          <div class="row" style="margin-top:6px">
+            <div class="col-2">
+              <label for="sessionLength">Session length</label>
+              <select id="sessionLength">
+                <option>20 minutes</option>
+                <option selected>40 minutes</option>
+                <option>60 minutes</option>
+              </select>
+            </div>
+            <div class="col-2">
+              <label for="frequency">Follow-up cadence</label>
+              <select id="frequency">
+                <option>Weekly</option>
+                <option selected>Bi-weekly</option>
+                <option>Monthly</option>
+              </select>
+            </div>
+          </div>
+
+          <label for="notes">Context / important notes (optional)</label>
+          <textarea id="notes" rows="3" placeholder="Anything you'd like the coach to know before the session"></textarea>
+
+          <div style="display:flex;gap:10px;margin-top:12px">
+            <button id="buildPlan">Create plan</button>
+            <button id="clearPlan" style="background:#e5eef0;color:var(--accent)">Clear</button>
+          </div>
+
+          <div style="margin-top:12px">
+            <label class="small">Plain-text summary</label>
+            <textarea id="planOutput" rows="6" readonly style="font-family:monospace;background:#f7f9f8"></textarea>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button id="copyPlan">Copy</button>
+              <button id="downloadPlan" style="background:#0b6460">Download .txt</button>
+              <div id="copyNotice" style="color:var(--muted);font-size:13px;align-self:center"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="card">
+        <h3 style="margin-top:0">7-day Habit Builder</h3>
+        <p class="small">Quick generator for a seven-day micro-habit and printable checklist to test consistency.</p>
+
+        <div class="habit" id="habitBuilder">
+          <label for="habitName">Habit name</label>
+          <input id="habitName" type="text" placeholder="e.g., 3-minute morning stretch">
+
+          <label for="habitChoice">Choose a template</label>
+          <select id="habitChoice">
+            <option>Movement burst</option>
+            <option>Deep breath reset</option>
+            <option>Night reflection</option>
+            <option>Hydration check-in</option>
+            <option>Mini journaling</option>
+          </select>
+
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button id="genHabit">Generate checklist</button>
+            <button id="clearHabit" style="background:#f3f4f6;color:var(--accent)">Reset</button>
+          </div>
+
+          <div class="checklist" id="checklist"></div>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button id="printChecklist">Print checklist</button>
+            <button id="copyChecklist">Copy checklist text</button>
+            <div id="habitNotice" class="small"></div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section style="margin-top:20px">
+      <div class="card">
+        <h2 style="margin-top:0">How a first month typically flows</h2>
+        <ol style="margin:0 0 10px 18px;color:var(--muted)">
+          <li>Initial mapping & one focused session to define a practical target.</li>
+          <li>A short experiment — 7–21 days with a micro-habit and small checkpoints.</li>
+          <li>Review & adjust; pick next micro-experiment or scale an effective habit.</li>
+        </ol>
+        <p class="small">If you want to begin, use the Session Planner above to craft the first meeting. When ready, click "{{PRIMARY_CTA_LABEL}}" to reserve a slot.</p>
+        <div style="margin-top:12px"><a class="button" href="{{PRIMARY_CTA_URL}}"><button>{{PRIMARY_CTA_LABEL}}</button></a></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="small">Contact: <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </div>
+  </footer>
+
+  <script>
+    // Session Planner logic
+    function summarizePlan() {
+      const goal = document.getElementById('goal').value.trim() || '[no goal provided]';
+      const focus = document.getElementById('focus').value;
+      const length = document.getElementById('sessionLength').value;
+      const cadence = document.getElementById('frequency').value;
+      const notes = document.getElementById('notes').value.trim();
+
+      const lines = [];
+      lines.push('Session summary for: ' + goal);
+      lines.push('Primary focus: ' + focus);
+      lines.push('Planned length: ' + length);
+      lines.push('Recommended follow-up cadence: ' + cadence);
+      if (notes) lines.push('Notes: ' + notes);
+      lines.push('\nSuggested agenda:');
+      lines.push('- 5 min: quick context and recent wins');
+      lines.push('- 20 min: focused exploration and obstacles');
+      lines.push('- 10 min: practical next actions and 7-day micro-habit');
+      lines.push('\nMicro-habit suggestion (starter): choose one small, repeatable action tied to daily cues. Track for 7 days and reflect.');
+
+      return lines.join('\n');
+    }
+
+    document.getElementById('buildPlan').addEventListener('click', function(){
+      const out = summarizePlan();
+      const ta = document.getElementById('planOutput');
+      ta.value = out;
+      document.getElementById('copyNotice').textContent = 'Plan ready';
+    });
+
+    document.getElementById('clearPlan').addEventListener('click', function(){
+      ['goal','notes'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('planOutput').value = '';
+      document.getElementById('copyNotice').textContent = '';
+    });
+
+    document.getElementById('copyPlan').addEventListener('click', async function(){
+      const text = document.getElementById('planOutput').value;
+      if (!text) { document.getElementById('copyNotice').textContent = 'Nothing to copy'; return; }
+      try { await navigator.clipboard.writeText(text); document.getElementById('copyNotice').textContent = 'Copied'; }
+      catch(e){ document.getElementById('copyNotice').textContent = 'Copy failed'; }
+    });
+
+    document.getElementById('downloadPlan').addEventListener('click', function(){
+      const text = document.getElementById('planOutput').value || summarizePlan();
+      const blob = new Blob([text], {type: 'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'session-plan.txt'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    });
+
+    // Habit builder logic
+    function dayLabel(n){ return 'Day ' + n; }
+    function buildChecklist(name, template) {
+      const items = [];
+      for (let i=1;i<=7;i++){
+        let action = '';
+        switch(template){
+          case 'Movement burst': action = name || '2-5 minute stretch'; break;
+          case 'Deep breath reset': action = name || '3 slow breaths (box breathing)'; break;
+          case 'Night reflection': action = name || '1-min journaling: highlight of today'; break;
+          case 'Hydration check-in': action = name || 'Drink 250ml water ahead of next task'; break;
+          case 'Mini journaling': action = name || 'One sentence capture of intention'; break;
+          default: action = name || 'Tiny practice';
+        }
+        items.push({day:dayLabel(i), action});
+      }
+      return items;
+    }
+
+    document.getElementById('genHabit').addEventListener('click', function(){
+      const name = document.getElementById('habitName').value.trim();
+      const template = document.getElementById('habitChoice').value;
+      const list = buildChecklist(name, template);
+      const container = document.getElementById('checklist');
+      container.innerHTML = '';
+      const ul = document.createElement('ul');
+      list.forEach(item => {
+        const li = document.createElement('li');
+        li.innerHTML = '<input type="checkbox"> <strong>'+item.day+':</strong> <span style="flex:1">'+item.action+'</span>';
+        ul.appendChild(li);
+      });
+      container.appendChild(ul);
+      document.getElementById('habitNotice').textContent = 'Checklist created';
+    });
+
+    document.getElementById('clearHabit').addEventListener('click', function(){
+      document.getElementById('habitName').value = '';
+      document.getElementById('checklist').innerHTML = '';
+      document.getElementById('habitNotice').textContent = '';
+    });
+
+    document.getElementById('printChecklist').addEventListener('click', function(){
+      const container = document.getElementById('checklist');
+      if (!container.innerHTML.trim()){ document.getElementById('habitNotice').textContent = 'Generate a checklist first'; return; }
+      const win = window.open('','_blank');
+      const title = document.getElementById('habitName').value.trim() || document.getElementById('habitChoice').value;
+      win.document.write('<html><head><title>'+title+' — checklist</title><style>body{font-family:Arial;padding:20px}h2{margin-top:0}</style></head><body>');
+      win.document.write('<h2>'+title+'</h2>');
+      win.document.write(container.innerHTML);
+      win.document.write('</body></html>');
+      win.document.close();
+      win.print();
+    });
+
+    document.getElementById('copyChecklist').addEventListener('click', async function(){
+      const container = document.getElementById('checklist');
+      if (!container.innerText.trim()){ document.getElementById('habitNotice').textContent = 'Nothing to copy'; return; }
+      try{ await navigator.clipboard.writeText(container.innerText); document.getElementById('habitNotice').textContent = 'Checklist copied'; }
+      catch(e){ document.getElementById('habitNotice').textContent = 'Copy failed'; }
+    });
+  </script>
+</body>
+</html>

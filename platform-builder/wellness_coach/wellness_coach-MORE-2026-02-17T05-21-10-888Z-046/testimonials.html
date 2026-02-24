@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Stories — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--muted:#6b7280;--accent:#0b7a5a}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;color:#07101a;background:linear-gradient(180deg,#fcfffd,#f7fbfa)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:16px 26px;background:#fff;border-bottom:1px solid #eef2f3}
+    nav a{margin-left:18px;color:var(--accent);text-decoration:none;font-weight:600}
+    .wrap{max-width:1100px;margin:28px auto;padding:0 18px}
+    h1{margin:0 0 8px}
+    p.lead{color:var(--muted);margin-top:0}
+    .filters{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
+    .filter{background:#fff;border:1px solid #e8f0ee;padding:8px 12px;border-radius:8px;cursor:pointer}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .testi{background:#fff;border-radius:12px;padding:16px;box-shadow:0 6px 20px rgba(11,122,90,0.05);border:1px solid rgba(10,10,10,0.03)}
+    .quote{color:#102329;font-style:normal}
+    .meta{color:var(--muted);font-size:14px;margin-top:10px}
+    .mood-line{display:flex;gap:8px;margin-top:12px}
+    .small{font-size:13px;color:var(--muted)}
+    .path-mini{height:48px;margin-top:12px;background-image:url('assets/img/pattern.svg');background-size:cover;border-radius:8px}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}nav{display:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Overview</a>
+      <a href="services.html">Approach</a>
+      <a href="programs.html">Offerings</a>
+      <a href="pricing.html">Investments</a>
+      <a href="testimonials.html">Stories</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <h1>Stories from people who used a clear path</h1>
+    <p class="lead">Real feedback that focuses on outcomes and practical habit changes — no overpromises, just steady results.</p>
+
+    <div class="filters">
+      <div class="filter" data-filter="all" onclick="applyFilter('all')">All</div>
+      <div class="filter" data-filter="sleep" onclick="applyFilter('sleep')">Sleep</div>
+      <div class="filter" data-filter="energy" onclick="applyFilter('energy')">Energy</div>
+      <div class="filter" data-filter="clarity" onclick="applyFilter('clarity')">Clarity</div>
+      <div class="filter" data-filter="stress" onclick="applyFilter('stress')">Calmer days</div>
+      <div class="filter" data-filter="vip" onclick="applyFilter('vip')">VIP Day</div>
+    </div>
+
+    <div class="grid" id="testimonialsGrid">
+      <!-- cards injected -->
+    </div>
+
+    <div style="margin-top:22px" class="card" id="interactiveCard">
+      <div class="testi">
+        <div style="font-weight:700">Compare paths</div>
+        <div class="small" style="margin-top:6px">Pick outcomes to see which stories align with the plan you need.</div>
+        <div style="margin-top:10px">
+          <label><input type="checkbox" value="sleep" onchange="syncFilter()"> Sleep</label>
+          <label style="margin-left:8px"><input type="checkbox" value="energy" onchange="syncFilter()"> Energy</label>
+          <label style="margin-left:8px"><input type="checkbox" value="clarity" onchange="syncFilter()"> Clarity</label>
+        </div>
+        <div id="miniPath" class="path-mini"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    (function(){
+      const testimonials = [
+        {name:'A. R.',tag:'sleep',role:'Parent, full schedule',text:'We adjusted 3 small cues and sleep improved. The days feel less reactive.'},
+        {name:'M. S.',tag:'energy',role:'Founder',text:'Weekly micro-actions kept me from crashing and I had steadier afternoons.'},
+        {name:'T. L.',tag:'clarity',role:'Designer',text:'Short rituals before work gave me a predictable focus window.'},
+        {name:'C. J.',tag:'vip',role:'Executive',text:'The intensive day reoriented my priorities; the next 30 days were far easier to hold.'},
+        {name:'P. K.',tag:'stress',role:'Teacher',text:'A simple, tailored 4-week scaffold reduced daily friction and reactivity.'},
+      ];
+
+      const grid = document.getElementById('testimonialsGrid');
+      function renderList(list){
+        grid.innerHTML = '';
+        list.forEach(t=>{
+          const card = document.createElement('div'); card.className='testi';
+          card.innerHTML = '<div class="quote">"'+t.text+'"</div><div class="meta">— '+t.name+' · '+t.role+'</div>';
+          const moodline = document.createElement('div'); moodline.className='mood-line';
+          const tag = document.createElement('div'); tag.className='small'; tag.textContent = 'Focus: '+t.tag; moodline.appendChild(tag);
+          card.appendChild(moodline);
+          grid.appendChild(card);
+        });
+      }
+
+      renderList(testimonials);
+
+      window.applyFilter = function(f){
+        if(f==='all') return renderList(testimonials);
+        renderList(testimonials.filter(t=>t.tag===f));
+      }
+
+      window.syncFilter = function(){
+        const checked = Array.from(document.querySelectorAll('#interactiveCard input[type=checkbox]')).filter(i=>i.checked).map(i=>i.value);
+        // simple highlight: reorder testimonials that match
+        const primary = testimonials.filter(t=>checked.includes(t.tag));
+        const secondary = testimonials.filter(t=>!checked.includes(t.tag));
+        renderList(primary.concat(secondary));
+        // render mini path: color blocks generated inline
+        const mini = document.getElementById('miniPath');
+        mini.innerHTML = '';
+        const colors = {sleep:'#0b7a5a',energy:'#0b5d87',clarity:'#9b5cf6'};
+        if(checked.length===0){ mini.style.background='linear-gradient(90deg,#f3f7f5,#eef6f1)'; return }
+        const frag = document.createElement('div'); frag.style.display='flex'; frag.style.height='48px';
+        for(let i=0;i<24;i++){ const s = document.createElement('div'); s.style.flex='1'; s.style.marginRight=(i<23?'2px':'0'); s.style.background=colors[checked[i % checked.length]]; frag.appendChild(s) }
+        mini.innerHTML=''; mini.appendChild(frag);
+      }
+
+    })();
+  </script>
+</body>
+</html>

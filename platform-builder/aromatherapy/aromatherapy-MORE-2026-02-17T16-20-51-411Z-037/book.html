@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <title>Book a Session — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--muted:#666;--accent:#6aa84f}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:#fbfcfb url('assets/img/pattern.svg');background-size:260px;color:#222}
+    header{display:flex;justify-content:space-between;padding:18px 22px}
+    nav a{margin-left:12px;text-decoration:none;color:#222;font-weight:600}
+    main{max-width:920px;margin:22px auto;padding:18px}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:18px}
+    .card{background:#fff;padding:18px;border-radius:12px;box-shadow:0 8px 28px rgba(20,20,30,0.05)}
+    label{display:block;margin-top:12px;font-weight:700}
+    input,select,textarea{width:100%;padding:10px;margin-top:6px;border:1px solid #e8e8e8;border-radius:8px}
+    .mood{display:flex;gap:8px;margin-top:10px}
+    .mood button{padding:8px 10px;border-radius:8px;border:1px solid #eee;background:#fafafa;cursor:pointer}
+    .mood button.active{background:linear-gradient(90deg,#f7fff5,#eef9ee);border-color:rgba(106,168,79,0.12)}
+    .session-preview{margin-top:10px;padding:10px;border-radius:10px;background:linear-gradient(180deg,#fff,#fcfffb)}
+    .primary{display:inline-block;margin-top:12px;padding:10px 14px;background:var(--accent);color:#fff;border-radius:10px;text-decoration:none;font-weight:700}
+    footer{margin-top:18px;color:var(--muted);font-size:13px;text-align:center}
+    @media (max-width:880px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style='display:flex;align-items:center;gap:12px'>
+      <svg width='40' height='40' viewBox='0 0 48 48' aria-hidden='true'><rect width='48' height='48' rx='10' fill='#fff'/><path d='M14 30c6-10 18-10 24 0' stroke='#6aa84f' stroke-width='3' fill='none'/></svg>
+      <div>
+        <strong>{{BUSINESS_NAME}}</strong>
+        <div style='font-size:13px;color:var(--muted)'>Book a session or request a consult</div>
+      </div>
+    </div>
+    <nav>
+      <a href='index.html'>Home</a>
+      <a href='services.html'>Offerings</a>
+      <a href='pricing.html'>Rates</a>
+      <a href='about.html'>About</a>
+      <a href='contact.html'>Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class='grid'>
+      <div class='card'>
+        <h2 style='margin:0 0 6px 0'>Request a Session</h2>
+        <p style='color:var(--muted);margin:0 0 12px 0'>Choose a style below; selections will adapt the booking label and suggested plan. Sessions may support everyday balance and are not a substitute for medical care.</p>
+
+        <form id='bookForm' action='{{PRIMARY_CTA_URL}}' method='POST'>
+          <label for='name'>Your name</label>
+          <input id='name' name='name' placeholder='First & last' required>
+
+          <label for='email'>Email</label>
+          <input id='email' name='email' type='email' placeholder='you@example.com' required>
+
+          <label for='phone'>Phone (optional)</label>
+          <input id='phone' name='phone' placeholder='555-555-5555'>
+
+          <label>Current state</label>
+          <div class='mood' role='radiogroup' aria-label='Choose your current state'>
+            <button type='button' class='mood-btn active' data-key='calm' aria-pressed='true'>Stressed</button>
+            <button type='button' class='mood-btn' data-key='fog'>Foggy</button>
+            <button type='button' class='mood-btn' data-key='tired'>Low energy</button>
+            <button type='button' class='mood-btn' data-key='sleep'>Trouble sleeping</button>
+          </div>
+
+          <div class='session-preview' id='sessionPreview'>
+            <strong id='sessionTitle'>Gentle Alignment</strong>
+            <div id='sessionBlurb' style='color:var(--muted);font-size:13px;margin-top:6px'>A centering session with grounding aromatics and a short at-home routine. May support steadier focus and calm.</div>
+          </div>
+
+          <input type='hidden' name='session_type' id='session_type' value='Gentle Alignment'>
+
+          <label for='notes'>Notes for your practitioner</label>
+          <textarea id='notes' name='notes' rows='4' placeholder='Share preferences, allergies, or pet details'></textarea>
+
+          <button type='submit' id='bookBtn' class='primary'>Request a Gentle Alignment</button>
+        </form>
+
+      </div>
+
+      <aside class='card'>
+        <h3 style='margin:0 0 6px 0'>Session at a glance</h3>
+        <div style='color:var(--muted);font-size:13px'>
+          <ul style='padding-left:18px'>
+            <li>Typical length: 40–60 minutes</li>
+            <li>Includes at-home blend and dilution guidance</li>
+            <li>Follow-up & notes via email</li>
+          </ul>
+        </div>
+
+        <div style='margin-top:12px'>
+          <strong>Safety</strong>
+          <div style='color:var(--muted);font-size:13px;margin-top:6px'>We include dilution ratios, patch-test instructions, and pet-aware modifications. If pregnant or under medical care, please consult your provider before using essential oils.</div>
+        </div>
+
+        <div style='margin-top:12px'>
+          <strong>Need help?</strong>
+          <div style='color:var(--muted);font-size:13px;margin-top:6px'>Call <a href='tel:{{PHONE}}'>{{PHONE}}</a> or email <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a></div>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      <div style='color:var(--muted)'>By booking you agree to our basic terms and understand that aromatherapy recommendations may support comfort and are not medical treatment.</div>
+    </footer>
+  </main>
+
+  <script>
+    // Mood-to-method interactivity for booking form
+    (function(){
+      const map = {
+        calm:{title:'Gentle Alignment',blurb:'A centering session with grounding aromatics and a short at-home routine. May support steadier focus and calm.',cta:'Request a Gentle Alignment'},
+        fog:{title:'Clarity Session',blurb:'A targeted approach that may support mental clarity and organized routines.',cta:'Request a Clarity Session'},
+        tired:{title:'Uplift Session',blurb:'Bright, energizing notes and small pacing strategies that may support renewed energy.',cta:'Request an Uplift Session'},
+        sleep:{title:'Evening Ease',blurb:'A calming sequence for pre-sleep routine and low-stimulation practices. May support gentler bedtime transitions.',cta:'Request an Evening Ease'}
+      };
+      const buttons = document.querySelectorAll('.mood-btn');
+      const titleEl = document.getElementById('sessionTitle');
+      const blurbEl = document.getElementById('sessionBlurb');
+      const hidden = document.getElementById('session_type');
+      const bookBtn = document.getElementById('bookBtn');
+      function update(key, btn){
+        buttons.forEach(b=>{b.classList.remove('active'); b.setAttribute('aria-pressed','false');});
+        if(btn){btn.classList.add('active'); btn.setAttribute('aria-pressed','true');}
+        const r = map[key] || map.calm;
+        // content morph
+        titleEl.style.opacity = 0; blurbEl.style.opacity = 0; bookBtn.style.opacity = 0;
+        setTimeout(()=>{
+          titleEl.textContent = r.title; blurbEl.textContent = r.blurb; hidden.value = r.title; bookBtn.textContent = r.cta;
+        },180);
+        setTimeout(()=>{titleEl.style.opacity=1; blurbEl.style.opacity=1; bookBtn.style.opacity=1;},280);
+      }
+      buttons.forEach(b=>{
+        b.addEventListener('click', ()=> update(b.dataset.key, b));
+      });
+      // init
+      update('calm', document.querySelector('.mood-btn'));
+    })();
+  </script>
+</body>
+</html>

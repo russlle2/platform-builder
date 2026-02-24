@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Way — Method & Model — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fcfdfc;--accent:#2d6a50;--muted:#697073}
+    body{font-family:Georgia,serif;color:#18211c;margin:0;background:var(--bg)}
+    .wrap{max-width:940px;margin:36px auto;padding:24px}
+    nav{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+    nav a{color:var(--muted);text-decoration:none;padding:6px 8px;border-radius:8px}
+    nav a:hover{background:#fff}
+    .hero{padding:22px;border-radius:12px;background:linear-gradient(180deg,#fff,#fbfffb);border:1px solid #eef6ee}
+    .hero h1{margin:0;font-family:inherit}
+    .columns{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:16px}
+    .card{padding:14px;border-radius:10px;background:#fff;border:1px solid #f2f6f2}
+    .steps{display:flex;flex-direction:column;gap:10px}
+    .step{padding:12px;border-radius:10px;background:linear-gradient(180deg,#ffffff,#f7fdf6)}
+    .mood-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .mood-row button{padding:8px 10px;border-radius:8px;border:1px solid #e9efe9;background:#fff;cursor:pointer}
+    .method-panel{margin-top:12px;padding:12px;border-radius:10px;background:#f2fbf3;border:1px solid #e2f0e4}
+    .pattern-top{position:fixed;right:16px;top:16px;width:220px;height:220px;opacity:0.06;pointer-events:none}
+  </style>
+</head>
+<body>
+  <svg class="pattern-top" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+      <pattern id="p3" width="18" height="18" patternUnits="userSpaceOnUse">
+        <rect width="9" height="9" fill="#d9f2e4"/>
+        <rect x="9" y="9" width="9" height="9" fill="#f0fbf6"/>
+        <circle cx="5" cy="13" r="1.6" fill="#bfe5cf" />
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#p3)" rx="16"/>
+  </svg>
+
+  <div class="wrap">
+    <nav>
+      <a href="index.html">Root</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Ailments</a>
+      <a href="approach.html" class="active">Way</a>
+      <a href="pricing.html">Rates</a>
+      <a href="about.html">Origin</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+
+    <div class="hero">
+      <h1>How we weave practices and planning</h1>
+      <p style="color:var(--muted);margin-top:8px">A few adaptable frameworks we blend: symptom mapping, micro-step experiments, and pacing. Emphasis on testable, compassionate change.</p>
+    </div>
+
+    <div class="columns">
+      <div>
+        <section class="card">
+          <h3>Three scaffolds</h3>
+          <div class="steps">
+            <div class="step"><strong>Map</strong><div style="color:var(--muted);font-size:13px;margin-top:6px">Gather patterns across days: sleep, appetite, mood, and activity.</div></div>
+            <div class="step"><strong>Test</strong><div style="color:var(--muted);font-size:13px;margin-top:6px">Introduce one small change for several days and observe. Keep adjustments minimal and measurable.</div></div>
+            <div class="step"><strong>Stabilize</strong><div style="color:var(--muted);font-size:13px;margin-top:6px">When a shift helps, shape it into a reliable habit with gentle support.</div></div>
+          </div>
+        </section>
+
+        <section class="card" style="margin-top:14px">
+          <h3>Micro-habits in practice</h3>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+            <div style="padding:10px;border-radius:8px;background:#fff;border:1px solid #f2f6f2">Five-minute morning stretch</div>
+            <div style="padding:10px;border-radius:8px;background:#fff;border:1px solid #f2f6f2">One-question end-of-day</div>
+            <div style="padding:10px;border-radius:8px;background:#fff;border:1px solid #f2f6f2">Three-breath reset</div>
+          </div>
+        </section>
+      </div>
+
+      <aside>
+        <div class="card">
+          <h3>How do you feel now?</h3>
+          <p style="color:var(--muted);font-size:13px">Choose a current state and see the suggested method and CTA text shift.</p>
+          <div class="mood-row">
+            <button data-key="slow">Slow</button>
+            <button data-key="rattled">Rattled</button>
+            <button data-key="curious">Curious</button>
+          </div>
+          <div class="method-panel" id="method-panel">
+            <strong id="method-title">Select a state</strong>
+            <p id="method-note" style="color:var(--muted);margin-top:8px">Suggestions will appear here. Choices change the invited next step.</p>
+            <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
+              <button id="method-cta" style="background:#fff;border:1px solid #eaf4ec;padding:8px 10px;border-radius:8px;cursor:pointer" onclick="location.href='{{PRIMARY_CTA_URL}}'">{{PRIMARY_CTA_LABEL}}</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4>Philosophy note</h4>
+          <p style="color:var(--muted);font-size:13px">We avoid grand promises. Our role is to teach tools and design small experiments that fit your day.</p>
+        </div>
+      </aside>
+    </div>
+
+    <section style="margin-top:18px;padding:14px;border-radius:12px;background:linear-gradient(180deg,#fff,#fbfff8);border:1px solid #eef6ef">
+      <h3>Plan shapes</h3>
+      <p style="color:var(--muted)">A short plan is different from a paced track. We name engagements by intent rather than by rigid labels.</p>
+      <div style="display:flex;gap:12px;margin-top:10px">
+        <div style="padding:12px;border-radius:10px;background:#fff;border:1px solid #eff6ee">Starter Review — single assessment & plan</div>
+        <div style="padding:12px;border-radius:10px;background:#fff;border:1px solid #eff6ee">Paced Support — weekly check-ins & adjustments</div>
+        <div style="padding:12px;border-radius:10px;background:#fff;border:1px solid #eff6ee">Focused Reset — concentrated sequence for acute disruption</div>
+      </div>
+    </section>
+
+    <footer style="display:flex;justify-content:space-between;align-items:center;margin-top:18px">
+      <div style="color:var(--muted);font-size:13px">Questions? Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      <div>
+        <button onclick="location.href='about.html'" style="background:transparent;border:1px solid #e6efe7;padding:10px;border-radius:10px;margin-right:8px">Our approach</button>
+        <button id="primary-action" style="background:var(--accent);color:#fff;padding:10px 12px;border-radius:10px;border:0">{{PRIMARY_CTA_LABEL}}</button>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Mood-to-Method mapping with CTA morph
+    const m = {
+      slow: {title:'Slow and steady',note:'Very small, low-demand practices: two-minute morning routine, single evening reflection. Suggested: a Starter Review to set a gentle plan.',cta:'Request a Starter Review'},
+      rattled: {title:'Soothing resets',note:'Short nervous-system settling tools, paced exposures, and reduced stimulation windows. Suggested: a Focused Reset.',cta:'Book a calming reset'},
+      curious: {title:'Experiment mode',note:'Try one micro-test for a week and record results. Suggested: a short paced track for iterative change.',cta:'Try a short experiment'}
+    };
+    document.querySelectorAll('[data-key]').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const key = btn.getAttribute('data-key');
+        const info = m[key];
+        document.getElementById('method-title').textContent = info.title;
+        document.getElementById('method-note').textContent = info.note;
+        const cta = document.getElementById('method-cta');
+        cta.textContent = info.cta;
+        // also update main primary action label
+        document.getElementById('primary-action').textContent = info.cta;
+        // subtle motion
+        document.getElementById('method-panel').animate([{transform:'translateY(6px)',opacity:0.7},{transform:'translateY(0)',opacity:1}],{duration:360,iterations:1});
+      });
+    });
+  </script>
+</body>
+</html>

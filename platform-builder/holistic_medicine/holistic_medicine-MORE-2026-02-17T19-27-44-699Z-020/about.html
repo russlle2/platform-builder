@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--accent:#276a56;--muted:#586663}
+    body{font-family:system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#fbfdfa,#eef6f2);margin:0;color:#0f2b26}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;background:rgba(255,255,255,0.8);border-bottom:1px solid rgba(12,20,18,0.04)}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#0f5f4a);display:flex;align-items:center;justify-content:center;color:white;font-weight:800}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none}
+    nav a[href$="about.html"]{color:var(--accent)}
+    main{max-width:980px;margin:28px auto;padding:20px}
+    .lead{display:grid;grid-template-columns:1fr 300px;gap:18px;align-items:center}
+    .card{background:white;padding:16px;border-radius:12px;box-shadow:0 8px 20px rgba(5,12,10,0.04)}
+    h1{margin:0;color:var(--accent)}
+    .muted{color:var(--muted)}
+
+    .team{display:flex;gap:10px;margin-top:12px}
+    .profile{flex:1;padding:12px;border-radius:10px;background:linear-gradient(180deg,#ffffff,#f6faf8)}
+    .profile h4{margin:6px 0}
+
+    /* reorder: About page places story after values and then inventory */
+    .values{margin-top:18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+
+    /* small */
+    .tiny{font-size:0.9rem;color:var(--muted)}
+
+    /* inventory compact */
+    .inventory-compact{margin-top:18px;padding:12px;border-radius:12px;background:linear-gradient(180deg,#fff,#f5fbf7)}
+    .checkbox{display:flex;gap:8px;align-items:center}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="logo">HM</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div class="tiny">Holistic support in {{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Start</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Concerns</a>
+      <a href="approach.html">Method</a>
+      <a href="pricing.html">Rates</a>
+      <a href="about.html">Studio</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="lead">
+      <div class="card">
+        <h1>Who we are</h1>
+        <p class="tiny muted">A small team blending evidence-aware natural approaches, practical habit design, and collaborative planning. Educational and supportive care — not medical guarantees.</p>
+        <div class="team">
+          <div class="profile">
+            <h4>Lead Practitioner</h4>
+            <div class="tiny">Credentials in integrative clinical practice, years of experience in whole-person assessment, coaching, and lifestyle design.</div>
+          </div>
+          <div class="profile">
+            <h4>Program Coordinator</h4>
+            <div class="tiny">Supports planning, group learning tracks, and client follow-up to keep small practices on track.</div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="card">
+        <div style="font-weight:700">Quick connect</div>
+        <div style="margin-top:6px" class="tiny">Phone: {{PHONE}}</div>
+        <div class="tiny">Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+        <div style="margin-top:12px"><button onclick="location.href='book.html'" style="padding:8px 10px;border-radius:8px;border:0;background:var(--accent);color:white;cursor:pointer">Book a discovery</button></div>
+      </aside>
+    </section>
+
+    <section class="values card" aria-label="values">
+      <div>
+        <h3 style="margin-top:0">Core commitments</h3>
+        <div class="tiny muted">We center practical experiments, clear measurement, and collaborative decision-making. Our work is paced to fit the demands of your life.</div>
+      </div>
+      <div>
+        <h3>Education first</h3>
+        <div class="tiny muted">We share what we know, why it may help, and simple ways to try it with low burden.</div>
+      </div>
+      <div>
+        <h3>Tailored steps</h3>
+        <div class="tiny muted">Plans are composed of small, testable habits and scheduled revisit points to refine progress.</div>
+      </div>
+    </section>
+
+    <section class="inventory-compact card">
+      <h4 style="margin:0">Try a short inventory</h4>
+      <div class="tiny muted" style="margin-top:6px">Pick areas you want to address; we produce a short agenda and a follow-up plan you can bring to booking.</div>
+      <div style="margin-top:10px">
+        <div class="checkbox"><input type="checkbox" id="a1" value="Sleep"><label for="a1"> Sleep</label></div>
+        <div class="checkbox"><input type="checkbox" id="a2" value="Energy"><label for="a2"> Energy</label></div>
+        <div class="checkbox"><input type="checkbox" id="a3" value="Mood"><label for="a3"> Mood</label></div>
+      </div>
+      <div style="margin-top:10px"><button onclick="runInventory()" style="padding:8px 10px;border-radius:8px;border:0;background:var(--accent);color:white;cursor:pointer">Generate agenda</button></div>
+      <div id="about-agenda" style="margin-top:10px;display:none"></div>
+    </section>
+
+    <section class="card" style="margin-top:18px">
+      <h3 style="margin-top:0">Our story</h3>
+      <p class="muted">{{BUSINESS_NAME}} began as a neighborhood practice focused on translating complex recommendations into small, sustainable trials. Over time we shaped a modest set of session forms and micro-habit supports aimed at steady clarity and fewer surprises.</p>
+    </section>
+
+    <section class="card" style="margin-top:18px">
+      <h3 style="margin-top:0">Ethical note</h3>
+      <p class="tiny muted">We provide education and supportive planning. We do not promise cures; when medical issues are present we coordinate with your primary clinicians for safe, integrated care.</p>
+    </section>
+
+  </main>
+
+  <script>
+    // reuse inventory logic in compact form
+    function runInventory(){
+      const boxes = Array.from(document.querySelectorAll('.inventory-compact input[type=checkbox]'));
+      const checked = boxes.filter(b=>b.checked).map(b=>b.value);
+      const out = document.getElementById('about-agenda');
+      if(checked.length===0){ out.style.display='block'; out.textContent='No items selected.'; return; }
+      const suggestions = checked.map(item=>'• '+item+': discuss current pattern and 1 small experiment');
+      out.style.display='block'; out.textContent = suggestions.join('\n') + '\nRecommended follow-up: '+(checked.length>2? 'Biweekly initial':'Monthly or biweekly depending on interest');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book a session — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbf9ff;--ink:#0b1020;--muted:#62646a;--accent:#7c5cff}
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:var(--bg);color:var(--ink)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:22px 28px}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none}
+    main{max-width:920px;margin:32px auto;padding:0 20px}
+    .hero{display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start}
+    .form{background:#fff;border-radius:12px;padding:18px;box-shadow:0 10px 30px rgba(12,12,20,0.06)}
+    label{display:block;margin-top:12px;font-weight:600}
+    input,textarea,select{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid #e8e6f3}
+    button{margin-top:12px;padding:10px 14px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-weight:700}
+    .muted{color:var(--muted)}
+    .aside{background:#fff;padding:16px;border-radius:12px}
+    .t{font-size:14px}
+    footer{margin-top:26px;color:var(--muted);font-size:13px}
+    @media(max-width:880px){.hero{grid-template-columns:1fr}.aside{order:2}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="fees.html">Work With Me</a>
+      <a href="book.html" style="color:var(--accent)">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- HERO (Book) -->
+    <section class="hero">
+      <div>
+        <h1 style="margin:0 0 8px">Schedule your first session</h1>
+        <p class="muted">Use the form to request an intake or a standard session. If you prefer, call <a href="tel:{{PHONE}}">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</p>
+
+        <!-- Booking form (non-functional placeholder) -->
+        <form class="form" action="{{PRIMARY_CTA_URL}}" method="get">
+          <label for="name">Your full name</label>
+          <input id="name" name="name" type="text" placeholder="Your name">
+
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="you@example.com">
+
+          <label for="phone">Phone</label>
+          <input id="phone" name="phone" type="tel" placeholder="(555) 555-5555">
+
+          <label for="service">What would you like to book?</label>
+          <select id="service" name="service">
+            <option>Initial Intake — 60–75 min</option>
+            <option>Standard Session — 50 min</option>
+            <option>Extended Session — 80–90 min</option>
+            <option>3-Session Resilience Package</option>
+          </select>
+
+          <label for="notes">Brief note (concern or availability)</label>
+          <textarea id="notes" name="notes" rows="4" placeholder="A sentence or two about what brings you here"></textarea>
+
+          <label style="font-weight:600;margin-top:10px"><input type="checkbox" name="consent"> I consent to a brief intake contact via email/phone</label>
+
+          <button type="submit">Request appointment</button>
+          <p class="muted t">By submitting you agree to receive scheduling messages. This form is not for emergencies.</p>
+        </form>
+      </div>
+
+      <aside class="aside">
+        <img src="assets/img/pattern.svg" alt="decorative" style="width:100%;border-radius:8px;margin-bottom:12px">
+        <div style="font-weight:700">What to expect</div>
+        <p class="muted t">In the intake we gather history, current struggles, and goals. We’ll discuss confidentiality, privacy, and a plan for next steps. If we’re not a fit I will offer referrals.</p>
+
+        <div style="margin-top:12px">
+          <div style="font-weight:700">Practical</div>
+          <div class="muted t">Please have your insurance info ready if you plan to use out-of-network reimbursement. Payment is collected at the time of session.</div>
+        </div>
+
+        <div style="margin-top:12px">
+          <a style="display:inline-block;padding:8px 12px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none" href="tel:{{PHONE}}">Call {{PHONE}}</a>
+        </div>
+      </aside>
+    </section>
+
+    <!-- BRIEF PROGRAMS / FRAMEWORK -->
+    <section style="margin-top:22px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="aside">
+        <strong>Short packages</strong>
+        <p class="muted t">3-session focus packages for immediate coping strategies and planning.</p>
+      </div>
+      <div class="aside">
+        <strong>Longer-term therapy</strong>
+        <p class="muted t">Weekly work for deeper relational or trauma-focused treatment.</p>
+      </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section style="margin-top:18px">
+      <div class="aside">
+        <strong>Client voice</strong>
+        <p class="muted">"I felt seen from the first session and left with practical next steps."</p>
+      </div>
+    </section>
+
+    <!-- PRICING SNIPPET -->
+    <section style="margin-top:18px" class="aside">
+      <strong>Fees overview</strong>
+      <p class="muted">Full rate and cancellation policies are on the Work With Me page. Sliding scale is available by request for limited spots.</p>
+    </section>
+
+    <!-- CTA + privacy -->
+    <section style="margin-top:18px;display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <strong>Need help choosing?</strong>
+        <div class="muted">Message me at <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> with a brief description and I’ll reply with recommendations.</div>
+      </div>
+      <div>
+        <a style="background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;display:inline-block" href="{{PRIMARY_CTA_URL}}">Start scheduling</a>
+      </div>
+    </section>
+
+    <footer>
+      <div class="muted">Confidentiality: Your communications and therapy notes are protected with standard professional safeguards. Email is not fully encrypted—avoid sending extremely sensitive details over email.</div>
+      <div class="muted" style="margin-top:6px">Crisis: If you are in immediate danger, call emergency services. This practice does not provide crisis intervention.</div>
+    </footer>
+  </main>
+</body>
+</html>

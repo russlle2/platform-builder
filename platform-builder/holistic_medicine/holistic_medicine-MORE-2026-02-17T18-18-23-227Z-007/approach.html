@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Our Approach</title>
+  <style>
+    :root{--bg:#fbfdfc;--card:#fff;--muted:#58696a;--accent:#2b7a78;--radius:12px;font-family:Assistant, system-ui, -apple-system, 'Segoe UI', Roboto}
+    body{margin:0;background:linear-gradient(180deg,#ffffff 0%,#f6fbfb 100%);color:#072e2e}
+    header{padding:16px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #eef6f5}
+    .brand{display:flex;gap:12px;align-items:center}
+    .brand .icon{width:44px;height:44px;background:linear-gradient(180deg,#2b7a78,#4ba3a1);border-radius:10px;color:white;display:flex;align-items:center;justify-content:center}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none;font-weight:600}
+    main{max-width:1000px;margin:20px auto;padding:18px}
+    .intro{display:flex;gap:18px}
+    .card{background:var(--card);border-radius:var(--radius);padding:18px;box-shadow:0 10px 24px rgba(9,30,30,0.06)}
+    .pill{background:#e9fbfa;color:#0d3d3b;padding:6px 10px;border-radius:999px;font-weight:700;font-size:13px;display:inline-block}
+    h1{margin:0 0 8px 0}
+    p.lead{margin:0 0 12px;color:var(--muted)}
+    .flow{display:flex;gap:12px;align-items:flex-start}
+    .step{flex:1;padding:12px;border-radius:10px;background:linear-gradient(180deg,#fbffff,#f4fffd);border:1px solid #e8f6f5}
+    .step h4{margin:0 0 6px 0}
+    .inventory{margin-top:14px}
+    .inventory label{display:block;margin-bottom:8px}
+    .agenda, .cadence{white-space:pre-line;background:#f8fffe;padding:12px;border-radius:8px;border:1px dashed #e6f3f2}
+    .btn{padding:10px 12px;border-radius:10px;border:none;background:var(--accent);color:white;cursor:pointer}
+    @media(max-width:880px){.intro{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="icon">H</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">Thoughtful clinical pathways with practical tests and habits</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Conditions</a>
+      <a href="pricing.html">Plans</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="intro">
+      <div style="flex:1">
+        <div class="card">
+          <span class="pill">Our method</span>
+          <h1>Assessment, small tests, and durable routines</h1>
+          <p class="lead">We emphasize clear priorities: identify what's actionable now, test gently, and translate what works into everyday rhythms. This lowers friction and helps sustain gains.</p>
+
+          <div class="flow" style="margin-top:12px">
+            <div class="step">
+              <h4>1. Clarify</h4>
+              <div class="small">Comprehensive intake focusing on history, context and safety checks.</div>
+            </div>
+            <div class="step">
+              <h4>2. Test</h4>
+              <div class="small">Short, measurable practice trials and targeted diagnostics when needed.</div>
+            </div>
+            <div class="step">
+              <h4>3. Stabilize</h4>
+              <div class="small">Supportive follow-ups and habit design that fit daily life.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <aside style="width:360px">
+        <div class="card">
+          <h3 style="margin-top:0">What to expect in a first visit</h3>
+          <ul style="padding-left:18px;color:var(--muted)">
+            <li>Review of symptoms and a focused safety screening</li>
+            <li>Baseline measures we can track (sleep, activity, symptom rating)</li>
+            <li>A short list of prioritized changes with clear checkpoints</li>
+          </ul>
+          <div style="height:8px"></div>
+          <a class="btn" href="book.html">Book an Intake</a>
+        </div>
+      </aside>
+    </section>
+
+    <section style="margin-top:18px">
+      <div class="card">
+        <h3 style="margin-top:0">Whole-person inventory: quick planner</h3>
+        <p class="small">Select the domains that concern you. We will suggest a short consultation agenda and a follow-up rhythm to consider.</p>
+
+        <div class="inventory">
+          <label><input type="checkbox" name="dom" value="Sleep"> Sleep</label>
+          <label><input type="checkbox" name="dom" value="Energy"> Energy / Fatigue</label>
+          <label><input type="checkbox" name="dom" value="Digestive"> Digestive</label>
+          <label><input type="checkbox" name="dom" value="Mood"> Mood / Stress</label>
+          <label><input type="checkbox" name="dom" value="Movement"> Movement / Pain</label>
+          <label><input type="checkbox" name="dom" value="Medications"> Medication review</label>
+
+          <div style="height:10px"></div>
+          <button class="btn" id="approach_build">Create agenda</button>
+
+          <div style="height:12px"></div>
+          <div class="small">Agenda</div>
+          <div id="approach_agenda" class="agenda">Select items and press "Create agenda".</div>
+          <div style="height:8px"></div>
+          <div class="small">Follow-up cadence</div>
+          <div id="approach_cadence" class="cadence">Select items and press "Create agenda".</div>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:18px">
+      <div class="card">
+        <h3 style="margin-top:0">How we frame progress</h3>
+        <p class="small">Improvement is often stepwise. We assess early signals of benefit and keep the plan simple: trackable outcomes, one or two practice changes, and scheduled reassessment. This reduces overwhelm and clarifies what helps.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer style="text-align:center;padding:18px;color:var(--muted)">
+    <div>Questions? Call {{PHONE}} or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>. Serving {{CITY}}, {{STATE}}.</div>
+  </footer>
+
+  <script>
+    function approachAgenda(selected){
+      const lines = ['Agenda:'];
+      if (!selected.length) { lines.push('  - Open evaluation and establish priorities'); return lines.join('\n'); }
+      if (selected.includes('Medications')) lines.push('  - Medication safety and interaction review');
+      if (selected.includes('Sleep')) lines.push('  - Sleep history and practical timing changes');
+      if (selected.includes('Energy')) lines.push('  - Activity pattern and nutrition review');
+      if (selected.includes('Digestive')) lines.push('  - Symptom patterning and initial dietary tests');
+      if (selected.includes('Mood')) lines.push('  - Brief screening and coping strategy plan');
+      if (selected.includes('Movement')) lines.push('  - Functional goals and graded movement plan');
+      return lines.join('\n');
+    }
+
+    function approachCadence(selected){
+      const lines = ['Follow-up cadence:'];
+      if (!selected.length) { lines.push('  - Arrange a short check-in within 2–4 weeks'); return lines.join('\n'); }
+      if (selected.includes('Medications')) { lines.push('  - 2-week safety check'); lines.push('  - 6–8 week medication outcome review'); return lines.join('\n'); }
+      if (selected.includes('Sleep') || selected.includes('Mood')) lines.push('  - 3–4 week behavioral check');
+      if (selected.includes('Digestive') || selected.includes('Energy')) lines.push('  - 4–6 week follow-up to evaluate trials');
+      if (selected.includes('Movement')) lines.push('  - 2–4 week brief check and 8-week function review');
+      if (lines.length===1) lines.push('  - Individualized cadence based on goals');
+      return lines.join('\n');
+    }
+
+    document.getElementById('approach_build').addEventListener('click', function(){
+      const picked = Array.from(document.querySelectorAll('input[name="dom"]:checked')).map(i => i.value);
+      document.getElementById('approach_agenda').textContent = approachAgenda(picked);
+      document.getElementById('approach_cadence').textContent = approachCadence(picked);
+    });
+  </script>
+</body>
+</html>

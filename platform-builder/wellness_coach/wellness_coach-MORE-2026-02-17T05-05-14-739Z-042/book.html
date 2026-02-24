@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Book a seat in an upcoming event series or request a cohort enrollment.">
+  <style>
+    :root{--bg:#fbfcfb;--accent:#4b8fa1;--muted:#6b6b6b}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto;color:#142029;background:var(--bg)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;background:linear-gradient(180deg,rgba(75,143,161,0.06),transparent)}
+    .logo{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#7bbf9e);display:grid;place-items:center;color:white;font-weight:800}
+    nav a{margin-left:14px;text-decoration:none;color:#142029;font-weight:700}
+    main{max-width:900px;margin:28px auto;padding:18px}
+    .form-card{background:white;padding:18px;border-radius:12px;box-shadow:0 10px 30px rgba(10,20,30,0.06)}
+    label{display:block;margin-top:12px;font-weight:700}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e8e8e8;margin-top:6px}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .note{color:var(--muted);font-size:0.95rem;margin-top:8px}
+    .actions{display:flex;gap:8px;margin-top:12px}
+    .btn{padding:10px 14px;border-radius:10px;border:none;cursor:pointer}
+    .btn.primary{background:var(--accent);color:white;font-weight:800}
+
+    /* small calendar styles (simple) */
+    .dates{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+    .date{padding:8px 10px;border-radius:8px;border:1px solid #e9e9e9;background:white;cursor:pointer}
+    .date.selected{border-color:var(--accent);background:linear-gradient(180deg,rgba(75,143,161,0.08),transparent)}
+
+    /* reveal */
+    .reveal{opacity:0;transform:translateY(12px);transition:opacity 420ms ease,transform 420ms ease}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none;opacity:1;transform:none}}
+    .reveal.visible{opacity:1;transform:none}
+
+    .modal-backdrop{position:fixed;inset:0;background:rgba(6,10,12,0.45);display:none;justify-content:center;align-items:center;padding:20px}
+    .modal{background:white;border-radius:12px;padding:16px;max-width:640px;width:100%}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center"><div class="logo">W</div><div><div style="font-weight:800">{{BUSINESS_NAME}}</div><div style="font-size:0.86rem;color:var(--muted)">{{TAGLINE}}</div></div></div>
+    <nav>
+      <a href="/index.html">Home</a>
+      <a href="/services.html">Frameworks</a>
+      <a href="/pricing.html">Invest</a>
+      <a href="/contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="reveal">
+      <h1>Reserve your spot or request a cohort</h1>
+      <p class="note">Choose an upcoming event or request an enrollment window for your team. No medical advice — just practical frameworks and habit-building support.</p>
+    </section>
+
+    <section class="form-card reveal" style="margin-top:18px">
+      <form id="bookingForm">
+        <div class="row">
+          <div>
+            <label for="name">Name</label>
+            <input id="name" name="name" placeholder="Your full name" required>
+          </div>
+          <div>
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="you@domain.com" required>
+          </div>
+        </div>
+
+        <label for="plan">Select series</label>
+        <select id="plan" name="plan">
+          <option value="habit-launch">Habit Launch Series — 4 sessions</option>
+          <option value="foundations">Foundations Cohort — 8 sessions</option>
+          <option value="seasonal-reset">Seasonal Reset — single workshop</option>
+        </select>
+
+        <label>Pick a preferred date</label>
+        <div class="dates" id="dates"></div>
+
+        <label for="notes">Notes (goals, accessibility needs)</label>
+        <textarea id="notes" name="notes" rows="4" placeholder="What outcome are you aiming for?"></textarea>
+
+        <div class="actions">
+          <button class="btn primary" type="submit">Reserve now</button>
+          <button class="btn" type="button" id="quickExercise">Try a 90-second practice</button>
+        </div>
+        <div class="note">A confirmation will be sent to <strong>{{EMAIL}}</strong>. For questions call <strong>{{PHONE}}</strong>.</div>
+      </form>
+    </section>
+
+    <section class="reveal" style="margin-top:18px;display:flex;gap:12px;align-items:flex-start">
+      <aside style="background:white;padding:12px;border-radius:10px;box-shadow:0 8px 20px rgba(10,20,30,0.04);width:280px">
+        <div style="font-weight:800">Need group pricing?</div>
+        <div class="note" style="margin-top:10px">We offer cohort scheduling and team windows. Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> with "Cohort inquiry" in the subject.</div>
+      </aside>
+      <div style="flex:1">
+        <h3>What happens once you reserve</h3>
+        <p class="note">You’ll receive a confirmation with preparation steps and a short set of practices to try before the first session. Each series centers on outcomes you can measure week to week.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-hidden="true">
+    <div class="modal" role="document">
+      <div id="modalInner">
+        <h4>Try a 90-second guided exercise</h4>
+        <p class="note">A quick reset to bring attention to the present. No sign-up required.</p>
+        <div style="display:flex;gap:8px;margin-top:10px"><button class="btn" id="modalStart">Start</button><button class="btn" id="modalClose">Close</button></div>
+        <div id="modalOutput" style="margin-top:12px"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // reveal on scroll
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const revealEls = Array.from(document.querySelectorAll('.reveal'));
+      if(prefersReduced){ revealEls.forEach(el=>el.classList.add('visible')); return; }
+      const onScroll = ()=>{
+        const viewH = window.innerHeight || document.documentElement.clientHeight;
+        revealEls.forEach(el=>{
+          if(el.classList.contains('visible')) return;
+          const r = el.getBoundingClientRect();
+          if(r.top <= viewH - 80) el.classList.add('visible');
+        });
+      };
+      onScroll();
+      window.addEventListener('scroll', onScroll, {passive:true});
+    })();
+
+    // simple date selector
+    (function(){
+      const datesEl = document.getElementById('dates');
+      const today = new Date();
+      const options = [];
+      for(let i=3;i<20;i+=3){ const d = new Date(); d.setDate(today.getDate()+i); options.push(d); }
+      options.forEach(d=>{
+        const el = document.createElement('div');
+        el.className='date';
+        el.tabIndex=0;
+        el.textContent = d.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'});
+        el.dataset.iso = d.toISOString();
+        el.addEventListener('click', ()=>{ document.querySelectorAll('.date').forEach(x=>x.classList.remove('selected')); el.classList.add('selected'); });
+        datesEl.appendChild(el);
+      });
+    })();
+
+    // booking form submit (mock)
+    document.getElementById('bookingForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      const name = this.name.value.trim(); const email = this.email.value.trim(); const plan = this.plan.value;
+      const selected = document.querySelector('.date.selected');
+      if(!selected){ alert('Pick a preferred date.'); return; }
+      const dateIso = selected.dataset.iso;
+      // fake send
+      alert('Thanks, '+name+'! We received your request for '+plan+'. A confirmation will be sent to '+email+'.');
+      this.reset(); document.querySelectorAll('.date').forEach(x=>x.classList.remove('selected'));
+    });
+
+    // Modal quick exercise (90s) — breathing + micro-clarity
+    (function(){
+      const backdrop = document.getElementById('modalBackdrop');
+      const start = document.getElementById('modalStart');
+      const close = document.getElementById('modalClose');
+      const output = document.getElementById('modalOutput');
+      const quickBtn = document.getElementById('quickExercise');
+      quickBtn.addEventListener('click', ()=>{ backdrop.style.display='flex'; backdrop.setAttribute('aria-hidden','false'); });
+      close.addEventListener('click', ()=>{ backdrop.style.display='none'; backdrop.setAttribute('aria-hidden','true'); stop(); });
+
+      let timer=null; let step=0; const steps = [ {text:'Breathe in (4s)',dur:4000},{text:'Hold (2s)',dur:2000},{text:'Breathe out (6s)',dur:6000}, {text:'Name one tiny next action',dur:80000} ];
+      function stop(){ if(timer){ clearTimeout(timer); timer=null; } }
+      start.addEventListener('click', ()=>{
+        step=0; output.textContent=''; runStep();
+      });
+      function runStep(){ if(step>=steps.length){ output.textContent='Done — thank you.'; return; }
+        const s = steps[step]; output.textContent = s.text;
+        timer = setTimeout(()=>{ step++; runStep(); }, s.dur);
+      }
+    })();
+  </script>
+</body>
+</html>

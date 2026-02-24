@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Fees — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfbfd;--muted:#6b6f76;--accent:#6c5ce7;--accent-2:#00b894;--card:#fff;--glass:rgba(255,255,255,0.7);--mono:ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial,sans-serif;color:#222;background:linear-gradient(180deg,var(--bg),#f1f5f9);}
+    header{display:flex;align-items:center;justify-content:space-between;padding:22px 28px;background:transparent}
+    .logo{font-weight:700;letter-spacing:0.6px}
+    nav a{margin-left:18px;color:#333;text-decoration:none;font-size:15px}
+    .wrap{max-width:980px;margin:28px auto;padding:26px}
+    .hero{display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start}
+    .intro{background:var(--card);padding:28px;border-radius:14px;box-shadow:0 8px 30px rgba(20,20,40,0.06)}
+    .intro h1{margin:0 0 8px 0;font-size:22px;color:#111}
+    .intro p{margin:0;color:var(--muted);line-height:1.45}
+    .pattern{width:100%;height:120px;background:url('assets/img/pattern.svg') repeat;border-radius:10px;margin-top:16px}
+
+    /* Comparator */
+    .comp{background:linear-gradient(180deg,#fff, #fbfdff);padding:18px;border-radius:12px;box-shadow:0 6px 20px rgba(30,30,60,0.04);}
+    .toggle{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+    .switch{width:68px;height:34px;background:#e9eefb;border-radius:34px;padding:4px;display:flex;align-items:center;cursor:pointer}
+    .knob{height:26px;width:26px;border-radius:50%;background:white;box-shadow:0 3px 8px rgba(30,30,60,0.12);transform:translateX(0);transition:transform .28s cubic-bezier(.2,.9,.2,1)}
+    .switch[data-mode="packages"] .knob{transform:translateX(34px)}
+    .prices{display:flex;flex-direction:column;gap:10px}
+    .plan{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;background:linear-gradient(180deg,#ffffff,#fafbff);}
+    .plan .label{font-weight:600}
+    .plan .price{font-family:var(--mono);font-weight:700;color:var(--accent);font-size:20px}
+    .small{font-size:13px;color:var(--muted)}
+
+    .cta-wrap{margin-top:12px}
+    .cta{display:inline-block;padding:10px 14px;border-radius:10px;background:var(--accent);color:white;text-decoration:none}
+
+    /* Mood-to-Method */
+    .mood{margin-top:18px;background:linear-gradient(180deg,#fff,#fefffb);padding:14px;border-radius:12px}
+    .mood .opts{display:flex;gap:8px;flex-wrap:wrap}
+    .mood button{padding:8px 10px;border-radius:8px;border:1px solid #eef;background:white;cursor:pointer}
+    .mood .meta{margin-top:12px}
+    .method{padding:10px;border-radius:8px;background:linear-gradient(90deg,#fbfbff,#fff);}
+    .method h4{margin:0 0 6px 0}
+    .note{font-size:13px;color:var(--muted);margin-top:10px}
+
+    footer{margin-top:28px;font-size:13px;color:var(--muted)}
+
+    @media (max-width:880px){.hero{grid-template-columns:1fr}.pattern{height:88px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Overview</a>
+      <a href="specialties.html">Focus Areas</a>
+      <a href="approach.html">How I Work</a>
+      <a href="fees.html">Invest</a>
+      <a href="book.html">Start</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <div class="hero">
+      <section class="intro">
+        <h1>Costs & options shaped around steady progress</h1>
+        <p>I aim to make access clear: single sessions, short focused packages, and ongoing support. Use the toggle to compare monthly continuity versus bundled packages; numbers animate so you can feel the difference.
+        </p>
+        <div class="pattern" aria-hidden="true"></div>
+      </section>
+
+      <aside class="comp" aria-labelledby="pricing-heading">
+        <div class="toggle" id="pricing-toggle">
+          <div style="font-size:13px;color:var(--muted)">Monthly</div>
+          <div class="switch" data-mode="monthly" role="button" aria-pressed="false" tabindex="0">
+            <div class="knob"></div>
+          </div>
+          <div style="font-size:13px;color:var(--muted)">Packages</div>
+        </div>
+
+        <div class="prices" id="prices">
+          <div class="plan" data-base="140">
+            <div>
+              <div class="label">Guided Session</div>
+              <div class="small">Single 50-minute session</div>
+            </div>
+            <div class="price" data-anim>---</div>
+          </div>
+
+          <div class="plan" data-base="600">
+            <div>
+              <div class="label">Resilience Series</div>
+              <div class="small">5-session bundle for momentum</div>
+            </div>
+            <div class="price" data-anim>---</div>
+          </div>
+
+          <div class="plan" data-base="2200">
+            <div>
+              <div class="label">Steady Care Monthly</div>
+              <div class="small">Weekly session and check-ins</div>
+            </div>
+            <div class="price" data-anim>---</div>
+          </div>
+        </div>
+
+        <div class="cta-wrap">
+          <a id="primary-cta" class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+
+        <div class="mood" aria-live="polite">
+          <div style="font-size:13px;color:var(--muted);margin-bottom:8px">How are you feeling right now?</div>
+          <div class="opts">
+            <button data-mood="overwhelmed">Overwhelmed</button>
+            <button data-mood="stuck">Stuck</button>
+            <button data-mood="anxious">Anxious</button>
+            <button data-mood="numb">Numb</button>
+            <button data-mood="curious">Curious</button>
+          </div>
+
+          <div class="meta">
+            <div class="method" id="method">
+              <h4>Recommended: Guided Session</h4>
+              <div class="small">A single 50-minute appointment to clarify priorities and plan next steps.</div>
+            </div>
+            <div class="note">Sessions and packages are clinical services; no specific outcomes are promised. Payment details and scheduling are confirmed at booking.</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      <p>Confidentiality: Sessions are private and clinical notes are held in a secure manner. Scope: My services are psychotherapy and coaching-oriented; they are not emergency services. If you are in crisis or feel you may be a danger to yourself or others, call local emergency services or {{PHONE}}. For urgent risk, please use emergency channels — I cannot provide crisis response via email.</p>
+    </footer>
+  </main>
+
+  <script>
+    // Pricing comparator with animated numbers
+    const switchEl = document.querySelector('.switch');
+    const prices = document.querySelectorAll('[data-anim]');
+    const plans = document.querySelectorAll('.plan');
+    const cta = document.getElementById('primary-cta');
+
+    function formatMoney(n){ return n.toLocaleString(undefined,{style:'currency',currency:'USD',maximumFractionDigits:0}); }
+
+    function animateValue(el, start, end, duration=600){
+      const startTime = performance.now();
+      function tick(now){
+        const t = Math.min(1,(now - startTime)/duration);
+        const val = Math.round(start + (end - start) * (1 - Math.cos(t * Math.PI))/2);
+        el.textContent = formatMoney(val);
+        if(t < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+
+    function updatePrices(mode){
+      plans.forEach(plan=>{
+        const base = Number(plan.getAttribute('data-base'));
+        let target = base;
+        if(mode === 'monthly'){
+          // monthly: base is per-session or monthly total
+          if(base > 1000){ target = Math.round(base / 4); } // show per-weekish for monthly product
+          else target = base;
+        } else {
+          // packages: apply discounts
+          if(base < 200) target = Math.round(base * 1); // single session shows same
+          else if(base < 1000) target = Math.round(base * 0.9); // small discount
+          else target = Math.round(base * 0.85); // larger bundles discounted
+        }
+        animateValue(plan.querySelector('[data-anim]'), Number(plan.querySelector('[data-anim]').textContent.replace(/[^0-9]/g, '')||0), target);
+      });
+
+      // change CTA phrasing
+      if(mode === 'monthly') cta.textContent = 'Begin ongoing care';
+      else cta.textContent = 'Reserve a package';
+    }
+
+    // initialize
+    prices.forEach(p=>p.textContent = '$0');
+    updatePrices('monthly');
+
+    function toggleMode(newMode){
+      switchEl.setAttribute('data-mode', newMode === 'packages' ? 'packages' : 'monthly');
+      switchEl.setAttribute('aria-pressed', newMode === 'packages');
+      updatePrices(newMode);
+    }
+
+    switchEl.addEventListener('click', ()=>{
+      const newMode = switchEl.getAttribute('data-mode') === 'monthly' ? 'packages' : 'monthly';
+      toggleMode(newMode);
+    });
+    switchEl.addEventListener('keydown', (e)=>{ if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); switchEl.click(); } });
+
+    // Mood-to-Method: morph method card and update CTA label dynamically
+    const moodButtons = document.querySelectorAll('[data-mood]');
+    const methodEl = document.getElementById('method');
+    const moodMap = {
+      overwhelmed: {title:'Short Stabilization', desc:'Two focused sessions to reduce immediate distress and form a short plan.' ,cta:'Book stabilization'},
+      stuck: {title:'Momentum Bundle', desc:'A 5-session plan to explore barriers and build a step-by-step routine.', cta:'Reserve momentum'},
+      anxious: {title:'Breathing & Grounding', desc:'Session work focused on immediate regulation and skills to manage anxiety.', cta:'Start regulation work'},
+      numb: {title:'Reconnect Sessions', desc:'Gentle pacing to notice feeling and rebuild engagement at your rhythm.', cta:'Begin reconnecting'},
+      curious: {title:'Exploratory Session', desc:'A single meeting to identify goals and test next steps.', cta:'Try an exploratory session'}
+    };
+
+    moodButtons.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        moodButtons.forEach(b=>b.disabled=false);
+        btn.disabled = true;
+        const m = btn.getAttribute('data-mood');
+        const data = moodMap[m] || moodMap['curious'];
+        methodEl.querySelector('h4').textContent = 'Recommended: ' + data.title;
+        methodEl.querySelector('.small').textContent = data.desc;
+        cta.textContent = data.cta;
+      });
+    });
+  </script>
+</body>
+</html>

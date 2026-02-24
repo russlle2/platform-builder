@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Bespoke Sessions • Private Offerings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#faf5ef;--accent:#6a4b3a;--muted:#7b6a61}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:#2e2521}
+    header{padding:16px;border-bottom:1px solid rgba(46,37,33,.04);background:linear-gradient(90deg,rgba(106,75,58,.03),transparent)}
+    .nav{max-width:1000px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+    .logo{width:44px;height:44px;background:var(--accent);color:#fff;border-radius:10px;display:grid;place-items:center;font-weight:700}
+    nav a{color:var(--muted);margin-left:12px;text-decoration:none}
+    main{max-width:1000px;margin:20px auto;padding:18px}
+    .hero{display:flex;gap:18px;align-items:center}
+    .hero .card{flex:1;background:#fff;padding:18px;border-radius:12px;box-shadow:0 8px 28px rgba(46,37,33,.06)}
+    h1{margin:0;color:var(--accent)}
+    .card p{color:var(--muted)}
+    .planner{margin-top:14px;padding:14px;border-radius:10px;background:linear-gradient(180deg,#fff,#fbf8f6)}
+    label{display:block;margin-top:8px;color:var(--muted)}
+    input,select{padding:8px;border-radius:8px;border:1px solid rgba(46,37,33,.06);width:100%;box-sizing:border-box}
+    .summary{margin-top:12px;background:#fff;padding:12px;border-radius:10px;border:1px solid rgba(46,37,33,.04)}
+    button{background:var(--accent);color:#fff;padding:8px 10px;border:0;border-radius:8px;cursor:pointer}
+    .note{color:#6b5a50;font-size:13px}
+    footer{max-width:1000px;margin:20px auto;padding:12px;text-align:center;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div style="display:flex;gap:12px;align-items:center">
+        <div class="logo">PB</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div style="font-size:12px;color:var(--muted)">Private and small-group work</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Gatherings</a>
+        <a href="events.html">Group Rites</a>
+        <a href="private-sessions.html" style="color:var(--accent);font-weight:700">Bespoke Sessions</a>
+        <a href="pricing.html">Investment</a>
+        <a href="faq.html">Compass</a>
+        <a href="book.html">Reserve</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="card">
+        <h1>Bespoke sessions — shaped around your needs</h1>
+        <p class="note">Private gatherings, workplace sound breaks, or one-to-one sessions. Together we sketch an approach that supports the intention.</p>
+
+        <div class="planner" id="planner">
+          <div style="font-weight:700">Session Planner</div>
+          <div style="color:var(--muted);font-size:13px;margin-top:6px">Answer a few prompts and get a short plan you can copy or email to your group.</div>
+
+          <label>Primary aim</label>
+          <select id="aim">
+            <option value="relax">Deep relaxation</option>
+            <option value="focus">Focus and clarity</option>
+            <option value="team">Team reset</option>
+            <option value="ritual">Personal rite</option>
+          </select>
+
+          <label>Session length</label>
+          <select id="length">
+            <option value="30">30 minutes</option>
+            <option value="60" selected>60 minutes</option>
+            <option value="90">90 minutes</option>
+          </select>
+
+          <label>Instruments you'd like included</label>
+          <div style="display:flex;gap:8px;margin-top:6px">
+            <label><input type="checkbox" class="inst" value="singing bowls"> Bowls</label>
+            <label><input type="checkbox" class="inst" value="gongs"> Gong</label>
+            <label><input type="checkbox" class="inst" value="voice"> Voice</label>
+          </div>
+
+          <label>Number of participants</label>
+          <input id="participants" type="number" value="6" min="1" />
+
+          <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
+            <button id="generate">Build plan</button>
+            <button id="copyPlan" style="background:#fff;color:var(--accent);border:1px solid rgba(46,37,33,.06)">Copy</button>
+            <button id="emailPlan" style="background:#fff;color:var(--accent);border:1px solid rgba(46,37,33,.06)">Email</button>
+          </div>
+
+          <div class="summary" id="summary" aria-live="polite">Your session summary will appear here after building.</div>
+        </div>
+
+        <div style="margin-top:12px;color:var(--muted);font-size:13px">Note on suitability: If participants have recent head injuries, implanted electronic devices, epilepsy, or are pregnant, please consult a clinician and contact us at {{EMAIL}} before booking.</div>
+      </div>
+
+      <div style="width:300px">
+        <div class="card">
+          <div style="font-weight:700">Add-ons</div>
+          <div style="color:var(--muted);margin-top:8px">Blanket bundles, mats, and aromatherapy spritz are available as retail add-ons.</div>
+          <div style="margin-top:12px"><a href="pricing.html" class="" style="background:var(--accent);color:#fff;padding:8px 10px;border-radius:8px;text-decoration:none">View Investment Options</a></div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <div style="font-weight:700">Facilitator chat</div>
+          <div style="color:var(--muted);margin-top:8px">We offer a free 10-minute call to ensure the session matches needs. Book via Reserve or reach at <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</div>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:18px" class="card">
+      <div style="font-weight:700">How we shape a private session</div>
+      <ol style="margin-top:8px;color:var(--muted)">
+        <li>Brief intake to set intention and practical details.</li>
+        <li>Tailored sound structure — beginning to end — with time for reflection.</li>
+        <li>Optional short practices participants can take with them.</li>
+      </ol>
+    </section>
+
+    <section style="margin-top:18px" class="card">
+      <div style="font-weight:700">Common uses</div>
+      <div style="color:var(--muted);margin-top:8px">Wellness days, leadership retreats, creative sprints, and private transitions. We frame each session to fit the rhythm you need.</div>
+    </section>
+
+    <section style="margin-top:18px" class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-weight:700">Ready to sketch your session?</div>
+          <div style="color:var(--muted);margin-top:6px">Build a plan and then proceed to Reserve to convert it into a booking.</div>
+        </div>
+        <div>
+          <a href="book.html" style="background:var(--accent);color:#fff;padding:8px 12px;border-radius:8px;text-decoration:none">Start booking</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="max-width:1000px;margin:0 auto;padding:12px;color:var(--muted)">Questions? Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</div>
+  </footer>
+
+  <script>
+    const aim = document.getElementById('aim');
+    const length = document.getElementById('length');
+    const instChecks = Array.from(document.querySelectorAll('.inst'));
+    const participants = document.getElementById('participants');
+    const generate = document.getElementById('generate');
+    const summary = document.getElementById('summary');
+    const copyPlan = document.getElementById('copyPlan');
+
+    function buildPlan(){
+      const chosenInst = instChecks.filter(i=>i.checked).map(i=>i.value);
+      const arr = [];
+      arr.push('Session proposal');
+      arr.push('Purpose: ' + aim.options[aim.selectedIndex].text);
+      arr.push('Length: ' + length.value + ' minutes');
+      arr.push('Participants: ' + participants.value);
+      if(chosenInst.length) arr.push('Instruments: ' + chosenInst.join(', '));
+
+      if(aim.value==='relax'){
+        arr.push('Structure: short arrival ritual, deep listening with warm bowls, guided breath, gentle closing. Time for recovery.');
+      } else if(aim.value==='focus'){
+        arr.push('Structure: centering brief, sound pieces to open attention, practical short closing with grounding prompt.');
+      } else if(aim.value==='team'){
+        arr.push('Structure: group check-in, shared sound sequence, and reflection prompts for team alignment.');
+      } else {
+        arr.push('Structure: personalized rite created with the facilitator. Includes pre-session intake and tailored closing.');
+      }
+
+      arr.push('Logistics: quiet room, mats or chairs as needed, water available. Contraindications: review with clinician if pregnant, have implants, or history of seizures.');
+      return arr.join('\n');
+    }
+
+    generate.addEventListener('click', ()=>{
+      summary.textContent = buildPlan();
+    });
+
+    copyPlan.addEventListener('click', ()=>{
+      const text = summary.textContent;
+      if(!text) return alert('Build the plan first.');
+      navigator.clipboard.writeText(text).then(()=>{
+        copyPlan.textContent='Copied';
+        setTimeout(()=>copyPlan.textContent='Copy',1200);
+      });
+    });
+  </script>
+</body>
+</html>

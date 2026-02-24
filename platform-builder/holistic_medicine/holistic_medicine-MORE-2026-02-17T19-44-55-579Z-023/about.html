@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Who we are and how we work — clear, integrative care shaped for busy people.">
+  <style>
+    :root{--bg:#ffffff;--muted:#586166;--accent:#2b6b5b}
+    *{box-sizing:border-box}
+    body{font-family:system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial; margin:0;color:#0b0b0b;background:linear-gradient(180deg,#fff,#f6fbfa)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:20px 26px;background:transparent}
+    .logo{width:44px;height:44px;border-radius:9px;background:linear-gradient(135deg,var(--accent),#1f4f3e);display:grid;place-items:center;color:white;font-weight:700}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none}
+    main{max-width:920px;margin:28px auto;padding:18px}
+    .intro{display:flex;gap:18px;align-items:flex-start}
+    .panel{background:#ffffff;border-radius:12px;padding:18px;box-shadow:0 8px 20px rgba(18,30,30,0.04)}
+    h1{margin:0 0 6px}
+    .muted{color:var(--muted)}
+    .timeline{display:flex;flex-direction:column;gap:12px;margin-top:14px}
+    .step{display:flex;gap:12px;align-items:flex-start}
+    .dot{width:12px;height:12px;border-radius:50%;background:var(--accent);margin-top:6px}
+    .contact{margin-top:18px;padding:14px;background:#f8fffb;border-radius:8px}
+
+    .reveal{opacity:0;transform:translateY(8px);transition:opacity .6s ease,transform .6s ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion: reduce){.reveal{transition:none}}
+
+    /* small details */
+    .values{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .value{background:#f1fbf8;padding:8px 12px;border-radius:999px;color:var(--accent);font-weight:700}
+
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="logo">HM</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="approach.html">Philosophy</a>
+      <a href="pricing.html">Investment</a>
+      <a href="about.html" style="color:var(--accent);font-weight:600">About</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="panel reveal" data-reveal>
+      <h1>About our work</h1>
+      <p class="muted">We combine practical medical knowledge with lifestyle and behavioral supports to help you move toward clearer days. Our focus is on collaborative planning, simple tracking, and changes that fit your life.</p>
+      <div class="values" aria-hidden>
+        <span class="value">Curious</span>
+        <span class="value">Evidence-aware</span>
+        <span class="value">Practical</span>
+      </div>
+    </section>
+
+    <section class="panel reveal" data-reveal style="margin-top:18px">
+      <h2 style="margin-top:0">How we approach a day with you</h2>
+      <div class="timeline">
+        <div class="step">
+          <div class="dot"></div>
+          <div>
+            <strong>1. Focused intake</strong>
+            <div class="muted">A structured conversation to map what matters most and reasonable first tests.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="dot"></div>
+          <div>
+            <strong>2. Clear plan</strong>
+            <div class="muted">A short list of prioritized, measurable steps you can try right away.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="dot"></div>
+          <div>
+            <strong>3. Rapid feedback</strong>
+            <div class="muted">Timely check-ins to iterate, adapt, and keep what works.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel reveal" data-reveal style="margin-top:18px">
+      <h2 style="margin-top:0">Meet the clinician</h2>
+      <p class="muted">Clinical lead blends conventional training with lifestyle-focused strategies. Emphasis is on listening, evidence-informed options, and step-by-step implementation rather than one-size-fits-all answers.</p>
+      <div style="display:flex;gap:14px;margin-top:12px;align-items:center">
+        <div style="width:96px;height:96px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#225d48);display:grid;place-items:center;color:white;font-weight:700">Dr</div>
+        <div>
+          <div style="font-weight:700">Clinical Lead</div>
+          <div class="muted">Board-certified clinician • Integrative training • Years of practice translating evidence into everyday routines</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel reveal" data-reveal style="margin-top:18px">
+      <h2 style="margin-top:0">Session Planner</h2>
+      <p class="muted">Quickly sketch an approach you can bring to your visit or use to decide which program fits best.</p>
+      <div style="margin-top:12px">
+        <!-- Small embedded planner: condensed version -->
+        <form id="miniPlanner" onsubmit="return false;">
+          <label for="mConcern">Primary concern</label>
+          <input id="mConcern" name="mConcern" type="text" placeholder="e.g., stress, gut issues">
+          <label style="margin-top:8px" for="mStyle">Preferred intensity</label>
+          <select id="mStyle">
+            <option>One 60–90 min visit</option>
+            <option>Integration Series</option>
+            <option>Focused Day</option>
+          </select>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button class="btn" id="miniBuild" style="background:var(--accent);color:white;padding:8px 12px;border-radius:8px;border:0">Preview</button>
+            <button class="btn" id="miniCopy" type="button" style="background:#e6f6ef;color:var(--accent);">Copy</button>
+          </div>
+        </form>
+        <pre id="miniOut" style="background:#fbfffc;padding:10px;border-radius:8px;margin-top:10px;color:var(--muted)">Use the form above and press Preview.</pre>
+      </div>
+    </section>
+
+  </main>
+
+  <footer style="max-width:920px;margin:28px auto;padding:10px;color:var(--muted);font-size:13px">{{BUSINESS_NAME}} • {{EMAIL}} • {{PHONE}}</footer>
+
+  <script>
+    // Reveal
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const els = document.querySelectorAll('[data-reveal]');
+      if(prefersReduced){ els.forEach(e=>e.classList.add('visible')); return }
+      const obs = new IntersectionObserver((entries)=>{ entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('visible'); obs.unobserve(en.target) } }) },{threshold:0.1});
+      els.forEach(el=>{ el.classList.add('reveal'); obs.observe(el) });
+    })();
+
+    // Mini planner
+    (function(){
+      const form = document.getElementById('miniPlanner');
+      const out = document.getElementById('miniOut');
+      const miniBuild = document.getElementById('miniBuild');
+      const miniCopy = document.getElementById('miniCopy');
+
+      function build(){
+        const concern = document.getElementById('mConcern').value.trim() || 'Not specified';
+        const style = document.getElementById('mStyle').value;
+        const text = ['Quick plan preview','---------------','Concern: '+concern,'Style: '+style,'','Suggested: Choose one measurable metric, try two small adjustments in week 1, schedule a short check-in within 2 weeks.'].join('\n');
+        out.textContent = text; return text;
+      }
+
+      miniBuild.addEventListener('click', function(e){ e.preventDefault(); build(); });
+      miniCopy.addEventListener('click', function(){ const t = out.textContent; if(!t) return; navigator.clipboard && navigator.clipboard.writeText(t).then(()=>{ miniCopy.textContent='Copied'; setTimeout(()=>miniCopy.textContent='Copy',900) }).catch(()=>alert('Copy failed')) });
+    })();
+  </script>
+</body>
+</html>

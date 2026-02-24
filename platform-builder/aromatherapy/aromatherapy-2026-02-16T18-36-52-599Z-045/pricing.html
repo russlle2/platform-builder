@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Investment — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg1:#FBF7FF;--bg2:#F6FFF7;--accent:#6B3FA0;--accent2:#FF9FB3;--muted:#6b6b6b;--card:#ffffff}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; color:#222}
+    body{background:linear-gradient(180deg,var(--bg1),var(--bg2));display:flex;flex-direction:column}
+    /* decorative SVG pattern sits under header */
+    .pattern{position:fixed;inset:0;opacity:0.12;pointer-events:none;z-index:0}
+    header{position:relative;z-index:5;padding:28px 32px;display:flex;align-items:center;justify-content:space-between}
+    .brand{font-weight:700;color:var(--accent);letter-spacing:0.6px}
+    nav a{margin:0 10px;color:#444;text-decoration:none;font-weight:600}
+    main{position:relative;z-index:3;max-width:1100px;margin:20px auto;padding:28px}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:center;margin-bottom:22px}
+    .hero .copy{background:linear-gradient(90deg,#fff 0%,rgba(255,255,255,0.8) 100%);padding:28px;border-radius:14px;box-shadow:0 6px 24px rgba(30,20,60,0.06)}
+    h1{margin:0 0 12px 0;font-size:28px;color:var(--accent)}
+    p.lead{margin:0;color:var(--muted)}
+    .cta{display:flex;gap:12px;margin-top:18px}
+    .btn{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+    .btn.ghost{background:transparent;border:2px solid rgba(107,63,160,0.12);color:var(--accent)}
+    .panel{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 30px rgba(107,63,160,0.06)}
+    .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:22px 0}
+    .plan h3{margin:0 0 8px 0;color:var(--accent2)}
+    .price{font-size:20px;font-weight:800;color:var(--accent)}
+    ul{margin:8px 0 0 16px;color:#444}
+    .note{font-size:13px;color:var(--muted);margin-top:8px}
+    .case-notes{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0}
+    .case{padding:14px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.9),#fff);border:1px solid rgba(140,120,180,0.06)}
+    .faq{margin-top:24px}
+    .faq h4{margin:0 0 12px 0;color:var(--accent)}
+    .q{margin:10px 0}
+    footer{padding:28px 32px;text-align:center;color:var(--muted);font-size:13px}
+    .legal{font-size:12px;color:#888;margin-top:8px}
+    @media (max-width:900px){.hero{grid-template-columns:1fr;}.plans{grid-template-columns:1fr}.case-notes{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <!-- unique inline SVG pattern for pricing page -->
+  <svg class="pattern" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" preserveAspectRatio="none">
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#FFDEE9"/><stop offset="1" stop-color="#B5FFFC"/></linearGradient>
+      <pattern id="p1" patternUnits="userSpaceOnUse" width="160" height="160">
+        <rect width="160" height="160" fill="url(#g1)"/>
+        <circle cx="24" cy="24" r="6" fill="#fff" opacity="0.22"/>
+        <circle cx="88" cy="88" r="10" fill="#6B3FA0" opacity="0.06"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#p1)"/>
+  </svg>
+
+  <header>
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">What We Do</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Boutique</a>
+      <a href="pricing.html">Investment</a>
+      <a href="about.html">The Story</a>
+      <a href="book.html">Reserve</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="copy panel">
+        <h1>Intensive Aromatherapy Sessions — designed to go deep, gently.</h1>
+        <p class="lead">Short, sweet, and deeply focused: our intensive pathway is for people who want concentrated support through scent-led sessions. These are not medical treatments — they are sensory facilitation held with care and safety standards.</p>
+        <div class="cta">
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <a class="btn ghost" href="contact.html">Ask a question</a>
+        </div>
+        <p class="note">Sessions include a standard intake, scent preference exploration, and tailored blend suggestions. All blends are recommended with dilution guidelines and patch-test instructions.</p>
+      </div>
+
+      <aside class="panel">
+        <strong>Quick info</strong>
+        <p class="note">Location: {{CITY}}, {{STATE}} • Contact: {{PHONE}}</p>
+        <p class="note">Session length options, take-home samples, and intensive packages available.</p>
+      </aside>
+    </section>
+
+    <section class="plans">
+      <article class="panel plan">
+        <h3>Deep Inhale — Single Intensive</h3>
+        <div class="price">$125</div>
+        <p class="note">A focused 90-minute session for concentrated scent mapping and an individualized aromatic plan.</p>
+        <ul>
+          <li>Intake + scent sampling</li>
+          <li>Custom single-session blend suggestion</li>
+          <li>Patch-test & dilution guidance</li>
+        </ul>
+      </article>
+
+      <article class="panel plan">
+        <h3>Course of Calm — 3-session</h3>
+        <div class="price">$340 (save 10%)</div>
+        <p class="note">Three intensives spaced as you prefer — great for a short, supported reset.</p>
+        <ul>
+          <li>Progressive scent planning</li>
+          <li>Take-home roll-on or sample kit</li>
+          <li>Between-session notes and adjustments</li>
+        </ul>
+      </article>
+
+      <article class="panel plan">
+        <h3>Signature Immersion — 6-session intensive</h3>
+        <div class="price">$620 (save 18%)</div>
+        <p class="note">A deeper commitment to a scent-led routine with thorough follow-up and personalized blends.</p>
+        <ul>
+          <li>Full aromatherapy pathway and ritual design</li>
+          <li>Priority scheduling and bespoke blends</li>
+          <li>Storage, safety, and dilution plan included</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="case-notes">
+      <div class="case panel">
+        <strong>Case vignette — gentle reintroduction</strong>
+        <p class="note">A client who hadn’t used essential oils in years returned to aromatherapy with curated, low-dilution suggestions and a small, labelled sample kit. We monitored preferences and adjusted blends every session.</p>
+      </div>
+      <div class="case panel">
+        <strong>Case vignette — ritual design</strong>
+        <p class="note">An immersive package included an evening ritual blend and practical instructions for safe diffusion around pets and children, plus clear patch-test steps.</p>
+      </div>
+    </section>
+
+    <section class="faq panel">
+      <h4>Frequently asked — safety first</h4>
+      <div class="q"><strong>How do I dilute essential oils?</strong>
+      <p class="note">Dilution depends on age, skin sensitivity, and purpose. Typical aromatherapy practice uses carrier oils (e.g., jojoba, sweet almond). General starting points: 0.5–1% for facial applications, 1–3% for short-term topical use. Your practitioner will advise specific ratios; never apply undiluted essential oil to skin.</p></div>
+
+      <div class="q"><strong>What is a patch test?</strong>
+      <p class="note">A patch test helps identify skin sensitivity. Apply a diluted sample to a small skin area and wait 24–48 hours. If irritation appears, discontinue use and consult a clinician.</p></div>
+
+      <div class="q"><strong>Are essential oils safe around pets?</strong>
+      <p class="note">Some oils can be irritating to animals. When using diffusers, ensure animals can leave the area, ventilate spaces well, and avoid diffusing in enclosed spaces frequented by pets. We provide pet-safe suggestions during sessions.</p></div>
+
+      <div class="q"><strong>Pregnancy, nursing, and health conditions?</strong>
+      <p class="note">Certain oils are not recommended during pregnancy or for people with specific health conditions. Always inform your practitioner of pregnancy, nursing, medications, or medical diagnoses. Aromatherapy is complementary and not a substitute for professional medical advice.</p></div>
+
+      <div class="q"><strong>Cancellation & packages</strong>
+      <p class="note">Please review booking policies at time of scheduling. Packages are designed for committed pathways; ask about transferability and timelines when you book.</p></div>
+    </section>
+
+    <section class="panel" style="margin-top:18px;display:flex;align-items:center;justify-content:space-between;gap:16px">
+      <div>
+        <strong>Ready to begin an intensive pathway?</strong>
+        <p class="note">Book a conversation — we'll discuss goals, scent preferences, and safety considerations.</p>
+      </div>
+      <div>
+        <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </section>
+
+    <p class="legal">Safety reminder: Aromatherapy supports wellbeing through scent and ritual; it does not replace medical care. Follow dilution and patch-test advice. For specific medical questions consult a licensed healthcare provider.</p>
+  </main>
+
+  <footer>
+    <div>Contact: <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    <div class="legal">© {{BUSINESS_NAME}} — {{CITY}}, {{STATE}}</div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>{{BUSINESS_NAME}} — Investment</title>
+  <style>
+    :root{--bg:#fff8f2;--accent:#ff6b6b;--muted:#6b6b6b;--card:#ffffff;--glass:rgba(255,255,255,0.6);--shadow:0 8px 30px rgba(11,12,14,0.06)}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+    body{background:linear-gradient(180deg, #fff 20%, var(--bg) 100%);color:#111}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:linear-gradient(90deg, rgba(255,255,255,0.6), rgba(255,255,255,0.4));backdrop-filter:blur(6px);position:sticky;top:0;z-index:40;border-bottom:1px solid rgba(0,0,0,0.03)}
+    .logo{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--accent)}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none;font-weight:600}
+    .wrap{max-width:1100px;margin:28px auto;padding:0 22px}
+    .hero{display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start}
+    .hero .lead{background:var(--card);padding:28px;border-radius:14px;box-shadow:var(--shadow)}
+    h1{margin:0 0 8px;font-size:28px;color:#15233a}
+    p.lead-copy{margin:0;color:var(--muted);line-height:1.5}
+    .cta-row{margin-top:18px;display:flex;gap:12px}
+    .btn{background:var(--accent);color:white;padding:10px 14px;border-radius:10px;border:0;font-weight:700;cursor:pointer}
+    .ghost{background:transparent;border:1px solid rgba(21,35,58,0.08);padding:9px 12px;border-radius:10px}
+
+    /* Pricing comparator */
+    .side{background:linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,255,255,0.6));padding:22px;border-radius:12px;box-shadow:var(--shadow)}
+    .toggle{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:16px}
+    .toggle .switch{width:74px;height:36px;border-radius:999px;background:linear-gradient(90deg,#f2f4f6,#ffffff);display:flex;align-items:center;padding:4px;cursor:pointer;border:1px solid rgba(0,0,0,0.04)}
+    .knob{width:28px;height:28px;border-radius:999px;background:var(--accent);box-shadow:0 6px 14px rgba(255,107,107,0.18);transition:transform .36s cubic-bezier(.2,.9,.3,1)}
+    .knob.right{transform:translateX(36px)}
+    .plans{display:grid;grid-template-columns:1fr;gap:12px}
+    .plan{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#fffdf9);border:1px solid rgba(17,19,21,0.04)}
+    .plan .meta{display:flex;flex-direction:column}
+    .plan .name{font-weight:700}
+    .price{font-weight:900;color:#13212d;font-size:20px}
+    .sub{color:var(--muted);font-size:13px}
+    .savings{font-size:12px;color:green;font-weight:700}
+
+    /* Grid for full pricing details */
+    .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:18px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:var(--shadow);border:1px solid rgba(0,0,0,0.03)}
+    ul{padding-left:18px;margin:12px 0 0;color:var(--muted)}
+    footer{margin:36px 0 80px;text-align:center;color:var(--muted)}
+
+    /* responsive */
+    @media (max-width:900px){.hero{grid-template-columns:1fr;}.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class='logo'>{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href='index.html'>Start</a>
+      <a href='about.html'>Story</a>
+      <a href='services.html'>Offerings</a>
+      <a href='programs.html'>Series</a>
+      <a href='pricing.html'>Investment</a>
+      <a href='testimonials.html'>Voices</a>
+      <a href='book.html'>Book</a>
+      <a href='contact.html'>Reach</a>
+    </nav>
+  </header>
+
+  <main class='wrap'>
+    <section class='hero'>
+      <div class='lead'>
+        <h1>Investment designed for real schedules</h1>
+        <p class='lead-copy'>Choose a rhythm that fits your weeks. Monthly access is great for ongoing adjustments; packaged intensives are for a focused reset. Values below animate so you can compare at a glance.</p>
+        <div class='cta-row'>
+          <button class='btn' onclick='location.href="{{PRIMARY_CTA_URL}}"'>{{PRIMARY_CTA_LABEL}}</button>
+          <button class='ghost' onclick='location.href="contact.html"'>Ask a question</button>
+        </div>
+      </div>
+
+      <aside class='side'>
+        <div class='toggle' aria-hidden='false'>
+          <div style='font-size:13px;color:var(--muted)'>Monthly</div>
+          <div class='switch' id='billingToggle' role='button' aria-pressed='false'>
+            <div class='knob' id='knob'></div>
+          </div>
+          <div style='font-size:13px;color:var(--muted)'>Package</div>
+        </div>
+
+        <div class='plans' id='plans'>
+          <div class='plan' data-month='49' data-package='240'>
+            <div class='meta'><div class='name'>Pulse Plan</div><div class='sub'>Light weekly check-ins</div></div>
+            <div>
+              <div class='price' data-display>—</div>
+              <div class='sub' data-sub>per month</div>
+            </div>
+          </div>
+
+          <div class='plan' data-month='99' data-package='540'>
+            <div class='meta'><div class='name'>Rhythm Plan</div><div class='sub'>Priority scheduling + toolkit</div></div>
+            <div>
+              <div class='price' data-display>—</div>
+              <div class='sub' data-sub>per month</div>
+            </div>
+          </div>
+
+          <div class='plan' data-month='199' data-package='960'>
+            <div class='meta'><div class='name'>Anchor Plan</div><div class='sub'>Deep dive series + follow-up</div></div>
+            <div>
+              <div class='price' data-display>—</div>
+              <div class='sub' data-sub>per month</div>
+            </div>
+          </div>
+        </div>
+
+        <div style='margin-top:12px;font-size:13px;color:var(--muted)'>Switch to compare one-time package pricing and see the effective saving.</div>
+      </aside>
+    </section>
+
+    <section class='grid' aria-label='Full pricing'>
+      <div class='card'>
+        <h3 style='margin:0 0 6px'>What you get</h3>
+        <ul>
+          <li>Short, practical frameworks you can test during busy weeks</li>
+          <li>Clear, repeatable habits and a weekly check-in</li>
+          <li>Templates for planning and evening reset</li>
+        </ul>
+      </div>
+
+      <div class='card'>
+        <h3 style='margin:0 0 6px'>How billing works</h3>
+        <p style='margin:0;color:var(--muted)'>Monthly plans renew automatically. Packages are billed once and include a recommended action plan for the following 8 weeks.</p>
+      </div>
+
+      <div class='card'>
+        <h3 style='margin:0 0 6px'>Custom teams & groups</h3>
+        <p style='margin:0;color:var(--muted)'>Events and cohorts are quoted separately. Reach out for a tailored proposal.</p>
+      </div>
+    </section>
+
+    <footer>
+      <div>Prefer a tailored quote? Call <a href='tel:{{PHONE}}'>{{PHONE}}</a> or email <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a></div>
+    </footer>
+  </main>
+
+  <script>
+    // Pricing comparator with animated numbers
+    (function(){
+      const toggle = document.getElementById('billingToggle');
+      const knob = document.getElementById('knob');
+      const plans = Array.from(document.querySelectorAll('.plan'));
+      let mode = 'monthly';
+
+      function formatCurrency(n){
+        return '$' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      }
+
+      function animateNumber(el, from, to, duration=600){
+        const start = performance.now();
+        function frame(now){
+          const progress = Math.min((now - start)/duration, 1);
+          const value = Math.round(from + (to - from) * ease(progress));
+          el.textContent = formatCurrency(value);
+          if(progress < 1) requestAnimationFrame(frame);
+        }
+        function ease(t){ return 1 - Math.pow(1 - t, 3); }
+        requestAnimationFrame(frame);
+      }
+
+      function updateDisplay(){
+        plans.forEach(plan => {
+          const monthly = Number(plan.getAttribute('data-month'));
+          const pack = Number(plan.getAttribute('data-package'));
+          const display = plan.querySelector('[data-display]');
+          const sub = plan.querySelector('[data-sub]');
+          if(mode === 'monthly'){
+            animateNumber(display, Number(display.textContent.replace(/[^0-9]/g,'')) || monthly, monthly);
+            sub.textContent = 'per month';
+          } else {
+            animateNumber(display, Number(display.textContent.replace(/[^0-9]/g,'')) || pack, pack);
+            sub.textContent = 'one-time package';
+          }
+        });
+      }
+
+      // initial render
+      plans.forEach(plan => {
+        const display = plan.querySelector('[data-display]');
+        display.textContent = '—';
+      });
+      setTimeout(updateDisplay,120);
+
+      toggle.addEventListener('click', ()=>{
+        mode = (mode === 'monthly') ? 'package' : 'monthly';
+        toggle.setAttribute('aria-pressed', mode === 'package');
+        if(mode === 'package') knob.classList.add('right'); else knob.classList.remove('right');
+        updateDisplay();
+      });
+
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Fees & Plans — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1720;--card:#0b1220;--accent:#7dd3fc;--muted:#9aa4b2;--glass:rgba(255,255,255,0.03);--max:960px}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, Roboto, 'Segoe UI', Arial; background:linear-gradient(180deg,#071021 0%, #071826 45%);color:#e6eef6}
+    .wrap{max-width:var(--max);margin:36px auto;padding:28px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .pattern{width:56px;height:56px;background-image:url('assets/img/pattern.svg');background-size:cover;border-radius:8px;box-shadow:0 4px 18px rgba(2,6,23,0.6)}
+    nav a{color:var(--muted);text-decoration:none;margin-left:16px;font-size:15px}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:22px;margin-top:22px}
+    .panel{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:20px;border-radius:12px;box-shadow:0 6px 20px rgba(2,6,23,0.6)}
+    h1{margin:0 0 8px 0;font-weight:600}
+    p.lead{color:var(--muted);margin:0 0 18px 0}
+    .mood{display:flex;flex-wrap:wrap;gap:10px}
+    .mood button{background:transparent;border:1px solid rgba(255,255,255,0.07);color:#dff7ff;padding:8px 12px;border-radius:999px;cursor:pointer}
+    .mood button.active{background:var(--accent);color:#022029;border:0}
+    .recommend{background:var(--glass);padding:14px;border-radius:10px;margin-bottom:12px}
+    .price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:10px}
+    .price{padding:16px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)}
+    .price h3{margin:0 0 6px 0}
+    .price p{margin:0;color:var(--muted);font-size:14px}
+    .cta{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:8px;background:var(--accent);color:#022029;text-decoration:none;font-weight:600}
+    footer.note{color:var(--muted);font-size:13px;margin-top:20px}
+    .accordion{margin-top:16px}
+    .acc-item{border-top:1px dashed rgba(255,255,255,0.03);padding:12px 0}
+    .acc-item button{background:none;border:0;color:var(--accent);cursor:pointer;padding:0;font-weight:600}
+    .acc-body{display:none;color:var(--muted);margin-top:8px;font-size:14px}
+    .acc-body.show{display:block}
+    .small{font-size:13px;color:var(--muted)}
+    @media(max-width:880px){.hero{grid-template-columns:1fr;}.price-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="pattern" aria-hidden="true"></div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div class="small">Private practice therapy in {{CITY}}, {{STATE}}</div>
+        </div>
+      </div>
+      <nav aria-label="Primary navigation">
+        <a href="index.html">Home</a>
+        <a href="specialties.html">Who I Help</a>
+        <a href="approach.html">How I Work</a>
+        <a href="fees.html">Fees & Plans</a>
+        <a href="faq.html">FAQs</a>
+        <a href="book.html">Book a Visit</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <main class="hero">
+      <section class="panel">
+        <h1>Fees & Plans shaped to the moment</h1>
+        <p class="lead">Flexible structures for focused work — from a single extended session to short intensive pathways. Pick the direction that fits what you need right now.</p>
+
+        <div class="recommend" aria-live="polite">
+          <strong id="rec-name">Recommended: Bridge Session</strong>
+          <div id="rec-desc" style="color:var(--muted);margin-top:6px">One 75-minute focused meeting to untangle a pressing concern and create a next-step plan to try between sessions.</div>
+          <div style="margin-top:8px"><span style="font-weight:700">Starting:</span> <span id="rec-price">$185</span></div>
+          <a id="rec-cta" class="cta" href="{{PRIMARY_CTA_URL}}">Book a Bridge Session</a>
+        </div>
+
+        <div>
+          <div style="font-size:14px;color:var(--muted);margin-bottom:8px">Choose how you feel now</div>
+          <div class="mood" role="tablist" aria-label="Mood to Method selector">
+            <button data-key="overwhelmed" class="active">Overwhelmed</button>
+            <button data-key="stuck">Stuck</button>
+            <button data-key="relational">Relationship strain</button>
+            <button data-key="transition">Preparing for change</button>
+            <button data-key="low">Low energy</button>
+          </div>
+        </div>
+
+        <div class="price-grid" style="margin-top:18px">
+          <div class="price">
+            <h3>Bridge Session</h3>
+            <p class="small">75 minutes. Single-session focus to orient difficult moments and craft immediate strategies.</p>
+            <div style="margin-top:8px;font-weight:700">$185</div>
+          </div>
+          <div class="price">
+            <h3>Short-Focus Sprint</h3>
+            <p class="small">Three 50-minute sessions across 4–6 weeks for concentrated problem-solving and skill practice.</p>
+            <div style="margin-top:8px;font-weight:700">$475 (3-session bundle)</div>
+          </div>
+          <div class="price">
+            <h3>Intensive Pathway</h3>
+            <p class="small">A condensed program of six sessions for deeper pattern work and stabilization.</p>
+            <div style="margin-top:8px;font-weight:700">$900 (6-session package)</div>
+          </div>
+        </div>
+
+        <div class="accordion">
+          <div class="acc-item">
+            <button class="acc-toggle">Session boundaries & confidentiality</button>
+            <div class="acc-body">
+              <p class="small">Conversations in therapy are confidential except when disclosure is required by law — for example, concerns of imminent harm to self or others, suspected abuse of a minor or dependent adult, or when a court issues an order. I will always attempt to discuss limits of confidentiality with you as part of informed consent.</p>
+              <p class="small">Sessions are typically 50 minutes unless otherwise arranged. For longer or specialty appointments (e.g., a Bridge Session), timing and fees differ as noted above. Cancelling within 48 hours may incur a fee; emergencies are handled with consideration. Please discuss concerns about timing, length, or payment at your first meeting.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="small" style="margin-top:12px">I strive for clear, compassionate practice policies that protect your process and my clinical obligations. Please reach out if you have questions about insurance, sliding scale, or accessibility.</div>
+      </section>
+
+      <aside class="panel" aria-labelledby="side-title">
+        <h2 id="side-title">Ways we can work</h2>
+        <p class="lead">Short engagements for tactical relief, multi-session packages for deeper change, and intensives for concentrated support.</p>
+
+        <dl style="margin-top:12px;color:var(--muted);font-size:14px">
+          <dt style="font-weight:700">Single consult</dt>
+          <dd style="margin:4px 0 10px 0">One longer session for planning and next steps — good when clarity and direction are the goal.</dd>
+          <dt style="font-weight:700">Focused bundle</dt>
+          <dd style="margin:4px 0 10px 0">Short string of sessions for practical skill-building and habit change.</dd>
+          <dt style="font-weight:700">Intensive Pathway</dt>
+          <dd style="margin:4px 0 0 0">A structured set of sessions for pattern work and consolidation.</dd>
+        </dl>
+
+        <div style="margin-top:14px">
+          <div style="font-weight:700">Connect</div>
+          <div class="small">Call: {{PHONE}}<br>Email: <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a></div>
+          <a href="{{PRIMARY_CTA_URL}}" class="cta" style="margin-top:12px;display:inline-block">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+
+        <div style="margin-top:16px" class="small">Payment options include card, ACH. I do not guarantee insurance reimbursement; I can provide a superbill upon request.</div>
+      </aside>
+    </main>
+
+    <footer class="note">
+      <div>These descriptions are informational and not medical advice. I do not promise outcomes; therapy is collaborative work that varies by person and circumstance.</div>
+      <div style="margin-top:8px;color:var(--muted);font-size:13px">If you are in immediate danger, please call emergency services. In the U.S., the 988 crisis line is available by phone or text for urgent mental health support.</div>
+    </footer>
+  </div>
+
+  <script>
+    (function(){
+      const map = {
+        overwhelmed: {
+          name:'Bridge Session',
+          desc:'A 75-minute deep-focus meeting to sort through what feels most immediate and set practical first steps.',
+          price:'$185',
+          ctaText:'Book a Bridge Session',
+          ctaUrl:'{{PRIMARY_CTA_URL}}?type=bridge'
+        },
+        stuck: {
+          name:'Short-Focus Sprint',
+          desc:'Three concentrated sessions to test approaches, practice skills, and shift a repeating pattern.',
+          price:'$475 (3 sessions)',
+          ctaText:'Reserve a Short-Focus Sprint',
+          ctaUrl:'{{PRIMARY_CTA_URL}}?type=sprint'
+        },
+        relational: {
+          name:'Connect Consultation',
+          desc:'One extended session to clarify dynamics, set communication experiments, and plan next steps.',
+          price:'$200',
+          ctaText:'Schedule a Connect Consultation',
+          ctaUrl:'{{PRIMARY_CTA_URL}}?type=connect'
+        },
+        transition: {
+          name:'Intensive Pathway',
+          desc:'A six-session pathway for supported transitions and consolidation of new ways of moving forward.',
+          price:'$900 (6 sessions)',
+          ctaText:'Join an Intensive Pathway',
+          ctaUrl:'{{PRIMARY_CTA_URL}}?type=intensive'
+        },
+        low: {
+          name:'Gentle Check-In',
+          desc:'Short, supportive meetings focused on steadying routine and small, manageable adjustments.',
+          price:'$120 (25 min)',
+          ctaText:'Book a Gentle Check-In',
+          ctaUrl:'{{PRIMARY_CTA_URL}}?type=checkin'
+        }
+      };
+
+      const buttons = document.querySelectorAll('.mood button');
+      const recName = document.getElementById('rec-name');
+      const recDesc = document.getElementById('rec-desc');
+      const recPrice = document.getElementById('rec-price');
+      const recCta = document.getElementById('rec-cta');
+
+      function setActive(key, btn){
+        buttons.forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        const m = map[key];
+        recName.textContent = 'Recommended: ' + m.name;
+        recDesc.textContent = m.desc;
+        recPrice.textContent = m.price;
+        recCta.textContent = m.ctaText;
+        recCta.href = m.ctaUrl;
+      }
+
+      buttons.forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const k = btn.getAttribute('data-key');
+          setActive(k, btn);
+        });
+      });
+
+      // Initialize
+      setActive('overwhelmed', document.querySelector('.mood button[data-key="overwhelmed"]'));
+
+      // Accordion
+      document.querySelectorAll('.acc-toggle').forEach(bt=>{
+        bt.addEventListener('click', ()=>{
+          const body = bt.nextElementSibling;
+          body.classList.toggle('show');
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="A private practice clinician offering ongoing support through a membership model. Contact, self-screening intake, and guided micro-practices." />
+  <style>
+    :root{
+      --bg:#f7faf9;--card:#ffffff;--muted:#6b7280;--accent:#2a6f9e;--accent-2:#7cc1d8;--glass:rgba(255,255,255,0.7);
+      --max-width:1000px;--radius:12px;--mono:ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+    }
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:linear-gradient(180deg, #f2fbff 0%, var(--bg) 40%);color:#0b1220}
+    header{background:linear-gradient(90deg, rgba(42,111,158,0.06), rgba(124,193,216,0.03));backdrop-filter:blur(6px);border-bottom:1px solid rgba(11,18,32,0.04)}
+    .wrap{max-width:var(--max-width);margin:0 auto;padding:28px}
+    .brand{display:flex;gap:16px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    nav{margin-top:8px}
+    .nav-list{display:flex;gap:12px;flex-wrap:wrap}
+    .nav-list a{color:var(--accent);text-decoration:none;padding:8px 10px;border-radius:8px;font-weight:600}
+    .nav-list a.current{background:rgba(42,111,158,0.08)}
+
+    main{max-width:var(--max-width);margin:22px auto;padding:28px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:24px}
+    .card{background:var(--card);padding:20px;border-radius:var(--radius);box-shadow:0 6px 18px rgba(9,30,46,0.04)}
+    h1{margin:0 0 8px 0;font-size:22px}
+    p.lead{color:var(--muted);margin:0 0 16px 0}
+
+    label{display:block;font-weight:600;margin-top:12px;color:#13202a}
+    input[type=text], input[type=email], textarea, select{width:100%;padding:10px;border-radius:10px;border:1px solid #e6eef2;margin-top:6px;font-size:14px}
+    textarea{min-height:110px;resize:vertical}
+    .row{display:flex;gap:12px}
+    .btn{display:inline-block;background:var(--accent);color:white;padding:10px 14px;border-radius:10px;border:0;font-weight:700;cursor:pointer}
+    .btn.secondary{background:transparent;border:1px solid rgba(11,18,32,0.06);color:var(--accent)}
+    .muted{color:var(--muted);font-size:14px}
+
+    .small{font-size:13px}
+    .side-note{font-size:13px;color:var(--muted);margin-top:8px}
+
+    footer{max-width:var(--max-width);margin:20px auto;padding:28px;text-align:center;color:var(--muted);font-size:13px}
+
+    /* intake wizard */
+    .wizard-steps{list-style:none;padding:0;margin:0}
+    .wizard-steps li{padding:12px;border-radius:8px;background:linear-gradient(180deg,#fff,#fbfdff);margin-bottom:10px;border:1px solid rgba(11,18,32,0.04)}
+    .scale{display:flex;gap:8px;margin-top:8px}
+    .scale button{flex:1;padding:8px;border-radius:8px;border:1px solid #e6eef2;background:white;cursor:pointer}
+    .scale button.active{background:var(--accent);color:white}
+
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(8,12,18,0.45);display:none;align-items:center;justify-content:center;padding:20px}
+    .modal{width:100%;max-width:680px;background:var(--card);padding:20px;border-radius:12px;box-shadow:0 30px 60px rgba(9,30,46,0.2)}
+    .modal .controls{display:flex;justify-content:space-between;align-items:center}
+    .circle{width:100px;height:100px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent);background:linear-gradient(180deg,rgba(124,193,216,0.12),rgba(42,111,158,0.08));margin:20px auto}
+    .breath-dot{width:18px;height:18px;background:var(--accent);border-radius:50%;display:inline-block;transform:scale(1);transition:transform 0.4s ease}
+
+    /* responsive */
+    @media (max-width:880px){.grid{grid-template-columns:1fr}.wrap{padding:18px}.nav-list{display:none}}
+
+    /* subtle pattern using local svg background */
+    .pattern-hero{background-image:url('assets/img/pattern.svg');background-repeat:repeat;background-size:160px;background-position:center}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="brand">
+        <div class="logo">TP</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div class="small muted">{ {TAGLINE} }</div>
+        </div>
+      </div>
+      <nav>
+        <div class="nav-list" aria-label="Primary">
+          <a href="index.html">Begin</a>
+          <a href="about.html">Practice</a>
+          <a href="specialties.html">Programs</a>
+          <a href="approach.html">How I Work</a>
+          <a href="fees.html">Investment</a>
+          <a href="faq.html">Questions</a>
+          <a href="book.html">Schedule</a>
+          <a href="contact.html" class="current">Connect</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="grid">
+      <section class="card pattern-hero">
+        <h1>Connect — arrange a confidential first conversation</h1>
+        <p class="lead">Use the form to ask a question, check availability, or request a short introductory call. If you prefer, complete the self-screening intake to bring to a first session.</p>
+
+        <form id="contactForm" class="small" onsubmit="return false;">
+          <label for="name">Your name</label>
+          <input id="name" name="name" type="text" placeholder="First and last" required />
+
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="you@example.com" required />
+
+          <label for="phone">Phone</label>
+          <input id="phone" name="phone" type="text" placeholder="{{PHONE}}" />
+
+          <label for="message">A brief note (reason for reaching out)</label>
+          <textarea id="message" name="message" placeholder="What would you like to focus on?"></textarea>
+
+          <div style="margin-top:12px;display:flex;gap:10px;align-items:center">
+            <button class="btn" id="sendContact">Send message</button>
+            <button class="btn secondary" id="startWizard">Complete intake</button>
+            <button class="btn secondary" id="tryNow">Try a quick practice</button>
+          </div>
+
+          <p class="side-note">I aim to respond within a few business days. For urgent help or immediate crisis, please call local emergency services or your crisis line. See confidentiality note below.</p>
+        </form>
+
+        <div style="margin-top:18px;border-top:1px dashed rgba(11,18,32,0.04);padding-top:12px">
+          <div class="muted">Prefer to book right away? <a href="book.html">Reserve a time</a> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+        </div>
+      </section>
+
+      <aside class="card">
+        <h3>Practice contact</h3>
+        <p class="muted">{{CITY}}, {{STATE}} — virtual availability across state-maintained licensure where permitted.</p>
+        <p style="margin-top:10px"><strong>Phone</strong><br /><a href="tel:{{PHONE}}">{{PHONE}}</a></p>
+        <p style="margin-top:8px"><strong>Email</strong><br /><a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+
+        <hr style="margin:12px 0;border:none;border-top:1px solid rgba(11,18,32,0.04)" />
+        <h4 style="margin:0">Confidentiality & boundaries</h4>
+        <p class="small muted">Conversations are kept private within the limits of law. I will discuss confidentiality in your first appointment and answer questions about record keeping, reporting, and data shared through this site. Messages sent by email are not guaranteed to be encrypted.
+        </p>
+
+        <h4 style="margin-top:12px">Scope & crisis</h4>
+        <p class="small muted">I offer evidence-informed psychotherapeutic care and coaching support for adults. I do not provide emergency services. If you are experiencing a medical or psychiatric emergency, call local emergency services or your crisis line.</p>
+      </aside>
+    </div>
+
+    <section class="card" style="margin-top:22px">
+      <h2 style="margin-top:0">Self-screening intake (for your first appointment)</h2>
+      <p class="muted">This interactive intake helps you organize current concerns and priorities to share during an initial appointment. It is not diagnostic — think of it as structured notes you can download and bring to the first meeting.</p>
+
+      <ul id="wizard" class="wizard-steps small"></ul>
+      <div style="display:flex;gap:10px;margin-top:12px">
+        <button class="btn" id="wizardStart">Start the intake</button>
+        <button class="btn secondary" id="wizardDownload" disabled>Download responses</button>
+        <button class="btn secondary" id="wizardReset">Clear</button>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-hidden="true">
+    <div class="modal" role="document" aria-modal="true">
+      <div class="controls">
+        <strong id="modalTitle">Guide</strong>
+        <button class="btn secondary" id="closeModal">Close</button>
+      </div>
+      <div id="modalBody">
+        <!-- dynamic content -->
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} — a private practice membership offering ongoing psychotherapy and support. No guarantees are made about specific outcomes. Licensed therapy is best understood in conversation; please ask about fit and scope during your first session.</div>
+    <div style="margin-top:8px">Privacy, limits to confidentiality, and crisis guidance are provided on intake. For questions: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call {{PHONE}}</div>
+  </footer>
+
+  <script>
+    // Small utility
+    function el(q){return document.querySelector(q)}
+    function create(tag,attrs){const t=document.createElement(tag);for(const k in attrs) t.setAttribute(k,attrs[k]);return t}
+
+    // Contact button simple handler (local only)
+    el('#sendContact').addEventListener('click',function(){
+      const data={name:el('#name').value,email:el('#email').value,phone:el('#phone').value,message:el('#message').value};
+      alert('Message prepared to send. This demo collects the details locally.\n\n' + JSON.stringify(data,null,2));
+    });
+
+    // --- Self-screening intake wizard ---
+    const wizardQuestions = [
+      {id:'concerns',title:'What brings you here now?',prompt:'In a few lines, describe the main issue or feeling you want help with.'},
+      {id:'duration',title:'How long has this been a focus?',prompt:'How long have you noticed this being important — weeks, months, years?'},
+      {id:'impact',title:'What is it affecting?',prompt:'How does this concern affect your day-to-day (work, sleep, relationships)?'},
+      {id:'goals',title:'What would help you most?',prompt:'What are three things you’d like to work toward or change? (short phrases)'}
+    ];
+
+    const state = {answers:{}, current:0};
+    const wizardList = el('#wizard');
+
+    function renderWizard(){
+      wizardList.innerHTML = '';
+      wizardQuestions.forEach((q,idx)=>{
+        const li = document.createElement('li');
+        const h = document.createElement('div'); h.style.fontWeight='700'; h.textContent = (idx+1)+'. ' + q.title;
+        li.appendChild(h);
+
+        const p = document.createElement('div'); p.className='muted small'; p.textContent = q.prompt; li.appendChild(p);
+
+        const textarea = document.createElement('textarea'); textarea.placeholder='Type a note...'; textarea.value = state.answers[q.id] || '';
+        textarea.addEventListener('input', (e)=>{ state.answers[q.id] = e.target.value; el('#wizardDownload').disabled=false; });
+        li.appendChild(textarea);
+
+        if(idx===0){
+          const note = document.createElement('div'); note.className='small muted'; note.style.marginTop='8px'; note.textContent='If helpful, include one or two examples (brief) that illustrate the concern.'; li.appendChild(note);
+        }
+
+        wizardList.appendChild(li);
+      });
+    }
+
+    el('#wizardStart').addEventListener('click', function(){
+      renderWizard();
+      el('#wizard').scrollIntoView({behavior:'smooth'});
+    });
+
+    el('#wizardReset').addEventListener('click', function(){
+      if(confirm('Clear collected responses?')){ state.answers={}; renderWizard(); el('#wizardDownload').disabled=true }
+    });
+
+    el('#wizardDownload').addEventListener('click', function(){
+      const now = new Date().toISOString();
+      const payload = {created:now,contact:{name:el('#name').value,email:el('#email').value,phone:el('#phone').value},responses:state.answers};
+      const blob = new Blob([JSON.stringify(payload,null,2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href=url; a.download='intake-'+now+'.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    });
+
+    // --- Try it now modal with breathing / journaling / intention ---
+    const modalBackdrop = el('#modalBackdrop');
+    const modalBody = el('#modalBody');
+    const modalTitle = el('#modalTitle');
+
+    function showModal(title,content){ modalTitle.textContent = title; modalBody.innerHTML = ''; modalBody.appendChild(content); modalBackdrop.style.display = 'flex'; modalBackdrop.setAttribute('aria-hidden','false'); }
+    function closeModal(){ modalBackdrop.style.display='none'; modalBackdrop.setAttribute('aria-hidden','true'); }
+    el('#closeModal').addEventListener('click', closeModal);
+    modalBackdrop.addEventListener('click', function(e){ if(e.target===modalBackdrop) closeModal(); });
+
+    // Build try it UI
+    el('#tryNow').addEventListener('click', function(){
+      const container = document.createElement('div');
+      const tabs = document.createElement('div'); tabs.style.display='flex'; tabs.style.gap='8px'; tabs.style.marginBottom='10px';
+      const modes = ['Breathing','Journaling','Set intention'];
+      let active='Breathing';
+
+      const contentArea = document.createElement('div');
+
+      function buildBreathing(){
+        const wrap = document.createElement('div');
+        const info = document.createElement('div'); info.className='muted small'; info.textContent='Follow the circle and the prompts. A short grounding practice.';
+        const circle = document.createElement('div'); circle.className='circle';
+        const dot = document.createElement('span'); dot.className='breath-dot'; circle.appendChild(dot);
+        const prompt = document.createElement('div'); prompt.style.textAlign='center'; prompt.style.marginTop='8px'; prompt.textContent='Ready?';
+        wrap.appendChild(info); wrap.appendChild(circle); wrap.appendChild(prompt);
+
+        let phase=0; // 0 inhale,1 hold,2 exhale
+        let running=false; let timer=null;
+        function step(){
+          if(!running) return;
+          if(phase===0){ dot.style.transform='scale(1.9)'; prompt.textContent='Breathe in (4)'; phase=1; timer=setTimeout(step,4000); }
+          else if(phase===1){ prompt.textContent='Hold (2)'; timer=setTimeout(()=>{dot.style.transform='scale(1.2)'; phase=2; step();},2000); }
+          else if(phase===2){ prompt.textContent='Breathe out (6)'; dot.style.transform='scale(0.5)'; phase=0; timer=setTimeout(step,6000); }
+        }
+
+        const controls = document.createElement('div'); controls.style.display='flex'; controls.style.gap='8px'; controls.style.justifyContent='center';
+        const start = document.createElement('button'); start.className='btn'; start.textContent='Start 1 minute';
+        const stop = document.createElement('button'); stop.className='btn secondary'; stop.textContent='Stop';
+        start.addEventListener('click', function(){ if(running) return; running=true; phase=0; step(); setTimeout(()=>{running=false; clearTimeout(timer); prompt.textContent='Done.'},60000); });
+        stop.addEventListener('click', function(){ running=false; clearTimeout(timer); prompt.textContent='Stopped'; dot.style.transform='scale(1)'; });
+        controls.appendChild(start); controls.appendChild(stop);
+        wrap.appendChild(controls);
+        return wrap;
+      }
+
+      function buildJournaling(){
+        const wrap = document.createElement('div');
+        const info = document.createElement('div'); info.className='muted small'; info.textContent='A brief timed writing prompt. Write without editing for 5 minutes.';
+        const prompt = document.createElement('div'); prompt.style.marginTop='8px'; prompt.textContent='Prompt: What is the one thing on your mind right now?';
+        const area = document.createElement('textarea'); area.placeholder='Write freely for 5 minutes...'; area.style.minHeight='140px';
+        const controls = document.createElement('div'); controls.style.display='flex'; controls.style.gap='8px'; controls.style.marginTop='8px';
+        const start = document.createElement('button'); start.className='btn'; start.textContent='Begin 5 minutes';
+        const save = document.createElement('button'); save.className='btn secondary'; save.textContent='Save text';
+        const timer = document.createElement('div'); timer.className='muted small'; timer.style.marginLeft='8px';
+        let t=null; let remain=0;
+        start.addEventListener('click', function(){ if(t) return; remain=300; timer.textContent='5:00'; t=setInterval(()=>{ remain--; const m=Math.floor(remain/60); const s=('0'+(remain%60)).slice(-2); timer.textContent = m + ':' + s; if(remain<=0){ clearInterval(t); t=null; timer.textContent='Done'; } },1000); area.focus(); });
+        save.addEventListener('click', function(){ const blob=new Blob([area.value],{type:'text/plain'}); const u=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=u; a.download='journal.txt'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(u); });
+        controls.appendChild(start); controls.appendChild(save); controls.appendChild(timer);
+        wrap.appendChild(info); wrap.appendChild(prompt); wrap.appendChild(area); wrap.appendChild(controls);
+        return wrap;
+      }
+
+      function buildIntention(){
+        const wrap = document.createElement('div');
+        const info = document.createElement('div'); info.className='muted small'; info.textContent='Set a short intention you can recall during the day.';
+        const form = document.createElement('div'); form.style.display='flex'; form.style.flexDirection='column'; form.style.gap='8px';
+        const input = document.createElement('input'); input.type='text'; input.placeholder='My intention for today is...';
+        const saveBtn = document.createElement('button'); saveBtn.className='btn'; saveBtn.textContent='Save intention';
+        const copyBtn = document.createElement('button'); copyBtn.className='btn secondary'; copyBtn.textContent='Copy to clipboard';
+        saveBtn.addEventListener('click', function(){ localStorage.setItem('intention', input.value); alert('Saved in browser memory. You can paste it into notes or bring to a session.'); });
+        copyBtn.addEventListener('click', function(){ navigator.clipboard.writeText(input.value || '').then(()=>alert('Copied.')); });
+        const current = document.createElement('div'); current.className='muted small'; current.textContent = 'Current saved intention: ' + (localStorage.getItem('intention') || '— none —');
+        form.appendChild(input); form.appendChild(saveBtn); form.appendChild(copyBtn); form.appendChild(current);
+        wrap.appendChild(info); wrap.appendChild(form);
+        return wrap;
+      }
+
+      function switchTo(mode){
+        contentArea.innerHTML='';
+        if(mode==='Breathing') contentArea.appendChild(buildBreathing());
+        if(mode==='Journaling') contentArea.appendChild(buildJournaling());
+        if(mode==='Set intention') contentArea.appendChild(buildIntention());
+      }
+
+      modes.forEach(m=>{
+        const b = document.createElement('button'); b.className='btn secondary'; b.textContent = m; b.addEventListener('click', ()=>{ active=m; switchTo(m); }); tabs.appendChild(b);
+      });
+
+      container.appendChild(tabs); container.appendChild(contentArea);
+      switchTo(active);
+      showModal('Quick practice — choose a mode', container);
+    });
+
+    // ensure keyboard accessible / initial render
+    renderWizard();
+  </script>
+</body>
+</html>

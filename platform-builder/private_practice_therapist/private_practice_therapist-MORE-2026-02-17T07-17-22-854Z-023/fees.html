@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Fees • {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Transparent session and package options for short work and ongoing support." />
+  <style>
+    :root{
+      --bg:#0f1720; --card:#0b1220; --muted:#9aa4b2; --accent:#7dd3fc; --glass:rgba(255,255,255,0.04);
+      --accent-2:#a78bfa;
+      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#07101a);color:#e6eef6}
+    a{color:var(--accent);text-decoration:none}
+    header{display:flex;align-items:center;justify-content:space-between;padding:24px 32px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:700}
+    nav a{margin-left:18px;color:var(--muted);font-size:15px}
+    .hero{padding:48px 32px 28px;background-image:url('assets/img/pattern.svg');background-size:360px;background-repeat:repeat;}
+    .hero-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start}
+    .lead{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:28px;border-radius:14px}
+    h1{margin:0 0 8px;font-size:28px}
+    p.lead-sub{margin:0;color:var(--muted)}
+    .aside{padding:20px;border-radius:12px;background:var(--glass);border:1px solid rgba(255,255,255,0.03)}
+    .comparator{display:flex;align-items:center;gap:16px;margin-top:18px}
+    .toggle{background:#07121a;padding:6px;border-radius:999px;border:1px solid rgba(255,255,255,0.03);display:inline-flex}
+    .toggle button{background:transparent;border:0;color:var(--muted);padding:10px 14px;border-radius:999px;cursor:pointer}
+    .toggle button.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#052026;box-shadow:0 6px 18px rgba(125,211,252,0.12);}
+    .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px}
+    .plan{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .plan h3{margin:0 0 6px;font-size:16px}
+    .price{font-weight:700;font-size:22px;color:var(--accent);}
+    .meta{color:var(--muted);font-size:13px;margin-top:8px}
+    .cta{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:10px;background:var(--accent);color:#052026;font-weight:600}
+    footer{max-width:1100px;margin:34px auto;color:var(--muted);font-size:13px;padding:0 32px}
+    .note{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
+    @media (max-width:900px){.hero-inner{grid-template-columns:1fr;}.plans{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">T</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="specialties.html">Specialties</a>
+      <a href="approach.html">How I Work</a>
+      <a href="fees.html">Fees</a>
+      <a href="faq.html">FAQ</a>
+      <a href="book.html">Schedule</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="lead">
+        <h1>Choices that match how much you want to move right now</h1>
+        <p class="lead-sub">I offer short, focused options and a monthly partnership. Use the switch to see an instant comparison of monthly rates and single‑package pricing.</p>
+
+        <div class="comparator">
+          <div>Show prices as</div>
+          <div class="toggle" role="tablist" aria-label="Pricing mode">
+            <button id="mode-monthly" class="active" data-mode="monthly">Monthly</button>
+            <button id="mode-package" data-mode="package">Package</button>
+          </div>
+        </div>
+
+        <div class="plans" id="plans">
+          <div class="plan" data-monthly="220" data-package="600">
+            <h3>Momentum Subscription</h3>
+            <div class="price" data-display>—</div>
+            <div class="meta">Ongoing weekly sessions; steady support and planning.</div>
+            <a class="cta" href="{{PRIMARY_CTA_URL}}" id="cta-momentum">{{PRIMARY_CTA_LABEL}}</a>
+          </div>
+
+          <div class="plan" data-monthly="120" data-package="320">
+            <h3>Focused Intensive — 3 sessions</h3>
+            <div class="price" data-display>—</div>
+            <div class="meta">Three close, task-oriented sessions to address a specific challenge.</div>
+            <a class="cta" href="{{PRIMARY_CTA_URL}}" id="cta-intensive">Book the Intensive</a>
+          </div>
+
+          <div class="plan" data-monthly="95" data-package="540">
+            <h3>Bridge Support — 6 sessions</h3>
+            <div class="price" data-display>—</div>
+            <div class="meta">Short-term series for transitions and clearer next steps.</div>
+            <a class="cta" href="{{PRIMARY_CTA_URL}}" id="cta-bridge">Arrange a Conversation</a>
+          </div>
+        </div>
+
+      </div>
+
+      <aside class="aside">
+        <h4 style="margin:0 0 8px">Notes on how I frame fees</h4>
+        <div style="color:var(--muted);font-size:14px">"Monthly" shows an estimated recurring investment if you meet regularly. "Package" shows a one‑time cost for a bundled set of sessions at a small savings. No medical claims — just options you can pick from and discuss further.</div>
+
+        <div style="margin-top:14px">
+          <strong style="display:block;margin-bottom:6px">Need a custom plan?</strong>
+          <div style="color:var(--muted);font-size:14px">I also create tailored bundles when timing or frequency matters. Reach out and we can outline a brief plan.</div>
+        </div>
+      </aside>
+
+    </div>
+  </section>
+
+  <main style="max-width:1100px;margin:22px auto;padding:0 32px">
+    <div class="note">
+      <strong>Confidentiality & scope</strong>
+      <div style="color:var(--muted);margin-top:6px">Sessions are confidential within professional and legal limits. I do not offer emergency crisis services. If you are in crisis or danger, please contact local emergency services or a 24/7 crisis line immediately.</div>
+    </div>
+
+    <section style="margin-top:18px">
+      <h3 style="margin-bottom:8px">Payments & insurance</h3>
+      <p style="color:var(--muted)">I accept private pay. Receipts for out-of-network reimbursement can be provided upon request. We can discuss sliding scale options in a first conversation when appropriate.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+      <div style="color:var(--muted)">Questions? Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or <a href="mailto:{{EMAIL}}">email</a>.</div>
+      <div style="color:var(--muted)">Serving <span>{{CITY}}, {{STATE}}</span></div>
+    </div>
+  </footer>
+
+  <script>
+    // Pricing comparator with animated numbers
+    (function(){
+      const btnMonthly = document.getElementById('mode-monthly');
+      const btnPackage = document.getElementById('mode-package');
+      const plans = document.querySelectorAll('.plan');
+      let mode = 'monthly';
+      function animateValue(el, start, end, duration){
+        let startTime = null;
+        const step = (timestamp)=>{
+          if(!startTime) startTime = timestamp;
+          const progress = Math.min((timestamp-startTime)/duration,1);
+          const value = Math.round(start + (end-start)*progress);
+          el.textContent = '$' + value;
+          if(progress<1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      }
+      function setMode(newMode){
+        mode = newMode;
+        btnMonthly.classList.toggle('active', mode==='monthly');
+        btnPackage.classList.toggle('active', mode==='package');
+        plans.forEach(p=>{
+          const display = p.querySelector('[data-display]');
+          const target = Number(p.dataset[mode]);
+          const currentText = display.textContent.replace(/[^0-9]/g,'');
+          const current = currentText ? Number(currentText) : 0;
+          animateValue(display,current,target,600);
+        });
+      }
+      btnMonthly.addEventListener('click',()=>setMode('monthly'));
+      btnPackage.addEventListener('click',()=>setMode('package'));
+      // initialize
+      window.addEventListener('load',()=>setMode('monthly'));
+    })();
+  </script>
+</body>
+</html>

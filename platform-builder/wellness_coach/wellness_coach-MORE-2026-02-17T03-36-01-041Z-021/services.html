@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{BUSINESS_NAME}} — Offerings</title>
+  <style>
+    :root{--bg:#ffffff;--card:#ffffff;--accent:#0f6fbf;--muted:#6b7280}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:linear-gradient(180deg,#fbfdff 0%, #ffffff 100%);color:#071029}
+    header{display:flex;justify-content:space-between;align-items:center;padding:16px 24px}
+    .brand{display:flex;align-items:center;gap:12px}
+    nav a{margin-left:16px;color:var(--muted);text-decoration:none;font-weight:600}
+    .container{max-width:980px;margin:26px auto;padding:20px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:20px}
+    .panel{background:var(--card);border-radius:12px;padding:20px;box-shadow:0 8px 30px rgba(9,34,61,0.04)}
+    h1{margin:0 0 6px}
+    .muted{color:var(--muted)}
+    ul.service-list{list-style:none;padding:0;margin:12px 0 0;display:flex;flex-direction:column;gap:12px}
+    li.service{padding:12px;border-radius:10px;border:1px solid rgba(11,54,96,0.04);display:flex;justify-content:space-between;align-items:center}
+    .price{font-weight:800;color:var(--accent)}
+    /* Session Planner styles */
+    .planner{margin-top:18px;border-radius:10px;padding:14px;background:linear-gradient(180deg,#fff,#fbfdff);border:1px solid rgba(11,54,96,0.03)}
+    .planner label{display:block;font-size:13px;color:var(--muted);margin-top:10px}
+    .planner input[type="text"],.planner textarea, .planner select{width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef8;margin-top:6px}
+    .planner .row{display:flex;gap:10px}
+    .btn{background:var(--accent);color:#fff;padding:10px 12px;border-radius:10px;border:none;font-weight:800;cursor:pointer}
+    .btn.secondary{background:transparent;color:var(--accent);border:1px solid rgba(15,111,191,0.12)}
+    .output{background:#f8fbff;border-radius:8px;padding:10px;margin-top:10px;white-space:pre-wrap;font-family:monospace;color:#09203a}
+    /* reveal */
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s cubic-bezier(.2,.9,.3,1),transform .6s cubic-bezier(.2,.9,.3,1)}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none;opacity:1;transform:none}}
+    @media(max-width:880px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#eaf4ff,#ffffff);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--accent)">W</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">Practical support for focused people</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Who I Am</a>
+      <a href="services.html">Offerings</a>
+      <a href="programs.html">Courses</a>
+      <a href="pricing.html">Rates</a>
+      <a href="testimonials.html">Praise</a>
+      <a href="book.html">Plan</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div class="grid">
+      <div class="panel reveal">
+        <h1>Offerings: concise, actionable support</h1>
+        <p class="muted">Choose a model that fits your rhythm. All work emphasizes measurable habits, simple frameworks, and practical outcomes.</p>
+
+        <ul class="service-list">
+          <li class="service">
+            <div>
+              <div style="font-weight:800">Focused Reset — VIP Day</div>
+              <div style="font-size:13px;color:var(--muted)">A intensive single day to design a bespoke daily map and an accountability toolkit.</div>
+            </div>
+            <div class="price">Investment: One day</div>
+          </li>
+
+          <li class="service">
+            <div>
+              <div style="font-weight:800">Steady Month — Support Package</div>
+              <div style="font-size:13px;color:var(--muted)">Four checkpoints and a living plan you can follow. Good for embedding a new routine.</div>
+            </div>
+            <div class="price">Investment: 4 sessions</div>
+          </li>
+
+          <li class="service">
+            <div>
+              <div style="font-weight:800">Pulse Check — Short consult</div>
+              <div style="font-size:13px;color:var(--muted)">30–45 minute clarity calls to correct course and tighten the plan.</div>
+            </div>
+            <div class="price">Investment: Single session</div>
+          </li>
+        </ul>
+
+        <section class="planner" aria-labelledby="plannerTitle">
+          <h3 id="plannerTitle">Session Planner</h3>
+          <p class="muted">Build a short plan you can use in a single VIP Day or a month-long engagement. Export the plan as plain text to share or save.</p>
+
+          <label for="goal">Primary outcome (one sentence)</label>
+          <input id="goal" type="text" placeholder="e.g. consistent early wake with steady energy" />
+
+          <label for="focus">Main areas to address</label>
+          <select id="focus" multiple size="4">
+            <option value="sleep">Sleep consistency</option>
+            <option value="movement">Movement & strength</option>
+            <option value="stress">Stress resets</option>
+            <option value="nutrition">Simple nutrition anchors</option>
+            <option value="rhythm">Daily rhythm & transitions</option>
+          </select>
+
+          <div class="row">
+            <label style="flex:1">Weekly time to invest (hours)
+              <input id="hours" type="text" placeholder="e.g. 2" />
+            </label>
+            <label style="flex:1">Pace
+              <select id="pace"><option>Low</option><option selected>Moderate</option><option>High</option></select>
+            </label>
+          </div>
+
+          <label for="notes">Personal constraints or notes</label>
+          <textarea id="notes" rows="3" placeholder="Work schedule, travel, medical notes (non-medical), preferences"></textarea>
+
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <button id="buildPlan" class="btn">Build plan</button>
+            <button id="clearPlan" class="btn secondary" type="button">Clear</button>
+          </div>
+
+          <div id="result" class="output" aria-live="polite"></div>
+          <div style="margin-top:8px;display:flex;gap:8px">
+            <button id="copyBtn" class="btn" style="background:#0a4f8a">Copy text</button>
+            <a id="bookNow" class="btn secondary" href="{{PRIMARY_CTA_URL}}">Schedule a VIP Day</a>
+          </div>
+        </section>
+
+      </div>
+
+      <aside class="panel reveal">
+        <h3>How the work is framed</h3>
+        <p class="muted">Every offering includes a short diagnosis, a compact framework, and a simple tracking tool. You leave with a plan that fits your calendar.</p>
+        <div style="margin-top:14px">
+          <strong>Recent focus areas</strong>
+          <ul style="margin-top:8px;color:var(--muted)">
+            <li>Morning scaffolds for high-velocity schedules</li>
+            <li>Midday resets to avoid energy crashes</li>
+            <li>Evening closures that prepare the next day</li>
+          </ul>
+        </div>
+
+        <div style="margin-top:16px">
+          <a href="contact.html" class="btn" style="display:inline-block">Ask a question</a>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    // Reveal on scroll with reduced-motion check
+    (function(){
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+        document.querySelectorAll('.reveal').forEach(function(el){el.classList.add('visible')});
+      } else {
+        var obs = new IntersectionObserver(function(entries){entries.forEach(function(en){if(en.isIntersecting) en.target.classList.add('visible')})},{threshold:0.12});
+        document.querySelectorAll('.reveal').forEach(function(el){obs.observe(el)});
+      }
+    })();
+
+    // Session Planner logic
+    (function(){
+      function q(id){return document.getElementById(id)}
+      var build = q('buildPlan'), clear = q('clearPlan'), copy = q('copyBtn');
+      var result = q('result');
+
+      function getSelectedOptions(sel){var arr=[]; for(var i=0;i<sel.options.length;i++){if(sel.options[i].selected) arr.push(sel.options[i].text);} return arr}
+
+      build.addEventListener('click', function(){
+        var goal = q('goal').value.trim();
+        var areas = getSelectedOptions(q('focus'));
+        var hours = q('hours').value.trim();
+        var pace = q('pace').value;
+        var notes = q('notes').value.trim();
+
+        if(!goal){result.textContent = 'Please add a clear one-sentence outcome.'; return}
+
+        var lines = [];
+        lines.push('{{BUSINESS_NAME}} — Session Plan');
+        lines.push('Primary outcome: ' + goal);
+        lines.push('Focus areas: ' + (areas.length?areas.join(', '):'General'));
+        lines.push('Weekly time commitment: ' + (hours? hours + ' hours':'Not specified'));
+        lines.push('Pace: ' + pace);
+        if(notes) { lines.push('Notes: ' + notes); }
+        lines.push('Recommended first steps:');
+        // simple plan builder logic
+        if(areas.indexOf('Sleep consistency')>-1 || areas.indexOf('sleep')>-1){
+          lines.push('- Morning anchor: wake + 15min light movement; keep wake time within 30 mins daily.');
+        }
+        if(areas.indexOf('Movement & strength')>-1 || areas.indexOf('movement')>-1){
+          lines.push('- Three short sessions of 20 minutes focused movement across the week (bodyweight or mobility).');
+        }
+        if(areas.indexOf('Stress resets')>-1 || areas.indexOf('stress')>-1){
+          lines.push('- Two micro-resets daily: 5 minutes breathing mid-afternoon and 5 minutes of grounding in the evening.');
+        }
+        if(areas.indexOf('Simple nutrition anchors')>-1 || areas.indexOf('nutrition')>-1){
+          lines.push('- Anchor meals: protein at breakfast and a balanced lunch; note one easy swap to reduce energy drag.');
+        }
+        if(areas.indexOf('Daily rhythm & transitions')>-1 || areas.indexOf('rhythm')>-1){
+          lines.push('- Establish a 5-step evening closure that prepares the next morning (list, prep, light movement, hydration, wind-down).');
+        }
+        if(!areas.length) lines.push('- Pick one micro-habit and test it for three days.');
+
+        lines.push('Tracking: Choose a single metric (sleep time, steps, energy rating) and check it 3x weekly.');
+        lines.push('Next review: Schedule 30–45 minute pulse check in 7–14 days.');
+
+        var out = lines.join('\n');
+        result.textContent = out;
+      });
+
+      clear.addEventListener('click', function(){q('goal').value=''; q('hours').value=''; q('notes').value=''; Array.prototype.forEach.call(q('focus').options,function(o){o.selected=false}); result.textContent='';});
+
+      copy.addEventListener('click', function(){
+        var text = result.textContent;
+        if(!text) return alert('Nothing to copy — build a plan first');
+        navigator.clipboard && navigator.clipboard.writeText(text).then(function(){
+          copy.textContent = 'Copied!'; setTimeout(function(){copy.textContent='Copy text'},1200);
+        }, function(){ alert('Copy failed — select and copy manually'); });
+      });
+    })();
+  </script>
+</body>
+</html>

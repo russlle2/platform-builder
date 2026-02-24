@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gatherings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1113;--card:#121417;--muted:#9aa3a6;--accent:#7dc4c8;--glass:rgba(255,255,255,0.03);--radius:12px}
+    html,body{height:100%;margin:0;font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#e9f0ef;background:linear-gradient(180deg,#071018 0%,#081218 60%);-webkit-font-smoothing:antialiased}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);backdrop-filter:blur(6px)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;border-radius:10px;background:var(--glass);display:grid;place-items:center}
+    .brand h1{font-size:16px;margin:0;color:#dff3f2}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-size:14px}
+    nav a.active{color:var(--accent)}
+    main{padding:32px;max-width:1100px;margin:0 auto}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:start}
+    .hero-card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:22px;border-radius:var(--radius);box-shadow:0 6px 30px rgba(2,8,10,0.6)}
+    .hero h2{margin:0 0 8px 0;color:#e8fbfb}
+    .muted{color:var(--muted);font-size:14px}
+    .next-event{border-radius:10px;padding:14px;background:rgba(125,196,200,0.06);border:1px solid rgba(125,196,200,0.06)}
+    .next-event time{display:block;font-weight:600;color:#e7fbfa}
+    .btn{display:inline-block;padding:10px 14px;background:var(--accent);color:#052022;border-radius:10px;text-decoration:none;font-weight:600}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:20px;margin-top:22px}
+    .card{background:var(--card);padding:18px;border-radius:12px}
+    .calendar{list-style:none;padding:0;margin:0}
+    .calendar li{display:flex;justify-content:space-between;padding:10px;border-radius:8px;margin-bottom:8px;background:linear-gradient(90deg,rgba(255,255,255,0.01),transparent)}
+    .seats{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;margin-top:12px}
+    .seat{background:#081215;border-radius:6px;height:28px;display:flex;align-items:center;justify-content:center;color:var(--muted);cursor:pointer;border:1px solid rgba(255,255,255,0.02)}
+    .seat.selected{background:var(--accent);color:#042022;font-weight:700}
+    .seat.full{background:#26292b;color:#6b6f71;cursor:not-allowed}
+    .packing{display:flex;flex-direction:column;gap:8px}
+    textarea{width:100%;height:120px;background:#071214;color:#d9efee;border-radius:8px;padding:12px;border:1px solid rgba(255,255,255,0.02)}
+    .footer-note{font-size:13px;color:#9fb0b1;margin-top:12px}
+    .disclaimer{font-size:13px;color:#d5e9e8;background:rgba(125,196,200,0.03);padding:12px;border-radius:8px;margin-top:12px}
+    .topline{font-size:13px;color:var(--muted);display:flex;gap:14px;align-items:center}
+    .pill{font-size:12px;padding:6px 8px;background:rgba(255,255,255,0.02);border-radius:999px;color:var(--muted)}
+    @media (max-width:900px){.hero{grid-template-columns:1fr;}.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo" aria-hidden>
+        <svg width="28" height="28" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="18" fill="#072022"/><path d="M18 62c8-12 24-28 34-30s28 2 36 16" stroke="#7dc4c8" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div>
+        <h1>{{BUSINESS_NAME}}</h1>
+        <div class="topline"><span class="pill">In-person gatherings</span><span class="muted">{{CITY}}, {{STATE}}</span></div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="events.html" class="active">Gatherings</a>
+      <a href="private-sessions.html">Sessions</a>
+      <a href="pricing.html">Membership</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-card">
+        <h2>Upcoming gatherings and what to expect</h2>
+        <p class="muted">Small-group acoustical sessions designed to guide a restorative evening. Choose a date, pick a seat, and get a tailored packing list so you arrive ready.</p>
+        <div class="card next-event" id="nextEventModule" style="margin-top:14px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div class="muted">Next gathering</div>
+              <time id="nextEventDate">—</time>
+              <div class="muted" id="nextEventLead">—</div>
+            </div>
+            <div style="text-align:right">
+              <a class="btn" href="book.html" id="bookNow">Reserve a place</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="hero-card">
+        <h3 style="margin-top:0">Quick facts</h3>
+        <ul style="padding-left:18px;color:var(--muted);margin:8px 0 0 0">
+          <li>Capacity: 18–24 per gathering</li>
+          <li>Average length: 60 minutes</li>
+          <li>Suggested arrival: 15 minutes early</li>
+        </ul>
+        <div style="margin-top:12px">
+          <div style="font-size:13px;color:var(--muted)">Contraindications</div>
+          <div class="disclaimer">Pregnancy, recent surgeries, implanted electronic devices (e.g., pacemakers), or seizure disorders should consult medical advice before participating. If you have concerns, call {{PHONE}} or email {{EMAIL}}.</div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="grid" style="margin-top:18px">
+      <div class="card">
+        <h3 style="margin-top:0">Select a date from the calendar</h3>
+        <ul class="calendar" id="calendarList">
+          <!-- populated by JS -->
+        </ul>
+
+        <h4 style="margin-top:12px">Seat map</h4>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="muted">Available seats: <strong id="availableCount">—</strong></div>
+          <div><button id="clearSeats" class="btn" style="background:transparent;border:1px solid rgba(125,196,200,0.08);color:var(--accent)">Clear selection</button></div>
+        </div>
+        <div class="seats" id="seatGrid" style="margin-top:10px"></div>
+        <div style="display:flex;gap:10px;margin-top:12px">
+          <button id="reserveSeats" class="btn">Hold my seat(s)</button>
+          <button id="viewPacking" class="btn" style="background:transparent;border:1px solid rgba(125,196,200,0.08);color:var(--accent)">What to bring</button>
+        </div>
+      </div>
+
+      <aside class="card">
+        <h3 style="margin-top:0">Packing checklist builder</h3>
+        <div class="packing">
+          <label><input type="radio" name="eventType" value="rest" checked> Rest & gentle tones</label>
+          <label><input type="radio" name="eventType" value="journey"> Sonic journey (moving layers)</label>
+          <label><input type="radio" name="eventType" value="immersion"> Deep immersion (extended drones)</label>
+
+          <div style="margin-top:8px">
+            <label class="muted">Comfort items</label>
+            <div><label><input type="checkbox" id="chkMat" checked> Yoga mat or blanket</label></div>
+            <div><label><input type="checkbox" id="chkPillow" checked> Small pillow or bolsters</label></div>
+            <div><label><input type="checkbox" id="chkLayers"> Extra layers (sweater)</label></div>
+            <div><label><input type="checkbox" id="chkWater"> Water bottle</label></div>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button id="generateList" class="btn">Create checklist</button>
+            <button id="copyPacking" class="btn" style="background:transparent;border:1px solid rgba(125,196,200,0.08);color:var(--accent)">Copy</button>
+          </div>
+
+          <textarea id="packingOutput" readonly placeholder="Your packing checklist will appear here"></textarea>
+          <div class="footer-note">Tip: Bring only what makes your body settle. Leave perfumes and strong scents at home.</div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    // sample data
+    const events = [
+      {id:1,title:'Evening: Quiet Resonance',date:'2026-02-24T19:00:00',type:'rest',capacity:18,lead:'A gentle session to unwind'},
+      {id:2,title:'Slow Wave Journey',date:'2026-03-03T19:30:00',type:'journey',capacity:20,lead:'Gradual layering of tones'},
+      {id:3,title:'Deep Arc Immersion',date:'2026-03-17T18:30:00',type:'immersion',capacity:16,lead:'Long-form drones for deep rest'}
+    ];
+
+    // render calendar list and next-event
+    const calendarList = document.getElementById('calendarList');
+    const nextEventDate = document.getElementById('nextEventDate');
+    const nextEventLead = document.getElementById('nextEventLead');
+
+    function renderCalendar(){
+      calendarList.innerHTML='';
+      const now = new Date();
+      const future = events.filter(e=>new Date(e.date) > now).sort((a,b)=>new Date(a.date)-new Date(b.date));
+      future.forEach(e=>{
+        const li=document.createElement('li');
+        const d=new Date(e.date);
+        li.innerHTML=`<div><strong>${e.title}</strong><div class='muted'>${d.toLocaleDateString()} · ${d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</div></div><div><button class='btn' data-id='${e.id}' style='padding:6px 10px;font-size:13px'>Select</button></div>`;
+        calendarList.appendChild(li);
+      });
+      const next = future[0]||events[0];
+      const dn = new Date(next.date);
+      nextEventDate.textContent = dn.toLocaleString([], {weekday:'short',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+      nextEventLead.textContent = next.lead;
+      // preselect first event
+      selectedEvent = next.id;
+      initSeatGrid(next.capacity);
+      updateAvailableDisplay();
+    }
+
+    // Seat selector
+    let selectedEvent = null;
+    let seatCount = 0;
+    const seatGrid = document.getElementById('seatGrid');
+    const availableCount = document.getElementById('availableCount');
+    let selectedSeats = new Set();
+    let takenSeats = new Set(); // simulate other people
+
+    function initSeatGrid(capacity){
+      seatGrid.innerHTML='';
+      selectedSeats.clear();
+      takenSeats.clear();
+      // randomly mark a few seats as taken
+      for(let i=1;i<=capacity;i++){
+        const btn=document.createElement('div');
+        btn.className='seat';
+        btn.textContent=i;
+        btn.dataset.seat=i;
+        btn.addEventListener('click',()=>toggleSeat(i,btn));
+        seatGrid.appendChild(btn);
+      }
+      // mark a handful as taken
+      for(let t=0;t<Math.floor(capacity*0.15);t++){
+        const n=Math.ceil(Math.random()*capacity);
+        takenSeats.add(n);
+        const el=seatGrid.querySelector(`[data-seat='${n}']`);
+        if(el){el.classList.add('full');}
+      }
+    }
+
+    function toggleSeat(i,el){
+      if(el.classList.contains('full')) return;
+      if(selectedSeats.has(i)){selectedSeats.delete(i);el.classList.remove('selected');}
+      else {selectedSeats.add(i);el.classList.add('selected');}
+      updateAvailableDisplay();
+    }
+
+    function updateAvailableDisplay(){
+      const total = seatGrid.children.length;
+      const taken = takenSeats.size + 0;
+      const avail = total - taken - selectedSeats.size;
+      availableCount.textContent = avail + ' / ' + total;
+    }
+
+    document.getElementById('clearSeats').addEventListener('click',()=>{
+      selectedSeats.forEach(n=>{
+        const el=seatGrid.querySelector(`[data-seat='${n}']`);
+        if(el) el.classList.remove('selected');
+      });
+      selectedSeats.clear();
+      updateAvailableDisplay();
+    });
+
+    document.getElementById('reserveSeats').addEventListener('click',()=>{
+      if(selectedSeats.size===0){alert('Select at least one seat to hold.');return}
+      // fake hold: move selected to taken
+      selectedSeats.forEach(n=>takenSeats.add(n));
+      selectedSeats.clear();
+      // update UI
+      for(const el of seatGrid.children){
+        el.classList.remove('selected');
+        if(takenSeats.has(Number(el.dataset.seat))) el.classList.add('full');
+      }
+      updateAvailableDisplay();
+      alert('Seats held. Proceed to Reserve to confirm your place.');
+    });
+
+    // packing list generator
+    document.getElementById('generateList').addEventListener('click',()=>{
+      const type = document.querySelector('input[name="eventType"]:checked').value;
+      const items=[];
+      if(document.getElementById('chkMat').checked) items.push('Yoga mat or blanket');
+      if(document.getElementById('chkPillow').checked) items.push('Small pillow/bolster');
+      if(document.getElementById('chkLayers').checked) items.push('Extra sweater or shawl');
+      if(document.getElementById('chkWater').checked) items.push('Water bottle');
+      // type-specific suggestions
+      if(type==='rest') items.unshift('Earplugs (if you prefer softer presence)');
+      if(type==='journey') items.unshift('Light eye-covering or silk scarf');
+      if(type==='immersion') items.unshift('Light-weight blanket for long holds');
+      const out = ['Packing checklist for: '+ (document.querySelector('input[name="eventType"]:checked').nextSibling.nodeValue.trim()), '---', ...items];
+      document.getElementById('packingOutput').value = out.join('\n');
+    });
+
+    document.getElementById('copyPacking').addEventListener('click',()=>{
+      const t=document.getElementById('packingOutput');
+      if(!t.value){alert('Generate a checklist first.');return}
+      navigator.clipboard.writeText(t.value).then(()=>alert('Checklist copied to clipboard.'));
+    });
+
+    // wire calendar selection buttons
+    calendarList.addEventListener('click',(e)=>{
+      const btn = e.target.closest('button');
+      if(!btn) return;
+      const id = Number(btn.dataset.id);
+      const ev = events.find(x=>x.id===id);
+      if(ev){
+        selectedEvent = id;
+        initSeatGrid(ev.capacity);
+        updateAvailableDisplay();
+        // highlight selection
+        document.querySelectorAll('.calendar button').forEach(b=>b.style.opacity='1');
+        btn.style.opacity='0.85';
+      }
+    });
+
+    // show packing panel via button
+    document.getElementById('viewPacking').addEventListener('click',()=>{
+      document.getElementById('packingOutput').focus();
+      alert('Use the packing checklist controls to build and copy a simple list.');
+    });
+
+    // initialize
+    renderCalendar();
+  </script>
+</body>
+</html>

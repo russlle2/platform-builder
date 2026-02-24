@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book a visit — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Schedule a focused visit or conversation. Use the planner to prepare a concise summary to bring to your appointment.">
+  <style>
+    :root{--bg:#f8fff9;--ink:#052223;--muted:#4d5b5b;--accent:#6aa84f;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial}
+    body{margin:0;background:var(--bg);color:var(--ink)}
+    .container{max-width:880px;margin:0 auto;padding:28px}
+    header{padding:12px 0}
+    nav{display:flex;gap:12px;align-items:center}
+    nav a{color:var(--ink);text-decoration:none;padding:8px;border-radius:8px}
+    .brand{font-weight:700}
+    main{padding:18px 0}
+    .card{background:#fff;padding:18px;border-radius:12px;border:1px solid rgba(6,18,12,0.04)}
+    h1{margin:0 0 8px}
+    .muted{color:var(--muted)}
+    .form-row{display:flex;gap:10px}
+    input,textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(6,18,12,0.06)}
+    button{background:var(--accent);color:white;border:0;padding:10px 14px;border-radius:10px}
+    .reveal{opacity:0;transform:translateY(12px);transition:opacity .6s ease,transform .6s ease}
+    .visible{opacity:1;transform:none}
+    .planner{margin-top:12px;border-radius:10px;padding:12px;border:1px dashed rgba(6,18,12,0.06);background:white}
+    pre.summary{white-space:pre-wrap;background:#f6fff3;padding:12px;border-radius:8px;border:1px solid rgba(106,168,79,0.08)}
+    @media(max-width:760px){.form-row{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <nav>
+        <div class="brand">{{BUSINESS_NAME}}</div>
+        <div style="flex:1"></div>
+        <a href="index.html">Overview</a>
+        <a href="services.html">Offerings</a>
+        <a href="conditions.html">Stories</a>
+        <a href="approach.html">Method</a>
+        <a href="pricing.html">Rates</a>
+        <a href="about.html">Studio</a>
+        <a href="book.html" class="active">Book</a>
+        <a href="contact.html">Reach</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <section class="card reveal">
+        <h1>Book a session</h1>
+        <p class="muted">Select a session frame and provide a short summary. Use the Session Planner below to build a plain-text summary you can copy into the booking notes.</p>
+
+        <form id="booking-form" style="margin-top:12px">
+          <div class="form-row">
+            <select id="sessionType">
+              <option>Focused Reset Day — intensive assessment</option>
+              <option>Foundations Series — 3-session package</option>
+              <option>Monthly Align — ongoing check-in</option>
+            </select>
+            <input id="name" placeholder="Your full name" required>
+          </div>
+          <div style="margin-top:12px">
+            <textarea id="notes" placeholder="Brief summary or current priorities (this will populate with your planner output if used)" rows="4"></textarea>
+          </div>
+          <div style="margin-top:12px;display:flex;gap:8px">
+            <button type="submit">Request booking</button>
+            <a href="tel:{{PHONE}}" style="align-self:center;color:var(--muted);text-decoration:none">Call us: {{PHONE}}</a>
+          </div>
+        </form>
+      </section>
+
+      <section class="card reveal" style="margin-top:18px">
+        <h2>Session Planner</h2>
+        <p class="muted">Build a concise summary to include with your booking. This output is plaintext — easy to copy into forms or email.</p>
+        <div class="planner" id="planner-book">
+          <label for="b-goal">What would you like to focus on?</label>
+          <input id="b-goal" type="text" placeholder="e.g., stabilize sleep, reduce reflux, improve stamina">
+          <label style="margin-top:8px">Key constraints</label>
+          <select id="b-constraint">
+            <option>Limited time (busy schedule)</option>
+            <option>Multiple medical providers</option>
+            <option>Sensitivity to supplements/medications</option>
+            <option>Prefer remote visits</option>
+          </select>
+          <label style="margin-top:8px">Select priority actions</label>
+          <div class="form-row">
+            <input id="b-action1" placeholder="Action 1 (short)" />
+            <input id="b-action2" placeholder="Action 2 (short)" />
+          </div>
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <button id="b-build">Generate text</button>
+            <button id="b-copy" type="button" class="secondary">Copy to clipboard</button>
+            <button id="b-insert" type="button" class="secondary">Insert into booking notes</button>
+          </div>
+          <pre id="b-summary" class="summary" aria-live="polite">Use the form to build a short plan.</pre>
+        </div>
+      </section>
+
+      <section class="reveal" style="margin-top:18px">
+        <h2>What happens after you request</h2>
+        <p class="muted">We triage requests and suggest the best intake option. For more urgent needs, please call us directly at <a href="tel:{{PHONE}}">{{PHONE}}</a>.</p>
+      </section>
+
+    </div>
+  </main>
+
+  <footer style="padding:18px 0;color:var(--muted)">
+    <div class="container">{{BUSINESS_NAME}} — {{CITY}}, {{STATE}} · <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+  </footer>
+
+  <script>
+    // Reveal
+    (function(){
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const els = document.querySelectorAll('.reveal');
+      if(reduced){els.forEach(e=>e.classList.add('visible'));return}
+      const io = new IntersectionObserver((entries)=>{entries.forEach(en=>{if(en.isIntersecting){en.target.classList.add('visible');io.unobserve(en.target)}})},{threshold:0.08});
+      els.forEach(e=>io.observe(e));
+    })();
+
+    // Booking form: attach planner output if user inserts
+    (function(){
+      const form = document.getElementById('booking-form');
+      const notes = document.getElementById('notes');
+      form.addEventListener('submit',function(e){e.preventDefault();
+        // naive demo: gather values and show a confirmation
+        const data = {
+          name:document.getElementById('name').value,
+          type:document.getElementById('sessionType').value,
+          notes:notes.value
+        };
+        alert('Booking request saved locally. In production this would send to the clinic.\n\n'+JSON.stringify(data,null,2));
+      });
+    })();
+
+    // Planner (book page)
+    (function(){
+      const g = document.getElementById('b-goal');
+      const c = document.getElementById('b-constraint');
+      const a1 = document.getElementById('b-action1');
+      const a2 = document.getElementById('b-action2');
+      const build = document.getElementById('b-build');
+      const copy = document.getElementById('b-copy');
+      const insert = document.getElementById('b-insert');
+      const out = document.getElementById('b-summary');
+      function make(){
+        const parts = [];
+        parts.push('Booking summary — {{BUSINESS_NAME}}');
+        parts.push('Focus: '+(g.value||'— not specified —'));
+        parts.push('Constraints: '+c.value);
+        const acts = [a1.value,a2.value].filter(Boolean);
+        if(acts.length){parts.push('Short actions:');acts.forEach((t,i)=>parts.push((i+1)+'. '+t))}
+        parts.push('\nNote: This is an initial summary to guide the intake conversation. Not a substitute for clinical assessment.');
+        return parts.join('\n');
+      }
+      build.addEventListener('click',function(e){e.preventDefault();out.textContent=make();});
+      copy.addEventListener('click',async function(e){e.preventDefault();try{await navigator.clipboard.writeText(out.textContent);copy.textContent='Copied';setTimeout(()=>copy.textContent='Copy to clipboard',1200)}catch(err){alert('Copy failed') }});
+      insert.addEventListener('click',function(e){e.preventDefault();document.getElementById('notes').value=out.textContent;insert.textContent='Inserted';setTimeout(()=>insert.textContent='Insert into booking notes',1200)});
+    })();
+  </script>
+</body>
+</html>

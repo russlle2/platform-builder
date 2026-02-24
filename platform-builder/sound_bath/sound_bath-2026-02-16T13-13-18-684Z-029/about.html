@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About • {{BUSINESS_NAME}}</title>
+  <meta name="description" content="About {{BUSINESS_NAME}} — a sensory, premium sound bathing experience in {{CITY}}, {{STATE}}. Learn our approach, pillars, and impact.">
+  <style>
+    :root{--bg:#0f1020;--card:#0f1724;--muted:#9aa7b2;--accent1:#8ee3d3;--accent2:#7b6cff;--glass:rgba(255,255,255,0.04);--radius:14px;font-family:Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#081021 60%);color:#e6eef6;line-height:1.45}
+    header{position:relative;padding:28px 24px;display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent1),var(--accent2));display:grid;place-items:center;font-weight:700;color:#041017}
+    nav{display:flex;gap:12px;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:10px;font-weight:600}
+    nav a.active,nav a:hover{background:var(--glass);color:#fff}
+    main{max-width:1100px;margin:20px auto;padding:34px;border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);box-shadow:0 8px 40px rgba(3,6,11,0.6)}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:center}
+    .hero h1{margin:0;font-size:28px;letter-spacing:-0.02em}
+    .hero p.lead{color:var(--muted);margin-top:12px}
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:18px;border-radius:14px}
+    .stats{display:flex;gap:12px;margin-top:14px}
+    .stat{background:rgba(255,255,255,0.02);padding:10px;border-radius:10px;text-align:center;min-width:86px}
+    .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
+    .pillar{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:16px;border-radius:12px}
+    .case-notes{margin-top:22px;display:flex;flex-direction:column;gap:12px}
+    .case{padding:14px;border-radius:12px;background:linear-gradient(90deg,rgba(123,108,255,0.06),rgba(142,227,211,0.03));border:1px solid rgba(255,255,255,0.02)}
+    footer{display:flex;justify-content:space-between;align-items:center;padding:18px;margin-top:18px;border-radius:12px;background:linear-gradient(90deg,rgba(255,255,255,0.015),transparent)}
+    .cta{display:inline-flex;gap:10px;align-items:center}
+    .btn{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#041017;padding:10px 14px;border-radius:12px;text-decoration:none;font-weight:700}
+    .muted{color:var(--muted);font-size:14px}
+    /* decorative SVG behind content */
+    .bg-svg{position:fixed;inset:0;pointer-events:none;opacity:0.16}
+    @media(max-width:880px){.hero{grid-template-columns:1fr;}.pillars{grid-template-columns:1fr}.brand .logo{width:44px;height:44px}}
+  </style>
+</head>
+<body>
+  <!-- unique inline SVG pattern (organic ripple, about page) -->
+  <svg class="bg-svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="gA" x1="0" x2="1"><stop offset="0" stop-color="#8ee3d3"/><stop offset="1" stop-color="#7b6cff"/></linearGradient>
+      <pattern id="pA" width="300" height="200" patternUnits="userSpaceOnUse" patternTransform="rotate(12)">
+        <rect width="300" height="200" fill="rgba(255,255,255,0)"/>
+        <circle cx="40" cy="60" r="24" fill="rgba(255,255,255,0.02)"/>
+        <circle cx="120" cy="140" r="18" fill="rgba(255,255,255,0.015)"/>
+        <rect x="0" y="0" width="300" height="200" fill="url(#gA)" opacity="0.02"/>
+      </pattern>
+      <filter id="blurA"><feGaussianBlur stdDeviation="28"/></filter>
+    </defs>
+    <rect width="1200" height="800" fill="url(#pA)"/>
+    <g filter="url(#blurA)">
+      <ellipse cx="200" cy="120" rx="320" ry="70" fill="#7b6cff" opacity="0.08"/>
+      <ellipse cx="980" cy="600" rx="420" ry="120" fill="#8ee3d3" opacity="0.06"/>
+    </g>
+  </svg>
+
+  <header>
+    <div class="brand">
+      <div class="logo">SB</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div class="muted" style="font-size:13px">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Gather</a>
+      <a href="events.html">Upcoming</a>
+      <a href="private-sessions.html">1:1 &amp; Teams</a>
+      <a href="pricing.html">Invest</a>
+      <a href="about.html" class="active">Our Atelier</a>
+      <a href="faq.html">Q&amp;A</a>
+      <a href="book.html">Reserve</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h1>About the practice — intentional sound, curated for rest</h1>
+        <p class="lead">We design sound baths that respect ritual, safety, and the nervous system. {{FACILITATOR_NAME}} blends clinical attention with sensory craft to create immersive group experiences.</p>
+        <div class="stats">
+          <div class="stat"><div style="font-size:18px;font-weight:700">10+</div><div class="muted">Years shaping sound</div></div>
+          <div class="stat"><div style="font-size:18px;font-weight:700">600+</div><div class="muted">Participants served</div></div>
+          <div class="stat"><div style="font-size:18px;font-weight:700">VIP day</div><div class="muted">Private sensory design</div></div>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <strong>Our signature focus</strong>
+        <p class="muted" style="margin-top:8px">Precision of tone, intentional pacing, and an environment that supports deep nervous system regulation. Sessions use a curated palette of instruments chosen for timbral clarity and tactile resonance.</p>
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+          <span style="background:rgba(255,255,255,0.03);padding:6px 10px;border-radius:999px;font-weight:700">Crystal bowls</span>
+          <span style="background:rgba(255,255,255,0.03);padding:6px 10px;border-radius:999px;font-weight:700">Tuning forks</span>
+          <span style="background:rgba(255,255,255,0.03);padding:6px 10px;border-radius:999px;font-weight:700">Monochord</span>
+        </div>
+      </aside>
+    </section>
+
+    <section class="pillars">
+      <div class="pillar">
+        <h3 style="margin:0">Calibration</h3>
+        <p class="muted" style="margin-top:8px">We begin with a short, simple intake to understand individual sensitivities and set safe volume and frequency ranges.</p>
+      </div>
+      <div class="pillar">
+        <h3 style="margin:0">Architecture</h3>
+        <p class="muted" style="margin-top:8px">Sessions are scaffolded: arrival, guided grounding, the sound journey, and integrative closure — each phase intentional.</p>
+      </div>
+      <div class="pillar">
+        <h3 style="margin:0">Care</h3>
+        <p class="muted" style="margin-top:8px">Accessibility, clear contraindications, and a culture of consent are woven into every gathering.</p>
+      </div>
+    </section>
+
+    <section class="case-notes">
+      <div class="case">
+        <strong>Corporate retreat — resiliency reset</strong>
+        <p class="muted" style="margin-top:8px">A two-hour offering designed to lower stress markers and sharpen group cohesion. Follow-up check-ins showed improved calm and focus among attendees.</p>
+      </div>
+      <div class="case">
+        <strong>Community circle — integrative series</strong>
+        <p class="muted" style="margin-top:8px">A six-week cohort that combined breathwork, sound, and journaling. Participants reported deeper sleep and reduced anxiety scores.</p>
+      </div>
+    </section>
+
+    <footer>
+      <div>
+        <div style="font-weight:800">Meet {{FACILITATOR_NAME}}</div>
+        <div class="muted">Facilitator, sonic designer and host — trained in somatic modalities and acoustic craft.</div>
+      </div>
+      <div class="cta">
+        <a class="btn" href="book.html">{{PRIMARY_CTA_LABEL}}</a>
+        <div class="muted">Or call <a class="muted" href="tel:{{PHONE}}">{{PHONE}}</a></div>
+      </div>
+    </footer>
+  </main>
+</body>
+</html>

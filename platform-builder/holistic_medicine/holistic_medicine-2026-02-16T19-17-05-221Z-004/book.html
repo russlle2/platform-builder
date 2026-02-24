@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Book a Visit — {{BUSINESS_NAME}}</title>
+<style>
+:root{--accent:#2c7a5d;--bg:#f7fffb;--pattern:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='500' height='120' viewBox='0 0 500 120'><defs><linearGradient id='lg' x1='0' x2='1'><stop offset='0' stop-color='%23cfead9'/><stop offset='1' stop-color='%23eaf8f0'/></linearGradient><pattern id='pat' width='100' height='100' patternUnits='userSpaceOnUse'><rect width='100' height='100' fill='url(%23lg)'/><g opacity='0.06' fill='%23000500'><rect x='0' y='0' width='50' height='50'/></g></pattern></defs><rect width='100%25' height='100%25' fill='url(%23pat)'/></svg>");}
+body{margin:0;font-family:system-ui,Roboto,Arial;background:linear-gradient(180deg,var(--bg),#f0fff7),var(--pattern);color:#123}
+.container{max-width:880px;margin:32px auto;padding:26px}
+.top{display:flex;justify-content:space-between;align-items:center}
+.top a{color:var(--accent);text-decoration:none;font-weight:700;margin-left:12px}
+.hero{background:#fff;padding:20px;border-radius:12px;box-shadow:0 8px 24px rgba(10,30,20,0.06);margin-top:18px}
+.steps{display:flex;gap:12px;margin-top:16px;flex-wrap:wrap}
+.step{background:linear-gradient(180deg,#fff,#f7fff7);padding:12px;border-radius:10px;flex:1;min-width:180px;box-shadow:0 6px 16px rgba(10,30,20,0.04)}
+.form{margin-top:18px;background:#fff;padding:16px;border-radius:10px}
+label{display:block;margin-top:10px;font-weight:600}
+input,select,textarea{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid #dfe;outline:none}
+.btn{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;border:none;font-weight:700;margin-top:12px}
+.note{font-size:13px;color:#456;margin-top:12px}
+footer{margin-top:18px;color:#234}
+@media(max-width:720px){.top{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="top">
+    <div>
+      <h2 style="margin:0">Reserve time with {{PRACTITIONER_NAME}}</h2>
+      <div style="color:#3b6;font-weight:600">{{BUSINESS_NAME}} — thoughtful integrative care</div>
+    </div>
+    <div>
+      <a href="index.html">Home</a>
+      <a href="services.html">Services</a>
+      <a href="pricing.html">Fees</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </div>
+
+  <section class="hero">
+    <p style="margin:0"><strong>Quick guide:</strong> First we listen (full intake), then we co-create a plan. Labs are optional and used for education. We do not promise cures; we focus on practical, sustainable steps.</p>
+
+    <div class="steps">
+      <div class="step">
+        <strong>1. Choose</strong>
+        <div class="note">Pick Starter or Intensive from the pricing page.</div>
+      </div>
+      <div class="step">
+        <strong>2. Book</strong>
+        <div class="note">Select a time, complete the intake form you'll receive by email.</div>
+      </div>
+      <div class="step">
+        <strong>3. Start</strong>
+        <div class="note">We meet, set goals, and begin adjustments you can actually maintain.</div>
+      </div>
+    </div>
+
+    <div class="note">We partner with your existing providers and respect prescriptions; never stop meds without coordination.</div>
+  </section>
+
+  <section class="form" aria-label="booking form">
+    <h3 style="margin-top:0">Request an appointment</h3>
+    <form action="{{PRIMARY_CTA_URL}}" method="post">
+      <label for="name">Full name</label>
+      <input id="name" name="name" required/>
+
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" required/>
+
+      <label for="phone">Phone</label>
+      <input id="phone" name="phone" type="tel"/>
+
+      <label for="service">Service interest</label>
+      <select id="service" name="service">
+        <option>Starter Session (60 min)</option>
+        <option>Intensive Plan (8 weeks)</option>
+        <option>Maintenance / Tune-up</option>
+      </select>
+
+      <label for="notes">Brief note (symptoms, goals)</label>
+      <textarea id="notes" name="notes" rows="4"></textarea>
+
+      <button class="btn" type="submit">Request time</button>
+
+      <div class="note">By submitting you agree we'll contact you to schedule. Cancellations less than 48 hours may incur fees.</div>
+    </form>
+  </section>
+
+  <section class="faq">
+    <h3>Before you arrive</h3>
+    <details style="margin-top:8px">
+      <summary>What should I prepare?</summary>
+      <p class="note">A list of medications, recent labs (if any), and a short summary of priorities helps us be efficient.</p>
+    </details>
+    <details style="margin-top:8px">
+      <summary>Do you work with my physician?</summary>
+      <p class="note">Yes. We can coordinate care and share reports with your permission.</p>
+    </details>
+  </section>
+
+  <footer>
+    <div>Questions? Call {{PHONE}} or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    <div class="note">Serving {{CITY}}, {{STATE}} • Practitioner: {{PRACTITIONER_NAME}} {{CREDENTIALS}}</div>
+  </footer>
+</div>
+</body>
+</html>

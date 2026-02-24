@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#041616;--card:#072426;--muted:#9bd8cf;--accent:#7ad7c6}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto;background:linear-gradient(180deg,var(--bg),#011213);color:#eaf8f4}
+    header{display:flex;justify-content:space-between;padding:18px 22px;align-items:center}
+    nav a{color:#94d9cf;margin-left:16px;text-decoration:none;font-weight:700}
+    main{padding:26px}
+    .grid{display:grid;grid-template-columns:1fr 380px;gap:22px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    h1{margin:0 0 10px}
+    .mixer{display:flex;gap:10px;margin-top:12px}
+    .mixer button{padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--muted);cursor:pointer}
+    .mixer button.active{background:var(--accent);color:#022a26;font-weight:800}
+    .programs{display:grid;gap:12px;margin-top:14px}
+    .prog{padding:12px;border-radius:10px;background:rgba(255,255,255,0.02);display:flex;justify-content:space-between;align-items:center}
+    .price{font-weight:800;color:var(--accent)}
+    form .row{display:flex;flex-direction:column;margin-bottom:10px}
+    input,select{padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#eaf8f4}
+    .submit{background:var(--accent);color:#022a26;padding:12px;border-radius:10px;border:none;font-weight:800;cursor:pointer;margin-top:10px}
+    .note{font-size:13px;color:#98d9cf;margin-top:8px}
+    .upcoming{font-size:14px;color:#c8efe6}
+    .contra{background:#161f1f;padding:10px;border-radius:8px;border:1px solid rgba(122,215,198,0.06);margin-top:12px}
+    @media (max-width:960px){.grid{grid-template-columns:1fr}.mixer{flex-wrap:wrap}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Gatherings</a>
+      <a href="events.html">Calendar</a>
+      <a href="private-sessions.html">Private</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="about.html">About</a>
+      <a href="book.html" style="color:var(--accent)">Reserve</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="grid">
+      <section class="card">
+        <h1>Choose your sound preference</h1>
+        <p class="note">Pick an intensity and we'll highlight the cohort rhythm and recommended tools.</p>
+
+        <div class="mixer" role="tablist" aria-label="Sound intensity">
+          <button id="gentle" class="active" role="tab" aria-selected="true">Gentle</button>
+          <button id="medium" role="tab">Medium</button>
+          <button id="intense" role="tab">Intense</button>
+        </div>
+
+        <div class="programs" id="programs">
+          <!-- program cards updated by JS -->
+        </div>
+
+        <div class="contra">
+          <strong>Contraindications</strong>
+          <div style="margin-top:6px;color:#bfeee6">Please consult medical advice if you have epilepsy, heart device implants, are pregnant, have recent head/neck injury, or other acute conditions. If in doubt, email us at <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a>.</div>
+        </div>
+      </section>
+
+      <aside class="card">
+        <div style="font-weight:800">Reserve a cohort spot</div>
+        <div class="upcoming" id="nextEvent">Next cohort: Loading…</div>
+
+        <form id="bookForm" style="margin-top:12px">
+          <div class="row">
+            <label for="name">Full name</label>
+            <input id="name" name="name" required />
+          </div>
+          <div class="row">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required />
+          </div>
+          <div class="row">
+            <label for="cohort">Choose cohort</label>
+            <select id="cohort" name="cohort"></select>
+          </div>
+          <div class="row">
+            <label for="intensity">Preferred intensity</label>
+            <select id="intensity" name="intensity">
+              <option value="gentle">Gentle</option>
+              <option value="medium">Medium</option>
+              <option value="intense">Intense</option>
+            </select>
+          </div>
+          <button class="submit" type="submit">Hold my spot</button>
+        </form>
+
+        <div style="margin-top:10px;color:var(--muted);font-size:13px">Questions? Call {{PHONE}} or email <a style="color:var(--accent);text-decoration:none" href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    (function(){
+      // Cohort data (example) — in a full app this would be fetched
+      const cohorts = [
+        {id:'cohort-1',name:'River Cohort — Early Evenings (4 weeks)',start:'2026-03-02',spots:6,price:'$160 — sliding'},
+        {id:'cohort-2',name:'Lumen Series — Weekend Intensives (2 weekends)',start:'2026-03-20',spots:8,price:'$220 — cohort rate'},
+        {id:'cohort-3',name:'Anchor Run — Morning Rhythm (6 weeks)',start:'2026-04-06',spots:5,price:'$300 — member discount'}
+      ];
+
+      // Program recommendations per intensity
+      const programs = {
+        gentle:[
+          {title:'Moonfall Drift — slow bowls & breath cues',desc:'For deep unwinding. Best after work or before sleep.',price:'Suggested: $160'},
+          {title:'Soft Layer Session — subtle chimes & hum',desc:'A low-volume practice to settle the nervous system.',price:'Suggested: $120'}
+        ],
+        medium:[
+          {title:'Tide Reset — layered bowls with choral overtones',desc:'For steady recalibration and clearer attention.',price:'Suggested: $180'},
+          {title:'Balanced Arc — bowls, gongs, and guided breath',desc:'Designed for midday refreshes.',price:'Suggested: $150'}
+        ],
+        intense:[
+          {title:'Edges — deeper gong textures & vocal work',desc:'For cathartic release; prior exposure recommended.',price:'Suggested: $240'},
+          {title:'Deep Resonance Intensive — sustained harmonics',desc:'For experienced listeners seeking strong somatic response.',price:'Suggested: $260'}
+        ]
+      };
+
+      // Fill cohort select and next-event module
+      const cohortSelect = document.getElementById('cohort');
+      const nextEvent = document.getElementById('nextEvent');
+      cohorts.forEach(c=>{ const opt=document.createElement('option'); opt.value=c.id; opt.textContent=c.name+' — starts '+c.start+' • '+c.spots+' seats • '+c.price; cohortSelect.appendChild(opt); });
+      nextEvent.textContent = 'Next cohort starts '+cohorts[0].start+' — '+cohorts[0].name;
+
+      // Mixer buttons
+      const gentleBtn=document.getElementById('gentle');
+      const mediumBtn=document.getElementById('medium');
+      const intenseBtn=document.getElementById('intense');
+      const btns=[gentleBtn,mediumBtn,intenseBtn];
+      const programsNode=document.getElementById('programs');
+
+      function renderPrograms(level){
+        programsNode.innerHTML='';
+        (programs[level]||[]).forEach(p=>{
+          const el=document.createElement('div'); el.className='prog';
+          el.innerHTML = '<div><div style="font-weight:800">'+p.title+'</div><div style="color:var(--muted);font-size:13px;margin-top:6px">'+p.desc+'</div></div><div class="price">'+p.price+'</div>';
+          programsNode.appendChild(el);
+        });
+      }
+
+      function setActive(btn){ btns.forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
+
+      gentleBtn.addEventListener('click',()=>{ setActive(gentleBtn); renderPrograms('gentle'); document.getElementById('intensity').value='gentle'; });
+      mediumBtn.addEventListener('click',()=>{ setActive(mediumBtn); renderPrograms('medium'); document.getElementById('intensity').value='medium'; });
+      intenseBtn.addEventListener('click',()=>{ setActive(intenseBtn); renderPrograms('intense'); document.getElementById('intensity').value='intense'; });
+
+      // Initialize default
+      renderPrograms('gentle');
+
+      // Form submit (local-only) — simulate reservation
+      document.getElementById('bookForm').addEventListener('submit',function(e){
+        e.preventDefault();
+        const name = this.name.value.trim();
+        const email = this.email.value.trim();
+        const cohort = this.cohort.value;
+        const intensity = this.intensity.value;
+        if(!name || !email){ alert('Please provide your name and email.'); return; }
+        // Simulate booking: show confirmation and CTA different phrasing
+        alert('Thanks, '+name+"! We've held a provisional seat for you in "+(document.querySelector('#cohort option:checked').text)+". Check your email for confirmation and payment details.");
+        // In a real flow: POST to booking endpoint
+        this.reset(); renderPrograms('gentle'); setActive(gentleBtn);
+      });
+
+      // Sync intensity select with mixer
+      document.getElementById('intensity').addEventListener('change',function(){
+        const v=this.value; if(v==='gentle') gentleBtn.click(); if(v==='medium') mediumBtn.click(); if(v==='intense') intenseBtn.click();
+      });
+
+    })();
+  </script>
+</body>
+</html>

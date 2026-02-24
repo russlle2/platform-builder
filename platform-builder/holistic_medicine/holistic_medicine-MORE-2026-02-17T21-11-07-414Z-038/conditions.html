@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Conditions & Support — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#071018;--muted:#9fb0b5;--card:#071b1f;--accent:#7cd0b9}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:#041316;color:#eaf6f2;background-image:url('assets/img/pattern.svg');background-size:50rem}
+    .wrap{max-width:980px;margin:34px auto;padding:20px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{color:#dff6ef;margin-left:14px;text-decoration:none;font-weight:600}
+    .intro{margin-top:18px;padding:18px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:12px}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:16px;margin-top:18px}
+    .list{background:rgba(255,255,255,0.02);padding:16px;border-radius:10px}
+    h2{margin:0 0 6px 0}
+    .cond{margin-bottom:12px}
+    .note{font-size:13px;color:var(--muted)}
+    .disclaimer{margin-top:8px;padding:10px;background:#06161a;border-radius:8px;border-left:4px solid rgba(255,255,255,0.03);color:var(--muted)}
+    .cta{display:inline-block;margin-top:10px;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#5fbfaf);color:#012226;text-decoration:none;font-weight:700}
+    pre{white-space:pre-wrap;background:rgba(0,0,0,0.25);padding:12px;border-radius:8px;color:#dff6f0}
+    .small{font-size:13px;color:var(--muted)}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div style="font-weight:800;color:#dff6f0">{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html">Essence</a>
+        <a href="services.html">Offerings</a>
+        <a href="conditions.html">Conditions</a>
+        <a href="approach.html">Method</a>
+      </nav>
+    </header>
+
+    <section class="intro">
+      <h2>Conditions we commonly support</h2>
+      <p class="small">We offer framed support for a range of functional concerns. Nothing here is a promise of cure — consider these descriptions educational and a starting point for clinical conversation.</p>
+    </section>
+
+    <div class="grid">
+      <div>
+        <div class="list">
+          <div class="cond">
+            <h3>Sleep disturbance</h3>
+            <div class="small">Strategies focus on sleep schedules, stimulus control, and layered behavioral supports. Where appropriate, circadian factors and sleep architecture are considered.</div>
+          </div>
+
+          <div class="cond">
+            <h3>Digestive complaints</h3>
+            <div class="small">From intermittent bloating to ongoing sensitivities: we use stepwise assessment, dietary pattern review, and selective testing to guide management.</div>
+          </div>
+
+          <div class="cond">
+            <h3>Chronic fatigue & low energy</h3>
+            <div class="small">Workup emphasizes sleep, nutrition, activity balance, and metabolic/thyroid screening. Plans aim to restore predictable energy windows rather than quick fixes.</div>
+          </div>
+
+          <div class="cond">
+            <h3>Persistent anxiety & mood congestion</h3>
+            <div class="small">We combine behavioral tools, sleep and lifestyle optimization, and, if indicated, referral for medication evaluation. Therapy and coaching pathways are integrated as appropriate.</div>
+          </div>
+
+          <div class="cond">
+            <h3>Hormonal transitions</h3>
+            <div class="small">Perimenopause, menstrual irregularities, and other transitions are approached with attention to symptoms, relevant labs, and individualized non-pharmacologic supports.</div>
+          </div>
+        </div>
+
+        <div class="list" style="margin-top:16px">
+          <h3 style="margin-top:0">A note about safety and limits</h3>
+          <div class="disclaimer">
+            This site provides educational content and general support offerings. It is not a substitute for emergency care. If you are experiencing severe symptoms (suicidal thoughts, chest pain, sudden changes in vision or speech), seek emergency services immediately.
+            For complex or acute medical conditions we coordinate care with appropriate specialists. No treatment guarantees are made.
+          </div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="card" style="background:rgba(3,18,18,0.6);padding:16px;border-radius:10px;color:#dff6f0">
+          <div style="font-weight:700">Quick triage planner</div>
+          <div class="small">Select symptoms you experience; receive suggested visit focus and an appropriate follow-up window.</div>
+
+          <div style="margin-top:10px">
+            <label><input type="checkbox" class="tri" value="Sleep Issues"> Sleep issues</label>
+            <label><input type="checkbox" class="tri" value="Digestive Symptoms"> Digestive symptoms</label>
+            <label><input type="checkbox" class="tri" value="Low Energy"> Low energy</label>
+            <label><input type="checkbox" class="tri" value="Mood/Anxiety"> Mood / Anxiety</label>
+            <label><input type="checkbox" class="tri" value="Hormonal Changes"> Hormonal changes</label>
+          </div>
+
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <button id="triage" class="cta">Assess focus</button>
+            <button id="copyTriage" class="secondary" style="background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)">Copy</button>
+          </div>
+
+          <div style="margin-top:10px">
+            <div style="font-weight:700">Proposal</div>
+            <pre id="triagePreview">Select symptoms and press "Assess focus".</pre>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;padding:12px;background:rgba(255,255,255,0.02);border-radius:10px;color:var(--muted)">
+          <div style="font-weight:700">Referral policy</div>
+          <div class="small">For conditions requiring specialist diagnostics or urgent intervention we will recommend appropriate referral pathways and coordinate with your team.</div>
+          <a href="contact.html" class="cta" style="display:inline-block;margin-top:8px">Contact us</a>
+        </div>
+      </aside>
+    </div>
+
+    <footer style="margin-top:18px;color:var(--muted);font-size:13px">
+      {{BUSINESS_NAME}} — evidence-informed integrative care. For appointments call {{PHONE}} or email {{EMAIL}}.
+    </footer>
+  </div>
+
+  <script>
+    // Simple triage and copy
+    document.getElementById('triage').addEventListener('click',()=>{
+      const checked=Array.from(document.querySelectorAll('.tri')).filter(i=>i.checked).map(i=>i.value);
+      const lines=[];
+      lines.push('Visit focus — '+new Date().toLocaleDateString());
+      if(!checked.length){lines.push('No symptoms selected. Consider a general intake.');document.getElementById('triagePreview').textContent=lines.join('\n');return}
+      lines.push('Targets: '+checked.join(', '));
+      lines.push('Suggested structure:');
+      lines.push('- Intake review (10–15m)');
+      checked.forEach((c,i)=>{
+        const min = i===0?20:10;
+        lines.push('- '+c+': ~'+min+' minutes (history, brief tools, immediate strategies)');
+      });
+      const follow = (checked.includes('Sleep issues')||checked.includes('Low energy'))? '2–4 week early check-in' : '4–8 week check-in';
+      lines.push('Follow-up cadence: '+follow);
+      lines.push('Prep: brief 3-day log of sleep/nutrition/activity relevant to concerns.');
+      document.getElementById('triagePreview').textContent=lines.join('\n');
+    });
+    document.getElementById('copyTriage').addEventListener('click',()=>{
+      const t=document.getElementById('triagePreview').textContent;
+      if(!t) return;
+      navigator.clipboard.writeText(t);
+    });
+  </script>
+</body>
+</html>

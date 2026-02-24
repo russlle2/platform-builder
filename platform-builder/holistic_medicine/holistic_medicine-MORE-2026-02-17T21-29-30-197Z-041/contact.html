@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contact — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reach out to {{BUSINESS_NAME}} — gentle, integrative care and collaborative planning for your whole life.">
+  <style>
+    :root{
+      --bg:#f7fbf9;
+      --muted:#6b6b6b;
+      --accent:#2f7a68;
+      --accent-2:#8fc1b2;
+      --card:#ffffff;
+      --glass: rgba(255,255,255,0.6);
+      --shadow: 0 6px 18px rgba(18,30,24,0.06);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%;margin:0;background:var(--bg);color:#142018}
+    /* diagonal split hero */
+    .hero{display:grid;grid-template-columns:1fr 1fr;min-height:48vh;align-items:stretch;position:relative;overflow:hidden}
+    .hero::before{content:"";position:absolute;inset:0;background-image:url('assets/img/pattern.svg');opacity:.08;mix-blend-mode:multiply}
+    .pane{padding:48px 40px;display:flex;flex-direction:column;justify-content:center}
+    .pane.left{background:linear-gradient(135deg,var(--glass),transparent);clip-path:polygon(0 0,85% 0,60% 100%,0% 100%)}
+    .pane.right{padding-left:64px}
+    h1{margin:0 0 8px 0;font-size:clamp(20px,4vw,32px);line-height:1.05;color:#0e3b33}
+    p.lead{margin:0 0 18px;color:var(--muted)}
+    nav{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+    nav a{color:var(--accent);text-decoration:none;padding:8px 12px;border-radius:8px;font-weight:600}
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:var(--shadow);max-width:960px;margin:22px auto}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:start}
+    .contact-info{padding:12px 8px}
+    .muted{color:var(--muted);font-size:0.95rem}
+
+    form{display:flex;flex-direction:column;gap:12px}
+    label{font-weight:600;font-size:0.92rem}
+    input[type=text],input[type=email],textarea,select{padding:10px;border-radius:8px;border:1px solid #e6eee9;background:#fcfffd}
+    textarea{min-height:120px;resize:vertical}
+    .btn{background:linear-gradient(180deg,var(--accent),var(--accent-2));color:white;border:none;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer}
+    .btn.secondary{background:transparent;color:var(--accent);border:1px solid rgba(47,122,104,0.12)}
+
+    /* Session Planner */
+    .planner{border-radius:10px;padding:14px;background:linear-gradient(180deg,rgba(255,255,255,0.9),#fff);border:1px solid #edf7f3}
+    .planner .row{display:flex;gap:8px}
+    .chip{display:inline-block;padding:6px 8px;border-radius:999px;border:1px solid #e8f3ee;background:#f9fffb;font-size:0.85rem}
+    .summary{white-space:pre-wrap;background:#f7fffb;padding:12px;border-radius:8px;border:1px dashed #e0efe6;min-height:96px}
+
+    /* reveal animation */
+    .reveal{opacity:1;transform:none}
+    .reveal-up{opacity:0;transform:translateY(22px)}
+    @media (prefers-reduced-motion: no-preference){
+      .reveal-up{transition:opacity 520ms cubic-bezier(.2,.9,.25,1),transform 520ms cubic-bezier(.2,.9,.25,1)}
+    }
+    @media (prefers-reduced-motion: reduce){
+      .reveal-up{transition:none;opacity:1;transform:none}
+    }
+
+    footer{padding:28px 40px;color:var(--muted);font-size:0.94rem}
+
+    @media(max-width:920px){.grid{grid-template-columns:1fr}.hero{grid-template-columns:1fr}.pane.left{clip-path:none}}
+  </style>
+</head>
+<body>
+  <header style="padding:22px 40px;display:flex;align-items:center;justify-content:space-between;">
+    <div>
+      <strong>{{BUSINESS_NAME}}</strong>
+      <div class="muted" style="font-size:0.9rem">{{TAGLINE}}</div>
+    </div>
+    <nav aria-label="Main navigation" style="display:flex;gap:10px;align-items:center">
+      <a href="index.html">Overview</a>
+      <a href="services.html">Therapies</a>
+      <a href="conditions.html">Conditions</a>
+      <a href="approach.html">Our Way</a>
+      <a href="pricing.html">Invest</a>
+      <a href="about.html">Meet</a>
+      <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="hero">
+      <div class="pane left reveal-up" data-reveal>
+        <h1>Connect with a thoughtful, person-centered clinician</h1>
+        <p class="lead">We listen to life stories, practical constraints, and preferences before suggesting options. Start with a short conversation and a clear next-step plan.</p>
+        <nav>
+          <a href="book.html">Start a Visit</a>
+          <a href="about.html">Who We Are</a>
+          <a href="services.html">What We Offer</a>
+        </nav>
+      </div>
+      <div class="pane right reveal-up" data-reveal>
+        <div class="card">
+          <h2 style="margin-top:0">Say hello — request a consult</h2>
+          <form id="contactForm" onsubmit="event.preventDefault();submitContact()">
+            <label for="name">Name</label>
+            <input id="name" name="name" type="text" required placeholder="Your name">
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required placeholder="you@example.com">
+
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" type="text" placeholder="{{PHONE}}">
+
+            <label for="message">Brief note (concern, availability, question)</label>
+            <textarea id="message" name="message" placeholder="What brings you here? Any practical constraints?"></textarea>
+
+            <div style="display:flex;gap:10px;align-items:center;margin-top:8px">
+              <button class="btn" type="submit">Send request</button>
+              <a class="btn secondary" href="book.html">Schedule now</a>
+            </div>
+            <p class="muted" style="margin-top:10px;font-size:0.9rem">We aim to respond within 2–3 business days. No emergency care — if it's urgent, please contact local emergency services.</p>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" style="margin:24px auto;max-width:1200px" id="plannerSection">
+      <h2 style="margin-top:0">Session Planner — build a simple, personal next-step plan</h2>
+      <p class="muted">Use this interactive tool to capture priorities and shape a realistic sequence of sessions. You can copy or download the plain-text plan and bring it to your first visit.</p>
+      <div class="grid" style="margin-top:12px">
+        <div>
+          <div class="planner reveal-up" data-reveal>
+            <div style="display:flex;gap:8px;align-items:center;justify-content:space-between">
+              <div>
+                <label for="concern">Primary focus</label>
+                <input id="concern" placeholder="e.g., sleep, chronic pain, stress, digestion">
+              </div>
+              <div style="width:140px">
+                <label for="sessionLength">Session length</label>
+                <select id="sessionLength">
+                  <option>30 min</option>
+                  <option selected>50 min</option>
+                  <option>75 min</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <div style="flex:1">
+                <label for="frequency">Preferred rhythm</label>
+                <select id="frequency">
+                  <option>Weekly</option>
+                  <option selected>Biweekly</option>
+                  <option>Monthly</option>
+                </select>
+              </div>
+              <div style="width:120px">
+                <label for="duration">Plan length</label>
+                <select id="duration">
+                  <option>1 month</option>
+                  <option selected>3 months</option>
+                  <option>6 months</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="margin-top:12px">
+              <label for="constraints">Practical constraints</label>
+              <input id="constraints" placeholder="e.g., late afternoons, budget limits, mobility">
+            </div>
+
+            <div style="margin-top:12px">
+              <label for="goals">Short-term goals</label>
+              <input id="goals" placeholder="What would feel like progress in 3 months?">
+            </div>
+
+            <div style="display:flex;gap:8px;align-items:center;margin-top:12px">
+              <button class="btn" onclick="buildPlan()">Make plan</button>
+              <button class="btn secondary" onclick="resetPlanner()">Reset</button>
+            </div>
+          </div>
+
+          <div style="margin-top:14px" class="reveal-up" data-reveal>
+            <h3 style="margin:0 0 8px 0">Plan summary</h3>
+            <div id="planSummary" class="summary">No plan yet — click "Make plan" to generate a concise plan you can copy or save.</div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button class="btn" id="copyBtn" onclick="copyPlan()">Copy plan</button>
+              <button class="btn secondary" onclick="downloadPlan()">Download .txt</button>
+            </div>
+          </div>
+        </div>
+
+        <aside class="contact-info reveal-up" data-reveal>
+          <h4 style="margin-top:0">Contact details</h4>
+          <p class="muted">Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a><br>Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+          <p class="muted">Location: {{CITY}}, {{STATE}}</p>
+
+          <div style="margin-top:12px">
+            <h4 style="margin:0 0 6px 0">What to include</h4>
+            <ul class="muted" style="padding-left:18px;margin:0">
+              <li>Preferred days/times</li>
+              <li>Brief history or current concern</li>
+              <li>Any relevant diagnoses or medications</li>
+            </ul>
+          </div>
+
+          <div style="margin-top:14px">
+            <h4 style="margin:0 0 6px 0">Quick links</h4>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <a href="book.html" class="btn">Start a visit</a>
+              <a href="about.html" class="btn secondary">Meet the team</a>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <p class="muted" style="margin-top:16px">Note: the Session Planner creates a suggested sequence for discussion. It is educational and not a diagnosis or personalized medical treatment; your clinician will tailor recommendations after assessment.</p>
+    </section>
+
+    <section class="card reveal-up" data-reveal style="max-width:1200px;margin:18px auto">
+      <h3 style="margin-top:0">Accessibility & motion</h3>
+      <p class="muted">This page respects system preferences for reduced motion. The reveal effects will not animate when reduced motion is requested. Keyboard navigation and screen-reader friendliness were considered in form labels and button text.</p>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+      <div class="muted">&copy; {{BUSINESS_NAME}} • Serving {{CITY}}, {{STATE}} • <a href="privacy.html">Privacy</a></div>
+      <div><a href="book.html" class="btn">Start a conversation</a></div>
+    </div>
+  </footer>
+
+  <script>
+    // Scroll-triggered reveal with reduced-motion support
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const items = document.querySelectorAll('[data-reveal]');
+      if(prefersReduced){
+        items.forEach(el=>el.classList.add('reveal'));
+        return;
+      }
+      const obs = new IntersectionObserver((entries)=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting){
+            entry.target.classList.add('reveal');
+            obs.unobserve(entry.target);
+          }
+        });
+      },{threshold:0.12});
+      items.forEach(el=>{
+        el.classList.add('reveal-up');
+        obs.observe(el);
+      });
+    })();
+
+    // Contact form (local demo handler)
+    function submitContact(){
+      const name = document.getElementById('name').value || '—';
+      const email = document.getElementById('email').value || '—';
+      const phone = document.getElementById('phone').value || '—';
+      const message = document.getElementById('message').value || '—';
+      // In a real site this would POST to a backend. For the demo we'll show a friendly confirmation.
+      alert('Thank you, ' + name + '. We received your request and will be in touch at ' + email + '.');
+      document.getElementById('contactForm').reset();
+    }
+
+    // Session Planner logic
+    function buildPlan(){
+      const concern = document.getElementById('concern').value.trim();
+      const length = document.getElementById('sessionLength').value;
+      const freq = document.getElementById('frequency').value;
+      const duration = document.getElementById('duration').value;
+      const constraints = document.getElementById('constraints').value.trim();
+      const goals = document.getElementById('goals').value.trim();
+
+      const lines = [];
+      lines.push('{{BUSINESS_NAME}} — Session Planner');
+      lines.push('Primary focus: ' + (concern || 'Not specified'));
+      lines.push('Session length: ' + length + ' • ' + freq + ' • Plan: ' + duration);
+      if(constraints) lines.push('Practical constraints: ' + constraints);
+      if(goals) lines.push('Short-term goals: ' + goals);
+
+      lines.push('\nSuggested sequence (discussion guide; not a prescription):');
+      // Create a gentle, layered plan based on inputs
+      if(concern.toLowerCase().includes('sleep')){
+        lines.push('1) Intake & baseline sleep history; brief behavioral adjustments.');
+        lines.push('2) Introduce sleep hygiene and simple evening routines; measure response.');
+        lines.push('3) If needed, consider targeted mind-body practices and referral for sleep study.');
+      } else if(concern.toLowerCase().includes('pain')){
+        lines.push('1) Intake focused on pain triggers, patterns, and current strategies.');
+        lines.push('2) Short course of movement/skills + adjunctive integrative options (as appropriate).');
+        lines.push('3) Re-evaluate function and refine plan; coordinate care with specialists if indicated.');
+      } else if(concern.toLowerCase().includes('stress') || concern.toLowerCase().includes('anxiety')){
+        lines.push('1) Map stressors, routines, and resilience resources.');
+        lines.push('2) Teach practical calming tools and brief habit changes; plan practice targets.');
+        lines.push('3) Layer in sleep/physical activity adjustments; plan maintenance and taper.');
+      } else {
+        lines.push('1) Initial assessment to clarify priorities and safety concerns.');
+        lines.push('2) Pick 2–3 practical, measurable steps to try between visits.');
+        lines.push('3) Review outcomes and iterate; consider brief specialty options if needed.');
+      }
+
+      lines.push('\nLogistics:');
+      lines.push('- Recommended visit cadence: ' + freq + ' • ' + length);
+      lines.push('- Suggested review point: after ' + duration + ' to measure progress');
+
+      lines.push('\nNotes: This plan is an educational starting point. Treatment recommendations will be personalized by your clinician after evaluation.');
+
+      const text = lines.join('\n');
+      document.getElementById('planSummary').textContent = text;
+      // enable copy button feedback
+      const copyBtn = document.getElementById('copyBtn');
+      copyBtn.textContent = 'Copy plan';
+    }
+
+    function resetPlanner(){
+      ['concern','sessionLength','frequency','duration','constraints','goals'].forEach(id=>{
+        const el = document.getElementById(id);
+        if(el && el.tagName === 'INPUT') el.value = '';
+        if(el && el.tagName === 'SELECT') el.selectedIndex = 1;
+      });
+      document.getElementById('planSummary').textContent = 'No plan yet — click "Make plan" to generate a concise plan you can copy or save.';
+    }
+
+    // Copy and download
+    async function copyPlan(){
+      const text = document.getElementById('planSummary').textContent;
+      try{
+        await navigator.clipboard.writeText(text);
+        const btn = document.getElementById('copyBtn');
+        btn.textContent = 'Copied!';
+        setTimeout(()=>btn.textContent = 'Copy plan',1400);
+      }catch(e){
+        alert('Copying is not available in this browser. You can select and copy the text manually.');
+      }
+    }
+
+    function downloadPlan(){
+      const text = document.getElementById('planSummary').textContent;
+      const blob = new Blob([text],{type:'text/plain;charset=utf-8'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'session-plan.txt'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>

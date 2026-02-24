@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Services — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--accent:#2765a8;--muted:#475569;--bg:#ffffff}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:#0b1220;background:var(--bg)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 28px;border-bottom:1px solid #eef2f7}
+    .brand{font-weight:800;color:var(--accent)}
+    nav a{margin-left:16px;color:#0b1220;text-decoration:none}
+    .wrap{max-width:980px;margin:26px auto;padding:0 24px}
+    .hero{display:flex;align-items:center;gap:18px}
+    .hero .copy{flex:1}
+    h1{margin:0 0 8px 0;font-size:28px}
+    .lead{color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
+    .offer{padding:16px;border-radius:12px;background:linear-gradient(180deg,rgba(39,101,168,0.04),transparent);box-shadow:0 8px 20px rgba(15,23,42,0.04)}
+    .price{font-weight:800;color:var(--accent);margin-top:8px}
+    .mini{font-size:13px;color:var(--muted)}
+    .patternSide{height:160px;background-image:url('assets/img/pattern.svg');background-size:cover;background-repeat:no-repeat;opacity:0.08;margin-left:12px}
+    /* Mood selector smaller variant */
+    .mood-inline{display:flex;gap:8px;margin-top:12px}
+    .mood-inline button{padding:8px 10px;border-radius:8px;border:1px solid #e6eef5;background:white;cursor:pointer}
+    .mood-inline button.active{background:var(--accent);color:white;border-color:var(--accent)}
+    /* Progress map on top */
+    .progress-strip{margin-top:18px;padding:12px;border-radius:10px;background:#fbfcff;display:flex;align-items:center;gap:12px}
+    .progress-bar{flex:1;height:12px;background:#eef2f7;border-radius:6px;overflow:hidden}
+    .progress-fill{height:100%;background:linear-gradient(90deg,#a6d8ff,#68a9e6);width:0%}
+    @media(max-width:920px){.grid{grid-template-columns:1fr} .patternSide{display:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Who We Are</a>
+      <a href="programs.html">Curricula</a>
+      <a href="contact.html">Talk</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="copy">
+        <h1>Services framed as short experiments</h1>
+        <p class="lead">Each offering is a time-limited engagement with clear metrics and a pragmatic path for 30 days of follow-through.</p>
+
+        <div class="mood-inline" id="moodInline">
+          <button data-mode="reset">Reset</button>
+          <button data-mode="spark">Spark</button>
+          <button data-mode="scaffold">Scaffold</button>
+        </div>
+
+        <div style="margin-top:12px">
+          <a id="servicesCta" class="cta-like" href="{{PRIMARY_CTA_URL}}" style="display:inline-block;padding:10px 12px;border-radius:8px;background:var(--accent);color:#fff;text-decoration:none;font-weight:700">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </div>
+
+      <div class="patternSide" aria-hidden></div>
+    </section>
+
+    <section style="margin-top:18px">
+      <div class="progress-strip">
+        <div style="min-width:160px"><strong>30-day readiness</strong><div class="mini">Select a service to get an instant readiness score</div></div>
+        <div class="progress-bar" aria-hidden><div id="progFill" class="progress-fill"></div></div>
+        <div style="min-width:70px;text-align:right" id="progLabel">0%</div>
+      </div>
+
+      <div class="grid" id="offersGrid">
+        <div class="offer" data-offer="focus-day">
+          <strong>Focus Day (VIP)</strong>
+          <div class="mini">Single-day deep design session. Map the next 30 days and leave with a one-page plan.</div>
+          <div class="price">$1,800</div>
+          <div class="mini">Includes follow-up check-in and habit blueprints.</div>
+          <button class="pickBtn" style="margin-top:8px;padding:8px 10px;border-radius:8px;border:1px solid #ccdff2;background:white;cursor:pointer">Select</button>
+        </div>
+
+        <div class="offer" data-offer="pulse-series">
+          <strong>Pulse Series</strong>
+          <div class="mini">Three 60-minute sessions across 30 days focused on a single outcome and accountability.</div>
+          <div class="price">$650</div>
+          <div class="mini">Best for leaders testing one small change.</div>
+          <button class="pickBtn" style="margin-top:8px;padding:8px 10px;border-radius:8px;border:1px solid #ccdff2;background:white;cursor:pointer">Select</button>
+        </div>
+
+        <div class="offer" data-offer="steady-plan">
+          <strong>30-Day Steady Plan</strong>
+          <div class="mini">A guided 30-day structure with micro-assignments, habit checklists, and two coaching calls.</div>
+          <div class="price">$980</div>
+          <div class="mini">Designed for measurable change without overload.</div>
+          <button class="pickBtn" style="margin-top:8px;padding:8px 10px;border-radius:8px;border:1px solid #ccdff2;background:white;cursor:pointer">Select</button>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:18px" class="card">
+      <h3>Service descriptions</h3>
+      <p class="mini">We avoid generic coaching packages. Each offer is a focused protocol: a clear start, a simple daily practice schedule, and a closing evaluation with specific next steps.</p>
+    </section>
+
+  </main>
+
+  <script>
+    // Mood inline changes CTA and readiness estimate
+    const modes = {
+      reset: {cta:'Begin a Reset',score:42},
+      spark: {cta:'Spark a Mini-Experiment',score:68},
+      scaffold: {cta:'Request a Scaffold Plan',score:55}
+    };
+    document.querySelectorAll('#moodInline button').forEach(b=>b.addEventListener('click',()=>{
+      document.querySelectorAll('#moodInline button').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      const m = modes[b.getAttribute('data-mode')];
+      const cta = document.getElementById('servicesCta');
+      cta.textContent = m.cta;
+      document.getElementById('progFill').style.width = m.score + '%';
+      document.getElementById('progLabel').textContent = m.score + '%';
+      // add query for analytics
+      cta.href = '{{PRIMARY_CTA_URL}}?offer=' + encodeURIComponent(m.cta.toLowerCase().replace(/\s+/g,'-'));
+    }));
+
+    // Offer selection updates progress estimate and CTA
+    document.querySelectorAll('.pickBtn').forEach(btn=>btn.addEventListener('click',()=>{
+      const parent = btn.closest('.offer');
+      const name = parent.getAttribute('data-offer');
+      let score = 50;
+      if(name==='focus-day') score = 88;
+      if(name==='pulse-series') score = 62;
+      if(name==='steady-plan') score = 74;
+      document.getElementById('progFill').style.width = score + '%';
+      document.getElementById('progLabel').textContent = score + '%';
+      const primary = document.getElementById('servicesCta');
+      primary.textContent = 'Book ' + parent.querySelector('strong').textContent;
+      primary.href = '{{PRIMARY_CTA_URL}}?selected=' + name;
+    }));
+
+    // initial state
+    (function(){document.querySelector('#moodInline button[data-mode="spark"]').click();})();
+  </script>
+</body>
+</html>

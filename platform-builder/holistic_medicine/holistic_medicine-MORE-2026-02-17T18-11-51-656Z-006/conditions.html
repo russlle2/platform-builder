@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Conditions & Support — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fffaf8;--ink:#2b2f2a;--muted:#6b6f66;--accent:#b57a62}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:var(--ink);background:var(--bg)}
+    .wrap{max-width:980px;margin:0 auto;padding:28px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    .links{display:flex;gap:12px}
+    .links a{color:var(--muted);text-decoration:none}
+    h1{margin:8px 0}
+    .lead{color:var(--muted)}
+    .grid{display:grid;grid-template-columns:1fr;gap:18px;margin-top:18px}
+    .panel{background:#fff;padding:16px;border-radius:10px;box-shadow:0 8px 20px rgba(43,47,42,0.04);opacity:0;transform:translateY(16px);transition:opacity .5s ease,transform .5s ease}
+    .panel.revealed{opacity:1;transform:none}
+    .condition-list{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+    .condition{padding:10px;border-radius:8px;border:1px solid rgba(43,47,42,0.04);background:linear-gradient(180deg,#fff,#fffefc)}
+    .disclaimer{font-size:13px;color:var(--muted);margin-top:10px}
+    footer{margin-top:22px;color:var(--muted);font-size:13px}
+
+    @media(min-width:760px){.grid{grid-template-columns:1fr 320px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div class="lead">Support information and educational resources</div>
+      </div>
+      <nav class="links">
+        <a href="index.html">Home</a>
+        <a href="services.html">Offerings</a>
+        <a href="approach.html">Method</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </header>
+
+    <main>
+      <h1>Conditions we commonly support</h1>
+      <p class="lead">We provide educational guidance across a range of everyday concerns. Our approach is to teach skills and offer resource-based plans; care is personalized but not a replacement for specialized medical evaluation.</p>
+
+      <div class="grid">
+        <section class="panel" data-reveal>
+          <h2>Areas of focus</h2>
+          <ul class="condition-list">
+            <li class="condition"><strong>Difficulty with sleep onset or maintenance</strong> — Behavioral routines, evening micro-practices, and simple environmental shifts to try over a few weeks.</li>
+            <li class="condition"><strong>Chronic stress and overwhelm</strong> — Small systems for pacing days, breathing tools, short movement breaks, and realistic tracking prompts.</li>
+            <li class="condition"><strong>Digestive comfort and gentle nutrition shifts</strong> — Habit-focused adjustments, mealtime patterns, and supportive coaching, not dietary prescriptions.</li>
+            <li class="condition"><strong>Energy dips across the day</strong> — Rhythm mapping to identify patterns and test manageable changes.</li>
+            <li class="condition"><strong>Mood variability tied to routine</strong> — Psychoeducation and practical check-ins to steady daily cadence.</li>
+          </ul>
+        </section>
+
+        <aside class="panel" data-reveal>
+          <h3>Clinical note & safe care</h3>
+          <p class="disclaimer">This practice offers educational and supportive services. We do not diagnose or promise cures. If you have a medical emergency, severe psychiatric symptoms, or concerns that need immediate attention, please contact emergency services or your primary clinician. Our sessions may complement clinical care but are not a substitute for specialist treatment.</p>
+
+          <h4 style="margin-top:12px">How we work with higher-risk concerns</h4>
+          <p class="disclaimer">When more intensive evaluation is needed (significant new symptoms, unmanaged medication concerns, suicidal ideation), we prioritize referrals and collaborative care. If you are currently under medical care, please let us know so we can align suggestions with your team.</p>
+        </aside>
+      </div>
+
+      <section style="margin-top:18px" class="panel" data-reveal>
+        <h2>What to expect in a supportive visit</h2>
+        <p class="disclaimer">Sessions are educational and collaborative. A typical visit includes a brief history, identification of practical targets, one or two tangible suggestions you can try, and optional handouts. We often recommend paced follow-up to review what was helpful.</p>
+        <p class="disclaimer">If you are unsure whether our services are right for a specific concern, reach out at <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a> for a brief check-in.</p>
+      </section>
+
+      <section style="margin-top:18px" class="panel" data-reveal>
+        <h2>Resources and next steps</h2>
+        <p class="disclaimer">We can provide simple tracking templates, stepwise experiment plans, and community resources. Plans are framed as experiments — try something for a few weeks and note what changes.</p>
+        <p class="disclaimer">To book or ask about an appropriate visit, choose "Book" from the top menu or send a note to <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</p>
+      </section>
+    </main>
+
+    <footer>
+      <div>&copy; {{BUSINESS_NAME}} • Serving {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • {{PHONE}}</div>
+    </footer>
+  </div>
+
+  <script>
+    // Scroll reveal, respects reduced motion
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const items = document.querySelectorAll('[data-reveal]');
+      if(prefersReduced){items.forEach(i=>i.classList.add('revealed'));return}
+      const obs = new IntersectionObserver((list)=>{
+        list.forEach(i=>{ if(i.isIntersecting){ i.target.classList.add('revealed'); obs.unobserve(i.target); } });
+      },{threshold:0.08});
+      items.forEach(i=>obs.observe(i));
+    })();
+  </script>
+</body>
+</html>

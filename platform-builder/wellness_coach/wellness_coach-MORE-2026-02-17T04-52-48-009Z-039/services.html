@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Approaches — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fcfff9;--muted:#5b6970;--accent:#1f6d5a;--card:#ffffff}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;color:#082426;background:var(--bg)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,#3da88a,#1f6d5a);display:grid;place-items:center;color:white;font-weight:700}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none;font-size:14px}
+    .cta{background:var(--accent);color:white;padding:10px 12px;border-radius:8px;text-decoration:none;font-weight:700}
+    main{max-width:1000px;margin:22px auto;padding:20px}
+    .intro{display:flex;gap:18px;align-items:center}
+    h1{margin:0;font-size:26px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px}
+    .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(8,26,26,0.06)}
+    .method{display:flex;flex-direction:column;gap:10px}
+    .mood-row{display:flex;gap:8px;flex-wrap:wrap}
+    button.mood{padding:10px 12px;border-radius:10px;border:1px solid rgba(15,30,28,0.06);background:transparent;cursor:pointer}
+    button.mood.active{background:var(--accent);color:white;border-color:transparent}
+    .recommend{margin-top:12px;padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(31,109,90,0.06),transparent)}
+    .method-cta{margin-top:12px}
+    .muted{color:var(--muted);font-size:13px}
+    .kw{font-weight:700;color:#0d443a}
+    @media(max-width:880px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">WC</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Overview</a>
+      <a href="about.html">Practice</a>
+      <a href="services.html" style="color:var(--accent)">Approaches</a>
+      <a href="programs.html">Journeys</a>
+      <a href="pricing.html">Investment</a>
+      <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="intro">
+      <div>
+        <h1>Choose how you want to work</h1>
+        <p class="muted">Different states call for different methods. Pick what describes you now, and see an approach tailored to that state — plus a suggested next action.</p>
+      </div>
+      <div style="margin-left:auto" class="muted">Sessions: remote • flexible cadence</div>
+    </div>
+
+    <div class="grid">
+      <section class="card">
+        <h2 style="margin-top:0">Mood-to-Method selector</h2>
+        <p class="muted">Select the description that matches your present experience. The page will present a concise method and reword the primary action so it fits where you are.</p>
+
+        <div style="margin-top:12px">
+          <div class="mood-row" role="list" aria-label="Mood options">
+            <button class="mood" data-key="overwhelmed">Overwhelmed</button>
+            <button class="mood" data-key="foggy">Foggy</button>
+            <button class="mood" data-key="stuck">Stuck</button>
+            <button class="mood" data-key="energetic">Energetic</button>
+            <button class="mood" data-key="steady">Steady but plateaued</button>
+          </div>
+
+          <div id="recommend" class="recommend">
+            <div style="font-size:14px;color:#0c3f35;font-weight:700">Pick a mood to see a focused approach</div>
+            <div id="rec-desc" class="muted" style="margin-top:8px">Recommendations appear here.</div>
+            <div id="rec-actions" style="margin-top:12px;display:flex;gap:8px;align-items:center">
+              <a id="primary-cta" class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+              <a id="secondary" class="muted" href="mailto:{{EMAIL}}" style="text-decoration:none;padding:8px 10px">Email a quick note</a>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:14px" class="muted">Approaches below are habit-forward and outcome-oriented — designed for testing and iteration.</div>
+      </section>
+
+      <aside class="card">
+        <h3 style="margin:0">Approach catalog</h3>
+        <p class="muted" style="margin-top:8px">Short descriptions to orient you</p>
+        <dl style="margin-top:12px;color:var(--muted)">
+          <dt class="kw">Micro-Anchor</dt>
+          <dd>Attach a tiny practice to an existing routine to make it reliable.</dd>
+          <dt class="kw" style="margin-top:8px">Signal Audit</dt>
+          <dd>Collect simple daily signals to see what really changes.</dd>
+          <dt class="kw" style="margin-top:8px">Weekly Reset</dt>
+          <dd>A compact weekly review to keep gains and drop what doesn't fit.</dd>
+        </dl>
+      </aside>
+    </div>
+
+    <div style="margin-top:18px" class="card">
+      <h3 style="margin:0">How the selector shapes the CTA</h3>
+      <p class="muted" style="margin-top:8px">The main action updates to match the mode: in overwhelmed states we suggest a short triage; when motivated, we suggest a launch plan. This helps the next step feel achievable.</p>
+    </div>
+
+  </main>
+
+  <script>
+    (function(){
+      const approaches = {
+        overwhelmed: {
+          title: 'Triage & tiny step',
+          desc: 'We narrow to one critical daily task and three stop-gap supports. Focus: reduce decision load for immediate relief.',
+          cta: 'Request a 20-minute triage'
+        },
+        foggy: {
+          title: 'Signal audit',
+          desc: 'Simple daily markers (energy, focus, friction) for two weeks to reveal patterns and targets for intervention.',
+          cta: 'Start a 14-day signal audit'
+        },
+        stuck: {
+          title: 'Micro-reset loop',
+          desc: 'Short practice chains (2–3 anchors) with measurable thresholds so you can feel momentum every week.',
+          cta: 'Try a 7-day micro-reset'
+        },
+        energetic: {
+          title: 'Launch ramp',
+          desc: 'Translate momentum into a structured 30-day push: clear habits, checkpoints, and a simplified review rhythm.',
+          cta: 'Map a 30-day launch'
+        },
+        steady: {
+          title: 'Plateau probe',
+          desc: 'We test one variable for three weeks with precise signals to see if change is sustainable before scaling.',
+          cta: 'Begin a 21-day probe'
+        }
+      };
+
+      const buttons = Array.from(document.querySelectorAll('button.mood'));
+      const recTitle = document.getElementById('recommend');
+      const recDesc = document.getElementById('rec-desc');
+      const mainCta = document.getElementById('primary-cta');
+
+      buttons.forEach(btn=>btn.addEventListener('click', ()=>{
+        buttons.forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        const key = btn.getAttribute('data-key');
+        const entry = approaches[key];
+        recTitle.querySelector('div').textContent = entry.title;
+        recDesc.textContent = entry.desc;
+        // change CTA text but keep the link
+        mainCta.textContent = entry.cta;
+        mainCta.href = '{{PRIMARY_CTA_URL}}?intention='+encodeURIComponent(entry.title);
+      }));
+
+      // accessibility: allow keyboard activation
+      buttons.forEach(b=>b.addEventListener('keyup', e=>{if(e.key==='Enter') b.click();}));
+    })();
+  </script>
+</body>
+</html>

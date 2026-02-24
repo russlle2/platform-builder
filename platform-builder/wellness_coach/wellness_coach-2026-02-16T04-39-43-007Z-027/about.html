@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f6efe6;--card:#fff6ee;--accent:#8a5a3b;--muted:#89766b;--glass:rgba(255,255,255,0.6);--radius:14px;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#fbf6f1 0%,var(--bg) 100%);color:#332820}
+    header{display:flex;align-items:center;justify-content:space-between;padding:28px 36px}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:12px;background:radial-gradient(circle at 30% 30%,#ffe9d6, #f1d6c0);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent);box-shadow:0 6px 18px rgba(138,90,59,0.12)}
+    nav a{color:var(--muted);text-decoration:none;margin:0 10px;font-weight:600}
+    nav a.primary{background:transparent;border:1px solid rgba(51,40,32,0.06);padding:10px 14px;border-radius:10px;color:var(--accent)}
+    main{max-width:1100px;margin:28px auto;padding:28px}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:center;background:linear-gradient(180deg,rgba(255,255,255,0.6),transparent);padding:36px;border-radius:18px;box-shadow:0 8px 30px rgba(51,40,32,0.06)}
+    .hero h1{margin:0;font-size:34px;line-height:1.05;color:var(--accent)}
+    .hero p{margin:12px 0;color:var(--muted)}
+    .meta{display:flex;gap:12px;align-items:center;margin-top:18px}
+    .cta{background:var(--accent);color:#fff;padding:12px 16px;border-radius:12px;text-decoration:none;font-weight:700}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(51,40,32,0.04)}
+    .rows{display:flex;flex-direction:column;gap:18px}
+    .section{margin-top:28px}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .benefit{padding:16px;border-radius:12px;background:linear-gradient(180deg,#fff,#fff8f3)}
+    .process{display:flex;gap:12px;align-items:flex-start}
+    .step{background:var(--glass);padding:12px;border-radius:12px;flex:1}
+    footer{margin-top:36px;padding:20px;text-align:center;color:var(--muted)}
+    /* small screens */
+    @media (max-width:880px){.hero{grid-template-columns:1fr;}.grid{grid-template-columns:1fr 1fr}.rows{gap:12px}}
+    @media (max-width:520px){.grid{grid-template-columns:1fr}}    
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">W</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="programs.html">Work With Me</a>
+      <a href="services.html">Offerings</a>
+      <a class="primary" href="book.html">{{PRIMARY_CTA_LABEL}}</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- HERO (unique inline SVG avatar for this page) -->
+    <section class="hero" aria-label="About hero">
+      <div>
+        <h1>Hi, I’m {{COACH_NAME}} — a gentle guide to sustainable wellbeing.</h1>
+        <p>I blend simple daily habits with proven frameworks to help busy people in {{CITY}}, {{STATE}} feel more grounded, energized, and capable — without burnout or fads.</p>
+        <div class="meta">
+          <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <div style="color:var(--muted)">or call <strong>{{PHONE}}</strong></div>
+        </div>
+      </div>
+
+      <div class="card" style="display:flex;flex-direction:column;align-items:center;gap:12px">
+        <!-- unique avatar SVG -->
+        <svg width="160" height="160" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Coach avatar">
+          <defs>
+            <linearGradient id="g1" x1="0" x2="1">
+              <stop offset="0" stop-color="#ffe9d6"/>
+              <stop offset="1" stop-color="#f1d6c0"/>
+            </linearGradient>
+          </defs>
+          <rect width="160" height="160" rx="20" fill="#fff"/>
+          <circle cx="80" cy="60" r="34" fill="url(#g1)" stroke="#e6c9b3" stroke-width="4"/>
+          <path d="M80 98c-28 0-44 12-44 24v6h88v-6c0-12-16-24-44-24z" fill="#f5e6dc" stroke="#ecd6c8"/>
+          <g fill="#8a5a3b" opacity="0.9">
+            <circle cx="72" cy="56" r="4"/>
+            <circle cx="88" cy="56" r="4"/>
+            <path d="M70 70c4 4 16 4 20 0" stroke="#8a5a3b" stroke-width="2" fill="none" stroke-linecap="round"/>
+          </g>
+        </svg>
+        <div style="text-align:center">
+          <div style="font-weight:700">{{COACH_NAME}} <span style="font-weight:400;color:var(--muted)">|</span> {{CREDENTIALS}}</div>
+          <div style="font-size:13px;color:var(--muted)">Coaching in {{CITY}}, {{STATE}}</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BENEFITS (unique headings) -->
+    <section class="section">
+      <h2 style="color:var(--accent)">Small changes. Lasting rhythm.</h2>
+      <p style="color:var(--muted)">I focus on tiny daily actions that compound into greater energy, calmer mornings, and clearer focus. Typical outcomes my clients celebrate:</p>
+      <div class="grid" style="margin-top:14px">
+        <div class="benefit">
+          <strong>Predictable mornings</strong>
+          <div style="color:var(--muted);margin-top:8px">A simple routine you can actually sustain, not another overhaul.</div>
+        </div>
+        <div class="benefit">
+          <strong>Manageable energy</strong>
+          <div style="color:var(--muted);margin-top:8px">Practical habits to reduce afternoon crashes and build steady cadence.</div>
+        </div>
+        <div class="benefit">
+          <strong>Clarity of priorities</strong>
+          <div style="color:var(--muted);margin-top:8px">Decide with ease what matters and create space for it each week.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROCESS (unique metaphor: garden) -->
+    <section class="section">
+      <h3 style="color:var(--accent)">How we grow your wellbeing</h3>
+      <div class="process" style="margin-top:12px">
+        <div class="step">
+          <strong>1. Soil & intention — Intake</strong>
+          <div style="color:var(--muted);margin-top:8px">We map your current rhythm and pick one anchor habit to start.</div>
+        </div>
+        <div class="step">
+          <strong>2. Nurture — Weekly coaching</strong>
+          <div style="color:var(--muted);margin-top:8px">Practical mini-experiments and supportive reflection to build momentum.</div>
+        </div>
+        <div class="step">
+          <strong>3. Harvest — Sustainable change</strong>
+          <div style="color:var(--muted);margin-top:8px">Refine routines so they fit your life long-term, not just a season.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SOCIAL PROOF (testimonials snippet) -->
+    <section class="section">
+      <h3 style="color:var(--accent)">Where clients notice the difference</h3>
+      <div class="rows">
+        <div class="card">
+          <strong>"Gentle guidance that actually fits my schedule."</strong>
+          <div style="color:var(--muted);margin-top:8px">— M., entrepreneur in {{CITY}}</div>
+        </div>
+        <div class="card">
+          <strong>"I sleep better and my mornings are calm again."</strong>
+          <div style="color:var(--muted);margin-top:8px">— L., parent and teacher</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LEAD MAGNET -->
+    <section class="section card" style="display:flex;align-items:center;justify-content:space-between;gap:16px">
+      <div>
+        <strong style="font-size:16px;color:var(--accent)">Free guide: The 7-Minute Morning Reset</strong>
+        <div style="color:var(--muted);margin-top:8px">Simple, research-informed steps you can do first thing to set an intentional tone for your day.</div>
+      </div>
+      <div>
+        <form action="#" onsubmit="alert('Thank you — please check your inbox.');return false;">
+          <input aria-label="Email" type="email" placeholder="Enter your email" style="padding:10px;border-radius:10px;border:1px solid #eaded6;margin-right:8px">
+          <button class="cta" type="submit">Send me the guide</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- FAQ (unique questions) -->
+    <section class="section">
+      <h3 style="color:var(--accent)">Questions people ask</h3>
+      <div style="margin-top:12px;display:flex;flex-direction:column;gap:12px">
+        <div class="card">
+          <strong>How long are sessions?</strong>
+          <div style="color:var(--muted);margin-top:8px">Most sessions are 50 minutes — focused, actionable, and paced to your life.</div>
+        </div>
+        <div class="card">
+          <strong>Do you provide plans?</strong>
+          <div style="color:var(--muted);margin-top:8px">I favor micro-experiments and simple trackers over rigid plans so change sticks.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA FOOTER -->
+    <section class="section" style="display:flex;gap:12px;align-items:center;justify-content:space-between">
+      <div>
+        <div style="font-weight:700;font-size:18px;color:var(--accent)">Ready to try a gentle approach to lasting habits?</div>
+        <div style="color:var(--muted);margin-top:6px">Book a complimentary discovery session and we’ll design a clear first month together.</div>
+      </div>
+      <div>
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </section>
+
+    <footer>
+      <div>{{BUSINESS_NAME}} — {{COACH_NAME}}, {{CREDENTIALS}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • {{PHONE}}</div>
+    </footer>
+  </main>
+</body>
+</html>

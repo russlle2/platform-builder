@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--muted:#6f6f6f;--accent:#2b7a6f}
+    body{margin:0;font-family:Inter,system-ui,Arial;color:#222;background:linear-gradient(180deg,#ffffff 0%, #fbfdfb 100%)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 28px}
+    nav a{margin-left:16px;text-decoration:none;color:#1d4f46;font-weight:600}
+    main{max-width:980px;margin:26px auto;padding:20px}
+    .intro{display:flex;gap:20px;align-items:flex-start}
+    .profile{width:220px;padding:18px;background:#fff;border-radius:12px;box-shadow:0 6px 20px rgba(20,30,20,0.06)}
+    .profile h3{margin:0}
+    .bio{flex:1;background:#fff;padding:22px;border-radius:12px;box-shadow:0 6px 20px rgba(20,30,20,0.04)}
+    .pill{display:inline-block;padding:6px 10px;background:rgba(43,122,111,0.08);color:#175243;border-radius:999px;font-weight:700}
+    .cta-row{margin-top:14px}
+    .btn{display:inline-block;padding:10px 14px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none;font-weight:700}
+    .muted{color:var(--muted)}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
+    .card{background:#fff;padding:16px;border-radius:10px;box-shadow:0 8px 20px rgba(12,20,12,0.04)}
+    label{font-size:13px;color:#556}
+    select{width:100%;padding:10px;border-radius:8px;border:1px solid #e6efea;margin-top:8px}
+    .recommend{margin-top:10px;padding:10px;border-radius:8px;background:linear-gradient(180deg,#f9fff9,#fff)}
+    footer{margin-top:28px;text-align:center;color:var(--muted);padding-bottom:24px}
+    @media(max-width:820px){.intro{flex-direction:column}.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div style="width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,#e9fbf3,#e0f6ef);display:grid;place-items:center;font-weight:800">HM</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Issues</a>
+      <a href="approach.html">Method</a>
+      <a href="pricing.html">Plans</a>
+      <a href="about.html">Team</a>
+      <a href="book.html">Schedule</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="intro">
+      <aside class="profile">
+        <div style="font-size:13px;color:var(--muted)">Practitioner</div>
+        <h3>Lead Clinician</h3>
+        <div style="margin-top:10px;font-size:14px;color:#385">Functional & integrative practice; emphasis on context and practical routines.</div>
+        <div class="cta-row">
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </aside>
+
+      <article class="bio">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <h2 style="margin:0 0 6px 0">About this practice</h2>
+            <div class="muted">We help people build reliable everyday supports—no quick fixes, just steady learning and coordination where needed.</div>
+          </div>
+          <div class="pill">Education & Coaching</div>
+        </div>
+
+        <p style="margin-top:12px">Our approach centers on small, evidence-minded adjustments that fit into your life. We combine practical lifestyle interventions, selective testing, and touchpoint-based care so you feel guided, not overwhelmed. All recommendations are educational and collaborative; personalized medical decisions are discussed together.</p>
+
+        <div class="grid">
+          <div class="card">
+            <h4 style="margin:0 0 8px 0">How we work</h4>
+            <p class="muted">Brief intake, prioritized goals, and a stepwise cycle. We review progress at set intervals and adapt the plan as you gain clarity.</p>
+          </div>
+
+          <div class="card">
+            <h4 style="margin:0 0 8px 0">Care values</h4>
+            <ul style="margin:0;padding-left:18px;color:var(--muted)">
+              <li>Practicality over perfection</li>
+              <li>Transparency in reasoning</li>
+              <li>Coordination with your existing clinicians</li>
+            </ul>
+          </div>
+        </div>
+
+        <div style="margin-top:14px">
+          <label for="mood-about">Not sure where to begin?</label>
+          <select id="mood-about">
+            <option value="overwhelmed">Overwhelmed</option>
+            <option value="drained">Energetically low</option>
+            <option value="curious">Want to learn</option>
+            <option value="steady">I need maintenance</option>
+          </select>
+
+          <div class="recommend" id="about-recommend">Recommended: <strong id="about-title">Intro Discovery</strong><div id="about-desc" style="margin-top:6px;color:#2a5b4f">A single focused session to map concerns and a clear next step.</div></div>
+        </div>
+
+      </article>
+    </section>
+
+    <section style="margin-top:22px;padding:18px;background:#fff;border-radius:12px;box-shadow:0 8px 20px rgba(12,20,12,0.04)">
+      <h3 style="margin-top:0">Our training and oversight</h3>
+      <p class="muted">Clinician training includes integrative nutrition, behavioral coaching, and primary care coordination. Where appropriate, we partner with licensed clinicians for medical management. We do not promise cure; we support learning, symptom understanding, and practical changes.</p>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} — <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+  </footer>
+
+  <script>
+    (function(){
+      const sel = document.getElementById('mood-about');
+      const titles = {
+        overwhelmed:{t:'Short Stabilizer',d:'A brief plan to reduce urgent stressors and regain focus.'},
+        drained:{t:'Recharge Sequence',d:'Paced support to rebuild energy and daily rhythms.'},
+        curious:{t:'Intro Discovery',d:'Single session to clarify priorities and options.'},
+        steady:{t:'Maintenance Track',d:'Monthly check-ins to keep momentum.'}
+      };
+      function update(){
+        const v = titles[sel.value] || titles.curious;
+        document.getElementById('about-title').textContent = v.t;
+        document.getElementById('about-desc').textContent = v.d;
+      }
+      sel.addEventListener('change',update);
+      update();
+    })();
+  </script>
+</body>
+</html>

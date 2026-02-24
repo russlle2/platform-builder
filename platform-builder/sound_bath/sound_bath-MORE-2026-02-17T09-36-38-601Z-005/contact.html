@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reach Out — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--muted:#94a3b8;--accent:#7dd3fc;--glass:rgba(255,255,255,0.04);--success:#10b981}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#e6eef8;background:linear-gradient(180deg,#071023 0%,#061423 50%),#041026}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);backdrop-filter:blur(6px)}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:42px;height:42px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#4f46e5);display:flex;align-items:center;justify-content:center;font-weight:700;color:#04263b}
+    nav a{color:var(--muted);text-decoration:none;margin:0 10px;font-size:14px}
+    nav a:hover{color:var(--accent)}
+    main{max-width:1060px;margin:28px auto;padding:28px}
+    .hero{display:grid;grid-template-columns:1fr 380px;gap:24px;padding:28px;border-radius:12px;background:linear-gradient(135deg,rgba(125,211,252,0.04),rgba(79,70,229,0.02));box-shadow:0 6px 30px rgba(2,6,23,0.6);position:relative;overflow:hidden}
+    .hero:before{content:'';position:absolute;inset:0;opacity:0.08;background-image:url('assets/img/pattern.svg');background-repeat:repeat;mix-blend-mode:screen}
+    h1{margin:0;font-size:28px;color:#e6f3ff}
+    p.lead{color:var(--muted);margin-top:8px}
+
+    /* Mixer */
+    .mixer{background:var(--card);padding:14px;border-radius:10px;color:#cbe7ff}
+    .levels{display:flex;gap:8px;margin:12px 0}
+    .level{padding:8px 12px;border-radius:8px;background:var(--glass);border:1px solid rgba(255,255,255,0.03);cursor:pointer}
+    .level.active{background:linear-gradient(90deg,rgba(125,211,252,0.15),rgba(79,70,229,0.12));border-color:rgba(125,211,252,0.22)}
+    .recommend{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+    .rec-card{padding:10px;border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);border:1px solid rgba(255,255,255,0.03)}
+    .rec-card h4{margin:0;font-size:15px}
+    .rec-card p{margin:6px 0 0;color:var(--muted);font-size:13px}
+
+    /* Form */
+    form{display:flex;flex-direction:column;gap:12px;padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);box-shadow:inset 0 1px 0 rgba(255,255,255,0.02)}
+    input,textarea,select{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#e6eef8;padding:10px;border-radius:8px}
+    .actions{display:flex;gap:8px;align-items:center}
+    .btn{background:var(--accent);color:#04263b;padding:10px 14px;border-radius:10px;border:none;cursor:pointer}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+
+    /* Proof gallery */
+    .proof{margin-top:26px;padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent)}
+    .testimonial{min-height:86px;display:flex;flex-direction:column;gap:8px}
+    .quote{font-size:15px;color:#dff7ff}
+    .who{font-size:13px;color:var(--muted)}
+    .badges{display:flex;gap:8px;margin-top:10px}
+    .badge{background:rgba(255,255,255,0.02);padding:6px 8px;border-radius:8px;font-size:12px;color:var(--muted);position:relative}
+    .badge:hover{background:linear-gradient(90deg,rgba(125,211,252,0.06),rgba(79,70,229,0.04));color:#dff7ff}
+    .tooltip{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 8px);background:#041027;color:#dff7ff;padding:8px;border-radius:6px;font-size:12px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .12s}
+    .badge:hover .tooltip{opacity:1}
+
+    /* Small utility */
+    .muted{color:var(--muted);font-size:13px}
+    .columns{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .section{margin-top:18px}
+    footer{margin:28px 0;padding:14px;color:var(--muted);text-align:center;font-size:13px}
+    @media (max-width:900px){.hero{grid-template-columns:1fr;}.columns{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">SB</div>
+      <div>
+        <div style="font-weight:700;color:#dff7ff">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav aria-label="Main navigation">
+      <a href="index.html">Gather</a>
+      <a href="events.html">Calendar</a>
+      <a href="private-sessions.html">Solo</a>
+      <a href="pricing.html">Investment</a>
+      <a href="about.html">Story</a>
+      <a href="faq.html">Answers</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="contact-heading">
+      <div>
+        <h1 id="contact-heading">Reach out & align your next sound journey</h1>
+        <p class="lead">A quick note, a request for a private session, or a question about accessibility — we’re listening. Use the form to tell us what you need and your sound preference; it helps us propose the right session type.</p>
+
+        <div class="section mixer" aria-label="Sound preference mixer">
+          <strong style="display:block">Sound preference</strong>
+          <div class="levels" role="tablist" aria-label="Sound intensity choices">
+            <div class="level" data-level="gentle" role="tab" tabindex="0">Gentle</div>
+            <div class="level active" data-level="medium" role="tab" tabindex="0">Balanced</div>
+            <div class="level" data-level="intense" role="tab" tabindex="0">Deep</div>
+          </div>
+          <div class="recommend" id="recommendations">
+            <div class="rec-card" data-for="gentle">
+              <h4>Soft Drift</h4>
+              <p>Slow gongs and soft bowls for long exhalations; designed for rest and sensory settling.</p>
+            </div>
+            <div class="rec-card" data-for="medium">
+              <h4>Rhythmic Arc</h4>
+              <p>Layered bowls with light percussive pulses—good for subtle release and focus.</p>
+            </div>
+            <div class="rec-card" data-for="intense">
+              <h4>Ocean Depth</h4>
+              <p>Deep resonant undertones that move the body-state for immersive release.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="section proof" aria-live="polite">
+          <strong>Proof gallery</strong>
+          <div id="testimonial-root">
+            <div class="testimonial">
+              <div class="quote">"Calming and precise—left me clear-headed for days."</div>
+              <div class="who">— Robin, community member</div>
+              <div class="badges" id="badges">
+                <div class="badge">Verified Host<div class="tooltip">Validated booking history and local reviews</div></div>
+                <div class="badge">Certified Facilitation<div class="tooltip">Training in sound therapy & safety</div></div>
+                <div class="badge">Local Press<div class="tooltip">Featured in regional wellness guides</div></div>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <button class="btn ghost" id="prev-test">Prev</button>
+              <button class="btn ghost" id="next-test">Next</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <aside>
+        <form id="contact-form" aria-label="Contact form">
+          <label class="muted">Full name<input type="text" name="name" required placeholder="Your name"></label>
+          <label class="muted">Email<input type="email" name="email" required placeholder="you@example.com"></label>
+          <label class="muted">Phone (optional)<input type="tel" name="phone" placeholder="{{PHONE}}"></label>
+          <label class="muted">Preferred day<select name="day"><option>Weekday evening</option><option>Weekend morning</option><option>Flexible</option></select></label>
+          <label class="muted">Sound orientation<input id="form-sound" type="text" name="sound_level" readonly value="medium"></label>
+          <label class="muted">Message<textarea name="message" rows="4" placeholder="Tell us about accommodations, accessibility needs, or the session you want"></textarea></label>
+
+          <div class="actions">
+            <button class="btn" type="submit">{{PRIMARY_CTA_LABEL}}</button>
+            <button class="btn ghost" type="button" id="call-me">Call: {{PHONE}}</button>
+          </div>
+          <div id="form-feedback" style="color:var(--success);font-size:13px;display:none;margin-top:8px">Thanks — we’ll reply within 48 hours.</div>
+
+          <div class="section" style="font-size:13px;color:var(--muted)">
+            <strong>Contraindications</strong>
+            <p style="margin:8px 0">Sound baths are restorative for many, but may not suit everyone. Please consult a physician before attending if you have epilepsy, are in early pregnancy, have a history of seizures, have a pacemaker, or are recovering from recent surgery. If you have serious psychiatric conditions or are actively experiencing severe dissociation, contact a healthcare professional before booking. This practice is not a substitute for medical care.</p>
+          </div>
+        </form>
+      </aside>
+    </section>
+
+    <section class="section columns">
+      <div>
+        <h3>Micro-practices to carry</h3>
+        <ul class="muted">
+          <li>Two slow exhales between tasks — a mini reset.</li>
+          <li>Pair a short sound loop (30s) with a walk to anchor attention.</li>
+          <li>If anxious, count three gentle breaths and soften your jaw.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Rates & formats</h3>
+        <div style="background:var(--card);padding:12px;border-radius:8px">
+          <div style="display:flex;justify-content:space-between"><strong>Drop-In</strong><span class="muted">$28</span></div>
+          <div style="display:flex;justify-content:space-between;margin-top:8px"><strong>Arc Series (4)</strong><span class="muted">$98</span></div>
+          <div style="display:flex;justify-content:space-between;margin-top:8px"><strong>Sanctuary Pass (monthly)</strong><span class="muted">$65</span></div>
+        </div>
+        <p class="muted" style="margin-top:8px">Custom pricing available for private and corporate bookings. We craft sessions to intention and accessibility.</p>
+      </div>
+    </section>
+
+    <section class="section" style="margin-top:22px">
+      <h3>Contact options</h3>
+      <p class="muted">Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a></p>
+      <p class="muted">Studio: {{CITY}}, {{STATE}}</p>
+    </section>
+
+    <section class="section" style="margin-top:22px">
+      <h3>How we respond</h3>
+      <p class="muted">We typically reply within two business days. If your message mentions medical or psychiatric urgency, we will prioritise guidance on safety and refer to licensed professionals when appropriate.</p>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} — small-group and private sound events • <a href="privacy.html" style="color:var(--muted)">Privacy</a></div>
+  </footer>
+
+  <script>
+    // Mixer logic
+    (function(){
+      const levels = document.querySelectorAll('.level');
+      const recRoot = document.getElementById('recommendations');
+      const formSound = document.getElementById('form-sound');
+      function setLevel(level){
+        levels.forEach(l=>{l.classList.toggle('active', l.dataset.level===level)});
+        // show/hide rec-cards (simple visual emphasis)
+        document.querySelectorAll('.rec-card').forEach(card=>{
+          if(card.dataset.for===level){card.style.boxShadow='0 6px 20px rgba(2,6,23,0.6)';card.style.borderColor='rgba(125,211,252,0.12)';}
+          else{card.style.boxShadow='none';card.style.borderColor='rgba(255,255,255,0.03)';}
+        });
+        formSound.value = level;
+      }
+      levels.forEach(l=>{
+        l.addEventListener('click', ()=>setLevel(l.dataset.level));
+        l.addEventListener('keyup', (e)=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();setLevel(l.dataset.level);}});
+      });
+      setLevel('medium');
+    })();
+
+    // Proof gallery: rotating testimonials + badges tooltip already in DOM
+    (function(){
+      const tests = [
+        {text:'"Calming and precise—left me clear-headed for days."', who:'Robin, community member', badges:['Verified Host','Certified Facilitation','Local Press']},
+        {text:'"A gentle, thorough offering — I slept through the best part."', who:'S. Patel', badges:['Awarded Program','Insurance-Friendly','Verified Host']},
+        {text:'"Powerful deep tones that opened stuck emotion—helped me move forward."', who:'Maya L.', badges:['Clinical Referral','Certified Facilitation','Press: Wellbeing']}
+      ];
+      let i = 0; const quoteEl = document.querySelector('.quote'); const whoEl = document.querySelector('.who'); const badgesEl = document.getElementById('badges');
+      function render(){
+        const t = tests[i];
+        quoteEl.textContent = t.text;
+        whoEl.textContent = '— ' + t.who;
+        badgesEl.innerHTML = t.badges.map(b=>' <div class="badge">'+b+'<div class="tooltip">'+b+' — credential or recognition</div></div>').join('');
+      }
+      document.getElementById('next-test').addEventListener('click', ()=>{i=(i+1)%tests.length;render();});
+      document.getElementById('prev-test').addEventListener('click', ()=>{i=(i-1+tests.length)%tests.length;render();});
+      render();
+      setInterval(()=>{i=(i+1)%tests.length;render();},5000);
+    })();
+
+    // Contact form handling (local only)
+    (function(){
+      const form = document.getElementById('contact-form');
+      const feedback = document.getElementById('form-feedback');
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        // Basic validation (demo)
+        const data = new FormData(form); const payload = {};
+        for(const [k,v] of data.entries()) payload[k]=v;
+        console.log('Contact submit', payload);
+        feedback.style.display = 'block';
+        setTimeout(()=>{feedback.textContent = 'Message queued — we’ll be in touch.';},600);
+        form.reset();
+        document.getElementById('form-sound').value='medium';
+      });
+      document.getElementById('call-me').addEventListener('click', ()=>{
+        window.location.href = 'tel:{{PHONE}}';
+      });
+    })();
+  </script>
+</body>
+</html>

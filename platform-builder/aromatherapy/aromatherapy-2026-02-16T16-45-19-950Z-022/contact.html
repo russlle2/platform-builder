@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{
+      --bg-1:#F6F1EA; --bg-2:#FFF8F1; --accent:#8B5E3C; --accent-2:#C48F6A; --muted:#6A5A53; --card:#FFFFFF;
+      --glass: rgba(255,255,255,0.7);
+      --radius:14px; --shadow: 0 8px 30px rgba(107,81,67,0.12);
+      font-family: "Georgia", serif; color:var(--muted);
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg-1),var(--bg-2));}
+    .wrap{min-height:100%;display:flex;flex-direction:column;}
+    header{display:flex;align-items:center;justify-content:space-between;padding:28px 36px;background:transparent}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{width:56px;height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--accent),#E9D7C2);box-shadow:var(--shadow);font-weight:700;color:white}
+    nav a{color:var(--muted);text-decoration:none;margin:0 10px;font-weight:600}
+    nav a:hover{color:var(--accent)}
+    main{flex:1;position:relative;overflow:hidden;padding:48px 24px 96px}
+    /* SVG pattern absolute */
+    .pattern-wrap{position:absolute;inset:0;pointer-events:none;opacity:0.12}
+    .container{max-width:1100px;margin:0 auto;position:relative;z-index:2}
+    /* Hero */
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:34px;align-items:center;margin-top:12px}
+    .hero-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:36px}
+    h1{margin:0 0 8px;font-family: 'Palatino Linotype', serif;color:var(--accent);font-size:32px}
+    p.lead{margin:0 0 18px;color:#64534B}
+    .cta-row{display:flex;gap:12px;align-items:center}
+    .btn{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;padding:12px 18px;border-radius:10px;border:none;cursor:pointer;font-weight:700}
+    .ghost{background:transparent;border:2px solid rgba(139,94,60,0.12);padding:10px 16px;border-radius:10px}
+
+    /* Contact form */
+    form.card{display:flex;flex-direction:column;gap:12px;padding:20px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,255,255,0.8));box-shadow:0 6px 22px rgba(101,78,60,0.08)}
+    input,textarea,select{padding:12px;border-radius:10px;border:1px solid rgba(101,78,60,0.12);font-size:15px}
+    textarea{min-height:120px;resize:vertical}
+
+    /* Social proof */
+    .social-proof{display:flex;gap:12px;margin-top:26px}
+    .quote{flex:1;background:var(--glass);padding:18px;border-radius:12px;border:1px solid rgba(107,81,67,0.04)}
+    .quote p{margin:0;font-style:italic;color:#57463F}
+    .meta{margin-top:10px;font-weight:700;color:var(--accent)}
+
+    /* Benefits */
+    .benefits{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:28px}
+    .benefit{background:linear-gradient(180deg,rgba(255,255,255,0.9),#FFFDFB);padding:18px;border-radius:12px;border:1px solid rgba(107,81,67,0.04)}
+    .benefit h4{margin:0 0 6px;color:var(--accent)}
+
+    /* Process */
+    .process{margin-top:28px;background:linear-gradient(180deg, #FFFBF7, #FFF9F2);padding:18px;border-radius:12px}
+    .steps{display:flex;gap:12px}
+    .step{flex:1;padding:12px;border-radius:10px;background:white;border:1px solid rgba(107,81,67,0.04)}
+    .step .num{width:34px;height:34px;border-radius:8px;background:var(--accent);color:white;display:inline-flex;align-items:center;justify-content:center;margin-right:8px}
+
+    /* Lead magnet */
+    .lead-magnet{display:flex;justify-content:space-between;align-items:center;margin-top:28px;padding:18px;border-radius:12px;background:linear-gradient(90deg,rgba(196,143,106,0.08),rgba(139,94,60,0.04))}
+    .lead-magnet input{flex:1;margin-right:12px}
+
+    /* FAQ */
+    .faq{margin-top:28px}
+    .q{padding:12px;border-radius:10px;background:white;border:1px solid rgba(107,81,67,0.04);margin-bottom:8px}
+
+    footer{padding:28px 36px;background:transparent;display:flex;justify-content:space-between;align-items:center}
+    @media (max-width:980px){.hero{grid-template-columns:1fr;}.benefits{grid-template-columns:1fr 1fr}.container{padding:0 18px}.lead-magnet{flex-direction:column;align-items:stretch}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="container">
+      <div class="brand">
+        <div class="logo">A</div>
+        <div>
+          <div style="font-weight:800;color:var(--accent)">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:#8A6F58">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Nest</a>
+        <a href="services.html">Offerings</a>
+        <a href="blends.html">Recipes</a>
+        <a href="shop.html">Boutique</a>
+        <a href="about.html">Our Story</a>
+        <a href="book.html">Reserve</a>
+        <a href="contact.html" style="font-weight:800;color:var(--accent)">Connect</a>
+      </nav>
+    </header>
+
+    <div class="pattern-wrap" aria-hidden="true">
+      <!-- unique inline SVG pattern (earthy warm, handcrafted motif) -->
+      <svg width="1600" height="900" viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="g1" x1="0" x2="1">
+            <stop offset="0" stop-color="#F9F6F2" />
+            <stop offset="1" stop-color="#FFF8F1" />
+          </linearGradient>
+          <pattern id="leafPattern" width="120" height="120" patternUnits="userSpaceOnUse" patternTransform="rotate(18)">
+            <rect width="120" height="120" fill="url(#g1)" />
+            <path d="M10 90 C40 30, 80 30, 110 90" fill="none" stroke="#E6CFC0" stroke-width="6" stroke-linecap="round" opacity="0.9" />
+            <circle cx="30" cy="30" r="6" fill="#EAD7C7" opacity="0.9" />
+            <circle cx="90" cy="90" r="4" fill="#C9A983" opacity="0.9" />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#leafPattern)" />
+        <g opacity="0.05">
+          <ellipse cx="1200" cy="120" rx="420" ry="120" fill="#C9A983" />
+          <ellipse cx="300" cy="780" rx="500" ry="140" fill="#8B5E3C" />
+        </g>
+      </svg>
+    </div>
+
+    <main class="container">
+      <!-- Hero + contact form (unique order: hero left, form right) -->
+      <section class="hero">
+        <div class="hero-card">
+          <h1>Let's make something scented and special</h1>
+          <p class="lead">Reach out to book an intensive aromatic consultation with {{PRACTITIONER_NAME}} — bespoke blends, safety-forward guidance, and delightfully earthy rituals.</p>
+          <div class="cta-row">
+            <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            <a class="ghost" href="book.html">Reserve a session</a>
+          </div>
+
+          <div class="social-proof" aria-label="Loved by clients">
+            <div class="quote">
+              <p>"Luxurious, grounded, and exactly what I needed to begin a home ritual. The blends are spot-on."</p>
+              <div class="meta">— Marisol, {{CITY}}</div>
+            </div>
+            <div class="quote">
+              <p>"Professional and playful — sessions are thorough and safety-minded. My diffuser never smelled better."</p>
+              <div class="meta">— Jacob</div>
+            </div>
+          </div>
+        </div>
+
+        <aside>
+          <form class="card" id="contactForm" action="#" method="POST" onsubmit="event.preventDefault();handleSubmit()">
+            <input type="text" name="name" placeholder="Your name" required />
+            <input type="email" name="email" placeholder="Email — we’ll reply to this" required />
+            <input type="tel" name="phone" placeholder="Phone (optional)" />
+            <select name="reason" required>
+              <option value="">I’m reaching out about...</option>
+              <option value="consult">Intensive consultation</option>
+              <option value="custom">Custom blend</option>
+              <option value="wholesale">Wholesale / partnership</option>
+            </select>
+            <textarea name="message" placeholder="Tell us a bit: timeline, preferences, pet/family notes..." required></textarea>
+            <label style="font-size:13px;color:#7A6050"><input type="checkbox" name="safety" required /> I understand aromatherapy is supportive and not a medical treatment; I agree to a safety review during my session.</label>
+            <button class="btn" type="submit">Send & Book</button>
+
+            <div style="font-size:13px;color:#7A6050;margin-top:8px">Or call <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+          </form>
+        </aside>
+      </section>
+
+      <!-- Benefits: quick bites (unique ordering) -->
+      <section class="benefits" aria-label="What to expect">
+        <div class="benefit">
+          <h4>Personalized, not prescriptive</h4>
+          <div>We build blends around you: preferences, sensitivities, and lifestyle — always safety-first.</div>
+        </div>
+        <div class="benefit">
+          <h4>Premium botanicals</h4>
+          <div>Carefully sourced essential oils and carrier suggestions to keep rituals grounded and refined.</div>
+        </div>
+        <div class="benefit">
+          <h4>Intensive guidance</h4>
+          <div>Deep sessions that include dilution charts, patch-test instructions, and a tailored aroma plan.</div>
+        </div>
+      </section>
+
+      <!-- Process (intensive offerModel) -->
+      <section class="process" aria-label="How the intensive works">
+        <h3 style="margin-top:0;color:var(--accent)">The intensive, in 3 thoughtful steps</h3>
+        <div class="steps">
+          <div class="step"><div><span class="num">1</span><strong> Discovery</strong></div><div style="margin-top:8px">We explore preferences, safety notes, household/pet context, and goals.</div></div>
+          <div class="step"><div><span class="num">2</span><strong> Custom blending</strong></div><div style="margin-top:8px">A bespoke blend + dilution guide and patch-test plan are prepared for you.</div></div>
+          <div class="step"><div><span class="num">3</span><strong> Integration</strong></div><div style="margin-top:8px">Follow-up support and ritual suggestions to help you confidently use your blends.</div></div>
+        </div>
+      </section>
+
+      <!-- Lead magnet -->
+      <section class="lead-magnet" aria-label="Free guide">
+        <div style="font-weight:700;color:var(--accent)">Free guide: "A Gentle Start with Essential Oils"</div>
+        <div style="flex:1;margin:0 12px;color:#705949">Mini-guide: dilution basics, a simple patch-test, and 4 blends to try safely at home.</div>
+        <div style="display:flex;gap:8px"><input type="email" id="leadEmail" placeholder="Your email" /><button class="btn" onclick="subscribeLead()">Send the guide</button></div>
+      </section>
+
+      <!-- FAQ: safety-forward -->
+      <section class="faq" aria-label="Frequently asked questions">
+        <h3 style="color:var(--accent)">A few safety-first FAQs</h3>
+        <div class="q"><strong>How should I dilute essential oils?</strong>
+          <div style="margin-top:8px">Dilution depends on age, sensitivity, and intended use. Typical rates: 1% for facial blends, 1–3% for daily topical mixes, and up to 5% for short-term spot use. Your intensive includes a bespoke dilution chart. Always use a carrier oil and follow patch-test guidance.</div>
+        </div>
+        <div class="q"><strong>What is a patch test?</strong>
+          <div style="margin-top:8px">A patch test helps check skin sensitivity: apply a small diluted sample to the inner forearm for 24 hours. If irritation occurs, discontinue use.</div>
+        </div>
+        <div class="q"><strong>Are essential oils safe around pets?</strong>
+          <div style="margin-top:8px">Some oils can be harmful to animals. During consultations we review household pets and provide safe-use guidelines or pet-friendly alternatives.</div>
+        </div>
+        <div class="q"><strong>What about pregnancy or breastfeeding?</strong>
+          <div style="margin-top:8px">Pregnancy and breastfeeding require extra caution. We follow conservative, evidence-aligned guidance and will suggest appropriate safe options or defer when needed.</div>
+        </div>
+      </section>
+
+      <!-- CTA: final nudge -->
+      <section style="margin-top:28px;display:flex;justify-content:space-between;align-items:center;gap:12px">
+        <div>
+          <h3 style="margin:0;color:var(--accent)">Ready for an immersive session?</h3>
+          <div style="color:#6F574A">Book an intensive consult and receive a custom blend plus clear safety notes.</div>
+        </div>
+        <div>
+          <a class="btn" href="book.html">Book an Intensive</a>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="container">
+      <div style="font-size:14px;color:#7A6050">© {{BUSINESS_NAME}} — {{CITY}}, {{STATE}}</div>
+      <div style="font-size:14px;color:#7A6050">Contact: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    </footer>
+  </div>
+
+  <script>
+    function handleSubmit(){
+      const btn = document.querySelector('#contactForm button');
+      btn.disabled = true; btn.textContent = 'Sending...';
+      setTimeout(()=>{btn.textContent='Sent — we’ll be in touch';},900);
+    }
+    function subscribeLead(){
+      const email = document.getElementById('leadEmail').value;
+      if(!email){alert('Please add an email to get the guide.');return}
+      alert('Thanks — the guide is on its way to ' + email);
+    }
+  </script>
+</body>
+</html>

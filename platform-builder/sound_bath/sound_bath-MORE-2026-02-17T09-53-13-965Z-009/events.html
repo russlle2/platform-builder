@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Gatherings — Events • {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1720;--card:#071021;--muted:#9aa4ad;--accent:#c2a97f;--glass:rgba(255,255,255,0.04);--white: #f7f9fb}
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";background:linear-gradient(180deg,var(--bg),#071827);color:var(--white);-webkit-font-smoothing:antialiased}
+    header{position:relative;padding:40px 24px;background:linear-gradient(90deg, rgba(22,28,35,0.6), rgba(8,12,18,0.6));overflow:hidden}
+    nav{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:48px;height:48px;display:grid;place-items:center;border-radius:10px;background:linear-gradient(135deg,#0c2530,#08121a);box-shadow:0 6px 18px rgba(0,0,0,0.6)}
+    .logo svg{width:34px;height:34px}
+    nav a{color:var(--white);text-decoration:none;margin-left:18px;font-weight:600;opacity:0.95}
+    nav .links{display:flex;align-items:center}
+    .cta{background:var(--accent);color:#061016;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700;margin-left:18px}
+
+    .hero{max-width:1100px;margin:40px auto 60px;padding:36px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 10px 30px rgba(2,6,23,0.5);display:grid;grid-template-columns:1fr 360px;gap:28px}
+    .hero h1{margin:0 0 12px;font-size:28px;line-height:1.05}
+    .hero p{margin:0 0 18px;color:var(--muted)}
+    .hero .actions{display:flex;gap:12px;align-items:center}
+    .card{background:var(--card);padding:18px;border-radius:12px}
+
+    /* Pattern SVG backdrop */
+    .pattern-wrap{position:absolute;inset:0;pointer-events:none;opacity:0.08}
+    svg.pattern{width:100%;height:100%}
+
+    .next-event{display:flex;flex-direction:column;gap:12px}
+    .next-event time{font-weight:700;color:var(--accent)}
+    .calendar{margin-top:18px;display:grid;gap:12px}
+    .event-row{display:flex;justify-content:space-between;gap:12px;padding:12px;border-radius:10px;background:var(--glass)}
+    .event-row small{color:var(--muted)}
+
+    .disclaimer{font-size:13px;color:#d6dbe0;background:linear-gradient(180deg,transparent,rgba(255,255,255,0.01));padding:12px;border-radius:10px}
+
+    section{max-width:1100px;margin:36px auto;padding:0 24px}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .offer{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:12px}
+
+    footer{max-width:1100px;margin:40px auto;padding:24px;color:var(--muted)}
+
+    /* reveal animation */
+    .reveal{opacity:0;transform:translateY(20px);transition:opacity 520ms cubic-bezier(.2,.9,.2,1),transform 520ms cubic-bezier(.2,.9,.2,1)}
+    .reveal.revealed{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){ .reveal{transition:none;opacity:1;transform:none} }
+
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,12,0.6);display:none;align-items:center;justify-content:center;padding:24px}
+    .modal{background:linear-gradient(180deg,#07121a,#0b1a24);padding:20px;border-radius:12px;max-width:720px;width:100%;color:var(--white)}
+    .modal header{display:flex;justify-content:space-between;align-items:center}
+    .modal .step{display:none}
+    .modal .step.active{display:block}
+    .modal textarea{width:100%;height:120px;border-radius:8px;padding:10px;background:#06111a;border:1px solid rgba(255,255,255,0.03);color:var(--white)}
+    .modal .meter{height:10px;background:#051018;border-radius:6px;overflow:hidden}
+    .meter > i{display:block;height:100%;background:linear-gradient(90deg,#ffde9e,#c2a97f);width:0%}
+
+    .btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:9px 12px;border-radius:8px;color:var(--white);cursor:pointer}
+    .btn.primary{background:var(--accent);color:#071016;border:none}
+
+    @media (max-width:880px){.hero{grid-template-columns:1fr;}.grid{grid-template-columns:1fr}} 
+  </style>
+</head>
+<body>
+  <div class="pattern-wrap" aria-hidden>
+    <svg class="pattern" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#123" stop-opacity="0.6"/><stop offset="1" stop-color="#082" stop-opacity="0.25"/></linearGradient>
+        <pattern id="p1" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(12)">
+          <rect width="40" height="40" fill="url(#g1)" />
+          <path d="M0 20 L20 0 L40 20" stroke="#c2a97f" stroke-opacity="0.06" stroke-width="1.5" fill="none"/>
+        </pattern>
+      </defs>
+      <rect width="800" height="400" fill="url(#p1)"></rect>
+    </svg>
+  </div>
+
+  <header>
+    <nav>
+      <div class="brand">
+        <div class="logo" aria-hidden>
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="8" width="40" height="32" rx="6" fill="#0a2130" />
+            <circle cx="24" cy="20" r="6" fill="#c2a97f" opacity="0.95"/>
+            <path d="M12 34c6-6 18-6 24 0" stroke="#c2a97f" stroke-opacity="0.22" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:var(--muted)">Gatherings • Sound & Stillness</div>
+        </div>
+      </div>
+      <div class="links">
+        <a href="index.html">Home</a>
+        <a href="events.html" aria-current="page">Gatherings</a>
+        <a href="private-sessions.html">Private</a>
+        <a href="pricing.html">Investment</a>
+        <a href="about.html">About</a>
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </nav>
+
+    <div class="hero reveal" data-reveal>
+      <div>
+        <h1>Join a communal pause designed for clarity and rest</h1>
+        <p>Small-group sound and breath gatherings with intentional structure — practical breathing cues, anchored sound textures, and moments to set what matters next. No mysticism required.</p>
+        <div class="actions">
+          <a href="book.html" class="btn primary">Reserve a seat</a>
+          <button class="btn" id="try-now-btn">Try it now</button>
+        </div>
+        <div style="margin-top:18px" class="disclaimer">Contraindications: If you are pregnant, have epilepsy, cardiac devices, active severe psychiatric conditions, or are currently under the influence of substances, consult your provider before attending. If in doubt, contact us at {{EMAIL}}.</div>
+      </div>
+      <aside class="card next-event">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <small style="color:var(--muted)">Next gathering</small>
+            <div><time id="next-time">—</time></div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-weight:700;color:var(--accent)" id="next-title">—</div>
+            <div style="font-size:13px;color:var(--muted)">Seats left: <span id="next-seats">—</span></div>
+          </div>
+        </div>
+        <div class="calendar" id="calendar-list" aria-live="polite"></div>
+        <a href="book.html" class="btn" style="margin-top:8px">See full schedule</a>
+      </aside>
+    </div>
+  </header>
+
+  <section>
+    <h2 class="reveal" data-reveal>What to expect</h2>
+    <div class="grid" style="margin-top:14px">
+      <div class="offer reveal" data-reveal>
+        <strong>Structured passage</strong>
+        <p style="color:var(--muted);margin-top:8px">A simple arc: arrival, intention setting, guided breath, layered sound, and an integration pause — each portion timed and led with practical cues.</p>
+      </div>
+      <div class="offer reveal" data-reveal>
+        <strong>Small and attentive</strong>
+        <p style="color:var(--muted);margin-top:8px">Capacities are limited so facilitators can read the room and offer short verbal landing instructions between pieces.</p>
+      </div>
+      <div class="offer reveal" data-reveal>
+        <strong>Tools to bring home</strong>
+        <p style="color:var(--muted);margin-top:8px">Each gathering ends with a brief invitation to note one practical next step — a micro-plan you can act on in the following 48 hours.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="reveal" data-reveal>Past participants</h2>
+    <div style="display:grid;gap:12px;margin-top:12px">
+      <div class="card reveal" data-reveal>
+        "A compact, grounded experience — I left with a softer jaw and clearer to-do's." — J, {{CITY}}
+      </div>
+      <div class="card reveal" data-reveal>
+        "The facilitator's cues made it easy to get out of my head and back into the day with steadiness." — R, {{STATE}}
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="color:var(--muted)">Small group gatherings in {{CITY}}, {{STATE}}</div>
+      </div>
+      <div style="color:var(--muted)">Questions? Call <a href="tel:{{PHONE}}" style="color:var(--white);text-decoration:none">{{PHONE}}</a> or <a href="mailto:{{EMAIL}}" style="color:var(--white);text-decoration:none">{{EMAIL}}</a></div>
+    </div>
+  </footer>
+
+  <!-- Modal: guided exercise -->
+  <div class="modal-backdrop" id="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document">
+      <header>
+        <div>
+          <strong id="modal-title">Try a short guided practice</strong>
+          <div id="modal-desc" style="color:var(--muted);font-size:13px">Choose a short path: breath, reflection, or intention.</div>
+        </div>
+        <div>
+          <button class="btn" id="modal-close" aria-label="Close">Close</button>
+        </div>
+      </header>
+      <main style="margin-top:12px">
+        <div class="step active" data-step="choose">
+          <p style="color:var(--muted)">Pick an offering below to try now. No audio required — follow the on-screen guide.</p>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button class="btn" data-action="start" data-path="breath">Breathing (2 min)</button>
+            <button class="btn" data-action="start" data-path="journaling">Journaling (4 min)</button>
+            <button class="btn" data-action="start" data-path="intention">Set an intention (90s)</button>
+          </div>
+        </div>
+
+        <div class="step" data-step="breath">
+          <p style="color:var(--muted)">Follow the visual breath: inhale as the bar grows, exhale as it shrinks. Repeat until the timer ends.</p>
+          <div style="margin:12px 0" class="meter"><i id="meter-bar"></i></div>
+          <div style="display:flex;justify-content:space-between;align-items:center"><div id="timer">2:00</div><div><button class="btn" id="breath-stop">Stop</button></div></div>
+        </div>
+
+        <div class="step" data-step="journaling">
+          <p style="color:var(--muted)">Write for a set period. Let motion and sound prompts be anchors for a quick clearing.</p>
+          <textarea id="journal-text" placeholder="What needs a small next action?"></textarea>
+          <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:8px"><div id="journal-timer">4:00</div><button class="btn" id="journal-finish">Finish</button></div>
+        </div>
+
+        <div class="step" data-step="intention">
+          <p style="color:var(--muted)">Inhale. Name one small intention. Exhale and imagine it planting in the day.</p>
+          <div style="display:flex;gap:8px;margin-top:12px"><input id="intent-input" placeholder="I will..." style="padding:8px;border-radius:8px;background:#06111a;border:1px solid rgba(255,255,255,0.03);color:var(--white);flex:1"/><button class="btn primary" id="intent-save">Save</button></div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // Simple reveal on scroll with prefers-reduced-motion
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const revealEls = document.querySelectorAll('[data-reveal]');
+      if(prefersReduced){ revealEls.forEach(el=>el.classList.add('revealed')); return }
+      const obs = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('revealed'); obs.unobserve(e.target); } });
+      },{threshold:0.12});
+      revealEls.forEach(el=>obs.observe(el));
+    })();
+
+    // Calendar / next event module
+    (function(){
+      const events = [
+        {id:1,date:addMinutesToNow(3*60+30),title:'Evening Release',seats:6},
+        {id:2,date:addMinutesToNow(48*60),title:'Midweek Reset',seats:4},
+        {id:3,date:addMinutesToNow(96*60),title:'Sunday Ease',seats:8}
+      ];
+      function addMinutesToNow(min){ return Date.now()+min*60000 }
+      function fmt(ts){ const d=new Date(ts); return d.toLocaleString(); }
+      const next = events[0];
+      document.getElementById('next-time').textContent = fmt(next.date);
+      document.getElementById('next-title').textContent = next.title;
+      document.getElementById('next-seats').textContent = next.seats;
+      const list = document.getElementById('calendar-list');
+      events.forEach(e=>{
+        const row = document.createElement('div'); row.className='event-row';
+        row.innerHTML = '<div><strong>'+e.title+'</strong><div><small>'+fmt(e.date)+'</small></div></div><div><small>'+e.seats+' seats</small></div>';
+        list.appendChild(row);
+      });
+    })();
+
+    // Guided exercise modal logic
+    (function(){
+      const modal = document.getElementById('modal');
+      const tryBtn = document.getElementById('try-now-btn');
+      const closeBtn = document.getElementById('modal-close');
+      const steps = Array.from(document.querySelectorAll('.modal .step'));
+      function open(){ modal.style.display='flex'; modal.setAttribute('aria-hidden','false'); steps.forEach(s=>s.classList.remove('active')); steps[0].classList.add('active'); }
+      function close(){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); stopAllTimers(); }
+      tryBtn.addEventListener('click', open); closeBtn.addEventListener('click', close);
+
+      // start buttons
+      document.querySelectorAll('[data-action="start"]').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const path = btn.getAttribute('data-path');
+          startPath(path);
+        });
+      });
+
+      function startPath(path){
+        steps.forEach(s=>s.classList.remove('active'));
+        const active = document.querySelector('.modal .step[data-step="'+path+'"]');
+        if(!active) return; active.classList.add('active');
+        if(path==='breath') startBreath(120);
+        if(path==='journaling') startJournal(240);
+        if(path==='intention') {/* nothing timed */}
+      }
+
+      // Breath timer
+      let breathInterval=null;let breathRemaining=0;
+      function startBreath(seconds){ stopAllTimers(); breathRemaining=seconds; updateMeter(); document.getElementById('timer').textContent = formatTime(breathRemaining); breathInterval=setInterval(()=>{
+        breathRemaining--; if(breathRemaining<0){ stopAllTimers(); return }
+        updateMeter(); document.getElementById('timer').textContent = formatTime(breathRemaining);
+      },1000);
+      }
+      function updateMeter(){ if(!document.getElementById('meter-bar')) return; const pct = Math.round((1 - breathRemaining/120)*100); document.getElementById('meter-bar').style.width = pct+'%'; }
+      document.getElementById('breath-stop').addEventListener('click', ()=>{ stopAllTimers(); });
+
+      // Journal timer
+      let journalInterval=null; let journalRemaining=0;
+      function startJournal(seconds){ stopAllTimers(); journalRemaining=seconds; document.getElementById('journal-timer').textContent = formatTime(journalRemaining);
+        journalInterval=setInterval(()=>{ journalRemaining--; if(journalRemaining<0){ stopAllTimers(); return } document.getElementById('journal-timer').textContent = formatTime(journalRemaining); },1000);
+      }
+      document.getElementById('journal-finish').addEventListener('click', ()=>{ stopAllTimers(); });
+
+      // Intention save
+      document.getElementById('intent-save').addEventListener('click', ()=>{
+        const val = (document.getElementById('intent-input').value||'').trim();
+        if(val) { alert('Saved: "'+val+'" — an action makes clarity stick.'); close(); }
+      });
+
+      function stopAllTimers(){ clearInterval(breathInterval); clearInterval(journalInterval); breathInterval=null;journalInterval=null; document.getElementById('meter-bar').style.width='0%'; }
+      function formatTime(s){ const m=Math.floor(s/60); const ss=s%60; return m+':'+(ss<10?'0'+ss:ss); }
+
+      // Accessibility: close on backdrop click
+      modal.addEventListener('click', (e)=>{ if(e.target===modal) close(); });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#032226;--panel:rgba(255,255,255,0.04);--muted:rgba(255,255,255,0.6);--accent:#8ee0cf}
+    body{margin:0;font-family:Inter,system-ui,Arial;color:#eafcf8;background:linear-gradient(180deg,var(--bg),#021015);min-height:100vh;background-image:url('assets/img/pattern.svg')}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;background:rgba(255,255,255,0.01)}
+    .logo{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#39b8c7);display:flex;align-items:center;justify-content:center;font-weight:700}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    main{max-width:1000px;margin:24px auto;padding:18px;display:grid;grid-template-columns:1fr 340px;gap:20px}
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:20px;border-radius:12px}
+    h1{margin:0 0 8px 0}
+    .mixer{display:flex;flex-direction:column;gap:12px}
+    .slider{width:100%;-webkit-appearance:none;height:10px;border-radius:10px;background:linear-gradient(90deg,#233,#468);outline:none}
+    .options{display:flex;gap:12px}
+    .opt{flex:1;padding:10px;border-radius:10px;text-align:center;background:rgba(255,255,255,0.02);cursor:pointer}
+    .opt.active{background:linear-gradient(180deg,var(--accent),#37a7b2);color:#022}
+    .program{margin-top:14px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.02)}
+    .price{font-weight:700;font-size:20px;color:#eafffb}
+    form{display:flex;flex-direction:column;gap:10px}
+    input,select,button,textarea{padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#eafffb}
+    button.primary{background:var(--accent);border:none;color:#022;padding:12px;border-radius:10px;font-weight:700}
+    .note{font-size:13px;color:var(--muted)}
+    .disclaimer{font-size:13px;color:#c7fff6;background:rgba(255,255,255,0.01);padding:10px;border-radius:8px;margin-top:8px}
+    @media(max-width:880px){main{grid-template-columns:1fr;padding:14px} .aside{order:2}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo">SB</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav aria-label="Booking nav">
+      <a href="index.html">Gatherings</a>
+      <a href="events.html">Calendar</a>
+      <a href="pricing.html">Memberships</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h1>Reserve a seat</h1>
+      <p class="note">Pick the tone level that fits your current needs. The recommendations and session framing below adjust instantly.</p>
+
+      <div class="mixer" aria-label="Sound preference mixer">
+        <label for="mix">Sound preference</label>
+        <div class="options" role="tablist">
+          <div class="opt active" data-level="gentle" role="tab" tabindex="0">Gentle</div>
+          <div class="opt" data-level="medium" role="tab" tabindex="0">Medium</div>
+          <div class="opt" data-level="intense" role="tab" tabindex="0">Intense</div>
+        </div>
+
+        <div class="program" id="program">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-size:15px;color:var(--muted)">Recommended session</div>
+              <div id="p-name" style="font-weight:700;font-size:18px;color:#eafffb">Soft Resonance</div>
+            </div>
+            <div class="price" id="p-price">Included with membership</div>
+          </div>
+
+          <div id="p-desc" style="margin-top:10px;color:var(--muted);font-size:14px">Layered bowls and wind chimes with long decays; steady tempo cues for a calm return.</div>
+        </div>
+      </div>
+
+      <form id="booking-form" style="margin-top:16px" onsubmit="return false;">
+        <input type="text" name="name" placeholder="Full name" required>
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="tel" name="phone" placeholder="Phone (optional)">
+        <label for="date">Select date</label>
+        <select name="date" id="date">
+          <option>Next available: see Calendar</option>
+        </select>
+        <label for="notes">Notes for facilitator (health considerations)</label>
+        <textarea name="notes" rows="3" placeholder="Tell us about any conditions we should know"></textarea>
+
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="primary" id="book-btn">{{PRIMARY_CTA_LABEL}}</button>
+          <button class="" id="contact-btn" style="background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted);padding:10px;border-radius:8px">Call us</button>
+        </div>
+
+        <div class="disclaimer">Not a substitute for medical care. If you have a pacemaker, epilepsy, unstable cardiac conditions, or are in psychiatric crisis, please consult a clinician before booking and inform us.</div>
+      </form>
+    </section>
+
+    <aside class="panel aside">
+      <h3>Quick guide</h3>
+      <div style="color:var(--muted);font-size:14px">Membership frames: our membership model is for frequent attendees. If you prefer single-event booking, check the Calendar. Members get priority reservation windows and a modest rate advantage.</div>
+
+      <div style="margin-top:12px">
+        <strong style="color:#eafffb">Why choose a membership?</strong>
+        <ul style="color:var(--muted)">
+          <li>Priority booking windows</li>
+          <li>Access to short recorded sessions</li>
+          <li>Consistent weekly gatherings</li>
+        </ul>
+      </div>
+
+      <div style="margin-top:12px">
+        <strong style="color:#eafffb">Contact</strong>
+        <div style="color:var(--muted);font-size:13px">Email: <a href="mailto:{{EMAIL}}" style="color:#bff7f0">{{EMAIL}}</a></div>
+        <div style="color:var(--muted);font-size:13px">Phone: <a href="tel:{{PHONE}}" style="color:#bff7f0">{{PHONE}}</a></div>
+      </div>
+    </aside>
+  </main>
+
+  <footer style="padding:18px;color:var(--muted);text-align:center">© {{BUSINESS_NAME}} — Serving calm practices in {{CITY}}, {{STATE}}</footer>
+
+  <script>
+    (function(){
+      // Mixer logic: switch program recommendations
+      const opts=document.querySelectorAll('.opt');
+      const pName=document.getElementById('p-name');
+      const pDesc=document.getElementById('p-desc');
+      const pPrice=document.getElementById('p-price');
+      const programs={
+        gentle:{name:'Soft Resonance',desc:'Layered singing bowls, long tones and quiet reed; slow cues to support a gentle re-orientation.',price:'Included with membership'},
+        medium:{name:'Balanced Clearing',desc:'Mixed bowls and light gong strokes with measured crescendos; clear markers for both rest and re-entry.',price:'Recommended for new members'},
+        intense:{name:'Focused Reset',desc:'Deeper metal tones with rhythmic pulses and strategic pauses; designed for stronger somatic release.',price:'Intensive session — membership required'}
+      };
+
+      function setLevel(level){
+        Object.values(opts).forEach(o=>o.classList.remove('active'));
+        document.querySelectorAll('.opt').forEach(o=>{if(o.dataset.level===level)o.classList.add('active')});
+        const p=programs[level];
+        pName.textContent=p.name;
+        pDesc.textContent=p.desc;
+        pPrice.textContent=p.price;
+      }
+
+      opts.forEach(o=>o.addEventListener('click',()=>setLevel(o.dataset.level)));
+      opts.forEach(o=>o.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')setLevel(o.dataset.level)}));
+
+      // initial state
+      setLevel('gentle');
+
+      // booking button -- local redirect to PRIMARY_CTA_URL or simple interaction
+      document.getElementById('book-btn').addEventListener('click',()=>{
+        const url = typeof '{{PRIMARY_CTA_URL}}' === 'string' && '{{PRIMARY_CTA_URL}}' !== '' ? '{{PRIMARY_CTA_URL}}' : '#';
+        // basic form validation
+        const form=document.getElementById('booking-form');
+        const name=form.name.value.trim();
+        const email=form.email.value.trim();
+        if(!name||!email){alert('Please provide name and email');return}
+        // Simulate booking success
+        alert('Request received. We will confirm availability by email.');
+        window.location.href = url;
+      });
+
+      document.getElementById('contact-btn').addEventListener('click',()=>{window.location.href='mailto:'+encodeURIComponent('{{EMAIL}}')});
+    })();
+  </script>
+</body>
+</html>

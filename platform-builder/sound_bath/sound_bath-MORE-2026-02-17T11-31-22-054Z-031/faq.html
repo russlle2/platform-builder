@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FAQ — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#071018;--muted:#9db0b0;--accent:#b8e6d8}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:var(--bg);color:#eaf6f1}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid rgba(255,255,255,0.03)}
+    .logo{width:44px;height:44px;background:linear-gradient(135deg,var(--accent),#7fb6ff);border-radius:10px;display:grid;place-items:center}
+    nav a{color:var(--muted);margin:0 8px;text-decoration:none}
+    main{max-width:980px;margin:28px auto;padding:16px}
+    h1{margin:0 0 6px}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px}
+    details{background:rgba(255,255,255,0.02);padding:12px;border-radius:8px;margin-bottom:10px}
+    summary{font-weight:600;cursor:pointer}
+    .muted{color:var(--muted);font-size:13px}
+    .mini-cta{display:inline-block;padding:8px 10px;border-radius:8px;background:var(--accent);color:#042;text-decoration:none;font-weight:600}
+
+    /* seat selector + packing list */
+    .seat-map{display:grid;grid-template-columns:repeat(6,34px);gap:8px;justify-content:start;padding:12px;background:rgba(255,255,255,0.02);border-radius:8px}
+    .seat{width:34px;height:34px;border-radius:6px;background:rgba(255,255,255,0.03);display:grid;place-items:center;color:var(--muted);cursor:pointer}
+    .seat.selected{background:linear-gradient(180deg,var(--accent),#6fbfb0);color:#042}
+    .seat.taken{opacity:0.25;cursor:not-allowed}
+    .packing{margin-top:12px}
+    .pack-item{display:flex;align-items:center;gap:8px;margin:8px 0}
+    input[type=checkbox]{width:16px;height:16px}
+    .export{background:#132024;color:#bff0e3;padding:8px;border-radius:8px;border:0;cursor:pointer}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="logo">SB</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Offerings</a>
+      <a href="events.html">Gatherings</a>
+      <a href="private-sessions.html">Private</a>
+      <a href="pricing.html">Invest</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">Help</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Frequently Asked</h1>
+    <p class="muted">Answers to common questions and a small interactive packing helper so you don’t forget essentials on the day.</p>
+
+    <div class="grid">
+      <div>
+        <details open>
+          <summary>What should I bring?</summary>
+          <div class="muted" style="margin-top:8px">We provide mats and bolsters on request, but many people bring their own mat, blanket, eye cover and a bottle of water. Use the packing helper on the right to create a checklist.</div>
+        </details>
+
+        <details>
+          <summary>Is sound safe for everyone?</summary>
+          <div class="muted" style="margin-top:8px">Most people find sessions calming. Please do not attend if you have a current ear infection, recent head trauma, or severe uncontrolled epilepsy without clinician clearance. If you are pregnant, consult your healthcare provider. If you have concerns, contact us at {{EMAIL}} or call {{PHONE}}.</div>
+        </details>
+
+        <details>
+          <summary>Arrival & late policy</summary>
+          <div class="muted" style="margin-top:8px">Arrive 10–15 minutes early for check-in. Late entry is limited to preserve the experience for others; in some cases you may be asked to wait for the next opening.</div>
+        </details>
+
+        <details>
+          <summary>Payment & cancellation</summary>
+          <div class="muted" style="margin-top:8px">Payments are taken at booking. To cancel or reschedule, please notify us at least 24 hours in advance to receive a credit. For VIP Day and private bookings, different terms apply; see our Invest page for details.</div>
+        </details>
+
+        <details>
+          <summary>Do you accept group or corporate bookings?</summary>
+          <div class="muted" style="margin-top:8px">Yes — we offer tailored private immersions and workshops. Reach out via the contact form or email {{EMAIL}} for a consult.</div>
+        </details>
+      </div>
+
+      <aside class="panel">
+        <h3>Seat & packing helper</h3>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:8px">Choose imaginary seats to estimate space and generate a customized 'what to bring' list.</div>
+
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <label for="eventSelect">Upcoming</label>
+          <select id="eventSelect" style="flex:1;padding:8px;border-radius:8px;background:transparent;color:inherit;border:1px solid rgba(255,255,255,0.03)">
+            <option data-taken="3">Mon 6:30pm — Focused Drift</option>
+            <option data-taken="1">Thu 7:30pm — Deep Pause</option>
+            <option data-taken="5">Sat 10:00am — Weekend Reset</option>
+          </select>
+        </div>
+
+        <div class="seat-map" id="seatMap" aria-hidden="false"></div>
+        <div style="margin-top:10px;color:var(--muted);font-size:13px">Selected seats: <span id="count">0</span></div>
+
+        <div class="packing">
+          <h4 style="margin:8px 0 6px">Suggested packing</h4>
+          <div class="pack-item"><input type="checkbox" id="mat" checked><label for="mat" class="muted">Personal mat</label></div>
+          <div class="pack-item"><input type="checkbox" id="blanket" checked><label for="blanket" class="muted">Blanket</label></div>
+          <div class="pack-item"><input type="checkbox" id="eye" checked><label for="eye" class="muted">Eye cover</label></div>
+          <div class="pack-item"><input type="checkbox" id="water" checked><label for="water" class="muted">Water bottle</label></div>
+          <div class="pack-item"><input type="checkbox" id="socks"><label for="socks" class="muted">Thick socks</label></div>
+
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button class="export" id="generateList">Generate list</button>
+            <button class="export" id="copyList">Copy</button>
+          </div>
+
+          <div id="listOut" style="margin-top:12px;color:var(--muted);font-size:14px;white-space:pre-wrap"></div>
+        </div>
+      </aside>
+    </div>
+
+    <section style="margin-top:20px" class="panel">
+      <h3>Still curious?</h3>
+      <p class="muted">If your question isn't listed, send it over at <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a>. For immediate booking, click the Reserve link in the header.</p>
+      <div style="margin-top:12px"><a class="mini-cta" href="{{PRIMARY_CTA_URL}}">Reserve your mat</a></div>
+    </section>
+
+  </main>
+
+  <script>
+    // Seat map generator
+    const seatMap = document.getElementById('seatMap');
+    const countEl = document.getElementById('count');
+    const eventSelect = document.getElementById('eventSelect');
+
+    function renderSeats(){
+      seatMap.innerHTML = '';
+      const taken = parseInt(eventSelect.selectedOptions[0].dataset.taken||0,10);
+      const total = 18;
+      for(let i=1;i<=total;i++){
+        const div = document.createElement('div');
+        div.className = 'seat';
+        div.textContent = i;
+        if(i<=taken){ div.classList.add('taken'); div.textContent='×'; }
+        div.addEventListener('click', ()=>{
+          if(div.classList.contains('taken')) return;
+          div.classList.toggle('selected');
+          updateCount();
+        });
+        seatMap.appendChild(div);
+      }
+      updateCount();
+    }
+
+    function updateCount(){
+      const c = seatMap.querySelectorAll('.seat.selected').length;
+      countEl.textContent = c;
+    }
+
+    eventSelect.addEventListener('change', renderSeats);
+    renderSeats();
+
+    // Packing list
+    const generateBtn = document.getElementById('generateList');
+    const copyBtn = document.getElementById('copyList');
+    const listOut = document.getElementById('listOut');
+
+    function makeList(){
+      const items = [];
+      if(document.getElementById('mat').checked) items.push('Mat');
+      if(document.getElementById('blanket').checked) items.push('Blanket');
+      if(document.getElementById('eye').checked) items.push('Eye cover');
+      if(document.getElementById('water').checked) items.push('Water bottle');
+      if(document.getElementById('socks').checked) items.push('Warm socks');
+
+      const seats = document.querySelectorAll('.seat.selected').length;
+      const header = 'Packing list for '+seats+' attendee'+(seats!==1?'s':'' )+':' ;
+      return header+'\n- '+(items.length?items.join('\n- '):'No items selected');
+    }
+
+    generateBtn.addEventListener('click', ()=>{
+      listOut.textContent = makeList();
+    });
+
+    copyBtn.addEventListener('click', async ()=>{
+      try{
+        await navigator.clipboard.writeText(listOut.textContent||makeList());
+        copyBtn.textContent='Copied';
+        setTimeout(()=>copyBtn.textContent='Copy',1200);
+      }catch(e){alert('Unable to copy.');}
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Plans — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--accent:#8aa29e;--muted:#6b6b6b;--bg:#fffdfb;--card:#ffffff;--glass:rgba(255,255,255,0.6)}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background-color:var(--bg);color:#0b0b0b}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:linear-gradient(180deg,rgba(138,162,158,0.06),transparent);backdrop-filter: blur(4px)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:48px;height:48px;background:linear-gradient(135deg,var(--accent),#d8e6df);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none;font-weight:600}
+    main{max-width:980px;margin:28px auto;padding:28px}
+    .hero{display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start}
+    .panel{background:var(--card);border-radius:12px;padding:20px;box-shadow:0 6px 22px rgba(12,12,12,0.06)}
+    h1{margin:0 0 8px 0;font-size:28px}
+    p.lead{margin:0;color:var(--muted)}
+    .toggle{display:flex;align-items:center;gap:10px;margin-top:16px}
+    .switch{display:inline-flex;background:#efeefb;border-radius:999px;padding:4px}
+    .option{padding:8px 14px;border-radius:999px;font-weight:600;cursor:pointer}
+    .option.is-active{background:linear-gradient(90deg,var(--accent),#7ea99b);color:#fff}
+    .price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+    .price-card{padding:18px;border-radius:10px;background:linear-gradient(180deg,#fff,#fbfcfb);display:flex;flex-direction:column;gap:12px}
+    .price{font-size:22px;font-weight:800}
+    .per{font-size:12px;color:var(--muted)}
+    .features{font-size:13px;color:var(--muted)}
+    .cta{display:inline-block;padding:10px 14px;background:var(--accent);color:white;border-radius:8px;text-decoration:none;font-weight:700}
+    .small{font-size:13px;color:var(--muted)}
+
+    /* Proof gallery */
+    .proof{margin-top:22px;display:flex;gap:14px;align-items:flex-start}
+    .testimonials{flex:1}
+    .testimony{padding:14px;border-radius:10px;background:linear-gradient(180deg,rgba(250,250,250,0.9),#fff);min-height:120px;position:relative}
+    .cite{margin-top:10px;font-weight:700}
+    .badges{width:140px;display:flex;flex-direction:column;gap:10px}
+    .badge{background:#fff;padding:8px;border-radius:8px;display:flex;align-items:center;gap:8px;cursor:default;border:1px solid #f0f0f0}
+    .badge svg{width:28px;height:28px}
+    .tooltip{position:relative}
+    .tooltip .bubble{position:absolute;left:calc(100% + 8px);top:50%;transform:translateY(-50%);background:#111;color:#fff;padding:8px;border-radius:8px;white-space:nowrap;font-size:12px;display:none}
+    .badge:focus .bubble,.badge:hover .bubble{display:block}
+
+    /* FAQ */
+    .faq{margin-top:20px}
+    details{margin-bottom:10px;background:#fff;padding:12px;border-radius:8px}
+
+    footer{margin-top:28px;padding:18px 0;text-align:center;color:var(--muted);font-size:13px}
+
+    /* Utilities */
+    .muted{color:var(--muted)}
+
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">AR</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Overview</a>
+      <a href="services.html">Sessions</a>
+      <a href="blends.html">Formulas</a>
+      <a href="shop.html">Shop</a>
+      <a href="pricing.html">Plans</a>
+      <a href="about.html">About</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero panel">
+      <div>
+        <h1>Membership plans for steady aromatherapy practice</h1>
+        <p class="lead">A membership model for people who want thoughtful scent support that fits routines — choose monthly access or pre-paid session packages.</p>
+
+        <div class="toggle" aria-hidden="false">
+          <div class="small">Billing</div>
+          <div class="switch" role="tablist" aria-label="Pricing toggle">
+            <button class="option is-active" data-mode="monthly" aria-pressed="true">Monthly</button>
+            <button class="option" data-mode="package" aria-pressed="false">Package</button>
+          </div>
+        </div>
+
+        <div class="price-grid" id="priceGrid">
+          <div class="price-card" data-prices-monthly="39" data-prices-package="320">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-weight:700">Ritual Support</div>
+                <div class="small muted">Monthly check-ins & blends</div>
+              </div>
+              <div style="text-align:right">
+                <div class="price" data-price>—</div>
+                <div class="per">/ mo or /package</div>
+              </div>
+            </div>
+            <div class="features small">Includes: 10% shop credit, one 30-min consult, custom blend note</div>
+            <a class="cta" href="{{PRIMARY_CTA_URL}}">Join — {{PRIMARY_CTA_LABEL}}</a>
+          </div>
+
+          <div class="price-card" data-prices-monthly="69" data-prices-package="560">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-weight:700">Daily Rhythm</div>
+                <div class="small muted">Weekly micro-checks + seasonal blends</div>
+              </div>
+              <div style="text-align:right">
+                <div class="price" data-price>—</div>
+                <div class="per">/ mo or /package</div>
+              </div>
+            </div>
+            <div class="features small">Includes: priority booking, seasonal blends, 15% shop credit</div>
+            <a class="cta" href="{{PRIMARY_CTA_URL}}">Start plan</a>
+          </div>
+
+          <div class="price-card" data-prices-monthly="129" data-prices-package="980">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-weight:700">Curated Support</div>
+                <div class="small muted">Personal plan + deep session</div>
+              </div>
+              <div style="text-align:right">
+                <div class="price" data-price>—</div>
+                <div class="per">/ mo or /package</div>
+              </div>
+            </div>
+            <div class="features small">Includes: 60-min deep session, personalized blends, 20% shop credit</div>
+            <a class="cta" href="{{PRIMARY_CTA_URL}}">Enroll</a>
+          </div>
+        </div>
+
+        <div class="small muted" style="margin-top:12px">Packages are one-time pre-pay for 6 sessions; monthly is recurring until canceled. All plans may support short-term emotional regulation and relaxation; not a medical treatment.</div>
+
+        <div class="faq" style="margin-top:14px">
+          <details>
+            <summary style="font-weight:700">Safety notes</summary>
+            <p class="small muted">Always perform a patch test. Dilutions are provided for topical blends; follow the guidance given in your welcome materials. If you are pregnant, nursing, or on medication, consult a licensed health professional before use. Keep essential oils away from children and check safety around pets.</p>
+          </details>
+          <details>
+            <summary style="font-weight:700">Cancellation & refunds</summary>
+            <p class="small muted">Monthly plans can be canceled any time via your account. Package credits may be used within 12 months. For questions, call {{PHONE}} or email {{EMAIL}}.</p>
+          </details>
+        </div>
+
+      </div>
+
+      <aside class="panel">
+        <div class="small muted">Proof & credibility</div>
+        <div class="proof">
+          <div class="testimonials">
+            <div class="testimony" id="testimony">
+              <div class="quote" id="quote">"A concise weekly check-in that helped me remember to breathe — I now keep a simple blend by my bed."</div>
+              <div class="cite" id="cite">— L. from {{CITY}}</div>
+            </div>
+
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button id="prev" aria-label="Previous testimonial">◀</button>
+              <button id="next" aria-label="Next testimonial">▶</button>
+            </div>
+          </div>
+
+          <div class="badges" aria-hidden="false">
+            <div class="badge tooltip" tabindex="0">
+              <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#7ea99b" stroke-width="1.5" fill="#eaf3ef"/><path d="M9.5 12.5l2 2 4-5" stroke="#3b6d5b" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <div>
+                <div style="font-weight:700">Practitioner-assessed</div>
+                <div class="small muted">Evidence-aware methods</div>
+              </div>
+              <div class="bubble">Assessments completed by a certified aromatherapy practitioner.</div>
+            </div>
+
+            <div class="badge tooltip" tabindex="0">
+              <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="#b88f7b" stroke-width="1.5" fill="#fff4ee"/><path d="M7 9h10M7 13h6" stroke="#b56d4e" stroke-width="1.3" stroke-linecap="round"/></svg>
+              <div>
+                <div style="font-weight:700">Client-chosen blends</div>
+                <div class="small muted">Co-created plans</div>
+              </div>
+              <div class="bubble">Blend choices are customized and include dilution instructions.</div>
+            </div>
+
+            <div class="badge tooltip" tabindex="0">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 3l2 6 6 .5-4.5 3 1.5 6L12 16l-7 3.5L6.5 13 2 10.5 8 10z" stroke="#6a7ea2" stroke-width="1.5" fill="#eef4fb"/></svg>
+              <div>
+                <div style="font-weight:700">Community-rated</div>
+                <div class="small muted">High retention</div>
+              </div>
+              <div class="bubble">Members report sustained use and return for seasonal updates.</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px" class="small muted">Questions? Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or write <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      </aside>
+    </section>
+
+    <footer>
+      <div class="small muted">Plans crafted in {{CITY}}, {{STATE}} • Terms and safety guidance provided at signup.</div>
+    </footer>
+  </main>
+
+  <script>
+    // Pricing comparator with animated numbers
+    (function(){
+      const options = document.querySelectorAll('.option');
+      const cards = document.querySelectorAll('.price-card');
+      let mode = 'monthly';
+
+      function animateValue(el, start, end, duration){
+        const startTime = performance.now();
+        function tick(now){
+          const elapsed = now - startTime;
+          const progress = Math.min(elapsed/duration,1);
+          const val = Math.round(start + (end-start)*progress);
+          el.textContent = '$' + val;
+          if(progress < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      }
+
+      function updatePrices(newMode){
+        cards.forEach(card=>{
+          const p = card.querySelector('[data-price]');
+          const newPrice = Number(card.getAttribute('data-prices-' + newMode));
+          const current = Number((p.textContent||"0").replace(/[^0-9]/g,'')) || 0;
+          animateValue(p, current, newPrice, 500);
+        });
+      }
+
+      options.forEach(btn=>btn.addEventListener('click',()=>{
+        options.forEach(o=>o.classList.remove('is-active'));
+        options.forEach(o=>o.setAttribute('aria-pressed','false'));
+        btn.classList.add('is-active');
+        btn.setAttribute('aria-pressed','true');
+        mode = btn.getAttribute('data-mode');
+        updatePrices(mode);
+      }));
+
+      // init
+      updatePrices(mode);
+    })();
+
+    // Proof gallery rotating testimonials
+    (function(){
+      const items = [
+        {quote: '"A concise weekly check-in that helped me remember to breathe — I now keep a simple blend by my bed."', cite: 'L., {{CITY}}'},
+        {quote: '"The membership reminded me to make small, consistent choices. My home smells like the intention I set."', cite: 'S., remote'},
+        {quote: '"Helpful dilution instructions and pet-friendly notes made the difference for our household."', cite: 'A., {{CITY}}'}
+      ];
+      let i = 0;
+      const quoteEl = document.getElementById('quote');
+      const citeEl = document.getElementById('cite');
+      const prev = document.getElementById('prev');
+      const next = document.getElementById('next');
+
+      function show(n){
+        i = (n + items.length) % items.length;
+        quoteEl.textContent = items[i].quote;
+        citeEl.textContent = '— ' + items[i].cite;
+      }
+      prev.addEventListener('click',()=> show(i-1));
+      next.addEventListener('click',()=> show(i+1));
+
+      let timer = setInterval(()=> show(i+1), 6000);
+      document.querySelector('.testimony').addEventListener('mouseenter',()=> clearInterval(timer));
+      document.querySelector('.testimony').addEventListener('mouseleave',()=> timer = setInterval(()=> show(i+1), 6000));
+
+      show(0);
+    })();
+  </script>
+</body>
+</html>

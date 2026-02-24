@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Reserve a Session — Book</title>
+  <style>
+    :root{--bg:#f7fff9;--accent:#5a9c7a;--muted:#65766a;font-family:Inter,system-ui,Segoe UI,Roboto,Arial}
+    body{margin:0;background:var(--bg);color:#0b1a14}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none}
+    main{padding:20px}
+    .wrap{max-width:980px;margin:0 auto;display:grid;grid-template-columns:1fr 360px;gap:22px}
+    .card{background:#fff;padding:18px;border-radius:12px;box-shadow:0 10px 30px rgba(8,12,10,0.06)}
+    .session-planner label{display:block;margin-top:8px;font-size:13px;color:var(--muted)}
+    .input,textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid #e6efe8;margin-top:6px}
+    .actions{display:flex;gap:10px;margin-top:12px}
+    .btn{padding:9px 12px;border-radius:8px;border:0;cursor:pointer}
+    .btn-primary{background:var(--accent);color:#fff}
+    .summary{white-space:pre-wrap;background:#f4fff8;padding:12px;border-radius:8px;margin-top:10px;border:1px solid #eaf7ee}
+    .note{font-size:13px;color:var(--muted);margin-top:8px}
+    @media(max-width:880px){.wrap{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style='display:flex;gap:10px;align-items:center'>
+      <div style='width:40px;height:40px;background:var(--accent);border-radius:8px;display:grid;place-items:center;color:#fff;font-weight:700'>W</div>
+      <div>
+        <div style='font-weight:700'>{{BUSINESS_NAME}}</div>
+        <div style='font-size:12px;color:var(--muted)'>Reserve a thoughtful session</div>
+      </div>
+    </div>
+    <nav>
+      <a href='index.html'>Root</a>
+      <a href='about.html'>Philosophy</a>
+      <a href='services.html'>Offerings</a>
+      <a href='programs.html'>Journeys</a>
+      <a href='pricing.html'>Rates</a>
+      <a href='testimonials.html'>Voices</a>
+      <a href='book.html' style='font-weight:600;color:var(--accent)'>Reserve</a>
+      <a href='contact.html'>Reach</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class='wrap'>
+      <section class='card'>
+        <h2 style='margin:0 0 6px 0'>Session Planner</h2>
+        <p class='note'>Build a compact plan for our time together. Use the planner to frame outcomes, select a framework, and export a plaintext summary you can copy into a calendar or email.</p>
+
+        <div class='session-planner'>
+          <label>Preferred focus area</label>
+          <select id='focus' class='input'>
+            <option value='clarity'>Clarity & Priorities</option>
+            <option value='energy'>Energy & Sleep</option>
+            <option value='boundaries'>Boundaries & Time</option>
+            <option value='habit'>Daily Habit Architecture</option>
+          </select>
+
+          <label>Primary outcome you'd like</label>
+          <input id='outcome' class='input' placeholder='One concise outcome (e.g., sleep 7hrs average)'>
+
+          <label>Preferred session length</label>
+          <select id='length' class='input'>
+            <option value='30'>30 minutes</option>
+            <option value='45'>45 minutes</option>
+            <option value='60' selected>60 minutes</option>
+          </select>
+
+          <label>Preferred rhythm</label>
+          <select id='rhythm' class='input'>
+            <option value='once'>Single session</option>
+            <option value='weekly'>Weekly check-ins</option>
+            <option value='monthly'>Monthly reflection</option>
+            <option value='hybrid'>Hybrid pathway</option>
+          </select>
+
+          <label>Choose an approach</label>
+          <select id='approach' class='input'>
+            <option value='mini'>Mini-framework: intention + cue + tiny action</option>
+            <option value='map'>Map & milestones: weekly markers</option>
+            <option value='habit-arch'>Habit architecture: build systems</option>
+            <option value='experiment'>Experiment loop: test, measure, adapt</option>
+          </select>
+
+          <label>Anything to share before we meet?</label>
+          <textarea id='notes' class='input' rows='4' placeholder='Context, constraints, schedule notes'></textarea>
+
+          <div class='actions'>
+            <button class='btn btn-primary' id='compose'>Compose summary</button>
+            <button class='btn' id='copyBtn'>Copy</button>
+            <button class='btn' id='emailBtn'>Email me a copy</button>
+            <button class='btn' id='bookNow' onclick="location.href='contact.html'">Proceed to booking</button>
+          </div>
+
+          <div id='planSummary' class='summary' aria-live='polite'>A short plan will appear here when you compose.</div>
+        </div>
+      </section>
+
+      <aside class='card'>
+        <h3 style='margin:0 0 8px 0'>Reserve details</h3>
+        <form id='bookingForm' onsubmit='event.preventDefault(); alert("Thanks — a confirmation will be sent to {{EMAIL}} (demo)")'>
+          <label style='font-size:13px;color:var(--muted)'>Your name</label>
+          <input class='input' name='name' required>
+          <label style='font-size:13px;color:var(--muted)'>Email</label>
+          <input class='input' name='email' required placeholder='you@example.com'>
+          <label style='font-size:13px;color:var(--muted)'>Phone</label>
+          <input class='input' name='phone' placeholder='Optional'>
+
+          <label style='font-size:13px;color:var(--muted)'>Choose a plan</label>
+          <select name='plan' class='input'>
+            <option>Starter Sprint — 4 weeks</option>
+            <option>Steady Course — 12 weeks</option>
+            <option>Hybrid Pathway — 6 months</option>
+          </select>
+
+          <label style='font-size:13px;color:var(--muted)'>Preferred date</label>
+          <input type='date' name='date' class='input'>
+
+          <div style='margin-top:12px;display:flex;gap:8px'>
+            <button class='btn btn-primary' type='submit'>Confirm request</button>
+            <button class='btn' type='button' onclick="location.href='pricing.html'">See rates</button>
+          </div>
+        </form>
+
+        <p class='note'>If you'd like a phone conversation first call <strong>{{PHONE}}</strong>. We will follow up to arrange times. Billing and refunds outlined on the confirmation.</p>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    // Session Planner logic
+    function readInputs(){
+      return {
+        focus: document.getElementById('focus').value,
+        outcome: document.getElementById('outcome').value.trim(),
+        length: document.getElementById('length').value,
+        rhythm: document.getElementById('rhythm').value,
+        approach: document.getElementById('approach').value,
+        notes: document.getElementById('notes').value.trim()
+      };
+    }
+
+    function buildPlan(data){
+      const lines = [];
+      lines.push('Session Planner — {{BUSINESS_NAME}}');
+      lines.push('Focus: '+data.focus);
+      if(data.outcome) lines.push('Desired outcome: '+data.outcome);
+      lines.push('Length: '+data.length+' minutes');
+      lines.push('Rhythm: '+data.rhythm);
+      lines.push('Approach: '+data.approach);
+      lines.push('Suggested starter steps:');
+
+      // small logic for starter steps
+      if(data.approach === 'mini'){
+        lines.push('- Clarify one habit cue and one tiny action (2 min)');
+        lines.push('- Agree on a daily check-in prompt');
+      } else if(data.approach === 'map'){
+        lines.push('- Set 3 milestones over the chosen rhythm');
+        lines.push('- Decide on what you will track each week');
+      } else if(data.approach === 'habit-arch'){
+        lines.push('- Choose a keystone habit and an anchor routine');
+        lines.push('- Build a 7-day micro-challenge to begin')
+      } else {
+        lines.push('- Frame an experiment: 1 variable to change, 1 metric to track');
+      }
+
+      if(data.notes) {
+        lines.push('Context notes:');
+        lines.push(data.notes);
+      }
+
+      lines.push('Next steps: Book a time at '+ (data.rhythm === 'once' ? 'single session' : (data.rhythm === 'weekly' ? 'weekly check-ins' : 'a rhythm that fits you')));
+      lines.push('\n— End of plan —');
+      return lines.join('\n');
+    }
+
+    document.getElementById('compose').addEventListener('click', ()=>{
+      const data = readInputs();
+      const summary = buildPlan(data);
+      document.getElementById('planSummary').textContent = summary;
+    });
+
+    document.getElementById('copyBtn').addEventListener('click', async ()=>{
+      const text = document.getElementById('planSummary').textContent.trim();
+      if(!text){ alert('Compose a summary first'); return; }
+      try{
+        await navigator.clipboard.writeText(text);
+        alert('Plan copied to clipboard');
+      }catch(e){
+        // fallback
+        const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy'); alert('Plan copied');}catch(err){alert('Copy failed');} ta.remove();
+      }
+    });
+
+    document.getElementById('emailBtn').addEventListener('click', ()=>{
+      const text = encodeURIComponent(document.getElementById('planSummary').textContent || '');
+      if(!text){ alert('Compose a summary first'); return; }
+      const mailto = 'mailto:{{EMAIL}}?subject='+encodeURIComponent('Session plan request')+'&body='+text;
+      window.location.href = mailto;
+    });
+  </script>
+</body>
+</html>

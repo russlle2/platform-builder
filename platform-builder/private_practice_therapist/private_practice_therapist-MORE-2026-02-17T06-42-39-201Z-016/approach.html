@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>My Approach — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fffefe;--card:#f7f2ff;--accent:#4f46e5;--accent2:#ff6b8a;--muted:#606060}
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:var(--bg);color:#222}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 20px}
+    nav a{margin:0 8px;text-decoration:none;color:#333;font-weight:700}
+    .hero{padding:28px 20px;display:grid;grid-template-columns:1fr 320px;gap:18px}
+    .panel{background:linear-gradient(180deg,#fff,#fffefb);padding:18px;border-radius:12px;box-shadow:0 12px 30px rgba(50,50,80,0.06)}
+    h1{margin:0 0 6px}
+    .flow{display:flex;gap:10px;align-items:center;margin-top:14px}
+    .step{background:white;padding:12px;border-radius:10px;border:1px solid rgba(0,0,0,0.04)}
+    .mood-inline{display:flex;gap:8px;margin-top:16px}
+    .mood-inline button{padding:8px 10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:white;cursor:pointer}
+    .mood-inline button.active{background:linear-gradient(90deg,var(--accent),var(--accent2));color:white;border:0}
+    .recommend{margin-top:12px;padding:12px;border-radius:10px;background:rgba(79,70,229,0.04)}
+    .cta{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:10px;background:var(--accent);color:white;text-decoration:none;font-weight:800}
+    footer{padding:18px;text-align:center;color:var(--muted)}
+    .svg-wrap{position:absolute;right:14px;top:14px;opacity:0.06}
+  </style>
+</head>
+<body>
+  <header>
+    <div style='display:flex;gap:12px;align-items:center'>
+      <div style='width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:white;font-weight:800'>A</div>
+      <div style='font-weight:800'>{{BUSINESS_NAME}}</div>
+    </div>
+
+    <nav>
+      <a href='index.html'>Home</a>
+      <a href='about.html'>About</a>
+      <a href='specialties.html'>Ways I Help</a>
+      <a href='approach.html'>My Approach</a>
+      <a href='fees.html'>Fees</a>
+      <a href='book.html'>Book</a>
+      <a href='contact.html'>Contact</a>
+    </nav>
+  </header>
+
+  <main style='padding:20px;position:relative'>
+    <div class='svg-wrap' aria-hidden='true'>
+      <svg width='160' height='160' viewBox='0 0 100 100'>
+        <defs>
+          <linearGradient id='lg2' x1='0' x2='1'>
+            <stop offset='0' stop-color='#4f46e5'/>
+            <stop offset='1' stop-color='#ff6b8a'/>
+          </linearGradient>
+        </defs>
+        <g fill='url(#lg2)'>
+          <path d='M10 50 Q25 10 50 20 T90 50 Q70 90 50 80 T10 50 Z' />
+        </g>
+      </svg>
+    </div>
+
+    <section class='hero'>
+      <div class='panel'>
+        <h1>How I think about therapeutic work</h1>
+        <p class='muted'>I combine a few core orientations into a collaborative process: noticing patterns, experimenting with small changes, and tracking what shifts. Work is paced to your needs.</p>
+
+        <div class='flow' aria-hidden='true'>
+          <div class='step'>1. Listen — gather context</div>
+          <div class='step'>2. Plan — set short aims</div>
+          <div class='step'>3. Try — small experiments</div>
+          <div class='step'>4. Reflect — refine the path</div>
+        </div>
+
+        <div style='margin-top:12px'>
+          <strong>Core commitments</strong>
+          <ul style='margin-top:8px'>
+            <li>Respectful, nonjudgmental stance</li>
+            <li>Clear collaboration on goals</li>
+            <li>Practical tools you can use now</li>
+          </ul>
+        </div>
+      </div>
+
+      <aside class='panel'>
+        <h3 style='margin-top:0'>Find a fit — Mood-to-Method</h3>
+        <div style='font-size:13px;color:var(--muted)'>Choose how you're feeling and see a recommended pathway, plus a tailored next step.</div>
+
+        <div class='mood-inline' role='tablist' aria-label='mood to method selector'>
+          <button data-key='anxious' class='active'>Anxious</button>
+          <button data-key='sad'>Low / Quiet</button>
+          <button data-key='crossroads'>Crossroads</button>
+        </div>
+
+        <div class='recommend' id='methodPanel'>
+          <div id='methodTitle' style='font-weight:800'>Brief stabilization plan</div>
+          <div id='methodDesc' class='muted' style='margin-top:6px'>We focus on immediate strategies for calming, then plan a short sequence to build more predictable routines and reduce choice-fatigue.</div>
+          <a id='methodCta' class='cta' href='{{PRIMARY_CTA_URL}}' style='display:inline-block;margin-top:10px'>{{PRIMARY_CTA_LABEL}} — Stabilize</a>
+        </div>
+
+        <div style='margin-top:12px;font-size:13px;color:var(--muted)'>
+          Sessions respect confidentiality and ethical boundaries. I do not provide emergency services; if you are in danger, call local emergency responders.</div>
+      </aside>
+    </section>
+
+    <section style='margin-top:20px'>
+      <div class='panel'>
+        <h3 style='margin-top:0'>Languages & logistics</h3>
+        <p class='muted'>I offer telehealth and in-person options depending on availability. Sessions are 45–55 minutes unless arranged otherwise. Cancellation and consent details are reviewed at intake.</p>
+
+        <h4 style='margin-top:10px'>Boundaries</h4>
+        <p class='muted'>I provide psychotherapy, not medical or emergency care. If you're receiving psychiatric medication, I coordinate with prescribers with your permission.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div style='padding:12px;color:var(--muted);text-align:center'>
+      <div>Questions or scheduling: <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a> • {{PHONE}}</div>
+      <div style='margin-top:8px'>If this is an emergency, contact local emergency services. I will discuss limits of confidentiality and crisis planning at our first meeting.</div>
+    </div>
+  </footer>
+
+  <script>
+    // Mood-to-Method for approach page
+    const moodBtns = document.querySelectorAll('.mood-inline button');
+    const methodTitle = document.getElementById('methodTitle');
+    const methodDesc = document.getElementById('methodDesc');
+    const methodCta = document.getElementById('methodCta');
+
+    const map = {
+      anxious:{title:'Brief stabilization plan',desc:'Start with grounding and pacing strategies, then build a short weekly plan to reduce reactivity and increase predictability.',cta:'{{PRIMARY_CTA_LABEL}} — Stabilize'},
+      sad:{title:'Gentle exploration pathway',desc:'A paced sequence to gently explore mood patterns and introduce small behavioral steps to lift energy and re-engage with meaningful activities.',cta:'{{PRIMARY_CTA_LABEL}} — Gentle Steps'},
+      crossroads:{title:'Decision-focused series',desc:'A concise track to clarify values, weigh options, and test steps that make choices feel less heavy. Practical mapping and accountability included.',cta:'{{PRIMARY_CTA_LABEL}} — Decide Together'}
+    };
+
+    moodBtns.forEach(b=>b.addEventListener('click',()=>{
+      moodBtns.forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      const key = b.getAttribute('data-key');
+      const m = map[key];
+      // soft transition
+      methodTitle.style.opacity=0; methodDesc.style.opacity=0; methodCta.style.opacity=0; methodCta.style.transform='translateY(6px)';
+      setTimeout(()=>{
+        methodTitle.textContent = m.title;
+        methodDesc.textContent = m.desc;
+        methodCta.textContent = m.cta;
+        methodTitle.style.opacity=1; methodDesc.style.opacity=1; methodCta.style.opacity=1; methodCta.style.transform='translateY(0)';
+      },220);
+    }));
+  </script>
+</body>
+</html>

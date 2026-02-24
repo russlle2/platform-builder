@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reach out for a focused, clinician-led intensive or ongoing support conversation.">
+  <style>
+    :root{
+      --bg:#0f1724; --glass: rgba(255,255,255,0.06); --glass-2: rgba(255,255,255,0.04);
+      --accent: #8bd3ff; --muted:#b7c6d9; --glass-border: rgba(255,255,255,0.08);
+      --card-glow: 0 8px 30px rgba(139,211,255,0.06);
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, 'Helvetica Neue', Arial;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#071028 0%, #091426 50%), url('assets/img/pattern.svg');background-size:cover;color:#e7f0ff}
+    .wrap{max-width:1100px;margin:36px auto;padding:28px;backdrop-filter: blur(6px) saturate(1.1);}
+    header{display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#6ea9ff);box-shadow:var(--card-glow);display:flex;align-items:center;justify-content:center;font-weight:700;color:#022033}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-size:0.95rem}
+    .hero{margin-top:28px;display:grid;grid-template-columns:1fr 420px;gap:22px}
+    .panel{background:linear-gradient(180deg,var(--glass), var(--glass-2));border:1px solid var(--glass-border);border-radius:14px;padding:20px;box-shadow:var(--card-glow)}
+    h1{margin:0;font-size:1.45rem;letter-spacing:-0.2px}
+    p.lead{color:var(--muted);margin-top:8px}
+
+    /* Mood picker */
+    .moods{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+    .mood{padding:10px 12px;border-radius:10px;background:transparent;border:1px solid transparent;color:var(--muted);cursor:pointer}
+    .mood[data-active="true"]{background:linear-gradient(90deg, rgba(139,211,255,0.12), rgba(140,160,255,0.06));border:1px solid rgba(139,211,255,0.18);color:#eaf8ff}
+
+    /* Recommended card */
+    .recommend{margin-bottom:10px}
+    .recommend h3{margin:0 0 6px 0;font-size:1.05rem}
+    .recommend p{margin:0;color:var(--muted)}
+
+    .cta-wrap{display:flex;gap:10px;margin-top:16px}
+    .cta{background:linear-gradient(90deg,var(--accent),#6ea9ff);border:none;padding:12px 16px;border-radius:10px;color:#04202a;font-weight:600;text-decoration:none}
+    .alt{background:transparent;border:1px solid var(--glass-border);color:var(--muted);padding:10px 14px;border-radius:10px;text-decoration:none}
+
+    form{display:grid;gap:10px;margin-top:12px}
+    input,textarea,select{background:transparent;border:1px solid var(--glass-border);padding:10px;border-radius:8px;color:#eaf8ff}
+    textarea{min-height:100px}
+    .small{font-size:0.9rem;color:var(--muted)}
+
+    /* Accordion */
+    .accordion{margin-top:18px}
+    .acc-item{border-top:1px dashed rgba(255,255,255,0.03);padding:12px 0}
+    .acc-toggle{display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+    .acc-body{max-height:0;overflow:hidden;transition: max-height .28s ease;padding-top:0}
+    .acc-body.open{max-height:400px;padding-top:10px}
+    .crisis{margin-top:12px;padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,140,140,0.05), transparent);border:1px solid rgba(255,130,130,0.06);color:#ffdfe0}
+
+    footer{margin-top:28px;color:var(--muted);font-size:0.9rem;text-align:center}
+
+    @media (max-width:900px){
+      .hero{grid-template-columns:1fr;}
+      header{flex-direction:column;align-items:flex-start}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden>MM</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div style="font-size:0.9rem;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+        </div>
+      </div>
+      <nav aria-label="Main navigation">
+        <a href="index.html">Home</a>
+        <a href="about.html">About & Approach</a>
+        <a href="specialties.html">Specialties</a>
+        <a href="approach.html">Our Way</a>
+        <a href="fees.html">Rates & Booking</a>
+        <a href="faq.html">FAQ</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </header>
+
+    <main class="hero">
+      <section class="panel">
+        <h1>Let’s find a concise, clinician-led way forward.</h1>
+        <p class="lead">If you’re reaching out about a specific moment or a pattern you want to change, pick how you’re feeling below. That helps me suggest an approach and tailor our first conversation.</p>
+
+        <div style="margin-top:16px" aria-hidden>
+          <div style="font-weight:600">Mood-to-Method</div>
+          <div class="moods" role="list">
+            <button class="mood" data-key="anxious" role="listitem">Anxious & Overactive</button>
+            <button class="mood" data-key="stuck" role="listitem">Stuck or Indecisive</button>
+            <button class="mood" data-key="grieving" role="listitem">Grief or Loss</button>
+            <button class="mood" data-key="burnout" role="listitem">Burnout / Exhaustion</button>
+            <button class="mood" data-key="curious" role="listitem">Curious / Planning</button>
+          </div>
+        </div>
+
+        <div class="recommend" id="recommend">
+          <h3>Suggested entry</h3>
+          <p id="recommend-text">Choose one of the states above to see a tailored option — from a focused intensive to a short course of sessions. Options are clinician-led and structured to fit the concern you name.</p>
+        </div>
+
+        <div class="cta-wrap">
+          <a id="primary-cta" class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <a class="alt" href="mailto:{{EMAIL}}">Email {{EMAIL}}</a>
+        </div>
+
+        <div class="small" style="margin-top:12px">Prefer a phone call? <a href="tel:{{PHONE}}" style="color:var(--accent)">{{PHONE}}</a></div>
+      </section>
+
+      <aside class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-size:0.95rem;font-weight:700">Connect with {{BUSINESS_NAME}}</div>
+            <div class="small">I offer intensive sessions and short episode-focused plans. Appointments by booking.</div>
+          </div>
+        </div>
+
+        <form id="contact-form" onsubmit="return handleSubmit(event)">
+          <label class="small">Your name</label>
+          <input id="name" name="name" required placeholder="Full name">
+
+          <label class="small">Best email</label>
+          <input id="email" name="email" type="email" placeholder="you@example.com" required>
+
+          <label class="small">Phone (optional)</label>
+          <input id="phone" name="phone" placeholder="+1 (555) 555-5555">
+
+          <label class="small">What brings you here?</label>
+          <select id="topic" name="topic">
+            <option value="intensive">Short Intensive (single focused sessions)</option>
+            <option value="brief">Focused Plan (3–6 sessions)</option>
+            <option value="ongoing">Ongoing clinical work</option>
+            <option value="consult">Consult / referral / resources</option>
+          </select>
+
+          <label class="small">A few words (optional)</label>
+          <textarea id="message" name="message" placeholder="A sentence about what feels most important right now"></textarea>
+
+          <button type="submit" class="cta">Reach out</button>
+        </form>
+
+        <div class="accordion" id="accordion">
+          <div class="acc-item">
+            <div class="acc-toggle" data-acc="boundaries">Session boundaries & expectations <span>+</span></div>
+            <div class="acc-body" id="acc-boundaries">
+              <p class="small">Sessions begin and end on time. If we need to reschedule, I ask for 48 hours’ notice where possible. This practice aims to keep clear, predictable timeframes so clinical work can be focused and respectful of your life.</p>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <div class="acc-toggle" data-acc="confidentiality">Confidentiality & limits <span>+</span></div>
+            <div class="acc-body" id="acc-confidentiality">
+              <p class="small">Conversations are confidential within legal and ethical bounds. I will always discuss limits to confidentiality (for example, risk of harm to you or others) before we begin clinical work. I will also explain how records are kept and who may access them, if applicable.</p>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <div class="acc-toggle" data-acc="scope">Scope, referrals & continuity <span>+</span></div>
+            <div class="acc-body" id="acc-scope">
+              <p class="small">I aim to provide honest guidance about what I can offer. If your needs fall outside my scope, I will suggest referrals and community resources to support continuity of care.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="crisis" role="note">
+          <strong>Respectful crisis guidance:</strong>
+          <p class="small">If you are in immediate danger or need emergency help, please call your local emergency number. For urgent mental health crises, contact local crisis services or a trusted emergency contact. If you’re unsure who to call, dialing local emergency services is the fastest way to get immediate support.</p>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      <div class="small">Email: <a href="mailto:{{EMAIL}}" style="color:var(--accent)">{{EMAIL}}</a> • Phone: <a href="tel:{{PHONE}}" style="color:var(--accent)">{{PHONE}}</a></div>
+      <div style="margin-top:6px" class="small">Sessions respect clinical boundaries and informed consent. No guarantees are made regarding outcomes.</div>
+    </footer>
+  </div>
+
+  <script>
+    // Mood-to-Method mapping
+    const mapping = {
+      anxious: {
+        label: 'Grounding Intensive',
+        desc: 'One to three targeted sessions focused on immediate regulation strategies, short experiments, and a pragmatic plan to reduce distressing cycles.',
+        cta: 'Book a Grounding Session'
+      },
+      stuck: {
+        label: 'Decision-Focused Plan',
+        desc: 'A short sequence of collaborative sessions to clarify values, weigh options, and design manageable next steps.',
+        cta: 'Start Decision Work'
+      },
+      grieving: {
+        label: 'Companioning Sessions',
+        desc: 'A gentle, frame-limited series to hold tender material, build routines that restore, and find practical ways to honor change.',
+        cta: 'Begin Companioning'
+      },
+      burnout: {
+        label: 'Recharge Strategy Intensive',
+        desc: 'Structured sessions that prioritize boundaries, pacing, and smaller behavioral shifts to restore capacity without adding burden.',
+        cta: 'Schedule a Recharge'
+      },
+      curious: {
+        label: 'Exploration Consultation',
+        desc: 'A short consult to map goals, consider therapeutic approaches, and create a clear plan for next steps if you choose to continue.',
+        cta: 'Request Consultation'
+      }
+    };
+
+    const moodButtons = document.querySelectorAll('.mood');
+    const recommendText = document.getElementById('recommend-text');
+    const primaryCta = document.getElementById('primary-cta');
+
+    function clearActive(){
+      moodButtons.forEach(b=>b.setAttribute('data-active','false'));
+    }
+
+    moodButtons.forEach(btn=>{
+      btn.setAttribute('data-active','false');
+      btn.addEventListener('click', ()=>{
+        clearActive();
+        btn.setAttribute('data-active','true');
+        const key = btn.getAttribute('data-key');
+        const info = mapping[key];
+        // update recommendation
+        recommendText.textContent = info.label + ' — ' + info.desc;
+        // update CTA label and url with mood param
+        const baseUrl = '{{PRIMARY_CTA_URL}}';
+        primaryCta.textContent = info.cta;
+        try{
+          const url = new URL(baseUrl, window.location.href);
+          url.searchParams.set('mood', key);
+          primaryCta.href = url.toString();
+        }catch(e){
+          // fallback if PRIMARY_CTA_URL is relative
+          primaryCta.href = baseUrl + (baseUrl.indexOf('?')===-1? '?' : '&') + 'mood=' + encodeURIComponent(key);
+        }
+      });
+    });
+
+    // Accordion logic
+    document.querySelectorAll('.acc-toggle').forEach(toggle=>{
+      toggle.addEventListener('click', ()=>{
+        const key = toggle.getAttribute('data-acc');
+        const body = document.getElementById('acc-' + key);
+        const open = body.classList.toggle('open');
+        toggle.querySelector('span').textContent = open ? '−' : '+';
+      });
+    });
+
+    // Form submit: local handling, not sending externally.
+    function handleSubmit(e){
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const topic = document.getElementById('topic').value;
+      const message = document.getElementById('message').value.trim();
+
+      // Provide a local acknowledgment and open user email as a convenience
+      const subject = encodeURIComponent('New contact from ' + name + ' — ' + topic);
+      const body = encodeURIComponent('Name: ' + name + '\nEmail: ' + email + '\nPhone: ' + phone + '\nTopic: ' + topic + '\n\nMessage:\n' + message);
+      const mail = 'mailto:{{EMAIL}}?subject=' + subject + '&body=' + body;
+      // try to open mail client
+      window.location.href = mail;
+
+      // clear form fields
+      document.getElementById('contact-form').reset();
+      // reset recommendation
+      recommendText.textContent = 'Choose one of the states above to see a tailored option — from a focused intensive to a short sequence of sessions.';
+      clearActive();
+      primaryCta.textContent = '{{PRIMARY_CTA_LABEL}}';
+      primaryCta.href = '{{PRIMARY_CTA_URL}}';
+      return false;
+    }
+  </script>
+</body>
+</html>

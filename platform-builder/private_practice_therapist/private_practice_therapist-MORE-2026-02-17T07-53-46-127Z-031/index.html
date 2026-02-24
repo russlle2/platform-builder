@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{BUSINESS_NAME}} — thoughtful short-term planning</title>
+  <meta name="description" content="An invitation to clearer sessions and practical forward steps. Short-term plans, self-checks, and supportive care in {{CITY}}, {{STATE}}.">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute;left:-9999px;">
+    <defs>
+      <pattern id="gridPattern" width="40" height="40" patternUnits="userSpaceOnUse">
+        <rect width="40" height="40" fill="#f7faf9"></rect>
+        <path d="M0 40 L40 0" stroke="#e6eef0" stroke-width="1" opacity="0.8" />
+      </pattern>
+    </defs>
+  </svg>
+
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="/">{{BUSINESS_NAME}}</a>
+      <nav class="main-nav">
+        <a href="about.html">Who I Am</a>
+        <a href="specialties.html">Focus Areas</a>
+        <a href="approach.html">How I Work</a>
+        <a href="fees.html">Investment</a>
+        <a href="faq.html">Curious?</a>
+        <a href="book.html" class="cta">{{PRIMARY_CTA_LABEL}}</a>
+      </nav>
+      <button class="mobile-toggle" aria-label="open menu">☰</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" style="background-image:url('assets/img/pattern.svg');">
+      <div class="container">
+        <h1 class="hero-title">Calm, practical planning for meaningful change</h1>
+        <p class="hero-sub">Short-term session plans and gentle self-checks to bring into therapy. Private, confidential, and tailored to where you are right now.</p>
+        <div class="hero-actions">
+          <a class="btn primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <a class="btn outline" href="contact.html">Get in touch</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="diagnostic container">
+      <h2>Self-check intake: build questions to bring to a consultation</h2>
+      <p class="muted">This non-diagnostic, reflective tool helps you organize what matters most. It does not replace a clinical assessment.</p>
+
+      <div class="wizard" id="intake-wizard">
+        <div class="steps">
+          <div class="step active" data-step="1">
+            <label>What brings you here? (select up to 2)</label>
+            <div class="choices">
+              <label><input type="checkbox" value="Stress or overwhelm"> Stress or overwhelm</label>
+              <label><input type="checkbox" value="Relationship concerns"> Relationship concerns</label>
+              <label><input type="checkbox" value="Transitions or decisions"> Transitions or decisions</label>
+              <label><input type="checkbox" value="Mood shifts or low energy"> Mood shifts or low energy</label>
+              <label><input type="checkbox" value="Work or performance pressure"> Work or performance pressure</label>
+            </div>
+          </div>
+
+          <div class="step" data-step="2">
+            <label>Which area feels most urgent to you right now?</label>
+            <select id="urgent-area">
+              <option value="">— choose —</option>
+              <option>Daily routines & sleep</option>
+              <option>Relationships & connection</option>
+              <option>Decision-making clarity</option>
+              <option>Managing emotions</option>
+            </select>
+          </div>
+
+          <div class="step" data-step="3">
+            <label>What outcome would be meaningful after a few sessions?</label>
+            <textarea id="meaningful-outcome" placeholder="A couple of lines is fine — what would feel different?"></textarea>
+          </div>
+
+          <div class="step" data-step="4">
+            <label>What would you like your clinician to know about privacy or previous care?</label>
+            <textarea id="privacy-note" placeholder="Optional: notes about previous therapy, preferences, or confidentiality concerns."></textarea>
+          </div>
+
+          <div class="controls">
+            <button id="prev-step" class="btn outline">Back</button>
+            <button id="next-step" class="btn primary">Next</button>
+          </div>
+        </div>
+
+        <div class="result" aria-live="polite">
+          <h3>Your short intake summary</h3>
+          <textarea id="intake-summary" readonly placeholder="Complete the steps to build a concise summary."></textarea>
+          <div class="result-actions">
+            <button id="copy-intake" class="btn">Copy summary</button>
+            <button id="email-intake" class="btn outline">Email to {{EMAIL}}</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="plan container">
+      <h2>Session Planner</h2>
+      <p class="muted">Build a brief plan you can bring to your first few sessions. Choose a rhythm that feels doable.</p>
+
+      <form id="session-planner">
+        <label>Focus for sessions</label>
+        <input type="text" id="planner-focus" placeholder="e.g., reduce rumination, set boundaries, improve sleep">
+
+        <label>Session cadence</label>
+        <select id="planner-cadence">
+          <option value="weekly">Weekly</option>
+          <option value="biweekly">Every other week</option>
+          <option value="monthly">Monthly check-in</option>
+        </select>
+
+        <label>Typical session length</label>
+        <select id="planner-length">
+          <option>45 minutes</option>
+          <option>50 minutes</option>
+          <option>75 minutes (deep work)</option>
+        </select>
+
+        <label>Top priorities (3)</label>
+        <input type="text" id="priority-1" placeholder="Priority 1">
+        <input type="text" id="priority-2" placeholder="Priority 2">
+        <input type="text" id="priority-3" placeholder="Priority 3">
+
+        <div class="planner-actions">
+          <button type="button" id="generate-plan" class="btn primary">Create plan</button>
+          <button type="button" id="clear-plan" class="btn outline">Clear</button>
+        </div>
+
+        <label>Plan summary</label>
+        <textarea id="plan-output" readonly placeholder="Your personalized plan will appear here."></textarea>
+        <div class="result-actions">
+          <button id="copy-plan" class="btn">Copy plan text</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="micro-habits container">
+      <h2>Short practices that support sessions</h2>
+      <p class="muted">Small, repeatable steps to try between appointments. These are suggestions to discuss with your clinician.</p>
+      <ul class="habits">
+        <li><strong>Two-minute pause:</strong> Name three things you can see, hear, and feel when overwhelmed.</li>
+        <li><strong>Evening review:</strong> Jot one small success from your day before bed.</li>
+        <li><strong>Boundary note:</strong> Practice saying one short phrase that communicates a limit kindly.</li>
+      </ul>
+    </section>
+
+    <section class="pricing container">
+      <h2>Care options & investment</h2>
+      <p class="muted">Transparent options to fit different needs. I offer both brief series and ongoing sessions. Insurance is handled privately; contact for details.</p>
+
+      <div class="plans">
+        <div class="card">
+          <h3>Starter Series</h3>
+          <p class="price">3 sessions</p>
+          <p>Focused work to clarify next steps and establish practices.</p>
+          <p class="cost">From $330</p>
+          <a class="btn" href="book.html">Start the series</a>
+        </div>
+        <div class="card featured">
+          <h3>Short-term Plan</h3>
+          <p class="price">6 sessions</p>
+          <p>Structured weekly or biweekly sessions to work through a clear set of goals.</p>
+          <p class="cost">From $600</p>
+          <a class="btn primary" href="book.html">Arrange a plan</a>
+        </div>
+        <div class="card">
+          <h3>Open Sessions</h3>
+          <p class="price">Single sessions</p>
+          <p>Flexible single appointments for check-ins and focused topics.</p>
+          <p class="cost">From $120</p>
+          <a class="btn" href="book.html">Book a session</a>
+        </div>
+      </div>
+
+      <p class="muted small">All care is confidential within professional and legal boundaries. Not a crisis service. If you are in immediate danger or a medical emergency, call local emergency services or a crisis line.</p>
+    </section>
+
+    <section class="cta container">
+      <h2>Ready to begin?</h2>
+      <p>Simple next steps: a brief intake, a first session to make a practical plan, and ongoing check-ins tuned to your pace.</p>
+      <a class="btn large primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      <p class="muted">Questions? Call {{PHONE}} or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</p>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-left">
+        <p>&copy; <span id="year"></span> {{BUSINESS_NAME}} — Private practice therapist, {{CITY}}, {{STATE}}</p>
+      </div>
+      <div class="footer-right">
+        <p>Confidentiality note: Sessions are confidential within professional and legal obligations. Scope: supportive psychotherapy and short-term planning. Not a crisis service.</p>
+        <nav class="footer-nav">
+          <a href="privacy.html">Privacy</a>
+          <a href="contact.html">Contact</a>
+        </nav>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

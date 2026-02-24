@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff8fb;--accent:#ff6b95;--muted:#4b5563;--card:#fff;--glass:rgba(255,255,255,0.65)}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:#0b1220;background:var(--bg)}
+    header{background:linear-gradient(180deg,rgba(255,255,255,0.7),transparent);position:sticky;top:0;padding:10px 0;border-bottom:1px solid rgba(11,17,32,0.04);z-index:30}
+    .wrap{max-width:1100px;margin:0 auto;padding:18px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:44px;height:44px;border-radius:9px;background:linear-gradient(135deg,var(--accent),#ffb3d1);display:grid;place-items:center;color:#fff;font-weight:700}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none}
+    .topline{display:flex;justify-content:space-between;align-items:center}
+    .hero{margin:22px 0;padding:26px;border-radius:14px;background:linear-gradient(180deg,#fff,rgba(255,107,149,0.03));box-shadow:0 10px 30px rgba(11,17,32,0.04);overflow:hidden}
+    .hero:after{content:'';position:absolute;right:-20%;top:-10%;width:60%;height:140%;transform:rotate(-18deg);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><defs><linearGradient id='g2' x1='0' x2='1'><stop offset='0' stop-color='%23ff6b95'/><stop offset='1' stop-color='%23ffb3d1' stop-opacity='0.25'/></linearGradient></defs><g fill='none' stroke='%23ff6b95' stroke-opacity='0.06'><circle cx='60' cy='60' r='40'/><circle cx='180' cy='120' r='60'/></g></svg>");opacity:0.18}
+
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:14px}
+    .service{padding:18px;border-radius:12px;background:var(--card);box-shadow:0 6px 18px rgba(11,17,32,0.03)}
+    .price{font-weight:700;color:var(--accent);font-size:20px}
+    .small{font-size:13px;color:var(--muted)}
+
+    /* session planner widget */
+    .planner{margin-top:18px;padding:16px;border-radius:12px;background:linear-gradient(180deg,#fff,rgba(255,107,149,0.02))}
+    .row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+    label{min-width:120px;color:var(--muted);font-size:14px}
+    input[type='text'],select,textarea{flex:1;padding:8px;border-radius:8px;border:1px solid rgba(11,17,32,0.06)}
+    button{background:var(--accent);color:white;border:0;padding:8px 12px;border-radius:8px;cursor:pointer}
+    .output{white-space:pre-wrap;background:rgba(11,17,32,0.02);padding:12px;border-radius:8px;font-size:14px}
+
+    .reveal{opacity:0;transform:translateY(14px);transition:opacity 420ms ease,transform 420ms ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media (max-width:900px){.cards{grid-template-columns:repeat(1,1fr)}label{min-width:100px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap topline">
+      <div class="brand"><div class="logo">W</div><div>{{BUSINESS_NAME}}</div></div>
+      <nav>
+        <a href="index.html">Welcome</a>
+        <a href="about.html">About the Method</a>
+        <a href="services.html">Offerings</a>
+        <a href="programs.html">Journeys</a>
+        <a href="pricing.html">Investment</a>
+        <a href="testimonials.html">Stories</a>
+        <a href="book.html">Reserve</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero reveal" data-reveal>
+      <h2 style="margin:0 0 8px 0">Offerings shaped around cohorts</h2>
+      <p class="small">Each offering is a guided container for testing habits and frameworks with peers. Pick the pace that fits your calendar.</p>
+    </section>
+
+    <section class="cards reveal" data-reveal>
+      <div class="service">
+        <h3>Starter Seat</h3>
+        <div class="price">$249</div>
+        <div class="small">6-week cohort • weekly group sessions • short weekly checklists</div>
+      </div>
+      <div class="service">
+        <h3>Core Cohort</h3>
+        <div class="price">$449</div>
+        <div class="small">8-week cohort • group coaching + guided reflections • peer review</div>
+      </div>
+      <div class="service">
+        <h3>Practice Lab</h3>
+        <div class="price">$799</div>
+        <div class="small">12-week deep cohort • small group + one 1:1 review • practice customization</div>
+      </div>
+    </section>
+
+    <section class="planner card reveal" data-reveal>
+      <h3 style="margin-top:0">Session Planner</h3>
+      <p class="small">Build a short, testable plan to bring to a cohort. This creates a plain-text summary you can copy and share.</p>
+      <div style="margin-top:8px">
+        <div class="row"><label for="goal">Primary goal</label><input id="goal" type="text" placeholder="What are you trying to change?" /></div>
+        <div class="row"><label for="time">Weekly time</label><select id="time"><option>Under 1 hour</option><option>1–2 hours</option><option>2–4 hours</option><option>4+ hours</option></select></div>
+        <div class="row"><label for="focus">Focus areas</label><input id="focus" type="text" placeholder="e.g., energy, sleep, focus"/></div>
+        <div class="row"><label for="pace">Preferred pace</label><select id="pace"><option>Steady (weekly)</option><option>Accelerated (twice weekly)</option><option>Slow (biweekly)</option></select></div>
+        <div class="row"><label for="notes">Quick notes</label><textarea id="notes" rows="3" placeholder="Anything else to share..."></textarea></div>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:8px"><button id="build">Create plan</button><button id="copy">Copy summary</button></div>
+        <div style="margin-top:12px"><div id="output" class="output">Your plan will appear here.</div></div>
+      </div>
+    </section>
+
+    <section class="card reveal" data-reveal>
+      <h3>How pricing works</h3>
+      <p class="small">We price by cohort seat — that keeps groups compact and predictable. There are occasional sliding options for limited seats; contact us if you need support.</p>
+    </section>
+
+    <section class="card reveal" data-reveal>
+      <h3>Next steps</h3>
+      <p class="small">If a cohort sounds right, pick a seat and bring the plan you built above. During intake we’ll align the cohort focus to your goals.</p>
+      <div style="margin-top:12px"><a class="cta" href="{{PRIMARY_CTA_URL}}" style="text-decoration:none;padding:10px 14px;background:var(--accent);color:white;border-radius:8px">{{PRIMARY_CTA_LABEL}}</a></div>
+    </section>
+
+  </main>
+
+  <footer class="wrap" style="margin-top:28px;color:var(--muted)">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+      <div>Reach out: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+      <div>Based in {{CITY}}, {{STATE}}</div>
+    </div>
+  </footer>
+
+  <script>
+    // reveal
+    (function(){
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var elems = document.querySelectorAll('[data-reveal]');
+      if(prefersReduced){elems.forEach(function(e){e.classList.add('visible')});return}
+      var obs = new IntersectionObserver(function(entries){entries.forEach(function(en){if(en.isIntersecting){en.target.classList.add('visible');obs.unobserve(en.target)}});},{threshold:0.12});
+      elems.forEach(function(el){obs.observe(el)});
+    })();
+
+    // session planner logic
+    (function(){
+      var buildBtn = document.getElementById('build');
+      var copyBtn = document.getElementById('copy');
+      var output = document.getElementById('output');
+      function assemble(){
+        var goal = document.getElementById('goal').value.trim();
+        var time = document.getElementById('time').value;
+        var focus = document.getElementById('focus').value.trim();
+        var pace = document.getElementById('pace').value;
+        var notes = document.getElementById('notes').value.trim();
+        if(!goal){output.textContent = 'Please enter a primary goal to build your plan.';return}
+        var lines = [];
+        lines.push('Plan summary');
+        lines.push('Primary goal: ' + goal);
+        lines.push('Weekly time commitment: ' + time);
+        lines.push('Focus areas: ' + (focus || '—'));
+        lines.push('Preferred cohort pace: ' + pace);
+        lines.push('Suggested practices:');
+        // simple heuristic suggestions
+        if(focus.match(/sleep|rest/i)){
+          lines.push('- Anchor: 15-min wind-down routine 5x/week');
+          lines.push('- Micro-check: brief morning log to rate sleep quality');
+        } else if(focus.match(/energy|focus|productiv/i)){
+          lines.push('- Anchor: 10-min midday reset 3x/week');
+          lines.push('- Habit: one small environmental tweak for fewer interruptions');
+        } else {
+          lines.push('- Anchor: daily 5-min reflection');
+          lines.push('- Habit: pick one tiny behaviour to do 5x/week');
+        }
+        lines.push('Group touchpoints: weekly short check-ins + one shared reflection');
+        if(notes) lines.push('Notes: ' + notes);
+        output.textContent = lines.join('\n');
+      }
+      buildBtn.addEventListener('click',assemble);
+      copyBtn.addEventListener('click',function(){
+        var text = output.textContent;
+        navigator.clipboard && navigator.clipboard.writeText(text).then(function(){
+          copyBtn.textContent = 'Copied'; setTimeout(function(){copyBtn.textContent='Copy summary'},1600);
+        },function(){
+          // fallback
+          var ta = document.createElement('textarea');ta.value = text;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');copyBtn.textContent='Copied';setTimeout(function(){copyBtn.textContent='Copy summary'},1600)}catch(e){alert('Copy failed')};ta.remove();
+        })
+      });
+    })();
+  </script>
+</body>
+</html>

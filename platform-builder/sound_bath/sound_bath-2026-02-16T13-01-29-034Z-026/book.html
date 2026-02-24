@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Book — {{BUSINESS_NAME}}</title>
+  <meta name='description' content='Reserve your place for the next sound bath with {{FACILITATOR_NAME}}. Small circles, offered at {{VENUE_NAME}}.'>
+  <style>
+    :root{--bg:#fff8f3;--earth:#7a5a44;--leaf:#7a9b76;--ink:#44312a}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto;color:var(--ink);background:linear-gradient(180deg,#fff,#fff8f3)}
+    .wrap{max-width:900px;margin:0 auto;padding:28px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    .brand{font-weight:700;color:var(--earth)}
+    .nav a{margin-left:12px;text-decoration:none;color:var(--ink)}
+    .hero{margin-top:18px;background:linear-gradient(180deg,#ffffff,#fcf7f2);padding:22px;border-radius:12px;border:1px solid rgba(122,155,118,0.06)}
+    h1{margin:0;font-size:26px}
+    p.muted{color:#7a6559}
+    .cols{display:grid;grid-template-columns:1fr 320px;gap:20px;margin-top:18px}
+    .card{background:#fff;padding:16px;border-radius:12px;border:1px solid rgba(120,100,86,0.06)}
+    label{display:block;margin-top:10px;font-weight:600}
+    input,select,textarea{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid #e6ddd4}
+    .button{background:var(--earth);color:#fff;padding:10px 14px;border-radius:10px;border:none;text-decoration:none;display:inline-block}
+    .small{font-size:13px;color:#6b584a}
+    .flow{margin-top:12px}
+    ul{margin:6px 0 0 18px;color:#6b584a}
+    .warning{background:linear-gradient(90deg,#fff4f0,#fff8f5);padding:12px;border-radius:10px;border:1px solid #f0d7cc;margin-top:12px}
+    @media(max-width:880px){.cols{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <header>
+      <div class='brand'>{{BUSINESS_NAME}}</div>
+      <nav class='nav'>
+        <a href='index.html'>Home</a>
+        <a href='events.html'>Events</a>
+        <a href='faq.html'>Help</a>
+      </nav>
+    </header>
+
+    <section class='hero'>
+      <h1>Reserve a place — next group session</h1>
+      <p class='muted'>Secure your seat for the series. The next gathering is on <strong>{{NEXT_EVENT_DATE}}</strong> at {{VENUE_NAME}}. Capacity is limited to keep the field small and held.</p>
+    </section>
+
+    <div class='cols'>
+      <main>
+        <section class='card'>
+          <h3>Booking details</h3>
+          <form id='bookForm' action='{{PRIMARY_CTA_URL}}' method='post'>
+            <label for='name'>Full name</label>
+            <input id='name' name='name' placeholder='Your name' required>
+
+            <label for='email'>Email</label>
+            <input id='email' name='email' type='email' placeholder='you@example.com' required>
+
+            <label for='phone'>Phone (optional)</label>
+            <input id='phone' name='phone' placeholder='Optional'>
+
+            <label for='ticket'>Ticket type</label>
+            <select id='ticket' name='ticket'>
+              <option value='standard'>General admission — single event</option>
+              <option value='series'>Series pass — 4 gatherings</option>
+              <option value='sliding'>Sliding scale — limited</option>
+            </select>
+
+            <label for='notes'>Accessibility or health notes</label>
+            <textarea id='notes' name='notes' rows='4' placeholder='Let us know mobility needs, sensory preferences, or questions'></textarea>
+
+            <div style='margin-top:12px'>
+              <button class='button' type='submit'>{{PRIMARY_CTA_LABEL}}</button>
+              <a class='small' href='mailto:{{EMAIL}}' style='margin-left:12px;color:var(--earth)'>Ask a question</a>
+            </div>
+            <p class='small' style='margin-top:10px'>By booking you agree to the scheduling and refund policy. If you need help, call {{PHONE}}.</p>
+          </form>
+        </section>
+
+        <section class='card' style='margin-top:14px'>
+          <h4 class='small'>What to bring</h4>
+          <ul class='small'>
+            <li>Comfortable layers and a warm blanket.</li>
+            <li>A small bolster or neck pillow if you like extra support.</li>
+            <li>Water to sip afterward.</li>
+          </ul>
+
+          <div class='flow'>
+            <h4 class='small'>Session flow</h4>
+            <p class='small'>We begin with a short centering and intention-setting, move through 45–60 minutes of layered sound, and finish with a gentle reorientation. You are free to rest or leave as needed.</p>
+          </div>
+
+          <div class='warning'>
+            <strong>Contraindications</strong>
+            <p class='small' style='margin-top:8px'>If you have epilepsy, implanted devices, are in the first trimester of pregnancy, have recent surgery, or significant psychiatric conditions, please consult your provider before attending. Email <a href='mailto:{{EMAIL}}' style='color:var(--earth)'>{{EMAIL}}</a> for guidance.</p>
+          </div>
+        </section>
+      </main>
+
+      <aside>
+        <div class='card'>
+          <h4>Private offerings</h4>
+          <p class='small'>We also offer 1:1 immersion, couple sessions, and tailored corporate sound breaks. See the private page for details.</p>
+          <a class='button' href='private-sessions.html' style='display:inline-block;margin-top:10px'>Inquire</a>
+        </div>
+
+        <div class='card' style='margin-top:12px'>
+          <h4>Sound palette for this series</h4>
+          <p class='small' style='margin-top:8px'>For the upcoming series we will favor: crystal bowls for clarity, bowed monochord for luminous motion, and soft chime textures for points of arrival.</p>
+        </div>
+
+        <div class='card' style='margin-top:12px'>
+          <h4>Need to reschedule?</h4>
+          <p class='small' style='margin-top:8px'>Transfers are available up to 72 hours before the start. Within 72 hours, contact us at <a href='mailto:{{EMAIL}}' style='color:var(--earth)'>{{EMAIL}}</a> and we will do our best to assist.</p>
+        </div>
+      </aside>
+    </div>
+
+    <footer style='margin-top:18px;text-align:center;color:#7a6559'>
+      <div>{{BUSINESS_NAME}} — {{VENUE_NAME}}, {{CITY}}, {{STATE}} · {{PHONE}}</div>
+    </footer>
+  </div>
+  <script>
+    (function(){
+      var form=document.getElementById('bookForm');
+      form.addEventListener('submit',function(e){
+        // lightweight capture; allow default post but show a gentle confirmation before navigating away
+        var btn = form.querySelector('button[type="submit"]');
+        btn.disabled=true;btn.textContent='Confirming...';
+      });
+    })();
+  </script>
+</body>
+</html>

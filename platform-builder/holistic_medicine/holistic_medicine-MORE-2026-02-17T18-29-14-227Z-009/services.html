@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{BUSINESS_NAME}} — Services</title>
+  <style>
+    :root{--accent:#00695c;--muted:#6b7280;--bg:#f7f9f8;--card:#ffffff;--accent-2:#ffb86b}
+    *{box-sizing:border-box}
+    body{font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;margin:0;color:#0b1320;background:var(--bg);line-height:1.45}
+    header{background:linear-gradient(180deg,rgba(0,0,0,0.03),transparent);padding:28px 20px;border-bottom:4px solid rgba(0,0,0,0.04)}
+    .nav{max-width:1100px;margin:0 auto;display:flex;gap:18px;align-items:center;justify-content:space-between}
+    .brand{font-weight:700;color:var(--accent);letter-spacing:.6px}
+    .menu{display:flex;gap:12px}
+    .menu a{color:#10312a;text-decoration:none;padding:8px 10px;border-radius:8px;font-weight:600}
+    .menu a:hover{background:rgba(0,0,0,0.03)}
+    .hero{max-width:1100px;margin:28px auto;padding:28px;background:linear-gradient(135deg,var(--card),#f9fffb);border-radius:14px;display:grid;grid-template-columns:1fr 320px;gap:24px}
+    .hero h1{margin:0;font-size:28px;color:#052b25}
+    .hero p.lead{color:var(--muted);margin-top:12px}
+    .cta{display:flex;flex-direction:column;gap:10px}
+    .btn{background:var(--accent);color:white;padding:12px 14px;border-radius:10px;text-decoration:none;font-weight:700;text-align:center}
+    .ghost{background:transparent;border:2px solid var(--accent);color:var(--accent);padding:10px;border-radius:10px;text-decoration:none;text-align:center}
+    .services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:20px}
+    .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(10,20,10,0.04)}
+    .card h3{margin:0 0 8px 0;color:#08382f}
+    .muted{color:var(--muted);font-size:14px}
+    .price-pill{display:inline-block;background:linear-gradient(90deg,var(--accent-2),#ffd89b);padding:6px 10px;border-radius:999px;font-weight:700}
+    .proof{margin-top:22px;display:flex;gap:14px;align-items:center}
+    .badges{display:flex;gap:10px}
+    .badge{position:relative;padding:8px 10px;border-radius:8px;background:#eef9f6;font-weight:700;color:var(--accent);font-size:13px;cursor:default}
+    .badge[data-tip]:hover::after{content:attr(data-tip);position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 8px);background:#052b25;color:white;padding:8px;border-radius:6px;white-space:nowrap;font-size:12px}
+    .testimonials{flex:1}
+    .testimonial{display:none}
+    .testimonial.active{display:block}
+    footer{max-width:1100px;margin:28px auto;padding:18px;color:var(--muted)}
+    /* SVG pattern */
+    .pattern{position:fixed;right:20px;bottom:20px;width:220px;height:220px;opacity:.08}
+    @media(max-width:800px){.hero{grid-template-columns:1fr}.pattern{display:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="nav">
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <div class="menu">
+        <a href="index.html">Home</a>
+        <a href="services.html">Programs</a>
+        <a href="conditions.html">Conditions</a>
+        <a href="approach.html">Method</a>
+        <a href="pricing.html">Rates</a>
+        <a href="about.html">Team</a>
+        <a href="book.html">Reserve</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h1>Practical integrative services that meet you where your day begins.</h1>
+        <p class="lead">Small program units, clear outcomes, and clinical context — designed for clients who want focused momentum without overwhelm.</p>
+
+        <div class="services-grid" aria-live="polite">
+          <div class="card">
+            <h3>Foundations Intensive</h3>
+            <div class="muted">Three guided contacts to stabilize routine, nutrition, sleep, and stress tools.</div>
+            <div style="margin-top:12px"><span class="price-pill">Core Series</span></div>
+          </div>
+          <div class="card">
+            <h3>Resilience Replay</h3>
+            <div class="muted">Short-cycle coaching & targeted modalities for work-life spikes.</div>
+            <div style="margin-top:12px"><span class="price-pill">Short Track</span></div>
+          </div>
+          <div class="card">
+            <h3>Rhythm Restoration</h3>
+            <div class="muted">Custom weekly sessions with skill practice and measurable goals.</div>
+            <div style="margin-top:12px"><span class="price-pill">Weekly Plan</span></div>
+          </div>
+          <div class="card">
+            <h3>VIP Day — Focus Session</h3>
+            <div class="muted">A single-day deep work session to reset habits and craft a practical roadmap.</div>
+            <div style="margin-top:12px"><span class="price-pill">VIP</span></div>
+          </div>
+        </div>
+
+        <div style="margin-top:20px;display:flex;gap:12px">
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <a class="ghost" href="contact.html">Ask a clinical question</a>
+        </div>
+      </div>
+
+      <aside class="card">
+        <div style="font-weight:800;color:#08382f">Book a planning call</div>
+        <div class="muted" style="margin-top:8px">Start with a 20-minute clarity call to select the right program.
+        </div>
+
+        <div class="proof" style="margin-top:18px">
+          <div class="badges">
+            <div class="badge" data-tip="Peer-reviewed research support">Evidence-Backed</div>
+            <div class="badge" data-tip="Years of practice and client outcomes">Practitioner-Led</div>
+            <div class="badge" data-tip="HIPAA-compliant notes and privacy">Secure</div>
+          </div>
+        </div>
+
+        <div class="testimonials" style="margin-top:14px">
+          <div class="testimonial active" id="t0">
+            <div style="font-weight:700">"A compact program that made real routine shifts."</div>
+            <div class="muted" style="margin-top:8px">— A client in {{CITY}}, {{STATE}}</div>
+          </div>
+          <div class="testimonial" id="t1">
+            <div style="font-weight:700">"The VIP Day was precise and actionable."</div>
+            <div class="muted" style="margin-top:8px">— Another client</div>
+          </div>
+          <div class="testimonial" id="t2">
+            <div style="font-weight:700">"Clear tools I could use immediately at work and home."</div>
+            <div class="muted" style="margin-top:8px">— Professional client</div>
+          </div>
+        </div>
+
+        <div style="margin-top:14px;color:var(--muted);font-size:13px">Contact: <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      </aside>
+    </section>
+
+    <section style="max-width:1100px;margin:22px auto;padding:20px;">
+      <div class="card">
+        <h3 style="margin-top:0">Why this structure?</h3>
+        <p class="muted">We focus on compact, measurable engagements so you can adopt practices without disrupting work, family, or responsibilities. Investment framing is transparent: pick a track, set immediate goals, and revisit on a clear cadence.</p>
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <a class="btn" href="pricing.html">See rate framing</a>
+          <a class="ghost" href="book.html">Schedule planning call</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <svg class="pattern" viewBox="0 0 100 100" aria-hidden="true">
+    <defs>
+      <linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#ffb86b"/><stop offset="1" stop-color="#00695c"/></linearGradient>
+      <pattern id="p0" width="10" height="10" patternUnits="userSpaceOnUse">
+        <rect width="10" height="10" fill="white"/>
+        <circle cx="2" cy="2" r="1.2" fill="#00695c"/>
+        <circle cx="8" cy="8" r="1.2" fill="#ffb86b"/>
+      </pattern>
+    </defs>
+    <rect width="100" height="100" fill="url(#p0)" opacity="0.9"/>
+    <circle cx="80" cy="20" r="18" fill="url(#g)" opacity="0.14"/>
+  </svg>
+
+  <footer>
+    <div style="max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center">
+      <div class="muted">&copy; <span id="year"></span> {{BUSINESS_NAME}} — Serving {{CITY}}, {{STATE}}</div>
+      <div class="muted">Privacy • Terms</div>
+    </div>
+  </footer>
+
+  <script>
+    // rotate testimonials
+    (function(){
+      const items = document.querySelectorAll('.testimonial');
+      let idx=0; setInterval(()=>{
+        items[idx].classList.remove('active');
+        idx=(idx+1)%items.length;
+        items[idx].classList.add('active');
+      },4200);
+    })();
+
+    // small accessibility: update year
+    document.getElementById('year').textContent=new Date().getFullYear();
+  </script>
+</body>
+</html>

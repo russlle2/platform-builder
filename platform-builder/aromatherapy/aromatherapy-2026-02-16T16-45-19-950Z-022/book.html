@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book a session — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reserve a session with {{PRACTITIONER_NAME}} — safety-first aromatherapy sessions and intensives.">
+  <style>
+    :root{--bg:#FFF8F2;--accent:#A65A2B;--accent-2:#4F2F23;--muted:#7A675A}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:linear-gradient(180deg,var(--bg),#F4ECE3);color:var(--accent-2)}
+    header{padding:20px}
+    .nav{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#E7B287);display:flex;align-items:center;justify-content:center;color:white}
+    nav a{margin-left:12px;text-decoration:none;color:var(--accent-2);font-weight:600}
+    main{max-width:1100px;margin:18px auto;padding:0 20px}
+    .hero{background:url('assets/img/pattern.svg'),linear-gradient(180deg,rgba(255,255,255,0.95),white);padding:22px;border-radius:14px}
+    .hero h1{margin:0;font-size:26px}
+    .muted{color:var(--muted)}
+    .booking{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px}
+    .form{background:white;padding:16px;border-radius:12px;box-shadow:0 8px 28px rgba(80,48,30,0.06)}
+    label{display:block;margin-top:10px;font-weight:600}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(120,70,30,0.08);margin-top:6px}
+    .aside{background:linear-gradient(180deg,#FFF6EF,white);padding:16px;border-radius:12px}
+    .steps{display:flex;flex-direction:column;gap:10px}
+    .step{background:white;padding:10px;border-radius:8px}
+    .cta{display:inline-block;padding:10px 14px;background:var(--accent);color:white;border-radius:10px;text-decoration:none;font-weight:700}
+    .faq{margin-top:16px}
+    footer{padding:18px;text-align:center;color:var(--muted);margin-top:20px}
+    @media (max-width:880px){.booking{grid-template-columns:1fr}.aside{order:2}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div style="display:flex;align-items:center;gap:12px"><div class="logo">A</div><div><strong>{{BUSINESS_NAME}}</strong><div class="muted">Book a session</div></div></div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="services.html">Offerings</a>
+        <a href="blends.html">Blends to Try</a>
+        <a href="shop.html">Store</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Reserve your aromatherapy session</h1>
+      <p class="muted">Choose an intensive, a single consult, or a short series. Every booking includes a safety review, dilution notes, and a clear care plan.</p>
+    </section>
+
+    <div class="booking">
+      <form class="form" action="#" method="POST" aria-label="Booking form">
+        <h3>Book — tell me a bit</h3>
+        <label for="name">Full name</label>
+        <input id="name" name="name" type="text" required>
+
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" required>
+
+        <label for="phone">Phone</label>
+        <input id="phone" name="phone" type="tel">
+
+        <label for="service">Service</label>
+        <select id="service" name="service" required>
+          <option>Deep Aroma Intensive — 90 min</option>
+          <option>Single Consult — 60 min</option>
+          <option>3-Session Bundle</option>
+        </select>
+
+        <label for="notes">Notes (allergies, pregnancy, pets, goals)</label>
+        <textarea id="notes" name="notes" rows="4" placeholder="Please mention pregnancy, pets in the home, any essential oil allergies, and what you'd like to focus on."></textarea>
+
+        <div style="margin-top:12px;display:flex;gap:10px;align-items:center">
+          <button class="cta" type="submit">Request Booking</button>
+          <a href="mailto:{{EMAIL}}" class="muted">Email: {{EMAIL}}</a>
+        </div>
+
+        <p class="muted" style="margin-top:8px">After you request, {{PRACTITIONER_NAME}} will follow up to confirm time, discuss safety, and share preparatory notes.</p>
+      </form>
+
+      <aside class="aside">
+        <h4>How booking works</h4>
+        <div class="steps">
+          <div class="step"><strong>1.</strong> You request a slot and share safety notes (pregnancy/pets/allergies).</div>
+          <div class="step"><strong>2.</strong> We confirm and send a short intake form and payment options.</div>
+          <div class="step"><strong>3.</strong> Session occurs (in-person or virtual) with a labeled blend and a clear dilution plan.</div>
+        </div>
+
+        <div style="margin-top:12px">
+          <h4>Quick notes on safety</h4>
+          <p class="muted">No medical claims are made. All recommendations are supportive, not diagnostic. For pregnancy, certain oils may be avoided and we will discuss alternatives.</p>
+        </div>
+
+        <div style="margin-top:12px">
+          <a class="cta" href="pricing.html">See Rates</a>
+        </div>
+      </aside>
+    </div>
+
+    <section class="faq">
+      <h3>Booking FAQs</h3>
+      <div style="margin-top:8px">
+        <strong>Do you require a patch test?</strong>
+        <p class="muted">We recommend a patch test before consistent topical use. During the session we'll guide you through performing one safely.</p>
+      </div>
+
+      <div style="margin-top:8px">
+        <strong>What if I have pets?</strong>
+        <p class="muted">Please mention pets in your notes. We'll offer pet-safe alternatives and advice on ventilation, placement, and which oils to avoid.</p>
+      </div>
+
+      <div style="margin-top:8px">
+        <strong>Pregnancy & nursing guidance</strong>
+        <p class="muted">We proceed conservatively for pregnancy and nursing, avoiding certain essential oils and sharing non-topical options. Always consult your healthcare provider too.</p>
+      </div>
+
+      <div style="margin-top:8px">
+        <strong>Cancellation & reschedules</strong>
+        <p class="muted">Please contact us 48 hours before to reschedule. Shorter notice may incur a fee depending on the package.</p>
+      </div>
+    </section>
+
+    <section style="margin-top:18px;background:linear-gradient(180deg,#FFF6EF,white);padding:14px;border-radius:10px">
+      <h3>Curious before you commit?</h3>
+      <p class="muted">Request a 15-minute complimentary call to see if an intensive is right for you.</p>
+      <form style="display:flex;gap:8px;align-items:center" action="#" method="POST">
+        <input type="email" placeholder="Email for call link" required>
+        <button class="cta" type="submit">Request Call</button>
+      </form>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="muted">Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    <div style="margin-top:6px">© {{BUSINESS_NAME}}</div>
+  </footer>
+</body>
+</html>

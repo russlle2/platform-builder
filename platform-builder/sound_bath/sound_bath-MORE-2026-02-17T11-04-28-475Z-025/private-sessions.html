@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>One-on-One — Private Sessions | {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Private sound sessions tailored to your needs in {{CITY}}, {{STATE}}. Select intensity and find the right session length and investment.">
+  <style>
+    :root{--bg:#071018;--glass:rgba(255,255,255,0.03);--accent:#ffd6a6;--muted:#cfdbe6}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial;background:linear-gradient(180deg,#04101a 0%,#06131a 100%);color:#f3fbff;min-height:100vh}
+    header{display:flex;gap:1rem;align-items:center;padding:1rem 2rem;background:rgba(255,255,255,0.02);backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,0.03)}
+    header .brand{font-weight:800}
+    header nav{display:flex;gap:0.75rem;margin-left:auto}
+    header a{color:var(--muted);text-decoration:none}
+    .wrap{max-width:1000px;margin:2rem auto;padding:1rem}
+    .glass{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:1.25rem;border-radius:14px;border:1px solid rgba(255,255,255,0.03)}
+    h1{margin:0 0 0.5rem 0;color:#fff}
+    .sub{color:var(--muted);margin-bottom:1rem}
+
+    .layout{display:grid;grid-template-columns:1fr 320px;gap:1rem}
+    .session-list{display:grid;gap:0.75rem}
+    .session{padding:0.75rem;border-radius:10px;background:rgba(255,255,255,0.02);display:flex;justify-content:space-between;align-items:center}
+    .session .meta{color:var(--muted)}
+
+    .mixer{display:flex;gap:0.5rem;align-items:center}
+    .mixer input[type=range]{width:150px}
+    .mixer .level{font-weight:700}
+
+    .aside{display:flex;flex-direction:column;gap:0.75rem}
+    .price{font-weight:800;color:var(--accent);font-size:1.2rem}
+    .note{font-size:0.9rem;color:var(--muted)}
+
+    footer{padding:2rem;text-align:center;color:var(--muted);margin-top:2rem}
+
+    @media(max-width:880px){.layout{grid-template-columns:1fr}.aside{order:2}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="events.html">Gatherings</a>
+      <a href="private-sessions.html">One-on-One</a>
+      <a href="pricing.html">Investment</a>
+      <a href="book.html">Reserve</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <div class="glass">
+      <h1>Private sessions — a sound room for one</h1>
+      <p class="sub">Tailored frequencies and pacing. Choose an intensity, and see which session style and suggested investment fit you best.</p>
+
+      <div class="layout">
+        <section>
+          <div style="display:flex;gap:1rem;align-items:center;margin-bottom:0.5rem">
+            <div class="mixer" aria-label="private session intensity">
+              <label class="level">Intensity</label>
+              <input id="intensityRange" type="range" min="1" max="3" value="1">
+              <div id="intensityLabel" style="margin-left:0.5rem;color:var(--muted)">Gentle</div>
+            </div>
+            <div style="margin-left:auto;color:var(--muted)">Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+          </div>
+
+          <div class="session-list" id="session-list">
+            <!-- sessions injected by JS -->
+          </div>
+
+          <p class="note">Contraindications: Sessions may use deep tones. Seek medical advice if pregnant, have implanted devices, or a history of seizures. Contact <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> with questions.</p>
+        </section>
+
+        <aside class="aside">
+          <div class="glass" style="padding:1rem">
+            <div class="muted">Suggested package</div>
+            <div class="price" id="suggested-price">$85</div>
+            <div class="note">Private session ~ 60 minutes. Includes brief intake and tailored sound set.</div>
+            <a class="cta" href="book.html" style="display:inline-block;margin-top:0.75rem;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#ffdcae);color:#1b2b2b;font-weight:800;text-decoration:none">Book this</a>
+          </div>
+
+          <div class="glass" style="padding:0.8rem">
+            <div class="muted">What to expect</div>
+            <ul style="margin:0.5rem 0 0 1rem;color:var(--muted)">
+              <li>Short intake to set intentions</li>
+              <li>Sound layers tailored to your tolerance</li>
+              <li>Post-session integration notes</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • {{CITY}}, {{STATE}}</div>
+  </footer>
+
+  <script>
+    // Private session types
+    const baseSessions = [
+      {id:'pulse',title:'Pulse & Ease',len:50,price:65,level:1,desc:'Focused calm with long bowl notes.'},
+      {id:'found',title:'Foundations',len:60,price:85,level:2,desc:'Layered harmonic work for release.'},
+      {id:'forge',title:'Sonic Reset',len:75,price:110,level:3,desc:'Intensive tones with somatic prompts.'}
+    ];
+
+    const listEl = document.getElementById('session-list');
+    const range = document.getElementById('intensityRange');
+    const label = document.getElementById('intensityLabel');
+    const suggestedPrice = document.getElementById('suggested-price');
+
+    function renderSessions(level){
+      listEl.innerHTML='';
+      // filter and sort by closeness to level
+      const sorted = baseSessions.slice().sort((a,b)=> Math.abs(a.level-level)-Math.abs(b.level-level));
+      sorted.forEach(s=>{
+        const div = document.createElement('div'); div.className='session';
+        div.innerHTML = '<div><div style="font-weight:700">'+s.title+'</div><div class="meta">'+s.desc+' • '+s.len+' min</div></div><div style="text-align:right"><div style="font-weight:800">$'+s.price+'</div><a class="cta" href="book.html" style="display:inline-block;margin-top:6px;padding:6px 10px;border-radius:8px;background:rgba(255,255,255,0.02);color:var(--muted);text-decoration:none">Request</a></div>';
+        listEl.appendChild(div);
+      });
+
+      // suggest the top match price
+      const top = sorted[0];
+      suggestedPrice.textContent = '$'+top.price;
+    }
+
+    range.addEventListener('input',()=>{
+      const v = Number(range.value);
+      const map = {1:'Gentle',2:'Medium',3:'Intense'};
+      label.textContent = map[v];
+      renderSessions(v);
+    });
+
+    // initial
+    renderSessions(1);
+
+    // Make sure CTAs show helpful phrasing if placeholder unchanged
+    document.querySelectorAll('.cta').forEach(a=>{ if(a.textContent.trim()==='{{PRIMARY_CTA_LABEL}}') a.textContent='Book this';});
+  </script>
+</body>
+</html>

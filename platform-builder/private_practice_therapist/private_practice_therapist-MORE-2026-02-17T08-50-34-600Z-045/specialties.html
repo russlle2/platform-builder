@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>What I Help With — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fffdfb;--accent:#7a6b9f;--muted:#6c6c6c;--card:#fff;--mono:#111}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:linear-gradient(0deg,#fffdfb, #f5f7fb);color:var(--mono);background-image:url('assets/img/pattern.svg');background-size:500px}
+    header{display:flex;justify-content:space-between;align-items:center;padding:20px 28px}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none;font-size:14px}
+    .wrap{max-width:1100px;margin:24px auto;padding:0 20px}
+    .intro{display:flex;gap:20px;align-items:flex-start}
+    .intro h1{margin:0}
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 24px rgba(12,12,12,0.06)}
+    .card h3{margin-top:0}
+    .cta-row{display:flex;gap:12px;margin-top:18px}
+    button.alt{padding:10px 12px;border-radius:10px;border:1px solid #ddd;background:white;cursor:pointer}
+    .planner-small{margin-top:18px;padding:14px;border-radius:10px;background:#f8f8ff}
+    .list{font-size:14px;color:var(--muted);line-height:1.6}
+    @media(max-width:940px){.cards{grid-template-columns:1fr}.intro{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style='font-weight:700'><a href='index.html' style='color:var(--mono);text-decoration:none'>Start</a></div>
+    <nav>
+      <a href='about.html'>The Clinician</a>
+      <a href='specialties.html'>Offerings</a>
+      <a href='approach.html'>Method</a>
+      <a href='book.html'>Begin</a>
+    </nav>
+  </header>
+
+  <main class='wrap'>
+    <section class='intro'>
+      <div style='flex:1'>
+        <h1>Areas of focus</h1>
+        <p class='list'>I work with adults who are navigating sustained stress, relationship shifts, transitions (work, family, identity), and mood or worry that interrupts daily life. Below are common pathways clients ask for; each is shaped into tailored work rather than a fixed program.</p>
+      </div>
+      <aside style='width:320px'>
+        <div class='planner-small card'>
+          <h4 style='margin:0 0 8px'>Quick planner</h4>
+          <label class='small'>Choose one focus</label>
+          <select id='focusSelect' style='width:100%;padding:8px;border-radius:8px;border:1px solid #eaeaea'>
+            <option>Manage persistent worry</option>
+            <option>Regulate low mood</option>
+            <option>Navigate relationship change</option>
+            <option>Transition support (job, family, move)</option>
+            <option>Parenting support</option>
+          </select>
+          <div style='display:flex;gap:8px;margin-top:12px'>
+            <button id='buildMini' class='alt'>Sketch plan</button>
+            <button id='openBook' class='alt' onclick="location.href='book.html'">Book a consult</button>
+          </div>
+          <pre id='miniOut' style='margin-top:12px;background:#fff;padding:8px;border-radius:8px;font-family:monospace;font-size:13px'>Pick a focus and sketch a short plan.</pre>
+        </div>
+      </aside>
+    </section>
+
+    <section class='cards'>
+      <div class='card'>
+        <h3>Regulation & mood</h3>
+        <p class='list'>Work here centers on routines, small behavioral experiments, and noticing patterns that sustain low mood. We prioritize manageable steps and ways to re-engage with what matters to you.</p>
+      </div>
+
+      <div class='card'>
+        <h3>Anxiety & persistent worry</h3>
+        <p class='list'>Practical tools, attention to avoidance, and gradual exposure to difficult situations help reduce the hold of worry. The pace is collaborative—experiments are tailored to your tolerance.</p>
+      </div>
+
+      <div class='card'>
+        <h3>Relationships & communication</h3>
+        <p class='list'>We explore patterns of giving and receiving, boundaries, and clear ways to test new approaches. Therapy focuses on what you can change and how to do so without abrupt risk.</p>
+      </div>
+
+      <div class='card'>
+        <h3>Transitions & identity</h3>
+        <p class='list'>When life shifts—career, family, or identity—the work is about orienting, defining priorities, and settling into new rhythms with practical supports.</p>
+      </div>
+
+      <div class='card'>
+        <h3>Short-form offerings</h3>
+        <p class='list'>Named packages: Anchor Series (4 sessions), Deep Check (single extended session), Rhythm Care (monthly maintenance). Pricing is discussed transparently; I offer a limited number of sliding-scale slots.</p>
+      </div>
+
+      <div class='card'>
+        <h3>Coordination & referrals</h3>
+        <p class='list'>I collaborate with other professionals when helpful and will discuss coordination when requested. I do not provide emergency or forensic services.</p>
+      </div>
+    </section>
+
+    <div style='margin-top:22px;display:flex;gap:12px;align-items:center'>
+      <button onclick="location.href='book.html'" style='padding:12px 16px;background:var(--accent);color:white;border-radius:10px;border:0;cursor:pointer'>Start with a consult</button>
+      <a href='contact.html' style='color:var(--muted);text-decoration:none'>Questions by email</a>
+    </div>
+  </main>
+
+  <script>
+    document.getElementById('buildMini').addEventListener('click', ()=>{
+      const focus = document.getElementById('focusSelect').value;
+      const suggestions = {
+        'Manage persistent worry': ['Weekly check-ins','2 small exposure tasks per week','Brief worry log'],'Regulate low mood': ['Behavioural activation plan','Daily 3-minute mood check','Short-term target: 4 weeks'],'Navigate relationship change': ['Define conversation goals','Practice one boundary script','Choose a small relational experiment'],'Transition support (job, family, move)': ['Set 3 concrete goals','Map support resources','Check-ins every 2 weeks'],'Parenting support': ['Identify one shift to test','Family routine focus','Coaching for challenging moments']
+      };
+      const plan = suggestions[focus] || [];
+      const text = ['Focus: ' + focus,'Suggested structure:','- ' + plan.join('\n- ')].join('\n');
+      document.getElementById('miniOut').textContent = text;
+    });
+  </script>
+</body>
+</html>

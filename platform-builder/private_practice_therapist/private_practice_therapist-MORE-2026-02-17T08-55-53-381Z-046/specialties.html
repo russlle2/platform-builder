@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Areas of Focus — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#FEFAF3;--card:#FFFFFF;--accent:#6C4A2B;--muted:#7B6B60;--accent-2:#D6B78B;--ink:#2E2A25}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+    header{padding:18px 20px;border-bottom:1px solid rgba(46,42,37,0.06)}
+    .wrap{max-width:980px;margin:0 auto;padding:18px}
+    nav{display:flex;gap:12px;flex-wrap:wrap}
+    nav a{color:var(--ink);text-decoration:none}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
+    .card{background:var(--card);padding:18px;border-radius:10px}
+    h1{color:var(--accent);margin:0 0 8px}
+    h3{margin:10px 0 6px}
+    p{margin:0}
+    ul{margin:8px 0 0 18px}
+
+    /* pricing style */
+    .tiers{display:flex;gap:12px;margin-top:12px}
+    .tier{flex:1;padding:12px;border-radius:10px;border:1px solid rgba(46,42,37,0.06)}
+    .tier h4{margin:0 0 6px}
+    .cta-row{display:flex;gap:8px;margin-top:10px}
+
+    .widget{margin-top:12px}
+    input,select,textarea{padding:10px;border-radius:8px;border:1px solid rgba(46,42,37,0.08)}
+    button.primary{background:var(--accent);color:white;border:none;padding:10px 14px;border-radius:8px;cursor:pointer}
+    .output{white-space:pre-wrap;background:#FFF9F2;padding:10px;border-radius:8px;border:1px dashed rgba(46,42,37,0.06);margin-top:8px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="specialties.html">Areas</a>
+        <a href="approach.html">Method</a>
+        <a href="fees.html">Fees</a>
+        <a href="faq.html">FAQ</a>
+        <a href="book.html">Start</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <h1>Areas of focus</h1>
+    <p class="muted">I offer steady clinical partnership across several common concerns for adults. Below are concise descriptions to help you decide if we might be a fit.</p>
+
+    <section class="grid" style="margin-top:14px">
+      <div>
+        <article class="card">
+          <h3>Carefully-paced anxiety work</h3>
+          <p class="muted">Support for persistent worry, performance anxiety, or situational stresses. We co-create practices you can use between sessions and prioritize exposure that feels manageable.</p>
+          <h3 style="margin-top:12px">Low mood & motivation</h3>
+          <p class="muted">Practical, behavioral steps paired with reflective work on meaning and energy. I help you find small, dependable shifts rather than all-or-nothing goals.</p>
+          <h3 style="margin-top:12px">Relationship patterns</h3>
+          <p class="muted">From communication habits to boundary-setting, we look at interaction cycles and rehearse alternatives you can try outside sessions.</p>
+          <h3 style="margin-top:12px">Transitions & role changes</h3>
+          <p class="muted">Support through moves, career shifts, parenting changes, and other transitions. We focus on stabilizing routines and clarifying values.</p>
+          <h3 style="margin-top:12px">Focused series for specific aims</h3>
+          <p class="muted">Short, structured programs address sleep, emotion regulation, or decision clarity. These are time-limited and skill-oriented.</p>
+        </article>
+
+        <article class="card" style="margin-top:12px">
+          <h3>Membership options and framing</h3>
+          <p class="muted">Rather than single blocks, many clients choose an ongoing plan. I offer clear tiers so you can pick the rhythm that fits your life.</p>
+          <div class="tiers">
+            <div class="tier">
+              <h4>Stabilize Circle</h4>
+              <p class="small">Biweekly sessions, access to short courses, messaging for scheduling.</p>
+            </div>
+            <div class="tier">
+              <h4>Steady Circle</h4>
+              <p class="small">Weekly sessions, course access, periodic check-ins between sessions.</p>
+            </div>
+            <div class="tier">
+              <h4>Focused Series</h4>
+              <p class="small">4–8 session concentrated programs for a specific goal; clear start and end.</p>
+            </div>
+          </div>
+          <div class="cta-row"><a class="primary" href="{{PRIMARY_CTA_URL}}">Begin a membership conversation</a></div>
+        </article>
+      </div>
+
+      <aside>
+        <div class="card">
+          <h3>Quick intake exercise</h3>
+          <p class="small">Use this short checklist to see which areas feel most pressing. The result produces questions you can take to the first appointment.</p>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+            <label><input type="checkbox" class="chk" value="Anxiety"> Anxiety or excessive worry</label>
+            <label><input type="checkbox" class="chk" value="Low mood"> Low mood / lack of interest</label>
+            <label><input type="checkbox" class="chk" value="Relationships"> Relationship patterns</label>
+            <label><input type="checkbox" class="chk" value="Transitions"> Life transitions</label>
+            <label><input type="checkbox" class="chk" value="Sleep"> Sleep problems</label>
+          </div>
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <button class="primary" id="summarize">Create note</button>
+            <button class="secondary" id="clearChk">Clear</button>
+          </div>
+          <div class="output" id="chkOutput">Your concise note will appear here.</div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h3>Bring to session</h3>
+          <p class="small">If you have questions about fit, timing, or approach, list them here and bring them to our consult.</p>
+          <textarea id="bring" rows="6" placeholder="Questions for the clinician..." style="width:100%;margin-top:8px;border-radius:8px;padding:10px"></textarea>
+          <div style="display:flex;gap:8px;margin-top:8px"><button class="primary" id="copyBring">Copy text</button></div>
+        </div>
+      </aside>
+    </section>
+
+    <p class="small" style="margin-top:14px">Limitations: This page is informational and not a substitute for clinical assessment. If you are at immediate risk, please contact local emergency services or a crisis line. Confidential contact: {{PHONE}} • {{EMAIL}}</p>
+  </main>
+
+  <script>
+    // checklist summarizer
+    document.getElementById('summarize').addEventListener('click', function(){
+      const checks = Array.from(document.querySelectorAll('.chk:checked')).map(n=>n.value);
+      const out = document.getElementById('chkOutput');
+      if(!checks.length){ out.textContent = 'No areas selected.'; return; }
+      const note = 'Primary concerns: ' + checks.join(', ') + '\nI would like to talk about: ' + checks.slice(0,3).join(', ') + '.';
+      out.textContent = note;
+    });
+    document.getElementById('clearChk').addEventListener('click', function(){
+      document.querySelectorAll('.chk').forEach(c=>c.checked=false);
+      document.getElementById('chkOutput').textContent = 'Your concise note will appear here.';
+    });
+
+    // Copy questions to bring
+    document.getElementById('copyBring').addEventListener('click', function(){
+      const text = document.getElementById('bring').value.trim();
+      if(!text) return;
+      navigator.clipboard && navigator.clipboard.writeText(text).then(()=>{
+        this.textContent = 'Copied';
+        setTimeout(()=>this.textContent='Copy text',1200);
+      });
+    });
+  </script>
+</body>
+</html>

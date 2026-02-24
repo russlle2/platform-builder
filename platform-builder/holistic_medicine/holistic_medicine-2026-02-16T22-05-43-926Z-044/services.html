@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Workshops, series, and integrative visits focusing on whole-person care.">
+  <style>
+    :root{--bg1:#F6FFF5;--bg2:#E8F7FF;--accent:#3A7CA5;--muted:#61707A;--card:#ffffff}
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;color:#0b2430;background:linear-gradient(135deg,var(--bg1),var(--bg2));}
+    a{color:var(--accent);text-decoration:none}
+    header{display:flex;align-items:center;justify-content:space-between;padding:28px 40px}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,#6AC8C6,#3A7CA5);color:white;font-weight:700}
+    nav{display:flex;gap:18px;align-items:center}
+    nav a{font-size:14px;color:var(--muted)}
+    nav a[aria-current="page"]{color:#092A33;font-weight:600}
+    .wrap{max-width:1100px;margin:28px auto;padding:20px}
+
+    /* split_diagonal hero */
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:32px;align-items:center;margin:20px 0}
+    .card{background:rgba(255,255,255,0.9);padding:28px;border-radius:14px;box-shadow:0 6px 20px rgba(10,20,25,0.06);backdrop-filter:blur(4px)}
+    .kicker{font-size:13px;color:var(--accent);font-weight:600;letter-spacing:0.6px}
+    h1{margin:8px 0 6px;font-size:28px;line-height:1.05}
+    p.lead{color:var(--muted);margin:0 0 14px}
+    .hero-visual{position:relative;height:320px;border-radius:12px;overflow:hidden}
+    .diag-split{position:absolute;left:-30%;top:-20%;width:160%;height:140%;transform:rotate(-12deg);background:linear-gradient(90deg,rgba(58,124,165,0.14),rgba(106,200,198,0.12));filter:blur(18px)}
+    .pattern{position:absolute;inset:0}
+
+    /* services list */
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px}
+    .service{padding:18px;border-radius:12px;background:var(--card);min-height:120px}
+    .service h3{margin:0 0 8px;font-size:16px}
+    .service p{margin:0;color:var(--muted);font-size:14px}
+
+    /* micro habits */
+    .micro{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+    .micro .chip{background:linear-gradient(90deg,#F0FFFC,#FFF9F0);padding:10px 12px;border-radius:999px;font-size:13px;color:#0b2430}
+
+    /* pricing & cta */
+    .row{display:flex;gap:18px;margin-top:20px}
+    .price{flex:1;padding:18px;border-radius:12px;background:linear-gradient(180deg,#fff,#fbfdff)}
+    .cta{align-self:center}
+    .btn{display:inline-block;background:var(--accent);color:white;padding:10px 16px;border-radius:10px;font-weight:600}
+
+    footer{margin:40px 0;color:var(--muted);font-size:13px;text-align:center}
+
+    @media (max-width:900px){
+      .hero{grid-template-columns:1fr;}
+      .grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media (max-width:560px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">HM</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Nest</a>
+      <a href="services.html" aria-current="page">Offerings</a>
+      <a href="approach.html">How we work</a>
+      <a href="conditions.html">Concerns</a>
+      <a href="pricing.html">Rates</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="hero card">
+      <div>
+        <div class="kicker">Offerings & Events</div>
+        <h1>Series, workshops, and guided visits for whole-person care</h1>
+        <p class="lead">Small cohorts, seasonal workshops, and individual consults that place biology in conversation with lifestyle and meaning. Each series weaves learning, gentle accountability, and practical habits.</p>
+        <div class="micro" style="margin-top:12px">
+          <span class="chip">6-week Gut Resilience</span>
+          <span class="chip">Sleep Rhythm Workshop</span>
+          <span class="chip">Stress & Breath Cohort</span>
+          <span class="chip">Monthly Open Q&amp;A</span>
+        </div>
+        <div class="row" style="margin-top:18px">
+          <div class="price card">
+            <strong style="font-size:18px">Cohorts from $249</strong>
+            <div style="color:var(--muted);font-size:13px;margin-top:8px">Sliding-scale seats available. Educational material included.</div>
+          </div>
+          <div class="cta">
+            <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="diag-split"></div>
+        <!-- inline SVG pattern unique to this page -->
+        <svg class="pattern" viewBox="0 0 600 360" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="g1" x1="0" x2="1">
+              <stop offset="0" stop-color="#6AC8C6" stop-opacity="0.6"/>
+              <stop offset="1" stop-color="#3A7CA5" stop-opacity="0.5"/>
+            </linearGradient>
+            <pattern id="p1" width="80" height="80" patternUnits="userSpaceOnUse">
+              <rect width="80" height="80" fill="url(#g1)"/>
+              <circle cx="12" cy="12" r="6" fill="rgba(255,255,255,0.45)" />
+              <path d="M0 40 L80 40" stroke="rgba(255,255,255,0.06)" stroke-width="2"/>
+            </pattern>
+            <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="8"/>
+            </filter>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#p1)"/>
+          <g filter="url(#soft)">
+            <ellipse cx="420" cy="200" rx="180" ry="120" fill="#FFF6EA" opacity="0.35"/>
+            <ellipse cx="140" cy="90" rx="160" ry="80" fill="#E8F7FF" opacity="0.28"/>
+          </g>
+          <text x="30" y="320" font-size="28" fill="#0b2430" opacity="0.08">{{BUSINESS_NAME}}</text>
+        </svg>
+      </div>
+    </section>
+
+    <section style="margin-top:26px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <h2 style="margin:0;font-size:20px">What we offer</h2>
+          <div style="color:var(--muted);font-size:14px;margin-top:6px">Selectable paths — join a series or arrange a short course of visits.</div>
+        </div>
+        <div style="font-size:13px;color:var(--muted)">Led by {{PRACTITIONER_NAME}}, {{CREDENTIALS}}</div>
+      </div>
+
+      <div class="grid">
+        <div class="service">
+          <h3>Group Series</h3>
+          <p>6–8 week cohorts that combine teaching, shared reflection, and practical habit-building. Ideal for restorative learning with peer support.</p>
+        </div>
+        <div class="service">
+          <h3>Workshops</h3>
+          <p>Single-session deep dives on sleep, digestion, stress resilience, and seasonal self-care. Materials provided for home practice.</p>
+        </div>
+        <div class="service">
+          <h3>Individual Integrative Visits</h3>
+          <p>Focused assessment and personalized guidance; a space to untangle symptoms, patterns, and lifestyle possibilities.</p>
+        </div>
+        <div class="service">
+          <h3>Open Learning Evenings</h3>
+          <p>Drop-in talks; bring questions. These are educational and community-oriented, not diagnostic clinics.</p>
+        </div>
+        <div class="service">
+          <h3>Follow-up Packages</h3>
+          <p>Short sequences of check-ins to adapt plans and sustain new rhythms—designed as learning cycles, not guarantees.</p>
+        </div>
+        <div class="service">
+          <h3>Resource Library</h3>
+          <p>Handouts, recipes, and micro-habit sequences to carry practice beyond sessions.</p>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:22px">
+      <h2 style="font-size:18px;margin-bottom:8px">Daily little things — micro practices you can start now</h2>
+      <p style="color:var(--muted);margin:0 0 12px">Small, repeatable actions scaffold larger change. We teach short routines you can adapt to your life.</p>
+      <div class="micro">
+        <span class="chip">3-minute breathing reset</span>
+        <span class="chip">Night wind-down ritual</span>
+        <span class="chip">Gentle gut-friendly breakfast</span>
+        <span class="chip">A daily movement prompt</span>
+      </div>
+    </section>
+
+    <section style="margin-top:22px;display:flex;gap:16px;align-items:flex-start">
+      <div style="flex:1" class="card">
+        <h3 style="margin-top:0">Pricing & access</h3>
+        <p style="color:var(--muted)">Workshops from $35; cohorts from $249; individual visits billed per session. Scholarships and sliding scale on request.</p>
+        <p style="color:var(--muted);font-size:13px;margin-top:8px">Education-first: sessions focus on learning and support. Not a promise of cure.</p>
+      </div>
+      <div style="width:260px" class="card">
+        <h4 style="margin:0 0 8px">Ready to join?</h4>
+        <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </section>
+
+    <footer>
+      <div>{{BUSINESS_NAME}} — {{CITY}}, {{STATE}} • <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Get in touch with {{BUSINESS_NAME}} — confidential intake, scheduling, and practical next steps." />
+  <style>
+    :root{
+      --bg:#fff8f2;
+      --accent:#ff6b6b;
+      --accent-2:#ffb86b;
+      --ink:#1b1b1b;
+      --muted:#6b6b6b;
+      --card:#fff;
+      --glass: rgba(255,255,255,0.7);
+      --radius:14px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:linear-gradient(180deg,var(--bg),#fff);color:var(--ink);line-height:1.4}
+    header{display:flex;align-items:center;justify-content:space-between;padding:28px 36px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:20px}
+    nav{display:flex;gap:18px}
+    nav a{color:var(--ink);text-decoration:none;font-weight:600}
+    .container{max-width:1100px;margin:24px auto;padding:28px}
+
+    .grid{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:start}
+
+    .card{background:var(--card);border-radius:var(--radius);box-shadow:0 8px 30px rgba(20,20,20,0.06);padding:26px}
+
+    .hero{display:flex;flex-direction:column;gap:10px}
+    .eyebrow{font-weight:700;color:var(--accent);letter-spacing:0.6px}
+    h1{margin:0;font-size:28px}
+    p.lead{margin:0;color:var(--muted)}
+
+    /* Proof gallery */
+    .proof{margin-top:18px}
+    .testimonial{display:flex;gap:14px;align-items:flex-start}
+    .avatar{width:56px;height:56px;background:linear-gradient(180deg,#fff, #f6f6f6);border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700}
+    .quote{flex:1}
+    .quote p{margin:0}
+    .badges{display:flex;gap:8px;margin-top:12px}
+    .badge{background:var(--glass);padding:8px 10px;border-radius:10px;font-weight:600;position:relative;cursor:default}
+    .badge:hover .tooltip{opacity:1;transform:translateY(0);pointer-events:auto}
+    .tooltip{position:absolute;left:50%;transform:translate(-50%,6px);bottom:-46px;background:#222;color:#fff;padding:8px;border-radius:8px;font-size:12px;white-space:nowrap;opacity:0;transition:opacity .18s, transform .18s;pointer-events:none}
+
+    /* contact form */
+    form{display:flex;flex-direction:column;gap:12px}
+    label{font-size:13px;color:var(--muted);font-weight:600}
+    input[type="text"],input[type="email"],textarea,select{padding:12px;border-radius:10px;border:1px solid #e6e6e6;font-size:15px}
+    textarea{min-height:120px;resize:vertical}
+    .row{display:flex;gap:10px}
+    .row .col{flex:1}
+    .actions{display:flex;gap:10px;align-items:center;margin-top:4px}
+    .btn{background:var(--accent);color:white;padding:12px 16px;border-radius:10px;border:none;font-weight:700;cursor:pointer}
+    .btn.ghost{background:transparent;border:2px solid var(--accent);color:var(--accent)}
+
+    /* pricing micro comparator */
+    .pricing-mini{margin-top:18px;border-radius:12px;padding:14px;background:linear-gradient(90deg,#fff, #fffaf3);display:flex;flex-direction:column;gap:12px}
+    .toggle{display:flex;align-items:center;gap:12px}
+    .switch{width:60px;height:32px;background:#eee;border-radius:20px;padding:4px;display:flex;align-items:center;cursor:pointer}
+    .knob{width:24px;height:24px;border-radius:50%;background:white;box-shadow:0 4px 12px rgba(0,0,0,0.08);transform:translateX(0);transition:transform .28s}
+    .prices{display:flex;gap:10px;align-items:center}
+    .price{font-weight:800;font-size:20px}
+    .muted-sm{font-size:12px;color:var(--muted)}
+
+    /* small screens */
+    @media (max-width:860px){
+      .grid{grid-template-columns:1fr;}
+      header{padding:18px}
+      .container{padding:18px}
+    }
+
+    footer{padding:28px;text-align:center;color:var(--muted);font-size:13px}
+
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">TP</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="about.html">Story</a>
+      <a href="specialties.html">Services</a>
+      <a href="approach.html">Method</a>
+      <a href="fees.html">Investment</a>
+      <a href="faq.html">FAQ</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div class="grid">
+      <section class="card">
+        <div class="hero">
+          <div class="eyebrow">Reach out</div>
+          <h1>Schedule a conversation with a clinician who listens.</h1>
+          <p class="lead">If you’re wondering whether therapy could help, this is the place to ask questions, check logistics, and line up something that fits your pace and priorities.</p>
+        </div>
+
+        <div class="proof">
+          <div class="testimonial">
+            <div class="avatar">A</div>
+            <div class="quote">
+              <p id="quoteText">"It felt like finding a small lighthouse on a foggy night — steady, simple, and practical."</p>
+              <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+                <div class="muted-sm">— A client in {{CITY}}</div>
+                <div style="margin-left:auto;color:var(--muted-sm);font-size:13px">Verified sessions • 2024</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="badges" id="badges">
+            <div class="badge" data-tooltip="20+ years combined experience working with individuals and couples">Experienced clinicians
+              <div class="tooltip">20+ years combined practice</div>
+            </div>
+            <div class="badge" data-tooltip="Telehealth + in-person options in {{CITY}}">Telehealth friendly
+              <div class="tooltip">Remote & in-person</div>
+            </div>
+            <div class="badge" data-tooltip="Clinical supervision and continuing education">Supervisor-led practice
+              <div class="tooltip">Clinical supervision</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pricing-mini">
+          <div style="font-weight:700">Quick cost check</div>
+          <div class="toggle" aria-hidden="false">
+            <div style="font-size:13px;color:var(--muted)">Monthly</div>
+            <div class="switch" id="priceSwitch" role="switch" aria-checked="false" tabindex="0" aria-label="Toggle pricing view">
+              <div class="knob" id="knob"></div>
+            </div>
+            <div style="font-size:13px;color:var(--muted)">Package</div>
+          </div>
+          <div class="prices">
+            <div>
+              <div class="price" id="priceValue">$120</div>
+              <div class="muted-sm">per session</div>
+            </div>
+            <div style="margin-left:auto;text-align:right">
+              <div class="muted-sm">or</div>
+              <div class="muted-sm">save on bundles</div>
+            </div>
+          </div>
+          <div style="font-size:13px;color:var(--muted)">Prices are examples and may vary by clinician, session length, and type. Insurance may not be accepted.</div>
+        </div>
+
+      </section>
+
+      <aside>
+        <div class="card">
+          <div style="font-weight:800">Get in touch</div>
+          <div style="color:var(--muted);font-size:13px;margin-bottom:10px">Use this form to describe what’s coming up and your availability. I’ll reply within 3 business days.</div>
+
+          <form id="contactForm">
+            <div>
+              <label for="name">Full name</label>
+              <input id="name" name="name" type="text" required placeholder="Your name" />
+            </div>
+            <div>
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" required placeholder="you@example.com" />
+            </div>
+            <div>
+              <label for="phone">Phone (optional)</label>
+              <input id="phone" name="phone" type="text" placeholder="(555) 555-5555" />
+            </div>
+            <div>
+              <label for="message">Brief note about what brings you here</label>
+              <textarea id="message" name="message" placeholder="A few lines about what you're looking for"></textarea>
+            </div>
+
+            <div class="row">
+              <div class="col">
+                <label for="when">Preferred time to meet</label>
+                <select id="when" name="when">
+                  <option>Morning</option>
+                  <option>Afternoon</option>
+                  <option>Evening</option>
+                </select>
+              </div>
+              <div class="col">
+                <label for="how">Session type</label>
+                <select id="how" name="how">
+                  <option>Telehealth</option>
+                  <option>In-person ({{CITY}})</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="font-size:12px;color:var(--muted)">
+              <label><input type="checkbox" id="consent" required /> I consent to confidential clinical intake communications. I understand this is not emergency care.</label>
+            </div>
+
+            <div class="actions">
+              <button type="submit" class="btn">{{PRIMARY_CTA_LABEL}}</button>
+              <a class="btn ghost" href="{{PRIMARY_CTA_URL}}">Continue to booking</a>
+            </div>
+
+            <div id="formNote" style="margin-top:10px;font-size:12px;color:var(--muted)"></div>
+
+          </form>
+
+          <hr style="margin:14px 0;border:none;border-top:1px solid #f1f1f1" />
+
+          <div style="font-size:13px;font-weight:700">Contact details</div>
+          <div style="margin-top:6px;color:var(--muted)">Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+          <div style="color:var(--muted)">Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+
+        </div>
+
+        <div style="height:18px"></div>
+
+        <div class="card">
+          <div style="font-weight:700">Confidentiality & boundaries</div>
+          <div style="margin-top:8px;color:var(--muted);font-size:13px">
+            Communications sent here are treated as part of a confidential clinical intake. Limitations to confidentiality include risk of harm to self or others, abuse of a minor or dependent adult, or other legal obligations. This site and form are not for crisis support. If you are in crisis or danger, call local emergency services or the nearest crisis line.
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} — Compassionate clinical care in {{CITY}}, {{STATE}} • Not a substitute for emergency services.</div>
+  </footer>
+
+  <script>
+    // Proof Gallery: rotating testimonials + badges tooltips
+    (function(){
+      const quotes = [
+        "It felt like finding a small lighthouse on a foggy night — steady, simple, and practical.",
+        "The sessions helped me name what mattered and make one manageable change at a time.",
+        "I appreciated the clear expectations and the real-world strategies we tried between sessions.",
+        "Warm, grounded listening that helped me make sense of a messy season."
+      ];
+      let i=0;
+      const quoteText = document.getElementById('quoteText');
+      function rotate(){
+        i=(i+1)%quotes.length;
+        // simple fade
+        quoteText.style.opacity=0; 
+        setTimeout(()=>{quoteText.textContent = '"'+quotes[i]+'"'; quoteText.style.opacity=1},260);
+      }
+      setInterval(rotate,4500);
+
+      // badges tooltip copy (keeps tooltips accessible)
+      document.querySelectorAll('#badges .badge').forEach(b=>{
+        const t = b.querySelector('.tooltip');
+        b.addEventListener('mouseenter',()=>{t.style.opacity=1;t.style.transform='translateY(0)'});
+        b.addEventListener('mouseleave',()=>{t.style.opacity=0;t.style.transform='translateY(6px)'});
+      });
+    })();
+
+    // Pricing comparator: monthly vs package with animated numbers
+    (function(){
+      const switchEl = document.getElementById('priceSwitch');
+      const knob = document.getElementById('knob');
+      const priceValue = document.getElementById('priceValue');
+      let state = 'monthly';
+      // example values (could be templated per clinician)
+      const values = {
+        monthly: 120,
+        package: 100 // per session when bought in a package
+      };
+
+      function animateNumber(from,to,duration=600){
+        const start = performance.now();
+        requestAnimationFrame(function frame(now){
+          const t = Math.min((now-start)/duration,1);
+          const current = Math.round(from + (to-from)*t);
+          priceValue.textContent = '$' + current;
+          if(t<1) requestAnimationFrame(frame);
+        });
+      }
+
+      function setState(s){
+        if(s===state) return;
+        const from = values[state];
+        const to = values[s];
+        animateNumber(from,to);
+        state=s;
+        // visual knob
+        if(state==='package'){
+          knob.style.transform = 'translateX(26px)';
+          switchEl.setAttribute('aria-checked','true');
+        } else {
+          knob.style.transform = 'translateX(0)';
+          switchEl.setAttribute('aria-checked','false');
+        }
+      }
+
+      switchEl.addEventListener('click',()=>{
+        setState(state==='monthly'? 'package': 'monthly');
+      });
+      switchEl.addEventListener('keydown',(e)=>{
+        if(e.key==='Enter' || e.key===' '){ e.preventDefault(); setState(state==='monthly'? 'package': 'monthly'); }
+      });
+
+      // initialize
+      priceValue.textContent = '$' + values.monthly;
+
+    })();
+
+    // Form handling (local UI only)
+    (function(){
+      const form = document.getElementById('contactForm');
+      const note = document.getElementById('formNote');
+      form.addEventListener('submit', (e)=>{
+        e.preventDefault();
+        const data = new FormData(form);
+        note.textContent = 'Thanks — your message is ready. A member of the practice will follow up at ' + (data.get('email') || 'the email you provided') + '.';
+        form.reset();
+      });
+    })();
+  </script>
+</body>
+</html>

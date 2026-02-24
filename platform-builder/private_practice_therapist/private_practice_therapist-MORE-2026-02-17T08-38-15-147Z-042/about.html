@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff8f2;--accent:#7c5a3e;--muted:#8a6f5a;--soft:#f3e9e1;--green:#7aa28c}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial; color:#3b2e28;background:var(--bg);}
+    .wrap{max-width:900px;margin:32px auto;padding:28px}
+    nav{display:flex;gap:14px;align-items:center;margin-bottom:18px}
+    nav a{color:var(--accent);text-decoration:none;font-weight:600}
+    header.hero{display:grid;grid-template-columns:1fr;gap:18px;padding:22px;border-radius:10px;background:linear-gradient(180deg,var(--soft),transparent);box-shadow:0 6px 18px rgba(60,40,30,0.06)}
+    h1{margin:0;font-size:22px;color:var(--accent)}
+    p.lead{margin:6px 0 0;color:var(--muted);line-height:1.5}
+    .card{background:#fff;border-radius:10px;padding:18px;margin-top:16px;box-shadow:0 4px 14px rgba(60,40,30,0.04)}
+    .meta{font-size:13px;color:var(--muted)}
+    .two{display:grid;grid-template-columns:1fr 320px;gap:18px}
+    label{display:block;font-size:13px;color:var(--muted);margin-top:12px}
+    input[type='text'],textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid #e6ddd7;font-size:15px}
+    button{background:var(--accent);color:#fff;border:none;padding:10px 14px;border-radius:8px;cursor:pointer}
+    .secondary{background:transparent;border:1px solid #e6ddd7;color:var(--accent)}
+    .summary{white-space:pre-wrap;background:#fbf6f3;padding:14px;border-radius:8px;border:1px dashed #e9ded6;margin-top:12px;font-family:ui-monospace,monospace;font-size:13px}
+    footer.note{font-size:13px;color:var(--muted);margin-top:14px}
+    .svg-deco{width:100%;height:84px;margin-top:6px;opacity:0.28}
+    @media(max-width:880px){.two{grid-template-columns:1fr} .svg-deco{height:60px}}
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <nav>
+      <a href='index.html'>Start</a>
+      <a href='about.html'>About</a>
+      <a href='specialties.html'>Services</a>
+      <a href='approach.html'>How I Work</a>
+      <a href='fees.html'>Investment</a>
+      <a href='faq.html'>Questions</a>
+      <a href='book.html'>Reserve</a>
+      <a href='contact.html'>Connect</a>
+    </nav>
+
+    <header class='hero card'>
+      <div>
+        <h1>Therapy shaped into steady, practical support</h1>
+        <p class='lead'>I offer gentle, evidence-informed care with attention to daily life — practical steps that preserve dignity and attention to who you are now.</p>
+      </div>
+      <svg class='svg-deco' viewBox='0 0 600 80' preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'>
+        <defs>
+          <linearGradient id='g1' x1='0' x2='1'>
+            <stop offset='0' stop-color='#f1e6de'/>
+            <stop offset='1' stop-color='#fff8f2'/>
+          </linearGradient>
+          <pattern id='p1' width='20' height='20' patternUnits='userSpaceOnUse' patternTransform='rotate(18)'>
+            <rect width='20' height='20' fill='transparent'/>
+            <path d='M0 10h20' stroke='#fdeee2' stroke-width='1'/>
+            <path d='M10 0v20' stroke='#efe0d6' stroke-width='1'/>
+          </pattern>
+        </defs>
+        <rect width='600' height='80' fill='url(#g1)'/>
+        <rect width='600' height='80' fill='url(#p1)' opacity='0.6'/>
+      </svg>
+    </header>
+
+    <section class='two'>
+      <div>
+        <div class='card'>
+          <h2 style='margin-top:0'>About me</h2>
+          <p class='meta'>Licensed clinician based in {{CITY}}, {{STATE}} — offering short and ongoing sessions by appointment.</p>
+          <p>I bring a calm, practical orientation: we notice what's present, name small shifts that matter, and plan clear next steps for the week. My work blends thoughtful listening with tools you can use between sessions. Nothing rushed; nothing flashy.</p>
+          <p class='meta'>I work with adults around transitions, anxiety, low mood, relationship patterns, and life-stage concerns. Telehealth and limited in-person availability.</p>
+        </div>
+
+        <div class='card'>
+          <h3 style='margin-top:0'>Session Planner</h3>
+          <p class='meta'>Build a focused plan you can try for the next 2–6 weeks.</p>
+          <label for='goal'>Primary focus for therapy</label>
+          <input id='goal' type='text' placeholder='e.g., worry that gets in the way of sleep'>
+          <label for='frequency'>Session rhythm</label>
+          <select id='frequency'>
+            <option value='weekly'>Weekly — steady space to track progress</option>
+            <option value='biweekly'>Every other week — room for practice</option>
+            <option value='monthly'>Monthly check-ins — focused themes</option>
+          </select>
+          <label for='focusAreas'>Tactical focuses (comma separated)</label>
+          <input id='focusAreas' type='text' placeholder='Boundaries, sleep, short-term planning'>
+          <label for='duration'>Prefered plan length</label>
+          <select id='duration'>
+            <option value='4'>4 sessions</option>
+            <option value='6'>6 sessions</option>
+            <option value='12'>12 sessions</option>
+          </select>
+          <div style='display:flex;gap:8px;margin-top:12px'>
+            <button id='buildPlanBtn'>Create plan</button>
+            <button class='secondary' id='clearPlanBtn'>Clear</button>
+          </div>
+          <div id='planSummary' class='summary' aria-live='polite'></div>
+          <div style='display:flex;gap:8px;margin-top:8px'>
+            <button id='copyPlanBtn' class='secondary'>Copy summary</button>
+            <a id='bookNow' class='secondary' href='{{PRIMARY_CTA_URL}}' style='text-decoration:none;display:inline-flex;align-items:center;padding:8px;border-radius:8px'>{{PRIMARY_CTA_LABEL}}</a>
+          </div>
+        </div>
+
+        <div class='card' style='margin-top:14px'>
+          <h3 style='margin-top:0'>Confidentiality & scope</h3>
+          <p>I maintain clinical confidentiality within legal and ethical limits. I am not able to provide emergency services through this site. If you are in crisis or danger, contact local emergency services or a crisis line immediately.</p>
+          <p class='meta'>For scheduling or clinical questions email <a href='mailto:{{EMAIL}}' style='color:var(--accent)'>{{EMAIL}}</a> or call <a href='tel:{{PHONE}}' style='color:var(--accent)'>{{PHONE}}</a>.</p>
+        </div>
+      </div>
+
+      <aside>
+        <div class='card'>
+          <h3 style='margin-top:0'>Self-screening intake</h3>
+          <p class='meta'>A brief, reflective set of prompts you can bring to your first visit. This is not diagnostic — it helps shape our initial conversation.</p>
+
+          <div id='wizard'>
+            <div id='stepContainer'>
+              <div class='step' data-step='1'>
+                <label>Which concern feels most pressing today?</label>
+                <input id='w1' type='text' placeholder='Two to six words'>
+              </div>
+              <div class='step' data-step='2' style='display:none'>
+                <label>How does this show up in day to day life?</label>
+                <textarea id='w2' rows='3' placeholder='Sleep, appetite, focus, relationships'></textarea>
+              </div>
+              <div class='step' data-step='3' style='display:none'>
+                <label>What have you tried so far that helps even a little?</label>
+                <input id='w3' type='text' placeholder='A practice, a strategy, support person'>
+              </div>
+              <div class='step' data-step='4' style='display:none'>
+                <label>What would a meaningful next step look like?</label>
+                <input id='w4' type='text' placeholder='A specific thing you could try in the week ahead'>
+              </div>
+            </div>
+
+            <div style='display:flex;gap:8px;margin-top:12px'>
+              <button id='nextStep'>Next</button>
+              <button id='prevStep' class='secondary'>Back</button>
+              <button id='finishWizard' class='secondary'>Produce notes</button>
+            </div>
+
+            <div id='wizardOutput' class='summary' style='display:none;margin-top:12px'></div>
+            <button id='copyWizard' class='secondary' style='display:none;margin-top:8px'>Copy intake notes</button>
+          </div>
+
+        </div>
+
+        <div class='card' style='margin-top:14px'>
+          <h4 style='margin-top:0'>Practicalities</h4>
+          <p class='meta'>Sessions are private and scheduled by appointment. I offer telehealth and in-person options where permitted. Insurance may be used; please ask when booking.</p>
+        </div>
+      </aside>
+    </section>
+
+    <footer class='note'>
+      Notes: This site does not replace emergency care. If you are at immediate risk, call local emergency services or a crisis hotline. Therapy is a collaborative process; outcomes differ by individual.
+    </footer>
+  </div>
+
+  <script>
+    // Session Planner
+    (function(){
+      var buildBtn=document.getElementById('buildPlanBtn');
+      var clearBtn=document.getElementById('clearPlanBtn');
+      var copyBtn=document.getElementById('copyPlanBtn');
+      var out=document.getElementById('planSummary');
+      function makePlan(){
+        var goal=document.getElementById('goal').value.trim();
+        var freq=document.getElementById('frequency').value;
+        var focus=document.getElementById('focusAreas').value.trim();
+        var dur=document.getElementById('duration').value;
+        if(!goal) { out.textContent='Please name a primary focus to build a plan.'; return }
+        var lines=[];
+        lines.push('Personal Plan — '+(goal||'No goal provided'));
+        lines.push('Rhythm: '+(freq==='weekly'? 'Weekly' : freq==='biweekly' ? 'Every other week' : 'Monthly'));
+        lines.push('Length: '+dur+' sessions');
+        if(focus) lines.push('Tactical focuses: '+focus);
+        lines.push('Suggested weekly practice: choose 1 small, measurable step to try between sessions (5–20 minutes).');
+        lines.push('Check-ins: note what helps and what gets in the way, bring examples to the next session.');
+        out.textContent=lines.join('\n');
+      }
+      function clearPlan(){
+        document.getElementById('goal').value='';
+        document.getElementById('focusAreas').value='';
+        out.textContent='';
+      }
+      function copyText(el){
+        if(!out.textContent) return; navigator.clipboard.writeText(out.textContent).then(function(){
+          el.textContent='Copied'; setTimeout(function(){el.textContent='Copy summary'},1400)
+        })
+      }
+      buildBtn.addEventListener('click',makePlan);
+      clearBtn.addEventListener('click',clearPlan);
+      copyBtn.addEventListener('click',function(){copyText(this)});
+    })();
+
+    // Intake wizard
+    (function(){
+      var step=1; var total=4;
+      var next=document.getElementById('nextStep');
+      var prev=document.getElementById('prevStep');
+      var finish=document.getElementById('finishWizard');
+      var out=document.getElementById('wizardOutput');
+      var copyBtn=document.getElementById('copyWizard');
+      function showStep(n){
+        var steps=document.querySelectorAll('#stepContainer .step');
+        steps.forEach(function(s){ s.style.display='none' });
+        var cur=document.querySelector('#stepContainer .step[data-step="'+n+'"]');
+        if(cur) cur.style.display='block';
+      }
+      next.addEventListener('click',function(){ if(step<total) step++; showStep(step) });
+      prev.addEventListener('click',function(){ if(step>1) step--; showStep(step) });
+      finish.addEventListener('click',function(){
+        var a=document.getElementById('w1').value.trim();
+        var b=document.getElementById('w2').value.trim();
+        var c=document.getElementById('w3').value.trim();
+        var d=document.getElementById('w4').value.trim();
+        var lines=[];
+        lines.push('Intake notes — bring to first session');
+        if(a) lines.push('Primary concern: '+a);
+        if(b) lines.push('How it shows up: '+b);
+        if(c) lines.push('What helps a little: '+c);
+        if(d) lines.push('What a next step might be: '+d);
+        lines.push('Questions to ask clinician:');
+        lines.push('- How might we prioritize the items above?');
+        lines.push('- What are simple practices to try between sessions?');
+        out.textContent=lines.join('\n');
+        out.style.display='block'; copyBtn.style.display='inline-block'; out.scrollIntoView({behavior:'smooth'});
+      });
+      copyBtn.addEventListener('click',function(){
+        if(!out.textContent) return; navigator.clipboard.writeText(out.textContent).then(()=>{this.textContent='Copied'});
+      });
+      showStep(1);
+    })();
+  </script>
+</body>
+</html>

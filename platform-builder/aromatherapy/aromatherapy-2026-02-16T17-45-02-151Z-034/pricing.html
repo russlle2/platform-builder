@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Investment & Pricing — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Transparent pricing for aromatherapy intensives and session packages. Safety-forward, personalized blends." />
+  <style>
+    :root{--bg:#fff7f0;--accent:#7a4b2a;--accent-2:#b06b44;--muted:#6b5a50;--card:#fff2ea;--glass:rgba(255,255,255,0.6);--radius:14px}
+    *{box-sizing:border-box}
+    body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;line-height:1.5;color:var(--muted);margin:0;background:linear-gradient(180deg,var(--bg),#fff);min-height:100vh;display:flex;flex-direction:column}
+    header{padding:28px 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{width:56px;height:56px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:white;font-weight:700}
+    nav a{color:var(--muted);text-decoration:none;margin:0 10px;font-weight:600}
+    nav a:hover{color:var(--accent)}
+    main{padding:28px;max-width:1100px;margin:0 auto;width:100%}
+
+    /* Hero */
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:32px;align-items:center;margin-top:10px}
+    .hero-card{background:linear-gradient(180deg,rgba(255,255,255,0.9),var(--card));padding:28px;border-radius:18px;box-shadow:0 8px 30px rgba(122,75,42,0.08)}
+    h1{margin:0 0 8px 0;color:var(--accent)}
+    p.lead{margin:0;color:var(--muted);font-size:15px}
+
+    /* Pricing grid */
+    .prices{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px}
+    .plan{background:linear-gradient(180deg,white, #fff3ec);padding:20px;border-radius:14px;border:1px solid rgba(122,75,42,0.06)}
+    .plan h3{margin:0;color:var(--accent)}
+    .price{font-size:28px;color:var(--accent-2);margin:12px 0;font-weight:800}
+    ul.benefit{padding-left:18px;margin:8px 0 16px 0;color:var(--muted)}
+    .plan .cta{display:inline-block;padding:10px 14px;background:var(--accent);color:white;border-radius:10px;text-decoration:none;font-weight:700}
+
+    /* feature strip */
+    .strip{margin:28px 0;padding:18px;border-radius:12px;background:linear-gradient(90deg,rgba(184,139,115,0.06),rgba(122,75,42,0.02));display:flex;gap:20px;align-items:center}
+    .strip svg{width:48px;height:48px;flex:0 0 48px}
+
+    /* FAQ brief */
+    .faq{margin-top:22px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .faq .q{background:linear-gradient(180deg,#fff,#fff9f6);padding:16px;border-radius:10px;border:1px solid rgba(122,75,42,0.04)}
+    .small{font-size:13px;color:#6b5a50}
+
+    footer{padding:28px;text-align:center;color:var(--muted)}
+
+    /* decorative background using inline svg data URI */
+    body::before{content:"";position:fixed;inset:0;z-index:-1;opacity:0.12;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600"><defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="%23b06b44" stop-opacity="0.15"/><stop offset="1" stop-color="%237a4b2a" stop-opacity="0.06"/></linearGradient></defs><rect width="800" height="600" fill="%23fff7f0"/><g fill="url(%23g)" transform="rotate(-25 400 300)"><circle cx="150" cy="120" r="120"/><ellipse cx="430" cy="480" rx="220" ry="80"/></g><g fill="rgba(122,75,42,0.06)"><path d="M0 560c60-30 140-40 220-16 120 36 150 0 300-20 120-17 220 40 280 56v20H0z"/></g></svg>');background-repeat:no-repeat;background-position:top right;background-size:65%}
+
+    @media(max-width:900px){.hero{grid-template-columns:1fr;}.prices{grid-template-columns:1fr}.hero-card{padding:18px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">A</div>
+      <div>
+        <div style="font-weight:800;color:var(--accent)">{{BUSINESS_NAME}}</div>
+        <div class="small">Curated aromatherapy · {{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Nest</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Formulas</a>
+      <a href="shop.html">Market</a>
+      <a href="about.html">Who we are</a>
+      <a href="book.html">Reserve</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-card">
+        <h1>Investment in scent + care</h1>
+        <p class="lead">Our pricing is transparent and crafted for deep, safe work. Each package is tailored and includes written blend notes, safety guidance, and a follow-up touchpoint. No medical claims — just thoughtful, professional aromatherapy.</p>
+        <div class="strip" style="margin-top:16px">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="rgba(122,75,42,0.3)" stroke-width="1.5"/><path d="M8 14s2-3 4-3 4 3 4 3" stroke="rgba(122,75,42,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div>
+            <div style="font-weight:700;color:var(--accent)">Intensive model — designed for lasting change</div>
+            <div class="small">Multi-session packages with personalization, blend continuity, and a clear safety plan.</div>
+          </div>
+        </div>
+      </div>
+
+      <aside style="align-self:start">
+        <div style="background:linear-gradient(180deg,#fff9f7,#fff2ea);padding:18px;border-radius:12px;border:1px solid rgba(122,75,42,0.05)">
+          <div style="font-weight:800;color:var(--accent-2);font-size:18px">Ready for a focused journey?</div>
+          <p class="small" style="margin:6px 0 12px">Book a discovery call to see if the intensive is right for you.</p>
+          <a class="plan cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </aside>
+    </section>
+
+    <section class="prices">
+      <div class="plan">
+        <h3>Starter Session</h3>
+        <div class="price">$95</div>
+        <div class="small">Single 60-minute consultation
+with a bespoke inhalation blend sample.</div>
+        <ul class="benefit">
+          <li>One 60-min session</li>
+          <li>Personalized inhalation blend (sample vial)</li>
+          <li>Safety & dilution guidance</li>
+        </ul>
+        <a class="cta" href="book.html">Book a Session</a>
+      </div>
+
+      <div class="plan">
+        <h3>Renewal Pack (3)</h3>
+        <div class="price">$260</div>
+        <div class="small">Three sessions for continuity and refinement.</div>
+        <ul class="benefit">
+          <li>Three 60-min sessions</li>
+          <li>Refined blends across visits</li>
+          <li>Between-session check-ins</li>
+        </ul>
+        <a class="cta" href="book.html">Reserve a Pack</a>
+      </div>
+
+      <div class="plan" style="border:2px solid var(--accent);box-shadow:0 10px 30px rgba(122,75,42,0.08)">
+        <h3>Focused Intensive</h3>
+        <div class="price">$680</div>
+        <div class="small">Four-session intensive: strategy, personalization, consolidation.</div>
+        <ul class="benefit">
+          <li>Four 75-min sessions</li>
+          <li>Comprehensive intake + final plan</li>
+          <li>Two sample blends + written notes</li>
+        </ul>
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">Begin the Intensive</a>
+      </div>
+    </section>
+
+    <section style="margin-top:18px">
+      <h2 style="color:var(--accent)">What your investment includes</h2>
+      <div class="small" style="margin-top:8px">Every package includes professional safety checks, patch-test instructions, dilution guidelines, and written blend notes you can keep. We do not offer medical diagnosis or treatment.</div>
+    </section>
+
+    <section class="faq" aria-label="pricing faq">
+      <div class="q">
+        <strong>Is there a sliding scale?</strong>
+        <div class="small" style="margin-top:6px">Occasionally — please reach out via {{EMAIL}} to discuss accessibility. Availability is limited.</div>
+      </div>
+      <div class="q">
+        <strong>What's the cancellation policy?</strong>
+        <div class="small" style="margin-top:6px">Please give 48 hours' notice for reschedules or cancellations. Late cancellations may be charged at full price.</div>
+      </div>
+    </section>
+
+    <section style="margin-top:22px;padding:18px;background:linear-gradient(180deg,#fff,#fff7f1);border-radius:12px;border:1px dashed rgba(122,75,42,0.06)">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div>
+          <div style="font-weight:800;color:var(--accent)">Want a prep checklist?</div>
+          <div class="small">Download a one-page intake & scent prep guide before your first session.</div>
+        </div>
+        <div><a class="plan cta" href="lead-magnet.html">Get the Prep Guide</a></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div style="max-width:900px;margin:0 auto;padding:12px 24px">© <span style="font-weight:700">{{PRACTITIONER_NAME}}</span> — {{BUSINESS_NAME}} • <span class="small">Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="book.html">Book</a></span></div>
+  </footer>
+</body>
+</html>

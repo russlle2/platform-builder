@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contact — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reach {{BUSINESS_NAME}} for integrative, whole-person care. Book a consult, ask about services, or request records.">
+  <style>
+    :root{
+      --bg1:#f6fbf9; --bg2:#eaf6f2;
+      --accent:#2a7f6b; --muted:#6b7a77; --card:#ffffff;
+      --glass: rgba(255,255,255,0.6);
+      --shadow: 0 8px 30px rgba(30,40,40,0.06);
+      --radius:16px;
+      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      color-scheme: light;
+    }
+    html,body{height:100%; margin:0; background:linear-gradient(180deg,var(--bg1),var(--bg2));}
+    /* SVG pattern covers entire page via pseudo-element technique */
+    body::before{
+      content: "";
+      position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.14;
+      background-image: radial-gradient(circle at 15% 20%, rgba(42,127,107,0.06) 0 8%, transparent 9%), linear-gradient(120deg, rgba(42,127,107,0.03), rgba(42,127,107,0.02));
+      backdrop-filter: blur(0.4px);
+    }
+    .wrap{max-width:1100px; margin:36px auto; padding:28px; position:relative; z-index:1}
+    header{display:flex; align-items:center; justify-content:space-between; gap:18px; margin-bottom:22px}
+    .brand{display:flex; gap:14px; align-items:center}
+    .logo{width:56px; height:56px; border-radius:12px; background:linear-gradient(135deg,#dff8f0,#e9fff5); display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow)}
+    .logo svg{width:36px; height:36px}
+    .brand h1{font-size:18px; margin:0; letter-spacing:0.2px}
+    .brand p{margin:0; color:var(--muted); font-size:13px}
+    nav a{color:var(--muted); text-decoration:none; margin-left:14px; font-size:14px}
+    nav a[href$="contact.html"]{color:var(--accent); font-weight:600}
+
+    main{display:grid; grid-template-columns: 1fr 380px; gap:28px; align-items:start}
+
+    /* Hero card */
+    .hero{background:linear-gradient(180deg, rgba(255,255,255,0.86), rgba(255,255,255,0.72)); padding:28px; border-radius:var(--radius); box-shadow:var(--shadow)}
+    .hero h2{margin:0 0 8px 0; font-size:22px}
+    .hero p.lead{margin:0; color:var(--muted)}
+    .meta{display:flex; gap:10px; margin-top:16px; align-items:center}
+    .pill{background:var(--glass); padding:8px 12px; border-radius:999px; color:var(--muted); font-size:13px}
+
+    section.card{background:var(--card); padding:18px; border-radius:14px; box-shadow:var(--shadow); margin-top:18px}
+    h3{margin:0 0 8px 0}
+    p{margin:0 0 12px 0; color:var(--muted)}
+
+    /* Ritual (daily practice) */
+    .ritual-grid{display:flex; gap:12px; margin-top:12px}
+    .ritual-grid .tile{flex:1; background:linear-gradient(180deg,#fff,#fbfffd); border-radius:12px; padding:12px}
+    .tile strong{display:block; color:var(--accent); margin-bottom:6px}
+
+    /* What to expect */
+    .expect-list{display:grid; gap:10px}
+    .expect-item{display:flex; gap:12px; align-items:flex-start}
+    .dot{width:44px; height:44px; flex:0 0 44px; border-radius:10px; background:linear-gradient(135deg,#e9fff5,#ddf7ee); display:flex; align-items:center; justify-content:center}
+
+    /* Appointment / schedule */
+    .schedule-list{display:flex; flex-direction:column; gap:10px}
+    .slot{display:flex; justify-content:space-between; align-items:center; padding:10px; border-radius:10px; background:linear-gradient(180deg,#ffffff,#fbfffe)}
+    .slot .type{font-weight:600}
+    .slot .meta{color:var(--muted); font-size:13px}
+
+    /* Form */
+    form{display:flex; flex-direction:column; gap:10px}
+    input,textarea,select{padding:12px; border-radius:10px; border:1px solid rgba(20,30,30,0.06); font-size:14px}
+    button.cta{background:linear-gradient(90deg,var(--accent),#2e9f7d); color:#fff; border:none; padding:12px 16px; border-radius:10px; cursor:pointer; font-weight:600}
+    .small{font-size:13px; color:var(--muted)}
+
+    footer{margin-top:28px; text-align:center; color:var(--muted); font-size:13px}
+
+    @media(max-width:980px){
+      main{grid-template-columns:1fr;}
+      .wrap{padding:18px}
+      nav{display:none}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden>
+          <!-- minimal botanical emblem as inline SVG pattern -->
+          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden>
+            <defs>
+              <linearGradient id="g1" x1="0" x2="1">
+                <stop offset="0" stop-color="#2a7f6b" stop-opacity="0.95"/>
+                <stop offset="1" stop-color="#68bca1" stop-opacity="0.95"/>
+              </linearGradient>
+            </defs>
+            <rect width="64" height="64" rx="12" fill="url(#g1)"/>
+            <g transform="translate(10,12)" fill="rgba(255,255,255,0.95)">
+              <path d="M14 0 C9 6 6 10 6 18 C6 26 14 30 18 30" stroke="rgba(255,255,255,0.9)" stroke-width="2" fill="none" stroke-linecap="round"/>
+              <circle cx="34" cy="20" r="6" />
+            </g>
+          </svg>
+        </div>
+        <div>
+          <h1>{{BUSINESS_NAME}}</h1>
+          <p>{{TAGLINE}}</p>
+        </div>
+      </div>
+      <nav aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="services.html">Care</a>
+        <a href="conditions.html">Conditions</a>
+        <a href="approach.html">How we help</a>
+        <a href="pricing.html">Fees</a>
+        <a href="about.html">About</a>
+        <a href="book.html">Schedule</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </header>
+
+    <main>
+      <div>
+        <section class="hero" aria-labelledby="contact-hero">
+          <h2 id="contact-hero">Connect with {{BUSINESS_NAME}} — practical, whole-person care</h2>
+          <p class="lead">If you are curious about integrative options, need help prioritizing healthy rituals, or want an informed partner for long-term wellness, start here. We emphasize education, shared decision-making, and safe integrative practices.</p>
+
+          <div class="meta" aria-hidden>
+            <div class="pill">Hybrid visits (telemedicine + in-person)</div>
+            <div class="pill">Accepts consults for adults &amp; adolescents</div>
+          </div>
+
+          <div class="card" style="margin-top:18px; background:linear-gradient(180deg,#fbfffe,#ffffff); padding:14px; border-radius:12px">
+            <h3 style="margin-bottom:6px">A short ritual to start — breath & orientation</h3>
+            <p class="small">Before a visit, we recommend a 3-minute settling practice: sit quietly, place a hand on your chest, breathe slowly in for 4, out for 6. Note one area you want to discuss. Small rituals help orient attention for a productive consult.</p>
+            <div class="ritual-grid" style="margin-top:10px">
+              <div class="tile"><strong>Hydration</strong><span class="small">Drink a glass of water 30 minutes before sessions to support cognitive clarity.</span></div>
+              <div class="tile"><strong>Notes</strong><span class="small">Bring medication list &amp; 1–2 questions to guide the appointment.</span></div>
+              <div class="tile"><strong>Wear</strong><span class="small">Comfortable clothing for any in-person exam components.</span></div>
+            </div>
+          </div>
+
+          <section class="card" aria-labelledby="expectations">
+            <h3 id="expectations">What to expect in your first visit</h3>
+            <div class="expect-list">
+              <div class="expect-item"><div class="dot">1</div><div><strong>Comprehensive intake</strong><p class="small">We review health history, lifestyle, and priorities — this is educational and collaborative.</p></div></div>
+              <div class="expect-item"><div class="dot">2</div><div><strong>Individualized plan</strong><p class="small">You will receive a practical, phased care plan (behavioral strategies, nutrition basics, optional labs discussed).</p></div></div>
+              <div class="expect-item"><div class="dot">3</div><div><strong>Follow-up</strong><p class="small">We set realistic goals and a follow-up cadence. Ongoing support emphasizes measurement and safety.</p></div></div>
+            </div>
+          </section>
+
+          <section class="card" aria-labelledby="notes">
+            <h3 id="notes">Important practice notes</h3>
+            <p class="small">We do not promise cures. Our approach integrates conventional and complementary options with attention to safety and evidence. Laboratory testing or specialist referrals may be suggested when appropriate.</p>
+          </section>
+
+        </section>
+
+        <section class="card" aria-labelledby="faq">
+          <h3 id="faq">FAQ — quick answers</h3>
+          <p class="small"><strong>How long is a new patient visit?</strong> Typically 60–75 minutes for the initial evaluation. Follow-ups are 30–45 minutes depending on needs.</p>
+          <p class="small"><strong>Do you coordinate with my primary doctor?</strong> Yes — with your permission we share plans and collaborate on treatments.</p>
+          <p class="small"><strong>Are supplements recommended?</strong> Some patients benefit from targeted supplementation; we discuss evidence, dosing, and interactions before recommending anything.</p>
+        </section>
+
+      </div>
+
+      <aside>
+        <div class="card" aria-labelledby="book">
+          <h3 id="book">Request an appointment</h3>
+          <p class="small">Select a visit type and leave basic details. We will respond within 48 business hours to confirm and provide intake forms.</p>
+
+          <form action="mailto:{{EMAIL}}" method="post" enctype="text/plain">
+            <label class="small">Visit type</label>
+            <select name="visit">
+              <option>New patient — full consult (60–75 min)</option>
+              <option>Follow-up — progress visit (30–45 min)</option>
+              <option>Brief check-in (15–20 min)</option>
+              <option>Phone triage / message</option>
+            </select>
+
+            <label class="small">Your name</label>
+            <input name="name" placeholder="First &amp; last" required>
+
+            <label class="small">Phone</label>
+            <input name="phone" placeholder="{{PHONE}}">
+
+            <label class="small">Email</label>
+            <input name="email" placeholder="{{EMAIL}}" required>
+
+            <label class="small">Brief reason for visit</label>
+            <textarea name="reason" rows="4" placeholder="2–3 sentences"></textarea>
+
+            <button class="cta" type="submit">{{PRIMARY_CTA_LABEL}}</button>
+            <p class="small" style="margin-top:8px">If urgent, call: <a href="tel:{{PHONE}}">{{PHONE}}</a>. For records requests, email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</p>
+          </form>
+        </div>
+
+        <div class="card" style="margin-top:14px; text-align:left">
+          <h3>Visit types &amp; hours</h3>
+          <div class="schedule-list">
+            <div class="slot"><div><div class="type">Initial Consult</div><div class="meta">60–75 min • in-person or virtual</div></div><div class="meta">Starting $180</div></div>
+            <div class="slot"><div><div class="type">Follow-up</div><div class="meta">30–45 min • focused plan review</div></div><div class="meta">Starting $95</div></div>
+            <div class="slot"><div><div class="type">Brief Check-in</div><div class="meta">15–20 min • medication or lab review</div></div><div class="meta">$45</div></div>
+          </div>
+          <p class="small" style="margin-top:10px">Hours: Mon–Thu 8:30–17:00; Fri by arrangement. Telemedicine available. Evening slots limited.</p>
+        </div>
+
+        <div class="card" style="margin-top:14px; text-align:left">
+          <h3>Location</h3>
+          <p class="small">Clinic in {{CITY}}, {{STATE}}. Exact address will be provided after booking. Parking and accessible entry available.</p>
+          <p class="small">Practitioner: {{PRACTITIONER_NAME}}, {{CREDENTIALS}}</p>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      <p>We focus on education and shared decision-making. The information provided is not a substitute for direct clinical care. For emergencies, call local emergency services.</p>
+      <p style="margin-top:8px"><a href="{{PRIMARY_CTA_URL}}" style="color:var(--accent); text-decoration:none; font-weight:600">Book a visit</a> • <a href="privacy.html">Privacy</a></p>
+    </footer>
+  </div>
+</body>
+</html>

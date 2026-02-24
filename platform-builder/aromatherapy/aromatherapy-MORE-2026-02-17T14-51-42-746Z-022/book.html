@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--accent:#5e3f36;--muted:#6d5b57}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--accent);background:#fffaf7}
+    header{display:flex;justify-content:space-between;align-items:center;padding:14px 20px}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none}
+    main{max-width:920px;margin:22px auto;padding:18px}
+
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .form-card{background:#fff;padding:16px;border-radius:12px;box-shadow:0 8px 26px rgba(94,63,54,0.04)}
+    label{display:block;margin-top:10px;font-size:14px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #eee;margin-top:6px}
+    button.submit{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--accent);color:#fff;border:none}
+
+    .aside{background:linear-gradient(180deg,#fff,#fff8f5);padding:14px;border-radius:12px}
+    .mini-wheel{width:160px;height:160px;margin:0 auto}
+
+    .faq{margin-top:12px;background:#fff;padding:12px;border-radius:10px}
+    .faq h4{margin:0 0 8px}
+    .note{color:var(--muted);font-size:14px}
+
+    footer{margin-top:18px;text-align:center;color:var(--muted)}
+
+    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Nest</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Apothecary</a>
+      <a href="pricing.html">Investment</a>
+      <a href="about.html">Origins</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1 style="margin:0 0 10px">Reserve time</h1>
+    <p style="margin:0 0 14px;color:var(--muted)">Select a session type and choose a few times that work for you. We'll confirm availability by email.</p>
+
+    <div class="grid">
+      <div class="form-card">
+        <form id="booking">
+          <label for="name">Full name</label>
+          <input id="name" name="name" required>
+
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required>
+
+          <label for="phone">Phone</label>
+          <input id="phone" name="phone" type="tel">
+
+          <label for="type">Session type</label>
+          <select id="type" name="type">
+            <option value="sampler" data-price="65">Sampler Session — $65</option>
+            <option value="seasonal" data-price="220">Seasonal Support — $220</option>
+            <option value="signature" data-price="420">Signature Scent Plan — $420</option>
+          </select>
+
+          <label for="notes">Notes (pets, pregnancy, meds, sensitivities)</label>
+          <textarea id="notes" name="notes" rows="4" placeholder="Share any considerations for safety" ></textarea>
+
+          <label for="times">Preferred times</label>
+          <input id="times" name="times" placeholder="e.g. Tue morning, Fri 3–5pm">
+
+          <div style="display:flex;gap:8px;align-items:center;margin-top:10px">
+            <input type="checkbox" id="patch" name="patch"> <label for="patch" style="margin:0">I will follow patch-test guidance</label>
+          </div>
+
+          <div style="margin-top:10px;color:var(--muted);font-size:13px">Price will be confirmed by email. No medical claims are made — services may support well-being and include safety guidance.</div>
+
+          <button type="submit" class="submit">Save request and email me</button>
+        </form>
+      </div>
+
+      <aside class="aside">
+        <div style="text-align:center">
+          <h4 style="margin:6px 0">Quick scent primer</h4>
+          <svg class="mini-wheel" viewBox="0 0 200 200" aria-hidden="true">
+            <defs>
+              <linearGradient id="a1" x1="0" x2="1"><stop offset="0" stop-color="#f6c6a6"/><stop offset="1" stop-color="#f0b48c"/></linearGradient>
+              <linearGradient id="a2" x1="0" x2="1"><stop offset="0" stop-color="#f1e0b8"/><stop offset="1" stop-color="#e6d39a"/></linearGradient>
+              <linearGradient id="a3" x1="0" x2="1"><stop offset="0" stop-color="#cfd8d1"/><stop offset="1" stop-color="#bfc9c2"/></linearGradient>
+            </defs>
+            <path class="seg" d="M100 100 L100 8 A92 92 0 0 1 192 100 z" fill="url(#a1)"/>
+            <path class="seg" d="M100 100 L192 100 A92 92 0 0 1 100 192 z" fill="url(#a2)"/>
+            <path class="seg" d="M100 100 L100 192 A92 92 0 0 1 8 100 z" fill="url(#a3)"/>
+            <circle cx="100" cy="100" r="28" fill="#fff" stroke="#efe7e3"/>
+            <text x="100" y="105" text-anchor="middle" font-size="11" fill="#5e3f36">Aroma</text>
+          </svg>
+
+          <div style="margin-top:10px;text-align:left">
+            <div class="faq">
+              <h4>Safety & FAQ</h4>
+              <p class="note"><strong>Patch test:</strong> For topical blends, apply a small diluted amount to the inner arm and watch for 24 hours. Stop use if irritation occurs.</p>
+              <p class="note"><strong>Dilution:</strong> Topical suggestions include dilution percentages; common guidance is 1–2% for general adult use, lower for sensitive individuals.</p>
+              <p class="note"><strong>Pets:</strong> Some essential oils can be harmful to animals. Note any pets during booking; we'll suggest pet-conscious options.</p>
+              <p class="note"><strong>Pregnancy & medications:</strong> If pregnant, nursing, or taking medication, mention this in notes so recommendations can be adjusted. Recommendations are not medical advice.</p>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <section style="margin-top:16px;text-align:center">
+      <small style="color:var(--muted)">We will respond by email to confirm your appointment and price. For urgent scheduling call <a href="tel:{{PHONE}}">{{PHONE}}</a>.</small>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="padding:16px;text-align:center;color:var(--muted)">{{BUSINESS_NAME}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+  </footer>
+
+  <script>
+    // Basic booking form handler (local only)
+    document.getElementById('booking').addEventListener('submit', function(e){
+      e.preventDefault();
+      const data = new FormData(e.target);
+      const out = {};
+      data.forEach((v,k)=>out[k]=v);
+      // Fake submit: show confirmation overlay
+      alert('Thanks, '+(out.name||'there')+'. Your request was noted. We will email you at '+(out.email||'')+' to confirm.');
+      e.target.reset();
+    });
+  </script>
+</body>
+</html>

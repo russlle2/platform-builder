@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Book Service | {{BUSINESS_NAME}} — Schedule in seconds</title>
+  <meta name="description" content="Schedule HVAC service with {{BUSINESS_NAME}} in {{CITY}}, {{STATE}}. Choose a date and time—fast confirmations. Or call {{PHONE}}.">
+  <link rel="canonical" href="/book.html">
+  <meta name="robots" content="index,follow">
+  <meta name="theme-color" content="#0ea5e9">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Book Service | {{BUSINESS_NAME}}">
+  <meta property="og:description" content="Easy online scheduling for HVAC installs, repairs, and maintenance.">
+  <meta property="og:url" content="/book.html">
+  <meta property="og:image" content="/assets/img/hero-abstract.svg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Book Service | {{BUSINESS_NAME}}">
+  <meta name="twitter:description" content="Pick a time that works for you—{{CITY}}, {{STATE}}.">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <script defer src="/assets/js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header" data-scrolled="false">
+    <div class="topbar" role="region" aria-label="Company quick actions">
+      <div class="container topbar-inner">
+        <p class="topbar-tagline">{{TAGLINE}}</p>
+        <div class="topbar-cta">
+          <a class="topbar-link" href="tel:{{PHONE}}">Call {{PHONE}}</a>
+          <a class="btn btn-primary btn-sm" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </div>
+    </div>
+    <div class="container nav-row">
+      <a class="brand" href="/index.html"><span class="brand-mark" aria-hidden="true">HVAC</span><span class="brand-name">{{BUSINESS_NAME}}</span></a>
+      <nav class="primary-nav" aria-label="Primary">
+        <button class="nav-toggle" aria-controls="site-menu" aria-expanded="false" aria-label="Toggle menu"><span class="nav-toggle-box" aria-hidden="true"><span class="nav-toggle-inner"></span></span>Menu</button>
+        <ul id="site-menu" class="menu">
+          <li><a href="/index.html">Home</a></li>
+          <li><a href="/services.html">Services</a></li>
+          <li><a href="/pricing.html">Pricing</a></li>
+          <li><a href="/financing.html">Financing</a></li>
+          <li><a href="/about.html">About</a></li>
+          <li><a href="/reviews.html">Reviews</a></li>
+          <li><a href="/book.html" aria-current="page">Book</a></li>
+          <li><a href="/contact.html">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="sub-hero">
+      <div class="container">
+        <h1>Book your visit</h1>
+        <p class="lead">Pick a time, tell us what’s going on, and we’ll confirm ASAP.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <form id="booking-form" class="form-layout" novalidate>
+          <fieldset>
+            <legend>Contact details</legend>
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="bk-name">Full name</label>
+                <input id="bk-name" name="name" type="text" autocomplete="name" required>
+              </div>
+              <div class="form-field">
+                <label for="bk-phone">Phone</label>
+                <input id="bk-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required>
+              </div>
+              <div class="form-field">
+                <label for="bk-email">Email</label>
+                <input id="bk-email" name="email" type="email" autocomplete="email" required>
+              </div>
+              <div class="form-field full">
+                <label for="bk-address">Service address</label>
+                <input id="bk-address" name="service_address" type="text" autocomplete="street-address" required>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Appointment</legend>
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="bk-date">Preferred date</label>
+                <input id="bk-date" name="date" type="date" required>
+              </div>
+              <div class="form-field">
+                <label for="bk-time">Preferred time</label>
+                <select id="bk-time" name="time" required>
+                  <option value="" selected disabled>Select a window</option>
+                  <option>8–10 AM</option>
+                  <option>10 AM–12 PM</option>
+                  <option>12–2 PM</option>
+                  <option>2–4 PM</option>
+                  <option>4–6 PM</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="bk-service">Service type</label>
+                <select id="bk-service" name="service" required>
+                  <option value="" selected disabled>Choose service</option>
+                  <option>Repair</option>
+                  <option>Maintenance</option>
+                  <option>Installation estimate</option>
+                  <option>Air quality</option>
+                </select>
+              </div>
+              <div class="form-field full">
+                <label for="bk-notes">Notes</label>
+                <textarea id="bk-notes" name="notes" rows="4" placeholder="Tell us the make/model, any error codes, and what you’re experiencing."></textarea>
+              </div>
+            </div>
+          </fieldset>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Request booking</button>
+            <p class="note">Prefer to talk? Call <a href="tel:{{PHONE}}">{{PHONE}}</a>.</p>
+          </div>
+        </form>
+        <div id="booking-feedback" class="result-panel" aria-live="polite"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <section class="footer-col">
+        <h3 class="footer-brand">{{BUSINESS_NAME}}</h3>
+        <p>{{TAGLINE}}</p>
+        <p><strong>Phone:</strong> <a href="tel:{{PHONE}}">{{PHONE}}</a><br><strong>Email:</strong> <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+      </section>
+      <section class="footer-col">
+        <h4>Visit us</h4>
+        <address>{{ADDRESS}}<br>{{CITY}}, {{STATE}} {{ZIP}}</address>
+        <p><strong>Hours:</strong> {{HOURS}}</p>
+      </section>
+      <section class="footer-col">
+        <h4>Pages</h4>
+        <ul class="footer-links">
+          <li><a href="/services.html">Services</a></li>
+          <li><a href="/pricing.html">Pricing</a></li>
+          <li><a href="/financing.html">Financing</a></li>
+          <li><a href="/about.html">About</a></li>
+          <li><a href="/reviews.html">Reviews</a></li>
+          <li><a href="/book.html" aria-current="page">Book</a></li>
+          <li><a href="/contact.html">Contact</a></li>
+        </ul>
+      </section>
+    </div>
+    <div class="container footer-base"><p>&copy; <span id="year"></span> {{BUSINESS_NAME}}</p></div>
+  </footer>
+</body>
+</html>

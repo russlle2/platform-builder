@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Rates — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent1:#8dd3c7;--accent2:#f6c1d1;--muted:#9aa4b2;--glass:rgba(255,255,255,0.04)}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;line-height:1.4;color:var(--accent1);background:linear-gradient(180deg,#071021 0%, #0b1220 40%, #071429 100%);}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:linear-gradient(90deg,rgba(255,255,255,0.02),transparent);backdrop-filter:blur(6px)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent1),var(--accent2));display:flex;align-items:center;justify-content:center;color:#06202a;font-weight:700;font-size:18px}
+    nav a{color:var(--accent1);text-decoration:none;margin-left:18px;font-weight:600}
+    main{max-width:1100px;margin:28px auto;padding:36px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:18px;box-shadow:0 6px 30px rgba(3,6,18,0.6)}
+    .hero{display:grid;grid-template-columns:1fr 320px;gap:28px}
+    .hero .lead{padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.015),transparent)}
+    h1{margin:0 0 12px 0;font-size:28px;color:var(--accent2)}
+    p.lead{color:var(--muted);margin:0 0 18px}
+    .cta{display:inline-block;padding:10px 16px;background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#042124;border-radius:10px;font-weight:700;text-decoration:none}
+    .sideCard{background:var(--card);padding:18px;border-radius:12px;color:var(--accent1)}
+    .pricing-grid{display:flex;gap:16px;margin-top:22px}
+    .tier{flex:1;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .tier h3{margin:0;color:var(--accent1)}
+    .price{font-size:22px;color:var(--accent2);margin:8px 0}
+    ul.features{list-style:none;padding:0;margin:10px 0;color:var(--muted)}
+    .addon-list{margin-top:16px}
+    .addon{display:flex;justify-content:space-between;padding:10px;border-radius:10px;background:var(--glass);margin-bottom:8px;color:var(--accent1)}
+    footer{display:flex;justify-content:space-between;align-items:center;padding:18px 28px;margin-top:18px;color:var(--muted)}
+    .micro{background:linear-gradient(90deg,rgba(141,211,199,0.06),rgba(246,193,209,0.03));padding:14px;border-radius:10px;margin-top:18px;color:var(--accent1)}
+    .small{font-size:13px;color:var(--muted)}
+    .pattern{position:fixed;right:-120px;top:-60px;opacity:0.12;width:520px;height:520px}
+  </style>
+</head>
+<body>
+  <svg class="pattern" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#8dd3c7"/><stop offset="1" stop-color="#f6c1d1"/></linearGradient>
+      <pattern id="p1" width="20" height="20" patternUnits="userSpaceOnUse" patternTransform="rotate(12)">
+        <rect width="20" height="20" fill="transparent" />
+        <path d="M0 10 L10 0 L20 10" stroke="url(#g1)" stroke-width="1.6" fill="none"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#p1)"/>
+  </svg>
+
+  <header>
+    <div class="brand">
+      <div class="logo">AR</div>
+      <div>
+        <div style="font-weight:700;color:var(--accent1)">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Shop</a>
+      <a href="pricing.html">Rates</a>
+      <a href="book.html">Book</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="hero">
+      <section class="lead">
+        <h1>Intentional care, simple pricing</h1>
+        <p class="lead">Choose a session that fits your rhythm. All consultations include a safety-first aromatic assessment and take-home guidance. No medical promises—just sensory craft and mindful support.</p>
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+
+        <div class="micro small" style="margin-top:16px">
+          Micro-ritual (free with any booking): A single-ingredient roll-on sample and a 3-step evening breathing ritual.
+        </div>
+      </section>
+
+      <aside class="sideCard">
+        <div style="font-size:13px;color:var(--muted)">Sessions are offered in {{CITY}}, {{STATE}} — remote consults available.</div>
+        <div style="margin-top:12px;font-weight:700">Quick note</div>
+        <div class="small" style="margin-top:8px">Safety-first care includes dilution guidance, patch-test instructions, and simple contraindication screening (pregnancy, medications, pets). We'll ask a few details when you book.</div>
+      </aside>
+    </div>
+
+    <section class="pricing-grid" aria-label="pricing plans">
+      <div class="tier">
+        <h3>Discovery — 30 min</h3>
+        <div class="price">$45</div>
+        <ul class="features">
+          <li>Intro consult & scent preference mapping</li>
+          <li>1 simple blend suggestion</li>
+          <li>Email follow-up & dilution notes</li>
+        </ul>
+        <a class="cta" href="book.html">Book Discovery</a>
+      </div>
+
+      <div class="tier">
+        <h3>Signature Session — 60 min</h3>
+        <div class="price">$95</div>
+        <ul class="features">
+          <li>Full consultation & aroma diagnostic</li>
+          <li>Custom 10–15 mL blend included</li>
+          <li>Safe-use plan & 2 follow-up notes</li>
+        </ul>
+        <a class="cta" href="book.html">Reserve Session</a>
+      </div>
+
+      <div class="tier">
+        <h3>Ritual Package — 3x</h3>
+        <div class="price">$260</div>
+        <ul class="features">
+          <li>Three labs for layering blends</li>
+          <li>Progressive scent journaling</li>
+          <li>1 retail add-on at 10% off</li>
+        </ul>
+        <a class="cta" href="book.html">Choose Package</a>
+      </div>
+    </section>
+
+    <section class="addon-list">
+      <h3 style="color:var(--accent1)">Retail add-ons</h3>
+      <div class="addon"><div>10 mL roll-on (single oil)</div><div style="font-weight:700;color:var(--accent2)">$12</div></div>
+      <div class="addon"><div>Custom 10–15 mL blend</div><div style="font-weight:700;color:var(--accent2)">$35</div></div>
+      <div class="addon"><div>Diffuser starter kit</div><div style="font-weight:700;color:var(--accent2)">$48</div></div>
+      <div class="small" style="margin-top:12px;color:var(--muted)">All products include safe dilution labels and suggested micro-habits. Please let us know about pregnancy, pets, or medication during booking.</div>
+    </section>
+
+    <section class="micro" style="margin-top:22px">
+      <strong>Small rituals to try:</strong>
+      <ol class="small" style="margin:8px 0 0 18px;color:var(--muted)">
+        <li>Evening: 3 slow inhales of a calming roll-on before bed.</li>
+        <li>Focus: 1 drop on a cotton square at work for mindful breaths.</li>
+        <li>Reset: Diffuse a citrus lift for 20 minutes mid-afternoon.</li>
+      </ol>
+    </section>
+
+    <footer>
+      <div class="small">Questions? Call <a href="tel:{{PHONE}}" style="color:var(--accent1);text-decoration:none">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}" style="color:var(--accent1);text-decoration:none">{{EMAIL}}</a></div>
+      <div class="small">Offering retail add-ons in-person and online • {{PRACTITIONER_NAME}}</div>
+    </footer>
+  </main>
+</body>
+</html>

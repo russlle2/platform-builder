@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FAQs — Investment & Process</title>
+  <meta name="description" content="Common questions about membership therapy, session logistics, confidentiality, and emergency guidance.">
+  <style>
+    :root{--maxw:980px;--ink:#07263e;--muted:#556571;--accent:#7dbdd6;--card:#fff}
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#fff,#f7fbfd);color:var(--ink);-webkit-font-smoothing:antialiased}
+    header{padding:18px 20px;max-width:var(--maxw);margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:16px;text-decoration:none;color:var(--ink)}
+    main{max-width:var(--maxw);margin:18px auto;padding:0 20px}
+    .faq-card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 10px 28px rgba(7,38,62,0.06);margin-bottom:12px}
+    h1{font-size:22px;margin:0 0 6px}
+    .q{font-weight:700}
+    .a{color:var(--muted);margin-top:6px}
+    .reveal{opacity:0;transform:translateY(12px);transition:opacity .5s ease,transform .5s ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="fees.html">Investment</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Frequently asked questions</h1>
+    <p style="color:var(--muted);margin-bottom:12px">Concise answers to practical questions about membership, billing, confidentiality, and access.</p>
+
+    <section class="faq-card reveal" data-delay="0">
+      <div class="q">How do memberships begin?</div>
+      <div class="a">We start with a brief intake session (30–50 minutes) to understand needs, clarify goals, and confirm a membership plan. That intake is followed by an agreement that outlines frequency, billing, and messaging expectations.</div>
+    </section>
+
+    <section class="faq-card reveal" data-delay="80">
+      <div class="q">What if I need a shorter, time-limited plan?</div>
+      <div class="a">Time-limited, goal-focused programs are available and framed as a single plan (e.g., 6–12 sessions). These are useful when there is a specific topic or transition to address. We’ll discuss suitability during the intake.</div>
+    </section>
+
+    <section class="faq-card reveal" data-delay="160">
+      <div class="q">Do you take insurance?</div>
+      <div class="a">I offer private-pay membership billing and provide receipts you can submit to your insurance for possible reimbursement. Coverage varies; check with your carrier. I can discuss documentation on request.</div>
+    </section>
+
+    <section class="faq-card reveal" data-delay="240">
+      <div class="q">How is confidentiality handled?</div>
+      <div class="a">Records are maintained according to professional standards. Confidentiality is respected except in legally defined situations (e.g., imminent risk of harm to self/others, suspected abuse, or court orders). We’ll review limits to confidentiality before beginning clinical work.</div>
+    </section>
+
+    <section class="faq-card reveal" data-delay="320">
+      <div class="q">What if I’m in crisis?</div>
+      <div class="a">This practice does not provide emergency/crisis services. If you are in immediate danger or experiencing an emergency, call local emergency services or your local crisis line. If you are in the U.S., you can also dial 988 for the Suicide & Crisis Lifeline.</div>
+    </section>
+
+    <section class="faq-card reveal" data-delay="400">
+      <div class="q">How do cancellations and scheduling work?</div>
+      <div class="a">Memberships include a scheduling agreement that outlines notice periods for cancellations and how to request additional sessions. If you need to reschedule, please contact the office within the agreed window so we can find a suitable time.</div>
+    </section>
+
+    <section class="faq-card reveal" data-delay="480">
+      <div class="q">What is the therapeutic scope?</div>
+      <div class="a">I work with adults on a range of personal, relational, and life-transition concerns. I do not provide forensic evaluations, court testimony, or emergency medical care. If your needs fall outside my scope, I’ll provide referrals to appropriate resources.</div>
+    </section>
+
+    <div style="margin-top:18px;display:flex;gap:10px;align-items:center">
+      <a class="btn" href="book.html" style="padding:10px 14px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none">Start with an intake</a>
+      <button class="btn" id="tryNowFaq">Try a guided exercise</button>
+    </div>
+
+    <p style="margin-top:18px;color:var(--muted);font-size:13px">If your question is not listed, please reach out by email at {{EMAIL}} or phone at {{PHONE}}.</p>
+  </main>
+
+  <div class="modal-backdrop" id="modalBackdropFaq" style="display:none;align-items:center;justify-content:center;position:fixed;inset:0;background:rgba(6,20,34,0.45);z-index:60">
+    <div style="background:#fff;padding:18px;border-radius:12px;max-width:600px;width:100%">
+      <h2 style="margin:0 0 8px">Brief grounding</h2>
+      <p style="color:var(--muted)">Sit comfortably. Close your eyes if you like. Notice your breath for three cycles: inhale for 3, exhale for 4. Repeat twice more. Open your eyes slowly.</p>
+      <div style="margin-top:10px;text-align:right"><button class="btn" id="closeFaq">Close</button></div>
+    </div>
+  </div>
+
+  <script>
+    // reveal logic (same pattern as other pages)
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const items = document.querySelectorAll('.reveal');
+      if(prefersReduced){items.forEach(i=>i.classList.add('visible'));return}
+      const io = new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){const el=e.target;setTimeout(()=>el.classList.add('visible'),parseInt(el.getAttribute('data-delay')||0,10));io.unobserve(el);}});},{threshold:0.12});
+      items.forEach(i=>io.observe(i));
+    })();
+
+    // small modal for FAQ grounding
+    (function(){
+      const btn = document.getElementById('tryNowFaq');
+      const modal = document.getElementById('modalBackdropFaq');
+      const close = document.getElementById('closeFaq');
+      btn.addEventListener('click',()=>{modal.style.display='flex'});
+      close.addEventListener('click',()=>{modal.style.display='none'});
+      modal.addEventListener('click',(e)=>{if(e.target===modal) modal.style.display='none'});
+    })();
+  </script>
+</body>
+</html>

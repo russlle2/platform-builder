@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reach out to {{THERAPIST_NAME}} for supportive, confidential therapy in {{CITY}}, {{STATE}}.">
+  <style>
+    :root{
+      --bg:#0f1724; --card:#0b1220; --accent:#ff7aa2; --muted:#9aa7b2; --glass:rgba(255,255,255,0.04);
+      --radius:14px; --maxw:1100px; --gap:20px; font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,#071228 0%,#071a2b 100%);color:#e6f0f6;line-height:1.45}
+    .site{max-width:var(--maxw);margin:40px auto;padding:28px;border-radius:20px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);box-shadow:0 6px 30px rgba(3,7,18,0.6)}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#5be4ff);display:grid;place-items:center;color:#071228;font-weight:700;font-size:18px}
+    nav{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:10px;font-size:14px}
+    nav a.cta{background:var(--accent);color:#071228;font-weight:700}
+
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:var(--gap)}
+    .hero{padding:28px;border-radius:var(--radius);background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));display:flex;gap:22px;align-items:center}
+    .hero h1{margin:0;font-size:28px;letter-spacing:-0.01em;color:#fff}
+    .hero p{margin:8px 0 0;color:var(--muted)}
+
+    .cta-row{margin-top:14px;display:flex;gap:12px}
+    .btn{background:var(--accent);border:none;padding:10px 14px;border-radius:12px;color:#071228;font-weight:700;cursor:pointer}
+    .btn.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+
+    form{margin-top:18px;padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent)}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input[type=text],input[type=email],textarea,select{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:var(--card);color:#dfeff6}
+    textarea{min-height:120px;resize:vertical}
+    .field{margin-bottom:12px}
+
+    aside.card{padding:18px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01))}
+    .avatar{width:84px;height:84px;border-radius:16px;overflow:hidden;display:inline-grid;place-items:center;margin-bottom:10px}
+    .meta{font-size:13px;color:var(--muted)}
+    .pill{display:inline-block;background:rgba(255,255,255,0.03);padding:6px 10px;border-radius:999px;font-size:13px;margin:6px 6px 0 0}
+
+    .mini{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+    .mini a{display:block;padding:14px;border-radius:10px;background:var(--glass);text-decoration:none;color:var(--muted);font-size:13px}
+
+    footer{margin-top:18px;padding:16px 0;color:var(--muted);font-size:13px}
+    .legal{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;margin-top:12px}
+
+    .success{display:none;margin-top:10px;padding:10px;background:rgba(91,228,255,0.08);border-radius:10px;color:#bff0ff}
+
+    @media (max-width:960px){.grid{grid-template-columns:1fr}.mini{grid-template-columns:repeat(2,1fr)}nav{display:none}}
+  </style>
+</head>
+<body>
+  <main class="site" role="main">
+    <header>
+      <div class="brand">
+        <div class="logo">{{BUSINESS_NAME}} </div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav aria-label="Primary navigation">
+        <a href="index.html">Home</a>
+        <a href="about.html">Who I Am</a>
+        <a href="specialties.html">Paths</a>
+        <a href="approach.html">Method</a>
+        <a href="fees.html">Investment</a>
+        <a href="faq.html">Questions</a>
+        <a href="book.html" class="cta">{{PRIMARY_CTA_LABEL}}</a>
+        <a href="contact.html" style="background:rgba(255,255,255,0.02);border-radius:8px;padding:8px 10px">Connect</a>
+      </nav>
+    </header>
+
+    <div class="grid">
+      <section>
+        <div class="hero" aria-labelledby="connect-heading">
+          <div style="flex:1">
+            <h1 id="connect-heading">Let’s make a plan together — reach out when you’re ready.</h1>
+            <p>I offer attentive, trauma-informed therapy with practical tools for anxiety, relationships, burnout, and life transitions. Contact me to ask about fit, availability, or next steps.</p>
+            <div class="cta-row">
+              <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+              <a class="btn secondary" href="mailto:{{EMAIL}}">Email {{THERAPIST_NAME}}</a>
+            </div>
+          </div>
+          <div style="width:148px;text-align:center">
+            <!-- decorative SVG / friendly guide illustration -->
+            <svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <defs>
+                <linearGradient id="g1" x1="0" x2="1">
+                  <stop offset="0" stop-color="#ff7aa2"/>
+                  <stop offset="1" stop-color="#5be4ff"/>
+                </linearGradient>
+              </defs>
+              <rect rx="20" width="120" height="120" fill="url(#g1)" opacity="0.14"/>
+              <g transform="translate(18,18)" fill="#fff">
+                <circle cx="24" cy="24" r="18" opacity="0.95" fill="#071228"/>
+                <path d="M15 36c7-5 18-5 25 0" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+                <circle cx="16" cy="20" r="2.8" fill="#fff" />
+                <circle cx="32" cy="20" r="2.8" fill="#fff" />
+              </g>
+            </svg>
+          </div>
+        </div>
+
+        <form id="contactForm" aria-label="Contact form">
+          <div class="field"><label for="name">Your name</label><input id="name" name="name" type="text" required placeholder="Your full name"></div>
+          <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" required placeholder="you@example.com"></div>
+          <div class="field"><label for="phone">Phone (optional)</label><input id="phone" name="phone" type="text" placeholder="Optional phone number"></div>
+
+          <div class="field">
+            <label for="mode">Preferred contact</label>
+            <select id="mode" name="mode">
+              <option>Email</option>
+              <option>Phone</option>
+              <option>Video session</option>
+            </select>
+          </div>
+
+          <div class="field"><label for="interest">What kind of support are you seeking?</label>
+            <input id="interest" name="interest" type="text" placeholder="e.g., anxiety, relationships, transitions - or list {{MODALITIES}}">
+          </div>
+
+          <div class="field"><label for="message">Message</label><textarea id="message" name="message" placeholder="A few lines about what brings you here..."></textarea></div>
+
+          <div style="font-size:13px;color:var(--muted);margin-bottom:12px">
+            <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="consent" required><span>I understand this is not an emergency service and consent to communication about scheduling.</span></label>
+          </div>
+
+          <div style="display:flex;gap:10px;align-items:center">
+            <button type="submit" class="btn">Send message</button>
+            <button type="button" class="btn secondary" onclick="location.href='mailto:{{EMAIL}}'">Email directly</button>
+          </div>
+          <div class="success" id="success">Thanks — your message is ready. We'll respond within a few business days.</div>
+        </form>
+
+        <div class="mini" aria-hidden="false">
+          <a href="about.html"><strong>Story</strong><div style="margin-top:6px;color:var(--muted)">Who I am and why I care about safety-first therapy.</div></a>
+          <a href="approach.html"><strong>Framework</strong><div style="margin-top:6px;color:var(--muted)">My clinical lens and how I structure growth-focused work.</div></a>
+          <a href="specialties.html"><strong>Programs</strong><div style="margin-top:6px;color:var(--muted)">Short-term skills, ongoing psychotherapy, and focused modules.</div></a>
+          <a href="fees.html"><strong>Pricing</strong><div style="margin-top:6px;color:var(--muted)">Session options and sliding scale details.</div></a>
+          <a href="faq.html"><strong>Testimonials</strong><div style="margin-top:6px;color:var(--muted)">Client reflections on process and progress.</div></a>
+          <a href="book.html"><strong>Ready?</strong><div style="margin-top:6px;color:var(--muted)">Book a 20-minute consult to see if we’re a fit.</div></a>
+        </div>
+
+      </section>
+
+      <aside class="card" aria-labelledby="therapist-card">
+        <div id="therapist-card" style="display:flex;gap:12px;align-items:center">
+          <div class="avatar" aria-hidden="true">
+            <!-- unique small avatar SVG -->
+            <svg width="84" height="84" viewBox="0 0 84 84" xmlns="http://www.w3.org/2000/svg">
+              <rect width="84" height="84" rx="16" fill="#071228" />
+              <g transform="translate(12,12)" fill="none" stroke="#fff" stroke-width="2">
+                <circle cx="30" cy="18" r="12" fill="#fff" opacity="0.06" stroke="none" />
+                <path d="M6 44c6-8 36-8 42 0" stroke-linecap="round"/>
+                <circle cx="20" cy="16" r="2" fill="#fff"/>
+                <circle cx="36" cy="16" r="2" fill="#fff"/>
+              </g>
+            </svg>
+          </div>
+          <div>
+            <div style="font-weight:700">{{THERAPIST_NAME}}</div>
+            <div class="meta">{{LICENSE}} — {{CITY}}, {{STATE}}</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;color:var(--muted)">I work with adults on anxiety, trauma recovery, relationship patterns, life transitions and professional burnout. Sessions are collaborative and practical, with attention to safety and pacing.</div>
+
+        <div style="margin-top:12px">
+          <div class="meta">Modalities</div>
+          <div style="margin-top:8px">
+            <span class="pill">{{MODALITIES}}</span>
+            <span class="pill">Trauma-informed CBT</span>
+            <span class="pill">Relational EMDR</span>
+          </div>
+        </div>
+
+        <div style="margin-top:14px;color:var(--muted)"><strong>Phone</strong><div style="margin-top:6px">{{PHONE}}</div></div>
+        <div style="margin-top:8px;color:var(--muted)"><strong>Email</strong><div style="margin-top:6px">{{EMAIL}}</div></div>
+
+        <div class="legal" style="margin-top:16px">
+          <div style="font-weight:700;margin-bottom:6px">Scheduling & Fees</div>
+          <div style="color:var(--muted);font-size:13px">See the full fee schedule on the Investment page. I offer brief consultations to help determine fit; longer therapy is arranged when we agree on goals and logistics.</div>
+        </div>
+
+      </aside>
+    </div>
+
+    <footer>
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        <div style="max-width:780px">
+          <strong>Confidentiality & Limits</strong>
+          <div class="legal">Conversations are confidential as described in my informed consent. There are legal limits to confidentiality (for example, imminent risk of harm to self or others, suspected child or elder abuse); I will discuss these and answer questions before beginning work together.</div>
+
+          <div style="margin-top:10px" class="legal">
+            <strong>Crisis disclaimer</strong>
+            <div style="color:var(--muted);font-size:13px;margin-top:6px">If you are in immediate danger or experiencing a psychiatric emergency, please call local emergency services or your crisis line. This practice does not provide emergency response.</div>
+          </div>
+
+          <div style="margin-top:10px" class="legal">
+            <strong>Scope & boundaries</strong>
+            <div style="color:var(--muted);font-size:13px;margin-top:6px">I provide psychotherapy and skills-based work for adults. I do not provide legal, financial, or medical advice. We discuss expected scope of care during initial meetings and periodically afterward.</div>
+          </div>
+        </div>
+
+        <div style="min-width:220px;color:var(--muted);font-size:13px">
+          <div><strong>Privacy note</strong><div style="margin-top:6px">I follow professional standards to protect your privacy. Electronic messages are not fully secure; we will discuss safer messaging options during intake.</div></div>
+
+          <div style="margin-top:12px"><strong>License</strong><div style="margin-top:6px">{{LICENSE}}</div></div>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    (function(){
+      const form = document.getElementById('contactForm');
+      const success = document.getElementById('success');
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const interest = document.getElementById('interest').value.trim();
+        const message = document.getElementById('message').value.trim();
+        if(!name || !email){
+          alert('Please provide your name and email so I can follow up.');
+          return;
+        }
+        // Construct a simple mailto as fallback for static sites.
+        const subject = encodeURIComponent('New contact from ' + (name||'client') + ' — ' + (interest||'general'));
+        const bodyLines = [
+          'Name: ' + name,
+          'Email: ' + email,
+          'Phone: ' + phone,
+          'Interest: ' + interest,
+          '\nMessage:\n' + message
+        ];
+        const body = encodeURIComponent(bodyLines.join('\n'));
+        const mailto = 'mailto:{{EMAIL}}?subject=' + subject + '&body=' + body;
+        // show success then open mail client
+        success.style.display = 'block';
+        window.location.href = mailto;
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Programs — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f3fbfa;--card:#ffffff;--accent:#0b6b63;--muted:#51676a;--radius:12px;font-family:Inter, system-ui, -apple-system, 'Segoe UI'}
+    body{margin:0;background:var(--bg);color:#053233}
+    .site{max-width:1080px;margin:36px auto;padding:28px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:14px;color:var(--accent);text-decoration:none;font-weight:600}
+    .intro{display:flex;gap:20px;align-items:center;margin-top:18px}
+    .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:18px}
+    .pkg{background:var(--card);padding:20px;border-radius:var(--radius);box-shadow:0 10px 30px rgba(6,60,56,0.05)}
+    h1{margin:0}
+    .price{font-weight:800;color:var(--accent);margin-top:8px}
+    .features{margin-top:12px;color:#063a36}
+    .cta{margin-top:14px;background:var(--accent);color:#fff;padding:10px 12px;border:none;border-radius:10px;font-weight:700}
+    .faq{margin-top:20px;padding:18px;border-radius:12px;background:#fff;border:1px solid #e6f6f4}
+    .leadmag{margin-top:18px;display:flex;gap:8px}
+    input[type=email]{flex:1;padding:10px;border-radius:10px;border:1px solid #eaf3f2}
+    footer{margin-top:22px;color:var(--muted);text-align:center}
+  </style>
+</head>
+<body>
+  <div class="site">
+    <header>
+      <div><strong>{{BUSINESS_NAME}}</strong></div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="services.html">Services</a>
+        <a href="about.html">About</a>
+        <a href="book.html">Book</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="intro">
+        <div style="flex:1">
+          <h1>Coaching tracks that meet you where you are</h1>
+          <p class="lead">Choose a focused path or a deeper tier. Each program centers on small, measurable habit changes and clear milestones.</p>
+        </div>
+        <div style="width:160px">
+          <img src="assets/img/pattern.svg" alt="pattern" style="width:100%">
+        </div>
+      </section>
+
+      <section class="cards">
+        <div class="pkg">
+          <h3>Foundations Path</h3>
+          <p class="price">Complimentary + Add-on</p>
+          <p class="lead">A self-guided kit with optional one-off coaching to set the plan in motion.</p>
+          <ul class="features">
+            <li>Starter workbook</li>
+            <li>Sample 5-day routine</li>
+            <li>Optional 60-min setup call</li>
+          </ul>
+          <button class="cta" onclick="location.href='contact.html'">Get the Starter Kit</button>
+        </div>
+
+        <div class="pkg">
+          <h3>Momentum Package — 12 weeks</h3>
+          <p class="price">Investment: cohort & private options</p>
+          <p class="lead">An action-focused program with weekly coaching to build durable routines.</p>
+          <ul class="features">
+            <li>Weekly 45-min sessions</li>
+            <li>Progress dashboard</li>
+            <li>Accountability checkpoints</li>
+          </ul>
+          <button class="cta" onclick="location.href='pricing.html'">See Pricing</button>
+        </div>
+
+        <div class="pkg">
+          <h3>VIP Reset Day</h3>
+          <p class="price">Premium flat fee</p>
+          <p class="lead">One intensive day of strategy, habit-build, and an immediate custom routine to implement the next morning.</p>
+          <ul class="features">
+            <li>Pre-work + full-day session</li>
+            <li>Ready-to-use morning & evening plan</li>
+            <li>10 days of follow-up support</li>
+          </ul>
+          <button class="cta" onclick="location.href='book.html'">Reserve VIP Day</button>
+        </div>
+
+        <div class="pkg">
+          <h3>Accountability Partner — Monthly</h3>
+          <p class="price">Subscription model</p>
+          <p class="lead">Short weekly check-ins and micro-adjustments to keep your wins rolling.</p>
+          <ul class="features">
+            <li>Two 25-min check-ins/month</li>
+            <li>Quick wins and habit micro-adjustments</li>
+            <li>Flexible pause/cancel</li>
+          </ul>
+          <button class="cta" onclick="location.href='pricing.html'">View Plans</button>
+        </div>
+      </section>
+
+      <section class="faq">
+        <h3>Program questions</h3>
+        <dl>
+          <dt>How do I choose the right program?</dt>
+          <dd class="lead">Start with the outcome you want. If you need a fast reset, the VIP Day fits. If you want sustained change, pick the Momentum Package.</dd>
+
+          <dt>Are there payment plans?</dt>
+          <dd class="lead">Yes — we offer installment options for longer programs. See the pricing page for details.</dd>
+
+          <dt>What if my schedule is irregular?</dt>
+          <dd class="lead">We design anchor habits and flexible check-ins so routines survive varying days.</dd>
+        </dl>
+      </section>
+
+      <section style="margin-top:18px;padding:18px;border-radius:12px;background:#fff;border:1px solid #e9f6f4">
+        <h3>Lead magnet — Quick win</h3>
+        <p class="lead">Sign up to get the 5-day Momentum Guide and sample micro-habits you can try this week.</p>
+        <form class="leadmag" action="{{PRIMARY_CTA_URL}}" method="post">
+          <input type="email" name="email" placeholder="Enter email" required>
+          <button class="cta" type="submit">{{PRIMARY_CTA_LABEL}}</button>
+        </form>
+      </section>
+
+      <section style="margin-top:18px;text-align:center">
+        <p style="margin:6px 0">Ready to begin? <a href="book.html" style="color:var(--accent);font-weight:700">Schedule a discovery call</a> to choose the right path.</p>
+      </section>
+
+    </main>
+
+    <footer>
+      <p style="color:var(--muted)">Questions: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • {{BUSINESS_NAME}} — {{CITY}}, {{STATE}}</p>
+    </footer>
+  </div>
+</body>
+</html>

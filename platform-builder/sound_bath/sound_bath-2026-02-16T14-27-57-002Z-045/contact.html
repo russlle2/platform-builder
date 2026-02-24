@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contact — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Contact {{BUSINESS_NAME}} for sound bath events, private sessions, and corporate wellness. Calm, clinical care with a sensory, premium approach.">
+  <style>
+    :root{
+      --bg-1: #f7fbfc;
+      --bg-2: #eef6f8;
+      --accent: #6b8fbf;
+      --muted: #6a7280;
+      --card: #ffffff;
+      --glass: rgba(255,255,255,0.66);
+      --radius: 14px;
+      --maxw: 980px;
+      --shadow: 0 8px 30px rgba(36,50,84,0.08);
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg-1),var(--bg-2));color:#0f1724;}
+    .page{min-height:100%;display:flex;flex-direction:column;align-items:center;padding:36px 20px 80px}
+    header{width:100%;max-width:var(--maxw);display:flex;align-items:center;justify-content:space-between;padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.7),rgba(255,255,255,0.55));box-shadow:var(--shadow);backdrop-filter: blur(6px);}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#9fc0e8);display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-size:15px}
+    .hero{width:100%;max-width:var(--maxw);margin-top:28px;padding:36px;border-radius:var(--radius);position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,0.85),rgba(246,250,252,0.9));box-shadow:var(--shadow)}
+    .hero::before{content:'';position:absolute;inset:0;background-image:url('/assets/img/pattern.svg');opacity:0.08;mix-blend-mode:multiply}
+    .hero-grid{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+    h1{margin:0;font-size:26px;color:#05233a}
+    p.lead{margin:12px 0 0;color:var(--muted);line-height:1.5}
+    .contact-card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 22px rgba(13,34,54,0.06)}
+    form{display:flex;flex-direction:column;gap:10px}
+    label{font-size:13px;color:var(--muted)}
+    input[type="text"],input[type="email"],textarea,select{width:100%;padding:12px;border-radius:8px;border:1px solid #e6eef5;background:linear-gradient(180deg,#fff,#fbfeff);font-size:15px}
+    textarea{min-height:110px;resize:vertical}
+    .row{display:flex;gap:10px}
+    .btn{display:inline-block;padding:12px 18px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#8fbfe1);color:white;font-weight:600;border:none;cursor:pointer}
+    .muted{font-size:13px;color:var(--muted)}
+    section{margin-top:26px}
+    .two-col{display:grid;grid-template-columns:1fr 320px;gap:20px}
+    .pillars{display:flex;gap:12px;flex-direction:column}
+    .pillar{background:var(--glass);padding:14px;border-radius:12px}
+    .case{background:linear-gradient(180deg,#ffffff, #fbfeff);padding:14px;border-radius:12px}
+    .faq-item{padding:12px;border-radius:10px;background:#fff;border:1px solid #eef5f8;margin-bottom:10px}
+    footer{width:100%;max-width:var(--maxw);margin-top:36px;padding:20px;border-radius:12px;background:transparent;color:var(--muted);font-size:13px;display:flex;justify-content:space-between}
+    @media (max-width:880px){.hero-grid,.two-col{grid-template-columns:1fr;}.contact-card{order:2}.hero{padding:20px}.logo{width:48px;height:48px}}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="brand">
+        <div class="logo">SB</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav aria-label="primary">
+        <a href="index.html">Gather</a>
+        <a href="events.html">Sessions</a>
+        <a href="private-sessions.html">1:1 & Private</a>
+        <a href="pricing.html">Tuition</a>
+        <a href="about.html">Our Approach</a>
+        <a href="faq.html">Questions</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </header>
+
+    <main style="width:100%;max-width:var(--maxw)">
+      <section class="hero" aria-labelledby="contact-hero">
+        <div class="hero-grid">
+          <div>
+            <h1 id="contact-hero">Connect with {{BUSINESS_NAME}} — book a conversation or a session</h1>
+            <p class="lead">Sensitive. Clinical. Carefully designed sound experiences for restoring equilibrium. Use this form to inquire about upcoming events, private 1:1 sessions, or workplace sound wellness programs.</p>
+
+            <div style="margin-top:18px;display:flex;gap:10px;align-items:center">
+              <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+              <div class="muted">or call <strong>{{PHONE}}</strong></div>
+            </div>
+
+            <div style="margin-top:18px;font-size:13px;color:var(--muted)">
+              Facilitator: <strong>{{FACILITATOR_NAME}}</strong> • Venue: <strong>{{VENUE_NAME}}</strong> • Serving <strong>{{CITY}}, {{STATE}}</strong>
+            </div>
+          </div>
+
+          <aside class="contact-card" aria-label="contact form">
+            <form id="contactForm" method="post" action="mailto:{{EMAIL}}">
+              <label for="name">Full name</label>
+              <input id="name" name="name" type="text" placeholder="Your name">
+
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" placeholder="you@example.com">
+
+              <label for="phone">Phone</label>
+              <input id="phone" name="phone" type="text" placeholder="Optional phone">
+
+              <label for="service">I'm interested in</label>
+              <select id="service" name="service">
+                <option>Upcoming Group Event</option>
+                <option>Private 1:1 Session</option>
+                <option>Couples Session</option>
+                <option>Corporate / Workplace</option>
+                <option>Other inquiry</option>
+              </select>
+
+              <label for="date">Preferred date</label>
+              <input id="date" name="date" type="text" placeholder="e.g. {{NEXT_EVENT_DATE}} or a few options">
+
+              <label for="message">Message / accessibility notes</label>
+              <textarea id="message" name="message" placeholder="Tell us about your needs, mobility, sensitivities, or scheduling constraints"></textarea>
+
+              <div style="display:flex;gap:10px;align-items:center;margin-top:6px">
+                <button type="submit" class="btn">Send request</button>
+                <div style="font-size:13px;color:var(--muted)">You can also email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+              </div>
+            </form>
+          </aside>
+        </div>
+      </section>
+
+      <section class="myth_vs_truth" aria-labelledby="myth">
+        <h2 id="myth">Myths vs. Clinical Truths</h2>
+        <div class="two-col" style="margin-top:12px;gap:18px">
+          <div>
+            <div class="pillar">
+              <strong>Myth:</strong> Sound baths are just background music.
+              <div class="muted">Truth: Sessions are intentionally structured resonance practices with therapeutic intent—rooted in pacing, safety, and somatic awareness.</div>
+            </div>
+            <div style="height:12px"></div>
+            <div class="pillar">
+              <strong>Myth:</strong> They are one-size-fits-all.
+              <div class="muted">Truth: We adapt tone, volume, and duration based on sensitivity, medical considerations, and personal goals.</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="pillar">
+              <strong>Myth:</strong> You must meditate perfectly.
+              <div class="muted">Truth: There is no required outcome—rest, reflection, or a light nap are all expected and valid experiences.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="pillars" aria-labelledby="pillars">
+        <h2 id="pillars" style="margin-top:22px">Our Three Pillars of Care</h2>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px">
+          <div class="pillar">
+            <strong>Intention-led design</strong>
+            <div class="muted">Every session begins with a clear intention and a brief intake so sound supports your nervous system rather than overstimulating it.</div>
+          </div>
+          <div class="pillar">
+            <strong>Safe resonance</strong>
+            <div class="muted">Volume and frequency choices are calibrated; hearing comfort and medical contraindications are screened prior to booking.</div>
+          </div>
+          <div class="pillar">
+            <strong>Sensory styling</strong>
+            <div class="muted">Premium linens, soft lighting, and scent-free space cultivate a cocooned, mindful environment.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="case_notes" aria-labelledby="notes">
+        <h2 id="notes" style="margin-top:22px">Case notes & recent outcomes</h2>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+          <div class="case">
+            <strong>Sleep consolidation</strong>
+            <div class="muted">A participant with fragmented sleep reported deeper sleep cycles after three weekly private sessions combining monochord and subtle tuning forks.</div>
+          </div>
+          <div class="case">
+            <strong>Workplace reset</strong>
+            <div class="muted">A small team of eight experienced a half-day sound reset; post-session surveys showed reduced perceived stress and clearer focus for 72 hours.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="faq" aria-labelledby="faq-head">
+        <h2 id="faq-head" style="margin-top:22px">Frequently asked — practical details</h2>
+
+        <div style="margin-top:12px">
+          <div class="faq-item">
+            <strong>What should I bring?</strong>
+            <div class="muted">Bring a yoga mat or blanket, eye-cover, and a small pillow. We provide extra blankets and ear-safe buffering pads. Dress in comfortable layers.</div>
+          </div>
+
+          <div class="faq-item">
+            <strong>Contraindications / safety</strong>
+            <div class="muted">If you are pregnant, have epilepsy, recent head injury, metal implants in the skull, or are undergoing certain acute medical treatments, please consult your healthcare provider and inform us. Loud, repetitive gongs can be adjusted or omitted. We require disclosure so we can adapt instruments and proximity.</div>
+          </div>
+
+          <div class="faq-item">
+            <strong>Flow of a session</strong>
+            <div class="muted">Sessions typically begin with a brief intake and orientation (5–10 min), preparing the space (5 min), followed by a guided sonic journey (30–60 min) that layers instruments such as crystal bowls, tuning forks, chimes, and monochord. We close with an integration period and optional post-session notes (10–15 min).</div>
+          </div>
+
+          <div class="faq-item">
+            <strong>Instruments we may use</strong>
+            <div class="muted">We draw from a curated palette: crystal bowls, soft chimes, tuning forks, monochord tones, and gentle gongs when appropriate. Each set is chosen for timbral compatibility and therapeutic intent.</div>
+          </div>
+
+          <div class="faq-item">
+            <strong>Cancellation / rescheduling</strong>
+            <div class="muted">For private sessions, please notify us 48 hours in advance to reschedule. Group event refunds and transfers follow the policy listed on the Pricing page.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="cta" aria-labelledby="cta-head">
+        <h2 id="cta-head" style="margin-top:22px">Ready to connect?</h2>
+        <div style="display:flex;gap:12px;align-items:center;margin-top:12px;flex-wrap:wrap">
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">Book a slot</a>
+          <div class="muted">Or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> — we'll reply within 48 hours.</div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div>© {{BUSINESS_NAME}} — calm clinical sound care</div>
+      <div style="text-align:right">
+        <div>{{VENUE_NAME}} • {{CITY}}, {{STATE}}</div>
+        <div>Phone: {{PHONE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

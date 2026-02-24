@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1720;--card:#0b1220;--accent:#7de3d1;--muted:#9aa6b2;--warm:#ffd78c;--glass:rgba(255,255,255,0.04)}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#e6eef6;background:linear-gradient(180deg, #07101a 0%, #071825 60%);-webkit-font-smoothing:antialiased}
+    /* unique SVG pattern placed inline */
+    .pattern{position:fixed;inset:0;pointer-events:none;opacity:0.12;mix-blend-mode:screen}
+    header{display:flex;align-items:center;justify-content:space-between;padding:28px 32px}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#8fb9ff);display:grid;place-items:center;color:#04202a;font-weight:700;font-size:18px}
+    nav a{color:#cfeff1;text-decoration:none;margin:0 10px;font-weight:600}
+    nav a:hover{text-decoration:underline}
+    .layout{max-width:1100px;margin:28px auto;padding:28px}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:center}
+    .hero .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:28px;border-radius:14px;box-shadow:0 6px 30px rgba(2,6,23,0.6)}
+    h1{margin:0 0 8px;font-size:38px;line-height:1.02;color:#f7fffb}
+    p.lead{margin:0;color:var(--muted);font-size:16px}
+    .meta{display:flex;gap:12px;margin-top:16px;color:var(--muted)}
+    .pill{background:var(--glass);padding:8px 12px;border-radius:999px;font-weight:600;color:#e9fbf6}
+    .story{margin-top:22px;color:#dff8f3}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:20px}
+    .box{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:16px;border-radius:12px}
+    .cta{display:inline-block;margin-top:18px;padding:12px 18px;border-radius:10px;background:var(--accent);color:#04202a;font-weight:700;text-decoration:none}
+    /* Proof Gallery */
+    .proof{margin-top:26px}
+    .testimonial{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px;min-height:120px;position:relative}
+    .quote{font-size:15px;color:#e7fbf7}
+    .author{margin-top:12px;color:var(--muted);font-weight:600}
+    .badges{display:flex;gap:10px;margin-top:12px}
+    .badge{background:rgba(255,255,255,0.03);padding:8px 10px;border-radius:8px;font-size:13px;position:relative}
+    .badge:hover .tip{opacity:1;transform:translateY(0)}
+    .tip{position:absolute;left:50%;transform:translate(-50%,6px);bottom:calc(100% + 8px);background:#02121a;color:#bff3ea;padding:8px 10px;border-radius:8px;white-space:nowrap;font-size:12px;opacity:0;transition:all 180ms ease}
+    footer{margin-top:36px;padding:18px 0;color:var(--muted);font-size:13px}
+    /* responsive */
+    @media (max-width:880px){.hero{grid-template-columns:1fr;}.brand .logo{width:48px;height:48px}}
+  </style>
+</head>
+<body>
+  <svg class="pattern" viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#6fe9d7" stop-opacity="0.25"/><stop offset="1" stop-color="#9bb7ff" stop-opacity="0.18"/></linearGradient>
+      <pattern id="p1" width="120" height="120" patternUnits="userSpaceOnUse" patternTransform="rotate(19)">
+        <rect width="120" height="120" fill="transparent"/>
+        <path d="M0 60c20-30 60-30 80 0" stroke="url(#g1)" stroke-width="2" fill="none" opacity="0.9"/>
+        <circle cx="30" cy="30" r="2.5" fill="#8fffe0" opacity="0.65"/>
+        <circle cx="90" cy="90" r="2" fill="#bcd4ff" opacity="0.6"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#p1)"/>
+  </svg>
+
+  <header>
+    <div class="brand">
+      <div class="logo">SB</div>
+      <div>
+        <div style="font-weight:800;color:#e9fffb">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">A modern sanctuary in {{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav aria-label="Primary Navigation">
+      <a href="index.html">Home</a>
+      <a href="events.html">Gatherings</a>
+      <a href="private-sessions.html">Private</a>
+      <a href="pricing.html">Offerings</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQ</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="layout">
+    <section class="hero">
+      <div class="card">
+        <h1>We craft luminous sound experiences for noticing and return.</h1>
+        <p class="lead">In a focused immersive setting we blend tuned bowls, breath guidance, and quiet structure to settle the nervous system. Sessions range from concentrated intensives to softly held community gatherings.</p>
+        <div class="meta">
+          <div class="pill">Intensive Offerings</div>
+          <div style="color:var(--muted);font-weight:600">Sessions in {{CITY}}</div>
+        </div>
+        <p class="story">Our approach mixes precise tonal layering with space for silence — designed for people who need real rest, not just time away. Each sound journey is sequenced to help the body drop into release, then return with clarity.</p>
+        <a class="cta" href="book.html">Reserve a Spot</a>
+      </div>
+
+      <aside class="card">
+        <div style="font-weight:800;color:#e9fbf4">Why we do it</div>
+        <div style="margin-top:10px;color:var(--muted)">We believe ritual needs modern clarity. Each meeting is short enough to honor busy lives and generous enough to transform them.</div>
+        <div class="grid">
+          <div class="box"><strong>Method</strong><div style="margin-top:6px;color:var(--muted)">Tonal layering + paced exhalation.</div></div>
+          <div class="box"><strong>Duration</strong><div style="margin-top:6px;color:var(--muted)">30–75 minutes depending on the format.</div></div>
+        </div>
+        <div style="margin-top:12px;color:var(--muted);font-size:13px">Contact: <a style="color:var(--accent);text-decoration:none" href="tel:{{PHONE}}">{{PHONE}}</a></div>
+      </aside>
+    </section>
+
+    <section class="proof">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-weight:800;color:#e9fbf4">Proof & Credibility</div>
+        <div style="color:var(--muted);font-size:13px">Live rotating attestations — peer-reviewed feeling.</div>
+      </div>
+      <div style="margin-top:12px;display:grid;grid-template-columns:1fr 240px;gap:16px">
+        <div>
+          <div class="testimonial" id="testimonial">
+            <div class="quote" id="quote">—</div>
+            <div class="author" id="author">—</div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:12px;align-items:center">
+            <button id="prev" aria-label="Previous" style="padding:8px 10px;border-radius:8px;background:#061219;color:#bfeee5;border:none">◀</button>
+            <button id="next" aria-label="Next" style="padding:8px 10px;border-radius:8px;background:#061219;color:#bfeee5;border:none">▶</button>
+            <div style="color:var(--muted);font-size:13px">Stories updated weekly</div>
+          </div>
+        </div>
+        <div>
+          <div style="font-weight:700;color:#e9fffb">Trusted by</div>
+          <div class="badges">
+            <div class="badge">Local Studio<div class="tip">A neighborhood wellness studio partnership</div></div>
+            <div class="badge">Yoga Collective<div class="tip">Preferred sound partner for retreats</div></div>
+            <div class="badge">Wellness Press<div class="tip">Featured in regional wellness column</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:28px">
+      <div style="font-weight:800;color:#e9fbf4">A short framework</div>
+      <div style="margin-top:10px;color:var(--muted)">We layer intention, tone, and breath in three phases: arrival, immersion, and return. Each phase has measurable cues so you can practice return outside the session.</div>
+      <div style="display:flex;gap:12px;margin-top:12px">
+        <div style="flex:1;background:rgba(255,255,255,0.02);padding:14px;border-radius:10px">Arrival: Grounding prompts, 5–8 minutes</div>
+        <div style="flex:1;background:rgba(255,255,255,0.02);padding:14px;border-radius:10px">Immersion: Tonal sequences, 20–40 minutes</div>
+        <div style="flex:1;background:rgba(255,255,255,0.02);padding:14px;border-radius:10px">Return: Guided reorientation, 5–10 minutes</div>
+      </div>
+    </section>
+
+    <footer>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>Questions? <a href="contact.html" style="color:var(--accent);text-decoration:none">Connect with us</a></div>
+        <div style="color:var(--muted)">© <span id="year"></span> {{BUSINESS_NAME}}</div>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    // testimonial rotation
+    const testimonials = [
+      {q: "I left feeling like my attention had been reshaped — calm and clear.", a: "— L. (teacher)"},
+      {q: "A focused hour that actually made a difference the next day.", a: "— R. (designer)"},
+      {q: "The sequence helped me release a week of tension without falling asleep.", a: "— M. (parent)"}
+    ];
+    let idx = 0;
+    const quoteEl = document.getElementById('quote');
+    const authorEl = document.getElementById('author');
+    function show(i){
+      const t = testimonials[i];
+      quoteEl.style.opacity = 0; authorEl.style.opacity = 0;
+      setTimeout(()=>{ quoteEl.textContent = t.q; authorEl.textContent = t.a; quoteEl.style.opacity=1; authorEl.style.opacity=1 },180)
+    }
+    document.getElementById('prev').addEventListener('click',()=>{ idx = (idx-1+testimonials.length)%testimonials.length; show(idx); });
+    document.getElementById('next').addEventListener('click',()=>{ idx = (idx+1)%testimonials.length; show(idx); });
+    show(0);
+    setInterval(()=>{ idx=(idx+1)%testimonials.length; show(idx); },7000);
+
+    // footer year
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

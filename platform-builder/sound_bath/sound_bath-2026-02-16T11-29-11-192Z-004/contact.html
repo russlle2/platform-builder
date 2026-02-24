@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Contact — {{BUSINESS_NAME}}</title>
+<style>
+/* Core aesthetic: soft gradients, glass cards, and an SVG pattern */
+:root{--ink:#06293a;--muted:#51636e;--accent1:#8ee3ff;--accent2:#d9b8ff}
+body {font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin:0; color:var(--ink); background: linear-gradient(180deg,#fbfbfe 0%, #f5f7fb 60%); min-height:100vh;}
+.header {padding:28px 32px; display:flex; justify-content:space-between; align-items:center;}
+.brand {display:flex; gap:12px; align-items:center;}
+.logo {width:52px; height:52px; border-radius:12px; background:linear-gradient(135deg,var(--accent1),var(--accent2)); display:flex; justify-content:center; align-items:center; color:#05263b; font-weight:700; box-shadow: 0 6px 20px rgba(13,24,35,0.12);}
+nav a {margin-left:18px; color: #07324a; text-decoration:none; font-weight:600;}
+.container {max-width:1100px; margin:28px auto; padding:36px; position:relative;}
+.svg-bg {position:absolute; right:-120px; top:-120px; width:520px; height:520px; opacity:0.12; pointer-events:none;}
+.hero {display:grid; grid-template-columns: 1fr 420px; gap:36px; align-items:start; padding:36px; background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(250,250,255,0.7)); border-radius:16px; box-shadow: 0 8px 30px rgba(9,16,24,0.06);}
+.hero h1 {font-size:28px; margin:0 0 10px 0; color:var(--ink);}
+.hero p.lead {margin:0 0 18px 0; color:#274151; line-height:1.45;}
+.card {background:#fff; border-radius:12px; padding:18px; box-shadow:0 6px 20px rgba(12,20,30,0.06);}
+.section {margin-top:20px; display:flex; gap:20px; align-items:flex-start;}
+.col {flex:1;}
+.side {width:320px;}
+.list {margin:0; padding-left:18px;}
+.small {font-size:13px; color:#3b4b55;}
+.diagnostic h2 {margin:0 0 10px 0;}
+.plan-grid {display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:12px;}
+.plan-item {background:linear-gradient(180deg,#fff,#fbfcff); padding:14px; border-radius:10px; text-align:center; box-shadow:0 4px 14px rgba(10,18,26,0.04);}
+.habits {display:flex; gap:12px; flex-wrap:wrap;}
+.habit {background:linear-gradient(90deg,#f7fbff,#fffaf8); padding:12px 14px; border-radius:10px; font-size:14px; box-shadow:0 3px 8px rgba(8,14,20,0.04);}
+.pricing {display:flex; gap:12px; align-items:center; justify-content:space-between; margin-top:16px;}
+.price {font-weight:700; font-size:20px; color:#052a3a;}
+.cta {margin-top:22px; display:flex; gap:12px;}
+.btn {display:inline-flex; gap:8px; align-items:center; padding:12px 16px; border-radius:10px; text-decoration:none; font-weight:700; color:white;}
+.btn-primary {background:linear-gradient(90deg,#6ec7ff,#a88bff);}
+.btn-ghost {background:transparent; border:2px solid rgba(7,50,74,0.08); color:#07324a;}
+form.contact-form {display:flex; flex-direction:column; gap:10px;}
+input, textarea {padding:10px 12px; border-radius:8px; border:1px solid #e6edf3; font-size:14px;}
+textarea {min-height:120px; resize:vertical;}
+.form-row {display:flex; gap:10px;}
+.form-row input {flex:1;}
+footer {margin:36px 0 0 0; text-align:center; font-size:13px; color:var(--muted);}
+@media (max-width:980px){.hero{grid-template-columns:1fr;}.side{width:100%;}}
+</style>
+</head>
+<body>
+<header class="header">
+<div class="brand">
+<div class="logo">SB</div>
+<div>
+<div style="font-weight:700;">{{BUSINESS_NAME}}</div>
+<div style="font-size:13px;color:#3b5560;">A curated sound and rest practice</div>
+</div>
+</div>
+<nav>
+<a href="index.html">Gatherings</a>
+<a href="events.html">Calendar</a>
+<a href="private-sessions.html">Sessions</a>
+<a href="pricing.html">Invest</a>
+<a href="about.html">Our story</a>
+<a href="contact.html">Connect</a>
+</nav>
+</header>
+
+<div class="container">
+<!-- decorative svg pattern -->
+<svg class="svg-bg" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<defs>
+<linearGradient id="g1" x1="0" x2="1">
+<stop offset="0" stop-color="#8ee3ff"/>
+<stop offset="1" stop-color="#d9b8ff"/>
+</linearGradient>
+<pattern id="p1" width="60" height="60" patternUnits="userSpaceOnUse">
+<rect width="60" height="60" fill="url(#g1)" rx="8"/>
+<path d="M0 30 L60 30 M30 0 L30 60" stroke="#ffffff" stroke-opacity="0.06" stroke-width="2"/>
+<circle cx="45" cy="15" r="2" fill="#fff" opacity="0.06"/>
+</pattern>
+</defs>
+<rect width="600" height="600" fill="url(#p1)" rx="60"/>
+</svg>
+
+<section class="hero">
+<div>
+<h1>Reach out — discover your next sound bath</h1>
+<p class="lead">We hold intentionally small, sensory-forward sound experiences in {{CITY}}, {{STATE}}. Whether you want to join a public circle, reserve a private 1:1, or learn about membership privileges, we’ll guide you to the right container.</p>
+
+<div class="card diagnostic">
+<h2>Short diagnostic</h2>
+<p>Not sure where to begin? Use the quick cues below so we can suggest the best format for your needs.</p>
+<ul class="list small">
+<li>Primary aim: calm, sleep support, emotional release, or workplace restoration</li>
+<li>Preferred intimacy: open circle vs. private session</li>
+<li>Any sensory or mobility considerations?</li>
+</ul>
+</div>
+
+<div class="plan">
+<h2 style="margin-top:16px;">How a gathering is planned</h2>
+<p class="small">We design each event with layered intention: arrival, immersion, and subtle reentry.</p>
+<div class="plan-grid">
+<div class="plan-item">
+<strong>Welcome</strong>
+<p class="small">Slow arrival, scent-free check-in, guidance on props.</p>
+</div>
+<div class="plan-item">
+<strong>Sound immersion</strong>
+<p class="small">Blended tones: crystal bowls, tuning forks, and a wooden monochord for sustained body resonance.</p>
+</div>
+<div class="plan-item">
+<strong>Integration</strong>
+<p class="small">Tea, journaling prompts, and gentle sharing if desired.</p>
+</div>
+</div>
+</div>
+
+</div>
+
+<!-- contact card -->
+<aside class="card side">
+<h3 style="margin-top:6px;">Contact & bookings</h3>
+<p class="small">Call or email to secure a seat, ask about memberships, or request a tailored corporate session.</p>
+<p style="margin:10px 0;"><strong>Phone:</strong> {{PHONE}}<br><strong>Email:</strong> <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+
+<form class="contact-form" onsubmit="submitContact(event)" aria-label="Contact form">
+<div class="form-row">
+<input name="name" placeholder="Your name" required />
+<input name="phone" placeholder="Phone (optional)" />
+</div>
+<input name="email" type="email" placeholder="Your email" required />
+<select name="interest" style="padding:10px;border-radius:8px;border:1px solid #e6edf3;">
+<option value="">I’m interested in...</option>
+<option>Next community event</option>
+<option>Private 1:1 session</option>
+<option>Couples / shared session</option>
+<option>Corporate / workplace session</option>
+<option>Membership</option>
+</select>
+<textarea name="message" placeholder="Tell us about your intention, accessibility needs, or preferred dates"></textarea>
+<div style="display:flex; gap:10px; margin-top:6px;">
+<button class="btn btn-primary" type="submit">{{PRIMARY_CTA_LABEL}}</button>
+<a class="btn btn-ghost" href="{{PRIMARY_CTA_URL}}">Book online</a>
+</div>
+</form>
+
+<div style="margin-top:14px;">
+<h4 style="margin:0 0 6px 0;">Location</h4>
+<p class="small">We rotate intimate venues; many gatherings take place at {{VENUE_NAME}} in {{CITY}}. Exact address shared after booking.</p>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="col card">
+<h2>What to bring</h2>
+<p class="small">Comfort deepens the experience. Bring:</p>
+<ul class="list small">
+<li>Comfortable mat, blanket, and a bolster or pillow</li>
+<li>Eye covering for gentle darkness</li>
+<li>Reusable water bottle and an openness to rest</li>
+</ul>
+
+<h2 style="margin-top:18px;">Contraindications & safety</h2>
+<p class="small">While sound baths are gentle, please consult with a medical professional and inform the facilitator before attending if you have epilepsy, severe cardiovascular issues, recent head injury, or are in early pregnancy.</p>
+
+<h2 style="margin-top:18px;">Typical session flow</h2>
+<p class="small">A standard session (60–90 minutes):</p>
+<ol class="list small">
+<li>Settling & orientation (10–15 min)</li>
+<li>Layered sound immersion (35–60 min) — instruments attuned to encourage nervous system downregulation</li>
+<li>Soft reorientation & tea (10–15 min)</li>
+</ol>
+
+<h2 style="margin-top:18px;">Instruments we may use</h2>
+<p class="small">Our palette varies with intention: crystal singing bowls, a deep gong, koshi-style chimes, tuning forks, and a resonant monochord are examples.</p>
+
+</div>
+
+<div class="side card">
+<h3>Micro-practices</h3>
+<div class="habits">
+<div class="habit">5-minute breath anchor</div>
+<div class="habit">Nightly body scan before sleep</div>
+<div class="habit">Weekly quiet hour — no screens</div>
+</div>
+
+<div style="margin-top:16px;">
+<h4>Rates snapshot</h4>
+<div class="pricing">
+<div>
+<div class="price">$25–$45</div>
+<div class="small">Community circle</div>
+</div>
+<div style="text-align:right;">
+<div class="price">$140</div>
+<div class="small">Private 1:1 session (60 min)</div>
+</div>
+</div>
+
+<p class="small" style="margin-top:10px;">Memberships grant discounted access and priority booking. Ask about our membership model when you contact us.</p>
+</div>
+
+</div>
+</section>
+
+<section class="card" style="margin-top:18px;">
+<h2>Immediate questions?</h2>
+<p class="small">Call or text <strong>{{PHONE}}</strong> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>. We typically reply within 48 hours.</p>
+<div class="cta">
+<a class="btn btn-primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+<a class="btn btn-ghost" href="book.html">See availability</a>
+</div>
+</section>
+
+<footer>
+<p>Facilitated by {{FACILITATOR_NAME}} • {{VENUE_NAME}} • {{CITY}}, {{STATE}}</p>
+</footer>
+
+<script>
+function submitContact(e){
+ e.preventDefault();
+ const form = e.target;
+ const data = new FormData(form);
+ const parts = [
+   encodeURIComponent('Name: ' + data.get('name')),
+   encodeURIComponent('Phone: ' + (data.get('phone') || '')),
+   encodeURIComponent('Email: ' + data.get('email')),
+   encodeURIComponent('Interest: ' + (data.get('interest') || '')),
+   encodeURIComponent('Message: ' + (data.get('message') || ''))
+ ];
+ const subject = encodeURIComponent('Contact from website');
+ const mailto = 'mailto:{{EMAIL}}?subject=' + subject + '&body=' + parts.join('%0A');
+ window.location.href = mailto;
+}
+</script>
+
+</body>
+</html>

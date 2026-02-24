@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>{{BUSINESS_NAME}} — Practical membership for steady wellbeing</title>
+  <meta name='description' content='A membership centered on habits, outcomes and simple frameworks to help people build steady personal rhythms.'>
+  <link rel='stylesheet' href='assets/css/styles.css'>
+</head>
+<body class='aura'>
+  <header class='site-header'>
+    <div class='wrap'>
+      <a class='brand' href='index.html'>{{BUSINESS_NAME}}</a>
+      <nav class='nav'>
+        <a href='index.html'>Home</a>
+        <a href='about.html'>Who I Am</a>
+        <a href='services.html'>Offerings</a>
+        <a href='programs.html'>Pathways</a>
+        <a href='pricing.html'>Membership</a>
+        <a href='testimonials.html'>Stories</a>
+        <a href='book.html' class='cta'>Book Session</a>
+        <a href='contact.html'>Reach Out</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class='hero'>
+      <div class='wrap hero-grid'>
+        <div class='hero-copy'>
+          <h1>Clearer days through simple structure</h1>
+          <p class='lead'>Small, practical changes that stack into reliable momentum for busy lives. Memberships, guided planners, and weekly micro-tools.</p>
+          <div class='hero-ctas'>
+            <a class='btn primary' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a>
+            <a class='btn ghost' href='programs.html'>Explore Pathways</a>
+          </div>
+          <p class='meta'>Questions? Call <a href='tel:{{PHONE}}'>{{PHONE}}</a> or email <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a>.</p>
+        </div>
+        <div class='hero-visual'>
+          <svg viewBox='0 0 400 300' class='card-illustration' aria-hidden='true'>
+            <rect x='0' y='0' width='400' height='300' rx='16' fill='url(#p)'></rect>
+            <defs>
+              <pattern id='p' patternUnits='userSpaceOnUse' width='40' height='40'>
+                <rect width='40' height='40' fill='#f7fbf7'></rect>
+                <path d='M0 20 L10 10 L20 20 L30 10 L40 20' stroke='#e6f0e9' stroke-width='2' fill='none'></path>
+              </pattern>
+            </defs>
+            <g transform='translate(20,30)'>
+              <rect width='160' height='100' rx='8' fill='#fff' stroke='#e6efe8'></rect>
+              <rect x='8' y='8' width='144' height='12' rx='4' fill='#f2faf5'></rect>
+              <rect x='8' y='28' width='120' height='10' rx='4' fill='#f4fbf6'></rect>
+              <rect x='8' y='46' width='80' height='10' rx='4' fill='#f6fcf7'></rect>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <section class='diagnostic wrap' id='diagnostic'>
+      <h2>Quick orientation: where to start</h2>
+      <p class='section-lead'>A three-question check to highlight one focus area you can act on this week.</p>
+      <form id='miniDiagnostic' class='card'>
+        <label>1) What feels most inconsistent?</label>
+        <select name='q1' required>
+          <option value='energy'>Sustaining energy through the day</option>
+          <option value='focus'>Sustaining focus for projects</option>
+          <option value='sleep'>Regular, restorative sleep</option>
+        </select>
+        <label>2) How many days this week can you commit to a short practice?</label>
+        <select name='q2' required>
+          <option value='2'>2 days</option>
+          <option value='3'>3 days</option>
+          <option value='5'>5+ days</option>
+        </select>
+        <label>3) What time block fits your schedule?</label>
+        <select name='q3' required>
+          <option value='morning'>Morning</option>
+          <option value='midday'>Midday</option>
+          <option value='evening'>Evening</option>
+        </select>
+        <div class='form-actions'>
+          <button type='submit' class='btn'>Get my focus</button>
+          <div id='diagResult' class='result' aria-live='polite'></div>
+        </div>
+      </form>
+    </section>
+
+    <section class='session-planner wrap' id='planner'>
+      <h2>Session Planner</h2>
+      <p class='section-lead'>Assemble a short, achievable session plan that fits your week and export a plain-text summary you can paste into notes.</p>
+      <form id='sessionForm' class='card grid-2'>
+        <div>
+          <label>Focus area (one phrase)</label>
+          <input name='focus' placeholder='e.g., Midday reset, Deep work sprint' required>
+          <label>Session length (minutes)</label>
+          <input name='length' type='number' min='5' max='120' value='20' required>
+          <label>Sessions per week</label>
+          <input name='perWeek' type='number' min='1' max='14' value='3' required>
+        </div>
+        <div>
+          <label>Core actions (comma separated)</label>
+          <input name='actions' placeholder='e.g., 5-min breath, 15-min focused work, 3 stretches'>
+          <label>Preferred days</label>
+          <div class='days'>
+            <label><input type='checkbox' name='days' value='Mon'>Mon</label>
+            <label><input type='checkbox' name='days' value='Tue'>Tue</label>
+            <label><input type='checkbox' name='days' value='Wed'>Wed</label>
+            <label><input type='checkbox' name='days' value='Thu'>Thu</label>
+            <label><input type='checkbox' name='days' value='Fri'>Fri</label>
+            <label><input type='checkbox' name='days' value='Sat'>Sat</label>
+            <label><input type='checkbox' name='days' value='Sun'>Sun</label>
+          </div>
+          <label>Notes / tweaks</label>
+          <textarea name='notes' placeholder='Adjust intensity, equipment, or environment'></textarea>
+        </div>
+        <div class='form-actions fullwidth'>
+          <button type='submit' class='btn primary'>Build plan</button>
+          <button type='button' id='copyPlan' class='btn ghost' disabled>Copy summary</button>
+          <pre id='planOutput' class='plan-output' aria-live='polite'></pre>
+        </div>
+      </form>
+    </section>
+
+    <section class='micro-habits wrap' id='habits'>
+      <h2>7-Day Challenge Maker</h2>
+      <p class='section-lead'>Create a printable checklist for a single habit and track progress visually. Great to pair with your planner.</p>
+      <form id='habitForm' class='card'>
+        <label>Habit name</label>
+        <input name='habit' placeholder='e.g., Morning walk, 10-minute journaling' required>
+        <label>Intensity / goal</label>
+        <input name='goal' placeholder='e.g., 10 minutes, 2 km, write 3 bullets'>
+        <label>Start day</label>
+        <select name='start'>
+          <option value='Mon'>Monday</option>
+          <option value='Tue'>Tuesday</option>
+          <option value='Wed'>Wednesday</option>
+          <option value='Thu'>Thursday</option>
+          <option value='Fri'>Friday</option>
+          <option value='Sat'>Saturday</option>
+          <option value='Sun'>Sunday</option>
+        </select>
+        <div class='form-actions'>
+          <button type='submit' class='btn'>Generate checklist</button>
+          <button type='button' id='printChecklist' class='btn ghost' disabled>Print</button>
+          <button type='button' id='copyChecklist' class='btn ghost' disabled>Copy text</button>
+        </div>
+      </form>
+
+      <section id='checklistArea' class='checklist card invisible' aria-hidden='true'>
+        <h3 id='checklistTitle'></h3>
+        <ul id='checklistList' class='checklist-list'></ul>
+      </section>
+    </section>
+
+    <section class='pricing wrap' id='pricing'>
+      <h2>Memberships that support steady practice</h2>
+      <p class='section-lead'>Monthly access to tools, a private planner, and twice-monthly small-group clinics. Simple tiers based on support level.</p>
+      <div class='pricing-grid'>
+        <article class='card'>
+          <h3>Core</h3>
+          <p class='price'>$29/mo</p>
+          <ul>
+            <li>Weekly planner templates</li>
+            <li>Habit checklist generator</li>
+            <li>Community board</li>
+          </ul>
+          <a class='btn primary' href='pricing.html'>Join Core</a>
+        </article>
+        <article class='card highlight'>
+          <h3>Guided</h3>
+          <p class='price'>$79/mo</p>
+          <ul>
+            <li>Everything in Core</li>
+            <li>Two small-group clinics / month</li>
+            <li>1:1 planning calls (quarterly)</li>
+          </ul>
+          <a class='btn primary' href='pricing.html'>Start Guided</a>
+        </article>
+        <article class='card'>
+          <h3>Anchor</h3>
+          <p class='price'>$149/mo</p>
+          <ul>
+            <li>All Guided features</li>
+            <li>Monthly personal review</li>
+            <li>Priority booking</li>
+          </ul>
+          <a class='btn primary' href='pricing.html'>Become Anchor</a>
+        </article>
+      </div>
+    </section>
+
+    <section class='final-cta wrap cta-section'>
+      <div class='card cta-card'>
+        <h2>Ready to shape a manageable routine?</h2>
+        <p>Pick a plan, try the planner, or book a short session to clarify next steps.</p>
+        <div class='cta-actions'>
+          <a class='btn primary' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a>
+          <a class='btn ghost' href='book.html'>Book a 20-min call</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class='site-footer'>
+    <div class='wrap'>
+      <div class='foot-grid'>
+        <div>
+          <strong>{{BUSINESS_NAME}}</strong>
+          <p>{{CITY}}, {{STATE}}</p>
+        </div>
+        <div>
+          <p>Phone: <a href='tel:{{PHONE}}'>{{PHONE}}</a></p>
+          <p>Email: <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a></p>
+        </div>
+        <div>
+          <nav class='mini-nav'>
+            <a href='about.html'>About</a>
+            <a href='pricing.html'>Membership</a>
+            <a href='contact.html'>Contact</a>
+          </nav>
+        </div>
+      </div>
+      <p class='muted'>&copy; <span id='year'></span> {{BUSINESS_NAME}}. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src='assets/js/main.js' defer></script>
+</body>
+</html>

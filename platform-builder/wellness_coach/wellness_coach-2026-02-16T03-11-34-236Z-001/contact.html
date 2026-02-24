@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contact — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Contact {{COACH_NAME}} — Connect for a discovery session, download a free ritual, or ask about programs in {{CITY}}, {{STATE}}.">
+  <style>
+    :root{--bg:#0f0f10;--card:#0b0b0c;--muted:#aeb3b8;--accent:#c9a86b;--accent-2:#8cc0a5;--glass:rgba(255,255,255,0.04);--radius:14px}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; color:#eef0ef;background:linear-gradient(180deg,#050507 0%, #0f0f10 55%);-webkit-font-smoothing:antialiased}
+    header{display:flex;align-items:center;justify-content:space-between;padding:28px 48px;border-bottom:1px solid rgba(255,255,255,0.03)}
+    .brand{display:flex;gap:14px;align-items:center}
+    .brand img{width:56px;height:56px;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,0.6)}
+    .brand h1{font-size:16px;margin:0;color:#fff;letter-spacing:0.4px}
+    nav a{color:var(--muted);text-decoration:none;margin-left:22px;font-size:14px}
+    .container{max-width:1100px;margin:36px auto;padding:0 24px}
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:center;padding:36px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);border-radius:18px;box-shadow:0 8px 30px rgba(0,0,0,0.6)}
+    .hero .meta{color:var(--muted);font-size:13px;margin-bottom:12px}
+    .hero h2{margin:0;font-size:28px;color:#fff;line-height:1.05}
+    .hero p{color:var(--muted);margin-top:12px}
+    .hero .cta{margin-top:18px}
+    .btn{display:inline-block;padding:12px 18px;border-radius:10px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#08110f;text-decoration:none;font-weight:600}
+    .panel{background:var(--card);padding:22px;border-radius:14px;color:var(--muted)}
+    .panel h3{color:#fff;margin-top:0}
+    form .row{display:flex;gap:12px}
+    input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.02);color:#fff}
+    textarea{min-height:120px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .small{font-size:13px;color:var(--muted)}
+    .mini-card{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:16px;border-radius:12px}
+    footer{margin-top:28px;color:var(--muted);font-size:13px;text-align:center}
+    /* gallery accents */
+    .art{display:flex;justify-content:center;align-items:center}
+    .art img{width:360px;max-width:100%;filter:drop-shadow(0 12px 36px rgba(0,0,0,0.7))}
+    .sections{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-top:26px}
+    .section{padding:18px;background:var(--glass);border-radius:12px}
+    .habits li{margin:8px 0}
+    .pricing-cards{display:flex;gap:12px}
+    .price{flex:1;padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03)}
+    .price h4{margin:0;color:#fff}
+    .lead{display:flex;gap:14px;align-items:center}
+    .avatar{width:56px;height:56px;border-radius:12px;flex:0 0 56px}
+    @media (max-width:880px){.hero{grid-template-columns:1fr;}.sections{grid-template-columns:1fr}.pricing-cards{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="assets/img/avatar.svg" alt="{{COACH_NAME}} avatar">
+      <div>
+        <h1>{{BUSINESS_NAME}}</h1>
+        <div class="small">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Story</a>
+      <a href="services.html">Services</a>
+      <a href="programs.html">Paths</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="testimonials.html">Voices</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- Hero (gallery-style) -->
+    <section class="hero">
+      <div>
+        <div class="meta">Connect • Clarify • Cultivate</div>
+        <h2>Reach out to begin a tailored wellness journey with {{COACH_NAME}}, {{CREDENTIALS}}</h2>
+        <p>Whether you want a quick diagnostic, a structured plan, or a daily micro-habit to anchor your days, start with a short conversation. No pressure — just clarity.</p>
+        <div class="cta">
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <a style="margin-left:12px;color:var(--muted);font-size:14px;text-decoration:none" href="#diagnostic">Take the 2-minute diagnostic</a>
+        </div>
+      </div>
+      <div class="panel art">
+        <img src="assets/img/hero.svg" alt="calm abstract gallery">
+      </div>
+    </section>
+
+    <!-- Diagnostic (brief self-assessment) -->
+    <section id="diagnostic" style="margin-top:20px" class="panel">
+      <h3>Two-minute alignment check</h3>
+      <p class="small">A quick reflective diagnostic to reveal what matters most right now. Answer honestly — there's no scoring, only insight.</p>
+      <form action="/capture-diagnostic" method="post" style="margin-top:12px">
+        <div class="grid-3">
+          <label class="mini-card">I feel rested most mornings<select name="sleep"><option>Yes</option><option>Some days</option><option>Rarely</option></select></label>
+          <label class="mini-card">I have a repeatable morning ritual<select name="ritual"><option>Yes</option><option>Partial</option><option>No</option></select></label>
+          <label class="mini-card">I make time for reflection<select name="reflect"><option>Daily</option><option>Weekly</option><option>Almost never</option></select></label>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:12px;align-items:center">
+          <button class="btn" type="submit">Reveal insights</button>
+          <div class="small">Receive a short summary and a tailored micro-habit.</div>
+        </div>
+      </form>
+    </section>
+
+    <!-- Plan (program overview that ripples to Programs) -->
+    <section style="margin-top:20px" class="section">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <h3>Guided Pathways</h3>
+          <p class="small">Short, intentional coaching arcs built around habits and soulful structure. Each pathway aligns practice with measurable outcomes — resilience, restful sleep cycles, and calm productivity.</p>
+        </div>
+        <div style="text-align:right">
+          <div class="small">Prefer a custom mix?</div>
+          <a class="btn" href="programs.html">Explore full paths</a>
+        </div>
+      </div>
+      <div class="pricing-cards" style="margin-top:14px">
+        <div class="price">
+          <h4>Seed — 6 weeks</h4>
+          <div class="small">Focused habit stack, two 45-minute sessions, daily accountability prompts.</div>
+        </div>
+        <div class="price">
+          <h4>Sprout — 12 weeks</h4>
+          <div class="small">Structured curriculum, weekly sessions, habit audits, and an integration toolkit.</div>
+        </div>
+        <div class="price">
+          <h4>Sanctum — 6 months</h4>
+          <div class="small">Deep transformation container: coaching, reflective practice, and sustained habit scaffolding.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Micro-habits (concrete examples) -->
+    <section style="margin-top:20px" class="panel">
+      <h3>Micro-habits — small acts, consistent change</h3>
+      <p class="small">Practical, spiritual-infused practices you can begin today. Pick one, repeat daily for 21 days, then add another.</p>
+      <ul class="habits" style="margin-top:12px">
+        <li><strong>3-Minute Arrival:</strong> Before your first screen, sit, breathe to set an intention.</li>
+        <li><strong>Signal Ritual:</strong> One deliberate action after lunch to reset energy (tea, walk, or five breaths).</li>
+        <li><strong>Bedtime Ledger:</strong> Two notes of gratitude and one undone task release before sleep.</li>
+      </ul>
+      <div style="margin-top:12px" class="small">Download the quick guide: <a href="{{PRIMARY_CTA_URL}}" style="color:var(--accent)">7-Minute Daily Ritual</a></div>
+    </section>
+
+    <!-- Pricing snapshot (ripples to pricing.html) -->
+    <section style="margin-top:20px" class="section">
+      <h3>Investment & formats</h3>
+      <p class="small">Transparent pricing and flexible delivery. If you’d like a written proposal, request one in the form below.</p>
+      <div style="display:flex;gap:12px;margin-top:12px;align-items:stretch">
+        <div class="price">
+          <h4>Intro Session — Single</h4>
+          <div class="small">60-minute discovery. Ideal for testing fit and getting a mini-plan.</div>
+        </div>
+        <div class="price">
+          <h4>Path Bundles</h4>
+          <div class="small">Cohort and private options available. Visit the pricing page for current rates and scholarship details.</div>
+        </div>
+      </div>
+      <div style="margin-top:12px"><a href="pricing.html" class="btn">See full pricing</a></div>
+    </section>
+
+    <!-- Contact form + CTA -->
+    <section style="margin-top:20px" class="panel">
+      <div style="display:flex;gap:18px;align-items:flex-start">
+        <div style="flex:1">
+          <h3>Let's schedule your discovery</h3>
+          <p class="small">Share a few details and your preferred times. I’ll respond within 48 hours with next steps.</p>
+          <form action="/contact" method="post" style="margin-top:12px">
+            <div class="row">
+              <input name="name" placeholder="Your name" required>
+              <input name="phone" placeholder="Phone (optional)" value="{{PHONE}}">
+            </div>
+            <div style="margin-top:8px" class="row">
+              <input name="email" placeholder="Email" required value="{{EMAIL}}">
+              <select name="interest"><option>Discovery session</option><option>Join a cohort</option><option>Private coaching</option></select>
+            </div>
+            <div style="margin-top:8px">
+              <textarea name="message" placeholder="Tell me briefly what you're seeking (sleep, energy, routine, presence...)" required></textarea>
+            </div>
+            <div style="margin-top:12px;display:flex;gap:12px;align-items:center">
+              <button class="btn" type="submit">Request a call</button>
+              <a href="book.html" style="color:var(--muted);text-decoration:none">Or book directly</a>
+            </div>
+          </form>
+        </div>
+        <aside style="width:300px;flex:0 0 300px">
+          <div class="lead panel">
+            <img src="assets/img/avatar.svg" alt="{{COACH_NAME}}" class="avatar">
+            <div>
+              <div style="color:#fff;font-weight:600">{{COACH_NAME}}, {{CREDENTIALS}}</div>
+              <div class="small">Based in {{CITY}}, {{STATE}} • Available globally</div>
+            </div>
+          </div>
+          <div style="margin-top:12px" class="panel small">
+            <strong>Quick contacts</strong>
+            <div style="margin-top:8px">Phone: <a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none">{{PHONE}}</a></div>
+            <div style="margin-top:6px">Email: <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a></div>
+            <div style="margin-top:8px">Prefer a PDF proposal? Check the box in your form message.</div>
+          </div>
+          <div style="margin-top:12px" class="panel small">
+            <strong>Lead magnet</strong>
+            <div style="margin-top:8px">Get the "7-Minute Daily Ritual" with your first message. It's a gentle practice to create momentum.</div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <footer>
+      <div class="small">© {{BUSINESS_NAME}} • Crafted guidance by {{COACH_NAME}} • <a href="privacy.html" style="color:var(--muted);text-decoration:none">Privacy</a></div>
+    </footer>
+
+  </main>
+
+  <!-- Decorative pattern (local svg) -->
+  <svg style="position:fixed;right:-120px;bottom:-120px;opacity:0.12;pointer-events:none" width="480" height="480" viewBox="0 0 600 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#c9a86b" stop-opacity="0.18"/><stop offset="1" stop-color="#8cc0a5" stop-opacity="0.06"/></linearGradient>
+    </defs>
+    <rect x="0" y="0" width="600" height="600" rx="90" fill="url(#g1)"/>
+  </svg>
+</body>
+</html>

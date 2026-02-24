@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Connect — Contact | {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reach out for membership, blends, or a short consultation. Aromatherapy offerings that may support everyday balance.">
+  <style>
+    :root{
+      --bg:#fbfbfd;--card:#ffffff;--muted:#6b7280;--accent:#7b5cff;--accent-2:#28c6a3;--danger:#e11d48;
+      --glass: rgba(255,255,255,0.6);
+      --radius:14px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#f8fafc 0%, #ffffff 40%);color:#0f172a}
+    /* patterned header using local SVG */
+    header{background-image: url('assets/img/pattern.svg');background-repeat:repeat;background-size:240px;padding:34px 20px 18px;border-bottom:1px solid #eef2ff}
+    .wrap{max-width:980px;margin:0 auto}
+    nav{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{font-weight:700;color:var(--accent)}
+    .navlinks{display:flex;gap:12px;font-size:15px}
+    .navlinks a{color:#0f172a;text-decoration:none;padding:8px 10px;border-radius:10px}
+    .navlinks a[href$="contact.html"]{background:linear-gradient(90deg, rgba(123,92,255,0.12), rgba(40,198,163,0.06));}
+    main{padding:28px 20px}
+    .grid{display:grid;grid-template-columns:1fr 420px;gap:22px}
+    .card{background:var(--card);border-radius:var(--radius);box-shadow:0 6px 24px rgba(15,23,42,0.06);padding:22px}
+    h1{margin:0 0 6px;font-size:22px}
+    p.lead{margin:0 0 16px;color:var(--muted)}
+    /* mood selector */
+    .mood-box{display:flex;flex-direction:column;gap:10px}
+    .mood-options{display:flex;gap:8px;flex-wrap:wrap}
+    .mood-btn{border:1px solid #e6e9f2;padding:8px 12px;border-radius:12px;background:#fff;cursor:pointer}
+    .mood-btn.active{border-color:var(--accent);box-shadow:0 6px 18px rgba(123,92,255,0.08);transform:translateY(-2px)}
+    .method{margin-top:8px;padding:12px;border-radius:10px;background:linear-gradient(180deg,#faf9ff,#fff)}
+    .cta{display:inline-block;margin-top:12px;padding:10px 16px;border-radius:12px;background:var(--accent);color:#fff;text-decoration:none}
+    .cta.alt{background:var(--accent-2)}
+    /* aroma wheel */
+    .wheel-wrap{display:flex;flex-direction:column;align-items:center;gap:12px}
+    .wheel{width:280px;height:280px;border-radius:50%;position:relative;display:grid;place-items:center}
+    .wheel svg{width:100%;height:100%}
+    .legend{display:flex;gap:8px;font-size:13px;color:var(--muted)}
+    .note-pill{padding:6px 10px;border-radius:999px;background:#f8fafc;border:1px solid #eef2ff}
+    .note-active{background:linear-gradient(90deg,#fff,#f7f2ff);border-color:var(--accent)}
+    /* contact form */
+    form{display:flex;flex-direction:column;gap:10px}
+    input,textarea,select{padding:10px;border-radius:10px;border:1px solid #e6e9f2;font-size:15px}
+    button[type="submit"]{padding:10px;border-radius:10px;border:0;background:var(--accent);color:#fff;cursor:pointer}
+    .muted{color:var(--muted);font-size:13px}
+    details{margin-top:10px}
+    footer{margin:22px 0 80px;color:var(--muted);font-size:13px}
+    @media (max-width:880px){.grid{grid-template-columns:1fr}.wheel{width:240px;height:240px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav>
+        <div style="display:flex;gap:12px;align-items:center">
+          <div class="brand">{{BUSINESS_NAME}}</div>
+          <div class="muted">Aromatherapy practice • {{CITY}}, {{STATE}}</div>
+        </div>
+        <div class="navlinks" role="navigation" aria-label="Main">
+          <a href="index.html">Essence</a>
+          <a href="services.html">Sessions</a>
+          <a href="blends.html">Custom Blends</a>
+          <a href="shop.html">Boutique</a>
+          <a href="pricing.html">Investment</a>
+          <a href="about.html">About</a>
+          <a href="book.html">Reserve</a>
+          <a href="contact.html">Connect</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="grid">
+      <section class="card">
+        <h1>Connect & co-create a scent approach</h1>
+        <p class="lead">Use this page to tell us about your current state; we'll suggest a gentle method and an inviting next step. All guidance is safety-forward and supportive, not clinical.</p>
+
+        <div class="mood-box">
+          <label for="mood">Choose the state that most fits right now</label>
+          <div id="mood" class="mood-options" role="list">
+            <button class="mood-btn" data-key="calm" role="listitem">Winding down</button>
+            <button class="mood-btn" data-key="focus" role="listitem">Need focus</button>
+            <button class="mood-btn" data-key="lift" role="listitem">Low energy</button>
+            <button class="mood-btn" data-key="reset" role="listitem">Overwhelmed</button>
+            <button class="mood-btn" data-key="sleep" role="listitem">Preparing for sleep</button>
+          </div>
+
+          <div class="method" id="methodPanel" aria-live="polite">
+            <strong id="methodTitle">A gentle inhalation exercise</strong>
+            <div id="methodDesc" style="margin-top:8px;color:var(--muted)">Select a state above to see a suggested, safety-minded method that may support that moment.</div>
+            <a id="primaryCta" class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          </div>
+        </div>
+
+        <hr style="margin:18px 0;border:0;border-top:1px solid #f1f5f9">
+
+        <h3 style="margin-bottom:8px">Reach us</h3>
+        <p class="muted">Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a> • Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+
+        <form id="contactForm" aria-describedby="formHelp">
+          <input name="name" placeholder="Your full name" required />
+          <input name="email" placeholder="Email address" type="email" required />
+          <select name="interest" id="interest">
+            <option value="consult">Short consult (15 min)</option>
+            <option value="membership">Membership inquiry</option>
+            <option value="blend">Custom blend</option>
+            <option value="other">Other</option>
+          </select>
+          <textarea name="message" placeholder="Tell us a little: what brings you here?" rows="4"></textarea>
+          <input type="hidden" name="mood_choice" id="moodChoice" />
+          <div style="display:flex;gap:8px;align-items:center;justify-content:space-between">
+            <div class="muted" id="formHelp">We'll reply within 3 business days. Responses may suggest low-cost steps or membership options.</div>
+            <button type="submit">Send message</button>
+          </div>
+        </form>
+
+        <details>
+          <summary style="cursor:pointer">Safety notes & FAQ</summary>
+          <div style="margin-top:8px;color:var(--muted);line-height:1.4">
+            <p><strong>Dilution & patch tests:</strong> Always dilute essential oils before skin application; consider a small patch test. Typical dilution ranges for adults are 0.5–3% depending on use. We can provide blend-specific guidance.</p>
+            <p><strong>Pets & pregnancy:</strong> Some oils are not recommended for pregnancy or for use around pets. Please tell us if you are pregnant, nursing, or have animals in the home so we can offer safer alternatives.</p>
+            <p><strong>Not a replacement:</strong> Services and suggestions are not medical treatment. They may support comfort, relaxation, or routine but are not medical advice.</p>
+          </div>
+        </details>
+
+      </section>
+
+      <aside class="card">
+        <div class="wheel-wrap">
+          <h3 style="margin:0">Aroma wheel — explore notes</h3>
+          <p class="muted" style="margin:0 0 8px">Hover or tap a note to learn quick descriptors. Top, middle, and base notes combine to shape an impression.</p>
+
+          <div class="wheel" id="aromaWheel" role="img" aria-label="Aroma wheel of top middle and base notes">
+            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <defs>
+                <linearGradient id="g1" x1="0%" x2="100%"><stop offset="0" stop-color="#7b5cff" stop-opacity="0.9"/><stop offset="1" stop-color="#28c6a3" stop-opacity="0.9"/></linearGradient>
+                <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="2"/></filter>
+              </defs>
+              <!-- outer ring = top notes -->
+              <g id="topNotes">
+                <path class="seg top" data-kind="top" data-key="citrus" d="M100 10 A90 90 0 0 1 190 100 L160 100 A60 60 0 0 0 100 40 Z" fill="#fff7ed" stroke="#fde68a"/>
+                <path class="seg top" data-kind="top" data-key="herb" d="M190 100 A90 90 0 0 1 100 190 L100 160 A60 60 0 0 0 160 100 Z" fill="#f0fdf4" stroke="#bbf7d0"/>
+                <path class="seg top" data-kind="top" data-key="floral" d="M100 190 A90 90 0 0 1 10 100 L40 100 A60 60 0 0 0 100 160 Z" fill="#fff1f2" stroke="#fecdd3"/>
+                <path class="seg top" data-kind="top" data-key="fresh" d="M10 100 A90 90 0 0 1 100 10 L100 40 A60 60 0 0 0 40 100 Z" fill="#eef2ff" stroke="#c7d2fe"/>
+              </g>
+              <!-- middle ring -->
+              <g id="midNotes">
+                <circle cx="100" cy="100" r="60" fill="#ffffff"/>
+                <text x="100" y="100" text-anchor="middle" dominant-baseline="middle" font-size="9" fill="#374151">Tap a slice</text>
+              </g>
+              <!-- base center -->
+              <circle cx="100" cy="100" r="28" fill="url(#g1)" filter="url(#soft)"/>
+            </svg>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:8px;width:100%">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+              <div class="note-pill" data-note="top">Top notes</div>
+              <div class="note-pill" data-note="middle">Middle notes</div>
+              <div class="note-pill" data-note="base">Base notes</div>
+            </div>
+            <div id="notePanel" class="card" style="padding:12px;margin:0;background:linear-gradient(180deg,#fff,#fbfcff)">
+              <strong id="noteTitle">Hover a segment</strong>
+              <div id="noteDesc" style="margin-top:6px;color:var(--muted)">Short descriptors and common oils will appear here. These are for sensory orientation and may support choice-making.</div>
+            </div>
+          </div>
+
+          <div class="legend" style="margin-top:10px">
+            <span class="muted">Top</span><span style="width:8px;height:8px;background:#fde68a;border-radius:50%;display:inline-block"></span>
+            <span class="muted">Middle</span><span style="width:8px;height:8px;background:#c7d2fe;border-radius:50%;display:inline-block"></span>
+            <span class="muted">Base</span><span style="width:8px;height:8px;background:url('#g1');border-radius:50%;display:inline-block"></span>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <footer class="wrap">
+      <p class="muted">Prefer booking? Visit the Reserve page. Membership details and blend pricing are under Investment and Custom Blends. For urgent scheduling call <a href="tel:{{PHONE}}">{{PHONE}}</a>.</p>
+    </footer>
+  </main>
+
+  <script>
+    (function(){
+      // Mood-to-Method logic
+      const moods = {
+        calm: {title:'Gentle box breathing', desc:'Slow 4-4-6 breaths using a linen-hydrosol spritz or a citrus-top inhale. Repeat for 3 rounds. This approach may support a calmer nervous state.', cta:'Book a brief consult', ctaClass:'cta'},
+        focus: {title:'Short aromatic focus ritual', desc:'Diffuse a clean, bright blend and practice 2 minutes of focused inhalation. May support attention and steadier thinking.', cta:'Try a focus consult', ctaClass:'cta alt'},
+        lift: {title:'Energizing lift', desc:'A 3-minute stand-and-breathe routine with uplifting top notes. May support gentle energy increases without caffeine.', cta:'Get a lift plan', ctaClass:'cta'},
+        reset: {title:'Grounding reset', desc:'A slow 5-breath grounding technique with a small amount of base-rich inhalation. May support emotional steadiness.', cta:'Request a reset session', ctaClass:'cta alt'},
+        sleep: {title:'Pre-sleep wind-down', desc:'A short ritual with muted lighting and relaxing mid/base notes. May support smoother transition to rest.', cta:'Explore sleep support', ctaClass:'cta'}
+      };
+
+      const buttons = Array.from(document.querySelectorAll('.mood-btn'));
+      const methodTitle = document.getElementById('methodTitle');
+      const methodDesc = document.getElementById('methodDesc');
+      const primaryCta = document.getElementById('primaryCta');
+      const moodChoice = document.getElementById('moodChoice');
+
+      buttons.forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          buttons.forEach(b=>b.classList.remove('active'));
+          btn.classList.add('active');
+          const key = btn.dataset.key;
+          const data = moods[key];
+          methodTitle.textContent = data.title;
+          methodDesc.textContent = data.desc;
+          primaryCta.textContent = data.cta;
+          primaryCta.className = data.ctaClass;
+          primaryCta.href = '{{PRIMARY_CTA_URL}}' + (key?('#'+key):'');
+          moodChoice.value = key;
+        });
+      });
+
+      // Contact form handling (demo only)
+      document.getElementById('contactForm').addEventListener('submit', function(e){
+        e.preventDefault();
+        const btn = this.querySelector('button[type="submit"]');
+        btn.disabled = true; btn.textContent = 'Sending...';
+        setTimeout(()=>{
+          btn.textContent = 'Sent — we will reply';
+          btn.disabled = false;
+          this.reset();
+          // clear mood active
+          buttons.forEach(b=>b.classList.remove('active'));
+          methodTitle.textContent = 'A gentle inhalation exercise';
+          methodDesc.textContent = 'Select a state above to see a suggested, safety-minded method that may support that moment.';
+        },900);
+      });
+
+      // Aroma wheel interactivity
+      const notePanel = document.getElementById('notePanel');
+      const noteTitle = document.getElementById('noteTitle');
+      const noteDesc = document.getElementById('noteDesc');
+
+      const noteMap = {
+        citrus: {title:'Citrus (Top)', desc:'Bright, zesty, and quick to evaporate. Common oils: Sweet orange, bergamot, lemon. May support a refreshed, uplifted feeling.'},
+        herb: {title:'Herbal-Fresh (Top)', desc:'Green and clarifying. Common oils: Rosemary, basil, peppermint (use cautiously). May support alertness in short doses.'},
+        floral: {title:'Floral (Top/Middle)', desc:'Soft, emotive, and often middle-register. Common oils: Lavender, geranium, neroli. May support soothing and balance.'},
+        fresh: {title:'Fresh/Aquatic (Top)', desc:'Clean and bright. Common oils: Eucalyptus (use with caution around children/pets), peppermint variants. May support a cool, clear sensation.'}
+      };
+
+      // Use event delegation on SVG
+      document.getElementById('aromaWheel').addEventListener('mouseover', function(e){
+        const seg = e.target.closest('.seg');
+        if(!seg) return;
+        const key = seg.dataset.key;
+        const info = noteMap[key];
+        if(info){
+          noteTitle.textContent = info.title;
+          noteDesc.textContent = info.desc;
+        }
+      });
+      document.getElementById('aromaWheel').addEventListener('click', function(e){
+        const seg = e.target.closest('.seg');
+        if(!seg) return;
+        const key = seg.dataset.key;
+        const info = noteMap[key];
+        if(info){
+          // simulate selecting an applicable mood to suggest method
+          methodTitle.textContent = info.title + ' — short inhalation';
+          methodDesc.textContent = 'A short inhale from a cotton pad may support a sense of ' + (key==='citrus'? 'brightness.' : key==='floral'? 'calm.' : 'clarity.');
+          primaryCta.textContent = 'Learn more about notes';
+          primaryCta.className = 'cta';
+        }
+      });
+
+      // clear note panel when pointer leaves
+      document.getElementById('aromaWheel').addEventListener('mouseleave', function(){
+        noteTitle.textContent = 'Hover a segment';
+        noteDesc.textContent = 'Short descriptors and common oils will appear here. These are for sensory orientation and may support choice-making.';
+      });
+
+    })();
+  </script>
+</body>
+</html>

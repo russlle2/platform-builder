@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Contact — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Contact {{BUSINESS_NAME}} to start an outcome-focused coaching path. Lead magnet, programs, and booking options available." />
+  <style>
+    :root{
+      --bg:#0f1113; --card:#0b0d0e; --muted:#9aa3a6; --accent:#e6b06b; --accent-2:#ffdca8; --glass:rgba(255,255,255,0.03);
+      --maxw:1100px; --radius:12px; --gutter:24px; --ff:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%;}
+    body{margin:0;font-family:var(--ff);background:linear-gradient(180deg,#071018 0%, #0b0d0e 100%);color:#eef2f3;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
+    .container{max-width:var(--maxw);margin:36px auto;padding:24px;}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{width:56px;height:56px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:0 6px 20px rgba(230,176,107,0.12)}
+    .logo svg{width:34px;height:34px}
+    .brand h1{font-size:18px;margin:0;letter-spacing:0.4px}
+    .brand p{margin:0;font-size:13px;color:var(--muted)}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-size:14px}
+
+    /* Hero gallery style */
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:center;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:34px;border-radius:14px;border:1px solid rgba(255,255,255,0.03)}
+    .hero .lead{max-width:640px}
+    .kicker{display:inline-block;background:rgba(230,176,107,0.12);color:var(--accent);padding:6px 10px;border-radius:999px;font-size:12px;margin-bottom:12px}
+    h2{font-size:30px;margin:0 0 12px 0;line-height:1.02}
+    p.lead-desc{color:var(--muted);margin:0 0 18px 0}
+    .hero .actions{display:flex;gap:12px}
+    .btn{display:inline-flex;align-items:center;gap:10px;padding:12px 16px;border-radius:10px;border:0;font-weight:600;cursor:pointer}
+    .btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#081017}
+    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+
+    /* Right gallery card */
+    .gallery-card{background:linear-gradient(180deg,rgba(255,255,255,0.015),transparent);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .gallery-card p{font-size:13px;color:var(--muted);margin:0 0 12px 0}
+
+    /* Sections grid */
+    .sections{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:22px}
+    section.card{background:var(--card);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    section.card h3{margin:0 0 8px 0}
+    .muted{color:var(--muted);font-size:13px}
+
+    /* testimonials */
+    .testimonials{display:flex;flex-direction:column;gap:12px}
+    .testimonial{display:flex;gap:12px;align-items:flex-start}
+    .avatar{width:56px;height:56px;border-radius:10px;flex:0 0 56px;background:linear-gradient(135deg,#ffe9cf, #ffd0a8);display:flex;align-items:center;justify-content:center}
+    .avatar svg{width:36px;height:36px}
+    .quote{background:var(--glass);padding:12px;border-radius:10px;flex:1}
+
+    /* form */
+    .contact-grid{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px}
+    form{display:flex;flex-direction:column;gap:12px}
+    input,textarea,select{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:12px;border-radius:10px;color:inherit;font-size:14px}
+    textarea{min-height:140px;resize:vertical}
+    .meta{font-size:13px;color:var(--muted)}
+
+    footer{margin-top:28px;color:var(--muted);font-size:13px;display:flex;justify-content:space-between;align-items:center}
+
+    @media (max-width:980px){
+      .hero{grid-template-columns:1fr;}
+      .contact-grid{grid-template-columns:1fr}
+      .sections{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true">
+          <!-- SVG mark (acts as assets/img/hero.svg in gallery) -->
+          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="logo">
+            <defs>
+              <linearGradient id="g1" x1="0" x2="1">
+                <stop offset="0" stop-color="#e6b06b" />
+                <stop offset="1" stop-color="#ffdca8" />
+              </linearGradient>
+            </defs>
+            <rect width="64" height="64" rx="12" fill="url(#g1)" />
+            <path d="M18 40c6-10 16-10 22 0" fill="none" stroke="#081017" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" />
+          </svg>
+        </div>
+        <div>
+          <h1>{{BUSINESS_NAME}}</h1>
+          <p>{{TAGLINE}}</p>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html#hero">Overview</a>
+        <a href="about.html#values">Philosophy</a>
+        <a href="programs.html">Paths</a>
+        <a href="pricing.html">Investments</a>
+        <a href="testimonials.html">Stories</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html" aria-current="page">Connect</a>
+      </nav>
+    </header>
+
+    <!-- HERO (gallery emphasis) -->
+    <main class="hero" id="hero">
+      <div class="lead">
+        <span class="kicker">12-week intensive</span>
+        <h2>Where steady habits meet measurable outcomes</h2>
+        <p class="lead-desc">I help professionals craft sustainable daily systems for energy, focus, and calm — without fads or fleeting motivation. This page is the fastest route to a discovery call with {{COACH_NAME}}, {{CREDENTIALS}}.</p>
+        <div class="actions">
+          <a class="btn btn-primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <a class="btn btn-ghost" href="#lead_magnet">Free guide</a>
+        </div>
+        <p class="meta" style="margin-top:12px">Prefer a direct line? Call <a href="tel:{{PHONE}}" style="color:var(--accent)">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}" style="color:var(--accent)">{{EMAIL}}</a>.</p>
+      </div>
+
+      <aside class="gallery-card" aria-hidden="false">
+        <p><strong>Quick snapshot</strong></p>
+        <ul class="muted" style="margin:8px 0 12px 0;padding-left:16px;line-height:1.6">
+          <li>Outcome-focused coaching: energy, routine, resilience</li>
+          <li>Proven frameworks: Habit Scaffold™, Weekly Reset™, Accountability Lanes</li>
+          <li>Small, measurable commitments; real product changes at 8 and 12 weeks</li>
+        </ul>
+        <!-- Inline gallery SVG (acts as assets/img/pattern.svg) -->
+        <div style="background:linear-gradient(135deg,rgba(255,255,255,0.02),transparent);padding:10px;border-radius:10px;display:flex;justify-content:center;">
+          <svg viewBox="0 0 200 120" width="100%" height="100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="pattern">
+            <defs>
+              <linearGradient id="g2" x1="0" x2="1">
+                <stop offset="0" stop-color="#ffdca8" stop-opacity="0.8" />
+                <stop offset="1" stop-color="#e6b06b" stop-opacity="0.9" />
+              </linearGradient>
+            </defs>
+            <rect width="200" height="120" rx="10" fill="#061116" />
+            <g fill="none" stroke="url(#g2)" stroke-width="2" opacity="0.9">
+              <path d="M10 100 C40 60, 80 60, 110 100"/>
+              <path d="M30 40 C60 10, 100 10, 130 40"/>
+              <path d="M60 20 C90 40, 110 80, 140 60"/>
+            </g>
+          </svg>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Compact map of required sections to ripple across site -->
+    <div class="sections" aria-hidden="false" style="margin-top:20px">
+      <!-- Values -->
+      <section class="card" id="values">
+        <h3>Core Principles</h3>
+        <p class="muted">Three strategic commitments guide every engagement.</p>
+        <ol style="margin:10px 0 0 18px;color:var(--muted)">
+          <li><strong>Small Levers:</strong> Change 1 practice — measure 3 metrics.</li>
+          <li><strong>Structure Over Willpower:</strong> Design decisions that remove friction.</li>
+          <li><strong>Evidence-First:</strong> Track progress, iterate weekly.</li>
+        </ol>
+      </section>
+
+      <!-- Methods -->
+      <section class="card" id="methods">
+        <h3>How I Work</h3>
+        <p class="muted">A workshop-to-accountability model that blends clarity with cadence.</p>
+        <ul style="margin:8px 0 0 18px;color:var(--muted)">
+          <li><strong>Week 0 — Baseline & Strategy:</strong> Intake, priorities, commitment plan.</li>
+          <li><strong>Weeks 1–6 — Habit Scaffold™:</strong> Micro-habits, daily logs, mid-week check-ins.</li>
+          <li><strong>Weeks 7–12 — Deep Integration:</strong> Reinforcement, context-specific practices, transition to independence.</li>
+        </ul>
+      </section>
+
+      <!-- Objections -->
+      <section class="card" id="objections">
+        <h3>Common Concerns, Answered</h3>
+        <p class="muted">Transparent responses so you can decide with confidence.</p>
+        <details style="margin-top:10px;color:var(--muted)">
+          <summary><strong>"I don’t have time."</strong></summary>
+          <p class="muted" style="margin:8px 0 0 0">The work centers on 10–30 minute daily commitments and weekly 45-minute coaching, designed to fit busy schedules and stack on existing routines.</p>
+        </details>
+        <details style="margin-top:8px;color:var(--muted)">
+          <summary><strong>"Is this just motivation coaching?"</strong></summary>
+          <p class="muted" style="margin:8px 0 0 0">No. We implement structural changes and measurable checkpoints so momentum is mechanical, not motivational.</p>
+        </details>
+      </section>
+
+      <!-- Testimonials -->
+      <section class="card" id="testimonials">
+        <h3>Client Milestones</h3>
+        <div class="testimonials">
+          <div class="testimonial">
+            <div class="avatar" aria-hidden="true">
+              <!-- avatar (assets/img/avatar.svg) -->
+              <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="32" cy="20" r="12" fill="#081017" opacity="0.08" />
+                <rect x="12" y="36" width="40" height="16" rx="6" fill="#081017" opacity="0.06" />
+              </svg>
+            </div>
+            <div class="quote">
+              <strong>"Doubled my focused work hours in 6 weeks — and I actually enjoy mornings again."</strong>
+              <div class="muted" style="margin-top:8px">— Senior PM, {{CITY}}, {{STATE}}</div>
+            </div>
+          </div>
+
+          <div class="testimonial">
+            <div class="avatar" aria-hidden="true">
+              <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="32" cy="20" r="12" fill="#081017" opacity="0.08" />
+                <rect x="12" y="36" width="40" height="16" rx="6" fill="#081017" opacity="0.06" />
+              </svg>
+            </div>
+            <div class="quote">
+              <strong>"The Weekly Reset is a game-changer — clarity for every Monday."</strong>
+              <div class="muted" style="margin-top:8px">— Ops Lead, remote</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Lead magnet -->
+      <section class="card" id="lead_magnet">
+        <h3>Get the Habit Starter Kit</h3>
+        <p class="muted">A concise workbook with templates: morning scaffolds, a 7-day cadence, and a tracking sheet. Immediate download.</p>
+        <form action="{{PRIMARY_CTA_URL}}" method="get" style="margin-top:10px;display:flex;gap:8px">
+          <input name="email" type="email" required placeholder="Your email" />
+          <button class="btn btn-primary" type="submit">Send the guide</button>
+        </form>
+      </section>
+
+      <!-- CTA condensed -->
+      <section class="card" id="cta">
+        <h3>Start Your Twelve-Week Shift</h3>
+        <p class="muted">Reserve a discovery session to align outcomes with a plan you can sustain.</p>
+        <a class="btn btn-primary" href="{{PRIMARY_CTA_URL}}" style="margin-top:10px;display:inline-block">{{PRIMARY_CTA_LABEL}}</a>
+      </section>
+    </div>
+
+    <!-- Contact grid (form + details) -->
+    <div class="contact-grid" style="margin-top:22px">
+      <div>
+        <h3>Reach Out</h3>
+        <p class="muted">Use the form below or book a time directly. I reply within two business days.</p>
+        <form action="{{PRIMARY_CTA_URL}}" method="post">
+          <input name="name" type="text" placeholder="Your full name" required />
+          <input name="email" type="email" placeholder="Email address" required />
+          <input name="phone" type="tel" placeholder="Phone (optional)" />
+          <select name="interest">
+            <option value="discovery">Book discovery call</option>
+            <option value="programs">Ask about programs</option>
+            <option value="workshops">Corporate / workshop request</option>
+          </select>
+          <textarea name="message" placeholder="Briefly describe what you want to change" required></textarea>
+          <div style="display:flex;gap:10px;align-items:center;justify-content:space-between">
+            <button class="btn btn-primary" type="submit">Request a consult</button>
+            <div class="muted" style="font-size:13px">Prefer booking? <a href="book.html" style="color:var(--accent)">See available times</a></div>
+          </div>
+        </form>
+      </div>
+
+      <aside style="display:flex;flex-direction:column;gap:12px">
+        <div class="card" style="padding:16px">
+          <h4>Contact details</h4>
+          <p class="muted" style="margin-top:6px">Phone: <a href="tel:{{PHONE}}" style="color:var(--accent)">{{PHONE}}</a><br/>Email: <a href="mailto:{{EMAIL}}" style="color:var(--accent)">{{EMAIL}}</a></p>
+          <p class="muted" style="margin-top:8px">Location: {{CITY}}, {{STATE}}</p>
+        </div>
+
+        <div class="card" style="padding:16px;display:flex;flex-direction:column;gap:10px;align-items:flex-start">
+          <h4>Signature</h4>
+          <div style="display:flex;gap:12px;align-items:center">
+            <div style="width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,#ffdca8,#e6b06b);display:flex;align-items:center;justify-content:center">
+              <!-- small avatar inline (same file acts as assets/img/avatar.svg) -->
+              <svg viewBox="0 0 64 64" width="36" height="36" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="coach avatar">
+                <circle cx="32" cy="20" r="10" fill="#081017" opacity="0.09" />
+                <rect x="14" y="36" width="36" height="14" rx="5" fill="#081017" opacity="0.06" />
+              </svg>
+            </div>
+            <div>
+              <div style="font-weight:700">{{COACH_NAME}}</div>
+              <div class="muted">{{CREDENTIALS}}</div>
+            </div>
+          </div>
+          <p class="muted" style="margin-top:10px">I work with a small cohort each quarter to ensure intensity, accountability, and compound progress. If you have questions about fit, book a short discovery call.</p>
+          <a class="btn btn-ghost" href="book.html">Book discovery</a>
+        </div>
+
+        <div class="card" style="padding:16px">
+          <h4>Quick FAQs</h4>
+          <div class="muted" style="margin-top:6px">
+            <strong>How long are sessions?</strong> Most are 45 minutes. Some deep-dive sessions extend to 60.
+            <br/><strong>Is coaching confidential?</strong> Yes — we follow a professional confidentiality standard.
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      <div>&copy; <span id="year">2026</span> {{BUSINESS_NAME}}</div>
+      <div class="muted">Designed for executives. Built for habit-led change.</div>
+    </footer>
+  </div>
+</body>
+</html>

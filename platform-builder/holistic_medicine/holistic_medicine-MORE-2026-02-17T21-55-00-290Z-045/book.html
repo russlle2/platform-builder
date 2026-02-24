@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reserve an intake, VIP day, or continuity plan. Use the Session Planner to shape a starting pathway.">
+  <style>
+    :root{--bg:#f7f2ec;--card:#fff;--accent:#6f4b36;--accent-2:#b57f52;--muted:#6b5a51;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+    body{margin:0;background:var(--bg);color:#2e251f}
+    .wrap{max-width:980px;margin:30px auto;padding:22px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    .logo{display:flex;gap:12px;align-items:center}
+    .logo-mark{width:50px;height:50px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;display:grid;place-items:center;font-weight:700}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    main{margin-top:18px}
+    .hero{background:linear-gradient(180deg,rgba(255,255,255,0.6),transparent);padding:18px;border-radius:10px;display:flex;gap:16px;align-items:center;background-image:url('assets/img/pattern.svg')}
+    .panel{background:var(--card);padding:16px;border-radius:10px;box-shadow:0 8px 20px rgba(38,30,24,0.06)}
+    form label{display:block;margin-top:10px;font-weight:600}
+    input[type=text],select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.08);margin-top:6px}
+    .actions{margin-top:12px;display:flex;gap:8px}
+    .btn{background:var(--accent);color:#fff;padding:10px 12px;border-radius:8px;text-decoration:none;border:none}
+    .secondary{background:#fff;border:1px solid rgba(0,0,0,0.08);color:var(--muted)}
+    .planner-output{white-space:pre-wrap;background:#fbf8f6;border:1px dashed rgba(0,0,0,0.04);padding:12px;border-radius:8px;margin-top:12px}
+    .hint{font-size:13px;color:var(--muted);margin-top:8px}
+
+    .reveal{opacity:0;transform:translateY(12px);transition:opacity .6s ease,transform .6s ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none;opacity:1;transform:none}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">
+        <div class="logo-mark">HS</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div class="muted" style="font-size:13px">Personalized integrative pathways</div>
+        </div>
+      </div>
+      <nav aria-label="Primary navigation">
+        <a href="index.html">Start</a>
+        <a href="services.html">Offerings</a>
+        <a href="conditions.html">Challenges</a>
+        <a href="approach.html">Philosophy</a>
+        <a href="pricing.html">Rates</a>
+        <a href="about.html">Team</a>
+        <a href="book.html" class="active">Reserve</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </header>
+
+    <section class="hero reveal" data-reveal>
+      <div style="flex:1">
+        <h1>Reserve a planning session or build a starter plan</h1>
+        <p class="muted">Use the Session Planner to shape a practical first pathway. Then reserve time to review and finalize it.</p>
+      </div>
+      <div style="text-align:right">
+        <div class="muted">Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+        <a class="btn" href="tel:{{PHONE}}" style="margin-top:8px;display:inline-block">Call to reserve</a>
+      </div>
+    </section>
+
+    <main style="display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px">
+      <section class="panel reveal" data-reveal>
+        <h2 id="planner">Session Planner</h2>
+        <p class="muted">Build a short, plain-language plan you can bring to your appointment. This creates a recommended pathway and a clear summary you can copy or email.</p>
+
+        <form id="plannerForm" onsubmit="return false;">
+          <label for="name">Name</label>
+          <input id="name" type="text" placeholder="Your name">
+
+          <label for="priority">Top priority right now</label>
+          <select id="priority">
+            <option value="energy">Low energy / fatigue</option>
+            <option value="sleep">Sleep difficulties</option>
+            <option value="digestion">Digestive concerns</option>
+            <option value="stress">Stress / overwhelm</option>
+            <option value="chronic">Chronic pain / inflammation</option>
+          </select>
+
+          <label>Available time per week for interventions</label>
+          <select id="time">
+            <option value="30">~30 minutes</option>
+            <option value="60">~1 hour</option>
+            <option value="120">1–2 hours</option>
+          </select>
+
+          <label>Preferred modalities (pick any)</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+            <label><input type="checkbox" value="Nutrition" name="mod"> Nutrition</label>
+            <label><input type="checkbox" value="Herbal" name="mod"> Herbal</label>
+            <label><input type="checkbox" value="Movement" name="mod"> Movement</label>
+            <label><input type="checkbox" value="Mindfulness" name="mod"> Mindfulness</label>
+            <label><input type="checkbox" value="Acupuncture" name="mod"> Acupuncture</label>
+          </div>
+
+          <label for="urgency">How soon do you want to see change?</label>
+          <select id="urgency">
+            <option value="immediate">Within 2 weeks</option>
+            <option value="soon">Within 1–2 months</option>
+            <option value="steady">Long-term steady progress</option>
+          </select>
+
+          <label for="notes">Other notes / constraints</label>
+          <textarea id="notes" rows="3" placeholder="Allergies, current meds, time windows, budget constraints"></textarea>
+
+          <div class="actions">
+            <button id="buildBtn" class="btn">Build my plan</button>
+            <button id="clearBtn" class="secondary">Reset</button>
+          </div>
+        </form>
+
+        <div id="output" class="planner-output" aria-live="polite" style="display:none"></div>
+
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button id="copyBtn" class="btn" style="display:none">Copy summary</button>
+          <a id="emailLink" class="secondary" style="display:none;padding:10px 12px;border-radius:8px;text-decoration:none;color:var(--muted)">Email summary</a>
+        </div>
+
+        <p class="hint">This planner creates a plain-text summary you can bring to your appointment. Recommendations are educational and not medical guarantees.</p>
+      </section>
+
+      <aside class="panel reveal" data-reveal>
+        <h3>Reserve options</h3>
+        <p class="muted">After building your plan, choose:</p>
+        <ul>
+          <li><strong>Planning Call:</strong> 30–45 min—review planner output and align next steps.</li>
+          <li><strong>Integrated Reset Day:</strong> full assessment + in-depth planning.</li>
+          <li><strong>Continuity Plan:</strong> monthly check-ins and adjustments.</li>
+        </ul>
+        <a class="btn" href="book.html#planner" style="display:inline-block;margin-top:10px">Start the planner</a>
+
+        <h4 style="margin-top:14px">Practicalities</h4>
+        <p class="muted">We will ask about current medications and any prior testing. If urgent symptoms are present, we will recommend appropriate urgent care or referral instead of standard planning.</p>
+      </aside>
+    </main>
+
+    <footer style="margin-top:20px;display:flex;justify-content:space-between;align-items:center">
+      <div class="muted">Need help? Call <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+      <div class="muted">Serving {{CITY}}, {{STATE}}</div>
+    </footer>
+  </div>
+
+  <script>
+    (function(){
+      // reveal animation
+      const prefersReduced = matchMedia('(prefers-reduced-motion:reduce)').matches;
+      if(prefersReduced){document.querySelectorAll('[data-reveal]').forEach(el=>el.classList.add('visible'))}else{const io=new IntersectionObserver((entries,obs)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}}),{threshold:0.12});document.querySelectorAll('[data-reveal]').forEach(el=>io.observe(el))}
+
+      // Planner logic
+      const form = document.getElementById('plannerForm');
+      const buildBtn = document.getElementById('buildBtn');
+      const clearBtn = document.getElementById('clearBtn');
+      const output = document.getElementById('output');
+      const copyBtn = document.getElementById('copyBtn');
+      const emailLink = document.getElementById('emailLink');
+
+      function gather(){
+        const name = document.getElementById('name').value.trim();
+        const priority = document.getElementById('priority').value;
+        const time = document.getElementById('time').value;
+        const mods = Array.from(document.querySelectorAll('input[name="mod"]:checked')).map(i=>i.value);
+        const urgency = document.getElementById('urgency').value;
+        const notes = document.getElementById('notes').value.trim();
+        return {name,priority,time,mods,urgency,notes};
+      }
+
+      function suggestPackage(data){
+        // simple heuristic to suggest a package
+        if(data.time === '120' || data.urgency === 'immediate') return 'Integrated Reset Day (VIP)';
+        if(data.time === '30' && data.mods.length<=1) return 'Planning Call (short)';
+        return 'Nurture Series (3 sessions)';
+      }
+
+      function buildText(d){
+        const now = new Date().toLocaleDateString();
+        const packageName = suggestPackage(d);
+        let out = '';
+        out += 'Plan created: ' + now + '\n';
+        if(d.name) out += 'Name: ' + d.name + '\n';
+        out += 'Priority: ' + ({energy:'Low energy / fatigue',sleep:'Sleep difficulties',digestion:'Digestive concerns',stress:'Stress / overwhelm',chronic:'Chronic pain / inflammation'})[d.priority] + '\n';
+        out += 'Available time: ~' + d.time + ' minutes per week\n';
+        out += 'Preferred modalities: ' + (d.mods.length? d.mods.join(', '): 'None specified') + '\n';
+        out += 'Desired timeline: ' + ({immediate:'Within 2 weeks',soon:'Within 1–2 months',steady:'Long-term progress'})[d.urgency] + '\n';
+        if(d.notes) out += 'Notes: ' + d.notes + '\n';
+        out += '\nRecommended pathway: ' + packageName + '\n';
+
+        // tactical starter suggestions
+        out += '\nStarter steps (first 4 weeks):\n';
+        if(d.priority === 'sleep'){
+          out += '- Brief sleep habit audit; create 1–2 consistent evening cues.\n';
+          out += '- 30-min mindfulness practice 3x/week.\n';
+        } else if(d.priority === 'energy'){
+          out += '- Simple morning movement: 10–15 min, 4x/week.\n';
+          out += '- Basic nutrient-dense meal pattern review.\n';
+        } else if(d.priority === 'digestion'){
+          out += '- Food and symptom log for 2 weeks.\n';
+          out += '- Review meal timing and fiber balance.\n';
+        } else if(d.priority === 'stress'){
+          out += '- 5-min micro-breaks, 3x/day.\n';
+          out += '- One focused coaching check-in in 2 weeks.\n';
+        } else {
+          out += '- Baseline goals and one measurable target.\n';
+        }
+
+        if(d.mods.length){
+          out += '\nModalities to consider: ' + d.mods.join(', ') + '\n';
+        }
+
+        out += '\nSuggested next appointment: ' + (packageName === 'Planning Call (short)' ? '30–45 min planning call' : (packageName === 'Integrated Reset Day (VIP)' ? 'Full-day assessment & plan' : 'Initial intake + two follow-ups')) + '\n';
+        out += '\nNotes about scope: Recommendations are educational and supportive. If urgent symptoms exist, we will advise appropriate evaluation or referral.\n';
+        out += '\nContact: ' + '{{EMAIL}}' + ' | Phone: ' + '{{PHONE}}' + '\n';
+        return out;
+      }
+
+      buildBtn.addEventListener('click',function(e){
+        const data = gather();
+        const text = buildText(data);
+        output.style.display='block';
+        output.textContent = text;
+        copyBtn.style.display='inline-block';
+        emailLink.style.display='inline-block';
+        emailLink.href = 'mailto:' + encodeURIComponent('{{EMAIL}}') + '?subject=' + encodeURIComponent('Planner summary for ' + (data.name||'client')) + '&body=' + encodeURIComponent(text);
+      });
+
+      clearBtn.addEventListener('click',function(){
+        form.reset();
+        output.style.display='none';
+        copyBtn.style.display='none';
+        emailLink.style.display='none';
+      });
+
+      copyBtn.addEventListener('click',function(){
+        const text = output.textContent || '';
+        if(!text) return;
+        if(navigator.clipboard && navigator.clipboard.writeText){
+          navigator.clipboard.writeText(text).then(()=>{copyBtn.textContent='Copied'}).catch(()=>{alert('Copy failed — select and copy manually')});
+        } else {
+          // fallback
+          const ta = document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');copyBtn.textContent='Copied'}catch(_){alert('Copy failed — select and copy manually')}ta.remove();
+        }
+      });
+
+    })();
+  </script>
+</body>
+</html>

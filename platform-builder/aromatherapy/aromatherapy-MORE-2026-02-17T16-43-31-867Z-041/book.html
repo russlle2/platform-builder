@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#07121a;--glass:rgba(255,255,255,0.04);--accent:#9FE0D1;--muted:#9fbab5}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:linear-gradient(180deg,#041216 0%,#07121a 100%);color:#e9fbf5}
+    header{display:flex;justify-content:space-between;align-items:center;padding:16px 22px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-bottom:1px solid rgba(255,255,255,0.03)}
+    nav a{color:#cfeee1;margin-left:12px;text-decoration:none}
+    main{max-width:1000px;margin:28px auto;padding:20px}
+    .wrap{display:grid;grid-template-columns:1fr 420px;gap:20px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    h1{margin:0 0 8px}
+    p.lead{margin:0;color:var(--muted)}
+    form{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+    input,select,textarea{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#eafff7;padding:10px;border-radius:10px}
+    button.submit{background:linear-gradient(90deg,var(--accent),#7ac1d8);border:none;padding:10px 12px;border-radius:10px;color:#012425;font-weight:700;cursor:pointer}
+
+    /* Aroma wheel */
+    .wheel-wrap{display:flex;flex-direction:column;align-items:center}
+    .wheel{width:320px;height:320px;border-radius:50%;position:relative;background:conic-gradient(#f7fffb 0 120deg,#e6fff9 120deg 240deg,#d9fff5 240deg 360deg);box-shadow:inset 0 -20px 40px rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center}
+    .wheel .center{width:120px;height:120px;border-radius:50%;background:rgba(0,0,0,0.28);display:flex;align-items:center;justify-content:center;color:#dff7f2}
+    .note-legend{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:12px}
+    .note{padding:8px 10px;border-radius:10px;background:rgba(255,255,255,0.03);font-size:13px;cursor:default}
+
+    .description{margin-top:12px;padding:12px;border-radius:8px;background:rgba(255,255,255,0.02);min-height:64px;color:var(--muted)}
+
+    @media(max-width:980px){.wrap{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center"><div style="width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,#9fe0d1,#7fb7d8);display:flex;align-items:center;justify-content:center;font-weight:700;color:#032425">A</div><strong>{{BUSINESS_NAME}}</strong></div>
+    <nav>
+      <a href="index.html">Sanctum</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Formulas</a>
+      <a href="shop.html">Apothecary</a>
+      <a href="pricing.html">Investment</a>
+      <a href="about.html">Story</a>
+      <a href="book.html" style="font-weight:600;color:#fff">Reserve</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <div class="card">
+        <h1>Reserve your focused scent session</h1>
+        <p class="lead">Select a time, share any sensitivities, and explore the aroma wheel to preview top, middle, and base notes. All sessions include dilution and patch-test guidance.</p>
+
+        <form id="booking">
+          <label>Full name<input type="text" name="name" required placeholder="Your name"></label>
+          <label>Email<input type="email" name="email" required placeholder="you@domain.com"></label>
+          <label>Phone<input type="tel" name="phone" placeholder="{{PHONE}}"></label>
+          <label>Select plan
+            <select name="plan">
+              <option value="essence-dive">Essence Dive — 90m</option>
+              <option value="root-rise">Root & Rise — 2 sessions</option>
+              <option value="steward">Scent Steward — monthly</option>
+            </select>
+          </label>
+          <label>Known allergies, pregnancy, or pets<textarea name="notes" rows="3" placeholder="Please list anything we should know"></textarea></label>
+          <div style="display:flex;gap:10px;align-items:center"><button class="submit" type="submit">Secure a spot</button><div style="color:var(--muted);font-size:13px">You will receive a confirmation email with next steps.</div></div>
+        </form>
+
+      </div>
+
+      <aside class="card">
+        <h3 style="margin-top:0">Aroma wheel — hover a band</h3>
+        <div class="wheel-wrap">
+          <div class="wheel" id="wheel" role="img" aria-label="Aroma wheel">
+            <div class="center" id="centerLabel">Notes</div>
+          </div>
+
+          <div class="note-legend">
+            <div class="note" data-type="top">Top: Citrus, Green</div>
+            <div class="note" data-type="middle">Middle: Floral, Herbal</div>
+            <div class="note" data-type="base">Base: Woody, Resinous</div>
+          </div>
+
+          <div class="description" id="noteDesc">Hover over a legend label or touch a wheel segment to see more about that family.</div>
+        </div>
+
+        <div style="margin-top:12px">
+          <strong>Quick prep</strong>
+          <p style="color:var(--muted);margin:8px 0">We recommend a patch test 24–48 hours prior to using concentrated blends. For pets and pregnancy, discuss options before arrival; we will suggest gentle alternatives.</p>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    // Booking form handler (mock)
+    document.getElementById('booking').addEventListener('submit',function(e){
+      e.preventDefault();
+      const name = this.name.value || 'Guest';
+      alert('Thanks, ' + name + '. A confirmation will arrive at the email provided.');
+      this.reset();
+    });
+
+    // Aroma wheel interaction
+    (function(){
+      const wheel = document.getElementById('wheel');
+      const desc = document.getElementById('noteDesc');
+      const center = document.getElementById('centerLabel');
+      const notes = {
+        top:{title:'Top notes — first impression',text:'Bright and volatile: citrus, light herbs, and fresh greens. They evaporate quickly and set the initial tone.'},
+        middle:{title:'Middle notes — the heart',text:'Floral and herbal tones that form the core of a scent. They linger after the top notes dissipate.'},
+        base:{title:'Base notes — anchor',text:'Deeper, lasting molecules: woods, resins, and balsams that remain and ground a blend.'}
+      };
+
+      // Create clickable/touchable segments using overlay buttons
+      const segs = [ {start:0,end:120,type:'top'},{start:120,end:240,type:'middle'},{start:240,end:360,type:'base'} ];
+      segs.forEach(s=>{
+        const btn = document.createElement('button');
+        btn.setAttribute('aria-label',s.type+' notes');
+        btn.style.position='absolute';
+        btn.style.inset='0';
+        btn.style.border='none';
+        btn.style.background='transparent';
+        btn.style.cursor='pointer';
+        btn.style.borderRadius='50%';
+        // capture angle via data
+        btn.dataset.type = s.type;
+        btn.addEventListener('mouseenter',onEnter);
+        btn.addEventListener('click',onEnter);
+        btn.addEventListener('touchstart',onEnter);
+        wheel.appendChild(btn);
+      });
+
+      function onEnter(e){
+        const type = e.currentTarget.dataset.type;
+        center.textContent = notes[type].title.split(' — ')[0];
+        desc.textContent = notes[type].text;
+        // small visual cue
+        wheel.style.boxShadow='inset 0 -30px 60px rgba(0,0,0,0.6), 0 10px 30px rgba(2,6,10,0.6)';
+        setTimeout(()=>{wheel.style.boxShadow='inset 0 -20px 40px rgba(0,0,0,0.4)';},600);
+      }
+
+      // Legend hover
+      document.querySelectorAll('.note').forEach(n=>{
+        n.addEventListener('mouseenter',()=>{
+          const t=n.dataset.type;
+          desc.textContent = notes[t].text;
+          center.textContent = notes[t].title.split(' — ')[0];
+        });
+      });
+
+      // Reset on leave
+      wheel.addEventListener('mouseleave',()=>{center.textContent='Notes';desc.textContent='Hover over a legend label or touch a wheel segment to see more about that family.'});
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Boutique — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Small-batch aromatherapy items and simple ritual kits. Safety-first descriptions and usage notes." />
+  <style>
+    :root{--brand:#8a5a3c;--muted:#6b6b6b;--bg:#fffaf6}
+    body{font-family:system-ui,Segoe UI,Roboto,Arial;background:var(--bg);margin:0;color:#222}
+    .wrap{max-width:980px;margin:0 auto;padding:22px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    header a{color:var(--muted);text-decoration:none;margin-left:12px}
+    h1{color:var(--brand)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:12px}
+    .product{background:#fff;padding:12px;border-radius:12px;border:1px solid rgba(0,0,0,0.04)}
+    .product h3{margin:6px 0;color:var(--brand)}
+    .price{font-weight:800;color:#2b2b2b}
+
+    .section{opacity:0;transform:translateY(10px);transition:opacity .6s ease,transform .6s ease}
+    .section.revealed{opacity:1;transform:none}
+
+    .planner-inline{margin-top:16px;padding:12px;background:linear-gradient(180deg,#fff,#fff9f0);border-radius:12px;display:flex;gap:12px;align-items:center}
+    .planner-inline input{padding:8px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)}
+    button{background:var(--brand);color:#fff;border:0;padding:8px 10px;border-radius:8px;cursor:pointer;font-weight:700}
+
+    @media (prefers-reduced-motion:reduce){.section{transition:none}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <div style="font-weight:900">Boutique</div>
+        <div style="color:var(--muted);font-size:13px">Small-batch items — shipped from {{CITY}}</div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="blends.html">Blends</a>
+        <a href="services.html">Offerings</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="section" id="intro">
+        <h1>Shop curated kits & jars</h1>
+        <p style="color:var(--muted)">Practical kits and small sample jars. Each product includes clear guidance for safe use and dilution.</p>
+      </section>
+
+      <section class="section" id="products">
+        <div class="grid">
+          <div class="product">
+            <h3>Mini Tasting Set</h3>
+            <div class="price">$28</div>
+            <p class="small">Three 2ml samples with usage card. Designed for brief inhalation tests and at-home tasting.</p>
+          </div>
+          <div class="product">
+            <h3>Ritual Kit — Pause</h3>
+            <div class="price">$45</div>
+            <p class="small">Small ritual kit with pre-diluted roller and guide for a 10-minute reset practice.</p>
+          </div>
+          <div class="product">
+            <h3>Personal Inhaler</h3>
+            <div class="price">$18</div>
+            <p class="small">Meet-and-try inhalers for on-the-go micro-practices. Not for topical use.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="planner">
+        <h2 style="color:var(--brand)">Build a shopping note</h2>
+        <div class="planner-inline">
+          <input id="itemName" placeholder="Item or kit name" aria-label="Item name" />
+          <select id="useHint"><option>Morning boost</option><option>Evening unwind</option><option>Short reset</option></select>
+          <button id="createNote">Create note</button>
+          <button id="copyNote" style="background:#c7a886">Copy</button>
+        </div>
+        <div id="noteOutput" style="margin-top:12px;background:#fff;padding:12px;border-radius:10px;border:1px dashed rgba(0,0,0,0.04);min-height:80px;color:var(--muted)">No note yet.</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:8px">When ordering, add safety notes (pets, pregnancy) to the order notes field so we can prepare appropriate blends.</div>
+      </section>
+
+      <section class="section" id="faq">
+        <h2 style="color:var(--brand)">Ordering & safety</h2>
+        <p class="small">All products come with suggested uses. For topical products, recommended dilution ratios are included. If you have specific health considerations, please include them when booking or ordering so we can advise appropriately. Products are not medicine and are meant to be supportive.</p>
+      </section>
+
+      <section class="section" id="cta">
+        <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center;background:#fff8f3;padding:12px;border-radius:10px;border:1px solid rgba(0,0,0,0.03)">
+          <div><strong>Questions before you buy?</strong><div style="color:var(--muted);font-size:13px">Contact us and share any sensitivities so we can suggest safer options.</div></div>
+          <div><a href="contact.html" style="background:var(--brand);color:#fff;padding:9px 12px;border-radius:8px;text-decoration:none;font-weight:800">Contact team</a></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // reveal
+    (function(){
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const nodes = document.querySelectorAll('.section');
+      if(reduce){ nodes.forEach(n=>n.classList.add('revealed')); return; }
+      const ob = new IntersectionObserver((entries)=>{ entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('revealed'); ob.unobserve(e.target); } }); },{threshold:0.12});
+      nodes.forEach(n=>ob.observe(n));
+    })();
+
+    // inline shopping note builder
+    (function(){
+      const item = document.getElementById('itemName');
+      const hint = document.getElementById('useHint');
+      const create = document.getElementById('createNote');
+      const copy = document.getElementById('copyNote');
+      const out = document.getElementById('noteOutput');
+
+      create.addEventListener('click',()=>{
+        const name = item.value.trim() || '(no item specified)';
+        const h = hint.value;
+        const text = `Shopping note:\n- Item: ${name}\n- Intended use: ${h}\n\nPlease note any pets or pregnancy so we can prepare blends with appropriate safety measures.\n\nThis request is for supportive aromatherapy products and is not a medical treatment.`;
+        out.textContent = text;
+      });
+
+      copy.addEventListener('click',async()=>{
+        try{ await navigator.clipboard.writeText(out.textContent); copy.textContent='Copied'; setTimeout(()=>copy.textContent='Copy',1400);}catch(e){ alert('Copy not supported.'); }
+      });
+    })();
+  </script>
+</body>
+</html>

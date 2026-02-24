@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Method — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfbff;--card:#ffffff;--accent:#ef4444;--muted:#4b5563}
+    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto; margin:0;background:var(--bg);color:#051124}
+    header{display:flex;align-items:center;justify-content:space-between;padding:22px 30px;background:linear-gradient(90deg,rgba(239,68,68,0.04),transparent)}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,#ef4444,#f97316);display:grid;place-items:center;color:white;font-weight:800}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none;font-weight:600}
+    .hero{padding:28px 30px;display:flex;gap:18px}
+    .hero .left{flex:2}
+    .hero .right{flex:1}
+    h1{margin:0 0 6px}
+    .muted{color:var(--muted)}
+    .pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:18px}
+    .pillar{background:var(--card);padding:14px;border-radius:10px;border:1px solid rgba(0,0,0,0.04)}
+    .timeline{margin-top:14px;padding:12px;background:#fff;border-radius:10px;border:1px solid #fff0f0}
+    .cta{margin-top:12px}
+    .btn{background:var(--accent);color:white;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+    .proof{margin-top:16px;display:flex;gap:12px;align-items:center}
+    .cred{display:flex;gap:8px}
+    .cred .badge{padding:6px 8px;background:#fff;border-radius:8px;border:1px solid #ffecec;font-size:13px}
+    .tooltip{position:absolute;background:#111827;color:white;padding:8px;border-radius:8px;font-size:13px;white-space:nowrap}
+    footer{padding:18px 30px;color:var(--muted)}
+    @media(max-width:900px){.hero{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="logo">HM</div>
+      <div>
+        <strong>{{BUSINESS_NAME}}</strong>
+        <div style="font-size:13px;color:var(--muted)">A humane approach to learning health</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Programs</a>
+      <a href="conditions.html">Ailments</a>
+      <a href="approach.html">Method</a>
+      <a href="pricing.html">Investment</a>
+      <a href="about.html">Team</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="left">
+        <h1>How we teach practical, durable change</h1>
+        <p class="muted">Our method is cohort-based instruction plus repeatable micro-experiments. We focus on learning systems you can keep using after the program ends.</p>
+
+        <div class="pillars" aria-label="Core principles">
+          <div class="pillar">
+            <strong>Small experiments</strong>
+            <div class="muted">We test tiny changes that reveal what scales for you.</div>
+          </div>
+          <div class="pillar">
+            <strong>Pace & safety</strong>
+            <div class="muted">Progress is measured and reversible; checkpoints avoid overwhelm.</div>
+          </div>
+          <div class="pillar">
+            <strong>Community learning</strong>
+            <div class="muted">Shared case-notes and peer feedback amplify retention.</div>
+          </div>
+          <div class="pillar">
+            <strong>Evidence-aware</strong>
+            <div class="muted">Curriculum references studies and practical clinical guidance where relevant.</div>
+          </div>
+        </div>
+
+        <div class="timeline" id="timeline">
+          <h4 style="margin:0 0 8px 0">Phase planner — interactive</h4>
+          <p class="muted">Select a phase to reveal typical practices and a cautionary note.</p>
+          <div style="display:flex;gap:8px">
+            <button class="btn-phase" data-phase="learn">Learn</button>
+            <button class="btn-phase" data-phase="apply">Apply</button>
+            <button class="btn-phase" data-phase="sustain">Sustain</button>
+          </div>
+          <div id="phase-detail" style="margin-top:10px;color:var(--muted)">Choose a phase to preview activities.</div>
+        </div>
+
+      </div>
+
+      <aside class="right">
+        <div class="card" style="background:#fff;padding:16px;border-radius:10px;border:1px solid #fff0f0">
+          <strong>Quick enroll</strong>
+          <p class="muted" style="margin-top:8px">Cohort seats come with group workshops, worksheets, and two live 1:1 check-ins per seat.</p>
+          <div class="cta"><a class="btn" href="book.html">Claim a seat</a></div>
+        </div>
+
+        <div class="proof" style="margin-top:12px">
+          <div>
+            <div id="approach-testimonial">"The method helped me iterate without feeling judged."</div>
+          </div>
+          <div class="cred">
+            <div class="badge" data-tip="Our team curates trial summaries">Study notes</div>
+            <div class="badge" data-tip="Clinicians help with triage and referrals">Clinical link</div>
+            <div class="badge" data-tip="We ask alumni to rate the impact and share stories">Alumni reviews</div>
+          </div>
+        </div>
+
+      </aside>
+    </section>
+
+    <section style="padding:18px">
+      <h3>Case notes & teaching style</h3>
+      <p class="muted">We present de-identified case examples in class to show decision-making and troubleshooting. These are educational narratives, not prescriptions.</p>
+      <div style="margin-top:12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
+        <div style="background:#fff;padding:12px;border-radius:8px;border:1px solid #fff0f0">Module: Sleep experiments — small, reversible tweaks</div>
+        <div style="background:#fff;padding:12px;border-radius:8px;border:1px solid #fff0f0">Module: Energy budgeting — pacing & activity ratio</div>
+        <div style="background:#fff;padding:12px;border-radius:8px;border:1px solid #fff0f0">Module: Gut mapping — tracking and elimination experiments</div>
+      </div>
+    </section>
+
+    <section style="padding:18px">
+      <h3>FAQ & safety notes</h3>
+      <p class="muted">Programs provide behavioral and educational support. We do not provide individualized medical diagnoses or medication management within cohort sessions. If you are managing serious illness, discuss cohort participation with your clinical team first.</p>
+    </section>
+
+    <section style="padding:18px">
+      <h3>Ready to try a different way?</h3>
+      <p class="muted">We accept small cohorts each term. If you'd like priority access, reserve now or request a syllabus.</p>
+      <div style="margin-top:12px"><a class="btn" href="book.html">Reserve a spot</a> <a href="contact.html" style="margin-left:10px;color:var(--muted);text-decoration:none">Request syllabus</a></div>
+    </section>
+  </main>
+
+  <footer>
+    <div style="padding:18px 30px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap">
+      <div>&copy; {{BUSINESS_NAME}} — {{CITY}}, {{STATE}}</div>
+      <div>Contact: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> · {{PHONE}}</div>
+    </div>
+  </footer>
+
+  <script>
+    // Phase planner for approach page
+    (function(){
+      const mapping = {
+        learn: 'Learn: Foundational concepts and shared case notes. Focus on comprehension and low-risk experiments.',
+        apply: 'Apply: Guided experiments with coach checkpoints. Scale only what proves feasible.',
+        sustain: 'Sustain: Build long-term guardrails and peer accountability. Emphasize maintainability.'
+      };
+      document.querySelectorAll('.btn-phase').forEach(btn => btn.addEventListener('click', ()=>{
+        document.getElementById('phase-detail').textContent = mapping[btn.dataset.phase] + ' (Educational guidance only — not individualized medical advice.)';
+      }));
+    })();
+
+    // Approach page testimonial rotate and badge tooltips
+    (function(){
+      const notes = ['"The method helped me iterate without feeling judged."','"Teaching felt practical and wise."','"I learned what to test and when to pause."'];
+      let i=0; const el=document.getElementById('approach-testimonial');
+      setInterval(()=>{ el.textContent = notes[i%notes.length]; i++; },7000);
+
+      // tooltip behavior for badges
+      const badges = document.querySelectorAll('.badge');
+      badges.forEach(b => {
+        b.addEventListener('mouseenter', (e)=>{
+          const tip = document.createElement('div'); tip.className='tooltip'; tip.textContent = b.getAttribute('data-tip');
+          document.body.appendChild(tip);
+          const r = b.getBoundingClientRect();
+          tip.style.left = (r.left + r.width/2 - tip.offsetWidth/2) + 'px';
+          tip.style.top = (r.top - tip.offsetHeight - 8) + 'px';
+          b._tip = tip;
+        });
+        b.addEventListener('mouseleave', ()=>{ if(b._tip){ b._tip.remove(); b._tip=null; } });
+      });
+    })();
+  </script>
+</body>
+</html>

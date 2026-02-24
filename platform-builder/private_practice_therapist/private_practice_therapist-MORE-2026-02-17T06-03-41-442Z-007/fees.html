@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Fees — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff8f2;--accent:#ff7a59;--muted:#6b6b6b;--card:#fff;--glass:rgba(255,255,255,0.6);--accent-2:#ffd89b}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:linear-gradient(180deg,var(--bg),#fff);color:#222}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:linear-gradient(90deg,rgba(255,122,89,0.06),rgba(255,216,155,0.03));border-bottom:1px solid rgba(0,0,0,0.04)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#ffb085);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    nav{display:flex;gap:12px;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:8px;font-weight:600}
+    nav a[href$="fees.html"]{color:var(--accent)}
+    main{max-width:980px;margin:28px auto;padding:28px}
+    .hero{display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start}
+    .hero h1{margin:0 0 8px 0;font-size:28px}
+    .hero p{margin:0;color:var(--muted)}
+    .cta{margin-top:16px}
+    .primary{display:inline-block;background:var(--accent);color:#fff;padding:10px 16px;border-radius:10px;text-decoration:none;font-weight:700}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 24px rgba(16,24,40,0.04)}
+
+    /* Pricing comparator */
+    .comparator{margin-top:18px;background:linear-gradient(180deg,#fff,#fffef7);padding:16px;border-radius:12px;border:1px solid rgba(0,0,0,0.04)}
+    .toggle{display:flex;gap:8px;align-items:center;background:var(--glass);padding:6px;border-radius:999px;width:max-content}
+    .toggle button{background:transparent;border:0;padding:8px 12px;border-radius:999px;font-weight:700;cursor:pointer}
+    .toggle button.active{background:var(--accent);color:#fff;box-shadow:0 6px 18px rgba(255,122,89,0.18)}
+    .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+    .plan{padding:12px;border-radius:12px;background:linear-gradient(180deg,#fff,#fff);border:1px solid rgba(0,0,0,0.04);text-align:center}
+    .plan h3{margin:0 0 6px 0;font-size:16px}
+    .price{font-size:22px;font-weight:800;color:var(--accent);transition:all 400ms cubic-bezier(.2,.9,.3,1)}
+    .muted{color:var(--muted);font-size:13px}
+
+    /* Details */
+    .fine{font-size:13px;color:var(--muted);margin-top:12px}
+
+    footer{max-width:980px;margin:28px auto;padding:18px;color:var(--muted);font-size:13px}
+
+    /* playful pattern */
+    .pattern{position:fixed;right:-120px;top:-120px;opacity:0.08;transform:rotate(12deg);width:420px;height:420px;pointer-events:none}
+
+    @media(max-width:880px){
+      .hero{grid-template-columns:1fr;}
+      .plans{grid-template-columns:1fr 1fr}
+    }
+    @media(max-width:520px){
+      .plans{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <svg class="pattern" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <defs>
+      <linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#ffb085"/><stop offset="1" stop-color="#ffd89b"/></linearGradient>
+    </defs>
+    <rect x="0" y="0" width="200" height="200" fill="url(#g)" rx="28"/>
+    <g fill="#fff" opacity="0.14">
+      <circle cx="40" cy="40" r="30"/>
+      <circle cx="140" cy="80" r="18"/>
+      <circle cx="80" cy="140" r="24"/>
+    </g>
+  </svg>
+
+  <header>
+    <div class="brand">
+      <div class="logo">TP</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Welcome</a>
+      <a href="about.html">Meet</a>
+      <a href="specialties.html">Focus Areas</a>
+      <a href="approach.html">Approach</a>
+      <a href="fees.html">Fees</a>
+      <a href="faq.html">Answers</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h1>Clear pricing so you can plan care that fits</h1>
+        <p>I offer several ways to work together — short bursts for a tight focus, deeper sessions when you need more space, and bundles that make planning easier. Below you'll find straightforward options and what each includes.</p>
+        <div class="cta">
+          <a class="primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </div>
+      <div class="card">
+        <strong style="display:block">Need a quick call first?</strong>
+        <p class="muted">A 15-minute consult can help us decide the best path forward and ensure the fit is right.</p>
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <a class="primary" href="{{PRIMARY_CTA_URL}}">Book consult</a>
+          <a href="contact.html" style="align-self:center;color:var(--muted);text-decoration:none">Contact via email</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="comparator card" aria-label="Pricing comparator">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-weight:800">Compare</div>
+          <div class="muted">Toggle between per-session and package pricing</div>
+        </div>
+        <div class="toggle" role="tablist" aria-label="Pricing toggle">
+          <button id="perBtn" class="active" role="tab" aria-selected="true">Per session</button>
+          <button id="packBtn" role="tab" aria-selected="false">Packages</button>
+        </div>
+      </div>
+
+      <div class="plans" id="plans">
+        <div class="plan" aria-live="polite">
+          <h3>Focused Session</h3>
+          <div class="price"><span data-per="120" data-pack="340">$120</span></div>
+          <div class="muted">50 minutes • goal-focused work</div>
+        </div>
+        <div class="plan" aria-live="polite">
+          <h3>Extended Session</h3>
+          <div class="price"><span data-per="170" data-pack="480">$170</span></div>
+          <div class="muted">80–90 minutes • more space for depth</div>
+        </div>
+        <div class="plan" aria-live="polite">
+          <h3>3-Session Bundle</h3>
+          <div class="price"><span data-per="—" data-pack="420">$420</span></div>
+          <div class="muted">Prepaid series • scheduled weekly or biweekly</div>
+        </div>
+      </div>
+
+      <div class="fine">Packages are billed up front and include a brief planning check-in. I welcome conversations about sliding scale availability; email {{EMAIL}} for details. Insurance billing is not provided through the practice; I can supply a superbill where appropriate.</div>
+    </section>
+
+    <section style="margin-top:18px" class="card">
+      <h3 style="margin:0 0 8px 0">What to expect</h3>
+      <p class="muted">I’ll work with you on clear goals each session and share practical steps between meetings when helpful. You are always in choice about pacing and focus. If you have questions about scope or timing, we’ll review them openly at first contact.</p>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="margin-bottom:8px">Confidentiality note: Sessions are private and notes are kept according to clinical record standards. Scope & boundaries: Therapy focuses on emotional and relational concerns rather than medical diagnosis. In urgent situations or crisis, please call emergency services or your local crisis line — this practice is not a crisis service.</div>
+    <div>Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a> • Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+  </footer>
+
+  <script>
+    (function(){
+      const perBtn = document.getElementById('perBtn');
+      const packBtn = document.getElementById('packBtn');
+      const spans = document.querySelectorAll('.price span');
+
+      function animateValue(el, start, end){
+        const duration = 450; //ms
+        const startTime = performance.now();
+        const isNA = end === '—';
+        function frame(now){
+          const t = Math.min(1,(now - startTime)/duration);
+          if(isNA){ el.textContent = '—'; return; }
+          const current = Math.round(start + (end - start) * t);
+          el.textContent = '$' + current;
+          if(t < 1) requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+      }
+
+      function switchTo(mode){
+        spans.forEach(s => {
+          const per = s.getAttribute('data-per');
+          const pack = s.getAttribute('data-pack');
+          const current = parseInt(s.textContent.replace(/[^0-9]/g,'')) || 0;
+          const targetRaw = mode === 'per' ? per : pack;
+          const target = (targetRaw === '—') ? '—' : parseInt(targetRaw);
+          animateValue(s, current, target);
+        });
+      }
+
+      perBtn.addEventListener('click', function(){
+        perBtn.classList.add('active'); packBtn.classList.remove('active');
+        perBtn.setAttribute('aria-selected','true'); packBtn.setAttribute('aria-selected','false');
+        switchTo('per');
+      });
+      packBtn.addEventListener('click', function(){
+        packBtn.classList.add('active'); perBtn.classList.remove('active');
+        packBtn.setAttribute('aria-selected','true'); perBtn.setAttribute('aria-selected','false');
+        switchTo('pack');
+      });
+
+      // initialize as per session
+      document.addEventListener('DOMContentLoaded', function(){ switchTo('per'); });
+    })();
+  </script>
+</body>
+</html>

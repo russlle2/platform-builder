@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FAQ — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#051022;--glass:rgba(255,255,255,0.04);--accent:#6ee7b7;--muted:#9fb9d6}
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#031227 0%,var(--bg) 80%);color:#e8f6ff}
+    .container{max-width:980px;margin:40px auto;padding:22px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);backdrop-filter:blur(6px)}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;margin-left:12px}
+    h1{margin:6px 0 0 0}
+    .intro{color:var(--muted);margin-top:6px}
+    .faq{margin-top:18px}
+    .qa{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;margin-bottom:10px}
+    .qa summary{cursor:pointer;font-weight:700}
+    .small{font-size:13px;color:var(--muted)}
+    .interactive{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+    .seg{display:flex;gap:8px}
+    .seg button{padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--muted)}
+    .seg button.active{background:var(--glass);color:#e6fbf5}
+    .rec{margin-top:12px;padding:10px;border-radius:8px;background:linear-gradient(180deg,rgba(0,0,0,0.18),transparent)}
+    .disclaimer{margin-top:14px;color:#ffd7d7;background:rgba(255,0,0,0.04);padding:10px;border-radius:8px}
+  </style>
+</head>
+<body>
+  <div class='container'>
+    <header>
+      <div>
+        <div style='font-weight:700;color:var(--accent)'>{{BUSINESS_NAME}}</div>
+        <div class='small'>Local gatherings · {{CITY}}, {{STATE}}</div>
+      </div>
+      <nav>
+        <a href='index.html'>Home</a>
+        <a href='events.html'>Gatherings</a>
+        <a href='about.html'>About</a>
+        <a href='book.html'>Book</a>
+        <a href='contact.html'>Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <h1>Questions people ask before they come</h1>
+      <div class='intro'>Concise answers below. If something's not listed, message us at <a href='mailto:{{EMAIL}}' style='color:var(--accent)'>{{EMAIL}}</a> or call <a href='tel:{{PHONE}}' style='color:var(--accent)'>{{PHONE}}</a>.</div>
+
+      <section class='faq'>
+        <details class='qa'><summary>Will I be asked to participate actively?</summary><div class='small' style='margin-top:8px'>Sessions ask you to arrive present and follow simple breath cues. Movement is optional; most of the work is listening and rest.</div></details>
+        <details class='qa'><summary>How do you choose instruments?</summary><div class='small' style='margin-top:8px'>We select bowls, chimes, tongue drums, and overtone instruments with a focus on clear harmonics and safe low frequencies.</div></details>
+        <details class='qa'><summary>Can you make accommodations?</summary><div class='small' style='margin-top:8px'>Yes. Email us ahead and we will reserve accessible seating, supports, or an adjusted sound plan.</div></details>
+        <details class='qa'><summary>What if I'm pregnant?</summary><div class='small' style='margin-top:8px'>Share that in registration. Low-volume, gentle formats are usually recommended; consult your health provider with questions.</div></details>
+        <details class='qa'><summary>Is it safe with medications?</summary><div class='small' style='margin-top:8px'>If you take medication that alters alertness, balance, or sensory processing, check with your clinician first.</div></details>
+      </section>
+
+      <section style='margin-top:18px'>
+        <h2 style='margin:0 0 8px 0'>Interactive guide — pick your present state</h2>
+        <div class='small'>Try a quick selector. It will show suggested formats and how intensity changes the experience.</div>
+
+        <div class='interactive'>
+          <div style='min-width:220px' class='card'>
+            <div class='small'>Mood</div>
+            <div class='seg' id='mood2'>
+              <button data-method='Pulse' class='active'>Alert</button>
+              <button data-method='Melt'>Tense</button>
+              <button data-method='Drift'>Tired</button>
+            </div>
+          </div>
+
+          <div style='min-width:220px' class='card'>
+            <div class='small'>Intensity</div>
+            <div class='seg' id='int2'>
+              <button data-i='gentle' class='active'>Gentle</button>
+              <button data-i='medium'>Medium</button>
+              <button data-i='intense'>Intense</button>
+            </div>
+          </div>
+
+          <div style='flex:1' class='card'>
+            <div class='small'>Recommendation</div>
+            <div id='rec2' class='rec'>Select a mood and intensity to see a short plan.</div>
+          </div>
+        </div>
+
+        <div class='disclaimer'>Contraindications: If you have epilepsy, acute cardiovascular issues, or are in an unsteady mental-health state, consult a clinician before attending. People with pacemakers or implanted devices should check instrument use with their provider.</div>
+      </section>
+
+      <section style='margin-top:18px'>
+        <h3 style='margin:0 0 8px 0'>Other practical items</h3>
+        <ul class='small'>
+          <li>Arrive 10 minutes early for check-in.</li>
+          <li>Wear comfortable clothes and bring a mat or blanket.</li>
+          <li>We keep capacity small; book in advance.</li>
+        </ul>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    (function(){
+      const mood = document.getElementById('mood2');
+      const intb = document.getElementById('int2');
+      const rec = document.getElementById('rec2');
+      let curMood = 'Pulse';
+      let curI = 'gentle';
+
+      const profiles = {
+        'Pulse':{gentle:'Short focused pulse with bright chimes; good for clearing the head.',medium:'Pulse with layered tones and light movement prompts.',intense:'Energetic pulse with driving overtone cycles for quick recalibration.'},
+        'Melt':{gentle:'Slow low tones and breath-led release.',medium:'Tonal sequences with sustained harmonics to ease tension.',intense:'Deep layering with extended resonances for strong bodily release.'},
+        'Drift':{gentle:'Minimal, slow textures and long silences to invite rest.',medium:'Measured wash of sound with a supportive close.',intense:'Full resonant wash — best if you know you want deep immersion.'}
+      };
+
+      function update(){
+        rec.textContent = profiles[curMood][curI] + ' (Program: ' + curMood + ' · ' + curI + ').';
+      }
+
+      mood.addEventListener('click', function(e){
+        const b = e.target.closest('button'); if(!b) return;
+        [...mood.querySelectorAll('button')].forEach(x=>x.classList.remove('active'));
+        b.classList.add('active');
+        curMood = b.getAttribute('data-method');
+        update();
+      });
+      intb.addEventListener('click', function(e){
+        const b = e.target.closest('button'); if(!b) return;
+        [...intb.querySelectorAll('button')].forEach(x=>x.classList.remove('active'));
+        b.classList.add('active');
+        curI = b.getAttribute('data-i');
+        update();
+      });
+
+      update();
+    })();
+  </script>
+</body>
+</html>

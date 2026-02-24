@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>{{BUSINESS_NAME}} — Rates & Plans</title>
+  <meta name='description' content='Transparent pricing for aromatherapy consultations, blends, and hybrid care.'>
+  <style>
+    :root{--bg:#f6fbf9;--card:#ffffff;--muted:#6b7c73;--accent:#6fa18b;--accent-2:#8db6a3;--glass:rgba(255,255,255,0.6);--shadow:rgba(40,50,40,0.06);font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:linear-gradient(180deg, #f8fffb 0%, var(--bg) 60%);color:#213233;line-height:1.45}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:transparent}
+    .logo{display:flex;gap:12px;align-items:center}
+    .logo svg{width:46px;height:46px}
+    nav{display:flex;gap:14px;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:8px;font-weight:600}
+    nav a[href$='pricing.html']{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white}
+    main{max-width:1100px;margin:28px auto;padding:28px}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:stretch}
+    .hero .lead{background:linear-gradient(180deg,rgba(255,255,255,0.7),var(--glass));padding:28px;border-radius:14px;box-shadow:0 10px 30px var(--shadow);}
+    h1{margin:0 0 8px 0;font-size:28px}
+    p.lead-desc{margin:0;color:var(--muted)}
+    .summary-card{background:var(--card);padding:20px;border-radius:12px;box-shadow:0 8px 24px var(--shadow)}
+
+    .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px}
+    .plan{background:linear-gradient(180deg,#ffffff, #fbfffd);padding:22px;border-radius:14px;border:1px solid rgba(120,140,130,0.06)}
+    .plan h3{margin:0 0 6px 0}
+    .price{font-size:20px;font-weight:700;color:var(--accent)}
+    ul.features{padding-left:18px;color:var(--muted);margin:12px 0}
+
+    .fineprint{font-size:13px;color:var(--muted);margin-top:16px}
+    .cta-panel{margin-top:26px;display:flex;gap:12px}
+    .btn{padding:12px 16px;border-radius:10px;border:none;cursor:pointer;font-weight:700}
+    .btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white}
+    .btn-ghost{background:transparent;border:1px solid rgba(34,50,44,0.08)}
+
+    footer{max-width:1100px;margin:48px auto;padding:20px;color:var(--muted);font-size:14px}
+
+    /* subtle decorative SVG background */
+    svg#bgpattern{position:fixed;right:-10%;top:-6%;width:58vw;height:58vh;opacity:0.12;transform:rotate(8deg);pointer-events:none}
+
+    @media (max-width:900px){.hero{grid-template-columns:1fr}.plans{grid-template-columns:1fr}.logo svg{width:40px;height:40px}}
+  </style>
+</head>
+<body>
+  <svg id='bgpattern' viewBox='0 0 800 800' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'>
+    <defs>
+      <linearGradient id='g1' x1='0' x2='1'>
+        <stop offset='0' stop-color='#dff3ea'/>
+        <stop offset='1' stop-color='#eaf7f0'/>
+      </linearGradient>
+      <pattern id='p1' width='120' height='120' patternUnits='userSpaceOnUse' patternTransform='rotate(20)'>
+        <rect width='120' height='120' fill='url(#g1)'/>
+        <circle cx='18' cy='18' r='6' fill='#e0f1e8' />
+        <circle cx='78' cy='78' r='6' fill='#f1fbf8' />
+        <path d='M0 120 L120 0' stroke='#f7fdfb' stroke-width='2' opacity='0.6'/>
+      </pattern>
+    </defs>
+    <rect width='100%' height='100%' fill='url(#p1)' rx='80'/>
+  </svg>
+
+  <header>
+    <div class='logo'>
+      <svg viewBox='0 0 64 64' aria-hidden='true'>
+        <rect x='6' y='6' width='52' height='52' rx='12' fill='#eaf7f0'/>
+        <path d='M20 36c6-6 14-6 20 0' stroke='#6fa18b' stroke-width='3' fill='none' stroke-linecap='round'/>
+      </svg>
+      <div>
+        <div style='font-weight:800'>{{BUSINESS_NAME}}</div>
+        <div style='font-size:12px;color:var(--muted)'>Aroma care rooted in safety & calm</div>
+      </div>
+    </div>
+    <nav>
+      <a href='index.html'>Home</a>
+      <a href='services.html'>Offerings</a>
+      <a href='blends.html'>Blends</a>
+      <a href='shop.html'>Shop</a>
+      <a href='pricing.html' aria-current='page'>Rates</a>
+      <a href='about.html'>Our Practice</a>
+      <a href='book.html'>Schedule</a>
+      <a href='contact.html'>Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class='hero'>
+      <div class='lead summary-card'>
+        <h1>Clear, compassionate pricing for aromatherapy support</h1>
+        <p class='lead-desc'>We offer single consultations, package plans, and hybrid follow-ups so you can access aromatherapy safely in a way that fits your life. All sessions prioritize safety and education; no medical claims are made.</p>
+
+        <div class='cta-panel'>
+          <button class='btn btn-primary' onclick='location.href="{{PRIMARY_CTA_URL}}"'>{{PRIMARY_CTA_LABEL}}</button>
+          <button class='btn btn-ghost' onclick='location.href="contact.html"'>Ask a question</button>
+        </div>
+
+        <div class='fineprint'>Sessions available in-person in {{CITY}}, {{STATE}} and via secure remote follow-up. Packages include step-by-step blending notes, dilution guidance, and patch-test support.</div>
+      </div>
+
+      <aside class='summary-card'>
+        <h4 style='margin:0 0 8px 0'>Quick snapshot</h4>
+        <div style='font-size:14px;color:var(--muted)'>Typical session length</div>
+        <div style='font-weight:800;margin-top:6px'>60 minutes</div>
+        <div style='margin-top:12px;font-size:13px;color:var(--muted)'>Hybrid model: initial intake often 60–90m, follow-up 30–45m. Sliding scale available by request.</div>
+      </aside>
+    </section>
+
+    <section style='margin-top:26px'>
+      <h2 style='margin:0 0 12px 0'>Plans built around practice and practice safety</h2>
+      <div class='plans'>
+        <div class='plan'>
+          <h3>Intro Session</h3>
+          <div class='price'>$95 — single</div>
+          <p style='color:var(--muted)'>60–75 min initial consultation; assessment, safe blend demo, patch-test guidance.</p>
+          <ul class='features'>
+            <li>Personalized blend suggestion</li>
+            <li>Dilution & safety checklist</li>
+            <li>Written notes & aftercare</li>
+          </ul>
+        </div>
+
+        <div class='plan'>
+          <h3>Care Package (3 sessions)</h3>
+          <div class='price'>$255 — package</div>
+          <p style='color:var(--muted)'>Two follow-ups + one initial intake. Ideal for establishing a routine and refinement.</p>
+          <ul class='features'>
+            <li>Blend refinements</li>
+            <li>Progress notes</li>
+            <li>30% discount on select roll-ons</li>
+          </ul>
+        </div>
+
+        <div class='plan'>
+          <h3>Monthly Support</h3>
+          <div class='price'>$85 / month</div>
+          <p style='color:var(--muted)'>Short monthly check-ins for ongoing adjustments and support (hybrid).</p>
+          <ul class='features'>
+            <li>30-min check-in calls</li>
+            <li>Priority scheduling</li>
+            <li>Email follow-ups</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style='margin-top:18px' class='summary-card'>
+        <h4 style='margin:0 0 8px 0'>Sliding scale & community rates</h4>
+        <p style='margin:0;color:var(--muted)'>I reserve a limited number of reduced-rate slots. If cost is a barrier, please contact {{EMAIL}} with a brief note.</p>
+      </div>
+    </section>
+
+    <section style='margin-top:26px'>
+      <h2 style='margin-bottom:10px'>Frequently asked pricing questions</h2>
+      <div style='display:grid;grid-template-columns:1fr 1fr;gap:12px'>
+        <div class='summary-card'>
+          <strong>What’s included?</strong>
+          <p style='margin:8px 0;color:var(--muted)'>Written dilution guidance, patch-test instructions, and a plain-language blend recipe are included with every session.</p>
+        </div>
+        <div class='summary-card'>
+          <strong>Cancellation policy</strong>
+          <p style='margin:8px 0;color:var(--muted)'>Please give 48 hours notice to avoid a 50% fee. Emergencies handled case-by-case.</p>
+        </div>
+      </div>
+    </section>
+
+    <section style='margin-top:26px' class='summary-card'>
+      <h4 style='margin:0 0 8px 0'>Ready to start?</h4>
+      <p style='margin:0 0 12px 0;color:var(--muted)'>Book a session or send a quick message to discuss what will fit your needs.</p>
+      <div class='cta-panel'>
+        <button class='btn btn-primary' onclick='location.href="book.html"'>Book a session</button>
+        <button class='btn btn-ghost' onclick='location.href="contact.html"'>Contact {{PRACTITIONER_NAME}}</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • <a href='tel:{{PHONE}}' style='color:var(--muted);text-decoration:none'>{{PHONE}}</a> • <a href='mailto:{{EMAIL}}' style='color:var(--muted);text-decoration:none'>{{EMAIL}}</a></div>
+  </footer>
+</body>
+</html>

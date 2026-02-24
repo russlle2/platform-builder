@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contact — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Contact {{BUSINESS_NAME}} for integrative, personalized session planning and VIP Day offers.">
+  <style>
+    :root{
+      --bg:#fbfbfb;
+      --card:#ffffff;
+      --muted:#6b6b6b;
+      --accent:#2b7a6f;
+      --accent-2:#1f5a4f;
+      --glass:rgba(255,255,255,0.6);
+      --radius:12px;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%;margin:0;background:var(--bg);color:#111}
+    body{
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      display:flex;flex-direction:column;
+      background-image: url('assets/img/pattern.svg');
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-position: right top;
+      background-size: 28%;
+    }
+    header{padding:22px 28px;display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    nav{display:flex;gap:14px;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:8px}
+    nav a.primary{background:var(--accent);color:white}
+    main{max-width:1100px;margin:18px auto;padding:22px}
+    .grid{display:grid;grid-template-columns:1fr 420px;gap:26px}
+    .card{background:var(--card);padding:22px;border-radius:var(--radius);box-shadow:0 6px 18px rgba(18,24,27,0.06)}
+    h1{margin:0 0 6px 0;font-size:22px}
+    p.lead{margin:0 0 18px 0;color:var(--muted)}
+    .contact-list{display:flex;flex-direction:column;gap:10px}
+    .contact-item{display:flex;gap:12px;align-items:center}
+    .meta{color:var(--muted);font-size:14px}
+    .muted-small{font-size:13px;color:var(--muted)}
+
+    /* Session Planner styles */
+    form .row{display:flex;gap:10px;margin-bottom:12px}
+    label{font-size:13px;color:#222}
+    input[type="text"],input[type="email"],textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e6e6;font-size:14px}
+    textarea{min-height:92px;resize:vertical}
+    button{background:var(--accent);border:none;color:white;padding:10px 14px;border-radius:10px;cursor:pointer}
+    .secondary{background:transparent;border:1px solid #ddd;color:#333}
+    .small{padding:8px 10px;font-size:13px}
+    .output{white-space:pre-wrap;background:#f7f7f8;padding:12px;border-radius:8px;border:1px dashed #e3e3e3}
+
+    footer{margin:26px auto 60px;max-width:1100px;padding:12px 22px;color:var(--muted);font-size:13px}
+
+    /* reveal animation */
+    .reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+    .reveal.visible{opacity:1;transform:none}
+
+    @media (max-width:900px){
+      .grid{grid-template-columns:1fr;}
+      body{background-size:46%}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">HM</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav aria-label="Primary">
+      <a href="index.html">Welcome</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Support</a>
+      <a href="approach.html">Method</a>
+      <a href="pricing.html">Investments</a>
+      <a href="about.html">Our Team</a>
+      <a href="book.html" class="primary">{{PRIMARY_CTA_LABEL}}</a>
+      <a href="contact.html" aria-current="page">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="card reveal" id="contact-top">
+      <h1>Connect with our integrative practice</h1>
+      <p class="lead">If you're exploring a tailored approach to better energy, clearer sleep, or steadier moods, start here. Use the planner to sketch a first session plan, then reach out to set a consult.</p>
+
+      <div class="grid">
+        <div>
+          <div class="card" style="margin-bottom:16px">
+            <h2 style="margin-top:0">How to reach us</h2>
+            <div class="contact-list">
+              <div class="contact-item"><strong>Phone</strong><div class="meta" style="margin-left:auto">{{PHONE}}</div></div>
+              <div class="contact-item"><strong>Email</strong><div class="meta" style="margin-left:auto">{{EMAIL}}</div></div>
+              <div class="contact-item"><strong>Location</strong><div class="meta" style="margin-left:auto">{{CITY}}, {{STATE}}</div></div>
+            </div>
+            <p class="muted-small" style="margin-top:12px">If you prefer, schedule a dedicated VIP Day to explore an in-depth plan and hands-on coaching. Ask about availability and next steps when you contact us.</p>
+            <p style="margin-top:12px"><a class="small" href="{{PRIMARY_CTA_URL}}"><button class="small">{{PRIMARY_CTA_LABEL}}</button></a></p>
+          </div>
+
+          <div class="card reveal" id="contact-form">
+            <h3 style="margin-top:0">Message us</h3>
+            <form id="messageForm">
+              <div class="row"><input type="text" id="name" name="name" placeholder="Your name" required></div>
+              <div class="row"><input type="email" id="email" name="email" placeholder="Email" required></div>
+              <div class="row"><input type="text" id="subject" name="subject" placeholder="Short subject (e.g., sleep, energy)"></div>
+              <div class="row"><textarea id="message" name="message" placeholder="Tell us briefly what you hope to address"></textarea></div>
+              <div style="display:flex;gap:8px;align-items:center">
+                <button type="submit">Send message</button>
+                <button type="button" class="secondary small" id="clearForm">Clear</button>
+              </div>
+            </form>
+            <p class="muted-small">We respond within 2 business days. Messages are for appointment requests and questions—this is not emergency care. For urgent concerns, call local emergency services.</p>
+          </div>
+        </div>
+
+        <aside>
+          <div class="card reveal" id="planner">
+            <h3 style="margin-top:0">Session Planner</h3>
+            <p class="muted-small">A short interactive tool to help you and your clinician translate goals into a single-session outline and a suggested 4-week starter sequence. Build, copy, or download your plan to share before booking.</p>
+
+            <form id="plannerForm">
+              <label for="goal">Primary goal</label>
+              <input id="goal" name="goal" placeholder="E.g., Improve sleep quality, reduce daily anxiety" required>
+
+              <label for="availability">Weekly time you can devote</label>
+              <select id="availability" name="availability">
+                <option value="30">~30 minutes/week</option>
+                <option value="60">~1 hour/week</option>
+                <option value="120">~2 hours/week</option>
+                <option value="240">~4+ hours/week</option>
+              </select>
+
+              <label>Focus areas (choose up to 3)</label>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+                <label><input type="checkbox" name="focus" value="mindfulness"> Mindfulness</label>
+                <label><input type="checkbox" name="focus" value="movement"> Movement</label>
+                <label><input type="checkbox" name="focus" value="nutrition"> Nutrition</label>
+                <label><input type="checkbox" name="focus" value="sleep"> Sleep</label>
+                <label><input type="checkbox" name="focus" value="stress"> Stress resilience</label>
+                <label><input type="checkbox" name="focus" value="bloodwork"> Labs/snaps</label>
+              </div>
+
+              <label for="constraints">Practical constraints</label>
+              <input id="constraints" name="constraints" placeholder="e.g., travel, caregiving, limited mobility">
+
+              <div style="display:flex;gap:8px;margin-top:12px">
+                <button type="button" id="buildPlan">Build plan</button>
+                <button type="button" id="copyPlan" class="secondary">Copy text</button>
+                <button type="button" id="downloadPlan" class="secondary">Download .txt</button>
+              </div>
+            </form>
+
+            <div style="margin-top:12px">
+              <div class="muted-small">Plan preview</div>
+              <div id="planOutput" class="output" aria-live="polite">No plan yet. Use the builder to create a short, practical plan.</div>
+            </div>
+
+          </div>
+        </aside>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>© {{BUSINESS_NAME}} — thoughtful, evidence-informed integrative care. Contact: {{EMAIL}} • {{PHONE}}</div>
+  </footer>
+
+  <script>
+    /* Scroll-triggered reveals with reduced-motion respect */
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const reveals = document.querySelectorAll('.reveal');
+      if(prefersReduced){
+        reveals.forEach(el=>el.classList.add('visible'));
+        return;
+      }
+      const obs = new IntersectionObserver((entries, observer)=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting){
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },{threshold:0.12});
+      reveals.forEach(el=>obs.observe(el));
+    })();
+
+    /* Simple contact form behavior (no server) */
+    document.getElementById('messageForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const subj = document.getElementById('subject').value.trim();
+      const msg = document.getElementById('message').value.trim();
+      // Simulated submit
+      alert('Thanks, ' + (name||'there') + '. Your message has been queued. We will reply to ' + (email||'your email') + '.');
+      this.reset();
+    });
+    document.getElementById('clearForm').addEventListener('click', function(){
+      document.getElementById('messageForm').reset();
+    });
+
+    /* Session Planner: builds plaintext summary, copy, download */
+    function gatherPlanner(){
+      const goal = document.getElementById('goal').value.trim();
+      const availability = parseInt(document.getElementById('availability').value,10);
+      const constraints = document.getElementById('constraints').value.trim();
+      const focusEls = Array.from(document.querySelectorAll('input[name="focus"]:checked')).map(n=>n.value);
+      return {goal,availability,constraints,focus:focusEls};
+    }
+
+    function friendlyTime(mins){
+      if(mins<60) return mins + ' min/week';
+      return (mins/60) + ' hr/week';
+    }
+
+    function recommendSessionCount(availability){
+      // rough framing: more time => layered plan
+      if(availability<=30) return 1;
+      if(availability<=60) return 2;
+      if(availability<=120) return 3;
+      return 4;
+    }
+
+    function buildPlaintextPlan(data){
+      const sessCount = recommendSessionCount(data.availability);
+      const focusLine = data.focus.length? data.focus.join(', ') : 'General integrative review';
+      const lines = [];
+      lines.push('{{BUSINESS_NAME}} — Session planner');
+      lines.push('Primary goal: ' + (data.goal || '—'));
+      lines.push('Focus: ' + focusLine);
+      lines.push('Weekly time available: ' + friendlyTime(data.availability));
+      if(data.constraints) lines.push('Practical constraints: ' + data.constraints);
+      lines.push('');
+      lines.push('Single-session outline (60 min frame suggested):');
+      lines.push('1. Brief history & priority setting (10-12 min)');
+      lines.push('2. Focused intake & simple measures (10 min) — sleep, activity, mood screening');
+      lines.push('3. Practical strategies & skill introduction (20 min) — chosen based on focus areas');
+      lines.push('4. Concrete starter tasks & resources (10 min)');
+      lines.push('5. Next steps (5-8 min) — labs, referrals, follow-up cadence');
+      lines.push('');
+      lines.push('Starter 4-week sequence (proposed):');
+      for(let w=1; w<=4; w++){
+        lines.push('Week ' + w + ': ' + (w===1 ? 'Foundations — small, high-impact habits' : w===2 ? 'Skill practice & habit building' : w===3 ? 'Adjust & add focused interventions' : 'Consolidate & plan forward'));
+      }
+      lines.push('');
+      lines.push('Recommended touchpoints: ' + sessCount + ' short sessions over 4 weeks (combined 1:1 and brief check-ins), then review.');
+      lines.push('');
+      lines.push('Notes for clinician / patient:');
+      lines.push('- Keep tasks small and specific.');
+      lines.push('- Prioritize one measurable behavior in week 1.');
+      lines.push('- Add labs or referrals only when they change management.');
+      lines.push('');
+      lines.push('Prepared: ' + new Date().toLocaleString());
+      return lines.join('\n');
+    }
+
+    document.getElementById('buildPlan').addEventListener('click', function(){
+      const data = gatherPlanner();
+      const out = buildPlaintextPlan(data);
+      document.getElementById('planOutput').textContent = out;
+    });
+
+    document.getElementById('copyPlan').addEventListener('click', async function(){
+      const text = document.getElementById('planOutput').textContent;
+      if(!text) return;
+      try{
+        await navigator.clipboard.writeText(text);
+        this.textContent = 'Copied';
+        setTimeout(()=>this.textContent='Copy text',1200);
+      }catch(e){
+        alert('Copy failed — select and copy the text manually.');
+      }
+    });
+
+    document.getElementById('downloadPlan').addEventListener('click', function(){
+      const text = document.getElementById('planOutput').textContent;
+      if(!text) return;
+      const blob = new Blob([text],{type:'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const name = (document.getElementById('goal').value||'plan').toLowerCase().replace(/[^a-z0-9]+/g,'-');
+      a.download = (name||'session-plan') + '.txt';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+  </script>
+</body>
+</html>

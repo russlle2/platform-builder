@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Essences — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Carefully curated aromatherapy blends with safety notes and recommended uses."
+  >
+  <style>
+    :root{--bg:#fffdf9;--card:#fff;--muted:#556;--accent:#8b6a5a;--accent-2:#f1e3da}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#1c1c1c;background:var(--bg)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;border-bottom:1px solid rgba(0,0,0,0.04)}
+    .logo{width:46px;height:46px;border-radius:8px;background:linear-gradient(135deg,var(--accent-2),var(--accent));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    main{max-width:980px;margin:24px auto;padding:0 18px}
+
+    .hero{display:flex;gap:18px;align-items:center}
+    .hero h1{margin:0;font-size:28px}
+    .hero p{margin:0;color:var(--muted)}
+
+    .search{margin-top:18px;display:flex;gap:8px}
+    input[type=text]{flex:1;padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06)}
+
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:20px}
+    .card{background:var(--card);padding:14px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.04)}
+    .card h3{margin:0 0 6px}
+    .muted{color:var(--muted)}
+
+    .badge{display:inline-block;padding:6px 8px;border-radius:999px;background:var(--accent-2);font-size:12px}
+
+    footer{margin:40px 0 80px;text-align:center;color:var(--muted)}
+
+    /* Reveal */
+    section{opacity:0;transform:translateY(16px);transition:opacity .55s ease,transform .55s ease}
+    section.revealed{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){section{opacity:1;transform:none;transition:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo">E</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html" class="active">Essences</a>
+      <a href="shop.html">Boutique</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div>
+        <h1>Essences crafted for daily rituals</h1>
+        <p class="muted">A small collection of single oils and pre-blended profiles. Each listing includes usage notes, dilution guidance, and pet/pregnancy cautions when relevant.</p>
+      </div>
+      <div style="margin-left:auto">
+        <button class="btn" onclick="location.href='shop.html'" style="padding:10px 14px;border-radius:9px;border:0;background:var(--accent);color:#fff;cursor:pointer">Visit Boutique</button>
+      </div>
+    </div>
+
+    <section aria-labelledby="collection-h">
+      <h2 id="collection-h">Featured blends</h2>
+      <div class="grid">
+        <article class="card" data-keywords="calm,evening,lavender">
+          <h3>Evening Ease — gentle blend</h3>
+          <div class="muted">Notes: lavender, petitgrain, a soft cedar whisper.</div>
+          <p class="muted">Suggested use: diffuse briefly in the evening or dilute to 1% for a pulse point roll-on. Patch test before topical use.</p>
+          <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
+            <span class="badge">Safety: low-risk (adults)</span>
+            <a href="blends.html#evening-ease" style="margin-left:auto;color:var(--accent);text-decoration:none">Read details</a>
+          </div>
+        </article>
+
+        <article class="card" data-keywords="bright,focus,citrus">
+          <h3>Morning Clarity — citrus lift</h3>
+          <div class="muted">Notes: sweet orange, rosemary (low), bergamot (non-furocoumarin source).</div>
+          <p class="muted">Suggested use: a 0.5–1% diffuser blend for brief morning routines. Avoid direct sunlight after topical application if using bergamot-type oils.</p>
+          <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
+            <span class="badge">Safety: avoid in pregnancy without guidance</span>
+            <a href="blends.html#morning-clarity" style="margin-left:auto;color:var(--accent);text-decoration:none">Read details</a>
+          </div>
+        </article>
+
+        <article class="card" data-keywords="clarity,focus,herbal">
+          <h3>Clear Desk — study blend</h3>
+          <div class="muted">Notes: rosemary (low), lemon, a hint of eucalyptus (low concentration).</div>
+          <p class="muted">Suggested use: short diffuser bursts while working. Keep concentrations low and ventilate the space.</p>
+          <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
+            <span class="badge">Safety: not for household with birds</span>
+            <a href="blends.html#clear-desk" style="margin-left:auto;color:var(--accent);text-decoration:none">Read details</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="howto-h">
+      <h2 id="howto-h">How we label safety</h2>
+      <div class="card" style="margin-top:12px">
+        <p class="muted">Every blend card lists suggested dilutions and notes on pets, pregnancy, and sun sensitivity when applicable. We avoid medical promises and instead describe how scents may support attentional shifts or ritual cues for some people.</p>
+      </div>
+    </section>
+
+    <section aria-label="Call to action">
+      <div class="card" style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <strong>Want a custom blend for your cohort?</strong>
+          <div class="muted">We create small-batch profiles for groups with a focus on safety and repeatability.</div>
+        </div>
+        <div>
+          <a class="btn" href="book.html">Book a consult</a>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="muted">Questions? Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call {{PHONE}} • Serving {{CITY}}, {{STATE}}</div>
+    </footer>
+  </main>
+
+  <script>
+    // Simple client-side search + reveals
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if(prefersReduced){ document.querySelectorAll('section').forEach(s=>s.classList.add('revealed')); } else {
+        const obs = new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('revealed');obs.unobserve(e.target);}})},{threshold:0.12});
+        document.querySelectorAll('section').forEach(s=>obs.observe(s));
+      }
+
+      // Tiny search
+      const cards = Array.from(document.querySelectorAll('.card'));
+      const input = document.createElement('input'); input.type='text'; input.placeholder='Search blends…'; input.style.padding='10px'; input.style.width='100%'; input.style.borderRadius='10px'; input.style.border='1px solid rgba(0,0,0,0.06)';
+      const hero = document.querySelector('.hero');
+      hero.insertAdjacentElement('afterend', input);
+      input.addEventListener('input',()=>{
+        const q = input.value.toLowerCase().trim();
+        cards.forEach(c=>{ const txt = (c.textContent||'').toLowerCase(); c.style.display = txt.includes(q)?'block':'none'; });
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Care & Investment — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#7CFFDE;--muted:#9aa7b2;--glass:rgba(255,255,255,0.04);--radius:14px}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:var(--accent);background:linear-gradient(180deg,#071026 0%, #05121a 60%);-webkit-font-smoothing:antialiased}
+    header{display:flex;align-items:center;justify-content:space-between;padding:28px 36px}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#1a8 60%,#4ac4ff);display:flex;align-items:center;justify-content:center;color:#021; font-weight:800}
+    nav a{color:rgba(124,255,222,0.9);text-decoration:none;margin-left:18px;font-weight:600}
+    .wrap{max-width:1100px;margin:30px auto;padding:28px}
+
+    /* playful hero */
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:center}
+    .hero-card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:36px;border-radius:18px;border:1px solid rgba(255,255,255,0.04);box-shadow:0 10px 30px rgba(2,6,23,0.6)}
+    h1{font-size:34px;line-height:1.02;margin:0 0 10px;color:#E6FFF7}
+    p.lead{color:var(--muted);margin:0 0 18px}
+    .pill{display:inline-block;background:linear-gradient(90deg,#072b27,rgba(124,255,222,0.06));padding:8px 12px;border-radius:999px;color:var(--accent);font-weight:700}
+
+    /* pricing grid */
+    .grid{display:flex;gap:18px;margin-top:18px}
+    .plan{flex:1;background:var(--card);padding:20px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .plan h3{margin:0 0 8px;color:#Cffff0}
+    .price{font-size:24px;color:#fff;margin:8px 0}
+    .features{color:var(--muted);font-size:14px;margin:10px 0 16px}
+    .cta-btn{display:inline-block;padding:10px 16px;border-radius:10px;background:linear-gradient(90deg,#22d3b0,#06b6d4);color:#042; font-weight:800;text-decoration:none}
+
+    .offers{margin-top:22px;display:flex;gap:12px;flex-wrap:wrap}
+    .addon{background:var(--glass);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);color:var(--accent);min-width:160px}
+
+    /* testimonials */
+    .testimonials{margin-top:26px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .test{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:14px;border-radius:12px;color:var(--muted)}
+
+    footer{margin-top:28px;padding:20px;border-top:1px dashed rgba(255,255,255,0.03);color:var(--muted);display:flex;justify-content:space-between}
+
+    /* subtle patterned svg overlay */
+    .bg-svg{position:fixed;right:-6%;top:-10%;opacity:0.14;width:760px;height:760px;transform:rotate(18deg);pointer-events:none}
+
+    @media(max-width:900px){.hero{grid-template-columns:1fr;}.bg-svg{display:none}}
+  </style>
+</head>
+<body>
+  <svg class="bg-svg" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#7CFFDE"/><stop offset="1" stop-color="#4ac4ff"/></linearGradient>
+      <pattern id="p1" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(15)">
+        <rect width="40" height="40" fill="transparent" />
+        <circle cx="6" cy="6" r="1.6" fill="#7CFFDE" opacity="0.7" />
+        <circle cx="34" cy="34" r="1.6" fill="#4ac4ff" opacity="0.5" />
+      </pattern>
+      <filter id="f1" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="32" /></filter>
+    </defs>
+    <g filter="url(#f1)">
+      <rect width="100%" height="100%" fill="url(#p1)" />
+      <circle cx="480" cy="120" r="120" fill="url(#g1)" opacity="0.12" />
+    </g>
+  </svg>
+
+  <header class="wrap">
+    <div class="brand">
+      <div class="logo">HM</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px">Holistic care for vibrant living</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Sanctum</a>
+      <a href="services.html">Offerings</a>
+      <a href="pricing.html">Investment</a>
+      <a href="book.html">Reserve</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="hero-card">
+        <div class="pill">Plans & Pathways</div>
+        <h1>Structured care without jargon — transparent options for whole-person healing</h1>
+        <p class="lead">Choose a pathway that balances time, depth, and add-on resources. We blend education, coaching, and evidence-informed natural modalities to support you — no guarantees, just guided steps.</p>
+        <div class="grid">
+          <div class="plan">
+            <h3>Discovery Session</h3>
+            <div class="price">$120 — 45 min</div>
+            <div class="features">Intake, history, personalized action plan. Includes brief resources and follow-up summary.</div>
+            <a class="cta-btn" href="book.html">Book Discovery</a>
+          </div>
+          <div class="plan">
+            <h3>Care Package — Foundations</h3>
+            <div class="price">$420 — 3 visits</div>
+            <div class="features">Deep intake, individualized plan, lifestyle coaching, one optional lab review (educational).</div>
+            <a class="cta-btn" href="book.html">Start Foundations</a>
+          </div>
+          <div class="plan">
+            <h3>Comprehensive Pathway</h3>
+            <div class="price">$1,220 — 12 weeks</div>
+            <div class="features">Multi-visit program with ongoing check-ins, guided supplements, and educational materials. Labs optional and discussed as part of informed care.</div>
+            <a class="cta-btn" href="book.html">Begin Comprehensive</a>
+          </div>
+        </div>
+
+        <div style="margin-top:16px;color:var(--muted);font-size:13px">Add-ons: herbal starter sets, guided meal plans, sleep toolkit. Retail items are optional and sold separately.</div>
+      </div>
+
+      <aside style="background:linear-gradient(180deg,#071833,rgba(7,24,51,0.35));padding:22px;border-radius:18px;border:1px solid rgba(255,255,255,0.03);height:100%">
+        <h3 style="margin-top:0;color:#DFFEF1">Snapshot: What you get</h3>
+        <ul style="color:var(--muted);line-height:1.6;padding-left:18px">
+          <li>Clear intake with health map</li>
+          <li>Simple, actionable lifestyle steps</li>
+          <li>Optional evidence-based supplements explained</li>
+          <li>Follow-ups for fine-tuning</li>
+        </ul>
+        <div style="margin-top:18px">
+          <a class="cta-btn" href="book.html">Reserve a Spot</a>
+        </div>
+      </aside>
+    </section>
+
+    <section style="margin-top:26px" class="hero-card">
+      <h2 style="margin:0 0 8px;color:#Eafff7">A la carte & retail additions</h2>
+      <p class="lead">Small, supportive purchases that pair with clinical recommendations. Items can enhance consistency but are optional.</p>
+      <div class="offers">
+        <div class="addon">Herbal Starter Kit — $39</div>
+        <div class="addon">Sleep Support Bundle — $49</div>
+        <div class="addon">Functional Food Guide (pdf) — $19</div>
+        <div class="addon">One-time Lab Review — $75</div>
+      </div>
+    </section>
+
+    <section style="margin-top:22px" class="hero-card">
+      <h2 style="margin-top:0;color:#CFFFE9">Pricing notes & ethics</h2>
+      <p style="color:var(--muted)">We price for clarity and continuity. Labs and supplements are optional; when recommended, they are explained and supported with educational resources. We do not promise cures. Results vary based on many factors.</p>
+    </section>
+
+    <section style="margin-top:22px" class="hero-card">
+      <h2 style="margin-top:0;color:#CFFFE9">Testimonials</h2>
+      <div class="testimonials">
+        <div class="test">"Gentle, practical guidance. I finally have a sleep routine that sticks." — A.T.</div>
+        <div class="test">"I appreciated the clear alternatives and no pressure on supplements." — M.S.</div>
+      </div>
+    </section>
+
+    <footer>
+      <div>Questions? Call {{PHONE}} · {{EMAIL}}</div>
+      <div><a href="book.html" class="cta-btn">{{PRIMARY_CTA_LABEL}}</a></div>
+    </footer>
+
+  </main>
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f6fbf8;--card:#ffffff;--accent:#2a6f5b;--muted:#6b7a73;--glass:rgba(255,255,255,0.7)}
+    html,body{height:100%}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#123;line-height:1.4;background:linear-gradient(180deg, var(--bg), #eef7f3);}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:transparent}
+    nav a{color:var(--accent);text-decoration:none;margin:0 10px;font-weight:600}
+    .wrap{max-width:980px;margin:28px auto;padding:28px}
+    .hero{display:grid;grid-template-columns:1fr;gap:18px;background:var(--card);padding:28px;border-radius:12px;box-shadow:0 6px 24px rgba(18,30,27,0.06);background-image:url('assets/img/pattern.svg');background-repeat:no-repeat;background-position:top right;background-size:260px}
+    .kicker{color:var(--muted);font-size:13px;font-weight:700}
+    h1{margin:6px 0 0;font-size:28px;color:#083f34}
+    p.lead{margin:12px 0;color:#254a44}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:20px}
+    .card{background:var(--card);padding:18px;border-radius:10px}
+    .muted{color:var(--muted);font-size:13px}
+    .cta{display:inline-block;background:var(--accent);color:#fff;padding:10px 14px;border-radius:8px;text-decoration:none;font-weight:700}
+    footer{margin-top:18px;color:var(--muted);font-size:13px}
+    /* planner + habit styles */
+    .widget{border:1px solid rgba(10,30,25,0.06);padding:14px;border-radius:10px}
+    label{display:block;font-size:13px;margin:8px 0 6px}
+    select,input[type=text],input[type=number],textarea{width:100%;padding:8px;border-radius:8px;border:1px solid #e6efe9;background:#fcfffd}
+    .row{display:flex;gap:8px}
+    .row > *{flex:1}
+    button{background:var(--accent);border:none;color:#fff;padding:8px 12px;border-radius:8px;cursor:pointer}
+    .summary{white-space:pre-wrap;background:#fbfffb;padding:12px;border-radius:8px;border:1px dashed rgba(42,111,91,0.12);margin-top:10px}
+    .small{font-size:12px;color:var(--muted)}
+    @media(max-width:880px){.grid{grid-template-columns:1fr}header{padding:12px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <strong style="color:var(--accent);font-size:16px">{{BUSINESS_NAME}}</strong>
+      <span class="small">— thoughtful membership for steady routines</span>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="services.html">Support Plans</a>
+      <a href="programs.html">Rituals</a>
+      <a href="pricing.html">Join</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div>
+        <div class="kicker">WHO WE ARE</div>
+        <h1>Guided structure for daily wellbeing — thoughtful, evidence-informed habits</h1>
+        <p class="lead">At {{BUSINESS_NAME}} we design steady supports that sit beside your life. Membership blends live coaching, concise weekly plans, and small habit recipes to help you stay consistent without decision fatigue.</p>
+        <p class="muted">We do not provide medical advice. We offer coaching frameworks focused on habits, environment, and scheduling to support everyday wellbeing.</p>
+      </div>
+      <aside style="align-self:start">
+        <div class="card">
+          <div class="small">Membership</div>
+          <h3 style="margin:6px 0 0">Monthly guidance + weekly planning</h3>
+          <p class="muted" style="margin-top:10px">Join a small cohort for regular check-ins, a simple weekly blueprint, and micro-tasks that build into routines.</p>
+          <div style="margin-top:12px">
+            <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <div class="grid" style="margin-top:18px">
+      <div>
+        <section class="card">
+          <h3 style="margin:0 0 8px">Our approach</h3>
+          <p class="muted">We begin with a short diagnostic and open a simple weekly plan designed to protect energy and attention. Each plan contains three core targets: Start, Anchor, Wind-down. Over weeks, we add tiny habits and short reflections to make the changes tolerateable.</p>
+          <ul class="muted">
+            <li>Personal session planning</li>
+            <li>Weekly habit cycles</li>
+            <li>Membership support with check-ins</li>
+          </ul>
+        </section>
+
+        <section class="card" style="margin-top:14px">
+          <h3 style="margin:0 0 8px">Session Planner</h3>
+          <p class="small">Build one tailored session plan and copy it into email or notes.</p>
+          <div class="widget" id="planner">
+            <label for="focus">Primary focus</label>
+            <select id="focus">
+              <option>Energy rhythm</option>
+              <option>Sleep preparation</option>
+              <option>Movement habit</option>
+              <option>Mindful pauses</option>
+            </select>
+            <div class="row" style="margin-top:8px">
+              <div>
+                <label for="length">Session length (min)</label>
+                <input id="length" type="number" value="30" min="5">
+              </div>
+              <div>
+                <label for="frequency">Per week</label>
+                <input id="frequency" type="number" value="3" min="1" max="7">
+              </div>
+            </div>
+            <label for="goal">Clear outcome for this cycle</label>
+            <input id="goal" type="text" placeholder="A short outcome, e.g. sleep by 11pm most nights">
+            <label for="notes">Coach note (optional)</label>
+            <textarea id="notes" rows="3" placeholder="Context for this plan"></textarea>
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button id="buildPlan">Create plan</button>
+              <button id="copyPlan" style="background:#4b8a72">Copy</button>
+            </div>
+            <div id="planOut" class="summary small" aria-live="polite">Your plan summary will appear here.</div>
+          </div>
+        </section>
+
+        <section class="card" style="margin-top:14px">
+          <h3 style="margin:0 0 8px">How membership works</h3>
+          <p class="muted">Members receive a guided week each Monday, a short group call every other week, and simple micro-practices that slot into your schedule. You get one dedicated planning session per month as part of the plan.</p>
+        </section>
+      </div>
+
+      <aside>
+        <section class="card">
+          <h4 style="margin:0 0 8px">Quick diagnostic</h4>
+          <form onsubmit="return false;">
+            <label for="energy">Current energy pattern</label>
+            <select id="energy">
+              <option>Peaks in morning</option>
+              <option>Afternoon dip</option>
+              <option>Evenly paced</option>
+            </select>
+            <label for="stress">Typical stress level</label>
+            <select id="stress">
+              <option>Low</option>
+              <option>Moderate</option>
+              <option>High</option>
+            </select>
+            <label for="available">Time available daily (min)</label>
+            <input id="available" type="number" value="20" min="5">
+            <div style="margin-top:10px"><button id="diagBtn">Get a micro-plan</button></div>
+          </form>
+          <div id="diagOut" class="small" style="margin-top:10px">Result will appear here.</div>
+        </section>
+
+        <section class="card" style="margin-top:14px">
+          <h4 style="margin:0 0 8px">Contact</h4>
+          <p class="small">Questions about coaching? Reach out:</p>
+          <p style="margin:6px 0"><strong>{{EMAIL}}</strong></p>
+          <p class="small">Prefer to talk: <strong>{{PHONE}}</strong></p>
+        </section>
+      </aside>
+    </div>
+
+    <footer class="card" style="margin-top:18px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div class="small">Serving clients in {{CITY}}, {{STATE}}</div>
+        <div>
+          <a class="small" href="pricing.html">Plans & pricing</a>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    // Session Planner logic
+    function summarizePlan(focus,length,frequency,goal,notes){
+      let lines = [];
+      lines.push('Session focus: ' + focus);
+      lines.push('Length: ' + length + ' minutes');
+      lines.push('Sessions per week: ' + frequency);
+      if(goal) lines.push('Target outcome: ' + goal);
+      if(notes) lines.push('Coach note: ' + notes);
+      lines.push('Suggested micro-steps:');
+      lines.push('- Anchor: pick one consistent cue to begin the session');
+      lines.push('- Tiny habit: 3 min warm-up, main 15-20 min, 2 min reflect');
+      lines.push('\nMembership suggestion: schedule a monthly planning slot to review progress.');
+      return lines.join('\n');
+    }
+
+    document.getElementById('buildPlan').addEventListener('click', function(){
+      const focus = document.getElementById('focus').value;
+      const length = document.getElementById('length').value;
+      const freq = document.getElementById('frequency').value;
+      const goal = document.getElementById('goal').value;
+      const notes = document.getElementById('notes').value;
+      const out = summarizePlan(focus,length,freq,goal,notes);
+      document.getElementById('planOut').textContent = out;
+    });
+
+    document.getElementById('copyPlan').addEventListener('click', function(){
+      const text = document.getElementById('planOut').textContent;
+      if(!text){alert('Create a plan first.');return}
+      navigator.clipboard && navigator.clipboard.writeText(text).then(function(){
+        alert('Plan copied to clipboard');
+      }, function(){
+        const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy'); alert('Plan copied.')}catch(e){alert('Copy failed')} ta.remove();
+      });
+    });
+
+    // Diagnostic micro-plan
+    document.getElementById('diagBtn').addEventListener('click', function(){
+      const energy = document.getElementById('energy').value;
+      const stress = document.getElementById('stress').value;
+      const avail = parseInt(document.getElementById('available').value,10)||10;
+      let advice = 'Micro-plan:\n';
+      advice += '- Time budget: ' + avail + ' min daily\n';
+      if(energy.includes('morning')) advice += '- Place priority sessions in the morning when possible.\n';
+      if(energy.includes('Afternoon')) advice += '- Use a 10-minute reset at 3pm: short walk or breathing.\n';
+      if(stress==='High') advice += '- Start with micro-practices: 2 minutes of grounding before tasks.\n';
+      advice += '\nTry one small change for 7 days and review. Members get a printable checklist each week.';
+      document.getElementById('diagOut').textContent = advice;
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Approach — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--ink:#0f1724;--accent:#0ea5a4;--soft:#f6fffe}
+    html,body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:var(--ink);background:#fbfdfd;padding:24px}
+    .container{max-width:980px;margin:0 auto}
+    .nav{display:flex;gap:12px;margin-bottom:18px}
+    .nav a{color:#6b7280;text-decoration:none;padding:8px;border-radius:8px}
+    .nav a.active{color:var(--accent);font-weight:700}
+    h1{margin:0;font-size:28px}
+    .pillars{display:flex;gap:12px;margin-top:18px}
+    .pillar{background:linear-gradient(180deg,white,var(--soft));padding:14px;border-radius:10px;border:1px solid #eef6f6;flex:1}
+    .notes{margin-top:18px;background:#fff;padding:14px;border-radius:10px;border:1px solid #f3f6f6}
+    .accordion{margin-top:12px}
+    .acc-item{margin-bottom:8px;border-radius:8px;overflow:hidden}
+    .acc-trigger{display:flex;justify-content:space-between;padding:12px;background:linear-gradient(90deg,rgba(14,165,164,0.06),transparent);cursor:pointer}
+    .acc-content{padding:0 12px 12px;color:#475569;max-height:0;overflow:hidden;transition:max-height 300ms ease}
+    .acc-item.open .acc-content{max-height:360px}
+    .cta{display:inline-block;margin-top:12px;background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+
+    @media (max-width:800px){.pillars{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <div class='container'>
+    <nav class='nav'>
+      <a href='index.html'>Home</a>
+      <a href='approach.html' class='active'>Rhythm & Method</a>
+      <a href='specialties.html'>Focus</a>
+      <a href='book.html'>Reserve</a>
+    </nav>
+
+    <header>
+      <h1>How I work — practical, relational, slow-cook change</h1>
+      <p style='color:#6b7280;margin-top:8px'>My offerings combine direct therapeutic skills with group learning rhythms. Below are the guiding pillars and what to expect from a typical cycle.</p>
+    </header>
+
+    <section class='pillars'>
+      <div class='pillar'>
+        <strong>1. Small experiments</strong>
+        <div style='color:#475569;margin-top:6px'>We test one change at a time — short exercises between sessions so ideas land in your real life, not just in conversation.</div>
+      </div>
+      <div class='pillar'>
+        <strong>2. Structure + flexibility</strong>
+        <div style='color:#475569;margin-top:6px'>Each cohort or short plan has a predictable arc, but content bends to what the group or you actually need.</div>
+      </div>
+      <div class='pillar'>
+        <strong>3. Practice with peers</strong>
+        <div style='color:#475569;margin-top:6px'>Groups allow for role practice and perspective shifts; not therapy theater, but purposeful, supported rehearsal.</div>
+      </div>
+    </section>
+
+    <div class='notes'>
+      <h3 style='margin-top:0'>What a cycle looks like</h3>
+      <ol style='color:#475569'>
+        <li>Initial intake and orientation — 30–50 minutes to set aims.</li>
+        <li>Core meetings — weekly or biweekly sessions with clear goals.</li>
+        <li>Between-session experiments and short check-ins.</li>
+        <li>A concluding review and next-step planning.</li>
+      </ol>
+      <a class='cta' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a>
+    </div>
+
+    <div style='margin-top:18px'>
+      <h3 style='margin-bottom:8px'>Boundaries, confidentiality & scope</h3>
+      <div class='accordion'>
+        <div class='acc-item' id='b1'>
+          <div class='acc-trigger' data-target='b1'>
+            <div><strong>Privacy limits</strong><div style='color:#6b7280;font-size:13px'>What I keep private</div></div>
+            <div style='color:#6b7280'>▾</div>
+          </div>
+          <div class='acc-content'>
+            <p>Conversations are confidential except when disclosure is required by law (imminent risk of harm, suspected abuse, or court order). I will be transparent about any steps I need to take if such issues arise.</p>
+          </div>
+        </div>
+
+        <div class='acc-item' id='b2'>
+          <div class='acc-trigger' data-target='b2'>
+            <div><strong>Scope of practice</strong><div style='color:#6b7280;font-size:13px'>Where I can help and where we may refer</div></div>
+            <div style='color:#6b7280'>▾</div>
+          </div>
+          <div class='acc-content'>
+            <p>I provide psychotherapy and facilitation for adults. I do not prescribe medication. If your care would benefit from psychiatric or medical evaluation, I will support referral and collaboration as needed.</p>
+          </div>
+        </div>
+      </div>
+
+      <div style='margin-top:12px;color:#111;font-weight:700'>If you are in immediate danger</div>
+      <div style='color:#6b7280;margin-top:6px'>Call 911 or local emergency services. If you are in the United States and are experiencing a suicidal crisis, call or text 988 to reach the Suicide & Crisis Lifeline. For other urgent needs, contact local emergency resources.</div>
+    </div>
+
+    <script>
+      // accordion
+      document.querySelectorAll('.acc-trigger').forEach(function(t){
+        t.addEventListener('click',function(){
+          var id = this.getAttribute('data-target');
+          var el = document.getElementById(id);
+          el.classList.toggle('open');
+        });
+      });
+
+      // subtle accessibility enhancement: announce when accordion opens (aria-live could be used more fully)
+    </script>
+  </div>
+</body>
+</html>

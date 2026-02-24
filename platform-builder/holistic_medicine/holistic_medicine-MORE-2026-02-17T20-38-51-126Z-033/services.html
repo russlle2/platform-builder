@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fcfbf8;--accent:#6b9a76;--muted:#64707a;--card:#ffffff}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#132;line-height:1.45}
+    body{background:var(--bg) url('assets/img/pattern.svg');background-size:600px;}
+    header{display:flex;justify-content:space-between;align-items:center;padding:20px 32px}
+    .brand{font-weight:700;letter-spacing:.6px}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none;font-size:14px}
+    .hero{max-width:980px;margin:20px auto;padding:40px;background:linear-gradient(180deg,rgba(255,255,255,0.85),rgba(255,255,255,0.9));box-shadow:0 6px 30px rgba(19,32,44,0.06);border-radius:12px}
+    .hero h1{margin:0 0 8px;font-size:28px;color:var(--accent)}
+    .hero p{margin:0 0 18px;color:var(--muted)}
+    .cta{display:inline-block;background:var(--accent);color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:24px;margin-top:24px}
+    .card{background:var(--card);padding:18px;border-radius:10px;box-shadow:0 4px 18px rgba(17,24,28,0.04)}
+    .service-list{list-style:none;padding:0;margin:0}
+    .service-item{padding:12px 0;border-bottom:1px dashed #eef3ee;color:#223}
+    .muted{color:var(--muted);font-size:14px}
+    .price-pill{background:#f4fbf8;border:1px solid #e6f1ea;padding:6px 10px;border-radius:999px;color:var(--accent);font-weight:600}
+    /* Proof gallery */
+    .proof{display:flex;flex-direction:column;gap:12px}
+    .testimonial{min-height:92px;display:flex;flex-direction:column;justify-content:center}
+    .quote{font-style:italic;color:#0c2230}
+    .by{font-size:13px;color:var(--muted);margin-top:8px}
+    .badges{display:flex;gap:8px;align-items:center}
+    .badge{background:#fff;border:1px solid #e6eef0;padding:6px 8px;border-radius:6px;font-size:12px;cursor:pointer;position:relative}
+    .tooltip{position:absolute;left:50%;transform:translateX(-50%);bottom:120%;background:#0b2230;color:#fff;padding:8px 10px;border-radius:6px;font-size:12px;white-space:nowrap;display:none}
+    .badge:hover .tooltip{display:block}
+    /* Timeline planner */
+    .timeline{display:flex;flex-direction:column;gap:12px}
+    .phases{display:flex;gap:8px}
+    .phase{flex:1;padding:12px;border-radius:8px;background:#fbfff9;border:1px solid #e9f1ea;text-align:center;cursor:pointer}
+    .phase.active{background:linear-gradient(180deg,#f0fff2,#e8f9ea);border-color:#cfe7d0}
+    .disclaimer{font-size:13px;color:#6b6b6b;margin-top:10px}
+    footer{padding:20px;text-align:center;color:var(--muted);font-size:13px}
+    @media(max-width:880px){.grid{grid-template-columns:1fr}header{padding:14px} .hero{padding:20px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Ailments</a>
+      <a href="approach.html">Method</a>
+      <a href="pricing.html">Plans</a>
+      <a href="book.html">Reserve</a>
+      <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+    </nav>
+  </header>
+
+  <main class="hero" role="main">
+    <h1>Integrated support plans for the life you live</h1>
+    <p>Small, intentional shifts framed around measurement and meaning — pragmatic tracks that combine evidence, lifestyle craft, and coaching.</p>
+    <a class="cta" href="{{PRIMARY_CTA_URL}}">Start a short orientation</a>
+
+    <div class="grid">
+      <section class="card" aria-labelledby="services-title">
+        <h2 id="services-title">Offerings</h2>
+        <p class="muted">Flexible combinations — choose consultations, guided cycles, or self-paced modules.</p>
+        <ul class="service-list">
+          <li class="service-item"><strong>Foundations Cycle</strong> — 6-week guided reset with testing and weekly planning <span class="price-pill">from $295</span></li>
+          <li class="service-item"><strong>Sync Sessions</strong> — 45-min focused visits for symptom mapping and short plans <span class="price-pill">$95</span></li>
+          <li class="service-item"><strong>Renew Toolkit</strong> — digital pathways for sleep, digestion, and energy; self-paced <span class="price-pill">$49–129</span></li>
+          <li class="service-item"><strong>Continuity Support</strong> — monthly check-ins and micro-adjustments <span class="price-pill">subscription</span></li>
+        </ul>
+        <p class="muted">Prices are framing examples; final recommendations are personalized and may include lab partnerships or supplements when appropriate.</p>
+      </section>
+
+      <aside class="card">
+        <div class="proof">
+          <div>
+            <strong>Proof Gallery</strong>
+            <div id="testimonial" class="testimonial">
+              <div class="quote">"The paced steps made sensible change possible — not dramatic, but steady and real."</div>
+              <div class="by">— A client in {{CITY}}, {{STATE}}</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="badges" aria-hidden="false">
+              <div class="badge" tabindex="0">Boarded<span class="tooltip">Practitioner with standard accreditation.</span></div>
+              <div class="badge" tabindex="0">Published<span class="tooltip">Work cited in peer-oriented outlets.</span></div>
+              <div class="badge" tabindex="0">Honors<span class="tooltip">Recognized locally for community health work.</span></div>
+            </div>
+          </div>
+        </div>
+
+        <hr style="margin:12px 0;border:none;border-top:1px solid #eef4ee">
+
+        <div class="timeline">
+          <strong>Roadmap planner</strong>
+          <div class="phases" role="tablist" aria-label="Phases">
+            <div class="phase active" data-phase="1">Phase 1<br><small class="muted">Observe & map</small></div>
+            <div class="phase" data-phase="2">Phase 2<br><small class="muted">Intervene deliberate</small></div>
+            <div class="phase" data-phase="3">Phase 3<br><small class="muted">Sustain & adapt</small></div>
+          </div>
+          <div id="phase-body" style="margin-top:10px;color:#133">
+            <h4>Phase 1 — Observe & map</h4>
+            <p class="muted">Baseline intake, simple tracking, and initial priorities. Typical length: 2–4 weeks.</p>
+          </div>
+          <div class="disclaimer">This planner is educational. It is not a substitute for emergency or specialized medical advice. Plans are individualized after assessment.</div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <div class="muted">Contact <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • Call <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+  </footer>
+
+  <script>
+    (function(){
+      // Simple rotating testimonials
+      const quotes = [
+        {q:'"Small steps, precise listening — I finally slept through the night twice in a row."',n:'— Client, remote'},
+        {q:'"Data + care that fits my day; no fuss. The tools helped me keep going."',n:'— Parent, {{CITY}}'},
+        {q:'"A pragmatic plan that respected my schedule and my values."',n:'— Professional, {{STATE}}'}
+      ];
+      let i=0; const el=document.getElementById('testimonial');
+      setInterval(()=>{ i=(i+1)%quotes.length; el.querySelector('.quote').textContent=quotes[i].q; el.querySelector('.by').textContent=quotes[i].n; },4500);
+
+      // Timeline selector
+      const phaseEls=document.querySelectorAll('.phase');
+      const body=document.getElementById('phase-body');
+      const copy={
+        1:{h:'Phase 1 — Observe & map',t:'Baseline intake, simple tracking, and initial priorities. Typical length: 2–4 weeks.'},
+        2:{h:'Phase 2 — Intervene deliberate',t:'Targeted changes and short experiments. Typical length: 4–8 weeks.'},
+        3:{h:'Phase 3 — Sustain & adapt',t:'Maintenance tools, relapse plans, and scaling habits. Ongoing.'}
+      };
+      phaseEls.forEach(elm=>elm.addEventListener('click',()=>{
+        phaseEls.forEach(e=>e.classList.remove('active'));
+        elm.classList.add('active');
+        const p=elm.getAttribute('data-phase'); body.innerHTML=`<h4>${copy[p].h}</h4><p class=\"muted\">${copy[p].t}</p>`;
+      }));
+
+      // keyboard accessibility for badges
+      document.querySelectorAll('.badge').forEach(b=>{
+        b.addEventListener('keydown',e=>{ if(e.key==='Enter' || e.key===' ') b.querySelector('.tooltip').style.display='block'; });
+        b.addEventListener('blur',()=>{ b.querySelector('.tooltip').style.display='none'; });
+      });
+    })();
+  </script>
+</body>
+</html>

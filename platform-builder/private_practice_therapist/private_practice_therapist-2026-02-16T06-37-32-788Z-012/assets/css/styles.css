@@ -1,0 +1,82 @@
+/* Minimal, calm CSS for zen_minimal layout */
+:root{
+  --bg:#ffffff;
+  --text:#0b1221;
+  --muted:#5c6778;
+  --accent:#2b8ef1;
+  --accent-2:#dbeeff;
+  --radius:10px;
+  --gap:28px;
+  --max:1100px;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+*{box-sizing:border-box}
+body{margin:0;color:var(--text);background:var(--bg);line-height:1.5}
+.container{max-width:var(--max);margin:0 auto;padding:48px 20px}
+.header-inner{display:flex;align-items:center;justify-content:space-between}
+.brand{font-weight:600;color:var(--text);text-decoration:none;font-size:1.05rem}
+.nav{position:relative}
+.menu-toggle{display:none;background:none;border:1px solid transparent;padding:8px;border-radius:8px}
+.nav-list{display:flex;gap:18px;list-style:none;margin:0;padding:0}
+.nav-list a{color:var(--text);text-decoration:none;padding:6px 8px}
+.nav-list .cta{background:var(--accent);color:white;padding:8px 12px;border-radius:8px}
+
+/* Hero */
+.hero{display:grid;grid-template-columns:1fr 360px;align-items:center;gap:32px;padding-top:40px;padding-bottom:40px}
+.hero-title{font-size:1.85rem;margin:0 0 10px}
+.hero-sub{color:var(--muted);margin:0 0 18px}
+.hero-actions{display:flex;gap:12px;margin-bottom:10px}
+.btn{display:inline-block;padding:10px 16px;border-radius:8px;text-decoration:none}
+.btn.primary{background:var(--accent);color:#fff}
+.btn.ghost{background:transparent;border:1px solid var(--muted);color:var(--text)}
+.hero-art img{width:100%;height:auto;display:block}
+.local{color:var(--muted);font-size:0.9rem}
+
+/* Story */
+.card.story{background:var(--accent-2);border-radius:var(--radius);padding:22px}
+.story-inner{display:flex;gap:18px;align-items:center}
+.avatar{width:88px;height:88px;border-radius:14px}
+.small{font-size:0.85rem;color:var(--muted)}
+
+/* Framework */
+.framework{padding-top:30px}
+.lede{color:var(--muted);margin-bottom:12px}
+.steps{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:0;margin:0;list-style:none}
+.steps li{background:#fff;border:1px solid #eef4ff;padding:12px;border-radius:8px}
+
+/* Programs */
+.programs .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{background:#fff;padding:18px;border-radius:10px;border:1px solid #f0f4fb}
+.card h3{margin-top:0}
+.link{color:var(--accent);text-decoration:none}
+
+/* Pricing */
+.pricing-grid{display:flex;gap:16px;margin-top:12px}
+.price-card{flex:1;background:#fff;border-radius:10px;padding:18px;border:1px solid #eef2f8}
+.price-card.featured{box-shadow:0 6px 18px rgba(43,142,241,0.08);border-color:var(--accent-2)}
+.amount{font-weight:600;font-size:1.1rem}
+
+/* Testimonials */
+.test-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.quote{background:#f7fbff;padding:14px;border-radius:10px;border:1px solid #eef7ff}
+.quote cite{display:block;margin-top:8px;color:var(--muted);font-size:0.85rem}
+
+/* CTA */
+.cta{background:#fff;border-radius:12px;padding:24px;text-align:center;border:1px solid #eef6ff}
+.cta-inner{max-width:760px;margin:0 auto}
+
+/* Footer */
+.site-footer{border-top:1px solid #eef4fb;padding:28px 0}
+.footer-inner{display:flex;justify-content:space-between;gap:20px;align-items:flex-start}
+.brand-footer{font-weight:600}
+.muted{color:var(--muted)}
+
+/* Responsive */
+@media (max-width:900px){
+  .hero{grid-template-columns:1fr;}
+  .programs .grid{grid-template-columns:1fr}
+  .test-grid{grid-template-columns:1fr}
+  .pricing-grid{flex-direction:column}
+  .nav-list{display:none;position:absolute;right:0;top:48px;background:white;padding:12px;border-radius:10px;box-shadow:0 6px 20px rgba(18,30,50,0.06)}
+  .menu-toggle{display:inline-block}
+}

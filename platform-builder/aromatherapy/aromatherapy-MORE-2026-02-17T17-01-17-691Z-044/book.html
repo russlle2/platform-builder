@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#ffffff;--accent:#758c6a;--muted:#5b6258}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:#0b1a12}
+    header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #eef6ee}
+    .brand{display:flex;gap:12px;align-items:center}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none}
+    main{max-width:920px;margin:28px auto;padding:18px}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
+    .card{background:white;border-radius:12px;padding:18px;box-shadow:0 10px 30px rgba(10,12,10,0.03)}
+    label{display:block;margin-top:10px;font-weight:600}
+    input,select,textarea{width:100%;padding:9px;border-radius:8px;border:1px solid #e6efe6}
+    .primary{background:var(--accent);color:white;padding:10px 14px;border-radius:10px;border:0;font-weight:700;margin-top:12px}
+    .muted{color:var(--muted)}
+    footer{max-width:920px;margin:22px auto;padding:12px;color:var(--muted)}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div style="width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#9fc08b);display:flex;align-items:center;justify-content:center;color:white;font-weight:700">A</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">Simple scent care you can schedule</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Welcome</a>
+      <a href="services.html">Sessions</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Shop</a>
+      <a href="pricing.html">Membership</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="grid">
+      <div>
+        <div class="card">
+          <h1 style="margin-top:0">Reserve a session</h1>
+          <p class="muted">Bookings are typically 30–60 minutes. Sessions include an intake, a short scent session, and clear at-home guidance that may support your goals.</p>
+
+          <form id="bookingForm">
+            <label for="name">Name</label>
+            <input id="name" name="name" type="text" required>
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="text" required>
+
+            <label for="type">Session type</label>
+            <select id="type" name="type">
+              <option value="intro">Intro (30 min) — a short orientation</option>
+              <option value="standard">Standard (60 min) — intake + blending</option>
+              <option value="follow">Follow-up (30 min) — tune and adjust</option>
+            </select>
+
+            <label for="date">Preferred date</label>
+            <input id="date" name="date" type="date">
+
+            <label for="notes">Brief notes (allergies, pregnancy, pets)</label>
+            <textarea id="notes" name="notes" rows="4"></textarea>
+
+            <button class="primary" type="submit">Request reservation</button>
+          </form>
+
+          <div id="msg" style="margin-top:12px;color:var(--muted)"></div>
+
+          <div style="margin-top:14px" class="card">
+            <h4 style="margin:0">What to expect</h4>
+            <p class="muted" style="margin-top:8px">A short conversation about preferences and contraindications, followed by a curated scent exercise. You will receive a simple dilution guide and suggestions you can use at home.</p>
+          </div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="card">
+          <h3 style="margin-top:0">Need a quick practice?</h3>
+          <p class="muted">Try a short breathing + intention exercise in the browser before your session.</p>
+          <button class="primary" id="miniTry">Try it now</button>
+          <div style="margin-top:10px;font-size:13px;color:var(--muted)">If you prefer, call <a href="tel:{{PHONE}}">{{PHONE}}</a> to schedule.</div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0">Safety</h4>
+          <p class="muted" style="margin-top:8px">We will ask about pregnancy, medications, and pets. If any serious concerns arise we may suggest consulting another provider before using certain essential oils.</p>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <div class="muted">For urgent questions email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a>.</div>
+  </footer>
+
+  <!-- Booking form + small guided modal -->
+  <div id="miniModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;padding:20px">
+    <div style="max-width:520px;background:white;padding:18px;border-radius:12px">
+      <h3 style="margin-top:0">Three-minute centering</h3>
+      <div id="miniBody" style="color:var(--muted);margin-top:8px">We’ll guide you through two short breathing cycles and a one-line intention. Comfortable seated is fine.</div>
+      <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+        <button class="primary" id="miniStart">Start</button>
+        <button id="miniClose" style="padding:8px;border-radius:8px;border:1px solid #e6efe6;background:white">Close</button>
+      </div>
+      <div id="miniProgress" style="margin-top:12px;display:none">
+        <div id="miniStep" style="font-weight:700"></div>
+        <div id="miniTimer" style="color:var(--muted);margin-top:6px"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Booking form: basic client-side flow (no back-end)
+    const form = document.getElementById('bookingForm');
+    const msg = document.getElementById('msg');
+    form.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const data = new FormData(form);
+      msg.textContent = 'Thanks — we received your request. We will follow up to confirm. (This is a demo submission.)';
+      form.reset();
+    });
+
+    // Mini guided modal logic
+    const miniModal = document.getElementById('miniModal');
+    const miniTry = document.getElementById('miniTry');
+    const miniClose = document.getElementById('miniClose');
+    const miniStart = document.getElementById('miniStart');
+    const miniProgress = document.getElementById('miniProgress');
+    const miniStep = document.getElementById('miniStep');
+    const miniTimer = document.getElementById('miniTimer');
+
+    miniTry.addEventListener('click', ()=>{miniModal.style.display='flex';});
+    miniClose.addEventListener('click', ()=>{miniModal.style.display='none';stopMini();});
+
+    let mid=null, mstep=0, msecs=0;
+    function stopMini(){clearInterval(mid);mid=null;miniProgress.style.display='none';miniStart.disabled=false;}
+
+    miniStart.addEventListener('click', ()=>{miniStart.disabled=true;miniProgress.style.display='block';mstep=0;runMini();});
+
+    function runMini(){
+      const seq=[{label:'Slow grounding breaths',time:45},{label:'Light focus breaths',time:60},{label:'One-line intention',time:15}];
+      if(mstep>=seq.length){miniStep.textContent='Complete — thank you.';miniTimer.textContent='0:00';stopMini();return}
+      const cur=seq[mstep];msecs=cur.time;miniStep.textContent=cur.label;miniTimer.textContent=format(msecs);
+      mid=setInterval(()=>{msecs--;miniTimer.textContent=format(msecs);if(msecs<=0){clearInterval(mid);mid=null;mstep++;setTimeout(runMini,600);} },1000);
+    }
+    function format(s){const m=Math.floor(s/60);const ss=s%60;return m+':'+(ss<10?'0'+ss:ss)}
+  </script>
+</body>
+</html>

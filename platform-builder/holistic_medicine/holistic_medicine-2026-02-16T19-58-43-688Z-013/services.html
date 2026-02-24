@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{{BUSINESS_NAME}} — Offerings</title>
+  <style>
+    :root{
+      --bg1:#f6fbf9;--bg2:#eef7ff;--accent:#2b7a78;--muted:#5b6468;--card:#ffffff;
+      --glass: rgba(255,255,255,0.6);
+    }
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; color:var(--muted);background:linear-gradient(180deg,var(--bg1),var(--bg2));}
+    .page{min-height:100vh;position:relative;overflow:hidden;padding-bottom:60px}
+    /* unique inline svg pattern sits behind content */
+    .pattern{position:absolute;inset:0;pointer-events:none;opacity:0.18}
+    header{display:flex;align-items:center;justify-content:space-between;padding:28px 36px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#4fb3bf);display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    nav{display:flex;gap:18px}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:8px}
+    nav a.active{background:var(--glass);backdrop-filter:blur(6px);color:#0b3b3a;font-weight:600}
+    main{max-width:980px;margin:22px auto;padding:36px;display:grid;grid-template-columns:1fr 320px;gap:28px}
+    .hero{background:linear-gradient(180deg,rgba(255,255,255,0.9),var(--card));padding:28px;border-radius:14px;box-shadow:0 6px 30px rgba(15,22,23,0.06)}
+    .hero h1{margin:0 0 8px 0;color:#08383a}
+    .hero p{margin:0 0 18px;color:var(--muted)}
+    .cta-row{display:flex;gap:12px}
+    .btn{background:var(--accent);color:white;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}
+    .muted-btn{background:transparent;border:1px solid rgba(11,59,58,0.08);padding:10px 12px;border-radius:10px;color:var(--muted);text-decoration:none}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 20px rgba(11,59,58,0.04)}
+    .services-list{display:grid;gap:12px}
+    .service{display:flex;gap:12px;align-items:flex-start}
+    .icon{width:46px;height:46px;border-radius:8px;background:linear-gradient(135deg,#fff,rgba(75,160,155,0.08));display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent)}
+    .small{font-size:13px;color:var(--muted)}
+    aside .card{position:sticky;top:32px}
+    dl.faq{margin:0}
+    dl dt{font-weight:600;margin-top:12px}
+    dl dd{margin:6px 0 12px 0;color:var(--muted)}
+    footer{position:relative;text-align:center;padding:24px 16px;color:var(--muted)}
+    /* responsive */
+    @media (max-width:880px){main{grid-template-columns:1fr;padding:20px}aside{order:2}header{padding:16px}}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- decorative pattern (unique to services) -->
+    <svg class="pattern" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#c9f0ec"/><stop offset="1" stop-color="#eaf8ff"/></linearGradient>
+        <pattern id="p1" width="120" height="120" patternUnits="userSpaceOnUse">
+          <rect width="120" height="120" fill="url(#g1)" />
+          <circle cx="20" cy="20" r="6" fill="#9ee1db" />
+          <circle cx="100" cy="100" r="6" fill="#b2efe7" />
+          <path d="M0 60h120" stroke="#7fd6cf" stroke-width="1" opacity="0.7"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#p1)"/>
+    </svg>
+
+    <header>
+      <div class="brand">
+        <div class="logo">HM</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="services.html" class="active">Offerings</a>
+        <a href="approach.html">Method</a>
+        <a href="pricing.html">Plans</a>
+        <a href="book.html">Reserve</a>
+      </nav>
+    </header>
+
+    <main>
+      <section>
+        <div class="hero card">
+          <h1>Integrative sessions that meet you where you are</h1>
+          <p>Personalized consultations blending evidence-informed nutrition, lifestyle, herbal care and mind-body skills to support whole-person well-being. We partner with you—no promises of cures, only practical tools and guidance.</p>
+          <div class="cta-row">
+            <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            <a class="muted-btn" href="contact.html">Ask a question</a>
+          </div>
+        </div>
+
+        <div style="height:18px"></div>
+
+        <div class="card">
+          <h3 style="margin-top:0">How sessions are structured</h3>
+          <div class="services-list">
+            <div class="service">
+              <div class="icon">C</div>
+              <div>
+                <strong>Comprehensive consultation</strong>
+                <div class="small">60–90 minutes. Detailed intake, health history, and collaborative goal-setting.</div>
+              </div>
+            </div>
+            <div class="service">
+              <div class="icon">P</div>
+              <div>
+                <strong>Follow-up visits</strong>
+                <div class="small">30–45 minutes. Review progress, adjust plan, and provide practical steps.</div>
+              </div>
+            </div>
+            <div class="service">
+              <div class="icon">N</div>
+              <div>
+                <strong>Nutrition & lifestyle coaching</strong>
+                <div class="small">Individualized guidance with meal frameworks, sleep, and stress tools.</div>
+              </div>
+            </div>
+            <div class="service">
+              <div class="icon">H</div>
+              <div>
+                <strong>Herbal and supplementary options</strong>
+                <div class="small">Education on supportive botanicals and safe supplementation when appropriate.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="height:14px"></div>
+
+        <div class="card">
+          <h3 style="margin-top:0">Typical client ritual</h3>
+          <p class="small">Our intake is intentionally attentive: we gather context, listen for patterns, and co-create a plan. You may be asked to track sleep, food, or mood for a short period so recommendations are grounded in your daily life.</p>
+        </div>
+
+      </section>
+
+      <aside>
+        <div class="card">
+          <h4 style="margin-top:0">What to expect</h4>
+          <ul class="small">
+            <li>Collaborative planning, rooted in whole-person assessment.</li>
+            <li>Education about options and risks—not promises.</li>
+            <li>Support for gradual, sustainable change.</li>
+          </ul>
+        </div>
+
+        <div style="height:14px"></div>
+
+        <div class="card">
+          <h4 style="margin-top:0">Visit types & scheduling</h4>
+          <p class="small">Intake: 60–90 min. Follow-up: 30–45 min. Remote and in-person availability; scheduling via Book page.</p>
+        </div>
+
+        <div style="height:14px"></div>
+
+        <div class="card">
+          <h4 style="margin-top:0">FAQ</h4>
+          <dl class="faq">
+            <dt>Do you replace my primary care?</dt>
+            <dd>We complement medical care and coordinate with your providers when helpful.</dd>
+            <dt>Are lab tests required?</dt>
+            <dd>Optional labs are educational and used selectively; they are always discussed before ordering.</dd>
+          </dl>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      <div class="card" style="display:inline-block;padding:18px;border-radius:12px;box-shadow:0 8px 30px rgba(11,59,58,0.05)">
+        <div style="font-weight:700">Ready to begin?</div>
+        <div class="small">Schedule a conversation with {{PRACTITIONER_NAME}}, {{CREDENTIALS}} — {{CITY}}, {{STATE}}</div>
+        <div style="height:10px"></div>
+        <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+      <div style="height:12px"></div>
+      <div class="small">Call: {{PHONE}} • Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </footer>
+  </div>
+</body>
+</html>

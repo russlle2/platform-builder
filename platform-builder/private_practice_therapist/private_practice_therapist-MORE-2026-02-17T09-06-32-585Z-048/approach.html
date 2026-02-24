@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'/>
+  <meta name='viewport' content='width=device-width,initial-scale=1'/>
+  <title>Method & Process — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7f9fc;--card:#ffffff;--muted:#4b5563;--accent:#7c3aed}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:var(--bg);color:#071233}
+    header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:white;border-bottom:1px solid #eef2ff}
+    .logo{width:46px;height:46px;border-radius:8px;background:linear-gradient(135deg,#7c3aed,#2563eb);display:grid;place-items:center;color:white;font-weight:700}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    main{max-width:980px;margin:26px auto;padding:0 20px}
+    .lead{background:var(--card);padding:20px;border-radius:12px;box-shadow:0 8px 30px rgba(15,23,42,0.04)}
+    .lead h1{margin:0 0 6px 0}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:20px;margin-top:18px}
+    .method{padding:16px;background:var(--card);border-radius:10px;border:1px solid #f1f5f9}
+    .step{display:flex;gap:10px;align-items:flex-start}
+    .num{width:36px;height:36px;background:linear-gradient(180deg,#fff,#f8fafc);border-radius:8px;display:grid;place-items:center;font-weight:700}
+    .muted{color:var(--muted)}
+    .btn{display:inline-block;padding:10px 14px;border-radius:8px;background:var(--accent);color:#fff;text-decoration:none;font-weight:700}
+    .accordion{margin-top:14px;border-radius:10px;border:1px solid #eef2ff}
+    .acc-head{padding:12px;background:#fff;border-bottom:1px solid #f8fafc;cursor:pointer;display:flex;justify-content:space-between}
+    .acc-body{padding:12px;display:none;color:var(--muted)}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style='display:flex;gap:12px;align-items:center'>
+      <div class='logo'>MP</div>
+      <div>
+        <div style='font-weight:700'>{{BUSINESS_NAME}}</div>
+        <div style='font-size:12px;color:var(--muted)'>Care in {{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav aria-label='Primary navigation'>
+      <a href='index.html'>Welcome</a>
+      <a href='about.html'>Background</a>
+      <a href='specialties.html'>Focus</a>
+      <a href='approach.html' style='color:#071233;font-weight:700'>Method</a>
+      <a href='book.html'>Book</a>
+      <a href='contact.html'>Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class='lead'>
+      <h1>How we can work together</h1>
+      <p class='muted'>I match structure to the question: brief, skills-oriented plans for immediate relief; exploratory work to understand patterns; or a blend of both. Below you'll find the practical steps I usually follow and a live selector to help pick a starting point.</p>
+    </div>
+
+    <div class='grid'>
+      <div>
+        <div class='method'>
+          <h3>Typical flow</h3>
+          <div style='height:8px'></div>
+          <div class='step'><div class='num'>1</div><div><strong>First contact</strong><div class='muted' style='margin-top:6px'>A brief call or message to clarify needs and logistics. We decide together whether a single session, a short series, or a referral is most appropriate.</div></div></div>
+          <div style='height:10px'></div>
+          <div class='step'><div class='num'>2</div><div><strong>Intake & plan</strong><div class='muted' style='margin-top:6px'>The first session includes a compact assessment and a co-created plan with measurable aims when helpful.</div></div></div>
+          <div style='height:10px'></div>
+          <div class='step'><div class='num'>3</div><div><strong>Work phase</strong><div class='muted' style='margin-top:6px'>Sessions may include skill practice, reflection, and small experiments between meetings. We review progress regularly and adjust pace.</div></div></div>
+          <div style='height:10px'></div>
+          <div class='step'><div class='num'>4</div><div><strong>Wrap & next steps</strong><div class='muted' style='margin-top:6px'>When goals are met or it's time to pause, we close a block intentionally and plan follow-up if needed.</div></div></div>
+
+          <div style='margin-top:14px'>
+            <label style='font-weight:700'>Mood-to-Method selector</label>
+            <select id='moodMethod' style='display:block;margin-top:8px;padding:10px;border-radius:8px;border:1px solid #eef2ff'>
+              <option value='urgent'>Need immediate coping tools</option>
+              <option value='clarify'>Need help clarifying a decision</option>
+              <option value='patterns'>Want to explore repeated patterns</option>
+              <option value='support'>Need supportive space for loss</option>
+            </select>
+            <div id='methodRec' class='muted' style='margin-top:10px'>Choose a state to see a suggested structure.</div>
+
+            <div style='margin-top:12px'>
+              <a id='methodCta' class='btn' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a>
+            </div>
+          </div>
+
+        </div>
+
+        <div class='accordion' style='margin-top:12px'>
+          <div class='acc-head' id='boundHead'>Session boundaries & confidentiality <span aria-hidden='true'>+</span></div>
+          <div class='acc-body' id='boundBody'>
+            <p>I document details needed for continuity of care and billing. Confidentiality is maintained within legal limits; I will explain these limits during intake and in writing. I do not provide emergency intervention, and I will discuss referrals if urgent care is appropriate.</p>
+            <p style='margin-top:8px'>If you are in immediate danger, call local emergency services. In the United States, dialing 988 connects you to the Suicide & Crisis Lifeline.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <aside>
+        <div class='method'>
+          <h3>Formats I offer</h3>
+          <div style='margin-top:10px' class='muted'>
+            <ul style='padding-left:18px;margin:0'>
+              <li>Focused Series (4–8 sessions) — goal-oriented work</li>
+              <li>Single-session intensives — concentrated problem-solving</li>
+              <li>Ongoing space — by arrangement when steady support is helpful</li>
+            </ul>
+          </div>
+          <div style='margin-top:12px'>
+            <a id='altCta' class='btn' href='{{PRIMARY_CTA_URL}}' style='background:#1f2937'>Book a conversation</a>
+          </div>
+        </div>
+
+        <div style='height:12px'></div>
+
+        <div class='method'>
+          <h4>Scope & referrals</h4>
+          <p class='muted'>If needs fall outside my scope I will discuss options and can coordinate referrals. I do not provide legal or medical opinions; any such needs will be handled by appropriate professionals.</p>
+        </div>
+
+      </aside>
+    </div>
+
+  </main>
+
+  <footer style='max-width:980px;margin:28px auto;padding:0 20px;color:var(--muted)'>If you are in immediate danger, call emergency services. For urgent emotional support in the United States, consider dialing 988. For scheduling and questions: {{PHONE}} • {{EMAIL}}.</footer>
+
+  <script>
+    (function(){
+      var select = document.getElementById('moodMethod');
+      var rec = document.getElementById('methodRec');
+      var cta = document.getElementById('methodCta');
+      var map = {
+        'urgent':{text:'Short skills blocks (3–6 sessions) focusing on coping strategies and stabilization',label:'Book a skills block'},
+        'clarify':{text:'One to three focused sessions to map options and weigh consequences',label:'Schedule a decision session'},
+        'patterns':{text:'Longer series with attention to recurring themes and experiments',label:'Begin pattern work'},
+        'support':{text:'Supportive sessions paced around your needs for meaning-making',label:'Request supportive sessions'}
+      };
+      function update(){
+        var key = select.value; var v = map[key]||map['urgent'];
+        rec.textContent = v.text;
+        cta.textContent = v.label + ' — ' + '{{PRIMARY_CTA_LABEL}}';
+        try{var u=new URL('{{PRIMARY_CTA_URL}}',location.href);u.searchParams.set('approach',key);cta.href=u.toString();}catch(e){cta.href='{{PRIMARY_CTA_URL}}';}
+      }
+      select.addEventListener('change',update);
+      update();
+
+      document.getElementById('boundHead').addEventListener('click',function(){
+        var b = document.getElementById('boundBody');
+        var open = b.style.display === 'block';
+        b.style.display = open ? 'none' : 'block';
+        this.querySelector('span').textContent = open ? '+' : '-';
+      });
+
+      // duplicate accordion for extra clarity (second mention)
+      var dup = document.createElement('div'); dup.className='accordion'; dup.style.marginTop='12px';
+      dup.innerHTML = "<div class='acc-head' id='boundHead2'>Additional confidentiality notes <span aria-hidden='true'>+</span></div><div class='acc-body' id='boundBody2'>In certain legal situations I may be required to disclose information; we will discuss this openly in writing and in session. If you need immediate crisis support, call emergency services or 988 in the U.S.</div>";
+      document.querySelector('aside .method').appendChild(dup);
+      document.getElementById('boundHead2').addEventListener('click',function(){var b=document.getElementById('boundBody2');var open=b.style.display==='block';b.style.display=open?'none':'block';this.querySelector('span').textContent=open?'+':'-';});
+
+    })();
+  </script>
+</body>
+</html>

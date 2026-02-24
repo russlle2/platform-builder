@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{{BUSINESS_NAME}} — Membership & Sessions</title>
+  <meta name="description" content="Membership tiers, flexible sessions, and a planner to shape a practical integrative plan." />
+  <style>
+    :root{--bg:#f7efe6;--accent:#7a5a3c;--muted:#a89b90;--card:#fff;--accent-2:#c79a6e}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#3b3229;background-color:var(--bg);}
+    .pattern{position:fixed;inset:0;opacity:.18;background-image:url("assets/img/pattern.svg");background-repeat:repeat;z-index:0}
+    header{position:relative;z-index:2;background:linear-gradient(180deg,rgba(255,255,255,.6),rgba(255,255,255,.8));backdrop-filter:saturate(.9) blur(6px);border-bottom:1px solid rgba(60,50,40,.06)}
+    .wrap{max-width:1100px;margin:0 auto;padding:24px}
+    nav{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+    a.logo{font-weight:700;color:var(--accent);text-decoration:none;font-size:18px}
+    a.navlink{color:#4a4038;text-decoration:none;padding:8px 10px;border-radius:8px}
+    a.navlink:hover{background:rgba(122,90,60,.06)}
+    .hero{display:flex;gap:28px;align-items:flex-start;padding:34px 0}
+    .hero-left{flex:1}
+    .eyebrow{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+    h1{margin:10px 0 6px;font-size:28px;color:var(--accent)}
+    p.lead{color:#4a4038;line-height:1.5}
+    .cta{display:inline-block;background:var(--accent);color:#fff;padding:10px 16px;border-radius:10px;text-decoration:none}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:28px}
+
+    /* pricing cards */
+    .cards{display:flex;gap:16px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(60,50,40,.06);flex:1;border:1px solid rgba(90,70,50,.04)}
+    .card h3{margin:0 0 8px;color:var(--accent)}
+    .price{font-size:22px;font-weight:700;color:#2f241c}
+    .muted{color:var(--muted);font-size:14px}
+
+    /* planner */
+    .widget{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 20px rgba(60,50,40,.04)}
+    .section-title{font-weight:700;color:var(--accent);margin-bottom:8px}
+    label.inline{display:inline-flex;align-items:center;gap:10px;margin-right:8px}
+    .controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+    .btn{background:var(--accent-2);color:#fff;border:none;padding:8px 10px;border-radius:8px;cursor:pointer}
+    .secondary{background:#fff;border:1px solid rgba(60,50,40,.06);color:var(--accent);}
+    textarea{width:100%;min-height:140px;border-radius:8px;padding:10px;border:1px solid rgba(60,50,40,.06);resize:vertical}
+    .small{font-size:13px;color:var(--muted)}
+
+    /* inventory */
+    .checklist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+    .checkitem{display:flex;gap:8px;align-items:center}
+
+    footer{padding:28px 0;color:var(--muted);font-size:14px}
+    @media(max-width:880px){.grid{grid-template-columns:1fr}.cards{flex-direction:column}.checklist{grid-template-columns:1fr}.hero{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <div class="pattern" aria-hidden="true"></div>
+  <header>
+    <div class="wrap">
+      <nav aria-label="Primary navigation">
+        <a class="logo" href="index.html">{{BUSINESS_NAME}}</a>
+        <a class="navlink" href="services.html">Offerings</a>
+        <a class="navlink" href="conditions.html">Health topics</a>
+        <a class="navlink" href="approach.html">Method</a>
+        <a class="navlink" href="pricing.html">Membership</a>
+        <a class="navlink" href="about.html">Our practice</a>
+        <a class="navlink" href="book.html">Reserve</a>
+        <a class="navlink" href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="hero-left">
+        <div class="eyebrow">Membership • Ongoing planning</div>
+        <h1>Practical integrative membership built around your days</h1>
+        <p class="lead">Choose a tier that matches how much time you can invest. We create a focused sequence of sessions, short check-ins, and home-centered practices so you can integrate small, evidence-aware changes consistently.</p>
+        <p><a class="cta" href="book.html">Start a short consult</a> <span class="small">or call {{PHONE}}</span></p>
+      </div>
+      <div style="width:360px">
+        <div class="cards">
+          <div class="card">
+            <h3>Root Member</h3>
+            <div class="price">$75 / month</div>
+            <p class="muted">Monthly guidance, recording of priorities, one quarterly session.</p>
+          </div>
+          <div class="card">
+            <h3>Rhythm Member</h3>
+            <div class="price">$165 / month</div>
+            <p class="muted">Monthly session, biweekly brief check-ins, care coordination notes.</p>
+          </div>
+          <div class="card">
+            <h3>Compass Member</h3>
+            <div class="price">$320 / month</div>
+            <p class="muted">Two sessions monthly, rapid-access messaging, personalised plan review.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid" aria-labelledby="planner-heading">
+      <div>
+        <div class="widget" id="inventory-widget">
+          <div class="section-title" id="planner-heading">Whole-person inventory</div>
+          <p class="small">Check areas you want us to prioritize. This inventory creates a suggested consultation agenda and a follow-up cadence.</p>
+          <form id="inventoryForm">
+            <div class="checklist">
+              <label class="checkitem"><input type="checkbox" name="area" value="Sleep"> Sleep & rest</label>
+              <label class="checkitem"><input type="checkbox" name="area" value="Nutrition"> Nutrition & digestion</label>
+              <label class="checkitem"><input type="checkbox" name="area" value="Movement"> Movement & strength</label>
+              <label class="checkitem"><input type="checkbox" name="area" value="Stress"> Stress & nervous system</label>
+              <label class="checkitem"><input type="checkbox" name="area" value="Relationships"> Relationships & social life</label>
+              <label class="checkitem"><input type="checkbox" name="area" value="Work"> Work & rhythm</label>
+              <label class="checkitem"><input type="checkbox" name="area" value="Environment"> Home & environment</label>
+              <label class="checkitem"><input type="checkbox" name="area" value="Spirituality"> Meaning & values</label>
+              <label class="checkitem"><input type="checkbox" name="area" value="Medical"> Medical context & meds</label>
+              <label class="checkitem"><input type="checkbox" name="area" value="Supplements"> Supplements & labs</label>
+            </div>
+            <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+              <button type="button" class="btn" id="inventoryGenerate">Compose agenda & cadence</button>
+              <button type="button" class="btn secondary" id="inventoryClear">Clear</button>
+              <div class="small" style="margin-left:auto">Confidential. For planning only.</div>
+            </div>
+          </form>
+          <div id="inventoryOutput" style="margin-top:12px;display:none">
+            <h4 style="margin:0 0 6px;color:var(--accent)">Suggested agenda</h4>
+            <pre id="agendaText" style="white-space:pre-wrap;background:#fbf6f0;padding:10px;border-radius:8px;border:1px solid rgba(60,50,40,.03)"></pre>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button class="btn" id="copyAgenda">Copy text</button>
+              <button class="btn secondary" id="downloadAgenda">Download .txt</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="height:18px"></div>
+
+        <div class="widget" id="faqWidget">
+          <div class="section-title">Common questions</div>
+          <p class="small">Memberships are cancellable any time. Sessions can be scheduled as virtual or in person in {{CITY}}, {{STATE}}. We do not promise cures; we build practical plans and monitor progress.</p>
+        </div>
+      </div>
+
+      <aside>
+        <div class="widget">
+          <div class="section-title">Session Planner</div>
+          <p class="small">Build a concise plan you can bring to your first session. Export a plain-text summary to copy or attach to booking notes.</p>
+          <div style="margin-top:8px">
+            <label class="section-title" style="font-size:14px">Select primary goal</label>
+            <select id="goal" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(60,50,40,.06);margin-bottom:8px">
+              <option value="Improve sleep consistency">Improve sleep consistency</option>
+              <option value="Reduce daily anxiety">Reduce daily anxiety</option>
+              <option value="Stabilize energy and digestion">Stabilize energy and digestion</option>
+              <option value="Build movement routine">Build movement routine</option>
+              <option value="Clarify meds & supplements plan">Clarify meds & supplements plan</option>
+            </select>
+
+            <div class="controls">
+              <label class="inline">Session length
+                <select id="length">
+                  <option value="25">25 min</option>
+                  <option value="50">50 min</option>
+                  <option value="80">80 min</option>
+                </select>
+              </label>
+
+              <label class="inline">Frequency
+                <select id="frequency">
+                  <option value="One-off">One-off</option>
+                  <option value="Monthly">Monthly</option>
+                  <option value="Biweekly">Biweekly</option>
+                  <option value="Weekly">Weekly</option>
+                </select>
+              </label>
+
+              <label class="inline">Membership
+                <select id="tier">
+                  <option value="Root Member">Root Member</option>
+                  <option value="Rhythm Member">Rhythm Member</option>
+                  <option value="Compass Member">Compass Member</option>
+                </select>
+              </label>
+            </div>
+
+            <label class="section-title" style="font-size:14px">Key focus areas (comma separated)</label>
+            <input id="focusAreas" placeholder="eg. sleep, stress, evening routine" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(60,50,40,.06);margin-bottom:8px">
+
+            <button class="btn" id="generatePlan">Generate plan</button>
+            <button class="btn secondary" id="clearPlan">Reset</button>
+
+            <div style="margin-top:10px">
+              <textarea id="planOutput" placeholder="Generated plan will appear here" readonly></textarea>
+              <div style="display:flex;gap:8px;margin-top:8px">
+                <button class="btn" id="copyPlan">Copy summary</button>
+                <button class="btn secondary" id="downloadPlan">Download .txt</button>
+                <a class="btn" id="bookFromPlan" href="book.html">Book with this note</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section style="margin-top:20px">
+      <div class="widget">
+        <div class="section-title">Notes on pricing framing</div>
+        <p class="small">Memberships are framed for different engagement rhythms rather than rigid packages. If your priorities or constraints change, we recalibrate cadence and session focus at any time.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="wrap">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+      <div>&copy; <strong>{{BUSINESS_NAME}}</strong> — <span class="small">Serving {{CITY}}, {{STATE}}</span></div>
+      <div class="small">Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • {{PHONE}}</div>
+    </div>
+  </footer>
+
+  <script>
+    // Inventory logic
+    const inventoryForm = document.getElementById('inventoryForm');
+    const inventoryGenerate = document.getElementById('inventoryGenerate');
+    const inventoryOutput = document.getElementById('inventoryOutput');
+    const agendaText = document.getElementById('agendaText');
+    const copyAgenda = document.getElementById('copyAgenda');
+    const downloadAgenda = document.getElementById('downloadAgenda');
+    const inventoryClear = document.getElementById('inventoryClear');
+
+    function buildAgenda(areas){
+      if(!areas.length) return 'No areas selected. Consider checking 2–4 domains you want to focus on.';
+      const priorities = areas.slice(0,4);
+      let agenda = 'Consultation agenda — suggested order:\n';
+      priorities.forEach((a,i)=>{agenda += (i+1)+'. '+a+' — 10–18 minutes: assessment, current routines, immediate next step.\n'});
+      if(areas.length>4){agenda += '\nOther areas to flag: '+areas.slice(4).join(', ')+'\n';}
+      // follow-up cadence
+      let cadence = '\nRecommended follow-up cadence:\n';
+      if(areas.length<=2){cadence += '- Primary session (50 min) + brief check-in at 2–3 weeks.\n';}
+      else if(areas.length<=4){cadence += '- Initial (50–80 min) + 2 check-ins over 6–8 weeks.\n';}
+      else{cadence += '- Initial (80 min) + monthly briefings for 3 months, then reassess.\n';}
+      cadence += '\nNotes: Bring any recent labs or a medication list; be prepared to track 1–2 simple behaviors for 2 weeks.';
+      return agenda + cadence;
+    }
+
+    inventoryGenerate.addEventListener('click',()=>{
+      const checked = Array.from(inventoryForm.querySelectorAll('input[name="area"]:checked')).map(i=>i.value);
+      const text = buildAgenda(checked);
+      agendaText.textContent = text;
+      inventoryOutput.style.display = 'block';
+    });
+
+    copyAgenda.addEventListener('click',()=>{
+      navigator.clipboard.writeText(agendaText.textContent).then(()=>{
+        copyAgenda.textContent = 'Copied';
+        setTimeout(()=>copyAgenda.textContent='Copy text',1200);
+      });
+    });
+
+    downloadAgenda.addEventListener('click',()=>{
+      const blob = new Blob([agendaText.textContent],{type:'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = '{{BUSINESS_NAME}}-agenda.txt'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    });
+
+    inventoryClear.addEventListener('click',()=>{
+      inventoryForm.reset(); inventoryOutput.style.display='none';
+    });
+
+    // Session planner
+    const generatePlan = document.getElementById('generatePlan');
+    const planOutput = document.getElementById('planOutput');
+    const copyPlan = document.getElementById('copyPlan');
+    const downloadPlan = document.getElementById('downloadPlan');
+    const clearPlan = document.getElementById('clearPlan');
+    const bookFromPlan = document.getElementById('bookFromPlan');
+
+    function composePlan(){
+      const goal = document.getElementById('goal').value;
+      const length = document.getElementById('length').value;
+      const frequency = document.getElementById('frequency').value;
+      const tier = document.getElementById('tier').value;
+      const focus = document.getElementById('focusAreas').value.trim();
+      let out = '';
+      out += '{{BUSINESS_NAME}} — Personal session plan\n';
+      out += 'Goal: '+goal+'\n';
+      out += 'Session length: '+length+' minutes | Frequency: '+frequency+' | Membership: '+tier+'\n';
+      out += '\nPrimary focus areas: '+(focus || 'Not specified')+'\n\n';
+      out += 'Recommended structure:\n';
+      out += '- Brief intake and immediate priorities (10%)\n';
+      out += '- Focused problem-solving and short-term behavior prescription (60%)\n';
+      out += '- Summary, simple measurements to track, and next steps (30%)\n\n';
+      out += 'Suggested first-step tasks:\n';
+      if(focus){
+        const tokens = focus.split(/,\s*/).slice(0,4);
+        tokens.forEach((t,i)=> out += (i+1)+'. '+t+' — one small, measurable action for 2 weeks\n');
+      } else {
+        out += '1. Track sleep/wake and 2 routines for 2 weeks\n2. Note any medication or supplement timings\n';
+      }
+      out += '\nFollow-up cadence suggestion:\n';
+      if(frequency==='Weekly') out += '- Weekly reviews for 6 weeks, then adjust.\n';
+      else if(frequency==='Biweekly') out += '- Biweekly reviews for 8–12 weeks.\n';
+      else if(frequency==='Monthly') out += '- Monthly sessions with a mid-cycle check-in by message.\n';
+      else out += '- One focused session; consider a 2–4 week brief check-in.\n';
+      out += '\nBring to your session: medication/supplement list, recent labs, a short day log (3 days).\n';
+      out += '\nPrepared by {{BUSINESS_NAME}} planner.';
+      return out;
+    }
+
+    generatePlan.addEventListener('click',()=>{planOutput.value = composePlan();});
+    copyPlan.addEventListener('click',()=>{navigator.clipboard.writeText(planOutput.value||'').then(()=>{copyPlan.textContent='Copied';setTimeout(()=>copyPlan.textContent='Copy summary',900);});});
+    downloadPlan.addEventListener('click',()=>{const blob=new Blob([planOutput.value],{type:'text/plain'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='plan-{{BUSINESS_NAME}}.txt';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);});
+    clearPlan.addEventListener('click',()=>{document.getElementById('goal').selectedIndex=0;document.getElementById('length').selectedIndex=0;document.getElementById('frequency').selectedIndex=0;document.getElementById('tier').selectedIndex=0;document.getElementById('focusAreas').value='';planOutput.value='';});
+
+    // link to booking with note: attach plan text as query (limited size)
+    bookFromPlan.addEventListener('click',(e)=>{
+      const note = encodeURIComponent(planOutput.value||'');
+      bookFromPlan.href = 'book.html?note='+note;
+    });
+  </script>
+</body>
+</html>

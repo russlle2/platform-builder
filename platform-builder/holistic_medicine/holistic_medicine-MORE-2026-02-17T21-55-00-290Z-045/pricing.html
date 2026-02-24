@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Rates — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Practical integrative plans, transparent pricing and flexible pathways to steadier health.">
+  <style>
+    :root{--bg:#f4efe8;--card:#ffffff;--accent:#8b5e3c;--muted:#7a6a60;--accent-2:#c08b5a;--shadow:0 6px 18px rgba(38,30,22,0.08);font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+    html,body{height:100%}
+    body{margin:0;background-color:var(--bg);color:#332a24;line-height:1.45}
+    .page{max-width:1100px;margin:36px auto;padding:28px}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{width:56px;height:56px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;color:#fff;font-weight:700}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none;font-weight:600}
+    nav a.active{color:var(--accent)}
+    .hero{display:flex;gap:28px;align-items:center;background:linear-gradient(180deg,rgba(255,255,255,0.6),transparent);padding:22px;border-radius:12px;box-shadow:var(--shadow);background-image:url('assets/img/pattern.svg');background-repeat:repeat}
+    .hero h1{margin:0;font-size:22px}
+    .hero p{margin:6px 0 0;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:20px}
+    .card{background:var(--card);padding:18px;border-radius:10px;box-shadow:var(--shadow);border:1px solid rgba(50,38,30,0.04)}
+    .card h3{margin:0 0 8px}
+    .price{font-size:20px;color:var(--accent);font-weight:700}
+    .muted{color:var(--muted);font-size:14px}
+    .cta{display:inline-block;margin-top:12px;background:var(--accent);color:#fff;padding:10px 14px;border-radius:8px;text-decoration:none}
+    .note{font-size:13px;color:var(--muted);margin-top:12px}
+    footer{margin-top:30px;padding-top:12px;border-top:1px dashed rgba(50,38,30,0.06);display:flex;justify-content:space-between;align-items:center}
+
+    /* reveal */
+    .reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none;opacity:1;transform:none}}
+
+    .small-list{font-size:14px;margin-top:8px}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="brand">
+        <div class="logo">HS</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav aria-label="Primary navigation">
+        <a href="index.html">Start</a>
+        <a href="services.html">Offerings</a>
+        <a href="conditions.html">Challenges</a>
+        <a href="approach.html">Philosophy</a>
+        <a href="pricing.html" class="active">Rates</a>
+        <a href="about.html">Team</a>
+        <a href="book.html">Reserve</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </header>
+
+    <section class="hero reveal" data-reveal>
+      <div>
+        <h1>Transparent pathways, not one-size fits all pricing</h1>
+        <p>Options framed around your time, depth of support, and follow-through needs. Not a checklist—an aligned pathway.</p>
+      </div>
+      <div style="margin-left:auto;text-align:right">
+        <div class="muted">Want help choosing?</div>
+        <a class="cta" href="book.html">Reserve a planning session</a>
+      </div>
+    </section>
+
+    <main>
+      <section class="grid" aria-label="Packages">
+        <article class="card reveal" data-reveal>
+          <h3>Integrated Reset Day</h3>
+          <div class="price">Starting at $1,400</div>
+          <div class="muted">A concentrated VIP day to reset systems and establish an actionable plan.</div>
+          <ul class="small-list">
+            <li>Full diagnostic intake</li>
+            <li>Two focused clinical sessions + targeted integrative plan</li>
+            <li>Beginner-friendly home protocols</li>
+          </ul>
+          <div class="note">Ideal for people wanting a single intensive step to shift momentum.</div>
+          <a class="cta" href="book.html#planner">Reserve a Reset</a>
+        </article>
+
+        <article class="card reveal" data-reveal>
+          <h3>Nurture Series — 3 sessions</h3>
+          <div class="price">$840 (series rate)</div>
+          <div class="muted">Short-term pathway to establish routines and measure response.</div>
+          <ul class="small-list">
+            <li>Initial assessment + two follow-ups</li>
+            <li>Refined protocols and measurable goals</li>
+          </ul>
+          <div class="note">Recommended for people who want a focused start with built-in adjustment.</div>
+          <a class="cta" href="book.html#planner">Start the Series</a>
+        </article>
+
+        <article class="card reveal" data-reveal>
+          <h3>Continuity Care — monthly</h3>
+          <div class="price">From $220 / month</div>
+          <div class="muted">Ongoing support for maintenance, coaching, and timely adjustments.</div>
+          <ul class="small-list">
+            <li>Monthly check-ins, rapid messaging, plan evolution</li>
+            <li>Discounts on labs and modalities</li>
+          </ul>
+          <div class="note">For people who value steady traction and adaptive support.</div>
+          <a class="cta" href="book.html#planner">Join Continuity</a>
+        </article>
+      </section>
+
+      <section class="card reveal" data-reveal style="margin-top:18px">
+        <h3>Custom arrangements</h3>
+        <p class="muted">If your needs fall outside these frames, we craft a tailored engagement. Pricing is always clarified before commitment.</p>
+        <p class="note">Insurance: we provide superbills where appropriate but do not file claims directly. No guarantees implied; plans are educational and supportive.</p>
+        <a class="cta" href="contact.html">Request a custom quote</a>
+      </section>
+
+    </main>
+
+    <footer>
+      <div class="muted">Questions? Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      <div style="font-size:13px;color:var(--muted)">Serving {{CITY}}, {{STATE}}</div>
+    </footer>
+  </div>
+
+  <script>
+    (function(){
+      const prefersReduced = matchMedia('(prefers-reduced-motion:reduce)').matches;
+      if(prefersReduced){
+        document.querySelectorAll('[data-reveal]').forEach(el=>el.classList.add('visible'));
+        return;
+      }
+      const observer = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)}}),{threshold:0.12}
+      );
+      document.querySelectorAll('[data-reveal]').forEach(el=>observer.observe(el));
+    })();
+  </script>
+</body>
+</html>

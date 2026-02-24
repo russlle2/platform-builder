@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#06121a;--panel:#071820;--muted:#9fb0b7;--accent:#9ad5d0;--accent2:#b6a8ff}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:radial-gradient(1200px 800px at 10% 10%,rgba(154,213,208,0.08),transparent),linear-gradient(180deg,#021018,#051323);color:#eaf8f6}
+    .container{max-width:1000px;margin:36px auto;padding:28px;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);box-shadow:0 20px 60px rgba(0,0,0,0.6);position:relative}
+    header{display:flex;align-items:center;justify-content:space-between}
+    .nav a{color:#cfeff4;text-decoration:none;margin-left:16px}
+    h1{margin:8px 0 6px 0;font-size:26px}
+    .lead{color:var(--muted);margin-bottom:12px}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:20px;margin-top:18px}
+    .panel{background:linear-gradient(180deg,var(--panel),transparent);padding:16px;border-radius:10px}
+    .bio p{color:var(--muted)}
+    .chip{background:rgba(255,255,255,0.02);padding:8px 10px;border-radius:8px;display:inline-block;margin-right:8px;margin-top:8px}
+    .micro{margin-top:12px;color:var(--muted)}
+    .pattern{position:absolute;left:-80px;bottom:-80px;opacity:0.08}
+    @media(max-width:880px){.grid{grid-template-columns:1fr}.container{margin:14px;padding:16px}}
+  </style>
+</head>
+<body>
+  <div class='container'>
+    <svg class='pattern' width='360' height='360' viewBox='0 0 360 360' fill='none' xmlns='http://www.w3.org/2000/svg'>
+      <defs>
+        <linearGradient id='lg' x1='0' x2='1'><stop offset='0' stop-color='#9ad5d0'/><stop offset='1' stop-color='#b6a8ff'/></linearGradient>
+      </defs>
+      <g opacity='0.95'>
+        <rect x='20' y='20' width='220' height='220' rx='40' fill='url(#lg)' opacity='0.18'/>
+        <circle cx='260' cy='260' r='80' fill='url(#lg)' opacity='0.12'/>
+      </g>
+    </svg>
+
+    <header>
+      <div>
+        <div style='font-weight:700;font-size:16px'>{{BUSINESS_NAME}}</div>
+        <div class='lead'>A home for integrative, evidence-informed care in {{CITY}}, {{STATE}}</div>
+      </div>
+      <nav class='nav'>
+        <a href='index.html'>Home</a>
+        <a href='services.html'>Offerings</a>
+        <a href='pricing.html'>Rates</a>
+        <a href='book.html'>Reserve</a>
+      </nav>
+    </header>
+
+    <h1>Weaving science and lived experience</h1>
+    <div class='grid'>
+      <main>
+        <section class='panel bio'>
+          <h2 style='margin-top:0'>Hello—I'm {{PRACTITIONER_NAME}}, {{CREDENTIALS}}</h2>
+          <p>I trained in conventional and integrative settings and now focus on whole-person care that honors physiology, lifestyle, and story. My work centers on helping people build resilience and practical routines that support long-term wellbeing.</p>
+          <p class='micro'><strong>Philosophy:</strong> I do not promise cures; instead I partner with you to reduce risk, clarify contributors to symptoms, and co-design sustainable plans that respect your context.</p>
+
+          <h3 style='margin-top:14px'>Education & training</h3>
+          <p class='muted'>Board certifications, licensure, and continuing training across nutrition, herbal medicine, and behavior change inform a measured, evidence-aware approach.</p>
+
+          <h3 style='margin-top:12px'>Clinical focus</h3>
+          <div class='chip'>Stress + nervous system support</div><div class='chip'>Sleep & circadian health</div><div class='chip'>Gut resilience</div>
+
+          <h3 style='margin-top:12px'>Not medical advice</h3>
+          <p class='muted'>This site provides educational information. Individual assessment is necessary; please consult with your provider about medications, chronic conditions, or acute symptoms.</p>
+        </section>
+      </main>
+
+      <aside>
+        <div class='panel'>
+          <h4 style='margin:0 0 8px 0'>Quick facts</h4>
+          <div class='muted'>Serving {{CITY}}, {{STATE}} — telehealth available across state lines per licensing.</div>
+          <div style='margin-top:10px'><strong>Contact</strong><div class='muted'>{{PHONE}} • {{EMAIL}}</div></div>
+
+          <div style='margin-top:12px'>
+            <h4 style='margin:0 0 6px 0'>Approach snapshot</h4>
+            <div class='muted'>Intake → collaborative plan → short-term lab options → follow-ups. Focus on small habits, environmental changes, and clear metrics.</div>
+          </div>
+
+          <div style='margin-top:12px'>
+            <a style='display:inline-block;background:linear-gradient(90deg,#b6a8ff,#9ad5d0);padding:10px 12px;border-radius:10px;color:#041018;font-weight:700;text-decoration:none' href='{{PRIMARY_CTA_URL}}'>Book a time</a>
+          </div>
+        </div>
+
+        <div class='panel' style='margin-top:12px'>
+          <h4 style='margin:0 0 8px 0'>Micro practices I recommend</h4>
+          <ul style='padding-left:18px;color:var(--muted);margin:0'>
+            <li>Daily 3-minute grounding practice on waking</li>
+            <li>Two tech-free meals per day for improved digestion</li>
+            <li>Weekly reflection on one small win</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+
+    <footer style='margin-top:18px;display:flex;justify-content:space-between;align-items:center'>
+      <div class='muted'>I practice with an emphasis on safety and collaboration. I do not offer guaranteed cures—care is individualized.</div>
+      <div><a href='book.html' style='background:linear-gradient(90deg,#9ad5d0,#b6a8ff);padding:10px 12px;border-radius:10px;color:#041018;font-weight:700;text-decoration:none'>Schedule a visit</a></div>
+    </footer>
+  </div>
+</body>
+</html>

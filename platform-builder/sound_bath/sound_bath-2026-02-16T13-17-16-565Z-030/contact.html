@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reach {{BUSINESS_NAME}} — sensory sound baths, private sessions, and events in {{CITY}}, {{STATE}}.">
+  <style>
+    :root{
+      --bg1: #0f1720; /* deep slate */
+      --bg2: #071023; /* midnight teal */
+      --accent: #d6f6ef; /* soft mint */
+      --muted: rgba(214,246,239,0.12);
+      --glass: rgba(255,255,255,0.04);
+      --radius: 14px;
+      --maxw: 920px;
+      color: var(--accent);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg1),var(--bg2));}
+    .page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:48px 20px;}
+    .card{width:100%;max-width:var(--maxw);background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:var(--radius);box-shadow:0 10px 40px rgba(2,6,23,0.6);position:relative;overflow:hidden;padding:48px}
+    /* subtle frosted band */
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:28px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .brand h1{font-size:16px;margin:0;letter-spacing:0.08em;font-weight:600}
+    .brand p{margin:0;font-size:12px;opacity:0.9}
+    nav a{color:var(--accent);opacity:0.85;text-decoration:none;padding:8px 10px;border-radius:8px;font-size:13px}
+    nav a:hover{background:var(--muted)}
+    /* layout */
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:32px}
+    .hero{padding:6px 6px 18px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));}
+    .hero h2{margin:0 0 8px;font-size:22px}
+    .meta{color:rgba(214,246,239,0.75);font-size:14px;margin-bottom:12px}
+    .lead{color:rgba(214,246,239,0.9);line-height:1.6;margin-bottom:18px;font-size:15px}
+    .panel{background:rgba(255,255,255,0.02);padding:18px;border-radius:12px}
+    .label{font-size:13px;color:rgba(214,246,239,0.85);margin-bottom:8px}
+    .contact-list{display:flex;flex-direction:column;gap:12px}
+    .item{display:flex;flex-direction:column}
+    .small{font-size:13px;color:rgba(214,246,239,0.72)}
+    .cta{display:inline-block;background:linear-gradient(90deg,#8be6d3,#69d4c3);color:#042029;padding:10px 16px;border-radius:12px;text-decoration:none;font-weight:600}
+    form{display:flex;flex-direction:column;gap:10px}
+    input[type=text],input[type=email],textarea{background:transparent;border:1px solid rgba(214,246,239,0.08);padding:12px;border-radius:10px;color:var(--accent);outline:none}
+    textarea{min-height:120px;resize:vertical}
+    .muted-note{font-size:12px;color:rgba(214,246,239,0.6)}
+    .footer-cta{display:flex;gap:12px;align-items:center;margin-top:18px}
+    /* background svg container */
+    .pattern-wrap{position:absolute;inset:0;pointer-events:none;opacity:0.14;mix-blend-mode:screen}
+    /* responsive */
+    @media(max-width:880px){.grid{grid-template-columns:1fr;}.card{padding:28px}}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="card" role="main">
+      <div class="pattern-wrap" aria-hidden="true">
+        <!-- unique inline SVG pattern (handcrafted per page) -->
+        <svg width="100%" height="100%" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="g1" x1="0" x2="1">
+              <stop offset="0%" stop-color="#7ee8d1" stop-opacity="0.09" />
+              <stop offset="100%" stop-color="#5fe1c0" stop-opacity="0.03" />
+            </linearGradient>
+            <pattern id="p1" width="80" height="80" patternUnits="userSpaceOnUse" patternTransform="rotate(15)">
+              <circle cx="10" cy="10" r="2.6" fill="#bff3e9" opacity="0.8"></circle>
+              <circle cx="40" cy="40" r="1.6" fill="#9beada" opacity="0.6"></circle>
+              <rect x="0" y="64" width="80" height="16" fill="url(#g1)" opacity="0.08"></rect>
+            </pattern>
+            <filter id="blur" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="28" result="b" />
+              <feBlend in="SourceGraphic" in2="b" mode="screen" />
+            </filter>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#p1)" filter="url(#blur)" />
+          <g transform="translate(80,40) rotate(-8)" opacity="0.6">
+            <ellipse cx="260" cy="160" rx="240" ry="80" fill="#0ea8a1" opacity="0.06" />
+            <ellipse cx="500" cy="420" rx="220" ry="90" fill="#71e6d2" opacity="0.04" />
+          </g>
+        </svg>
+      </div>
+
+      <div class="topbar">
+        <div class="brand">
+          <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="22" cy="22" r="20" stroke="rgba(214,246,239,0.14)" stroke-width="2" />
+            <path d="M11 27c5-6 10-10 18-12" stroke="#9beada" stroke-width="1.8" stroke-linecap="round" />
+          </svg>
+          <div>
+            <h1>{{BUSINESS_NAME}}</h1>
+            <p>{{TAGLINE}}</p>
+          </div>
+        </div>
+        <nav aria-label="primary navigation">
+          <a href="index.html">Home</a>
+          <a href="events.html">Upcoming</a>
+          <a href="book.html">Reserve</a>
+          <a href="contact.html">Connect</a>
+        </nav>
+      </div>
+
+      <div class="grid">
+        <section class="hero">
+          <div class="meta">Contact & Inquiries — sensory sound experiences</div>
+          <h2>Reach us softly — a note from {{FACILITATOR_NAME}}</h2>
+          <p class="lead">If you have questions about sound baths, private sessions, corporate offerings, or accessibility at {{VENUE_NAME}} in {{CITY}}, write to us. We answer with care and brief, clear guidance so you can come prepared and feeling safe.</p>
+
+          <div style="display:flex;gap:14px;margin-top:12px;flex-wrap:wrap">
+            <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            <a class="muted-note" href="book.html">Reserve a private session</a>
+          </div>
+
+          <div style="display:flex;gap:14px;margin-top:18px;flex-wrap:wrap">
+            <div class="panel" style="flex:1;min-width:180px">
+              <div class="label">Phone</div>
+              <div class="small">{{PHONE}}</div>
+            </div>
+            <div class="panel" style="min-width:180px">
+              <div class="label">Email</div>
+              <div class="small">{{EMAIL}}</div>
+            </div>
+          </div>
+
+          <div style="margin-top:18px" class="muted-note">Next group sound bath: <strong>{{NEXT_EVENT_DATE}}</strong> at {{VENUE_NAME}}, {{CITY}}.</div>
+        </section>
+
+        <aside>
+          <div class="panel">
+            <div class="label">Send us a note</div>
+            <form method="post" action="/contact/submit" aria-label="Contact form">
+              <input type="text" name="name" placeholder="Your name" required aria-required="true">
+              <input type="email" name="email" placeholder="Email address" required>
+              <input type="text" name="subject" placeholder="Subject (e.g. private session, event question)">
+              <textarea name="message" placeholder="Brief message — availability, questions, or venue accessibility notes"></textarea>
+              <div style="display:flex;gap:10px;align-items:center;justify-content:space-between">
+                <div class="muted-note">Preferred response within 48 hours.</div>
+                <button type="submit" class="cta">Send</button>
+              </div>
+            </form>
+
+            <div style="margin-top:14px">
+              <div class="label">What to bring</div>
+              <div class="small">A yoga mat or blanket, a pillow for your neck, water, and an open curiosity. We provide bolsters & blankets on request.</div>
+            </div>
+
+            <div style="margin-top:14px">
+              <div class="label">Contraindications & Notes</div>
+              <div class="small">Sound baths are gentle but immersive. If you are pregnant, have a pacemaker, recent concussion, epilepsy, or are under specific medication with sound sensitivity, please consult your physician before attending and notify us in the form. Private sessions can be adapted — ask about 1:1 or couples offerings.</div>
+            </div>
+          </div>
+
+          <div style="margin-top:16px;" class="panel">
+            <div class="label">Quick schedule</div>
+            <div class="contact-list">
+              <div class="item"><strong>Group Sound Bath</strong><span class="small">— monthly meditative sessions; next: {{NEXT_EVENT_DATE}}</span></div>
+              <div class="item"><strong>Private 1:1</strong><span class="small">— bespoke sessions for relaxation, healing, or performance support</span></div>
+              <div class="item"><strong>Corporate & Workshops</strong><span class="small">— team resets, breathwork + sound, multi-room experiences</span></div>
+              <div class="item"><strong>Venue</strong><span class="small">{{VENUE_NAME}} — intimate, accessible studio in {{CITY}}, {{STATE}}</span></div>
+            </div>
+
+            <div class="footer-cta">
+              <a class="cta" href="book.html">Book a session</a>
+              <a class="muted-note" href="faq.html">Frequently asked</a>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <section style="margin-top:20px" class="hero">
+        <h3 style="margin:0 0 8px">A brief note on flow</h3>
+        <p class="lead" style="margin:0">Sessions begin with a soft centering — guided breath, gentle voice, and attunement. Instruments arrive in layers: a monochord or crystal bowls to open space, chimes for shimmer, and a gong or lower tone to settle. We close slowly, returning to silence. Expect a guided entry and a quiet reorientation at the end.</p>
+      </section>
+
+      <section style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+        <div class="small">Prefer a direct conversation? Call us at <strong>{{PHONE}}</strong> or email <strong>{{EMAIL}}</strong>.</div>
+        <div style="flex:1"></div>
+        <a href="private-sessions.html" class="muted-note">Private offerings (1:1 • Couples • Corporate)</a>
+      </section>
+
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Schedule — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f4efe8;--muted:#6b5d4f;--accent:#8a5a3c;--card:#fff}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;margin:0;background:var(--bg);color:var(--muted)}
+    header{display:flex;justify-content:space-between;padding:16px 22px;align-items:center}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(180deg,#b08968,#8a5a3c);color:#fff;display:flex;align-items:center;justify-content:center}
+    nav a{margin-left:12px;text-decoration:none;color:var(--muted)}
+    main{max-width:820px;margin:18px auto;padding:18px}
+    .card{background:var(--card);padding:16px;border-radius:12px;border:1px solid rgba(138,90,60,0.04)}
+    label{display:block;font-size:13px;margin-bottom:6px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e8e0d6;background:transparent}
+    .cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .btn{padding:10px 12px;border-radius:10px;border:0;background:var(--accent);color:#fff;cursor:pointer}
+    .secondary{background:transparent;border:1px solid rgba(138,90,60,0.08);color:var(--muted)}
+    .small{font-size:13px;color:#6f6253}
+    .intake{margin-top:14px}
+    .summary{white-space:pre-wrap;background:#fbf8f4;padding:12px;border-radius:8px;font-family:monospace;border:1px dashed rgba(138,90,60,0.05)}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo">TP</div>
+      <div style="font-weight:600">{{BUSINESS_NAME}}</div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="approach.html">Method</a>
+      <a href="fees.html">Investment</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+  <main>
+    <section class="card">
+      <h2 style="margin-top:0;color:var(--accent)">Request an appointment</h2>
+      <p class="small">Complete the form below and I will follow up to confirm timing. This is not an emergency contact.</p>
+
+      <form id="bookingForm" onsubmit="return false;">
+        <div class="cols">
+          <div>
+            <label for="name">Your name</label>
+            <input id="name" name="name" required>
+          </div>
+          <div>
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required>
+          </div>
+        </div>
+
+        <div style="margin-top:10px">
+          <label for="phone">Phone (optional)</label>
+          <input id="phone" name="phone" placeholder="{{PHONE}}">
+        </div>
+
+        <div style="margin-top:10px">
+          <label for="service">Type of session</label>
+          <select id="service" name="service">
+            <option>Initial consultation (50 min)</option>
+            <option>Regular session (45–50 min)</option>
+            <option>Brief check-in (20 min)</option>
+          </select>
+        </div>
+
+        <div style="margin-top:10px">
+          <label for="when">Preferred days/times</label>
+          <input id="when" name="when" placeholder="e.g., Tuesdays after 5pm">
+        </div>
+
+        <div style="margin-top:12px">
+          <label>Notes or questions for intake</label>
+          <textarea id="bookingNotes" rows="4" placeholder="Anything important: accessibility, concerns, what you'd like from therapy"></textarea>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
+          <div class="small">By submitting, you agree to be contacted to schedule. I will discuss confidentiality and limits at intake.</div>
+          <div style="display:flex;gap:8px">
+            <button class="btn" id="submitBtn">Send request</button>
+            <button class="btn secondary" id="fillWizard" type="button">Use intake helper</button>
+          </div>
+        </div>
+      </form>
+
+      <div class="intake">
+        <strong style="color:var(--accent)">Intake helper</strong>
+        <p class="small">A short self-check that produces a text you can paste into the notes above or copy to share at our first meeting.</p>
+
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <input id="mood" placeholder="Briefly: what's the main concern?">
+          <select id="priority">
+            <option>Stabilize day-to-day</option>
+            <option>Work on a specific problem</option>
+            <option>Longer-term therapy</option>
+          </select>
+        </div>
+
+        <div style="display:flex;gap:8px">
+          <button class="btn" id="makeSummary">Make summary</button>
+          <button class="btn secondary" id="copySummary">Copy</button>
+        </div>
+
+        <div style="margin-top:10px">
+          <label>Summary</label>
+          <div id="summary" class="summary">Use the helper to craft a short summary for intake.</div>
+        </div>
+      </div>
+
+    </section>
+
+    <section style="margin-top:14px" class="card">
+      <h4 style="margin:0;color:var(--accent)">After you request</h4>
+      <p class="small">I will reply by email within a few business days to confirm availability and offer next steps. If you need immediate support, please contact local emergency services or a crisis line.</p>
+    </section>
+  </main>
+
+  <footer style="max-width:820px;margin:12px auto;padding:12px;color:#6f6253;font-size:13px">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>Confidentiality: sessions are private with legally defined limits. We will review specifics before we begin.</div>
+      <div>Contact: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </div>
+  </footer>
+
+  <script>
+    // Booking form simulation
+    (function(){
+      const submitBtn = document.getElementById('submitBtn');
+      const form = document.getElementById('bookingForm');
+      submitBtn.addEventListener('click',()=>{
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        if(!name || !email){ alert('Please provide name and email.'); return; }
+        submitBtn.textContent='Sent';
+        setTimeout(()=>submitBtn.textContent='Send request',2000);
+        alert('Request noted. I will be in touch to confirm a time.');
+        form.reset();
+      });
+
+      // Intake helper
+      const makeSummary = document.getElementById('makeSummary');
+      const copySummary = document.getElementById('copySummary');
+      const summary = document.getElementById('summary');
+      const fillWizard = document.getElementById('fillWizard');
+
+      makeSummary.addEventListener('click',()=>{
+        const mood = document.getElementById('mood').value.trim() || 'Not specified';
+        const priority = document.getElementById('priority').value;
+        const s = [];
+        s.push('Presenting: '+mood);
+        s.push('Priority: '+priority);
+        s.push('Availability: '+(document.getElementById('when') ? document.getElementById('when').value.trim() || 'Not listed' : 'Not listed'));
+        s.push('Brief supports: '+(document.getElementById('phone').value.trim() || 'None listed'));
+        s.push('\nPrepared to discuss goals and next steps with {{BUSINESS_NAME}}.');
+        summary.textContent = s.join('\n');
+      });
+
+      copySummary.addEventListener('click',async ()=>{
+        try{ await navigator.clipboard.writeText(summary.textContent); copySummary.textContent='Copied'; setTimeout(()=>copySummary.textContent='Copy',1200);}catch(e){alert('Copy failed.');}
+      });
+
+      fillWizard.addEventListener('click',()=>{
+        // open a small intake dialog simulated by prompting
+        const concise = prompt('If you like, paste a one-line summary for notes:');
+        if(concise !== null){ document.getElementById('bookingNotes').value = concise; }
+      });
+    })();
+  </script>
+</body>
+</html>

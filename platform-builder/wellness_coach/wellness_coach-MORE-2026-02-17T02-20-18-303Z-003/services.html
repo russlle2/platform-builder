@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <meta name='description' content='A menu of coaching offerings for sustainable change.'>
+  <style>
+    :root{--bg:#fff;--ink:#1b1b1b;--muted:#666;--accent:#2f8b6b}
+    body{font-family:system-ui,Segoe UI,Roboto,Arial; margin:0;background:linear-gradient(#fff,#f6fff4)}
+    header{padding:18px 20px;border-bottom:1px solid #eee}
+    .nav{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:12px;text-decoration:none;color:var(--ink)}
+    main{max-width:1100px;margin:28px auto;padding:0 20px}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:20px}
+    .list{display:grid;gap:14px}
+    .card{background:#fff;padding:18px;border-radius:12px;box-shadow:0 8px 20px rgba(9,9,9,0.04)}
+    h1{margin:0 0 6px}
+    .muted{color:var(--muted)}
+    .price{font-size:18px;font-weight:700;color:var(--accent)}
+    .pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#f0fff2;color:var(--accent);font-weight:600}
+    .cta{margin-top:12px}
+    footer{max-width:1100px;margin:28px auto;padding:18px 20px;color:var(--muted)}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}.nav{flex-direction:column;align-items:flex-start}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class='nav'>
+      <div style='font-weight:700'>{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href='index.html'>Home</a>
+        <a href='programs.html'>Journeys</a>
+        <a href='services.html'>Offerings</a>
+        <a href='about.html'>About</a>
+        <a href='pricing.html'>Pricing</a>
+        <a href='contact.html'>Connect</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class='grid'>
+      <div>
+        <div class='card'>
+          <h1>Offerings</h1>
+          <p class='muted'>A small suite of focused formats. Each one pairs an outcome, a practice loop, and clarity on habit-building.</p>
+        </div>
+
+        <div class='list'>
+          <div class='card'>
+            <div style='display:flex;justify-content:space-between;align-items:center'>
+              <div>
+                <div style='font-weight:700'>Focus Sessions</div>
+                <div class='muted small'>Single sessions for a specific challenge or reset.</div>
+              </div>
+              <div class='price'>$95</div>
+            </div>
+            <div class='cta'><button onclick="location.href='book.html'">Reserve a Focus Session</button></div>
+          </div>
+
+          <div class='card'>
+            <div style='display:flex;justify-content:space-between;align-items:center'>
+              <div>
+                <div style='font-weight:700'>Rhythm Series</div>
+                <div class='muted small'>A 6-week guided sequence: small habits, weekly reflection, clear outcomes.</div>
+              </div>
+              <div class='price'>$720</div>
+            </div>
+            <div class='pill' style='margin-top:10px'>Hybrid coaching + resources</div>
+            <div class='cta'><button onclick="location.href='programs.html'">Explore the Series</button></div>
+          </div>
+
+          <div class='card'>
+            <div style='display:flex;justify-content:space-between;align-items:center'>
+              <div>
+                <div style='font-weight:700'>Guided Foundations</div>
+                <div class='muted small'>Three 60-minute sessions plus habit design and check-ins.</div>
+              </div>
+              <div class='price'>$380</div>
+            </div>
+            <div class='cta'><button onclick="location.href='book.html'">Get started</button></div>
+          </div>
+
+        </div>
+      </div>
+
+      <aside>
+        <div class='card'>
+          <h3>Quick Planner</h3>
+          <p class='muted small'>A micro-interaction to draft a session you can try this week. Build and copy to clipboard.</p>
+          <form id='sp-mini' onsubmit='return false;'>
+            <label class='muted small'>Goal</label>
+            <input id='mini-goal' type='text' placeholder='One-line goal'>
+            <label class='muted small'>Time</label>
+            <select id='mini-time'>
+              <option>20 minutes</option>
+              <option selected>40 minutes</option>
+            </select>
+            <div style='margin-top:8px;display:flex;gap:8px'>
+              <button id='mini-build'>Build</button>
+              <button id='mini-copy' class='ghost' type='button'>Copy</button>
+            </div>
+            <pre id='mini-out' class='muted' style='margin-top:10px;background:#fbfbfb;padding:10px;border-radius:8px'>Plan appears here</pre>
+          </form>
+        </div>
+
+        <div class='card' style='margin-top:14px'>
+          <h3>7-Day Challenge</h3>
+          <p class='muted small'>Pick a habit, get a compact checklist you can print.</p>
+          <form id='hb-mini' onsubmit='return false;'>
+            <input id='hbmini-habit' type='text' placeholder='Habit name' value='Evening wind-down'>
+            <div style='margin-top:8px;display:flex;gap:8px'>
+              <button id='hbmini-gen'>Create</button>
+              <button id='hbmini-print' class='ghost' type='button'>Print</button>
+            </div>
+          </form>
+          <div id='hbmini-out' style='margin-top:10px;color:var(--muted)'>No checklist yet.</div>
+        </div>
+
+      </aside>
+    </section>
+
+    <section style='margin-top:18px'>
+      <div class='card'>
+        <h3>How sessions differ</h3>
+        <p class='muted small'>Each offering is framed around an outcome and a simple behavioral loop: cue — practice — reflection. We keep measurable anchors so small wins stack.</p>
+        <div style='margin-top:10px'><button onclick="location.href='contact.html'">Ask a question</button></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div style='max-width:1100px;margin:0 auto;padding:18px 20px;color:var(--muted)'>Contact: <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a> • Call <strong>{{PHONE}}</strong></div>
+  </footer>
+
+  <script>
+    // Mini session builder
+    (function(){
+      var build = document.getElementById('mini-build');
+      var copyBtn = document.getElementById('mini-copy');
+      var out = document.getElementById('mini-out');
+      function make(){
+        var goal = document.getElementById('mini-goal').value.trim() || 'Reset and focus';
+        var time = document.getElementById('mini-time').value;
+        var txt = 'Session Plan:\nGoal: ' + goal + '\nDuration: ' + time + '\nStructure: 1) 5 min check-in 2) 20 min focused practice 3) 5 min reflection and one habit to try';
+        out.textContent = txt; return txt;
+      }
+      build.addEventListener('click', function(e){ e.preventDefault(); make(); });
+      copyBtn.addEventListener('click', function(){ var t = out.textContent || make(); if(navigator.clipboard) navigator.clipboard.writeText(t); });
+    })();
+
+    // Mini habit generator
+    (function(){
+      var gen = document.getElementById('hbmini-gen');
+      var printBtn = document.getElementById('hbmini-print');
+      var out = document.getElementById('hbmini-out');
+      gen.addEventListener('click', function(e){ e.preventDefault(); var habit = document.getElementById('hbmini-habit').value.trim() || 'New practice'; var html = '<strong>7-day:</strong> ' + habit + '<br/>' + Array.from({length:7},function(_,i){return 'Day '+(i+1)}).join(', '); out.innerHTML = html; });
+      printBtn.addEventListener('click', function(){ var w = window.open('','_blank'); w.document.write('<html><body>'+ (out.innerHTML || 'No checklist') +'</body></html>'); w.document.close(); w.print(); });
+    })();
+  </script>
+</body>
+</html>

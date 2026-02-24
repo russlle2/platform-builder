@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#07121a;--card:#071722;--accent:#bfeee1;--muted:#9fb5b2}
+    body{margin:0;font-family:Inter, system-ui,-apple-system, 'Segoe UI', Roboto, Arial;color:var(--accent);background:radial-gradient(circle at 10% 15%, #0b2d28 0%, #031216 40%, #01070b 100%);-webkit-font-smoothing:antialiased}
+    header{display:flex;align-items:center;justify-content:space-between;padding:16px 24px}
+    .logo{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,#143f3c,#2a6a61);display:flex;align-items:center;justify-content:center;font-weight:800;color:#011514}
+    nav a{color:rgba(191,238,225,0.9);margin-left:16px;text-decoration:none}
+    .wrap{max-width:1000px;margin:28px auto;padding:20px}
+    .intro{display:flex;gap:22px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.03),transparent);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+    h1{margin:0 0 8px}
+    p.lead{color:var(--muted);margin:0 0 12px}
+
+    /* myth vs truth */
+    .myths{display:flex;flex-direction:column;gap:12px;margin-top:14px}
+    .myth{display:flex;gap:12px;padding:12px;border-radius:10px;background:linear-gradient(90deg,rgba(255,255,255,0.02),transparent)}
+    .myth .tag{background:#072726;color:var(--accent);padding:6px 8px;border-radius:8px;font-size:12px}
+    .truth{color:#dff6f1}
+
+    /* pillars */
+    .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+    .pillar{padding:12px;border-radius:10px;background:rgba(255,255,255,0.02)}
+    .pillar h3{margin:0 0 6px;font-size:16px}
+    .pill-d{color:var(--muted);font-size:13px}
+
+    /* proof gallery compact */
+    .proof{margin-top:16px}
+    .proof-list{display:flex;gap:10px}
+    .proof-item{background:#071d20;padding:10px;border-radius:8px;width:32%;min-width:150px}
+    .proof-item .who{color:var(--muted);font-size:13px}
+
+    footer{margin-top:18px;padding:14px;border-radius:12px;background:linear-gradient(90deg,rgba(0,0,0,0.15),transparent);display:flex;justify-content:space-between;align-items:center}
+    .btn{background:var(--accent);color:#032425;padding:10px 12px;border-radius:10px;border:0;cursor:pointer}
+
+    @media (max-width:900px){.intro{flex-direction:column}.pillars{grid-template-columns:1fr}} 
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo">A</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Place</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Market</a>
+      <a href="pricing.html">Costing</a>
+      <a href="about.html">About</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="intro">
+      <div class="card" style="flex:1">
+        <h1>About the practice</h1>
+        <p class="lead">At {{BUSINESS_NAME}} we weave botanical clarity with practical ritual. Our work is not prescriptive medicine; it may support comfort, focus, and small habit cues when used thoughtfully and safely.</p>
+
+        <div class="myths">
+          <div class="myth">
+            <div class="tag">Myth</div>
+            <div>
+              <div style="font-weight:700">Aromatherapy is a cure-all</div>
+              <div class="truth">Aromatherapy is supportive, not curative. Our services may support general well-being but do not replace medical care.</div>
+            </div>
+          </div>
+
+          <div class="myth">
+            <div class="tag">Myth</div>
+            <div>
+              <div style="font-weight:700">Stronger always means better</div>
+              <div class="truth">Strength must match purpose. We emphasize proper dilution, patch testing, and safety around pets and pregnancy.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <aside class="card" style="width:320px">
+        <h3>Philosophy</h3>
+        <p class="pill-d">We design scent relationships: small, repeatable supports that fit a life rather than interrupt it. Craft and safety guide every blend.</p>
+
+        <h3 style="margin-top:12px">The practitioner</h3>
+        <p class="pill-d">I bring training in clinical aromatics and years of hands-on blending. Each session includes clear dilution notes and safety suggestions.</p>
+
+        <div style="margin-top:12px">
+          <a href="book.html" class="btn">Book a discovery</a>
+        </div>
+      </aside>
+    </section>
+
+    <section class="pillars">
+      <div class="pillar card">
+        <h3>Safety-first</h3>
+        <div class="pill-d">Patch tests, dilution charts, and explicit notes for pregnancy and pets are included in every plan.</div>
+      </div>
+      <div class="pillar card">
+        <h3>Evidence-minded</h3>
+        <div class="pill-d">We work with established safety practices; we avoid medical claims and focus on gentle, reproducible practice.</div>
+      </div>
+      <div class="pillar card">
+        <h3>Practical design</h3>
+        <div class="pill-d">Blends are simple, repeatable, and built to fit daily routines rather than demand them.</div>
+      </div>
+    </section>
+
+    <section class="proof">
+      <h3 style="margin:0 0 8px">What people say</h3>
+      <div class="proof-list">
+        <div class="proof-item card"><div style="font-weight:700">Sam</div><div class="who">"Clear guidance and follow-through on use."</div></div>
+        <div class="proof-item card"><div style="font-weight:700">Leah</div><div class="who">"Detailed safety notes for our cat and home—much appreciated."</div></div>
+        <div class="proof-item card"><div style="font-weight:700">Omar</div><div class="who">"Practical blends I actually used."</div></div>
+      </div>
+    </section>
+
+    <footer>
+      <div>
+        <div style="font-weight:700">Curious to learn more?</div>
+        <div class="pill-d">Reach out by phone or email for a brief consult about safety and needs.</div>
+      </div>
+      <div>
+        <a href="contact.html" class="btn">Say hello</a>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    // Small proof rotator for variety (compact)
+    (function(){
+      const items = document.querySelectorAll('.proof-item');
+      let i=0;
+      function rotate(){
+        items.forEach((el,idx)=>el.style.opacity = idx===i?1:0.45);
+        i = (i+1) % items.length;
+        setTimeout(rotate,3600);
+      }
+      rotate();
+    })();
+  </script>
+</body>
+</html>

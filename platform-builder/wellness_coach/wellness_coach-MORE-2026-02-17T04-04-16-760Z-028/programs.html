@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Programs · {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f8fffc;--accent:#0e6b57;--muted:#61706a;--card:#ffffff;--max-width:980px}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:#03332d}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px;max-width:var(--max-width);margin:0 auto}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none}
+    main{max-width:var(--max-width);margin:20px auto;padding:0 18px}
+    .list{display:grid;grid-template-columns:1fr;gap:18px}
+    .program{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 8px 28px rgba(4,16,12,0.04);display:flex;justify-content:space-between;gap:12px}
+    .program .meta{max-width:65%}
+    .program h3{margin-top:0}
+    .tag{display:inline-block;background:#effff9;padding:6px 10px;border-radius:999px;color:var(--accent);font-weight:700}
+
+    .reveal{opacity:0;transform:translateY(12px);transition:opacity 420ms ease,transform 420ms ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion: reduce){.reveal{transition:none;opacity:1;transform:none}}
+
+    .price{font-weight:800;color:var(--accent)}
+    .cta-row{display:flex;gap:10px}
+
+    @media (max-width:720px){.program{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="services.html">Offerings</a>
+      <a href="programs.html">Programs</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="reveal" data-delay="0">
+      <h1>Programs and short blends</h1>
+      <p style="color:var(--muted)">Structured pathways for particular outcomes—each built around weekly rhythms and concrete habits.</p>
+    </section>
+
+    <section class="list" style="margin-top:16px">
+      <article class="program reveal" data-delay="120">
+        <div class="meta">
+          <div class="tag">Restart — 4 weeks</div>
+          <h3>Energy Re-mapping</h3>
+          <p style="color:var(--muted)">Reset how you use daily windows of focus and rest. Includes two short coaching touchpoints per week and a habit blueprint.</p>
+        </div>
+        <div style="text-align:right">
+          <div class="price">$99</div>
+          <div class="cta-row" style="margin-top:12px">
+            <a class="btn" href="{{PRIMARY_CTA_URL}}">Enroll</a>
+            <a class="btn" href="book.html">Schedule intro</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="program reveal" data-delay="240">
+        <div class="meta">
+          <div class="tag">Sustain — ongoing</div>
+          <h3>Weekly Stewardship Loop</h3>
+          <p style="color:var(--muted)">A membership track with a weekly template, short reflections, and a rolling set of micro-tasks to keep practice active.</p>
+        </div>
+        <div style="text-align:right">
+          <div class="price">$19 / month (member rate)</div>
+          <div class="cta-row" style="margin-top:12px">
+            <a class="btn" href="{{PRIMARY_CTA_URL}}">Join</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="program reveal" data-delay="360">
+        <div class="meta">
+          <div class="tag">Refine — 2 sessions</div>
+          <h3>Focus Sprint</h3>
+          <p style="color:var(--muted)">Two short sessions for a single target: tidying a morning routine, tightening an evening wind-down, or simplifying meals.</p>
+        </div>
+        <div style="text-align:right">
+          <div class="price">$79</div>
+          <div class="cta-row" style="margin-top:12px">
+            <a class="btn" href="{{PRIMARY_CTA_URL}}">Reserve spot</a>
+            <a class="btn" href="contact.html">Ask a question</a>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="reveal" data-delay="480" style="margin-top:20px;background:#fff;padding:14px;border-radius:10px">
+      <h2 style="margin-top:0">Session Planner — create a baseline</h2>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <input id="pname" type="text" placeholder="Your name" style="padding:8px;border-radius:8px;border:1px solid #e7f3ee">
+        <select id="ptype" style="padding:8px;border-radius:8px;border:1px solid #e7f3ee">
+          <option>Energy Re-mapping</option>
+          <option>Weekly Stewardship Loop</option>
+          <option>Focus Sprint</option>
+        </select>
+        <button id="buildPrograms" class="btn">Create</button>
+      </div>
+      <div id="summaryPrograms" class="summary" style="margin-top:12px;min-height:80px;border:1px dashed #d9efe6;padding:10px">Planner output will appear here.</div>
+      <div style="display:flex;gap:8px;margin-top:8px"><button id="copyPrograms" class="btn">Copy</button><button id="downloadPrograms" class="btn secondary" style="background:#eef7f5;color:var(--accent);border:1px solid #d7efe9">Download</button></div>
+    </section>
+
+  </main>
+
+  <script>
+    // Reveal
+    (function(){
+      const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const nodes = document.querySelectorAll('.reveal');
+      if(reduced){ nodes.forEach(n=>n.classList.add('visible')); return; }
+      const observer = new IntersectionObserver((entries)=>{
+        entries.forEach(en=>{
+          if(en.isIntersecting){ const el = en.target; const d = el.getAttribute('data-delay')||0; setTimeout(()=>el.classList.add('visible'), Number(d)); observer.unobserve(el); }
+        });
+      },{threshold:0.12});
+      nodes.forEach(n=>observer.observe(n));
+    })();
+
+    // Planner for programs
+    (function(){
+      function build(){
+        const name = document.getElementById('pname').value || '';
+        const type = document.getElementById('ptype').value;
+        const lines = [];
+        lines.push('Program planner — ' + new Date().toLocaleDateString());
+        if(name) lines.push('Name: ' + name);
+        lines.push('Chosen program: ' + type);
+        lines.push('\nRecommended first month:');
+        if(type === 'Energy Re-mapping'){
+          lines.push('  • Two sessions weekly for first three weeks.');
+          lines.push('  • One micro-habit: 10-minute midafternoon reset.');
+        }else if(type === 'Weekly Stewardship Loop'){
+          lines.push('  • Weekly check-ins + one reflective note.');
+          lines.push('  • Anchor habit: morning 5-minute priorities list.');
+        }else{
+          lines.push('  • Two brief focused sessions; one practical adjustment per session.');
+        }
+        lines.push('\nUse this text as a simple handout before your first meeting.');
+        return lines.join('\n');
+      }
+      document.getElementById('buildPrograms').addEventListener('click', ()=>{ document.getElementById('summaryPrograms').textContent = build(); });
+      document.getElementById('copyPrograms').addEventListener('click', async ()=>{ try{ await navigator.clipboard.writeText(document.getElementById('summaryPrograms').textContent||''); document.getElementById('copyPrograms').textContent='Copied'; setTimeout(()=>document.getElementById('copyPrograms').textContent='Copy',1000);}catch(e){console.error(e);} });
+      document.getElementById('downloadPrograms').addEventListener('click', ()=>{ const blob = new Blob([document.getElementById('summaryPrograms').textContent||''],{type:'text/plain'}); const url = URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url;a.download='program-plan.txt';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url); });
+    })();
+  </script>
+</body>
+</html>

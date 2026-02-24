@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book a Session — Aromatherapy</title>
+  <style>
+    :root{--bg:#fffaf6;--accent:#6b422a;--muted:#825f4e;--card:#fff;--radius:12px}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--accent);background:var(--bg)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:16px 22px;background:linear-gradient(90deg,rgba(107,66,42,0.03),transparent)}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none}
+    main{max-width:920px;margin:22px auto;padding:18px}
+    .panel{padding:18px;border-radius:var(--radius);background:linear-gradient(180deg,var(--card),#fff);box-shadow:0 12px 28px rgba(107,66,42,0.05)}
+    h1{margin:0 0 8px}
+    form{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:14px}
+    label{font-size:13px;color:var(--muted);display:block;margin-top:8px}
+    input,textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(130,95,78,0.08);font-size:14px}
+    textarea{min-height:120px}
+    .planner{padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(234,216,200,0.55),transparent)}
+    button{padding:10px 12px;border-radius:10px;background:var(--accent);color:#fff;border:0}
+    .summary{margin-top:12px;padding:12px;border-radius:8px;background:#fff;border:1px solid rgba(107,66,42,0.06)}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(180deg,#f7decf,#e9b892);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">A</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Shop</a>
+      <a href="pricing.html">Investment</a>
+      <a href="about.html">About</a>
+      <a href="book.html" style="font-weight:700;color:var(--accent)">Book</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h1>Plan a session</h1>
+      <p style="color:var(--muted);margin-top:6px">Use the session planner to draft what you want from a consult. The summary you create can be copied into your booking form or sent ahead of your appointment.</p>
+
+      <form id="plannerForm">
+        <div>
+          <label for="name">Your name</label>
+          <input id="name" type="text" placeholder="First and last name" required>
+
+          <label for="email">Email</label>
+          <input id="email" type="text" placeholder="you@domain.com">
+
+          <label for="goal">Primary goals (brief)</label>
+          <input id="goal" type="text" placeholder="e.g., calmer evenings; clearer focus at work">
+
+          <label for="duration">Preferred session length</label>
+          <select id="duration">
+            <option>30 minutes</option>
+            <option selected>45 minutes</option>
+            <option>60 minutes</option>
+          </select>
+
+          <label for="frequency">Desired frequency</label>
+          <select id="frequency">
+            <option>One-time consult</option>
+            <option>Weekly</option>
+            <option>Bi-weekly</option>
+            <option>Monthly</option>
+          </select>
+
+          <label for="notes">Anything else we should know? (allergies, medications, pregnancy, pets)</label>
+          <textarea id="notes" placeholder="Include relevant safety notes here"></textarea>
+
+          <div style="margin-top:12px;display:flex;gap:10px">
+            <button type="button" id="buildPlan">Build plan</button>
+            <a href="{{PRIMARY_CTA_URL}}" style="display:inline-block;padding:10px 12px;border-radius:10px;background:transparent;border:1px solid rgba(107,66,42,0.06);text-decoration:none;color:var(--accent)">Start booking</a>
+          </div>
+        </div>
+
+        <aside class="planner">
+          <strong>Planner output</strong>
+          <div id="planSummary" class="summary">Use the form to the left and click "Build plan" to generate a personalized plan summary. You can copy the text to your clipboard for the booking form.</div>
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <button type="button" id="copyPlan">Copy summary</button>
+            <button type="button" id="clearPlan" style="background:#efefef;color:var(--accent)">Clear</button>
+          </div>
+
+          <div style="margin-top:12px;color:var(--muted);font-size:13px">We prioritize safety. Expect patch-test guidance, conservative dilution recommendations, and notes for pregnancy and pets during the consult.</div>
+        </aside>
+      </form>
+
+      <div style="margin-top:18px;color:var(--muted)">Prefer a quick phone chat? Call <strong>{{PHONE}}</strong> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</div>
+    </section>
+
+    <footer style="margin-top:18px;color:var(--muted)">Serving {{CITY}}, {{STATE}} • Thank you for approaching scent with care</footer>
+  </main>
+
+  <script>
+    (function(){
+      const buildBtn = document.getElementById('buildPlan');
+      const copyBtn = document.getElementById('copyPlan');
+      const clearBtn = document.getElementById('clearPlan');
+      const summary = document.getElementById('planSummary');
+
+      function sanitize(s){ return (s||'').toString().trim(); }
+
+      buildBtn.addEventListener('click', function(){
+        const name = sanitize(document.getElementById('name').value) || 'Client';
+        const email = sanitize(document.getElementById('email').value) || '{{EMAIL}}';
+        const goal = sanitize(document.getElementById('goal').value) || 'General well-being';
+        const duration = sanitize(document.getElementById('duration').value);
+        const frequency = sanitize(document.getElementById('frequency').value);
+        const notes = sanitize(document.getElementById('notes').value) || 'No additional notes.';
+
+        const planText = [];
+        planText.push('Name: ' + name);
+        planText.push('Email: ' + email);
+        planText.push('Primary goal: ' + goal);
+        planText.push('Preferred session length: ' + duration);
+        planText.push('Desired frequency: ' + frequency);
+        planText.push('Safety notes: ' + notes);
+        planText.push('Suggested in-session focus: intake on scent history; patch test; 1–2 starter blends with conservative dilutions; simple at-home ritual.');
+        planText.push('Next steps: Book a consult and bring any current products or notes.');
+
+        summary.textContent = planText.join('\n');
+      });
+
+      copyBtn.addEventListener('click', function(){
+        const text = summary.textContent;
+        if(!text) return alert('No summary to copy — build a plan first.');
+        navigator.clipboard && navigator.clipboard.writeText(text).then(()=>{
+          alert('Plan summary copied to clipboard');
+        }).catch(()=>{ alert('Unable to copy automatically. Select the text and copy.') });
+      });
+
+      clearBtn.addEventListener('click', function(){
+        document.getElementById('plannerForm').reset();
+        summary.textContent = 'Use the form to the left and click "Build plan" to generate a personalized plan summary. You can copy the text to your clipboard for the booking form.';
+      });
+    })();
+  </script>
+</body>
+</html>

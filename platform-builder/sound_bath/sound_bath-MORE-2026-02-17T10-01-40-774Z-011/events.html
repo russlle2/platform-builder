@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gatherings · {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0b1020;--glass-bg:rgba(255,255,255,0.06);--accent:#8be7e0;--muted:#cbd5e1;--card:#0f1724}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--muted);background:radial-gradient(1200px 600px at 10% 10%,#071224 0%,transparent 20%),radial-gradient(800px 400px at 90% 90%,#061020 0%,transparent 15%),var(--bg);}
+    .wrap{max-width:1100px;margin:40px auto;padding:28px;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));backdrop-filter:blur(8px);box-shadow:0 8px 30px rgba(2,6,23,0.7);border:1px solid rgba(255,255,255,0.04)}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#6fcfd3);display:flex;align-items:center;justify-content:center;color:#042a2a;font-weight:700}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-size:15px}
+    .hero{display:flex;gap:24px;align-items:flex-start}
+    .hero .left{flex:1}
+    h1{color:#f1fbfa;margin:0 0 6px 0;font-size:28px}
+    p.lead{margin:0 0 14px 0;color:#bfe6e4}
+    .cta-row{display:flex;gap:12px;align-items:center}
+    .btn{padding:10px 16px;border-radius:10px;background:linear-gradient(180deg,var(--accent),#62d5d2);color:#042a2a;text-decoration:none;font-weight:600}
+    .ghost{padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:transparent}
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:12px;padding:14px;border:1px solid rgba(255,255,255,0.03)}
+    .grid{display:grid;grid-template-columns:1fr 380px;gap:20px;margin-top:18px}
+    .next-event{display:flex;flex-direction:column;gap:12px}
+    .event-card{padding:12px;border-radius:10px;background:linear-gradient(90deg,rgba(139,231,224,0.04),rgba(99,206,203,0.02));border:1px solid rgba(139,231,224,0.06)}
+    .calendar{margin-top:10px;display:flex;flex-direction:column;gap:10px}
+    .cal-item{display:flex;justify-content:space-between;padding:10px;border-radius:8px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.02)}
+    .controls{display:flex;flex-direction:column;gap:12px}
+    label{font-size:13px;color:#aedede}
+    .mood-buttons{display:flex;gap:8px;flex-wrap:wrap}
+    .mood-buttons button{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted);padding:8px 10px;border-radius:10px}
+    .mood-buttons button.active{border-color:var(--accent);background:rgba(139,231,224,0.06);color:#e8fbfa}
+    .slider{display:flex;gap:8px}
+    .slider button{flex:1;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--muted)}
+    .slider button.active{background:linear-gradient(90deg,rgba(139,231,224,0.07),rgba(99,206,203,0.03));border-color:var(--accent);color:#042a2a}
+    .recommend{margin-top:10px;padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);border:1px solid rgba(255,255,255,0.03);color:#dffdfc}
+    footer{margin-top:22px;padding-top:12px;border-top:1px dashed rgba(255,255,255,0.02);display:flex;justify-content:space-between}
+    .disclaimer{font-size:12px;color:#9fbfbf}
+    /* pattern overlay */
+    .pattern{position:absolute;inset:0;pointer-events:none;opacity:0.06}
+  </style>
+</head>
+<body>
+  <div class="pattern">
+    <svg width="100%" height="100%" viewBox="0 0 800 400" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="p1" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(12)">
+          <rect width="40" height="40" fill="none" />
+          <path d="M0 20 Q10 10 20 20 T40 20" stroke="#7ee9e4" stroke-opacity="0.06" stroke-width="1" fill="none" />
+          <circle cx="6" cy="6" r="1.2" fill="#8be7e0" opacity="0.06" />
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#p1)" />
+    </svg>
+  </div>
+
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">SB</div>
+        <div>
+          <div style="color:#e9ffff;font-weight:700">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:#9fdede">Explore sound gatherings and small-series events</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Nest</a>
+        <a href="events.html">Gatherings</a>
+        <a href="private-sessions.html">Private</a>
+        <a href="pricing.html">Invest</a>
+        <a href="about.html">Story</a>
+        <a href="faq.html">FAQ</a>
+        <a href="book.html">Reserve</a>
+        <a href="contact.html">Reach</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="left">
+        <h1>Upcoming sound gatherings in {{CITY}}, {{STATE}}</h1>
+        <p class="lead">Evidence-minded sound experiences for intentional rest, creative reset, and clearer thinking. Join a session tailored to what you need right now.</p>
+        <div class="cta-row">
+          <a id="primaryCta" class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <a class="ghost" href="faq.html">How it works</a>
+        </div>
+      </div>
+      <div style="width:360px">
+        <div class="panel">
+          <div class="next-event">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div style="font-size:13px;color:#bfe6e4">Next live gathering</div>
+              <div style="font-size:12px;color:#9fbfbf">Walk-ins sometimes welcome</div>
+            </div>
+            <div id="nextCard" class="event-card">
+              <div style="font-weight:700;color:#042a2a">Evening Resonance — Guided Sound Drift</div>
+              <div style="font-size:13px;margin-top:6px">Sat · Mar 13 · 6:30PM — 7:30PM</div>
+              <div style="margin-top:8px;display:flex;gap:8px">
+                <a id="joinBtn" class="btn" href="book.html">Reserve a spot</a>
+                <a class="ghost" href="events.html">Full calendar</a>
+              </div>
+            </div>
+
+            <div style="font-size:13px;color:#9fbfbf">Upcoming calendar</div>
+            <div class="calendar" id="calendarList">
+              <!-- events populated by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid">
+      <div>
+        <div class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-size:15px;color:#e9ffff;font-weight:700">Find the right approach — Mood to Method</div>
+              <div style="font-size:13px;color:#9fbfbf">Select how you feel, choose the sound density, and we’ll suggest the most useful session type.</div>
+            </div>
+            <div style="font-size:12px;color:#9fbfbf">Dynamic recommendations</div>
+          </div>
+
+          <div style="margin-top:12px" class="controls">
+            <div>
+              <label>How do you feel right now?</label>
+              <div class="mood-buttons" id="moodBtns">
+                <button data-mood="tense">Tense</button>
+                <button data-mood="scattered">Scattered</button>
+                <button data-mood="heavy">Heavy</button>
+                <button data-mood="restless">Restless</button>
+                <button data-mood="curious">Curious</button>
+              </div>
+            </div>
+
+            <div>
+              <label>Sound density</label>
+              <div class="slider" id="densitySlider">
+                <button data-density="gentle">Gentle</button>
+                <button data-density="medium">Medium</button>
+                <button data-density="intense">Intense</button>
+              </div>
+            </div>
+
+            <div class="recommend" id="recommendBlock">
+              <div style="font-size:13px;color:#c9faf8">Recommended format</div>
+              <div id="recommendTitle" style="font-weight:700;margin-top:6px;color:#042a2a"></div>
+              <div id="recommendDesc" style="font-size:13px;margin-top:8px;color:#dffdfc"></div>
+              <div style="margin-top:10px">
+                <a id="recommendCta" class="btn" href="book.html">Book this format</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:14px" class="panel">
+          <div style="font-size:15px;font-weight:700;color:#e9ffff">Why join a gathering?</div>
+          <ul style="margin:10px 0 0 18px;color:#bfe6e4">
+            <li>Short, intentional practices to reset attention and mood</li>
+            <li>Guided sound + simple breath prompts — accessible to first-timers</li>
+            <li>Community rhythm without pressure — arrive as you are</li>
+          </ul>
+          <div style="margin-top:12px;font-size:13px;color:#9fbfbf">Please note: People with seizure disorders, pacemakers, or pregnancy should consult a physician before attending. If you have hearing implants or significant hearing loss, contact us at {{EMAIL}} for accommodations.</div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="panel">
+          <div style="font-size:14px;font-weight:700;color:#e9ffff">What to expect</div>
+          <ol style="margin-top:8px;color:#bfe6e4">
+            <li>Soft lighting and a short welcome (5–8 min)</li>
+            <li>Guided sound practice (30–40 min) with periods of quiet</li>
+            <li>Short re-orientation and open time for questions</li>
+          </ol>
+          <div style="margin-top:10px;font-size:13px;color:#9fbfbf">Bring a mat and a blanket. We provide bolsters and straps on request.</div>
+        </div>
+
+        <div style="margin-top:12px" class="panel">
+          <div style="font-size:13px;font-weight:700;color:#e9ffff">Social proof</div>
+          <div style="margin-top:8px;color:#bfe6e4">"A clear, quiet reset — I left sharper and strangely lighter." — M.</div>
+          <div style="margin-top:6px;color:#bfe6e4">"Accessible guidance and real calm." — S.</div>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      <div class="disclaimer">For questions: <a style="color:var(--accent);text-decoration:none" href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a style="color:var(--accent);text-decoration:none" href="tel:{{PHONE}}">{{PHONE}}</a></div>
+      <div style="font-size:13px;color:#9fbfbf">© <span id="year"></span> {{BUSINESS_NAME}}</div>
+    </footer>
+  </div>
+
+  <script>
+    (function(){
+      // sample events - in a real site this would come from a feed
+      const events = [
+        {id:1,title:'Morning Clarity — Light Sound Flow',date:'2026-03-02T08:30:00',duration:'45m'},
+        {id:2,title:'Evening Resonance — Guided Sound Drift',date:'2026-03-13T18:30:00',duration:'60m'},
+        {id:3,title:'Noon Pause — Micro Sound Reset',date:'2026-03-20T12:10:00',duration:'30m'},
+        {id:4,title:'Slow Burn — Deep Tones & Rest',date:'2026-04-02T19:00:00',duration:'75m'}
+      ];
+
+      const cal = document.getElementById('calendarList');
+      events.forEach(ev=>{
+        const d = new Date(ev.date);
+        const item = document.createElement('div');
+        item.className='cal-item';
+        item.innerHTML = '<div>'+ev.title+'</div><div style="text-align:right"><div style=\'font-weight:700;color:#dffdfc\'> '+d.toLocaleDateString()+' </div><div style=\'font-size:12px;color:#9fbfbf\'> '+d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})+' </div></div>';
+        cal.appendChild(item);
+      });
+
+      // next event pick
+      const next = events.find(e=>new Date(e.date)>new Date()) || events[0];
+      const nextCard = document.getElementById('nextCard');
+      nextCard.querySelector('div').textContent = next.title;
+      nextCard.querySelectorAll('div')[1].textContent = new Date(next.date).toLocaleString();
+
+      document.getElementById('year').textContent = new Date().getFullYear();
+
+      // interactive selectors
+      const moods = document.getElementById('moodBtns');
+      const densities = document.getElementById('densitySlider');
+      const recommendTitle = document.getElementById('recommendTitle');
+      const recommendDesc = document.getElementById('recommendDesc');
+      const recommendCta = document.getElementById('recommendCta');
+      const primaryCta = document.getElementById('primaryCta');
+
+      let state = {mood:'scattered',density:'medium'};
+
+      function updateUI(){
+        // title mapping
+        const map = {
+          tense:{gentle:{title:'Breath-anchored Calm',desc:'A slow, grounding session emphasizing low-volume bowls and guided breath cues.'},medium:{title:'Steady Resonance',desc:'Moderate layering to ease tension and restore a balanced heart-rate.'},intense:{title:'Deep Unwind',desc:'Denser harmonic textures to help shift out of a contracted state.'}},
+          scattered:{gentle:{title:'Short Focus Reset',desc:'Simple, focused tones with short silences to re-center attention.'},medium:{title:'Guided Threading',desc:'Medium texture sequences to rebuild attention with gentle transitions.'},intense:{title:'Clear Sweep',desc:'Faster textural shifts to move energy and sharpen mental clarity.'}},
+          heavy:{gentle:{title:'Soft Release',desc:'Long, low tones with ample quiet space for gentle emotional release.'},medium:{title:'Layered Soften',desc:'Warm pads and bowls designed to ease heaviness without overwhelm.'},intense:{title:'Release Arc',desc:'A stronger, well-paced set of tones for deeper energetic clearing.'}},
+          restless:{gentle:{title:'Tactile Pause',desc:'Short tactile sounds and breath holds to settle fidgety energy.'},medium:{title:'Rhythmic Anchor',desc:'Subtle rhythmic layers to help regulate nervous energy.'},intense:{title:'Centered Motion',desc:'Stronger sonics with clear cadences to channel excess energy.'}},
+          curious:{gentle:{title:'Introductory Drift',desc:'A gentle guided introduction to instruments and how sound lands.'},medium:{title:'Exploration Set',desc:'Mixed textures to explore how different tones affect attention.'},intense:{title:'Immersive Trial',desc:'Sustained, dense textures for a full-bodied listening experiment.'}}
+        };
+
+        const pick = (map[state.mood]||map['scattered'])[state.density]||{title:'Sound Session',desc:''};
+        recommendTitle.textContent = pick.title;
+        recommendDesc.textContent = pick.desc;
+
+        // CTA text morphs with mood/density
+        const ctaMap = {
+          gentle:'Reserve a gentle spot',
+          medium:'Book the medium experience',
+          intense:'Claim an intense immersion'
+        };
+        recommendCta.textContent = ctaMap[state.density];
+        primaryCta.textContent = (state.density==='gentle')? 'Try a gentle session' : (state.density==='medium')? 'Join a session' : 'Dive into a deep session';
+        // also change join button text to match
+        document.getElementById('joinBtn').textContent = primaryCta.textContent;
+      }
+
+      moods.addEventListener('click',e=>{
+        const b = e.target.closest('button[data-mood]');
+        if(!b) return;
+        moods.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
+        b.classList.add('active');
+        state.mood = b.dataset.mood;
+        updateUI();
+      });
+
+      densities.addEventListener('click',e=>{
+        const b = e.target.closest('button[data-density]');
+        if(!b) return;
+        densities.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
+        b.classList.add('active');
+        state.density = b.dataset.density;
+        updateUI();
+      });
+
+      // initialize default active
+      moods.querySelector('button[data-mood="scattered"]').classList.add('active');
+      densities.querySelector('button[data-density="medium"]').classList.add('active');
+      updateUI();
+
+    })();
+  </script>
+</body>
+</html>

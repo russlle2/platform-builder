@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Stories — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Real progress stories from cohort participants. Short, habit-focused case notes." />
+  <style>
+    :root{--bg:#fff6f9;--card:#fff;--accent:#ff6b8a;--muted:#475569}
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;margin:0;background:var(--bg);color:#0b1220}
+    .wrap{max-width:1100px;margin:0 auto;padding:24px}
+    header{padding:18px 0}
+    nav{display:flex;justify-content:space-between;align-items:center}
+    .nav a{color:var(--muted);text-decoration:none;margin-left:14px}
+    .hero{padding:22px;background:linear-gradient(180deg,rgba(255,107,138,0.06),transparent);border-radius:12px}
+    .hero h1{margin:0;font-size:24px}
+    .hero p{margin:8px 0 0;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+    .card{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 6px 20px rgba(11,18,32,0.06)}
+    .quote{font-size:14px;color:#0b1220}
+    .author{margin-top:12px;font-size:13px;color:var(--muted)}
+    .cta{display:inline-block;background:var(--accent);color:#fff;padding:8px 12px;border-radius:10px;text-decoration:none}
+    .reveal-hidden{opacity:0;transform:translateY(14px);transition:opacity .45s ease,transform .6s cubic-bezier(.2,.9,.3,1)}
+    @media (prefers-reduced-motion: reduce){.reveal-hidden{opacity:1;transform:none;transition:none}}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+    footer{margin-top:30px;padding:24px;color:var(--muted)}
+    .try-btn{background:transparent;border:1px solid rgba(11,18,32,0.06);padding:8px 10px;border-radius:8px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <nav>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div>
+          <a href="index.html">Home</a>
+          <a href="programs.html">Journeys</a>
+          <a href="pricing.html">Plans</a>
+          <a href="book.html">Reserve</a>
+        </div>
+      </nav>
+    </header>
+
+    <section class="hero reveal-hidden">
+      <h1>Progress notes from people who practiced with care</h1>
+      <p>Short, focused stories about what shifted when habits got a clear place in the day.</p>
+    </section>
+
+    <main>
+      <section class="grid" style="margin-top:16px">
+        <article class="card reveal-hidden">
+          <div class="quote">"I used to think I needed big mornings. After the cohort I built a 5-minute anchor that made afternoons steadier — more consistent energy and less overwhelm."</div>
+          <div class="author">— Sam, Bridge Cohort</div>
+        </article>
+
+        <article class="card reveal-hidden">
+          <div class="quote">"The weekly review tool changed my week. I can spot drift earlier and pull a small correction before stress builds."</div>
+          <div class="author">— Priya, Anchor Cohort</div>
+        </article>
+
+        <article class="card reveal-hidden">
+          <div class="quote">"Short journaling prompts helped me find one reliable habit: a two-minute note each evening. It feels tiny, but it shaped my next day."</div>
+          <div class="author">— Marco, Launch Cohort</div>
+        </article>
+
+        <article class="card reveal-hidden">
+          <div class="quote">"Community check-ins were practical and gentle. Not motivational pep-talks — actual accountability that fit my life."</div>
+          <div class="author">— Lila, Micro Cohort</div>
+        </article>
+
+        <article class="card reveal-hidden">
+          <div class="quote">"I didn't need more tools. I needed one repeatable practice I could do even on busy days. This gave me that."</div>
+          <div class="author">— Jonah, Bridge Cohort</div>
+        </article>
+
+        <article class="card reveal-hidden">
+          <div class="quote">"The coach's frameworks helped me map how small moves accumulate. It's easier to keep a practice when you can see it build."</div>
+          <div class="author">— Andrea, Anchor Cohort</div>
+        </article>
+
+      </section>
+
+      <section style="margin-top:18px">
+        <div class="card reveal-hidden">
+          <h3>Want to hear more?</h3>
+          <p class="small">We keep a short digest of cohort notes and snapshots. Sign up for the occasional update, or book a brief chat to see which cohort fits.</p>
+          <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
+            <a class="cta" href="book.html">Book a short consult</a>
+            <button class="try-btn" id="try-btn">Try it now</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer>
+      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px">
+        <div>{{BUSINESS_NAME}} • {{CITY}}, {{STATE}}</div>
+        <div class="small">Contact: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Modal copied for this page -->
+  <div id="overlay" class="overlay" aria-hidden="true" style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(2,6,23,0.48);z-index:60">
+    <div class="modal" style="background:#fff;border-radius:12px;padding:18px;max-width:640px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,0.16)" role="dialog" aria-modal="true">
+      <h2 style="margin:0 0 8px">Try a short practice</h2>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <div class="step" data-type="breathing" style="flex:1;padding:10px;background:rgba(255,107,138,0.08);border-radius:8px;text-align:center">Breathing</div>
+        <div class="step" data-type="journaling" style="flex:1;padding:10px;background:rgba(255,107,138,0.04);border-radius:8px;text-align:center">Journaling</div>
+        <div class="step" data-type="intention" style="flex:1;padding:10px;background:rgba(255,107,138,0.02);border-radius:8px;text-align:center">Intention</div>
+      </div>
+      <div id="modal-body"><p class="small">Select one to preview and start.</p></div>
+      <div style="display:flex;justify-content:flex-end;margin-top:12px"><button id="close-modal" class="btn-ghost" style="margin-right:8px">Close</button><button id="start" class="btn-primary" style="background:#ff6b8a;color:#fff;padding:8px 12px;border-radius:8px;border:none">Start</button></div>
+    </div>
+  </div>
+
+  <script>
+    // Reveal logic
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const items = document.querySelectorAll('.reveal-hidden');
+      if(prefersReduced){ items.forEach(i=>{ i.style.opacity=1; i.style.transform='none'; }); return; }
+      const obs = new IntersectionObserver((entries, o)=>{ entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.remove('reveal-hidden'); o.unobserve(e.target); } }); },{threshold:0.08});
+      items.forEach(i=>obs.observe(i));
+    })();
+
+    // Simple modal reused from pricing with limited features
+    (function(){
+      const overlay = document.getElementById('overlay');
+      const tryBtn = document.getElementById('try-btn');
+      const close = document.getElementById('close-modal');
+      const start = document.getElementById('start');
+      let selected = 'breathing';
+      function open(){ overlay.style.display='flex'; overlay.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden'; }
+      function closeModal(){ overlay.style.display='none'; overlay.setAttribute('aria-hidden','true'); document.body.style.overflow=''; }
+      if(tryBtn) tryBtn.addEventListener('click', open);
+      close.addEventListener('click', closeModal);
+      overlay.addEventListener('click', (e)=>{ if(e.target===overlay) closeModal(); });
+      const steps = document.querySelectorAll('.step'); steps.forEach(s=>s.addEventListener('click', ()=>{ selected=s.dataset.type; render(); }));
+      function render(){ const body = document.getElementById('modal-body'); if(selected==='breathing') body.innerHTML='<p class="small">One-minute grounding breath: inhale 4, hold 2, exhale 6. Hit start to follow and see a live count.</p>'; else if(selected==='journaling') body.innerHTML='<p class="small">Three quick prompts: notice, name, next. You get a short textarea to capture a note.</p><textarea style="width:100%;margin-top:8px;border-radius:8px;padding:8px" rows="5"></textarea>'; else body.innerHTML='<p class="small">Write a crisp intention and repeat it mentally three times.</p><input style="width:100%;padding:8px;border-radius:8px;margin-top:8px" placeholder="Today I will...">'; }
+      start.addEventListener('click', ()=>{ alert('This page provides a quick guided preview — open the Plans page for the interactive variant.'); });
+      render();
+    })();
+  </script>
+</body>
+</html>

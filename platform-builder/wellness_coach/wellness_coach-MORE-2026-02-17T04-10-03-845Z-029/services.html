@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--card:#fff;--muted:#657271;--accent:#6ea97c;--accent-2:#4a90e2;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial}
+    body{margin:0;background:linear-gradient(180deg,#ffffff 0%,#f7fbfb 100%);color:#102;}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;background:transparent}
+    .logo{width:44px;height:44px;border-radius:9px;background-image:url('assets/img/pattern.svg');background-size:60px}
+    nav a{margin-left:12px;color:#163; text-decoration:none;font-weight:600}
+    .wrap{max-width:1100px;margin:26px auto;padding:0 20px}
+    .intro{display:flex;gap:20px;align-items:flex-start}
+    .left{flex:1}
+    .right{width:340px}
+    .service-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:14px}
+    .service{background:var(--card);padding:14px;border-radius:10px;box-shadow:0 10px 24px rgba(7,10,9,0.04)}
+    .service h3{margin:0 0 8px}
+    .service p{margin:0;color:var(--muted)}
+
+    /* Proof gallery */
+    .proof-wrap{margin-top:18px}
+    .carousel{position:relative;overflow:hidden;border-radius:12px;background:linear-gradient(180deg,#fff,#fbfffb);padding:14px}
+    .slide{display:none;padding:8px}
+    .slide.active{display:block}
+    .controls{display:flex;gap:8px;align-items:center;margin-top:10px}
+    .dot{width:10px;height:10px;border-radius:50%;background:#e6e6e6}
+    .cred{display:flex;gap:8px;margin-top:10px}
+    .cred .badge{padding:8px 10px;border-radius:8px;background:#f2fbf5;border:1px solid rgba(8,8,8,0.04);cursor:pointer}
+    .cred .badge[data-tip]:hover::after{content:attr(data-tip);position:absolute;background:#0b2b28;color:#fff;padding:6px 8px;border-radius:6px;font-size:13px}
+
+    .cta{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:10px;background:var(--accent-2);color:#fff;text-decoration:none;font-weight:700}
+
+    @media(max-width:900px){.service-grid{grid-template-columns:1fr}.right{width:100%}.intro{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo" aria-hidden="true"></div>
+      <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Our Story</a>
+      <a href="services.html">Offerings</a>
+      <a href="programs.html">Journeys</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="testimonials.html">Testimonials</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <div class="wrap">
+    <section class="intro">
+      <div class="left">
+        <h1>Applied practices you can use this week</h1>
+        <p style="color:var(--muted)">Short engagements and ongoing support that focus on habits, clear outcomes, and frameworks you can repeat. No jargon, just useful moves.</p>
+
+        <div class="service-grid">
+          <div class="service">
+            <h3>Starter Session</h3>
+            <p>One 60-minute session to map the friction points in your day and leave with three actions to try immediately.</p>
+            <div style="margin-top:10px;font-weight:700;color:#1b2b2a">From $95</div>
+            <a class="cta" href="book.html">Try a Starter</a>
+          </div>
+
+          <div class="service">
+            <h3>Weekly Alignment</h3>
+            <p>Four sessions across a month to build a repeatable weekly plan and habit triggers tied to outcomes.</p>
+            <div style="margin-top:10px;font-weight:700;color:#1b2b2a">Tailored pricing</div>
+            <a class="cta" href="contact.html">Discuss options</a>
+          </div>
+
+          <div class="service">
+            <h3>Micro-Intensive</h3>
+            <p>Focused 2-week burst with daily micro-checks. Good for shifting a single pattern with intensive accountability.</p>
+            <div style="margin-top:10px;font-weight:700;color:#1b2b2a">Starts at $350</div>
+            <a class="cta" href="book.html">Book intensive</a>
+          </div>
+
+          <div class="service">
+            <h3>Team Essentials</h3>
+            <p>Short workshops and templates that teams can use to create steadier days and clearer priorities.</p>
+            <div style="margin-top:10px;font-weight:700;color:#1b2b2a">Custom quote</div>
+            <a class="cta" href="contact.html">Get a quote</a>
+          </div>
+        </div>
+
+      </div>
+
+      <aside class="right">
+        <div class="card" style="padding:14px;border-radius:12px;box-shadow:0 10px 24px rgba(7,10,9,0.04)">
+          <strong>Proof Gallery</strong>
+          <div class="proof-wrap">
+            <div class="carousel" id="carousel">
+              <div class="slide active">
+                “I kept the practices for months. Short nudges changed my mornings for good.” — R.
+              </div>
+              <div class="slide">
+                “A month of small change that didn’t feel exhausting — clear wins.” — S.
+              </div>
+              <div class="slide">
+                “We used the team templates and saw better focus in afternoon blocks.” — Team L.
+              </div>
+            </div>
+
+            <div class="controls" id="controls">
+              <div id="dots" style="display:flex;gap:8px"></div>
+              <div style="flex:1"></div>
+              <button id="prev" aria-label="previous">‹</button>
+              <button id="next" aria-label="next">›</button>
+            </div>
+
+            <div class="cred" id="badges">
+              <div class="badge" data-tip="As seen in a local newsletter">Local press</div>
+              <div class="badge" data-tip="Featured curriculum in company workshops">Company workshops</div>
+              <div class="badge" data-tip="Recommended by community leaders">Community recommended</div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;color:var(--muted);font-size:13px">Real feedback, rotating. Hover badges for context.</div>
+        </div>
+
+        <div style="margin-top:12px;text-align:center">
+          <a class="cta" href="book.html">Start with a session</a>
+        </div>
+      </aside>
+    </section>
+
+    <section style="margin-top:18px">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <h2 style="margin:0">How a typical engagement runs</h2>
+          <div style="color:var(--muted);margin-top:6px">A small set of shifts, clear checkpoints, and simple ways to adapt the plan.</div>
+        </div>
+        <div style="font-size:13px;color:var(--muted)">Questions? <a href="contact.html">Contact us</a></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px">
+        <div class="card" style="padding:14px">Discovery • Map constraints and aims</div>
+        <div class="card" style="padding:14px">Practice • Short, repeatable daily moves</div>
+        <div class="card" style="padding:14px">Adapt • Tune the mix and keep what works</div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Carousel / Proof Gallery logic
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const dotsEl = document.getElementById('dots');
+    let idx = 0;
+    function show(n){
+      slides.forEach((s,i)=>s.classList.toggle('active', i===n));
+      Array.from(dotsEl.children).forEach((d,i)=>d.style.background = i===n ? '#1b2b2a' : '#e6e6e6');
+      idx = n;
+    }
+    // create dots
+    slides.forEach((_,i)=>{ const d=document.createElement('div'); d.className='dot'; d.style.cursor='pointer'; d.addEventListener('click',()=>{ show(i); resetAuto(); }); dotsEl.appendChild(d); });
+    show(0);
+
+    document.getElementById('prev').addEventListener('click',()=>{ show((idx-1+slides.length)%slides.length); resetAuto(); });
+    document.getElementById('next').addEventListener('click',()=>{ show((idx+1)%slides.length); resetAuto(); });
+
+    let auto = setInterval(()=>{ show((idx+1)%slides.length); },4000);
+    function resetAuto(){ clearInterval(auto); auto = setInterval(()=>{ show((idx+1)%slides.length); },4000); }
+
+    // tooltip badges: already handled by CSS pseudo-element using data-tip attribute
+
+  </script>
+</body>
+</html>

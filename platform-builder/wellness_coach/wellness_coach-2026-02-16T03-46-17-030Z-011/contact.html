@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contact • {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Connect with {{COACH_NAME}} — friendly wellness coaching focused on sustainable habits and clear outcomes.">
+  <style>
+    :root{--bg:#0f0f10;--card:#0f1720;--muted:#9aa3ad;--accent:#ffc857;--accent-2:#ff8a65;--glass:rgba(255,255,255,0.04);--white: #f7f8fb;--radius:12px;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#071017 0%, #0b0f13 60%);color:var(--white);}
+    .wrap{max-width:1100px;margin:36px auto;padding:28px;}
+    header{display:flex;align-items:center;justify-content:space-between;gap:18px}
+    .brand{display:flex;align-items:center;gap:14px}
+    .brand .logo{width:64px;height:64px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;font-weight:700;color:#102;box-shadow:0 6px 28px rgba(255,200,87,0.08)}
+    .brand h1{font-size:18px;margin:0}
+    nav{display:flex;gap:14px;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:10px}
+    nav a.primary{background:linear-gradient(90deg, rgba(255,200,87,0.12), rgba(255,138,101,0.06));color:var(--white)}
+
+    /* Hero gallery */
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;margin-top:28px;align-items:start}
+    .hero-card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:28px;border-radius:16px;box-shadow:0 12px 40px rgba(2,6,23,0.6);}
+    .hero h2{margin:0 0 8px 0;font-size:28px;line-height:1.05}
+    .hero p.lead{color:var(--muted);margin:0 0 18px}
+    .hero .cta-row{display:flex;gap:12px}
+    .btn{background:var(--accent);color:#102;padding:12px 16px;border-radius:12px;text-decoration:none;font-weight:600}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--white)}
+
+    /* Right column - contact card */
+    .contact-card{background:var(--card);padding:20px;border-radius:12px}
+    .avatar{width:72px;height:72px;border-radius:12px;background:linear-gradient(135deg,#fff3d6,#ffd2b2);display:grid;place-items:center;margin-bottom:12px}
+    .meta{color:var(--muted);font-size:14px}
+
+    /* Main form */
+    form.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input,select,textarea{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:var(--glass);color:var(--white);outline:none}
+    textarea{min-height:120px;resize:vertical}
+    .full{grid-column:1/-1}
+    .note{font-size:13px;color:var(--muted);margin-top:10px}
+
+    /* Ripples: small sections preview */
+    .ripple-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:26px}
+    .ripple{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:12px}
+    .ripple h4{margin:4px 0 8px 0}
+    .ripple p{margin:0;color:var(--muted);font-size:14px}
+
+    /* Testimonials preview */
+    .test-preview{margin-top:26px;display:flex;gap:10px;overflow:auto;padding-bottom:6px}
+    .t{min-width:220px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:12px}
+
+    footer{margin-top:36px;color:var(--muted);font-size:13px;display:flex;justify-content:space-between;align-items:center}
+
+    /* Responsive */
+    @media (max-width:980px){
+      .hero{grid-template-columns:1fr;}
+      .ripple-grid{grid-template-columns:repeat(2,1fr)}
+      form.field-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">WC</div>
+        <div>
+          <h1>{{BUSINESS_NAME}}</h1>
+          <div class="meta">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="programs.html" class="primary">Paths</a>
+        <a href="pricing.html">Invest</a>
+        <a href="testimonials.html">Stories</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <main class="hero">
+      <section class="hero-card">
+        <h2>Let’s design your next 90 days of health habits.</h2>
+        <p class="lead">Hi, I’m {{COACH_NAME}} ({{CREDENTIALS}}). I help busy people in {{CITY}}, {{STATE}} build daily routines that stick—without overwhelm or fad diets. Start with a short consult and walk away with a clear first-week plan.</p>
+        <div class="cta-row">
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <a class="btn ghost" href="book.html">Schedule a consult</a>
+        </div>
+
+        <div class="ripple-grid" aria-hidden="false">
+          <div class="ripple" id="r-story">
+            <h4>Quick story</h4>
+            <p>I scaled small daily wins into a new career and helped clients reduce anxiety around food and sleep by focusing on habits, not perfection.</p>
+          </div>
+          <div class="ripple" id="r-framework">
+            <h4>My framework</h4>
+            <p>Clarify → Build → Anchor: clarity on motivation, micro-habit design, and integration into your week.</p>
+          </div>
+          <div class="ripple" id="r-programs">
+            <h4>Paths</h4>
+            <p>Short: Momentum Starter. Mid: Habit Deepen. Long: Lifestyle Shift. Each has checkpoints and habit experiments.</p>
+          </div>
+        </div>
+
+        <div class="test-preview">
+          <div class="t"><strong>"More energy in two weeks"</strong><p class="note">— Clara, 34</p></div>
+          <div class="t"><strong>"Finally sustainable"</strong><p class="note">— Malik, 41</p></div>
+        </div>
+
+      </section>
+
+      <aside class="contact-card">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="avatar">
+            <!-- avatar svg reference -->
+            <img src="assets/img/avatar.svg" alt="{{COACH_NAME}}" width="56" height="56" style="display:block;border-radius:8px">
+          </div>
+          <div>
+            <div style="font-weight:700">{{COACH_NAME}}</div>
+            <div class="meta">{{CREDENTIALS}}</div>
+          </div>
+        </div>
+
+        <div style="margin-top:14px">
+          <div class="meta">Reach out by phone or send a note — I reply within 48 hours.</div>
+          <div style="margin-top:12px">
+            <div style="font-weight:700">Call</div>
+            <a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none">{{PHONE}}</a>
+          </div>
+          <div style="margin-top:8px">
+            <div style="font-weight:700">Email</div>
+            <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a>
+          </div>
+        </div>
+
+        <form id="contactForm" style="margin-top:14px">
+          <div class="field-grid">
+            <div>
+              <label for="name">Full name</label>
+              <input id="name" name="name" placeholder="Your name" required>
+            </div>
+            <div>
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" placeholder="you@email.com" required>
+            </div>
+            <div>
+              <label for="phone">Phone</label>
+              <input id="phone" name="phone" placeholder="Optional">
+            </div>
+            <div>
+              <label for="program">Interested in</label>
+              <select id="program" name="program">
+                <option>Momentum Starter — 4 weeks</option>
+                <option>Habit Deepen — 12 weeks</option>
+                <option>Lifestyle Shift — 6 months</option>
+                <option>Custom Package</option>
+              </select>
+            </div>
+            <div class="full">
+              <label for="message">A short note — what are you hoping to change?</label>
+              <textarea id="message" name="message" placeholder="I want more energy, clearer sleep, less stress..." required></textarea>
+            </div>
+            <div class="full">
+              <label><input type="checkbox" id="consent"> I consent to receive a reply and occasional program updates.</label>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;display:flex;gap:10px">
+            <button class="btn" type="submit">Send message</button>
+            <a class="btn ghost" href="book.html">Book a consult</a>
+          </div>
+        </form>
+
+        <div id="formMsg" class="note" style="margin-top:10px;display:none"></div>
+
+      </aside>
+    </main>
+
+    <section style="margin-top:28px">
+      <div style="display:flex;gap:20px;align-items:center">
+        <img src="assets/img/pattern.svg" alt="pattern" width="120" style="border-radius:12px">
+        <div>
+          <h3 style="margin:0 0 6px 0">Free tool: The 7-Day Habit Sprint</h3>
+          <p class="note">Grab a concise checklist + email guide that helps you test one habit for a week. Immediate, practical steps—no fluff.</p>
+          <div style="margin-top:8px"><a class="btn" href="book.html">Get the 7-Day Sprint</a></div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div>
+        <strong>{{BUSINESS_NAME}}</strong> — {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}" style="color:var(--muted)">{{EMAIL}}</a>
+      </div>
+      <div class="meta">Made for people who want real progress, weekly wins, and simpler routines.</div>
+    </footer>
+  </div>
+
+  <script>
+    // Minimal form handling — local-only demonstration
+    document.getElementById('contactForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      var name = document.getElementById('name').value || 'there';
+      var msg = document.getElementById('formMsg');
+      msg.style.display = 'block';
+      msg.style.color = 'var(--accent)';
+      msg.textContent = 'Thanks ' + name + '! I received your note and will reply within 48 hours.';
+      this.reset();
+    });
+  </script>
+</body>
+</html>

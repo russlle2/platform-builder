@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Reserve • {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#07121a;--panel:#081726;--muted:#91a6b1;--accent:#7fe2cf;--accent2:#6aa7e3;font-family:Inter, system-ui, -apple-system, 'Segoe UI'}
+    body{margin:0;background:linear-gradient(180deg,#03121a 0%,#071726 100%);color:#e8f6f5}
+    .shell{max-width:960px;margin:26px auto;padding:22px}
+    header{display:flex;align-items:center;justify-content:space-between}
+    .nav a{color:var(--muted);text-decoration:none;margin-left:16px}
+
+    .booking{display:grid;grid-template-columns:1fr 380px;gap:18px;margin-top:18px}
+    .card{background:var(--panel);padding:18px;border-radius:12px}
+    h1{margin:0 0 8px 0}
+    label{display:block;margin-top:12px;color:var(--muted);font-size:14px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.02);color:#eaf7f6}
+    .btn{display:inline-block;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#042a2f;font-weight:700;text-decoration:none;margin-top:12px}
+    .muted{color:var(--muted);font-size:13px}
+
+    .pattern{position:fixed;left:0;bottom:0;width:360px;height:360px;opacity:0.06;background-image:url('assets/img/pattern.svg');background-size:cover;pointer-events:none}
+
+    @media (max-width:880px){.booking{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="pattern" aria-hidden="true"></div>
+  <div class="shell">
+    <header>
+      <div>
+        <div style="font-weight:700">Reserve • {{BUSINESS_NAME}}</div>
+        <div class="muted">Memberships, single events, and bespoke bookings</div>
+      </div>
+      <nav class="nav">
+        <a href="index.html">Back</a>
+        <a href="events.html">Events</a>
+        <a href="private-sessions.html">Private</a>
+        <a href="faq.html">FAQ</a>
+      </nav>
+    </header>
+
+    <main class="booking">
+      <section class="card">
+        <h1>Reserve your spot</h1>
+        <p class="muted">Select a date, tell us if it’s your first time, and choose a membership option if you'd like ongoing access.</p>
+
+        <form method="post" action="{{PRIMARY_CTA_URL}}">
+          <label for="type">Booking Type</label>
+          <select id="type" name="type">
+            <option value="drop">Drop-in (single event)</option>
+            <option value="membership">Monthly Membership</option>
+            <option value="private">Private Session (1:1 / Couples / Corporate)</option>
+          </select>
+
+          <label for="date">Preferred date</label>
+          <input id="date" name="date" placeholder="YYYY-MM-DD" />
+
+          <label for="name">Full name</label>
+          <input id="name" name="name" required />
+
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required />
+
+          <label for="notes">Notes & Accessibility</label>
+          <textarea id="notes" name="notes" rows="4" placeholder="Tell us about mobility needs, sensitivities, or preferences"></textarea>
+
+          <label for="promo">Promo code / membership</label>
+          <input id="promo" name="promo" />
+
+          <div style="margin-top:10px" class="muted">By reserving you acknowledge the contraindications listed on our FAQ. If pregnant, have implants, severe tinnitus, or are recovering from surgery, please contact us before booking.</div>
+
+          <button class="btn" type="submit">Reserve Spot</button>
+        </form>
+
+        <hr style="border:none;height:1px;background:rgba(255,255,255,0.03);margin:18px 0" />
+
+        <h3 style="margin:0 0 8px 0">Private session requests</h3>
+        <p class="muted">For 1:1, couple, or corporate requests, choose "Private Session" above and include preferred dates in the notes. We respond within 48 hours with availability and tailored pricing.</p>
+
+        <p style="margin-top:12px" class="muted">Questions? Call <strong>{{PHONE}}</strong> or <a href="mailto:{{EMAIL}}" style="color:inherit">email</a>.</p>
+      </section>
+
+      <aside class="card">
+        <h2>Booking snapshot</h2>
+        <p class="muted">Quick details to guide your decision.</p>
+
+        <h3 style="margin-top:12px">Typical durations</h3>
+        <ul class="muted">
+          <li>Drop-in group ritual — 60–75 minutes</li>
+          <li>Private 1:1 — 60 minutes (customizable)</li>
+          <li>Couples — 75 minutes</li>
+        </ul>
+
+        <h3 style="margin-top:12px">Sample instruments</h3>
+        <p class="muted">Sessions are curated from a rotating palette: crystal singing bowls, chimes, kalimba, and gentle bowed instruments. Private bookings can request specific instrument focuses.</p>
+
+        <h3 style="margin-top:12px">Pricing overview</h3>
+        <p class="muted">Drop-in pricing, membership tiers, and private rates are available on our Pricing page. Memberships grant booking priority and discounts on private sessions.</p>
+
+        <div style="margin-top:12px">
+          <a class="btn" href="pricing.html">See Pricing</a>
+        </div>
+
+        <hr style="border:none;height:1px;background:rgba(255,255,255,0.03);margin:16px 0" />
+        <p class="muted"><strong>Location:</strong> {{VENUE_NAME}}, {{CITY}}, {{STATE}}</p>
+        <p class="muted">Please arrive 10–15 minutes early to settle. Doors close shortly after the start to preserve a held field for the group.</p>
+      </aside>
+    </main>
+
+    <footer style="margin-top:18px;color:var(--muted);font-size:13px">If you need assistance booking multiple seats or a corporate event, contact us at {{EMAIL}} or call {{PHONE}}.</footer>
+  </div>
+</body>
+</html>

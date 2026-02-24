@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Gatherings — {{BUSINESS_NAME}} Sound Bath Events</title>
+  <style>
+    :root{--bg:#0f1020;--card:#0f1724;--accent:#a58eff;--muted:#9aa3b2;--glass:rgba(255,255,255,0.04);--gold:linear-gradient(90deg,#ffd6a5,#ff9aa2);}    
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#eaf0ff;background:radial-gradient(circle at 10% 10%, rgba(165,142,255,0.08), transparent 10%),var(--bg);}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 32px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);backdrop-filter: blur(6px);position:sticky;top:0;z-index:10;border-bottom:1px solid rgba(255,255,255,0.03)}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:48px;height:48px;flex:0 0 48px;border-radius:10px;background:conic-gradient(from 180deg at 50% 50%, #7b61ff, #ffa5d6 60%, #66ffd9);box-shadow:0 6px 20px rgba(102,255,217,0.06);display:grid;place-items:center;color:#071122;font-weight:700}
+    nav a{color:#cfe1ff;text-decoration:none;margin:0 10px;font-size:14px}
+    nav a:hover{color:#fff}
+    .container{max-width:1100px;margin:36px auto;padding:0 20px}
+
+    /* SVG backdrop */
+    .pattern-wrap{position:fixed;inset:0;pointer-events:none;opacity:0.12}
+    .hero{display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:stretch}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:14px;padding:22px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 8px 30px rgba(6,8,21,0.6)}
+    h1{margin:0;color:#fff;font-size:28px;letter-spacing:-0.4px}
+    p.lead{color:var(--muted);margin-top:8px}
+    .meta{margin-top:14px;color:#e6eaf6}
+    .next{background:linear-gradient(90deg,rgba(165,142,255,0.14),rgba(255,154,162,0.06));padding:12px;border-radius:10px;border:1px solid rgba(165,142,255,0.06)}
+
+    .calendar{margin-top:18px;display:grid;gap:10px}
+    .event-pill{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:10px;background:var(--glass);border:1px solid rgba(255,255,255,0.03)}
+    .muted{color:var(--muted);font-size:13px}
+    .btn{display:inline-block;padding:10px 14px;border-radius:10px;background:var(--accent);color:#081023;text-decoration:none;font-weight:600}
+
+    section{margin-top:28px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .pill{padding:14px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);border:1px solid rgba(255,255,255,0.03)}
+    footer{margin:60px 0 120px;color:var(--muted);text-align:center}
+
+    /* responsive */
+    @media (max-width:900px){
+      .hero{grid-template-columns:1fr;}
+      .grid-3{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="pattern-wrap" aria-hidden>
+    <!-- Unique svg pattern for events page -->
+    <svg width="100%" height="100%" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" style="opacity:0.85;filter:blur(18px)">
+      <defs>
+        <linearGradient id="g1" x1="0" x2="1">
+          <stop offset="0" stop-color="#8f72ff" stop-opacity="0.35"/>
+          <stop offset="1" stop-color="#ffd6a5" stop-opacity="0.12"/>
+        </linearGradient>
+        <pattern id="p1" width="40" height="40" patternUnits="userSpaceOnUse">
+          <circle cx="6" cy="6" r="1.5" fill="#fff" opacity="0.06"></circle>
+        </pattern>
+      </defs>
+      <rect x="-20" y="-40" width="1000" height="700" fill="url(#g1)"></rect>
+      <g transform="translate(80,40) rotate(-12)">
+        <path d="M0 200 C 140 40 260 260 420 120 C 580 -20 720 200 900 80 L900 700 L0 700 Z" fill="url(#p1)"></path>
+        <path d="M0 220 C 140 80 260 280 420 140 C 580 0 720 220 900 100 L900 700 L0 700 Z" fill="#7b61ff" opacity="0.055"></path>
+      </g>
+    </svg>
+  </div>
+
+  <header>
+    <div class="brand">
+      <div class="logo">SB</div>
+      <div>
+        <div style="font-weight:700;color:#fff">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="/index.html">Home</a>
+      <a href="/events.html">Gatherings</a>
+      <a href="/private-sessions.html">Sessions</a>
+      <a href="/pricing.html">Pricing</a>
+      <a href="/book.html">Reserve</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="card">
+        <h1>Evenings of sound & slow light</h1>
+        <p class="lead">A curated, sensory sound bath for deep rest — hosted in {{CITY}}, {{STATE}} by {{FACILITATOR_NAME}}. Premium cushions and scent included.</p>
+        <div class="meta">
+          <div style="display:flex;gap:12px;align-items:center">
+            <div class="next">
+              <div style="font-size:13px;color:var(--muted)">Next event</div>
+              <div style="font-weight:700;margin-top:6px">{{NEXT_EVENT_DATE}}</div>
+            </div>
+            <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          </div>
+        </div>
+
+        <div class="calendar">
+          <div class="event-pill"><div><strong>Sunset Sound Bath</strong><div class="muted">Fri • Feb 20 • 6:30–8:00pm</div></div><div><a class="btn" href="/book.html">Reserve</a></div></div>
+          <div class="event-pill"><div><strong>Full Moon Immersion</strong><div class="muted">Sat • Mar 7 • 7:00–8:30pm</div></div><div class="muted">12 seats</div></div>
+          <div class="event-pill"><div><strong>Community Morning</strong><div class="muted">Sun • Mar 22 • 9:30–10:45am</div></div><div class="muted">Pay-what-you-can</div></div>
+        </div>
+
+      </div>
+
+      <aside class="card">
+        <h3 style="margin-top:0">What to expect</h3>
+        <p class="muted">A gentle entrance, layered sound journey, then soft re-emergence. Comfortable mats and blankets available.</p>
+        <ul style="color:var(--muted);padding-left:18px;margin-top:8px">
+          <li>Arrival & settling (10–15 min)</li>
+          <li>Guided breath & intention (5–10 min)</li>
+          <li>Sound immersion (35–50 min)</li>
+          <li>Graceful transition & tea (10–15 min)</li>
+        </ul>
+        <div style="margin-top:14px">
+          <div class="muted">Instruments on the night</div>
+          <div style="font-weight:700;margin-top:6px">Crystal bowls • Soft chimes • Monochord</div>
+        </div>
+      </aside>
+    </section>
+
+    <section>
+      <div class="card">
+        <h2 style="margin-top:0">Myths & clarity — the sound bath explained</h2>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px">
+          <div>
+            <h4>Myth</h4>
+            <p class="muted">Sound baths are just music you lie to. They’re loud and chaotic.</p>
+          </div>
+          <div>
+            <h4>Truth</h4>
+            <p class="muted">These are carefully held, sensory environments using tuned instruments to invite parasympathetic rest. Volume is intentional, not intrusive.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid-3">
+      <div class="pill">
+        <h4>How to prepare</h4>
+        <p class="muted">Wear layers, bring an eye cover if you prefer. We provide mats, but personal mats are welcome.</p>
+      </div>
+      <div class="pill">
+        <h4>What to bring</h4>
+        <p class="muted">Light blanket, water bottle, phone on airplane mode, personal pillow for neck support.</p>
+      </div>
+      <div class="pill">
+        <h4>Contraindications</h4>
+        <p class="muted">If you are pregnant, have a pacemaker, recent surgeries, epilepsy, or severe psychiatric conditions please consult with your care provider and notify us before booking.</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="card">
+        <h3 style="margin-top:0">Notes from recent gatherings</h3>
+        <div style="margin-top:8px;color:var(--muted)">
+          "A gentle, cinematic rest — I slept better for days." — attendee review<br>
+          "A premium sensory evening, the cushions make all the difference." — attendee review
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="card">
+        <h3 style="margin-top:0">FAQ — quick answers</h3>
+        <details style="margin-top:8px;color:var(--muted)"><summary style="cursor:pointer">How long is a typical event?</summary><div style="padding-top:8px">Around 75–90 minutes including settling and post-session tea.</div></details>
+        <details style="margin-top:8px;color:var(--muted)"><summary style="cursor:pointer">Are mats provided?</summary><div style="padding-top:8px">Yes — we offer premium mats, bolsters, and blankets. You may bring your own.</div></details>
+        <details style="margin-top:8px;color:var(--muted)"><summary style="cursor:pointer">Can I record?</summary><div style="padding-top:8px">Out of respect for others, recording is discouraged. Photography is not allowed during immersion.</div></details>
+      </div>
+    </section>
+
+    <section style="display:flex;gap:18px;align-items:center;justify-content:space-between">
+      <div>
+        <h3 style="margin:0">Reserve your spot</h3>
+        <p class="muted" style="margin-top:6px">Small groups, intimate settings — book early.</p>
+      </div>
+      <div>
+        <a class="btn" href="/book.html">Book for {{NEXT_EVENT_DATE}}</a>
+      </div>
+    </section>
+
+    <footer>
+      <div>{{VENUE_NAME}} — {{CITY}}, {{STATE}} • <a href="tel:{{PHONE}}" style="color:var(--muted);text-decoration:none">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}" style="color:var(--muted);text-decoration:none">{{EMAIL}}</a></div>
+      <div style="margin-top:8px" class="muted">© {{BUSINESS_NAME}}</div>
+    </footer>
+  </main>
+</body>
+</html>

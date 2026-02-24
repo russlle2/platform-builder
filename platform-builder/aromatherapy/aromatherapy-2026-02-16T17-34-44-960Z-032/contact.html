@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Contact {{BUSINESS_NAME}} — calm, safety-forward aromatherapy consultations and blends in {{CITY}}, {{STATE}}." />
+  <style>
+    :root{
+      --bg1: linear-gradient(120deg, rgba(230,245,250,0.75), rgba(250,240,255,0.6));
+      --glass: rgba(255,255,255,0.18);
+      --accent: #5b9ea7; /* teal-ish */
+      --muted: #6b6b6b;
+      --radius: 16px;
+      --card-pad: 22px;
+      --shadow: 0 8px 30px rgba(20,30,40,0.08);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%;margin:0;background:var(--bg1);color:#102027}
+    /* SVG patterned backdrop */
+    body::before{
+      content:"";
+      position:fixed;inset:0;z-index:0;opacity:0.28;
+      background-image:url('assets/img/pattern.svg');
+      background-repeat:repeat;mix-blend-mode:overlay;filter:grayscale(20%);
+      transform:scale(1.03);
+    }
+    .wrap{position:relative;z-index:1;max-width:1100px;margin:36px auto;padding:28px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:20px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:60px;height:60px;border-radius:14px;background:linear-gradient(135deg,#f7ffff, #eaf7f9);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent);font-size:20px}
+    nav{display:flex;gap:12px;align-items:center}
+    nav a{padding:8px 12px;border-radius:10px;color:#10323b;text-decoration:none;font-weight:600;font-size:14px}
+    nav a:hover{background:rgba(255,255,255,0.6);backdrop-filter:blur(6px)}
+    /* glass panels */
+    .panel{background:var(--glass);border-radius:var(--radius);backdrop-filter:blur(10px);box-shadow:var(--shadow);padding:var(--card-pad)}
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:20px;align-items:start;margin-bottom:18px}
+    .hero h1{margin:0;font-size:26px;color:#042b30}
+    .hero p{margin-top:8px;color:var(--muted);line-height:1.5}
+    .contact-card{display:flex;flex-direction:column;gap:12px}
+    .muted{color:var(--muted);font-size:14px}
+    form{display:grid;gap:10px}
+    label{font-size:13px;color:#0b3a3f}
+    input[type=text],input[type=email],input[type=tel],select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(8,20,22,0.06);font-size:14px;background:rgba(255,255,255,0.7)}
+    textarea{min-height:120px;resize:vertical}
+    .row{display:flex;gap:10px}
+    .row > *{flex:1}
+    .btn{background:linear-gradient(180deg,var(--accent),#2f7f83);color:white;padding:10px 14px;border-radius:10px;border:0;font-weight:700;cursor:pointer}
+    .secondary{background:transparent;border:1px solid rgba(8,20,22,0.08);color:#08373a}
+    .contact-meta{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .meta-item{display:flex;flex-direction:column;padding:12px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.55),rgba(255,255,255,0.35));}
+    .meta-item strong{font-size:15px}
+    .faq-mini{margin-top:10px}
+    .notice{font-size:13px;color:#28403f;background:rgba(90,155,150,0.06);padding:10px;border-radius:10px}
+    footer{margin-top:22px;padding-top:18px;border-top:1px dashed rgba(8,20,22,0.06);display:flex;justify-content:space-between;align-items:center}
+    @media (max-width:900px){
+      .hero{grid-template-columns:1fr;}
+      .contact-meta{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">{{BUSINESS_NAME}}</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav aria-label="Main navigation">
+        <a href="index.html">Essence</a>
+        <a href="services.html">Sessions</a>
+        <a href="blends.html">Blends</a>
+        <a href="shop.html">Boutique</a>
+        <a href="pricing.html">Rates</a>
+        <a href="about.html">About</a>
+        <a href="book.html">Schedule</a>
+        <a href="contact.html" style="background:rgba(255,255,255,0.7);">Connect</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero panel">
+        <div>
+          <h1>Connect with {{PRACTITIONER_NAME}} — thoughtful aromatherapy in {{CITY}}, {{STATE}}</h1>
+          <p class="muted">Use this form for questions, appointment requests, or to request a custom blend. We prioritize safety and clarity: no medical claims here, only supportive, aromatic care and guidance. Expect a reply within 48 business hours.</p>
+
+          <div style="margin-top:16px" class="panel">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+              <div>
+                <div style="font-size:13px;color:var(--muted)">Prefer to speak?</div>
+                <div style="font-weight:700;margin-top:4px">Phone: <a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none">{{PHONE}}</a></div>
+                <div style="font-weight:700;margin-top:2px">Email: <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a></div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-size:13px;color:var(--muted)">Hybrid services</div>
+                <div style="font-weight:700">In-person & remote</div>
+                <div style="font-size:13px;color:var(--muted)">Book a session: <a href="{{PRIMARY_CTA_URL}}" class="secondary" style="padding:6px 10px;border-radius:8px;text-decoration:none;color:inherit">{{PRIMARY_CTA_LABEL}}</a></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+            <div class="panel" style="flex:1;min-width:220px">
+              <strong>Office</strong>
+              <div class="muted" style="margin-top:6px">{{CITY}}, {{STATE}} — by appointment</div>
+            </div>
+            <div class="panel" style="width:220px">
+              <strong>Typical reply</strong>
+              <div class="muted" style="margin-top:6px">48 business hours</div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="contact-card panel" aria-labelledby="contact-heading">
+          <h2 id="contact-heading" style="margin:0">Send a message</h2>
+          <p class="muted" style="margin:0 0 8px 0">Please include preferred times, service interest, and any scent sensitivities.</p>
+
+          <form action="{{PRIMARY_CTA_URL}}/contact" method="post" novalidate>
+            <div class="row">
+              <div>
+                <label for="name">Full name</label>
+                <input id="name" name="name" type="text" placeholder="Your name" required />
+              </div>
+              <div>
+                <label for="phone">Phone</label>
+                <input id="phone" name="phone" type="tel" placeholder="{{PHONE}}" />
+              </div>
+            </div>
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="{{EMAIL}}" required />
+
+            <label for="type">Inquiry type</label>
+            <select id="type" name="type">
+              <option>Consultation</option>
+              <option>Custom blend</option>
+              <option>Wholesale / Stockists</option>
+              <option>General question</option>
+            </select>
+
+            <label for="message">Message</label>
+            <textarea id="message" name="message" placeholder="Tell me a bit about what you’re looking for — goals, scent likes/dislikes, any sensitivities."></textarea>
+
+            <div class="row">
+              <div>
+                <label for="appt">Session preference</label>
+                <select id="appt" name="appt">
+                  <option>In-person</option>
+                  <option>Remote (video)</option>
+                  <option>Not sure — advise me</option>
+                </select>
+              </div>
+              <div>
+                <label for="blend">Interest</label>
+                <select id="blend" name="blend">
+                  <option>General consultation</option>
+                  <option>Custom single blend</option>
+                  <option>{{FAVORITE_BLEND}}</option>
+                </select>
+              </div>
+            </div>
+
+            <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="consent" required /> I consent to receive a reply from {{BUSINESS_NAME}} and agree to the privacy notes below.</label>
+
+            <div class="notice">Safety-first: aromatherapy can be a supportive practice for well-being. This service does not offer medical diagnoses or treatments. Inform us of pregnancy, medications, seizures, or significant respiratory conditions before any in-person session. We will guide safe dilution and patch-testing but this is not medical advice.</div>
+
+            <div style="display:flex;gap:10px;margin-top:8px">
+              <button type="submit" class="btn">Send message</button>
+              <a href="{{PRIMARY_CTA_URL}}" class="secondary" style="display:inline-flex;align-items:center;justify-content:center;padding:10px 14px;border-radius:10px;text-decoration:none">Schedule</a>
+            </div>
+
+            <div style="font-size:12px;color:var(--muted);margin-top:8px">By contacting us you consent to our follow-up via your provided contact details.</div>
+          </form>
+
+        </aside>
+      </section>
+
+      <section class="panel contact-meta">
+        <div class="meta-item">
+          <strong>Safety & pets</strong>
+          <div class="muted" style="margin-top:6px">Essential oils can affect animals differently. If you have pets, note species and size in your message. We advise pet-safe diffusion practices and will not recommend anything that could risk a companion animal.</div>
+        </div>
+        <div class="meta-item">
+          <strong>Pregnancy & special considerations</strong>
+          <div class="muted" style="margin-top:6px">If you are pregnant, nursing, or managing complex health matters, tell us up front. We will suggest pregnancy-safe blends and dilution guidance where appropriate and will always encourage consulting your healthcare provider for clinical decisions.</div>
+        </div>
+      </section>
+
+      <section style="margin-top:14px" class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+          <div>
+            <h3 style="margin:0">Quick FAQ</h3>
+            <div class="faq-mini muted" style="margin-top:8px">
+              <strong>Dilution?</strong> Typical topical blends are formulated with conservative dilution; we will recommend safe ratios and always advise a patch test.
+              <br><strong>Do I need a patch test?</strong> We commonly suggest it for topical use. We’ll walk you through a simple patch protocol.
+              <br><strong>Pets or pregnancy?</strong> Mention on your intake — we’ll avoid contraindicated oils and methods.
+            </div>
+          </div>
+          <div style="width:260px;text-align:right">
+            <div style="font-weight:700">Need immediate help?</div>
+            <div class="muted">Call: <a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none">{{PHONE}}</a></div>
+            <div style="margin-top:6px"><a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a></div>
+          </div>
+        </div>
+      </section>
+
+      <section style="margin-top:14px" class="panel">
+        <h3 style="margin:0 0 8px 0">Visit or mail</h3>
+        <div class="muted">Office location is by appointment only. For mailed orders or wholesale inquiries, include shipping address in your message.</div>
+        <div style="margin-top:12px;display:grid;grid-template-columns:1fr 240px;gap:12px;align-items:start">
+          <div class="panel" style="min-height:120px">
+            <strong>Address</strong>
+            <div class="muted" style="margin-top:6px">{{CITY}}, {{STATE}} — details provided after booking.</div>
+          </div>
+          <div class="panel" style="height:120px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(255,255,255,0.6),rgba(245,250,250,0.45));">
+            <div style="text-align:center;color:var(--muted)">Static map placeholder</div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer>
+      <div class="muted">&copy; <span id="year">2026</span> {{BUSINESS_NAME}} — calm, safety-forward aromatherapy.</div>
+      <div style="display:flex;gap:12px;align-items:center">
+        <a href="privacy.html" class="muted">Privacy</a>
+        <a href="terms.html" class="muted">Terms</a>
+      </div>
+    </footer>
+  </div>
+  <script>
+    // Small enhancement: set year
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

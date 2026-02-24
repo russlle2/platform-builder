@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Pricing — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Series and session pricing for holistic, whole-person care—education first, no guaranteed cures.">
+  <style>
+    :root{--bg:#fbfbf9;--accent:#7a5cff;--muted:#6b6b6b;--card:#ffffff;--glass:rgba(255,255,255,0.6);--accent-2:#2ec4b6}
+    *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    html,body{height:100%;margin:0;background:linear-gradient(150deg,var(--bg),#f1f6ff 60%)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:56px;height:56px;display:grid;place-items:center;border-radius:12px;overflow:hidden;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;font-weight:700}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-size:15px}
+    /* split diagonal hero */
+    .hero{display:grid;grid-template-columns:1fr 1fr;gap:0;min-height:360px;align-items:center;padding:48px;position:relative}
+    .hero .left{padding:28px}
+    .hero h1{margin:0;font-size:34px;letter-spacing:-0.02em;color:#1a1a1a}
+    .hero p.lead{color:var(--muted);margin-top:12px;max-width:46ch}
+    .hero .right{position:relative;height:260px}
+    /* diagonal panel */
+    .diagonal{position:absolute;inset:18px;border-radius:18px;background:linear-gradient(180deg,rgba(122,92,255,0.09),rgba(46,196,182,0.06));clip-path:polygon(0 0,100% 0,70% 100%,0% 100%);box-shadow:0 8px 30px rgba(20,20,60,0.06)}
+    .card-grid{display:grid;gap:18px;margin-top:20px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(20,20,60,0.04)}
+    .price{font-weight:700;font-size:20px;color:var(--accent)}
+    .muted{color:var(--muted);font-size:14px}
+    main{max-width:1100px;margin:28px auto;padding:0 20px}
+    section{margin:28px 0}
+    h2{margin:0 0 8px 0;font-size:20px}
+    .faq dt{font-weight:600}
+    .faq dd{margin:8px 0 16px 0;color:var(--muted)}
+    footer{padding:36px 20px;text-align:center;color:var(--muted);font-size:14px}
+    /* responsive */
+    @media(max-width:860px){.hero{grid-template-columns:1fr;min-height:360px}.hero .right{height:180px}
+      nav a{display:none}
+    }
+    /* subtle pattern via svg mask */
+    .pattern{position:absolute;inset:0;pointer-events:none;opacity:0.12}
+    .cta-btn{display:inline-block;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;padding:10px 16px;border-radius:10px;text-decoration:none;font-weight:600}
+    .tiers{display:flex;gap:14px}
+    .tier{flex:1;padding:18px;border-radius:12px;background:linear-gradient(180deg,#fff,#fbfbff);border:1px solid rgba(10,10,50,0.03)}
+    .tiny{font-size:13px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <svg class="pattern" width="0" height="0" viewBox="0 0 800 600" aria-hidden>
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1">
+        <stop offset="0" stop-color="#7a5cff" stop-opacity="0.18" />
+        <stop offset="1" stop-color="#2ec4b6" stop-opacity="0.12" />
+      </linearGradient>
+      <pattern id="p" width="40" height="40" patternUnits="userSpaceOnUse">
+        <rect width="40" height="40" fill="transparent"></rect>
+        <path d="M0 20 L20 0 M20 40 L40 20" stroke="#7a5cff" stroke-opacity="0.06" stroke-width="1"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#p)"></rect>
+  </svg>
+
+  <header>
+    <div class="brand">
+      <div class="logo">HM</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div class="tiny" style="margin-top:4px">A gentle series of gatherings for whole-person health</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="about.html">Who we are</a>
+      <a href="book.html">Reserve</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div class="left">
+      <h1>Pricing for the Seasons: guided series + individual sessions</h1>
+      <p class="lead">We offer small-series workshops and one-on-one visits grounded in education and whole-person planning. Choose an approachable path—no promises, only support, learning, and tending.</p>
+      <div style="margin-top:18px">
+        <a class="cta-btn" href="book.html">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+      <div class="card-grid" style="margin-top:18px">
+        <div class="card tiny">Sliding-scale options and community scholarships are available. Ask during booking: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      </div>
+    </div>
+    <div class="right">
+      <div class="diagonal"></div>
+    </div>
+  </div>
+
+  <main>
+    <section id="pricing">
+      <h2>How the series are priced</h2>
+      <p class="muted">Events are structured as educational cohorts: each series includes 4–6 meetings, learning materials, and a follow-up support call. Sessions are small and intentionally paced.</p>
+
+      <div class="tiers" style="margin-top:14px">
+        <div class="tier">
+          <div class="price">Series — Seasonal Cohort</div>
+          <div class="tiny" style="margin-top:6px">4 sessions + materials + group support call</div>
+          <div style="margin-top:12px;font-weight:700">$240 / person</div>
+          <div class="muted" style="margin-top:8px">Reserve your seat — limited capacity.</div>
+        </div>
+        <div class="tier">
+          <div class="price">Individual intake + plan</div>
+          <div class="tiny" style="margin-top:6px">Initial 60–75 min visit with personalized plan</div>
+          <div style="margin-top:12px;font-weight:700">$150</div>
+          <div class="muted" style="margin-top:8px">Includes care recommendations; optional labs billed separately.</div>
+        </div>
+        <div class="tier">
+          <div class="price">Follow-up coaching</div>
+          <div class="tiny" style="margin-top:6px">30-minute check-ins to tune your plan</div>
+          <div style="margin-top:12px;font-weight:700">$65</div>
+          <div class="muted" style="margin-top:8px">Pack discounts available for recurring support.</div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px" class="card">
+        <div style="font-weight:700">Community evening (pay what you can)</div>
+        <div class="muted" style="margin-top:6px">A monthly educational gathering: sliding scale, suggested $10–30. Pre-register to hold your place.</div>
+      </div>
+    </section>
+
+    <section id="what_to_expect">
+      <h2>What to expect with payment</h2>
+      <p class="muted">Payments secure your place and help us prepare materials. If you must cancel, we ask for at least 48 hours notice for partial refund credit. All plans emphasize education, self-care, and coordinated options; there are no guaranteed cures.</p>
+    </section>
+
+    <section id="faq" class="faq">
+      <h2>Frequently asked</h2>
+      <dl>
+        <dt>Are refunds available?</dt>
+        <dd>We offer credit or partial refunds for cancellations made 48+ hours ahead. Workshop cancellations may be refunded based on timing and resources committed.</dd>
+        <dt>Do you offer scholarships?</dt>
+        <dd>Yes — limited spots each series. Reach out to <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> with a brief note.</dd>
+        <dt>Will labs be required?</dt>
+        <dd>Optional educational labs may be suggested; they are billed separately and used to inform a plan where relevant.</dd>
+      </dl>
+    </section>
+
+    <section id="cta" style="display:flex;gap:18px;align-items:center;justify-content:space-between">
+      <div>
+        <h2>Ready to join a series or book a visit?</h2>
+        <p class="muted">Select a cohort, or schedule an intake to craft a plan that's tailored to you.</p>
+      </div>
+      <div>
+        <a class="cta-btn" href="book.html">Book now</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} — {{CITY}}, {{STATE}} • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    <div style="margin-top:8px">Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Membership Pricing — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfdfc;--muted:#6b7280;--accent:#2b8a7a;--card:#ffffff;--glass:rgba(255,255,255,0.65);--shadow:0 6px 20px rgba(16,24,40,0.08)}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;color:#0f172a;background:var(--bg);}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:linear-gradient(180deg, rgba(43,138,122,0.06), transparent);backdrop-filter: blur(6px);}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:52px;height:52px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),#5bb39f);color:white;font-weight:700}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none;font-size:14px}
+    .nav-right a{background:var(--accent);color:white;padding:8px 14px;border-radius:8px;text-decoration:none;font-weight:600}
+    main{max-width:1100px;margin:34px auto;padding:0 24px}
+    .hero{display:flex;gap:28px;align-items:center;padding:28px;border-radius:14px;background:linear-gradient(90deg, rgba(43,138,122,0.06), rgba(43,138,122,0.02));box-shadow:var(--shadow)}
+    .hero h1{margin:0;font-size:28px;color:#052f2a}
+    .hero p{margin:6px 0 0;color:var(--muted)}
+    .cards{display:flex;gap:18px;margin-top:22px}
+    .card{flex:1;background:var(--card);padding:20px;border-radius:12px;box-shadow:var(--shadow);border:1px solid rgba(11,14,16,0.04)}
+    .card h3{margin:0 0 8px}
+    .price{font-size:20px;color:var(--accent);font-weight:700}
+    ul.features{list-style:none;padding:0;margin:12px 0 18px;color:var(--muted)}
+    ul.features li{margin:8px 0}
+    .cta{display:inline-block;background:var(--accent);color:white;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}
+    .footnote{font-size:13px;color:var(--muted);margin-top:8px}
+    .compare{margin-top:24px;background:linear-gradient(180deg,white, #fbfbfd);border-radius:12px;padding:14px;border:1px solid rgba(11,14,16,0.04)}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:10px;text-align:left;border-bottom:1px dashed rgba(11,14,16,0.04)}
+    th{color:var(--muted);font-weight:600}
+    .inline-help{font-size:13px;color:var(--muted)}
+    footer{max-width:1100px;margin:28px auto;padding:20px 24px;color:var(--muted)}
+    /* subtle patterned background using embedded SVG */
+    body::before{content:"";position:fixed;inset:0;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="%232b8a7a" stop-opacity="0.05"/><stop offset="1" stop-color="%238bd3c5" stop-opacity="0.02"/></linearGradient></defs><rect width="100%" height="100%" fill="transparent"/><g fill="url(%23g)"><circle cx="30" cy="30" r="2"/><circle cx="70" cy="90" r="2"/><circle cx="140" cy="50" r="2"/></g></svg>');opacity:1;pointer-events:none;mix-blend-mode:overlay}
+    @media(max-width:880px){.cards{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">W</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <div>
+      <nav class="nav-main">
+        <a href="index.html">Home</a>
+        <a href="programs.html">Offerings</a>
+        <a href="services.html">Sessions</a>
+        <a href="about.html">About</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="testimonials.html">Stories</a>
+        <a href="book.html">Book</a>
+        <a class="nav-right" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div style="flex:1">
+        <h1>Memberships designed around steady progress</h1>
+        <p>Flexible tiers for habit-led change, with checkpoints and a curated plan each month. No jargon — just practical routines that fit your life.</p>
+      </div>
+      <div style="width:320px;text-align:right">
+        <div style="font-size:13px;color:var(--muted)">Start with a reflection call</div>
+        <a href="book.html" class="cta" style="margin-top:8px;display:inline-block">Schedule your starter session</a>
+      </div>
+    </section>
+
+    <section class="cards" aria-label="pricing tiers">
+      <div class="card">
+        <h3>Starter Membership</h3>
+        <div class="price">$29 / month</div>
+        <ul class="features">
+          <li>Monthly 30-minute alignment session</li>
+          <li>One focused habit cycle (7-day challenge)</li>
+          <li>Email check-ins and a simple dashboard</li>
+        </ul>
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">Join Starter</a>
+        <div class="footnote">Best for testing new rhythms and building one lasting habit.</div>
+      </div>
+
+      <div class="card">
+        <h3>Steady Arc</h3>
+        <div class="price">$79 / month</div>
+        <ul class="features">
+          <li>Bi-weekly coaching sessions</li>
+          <li>Personal session planner and habit toolkit</li>
+          <li>Priority scheduling + printable weekly checklists</li>
+        </ul>
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">Enroll in Steady Arc</a>
+        <div class="footnote">A practical package for people building a repeatable system.</div>
+      </div>
+
+      <div class="card">
+        <h3>Guided Membership</h3>
+        <div class="price">$149 / month</div>
+        <ul class="features">
+          <li>Weekly sessions and bespoke plans</li>
+          <li>Priority support, habit labs, and progress reviews</li>
+          <li>Quarterly intensive & planning session</li>
+        </ul>
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">Apply for Guided</a>
+        <div class="footnote">For people ready to reframe multiple routines and anchor them into daily life.</div>
+      </div>
+    </section>
+
+    <section class="compare" aria-label="compare features">
+      <h4 style="margin-top:0">What you get</h4>
+      <table>
+        <thead>
+          <tr><th>Feature</th><th>Starter</th><th>Steady Arc</th><th>Guided</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Weekly plan</td><td>—</td><td>Yes</td><td>Yes</td></tr>
+          <tr><td>7-day challenge generator</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+          <tr><td>Session Planner tool</td><td>—</td><td>Yes</td><td>Priority</td></tr>
+          <tr><td>Printable checklist</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+          <tr><td>Email follow-ups</td><td>Standard</td><td>Priority</td><td>Rapid</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:12px" class="inline-help">All memberships include practical habit templates and outcome-focused frameworks (no medical advice).</div>
+    </section>
+
+    <section style="margin-top:22px;padding:18px;background:linear-gradient(180deg, rgba(43,138,122,0.03), transparent);border-radius:12px;"> 
+      <h4 style="margin:0 0 8px">Not sure which fits?</h4>
+      <p style="margin:0 0 12px;color:var(--muted)">Try a 20-minute discovery call — we can create a short session plan and a 7-day action you can start immediately.</p>
+      <a href="book.html" class="cta">Book a discovery</a>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>Questions? Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    <div style="margin-top:8px;color:var(--muted)">Membership billing is month-to-month. Cancel anytime.</div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Private Sessions — Tailored Sound</title>
+  <style>
+    :root{--bg:#0b0f14;--card:#0f1820;--muted:#9fb1bb;--accent:#ffd89b}
+    body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:radial-gradient(1200px 600px at 10% 10%,rgba(137,220,210,0.06),transparent),#07111a;color:#e9f6f3;min-height:100vh}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 28px}
+    .logo{display:flex;gap:10px;align-items:center}
+    .logo .box{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,#ffd89b,#ffb6b9);display:grid;place-items:center;color:#072022;font-weight:800}
+    nav a{color:var(--muted);text-decoration:none;margin-left:14px}
+    main{max-width:950px;margin:28px auto;padding:18px}
+    .lead-card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px}
+    h1{margin:0 0 6px;font-size:24px}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
+    .profile{padding:14px;border-radius:12px;background:rgba(255,255,255,0.01)}
+    .option-list{display:flex;flex-direction:column;gap:10px}
+    .pkg{padding:12px;border-radius:10px;background:rgba(255,255,255,0.01);display:flex;justify-content:space-between;align-items:center}
+    .book-btn{background:var(--accent);color:#072022;padding:8px 12px;border-radius:8px;text-decoration:none;font-weight:700}
+    .small{font-size:13px;color:var(--muted)}
+    .disclaimer{margin-top:12px;padding:10px;border-radius:8px;background:rgba(255,255,255,0.01);color:#d4e9e4}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}.logo{font-size:14px}.nav{display:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo"><div class="box">PS</div><div style="font-weight:800">Personal Sound Atelier</div></div>
+    <div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="events.html">Gatherings</a>
+        <a href="pricing.html">Investment</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="lead-card">
+      <h1>Private sessions calibrated to what you need</h1>
+      <p class="small">One-on-one or small-group arrangements designed as a therapeutic sound container. Choose your sensitivity and we’ll tailor the texture, duration, and follow-up guidance.</p>
+    </section>
+
+    <div class="grid">
+      <div>
+        <div class="card profile" style="padding:18px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-size:13px;color:var(--muted)">Your current orientation</div>
+              <div style="font-weight:800;margin-top:6px" id="psMoodTitle">Balanced</div>
+            </div>
+            <div style="text-align:right">
+              <div class="small">Prefer phone?</div>
+              <a href="tel:{{PHONE}}" class="book-btn">Call {{PHONE}}</a>
+            </div>
+          </div>
+
+          <div style="margin-top:12px">
+            <div style="font-size:13px;color:var(--muted)">Choose mood</div>
+            <select id="psMood" style="margin-top:8px;padding:10px;border-radius:8px;background:rgba(255,255,255,0.02);color:#e9f6f3;border:none;width:100%">
+              <option value="restless">Restless</option>
+              <option value="numb">Numb</option>
+              <option value="heavy">Heavy</option>
+              <option value="balanced" selected>Balanced</option>
+              <option value="curious">Curious</option>
+            </select>
+          </div>
+
+          <div style="margin-top:12px">
+            <div style="font-size:13px;color:var(--muted)">Sound preference</div>
+            <div style="display:flex;gap:8px;margin-top:8px" id="psMixer">
+              <div class="mix" data-level="gentle" style="flex:1;padding:9px;border-radius:8px;background:rgba(255,255,255,0.01);text-align:center;cursor:pointer">Gentle</div>
+              <div class="mix selected" data-level="medium" style="flex:1;padding:9px;border-radius:8px;background:linear-gradient(90deg,rgba(255,216,155,0.06),rgba(255,182,185,0.03));text-align:center;cursor:pointer">Medium</div>
+              <div class="mix" data-level="intense" style="flex:1;padding:9px;border-radius:8px;background:rgba(255,255,255,0.01);text-align:center;cursor:pointer">Intense</div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px">
+            <div style="font-size:13px;color:var(--muted)">Recommended format</div>
+            <div id="psRec" style="margin-top:8px;font-weight:800">Solo 60 — Breath & Tone</div>
+            <div class="small" id="psRecDesc" style="margin-top:6px;color:var(--muted)">A focused 60-minute container combining long tones and guided breathwork.</div>
+          </div>
+
+          <div style="margin-top:14px;display:flex;gap:8px;align-items:center">
+            <a id="psBook" class="book-btn" href="{{PRIMARY_CTA_URL}}">Request a Personal Arrangement</a>
+            <a href="mailto:{{EMAIL}}" style="color:var(--muted);text-decoration:none;font-weight:700">Email</a>
+          </div>
+
+          <div class="disclaimer">
+            Note: If you have implants, are pregnant, or have a diagnosed condition sensitive to vibration or sound exposure, please contact your healthcare provider before booking and inform us at {{EMAIL}}.
+          </div>
+        </div>
+
+        <div style="margin-top:14px;padding:12px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);color:var(--muted)">
+          <div style="font-weight:700">What to expect</div>
+          <ul style="margin:8px 0 0 18px">
+            <li>Intake and intention-setting (10–15 min)</li>
+            <li>Sound container (40–60 min)</li>
+            <li>Gentle re-entry and notes (10 min)</li>
+          </ul>
+        </div>
+      </div>
+
+      <aside>
+        <div style="padding:14px;border-radius:12px;background:linear-gradient(90deg,rgba(255,216,155,0.02),transparent)">
+          <div style="font-size:13px;color:var(--muted)">Packages</div>
+          <div class="option-list" style="margin-top:12px">
+            <div class="pkg">
+              <div>
+                <div style="font-weight:800">Solo 60</div>
+                <div class="small">A single-hour private container</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-weight:800">$140</div>
+                <div class="small">per session</div>
+              </div>
+            </div>
+
+            <div class="pkg">
+              <div>
+                <div style="font-weight:800">Duo 75</div>
+                <div class="small">Two people, shared focus (75 min)</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-weight:800">$220</div>
+                <div class="small">total</div>
+              </div>
+            </div>
+
+            <div class="pkg">
+              <div>
+                <div style="font-weight:800">Therapeutic Series (3)</div>
+                <div class="small">Curated sequence with check-ins</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-weight:800">$390</div>
+                <div class="small">save $30</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;color:var(--muted);font-size:13px">Custom requests and sliding-scale options available — email <a href="mailto:{{EMAIL}}" style="color:#eafbf8">{{EMAIL}}</a></div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    (function(){
+      const moodSelect = document.getElementById('psMood');
+      const mixers = document.querySelectorAll('#psMixer .mix');
+      const titleEl = document.getElementById('psMoodTitle');
+      const recEl = document.getElementById('psRec');
+      const recDesc = document.getElementById('psRecDesc');
+      const bookBtn = document.getElementById('psBook');
+
+      const mapping = {
+        restless:{gentle:{title:'Solo 45 — Soften',desc:'Short container focused on breath and soft overtones.'},medium:{title:'Solo 60 — Reset',desc:'Breath-led session with mid-range singing bowls.'},intense:{title:'Deep 75 — Release',desc:'Layered low-frequency support for deep release.'}},
+        numb:{gentle:{title:'Gentle 45 — Tune In',desc:'Carefully lowered vibration to invite sensation.'},medium:{title:'Flow 60 — Warm',desc:'Warm harmonic patterns to rekindle felt-sense.'},intense:{title:'Embodied 75 — Stir',desc:'Long sustain and textured malletwork.'}},
+        heavy:{gentle:{title:'Light 45 — Unweight',desc:'Soft sustain and somatic cues.'},medium:{title:'Lift 60 — Open',desc:'Deep bowls with breath sequencing.'},intense:{title:'Anchor 90 — Deep Resonance',desc:'Prolonged low-frequency emphasis with supportive guidance.'}},
+        balanced:{gentle:{title:'Solo 45 — Maintain',desc:'Short practice to maintain equilibrium.'},medium:{title:'Solo 60 — Balanced',desc:'Standard private container with mixed textures.'},intense:{title:'Extended 75 — Enrich',desc:'Deeper layering and optional movement.'}},
+        curious:{gentle:{title:'Explore 45 — Touch',desc:'Delicate textures and invitation to play.'},medium:{title:'Play 60 — Varied Textures',desc:'Dynamic shifts, bells, and field changes.'},intense:{title:'Traverse 75 — Wide Field',desc:'Rich, exploratory sound landscape.'}}
+      };
+
+      let currentLevel = 'medium';
+
+      function updateRec(){
+        const mood = moodSelect.value;
+        const rec = mapping[mood][currentLevel];
+        titleEl.textContent = mood.charAt(0).toUpperCase() + mood.slice(1);
+        recEl.textContent = rec.title;
+        recDesc.textContent = rec.desc;
+        bookBtn.textContent = 'Request: ' + rec.title;
+      }
+
+      moodSelect.addEventListener('change',updateRec);
+      mixers.forEach(m=>m.addEventListener('click',function(){
+        mixers.forEach(x=>x.classList.remove('selected'));
+        this.classList.add('selected');
+        currentLevel = this.getAttribute('data-level');
+        updateRec();
+      }));
+
+      updateRec();
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Private Sessions — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--accent:#1565d8;--muted:#5b5b66;--card:#fff}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#fbfdff,#f7f9ff)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:16px 24px}
+    .brand{display:flex;gap:12px;align-items:center}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+
+    .container{max-width:980px;margin:18px auto;padding:18px}
+    .hero{display:flex;gap:18px;align-items:flex-start}
+    .hero .left{flex:1}
+    .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 24px rgba(22,26,40,0.06)}
+    .session-options{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+    .option{padding:12px;border-radius:10px;border:1px solid #eef2ff}
+    .mixer-vertical{display:flex;gap:8px;flex-direction:column;margin-top:10px}
+    .mixer-vertical button{padding:8px;border-radius:8px;border:none;background:#f7f8ff;cursor:pointer}
+    .mixer-vertical button.active{background:var(--accent);color:white}
+
+    .note{color:var(--muted);font-size:13px;margin-top:8px}
+    .cta{display:inline-block;background:var(--accent);color:white;padding:10px 14px;border-radius:10px;text-decoration:none}
+
+    .aside{width:320px}
+    .price-box{font-size:24px;font-weight:700;color:#222}
+
+    @media (max-width:900px){.hero{flex-direction:column}.aside{width:100%}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div style="width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#5b9dff);display:flex;align-items:center;justify-content:center;color:white;font-weight:700">PS</div>
+      <div>
+        <div style="font-weight:700">Private Sessions</div>
+        <div style="font-size:12px;color:var(--muted)">One-to-one and small-group tailoring</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Gather</a>
+      <a href="events.html">Sessions</a>
+      <a href="private-sessions.html">Private</a>
+      <a href="pricing.html">Rates</a>
+      <a href="book.html">Reserve</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div class="hero">
+      <div class="left">
+        <div class="card">
+          <h2 style="margin:0 0 8px 0">Personal sound work for targeted rest</h2>
+          <p class="note">Sessions are crafted around your nervous system, goals, and comfort. Choose an intensity to see how a private session might be arranged.</p>
+
+          <div style="margin-top:12px">Intensity chooser</div>
+          <div class="mixer-vertical" role="tablist" aria-label="Private intensity">
+            <button id="pGentle" class="active" data-level="gentle">Soft — grounding & stable</button>
+            <button id="pMedium" data-level="medium">Balanced — deeper layers</button>
+            <button id="pIntense" data-level="intense">Deep — resonance & release</button>
+          </div>
+
+          <div id="privatePlan" style="margin-top:14px"></div>
+
+          <div style="margin-top:14px">
+            <a class="cta" href="book.html">Request a private session</a>
+            <a href="contact.html" style="margin-left:10px;color:var(--muted);text-decoration:none">Ask a question</a>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0 0 8px 0">How a private session differs</h4>
+          <ul style="margin:0;padding-left:18px;color:var(--muted)">
+            <li>Time and instrumentation tailored to your sensitivity</li>
+            <li>Short intake to set intention and check medical suitability</li>
+            <li>Flexible positioning: seated, semi-reclined, or lying</li>
+          </ul>
+          <div class="note">Contraindications: Private sessions may still be unsuitable for those with implanted electronic medical devices, recent cranial surgery, or uncontrolled seizures. Always check with your clinician if unsure.</div>
+        </div>
+
+      </div>
+
+      <aside class="aside">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-size:13px;color:var(--muted)">Estimated single-session range</div>
+              <div class="price-box" id="priceEstimate">—</div>
+            </div>
+            <div style="font-size:12px;color:var(--muted)">45–90 min</div>
+          </div>
+
+          <div style="margin-top:12px;color:var(--muted);font-size:13px">After you request, we’ll follow with a short intake and finalize the format for your needs. Multiple sessions can be packaged for ongoing support.</div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0 0 8px 0">Small-group private options</h4>
+          <div style="color:var(--muted);font-size:13px">Invite up to 6 people for a tailored evening. We design the flow to match your group intention — gentle winding down or a focused reset.</div>
+        </div>
+
+      </aside>
+    </div>
+
+    <div style="margin-top:12px;display:flex;gap:12px">
+      <div class="card" style="flex:1">
+        <h4 style="margin:0 0 8px 0">Attendee notes</h4>
+        <div id="privateTestimonials" style="color:var(--muted);font-size:14px">Clients report improved sleep and clearer emotional boundaries after a short series.</div>
+      </div>
+
+      <div class="card" style="width:260px">
+        <h4 style="margin:0 0 8px 0">Book or inquire</h4>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <a class="cta" href="book.html">Start a request</a>
+          <a href="mailto:{{EMAIL}}" style="text-decoration:none;color:var(--muted);padding:8px 10px;border-radius:8px;border:1px solid #eef2ff;display:inline-block">Email us</a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    (function(){
+      const plans = {
+        gentle:{summary:'A calm, low-volume session with bowls and soft vocal harmonics. Intake and 45–60 minutes of guided sound.',price:'$95–$140'},
+        medium:{summary:'Medium sustain and layered textures for a clear nervous-system reset. 60–75 minutes with customized tools.',price:'$140–$210'},
+        intense:{summary:'Extended resonance work using low-frequency bowls and gong elements for deep release. 75–90 minutes.',price:'$210–$320'}
+      };
+
+      const buttons = document.querySelectorAll('.mixer-vertical button');
+      const planBox = document.getElementById('privatePlan');
+      const priceEstimate = document.getElementById('priceEstimate');
+
+      function setPlan(level){
+        buttons.forEach(b=>b.classList.toggle('active',b.dataset.level===level));
+        const p = plans[level];
+        planBox.innerHTML = `<div style=\"font-weight:700;margin-bottom:8px\">${p.summary}</div><div style=\"color:var(--muted);font-size:13px\">Recommended instruments: ${level==='gentle'?'soft bowls, chimes':level==='medium'?'bowls, voice, frame drum':'large bowls, gong, tuned earth tones'}</div>`;
+        priceEstimate.textContent = p.price;
+      }
+
+      buttons.forEach(b=>b.addEventListener('click',()=>setPlan(b.dataset.level)));
+      // init
+      setPlan('gentle');
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#071022;--card:#081328;--accent:#FF6B6B;--muted:#9aa4be;--glass:rgba(255,255,255,0.03);--white:#f3f6ff}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#041423 0%, #07142a 100%), url('assets/img/pattern.svg');color:var(--white)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;background:rgba(255,255,255,0.02)}
+    .logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#ff8a80,var(--accent));display:flex;align-items:center;justify-content:center;font-weight:800}
+    nav a{color:var(--white);text-decoration:none;margin-left:16px;font-weight:600}
+    .wrap{padding:28px}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:22px}
+    .card{background:var(--card);border-radius:12px;padding:18px}
+    h1{margin:0 0 6px 0}
+    .muted{color:var(--muted);font-size:14px}
+    /* Pricing comparator */
+    .comparator{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+    .toggle{display:flex;width:240px;background:var(--glass);padding:6px;border-radius:999px}
+    .opt{flex:1;text-align:center;padding:8px;border-radius:999px;cursor:pointer;font-weight:700}
+    .opt.active{background:linear-gradient(90deg,rgba(255,107,107,0.18),rgba(255,138,128,0.08));color:#fff}
+    .plans{display:flex;flex-direction:column;gap:12px;margin-top:12px}
+    .plan{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent)}
+    .price{font-weight:800;font-size:18px;color:var(--accent)}
+    .desc{color:var(--muted);font-size:13px}
+    /* animation target */
+    .num{display:inline-block;min-width:74px;text-align:right}
+    footer{padding:20px 28px;color:var(--muted)}
+    @media(max-width:880px){.grid{grid-template-columns:1fr}.toggle{width:100%}}
+  </style>
+</head>
+<body>
+<header>
+  <div style="display:flex;gap:14px;align-items:center">
+    <div class="logo">P</div>
+    <div>
+      <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+      <div style="font-size:12px;color:var(--muted)">Programs & clinical focus</div>
+    </div>
+  </div>
+  <nav>
+    <a href="index.html">Base</a>
+    <a href="approach.html">Method</a>
+    <a href="specialties.html">Services</a>
+    <a href="fees.html">Fees</a>
+    <a href="book.html">Reserve</a>
+  </nav>
+</header>
+<main class="wrap">
+  <div class="grid">
+    <div>
+      <div class="card">
+        <h1>Focused help, framed around your aim</h1>
+        <p class="muted">Here are structured programs I offer. Toggle between a monthly subscription-style rhythm and single-package pricing to compare what fits your needs.</p>
+
+        <div class="comparator" id="comparator">
+          <div style="font-size:13px;color:var(--muted)">View prices as</div>
+          <div class="toggle" role="tablist">
+            <div class="opt active" data-mode="monthly">Monthly</div>
+            <div class="opt" data-mode="package">Package</div>
+          </div>
+
+          <div class="plans" id="plans">
+            <div class="plan">
+              <div>
+                <div style="font-weight:700">Clarity Sprint</div>
+                <div class="desc">3 focused sessions for a pressing decision</div>
+              </div>
+              <div class="price"><span class="num" data-monthly="420" data-package="1150">$420</span><span style="font-size:13px;color:var(--muted)">/mo</span></div>
+            </div>
+
+            <div class="plan">
+              <div>
+                <div style="font-weight:700">Transition Series</div>
+                <div class="desc">Six sessions for role or relational shifts</div>
+              </div>
+              <div class="price"><span class="num" data-monthly="320" data-package="1750">$320</span><span style="font-size:13px;color:var(--muted)">/mo</span></div>
+            </div>
+
+            <div class="plan">
+              <div>
+                <div style="font-weight:700">Anchor Package</div>
+                <div class="desc">Ongoing short-check rhythm for steady work</div>
+              </div>
+              <div class="price"><span class="num" data-monthly="220" data-package="1200">$220</span><span style="font-size:13px;color:var(--muted)">/mo</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:16px;color:var(--muted);font-size:13px">Monthly view expresses a recurring cadence; package view shows the bulk price if you prefer a set of sessions paid up front. No promises—just clear options to pick from.</div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <h3 style="margin-top:0">Who I usually work with</h3>
+        <p class="muted">Adults navigating role change, parents balancing identities, folks hoping to interrupt a pattern. I focus on practical momentum: experiments, tracking, and short-term pivots.</p>
+      </div>
+    </div>
+
+    <aside class="card">
+      <div style="font-weight:700">Quick comparison</div>
+      <div style="margin-top:10px;color:var(--muted);font-size:14px">If you want a single, directional push, Clarity Sprint often helps. If you want scaffolding across weeks, consider the Transition Series. I can help you decide in a short consult.</div>
+      <div style="margin-top:14px">
+        <a href="{{PRIMARY_CTA_URL}}" style="display:inline-block;padding:10px 14px;background:var(--accent);color:#071023;border-radius:10px;font-weight:800;text-decoration:none">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+      <div style="margin-top:14px;color:var(--muted);font-size:13px">Sessions are confidential. Not a crisis service. If you are in immediate danger, contact emergency services.</div>
+    </aside>
+  </div>
+</main>
+<footer>
+  <div style="padding:10px 28px;color:var(--muted);font-size:13px">Email: <a href="mailto:{{EMAIL}}" style="color:var(--accent)">{{EMAIL}}</a> • Call: <a href="tel:{{PHONE}}" style="color:var(--accent)">{{PHONE}}</a></div>
+</footer>
+
+<script>
+// Pricing comparator logic with animated numbers
+(function(){
+  const opts=document.querySelectorAll('.opt');
+  const nums=document.querySelectorAll('.num');
+  let mode='monthly';
+  function animateValue(el, start, end, duration){
+    const startTime=performance.now();
+    function loop(now){
+      const t=Math.min(1,(now-startTime)/duration);
+      const value=Math.round(start + (end-start)*t);
+      el.textContent = '$' + value;
+      if(t<1) requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
+  }
+  opts.forEach(o=>o.addEventListener('click', ()=>{
+    opts.forEach(x=>x.classList.remove('active'));
+    o.classList.add('active');
+    mode=o.dataset.mode;
+    nums.forEach(n=>{
+      const from = parseInt(n.textContent.replace(/[^0-9]/g,'')) || 0;
+      const to = parseInt(n.dataset[mode]);
+      animateValue(n, from, to, 550);
+      // suffix
+      setTimeout(()=>{
+        const suffix = mode==='monthly'?'/mo':' total';
+        n.nextSibling.textContent = mode==='monthly'?'/mo':' total';
+      },560);
+    });
+  }));
+  // initialize numeric suffixes
+  nums.forEach(n=>{ n.nextSibling.textContent='/mo'; });
+})();
+</script>
+</body>
+</html>

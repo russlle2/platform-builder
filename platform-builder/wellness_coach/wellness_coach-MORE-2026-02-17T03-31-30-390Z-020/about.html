@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'/>
+  <meta name='viewport' content='width=device-width,initial-scale=1'/>
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1720;--card:#0b1220;--accent:#8be3c5;--muted:#98a3b3;--glass:rgba(255,255,255,0.03)}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue';background:linear-gradient(180deg,#071021 0%,#071423 50%);color: #e6f7f3}
+    .wrap{max-width:1100px;margin:32px auto;padding:28px}
+    header{display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;gap:14px;align-items:center}
+    .mark{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#60b7ff);display:flex;align-items:center;justify-content:center;color:#042;box-shadow:0 6px 24px rgba(0,0,0,0.6)}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-weight:600}
+    .hero{display:grid;grid-template-columns:1fr 380px;gap:28px;margin-top:28px}
+    .panel{background:var(--card);padding:22px;border-radius:12px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.02)}
+    h1{margin:0 0 8px 0;font-size:28px}
+    p.lead{color:var(--muted);margin:0 0 18px 0}
+    .meta{font-size:13px;color:var(--muted);display:flex;gap:12px}
+    .pattern{background-image:url('assets/img/pattern.svg');background-size:420px;background-repeat:repeat;}
+    .story{margin-top:18px;line-height:1.6;color:#dff6ef}
+    .framework{display:flex;flex-direction:column;gap:12px;margin-top:18px}
+    .tile{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:14px;border-radius:10px}
+    .cta{display:flex;gap:12px;margin-top:18px}
+    .btn{padding:10px 14px;border-radius:10px;border:0;background:var(--accent);color:#042;font-weight:700;text-decoration:none}
+    .muted-btn{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+    /* Mood-to-Method UI */
+    .mood{margin-top:18px;padding:14px;border-radius:12px;background:linear-gradient(90deg,rgba(139,227,197,0.06),transparent)}
+    .mood select{width:100%;padding:10px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:#e6f7f3}
+    .approach{margin-top:12px}
+    .approach h3{margin:0 0 6px 0}
+    footer{margin-top:28px;color:var(--muted);font-size:13px}
+    /* small screens */
+    @media (max-width:880px){.hero{grid-template-columns:1fr}.mark{width:52px;height:52px}.wrap{padding:14px}}
+  </style>
+</head>
+<body>
+  <div class='wrap pattern'>
+    <header>
+      <div class='brand'>
+        <div class='mark'>WC</div>
+        <div>
+          <div style='font-weight:800'>{{BUSINESS_NAME}}</div>
+          <div style='font-size:12px;color:var(--muted)'>Attuned coaching + practical scaffolds</div>
+        </div>
+      </div>
+      <nav>
+        <a href='index.html'>Home</a>
+        <a href='about.html'>About</a>
+        <a href='services.html'>Offerings</a>
+        <a href='programs.html'>Roadmaps</a>
+        <a href='pricing.html'>Pricing</a>
+        <a href='testimonials.html'>Stories</a>
+        <a href='book.html'>Book</a>
+        <a href='contact.html'>Contact</a>
+      </nav>
+    </header>
+
+    <main class='hero'>
+      <section class='panel'>
+        <h1>Who I work with</h1>
+        <p class='lead'>I partner with people who want dependable daily rhythms without adding complexity. We build small habits, guardrails and micro-systems that shape the next 30 days.</p>
+
+        <div class='story'>
+          <p>I blend outcome-oriented coaching with a set of compact frameworks: a morning scaffold, a focus arc for productive afternoons, and a winding-down practice to close the day. Each framework is taught, practiced, and adjusted so you leave with repeatable moves—not vague advice.</p>
+        </div>
+
+        <div class='framework'>
+          <div class='tile'>
+            <strong>Outcome clarity</strong>
+            <div style='color:var(--muted);font-size:13px;margin-top:6px'>We translate the change you want into three measurable short-term outcomes and the daily micro-actions that support them.</div>
+          </div>
+          <div class='tile'>
+            <strong>Habit scaffolding</strong>
+            <div style='color:var(--muted);font-size:13px;margin-top:6px'>Simple habit stacks that slot into an already busy day.</div>
+          </div>
+          <div class='tile'>
+            <strong>30-day path map</strong>
+            <div style='color:var(--muted);font-size:13px;margin-top:6px'>A visual daily plan so you can see how small choices add up across a month.</div>
+          </div>
+        </div>
+
+        <div class='mood'>
+          <label style='font-size:13px;color:var(--muted)'>Tell me how you feel right now</label>
+          <select id='moodSelect' aria-label='Mood to method'>
+            <option value='drained'>Drained — need gentle rebuild</option>
+            <option value='restless'>Restless — too many starts</option>
+            <option value='stuck'>Stuck — progress plateau</option>
+            <option value='energized'>Energized — amplify focus</option>
+          </select>
+          <div class='approach'>
+            <h3 id='methodTitle'>Adaptive Alignment</h3>
+            <p id='methodDesc' style='color:var(--muted)'>We select a compact sequence of habits and a supportive check-in rhythm tailored to your current energy and load.</p>
+            <div style='margin-top:8px'>
+              <a id='moodCta' class='btn' href='{{PRIMARY_CTA_URL}}?mood=drained'>Begin an alignment session</a>
+              <a class='muted-btn' href='contact.html'>Ask a question</a>
+            </div>
+          </div>
+        </div>
+
+        <div style='margin-top:18px' class='meta'>
+          <div>Phone: {{PHONE}}</div>
+          <div>Email: {{EMAIL}}</div>
+        </div>
+      </section>
+
+      <aside class='panel'>
+        <h3 style='margin-top:0'>Origin story</h3>
+        <p style='color:var(--muted)'>I was trained across design and coaching disciplines. Over time I learned the most durable change is rarely dramatic — it is designed. My approach pairs a clear aim with a small set of daily practices and an accountability structure.</p>
+
+        <h4 style='margin-top:16px'>What you can expect</h4>
+        <ul style='color:var(--muted);padding-left:18px'>
+          <li>Two-week check-in structure</li>
+          <li>Daily micro-practices, 5–20 minutes</li>
+          <li>A visual 30-day path map with priorities</li>
+        </ul>
+
+        <div style='margin-top:18px'>
+          <strong style='display:block'>Location</strong>
+          <div style='color:var(--muted)'>{{CITY}}, {{STATE}}</div>
+        </div>
+
+        <div style='margin-top:18px'>
+          <a class='btn' href='{{PRIMARY_CTA_URL}}?origin=about'>Start a focused plan</a>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      <div style='display:flex;justify-content:space-between;align-items:center'>
+        <div style='color:var(--muted)'>© {{BUSINESS_NAME}} • Practical systems for daily well-being</div>
+        <div style='color:var(--muted)'>Need help? <a href='contact.html' style='color:var(--accent);text-decoration:none'>Reach out</a></div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    (function(){
+      var select = document.getElementById('moodSelect');
+      var title = document.getElementById('methodTitle');
+      var desc = document.getElementById('methodDesc');
+      var cta = document.getElementById('moodCta');
+
+      var map = {
+        'drained':{
+          title:'Rebuild Rhythm',
+          desc:'A soft, daily scaffold focused on restorative micro-habits: short movement, simplified evening routine, and a 5-minute morning planning practice.',
+          ctaLabel:'Book a gentle reset',
+          slug:'rebuild'
+        },
+        'restless':{
+          title:'Channel the restless',
+          desc:'Turn scattered energy into short sprints and clear stop points — two focused habits and a winding-down buffer to secure evenings.',
+          ctaLabel:'Try a focused sprint',
+          slug:'channel'
+        },
+        'stuck':{
+          title:'Shift the Plateau',
+          desc:'We map friction points, set tiny experiments, and create a weekly cadence so momentum returns without extra complexity.',
+          ctaLabel:'Schedule a momentum session',
+          slug:'shift'
+        },
+        'energized':{
+          title:'Amplify Progress',
+          desc:'Lean into current energy with an elevated habit scaffold and a modest productivity scaffold that preserves recovery.',
+          ctaLabel:'Amplify with an intensive',
+          slug:'amplify'
+        }
+      };
+
+      function update(){
+        var val = select.value;
+        var cfg = map[val];
+        title.textContent = cfg.title;
+        desc.textContent = cfg.desc;
+        cta.textContent = cfg.ctaLabel;
+        cta.href = '{{PRIMARY_CTA_URL}}?mood=' + cfg.slug;
+      }
+
+      select.addEventListener('change', update);
+      update();
+    })();
+  </script>
+</body>
+</html>

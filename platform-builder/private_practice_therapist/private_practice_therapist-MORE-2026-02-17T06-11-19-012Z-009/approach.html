@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>How I Work — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f6fbff;--muted:#585858;--accent:#c96bd6;--card:#fff}
+    body{margin:0;font-family:system-ui,Arial;background:var(--bg);color:#222}
+    .wrap{max-width:980px;margin:0 auto;padding:28px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    h1{margin-top:8px}
+    .lead{background:linear-gradient(90deg,rgba(201,107,214,0.06),transparent);padding:12px;border-radius:10px}
+    .flow{display:flex;gap:12px;margin-top:16px}
+    .step{flex:1;background:var(--card);padding:14px;border-radius:12px;border:1px solid #eee}
+    .plan{margin-top:18px;background:var(--card);padding:14px;border-radius:12px}
+    .plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .plan .price{font-size:16px;color:var(--accent);font-weight:700}
+    .mood-banner{margin-top:12px;padding:12px;border-radius:10px;background:linear-gradient(90deg,rgba(201,107,214,0.06),transparent)}
+    .conf{margin-top:18px;padding:12px;border-radius:10px;background:#fff;border:1px solid #ffe6fb}
+    .btn{background:var(--accent);color:#fff;padding:10px 12px;border-radius:10px;text-decoration:none}
+    footer{margin-top:20px;padding:12px;border-top:1px solid #eee;color:var(--muted)}
+    @media(max-width:760px){.plan-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html">Welcome</a>
+        <a href="about.html">About</a>
+        <a href="specialties.html">Areas</a>
+        <a href="approach.html" style="font-weight:700">How I Work</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </header>
+
+    <main>
+      <h1>How I generally work with people</h1>
+      <p class="lead">Think of therapy as a series of small experiments rather than a straight ladder to a destination. We name a question, try something modest, observe results, and decide together how to proceed.</p>
+
+      <section class="flow" aria-label="process">
+        <div class="step">
+          <h3>1. Clarify</h3>
+          <p class="small">A focused first meeting to surface the core concern and practical goals. We’ll agree on what would count as helpful change over a few weeks.</p>
+        </div>
+        <div class="step">
+          <h3>2. Try</h3>
+          <p class="small">Small, testable changes between sessions—communication experiments, brief routines, or new boundaries. We track what lands and what doesn’t.</p>
+        </div>
+        <div class="step">
+          <h3>3. Reflect</h3>
+          <p class="small">We look at outcomes, adjust the plan, and settle on what next steps feel realistic and meaningful to you.</p>
+        </div>
+      </section>
+
+      <div class="mood-banner">
+        <strong>Mood-to-Method selector</strong>
+        <p class="small">If you’re deciding whether to reach out, select how you’re feeling and I’ll suggest a way to begin. This will also update the main action below.</p>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="mood" data-key="uncertain">Unsure</button>
+          <button class="mood" data-key="stressed">Overwhelmed</button>
+          <button class="mood" data-key="stuck">Repeating patterns</button>
+        </div>
+        <div id="approachRec" style="margin-top:8px;color:var(--muted)">No selection yet.</div>
+      </div>
+
+      <section class="plan">
+        <h2>Ways of working</h2>
+        <p class="note">I offer both time-limited pathways and ongoing care. Below are the common options; we’ll tailor anything to your needs.</p>
+        <div class="plan-grid">
+          <div>
+            <h4>Short Series</h4>
+            <p class="small">4–8 focused sessions to address a defined question (communication, decision, or an acute pattern).</p>
+            <div class="price">Structured pathway — inquire for details</div>
+            <p style="margin-top:10px"><a href="book.html" class="btn" id="primaryAction">{{PRIMARY_CTA_LABEL}}</a></p>
+          </div>
+
+          <div>
+            <h4>Ongoing sessions</h4>
+            <p class="small">Weekly or biweekly meetings for deeper, sustained work. We co-create pacing that fits your life.</p>
+            <div class="price">Monthly engagement — custom plan</div>
+            <p style="margin-top:10px"><a href="contact.html" class="btn">Get in touch</a></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="conf">
+        <strong>Boundaries, confidentiality & crisis guidance</strong>
+        <p class="small">Clinical conversations are confidential. Exceptions include imminent risk to life, suspected abuse of a child or vulnerable adult, and situations ordered by a court. If these arise we will communicate clearly about what must be disclosed and why.</p>
+        <p class="small" style="margin-top:8px">Cancellations and session policies are discussed at intake so expectations are mutual and clear.</p>
+        <div class="crisis" style="margin-top:8px;padding:10px;border-radius:8px;background:#fffef7;border:1px solid #fff0b3;color:#665400">
+          If you are in immediate danger or a medical emergency, call local emergency services. For urgent mental health support, please contact your local crisis line or national helpline in your area.
+        </div>
+      </section>
+
+    </main>
+
+    <footer>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div class="small">Licensed clinician serving {{CITY}}, {{STATE}} • <a href="faq.html">FAQ</a></div>
+        <div><a href="{{PRIMARY_CTA_URL}}" id="footerCTA" class="btn">{{PRIMARY_CTA_LABEL}}</a></div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const approachMap = {
+      uncertain: 'A clarifying session is often the best first step — brief, focused, and helps us set practical next actions.',
+      stressed: 'Short, skills-focused sessions with a grounding practice and brief planning to protect the rest of your day.',
+      stuck: 'We use narrative mapping and micro-experiments to notice patterns and try different responses.'
+    };
+    document.querySelectorAll('.mood').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const key = btn.getAttribute('data-key');
+        document.getElementById('approachRec').textContent = approachMap[key] || approachMap['uncertain'];
+        // Update primary action phrasing and include mood tag in url
+        const label = (key==='uncertain')? 'Schedule a clarifying visit' : (key==='stressed')? 'Request a short consultation' : 'Begin pattern work';
+        document.getElementById('primaryAction').textContent = label;
+        document.getElementById('primaryAction').href = '{{PRIMARY_CTA_URL}}?context='+encodeURIComponent(key);
+        document.getElementById('footerCTA').textContent = label;
+        document.getElementById('footerCTA').href = '{{PRIMARY_CTA_URL}}?context='+encodeURIComponent(key);
+      });
+    });
+  </script>
+</body>
+</html>

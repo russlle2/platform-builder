@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Private Sessions — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--ink:#0f1720;--muted:#6b7280;--accent:#7a9b86}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:linear-gradient(180deg,#ffffff,#fbfbfb);color:var(--ink)}
+    .container{max-width:900px;margin:36px auto;padding:28px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    h1{margin:0 0 8px}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:20px;margin-top:18px}
+    .card{background:white;padding:18px;border-radius:12px;box-shadow:0 8px 30px rgba(12,15,20,0.04);border:1px solid rgba(12,15,20,0.03)}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(12,15,20,0.06);font-size:15px}
+    .btn{background:var(--accent);color:white;padding:10px 12px;border-radius:8px;border:none;cursor:pointer}
+    .summary{white-space:pre-wrap;background:#f8faf8;padding:12px;border-radius:8px;margin-top:12px;border:1px dashed rgba(12,15,20,0.04)}
+    .note{font-size:13px;color:var(--muted);margin-top:8px}
+    @media(max-width:860px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">Private sound work tailored for practical transformation</div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="events.html">Gatherings</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <main class="grid">
+      <section class="card">
+        <h1>Session Planner</h1>
+        <p style="color:var(--muted);margin-top:6px">Design a focused plan: pick length, intended outcome, and a sound palette. The planner returns a clear plan you can copy and bring to a booking conversation.</p>
+
+        <div style="margin-top:14px">
+          <label for="length">Length</label>
+          <select id="length">
+            <option value="30">30 minutes — Quick recalibration</option>
+            <option value="60">60 minutes — Deep realignment</option>
+            <option value="90">90 minutes — Intensive restorative arc</option>
+          </select>
+        </div>
+
+        <div style="margin-top:12px">
+          <label for="focus">Primary focus</label>
+          <select id="focus">
+            <option value="grounding">Grounding & regulated breath</option>
+            <option value="clarity">Mental clarity & decision support</option>
+            <option value="recovery">Physical recovery & nervous system rest</option>
+            <option value="transition">Life transition planning</option>
+          </select>
+        </div>
+
+        <div style="margin-top:12px">
+          <label for="palette">Sound palette</label>
+          <select id="palette">
+            <option value="bowls">Warm bowls & low drones</option>
+            <option value="harp">Plucked tones & chimes</option>
+            <option value="vocal">Harmonic voice layers</option>
+            <option value="mixed">A curated blend</option>
+          </select>
+        </div>
+
+        <div style="margin-top:12px">
+          <label for="sessions">Number of sessions</label>
+          <input id="sessions" type="number" min="1" max="8" value="1">
+        </div>
+
+        <div style="margin-top:12px">
+          <label for="notes">Short note for the facilitator (optional)</label>
+          <textarea id="notes" rows="3" placeholder="e.g. recovering from shoulder surgery; prefer soft touch"></textarea>
+        </div>
+
+        <div style="margin-top:12px;display:flex;gap:10px">
+          <button id="buildPlan" class="btn">Craft my plan</button>
+          <button id="clearPlan" class="btn" style="background:#e7eef0;color:var(--ink)">Reset</button>
+        </div>
+
+        <div class="note">Care note: If you have recent surgeries, implants, or neurological conditions, consult your health provider before booking. For pregnancy or other special circumstances, email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</div>
+
+        <div id="planArea" class="summary" style="display:none;margin-top:14px"></div>
+
+        <div style="margin-top:8px;display:flex;gap:8px">
+          <button id="copyPlan" class="btn" style="display:none">Copy plain text</button>
+          <a id="bookNow" class="btn" href="book.html" style="background:#222">Proceed to book</a>
+        </div>
+      </section>
+
+      <aside class="card">
+        <div style="font-weight:700">How the planner works</div>
+        <div style="color:var(--muted);margin-top:8px">We translate your choices into a simple schedule with focus points and preparatory notes. Use the exported summary to keep a useful record or send with a booking request. This is an aid — final session content is adapted live.</div>
+
+        <hr style="margin:14px 0;border:none;border-top:1px dashed rgba(12,15,20,0.06)">
+
+        <div>
+          <div style="font-weight:600">Sample micro-plan</div>
+          <div style="margin-top:8px;color:var(--muted)">60m • Clarity • Bowls
+            \n- Arrival & orientation (10m)\n- Focused tonework (35m)\n- Integration & notes (15m)
+          </div>
+        </div>
+
+        <hr style="margin:14px 0;border:none;border-top:1px dashed rgba(12,15,20,0.06)">
+
+        <div style="font-size:13px;color:var(--muted)">Have a question first? Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</div>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    (function(){
+      const build = document.getElementById('buildPlan');
+      const clear = document.getElementById('clearPlan');
+      const copy = document.getElementById('copyPlan');
+      const planArea = document.getElementById('planArea');
+      const book = document.getElementById('bookNow');
+
+      function makePlan(){
+        const length = document.getElementById('length').value;
+        const focus = document.getElementById('focus').value;
+        const palette = document.getElementById('palette').value;
+        const sessions = parseInt(document.getElementById('sessions').value,10)||1;
+        const notes = document.getElementById('notes').value.trim();
+
+        const humanLength = length+' min';
+        const focusMap={grounding:'Grounding & breath regulation',clarity:'Mental clarity',recovery:'Physical recovery',transition:'Life transitions'};
+        const paletteMap={bowls:'Warm bowls and low drones',harp:'Plucked textures & chimes',vocal:'Harmonic voice layers',mixed:'A balanced blend of instruments'};
+
+        // build plain-text summary
+        let summary = '';
+        summary += 'Session Plan — '+humanLength+' | '+focusMap[focus]+'\n';
+        summary += 'Sound style: '+paletteMap[palette]+'\n';
+        summary += 'Series: '+sessions+' session'+(sessions>1?'s':'')+'\n\n';
+
+        // schedule suggestions
+        function singlePlan(i){
+          const base='Session '+(i+1)+':\n - Intention check-in (5–10m)\n - Tonework tailored to '+focusMap[focus].toLowerCase()+' (\n   '+(length>60? Math.max(20,length-30) : Math.max(15,length-25))+' min)\n - Guided integration & next steps (10–15m)\n';
+          return base;
+        }
+        for(let i=0;i<sessions;i++) summary += singlePlan(i)+'\n';
+
+        if(notes) summary += 'Notes for facilitator: '+notes+'\n\n';
+        summary += 'Booking: '+window.location.origin+'/book.html\nContact: '+ '{{EMAIL}}';
+
+        return summary;
+      }
+
+      build.addEventListener('click',()=>{
+        const text = makePlan();
+        planArea.style.display='block';
+        planArea.textContent = text;
+        copy.style.display='inline-block';
+        // add data attribute for the book link
+        book.href = 'book.html?plan='+encodeURIComponent(text.slice(0,240));
+      });
+
+      clear.addEventListener('click',()=>{
+        document.getElementById('length').value='60';
+        document.getElementById('focus').value='grounding';
+        document.getElementById('palette').value='bowls';
+        document.getElementById('sessions').value='1';
+        document.getElementById('notes').value='';
+        planArea.style.display='none';
+        copy.style.display='none';
+      });
+
+      copy.addEventListener('click',async()=>{
+        try{
+          await navigator.clipboard.writeText(planArea.textContent);
+          copy.textContent='Copied';
+          setTimeout(()=>{ copy.textContent='Copy plain text'; },1400);
+        }catch(e){
+          alert('Copy failed — select and copy manually.');
+        }
+      });
+
+    })();
+  </script>
+</body>
+</html>

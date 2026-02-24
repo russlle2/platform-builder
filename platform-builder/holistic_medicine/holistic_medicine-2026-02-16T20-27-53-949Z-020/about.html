@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Meet {{PRACTITIONER_NAME}} and learn about our integrative, whole-person approach to health and education.">
+  <style>
+    :root{--bg:#fffefb;--accent:#2b7a4b;--muted:#556169;--card:#ffffff;--glass:rgba(255,255,255,0.75);--radius:14px}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#0b1a14;background:linear-gradient(180deg,#fbfff8,#eef7ee);}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 26px}
+    .logo{width:48px;height:48px;border-radius:11px;background:linear-gradient(135deg,var(--accent),#2e8b54);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none}
+    nav a.contact{color:var(--accent);font-weight:700}
+    main{max-width:980px;margin:18px auto;padding:20px}
+    .intro{display:flex;gap:20px;align-items:flex-start}
+    .card{background:var(--card);padding:18px;border-radius:var(--radius);box-shadow:0 8px 26px rgba(16,24,26,0.06)}
+    .bio{flex:1}
+    .portrait{width:260px;border-radius:12px;background:linear-gradient(180deg,#ffffff,#f3fff2);padding:16px;display:flex;flex-direction:column;align-items:center;gap:10px}
+    h1{margin:0 0 8px;font-size:26px}
+    p.lead{margin:0;color:var(--muted)}
+    .section{margin-top:16px}
+    .pill{display:inline-block;background:rgba(43,122,75,0.08);color:var(--accent);padding:6px 10px;border-radius:999px;font-weight:700;font-size:13px}
+    .list{margin-top:10px}
+    .muted{color:var(--muted)}
+    footer{margin-top:20px;padding:18px;border-top:1px solid rgba(11,26,20,0.04);display:flex;justify-content:space-between}
+    @media(max-width:880px){.intro{flex-direction:column}.portrait{width:100%}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo">HM</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">Practical integrative care in {{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Intro</a>
+      <a href="services.html">Services</a>
+      <a href="pricing.html">Costs</a>
+      <a href="contact.html" class="contact">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="intro">
+      <div class="bio card">
+        <h1>About {{PRACTITIONER_NAME}}, {{CREDENTIALS}}</h1>
+        <p class="lead">I blend evidence-informed medicine with practical lifestyle tools so clients leave with a clear, manageable plan. My work centers on education, shared decision-making, and whole-person context: medical history, sleep, stress, nutrition, movement, and environment.</p>
+
+        <div class="section">
+          <div class="pill">Philosophy — Whole-person first</div>
+          <p class="muted" style="margin-top:10px">We focus on root contributors and daily habits rather than quick fixes. Every plan is tailored, realistic, and measurable. Labs may be offered as an educational resource when they help guide safe decisions.</p>
+        </div>
+
+        <div class="section">
+          <h3 style="margin:0 0 8px">What to expect at a first visit</h3>
+          <ol class="list muted">
+            <li>Pre-visit intake to gather history and priorities.</li>
+            <li>An in-depth, conversational evaluation—your goals guide the visit.</li>
+            <li>A practical plan with small, trackable steps and optional resources.</li>
+          </ol>
+          <p class="muted small" style="margin-top:8px">We do not promise cures; rather, we aim to improve understanding, reduce risk, and support sustainable change.</p>
+        </div>
+
+        <div class="section">
+          <h3 style="margin:0 0 8px">Credentials & training</h3>
+          <p class="muted">{{PRACTITIONER_NAME}}, {{CREDENTIALS}}, trained in integrative approaches with additional certifications in nutrition and functional assessment. Continuous learning and measured outcomes shape clinical decisions.</p>
+        </div>
+
+      </div>
+
+      <aside class="portrait card">
+        <div style="width:120px;height:120px;border-radius:12px;background:linear-gradient(135deg,#f7fff3,#e6f6e4);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--accent);font-size:36px">{{PRACTITIONER_NAME.split(' ')[0][0]}}{{PRACTITIONER_NAME.split(' ')[1] ? PRACTITIONER_NAME.split(' ')[1][0] : ''}}</div>
+        <div style="font-weight:700">{{PRACTITIONER_NAME}}</div>
+        <div style="color:var(--muted);font-size:13px">{{CREDENTIALS}}</div>
+        <div style="margin-top:10px;color:var(--muted);font-size:13px">Based in {{CITY}}, {{STATE}}</div>
+        <div style="margin-top:12px;width:100%"><a href="book.html" class="pill" style="text-decoration:none">Schedule a time</a></div>
+      </aside>
+    </div>
+
+    <section class="section card" style="margin-top:16px">
+      <h3 style="margin-top:0">A typical clinical ritual</h3>
+      <p class="muted">Our visit sequence is intentionally structured to maximize clarity and respect your time. We call it a ritual because consistent structure improves outcomes and reduces unnecessary tests.</p>
+
+      <ul class="list" style="margin-top:10px;color:var(--muted)">
+        <li><strong>1. Intake synthesis:</strong> quick summary of your history and priorities.</li>
+        <li><strong>2. Focused review:</strong> targeted discussion of domains that matter most to you.</li>
+        <li><strong>3. Practical plan:</strong> stepwise activities, measurable short-term goals, and resources.</li>
+        <li><strong>4. Follow-up:</strong> check-ins and adjustments; labs only when they inform a safe plan.</li>
+      </ul>
+    </section>
+
+    <section class="section" style="margin-top:16px">
+      <h3>Community & learning</h3>
+      <p class="muted">We emphasize self-education. After visits clients frequently receive worksheets, tracking templates, and trustworthy reading lists so they can make steady progress.</p>
+      <div style="margin-top:12px"><a href="contact.html" class="pill" style="text-decoration:none">Discuss a VIP Day</a></div>
+    </section>
+  </main>
+
+  <footer>
+    <div style="font-size:13px;color:var(--muted)">© {{BUSINESS_NAME}} • {{CITY}}, {{STATE}}</div>
+    <div style="font-size:13px;color:var(--muted)">Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+  </footer>
+</body>
+</html>

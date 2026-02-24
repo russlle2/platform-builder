@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Offerings · {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fffefc;--accent:#125e50;--muted:#6b7280;--card:#ffffff;--max-width:980px}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:#062f2a}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px;max-width:var(--max-width);margin:0 auto}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none}
+    main{max-width:var(--max-width);margin:18px auto;padding:0 18px}
+    .intro{display:flex;gap:18px;align-items:center}
+    .intro .left{flex:1}
+    .intro h1{margin:0;font-size:24px}
+    .intro p{color:var(--muted)}
+    .services-list{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+    .service{background:var(--card);padding:14px;border-radius:10px;box-shadow:0 6px 18px rgba(12,30,24,0.04)}
+    .service h3{margin-top:0}
+    .service p{color:var(--muted);font-size:14px}
+    .price-tag{font-weight:700;color:var(--accent);margin-top:8px}
+
+    .reveal{opacity:0;transform:translateY(10px);transition:opacity 360ms ease,transform 360ms ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion: reduce){.reveal{transition:none;opacity:1;transform:none}}
+
+    .planner-compact{margin-top:20px;background:#f6fffb;padding:12px;border-radius:10px}
+    .planner-compact input[type="text"],.planner-compact select{width:100%;padding:8px;border-radius:8px;border:1px solid #e7f2ef}
+    .planner-compact .btn{margin-top:10px;padding:8px 10px;border-radius:8px;background:var(--accent);color:#fff;border:0}
+
+    @media (max-width:900px){.services-list{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="services.html">Offerings</a>
+      <a href="programs.html">Programs</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="intro reveal" data-delay="0">
+      <div class="left">
+        <h1>Support that fits inside a busy life</h1>
+        <p>A membership creates ongoing access to frameworks, habit support, and short focused sessions. Choose the cadence that matches the life you lead.</p>
+      </div>
+      <div>
+        <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </section>
+
+    <section class="services-list" style="margin-top:18px">
+      <article class="service reveal" data-delay="120">
+        <h3>Foundations Track</h3>
+        <p>Four-week guided setup to stabilize daily rhythms and identify reliable micro-habits.</p>
+        <div class="price-tag">Membership add-on: $29 / month</div>
+      </article>
+
+      <article class="service reveal" data-delay="240">
+        <h3>Maintenance Circle</h3>
+        <p>Weekly check-ins, short adjustments, and a durable template for steady progress.</p>
+        <div class="price-tag">Included in membership</div>
+      </article>
+
+      <article class="service reveal" data-delay="360">
+        <h3>Focus Intensives</h3>
+        <p>Two- to three-session bursts with hands-on adjustments for a single priority (workload, sleep timing, or movement).</p>
+        <div class="price-tag">From $129 (one-off)</div>
+      </article>
+
+      <article class="service reveal" data-delay="480">
+        <h3>Partner Support</h3>
+        <p>Sessions that help you and a close collaborator coordinate routines and shared responsibilities.</p>
+        <div class="price-tag">Tailored quote</div>
+      </article>
+
+      <article class="service reveal" data-delay="600">
+        <h3>Self-led Library</h3>
+        <p>Short guides and habit blueprints you can use independently—organized around outcomes and weekly practice.</p>
+        <div class="price-tag">Included in membership</div>
+      </article>
+
+      <article class="service reveal" data-delay="720">
+        <h3>One-off Consult</h3>
+        <p>A focused 45-minute session to reset and leave with one clear next step.</p>
+        <div class="price-tag">$79</div>
+      </article>
+    </section>
+
+    <section class="planner-compact reveal" data-delay="840">
+      <h3 style="margin-top:0">Quick Session Planner</h3>
+      <div>
+        <input id="sname" type="text" placeholder="Name" style="margin-bottom:8px">
+        <select id="sfreq">
+          <option>Once weekly</option>
+          <option>Twice weekly</option>
+          <option>Three times weekly</option>
+        </select>
+        <button id="buildServices" class="btn">Compose plan</button>
+      </div>
+      <div id="summaryServices" class="summary" style="margin-top:10px;background:#fff;min-height:64px;border:1px solid #e6f3ee;padding:10px">Your plan summary will appear here.</div>
+      <div style="display:flex;gap:8px;margin-top:8px"><button id="copyServices" class="btn">Copy</button><a class="btn" href="{{PRIMARY_CTA_URL}}">Join membership</a></div>
+    </section>
+
+  </main>
+
+  <script>
+    // Reveal behavior
+    (function(){
+      const prefersReduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const items = document.querySelectorAll('.reveal');
+      if(prefersReduce){ items.forEach(i=>i.classList.add('visible')); return; }
+      const obs = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{
+          if(e.isIntersecting){
+            const el = e.target; const d = el.getAttribute('data-delay')||0;
+            setTimeout(()=>el.classList.add('visible'), Number(d)); obs.unobserve(el);
+          }
+        });
+      },{threshold:0.14});
+      items.forEach(i=>obs.observe(i));
+    })();
+
+    // Compact planner
+    (function(){
+      function compose(){
+        const name = document.getElementById('sname').value || '';
+        const freq = document.getElementById('sfreq').value;
+        const lines = [];
+        lines.push('Membership plan sketch — ' + new Date().toLocaleDateString());
+        if(name) lines.push('Name: ' + name);
+        lines.push('Suggested cadence: ' + freq);
+        lines.push('Core actions: 2 anchor habits; 1 midweek check; 1 reflective note on Sunday');
+        lines.push('\nUse this to guide the first month. Adjust the number of sessions based on workload.');
+        return lines.join('\n');
+      }
+      document.getElementById('buildServices').addEventListener('click', ()=>{
+        document.getElementById('summaryServices').textContent = compose();
+      });
+      document.getElementById('copyServices').addEventListener('click', async ()=>{
+        try{ await navigator.clipboard.writeText(document.getElementById('summaryServices').textContent||''); document.getElementById('copyServices').textContent='Copied'; setTimeout(()=>document.getElementById('copyServices').textContent='Copy',1000);}catch(e){console.error(e)}
+      });
+    })();
+  </script>
+</body>
+</html>

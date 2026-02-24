@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfdfc;--text:#15331f;--muted:#6c756c;--accent:#2f6b4f;--card:#fff;--radius:12px;--maxw:980px}
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;color:var(--text);background:var(--bg)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:28px 20px;max-width:var(--maxw);margin:0 auto}
+    .logo{width:54px;height:54px;border-radius:10px;background:linear-gradient(135deg,#4b8a69,#2f6b4f);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
+    nav a{margin-left:16px;color:var(--accent);text-decoration:none}
+    main{max-width:var(--maxw);margin:18px auto;padding:22px}
+    .intro{display:flex;gap:20px;align-items:flex-start}
+    .intro .text{background:var(--card);padding:18px;border-radius:var(--radius);box-shadow:0 10px 30px rgba(20,40,30,0.04)}
+    h1{margin:0 0 8px}
+    .values{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:16px}
+    .value{background:linear-gradient(180deg,#fff, #f6faf7);padding:12px;border-radius:10px;border:1px solid rgba(15,64,43,0.04)}
+    .bio{margin-top:18px;background:var(--card);padding:16px;border-radius:var(--radius)}
+    .ctaBar{display:flex;gap:10px;margin-top:14px}
+
+    /* reveal */
+    .reveal{opacity:0;transform:translateY(10px);transition:opacity .6s ease,transform .6s ease}
+    @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+    .reveal.visible{opacity:1;transform:none}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:14px">
+      <div class="logo">HM</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="approach.html">Method</a>
+      <a href="pricing.html">Rates</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="intro reveal" id="lead">
+      <div class="text">
+        <h1>Who we are</h1>
+        <p style="color:var(--muted)">{{BUSINESS_NAME}} blends clinical attention with practical lived skills. We support people looking to shift patterns in sleep, digestion, mood, and energy through structured learning and targeted practices.</p>
+        <div class="ctaBar">
+          <a href="book.html" style="background:var(--accent);color:#fff;padding:10px 12px;border-radius:8px;text-decoration:none;font-weight:700">{{PRIMARY_CTA_LABEL}}</a>
+          <a href="contact.html" style="padding:10px 12px;border-radius:8px;background:#f0f6f2;color:var(--accent);text-decoration:none">Contact team</a>
+        </div>
+      </div>
+      <div style="width:320px">
+        <div style="background:linear-gradient(180deg,#eaf7ee,#fff);padding:14px;border-radius:12px;border:1px solid rgba(15,64,43,0.04)">
+          <strong>Quick snapshot</strong>
+          <p style="margin:8px 0;color:var(--muted)">Integrative visits, guided courses, and practical handouts. We work by evidence-informed methods and personalize learning to your context.</p>
+        </div>
+
+        <div style="margin-top:12px;padding:12px;background:var(--card);border-radius:10px">
+          <strong>Contact</strong>
+          <div style="color:var(--muted);margin-top:6px">Phone: {{PHONE}}<br>Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="reveal" style="margin-top:18px;padding:12px;background:linear-gradient(180deg,#fff,#fbfff8);border-radius:12px">
+      <h2>Our approach</h2>
+      <p style="color:var(--muted)">We practice attentive listening, prioritize what moves the needle, and offer reproducible daily practices. Recommendations are educational and meant to support collaboration with your existing care team.</p>
+      <div class="values">
+        <div class="value">Systems-aware plans — understanding how sleep, digestion, and stress interact</div>
+        <div class="value">Small, testable steps — micro-habits that respect your time</div>
+        <div class="value">Shared decision-making — you choose from evidence and options</div>
+        <div class="value">Measurement-oriented — we track what matters to you</div>
+      </div>
+    </section>
+
+    <section class="bio reveal" style="margin-top:16px">
+      <h3>Lead practitioner</h3>
+      <p style="margin:8px 0;color:var(--muted)">[Name], ND / LAc (placeholder). Training in integrative medicine, clinical nutrition, and behavioral coaching. Focused on practical, teachable skills and clear next steps rather than overpromising outcomes.</p>
+      <p style="font-size:13px;color:var(--muted)">Licenses and certifications will be shared during the intake. For urgent or emergency concerns, contact emergency services or your primary medical provider.</p>
+    </section>
+
+  </main>
+
+  <script>
+    // simple reveal with prefers-reduced-motion support
+    (function(){
+      const nodes = Array.from(document.querySelectorAll('.reveal'))
+      const reduced = window.matchMedia('(prefers-reduced-motion:reduce)').matches
+      function show(){ nodes.forEach(n=>n.classList.add('visible')) }
+      if(reduced) show(); else { window.addEventListener('scroll', ()=>{ nodes.forEach(n=>{ const r=n.getBoundingClientRect(); if(r.top< window.innerHeight-60) n.classList.add('visible') })}); window.addEventListener('load', show); }
+    })();
+  </script>
+</body>
+</html>

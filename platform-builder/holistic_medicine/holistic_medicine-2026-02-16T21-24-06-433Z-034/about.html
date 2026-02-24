@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Meet {{PRACTITIONER_NAME}} and the guiding philosophy behind our integrative practice." />
+  <style>
+    :root{--bg:#071226;--glass:rgba(255,255,255,0.04);--accent:#c9a7ff;--muted:#bcd3e6}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#041018 0%, #071226 50%, #081424 100%);color:#eef7fb}
+    header{display:flex;justify-content:space-between;align-items:center;padding:20px 28px;background:transparent}
+    .nav a{color:var(--muted);margin-left:16px;text-decoration:none;font-weight:600}
+    .hero{max-width:1100px;margin:28px auto;padding:36px;border-radius:18px;background:linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.03);position:relative}
+    .hero h1{margin:0;font-size:30px}
+    .lead{color:var(--muted);margin-top:8px}
+    .two-col{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:22px}
+    .card{background:rgba(255,255,255,0.02);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .pillars{display:flex;flex-direction:column;gap:10px}
+    .pillar{padding:12px;border-radius:10px;background:linear-gradient(90deg, rgba(201,167,255,0.04), rgba(160,230,200,0.02));}
+    .bio{display:flex;gap:12px;align-items:flex-start}
+    .avatar{width:88px;height:88px;border-radius:16px;background:linear-gradient(135deg,#bca8ff,#8ee0c0);display:grid;place-items:center;font-weight:800;color:#042a2a}
+    .muted{color:var(--muted)}
+    footer{max-width:1100px;margin:34px auto;color:var(--muted);text-align:center}
+    @media (max-width:880px){.two-col{grid-template-columns:1fr}.hero{padding:20px}}
+
+    /* decorative svg */
+    .glyph{position:absolute;left:-40px;top:-40px;opacity:0.09}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#c9a7ff,#8ee0c0);display:grid;place-items:center;color:#052">{{BUSINESS_NAME}}</div>
+      <div style="color:var(--muted);font-weight:700">{{BUSINESS_NAME}}</div>
+    </div>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="services.html">What We Do</a>
+      <a href="book.html">Sessions</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="about-hero">
+      <svg class="glyph" width="220" height="220" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="ag" x1="0" x2="1"><stop offset="0" stop-color="#c9a7ff"/><stop offset="1" stop-color="#8ee0c0"/></linearGradient></defs>
+        <circle cx="100" cy="100" r="90" fill="url(#ag)" opacity="0.06"/>
+        <path d="M40 140 C70 70, 130 70, 160 140" stroke="#fff" stroke-opacity="0.03" stroke-width="6" fill="none"/>
+      </svg>
+      <div>
+        <h1 id="about-hero">A careful, curious practice</h1>
+        <p class="lead">We blend modern evidence with time-tested wisdom to support resilient health. Our work centers on listening, education, and small sustainable shifts.</p>
+
+        <div class="two-col">
+          <div>
+            <div class="card">
+              <h3 style="margin-top:0">Our pillars</h3>
+              <div class="pillars">
+                <div class="pillar"><strong>Listen deeply</strong><div class="muted">Intake that honors story, context, and priorities.</div></div>
+                <div class="pillar"><strong>Practical education</strong><div class="muted">Actionable tools you can integrate into daily life.</div></div>
+                <div class="pillar"><strong>Personalized plans</strong><div class="muted">Tailored guidance; optional supportive products and labs when useful.</div></div>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:14px">
+              <h4 style="margin:0 0 8px 0">Myth vs. truth</h4>
+              <p class="muted">Myth: A single supplement is a cure. Truth: Meaningful change usually comes from layered, individualized steps — education, lifestyle, and selective interventions when appropriate.</p>
+            </div>
+          </div>
+
+          <aside>
+            <div class="card">
+              <div class="bio">
+                <div class="avatar">{{PRACTITIONER_NAME.split(' ')[0][0]}}{{PRACTITIONER_NAME.split(' ')[-1][0]}}</div>
+                <div>
+                  <div style="font-weight:800">{{PRACTITIONER_NAME}}, {{CREDENTIALS}}</div>
+                  <div class="muted" style="margin-top:6px">A clinician trained in integrative approaches, emphasizing nutrition, stress resilience, and practical lab interpretation.</div>
+                </div>
+              </div>
+
+              <p class="muted" style="margin-top:12px">{{PRACTITIONER_NAME}} focuses on meeting people where they are and helping translate complex information into clear next steps. The aim is improved function and wiser self-care — not quick fixes.</p>
+
+              <a href="book.html" class="cta" style="display:inline-block;margin-top:12px;padding:10px 12px;border-radius:10px;background:linear-gradient(90deg,#c9a7ff,#8ee0c0);color:#022;font-weight:700;text-decoration:none">Schedule a conversation</a>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section style="max-width:1100px;margin:20px auto;display:grid;gap:12px">
+      <div class="card">
+        <h3 style="margin-top:0">Frequently asked</h3>
+        <div style="margin-top:8px;color:var(--muted)">
+          <strong>Do you promise cures?</strong>
+          <p class="muted" style="margin:6px 0">No. We provide education and support. Results vary and depend on many factors. Our responsibility is to offer transparent guidance and to partner in clear goal-setting.</p>
+
+          <strong>Are supplements required?</strong>
+          <p class="muted" style="margin:6px 0">Not required. Supplements are described as options and selected selectively when they add value to the plan.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div style="padding:20px 0;">Contact: <a href="mailto:{{EMAIL}}" style="color:#c9a7ff;text-decoration:none">{{EMAIL}}</a> — Phone: {{PHONE}}</div>
+    </footer>
+  </main>
+</body>
+</html>

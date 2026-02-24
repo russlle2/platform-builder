@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Plans & Investment — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff7f0;--accent:#2a7a6b;--muted:#6b6b6b;--card:#ffffff;--glass:rgba(255,255,255,0.7);--accent-2:#f08a5d}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; color:#222}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:linear-gradient(180deg,var(--bg),#fff);position:sticky;top:0;z-index:10;border-bottom:1px solid rgba(0,0,0,0.04)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:46px;height:46px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:white;font-weight:700}
+    nav a{margin-left:18px;text-decoration:none;color:#333;font-weight:600}
+    .container{max-width:1100px;margin:34px auto;padding:0 20px}
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:center}
+    .hero .card{background:var(--card);padding:28px;border-radius:14px;box-shadow:0 8px 30px rgba(38,38,38,0.06)}
+    h1{margin:0 0 8px;font-size:28px}
+    p.lead{margin:0;color:var(--muted)}
+    /* decorative svg pattern */
+    .pattern-wrap{position:relative;border-radius:14px;overflow:hidden}
+    .pattern-wrap svg{position:absolute;inset:0;width:100%;height:100%}
+    .pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
+    .plan{background:linear-gradient(180deg,#fff,#fff);padding:20px;border-radius:12px;border:1px solid rgba(0,0,0,0.06);text-align:center}
+    .plan .title{font-weight:700;margin-bottom:8px}
+    .price{font-size:28px;font-weight:800;color:var(--accent);display:flex;align-items:baseline;justify-content:center;gap:8px}
+    .muted{color:var(--muted);font-size:13px}
+    .cta-ghost{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:10px;background:transparent;border:1px dashed rgba(0,0,0,0.08);cursor:pointer}
+    .toggle{display:inline-flex;background:rgba(0,0,0,0.04);padding:6px;border-radius:999px}
+    .toggle button{border:0;background:transparent;padding:8px 12px;border-radius:999px;cursor:pointer;font-weight:700}
+    .toggle .active{background:var(--accent);color:white}
+    ul.features{list-style:none;padding:0;margin:12px 0 0;color:var(--muted)}
+    .badge-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:16px}
+    .badge{background:rgba(42,122,107,0.08);padding:8px 10px;border-radius:999px;font-size:13px;display:inline-flex;gap:8px;align-items:center}
+    .tooltip{position:relative}
+    .tooltip:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:8px 10px;border-radius:8px;font-size:12px;white-space:nowrap}
+    .proof{margin-top:30px;background:linear-gradient(180deg,#fff,#fff);padding:18px;border-radius:12px;display:flex;gap:16px;align-items:center}
+    .testimony{flex:1}
+    .test-name{font-weight:700}
+    footer{margin-top:46px;padding:30px 20px;text-align:center;color:var(--muted);font-size:13px}
+    .pill-cta{background:var(--accent);color:white;padding:10px 16px;border-radius:12px;text-decoration:none;font-weight:700}
+    @media(max-width:920px){.hero{grid-template-columns:1fr;}.pricing-grid{grid-template-columns:1fr}.brand .logo{width:40px;height:40px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">HM</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="approach.html">Approach</a>
+      <a href="pricing.html" style="opacity:0.9">Pricing</a>
+      <a href="about.html">About</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="card">
+        <h1>Choose a pathway that meets you where you are</h1>
+        <p class="lead">Practical packages and month-to-month options for people who want steady progress without fuss. Pick the cadence that fits your rhythm.</p>
+
+        <div style="margin-top:18px">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div class="toggle" role="tablist" aria-label="Billing toggle">
+              <button id="monthlyBtn" class="active">Monthly</button>
+              <button id="packageBtn">Package</button>
+            </div>
+            <div class="muted">Toggle to compare billing styles</div>
+          </div>
+        </div>
+
+        <div class="pricing-grid" id="pricingGrid">
+          <div class="plan" data-plan="seed">
+            <div class="title">Seed Session</div>
+            <div class="price"><span class="price-amount" data-base="120">$120</span><span class="muted">/mo</span></div>
+            <div class="muted">Single deep-dive consult with personalized guidance</div>
+            <ul class="features">
+              <li>60-minute intake</li>
+              <li>Actionable next steps</li>
+            </ul>
+            <button class="cta-ghost" onclick="location.href='{{PRIMARY_CTA_URL}}'">Reserve a Seed</button>
+          </div>
+
+          <div class="plan" data-plan="renewal">
+            <div class="title">Renewal Track</div>
+            <div class="price"><span class="price-amount" data-base="240">$240</span><span class="muted">/mo</span></div>
+            <div class="muted">A monthly check-in rhythm for steady change</div>
+            <ul class="features">
+              <li>Monthly 50-min sessions</li>
+              <li>Core learning materials</li>
+            </ul>
+            <button class="cta-ghost" onclick="location.href='{{PRIMARY_CTA_URL}}'">Join Renewal</button>
+          </div>
+
+          <div class="plan" data-plan="revive">
+            <div class="title">Revive Intensive</div>
+            <div class="price"><span class="price-amount" data-base="800">$800</span><span class="muted">/pkg</span></div>
+            <div class="muted">A focused 3-session booster to reset priorities</div>
+            <ul class="features">
+              <li>Three 60-min sessions</li>
+              <li>Personalized toolkit</li>
+            </ul>
+            <button class="cta-ghost" onclick="location.href='{{PRIMARY_CTA_URL}}'">Book an Intensive</button>
+          </div>
+        </div>
+
+        <div class="badge-row" aria-hidden>
+          <div class="badge tooltip" data-tip="Verified continuing education provider">CME-friendly</div>
+          <div class="badge tooltip" data-tip="Members include licensed clinicians and coaches">Integrative Guild</div>
+          <div class="badge tooltip" data-tip="Community-reviewed outcomes">Community Rated</div>
+        </div>
+      </div>
+
+      <div class="pattern-wrap" aria-hidden>
+        <!-- decorative SVG pattern: hand-drawn concentric arcs and dots -->
+        <svg viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#fcefe6"/><stop offset="1" stop-color="#e8fff9"/></linearGradient>
+            <pattern id="p1" width="120" height="120" patternUnits="userSpaceOnUse">
+              <g stroke="#fde6dd" stroke-width="1" fill="none">
+                <path d="M10 60 Q30 10 60 60 T110 60"/>
+                <circle cx="60" cy="60" r="1.6" fill="#f08a5d"/>
+              </g>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#g1)"/>
+          <rect x="0" y="0" width="100%" height="100%" fill="url(#p1)" opacity="0.9"/>
+          <g transform="translate(40,80)" fill="none" stroke="#2a7a6b" stroke-opacity="0.07">
+            <path d="M0 200 C40 60, 160 60, 200 200" stroke-width="18" stroke-linecap="round"/>
+            <path d="M20 200 C60 80, 140 80, 180 200" stroke-width="10" stroke-linecap="round"/>
+          </g>
+        </svg>
+      </div>
+    </section>
+
+    <section class="proof" aria-live="polite">
+      <div style="width:84px;height:84px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;color:white;font-size:28px">"</div>
+      <div class="testimony">
+        <div id="testimonialText">"Collaborative and clear. I left with a plan I could actually live with."</div>
+        <div class="test-name" id="testimonialAuthor">— A. Rivera, Designer</div>
+        <div class="muted" id="testimonialMeta">Renewal Track, 6 months</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+        <div style="display:flex;gap:8px">
+          <div class="badge tooltip" data-tip="Independent research group">Evidence Partner</div>
+          <div class="badge tooltip" data-tip="Local clinic network">City Clinic</div>
+        </div>
+        <a class="pill-cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} — <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    <div style="margin-top:8px">Small-group learning add-ons available. No medical guarantees — educational services and supportive guidance.</div>
+  </footer>
+
+  <script>
+    // Pricing toggle with animated counters
+    (function(){
+      const monthlyBtn = document.getElementById('monthlyBtn');
+      const packageBtn = document.getElementById('packageBtn');
+      const prices = document.querySelectorAll('.price-amount');
+
+      const plans = {
+        seed: {monthly:120, package:320},
+        renewal: {monthly:240, package:680},
+        revive: {monthly:280, package:800}
+      };
+
+      function animateValue(el, start, end, duration){
+        const startTime = performance.now();
+        function step(now){
+          const t = Math.min(1,(now - startTime)/duration);
+          const val = Math.round(start + (end - start)*t);
+          el.textContent = '$' + val;
+          if(t < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+
+      function setMode(mode){
+        document.querySelectorAll('.plan').forEach(planEl => {
+          const key = planEl.dataset.plan;
+          const priceEl = planEl.querySelector('.price-amount');
+          const base = plans[key][mode];
+          const current = parseInt(priceEl.textContent.replace(/[^0-9]/g,'')) || 0;
+          animateValue(priceEl, current, base, 600);
+
+          // small unit label
+          const unit = planEl.querySelector('.muted');
+          if(mode === 'monthly') unit.textContent = '/mo'; else unit.textContent = '/pkg';
+        });
+      }
+
+      monthlyBtn.addEventListener('click', function(){
+        monthlyBtn.classList.add('active'); packageBtn.classList.remove('active'); setMode('monthly');
+      });
+      packageBtn.addEventListener('click', function(){
+        packageBtn.classList.add('active'); monthlyBtn.classList.remove('active'); setMode('package');
+      });
+
+      // initialize
+      setMode('monthly');
+    })();
+
+    // Simple rotating testimonial proof gallery with badges & tooltips
+    (function(){
+      const items = [
+        {text:'A steady plan and kind accountability changed the way I manage my energy.', author:'— M. Patel, Teacher', meta:'Renewal Track'},
+        {text:'Clear checkpoints and practical tools — I finally slept through the night again.', author:'— S. Gomez, Entrepreneur', meta:'Revive Intensive'},
+        {text:'The session helped me reorder priorities into a small, weekly plan.', author:'— K. Lee, Educator', meta:'Seed Session'}
+      ];
+      let idx = 0;
+      const textEl = document.getElementById('testimonialText');
+      const authorEl = document.getElementById('testimonialAuthor');
+      const metaEl = document.getElementById('testimonialMeta');
+      function rotate(){
+        idx = (idx + 1) % items.length;
+        const it = items[idx];
+        textEl.style.opacity = 0; authorEl.style.opacity = 0; metaEl.style.opacity = 0;
+        setTimeout(()=>{
+          textEl.textContent = '"' + it.text + '"';
+          authorEl.textContent = it.author;
+          metaEl.textContent = it.meta;
+          textEl.style.opacity = 1; authorEl.style.opacity = 1; metaEl.style.opacity = 1;
+        }, 300);
+      }
+      setInterval(rotate, 4200);
+    })();
+  </script>
+</body>
+</html>

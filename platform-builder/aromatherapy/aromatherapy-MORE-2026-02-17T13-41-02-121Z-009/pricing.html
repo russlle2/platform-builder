@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Rates — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbf9f6;--ink:#21312b;--muted:#6d7b73;--accent:#8aa78a;--card:#ffffff}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial;font-weight:400;color:var(--ink);background:linear-gradient(180deg,#fbf9f6 0%, #f6f4f2 100%)}
+    a{color:inherit;text-decoration:none}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:transparent}
+    nav a{margin:0 10px;font-size:0.95rem;color:var(--muted)}
+    .hero{display:grid;grid-template-columns:1fr;gap:24px;padding:48px 28px;background-image:url('assets/img/pattern.svg');background-size:320px;background-repeat:repeat;background-position:top left}
+    .hero .kicker{color:var(--accent);font-size:0.95rem}
+    .hero h1{margin:6px 0;font-size:clamp(1.6rem,3.2vw,2.4rem);line-height:1.05}
+    .columns{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:start}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 30px rgba(33,49,43,0.06)}
+    .package{padding:14px;border-radius:10px;border:1px solid rgba(33,49,43,0.04);margin-bottom:12px}
+    .package h3{margin:0;font-size:1.05rem}
+    .price{font-weight:700;color:var(--ink);margin-top:6px}
+    .muted{color:var(--muted);font-size:0.92rem}
+    button.cta{background:var(--ink);color:#fff;border:0;padding:10px 14px;border-radius:8px;cursor:pointer}
+    footer{padding:28px;text-align:center;color:var(--muted);font-size:0.9rem}
+    /* reveal */
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity 500ms ease, transform 500ms ease}
+    .revealed{opacity:1;transform:none}
+    /* planner */
+    .planner label{display:block;font-size:0.9rem;margin-top:10px;color:var(--muted)}
+    .planner select, .planner input[type="range"], .planner input[type="text"]{width:100%;margin-top:6px;padding:8px;border-radius:8px;border:1px solid rgba(33,49,43,0.08)}
+    .planner .summary{white-space:pre-wrap;background:#fcfcfb;padding:12px;border-radius:8px;margin-top:10px;border:1px dashed rgba(33,49,43,0.05)}
+    .copyBtn{margin-top:8px;background:transparent;border:1px dashed var(--accent);padding:8px;border-radius:8px;color:var(--accent);cursor:pointer}
+    @media (max-width:880px){.columns{grid-template-columns:1fr;}.hero{padding:32px 18px}}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:14px;align-items:center">
+      <strong style="font-size:1rem">{{BUSINESS_NAME}}</strong>
+      <span class="muted">— {{TAGLINE}}</span>
+    </div>
+    <nav aria-label="Primary">
+      <a href="index.html">Nest</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Synergies</a>
+      <a href="shop.html">Apothecary</a>
+      <a href="pricing.html">Rates</a>
+      <a href="about.html">Origins</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="rates-title">
+      <div class="reveal" data-reveal>
+        <div class="kicker">Rates &amp; pathways</div>
+        <h1 id="rates-title">Thoughtful sessions and curated blends that may support rest, clarity, and ritual</h1>
+        <p class="muted">Simple pricing for carefully guided care. Safety notes and preparation below — always patch test and respect personal sensitivities.</p>
+      </div>
+      <div class="reveal" data-reveal>
+        <div class="card">
+          <strong>Need help choosing?</strong>
+          <p class="muted">Use the Session Planner to craft a short, personalized plan and copy it to your clipboard. Bring the summary when you book.</p>
+          <p style="margin-top:12px"><a class="cta" href="#planner">Open Planner</a></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="columns" style="padding:28px">
+      <div>
+        <div class="card reveal" data-reveal>
+          <h2 style="margin-top:0">Programs & pricing</h2>
+          <p class="muted">Our offerings blend aromatherapy, breath awareness, and gentle guidance. Prices shown are per session; ask about packages for ongoing rhythm.</p>
+
+          <div class="package">
+            <h3>Moment Session — 30 minutes</h3>
+            <div class="price">$60</div>
+            <div class="muted">A targeted, solo check-in: a brief blend and practices you can use daily. Best for short resets.</div>
+          </div>
+
+          <div class="package">
+            <h3>Ritual Session — 60 minutes</h3>
+            <div class="price">$120</div>
+            <div class="muted">A full guided session with bespoke blending, safety review, and take-home notes that may support your routine.</div>
+          </div>
+
+          <div class="package">
+            <h3>Gathering — up to 6 people</h3>
+            <div class="price">from $220</div>
+            <div class="muted">Small group session for shared practices and learning. Pricing varies by content and location.</div>
+          </div>
+
+          <div style="margin-top:12px" class="muted">Custom plans and subscription-style support available — reach out to explore options.</div>
+        </div>
+
+        <div class="card reveal" data-reveal style="margin-top:18px">
+          <h3>Safety & preparations</h3>
+          <ul class="muted" style="margin:8px 0 0 18px">
+            <li>Always perform a patch test for new blends.</li>
+            <li>Use 1–3% dilution for most topical blends unless advised otherwise.</li>
+            <li>Keep essential oils away from eyes and mucous membranes; avoid undiluted application.</li>
+            <li>If you have pets, especially cats, inform us — some oils may be harmful to animals.</li>
+            <li>If pregnant or nursing, consult your healthcare provider before use and notify us.</li>
+          </ul>
+        </div>
+
+        <div class="card reveal" data-reveal style="margin-top:18px">
+          <h3>FAQ</h3>
+          <div class="muted" style="margin-top:8px">
+            Q: Do sessions include products? <br>
+            A: Sessions may include small sample blends; larger products are extra.
+            <br><br>
+            Q: How do I book? <br>
+            A: Use the Reserve page or call {{PHONE}}.
+          </div>
+        </div>
+      </div>
+
+      <aside class="card reveal" data-reveal>
+        <h3 id="planner">Session Planner</h3>
+        <div class="planner" aria-live="polite">
+          <label for="focus">Select intention</label>
+          <select id="focus">
+            <option value="calm">Calm & grounding</option>
+            <option value="focus">Focus & clarity</option>
+            <option value="sleep">Ease into sleep</option>
+            <option value="energize">Gentle lift</option>
+          </select>
+
+          <label for="length">Preferred length</label>
+          <select id="length">
+            <option value="30">30 minutes</option>
+            <option value="60">60 minutes</option>
+            <option value="90">90 minutes</option>
+          </select>
+
+          <label for="sensitivity">Skin sensitivity</label>
+          <select id="sensitivity">
+            <option value="normal">Normal</option>
+            <option value="sensitive">Sensitive (lower dilution)</option>
+            <option value="allergy">Known allergies — will discuss</option>
+          </select>
+
+          <label for="pets">Pets in home?</label>
+          <select id="pets">
+            <option value="none">None</option>
+            <option value="dog">Dog</option>
+            <option value="cat">Cat</option>
+            <option value="other">Other</option>
+          </select>
+
+          <label for="notes">Short note (optional)</label>
+          <input id="notes" type="text" placeholder="Preferences, fragrance dislikes, etc.">
+
+          <button id="build" class="cta" style="width:100%;margin-top:12px">Build my plan</button>
+
+          <div id="summary" class="summary" aria-atomic="true"></div>
+          <button id="copy" class="copyBtn">Copy plan as text</button>
+        </div>
+      </aside>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} — {{CITY}}, {{STATE}} • <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+  </footer>
+
+  <script>
+    (function(){
+      // Scroll-triggered reveal
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const revealables = document.querySelectorAll('[data-reveal]');
+      function reveal(el){ el.classList.add('revealed'); }
+      if(prefersReduced){ revealables.forEach(r=>reveal(r)); }
+      else if('IntersectionObserver' in window){
+        const io = new IntersectionObserver((entries)=>{
+          entries.forEach(e=>{ if(e.isIntersecting){ reveal(e.target); io.unobserve(e.target); } });
+        },{threshold:0.12});
+        revealables.forEach(r=>io.observe(r));
+      } else { revealables.forEach(r=>reveal(r)); }
+    })();
+
+    // Session Planner
+    (function(){
+      const btn = document.getElementById('build');
+      const copyBtn = document.getElementById('copy');
+      const summary = document.getElementById('summary');
+      function makeText(){
+        const focus = document.getElementById('focus').value;
+        const length = document.getElementById('length').value;
+        const sensitivity = document.getElementById('sensitivity').value;
+        const pets = document.getElementById('pets').value;
+        const notes = document.getElementById('notes').value.trim();
+        const focusMap = {
+          calm: 'Calm & grounding',
+          focus: 'Focus & clarity',
+          sleep: 'Ease into sleep',
+          energize: 'Gentle lift'
+        };
+        const dilutions = {normal:'1-3% typical dilution advised',sensitive:'use lower dilution (≤1%) and extra patch testing',allergy:'discuss specific ingredients; avoid known allergens'};
+        const petNotes = {none:'No pets indicated.',dog:'Inform about scent strength; some oils may affect dogs',cat:'Special caution: many essential oils can be harmful to cats. Discuss alternatives',other:'Note presence of animals; we will choose pet-safe options'};
+        let out = '';
+        out += 'Intention: ' + (focusMap[focus]||focus) + '\n';
+        out += 'Session length: ' + length + ' minutes\n';
+        out += 'Skin / sensitivity guidance: ' + (dilutions[sensitivity]||'Standard safety guidance applies') + '\n';
+        out += 'Pets: ' + (petNotes[pets]||pets) + '\n';
+        if(notes) out += 'Notes: ' + notes + '\n';
+        out += '\nSafety reminders:\n- Patch test new blends before topical use.\n- Keep oils away from eyes and mucous membranes.\n- If pregnant or nursing, consult your care provider and notify practitioner.\n- If you have pets, we will select pet-appropriate methods and oils.\n\nBring this summary when you book.\n';
+        return out;
+      }
+      btn.addEventListener('click', function(){ summary.textContent = makeText(); summary.focus(); });
+      copyBtn.addEventListener('click', function(){ const txt = summary.textContent; if(!txt) return; if(navigator.clipboard){ navigator.clipboard.writeText(txt).then(()=>{ copyBtn.textContent='Copied'; setTimeout(()=>copyBtn.textContent='Copy plan as text',1400); }); } else { const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); copyBtn.textContent='Copied'; }catch(e){} ta.remove(); setTimeout(()=>copyBtn.textContent='Copy plan as text',1400); } });
+    })();
+  </script>
+</body>
+</html>

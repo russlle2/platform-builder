@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#071522;--panel:rgba(255,255,255,0.03);--muted:#bcdad7;--accent:#9fe8d0}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#021012);color:#eafffb;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}
+    .container{max-width:920px;margin:28px auto;padding:20px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;margin-left:12px}
+
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:16px;margin-top:16px}
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.04)}
+    label{display:block;margin-bottom:8px;font-size:13px;color:var(--muted)}
+    input,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#eafffb}
+    .small{font-size:13px;color:var(--muted)}
+    .btn{margin-top:10px;padding:10px 12px;border-radius:10px;border:none;background:linear-gradient(90deg,var(--accent),#7ee7c7);color:#04201b;cursor:pointer}
+
+    .sidebar .slot{padding:12px;border-radius:10px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.03);margin-bottom:10px}
+    .slot h4{margin:0 0 6px 0}
+    .disclaimer{font-size:12px;color:var(--muted);margin-top:12px}
+
+    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <strong>{{BUSINESS_NAME}}</strong>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+      <nav>
+        <a href="index.html">Welcome</a>
+        <a href="services.html">Offerings</a>
+        <a href="approach.html">Practice</a>
+        <a href="pricing.html">Rates</a>
+        <a href="contact.html">Say Hi</a>
+      </nav>
+    </header>
+
+    <main class="grid">
+      <section class="panel">
+        <h2 style="margin-top:0">Reserve an intro session</h2>
+        <p class="small">Fill the form to request a short orientation. We'll propose next steps and the best fit among monthly support, focused packages, or cohort options.</p>
+
+        <form id="booking-form" onsubmit="return false;">
+          <label>Full name<input type="text" id="name" required placeholder="Your name"></label>
+          <label>Email<input type="email" id="email" required placeholder="you@domain.com"></label>
+          <label>Phone (optional)<input type="tel" id="phone" placeholder="(555) 555-5555"></label>
+
+          <label>Preferred time frame
+            <select id="timeframe">
+              <option>Next 2 weeks</option>
+              <option>Next month</option>
+              <option>When cohort opens</option>
+            </select>
+          </label>
+
+          <label>Tell us briefly about your goals<textarea id="notes" rows="4" placeholder="Short note about what you're hoping for"></textarea></label>
+
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="btn" id="send-btn">Request intro</button>
+            <button class="btn" style="background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)" type="button" onclick="location.href='pricing.html'">See pricing</button>
+          </div>
+
+          <div class="disclaimer">We do not provide emergency services. Submission starts an educational conversation; licensed clinicians will share options. For urgent care, contact local emergency services or your provider.</div>
+        </form>
+      </section>
+
+      <aside class="panel sidebar">
+        <div class="slot">
+          <h4>Available touchpoints</h4>
+          <div class="small">Choose what you expect: a single orientation, ongoing monthly check-ins, or a structured cohort. We'll match logistics and the right team member.</div>
+        </div>
+
+        <div class="slot">
+          <h4>Next cohort</h4>
+          <div class="small">Starts: <strong>June</strong> • Duration: 12 weeks • Spots: limited</div>
+          <div style="margin-top:8px"><button class="btn" onclick="location.href='pricing.html'">Join waitlist</button></div>
+        </div>
+
+        <div class="slot">
+          <h4>Quick contact</h4>
+          <div class="small">Call: {{PHONE}}<br>Email: <a href="mailto:{{EMAIL}}" style="color:var(--muted)">{{EMAIL}}</a></div>
+        </div>
+      </aside>
+    </main>
+
+    <footer style="margin-top:18px;color:var(--muted);font-size:13px">If you have billing questions or need accessibility accommodations please email {{EMAIL}}. By requesting you agree to receive scheduling communication.</footer>
+  </div>
+
+  <script>
+    // Local booking micro-interaction
+    const form = document.getElementById('booking-form');
+    const sendBtn = document.getElementById('send-btn');
+    sendBtn.addEventListener('click',()=>{
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      if(!name || !email){ alert('Please provide name and email.'); return; }
+      sendBtn.disabled = true;
+      sendBtn.textContent = 'Sending...';
+      // simulate send
+      setTimeout(()=>{
+        alert('Thanks '+name+" — we've received your request. We'll follow up at "+email+" with next steps.");
+        sendBtn.textContent = 'Request intro';
+        sendBtn.disabled = false;
+        form.reset();
+        location.href = 'contact.html';
+      },900);
+    });
+  </script>
+</body>
+</html>

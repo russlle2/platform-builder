@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Pricing — Holistic Programs</title>
+  <style>
+    :root{--bg:#fbfbf9;--ink:#14221f;--muted:#5b6b67;--accent:#8aa394;--glass:rgba(255,255,255,0.6);--card:#ffffff}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+    header{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 1.5rem;border-bottom:1px solid rgba(20,34,31,0.04);backdrop-filter:blur(6px);position:sticky;top:0;background:linear-gradient(180deg,rgba(251,251,249,0.75),rgba(251,251,249,0.5));z-index:10}
+    .brand{display:flex;gap:.6rem;align-items:center}
+    .logo{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#cfe3d8);display:grid;place-items:center;font-weight:700;color:var(--bg)}
+    nav a{margin-left:1rem;color:var(--muted);text-decoration:none;font-weight:600;font-size:.95rem}
+    .primary{background:var(--accent);color:white;padding:.5rem .9rem;border-radius:8px;text-decoration:none}
+    main{max-width:980px;margin:2rem auto;padding:1rem}
+    .hero{display:grid;grid-template-columns:1fr;gap:1rem;padding:1.25rem;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.6),rgba(255,255,255,0.4));box-shadow:0 6px 24px rgba(15,21,19,0.04);border:1px solid rgba(20,34,31,0.03)}
+    .hero h1{margin:0;font-size:1.6rem}
+    .lead{color:var(--muted);margin-top:.35rem}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;margin-top:1rem}
+    .card{background:var(--card);padding:1rem;border-radius:10px;border:1px solid rgba(20,34,31,0.03);box-shadow:0 4px 18px rgba(15,21,19,0.03)}
+    .price{font-size:1.4rem;font-weight:700;color:var(--ink)}
+    .muted{color:var(--muted)}
+    .cta-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem}
+    .small{font-size:.9rem}
+    footer{max-width:980px;margin:2rem auto;padding:1rem;color:var(--muted);font-size:.95rem}
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease}
+    .reveal.visible{opacity:1;transform:none}
+    /* pattern background using external asset (expected at assets/img/pattern.svg) */
+    .wall{background-image:url('assets/img/pattern.svg');background-size:450px;background-position:80% -10%;background-repeat:no-repeat}
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(5,8,7,0.45);display:none;align-items:center;justify-content:center;padding:1rem}
+    .modal{background:var(--card);border-radius:12px;padding:1rem;max-width:640px;width:100%;box-shadow:0 12px 44px rgba(8,12,10,0.45)}
+    .steps{display:flex;flex-direction:column;gap:.65rem}
+    .controls{display:flex;gap:.5rem;justify-content:flex-end;margin-top:.5rem}
+    button{font-weight:600}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none} }
+  </style>
+</head>
+<body class="wall">
+  <header>
+    <div class="brand">
+      <div class="logo">HM</div>
+      <div>
+        <div style="font-weight:700">Holistic Medicine</div>
+        <div style="font-size:.85rem;color:var(--muted)">Nourish. Map. Move.</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Conditions</a>
+      <a href="approach.html">Our Way</a>
+      <a href="pricing.html" style="color:var(--ink);">Pricing</a>
+      <a href="about.html">About</a>
+      <a class="primary" href="book.html">{{PRIMARY_CTA_LABEL}}</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero reveal" data-reveal>
+      <div>
+        <h1>Clearer budgeting for care that fits your life rhythm</h1>
+        <p class="lead">Packages and one-off sessions designed to meet moments: evaluation, steady support, and at-home add-ons to sustain what we build together. Transparent rates and thoughtful options — no rush, just clarity.</p>
+      </div>
+      <div class="cta-row">
+        <a class="primary" href="book.html">Reserve a planning call</a>
+        <button id="tryBtn" style="background:transparent;border:1px solid var(--accent);padding:.5rem .7rem;border-radius:8px;color:var(--accent);font-weight:700">Try a guided exercise</button>
+      </div>
+    </section>
+
+    <section style="margin-top:1.25rem" class="reveal" data-reveal>
+      <h2 style="margin:0 0 .4rem 0">Programs and pricing</h2>
+      <p class="muted small">Pick a rhythm that meets where you are. Add-ons and retail items are listed so you can choose what supports continuity at home.</p>
+
+      <div class="grid" style="margin-top:.85rem">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-weight:700">Foundations Review</div>
+              <div class="muted small">Initial evaluation + personalized map</div>
+            </div>
+            <div class="price">$185</div>
+          </div>
+          <p class="muted small" style="margin-top:.6rem">A 75-minute intake to listen widely: symptoms, routines, and readiness. Includes tailored next steps and recommended low-friction practices.</p>
+          <div class="cta-row">
+            <a class="primary" href="book.html">Book Foundations</a>
+            <a href="contact.html" class="small">Questions? Call {{PHONE}}</a>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-weight:700">Steady Support Series</div>
+              <div class="muted small">Flexible 6-session plan</div>
+            </div>
+            <div class="price">$990 (6 sessions)</div>
+          </div>
+          <p class="muted small" style="margin-top:.6rem">A paced set of visits to practice, review, and refine. Sessions can be a mix of coaching, breathwork, or simple home-focused supports.</p>
+          <div class="cta-row">
+            <a class="primary" href="book.html">Start a series</a>
+            <div class="small muted">Split payments available</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-weight:700">Focused Sessions</div>
+              <div class="muted small">Single 50-minute visit</div>
+            </div>
+            <div class="price">$125</div>
+          </div>
+          <p class="muted small" style="margin-top:.6rem">Target a single concern — sleep, digestion, stress mapping — and leave with a short practical plan you can try immediately.</p>
+          <div class="cta-row">
+            <a class="primary" href="book.html">Book a focused visit</a>
+            <a href="contact.html" class="small">Email {{EMAIL}}</a>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-weight:700">At-Home Support Kit (Add-on)</div>
+              <div class="muted small">Hand-picked items & guidance</div>
+            </div>
+            <div class="price">$49–$79</div>
+          </div>
+          <p class="muted small" style="margin-top:.6rem">A curated set of simple tools and written prompts to keep momentum between visits. Sold as a one-time retail add-on.</p>
+          <div class="cta-row">
+            <a class="primary" href="book.html">Add kit to booking</a>
+            <div class="small muted">Ships within {{CITY}}, {{STATE}}</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:1.25rem" class="card reveal" data-reveal>
+      <h3 style="margin-top:0">A la carte options</h3>
+      <ul class="muted small">
+        <li>15-min check-ins — $35</li>
+        <li>30-min practical coaching — $65</li>
+        <li>Home practice review (written) — $40</li>
+      </ul>
+      <p class="muted small" style="margin-top:.6rem">Packages may include prioritized written guidance and recommended add-ons. None of our notes replace medical care; we coordinate with your care team when useful.</p>
+    </section>
+
+    <section style="margin-top:1rem" class="reveal" data-reveal>
+      <h3 style="margin:0 0 .4rem 0">Questions we often get</h3>
+      <details class="card" style="padding:1rem;border-left:4px solid var(--accent);">
+        <summary style="font-weight:700;cursor:pointer">Do you take insurance?</summary>
+        <p class="muted small">We do not bill insurance directly. We provide superbills on request for those who may be eligible to submit for reimbursement.</p>
+      </details>
+      <details class="card" style="padding:1rem;border-left:4px solid #c4c9c6;margin-top:.6rem">
+        <summary style="font-weight:700;cursor:pointer">What if I need medication management?</summary>
+        <p class="muted small">Our care focuses on integrative supports and lifestyle mapping. If medication conversations are relevant, we coordinate with your prescriber or help you find an appropriate provider.</p>
+      </details>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
+      <div>
+        <div style="font-weight:700">Holistic Medicine</div>
+        <div class="muted small">Thoughtful, practical care — contact {{EMAIL}} or call {{PHONE}}</div>
+      </div>
+      <div class="muted small">© <span id="year"></span></div>
+    </div>
+  </footer>
+
+  <div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document">
+      <h3 id="modalTitle">Guided practice</h3>
+      <div id="modalContent" class="steps">
+        <p class="muted">Choose a short guided practice to center. No claims — simple techniques for calm and reflection.</p>
+        <div id="stepArea"></div>
+      </div>
+      <div class="controls">
+        <button id="prevBtn" disabled>Back</button>
+        <button id="nextBtn">Start</button>
+        <button id="closeBtn" style="background:transparent;border:none;color:var(--muted);">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Reveal on scroll with reduced-motion respect
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const observers = document.querySelectorAll('[data-reveal]');
+      if(prefersReduced){
+        observers.forEach(el=>el.classList.add('visible'));
+        return;
+      }
+      const io = new IntersectionObserver((entries)=>{
+        for(const e of entries){
+          if(e.isIntersecting){
+            e.target.classList.add('visible');
+            io.unobserve(e.target);
+          }
+        }
+      },{threshold:0.15});
+      observers.forEach(el=>io.observe(el));
+    })();
+
+    // Guided exercise modal implementation
+    (function(){
+      const backdrop = document.getElementById('modalBackdrop');
+      const tryBtn = document.getElementById('tryBtn');
+      const closeBtn = document.getElementById('closeBtn');
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const stepArea = document.getElementById('stepArea');
+      const modalTitle = document.getElementById('modalTitle');
+
+      const practices = {
+        'Breathing': [
+          {t:'Find a comfortable seat. Rest hands on your lap.'},
+          {t:'Breathe in for 4 counts… hold 2… out for 6. Repeat gently.'},
+          {t:'Continue for 6 breaths, noticing the body soften each out-breath.'}
+        ],
+        'Micro-Journaling': [
+          {t:'Set a timer for 5 minutes. Have a pen ready.'},
+          {t:'Prompt: "What small thing helped me today?" — write non-judgmentally.'},
+          {t:'Note one tiny next step you can try tomorrow.'}
+        ],
+        'Intention Setting': [
+          {t:'Close your eyes if that feels safe. Take two slow breaths.'},
+          {t:'Name one quality you want to carry today (ease, patience, focus).'},
+          {t:'Picture a small action that reflects that intention and commit to one breath-length to notice it.'}
+        ]
+      };
+
+      let choice = null; // key
+      let step = 0;
+
+      function renderSelection(){
+        modalTitle.textContent = 'Try a short practice';
+        stepArea.innerHTML = '';
+        const info = document.createElement('div');
+        info.innerHTML = '<div style="display:flex;gap:.5rem;flex-wrap:wrap"></div>';
+        const container = info.firstElementChild;
+        Object.keys(practices).forEach(key=>{
+          const btn = document.createElement('button');
+          btn.textContent = key;
+          btn.style.padding = '.45rem .7rem';
+          btn.style.border = '1px solid rgba(20,34,31,0.06)';
+          btn.style.borderRadius = '8px';
+          btn.style.background = 'white';
+          btn.onclick = ()=>{
+            choice = key; step = 0; renderStep();
+          };
+          container.appendChild(btn);
+        });
+        stepArea.appendChild(info);
+        prevBtn.disabled = true; nextBtn.textContent = 'Start';
+      }
+
+      function renderStep(){
+        modalTitle.textContent = choice;
+        const steps = practices[choice];
+        stepArea.innerHTML = '';
+        const el = document.createElement('div');
+        el.innerHTML = '<p style="margin:0 .0 0 .0">'+steps[step].t+'</p>';
+        stepArea.appendChild(el);
+        prevBtn.disabled = step===0;
+        nextBtn.textContent = step < steps.length-1 ? 'Next' : 'Finish';
+      }
+
+      function openModal(){
+        backdrop.style.display = 'flex';
+        backdrop.setAttribute('aria-hidden','false');
+        renderSelection();
+      }
+      function closeModal(){
+        backdrop.style.display = 'none';
+        backdrop.setAttribute('aria-hidden','true');
+        choice = null; step = 0;
+      }
+
+      tryBtn.addEventListener('click', openModal);
+      closeBtn.addEventListener('click', closeModal);
+      backdrop.addEventListener('click', (e)=>{ if(e.target===backdrop) closeModal(); });
+
+      prevBtn.addEventListener('click', ()=>{
+        if(choice===null) return;
+        if(step>0){ step--; renderStep(); }
+      });
+
+      nextBtn.addEventListener('click', ()=>{
+        if(choice===null){ // start sequence
+          // choose first by default
+          const keys = Object.keys(practices);
+          choice = keys[0]; step = 0; renderStep();
+          return;
+        }
+        const steps = practices[choice];
+        if(step < steps.length-1){ step++; renderStep(); }
+        else { closeModal(); }
+      });
+
+      // keyboard accessibility
+      document.addEventListener('keydown', (e)=>{
+        if(backdrop.style.display==='flex'){
+          if(e.key==='Escape') closeModal();
+          if(e.key==='ArrowRight') nextBtn.click();
+          if(e.key==='ArrowLeft') prevBtn.click();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

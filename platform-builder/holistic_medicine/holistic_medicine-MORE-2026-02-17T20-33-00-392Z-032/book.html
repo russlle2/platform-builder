@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Enroll — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--primary:#2b8cff;--soft:#f6fbff}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto;background:var(--soft);color:#0b0b0d}
+    header{display:flex;justify-content:space-between;align-items:center;padding:16px 22px}
+    .logo{font-weight:700;color:var(--primary)}
+    nav a{margin-left:12px;color:#4a4a58;text-decoration:none}
+
+    .wrap{max-width:960px;margin:18px auto;padding:0 18px}
+    .hero{background:white;border-radius:12px;padding:20px;border:1px solid #eef5ff;display:flex;gap:20px;align-items:center}
+    .left{flex:1}
+    h1{margin:0 0 6px}
+    .muted{color:#62626b}
+    .form{margin-top:12px;display:grid;grid-template-columns:1fr 120px;gap:10px}
+    input,select{padding:10px;border-radius:8px;border:1px solid #e8eefc}
+    .btn{background:var(--primary);color:white;border:none;padding:10px;border-radius:8px;cursor:pointer}
+
+    .details{margin-top:16px;display:flex;gap:12px}
+    .card{background:white;padding:12px;border-radius:10px;border:1px solid #eef5ff}
+
+    .faq{margin-top:18px}
+    .q{background:white;padding:12px;border-radius:8px;border:1px solid #f2f6ff;margin-bottom:8px}
+
+    .proof-mini{display:flex;gap:8px;align-items:center;margin-top:10px}
+    .proof-mini .badge{width:36px;height:36px;border-radius:8px;background:white;border:1px solid #eef5ff;display:flex;align-items:center;justify-content:center}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Programs</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <div class="wrap">
+    <section class="hero">
+      <div class="left">
+        <h1>Reserve your spot in the next cohort</h1>
+        <div class="muted">Small groups, clearly structured sessions. Seats are limited to preserve connection and meaningful interaction.</div>
+
+        <div class="form" style="margin-top:12px">
+          <input id="name" placeholder="Your name" />
+          <input id="phone" placeholder="Phone" />
+          <input id="email" placeholder="Email" />
+          <select id="interest"><option value="cohort">Join next cohort</option><option value="private">Private intake</option></select>
+          <input id="city" placeholder="{{CITY}}" />
+          <button id="bookBtn" class="btn">Request spot</button>
+        </div>
+
+        <div class="proof-mini">
+          <div class="badge" title="Group rating: 4.7/5"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 17.3l-6.16 3.64 1.64-7.19L2 9.5l7.4-.64L12 2l2.6 6.86L22 9.5l-5.48 4.25 1.64 7.19z" fill="#2b8cff"/></svg></div>
+          <div class="muted">Cohort feedback: meaningful improvements in routines and symptom management reported. (Anonymous survey)</div>
+        </div>
+      </div>
+
+      <div style="width:260px">
+        <div class="card">
+          <div style="font-size:13px;color:#6b6b74">Next cohort</div>
+          <div style="font-weight:700;margin-top:6px">Starts: April 12</div>
+          <div class="muted" style="margin-top:6px">8 weeks • twice-weekly sessions • small cohort</div>
+        </div>
+        <div class="card" style="margin-top:12px">
+          <div style="font-size:13px;color:#6b6b74">Price</div>
+          <div style="font-weight:700;margin-top:6px">$980 — cohort cycle</div>
+          <div class="muted" style="margin-top:6px">Small payment plans available. Contact us after requesting a spot.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="details">
+      <div class="card" style="flex:1">
+        <h3 style="margin-top:0">What to expect</h3>
+        <div class="muted">Interactive lessons, weekly action steps, and check-ins. You will leave with a prioritized set of changes and tools for tracking progress.</div>
+      </div>
+
+      <div class="card" style="width:280px">
+        <h4 style="margin:0 0 6px">Need private care?</h4>
+        <div class="muted">Select "Private intake" in the form. We'll set a 1:1 consult if that's a better fit.</div>
+      </div>
+    </section>
+
+    <section class="faq">
+      <h3>Frequently asked</h3>
+      <div class="q"><strong>How do payments work?</strong>
+        <div class="muted">You can pay the cohort fee upfront or ask about a short payment plan. We accept card payments through a secure portal.</div>
+      </div>
+      <div class="q"><strong>Can I do this if I have complex conditions?</strong>
+        <div class="muted">Group material is educational and supportive. If you have complex or unstable medical issues, please discuss with your clinician; we also offer private intake options.</div>
+      </div>
+      <div class="q"><strong>What is the cancellation policy?</strong>
+        <div class="muted">Seats can be deferred up to two weeks before start; refunds follow our policy outlined on request.</div>
+      </div>
+    </section>
+
+    <section style="margin-top:12px;text-align:center">
+      <div style="display:inline-block;padding:12px 16px;background:#fff;border-radius:12px;border:1px solid #eef5ff">
+        <div style="font-weight:700">Still not sure?</div>
+        <div class="muted" style="margin-bottom:8px">Book a no-pressure intro call to see if the cohort is right for you.</div>
+        <a class="btn" href="{{PRIMARY_CTA_URL}}">Schedule Intro</a>
+      </div>
+    </section>
+
+    <footer style="margin-top:22px;text-align:center;color:#6b6b74">Questions? Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></footer>
+  </div>
+
+  <script>
+    // lightweight booking form handler (client-side only)
+    const bookBtn = document.getElementById('bookBtn');
+    bookBtn.addEventListener('click', ()=>{
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const interest = document.getElementById('interest').value;
+      if(!name || !email){
+        alert('Please add your name and email to request a spot.');
+        return;
+      }
+      // mimic submission
+      bookBtn.textContent = 'Sending…'; bookBtn.disabled = true;
+      setTimeout(()=>{
+        alert('Thanks, ' + name + '! We received your request for ' + (interest==='cohort'?'the cohort.':'a private intake.') + ' We will follow up at ' + email + '.');
+        bookBtn.textContent = 'Request spot'; bookBtn.disabled = false;
+      },900);
+    });
+  </script>
+</body>
+</html>

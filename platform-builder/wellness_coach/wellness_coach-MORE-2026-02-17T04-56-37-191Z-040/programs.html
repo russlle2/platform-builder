@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Journeys — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7faf8;--muted:#5f6a6a;--accent:#d77fa0;--ink:#15202b}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--ink)}
+    header{display:flex;justify-content:space-between;padding:18px 26px;background:#fff;border-bottom:1px solid #eee}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    .hero{max-width:1100px;margin:22px auto;padding:0 26px}
+    .card{background:white;border-radius:12px;padding:18px;box-shadow:0 10px 40px rgba(10,10,10,0.04)}
+    .grid{display:grid;grid-template-columns:380px 1fr;gap:18px}
+    h1{margin:0 0 8px}
+    .goals{display:flex;flex-direction:column;gap:8px}
+    .goal{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;border:1px solid #f2e8ef;background:linear-gradient(180deg,#fff,#fff7fb)}
+    .pathmap{margin-top:18px;padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#fffefc)}
+    .track{display:flex;gap:8px;align-items:center}
+    .day{width:22px;height:22px;border-radius:6px;background:#f4f4f4;display:flex;align-items:center;justify-content:center;font-size:11px}
+    .day.active{background:var(--accent);color:white}
+    .legend{display:flex;gap:10px;margin-top:8px}
+    .legend .k{display:flex;gap:8px;align-items:center}
+    .meter{height:12px;background:#eee;border-radius:8px;overflow:hidden;margin-top:12px}
+    .meter > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#f08fb7);width:0%}
+    .save{margin-top:12px}
+
+    @media(max-width:960px){.grid{grid-template-columns:1fr}.track{flex-wrap:wrap}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Gateway</a>
+      <a href="about.html">Origins</a>
+      <a href="services.html">Offerings</a>
+      <a href="programs.html">Journeys</a>
+      <a href="pricing.html">Rates</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main class="hero">
+    <div class="grid">
+      <aside>
+        <div class="card">
+          <h2>Select goals</h2>
+          <p style="color:var(--muted);margin-top:6px">Pick the outcomes you want this month. The path map adapts a 30-day plan around selections.</p>
+          <div class="goals" id="goals">
+            <label class="goal"><input type="checkbox" value="energy"> <div><strong>Energy steadiness</strong><div style="color:var(--muted);font-size:13px">Short daily boosts and midday resets</div></div></label>
+            <label class="goal"><input type="checkbox" value="sleep"> <div><strong>Sleep rhythm</strong><div style="color:var(--muted);font-size:13px">Evening anchors and wind-downs</div></div></label>
+            <label class="goal"><input type="checkbox" value="focus"> <div><strong>Focus windows</strong><div style="color:var(--muted);font-size:13px">Timed work blocks and micro-breaks</div></div></label>
+            <label class="goal"><input type="checkbox" value="calm"> <div><strong>Everyday calm</strong><div style="color:var(--muted);font-size:13px">Mini resets to manage momentum</div></div></label>
+          </div>
+          <div style="margin-top:12px">
+            <button id="planBtn" style="padding:10px 12px;border-radius:8px;background:var(--accent);color:white;border:none;cursor:pointer">Map my 30 days</button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <h3>Snapshot</h3>
+          <div class="note" style="color:var(--muted);font-size:14px">The meter below estimates weekly intensity; more goals = fuller schedule. You can dial cadence later.</div>
+          <div class="meter"><i id="intensityBar"></i></div>
+          <div style="font-size:13px;color:var(--muted);margin-top:8px">Intensity: <span id="intensityLabel">Low</span></div>
+          <div class="save"><a href="{{PRIMARY_CTA_URL}}" style="display:inline-block;background:var(--accent);color:white;padding:8px 12px;border-radius:8px;text-decoration:none;font-weight:700">Save and start</a></div>
+        </div>
+      </aside>
+
+      <section>
+        <div class="card">
+          <h1>30-day path map</h1>
+          <p style="color:var(--muted)">After you choose goals, a visual path appears: daily micro-tasks, weekly checkpoints, and places to reflect. Use it as a roadmap to guide small changes consistently.</p>
+
+          <div class="pathmap" id="pathmap">
+            <div style="font-size:13px;color:var(--muted)">No goals selected — choose goals to generate your map.</div>
+          </div>
+
+          <div style="margin-top:12px;color:var(--muted);font-size:13px">A friendly note: this is a planning tool for habits and routines, not medical guidance.</div>
+        </div>
+
+        <div style="margin-top:16px" class="card" id="milestonesCard" style="display:none">
+          <h3>Weekly checkpoints</h3>
+          <div id="milestones" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    (function(){
+      const goalInputs = Array.from(document.querySelectorAll('#goals input'));
+      const planBtn = document.getElementById('planBtn');
+      const pathmap = document.getElementById('pathmap');
+      const intensityBar = document.getElementById('intensityBar');
+      const intensityLabel = document.getElementById('intensityLabel');
+      const milestones = document.getElementById('milestones');
+      const milestonesCard = document.getElementById('milestonesCard');
+
+      function computeIntensity(selected){
+        // Intensity: 1-4 goals maps to % width
+        const n = selected.length;
+        const pct = Math.min(100, n * 24 + (n>0?12:0));
+        let label = 'Low';
+        if(pct>60) label='High'; else if(pct>30) label='Medium';
+        return {pct,label,n};
+      }
+
+      function buildPath(selected){
+        // Build a 30-day map: days with icons for micro-tasks
+        const container = document.createElement('div');
+        container.className = 'track';
+        for(let d=1;d<=30;d++){
+          const day = document.createElement('div');
+          day.className = 'day';
+          // Simple algorithm: schedule micro tasks every other day, plus weekly checkpoints
+          const weekly = (d%7===0);
+          const taskCount = Math.max(0, Math.ceil((selected.length + (weekly?1:0))/2));
+          if(taskCount>0){ day.classList.add('active'); day.title = 'Tasks: '+taskCount; }
+          day.textContent = d%7===0 ? 'W' : (d%5===0? '•' : '');
+          container.appendChild(day);
+        }
+
+        // Weekly milestones
+        const milestoneList = document.createElement('div');
+        milestoneList.style.marginTop='12px';
+        for(let w=1;w<=4;w++){
+          const mm = document.createElement('div');
+          mm.style.padding='8px';mm.style.border='1px solid #f0e9ef';mm.style.borderRadius='8px';mm.style.background='#fff';mm.style.marginRight='8px';mm.style.display='inline-block';
+          mm.textContent = 'Week '+w+': reflect on ' + (selected.length? selected.join(', '): 'your routine');
+          milestoneList.appendChild(mm);
+        }
+
+        return {container,milestoneList};
+      }
+
+      planBtn.addEventListener('click', ()=>{
+        const selected = goalInputs.filter(i=>i.checked).map(i=>i.value);
+        const info = computeIntensity(selected);
+        intensityBar.style.width = info.pct + '%';
+        intensityLabel.textContent = info.label + (info.n? ' ('+info.n+' goals)':'');
+
+        // Build path
+        pathmap.innerHTML = '';
+        const pieces = buildPath(selected);
+        pathmap.appendChild(pieces.container);
+
+        // Show milestones
+        milestones.innerHTML = '';
+        milestones.appendChild(pieces.milestoneList);
+        milestonesCard.style.display = 'block';
+      });
+
+      // Small convenience: toggle sample pre-selections on double-click header
+      document.querySelector('h1').addEventListener('dblclick', ()=>{
+        // pick two defaults
+        goalInputs.forEach(i=> i.checked = false);
+        goalInputs[0].checked = true; goalInputs[2].checked = true;
+        planBtn.click();
+      });
+
+    })();
+  </script>
+</body>
+</html>

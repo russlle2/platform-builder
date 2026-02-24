@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Reserve a Conversation | {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--accent:#356c56;--muted:#6b6b6b}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:#fbfbf9;color:#222}
+    header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid rgba(0,0,0,0.04)}
+    nav a{margin-left:14px;text-decoration:none;color:#333;font-weight:700}
+    .container{max-width:920px;margin:28px auto;padding:18px}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:22px}
+    .card{background:#fff;padding:18px;border-radius:12px;box-shadow:0 12px 30px rgba(20,40,30,0.06)}
+    h1{margin:0;color:var(--accent)}
+    label{display:block;font-weight:700;margin-top:12px}
+    input[type=text], input[type=email], select, textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e5e5e5;margin-top:6px}
+    .small{font-size:13px;color:var(--muted)}
+    .btn{display:inline-block;background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;margin-top:12px}
+
+    .summary{background:linear-gradient(180deg,#fff,#fbfff9);padding:12px;border-radius:10px;border:1px solid rgba(0,0,0,0.03)}
+
+    @media(max-width:880px){.grid{grid-template-columns:1fr}.aside{order:2}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#2f5c47);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800">HM</div>
+      <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="pricing.html">Investment</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div class="grid">
+      <div class="card">
+        <h1>Reserve a Short Intake</h1>
+        <p class="small">Pick an option below. Appointments include educational guidance. We will confirm specifics by email.</p>
+
+        <form id="booking" onsubmit="return false;">
+          <label for="name">Your name</label>
+          <input id="name" name="name" type="text" placeholder="Your full name" required />
+
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="you@example.com" required />
+
+          <label for="option">What feels most helpful</label>
+          <select id="option" name="option">
+            <option value="intro">Rhythm Intro — brief consult</option>
+            <option value="foundations">Foundations Plan — multi-session</option>
+            <option value="reset">Reset Package — focused work</option>
+          </select>
+
+          <label for="notes">A short note (current concerns or goals)</label>
+          <textarea id="notes" name="notes" rows="4" placeholder="Share what you'd like help with..."></textarea>
+
+          <label style="margin-top:12px">Preferred day</label>
+          <input id="date" type="text" placeholder="e.g. Weekdays, mornings" />
+
+          <div style="display:flex;gap:12px;align-items:center">
+            <button id="submit" class="btn">Schedule request</button>
+            <div class="small">or call <strong>{{PHONE}}</strong></div>
+          </div>
+        </form>
+
+        <div id="notice" style="margin-top:14px;color:var(--muted);font-size:14px"></div>
+      </div>
+
+      <aside class="card aside">
+        <div class="summary">
+          <h3 style="margin:0">What happens next</h3>
+          <ol style="margin-top:8px;color:var(--muted)">
+            <li>We review your request and reply within 48 hours</li>
+            <li>You'll receive a brief intake and recommended plan</li>
+            <li>Booking is confirmed after scheduling and payment when needed</li>
+          </ol>
+        </div>
+
+        <div style="margin-top:14px">
+          <h4 style="margin:0">Need help now?</h4>
+          <div style="margin-top:8px;color:var(--muted)">Call <strong>{{PHONE}}</strong> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+        </div>
+
+        <div style="margin-top:12px;font-size:13px;color:var(--muted)">
+          <strong>Privacy:</strong> Your details stay with the care team and are not shared without consent.
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    (function(){
+      const form = document.getElementById('booking');
+      const submit = document.getElementById('submit');
+      const notice = document.getElementById('notice');
+
+      function validate(){
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        if(!name || !email) return false;
+        return true;
+      }
+
+      submit.addEventListener('click', ()=>{
+        if(!validate()){ notice.textContent = 'Please provide your name and email.'; notice.style.color = 'crimson'; return; }
+        submit.textContent = 'Sending…'; submit.disabled = true;
+
+        // Simulate a local-only booking summary
+        setTimeout(()=>{
+          submit.textContent = 'Request sent';
+          notice.style.color = 'green';
+          notice.textContent = 'Thank you — we will be in touch within 48 hours to propose a time. No payment is taken here.';
+          // show a quick summary
+          const values = Array.from(new FormData(form).entries()).reduce((acc,[k,v])=>{acc[k]=v;return acc;},{ });
+          console.log('Booking request (local only):', values);
+        },900);
+      });
+    })();
+  </script>
+</body>
+</html>

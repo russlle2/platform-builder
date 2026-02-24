@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f3efe7;--accent:#7a5a37;--muted:#8b7a6f;--card:#fff;--accent-2:#c9a66b}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#3b2e28;background:var(--bg);}
+    body{background-image: url('assets/img/pattern.svg');background-repeat:repeat;background-size:220px;}
+    .wrap{max-width:980px;margin:36px auto;padding:28px}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    .brand{display:flex;flex-direction:column}
+    .brand h1{margin:0;font-size:18px;color:var(--accent)}
+    .brand p{margin:2px 0 0;color:var(--muted);font-size:13px}
+    nav a{margin-left:14px;color:var(--accent);text-decoration:none;font-weight:600}
+    .hero{background:linear-gradient(180deg,rgba(255,255,255,0.8),rgba(255,255,255,0.95));padding:22px;border-radius:12px;box-shadow:0 6px 18px rgba(58,38,20,0.06)}
+    .hero h2{margin:0 0 10px;color:#2f231d;font-size:26px}
+    .hero p{margin:0 0 16px;color:var(--muted)}
+    .cta{display:inline-block;background:var(--accent);color:#fff;padding:10px 14px;border-radius:8px;text-decoration:none}
+    .columns{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px}
+    .card{background:var(--card);padding:16px;border-radius:10px;box-shadow:0 6px 16px rgba(32,22,16,0.04)}
+    h3{margin:0 0 8px;color:var(--accent)}
+    p.lead{color:var(--muted);margin:0 0 12px}
+    .values{display:flex;gap:10px;flex-wrap:wrap}
+    .pill{background:linear-gradient(90deg, rgba(201,166,107,0.14), rgba(122,90,55,0.06));padding:8px 10px;border-radius:8px;font-size:13px;color:var(--accent);border:1px solid rgba(122,90,55,0.06)}
+
+    /* Habit builder */
+    .habit-form label{display:block;font-size:13px;color:#4b382f;margin-bottom:6px}
+    .habit-form input[type=text],.habit-form select{width:100%;padding:8px;border-radius:8px;border:1px solid #e6ddd3;background:#fff}
+    .habit-form .row{display:flex;gap:8px}
+    .btn{background:var(--accent-2);border:none;padding:9px 12px;border-radius:8px;color:#2a1c14;cursor:pointer;font-weight:700}
+    .checklist{margin-top:12px}
+    .checklist ul{list-style:none;padding:0;margin:0}
+    .checklist li{display:flex;align-items:center;gap:10px;padding:8px 6px;border-bottom:1px dashed #eee}
+    .actions{display:flex;gap:8px;margin-top:10px}
+    footer{margin-top:22px;padding-top:16px;border-top:1px solid rgba(58,38,20,0.04);display:flex;justify-content:space-between;align-items:center}
+    @media (max-width:860px){.columns{grid-template-columns:1fr;}.brand p{display:none}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <h1>{{BUSINESS_NAME}}</h1>
+        <p>Rooted coaching in {{CITY}}, {{STATE}}</p>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">Why</a>
+        <a href="services.html">Services</a>
+        <a href="programs.html">Programs</a>
+        <a href="pricing.html">Investments</a>
+        <a href="testimonials.html">Kind Words</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html">Hello</a>
+      </nav>
+    </header>
+
+    <section class="hero card">
+      <h2>{{TAGLINE}}</h2>
+      <p class="lead">I work with busy people to build steady systems that hold through real life. We shape habits, anchor small rituals and track outcome-focused signals so your days become more predictable and calm.</p>
+      <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+    </section>
+
+    <div class="columns">
+      <main>
+        <section class="card">
+          <h3>My story</h3>
+          <p>I blend practical frameworks with gentle accountability — no one-size-fits-all scripts, just clear tools you can try and keep. Over years of work with clients I’ve seen how small, repeated choices reshape priorities, sleep, energy and momentum. Here you get habits that serve a life, not appointments that crowd it.</p>
+        </section>
+
+        <section class="card" style="margin-top:12px">
+          <h3>How I work</h3>
+          <p>We start where you are: map current rhythms, isolate high-leverage habits, then design short, testable routines. I offer session plans, ongoing check-ins and practical kits you can use at home. Everything is non-medical and outcome-focused: sleep, movement, focus, stress architecture, and sustainable nutrition patterns.</p>
+        </section>
+
+        <section class="card" style="margin-top:12px">
+          <h3>Values that guide the work</h3>
+          <div class="values" style="margin-top:8px">
+            <span class="pill">Observation before change</span>
+            <span class="pill">Small bets, big signal</span>
+            <span class="pill">Tools that fit your life</span>
+            <span class="pill">Consistency over perfection</span>
+          </div>
+        </section>
+      </main>
+
+      <aside>
+        <section class="card">
+          <h3>7‑Day Habit Builder</h3>
+          <p style="margin-top:6px;color:var(--muted);font-size:14px">Choose one practice. Generate a week of small, concrete prompts and a printable checklist to keep you honest.</p>
+
+          <div class="habit-form" style="margin-top:12px">
+            <label for="habit-name">Habit to build</label>
+            <input id="habit-name" type="text" placeholder="e.g., evening wind-down" />
+
+            <label for="focus-area" style="margin-top:8px">Focus area</label>
+            <select id="focus-area">
+              <option>Sleep & rhythm</option>
+              <option>Gentle movement</option>
+              <option>Mindful breaks</option>
+              <option>Eating with awareness</option>
+            </select>
+
+            <label style="margin-top:8px">Difficulty</label>
+            <div class="row">
+              <select id="difficulty">
+                <option>Easy — 3 minutes</option>
+                <option>Medium — 10 minutes</option>
+                <option>Challenge — 20 minutes</option>
+              </select>
+              <button class="btn" id="generate-habit">Generate</button>
+            </div>
+          </div>
+
+          <div class="checklist" id="habit-checklist" style="display:none">
+            <h4 style="margin-top:12px;margin-bottom:8px;color:var(--accent)">Your 7‑Day Checklist</h4>
+            <div id="habit-days"></div>
+
+            <div class="actions">
+              <button class="btn" id="print-checklist">Print Checklist</button>
+              <button class="btn" id="copy-checklist">Copy Checklist</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="card" style="margin-top:12px">
+          <h3>Get in touch</h3>
+          <p style="margin-top:6px;color:var(--muted);font-size:14px">Ready to sketch a plan? Call <strong>{{PHONE}}</strong> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</p>
+        </section>
+      </aside>
+    </div>
+
+    <footer>
+      <div style="color:var(--muted);font-size:13px">Serving people in {{CITY}}, {{STATE}}</div>
+      <a href="{{PRIMARY_CTA_URL}}" class="cta">Start a short conversation</a>
+    </footer>
+  </div>
+
+  <script>
+    // Habit builder: 7-day challenge, printable checklist
+    function genPrompts(habit, area, difficulty){
+      var base=[];
+      var easyPrompts=[
+        `1) Tonight: spend 3 minutes preparing the space for ${habit}.`,
+        `2) Tomorrow morning: notice one tiny change after doing ${habit}.`,
+        `3) Midday: check in for 60 seconds and take a small breath focused on ${habit}.`,
+        `4) Evening: repeat step 1; notice how it felt.`,
+        `5) Choose a trigger (e.g., after brushing) and do the habit for 3 minutes.`,
+        `6) Log one sentence about the experience.`,
+        `7) Celebrate consistency: mark the box and reflect briefly.`
+      ];
+      var mediumPrompts=[
+        `1) Tonight: set a 10-minute window for ${habit} with no distractions.`,
+        `2) Morning: perform ${habit} and note one sensory detail.`,
+        `3) Midday: repeat ${habit} or do a 5-minute micro-version.`,
+        `4) Evening: lengthen the practice by 2 minutes and notice the difference.`,
+        `5) After a meal or break: use it as your trigger and do the habit.`,
+        `6) Log a quick note about how it shifted your day.`,
+        `7) Share progress with a friend or note a win.`
+      ];
+      var hardPrompts=[
+        `1) Today: commit a 20-minute block to ${habit}.`,
+        `2) Morning: repeat with intention and track a measurable detail.`,
+        `3) Midday: practice and compare to morning session.`,
+        `4) Evening: extend or refine the practice; try a new cue.`,
+        `5) Add a short accountability note (to self or a partner).`,
+        `6) Record one concrete effect (energy, focus, calm).`,
+        `7) Summarize the week and pick one adjustment.`
+      ];
+      if(difficulty.indexOf('Easy')===0) return easyPrompts;
+      if(difficulty.indexOf('Medium')===0) return mediumPrompts;
+      return hardPrompts;
+    }
+
+    document.getElementById('generate-habit').addEventListener('click',function(){
+      var habit=document.getElementById('habit-name').value.trim()||'your practice';
+      var area=document.getElementById('focus-area').value;
+      var difficulty=document.getElementById('difficulty').value;
+      var prompts=genPrompts(habit,area,difficulty);
+      var container=document.getElementById('habit-days');
+      container.innerHTML='';
+      prompts.forEach(function(p,i){
+        var li=document.createElement('div');
+        li.innerHTML=`<label style=\"display:flex;align-items:center;gap:10px\"><input type=\"checkbox\" data-day=\"${i+1}\" /> <span style=\"font-size:14px;color:#3e2f28\">Day ${i+1}: ${p}</span></label>`;
+        container.appendChild(li);
+      });
+      document.getElementById('habit-checklist').style.display='block';
+    });
+
+    document.getElementById('print-checklist').addEventListener('click',function(){
+      var habit=document.getElementById('habit-name').value.trim()||'Your Practice';
+      var area=document.getElementById('focus-area').value;
+      var items=Array.from(document.querySelectorAll('#habit-days label span')).map(function(s,i){return (i+1)+'. '+s.textContent.replace(/^Day \d+: /,'');});
+      var w=window.open('','habit','width=600,height=700');
+      var html='<html><head><title>'+habit+' - 7-Day Checklist</title><style>body{font-family:Arial,Helvetica,sans-serif;padding:18px;color:#2f231d}h2{color:#7a5a37}ul{padding-left:20px}</style></head><body>';
+      html+='<h2>'+habit+' — 7-Day Checklist</h2>';
+      html+='<p style="color:#6b574b">Focus: '+area+'</p>';
+      html+='<ul>';
+      items.forEach(function(it){html+='<li>'+it+'</li>';});
+      html+='</ul>';
+      html+='<p style="color:#6b574b;font-size:13px">Created by {{BUSINESS_NAME}}</p>';
+      html+='</body></html>';
+      w.document.write(html);w.document.close();
+      w.print();
+    });
+
+    document.getElementById('copy-checklist').addEventListener('click',function(){
+      var title=document.getElementById('habit-name').value.trim()||'7-Day Checklist';
+      var area=document.getElementById('focus-area').value;
+      var items=Array.from(document.querySelectorAll('#habit-days label span')).map(function(s,i){return (i+1)+'. '+s.textContent.replace(/^Day \d+: /,'');}).join('\n');
+      var text=title+' - Focus: '+area+'\n\n'+items+'\n\nCreated by {{BUSINESS_NAME}}';
+      navigator.clipboard.writeText(text).then(function(){alert('Checklist copied to clipboard');},function(){alert('Copy failed — try selecting the text manually.');});
+    });
+  </script>
+</body>
+</html>

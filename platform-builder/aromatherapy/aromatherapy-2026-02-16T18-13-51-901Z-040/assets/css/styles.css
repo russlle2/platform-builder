@@ -1,0 +1,67 @@
+/* Glass-morphism aromatherapy UI — clinical, calm */
+:root{
+  --bg:#f5fbfa;
+  --glass-bg: rgba(255,255,255,0.6);
+  --accent:#7AB9A2;
+  --muted:#6b7a73;
+  --text:#263237;
+  --card-radius:14px;
+  --shadow: 0 6px 18px rgba(34,50,46,0.08);
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#e6f5f2);font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--text);-webkit-font-smoothing:antialiased}
+.site{min-height:100vh;display:flex;flex-direction:column}
+.container{max-width:1000px;margin:0 auto;padding:28px}
+.nav{position:sticky;top:14px;padding:10px 0;z-index:30}
+.nav-inner{display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;flex-direction:column;text-decoration:none;color:var(--text)}
+.brand strong{font-size:18px}
+.brand .muted{font-size:12px;color:var(--muted)}
+.main-nav a{margin:0 8px;text-decoration:none;color:var(--text);padding:6px 10px;border-radius:8px}
+.main-nav a.cta{background:var(--accent);color:white}
+.menu-toggle{display:none;background:transparent;border:1px solid rgba(38,50,55,0.06);padding:8px;border-radius:8px}
+.hero{padding:40px 0}
+.hero-inner{display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:center}
+.hero-copy{padding:28px;border-radius:var(--card-radius);background:var(--glass-bg);backdrop-filter: blur(8px);box-shadow:var(--shadow)}
+.hero-title{margin:0 0 12px;font-size:28px}
+.lead{margin:0 0 18px;color:var(--muted)}
+.btn{display:inline-block;padding:10px 14px;border-radius:10px;text-decoration:none;border:1px solid rgba(38,50,55,0.06)}
+.btn.primary{background:linear-gradient(90deg,var(--accent),#90d6bb);color:#01302a;border:none}
+.btn.ghost{background:transparent}
+.btn.small{padding:8px 10px;font-size:14px}
+.small{font-size:13px}
+.muted{color:var(--muted)}
+.hero-art .card{padding:14px;border-radius:12px}
+.glass{background:var(--glass-bg);backdrop-filter: blur(8px);border-radius:var(--card-radius);box-shadow:var(--shadow);padding:18px}
+.section{padding:28px 0}
+.section.alt{background:linear-gradient(180deg,rgba(122,185,162,0.05),transparent)}
+.split{display:grid;grid-template-columns:2fr 1fr;gap:18px;align-items:start}
+.faq{list-style:none;padding:0;margin:0}
+.faq li{margin-bottom:8px}
+.plan-cards{display:flex;gap:12px;margin-top:12px}
+.plan-cards .card{flex:1}
+.habits{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;list-style:none;padding:0}
+.pricing-grid{display:flex;gap:12px}
+.price{flex:1;padding:16px;text-align:center}
+.price-amount{font-size:20px;margin:8px 0}
+.cta{padding:30px 0}
+.cta-inner{text-align:center}
+.cta-actions{display:flex;gap:12px;justify-content:center;margin-top:12px}
+.site-foot{margin-top:auto;padding:24px 0}
+.foot-inner{display:flex;justify-content:space-between;align-items:center}
+.tiny{font-size:12px}
+.card{padding:12px}
+/* Responsive */
+@media (max-width:900px){
+  .hero-inner{grid-template-columns:1fr}
+  .split{grid-template-columns:1fr}
+  .main-nav{display:none}
+  .menu-toggle{display:block}
+}
+/* SVG pattern background */
+body::before{content:"";position:fixed;inset:0;z-index:-1;opacity:0.65;background-image:url('../assets/img/pattern.svg');background-repeat:repeat;background-size:260px;filter:grayscale(12%) hue-rotate(-10deg) saturate(90%);mix-blend-mode:multiply}
+/* Small utilities */
+.muted.small{font-size:13px}
+.split aside{font-size:14px}
+/* Accessibility focus */
+a:focus,button:focus,input:focus,select:focus{outline:3px solid rgba(122,185,162,0.25);outline-offset:3px}

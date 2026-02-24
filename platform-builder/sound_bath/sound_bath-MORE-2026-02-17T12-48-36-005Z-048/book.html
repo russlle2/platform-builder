@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Book — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#071026;--card:#081426;--accent:#6bffdf;--muted:#9fb0c8}
+    body{margin:0;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial;background:linear-gradient(180deg,#02101a,#041a2a);color:#e7fbff}
+    .wrap{max-width:980px;margin:28px auto;padding:20px;border-radius:12px;position:relative}
+    .pattern{position:absolute;inset:0;opacity:.045;background-image:url('assets/img/pattern.svg');background-repeat:repeat;background-size:210px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{color:var(--muted);margin-left:12px;text-decoration:none}
+
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:18px;margin-top:18px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    label{display:block;font-size:13px;margin-top:10px;color:var(--muted)}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+    .row{display:flex;gap:8px}
+
+    .mixer{display:flex;gap:8px;margin-top:12px}
+    .mix-btn{padding:10px 14px;border-radius:999px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);cursor:pointer}
+    .mix-btn.active{background:linear-gradient(90deg,var(--accent),#8a5bff);color:#022;box-shadow:0 6px 20px rgba(107,255,223,0.07)}
+
+    .recommend{margin-top:12px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.02)}
+    .price{font-weight:700;color:var(--accent)}
+
+    .next{font-size:14px;color:var(--muted);margin-top:12px}
+    .btn{display:inline-block;margin-top:12px;padding:10px 14px;background:var(--accent);color:#022;border-radius:10px;text-decoration:none;font-weight:700}
+
+    .disclaimer{margin-top:12px;color:var(--muted);font-size:13px}
+
+    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <div class='pattern' aria-hidden='true'></div>
+    <header>
+      <div>
+        <h2 style='margin:0'>Reserve</h2>
+        <div style='color:var(--muted);font-size:13px'>Choose a session and set your sound preference.</div>
+      </div>
+      <nav>
+        <a href='index.html'>Home</a>
+        <a href='events.html'>Gatherings</a>
+        <a href='pricing.html'>Rates</a>
+        <a href='contact.html'>Help</a>
+      </nav>
+    </header>
+
+    <div class='grid'>
+      <div>
+        <form id='booking' class='card' onsubmit='return false;'>
+          <label for='name'>Full name</label>
+          <input id='name' name='name' required placeholder='Your name'>
+
+          <label for='email'>Email</label>
+          <input id='email' name='email' type='email' required placeholder='you@example.com'>
+
+          <label for='phone'>Phone</label>
+          <input id='phone' name='phone' placeholder='Optional'>
+
+          <label for='program'>Select offering</label>
+          <select id='program' name='program'>
+            <option value='drift'>Evening Drift — 60 minutes</option>
+            <option value='core'>Core Resonance — 75 minutes</option>
+            <option value='immersion'>Immersion+ — 90 minutes</option>
+          </select>
+
+          <label>Sound preference</label>
+          <div class='mixer' role='tablist' aria-label='Sound intensity selector'>
+            <button type='button' class='mix-btn' data-level='gentle' id='level-gentle'>Gentle</button>
+            <button type='button' class='mix-btn active' data-level='medium' id='level-medium'>Medium</button>
+            <button type='button' class='mix-btn' data-level='intense' id='level-intense'>Intense</button>
+          </div>
+
+          <div id='recommend' class='recommend'>
+            <div style='font-size:14px;color:var(--muted)'>Recommended program:</div>
+            <div style='margin-top:6px;font-weight:600' id='rec-name'>Core Resonance</div>
+            <div style='margin-top:6px' id='rec-desc'>A steady, layered session focused on full-body resonance and paced returns.</div>
+            <div style='margin-top:8px'>Price: <span class='price' id='rec-price'>$35</span></div>
+          </div>
+
+          <label for='date'>Choose a date</label>
+          <select id='date' name='date'></select>
+
+          <div class='disclaimer'>
+            Contraindications: If you have epilepsy, are in an unstable psychiatric state, have implanted electrical devices, or are pregnant with complications, speak to your clinician before booking. If unsure, contact <a href='mailto:{{EMAIL}}' style='color:inherit;text-decoration:underline'>{{EMAIL}}</a>.
+          </div>
+
+          <div style='display:flex;gap:10px;align-items:center'>
+            <button id='submit' class='btn'>Request reservation</button>
+            <a href='contact.html' style='color:var(--muted);text-decoration:underline;margin-left:6px'>Need help?</a>
+          </div>
+        </form>
+      </div>
+
+      <aside class='card'>
+        <h4 style='margin:0'>Quick availability</h4>
+        <div class='next' id='next-available'>Next opening: —</div>
+        <ul id='calendar' style='margin-top:12px;color:var(--muted);padding-left:18px'></ul>
+
+        <div style='margin-top:18px'>
+          <h4 style='margin:0'>Pricing model</h4>
+          <p class='muted' style='margin-top:8px'>Pay per drop-in, or buy a 3-visit credit pack for a discount. Private sessions priced individually — contact for details.</p>
+        </div>
+
+        <div style='margin-top:12px'>
+          <strong style='color:var(--accent)'>Single visit</strong>: $35 · <strong style='color:var(--accent)'>3-pack</strong>: $95
+        </div>
+      </aside>
+    </div>
+
+    <footer style='margin-top:18px;color:var(--muted)'>Questions about accessibility or safety? Email <a href='mailto:{{EMAIL}}' style='color:inherit;text-decoration:underline'>{{EMAIL}}</a> or call <a href='tel:{{PHONE}}' style='color:inherit;text-decoration:none'>{{PHONE}}</a></footer>
+  </div>
+
+  <script>
+    // Simple booking UI: mixer changes recommendation
+    (function(){
+      const mixBtns = Array.from(document.querySelectorAll('.mix-btn'));
+      const recName = document.getElementById('rec-name');
+      const recDesc = document.getElementById('rec-desc');
+      const recPrice = document.getElementById('rec-price');
+      const programEl = document.getElementById('program');
+
+      const profiles = {
+        gentle: {
+          drift: {name: 'Evening Drift', desc: 'Soft, sparse tones to help ease tension.', price: '$30'},
+          core: {name: 'Core Resonance (lighter)', desc: 'Reduced intensity with emphasis on breath.', price: '$32'},
+          immersion: {name: 'Immersion+ (soft variant)', desc: 'Extended, but gentled layers for longer calm.', price: '$40'}
+        },
+        medium: {
+          drift: {name: 'Evening Drift', desc: 'Balanced layers for an accessible evening session.', price: '$35'},
+          core: {name: 'Core Resonance', desc: 'Full resinant layering and gradual climbs.', price: '$45'},
+          immersion: {name: 'Immersion+', desc: 'Extended resonance work for deeper release.', price: '$55'}
+        },
+        intense: {
+          drift: {name: 'Evening Drift (dynamic)', desc: 'Bolder presence of tones and focal transitions.', price: '$40'},
+          core: {name: 'Core Resonance (intense)', desc: 'Richer low frequencies and stronger crescendos.', price: '$55'},
+          immersion: {name: 'Immersion+ (deep)', desc: 'An extended, immersive sound field; longer integration.', price: '$70'}
+        }
+      };
+
+      function setActive(level){
+        mixBtns.forEach(b=>b.classList.toggle('active', b.dataset.level===level));
+        updateRecommendation(level, programEl.value);
+      }
+
+      mixBtns.forEach(b=>{ b.addEventListener('click',()=> setActive(b.dataset.level)); });
+
+      programEl.addEventListener('change', ()=>{
+        const active = document.querySelector('.mix-btn.active').dataset.level;
+        updateRecommendation(active, programEl.value);
+      });
+
+      function updateRecommendation(level, programKey){
+        const p = profiles[level][programKey];
+        recName.textContent = p.name;
+        recDesc.textContent = p.desc;
+        recPrice.textContent = p.price;
+      }
+
+      // Initialize
+      setActive('medium');
+
+      // Calendar & next-available simulation
+      const dates = generateDates(10); // next 10 slots
+      const calendar = document.getElementById('calendar');
+      const selectDate = document.getElementById('date');
+      const nextEl = document.getElementById('next-available');
+
+      function generateDates(n){
+        const out = [];
+        const now = new Date();
+        for(let i=1;i<=n;i++){
+          const d = new Date(now.getFullYear(), now.getMonth(), now.getDate()+i, 19, 0, 0);
+          out.push(d);
+        }
+        return out;
+      }
+
+      dates.forEach((d,idx)=>{
+        const li = document.createElement('li');
+        li.textContent = d.toDateString() + ' — 7:00 PM';
+        calendar.appendChild(li);
+        const opt = document.createElement('option');
+        opt.value = d.toISOString();
+        opt.textContent = d.toDateString() + ' · 7:00 PM';
+        selectDate.appendChild(opt);
+      });
+
+      if(dates.length){
+        const next = dates[0];
+        nextEl.textContent = next.toDateString() + ' at 7:00 PM';
+        selectDate.selectedIndex = 0;
+      }
+
+      // Simulated submit
+      document.getElementById('submit').addEventListener('click', ()=>{
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        if(!name || !email){ alert('Please provide name and email.'); return; }
+        const program = document.getElementById('program').value;
+        const date = document.getElementById('date').value;
+        alert('Request sent. We will follow up to confirm your reservation.');
+        // Reset lightly
+        document.getElementById('booking').reset();
+        setActive('medium');
+      });
+
+    })();
+  </script>
+</body>
+</html>

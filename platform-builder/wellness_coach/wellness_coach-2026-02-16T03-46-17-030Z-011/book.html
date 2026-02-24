@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve Your Session — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fffaf6;--ink:#14202a;--muted:#6b7a83;--accent:#ffd9a6;--accent-2:#ff6b8a;--card:#fff;--radius:14px}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--ink)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:20px 32px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;color:#081018;font-weight:800}
+    nav a{color:var(--muted);text-decoration:none;margin:0 8px}
+    .hero{max-width:1100px;margin:18px auto;padding:18px 28px;display:grid;grid-template-columns:1fr 380px;gap:20px;align-items:start}
+    .hero h1{margin:0 0 8px;font-size:32px}
+    .hero p{margin:0 0 12px;color:var(--muted)}
+    .form-card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 16px 40px rgba(8,10,12,0.06)}
+    label{display:block;font-size:13px;color:var(--muted);margin-top:10px}
+    input,textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid #e7e9ec;margin-top:6px}
+    .submit{margin-top:14px;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent),var(--accent-2));border:none;font-weight:700}
+    .info{font-size:14px;color:var(--muted);margin-top:12px}
+    .summary{background:linear-gradient(180deg,rgba(255,255,255,0.6),transparent);padding:14px;border-radius:12px}
+    .programs{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+    .program{padding:10px;border-radius:10px;background:#fff;border:1px solid rgba(0,0,0,0.03)}
+    .small-cta{display:inline-block;padding:8px 10px;background:var(--accent);border-radius:8px;color:#081018;text-decoration:none}
+    footer{padding:28px 32px;text-align:center;color:var(--muted)}
+    @media (max-width:980px){.hero{grid-template-columns:1fr;gap:12px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">{{COACH_NAME}}</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="services.html">Services</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="testimonials.html">Testimonials</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h1>Reserve Your Session</h1>
+        <p>Pick a time to get clarity and map one habit that moves your biggest needle. No jargon — practical next steps and a clear follow-up plan.</p>
+
+        <div class="form-card">
+          <form action="{{PRIMARY_CTA_URL}}" method="post">
+            <label for="name">Full name</label>
+            <input id="name" name="name" required placeholder="Your name">
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required placeholder="you@domain.com">
+
+            <label for="phone">Phone (optional)</label>
+            <input id="phone" name="phone" placeholder="(555) 555-5555">
+
+            <label for="program">Choose a session</label>
+            <select id="program" name="program">
+              <option>Clarity Call — 30 min (Free)</option>
+              <option>Habits Accelerator — 45 min</option>
+              <option>Balance Path — 60 min</option>
+              <option>Sustain Program Intro — 20 min</option>
+            </select>
+
+            <label for="date">Preferred date & time (optional)</label>
+            <input id="date" name="date" placeholder="e.g. Mon 9/12 morning">
+
+            <label for="notes">What’s the one thing you want to change?</label>
+            <textarea id="notes" name="notes" rows="4" placeholder="Short note about what you want support with"></textarea>
+
+            <div class="info">By clicking reserve you’ll receive a confirmation and a short intake to prepare our first session.</div>
+            <button type="submit" class="submit">Reserve my spot</button>
+          </form>
+        </div>
+      </div>
+
+      <aside>
+        <div class="summary">
+          <h4 style="margin:0 0 8px">Quick Program notes</h4>
+          <div class="programs">
+            <div class="program"><strong>Habits Accelerator</strong><div style="color:var(--muted);font-size:13px">For focused 6-week habit building with weekly accountability.</div></div>
+            <div class="program"><strong>Balance Path</strong><div style="color:var(--muted);font-size:13px">60-minute strategy to rebalance routines and energy allocation.</div></div>
+            <div class="program"><strong>Sustain Program</strong><div style="color:var(--muted);font-size:13px">Longer coaching arc for lasting behavior change.</div></div>
+          </div>
+
+          <div style="margin-top:12px">
+            <div style="font-size:13px;color:var(--muted)">Need a corporate or group request? <a href="contact.html" class="small-cta">Contact</a></div>
+          </div>
+
+          <div style="margin-top:14px;color:var(--muted);font-size:13px">Have questions before booking? Call {{PHONE}} or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+        </div>
+
+        <div style="height:14px"></div>
+        <div class="form-card">
+          <h4 style="margin:0 0 8px">What to expect</h4>
+          <p style="color:var(--muted);margin:0">A short intake, a habitat of small daily practices, and a plan for the coming week. Coaching is collaborative: we design systems you can keep.</p>
+          <div style="margin-top:12px"><a class="small-cta" href="testimonials.html">Read client outcomes</a></div>
+        </div>
+      </aside>
+    </section>
+
+    <section style="max-width:980px;margin:28px auto;padding:0 28px">
+      <h3 style="margin:0 0 10px">Need help choosing?</h3>
+      <p style="color:var(--muted);margin:0 0 14px">If you’re unsure which session suits you, start with a free 30-minute clarity call. We’ll map one habit and an immediate next step.</p>
+      <a href="book.html" class="small-cta">Book a Free Clarity Call</a>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="padding:28px 32px;color:var(--muted);text-align:center">© {{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{BUSINESS_NAME}} — {{TAGLINE}}</title>
+  <meta name="theme-color" content="#8A5A3C">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">{{BUSINESS_NAME}}</a>
+      <nav class="main-nav" aria-label="Primary">
+        <a href="/services.html">Offerings</a>
+        <a href="/conditions.html">Health Topics</a>
+        <a href="/approach.html">Our Way</a>
+        <a href="/pricing.html">Membership</a>
+        <a href="/about.html">Team</a>
+        <a href="/book.html">Schedule</a>
+        <a href="/contact.html">Connect</a>
+      </nav>
+      <div class="header-ctas">
+        <a class="phone" href="tel:{{PHONE}}">{{PHONE}}</a>
+        <a class="btn primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero">
+      <div class="wrap hero-inner">
+        <div class="hero-copy">
+          <h1>Thoughtful, whole-person care that fits into daily life</h1>
+          <p class="lead">We integrate evidence-aware modalities across nutrition, stress, movement, and sleep so you can make sustainable changes without overwhelm.</p>
+          <p class="muted">A membership model for steady progress, personalized visits, and guided self-practice.</p>
+          <div class="hero-actions">
+            <a class="btn primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            <a class="btn ghost" href="/about.html">Meet the team</a>
+          </div>
+        </div>
+        <aside class="hero-panel">
+          <h3>Quick planner — build a session</h3>
+          <form id="session-planner" class="planner">
+            <label>Primary concern
+              <input name="concern" placeholder="e.g., sleep, digestion, stress" />
+            </label>
+            <label>Top goal
+              <input name="goal" placeholder="A simple, measurable aim" />
+            </label>
+
+            <fieldset class="modalities">
+              <legend>Prefered focus (choose up to 3)</legend>
+              <label><input type="checkbox" name="modality" value="Nutrition"> Nutrition</label>
+              <label><input type="checkbox" name="modality" value="Movement"> Movement</label>
+              <label><input type="checkbox" name="modality" value="Sleep"> Sleep</label>
+              <label><input type="checkbox" name="modality" value="Mind-Body"> Mind-Body</label>
+              <label><input type="checkbox" name="modality" value="Herbal" disabled> Herbal (by consult)</label>
+            </fieldset>
+
+            <label>Session length
+              <select name="length"><option>30</option><option selected>50</option><option>75</option></select>
+            </label>
+            <label>Suggested frequency
+              <select name="freq"><option>Weekly</option><option selected>Biweekly</option><option>Monthly</option></select>
+            </label>
+            <div class="planner-actions">
+              <button type="button" id="build-plan" class="btn primary">Build my plan</button>
+              <button type="button" id="copy-plan" class="btn ghost" disabled>Copy summary</button>
+              <button type="button" id="download-plan" class="btn ghost" disabled>Download .txt</button>
+            </div>
+          </form>
+          <pre id="plan-output" class="plan-output" aria-live="polite"></pre>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Benefits (reordered on purpose) -->
+    <section class="benefits wrap">
+      <h2>How our membership helps you</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Ongoing guidance</h3>
+          <p>Monthly visits plus targeted check-ins to keep changes practical and measurable.</p>
+        </div>
+        <div class="card">
+          <h3>Personal toolkit</h3>
+          <p>Tailored plans, simple practices, and clear measures to follow at home.</p>
+        </div>
+        <div class="card">
+          <h3>Interdisciplinary thinking</h3>
+          <p>We draw on nutrition, behavior, sleep science, and movement to make plans that add up.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Social proof -->
+    <section class="social-proof wrap">
+      <h2>Voices from members</h2>
+      <blockquote>
+        "I appreciate the steady check-ins and specific actions each month — I actually see change."<cite>— Member, {{CITY}}</cite>
+      </blockquote>
+      <blockquote>
+        "Practical ideas that fit real life. The team listens and then helps prioritize."<cite>— Participant, {{STATE}}</cite>
+      </blockquote>
+    </section>
+
+    <!-- Process including Whole-person inventory -->
+    <section class="process wrap">
+      <h2>How a typical consultation unfolds</h2>
+      <ol>
+        <li>We listen to what matters right now and map immediate opportunities.</li>
+        <li>We co-create a short plan with simple practices and measurable signs.</li>
+        <li>We check back at set intervals and adapt based on results and new priorities.</li>
+      </ol>
+
+      <div class="inventory">
+        <h3>Whole-person inventory</h3>
+        <p>Check areas that feel relevant and get a suggested consultation agenda and a follow-up cadence.</p>
+        <form id="inventory-form">
+          <div class="inventory-grid">
+            <label><input type="checkbox" name="area" value="Sleep"> Sleep and rest</label>
+            <label><input type="checkbox" name="area" value="Digestion"> Digestion and appetite</label>
+            <label><input type="checkbox" name="area" value="Energy"> Energy and fatigue</label>
+            <label><input type="checkbox" name="area" value="Mood"> Mood and resilience</label>
+            <label><input type="checkbox" name="area" value="Movement"> Movement and strength</label>
+            <label><input type="checkbox" name="area" value="Breathing"> Breathing and relaxation</label>
+            <label><input type="checkbox" name="area" value="Environment"> Home and work patterns</label>
+            <label><input type="checkbox" name="area" value="Medications"> Medications and supplements</label>
+          </div>
+          <div class="inventory-actions">
+            <button type="button" id="build-agenda" class="btn primary">Create agenda</button>
+            <button type="button" id="copy-agenda" class="btn ghost" disabled>Copy agenda</button>
+          </div>
+        </form>
+        <pre id="agenda-output" class="plan-output" aria-live="polite"></pre>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq wrap">
+      <h2>FAQ</h2>
+      <details>
+        <summary>Do you cure conditions?</summary>
+        <p>We do not promise cures. Our approach is educational and integrative: we partner with you to reduce symptoms, improve function, and support better self-care.</p>
+      </details>
+      <details>
+        <summary>What about prescriptions?</summary>
+        <p>We coordinate with your prescribers as needed. Some services may involve suggestions best handled by your primary clinician.</p>
+      </details>
+    </section>
+
+    <!-- CTA -->
+    <section class="final-cta wrap">
+      <h2>Ready to start steady, practical change?</h2>
+      <p>Begin with a short planning visit and a personalized agenda.</p>
+      <a class="btn primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <div>
+        <strong>{{BUSINESS_NAME}}</strong>
+        <p>{{CITY}}, {{STATE}}</p>
+      </div>
+      <div>
+        <a href="tel:{{PHONE}}">{{PHONE}}</a>
+        <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>
+      </div>
+    </div>
+    <svg class="pattern-bg" aria-hidden="true"><use href="assets/img/pattern.svg#p"></use></svg>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

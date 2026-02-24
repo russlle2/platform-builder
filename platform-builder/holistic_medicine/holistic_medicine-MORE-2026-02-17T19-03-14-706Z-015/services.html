@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Services — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1724;--glass:rgba(255,255,255,0.06);--accent:#6ee7b7;--muted:#9aa4b2;--card:#0b1220}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:linear-gradient(180deg,#071024 0%,#071726 60%);color:#e6eef6}
+    body{display:flex;align-items:flex-start;justify-content:center;padding:48px}
+    .wrap{width:980px;backdrop-filter:blur(8px);background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:20px;padding:26px;box-shadow:0 10px 30px rgba(2,6,23,0.6)}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    .brand{display:flex;flex-direction:column}
+    .brand h1{margin:0;font-size:18px;letter-spacing:0.2px}
+    .brand p{margin:0;font-size:12px;color:var(--muted)}
+    nav a{color:var(--muted);margin-left:14px;text-decoration:none;font-size:14px}
+    .hero{display:flex;gap:18px;align-items:center}
+    .panel{flex:1;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:14px;padding:18px;border:1px solid rgba(255,255,255,0.03)}
+    .panel h2{margin:0 0 8px 0}
+    .muted{color:var(--muted);font-size:13px}
+    /* Pricing comparator */
+    .comparator{display:flex;gap:12px;align-items:center;margin-top:12px}
+    .toggle{display:inline-flex;background:rgba(255,255,255,0.03);border-radius:999px;padding:6px;border:1px solid rgba(255,255,255,0.04)}
+    .toggle button{background:transparent;border:0;color:var(--muted);padding:6px 12px;border-radius:999px;cursor:pointer}
+    .toggle button.active{background:linear-gradient(90deg,rgba(110,231,183,0.12),rgba(110,231,183,0.06));color:var(--accent);box-shadow:inset 0 -1px 0 rgba(255,255,255,0.02)}
+    .prices{display:flex;gap:12px;margin-top:14px}
+    .price-card{flex:1;padding:14px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);border:1px solid rgba(255,255,255,0.03)}
+    .figure{font-size:22px;font-weight:700;color:var(--accent)}
+    .meta{font-size:12px;color:var(--muted)}
+    .cta{margin-top:12px}
+    .btn{background:var(--accent);color:#072127;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}
+    .services-list{margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .service{padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.015),transparent);border:1px solid rgba(255,255,255,0.02)}
+    .service h3{margin:0 0 6px 0;font-size:15px}
+    .service p{margin:0;color:var(--muted);font-size:13px}
+    footer{display:flex;justify-content:space-between;align-items:center;margin-top:16px;color:var(--muted);font-size:13px}
+    /* subtle svg pattern overlay */
+    .pattern{position:absolute;left:0;top:0;right:0;bottom:0;pointer-events:none;opacity:0.06}
+  </style>
+</head>
+<body>
+  <svg class="pattern" xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute;">
+    <defs>
+      <pattern id="p1" width="36" height="36" patternUnits="userSpaceOnUse">
+        <rect width="36" height="36" fill="#04202b" />
+        <path d="M0 18h36M18 0v36" stroke="#06303b" stroke-width="0.6" />
+      </pattern>
+    </defs>
+  </svg>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <h1>{{BUSINESS_NAME}}</h1>
+        <p class="muted">Mindful integrative membership for long-term balance</p>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="approach.html">How We Work</a>
+        <a href="services.html">Plans</a>
+        <a href="conditions.html">Conditions</a>
+        <a href="book.html">Book</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="panel">
+        <h2>Program tiers framed for lasting change</h2>
+        <p class="muted">Flexible memberships and short-form packages to match where you are—educational, collaborative, practical.</p>
+
+        <div class="comparator">
+          <div class="toggle" role="tablist" aria-label="Pricing toggle">
+            <button id="opt-monthly" class="active" data-mode="monthly">Monthly</button>
+            <button id="opt-package" data-mode="package">Packages</button>
+          </div>
+          <div class="muted">Compare typical investment</div>
+        </div>
+
+        <div class="prices">
+          <div class="price-card">
+            <div class="meta">Core Membership</div>
+            <div class="figure" data-monthly="129" data-package="990">$129</div>
+            <div class="muted">Ongoing community + clinician check-ins</div>
+            <div class="cta"><a id="cta-core" class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+          </div>
+          <div class="price-card">
+            <div class="meta">Focused Integrative Plan</div>
+            <div class="figure" data-monthly="249" data-package="1790">$249</div>
+            <div class="muted">Deeper planning with targeted follow-ups</div>
+            <div class="cta"><a id="cta-plan" class="btn" href="{{PRIMARY_CTA_URL}}">Begin a plan</a></div>
+          </div>
+        </div>
+
+        <div class="services-list">
+          <div class="service">
+            <h3>Rhythm Enrollment</h3>
+            <p>Ongoing weekly touchpoints, self-guided resources, quarterly clinician review.</p>
+          </div>
+          <div class="service">
+            <h3>Focused Cycle</h3>
+            <p>Six-session series for a targeted objective: pain, sleep, digestion, or mood support.</p>
+          </div>
+          <div class="service">
+            <h3>Starter Session</h3>
+            <p>A single deep intake to orient priorities and next steps.</p>
+          </div>
+          <div class="service">
+            <h3>Group Skill Labs</h3>
+            <p>Small cohorts learning practical skills for daily management.</p>
+          </div>
+        </div>
+      </div>
+
+      <aside style="width:320px">
+        <div class="panel">
+          <h2>Why choose a membership?</h2>
+          <p class="muted">Membership lets care adapt as you progress. We emphasize measurable steps, education, and shared decision-making.</p>
+          <ul class="muted" style="padding-left:16px;margin-top:8px">
+            <li>Regular, small adjustments</li>
+            <li>Access to learning resources</li>
+            <li>Priority scheduling</li>
+          </ul>
+          <div style="margin-top:12px">
+            <a class="btn" href="book.html">Schedule a review</a>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <footer>
+      <div class="muted">Call us: {{PHONE}} • {{EMAIL}}</div>
+      <div class="muted">Serving {{CITY}}, {{STATE}} — Educational services only</div>
+    </footer>
+  </div>
+
+  <script>
+    // Pricing comparator: animated numbers
+    (function(){
+      const monthlyBtn = document.getElementById('opt-monthly');
+      const packageBtn = document.getElementById('opt-package');
+      const figures = document.querySelectorAll('.figure');
+      let mode = 'monthly';
+
+      function animateTo(el, target){
+        target = Number(target);
+        const start = Number(el.textContent.replace(/[^0-9.-]+/g,'')||0);
+        const dur = 600;
+        const startTime = performance.now();
+        function frame(t){
+          const p = Math.min(1,(t-startTime)/dur);
+          const val = Math.round(start + (target-start)*p);
+          el.textContent = '$' + val;
+          if(p<1) requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+      }
+
+      function setMode(m){
+        mode = m;
+        figures.forEach(f=>{
+          const value = f.dataset[mode];
+          animateTo(f,value);
+        });
+        if(mode==='monthly'){
+          monthlyBtn.classList.add('active');
+          packageBtn.classList.remove('active');
+        } else {
+          packageBtn.classList.add('active');
+          monthlyBtn.classList.remove('active');
+        }
+      }
+
+      monthlyBtn.addEventListener('click',()=>setMode('monthly'));
+      packageBtn.addEventListener('click',()=>setMode('package'));
+
+      // init
+      setMode('monthly');
+    })();
+  </script>
+</body>
+</html>

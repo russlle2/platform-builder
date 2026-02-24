@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book a Clarity Call — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7fbfa;--card:#ffffff;--accent:#2f7a66;--muted:#6b7575}
+    body{margin:0;background:var(--bg);font-family:Inter,Segoe UI,Arial;color:#0b0b0b}
+    .frame{max-width:900px;margin:40px auto;padding:28px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:20px;margin-top:20px}
+    .panel{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 30px rgba(20,20,20,0.04)}
+    label{display:block;margin-top:12px;font-weight:600}
+    input,textarea,select{width:100%;padding:10px;margin-top:8px;border-radius:8px;border:1px solid #e6efec}
+    .btn{display:inline-block;padding:10px 14px;background:var(--accent);color:white;border-radius:10px;text-decoration:none;margin-top:12px}
+    .plan-snippet{background:linear-gradient(180deg,#fff,#f4fbf9);padding:12px;border-radius:10px}
+    .micro-list{color:var(--muted);padding-left:18px}
+    .footer-note{font-size:13px;color:var(--muted);margin-top:12px}
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <header>
+      <div>
+        <strong>{{BUSINESS_NAME}}</strong>
+        <div style="font-size:13px;color:var(--muted)">Book your clarity call with {{COACH_NAME}}, {{CREDENTIALS}}</div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="programs.html">Work With Me</a>
+        <a href="pricing.html">Investment</a>
+        <a href="testimonials.html">Stories</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <div class="grid">
+      <main>
+        <section class="panel" aria-labelledby="book-title">
+          <h1 id="book-title" style="margin:0;font-size:20px">Schedule a Free 20-Minute Clarity Session</h1>
+          <p style="color:var(--muted);margin-top:8px">A short diagnostic to tailor a micro-habit plan and identify which cohort container fits your life.</p>
+
+          <form method="post" action="{{PRIMARY_CTA_URL}}">
+            <label for="name">Your name</label>
+            <input id="name" name="name" placeholder="First & last" required>
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="you@domain" required>
+
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" placeholder="Optional">
+
+            <label for="goal">What are you hoping to shift?</label>
+            <textarea id="goal" name="goal" rows="4" placeholder="A few sentences about your rhythm and obstacles"></textarea>
+
+            <label for="when">Preferred time</label>
+            <select id="when" name="when">
+              <option>Morning (8–10am)</option>
+              <option>Afternoon (12–3pm)</option>
+              <option>Evening (6–8pm)</option>
+            </select>
+
+            <input type="hidden" name="source" value="book_page">
+            <button class="btn" type="submit">{{PRIMARY_CTA_LABEL}}</button>
+          </form>
+
+          <p class="footer-note">By booking you’ll receive a short pre-call questionnaire and a recommended micro-habit to try before our conversation.</p>
+        </section>
+
+        <section class="panel" style="margin-top:18px">
+          <h3 style="margin:0">What to expect in 20 minutes</h3>
+          <ol style="color:var(--muted);margin-top:10px;padding-left:18px">
+            <li>Values & scheduling reality check</li>
+            <li>Identification of one high-leverage micro-habit</li>
+            <li>Suggested cohort or 1:1 pathway</li>
+          </ol>
+        </section>
+      </main>
+
+      <aside>
+        <div class="panel">
+          <h4 style="margin:0">Quick Cohort Preview</h4>
+          <div class="plan-snippet" style="margin-top:10px">
+            <strong>Presence Path</strong>
+            <div style="color:var(--muted);font-size:13px">8 weeks • starts next month • $795</div>
+            <div style="margin-top:8px;color:var(--muted)">Includes starter micro-habit plan and group accountability.</div>
+            <a class="btn" href="pricing.html" style="display:inline-block;margin-top:10px">See Details</a>
+          </div>
+
+          <div style="margin-top:16px">
+            <h5 style="margin:0">Tiny Practices to Try Now</h5>
+            <ul class="micro-list">
+              <li>One breath at the sink</li>
+              <li>Daily two-minute tidy ritual</li>
+              <li>Evening gratitude line</li>
+            </ul>
+          </div>
+
+          <div style="margin-top:14px;color:var(--muted);font-size:13px">Have billing or accessibility questions? Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a>.</div>
+        </div>
+      </aside>
+    </div>
+
+    <footer style="margin-top:18px;color:var(--muted);font-size:13px">{{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • All programs emphasize habits, frameworks, and community — not medical advice.</footer>
+  </div>
+</body>
+</html>

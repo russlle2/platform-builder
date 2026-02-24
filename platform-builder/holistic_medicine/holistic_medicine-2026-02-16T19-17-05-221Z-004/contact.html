@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Contact • {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reach out to {{PRACTITIONER_NAME}} for an integrative conversation about whole-person health in {{CITY}}, {{STATE}}." />
+  <style>
+    :root{
+      --bg1: #0f1724;
+      --bg2: #102033;
+      --accent: #9dd3b2;
+      --muted: #a6b0bf;
+      --card: rgba(255,255,255,0.04);
+      --glass: rgba(255,255,255,0.06);
+      --radius: 14px;
+      --maxw: 980px;
+      --shadow: 0 8px 30px rgba(2,6,23,0.6);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      color-scheme: dark;
+    }
+    html,body{height:100%;}
+    body{
+      margin:0;
+      background: radial-gradient(1000px 600px at 10% 20%, rgba(157,211,178,0.06), transparent 6%), radial-gradient(600px 400px at 90% 80%, rgba(157,211,178,0.04), transparent 6%), linear-gradient(180deg,var(--bg1),var(--bg2));
+      background-attachment: fixed;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:48px 20px;
+    }
+    /* Subtle repeated svg pattern (inline) */
+    .pattern {
+      position:fixed;inset:0;pointer-events:none;opacity:0.08;mix-blend-mode:lighten;
+    }
+    .wrap{
+      width:100%;max-width:var(--maxw);margin:auto;display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:start;
+    }
+    header{grid-column:1 / -1;display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{
+      width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#e6fbef, rgba(157,211,178,0.12));display:flex;align-items:center;justify-content:center;color:#052018;font-weight:700;font-size:18px;box-shadow:0 6px 18px rgba(4,9,14,0.6);
+    }
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-size:15px}
+    nav a:hover{color:var(--accent)}
+    /* Hero card */
+    .hero{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:var(--radius);
+      padding:28px;border:1px solid rgba(255,255,255,0.03);box-shadow:var(--shadow);
+    }
+    .hero h1{margin:0 0 8px 0;font-size:22px;color:#f7fff9}
+    .hero p{margin:0 0 12px 0;color:var(--muted);font-size:15px;line-height:1.5}
+    .kicker{display:inline-block;background:linear-gradient(90deg, rgba(157,211,178,0.18), rgba(157,211,178,0.06));padding:6px 10px;border-radius:999px;color:var(--accent);font-weight:600;margin-bottom:12px}
+    /* Contact form */
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));padding:22px;border-radius:12px;border:1px solid rgba(255,255,255,0.025);
+    }
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input[type="text"],input[type="email"],input[type="tel"],select,textarea{
+      width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color: #e8f8ef;resize:vertical;min-height:44px;outline:none
+    }
+    textarea{min-height:120px}
+    .row{display:flex;gap:12px}
+    .row .col{flex:1}
+    .muted{font-size:13px;color:var(--muted)}
+    .cta{display:inline-block;margin-top:12px;background:linear-gradient(90deg,#83c9a2,#a5e5c6);color:#052018;padding:12px 18px;border-radius:10px;font-weight:700;text-decoration:none;border:none;cursor:pointer}
+    .secondary{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted);padding:10px 14px;border-radius:10px}
+    .contact-meta{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
+    footer{grid-column:1 / -1;margin-top:18px;color:var(--muted);font-size:13px}
+    .note{font-size:13px;color:var(--muted);margin-top:8px}
+    @media (max-width:980px){
+      .wrap{grid-template-columns:1fr;}
+      nav a{margin-left:12px}
+    }
+  </style>
+</head>
+<body>
+  <!-- Decorative pattern SVG -->
+  <svg class="pattern" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" aria-hidden="true">
+    <defs>
+      <pattern id="p" width="64" height="64" patternUnits="userSpaceOnUse" patternTransform="rotate(18)">
+        <rect width="32" height="32" fill="none" />
+        <circle cx="8" cy="8" r="1.6" fill="#9dd3b2" />
+        <circle cx="40" cy="40" r="1.1" fill="#a8e6c9" />
+        <path d="M0 32h64" stroke="#9dd3b2" stroke-opacity="0.05"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#p)" />
+  </svg>
+
+  <main class="wrap" role="main">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true">HM</div>
+        <div>
+          <div style="font-weight:700;color:#f3fff6">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:4px">{{TAGLINE}} — {{CITY}}, {{STATE}}</div>
+        </div>
+      </div>
+      <nav aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="services.html">Offerings</a>
+        <a href="conditions.html">Concerns</a>
+        <a href="approach.html">Method</a>
+        <a href="pricing.html">Investment</a>
+        <a href="about.html">Who</a>
+        <a href="book.html">Schedule</a>
+        <a href="contact.html">Reach</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <span class="kicker">Let's talk whole you</span>
+      <h1>Get in touch with {{PRACTITIONER_NAME}}, {{CREDENTIALS}}</h1>
+      <p>Curious about integrative pathways for stress, sleep, digestion, inflammation, or energy? Share a few details and we’ll respond with thoughtful next steps. No promises of cures — only careful listening, education, and collaborative planning.</p>
+      <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
+        <div class="contact-meta">
+          <div>Phone: <a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none">{{PHONE}}</a></div>
+          <div>Email: <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a></div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="card">
+      <form id="contactForm" action="{{PRIMARY_CTA_URL}}" method="post" novalidate>
+        <label for="name">Full name</label>
+        <input id="name" name="name" type="text" placeholder="Your name" required />
+
+        <div class="row" style="margin-top:10px">
+          <div class="col">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="you@domain.com" required />
+          </div>
+          <div class="col">
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" type="tel" placeholder="(optional)" />
+          </div>
+        </div>
+
+        <label for="reason" style="margin-top:10px">Reason for reaching out</label>
+        <select id="reason" name="reason">
+          <option>Consult / New patient</option>
+          <option>Follow-up / Existing patient</option>
+          <option>Questions about labs or testing</option>
+          <option>Billing / Insurance</option>
+          <option>Other</option>
+        </select>
+
+        <label for="message" style="margin-top:10px">Brief message</label>
+        <textarea id="message" name="message" placeholder="What would you like to improve or understand?" required></textarea>
+
+        <label style="margin-top:10px"><input type="checkbox" name="consent" required /> I acknowledge that integrative care is educational and collaborative; no guaranteed cures are suggested here.</label>
+
+        <div style="display:flex;gap:10px;margin-top:12px;align-items:center">
+          <button class="cta" type="submit">{{PRIMARY_CTA_LABEL}}</button>
+          <button type="button" class="secondary" onclick="document.getElementById('contactForm').reset()">Clear</button>
+        </div>
+
+        <div class="note">We aim to reply within 2 business days. For urgent concerns, please call {{PHONE}}.</div>
+      </form>
+    </aside>
+
+    <section class="hero" style="min-height:0">
+      <h2 style="margin-top:0">What to expect after you reach out</h2>
+      <p style="margin-bottom:8px;color:var(--muted)">A friendly scheduling note: initial intake is an in-depth conversation where we map symptoms, lifestyle, prior testing, and goals. Follow-ups and optional educational labs are discussed as part of a tailored plan.</p>
+
+      <div style="display:grid;grid-template-columns:1fr;gap:10px">
+        <div style="background:var(--card);padding:12px;border-radius:10px;color:var(--muted);font-size:14px">Privacy first: your information is handled with care. Clinical records and messages are retained per professional guidelines.</div>
+        <div style="background:var(--card);padding:12px;border-radius:10px;color:var(--muted);font-size:14px">Not emergency care: if this is an emergency, call local emergency services immediately.</div>
+      </div>
+    </section>
+
+    <footer>
+      <div>Prefer to schedule right away? Visit <a href="book.html" style="color:var(--accent)">Schedule</a> to pick a time.</div>
+      <div style="margin-top:6px">{{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}" style="color:var(--accent)">{{EMAIL}}</a></div>
+    </footer>
+  </main>
+
+  <script>
+    (function(){
+      const f = document.getElementById('contactForm');
+      f.addEventListener('submit', function(e){
+        // lightweight client validation + playful microcopy
+        if(!f.checkValidity()){
+          e.preventDefault();
+          alert('A few required fields are missing. Please check name, email, message, and consent.');
+          return;
+        }
+        // show ephemeral feedback and allow normal submit
+        e.preventDefault();
+        const btn = f.querySelector('button[type=submit]');
+        const old = btn.textContent;
+        btn.textContent = 'Sending...';
+        btn.disabled = true;
+        setTimeout(()=>{
+          // in a real site, this would submit via fetch or allow server submit
+          btn.textContent = 'Message sent';
+          btn.style.opacity = 0.9;
+          btn.disabled = true;
+          // mimic redirect to a thank-you or call external endpoint
+          setTimeout(()=>{
+            // fallback: reset form and restore
+            f.reset();btn.textContent = old;btn.disabled=false;
+            alert('Thanks — we received your note and will be in touch.');
+          },1200);
+        },700);
+      });
+    })();
+  </script>
+</body>
+</html>

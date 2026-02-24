@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Conditions & guidance — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Supportive information on common conditions often seen in integrative care. Educational, not prescriptive.">
+  <style>
+    :root{--bg:#f7efe6;--ink:#2a2a23;--muted:#6e6558;--accent:#7b5a43;--card:#ffffff;--radius:12px;max-width:980px}
+    body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;color:var(--ink);}
+    .wrap{max-width:var(--max-width);margin:32px auto;padding:24px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    .nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    h1{margin:12px 0 6px}
+    .muted{color:var(--muted)}
+    .card{background:var(--card);padding:14px;border-radius:var(--radius);box-shadow:0 6px 20px rgba(18,14,10,0.04);margin:14px 0}
+
+    .reveal{opacity:0;transform:translateY(10px);transition:opacity 420ms ease,transform 420ms ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none;opacity:1;transform:none}}
+
+    ul.conditions{list-style:none;padding:0;margin:12px 0}
+    ul.conditions li{padding:10px 0;border-bottom:1px dashed #efe6db}
+    .disclaimer{font-size:0.9rem;color:#8a7f72;margin-top:10px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div class="muted">A gentle approach to common concerns</div>
+      </div>
+      <nav class="nav" aria-label="Main">
+        <a href="index.html">Home</a>
+        <a href="services.html">Offerings</a>
+        <a href="conditions.html">Conditions</a>
+        <a href="approach.html">How I work</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="card reveal">
+        <h1>Common concerns I support</h1>
+        <p class="muted">Below are topics frequently addressed in integrative consultations. Entries are educational: they describe supportive strategies, typical focuses in visits, and ways we may work together. They are not medical guarantees.</p>
+      </section>
+
+      <section class="card reveal" id="list">
+        <h2>Conditions & supportive guidance</h2>
+        <ul class="conditions">
+          <li>
+            <strong>Sleep difficulties</strong>
+            <div class="muted">Focus: evening routines, circadian cues, gentle sleep skills, and nutrition timing. Approach: map current patterns, introduce micro-practices, review stimulant timing and light exposure.</div>
+          </li>
+          <li>
+            <strong>Digestive complaints</strong>
+            <div class="muted">Focus: meal rhythms, mindful eating, simple elimination trials, and supportive botanicals when appropriate. Approach: timeline of symptoms, practical dietary adjustments, and movement practices to support digestion.</div>
+          </li>
+          <li>
+            <strong>Stress, worry, and nervous system dysregulation</strong>
+            <div class="muted">Focus: breath-work, small somatic practices, daily pacing, and anchoring routines. Approach: build tolerable exposures to routines, scaffold restoration moments into the day.</div>
+          </li>
+          <li>
+            <strong>Chronic aches & movement recovery</strong>
+            <div class="muted">Focus: alignment, graded movement, sleep and nutrition that support repair. Approach: short movement prescriptions, recovery emphasis, and coordination with other providers as needed.</div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="card reveal" id="framing">
+        <h2>How to read this page</h2>
+        <p class="muted">This content is informational and does not replace individualized assessment. During visits we integrate clinical reasoning with your lived priorities. Where medical testing or urgent care are indicated, we will recommend appropriate steps and collaborate with other clinicians.</p>
+        <p class="disclaimer">Disclaimer: No treatment is guaranteed. Recommendations are educational and tailored to each person's context. If you have an emergency or life-threatening condition, seek immediate medical care.</p>
+      </section>
+
+      <section class="card reveal" id="next">
+        <h2>Next steps</h2>
+        <p class="muted">If one of these descriptions resonates, the usual path is a foundational visit to outline priorities and immediate steps. From there we may choose a short sequence of revisits or focused intensives depending on need.</p>
+        <div style="margin-top:8px"><a style="display:inline-block;padding:10px 14px;border-radius:10px;background:var(--accent);color:#fff;text-decoration:none" href="{{PRIMARY_CTA_URL}}">Start with a visit</a></div>
+      </section>
+
+      <footer style="text-align:center;margin-top:20px;color:var(--muted)">
+        <div>Contact: {{PHONE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+        <div style="margin-top:6px">Serving {{CITY}}, {{STATE}}</div>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const nodes = document.querySelectorAll('.reveal');
+      if(prefersReduced){ nodes.forEach(n=>n.classList.add('visible')); return; }
+      const obs = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); } });
+      },{threshold:0.08});
+      nodes.forEach(n=>obs.observe(n));
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reach out to {{PRACTITIONER_NAME}} at {{BUSINESS_NAME}} for aromatherapy consultations, bespoke blends and retail inquiries. Safety-first guidance.">
+  <style>
+    :root{
+      --bg1:#0f1724; --bg2:#0b1a2b; --accent:#ff7aa2; --accent-2:#7be6c7; --muted:#97a1b2; --card:#0e2330; --glass: rgba(255,255,255,0.04);
+      --radius:16px; --pad:24px; --max:1100px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(160deg,var(--bg1),var(--bg2));color:#e6f7f0;}
+    /* unique floating SVG pattern (also provide fallback asset reference) */
+    .pattern-wrap{position:fixed;inset:0;pointer-events:none;opacity:0.12;mix-blend-mode:screen;}
+    .page{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:48px 20px;}
+    header{width:100%;max-width:var(--max);display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{width:54px;height:54px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:0 6px 18px rgba(11,23,35,0.6);font-weight:700;color:#092225}
+    nav{display:flex;gap:16px;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:10px;font-weight:600}
+    nav a:hover{color:#fff;background:rgba(255,255,255,0.04)}
+    main{width:100%;max-width:var(--max);display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:start}
+
+    /* hero/contact card */
+    .lead{background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));border-radius:var(--radius);padding:28px;box-shadow:0 10px 40px rgba(2,6,23,0.6);backdrop-filter:blur(6px)}
+    h1{margin:0 0 6px;font-size:28px;letter-spacing:-0.02em}
+    p.lead-desc{margin:0 0 18px;color:var(--muted);line-height:1.5}
+
+    .grid-sm{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .meta{display:flex;gap:12px;align-items:center}
+    .pill{background:var(--glass);padding:8px 12px;border-radius:999px;color:var(--muted);font-weight:700}
+
+    /* contact form */
+    .form-card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:20px;border-radius:12px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.02)}
+    form{display:flex;flex-direction:column;gap:12px}
+    label{font-size:13px;color:var(--muted);font-weight:700}
+    input[type=text],input[type=email],select,textarea{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#eafaf5;outline:none}
+    textarea{min-height:110px;resize:vertical}
+    .btn{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#062423;padding:12px 16px;border-radius:12px;border:none;font-weight:800;cursor:pointer}
+    .muted-note{font-size:13px;color:var(--muted)}
+
+    aside{position:relative}
+    .card-rt{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:14px;padding:18px;box-shadow:0 8px 30px rgba(2,6,23,0.5)}
+    .contact-line{display:flex;gap:12px;align-items:center;color:var(--muted);margin-bottom:12px}
+    .contact-line strong{color:#fff}
+    .small-map{width:100%;height:160px;border-radius:10px;overflow:hidden;background:linear-gradient(180deg,rgba(11,34,28,0.6),rgba(3,11,18,0.6));display:grid;place-items:center;color:var(--muted);font-weight:700}
+
+    footer{width:100%;max-width:var(--max);margin-top:44px;color:var(--muted);font-size:13px;display:flex;justify-content:space-between;align-items:center}
+
+    /* responsive */
+    @media (max-width:980px){main{grid-template-columns:1fr;}
+      header{padding-bottom:6px}
+    }
+
+  </style>
+</head>
+<body>
+  <div class="pattern-wrap" aria-hidden="true">
+    <!-- Inline decorative SVG. Also keep an external fallback at assets/img/pattern.svg for build systems. -->
+    <svg width="100%" height="100%" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g1" x1="0" x2="1">
+          <stop offset="0" stop-color="#112a2b" />
+          <stop offset="1" stop-color="#071422" />
+        </linearGradient>
+        <pattern id="p1" width="120" height="120" patternUnits="userSpaceOnUse" patternTransform="rotate(18)">
+          <rect width="120" height="120" fill="url(#g1)" />
+          <path d="M0 60 Q30 30 60 60 T120 60" stroke="#0b5c52" stroke-opacity="0.9" stroke-width="0.9" fill="none" />
+          <circle cx="20" cy="20" r="2.5" fill="#ff7aa2" opacity="0.7" />
+          <circle cx="100" cy="100" r="1.8" fill="#7be6c7" opacity="0.6" />
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#p1)" />
+    </svg>
+  </div>
+
+  <div class="page">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true">A</div>
+        <div>
+          <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+          <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav aria-label="primary navigation">
+        <a href="/">Nest</a>
+        <a href="/services.html">Offerings</a>
+        <a href="/blends.html">Blends</a>
+        <a href="/shop.html">Emporium</a>
+        <a href="/book.html">Reserve</a>
+        <a href="/contact.html" style="color:#fff;background:rgba(255,255,255,0.04);">Connect</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="lead" aria-labelledby="contact-heading">
+        <h1 id="contact-heading">Let's craft your olfactory story</h1>
+        <p class="lead-desc">Reach out to {{PRACTITIONER_NAME}} to discuss personalized blends, retail questions, or to schedule a consultation. We center safety and clarity — no medical claims — only supportive aromatic care and education.</p>
+
+        <div class="grid-sm" style="margin-bottom:16px">
+          <div class="pill">Local studio — {{CITY}}, {{STATE}}</div>
+          <div class="pill">Retail + Custom Blends</div>
+        </div>
+
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <a class="btn" href="{{PRIMARY_CTA_URL}}" role="button">{{PRIMARY_CTA_LABEL}}</a>
+          <a class="pill" href="tel:{{PHONE}}" style="text-decoration:none;color:var(--muted);">Call: {{PHONE}}</a>
+        </div>
+
+        <div style="margin-top:18px;font-size:13px;color:var(--muted)">
+          <strong>Quick note:</strong> Aromatherapy is safe when used mindfully. If you have pregnancy, severe allergies, or are managing a medical condition, please consult your healthcare provider before using essential oils. We always recommend a patch test and careful dilution. (See FAQ on our Blends page for more safety guidance.)
+        </div>
+      </section>
+
+      <aside>
+        <div class="card-rt">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <div>
+              <div style="font-size:13px;color:var(--muted);font-weight:700">Contact</div>
+              <div style="font-weight:800">{{PRACTITIONER_NAME}}</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:12px;color:var(--muted)">Studio</div>
+              <div style="font-weight:700">{{CITY}}, {{STATE}}</div>
+            </div>
+          </div>
+
+          <div class="contact-line"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 15v4a1 1 0 0 1-1 1h-3" stroke="#7be6c7" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 6v-1a1 1 0 0 1 1-1h6" stroke="#ff7aa2" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 15c0-7.18-5.82-13-13-13" stroke="#ffb6d1" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div class="muted-note">Phone</div><strong>{{PHONE}}</strong></div></div>
+
+          <div class="contact-line"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 8v8a2 2 0 0 0 2 2h14" stroke="#7be6c7" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 8l9 6 9-6" stroke="#ff7aa2" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div class="muted-note">Email</div><strong>{{EMAIL}}</strong></div></div>
+
+          <div style="margin-top:10px" class="muted-note">Prefer to write? Use the form to share a little about your scent goals, sensitivities, and timeline. We aim to reply within 48 hours.</div>
+
+          <div style="margin-top:12px" class="small-map" aria-hidden="true">Studio Map &mdash; {{CITY}}</div>
+        </div>
+
+        <div style="height:14px"></div>
+
+        <div class="form-card" aria-labelledby="form-heading">
+          <h2 id="form-heading" style="margin:0 0 8px">Send a note</h2>
+          <form id="contactForm">
+            <label for="name">Your name</label>
+            <input id="name" name="name" type="text" placeholder="Aroma-seeker" required />
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="you@domain.com" required />
+
+            <label for="phone">Phone (optional)</label>
+            <input id="phone" name="phone" type="text" placeholder="(###) ###-####" />
+
+            <label for="interest">I'm writing about</label>
+            <select id="interest" name="interest">
+              <option>Custom blend</option>
+              <option>Retail order</option>
+              <option>Consultation</option>
+              <option>Wholesale / Stocking</option>
+              <option>Other</option>
+            </select>
+
+            <label for="message">Brief message (sensitivities, preferences)</label>
+            <textarea id="message" name="message" placeholder="I love warm, resinous notes..." required></textarea>
+
+            <div style="display:flex;gap:10px;align-items:center;justify-content:space-between">
+              <div style="font-size:12px;color:var(--muted);max-width:260px">By contacting {{BUSINESS_NAME}} you agree to a privacy-forward reply. We do not provide medical advice via email.</div>
+              <div style="display:flex;gap:8px">
+                <button type="submit" class="btn">Send</button>
+              </div>
+            </div>
+          </form>
+
+          <div id="response" style="margin-top:10px;font-size:13px;color:var(--muted)"></div>
+        </div>
+
+      </aside>
+    </main>
+
+    <footer>
+      <div>© <span id="year"></span> {{BUSINESS_NAME}} — All rights reserved.</div>
+      <div style="text-align:right">Designed for calm, crafted with care · <a href="/about.html" style="color:var(--muted);text-decoration:none">About</a></div>
+    </footer>
+  </div>
+
+  <script>
+    // small client-side handler to create a mailto fallback and show confirmation
+    document.getElementById('year').textContent = new Date().getFullYear();
+    const form = document.getElementById('contactForm');
+    const response = document.getElementById('response');
+
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      const data = new FormData(form);
+      const name = data.get('name');
+      const email = data.get('email');
+      const phone = data.get('phone') || '';
+      const interest = data.get('interest');
+      const message = data.get('message');
+
+      const subject = encodeURIComponent('Inquiry from ' + name + ' — ' + interest);
+      const body = encodeURIComponent('Name: ' + name + '\nEmail: ' + email + '\nPhone: ' + phone + '\nInterest: ' + interest + '\n\nMessage:\n' + message);
+      const mailto = 'mailto:{{EMAIL}}?subject=' + subject + '&body=' + body;
+
+      // Open the default mail client as a convenient fallback for this static template.
+      window.location.href = mailto;
+
+      response.style.color = '#7be6c7';
+      response.textContent = 'Opening your mail app to send the message. If nothing happens, please email {{EMAIL}} directly.';
+    });
+  </script>
+</body>
+</html>

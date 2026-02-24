@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{BUSINESS_NAME}} — Gentle planning for the next steps</title>
+  <meta name="description" content="Therapeutic support for everyday life: short and steady ways to move forward with clarity and care.">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="/">{{BUSINESS_NAME}}</a>
+      <nav class="nav">
+        <a href="/approach.html">How I Work</a>
+        <a href="/specialties.html">Focus Areas</a>
+        <a href="/book.html">Start a Session</a>
+        <a href="/contact.html" class="cta">{{PRIMARY_CTA_LABEL}}</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <h1>Quiet maps for moving through heavy days</h1>
+          <p>A small, steady plan you can use between sessions — practical steps shaped by what matters to you.</p>
+          <p class="meta">Telehealth and in-office openings in {{CITY}}, {{STATE}} • Confidential care</p>
+          <p>
+            <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            <a class="link" href="/fees.html">Fees &amp; options</a>
+          </p>
+        </div>
+        <div class="hero-pattern" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <section class="social-proof">
+      <div class="wrap">
+        <h2>What people often notice</h2>
+        <ul class="proof-list">
+          <li>Clearer steps after a single conversation</li>
+          <li>Tools you can use the same week</li>
+          <li>Warm, steady listening with practical follow-up</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="benefits wrap">
+      <h2>How sessions are shaped</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Small series</h3>
+          <p>Focused blocks (4–8 meetings) for a specific concern — designed to give momentum without open‑ended obligations.</p>
+        </div>
+        <div class="card">
+          <h3>Advisory visits</h3>
+          <p>Single-session consultations for planning next steps or clarifying priorities between longer courses of care.</p>
+        </div>
+        <div class="card">
+          <h3>Ongoing rhythm</h3>
+          <p>Regular meetings for steady progress, tailored to life’s shifts and schedule constraints.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="process wrap">
+      <h2>How an initial week might look</h2>
+      <ol class="process-list">
+        <li><strong>Intro conversation.</strong> A short call to see fit and logistics.</li>
+        <li><strong>First session.</strong> Gentle orientation and a first plan you can use right away.</li>
+        <li><strong>Two‑week check.</strong> A brief review to refine tools and next steps.</li>
+      </ol>
+    </section>
+
+    <section class="interactive wrap">
+      <div class="two-col">
+        <div>
+          <h2>Session Planner</h2>
+          <p>Create a concise plan to bring to your session or start using between meetings.</p>
+
+          <form id="planner-form" class="planner">
+            <label>Preferred focus for this plan
+              <input type="text" id="planner-focus" placeholder="e.g., sleep, boundaries, transitions">
+            </label>
+            <div id="actions-list">
+              <label>Action 1
+                <input type="text" class="planner-action" placeholder="A small actionable step">
+              </label>
+            </div>
+            <div class="planner-controls">
+              <button type="button" id="add-action">+ Add action</button>
+              <button type="button" id="build-plan" class="btn">Build plan</button>
+            </div>
+          </form>
+
+          <div class="plan-output">
+            <h3>Your plan</h3>
+            <textarea id="plan-text" readonly rows="6" placeholder="Your plan will appear here."></textarea>
+            <div class="plan-actions">
+              <button id="copy-plan">Copy</button>
+              <button id="download-plan">Download (.txt)</button>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h2>Intake Snapshot</h2>
+          <p>An optional self‑screen to help prioritize what to bring into the first session. Not a diagnosis — only notes for your clinician.</p>
+          <form id="snapshot-form" class="wizard">
+            <label>Primary concern
+              <input type="text" id="snapshot-concern" placeholder="What feels most important right now?">
+            </label>
+            <label>Recent changes or triggers
+              <input type="text" id="snapshot-triggers" placeholder="Events, shifts, or stressors">
+            </label>
+            <label>What helped before?
+              <input type="text" id="snapshot-helped" placeholder="Practices or people that eased things">
+            </label>
+            <div class="wizard-actions">
+              <button type="button" id="snapshot-build" class="btn">Create snapshot</button>
+            </div>
+          </form>
+
+          <div class="snapshot-output">
+            <h3>Snapshot to bring</h3>
+            <textarea id="snapshot-text" readonly rows="6" placeholder="A short set of notes and suggested talking points."></textarea>
+            <div class="plan-actions">
+              <button id="copy-snapshot">Copy</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <hr>
+
+      <div>
+        <h2>Reflection Guide</h2>
+        <p>A brief sequence of prompts to frame a conversation with your clinician. Use what feels safe to share.</p>
+        <form id="reflection-form" class="wizard">
+          <label>What would you like less of?
+            <input type="text" id="ref-less" placeholder="Example: anxiety, fatigue, overwork">
+          </label>
+          <label>What would you like more of?
+            <input type="text" id="ref-more" placeholder="Example: calm, routine, energy">
+          </label>
+          <label>One change you can try this week
+            <input type="text" id="ref-action" placeholder="A small, concrete step">
+          </label>
+          <div class="wizard-actions">
+            <button type="button" id="reflection-build" class="btn">Generate prompts</button>
+          </div>
+        </form>
+
+        <div class="reflection-output">
+          <h3>Prompts to bring</h3>
+          <textarea id="reflection-text" readonly rows="6" placeholder="Prompts will appear here."></textarea>
+          <div class="plan-actions">
+            <button id="copy-reflection">Copy</button>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <section class="faq wrap">
+      <h2>Frequently asked</h2>
+      <details>
+        <summary>How confidential is this work?</summary>
+        <p>Sessions are recorded in secure clinical notes. Confidentiality follows standard professional limits: if there is a safety risk to you or others, or a legal requirement, I must act accordingly. We can talk about how to keep notes and communication in ways that feel safe for you.</p>
+      </details>
+      <details>
+        <summary>What if I am in crisis?</summary>
+        <p>This practice does not provide emergency services. If you are in immediate danger or need urgent medical help, please call local emergency services or go to your nearest emergency department. For urgent mental health help in the U.S., you can call or text 988.</p>
+      </details>
+      <details>
+        <summary>What framework do you use?</summary>
+        <p>I draw from evidence-informed approaches and tailor them to your needs. Our work will be collaborative and pragmatic, focusing on what you say matters most.</p>
+      </details>
+    </section>
+
+    <section class="cta wrap">
+      <h2>Ready to begin?</h2>
+      <p>Reach out for a short conversation to see if we’re a fit and to set the first available appointment.</p>
+      <p><a class="btn large" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></p>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>{{BUSINESS_NAME}} &middot; <a href="tel:{{PHONE}}">{{PHONE}}</a> &middot; <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+      <p class="small">I maintain clinical boundaries and confidentiality. The information here is general and not a substitute for professional assessment. If you face an emergency, contact local emergency services immediately.</p>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

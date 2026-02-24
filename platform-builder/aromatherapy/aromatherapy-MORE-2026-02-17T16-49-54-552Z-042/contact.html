@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reach out to book a consultation, ask about blends, or plan a personalized aromatherapy session that may support balance and calm." />
+  <style>
+    :root{
+      --bg:#fbfaf6;
+      --muted:#7b7b7b;
+      --accent:#7aa182;
+      --ink:#223;
+      --card:#ffffff;
+      --glass: rgba(255,255,255,0.6);
+      --radius:14px;
+      --gap:20px;
+      --max-width:1100px;
+      --shadow: 0 6px 18px rgba(34,34,34,0.08);
+      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    html,body{height:100%;}
+    body{margin:0;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;}
+
+    /* pattern backdrop using local SVG asset */
+    .page-wrap{
+      min-height:100vh;
+      background-image: url('assets/img/pattern.svg');
+      background-repeat: repeat;
+      background-size: 260px;
+      display:flex;flex-direction:column;align-items:center;padding:48px 24px;
+    }
+
+    header{width:100%;max-width:var(--max-width);display:flex;align-items:center;justify-content:space-between;padding:12px 0;}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#a3cfc0);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;box-shadow:var(--shadow)}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-weight:600}
+
+    main{width:100%;max-width:var(--max-width);display:grid;grid-template-columns:1fr 420px;gap:28px;margin-top:28px;align-items:start}
+
+    /* hero / contact card */
+    .card{background:var(--card);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+    .hero{padding:26px;background:linear-gradient(180deg,rgba(122,161,130,0.06),transparent);}
+    .hero h1{margin:0 0 8px;font-size:22px}
+    .hero p{margin:0;color:var(--muted)}
+
+    form.contact-form{display:flex;flex-direction:column;gap:12px;margin-top:12px}
+    input[type=text],input[type=email],textarea,select{width:100%;padding:10px;border-radius:10px;border:1px solid #e6e6e6;background:var(--glass)}
+    textarea{min-height:120px;resize:vertical}
+    .row{display:flex;gap:12px}
+
+    button.primary{background:var(--accent);color:white;border:none;padding:12px 16px;border-radius:10px;font-weight:700;cursor:pointer}
+    .muted{color:var(--muted);font-size:13px}
+
+    /* session planner */
+    .planner{position:sticky;top:28px}
+    .planner h3{margin:0 0 8px}
+    .planner .panel{display:flex;flex-direction:column;gap:10px}
+    .pill{display:inline-block;padding:8px 10px;border-radius:999px;background:#f2fbf6;color:#155; font-weight:600}
+
+    .summary{white-space:pre-wrap;background:#f8f9fb;padding:12px;border-radius:8px;border:1px dashed #e7eef0;font-size:14px}
+
+    /* gallery and info sections */
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .tile{background:linear-gradient(180deg,white, #fcfefe); border-radius:12px;padding:12px;box-shadow:0 6px 20px rgba(20,20,20,0.04)}
+
+    footer{width:100%;max-width:var(--max-width);margin-top:36px;color:var(--muted);font-size:14px}
+
+    /* reveal animations */
+    .reveal{opacity:0;transform:translateY(10px);transition:opacity .6s ease,transform .6s ease}
+    .reveal.revealed{opacity:1;transform:none}
+    @media (prefers-reduced-motion: reduce){
+      .reveal{transition:none;transform:none;opacity:1}
+    }
+
+    /* responsive */
+    @media (max-width:980px){main{grid-template-columns:1fr;}
+      .planner{position:static}
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">A</div>
+        <div>
+          <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+          <div class="muted" style="font-size:13px">Gentle aromatherapy that may support calm and focus</div>
+        </div>
+      </div>
+      <nav aria-label="Primary">
+        <a href="index.html">Welcome</a>
+        <a href="services.html">Offerings</a>
+        <a href="blends.html">Signatures</a>
+        <a href="shop.html">Shop</a>
+        <a href="pricing.html">Invest</a>
+        <a href="about.html">Our Story</a>
+        <a href="book.html">Schedule</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="card hero reveal" aria-labelledby="contact-heading">
+        <h1 id="contact-heading">Let's plan something thoughtful</h1>
+        <p class="muted">Reach out to ask a question, request retail add-ons, or tell us about a session you'd like to explore. We'll reply within 2 business days.</p>
+
+        <form class="contact-form" id="contactForm" action="" onsubmit="event.preventDefault(); sendMessage();">
+          <input type="text" id="name" placeholder="Your name" required />
+          <input type="email" id="email" placeholder="Your email — {{EMAIL}}" required />
+          <input type="text" id="phone" placeholder="Phone (optional) — {{PHONE}}" />
+          <textarea id="message" placeholder="How can we help? Tell us about timing, goals, or preferences."></textarea>
+
+          <div class="row">
+            <select id="contactReason" aria-label="Reason">
+              <option value="consult">Request a consultation</option>
+              <option value="retail">Ask about retail add-ons</option>
+              <option value="orders">Question about an order</option>
+              <option value="other">Something else</option>
+            </select>
+            <button class="primary" type="submit">Send message</button>
+          </div>
+          <div class="muted">By sending you agree to receive a reply from our studio. We do not share data with third parties.</div>
+        </form>
+
+        <hr style="margin:18px 0;border:none;border-top:1px solid #f0f0f0" />
+
+        <div class="grid">
+          <div class="tile">
+            <strong>Studio hours</strong>
+            <div class="muted">Tue–Sat, 9:00–17:00 (local)</div>
+            <div style="margin-top:8px" class="muted">Appointments by booking. Walk-ins welcome when available.</div>
+          </div>
+          <div class="tile">
+            <strong>Location</strong>
+            <div class="muted">Serving {{CITY}}, {{STATE}} — sessions in-person or remote</div>
+            <div style="margin-top:8px" class="muted">Remote consultations include scent education and blend recommendations.</div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="planner reveal" aria-labelledby="planner-heading">
+        <div class="card panel" style="padding:18px">
+          <h3 id="planner-heading">Session Planner</h3>
+          <div class="muted">Build a brief plan, get suggested blends and a simple aftercare checklist. Export your plan at the end.</div>
+
+          <div style="margin-top:12px" class="panel">
+            <label class="muted">Primary intention</label>
+            <select id="intent">
+              <option value="calm">Calm & grounding</option>
+              <option value="focus">Focus & clarity</option>
+              <option value="sleep">Sleep support</option>
+              <option value="uplift">Lift mood gently</option>
+            </select>
+
+            <label class="muted">Session length</label>
+            <select id="length">
+              <option value="20">20 minutes — mini consult</option>
+              <option value="45">45 minutes — full session</option>
+              <option value="90">90 minutes — deep exploration</option>
+            </select>
+
+            <label class="muted">Preferences & constraints</label>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label><input type="checkbox" id="pregnancy" /> Pregnancy or breastfeeding — consult first</label>
+              <label><input type="checkbox" id="pets" /> Pets at home — need pet-safe guidance</label>
+              <label><input type="checkbox" id="sensitive" /> Sensitive skin or fragrance sensitivity</label>
+            </div>
+
+            <label class="muted">Aroma notes you like (choose up to 3)</label>
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
+              <button type="button" class="pill" data-note="Lavender">Lavender</button>
+              <button type="button" class="pill" data-note="Citrus">Citrus</button>
+              <button type="button" class="pill" data-note="Woodsy">Woodsy</button>
+              <button type="button" class="pill" data-note="Herbal">Herbal</button>
+              <button type="button" class="pill" data-note="Floral">Floral</button>
+            </div>
+
+            <button id="build" class="primary" style="margin-top:10px">Create plan</button>
+
+            <div id="resultArea" style="display:none;margin-top:12px">
+              <div class="summary" id="planSummary" aria-live="polite"></div>
+              <div style="display:flex;gap:8px;margin-top:8px">
+                <button id="copyBtn">Copy summary</button>
+                <button id="downloadBtn">Download .txt</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- secondary content that reveals later -->
+      <section class="card reveal" style="grid-column:1/2;margin-top:16px">
+        <h4>What to expect after you reach out</h4>
+        <ol>
+          <li class="muted">We reply within 2 business days to confirm availability and ask a few intake questions.</li>
+          <li class="muted">If you book a session we'll share pre-session guidance, patch test instructions, and suggested retail add-ons.</li>
+          <li class="muted">At your session you can expect scent education, a gentle aromatherapy experience, and notes to take home.</li>
+        </ol>
+      </section>
+
+      <section class="card reveal" style="grid-column:1/2;margin-top:16px">
+        <h4>FAQ & safety notes</h4>
+        <p class="muted"><strong>Dilution & patch testing:</strong> Topical blends are shared with suggested dilutions. We always encourage a small patch test (on the forearm) before first topical use.</p>
+        <p class="muted"><strong>Pregnancy & nursing:</strong> If you are pregnant or nursing, please let us know — we will tailor recommendations and may advise avoiding certain oils.</p>
+        <p class="muted"><strong>Pets:</strong> Many essential oils can affect pets. We provide pet-safe guidance for at-home use and diffusion choices.</p>
+        <p class="muted"><strong>Medical concerns:</strong> Aromatherapy is supportive and not a substitute for professional medical care. Our suggestions may support well-being but are not medical advice.</p>
+      </section>
+
+    </main>
+
+    <footer>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
+        <div class="muted">Contact: <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+        <div class="muted">Ready to begin? <a href="book.html">{{PRIMARY_CTA_LABEL}}</a></div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Scroll-triggered reveal with prefers-reduced-motion support
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const items = Array.from(document.querySelectorAll('.reveal'));
+      if(prefersReduced){
+        items.forEach(i=>i.classList.add('revealed'));
+        return;
+      }
+      if('IntersectionObserver' in window){
+        const obs = new IntersectionObserver((entries)=>{
+          entries.forEach(e=>{
+            if(e.isIntersecting) { e.target.classList.add('revealed'); obs.unobserve(e.target); }
+          });
+        },{threshold:0.12});
+        items.forEach(i=>obs.observe(i));
+      } else {
+        // fallback
+        items.forEach(i=>i.classList.add('revealed'));
+      }
+    })();
+
+    // Session Planner logic
+    (function(){
+      const noteButtons = Array.from(document.querySelectorAll('.pill'));
+      const selectedNotes = new Set();
+      noteButtons.forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const note = btn.getAttribute('data-note');
+          if(selectedNotes.has(note)){
+            selectedNotes.delete(note); btn.style.opacity=1; btn.style.boxShadow='none';
+          } else {
+            if(selectedNotes.size >= 3) return; // max 3
+            selectedNotes.add(note); btn.style.opacity=0.9; btn.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)';
+          }
+        });
+      });
+
+      function recommendBlend(intent,notes,constraints,length){
+        // gentle heuristic to create a friendly plan
+        const now = new Date();
+        const blendName = intent === 'calm' ? 'Hearth Quiet' : intent === 'focus' ? 'Clearwork' : intent === 'sleep' ? 'Evening Veil' : 'Sunny Ease';
+        const notesList = notes.length ? notes.join(', ') : 'balanced citrus and herb notes';
+        const mode = constraints.includes('sensitive') ? 'inhalation-focused, minimal topical use' : 'inhalation with optional topical (diluted)';
+        const dilution = constraints.includes('sensitive') ? '0.25%–1%' : '1%–2% for general adult use';
+        const petNote = constraints.includes('pets') ? '\n• Pet-safe diffusion guidance will be provided.' : '';
+        const pregnancyNote = constraints.includes('pregnancy') ? '\n• We will avoid certain oils and provide pregnancy-safe alternatives.' : '';
+
+        const retailHint = 'Optional retail add-ons: pre-blended roller (10ml), breathing inhaler, or a small diffuser pad.';
+
+        return `Plan created: ${blendName} — ${now.toLocaleDateString()}\n\nIntent: ${intent.replace(/\b\w/g, c=>c.toUpperCase())}\nPreferred notes: ${notesList}\nSession length: ${length} minutes\nApproach: ${mode}\nSuggested topical dilution (if used): ${dilution}${petNote}${pregnancyNote}\n\nSuggested actions:\n• Gentle inhalation and guided awareness during the session (10–15 minutes).\n• If topical use is chosen, perform a patch test on the inner forearm 24 hours before wider use.\n• Follow the provided aftercare card with dilution notes and scent reminders.\n\n${retailHint}\n\nSafety reminder: Our recommendations may support well-being but are not medical advice. For medical conditions, please consult a healthcare professional.`;
+      }
+
+      const buildBtn = document.getElementById('build');
+      const summaryEl = document.getElementById('planSummary');
+      const resultArea = document.getElementById('resultArea');
+      const copyBtn = document.getElementById('copyBtn');
+      const downloadBtn = document.getElementById('downloadBtn');
+
+      buildBtn.addEventListener('click', ()=>{
+        const intent = document.getElementById('intent').value;
+        const length = document.getElementById('length').value;
+        const constraints = [];
+        if(document.getElementById('pregnancy').checked) constraints.push('pregnancy');
+        if(document.getElementById('pets').checked) constraints.push('pets');
+        if(document.getElementById('sensitive').checked) constraints.push('sensitive');
+        const notes = Array.from(selectedNotes);
+        const txt = recommendBlend(intent,notes,constraints,length);
+        summaryEl.textContent = txt;
+        resultArea.style.display = 'block';
+        summaryEl.scrollIntoView({behavior:'smooth',block:'center'});
+      });
+
+      copyBtn.addEventListener('click', async ()=>{
+        try{
+          await navigator.clipboard.writeText(summaryEl.textContent);
+          copyBtn.textContent = 'Copied ✓';
+          setTimeout(()=>copyBtn.textContent = 'Copy summary',1600);
+        }catch(e){
+          alert('Copy failed — your browser may block clipboard access.');
+        }
+      });
+
+      downloadBtn.addEventListener('click', ()=>{
+        const blob = new Blob([summaryEl.textContent],{type:'text/plain'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'aromatherapy-plan.txt';
+        document.body.appendChild(a); a.click(); a.remove();
+        URL.revokeObjectURL(url);
+      });
+
+      // lightweight form send stub
+      window.sendMessage = function(){
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const reason = document.getElementById('contactReason').value;
+        alert('Thanks, ' + (name || 'there') + '. We received your message regarding ' + reason + '. We\'ll follow up at ' + email + '.');
+        document.getElementById('contactForm').reset();
+      }
+    })();
+  </script>
+</body>
+</html>

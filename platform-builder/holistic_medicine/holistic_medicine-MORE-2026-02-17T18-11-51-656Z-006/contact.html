@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <meta name='description' content='Connect with a thoughtful integrative practitioner to shape a personalized plan.'>
+  <style>
+    :root{
+      --bg:#f7fbf7; --card:#ffffff; --muted:#6b6b6b; --accent:#5a8a72; --accent-2:#7bb58f;
+      --glass: rgba(255,255,255,0.6);
+      --shadow: 0 6px 18px rgba(15,23,42,0.08);
+      --radius:14px; --gap:24px; --max:1100px;
+    }
+    html,body{height:100%;}
+    body{
+      margin:0; font-family:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial; color:#163022; background:var(--bg) url('assets/img/pattern.svg');
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; line-height:1.45; padding:32px; display:flex; justify-content:center;
+    }
+    .wrap{max-width:var(--max); width:100%;}
+    header{display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:28px}
+    .brand{display:flex; gap:12px; align-items:center}
+    .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;box-shadow:var(--shadow)}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none;font-weight:600}
+    nav a.cta{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px}
+
+    main{display:grid; grid-template-columns: 1fr 360px; gap:var(--gap); align-items:start}
+    .main-col{display:flex;flex-direction:column;gap:18px}
+    .card{background:var(--card);padding:20px;border-radius:var(--radius);box-shadow:var(--shadow)}
+    h1{margin:0 0 6px 0;font-size:26px}
+    p.lead{margin:0;color:var(--muted)}
+
+    /* Reveal animation */
+    .reveal{opacity:0; transform:translateY(18px); transition:opacity 520ms cubic-bezier(.2,.9,.2,1), transform 520ms cubic-bezier(.2,.9,.2,1)}
+    .reveal.visible{opacity:1; transform:none}
+    @media (prefers-reduced-motion: reduce){
+      .reveal{transition:none; opacity:1; transform:none}
+    }
+
+    /* Session planner styles */
+    .planner{display:flex;flex-direction:column;gap:12px}
+    .row{display:flex;gap:8px}
+    .input, textarea, select{width:100%;padding:10px;border-radius:10px;border:1px solid #e6eee6;background:#fbfffb}
+    textarea{min-height:92px;resize:vertical}
+    label{font-size:14px;color:var(--muted)}
+    .small{font-size:13px;color:#4f6b55}
+    .btn{background:var(--accent);color:#fff;border:none;padding:10px 12px;border-radius:10px;cursor:pointer}
+    .btn.secondary{background:#eef6ef;color:var(--accent);border:1px solid #d9eee0}
+    .plan-output{white-space:pre-wrap;background:#f3faf6;border-radius:10px;padding:12px;border:1px dashed #dfeee0}
+
+    aside .card{position:sticky; top:32px}
+
+    footer{margin-top:28px;text-align:center;color:var(--muted);font-size:13px}
+
+    /* small utilities */
+    .muted{color:var(--muted)}
+    .meta{font-size:13px;color:#5c6b5c}
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <header>
+      <div class='brand'>
+        <div class='logo' aria-hidden='true'>HM</div>
+        <div>
+          <div style='font-weight:700'>{{BUSINESS_NAME}}</div>
+          <div class='meta'>{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav aria-label='Main navigation'>
+        <a href='index.html'>Welcome</a>
+        <a href='services.html'>Offerings</a>
+        <a href='conditions.html'>Ailments</a>
+        <a href='approach.html'>Method</a>
+        <a href='pricing.html'>Investment</a>
+        <a href='about.html'>About</a>
+        <a href='book.html' class='cta'>{{PRIMARY_CTA_LABEL}}</a>
+        <a href='contact.html'>Connect</a>
+      </nav>
+    </header>
+
+    <main>
+      <div class='main-col'>
+        <!-- HERO -->
+        <section class='card reveal' data-reveal>
+          <h1>Find a conversation that fits your life.</h1>
+          <p class='lead'>If you'd like a practical, whole-context discussion about your next steps, reach out. We shape plans around your rhythms—not a checklist.</p>
+          <p class='small muted'>Phone: <a href='tel:{{PHONE}}'>{{PHONE}}</a> · Email: <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a></p>
+        </section>
+
+        <!-- STORY -->
+        <section class='card reveal' data-reveal>
+          <h2>How we listen</h2>
+          <p class='muted'>We begin with a curious inventory: sleep, appetite, stress signals, and what your days truly look like. From there we assemble simple, repeatable elements to try—gentle habits, dietary notes, movement cues, and tailored breathing or sensory anchors.</p>
+        </section>
+
+        <!-- FRAMEWORK: Quick Session Planner (widget 1) -->
+        <section class='card reveal' data-reveal>
+          <h2>Quick Session Planner</h2>
+          <p class='small'>Sketch a focused plan in moments — great for when you want a short, practical roadmap.</p>
+          <div class='planner' id='planner-quick'>
+            <label>Primary focus</label>
+            <select id='q-focus' class='input'>
+              <option>Stress regulation</option>
+              <option>Sleep support</option>
+              <option>Energy balance</option>
+              <option>Digestive steadiness</option>
+            </select>
+            <div class='row'>
+              <div style='flex:1'>
+                <label>Session length</label>
+                <select id='q-length' class='input'>
+                  <option>30 minutes</option>
+                  <option>45 minutes</option>
+                  <option>60 minutes</option>
+                </select>
+              </div>
+              <div style='width:140px'>
+                <label>Frequency</label>
+                <select id='q-frequency' class='input'>
+                  <option>One-time</option>
+                  <option>Weekly</option>
+                  <option>Biweekly</option>
+                </select>
+              </div>
+            </div>
+            <label>Quick notes</label>
+            <input id='q-notes' class='input' placeholder='Anything we should know?'>
+            <div style='display:flex;gap:8px'>
+              <button class='btn' id='q-build'>Build plan</button>
+              <button class='btn secondary' id='q-copy' title='Copy plan to clipboard'>Copy</button>
+            </div>
+            <div id='q-output' class='plan-output' aria-live='polite'>Your quick plan will appear here.</div>
+          </div>
+        </section>
+
+        <!-- OFFERS: Detailed Planner (widget 2) -->
+        <section class='card reveal' data-reveal>
+          <h2>Detailed Session Planner</h2>
+          <p class='small'>A more deliberate builder: mix session focus areas, choose modules, and craft a two-visit pathway to begin.</p>
+          <div class='planner' id='planner-detailed'>
+            <label>Choose up to three focus modules</label>
+            <div class='row'>
+              <select id='d-module-1' class='input'>
+                <option>Foundational intake</option>
+                <option>Breath & nervous system tools</option>
+                <option>Meal patterning</option>
+                <option>Movement micro-practice</option>
+              </select>
+              <select id='d-module-2' class='input'>
+                <option>Gentle sleep architecture</option>
+                <option>Energy pacing strategies</option>
+                <option>Digestion rhythm</option>
+                <option>Stress-first aids</option>
+              </select>
+            </div>
+            <label>Desired outcomes</label>
+            <textarea id='d-outcomes' placeholder='Three simple outcomes you hope for'></textarea>
+            <div class='row'>
+              <div style='flex:1'>
+                <label>Preferred session cadence</label>
+                <select id='d-cadence' class='input'>
+                  <option>Initial + follow-up (2 visits)</option>
+                  <option>Short series (4 visits)</option>
+                  <option>Monthly check-ins</option>
+                </select>
+              </div>
+              <div style='width:120px'>
+                <label>Typical day energy</label>
+                <select id='d-energy' class='input'>
+                  <option>Mornings strong</option>
+                  <option>Afternoons dip</option>
+                  <option>Evenings active</option>
+                </select>
+              </div>
+            </div>
+            <div style='display:flex;gap:8px'>
+              <button class='btn' id='d-build'>Create summary</button>
+              <button class='btn secondary' id='d-copy'>Copy</button>
+            </div>
+            <div id='d-output' class='plan-output' aria-live='polite'>Your detailed plan will appear here.</div>
+          </div>
+        </section>
+
+        <!-- TESTIMONIALS -->
+        <section class='card reveal' data-reveal>
+          <h2>Notes from people who shared their path</h2>
+          <p class='muted'>"Thoughtful conversation and a plan I could actually try." — a client in {{CITY}}, {{STATE}}</p>
+          <p class='muted'>"Clear steps and space to adjust week by week." — another client</p>
+        </section>
+
+        <!-- CTA -->
+        <section class='card reveal' data-reveal>
+          <h2>Ready to connect?</h2>
+          <p class='small'>Book a time or send a note. We respond within a few business days.</p>
+          <div style='display:flex;gap:10px'>
+            <a href='{{PRIMARY_CTA_URL}}' class='btn' style='text-decoration:none;display:inline-block'>{{PRIMARY_CTA_LABEL}}</a>
+            <a href='mailto:{{EMAIL}}' class='btn secondary' style='text-decoration:none;display:inline-block'>Email {{EMAIL}}</a>
+          </div>
+        </section>
+
+      </div>
+
+      <aside>
+        <div class='card reveal' data-reveal>
+          <h3>Contact</h3>
+          <p class='muted'>Phone: <a href='tel:{{PHONE}}'>{{PHONE}}</a></p>
+          <p class='muted'>Email: <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a></p>
+          <p class='small'>Office: {{CITY}}, {{STATE}}</p>
+        </div>
+
+        <div class='card reveal' data-reveal>
+          <h3>What to bring</h3>
+          <ul class='muted'>
+            <li>Current medications/supplements list</li>
+            <li>A sense of the parts of your day that feel off</li>
+            <li>Questions you'd like to prioritize</li>
+          </ul>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      <div class='muted'>No promises of cure — educational and supportive guidance. For urgent concerns, call local emergency services.</div>
+      <div style='margin-top:8px'>© <span id='year'></span> {{BUSINESS_NAME}}</div>
+    </footer>
+  </div>
+
+  <script>
+    // simple year fill
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Scroll-triggered reveal with reduced-motion respect
+    (function(){
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var els = Array.prototype.slice.call(document.querySelectorAll('[data-reveal]'));
+      if(prefersReduced){ els.forEach(function(e){ e.classList.add('visible'); }); return; }
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if(entry.isIntersecting){ entry.target.classList.add('visible'); io.unobserve(entry.target); }
+        });
+      },{root:null,rootMargin:'-10% 0px',threshold:0.08});
+      els.forEach(function(e){ e.classList.add('reveal'); io.observe(e); });
+    })();
+
+    // Utility: safe copy
+    function safeCopy(text){
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        return navigator.clipboard.writeText(text);
+      }
+      var ta = document.createElement('textarea'); ta.value = text; ta.style.position='fixed'; ta.style.left='-9999px'; document.body.appendChild(ta); ta.select();
+      try{ document.execCommand('copy'); document.body.removeChild(ta); return Promise.resolve(); } catch(e){ document.body.removeChild(ta); return Promise.reject(e); }
+    }
+
+    // Quick planner
+    (function(){
+      var build = document.getElementById('q-build');
+      var copy = document.getElementById('q-copy');
+      var out = document.getElementById('q-output');
+      function summary(){
+        var focus = document.getElementById('q-focus').value;
+        var length = document.getElementById('q-length').value;
+        var freq = document.getElementById('q-frequency').value;
+        var notes = document.getElementById('q-notes').value.trim();
+        var txt = 'Quick Session Plan\n--\nFocus: ' + focus + '\nLength: ' + length + '\nCadence: ' + freq + '\nNotes: ' + (notes||'—');
+        return txt;
+      }
+      build.addEventListener('click', function(){ out.textContent = summary(); });
+      copy.addEventListener('click', function(){
+        var txt = out.textContent || summary();
+        safeCopy(txt).then(function(){ copy.textContent='Copied'; setTimeout(function(){ copy.textContent='Copy'; },1400); }).catch(function(){ alert('Unable to copy automatically. Please select and copy.'); });
+      });
+    })();
+
+    // Detailed planner
+    (function(){
+      var build = document.getElementById('d-build');
+      var copy = document.getElementById('d-copy');
+      var out = document.getElementById('d-output');
+      function summary(){
+        var m1 = document.getElementById('d-module-1').value;
+        var m2 = document.getElementById('d-module-2').value;
+        var outcomes = document.getElementById('d-outcomes').value.trim();
+        var cadence = document.getElementById('d-cadence').value;
+        var energy = document.getElementById('d-energy').value;
+        var lines = [];
+        lines.push('Detailed Session Plan');
+        lines.push('---------------------');
+        lines.push('Modules: ' + [m1, m2].filter(Boolean).join(', '));
+        lines.push('Desired outcomes: ' + (outcomes || '—'));
+        lines.push('Cadence: ' + cadence);
+        lines.push('Daily energy note: ' + energy);
+        lines.push('Suggested first steps: try one small change for 7 days, track how it lands, and bring observations to the next visit.');
+        return lines.join('\n');
+      }
+      build.addEventListener('click', function(){ out.textContent = summary(); });
+      copy.addEventListener('click', function(){
+        var txt = out.textContent || summary();
+        safeCopy(txt).then(function(){ copy.textContent='Copied'; setTimeout(function(){ copy.textContent='Copy'; },1400); }).catch(function(){ alert('Unable to copy automatically. Please select and copy.'); });
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+/* Core variables and reset */
+:root{--bg:#fbfbfc;--muted:#6b6b75;--accent1:#7fd3c7;--accent2:#c9b2ff;--card:#ffffff;--radius:12px;--gap:24px;--max-width:1100px}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;line-height:1.4;color:#1b1b1f;background:linear-gradient(180deg,var(--bg),#fff 60%)}
+.wrap{max-width:var(--max-width);margin:0 auto;padding:28px}
+.site-header{position:sticky;top:0;background:rgba(255,255,255,0.8);backdrop-filter:blur(6px);border-bottom:1px solid rgba(20,20,30,0.04)}
+.site-header .wrap{display:flex;align-items:center;justify-content:space-between}
+.brand{font-weight:700;color:#0b3b36;text-decoration:none;font-size:1.05rem}
+.nav-list{list-style:none;display:flex;gap:12px;align-items:center}
+.nav-list a{color:#234; text-decoration:none;padding:8px;border-radius:8px}
+.nav-list a.cta{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#072;box-shadow:0 6px 18px rgba(110,80,160,0.08)}
+.nav-toggle{display:none;background:none;border:0;padding:8px;font-weight:600}
+
+/* HERO */
+.hero{padding:48px 0;background-repeat:no-repeat;background-size:cover;border-bottom:1px solid rgba(10,10,20,0.03)}
+.hero-grid{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:center}
+.hero-card{background:linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.6));padding:28px;border-radius:var(--radius);box-shadow:0 8px 30px rgba(12,20,40,0.06)}
+.headline{font-size:clamp(1.25rem,2.5vw,2.25rem);margin-bottom:8px;color:#08372f}
+.subhead{color:var(--muted);margin-bottom:12px}
+.lead{color:#2b2b2f;margin-bottom:16px}
+.hero-ctas{display:flex;gap:12px}
+.btn{display:inline-block;padding:12px 18px;border-radius:10px;text-decoration:none;font-weight:600}
+.btn.primary{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#08372f}
+.btn.ghost{background:transparent;border:1px solid rgba(10,10,20,0.06);color:#08372f}
+.btn.small{padding:8px 12px;font-size:.9rem}
+.card-visual{padding:8px}
+.visual-svg{width:100%;height:auto;border-radius:12px}
+
+/* Sections */
+.section{padding:40px 0}
+.soft{background:linear-gradient(180deg, rgba(245,250,249,0.6), transparent)}
+.light{background:transparent}
+.split{display:grid;grid-template-columns:1fr 380px;gap:24px;align-items:start}
+.card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(12,20,40,0.04)}
+.features{margin-top:12px;list-style:none;padding-left:0}
+.features li{padding:8px 0;border-top:1px dashed rgba(10,10,10,0.03);color:var(--muted)}
+.grid{display:grid;gap:18px}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+.grid-2{grid-template-columns:repeat(2,1fr)}
+.tile{background:linear-gradient(180deg,#fff, #fbfbff);padding:18px;border-radius:12px;border:1px solid rgba(10,10,10,0.03)}
+
+.pricing-grid{display:flex;gap:18px;margin-top:18px}
+.price{flex:1;background:linear-gradient(180deg,#fff,#fcfcff);padding:18px;border-radius:10px;border:1px solid rgba(10,10,10,0.04);text-align:center}
+.price-head{font-weight:700;margin-bottom:8px}
+.price-amt{font-size:1.25rem;color:#0b3b36}
+.price-desc{color:var(--muted);margin-top:8px}
+
+.accordion details{background:var(--card);padding:12px;border-radius:10px;margin-top:12px}
+.accordion summary{cursor:pointer;font-weight:600}
+.accordion .answer{margin-top:8px;color:var(--muted)}
+
+.cta{background:linear-gradient(90deg, rgba(127,211,199,0.12), rgba(201,178,255,0.08));border-top:1px solid rgba(10,10,20,0.02)}
+.cta-grid{display:flex;align-items:center;justify-content:space-between;gap:18px}
+.btn.large{padding:14px 22px}
+
+.site-footer{padding:20px 0;margin-top:24px;border-top:1px solid rgba(10,10,20,0.03);color:var(--muted)}
+.footer-grid{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:center}
+.small.muted{font-size:.85rem}
+
+/* responsive */
+@media (max-width:900px){
+  .hero-grid{grid-template-columns:1fr}
+  .split{grid-template-columns:1fr}
+  .grid-3{grid-template-columns:1fr}
+  .grid-2{grid-template-columns:1fr}
+  .nav-toggle{display:inline-block}
+  .nav-list{position:absolute;right:20px;top:64px;background:var(--card);flex-direction:column;padding:12px;border-radius:10px;display:none;box-shadow:0 10px 30px rgba(10,10,20,0.08)}
+  .nav-list.show{display:flex}
+}
+
+/* Decorative pattern overlay to enhance visual richness */
+.layout-gallery::before{content:"";position:fixed;inset:0;pointer-events:none;background-image:url('../assets/img/pattern.svg');opacity:0.06;mix-blend-mode:multiply}

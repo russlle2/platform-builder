@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Book — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--glass:rgba(255,255,255,0.05);--accent:#9AD3FF}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto;color:#e9fbff;background:linear-gradient(180deg,#00131a 0%,#04222a 100%)}
+    .page{max-width:980px;margin:36px auto;padding:22px;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);backdrop-filter:blur(8px)}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{color:#cceff6;text-decoration:none;margin-left:14px;font-weight:600}
+    .split{display:flex;gap:18px;margin-top:18px}
+    .left{flex:1}
+    .panel{padding:14px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);border:1px solid rgba(255,255,255,0.02)}
+    label{display:block;margin-top:8px;color:#cfeef7;font-weight:700}
+    input,select,textarea{width:100%;padding:10px;margin-top:6px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:rgba(0,0,0,0.2);color:#eafcff}
+    .btn{display:inline-block;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,#7AE7D9,#9AD3FF);color:#002033;font-weight:800;text-decoration:none}
+    .micro{margin-top:12px;color:#cfeef7}
+    .steps{display:flex;gap:8px;margin-top:12px}
+    .step{padding:10px;border-radius:10px;background:rgba(255,255,255,0.02);font-weight:700}
+    /* small pattern unique for booking page */
+    .pattern{position:absolute;left:10px;bottom:10px;opacity:0.06}
+    @media(max-width:880px){.split{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <svg class='pattern' width='140' height='140' viewBox='0 0 140 140' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'>
+    <defs>
+      <linearGradient id='bgb' x1='0' x2='1'>
+        <stop offset='0' stop-color='#9AD3FF' stop-opacity='0.12'/>
+        <stop offset='1' stop-color='#7AE7D9' stop-opacity='0.08'/>
+      </linearGradient>
+    </defs>
+    <rect width='140' height='140' rx='20' fill='url(#bgb)' />
+    <g fill='rgba(255,255,255,0.06)'>
+      <rect x='12' y='24' width='10' height='10' rx='2'/>
+      <rect x='90' y='60' width='10' height='10' rx='2'/>
+      <rect x='50' y='100' width='10' height='10' rx='2'/>
+    </g>
+  </svg>
+
+  <main class='page'>
+    <header>
+      <div>
+        <div style='font-weight:800'>{{BUSINESS_NAME}}</div>
+        <div style='font-size:13px;color:#bfe6f4'>Schedule a session — practical, safety-first</div>
+      </div>
+      <nav>
+        <a href='index.html'>Welcome</a>
+        <a href='blends.html'>Blends</a>
+        <a href='pricing.html'>Pricing</a>
+        <a href='book.html' style='opacity:1'>Book</a>
+        <a href='contact.html'>Contact</a>
+      </nav>
+    </header>
+
+    <div class='split'>
+      <section class='left'>
+        <div class='panel'>
+          <h2 style='margin:0'>Book a session</h2>
+          <p style='color:#cfeef7'>Choose a service and share a few details. If you have concerns (pregnancy, pets, medical conditions), note them so we can plan safely.</p>
+
+          <form id='booking' style='margin-top:12px'>
+            <label for='name'>Full name</label>
+            <input id='name' name='name' placeholder='Your name' required />
+
+            <label for='email'>Email</label>
+            <input id='email' name='email' type='email' placeholder='you@domain.com' required />
+
+            <label for='service'>Service</label>
+            <select id='service' name='service'>
+              <option value='discovery'>Discovery — 30 min • $95</option>
+              <option value='signature'>Signature — 60–75 min • $225</option>
+              <option value='vip'>VIP Day — full-day • $950</option>
+            </select>
+
+            <label for='notes'>Notes (allergies, pregnancy, pets, goals)</label>
+            <textarea id='notes' name='notes' rows='4' placeholder='Anything we should know?'></textarea>
+
+            <div style='display:flex;gap:10px;margin-top:12px;align-items:center'>
+              <a id='submitBtn' class='btn' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a>
+              <div style='font-size:13px;color:#bfe6f4'>Or call <strong>{{PHONE}}</strong></div>
+            </div>
+          </form>
+
+          <div class='micro'>
+            <h4 style='margin-top:14px;margin-bottom:8px'>Prepare for your session</h4>
+            <ul style='margin:0;padding-left:18px;color:#cfeef7'>
+              <li>Have a quiet, scent-neutral space for online sessions</li>
+              <li>Bring any current products for label review</li>
+              <li>Patch test any topical blend before wider use</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class='panel' style='margin-top:12px'>
+          <h4 style='margin:0'>Session plan (what we'll do)</h4>
+          <div class='steps'>
+            <div class='step'>Intake</div>
+            <div class='step'>Olfactory mapping</div>
+            <div class='step'>Blend & dilution</div>
+            <div class='step'>Home protocol</div>
+          </div>
+          <p style='color:#cfeef7;margin-top:12px'>Sessions are collaborative and safety-focused — we will avoid oils that are contraindicated for pregnancy or specific medical conditions.</p>
+        </div>
+      </section>
+
+      <aside style='width:320px'>
+        <div class='panel'>
+          <h3 style='margin:0'>Quick pricing</h3>
+          <div style='margin-top:8px;color:#cfeef7'>
+            <strong>Discovery</strong> — 30 min • $95<br/>
+            <strong>Signature</strong> — 60–75 min • $225<br/>
+            <strong>VIP Day</strong> — full-day • $950
+          </div>
+
+          <div style='margin-top:12px'>
+            <h4 style='margin:0'>Cancellation & prep</h4>
+            <p style='color:#bfe6f4;margin-top:8px'>Please give 48 hours notice to reschedule. If topical testing is planned, allow 48 hours for patch tests prior to session day.</p>
+          </div>
+
+          <div style='margin-top:12px'>
+            <h4 style='margin:0'>Contact</h4>
+            <div style='color:#cfeef7;margin-top:8px'>Email <a href='mailto:{{EMAIL}}' style='color:#cfeef7;text-decoration:none'>{{EMAIL}}</a><br/>Call {{PHONE}}</div>
+          </div>
+        </div>
+
+        <div class='panel' style='margin-top:12px'>
+          <h4 style='margin:0'>A few safety reminders</h4>
+          <ul style='margin:8px 0 0 18px;color:#cfeef7'>
+            <li>Always dilute before topical application</li>
+            <li>Patch test first; stop if irritation occurs</li>
+            <li>Mention pregnancy or medical conditions when booking</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+
+    <footer style='margin-top:18px;display:flex;justify-content:space-between;align-items:center;color:#bfe6f4'>
+      <div>Questions? <a href='contact.html' style='color:#cfeef7;text-decoration:none'>Get in touch</a></div>
+      <div style='font-size:13px'>Serving {{CITY}}, {{STATE}} • {{PRACTITIONER_NAME}}</div>
+    </footer>
+  </main>
+
+  <script>
+    // simple front-end placeholder behavior
+    document.getElementById('submitBtn').addEventListener('click', function(e){
+      e.preventDefault();
+      alert('You will be redirected to the booking flow.');
+      window.location.href='{{PRIMARY_CTA_URL}}';
+    });
+  </script>
+</body>
+</html>

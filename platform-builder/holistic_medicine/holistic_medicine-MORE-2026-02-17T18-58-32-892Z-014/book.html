@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Book — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--accent:#6B8E6D;--muted:#6b7280}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:#f6fbf7;color:#082227}
+    .wrap{max-width:900px;margin:0 auto;padding:28px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:10px;color:#475569;text-decoration:none}
+    .panel{background:#fff;padding:18px;border-radius:12px;box-shadow:0 12px 28px rgba(2,6,23,0.06);margin-top:16px}
+    h1{margin:0}
+    .form-row{display:flex;gap:8px;margin-top:12px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6f1ea}
+    button{background:var(--accent);color:#fff;border:0;padding:10px 12px;border-radius:8px;cursor:pointer}
+    .muted{color:var(--muted)}
+    .moods{display:flex;gap:8px;margin-top:12px}
+    .mood{padding:8px 10px;border-radius:8px;border:1px solid #eef6ee;background:#fff;cursor:pointer}
+    .mood.active{background:var(--accent);color:#fff}
+    .suggestion{margin-top:12px;padding:12px;border-radius:8px;background:#f9fff8;border:1px solid #eaf3ec}
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <header>
+      <div>
+        <div style='font-weight:800;color:var(--accent)'>{{BUSINESS_NAME}}</div>
+        <div class='muted'>Book a time to begin</div>
+      </div>
+      <nav>
+        <a href='index.html'>Home</a>
+        <a href='services.html'>Offerings</a>
+        <a href='pricing.html'>Investment</a>
+        <a href='about.html'>About</a>
+        <a href='contact.html'>Connect</a>
+      </nav>
+    </header>
+
+    <main>
+      <div class='panel'>
+        <h1>Reserve time</h1>
+        <p class='muted'>Select a pathway and share a few details so we can tailor the first session. We’ll follow up to confirm availability.</p>
+
+        <div style='margin-top:12px'>
+          <label class='muted'>Choose a program</label>
+          <select id='program'>
+            <option value='tune'>Pulse Tune — single consult</option>
+            <option value='align'>Alignment Series — monthly</option>
+            <option value='continuum'>Continuum Intensive — deep program</option>
+          </select>
+        </div>
+
+        <div style='margin-top:12px'>
+          <label class='muted'>Your current state</label>
+          <div class='moods' id='moodSelect'>
+            <div class='mood' data-mood='anxious'>Anxious</div>
+            <div class='mood' data-mood='tired'>Tired</div>
+            <div class='mood' data-mood='curious'>Curious</div>
+            <div class='mood' data-mood='sick'>Physically unwell</div>
+          </div>
+        </div>
+
+        <div id='methodCard' class='suggestion'>
+          Choose a state to see the suggested first steps and a tailored CTA.
+        </div>
+
+        <form id='booking' style='margin-top:12px'>
+          <div class='form-row'>
+            <input id='name' placeholder='Your full name' required>
+            <input id='phone' placeholder='Phone (optional)'>
+          </div>
+          <div style='margin-top:8px'>
+            <input id='email' type='email' placeholder='Email' required>
+          </div>
+          <div style='margin-top:8px'>
+            <textarea id='notes' rows='4' placeholder='Briefly: what brought you here?'></textarea>
+          </div>
+          <div style='margin-top:12px;display:flex;gap:8px;align-items:center'>
+            <button type='submit' id='submitBtn'>Request this slot</button>
+            <div class='muted'>Or <a href='contact.html'>email us</a> for questions</div>
+          </div>
+        </form>
+      </div>
+    </main>
+
+    <footer style='margin-top:18px' class='muted'>By submitting, you agree to receive scheduling communication. Medical disclaimers available on the Ailments page.</footer>
+  </div>
+
+  <script>
+    (function(){
+      const moodMap = {
+        anxious:{title:'Gentle orientation',desc:'Begin with a Pulse Tune — short, focused session to calm immediate concerns and set 1–2 practical steps.',cta:'Request a Pulse Tune'},
+        tired:{title:'Rhythm-friendly plan',desc:'Alignment Series often helps with energy patterns; we suggest a pacing conversation and small daytime experiments.',cta:'Ask about Alignment'},
+        curious:{title:'Exploratory consult',desc:'A Pulse Tune or a longer intake depending on depth. Good for mapping possible directions.',cta:'Request an Exploratory Tune'},
+        sick:{title:'Assess & coordinate care',desc:'We prioritize a clinical intake to ensure safety and coordinate any needed referrals.',cta:'Request a Clinical Intake'}
+      };
+
+      const moodSelect = document.getElementById('moodSelect');
+      const methodCard = document.getElementById('methodCard');
+      const programSelect = document.getElementById('program');
+      const submitBtn = document.getElementById('submitBtn');
+
+      function updateCtaText(){
+        const program = programSelect.value;
+        if(program==='tune') submitBtn.textContent = 'Request a Pulse Tune';
+        else if(program==='align') submitBtn.textContent = 'Request Alignment Series';
+        else submitBtn.textContent = 'Request Continuum Intensive';
+      }
+
+      programSelect.addEventListener('change',updateCtaText);
+      updateCtaText();
+
+      moodSelect.addEventListener('click',function(e){
+        const btn = e.target.closest('.mood'); if(!btn) return;
+        [...moodSelect.children].forEach(n=>n.classList.remove('active'));
+        btn.classList.add('active');
+        const key = btn.getAttribute('data-mood');
+        const info = moodMap[key];
+        methodCard.innerHTML = '<strong>'+info.title+'</strong><div style="margin-top:8px" class="muted">'+info.desc+'</div><div style="margin-top:10px"><em class="muted">Suggested CTA will update with your program selection.</em></div>';
+      });
+
+      // handle form submit locally
+      document.getElementById('booking').addEventListener('submit',function(e){
+        e.preventDefault();
+        const payload = {
+          name:document.getElementById('name').value,
+          email:document.getElementById('email').value,
+          phone:document.getElementById('phone').value,
+          program:programSelect.value,
+          mood:[...moodSelect.children].find(c=>c.classList.contains('active'))?.getAttribute('data-mood')||null,
+          notes:document.getElementById('notes').value
+        };
+        // fake submit
+        submitBtn.textContent = 'Sending...'; submitBtn.disabled = true;
+        setTimeout(function(){
+          submitBtn.textContent = 'Request sent';
+          methodCard.innerHTML = '<strong>Thanks — we received your request.</strong><div class="muted">We will follow up at the email provided to confirm a time and next steps.</div>';
+        },900);
+        console.log('booking payload',payload);
+      });
+
+      // prefill via query param
+      const params = new URLSearchParams(location.search);
+      const p = params.get('program'); if(p){programSelect.value = p; updateCtaText();}
+
+    })();
+  </script>
+</body>
+</html>

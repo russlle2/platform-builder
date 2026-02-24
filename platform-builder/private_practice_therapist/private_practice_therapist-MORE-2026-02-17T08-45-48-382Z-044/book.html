@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book & Tools — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f4f7fb;--card:#fff;--muted:#5b6b78;--accent:#1f6fb8;--radius:12px}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial;background:var(--bg);color:#072033}
+    header{padding:18px 20px;border-bottom:1px solid rgba(7,32,51,.06)}
+    .nav{max-width:980px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+    nav a{margin-left:16px;color:var(--accent);text-decoration:none}
+    main{max-width:980px;margin:22px auto;padding:0 20px}
+    h1{margin:0 0 8px;font-size:22px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:20px}
+    .card{background:var(--card);padding:18px;border-radius:var(--radius);box-shadow:0 8px 24px rgba(11,20,30,.04)}
+    label{display:block;font-weight:600;margin-top:12px}
+    input[type=text],select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(7,32,51,.06);margin-top:6px}
+    button{margin-top:12px;padding:10px 12px;background:var(--accent);border:none;color:white;border-radius:9px}
+    .secondary{background:#eef6ff;color:var(--accent);border:none}
+    .tool-section{margin-top:12px}
+    .output{white-space:pre-wrap;background:#f7fbff;border-radius:8px;padding:12px;margin-top:10px;border:1px dashed rgba(31,111,184,.12)}
+    .note{font-size:13px;color:var(--muted);margin-top:8px}
+    @media (max-width:980px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html">Welcome</a>
+        <a href="about.html">Practitioner</a>
+        <a href="specialties.html">Focus Areas</a>
+        <a href="approach.html">How I Work</a>
+        <a href="fees.html">Rates</a>
+        <a href="faq.html">FAQ</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <div style="margin-bottom:12px">
+      <h1>Book an appointment and prepare with built-in tools</h1>
+      <p class="note">Use the planner to create a simple session plan and the intake wizard to assemble helpful notes to bring to our first conversation. All tool data stays in your browser unless you choose to copy or download it.</p>
+    </div>
+
+    <div class="grid">
+      <section class="card">
+        <h2 style="margin-top:0">Session Planner</h2>
+        <p class="note">Build a short plan that frames your goals, preferred cadence, and what success looks like. Useful to bring to an initial visit or to share in a message.</p>
+        <div class="tool-section">
+          <label for="goal">Primary objective for sessions</label>
+          <input id="goal" type="text" placeholder="e.g., manage work-related stress, rebuild routine, prepare for transition">
+
+          <label for="frequency">Preferred frequency</label>
+          <select id="frequency"><option>Weekly</option><option>Every other week</option><option>Biweekly</option><option>Monthly</option></select>
+
+          <label for="length">Session length</label>
+          <select id="length"><option>50 minutes (standard)</option><option>75 minutes (extended)</option><option>30 minutes (brief check-in)</option></select>
+
+          <label for="measures">What would feel like meaningful progress in 3 months?</label>
+          <input id="measures" type="text" placeholder="Small, concrete signs you can track">
+
+          <label for="constraints">Practical constraints</label>
+          <input id="constraints" type="text" placeholder="Availability, budget, caregiving, time-zone">
+
+          <button id="buildPlan">Create plan</button>
+          <button id="copyPlan" class="secondary">Copy plan</button>
+
+          <div id="planOutput" class="output" aria-live="polite">Your plan will appear here.</div>
+          <div class="note">You can copy the plan to your clipboard or download it for your records. This text is not sent to the clinic unless you paste it into an email or form.</div>
+        </div>
+
+        <hr style="margin:18px 0;border:none;border-top:1px solid rgba(7,32,51,.06)">
+
+        <h2>Self-screening intake wizard</h2>
+        <p class="note">A short, non-diagnostic series of prompts that helps you clarify what to discuss in a consultation. The resulting summary includes suggested questions you may want to bring up.</p>
+
+        <div id="wizard" class="tool-section">
+          <div id="stepArea">
+            <div data-step="1">
+              <label>1) What brings you here now?</label>
+              <textarea id="w1" rows="3" placeholder="Describe the main concern in a few sentences"></textarea>
+            </div>
+            <div data-step="2" style="display:none">
+              <label>2) How long have you noticed this concern?</label>
+              <select id="w2"><option>Less than a month</option><option>1-3 months</option><option>3-12 months</option><option>Over a year</option></select>
+            </div>
+            <div data-step="3" style="display:none">
+              <label>3) What have you tried so far to address this?</label>
+              <textarea id="w3" rows="3" placeholder="Actions, coping strategies, therapy, medication (if any)"></textarea>
+            </div>
+            <div data-step="4" style="display:none">
+              <label>4) What would you most like help with right now?</label>
+              <input id="w4" type="text" placeholder="A practical hope or immediate goal">
+            </div>
+            <div data-step="5" style="display:none">
+              <label>5) Are there safety concerns we should know about (self-harm, harm to others)?</label>
+              <select id="w5"><option>No</option><option>Yes — I will discuss these directly in a session</option></select>
+            </div>
+          </div>
+
+          <div style="margin-top:12px">
+            <button id="prevStep" class="secondary" style="display:none">Back</button>
+            <button id="nextStep">Next</button>
+            <button id="generateSummary" style="display:none">Create summary</button>
+          </div>
+
+          <div id="wizardOutput" class="output" style="display:none;margin-top:12px"></div>
+          <div style="margin-top:8px">
+            <button id="copyWizard" class="secondary" style="display:none">Copy summary</button>
+            <button id="downloadWizard" class="secondary" style="display:none">Download summary</button>
+          </div>
+
+          <p class="note" style="margin-top:12px">If you answer yes to the safety question, please contact local emergency services or a crisis line immediately. This tool is not an emergency service and is intended to help you prepare for a conversation.</p>
+        </div>
+
+      </section>
+
+      <aside class="card">
+        <h3 style="margin-top:0">Schedule a time</h3>
+        <p class="note">To request an appointment, click the button below and include a few preferred times. If you already have a plan or a completed intake summary, paste it into your message.</p>
+        <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+
+        <div style="margin-top:14px">
+          <h4 style="margin:6px 0">Privacy & scope</h4>
+          <p class="note">Notes you create with the planner and wizard remain on your device unless you choose to copy or download them. Clinical boundaries and limits to confidentiality will be reviewed at intake.</p>
+        </div>
+
+        <div style="margin-top:12px;font-size:13px;color:var(--muted)">
+          <strong>Crisis:</strong> If you are in immediate danger, call local emergency services or your region's crisis number. If in the United States, you can dial or text 988.
+        </div>
+      </aside>
+    </div>
+  </main>
+  <footer style="max-width:980px;margin:28px auto;padding:0 20px;color:var(--muted);font-size:13px">
+    <div>Phone: {{PHONE}} • Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    <div style="margin-top:8px">Location: {{CITY}}, {{STATE}}</div>
+  </footer>
+
+  <script>
+    // Session Planner
+    function buildPlanText(){
+      const goal = document.getElementById('goal').value.trim();
+      const freq = document.getElementById('frequency').value;
+      const length = document.getElementById('length').value;
+      const measures = document.getElementById('measures').value.trim();
+      const constraints = document.getElementById('constraints').value.trim();
+      const lines = [];
+      lines.push('Session Planner — '+(new Date()).toLocaleDateString());
+      lines.push('Primary objective: '+(goal || '[not provided]'));
+      lines.push('Preferred frequency: '+freq);
+      lines.push('Session length: '+length);
+      lines.push('Three-month indicators of progress: '+(measures || '[not provided]'));
+      lines.push('Practical constraints: '+(constraints || '[not provided]'));
+      lines.push('\nNotes: This plan is a personal summary to bring to an initial conversation. It does not replace clinical assessment.');
+      return lines.join('\n');
+    }
+
+    document.getElementById('buildPlan').addEventListener('click',()=>{
+      const out = buildPlanText();
+      document.getElementById('planOutput').textContent = out;
+    });
+
+    document.getElementById('copyPlan').addEventListener('click',async()=>{
+      const out = buildPlanText();
+      try{await navigator.clipboard.writeText(out);alert('Plan copied to clipboard.');}catch(e){alert('Unable to copy automatically. You can select the text and copy manually.');}
+    });
+
+    // Intake Wizard
+    (function(){
+      const steps = Array.from(document.querySelectorAll('#stepArea [data-step]'));
+      let idx = 0;
+      const prevBtn = document.getElementById('prevStep');
+      const nextBtn = document.getElementById('nextStep');
+      const genBtn = document.getElementById('generateSummary');
+      const wizardOutput = document.getElementById('wizardOutput');
+      const copyWizard = document.getElementById('copyWizard');
+      const downloadWizard = document.getElementById('downloadWizard');
+
+      function showStep(i){
+        steps.forEach((s,si)=>s.style.display = si===i ? 'block' : 'none');
+        prevBtn.style.display = i>0 ? 'inline-block' : 'none';
+        nextBtn.style.display = i<steps.length-1 ? 'inline-block' : 'none';
+        genBtn.style.display = i===steps.length-1 ? 'inline-block' : 'none';
+      }
+
+      prevBtn.addEventListener('click',()=>{ if(idx>0){idx--;showStep(idx);} });
+      nextBtn.addEventListener('click',()=>{ if(idx<steps.length-1){idx++;showStep(idx);} });
+
+      genBtn.addEventListener('click',()=>{
+        const a = document.getElementById('w1').value.trim();
+        const b = document.getElementById('w2').value;
+        const c = document.getElementById('w3').value.trim();
+        const d = document.getElementById('w4').value.trim();
+        const e = document.getElementById('w5').value;
+        const summaryLines = [];
+        summaryLines.push('Intake Summary — '+(new Date()).toLocaleDateString());
+        summaryLines.push('Presenting concern: '+(a || '[not provided]'));
+        summaryLines.push('Duration: '+b);
+        summaryLines.push('What has been tried: '+(c || '[not provided]'));
+        summaryLines.push('Immediate aim for therapy: '+(d || '[not provided]'));
+        summaryLines.push('Safety flags: '+(e));
+
+        // Suggested questions
+        const qs = [];
+        qs.push('What might be the first priorities if we work together?');
+        qs.push('How might session frequency be arranged around my schedule?');
+        qs.push('What are reasonable short-term goals we can track?');
+        qs.push('Are there resources I can use between sessions to support progress?');
+        if(c.toLowerCase().includes('medic')||c.toLowerCase().includes('medicat')){
+          qs.push('What is the coordination plan with medication prescribers, if needed?');
+        }
+        if(e.toLowerCase().startsWith('yes')){
+          qs.push('I noted safety concerns — how will you coordinate care and safety planning?');
+        }
+
+        summaryLines.push('\nSuggested questions to bring to the consultation:\n- '+qs.join('\n- '));
+        summaryLines.push('\nNote: This intake summary is a short planning tool and not a clinical diagnosis. If you are in crisis, contact local emergency services.');
+
+        const out = summaryLines.join('\n');
+        wizardOutput.textContent = out;
+        wizardOutput.style.display = 'block';
+        copyWizard.style.display = 'inline-block';
+        downloadWizard.style.display = 'inline-block';
+      });
+
+      copyWizard.addEventListener('click',async()=>{
+        try{await navigator.clipboard.writeText(document.getElementById('wizardOutput').textContent);alert('Summary copied to clipboard.');}catch(e){alert('Unable to copy automatically. Select the text and copy manually.');}
+      });
+
+      downloadWizard.addEventListener('click',()=>{
+        const text = document.getElementById('wizardOutput').textContent;
+        const blob = new Blob([text],{type:'text/plain;charset=utf-8'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'intake-summary.txt'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+      });
+
+      showStep(0);
+    })();
+  </script>
+</body>
+</html>

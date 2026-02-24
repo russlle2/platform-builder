@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Journeys — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Structured programs that focus on habits, weekly practices, and measurable outcomes over set periods.">
+  <style>
+    :root{--bg:#fbf7f2;--accent:#5b3e2f;--muted:#92766a;--card:#fffaf6;--ink:#2b1f1a}
+    body{margin:0;font-family:Georgia,serif;background:var(--bg);color:var(--ink)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    main{max-width:980px;margin:18px auto;padding:18px}
+
+    .hero{padding:20px;border-radius:12px;background:linear-gradient(180deg,rgba(91,62,47,0.03),transparent);display:flex;justify-content:space-between;align-items:center}
+    .hero h1{margin:0;color:var(--accent);font-family:Georgia,serif}
+
+    .programs{display:flex;flex-direction:column;gap:12px;margin-top:18px}
+    .prog{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;background:var(--card);border:1px solid rgba(80,50,30,0.04)}
+    .prog-info{max-width:70%}
+    .prog h4{margin:0;color:var(--accent)}
+    .muted{color:var(--muted)}
+
+    /* Compact challenge widget (another habit builder) */
+    .challenge{margin-top:18px;padding:14px;background:#fff;border-radius:12px;border:1px solid rgba(0,0,0,0.03)}
+    label{display:block;margin-bottom:6px;font-size:13px}
+    input,select{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:transparent}
+    .btn{background:var(--accent);color:#fff;padding:9px 12px;border-radius:10px;border:0;cursor:pointer}
+
+    footer{margin-top:24px;color:var(--muted);font-size:13px}
+
+    @media(max-width:800px){.prog-info{max-width:60%}header{padding:12px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Approach</a>
+      <a href="services.html">Offerings</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h1>Journeys</h1>
+        <p class="muted" style="margin-top:8px">Programs with clear windows: choose a rhythm, practice for the set period, and carry forward what works. Outcomes focus on stable habits and clearer daily structure.</p>
+      </div>
+      <div>
+        <a href="book.html"><button class="btn">Begin a Journey</button></a>
+      </div>
+    </section>
+
+    <section class="programs">
+      <div class="prog">
+        <div class="prog-info">
+          <h4>Seed Week — a light starter</h4>
+          <p class="muted">One week of guided micro-practices, a short session, and practical notes to keep the work moving.</p>
+        </div>
+        <div style="text-align:right">
+          <div style="font-weight:700;color:var(--accent)">$95</div>
+          <div class="muted">1 week</div>
+        </div>
+      </div>
+
+      <div class="prog">
+        <div class="prog-info">
+          <h4>Rhythm Sprint — embed a habit</h4>
+          <p class="muted">Four weekly sessions with progressive practice and a maintenance plan. Best for forming a clear daily movement or attention habit.</p>
+        </div>
+        <div style="text-align:right">
+          <div style="font-weight:700;color:var(--accent)">$420</div>
+          <div class="muted">4 weeks</div>
+        </div>
+      </div>
+
+      <div class="prog">
+        <div class="prog-info">
+          <h4>Quarter Steward — sustained support</h4>
+          <p class="muted">Three months of steady guidance: weekly check-ins, two session deep-dive, and a structured review at month end.</p>
+        </div>
+        <div style="text-align:right">
+          <div style="font-weight:700;color:var(--accent)">$1,650</div>
+          <div class="muted">3 months</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="challenge" aria-labelledby="challenge-title">
+      <h3 id="challenge-title">7-Day Challenge Generator</h3>
+      <p class="muted">A compact version of the habit builder focused on integrating one tiny practice into each day. Generate the checklist and print or copy the plan.</p>
+
+      <div style="display:grid;gap:8px">
+        <div>
+          <label for="c-focus">Challenge focus</label>
+          <input id="c-focus" type="text" placeholder="Morning clarity" value="Morning clarity" />
+        </div>
+        <div style="display:flex;gap:8px">
+          <div style="flex:1">
+            <label for="c-time">Minutes per day</label>
+            <input id="c-time" type="text" value="5" />
+          </div>
+          <div style="width:160px">
+            <label for="c-start">Start date</label>
+            <input id="c-start" type="date" />
+          </div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button id="gen-challenge" class="btn">Create challenge</button>
+          <button id="print-challenge" class="btn" style="background:#fff;color:var(--accent);border:1px solid rgba(80,50,30,0.06)">Print</button>
+        </div>
+      </div>
+
+      <div id="challenge-output" style="margin-top:12px;padding:12px;border-radius:8px;background:#fff;border:1px dashed rgba(80,50,30,0.06)">No challenge yet.</div>
+    </section>
+
+    <section style="margin-top:18px;display:flex;gap:12px;align-items:center">
+      <div style="flex:1">
+        <h4>Begin with a short conversation</h4>
+        <p class="muted">A single session helps tailor which Journey fits your days and what small practices will likely stick.</p>
+      </div>
+      <div><a href="book.html"><button class="btn">{{PRIMARY_CTA_LABEL}}</button></a></div>
+    </section>
+
+    <footer>
+      <div class="muted">Serving {{CITY}}, {{STATE}} — contact <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call {{PHONE}}</div>
+    </footer>
+  </main>
+
+<script>
+(function(){
+  // Compact 7-day challenge generator
+  const gen = document.getElementById('gen-challenge');
+  const out = document.getElementById('challenge-output');
+  const printBtn = document.getElementById('print-challenge');
+
+  gen.addEventListener('click',function(){
+    const focus = document.getElementById('c-focus').value.trim() || 'Short practice';
+    const minutes = document.getElementById('c-time').value.trim() || '5';
+    const startVal = document.getElementById('c-start').value;
+    const start = startVal ? new Date(startVal) : new Date();
+
+    const days = [];
+    for(let i=0;i<7;i++){
+      const d = new Date(start); d.setDate(d.getDate()+i);
+      days.push({label: d.toDateString(), task: focus + ' — '+minutes+' min'});
+    }
+
+    let html = '<div><strong>'+escapeHtml(focus)+'</strong> <span class="muted">('+escapeHtml(minutes)+' min/day)</span></div>';
+    html += '<ol style="margin-top:8px">';
+    days.forEach(d=>{ html += '<li style="margin-bottom:6px">'+escapeHtml(d.label)+': '+escapeHtml(d.task)+'</li>'; });
+    html += '</ol>';
+    out.innerHTML = html;
+  });
+
+  printBtn.addEventListener('click',function(){
+    const w = window.open('','_blank');
+    w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>7-Day Challenge</title></head><body style="font-family:system-ui;padding:18px">');
+    w.document.write('<h3>7-Day Challenge</h3>');
+    w.document.write(document.getElementById('challenge-output').innerHTML);
+    w.document.write('<script>window.onload=function(){window.print();};<\/script>');
+    w.document.write('</body></html>');
+    w.document.close();
+  });
+
+  function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+})();
+</script>
+</body>
+</html>

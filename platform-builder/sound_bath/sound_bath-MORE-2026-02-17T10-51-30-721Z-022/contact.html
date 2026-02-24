@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reach — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Contact and book space for attentive sound gatherings. Gentle to intense offerings, private sessions, and events in {{CITY}}, {{STATE}}.">
+  <style>
+    :root{
+      --bg:#0f1113;--card:#0f1720;--muted:#9aa4ad;--accent:#c9ffe3;--accent-2:#7bd3ff;--glass:rgba(255,255,255,0.03);
+      --radius:14px; --mono:ui-monospace, SFMono-Regular, Menlo, monospace; --ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%;margin:0;font-family:var(--ui);background-color:var(--bg);color:#e6eef3;line-height:1.35}
+    /* organic, poetic hero */
+    .wrap{max-width:980px;margin:40px auto;padding:28px}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .brand .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:#072127;font-weight:700;box-shadow:0 6px 24px rgba(0,0,0,0.5)}
+    nav{display:flex;gap:12px}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:10px}
+    nav a:hover{color:var(--accent);background:rgba(255,255,255,0.02)}
+
+    .hero{background:linear-gradient(180deg,rgba(12,17,20,0.6),rgba(8,11,13,0.6));padding:22px;border-radius:var(--radius);display:flex;gap:18px;align-items:center;position:relative}
+    .hero .copy{flex:1}
+    .hero h1{margin:0;font-size:28px;letter-spacing:0.2px}
+    .hero p{color:var(--muted);margin-top:8px}
+    .cta{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#032227;font-weight:600;text-decoration:none}
+
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:16px;border-radius:12px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.02);}
+
+    /* mixer */
+    .mixer-row{display:flex;gap:12px;align-items:center}
+    .slider{display:flex;gap:8px;align-items:center}
+    .levels button{padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--muted);cursor:pointer}
+    .levels button.active{background:var(--accent);color:#022;box-shadow:0 6px 18px rgba(123,211,255,0.08)}
+
+    .recommend{margin-top:12px;color:var(--accent);font-weight:600}
+    .prog-list{margin-top:10px;color:var(--muted)}
+    .prog-item{background:var(--glass);padding:8px;border-radius:10px;margin-bottom:8px}
+
+    /* proof gallery */
+    #proof{margin-top:26px}
+    .proof-wrap{display:flex;gap:14px;align-items:start}
+    .testimony{flex:1;padding:16px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent)}
+    .quote{font-style:italic;color:#dff7ee}
+    .who{margin-top:10px;color:var(--muted);font-size:13px}
+    .badges{width:160px;padding:12px;border-radius:12px;background:rgba(255,255,255,0.02);display:flex;flex-direction:column;gap:8px;align-items:center}
+    .badge{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#111827,#063c3f);display:flex;align-items:center;justify-content:center;color:var(--accent);position:relative;cursor:default}
+    .badge + .badge{margin-top:8px}
+    .tooltip{position:absolute;left:60px;top:50%;transform:translateY(-50%);padding:8px 10px;border-radius:8px;background:#02171a;color:var(--accent);font-size:12px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .16s}
+    .badge:hover .tooltip,.badge:focus .tooltip{opacity:1}
+
+    /* small UI */
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input,textarea,select{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+    textarea{min-height:110px}
+    .send{margin-top:10px;padding:10px 12px;background:var(--accent);color:#032227;border-radius:10px;border:none;cursor:pointer}
+
+    .disclaimer{margin-top:18px;color:#a0b1b8;font-size:13px;background:rgba(255,255,255,0.01);padding:12px;border-radius:10px}
+
+    footer{margin-top:28px;color:var(--muted);font-size:13px;display:flex;justify-content:space-between}
+
+    /* data-image pattern (inline svg) */
+    body::before{content:"";position:fixed;inset:0;opacity:0.09;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="%23c9ffe3" stop-opacity="0.08"/><stop offset="1" stop-color="%237bd3ff" stop-opacity="0.05"/></linearGradient></defs><rect width="100%" height="100%" fill="%230b0f12"/><g stroke="%2317a" stroke-opacity="0.06"><path d="M0 30 C80 10,160 50,240 30" fill="none"/><path d="M100 90 C180 70,260 110,340 90" fill="none"/></g></svg>');background-repeat:repeat;mix-blend-mode:screen;pointer-events:none}
+
+    @media (max-width:880px){.grid{grid-template-columns:1fr}.badges{order:2;width:100%;flex-direction:row;justify-content:space-around}.wrap{margin:18px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">SB</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="/index.html">Gatherings</a>
+        <a href="/events.html">Events</a>
+        <a href="/private-sessions.html">Private</a>
+        <a href="/pricing.html">Rates</a>
+        <a href="/about.html">Our Thread</a>
+        <a href="/faq.html">Q&amp;A</a>
+        <a href="/book.html">Book</a>
+        <a href="/contact.html" style="color:var(--accent)">Reach</a>
+      </nav>
+    </header>
+
+    <section class="hero card">
+      <div class="copy">
+        <h1>Reach the field where sound meets care</h1>
+        <p>Arrive with what you have. We offer a gentle, medium, or intense palette of sound practices tailored to practical rest and steady attention.</p>
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+      <div style="width:220px;text-align:center;color:var(--muted)">
+        <div style="font-size:12px">Quick line</div>
+        <div style="font-weight:700;margin-top:8px">{{PHONE}}</div>
+        <div style="margin-top:6px;font-size:13px">or</div>
+        <div style="margin-top:8px;color:var(--accent);font-weight:600">{{EMAIL}}</div>
+      </div>
+    </section>
+
+    <div class="grid">
+      <div>
+        <div class="card">
+          <form id="contactForm" autocomplete="on">
+            <label for="name">Your name</label>
+            <input id="name" name="name" placeholder="First &amp; last">
+
+            <label for="email">Email</label>
+            <input id="email" name="email" placeholder="you@domain">
+
+            <label for="phone">Phone (optional)</label>
+            <input id="phone" name="phone" placeholder="{{PHONE}}">
+
+            <label for="city">City</label>
+            <input id="city" name="city" placeholder="{{CITY}}">
+
+            <div style="display:flex;gap:12px;margin-top:10px;align-items:flex-end">
+              <div style="flex:1">
+                <label>Sound preference</label>
+                <div class="mixer-row">
+                  <div class="levels" role="tablist" aria-label="Sound intensity choices">
+                    <button type="button" data-level="gentle" class="active">Gentle</button>
+                    <button type="button" data-level="medium">Medium</button>
+                    <button type="button" data-level="intense">Intense</button>
+                  </div>
+                </div>
+                <div class="recommend" id="recLabel">Recommended: Calming Flow</div>
+                <div class="prog-list" id="progList">
+                  <div class="prog-item" data-prog="gentle">Dawn Ripple — 45 min group practice • soft bowls &amp; breath cues</div>
+                </div>
+              </div>
+
+              <div style="width:180px">
+                <label>Session type</label>
+                <select id="stype">
+                  <option value="dropin">Open Gathering</option>
+                  <option value="private">Private Session</option>
+                  <option value="corporate">Tailored Group</option>
+                </select>
+                <button class="send" style="width:100%" type="button" id="quickBook">Request a time</button>
+              </div>
+            </div>
+
+            <label for="message" style="margin-top:12px">Notes (health, accessibility, or questions)</label>
+            <textarea id="message" name="message" placeholder="Please mention any health considerations — e.g., epilepsy, pregnancy, pacemaker presence, or severe sound sensitivity."></textarea>
+
+            <div style="display:flex;gap:8px;align-items:center;margin-top:10px">
+              <button class="send" type="submit">Send request</button>
+              <a href="/book.html" style="color:var(--muted);text-decoration:none">Or choose a slot</a>
+            </div>
+          </form>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0 0 8px 0">Scheduling note</h4>
+          <p style="margin:0;color:var(--muted)">We confirm times by email; private sessions are available evenings and weekends. For events and the public calendar, see <a href="/events.html">Events</a>.</p>
+        </div>
+
+        <div class="disclaimer">
+          <strong>Contraindications:</strong> If you have epilepsy, recent head trauma, an implanted medical device (pacemaker), are pregnant, have unmanaged psychiatric conditions, or have severe sound sensitivity, please consult a physician before attending. Inform us in the notes and choose private options if needed.
+        </div>
+      </div>
+
+      <aside>
+        <div id="proof" class="card">
+          <div class="proof-wrap">
+            <div class="testimony" aria-live="polite">
+              <div class="quote" id="quoteText">“A careful hour — I left with steadier breath and a softer edge.”</div>
+              <div class="who" id="quoteWho">— A local participant, creative director</div>
+              <div style="margin-top:12px;font-size:13px;color:var(--muted)">Rotating notes from recent gatherings</div>
+              <div style="display:flex;gap:8px;margin-top:12px">
+                <button id="prev" aria-label="Previous testimonial">◀</button>
+                <button id="pause" aria-label="Pause rotation">▮▮</button>
+                <button id="next" aria-label="Next testimonial">▶</button>
+              </div>
+            </div>
+
+            <div class="badges" aria-hidden="false">
+              <div class="badge" tabindex="0">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l2.7 5.5L20 9l-4 3.8L17 20l-5-2.6L7 20l1-7.2L4 9l5.3-1.5L12 2z" fill="#bff7e6"/></svg>
+                <div class="tooltip">Verified facilitator training</div>
+              </div>
+              <div class="badge" tabindex="0">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="#7bd3ff"/></svg>
+                <div class="tooltip">Community partnerships</div>
+              </div>
+              <div class="badge" tabindex="0">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3" fill="#c9ffe3"></rect></svg>
+                <div class="tooltip">Accessible options available</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0 0 8px 0">Quick facts</h4>
+          <p style="margin:0;color:var(--muted)">Sessions run 45–75 minutes. Arrive 10 minutes early to settle. Mats and blankets available; bring earplugs if you prefer less intensity.</p>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      <div>Contact: <a href="mailto:{{EMAIL}}" style="color:var(--accent)">{{EMAIL}}</a> · {{PHONE}}</div>
+      <div style="color:var(--muted)">Serving {{CITY}}, {{STATE}} · <a href="/privacy.html" style="color:var(--muted)">Privacy</a></div>
+    </footer>
+  </div>
+
+  <script>
+    (function(){
+      // Mixer: gentle / medium / intense
+      var levels = document.querySelectorAll('.levels button');
+      var recLabel = document.getElementById('recLabel');
+      var progList = document.getElementById('progList');
+
+      var programs = {
+        gentle: [{title:'Dawn Ripple — 45 min group practice • soft bowls & breath cues', note:'soothing harmonics, minimal resonance'},{title:'Evening Ease — 30 min short reset', note:'slow bowls, guided breathing'}],
+        medium: [{title:'Steady Drift — 60 min • bowls & chimes', note:'long sustains, gentle overtones'},{title:'Focus Layer — 50 min • mixed tones', note:'interval work for attention'}],
+        intense: [{title:'Deep Resonance — 75 min • layered gongs', note:'long-form immersion, higher amplitude'},{title:'Renew Intensive — 90 min • gong-led', note:'structured transitions & integration'}]
+      };
+
+      function setLevel(level){
+        levels.forEach(function(b){b.classList.toggle('active', b.getAttribute('data-level')===level)});
+        recLabel.textContent = 'Recommended: ' + (levels[0].getAttribute('data-level')===level ? 'Calming Flow' : (level==='medium'?'Steady Flow':'Deep Resonance'));
+        // populate list
+        progList.innerHTML = '';
+        programs[level].forEach(function(p){
+          var d = document.createElement('div'); d.className='prog-item'; d.textContent = p.title; progList.appendChild(d);
+        });
+        // store an analytics hint (no network calls)
+        console.log('preference:', level);
+      }
+
+      levels.forEach(function(b){b.addEventListener('click', function(){setLevel(b.getAttribute('data-level'))})});
+      setLevel('gentle');
+
+      // QuickBook button fills form and selects preference
+      document.getElementById('quickBook').addEventListener('click', function(){
+        var selected = document.querySelector('.levels button.active').getAttribute('data-level');
+        alert('Requesting a ' + selected + ' session. We will follow up at ' + (document.getElementById('email').value || '{{EMAIL}}'));
+      });
+
+      // Proof gallery rotation
+      var testimonials = [
+        {text:'This was a rare, clear pause. I could feel my shoulders let go.', who:'— M., teacher'},
+        {text:'The balance between quiet and sound was exactly what I needed after a week of noise.', who:'— L., nurse'},
+        {text:'Focused, generous facilitation. I slept better for days.', who:'— R., engineer'}
+      ];
+      var idx=0; var paused=false; var quoteText=document.getElementById('quoteText'); var quoteWho=document.getElementById('quoteWho');
+      function show(i){ idx=(i+testimonials.length)%testimonials.length; quoteText.textContent='"'+testimonials[idx].text+'"'; quoteWho.textContent=testimonials[idx].who }
+      show(0);
+      var rot = setInterval(function(){ if(!paused) show(idx+1); }, 4200);
+      document.getElementById('next').addEventListener('click',function(){ show(idx+1) });
+      document.getElementById('prev').addEventListener('click',function(){ show(idx-1) });
+      var pauseBtn = document.getElementById('pause');
+      pauseBtn.addEventListener('click', function(){ paused = !paused; pauseBtn.textContent = paused ? '▶' : '▮▮' });
+
+      // Accessibility: allow keyboard on badges to reveal tooltips
+      var badges = document.querySelectorAll('.badge');
+      badges.forEach(function(b){ b.addEventListener('focus', function(){ b.classList.add('focus') }); b.addEventListener('blur', function(){ b.classList.remove('focus') }); });
+
+      // Form submit handler (local only)
+      document.getElementById('contactForm').addEventListener('submit', function(e){
+        e.preventDefault();
+        var payload = {
+          name:document.getElementById('name').value,
+          email:document.getElementById('email').value || '{{EMAIL}}',
+          phone:document.getElementById('phone').value || '{{PHONE}}',
+          city:document.getElementById('city').value || '{{CITY}}',
+          preference: document.querySelector('.levels button.active').getAttribute('data-level'),
+          type:document.getElementById('stype').value,
+          message:document.getElementById('message').value
+        };
+        console.log('contact.submit', payload);
+        alert('Thanks — your request is noted. We will reply to ' + payload.email);
+        this.reset(); setLevel('gentle');
+      });
+    })();
+  </script>
+</body>
+</html>

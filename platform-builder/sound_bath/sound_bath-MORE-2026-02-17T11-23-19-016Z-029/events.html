@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gatherings — Sound Bath Events</title>
+  <style>
+    :root{--bg:#0f1221;--card:#11131b;--accent:#8bd3c7;--muted:#98a0b3;--glass:rgba(255,255,255,0.04);--gold:#e0c47a}
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#eef2f7;background:linear-gradient(180deg,var(--bg),#07101a 60%);}    
+    header{display:flex;align-items:center;justify-content:space-between;padding:28px 32px}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:62px;height:62px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),#3fb0c6);box-shadow:0 6px 18px rgba(0,0,0,0.6)}
+    .logo svg{width:40px;height:40px;filter:drop-shadow(0 6px 14px rgba(0,0,0,0.4))}
+    nav a{color:#d9e7e3;text-decoration:none;margin-left:18px;font-weight:600}
+    .hero{padding:36px 32px;display:grid;grid-template-columns:1fr 420px;gap:28px}
+    .hero-card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:28px;border-radius:14px;box-shadow:0 8px 30px rgba(3,6,14,0.6)}
+    h1{margin:0 0 8px;font-size:28px;color:#f3fbfa}
+    p.lead{margin:0;color:var(--muted);line-height:1.5}
+    /* pattern band */
+    .pattern-band{height:92px;border-radius:12px;margin-top:18px;overflow:hidden}
+    .next-event{background:linear-gradient(90deg,rgba(139,211,199,0.06),rgba(224,196,122,0.02));border:1px solid rgba(255,255,255,0.03);padding:18px;border-radius:12px}
+    .when{font-weight:700;color:#fff}
+    .where{color:var(--muted);font-size:13px}
+    .calendar{margin-top:18px;display:flex;flex-direction:column;gap:12px}
+    .cal-item{display:flex;justify-content:space-between;padding:12px;border-radius:10px;background:var(--glass);border:1px solid rgba(255,255,255,0.02)}
+    .cal-date{font-weight:700;color:var(--accent);min-width:110px}
+    .cal-meta{color:var(--muted)}
+    .cta{display:inline-block;margin-top:14px;padding:10px 14px;border-radius:10px;background:var(--accent);color:#042026;font-weight:700;text-decoration:none}
+    /* proof gallery */
+    .proof{margin-top:22px;padding:16px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent)}
+    .testi{min-height:86px;display:flex;flex-direction:column;gap:8px}
+    .quote{font-style:italic;color:#e9fbf8}
+    .by{color:var(--muted);font-size:13px}
+    .badges{margin-top:12px;display:flex;gap:10px;align-items:center}
+    .badge{display:inline-flex;gap:8px;align-items:center;padding:8px 10px;border-radius:999px;background:rgba(255,255,255,0.03);cursor:default}
+    .badge svg{width:18px;height:18px}
+    .tooltip{position:relative}
+    .tooltip:hover::after{content:attr(data-tip);position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 10px);background:#041018;color:#e6f8f5;padding:8px 10px;border-radius:8px;white-space:nowrap;font-size:13px;box-shadow:0 6px 18px rgba(0,0,0,0.6)}
+    /* calendar list style */
+    .calendar-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:16px}
+    .grid-card{padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);border:1px solid rgba(255,255,255,0.02)}
+    .disclaimer{margin-top:12px;color:#f3d6b3;background:rgba(224,196,122,0.06);padding:10px;border-radius:8px;font-size:13px}
+    footer{padding:28px 32px;color:var(--muted);font-size:13px}
+    /* inline SVG background pattern */
+    .pattern{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='120' viewBox='0 0 320 120'><defs><linearGradient id='g' x1='0' x2='1'><stop offset='0' stop-color='%238bd3c7' stop-opacity='0.12'/><stop offset='1' stop-color='%23e0c47a' stop-opacity='0.06'/></linearGradient></defs><rect width='320' height='120' fill='none'/><g stroke='rgba(255,255,255,0.04)' stroke-width='1' fill='none'><path d='M0 20 Q40 10 80 20 T160 20 T240 20 T320 20' stroke='url(%23g)'/></g></svg>");background-repeat:repeat-x;background-size:480px 92px}
+    @media (max-width:880px){.hero{grid-template-columns:1fr;padding:20px}.logo{width:54px;height:54px}.brand h2{font-size:16px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo" aria-hidden>
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" fill="#022428"/><path d="M6 12c2-3 6-4 9-2" stroke="#b9f0e8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div>
+        <div style="color:#cfeee9;font-weight:700">Sound Gatherings</div>
+        <div style="color:var(--muted);font-size:13px">Intent-led sound events in {{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="events.html">Gatherings</a>
+      <a href="private-sessions.html">Private Sessions</a>
+      <a href="pricing.html">Rates</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-card">
+        <h1>Upcoming gatherings near {{CITY}}</h1>
+        <p class="lead">Small-group resonant sessions offered as concentrated refreshers — temporary fields to rest, reflect, and recalibrate. Timed gatherings with focused intention and space to land.</p>
+        <div class="pattern-band pattern" aria-hidden></div>
+
+        <div class="next-event" id="nextEvent">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div class="when" id="nextWhen">Sat • Feb 28 • 6:30pm</div>
+              <div class="where">Studio — {{CITY}}, {{STATE}} • Limited seating</div>
+            </div>
+            <div>
+              <a class="cta" href="book.html">Reserve a Spot</a>
+            </div>
+          </div>
+          <div style="margin-top:8px;color:var(--muted);font-size:13px">Facilitated by an experienced guide using crystal bowls, gongs, and tuned voice.</div>
+        </div>
+
+        <div class="calendar">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <strong style="color:#eafbf9">Full schedule</strong>
+            <a href="events.html#calendar" style="color:var(--muted);text-decoration:none;font-size:13px">View calendar</a>
+          </div>
+
+          <div class="cal-item">
+            <div>
+              <div class="cal-date">Sun, Mar 7</div>
+              <div class="cal-meta">Morning Reset • 10:00 — 11:00am</div>
+            </div>
+            <div class="cal-side" style="text-align:right">
+              <div style="color:var(--muted);font-size:13px">Spots left: 6</div>
+              <a href="book.html" style="margin-top:6px;display:inline-block;color:var(--accent);font-weight:700;text-decoration:none">Book</a>
+            </div>
+          </div>
+
+          <div class="cal-item">
+            <div>
+              <div class="cal-date">Fri, Mar 12</div>
+              <div class="cal-meta">Evening Immersion • 7:00 — 8:30pm</div>
+            </div>
+            <div style="text-align:right">
+              <div style="color:var(--muted);font-size:13px">Spots left: 2</div>
+              <a href="book.html" style="margin-top:6px;display:inline-block;color:var(--accent);font-weight:700;text-decoration:none">Book</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="disclaimer">Contraindications: These events use sustained sound and vibrations. If you have epilepsy, recent ear surgery, are pregnant, have implanted medical devices, or any condition made worse by loud sound or vibration, please consult a physician before attending. If unsure, contact us at {{EMAIL}} for guidance.</div>
+
+      </div>
+
+      <aside style="align-self:start">
+        <div class="hero-card">
+          <strong style="color:#eafbf9">Next session</strong>
+          <div style="margin-top:10px" id="countdown">Starts in — calculating…</div>
+          <div style="margin-top:14px;color:var(--muted);font-size:13px">Doors open 20 minutes before. Please arrive gently.</div>
+          <a class="cta" href="book.html" style="display:block;text-align:center;margin-top:14px">Hold my seat</a>
+
+          <div class="proof" style="margin-top:18px">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <strong style="color:#eafbf9">From past guests</strong>
+              <small style="color:var(--muted);font-size:12px" id="proofIndex">1 / 3</small>
+            </div>
+            <div class="testi" id="testimonial">
+              <div class="quote">“A rare night that felt like a full reset — I left quieter and more present.”</div>
+              <div class="by">— A. (visiting)</div>
+            </div>
+
+            <div class="badges" aria-hidden>
+              <div class="badge tooltip" data-tip="Community-reviewed facilitator network">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l2.4 4.9L20 8.6l-4 3.9L17.1 20 12 16.9 6.9 20 8 12.5 4 8.6l5.6-1.7L12 2z" fill="white" opacity="0.9"/></svg>
+                <div style="font-size:13px;color:#e8fbf7">Studio Verified</div>
+              </div>
+              <div class="badge tooltip" data-tip="Featured in local lifestyle coverage">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="8" fill="white" opacity="0.12"/><path d="M8 12h8" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg>
+                <div style="font-size:13px;color:#e8fbf7">Local Press</div>
+              </div>
+              <div class="badge tooltip" data-tip="Practitioner referrals from city practitioners">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="4" width="18" height="14" rx="2" fill="white" opacity="0.08"/><path d="M7 8h10v6H7z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <div style="font-size:13px;color:#e8fbf7">Practitioner Network</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;color:var(--muted);font-size:13px">Questions? Call <a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a></div>
+        </div>
+
+        <div style="margin-top:12px;padding:12px;border-radius:12px;background:rgba(255,255,255,0.02)">
+          <strong style="color:#eafbf9">Calendar</strong>
+          <div id="calendarList" class="calendar-grid" style="margin-top:10px">
+            <div class="grid-card"><div style="font-weight:700">Mar 7</div><div style="color:var(--muted);font-size:13px;margin-top:6px">10:00 — Morning Reset</div></div>
+            <div class="grid-card"><div style="font-weight:700">Mar 12</div><div style="color:var(--muted);font-size:13px;margin-top:6px">19:00 — Evening Immersion</div></div>
+            <div class="grid-card"><div style="font-weight:700">Mar 21</div><div style="color:var(--muted);font-size:13px;margin-top:6px">07:30 — Gentle Dawn</div></div>
+            <div class="grid-card"><div style="font-weight:700">Apr 2</div><div style="color:var(--muted);font-size:13px;margin-top:6px">18:30 — Deep Release</div></div>
+          </div>
+        </div>
+
+      </aside>
+    </section>
+  </main>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
+      <div>© 2026 • Intent-led gatherings in {{CITY}}, {{STATE}}</div>
+      <div style="color:var(--muted)">Need help? <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a> • <a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none">{{PHONE}}</a></div>
+    </div>
+  </footer>
+
+  <script>
+    // Simple rotating testimonial proof gallery
+    (function(){
+      const items = [
+        {quote:'A room that made it easy to set down hurry and tune inward.', by:'— R.'},
+        {quote:'I slept deeper the night of the session and felt steadier all week.', by:'— M.'},
+        {quote:'Soothing and precise — guided with clarity. A grounding experience.', by:'— S.'}
+      ];
+      let idx=0;
+      const elQuote = document.querySelector('#testimonial .quote');
+      const elBy = document.querySelector('#testimonial .by');
+      const elIndex = document.getElementById('proofIndex');
+      function show(i){
+        elQuote.textContent = items[i].quote;
+        elBy.textContent = items[i].by;
+        elIndex.textContent = (i+1)+ ' / ' + items.length;
+      }
+      show(0);
+      setInterval(()=>{ idx=(idx+1)%items.length; show(idx); },4000);
+    })();
+
+    // Countdown to next event (sample date, replace server-side if needed)
+    (function(){
+      const when = new Date(); when.setDate(when.getDate()+6); when.setHours(18,30,0,0);
+      const el = document.getElementById('countdown');
+      function tick(){
+        const diff = when - new Date();
+        if(diff<=0){ el.textContent = 'Starting soon — check in at the door.'; return; }
+        const h = Math.floor(diff/36e5);
+        const m = Math.floor((diff%36e5)/6e4);
+        const s = Math.floor((diff%6e4)/1000);
+        el.textContent = 'Starts in ' + h + 'h ' + m + 'm ' + s + 's';
+      }
+      tick(); setInterval(tick,1000);
+    })();
+  </script>
+</body>
+</html>

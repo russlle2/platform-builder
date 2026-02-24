@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Our Approach — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="How intake, planning, and follow-up come together in a whole-person, educational approach.">
+  <style>
+    :root{--bg:#FCFEFF;--ink:#07323E;--muted:#62767A;--accent:#2DAF9B}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;background:linear-gradient(120deg,#FCFEFF,#F7FBFF);color:var(--ink)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:20px 26px}
+    .logo{font-weight:800}
+    nav{display:flex;gap:14px}
+    nav a{color:var(--muted);font-size:13px}
+    nav a[aria-current="page"]{color:var(--ink);font-weight:600}
+    .wrap{max-width:980px;margin:20px auto;padding:18px}
+
+    .hero{display:grid;grid-template-columns:1fr 220px;gap:20px;align-items:center}
+    .card{background:white;border-radius:12px;padding:18px;box-shadow:0 6px 24px rgba(12,20,24,0.04)}
+    h1{margin:0 0 8px}
+    p.lead{color:var(--muted);margin:0}
+
+    .stages{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}
+    .stage{padding:14px;border-radius:12px;background:linear-gradient(180deg,#fff,#F6FFFD)}
+    .stage h3{margin:0 0 8px}
+    .stage p{margin:0;color:var(--muted)}
+
+    .labs{margin-top:16px;padding:14px;border-radius:12px;background:#fff}
+    .micro{margin-top:14px;display:flex;flex-wrap:wrap;gap:10px}
+    .chip{background:#EFFFFB;padding:8px 10px;border-radius:999px;color:#07524B;font-size:13px}
+
+    .note{margin-top:14px;color:var(--muted);font-size:13px}
+    .book{margin-top:18px}
+    .btn{background:var(--accent);color:white;padding:10px 14px;border-radius:10px;text-decoration:none}
+
+    @media (max-width:900px){.hero{grid-template-columns:1fr}}
+    @media (max-width:700px){.stages{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Begin</a>
+      <a href="services.html">Services</a>
+      <a href="approach.html" aria-current="page">Method</a>
+      <a href="contact.html">Reach</a>
+      <a href="book.html">Book</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="card">
+        <h1>How we work — a patient learning arc</h1>
+        <p class="lead">Our approach marries careful listening with teachable interventions. We design plans you can practice, measure, and refine.</p>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;justify-content:center;align-items:center">
+        <!-- diagonal motif as svg -->
+        <svg width="160" height="160" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="ag" x1="0" x2="1">
+              <stop offset="0" stop-color="#2DAF9B" stop-opacity="0.9"/>
+              <stop offset="1" stop-color="#6AC8C6" stop-opacity="0.6"/>
+            </linearGradient>
+          </defs>
+          <rect width="160" height="160" rx="14" fill="url(#ag)"/>
+          <path d="M0 120 L160 20 L160 160 L0 160 Z" fill="#FFFFFF" opacity="0.08"/>
+          <text x="14" y="86" font-size="20" fill="#03353A" opacity="0.12">Listen → Plan</text>
+        </svg>
+        <div style="font-size:13px;color:var(--muted);margin-top:10px">Intake, clarity, ongoing care</div>
+      </div>
+    </section>
+
+    <section class="stages">
+      <div class="stage">
+        <h3>1. Intake (Listen)</h3>
+        <p>We begin with a focused conversation: story, priorities, and a guided review of patterns. This is where symptoms become context.</p>
+      </div>
+      <div class="stage">
+        <h3>2. Assessment (Understand)</h3>
+        <p>We synthesize history and relevant data. When helpful, we discuss optional labs to inform educational conversations—not as mandatory orders.</p>
+      </div>
+      <div class="stage">
+        <h3>3. Plan (Practice)</h3>
+        <p>Rather than single fixes, plans are modular: small habits, pacing, nutrition patterns, and measurable steps you can trial and adjust.</p>
+      </div>
+      <div class="stage">
+        <h3>4. Follow-up (Refine)</h3>
+        <p>Short check-ins help translate learning into durable habits. We tune, troubleshoot, and add layers of support.</p>
+      </div>
+    </section>
+
+    <section class="labs card" aria-labelledby="labs-title">
+      <h3 id="labs-title">Optional educational labs</h3>
+      <p style="color:var(--muted)">We may suggest common, non-invasive tests (labs, nutrient markers, sleep tracking) only when they will inform education and choice. Labs are optional and explained before any order.</p>
+    </section>
+
+    <section style="margin-top:12px">
+      <h3 style="margin-bottom:8px">Micro practices we teach</h3>
+      <div class="micro">
+        <div class="chip">Night breathing cue</div>
+        <div class="chip">Gentle morning movement</div>
+        <div class="chip">Mindful evening meal</div>
+        <div class="chip">5-minute reset</div>
+      </div>
+      <div class="note">These are simple, repeatable acts meant to translate knowledge into daily life.</div>
+    </section>
+
+    <div class="book">
+      <a class="btn" href="{{PRIMARY_CTA_URL}}">Begin an intake with {{PRACTITIONER_NAME}}</a>
+      <div style="color:var(--muted);font-size:13px;margin-top:8px">Sessions are educational; not a promise of cure. For urgent issues, please seek emergency care.</div>
+    </div>
+
+    <footer style="margin-top:26px;color:var(--muted);font-size:13px">{{BUSINESS_NAME}} • {{PRACTITIONER_NAME}}, {{CREDENTIALS}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></footer>
+  </main>
+</body>
+</html>

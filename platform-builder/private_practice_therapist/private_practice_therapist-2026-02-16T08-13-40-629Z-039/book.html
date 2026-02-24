@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Schedule — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--accent:#6b8e7c;--muted:#6d6d6d}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#121212;margin:0;background:#fff}
+    .page{max-width:820px;margin:42px auto;padding:0 20px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:14px;text-decoration:none;color:inherit}
+    h1{font-size:26px;margin:18px 0}
+    .grid{display:grid;grid-template-columns:1fr 300px;gap:20px}
+    .panel{background:#fff;border:1px solid #f0f0f0;padding:18px;border-radius:10px}
+    label{display:block;font-weight:600;margin-top:10px}
+    input,textarea,select{width:100%;padding:10px;border:1px solid #e6e6e6;border-radius:8px;margin-top:6px}
+    .btn{display:inline-block;padding:12px 16px;background:var(--accent);color:#fff;text-decoration:none;border-radius:8px;margin-top:12px}
+    .note{color:var(--muted);font-size:13px;margin-top:10px}
+    footer{margin-top:28px;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div>
+        <strong>{{BUSINESS_NAME}}</strong>
+        <div style="color:var(--muted);font-size:13px">Appointments in {{CITY}}, {{STATE}} and by secure video</div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="specialties.html">Programs</a>
+        <a href="fees.html">Investment</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <h1>Book a time</h1>
+      <div style="color:var(--muted);margin-bottom:14px">Choose a path below and I’ll follow up to confirm. If you prefer, you can also email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a>.</div>
+
+      <div class="grid">
+        <div>
+          <div class="panel">
+            <h3>Scheduling request</h3>
+            <form action="{{PRIMARY_CTA_URL}}" method="post">
+              <label for="name">Your name</label>
+              <input id="name" name="name" required />
+
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" required />
+
+              <label for="phone">Phone</label>
+              <input id="phone" name="phone" />
+
+              <label for="service">Service</label>
+              <select id="service" name="service">
+                <option>Single Session — 50 min</option>
+                <option>Commitment Package — Weekly (recommended)</option>
+                <option>Extended Focus Session — 2.5 hrs</option>
+              </select>
+
+              <label for="notes">Brief note: goals or concerns</label>
+              <textarea id="notes" name="notes" rows="4"></textarea>
+
+              <label style="margin-top:12px"><input type="checkbox" name="consent" required /> I understand this is a scheduling request and not an emergency service.</label>
+
+              <button class="btn" type="submit">Request a Time</button>
+            </form>
+
+            <p class="note">I will respond within 48 business hours to confirm and share intake materials. If you do not receive a reply, please check spam or call {{PHONE}}.</p>
+          </div>
+
+          <div class="panel" style="margin-top:14px">
+            <h4>What to expect at first meeting</h4>
+            <p class="note">We’ll review your goals, relevant history, and current stressors. Together we’ll set initial goals and consider the best frequency for sessions.</p>
+          </div>
+        </div>
+
+        <aside>
+          <div class="panel">
+            <h4>Quick policies</h4>
+            <p class="note">Fees: please see the Investment page. Payment is due at the time of service. Cancellation: 48-hour notice preferred to avoid a fee.</p>
+            <h4 style="margin-top:12px">Privacy & safety</h4>
+            <p class="note">Confidentiality is maintained with standard legal exceptions. If you are in crisis, call emergency services or a local crisis line immediately.</p>
+            <div style="margin-top:12px">
+              <a class="btn" href="mailto:{{EMAIL}}">Email {{THERAPIST_NAME}}</a>
+            </div>
+          </div>
+
+          <div style="margin-top:14px;text-align:center">
+            <img src="assets/img/avatar.svg" alt="portrait placeholder" style="width:120px;height:auto;border-radius:10px;border:1px solid #f0f0f0" />
+            <div style="color:var(--muted);margin-top:8px">{{THERAPIST_NAME}}, {{LICENSE}} • {{MODALITIES}}</div>
+          </div>
+        </aside>
+      </div>
+
+      <section style="margin-top:20px">
+        <h4>Intake & boundaries</h4>
+        <p class="note">Before our first appointment you'll receive an intake packet explaining confidentiality, limits of therapy, and consent forms. Therapy does not replace emergency care. For urgent situations, call local emergency services.</p>
+      </section>
+
+    </main>
+
+    <footer>
+      <div>{{BUSINESS_NAME}} • {{THERAPIST_NAME}} • {{LICENSE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{{BUSINESS_NAME}} — Investment & Plans</title>
+  <style>
+    :root{--bg:#faf9f7;--card:#fff;--muted:#6b6b6b;--accent:#7d5cff;--accent-2:#ffd6a5;--glass:rgba(255,255,255,0.7);--radius:14px}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue';color:#222;background:var(--bg)}
+    .wrap{max-width:1100px;margin:40px auto;padding:28px}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{width:64px;height:64px;background:linear-gradient(135deg,var(--accent),#5fb8ff);border-radius:12px;display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    nav a{margin-left:18px;color:var(--muted);text-decoration:none;font-weight:600}
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:center;background:linear-gradient(180deg,#fff 0%,#fbfaff 100%);padding:28px;border-radius:18px}
+    .hero h1{margin:0;font-size:30px;line-height:1.05;color:#0f1724}
+    .hero p{color:var(--muted);margin-top:12px}
+    .svg-wrap{display:flex;align-items:center;justify-content:center}
+    .card-grid{display:flex;gap:18px;margin-top:22px}
+    .card{background:var(--card);padding:20px;border-radius:12px;box-shadow:0 6px 22px rgba(18,18,18,0.06);flex:1}
+    .price{font-size:20px;font-weight:800;color:var(--accent)}
+    .muted{color:var(--muted)}
+    .benefits{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
+    .benefit{background:linear-gradient(180deg,#fff,#fff);padding:18px;border-radius:12px}
+    .process{margin-top:26px;padding:18px;background:var(--card);border-radius:12px}
+    .faq{margin-top:22px}
+    .lead{display:flex;gap:12px;margin-top:20px}
+    .cta{background:var(--accent);color:#fff;padding:12px 18px;border-radius:10px;text-decoration:none;font-weight:700}
+    footer{margin-top:30px;color:var(--muted);font-size:13px}
+    /* responsive */
+    @media(max-width:880px){.hero{grid-template-columns:1fr;}.benefits{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">W</div>
+        <div>
+          <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+          <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">About {{COACH_NAME}}</a>
+        <a href="programs.html">Paths</a>
+        <a href="pricing.html" style="color:var(--accent)">Pricing</a>
+        <a href="book.html">Book</a>
+      </nav>
+    </header>
+
+    <section class="hero" aria-label="pricing hero">
+      <div>
+        <h1>Investment & Pathways for Sustainable Habits</h1>
+        <p>Choose the right pace for your life. Practical habits, compassionate accountability, and a clear framework to build resilience — without overwhelm.</p>
+
+        <div class="card-grid">
+          <div class="card">
+            <div style="font-weight:700">Starter Clarity Session</div>
+            <div class="muted" style="margin-top:8px">90-min VIP intake — perfect for urgent alignment</div>
+            <div class="price" style="margin-top:12px">$395</div>
+            <div style="margin-top:12px"><a class="cta" href="book.html">Book a VIP</a></div>
+          </div>
+
+          <div class="card">
+            <div style="font-weight:700">Momentum Month</div>
+            <div class="muted" style="margin-top:8px">4 weeks of focused habit design + weekly coaching</div>
+            <div class="price" style="margin-top:12px">$1,450</div>
+            <div style="margin-top:12px"><a class="cta" href="book.html">Reserve your spot</a></div>
+          </div>
+
+          <div class="card">
+            <div style="font-weight:700">Quarterly Transformation</div>
+            <div class="muted" style="margin-top:8px">90-day framework for lasting change with priority support</div>
+            <div class="price" style="margin-top:12px">$3,600</div>
+            <div style="margin-top:12px"><a class="cta" href="book.html">Start a quarter</a></div>
+          </div>
+        </div>
+
+        <div class="benefits">
+          <div class="benefit"><strong>Outcome-Focused</strong><div class="muted">Clear milestones so progress is readable.</div></div>
+          <div class="benefit"><strong>Habit Architecture</strong><div class="muted">Small daily practices that stack over time.</div></div>
+          <div class="benefit"><strong>Accountable Support</strong><div class="muted">Gentle check-ins, practical tools, compassionate clarity.</div></div>
+        </div>
+      </div>
+
+      <div class="svg-wrap">
+        <!-- hero svg unique to pricing page (would also live at assets/img/hero.svg) -->
+        <svg width="380" height="320" viewBox="0 0 380 320" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="g1" x1="0" x2="1">
+              <stop offset="0" stop-color="#7d5cff" />
+              <stop offset="1" stop-color="#5fb8ff" />
+            </linearGradient>
+          </defs>
+          <rect rx="22" width="380" height="320" fill="#fff" stroke="#f1eefc"/>
+          <g transform="translate(30,30)">
+            <circle cx="80" cy="60" r="56" fill="url(#g1)" opacity="0.95" />
+            <rect x="160" y="20" width="160" height="100" rx="14" fill="#ffd6a5" />
+            <rect x="40" y="150" width="280" height="120" rx="18" fill="#f6f7ff" stroke="#ece9ff" />
+          </g>
+        </svg>
+      </div>
+
+    </section>
+
+    <section class="process" aria-label="how it works">
+      <h3 style="margin:0">A gentle framework — See the structure</h3>
+      <ol style="margin-top:12px;color:var(--muted)">
+        <li><strong>Anchor:</strong> Understand where you are and what matters now.</li>
+        <li><strong>Design:</strong> Co-create tiny, realistic practices aligned with your rhythms.</li>
+        <li><strong>Embed:</strong> Support systems and micro-commitments for consistency.</li>
+        <li><strong>Reflect:</strong> Weekly check-ins and course corrections.</li>
+      </ol>
+    </section>
+
+    <section class="faq" aria-label="pricing faq">
+      <h3>Common questions about investment</h3>
+      <div style="margin-top:12px">
+        <details>
+          <summary style="font-weight:700">What if I can’t commit weekly?</summary>
+          <div class="muted" style="margin-top:8px">We’ll design a cadence that fits your season — even biweekly or a VIP intensive can move you forward.</div>
+        </details>
+        <details style="margin-top:8px">
+          <summary style="font-weight:700">Are there payment plans?</summary>
+          <div class="muted" style="margin-top:8px">Yes — flexible plans are available for Momentum Month and Quarterly Transformation. Ask during booking.</div>
+        </details>
+        <details style="margin-top:8px">
+          <summary style="font-weight:700">Do you provide medically oriented guidance?</summary>
+          <div class="muted" style="margin-top:8px">I focus on habits, wellbeing routines, and life design. For medical concerns we collaborate with your care team and avoid clinical diagnosis.</div>
+        </details>
+      </div>
+    </section>
+
+    <section class="lead" aria-label="lead magnet">
+      <div style="flex:1;background:linear-gradient(180deg,#fff,#fff);padding:16px;border-radius:12px">
+        <strong>Free guide: The 7-Day Reset for Clearer Energy</strong>
+        <div class="muted" style="margin-top:8px">A simple, research-informed week of micro-habits to clarify appetite, sleep, and focus.</div>
+      </div>
+      <form style="display:flex;gap:8px;align-items:center">
+        <input aria-label="email" placeholder="your email" style="padding:10px;border-radius:10px;border:1px solid #e9e9f2">
+        <button class="cta">Send me the guide</button>
+      </form>
+    </section>
+
+    <section style="margin-top:20px;display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div style="font-weight:700">Ready to choose your path?</div>
+        <div class="muted">Join clients in {{CITY}}, {{STATE}} and beyond for sustainable change.</div>
+      </div>
+      <div>
+        <a class="cta" href="book.html">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </section>
+
+    <footer>
+      <div>Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+      <div style="margin-top:6px">© {{COACH_NAME}}, {{CREDENTIALS}} — {{BUSINESS_NAME}}</div>
+    </footer>
+  </div>
+</body>
+</html>

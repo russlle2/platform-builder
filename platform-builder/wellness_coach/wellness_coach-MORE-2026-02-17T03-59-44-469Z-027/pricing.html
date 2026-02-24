@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Rates & Programs — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfbfb;--card:#fff;--muted:#6b7280;--accent:#0f7c6b;--accent-2:#6a8cff;--glass:rgba(255,255,255,0.6)}
+    html,body{height:100%;margin:0;font-family:Inter,Segoe UI,system-ui,-apple-system,Roboto,'Helvetica Neue',Arial;color:#0b1220;background:var(--bg)}
+    .wrap{max-width:980px;margin:36px auto;padding:28px}
+    header{display:flex;align-items:center;justify-content:space-between}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none;font-weight:600}
+    h1{margin:8px 0 18px;font-size:28px}
+    .lead{color:var(--muted);max-width:64ch}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(12,20,30,0.06);border:1px solid rgba(12,20,30,0.04)}
+    .price{font-size:22px;font-weight:700;color:var(--accent)}
+    .features{color:var(--muted);font-size:14px;margin-top:12px}
+    .cta{display:inline-block;margin-top:16px;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;text-decoration:none}
+    .muted{color:var(--muted);font-size:13px}
+    .pattern-svg{position:fixed;right:-120px;top:-120px;opacity:0.06;width:420px;height:420px;pointer-events:none}
+    /* Habit builder area */
+    .habit-wrap{margin-top:30px;background:linear-gradient(180deg,rgba(255,255,255,0.8),rgba(250,250,252,0.9));padding:18px;border-radius:12px}
+    .habit-controls{display:flex;gap:10px;flex-wrap:wrap}
+    select,input[type=text]{padding:8px;border-radius:8px;border:1px solid #e6e9ef}
+    button{padding:9px 12px;border-radius:8px;border:0;background:var(--accent);color:#fff}
+    .checklist{margin-top:12px}
+    .printOnly{display:none}
+    @media print{body *:not(.printOnly){display:none} .printOnly{display:block}}
+    footer{margin-top:38px;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <svg class="pattern-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1">
+        <stop offset="0" stop-color="#6a8cff" stop-opacity="0.95"/>
+        <stop offset="1" stop-color="#0f7c6b" stop-opacity="0.9"/>
+      </linearGradient>
+      <pattern id="p1" width="20" height="20" patternUnits="userSpaceOnUse">
+        <rect width="10" height="10" fill="rgba(255,255,255,0.06)"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#g1)" />
+    <circle cx="30" cy="30" r="60" fill="url(#p1)" transform="rotate(18 30 30)" />
+    <path d="M20 140 C60 120,140 120,180 140" stroke="white" stroke-opacity="0.08" fill="none" stroke-width="8"/>
+  </svg>
+
+  <div class="wrap">
+    <header>
+      <div>
+        <div style="font-weight:800;font-size:15px">{{BUSINESS_NAME}}</div>
+        <nav style="margin-top:6px">
+          <a href="index.html">Home</a>
+          <a href="about.html">Who I Am</a>
+          <a href="services.html">Offerings</a>
+          <a href="programs.html">Programs</a>
+          <a href="pricing.html">Rates</a>
+          <a href="testimonials.html">Praise</a>
+          <a href="book.html">Start</a>
+        </nav>
+      </div>
+      <div style="text-align:right">
+        <div class="muted">Ready to clarify next steps?</div>
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </header>
+
+    <main>
+      <h1>Flexible structures for immediate shifts — pricing framed by outcome</h1>
+      <p class="lead">I price around the change you want: focused reset days, short blueprints to start new habits, and layered plans that hold across months. Choose the shape of support and we’ll tailor the steps that make it stick.</p>
+
+      <div class="grid" role="list">
+        <div class="card" role="listitem">
+          <div style="font-weight:700">Clarity Sprint — VIP Day</div>
+          <div class="price">One-day intensive — $1,800</div>
+          <div class="features">Outcomes: a digestible practice sequence, 3 pragmatic daily anchors, and a 30-day micro-habit map to begin tomorrow.</div>
+          <div class="muted">Includes a 90-minute prep call, 6-hour working day, and a 45-minute follow-up</div>
+          <a class="cta" href="book.html#vip">Reserve a VIP Day</a>
+        </div>
+
+        <div class="card">
+          <div style="font-weight:700">Momentum Blueprint — 4 weeks</div>
+          <div class="price">$950 (4 weekly sessions)</div>
+          <div class="features">Outcomes: weekly focus areas, measurable habit targets, and a simple accountability rhythm to stabilize progress.</div>
+          <div class="muted">Includes 4 x 45-minute sessions + written guide</div>
+          <a class="cta" href="book.html#blueprint">Book a Blueprint</a>
+        </div>
+
+        <div class="card">
+          <div style="font-weight:700">Sustain Plan — 12 weeks</div>
+          <div class="price">$2,400 (installments available)</div>
+          <div class="features">Outcomes: layered frameworks for daily energy, weekly planning signals, and durable habit architecture to hold through the long haul.</div>
+          <div class="muted">Includes personalized practices, check-ins, and revisions</div>
+          <a class="cta" href="book.html#sustain">Start the Sustain Plan</a>
+        </div>
+      </div>
+
+      <section class="habit-wrap" aria-labelledby="habitTitle">
+        <h2 id="habitTitle">7‑Day Micro‑Challenge Generator</h2>
+        <p class="muted">Choose one small habit. The generator creates a day-by-day progression and a printable checklist for the week.</p>
+
+        <div class="habit-controls">
+          <label>
+            Habit
+            <select id="habitSelect">
+              <option value="Hydration">Hydration — steady sips</option>
+              <option value="Movement">Movement — short sessions</option>
+              <option value="Breath">Breathwork — short practices</option>
+              <option value="EveningRoutine">Evening Routine — wind-down</option>
+              <option value="Journaling">Journaling — 3-minute note</option>
+            </select>
+          </label>
+
+          <label>
+            Target (min / times)
+            <input type="text" id="habitTarget" placeholder="e.g. 8 glasses / 3x" />
+          </label>
+
+          <button id="genHabit">Generate checklist</button>
+          <button id="copyHabit">Copy text</button>
+          <button id="printHabit">Print</button>
+        </div>
+
+        <div class="checklist" id="checklistArea" aria-live="polite"></div>
+
+      </section>
+
+    </main>
+
+    <footer>
+      <div>{{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </footer>
+  </div>
+
+  <script>
+    // Habit builder logic
+    function buildHabitText(habit, target){
+      var days = ['Day 1','Day 2','Day 3','Day 4','Day 5','Day 6','Day 7'];
+      var tips = {
+        'Hydration': ['Start with a glass on waking','Keep a 500ml bottle visible','Add a pinch of salt if needed','Pair with meals','Sip between tasks','Set a 10am alarm','Reflect on energy levels'],
+        'Movement': ['5-minute warmup','Short walk midday','10 squats','Desk stretches','Micro-yoga sequence','Short walk after dinner','Gentle cooldown'],
+        'Breath': ['Box breath 3 mins','Box breath 4 mins','Abdominal breath 5 mins','Alternate nostril 3 mins','Coherent breathing 5 mins','Guided breath 6 mins','Soothing breath 4 mins'],
+        'EveningRoutine': ['Dim lights 30m before bed','No screens 45m before bed','Warm drink','Light reading','Reflective journaling','Breath practice','Set tomorrow’s top 3'],
+        'Journaling': ['List 3 wins','Write one thing learned','Note a worry and a solve','Gratitude list','Plan tomorrow','Freewrite 3 mins','Review growth']
+      };
+      var out = '7-Day ' + habit + ' Challenge\nTarget: ' + (target||'—') + '\n\n';
+      for(var i=0;i<7;i++){
+        out += (i+1)+'. '+days[i]+': '+ (tips[habit]?[tips[habit][i]]:'Practice') + '\n';
+      }
+      return out;
+    }
+
+    function renderChecklistBlock(text){
+      var lines = text.split('\n');
+      var html = '<div class="card printOnly" style="margin-bottom:12px;padding:18px;">' +
+                 '<pre style="font-family:inherit;white-space:pre-wrap">'+ escapeHtml(text) +'</pre></div>';
+      html += '<div class="card" style="margin-top:12px;padding:12px">';
+      html += '<ul style="margin:0;padding-left:20px">';
+      for(var i=0;i<7;i++){
+        var day = lines[i+2] || ('Day '+(i+1)+':')
+        html += '<li style="margin:8px 0"><label><input type="checkbox" /> <strong>'+escapeHtml(day.split(':')[0])+':</strong> '+escapeHtml(day.split(':').slice(1).join(':'))+'</label></li>';
+      }
+      html += '</ul></div>';
+      return html;
+    }
+
+    function escapeHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+    document.getElementById('genHabit').addEventListener('click',function(){
+      var h = document.getElementById('habitSelect').value;
+      var t = document.getElementById('habitTarget').value;
+      var text = buildHabitText(h,t);
+      document.getElementById('checklistArea').innerHTML = renderChecklistBlock(text);
+    });
+
+    document.getElementById('copyHabit').addEventListener('click',function(){
+      var h = document.getElementById('habitSelect').value;
+      var t = document.getElementById('habitTarget').value;
+      var text = buildHabitText(h,t);
+      navigator.clipboard.writeText(text).then(function(){
+        alert('Checklist copied to clipboard');
+      },function(){alert('Copy failed')});
+    });
+
+    document.getElementById('printHabit').addEventListener('click',function(){
+      var h = document.getElementById('habitSelect').value;
+      var t = document.getElementById('habitTarget').value;
+      var text = buildHabitText(h,t);
+      var newWin = window.open('','Print');
+      newWin.document.write('<pre style="font-family:Arial,Helvetica,sans-serif; font-size:14px">'+escapeHtml(text)+'</pre>');
+      newWin.document.close();
+      newWin.focus();
+      newWin.print();
+      newWin.close();
+    });
+
+  </script>
+</body>
+</html>

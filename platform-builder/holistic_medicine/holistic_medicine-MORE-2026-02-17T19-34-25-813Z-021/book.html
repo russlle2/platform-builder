@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Book a visit — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reserve a consultation or membership onboarding." />
+  <style>
+    :root{--bg:#f6f0e7;--accent:#6a4b35;--muted:#9a8d84;--card:#fff;--accent-2:#b6865b}
+    html,body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:var(--bg);color:#342a22}
+    .pattern{position:fixed;inset:0;opacity:.14;background-image:url("assets/img/pattern.svg");background-repeat:repeat;z-index:0}
+    .wrap{max-width:840px;margin:0 auto;padding:28px}
+    header{padding-bottom:8px}
+    nav{display:flex;gap:12px;align-items:center}
+    a.logo{font-weight:700;color:var(--accent);text-decoration:none}
+    .card{background:var(--card);padding:18px;border-radius:12px;border:1px solid rgba(80,60,40,.04);box-shadow:0 10px 26px rgba(60,50,40,.03)}
+    h1{margin:0;color:var(--accent)}
+    .muted{color:var(--muted)}
+    form{margin-top:12px;display:grid;gap:10px}
+    input,textarea,select{padding:10px;border-radius:8px;border:1px solid rgba(60,50,40,.06)}
+    button{background:var(--accent-2);color:#fff;border:none;padding:10px;border-radius:8px;cursor:pointer}
+    .small{font-size:13px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="pattern" aria-hidden></div>
+  <header class="wrap">
+    <nav>
+      <a class="logo" href="index.html">{{BUSINESS_NAME}}</a>
+      <a style="margin-left:auto;color:var(--muted);text-decoration:none" href="contact.html">{{PHONE}}</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <div class="card">
+      <h1>Reserve a visit</h1>
+      <p class="small">Choose a visit type and add any plan text from the session planner. We'll review your note before the visit.</p>
+
+      <form id="bookingForm">
+        <label>Preferred date
+          <input id="date" type="date" required />
+        </label>
+        <label>Preferred time
+          <input id="time" type="time" required />
+        </label>
+        <label>Visit type
+          <select id="visitType">
+            <option>Introductory (25 min)</option>
+            <option>Standard consultation (50 min)</option>
+            <option>Comprehensive intake (80 min)</option>
+            <option>Membership onboarding</option>
+          </select>
+        </label>
+        <label>Your phone or preferred contact
+          <input id="contact" placeholder="Phone or email" value="{{PHONE}}" />
+        </label>
+        <label>Notes for clinician (paste plan or inventory output)</label>
+        <textarea id="note" placeholder="Paste your session plan or details here"></textarea>
+
+        <div style="display:flex;gap:8px;align-items:center">
+          <button type="button" id="submitBooking">Request booking</button>
+          <button type="button" id="prefillPlan" style="background:#fff;border:1px solid rgba(60,50,40,.06);color:var(--accent-2)">Paste planner note</button>
+          <div class="small" style="margin-left:auto">We will follow up by email with availability.</div>
+        </div>
+      </form>
+
+      <div id="confirmation" style="display:none;margin-top:12px;background:#fbf7f2;padding:10px;border-radius:8px;border:1px solid rgba(60,50,40,.03)"></div>
+    </div>
+
+    <div style="height:12px"></div>
+
+    <div class="card">
+      <h3 style="margin-top:0;color:var(--accent)">What to bring</h3>
+      <ul class="small">
+        <li>Any medication or supplement list</li>
+        <li>Recent labs or imaging (if available)</li>
+        <li>A brief note of 1–3 priorities you want to address</li>
+      </ul>
+    </div>
+
+    <footer style="margin-top:18px;color:var(--muted)">
+      <div class="small">If this is an urgent medical matter, call your local emergency number. Our consultations are educational and supportive; not a substitute for emergency care.</div>
+    </footer>
+  </main>
+
+  <script>
+    // prefill from query (planner link)
+    const params = new URLSearchParams(window.location.search);
+    const noteField = document.getElementById('note');
+    if(params.has('note')){
+      try{ noteField.value = decodeURIComponent(params.get('note')).slice(0,3000); } catch(e){}
+    }
+
+    document.getElementById('prefillPlan').addEventListener('click',()=>{
+      // attempt to read from clipboard
+      navigator.clipboard.readText().then(text=>{ if(text) noteField.value = text; else alert('Clipboard is empty. Copy planner text then try.'); }).catch(()=>{ alert('Clipboard access denied. Paste manually.'); });
+    });
+
+    document.getElementById('submitBooking').addEventListener('click',()=>{
+      const d=document.getElementById('date').value; const t=document.getElementById('time').value; const vt=document.getElementById('visitType').value; const c=document.getElementById('contact').value; const note=document.getElementById('note').value;
+      if(!d||!t){ alert('Please choose a date and time.'); return; }
+      const summary = 'Booking request:\nDate: '+d+'\nTime: '+t+'\nVisit: '+vt+'\nContact: '+c+'\n\nNote:\n'+(note||'No note provided');
+      // simulate submission
+      document.getElementById('confirmation').style.display='block';
+      document.getElementById('confirmation').textContent = 'Request sent. We will contact you at '+c+' with scheduling details.\n\n'+summary;
+      // in a real implementation this would POST to a server or email
+    });
+  </script>
+</body>
+</html>

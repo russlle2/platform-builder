@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Start — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f3f6fb;--card:#fff;--muted:#5b6470;--accent:#6b4efb}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;color:#071029;background:var(--bg)}
+    header{padding:14px 18px;background:linear-gradient(180deg,rgba(107,78,251,0.06),transparent)}
+    .nav{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:10px;text-decoration:none;color:#071029}
+    main{max-width:900px;margin:24px auto;padding:18px}
+    .hero{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 30px rgba(11,15,27,0.06)}
+    .hero h1{margin:0;font-size:24px}
+    .hero p{color:var(--muted);margin:8px 0}
+    .form{margin-top:16px;display:grid;gap:10px}
+    input,select,textarea{padding:10px;border-radius:8px;border:1px solid rgba(11,15,27,0.08);width:100%;box-sizing:border-box}
+    .row{display:flex;gap:10px}
+    .row .col{flex:1}
+    .btn{background:var(--accent);color:white;padding:12px;border-radius:10px;border:0;cursor:pointer}
+    .note{font-size:13px;color:var(--muted)}
+    .acc{margin-top:18px}
+    .acc-item{background:var(--card);padding:12px;border-radius:10px;margin-bottom:10px}
+    .acc-head{display:flex;justify-content:space-between;cursor:pointer}
+    .acc-body{max-height:0;overflow:hidden;transition:max-height .24s ease}
+    footer{margin-top:26px;padding:18px;text-align:center;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+      <div>
+        <a href="index.html">Practice</a>
+        <a href="about.html">Clinician</a>
+        <a href="fees.html">Invest</a>
+        <a href="contact.html">Connect</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Begin a short series or schedule a single visit</h1>
+      <p class="note">Select the session type that best fits your immediate needs. If you're uncertain, use the message box below and we'll suggest a path.</p>
+      <div class="form">
+        <div class="row">
+          <div class="col"><input type="text" id="name" placeholder="Your name"></div>
+          <div class="col"><input type="tel" id="phone" placeholder="Phone (optional)"></div>
+        </div>
+        <input type="email" id="email" placeholder="Email, for confirmations *">
+        <select id="type">
+          <option value="single">Single session — 50 minutes</option>
+          <option value="short">Short Course — 4 sessions</option>
+          <option value="bridge">Bridge Support — 8 sessions</option>
+        </select>
+        <textarea id="notes" rows="4" placeholder="Brief note about what you'd like to focus on"></textarea>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="btn" id="bookBtn">Request an appointment</button>
+          <div class="note">Or call <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+        </div>
+      </div>
+
+      <div class="acc">
+        <div class="acc-item">
+          <div class="acc-head" data-acc="bound">Session boundaries & confidentiality <span>+</span></div>
+          <div class="acc-body" id="bound-body">
+            <p class="note">I maintain confidentiality except in specific legal circumstances (imminent danger, suspected abuse, or court order). Telehealth carries privacy considerations; please use a private space and a secure connection. Notes are maintained per professional standards.</p>
+            <p class="note">If you require documentation for work, school, or insurance, discuss this at intake so we can agree on content and process.</p>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <div class="acc-head" data-acc="cancel">Cancellations & rescheduling <span>+</span></div>
+          <div class="acc-body" id="cancel-body">
+            <p class="note">Please provide 48 hours' notice to avoid a late fee. Exceptions apply for emergencies. When a session is missed without notice, a portion of the fee may be retained to hold time.</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;background:linear-gradient(180deg,#fff,transparent);padding:12px;border-radius:8px">
+        <div style="font-weight:700">Privacy & emergency resources</div>
+        <p class="note">If you are in immediate danger, call emergency services. For urgent mental health crises, use local crisis lines. If located in the U.S., dialing or texting 988 will connect you with the Suicide & Crisis Lifeline.</p>
+      </div>
+    </section>
+
+    <section style="margin-top:18px">
+      <div style="display:flex;gap:12px;align-items:center">
+        <svg width="72" height="72" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect rx="16" width="120" height="120" fill="url(#p)"/><defs><linearGradient id="p" x1="0" x2="1"><stop offset="0" stop-color="#7c5cff"/><stop offset="1" stop-color="#4ec1ff"/></linearGradient></defs></svg>
+        <div>
+          <div style="font-weight:700">What happens after you request?</div>
+          <div class="note">I will reply within 48 hours to confirm availability and next steps. If your need is time-sensitive, please call the number above. Replies will respect confidentiality; do not disclose imminent safety concerns by message.</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="note">By submitting a booking request you agree to be contacted at the information provided. You may decline any suggested referral or treatment option. If you are in crisis, call emergency services immediately.</div>
+  </footer>
+
+  <script>
+    // Booking button behavior (local minimal simulation)
+    document.getElementById('bookBtn').addEventListener('click',()=>{
+      const name=document.getElementById('name').value.trim();
+      const email=document.getElementById('email').value.trim();
+      if(!email){alert('Please provide an email for confirmation.');return}
+      // In production this would post to a scheduling backend. Here we open the main CTA.
+      window.location.href='{{PRIMARY_CTA_URL}}';
+    });
+
+    // Accordion simple
+    document.querySelectorAll('.acc-head').forEach(h=>{
+      h.addEventListener('click',()=>{
+        const key=h.getAttribute('data-acc');
+        const body=document.getElementById(key+'-body');
+        const open=body.style.maxHeight && body.style.maxHeight!=='0px';
+        if(open){body.style.maxHeight='0'; h.querySelector('span').textContent='+'} else {body.style.maxHeight=body.scrollHeight+'px'; h.querySelector('span').textContent='−'}
+      });
+    });
+  </script>
+</body>
+</html>

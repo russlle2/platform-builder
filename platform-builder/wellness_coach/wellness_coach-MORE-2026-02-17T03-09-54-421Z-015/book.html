@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book a Session — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--accent:#0f766e;--muted:#6b7280}
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:#fbfdfe;color:#042022}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px}
+    .logo{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,#0f766e,#065f46);display:flex;align-items:center;justify-content:center;color:white}
+    nav a{margin-left:10px;color:var(--muted);text-decoration:none;font-weight:600}
+    .wrap{max-width:1000px;margin:24px auto;padding:18px}
+    .grid{display:grid;grid-template-columns:1fr 420px;gap:18px}
+    .panel{background:#fff;padding:18px;border-radius:12px;border:1px solid rgba(2,18,27,0.04)}
+    h1{margin:0 0 6px 0}
+    p.muted{color:var(--muted);margin-top:6px}
+    label{display:block;margin-top:10px;font-size:14px}
+    input[type=text],textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef0;margin-top:6px}
+    .btn{background:var(--accent);color:white;padding:10px 12px;border-radius:8px;border:0;cursor:pointer}
+    .session-plan{margin-top:14px;padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff 0,#f6fffd 100%);border:1px solid rgba(15,23,42,0.03)}
+    pre{white-space:pre-wrap;background:#f8fafb;padding:12px;border-radius:8px;border:1px dashed #e6eef0}
+    .mini{font-size:13px;color:var(--muted)}
+    footer{margin-top:20px;color:var(--muted);font-size:13px;text-align:center}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="logo">W</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Story</a>
+      <a href="services.html">Offerings</a>
+      <a href="programs.html">Plans</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="testimonials.html">Testimonials</a>
+      <a href="book.html">Book</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <div class="grid">
+      <section class="panel">
+        <h1>Book a Session</h1>
+        <p class="muted">Choose a session length and build a tailored session plan using the Session Planner tool below. After you create the plan, copy the summary and include it in your booking message.</p>
+
+        <label for="name">Your name</label>
+        <input id="name" type="text" placeholder="Full name">
+
+        <label for="email">Email</label>
+        <input id="email" type="text" placeholder="you@example.com">
+
+        <label for="sessionType">Session focus</label>
+        <select id="sessionType">
+          <option>Kickoff: Align priorities & immediate actions (60 min)</option>
+          <option>Weekly check-in & micro-tasks (30 min)</option>
+          <option>Deep planning session (90 min)</option>
+        </select>
+
+        <label for="when">Preferred date/time (suggested)</label>
+        <input id="when" type="text" placeholder="e.g., Week of Mar 1, mornings preferred">
+
+        <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+          <button class="btn" id="submitBooking">Request Booking</button>
+          <div class="mini">Or call <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+        </div>
+
+        <div style="margin-top:18px" class="session-plan">
+          <h3 style="margin:0 0 8px 0">Session Planner</h3>
+          <p class="mini">Build a simple session agenda and a short plan you can copy into your booking message.</p>
+
+          <label for="goal">Primary goal for this session</label>
+          <input id="goal" type="text" placeholder="What outcome would help most?">
+
+          <label for="duration">Preferred session length</label>
+          <select id="duration">
+            <option>30 minutes</option>
+            <option>45 minutes</option>
+            <option>60 minutes</option>
+            <option>90 minutes</option>
+          </select>
+
+          <label for="focusAreas">Focus areas (comma separated)</label>
+          <input id="focusAreas" type="text" placeholder="e.g., sleep routine, energy peaks, weekly planning">
+
+          <label for="followUp">Follow-up preference</label>
+          <select id="followUp">
+            <option>Email summary + 3 next steps</option>
+            <option>Plan + 7-day checklist</option>
+            <option>Weekly micro-checks for 1 month</option>
+          </select>
+
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button id="build">Build Plan</button>
+            <button id="copyPlan" style="background:#475569">Copy Summary</button>
+            <button id="downloadPlan" style="background:#065f46">Download as .txt</button>
+          </div>
+
+          <div style="margin-top:12px">
+            <pre id="planOut">No plan yet. Use "Build Plan" to create a short agenda and follow-ups.</pre>
+          </div>
+        </div>
+
+      </section>
+
+      <aside class="panel">
+        <h3 style="margin-top:0">How this works</h3>
+        <p class="muted">The planner creates a concise agenda and three clear follow-ups you can act on right away. It's meant to keep sessions targeted and practical.</p>
+
+        <div style="margin-top:14px">
+          <div style="font-weight:700">Need a different arrangement?</div>
+          <div class="muted" style="margin-top:6px">Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> with your needs or call <a href="tel:{{PHONE}}">{{PHONE}}</a>.</div>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      <div class="mini">By requesting a booking you agree to coordinate scheduling and any membership details. Coaching frameworks focus on habits and behaviors; not medical advice.</div>
+    </footer>
+  </main>
+
+  <script>
+    // Session Planner: builds a plaintext summary, copy and download
+    (function(){
+      const goal = document.getElementById('goal');
+      const duration = document.getElementById('duration');
+      const focus = document.getElementById('focusAreas');
+      const followUp = document.getElementById('followUp');
+      const build = document.getElementById('build');
+      const out = document.getElementById('planOut');
+      const cp = document.getElementById('copyPlan');
+      const dl = document.getElementById('downloadPlan');
+
+      function generate(){
+        const g = goal.value.trim() || 'Define a short, clear objective';
+        const dur = duration.value;
+        const f = focus.value.trim()?focus.value.trim().split(',').map(s=>s.trim()).filter(Boolean):[];
+        const fu = followUp.value;
+
+        const agenda = [];
+        agenda.push('Session Objective: '+g);
+        agenda.push('Duration: '+dur);
+        if(f.length) agenda.push('Focus areas: '+f.join(', '));
+
+        // Build 3-part agenda
+        agenda.push('\nProposed agenda:');
+        agenda.push('1) Quick review of current patterns (10% of session)');
+        agenda.push('2) Targeted exploration around "'+(f[0]||g)+'" (60% of session)');
+        agenda.push('3) Concrete next steps and a check-in plan (remaining time)');
+
+        // Follow-ups
+        agenda.push('\nFollow-up:');
+        if(fu.includes('7-day')){
+          agenda.push('- Provide a 7-day checklist tailored to the session')
+        } else if(fu.includes('weekly')){
+          agenda.push('- Weekly micro-check prompts for the first month')
+        } else {
+          agenda.push('- Email summary with 3 concrete next steps')
+        }
+
+        agenda.push('\nPrepared by: '+('{{BUSINESS_NAME}}'));
+        agenda.push('Contact: '+('{{EMAIL}}')+' | '+('{{PHONE}}'));
+
+        return agenda.join('\n');
+      }
+
+      build.addEventListener('click',function(){
+        out.textContent = generate();
+        out.scrollIntoView({behavior:'smooth'});
+      });
+
+      cp.addEventListener('click',function(){
+        if(out.textContent.trim().length===0 || out.textContent.includes('No plan')){alert('Please build a plan first.');return}
+        navigator.clipboard.writeText(out.textContent).then(()=>alert('Plan summary copied.'),()=>alert('Copy failed.'));
+      });
+
+      dl.addEventListener('click',function(){
+        if(out.textContent.trim().length===0 || out.textContent.includes('No plan')){alert('Please build a plan first.');return}
+        const blob = new Blob([out.textContent],{type:'text/plain'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'session-plan.txt';
+        document.body.appendChild(a); a.click(); a.remove();
+        URL.revokeObjectURL(url);
+      });
+
+      // Booking request button: prefill a message
+      document.getElementById('submitBooking').addEventListener('click',function(){
+        const nm = document.getElementById('name').value.trim();
+        const em = document.getElementById('email').value.trim();
+        const st = document.getElementById('sessionType').value;
+        const when = document.getElementById('when').value.trim();
+        const plan = out.textContent.trim();
+        if(!nm || !em){alert('Please provide name and email.');return}
+        const subject = encodeURIComponent('Session request from '+nm);
+        let body = 'Name: '+nm+'\nEmail: '+em+'\nSession type: '+st+'\nPreferred: '+when+'\n\n';
+        body += 'Session plan summary (auto):\n'+(plan||'No plan provided yet.');
+        const mailto = 'mailto:{{EMAIL}}?subject='+subject+'&body='+encodeURIComponent(body);
+        window.location.href = mailto;
+      });
+    })();
+  </script>
+</body>
+</html>

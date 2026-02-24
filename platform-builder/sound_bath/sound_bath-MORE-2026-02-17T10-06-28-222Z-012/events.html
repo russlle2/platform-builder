@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Events — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfbfa;--ink:#0f1720;--muted:#6b7280;--accent:#6b8e77;--glass:rgba(255,255,255,0.6);}    
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial; color:var(--ink);background:var(--bg);}    
+    .wrap{max-width:980px;margin:36px auto;padding:28px;background:linear-gradient(180deg,rgba(255,255,255,0.8),rgba(250,250,249,0.9));box-shadow:0 6px 30px rgba(12,15,20,0.06);border-radius:14px;position:relative;overflow:hidden}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+    .brand{font-weight:600;letter-spacing:0.3px}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none;font-size:14px}
+    .hero{display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start}
+    h1{margin:0 0 8px;font-size:28px}
+    p.lead{margin:0;color:var(--muted)}
+    .card{background:var(--glass);padding:16px;border-radius:10px;backdrop-filter:blur(6px);border:1px solid rgba(12,15,20,0.03)}
+    .next-event{margin-bottom:18px}
+    .calendar{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+    .evt{padding:12px;border-radius:8px;background:white;border:1px solid rgba(12,15,20,0.04)}
+    .evt .when{font-weight:600}
+
+    /* seat selector */
+    .seats{display:grid;grid-template-columns:repeat(8,36px);gap:8px;margin-top:14px}
+    .seat{width:36px;height:36px;border-radius:8px;border:1px solid rgba(12,15,20,0.06);display:flex;align-items:center;justify-content:center;background:#fff;cursor:pointer}
+    .seat.taken{background:#f3f4f6;color:#9ca3af;cursor:not-allowed}
+    .seat.selected{background:linear-gradient(180deg,var(--accent),#5f7d62);color:white}
+    .meta{margin-top:10px;color:var(--muted);font-size:14px}
+
+    /* packing list */
+    .packing{margin-top:18px}
+    .packing .list{margin-top:10px}
+    .btn{display:inline-block;padding:8px 12px;border-radius:8px;background:var(--accent);color:white;text-decoration:none;border:none;cursor:pointer}
+    .btn.ghost{background:transparent;border:1px solid rgba(11,15,14,0.06);color:var(--ink)}
+
+    /* footer */
+    footer{margin-top:18px;font-size:13px;color:var(--muted)}
+
+    /* subtle patterned background via inline SVG data URI */
+    .pattern{position:absolute;right:-120px;top:-120px;opacity:0.07;width:420px;height:420px;pointer-events:none}
+
+    @media(max-width:820px){.hero{grid-template-columns:1fr}nav{display:none}.pattern{display:none}}
+  </style>
+</head>
+<body>
+  <div class="wrap" role="main">
+    <svg class="pattern" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <linearGradient id="g" x1="0" x2="1"><stop stop-color="#6b8e77" offset="0" stop-opacity="0.9"/><stop stop-color="#c9e0d0" offset="1" stop-opacity="0.6"/></linearGradient>
+      </defs>
+      <rect width="200" height="200" fill="url(#g)" rx="20"/>
+      <g fill="rgba(255,255,255,0.08)" transform="translate(10,10)">
+        <circle cx="30" cy="30" r="6"/><circle cx="70" cy="50" r="5"/><circle cx="110" cy="90" r="4"/>
+        <rect x="20" y="110" width="90" height="6" rx="3"/>
+      </g>
+    </svg>
+
+    <header>
+      <div>
+        <div class="brand">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+      <nav>
+        <a href="index.html">Gatherings</a>
+        <a href="private-sessions.html">Sessions</a>
+        <a href="pricing.html">Investment</a>
+        <a href="about.html">The Story</a>
+        <a href="faq.html">FAQ</a>
+        <a href="book.html">Reserve</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div>
+        <h1>Upcoming Sound Gatherings</h1>
+        <p class="lead">Join a curated circle where tone and pause create a clear space to rest, notice, and decide. Select a seat, plan what to bring, and claim your place.</p>
+
+        <div class="card next-event">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-size:13px;color:var(--muted)">Next gathering</div>
+              <div style="font-weight:700;font-size:16px" id="nextWhen">—</div>
+              <div style="color:var(--muted);font-size:13px" id="nextWhere">—</div>
+            </div>
+            <div>
+              <a class="btn" href="book.html">{{PRIMARY_CTA_LABEL}}</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <div style="font-weight:600">Calendar</div>
+            <div style="font-size:13px;color:var(--muted)">Select a date for details</div>
+          </div>
+          <div class="calendar" id="calendar"></div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <div style="font-weight:600">Contraindications & safe practice</div>
+          <div style="color:var(--muted);font-size:13px;margin-top:8px">Sound facilitation is gentle but may not be suitable for everyone. If you have a history of seizure disorders, uncontrolled epilepsy, recent surgery, or are pregnant without medical consent, please consult your healthcare provider before attending. If you use hearing aids or implants, reach out to <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> for guidance.</div>
+        </div>
+
+      </div>
+
+      <aside>
+        <div class="card">
+          <div style="font-weight:700;margin-bottom:6px">Reserve seats — mock selector</div>
+          <div style="font-size:13px;color:var(--muted)">Choose your preferred spot. This selector is local and illustrative; final booking is via the Reserve page.</div>
+
+          <div class="seats" id="seats"></div>
+          <div class="meta"><span id="selectedCount">0</span> selected • <span id="availableCount">--</span> available</div>
+
+          <div style="margin-top:12px">
+            <label style="font-size:13px;display:block;margin-bottom:6px">Seating preference</label>
+            <select id="seatType" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(12,15,20,0.06)">
+              <option value="floor">Floor cushion (quiet, grounded)</option>
+              <option value="chair">Chair (upright, supported)</option>
+              <option value="mat">Yoga mat (stretched, open)</option>
+            </select>
+          </div>
+
+          <div class="packing">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div style="font-weight:600">What to bring</div>
+              <button id="genPacking" class="btn ghost">Generate</button>
+            </div>
+            <div class="list" id="packingList">—</div>
+          </div>
+
+        </div>
+
+        <div style="margin-top:12px" class="card">
+          <div style="font-weight:700">Quick notes</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:8px">Arrive 10–15 minutes early. Dress in layers. Water will be available. For accessibility, please email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</div>
+        </div>
+
+      </aside>
+    </section>
+
+    <footer>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>Questions? Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</div>
+        <div style="color:var(--muted)">© <span id="year"></span></div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    (function(){
+      const events=[
+        {date:'2026-03-05T18:30',label:'Evening Circle — The Low Tide',place:'Community Loft, {{CITY}}'},
+        {date:'2026-03-12T10:00',label:'Morning Unwind',place:'Studio B, {{CITY}}'},
+        {date:'2026-03-19T18:30',label:'Midnight Balance',place:'Riverside Room, {{CITY}}'},
+        {date:'2026-04-02T09:30',label:'Weekend Reset',place:'Green Hall, {{CITY}}'}
+      ];
+
+      // populate calendar
+      const cal=document.getElementById('calendar');
+      events.forEach((e,i)=>{
+        const dt=new Date(e.date);
+        const box=document.createElement('button');
+        box.className='evt';
+        box.type='button';
+        box.innerHTML='<div class="when">'+dt.toLocaleString(undefined,{weekday:'short',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})+'</div><div style="color:var(--muted);font-size:13px;margin-top:6px">'+e.label+'</div>';
+        box.addEventListener('click',()=>{
+          document.getElementById('nextWhen').textContent = dt.toLocaleString(undefined,{weekday:'long',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
+          document.getElementById('nextWhere').textContent = e.place;
+        });
+        cal.appendChild(box);
+        if(i===0){ box.click(); }
+      });
+
+      // seats mockup
+      const seatsEl=document.getElementById('seats');
+      const totalSeats=32;
+      const takenIndexes=new Set();
+      // fake some taken seats
+      for(let i=0;i<8;i++){ takenIndexes.add(Math.floor(Math.random()*totalSeats)); }
+      const seats=[];
+      for(let i=0;i<totalSeats;i++){
+        const b=document.createElement('button');
+        b.className='seat'+(takenIndexes.has(i)?' taken':'');
+        b.type='button';
+        b.textContent = i+1;
+        if(!takenIndexes.has(i)){
+          b.addEventListener('click',()=>{
+            if(b.classList.contains('selected')){ b.classList.remove('selected'); }
+            else{ b.classList.add('selected'); }
+            updateSeatMeta();
+          });
+        }
+        seatsEl.appendChild(b);
+        seats.push(b);
+      }
+
+      function updateSeatMeta(){
+        const selected=seats.filter(s=>s.classList.contains('selected')).length;
+        const available=seats.filter(s=>!s.classList.contains('taken')).length;
+        document.getElementById('selectedCount').textContent=selected;
+        document.getElementById('availableCount').textContent=available;
+      }
+      updateSeatMeta();
+
+      // packing generator
+      document.getElementById('genPacking').addEventListener('click',()=>{
+        const type=document.getElementById('seatType').value;
+        const suggestions=['Water bottle','Comfortable layers','Socks or soft shoes','Small towel'];
+        if(type==='floor') suggestions.push('Yoga cushion or small bolster','Blanket for warmth');
+        if(type==='chair') suggestions.push('Light shawl for neck support');
+        if(type==='mat') suggestions.push('Yoga mat and lightweight blanket');
+        // if selected seats > 0 add extra
+        const sel = parseInt(document.getElementById('selectedCount').textContent,10)||0;
+        if(sel>0) suggestions.push('You selected '+sel+' seat'+(sel>1?'s':'' )+' — arrive together if in a group');
+        const list = suggestions.map(s=>'<div style="padding:6px 0;border-bottom:1px dashed rgba(11,15,14,0.04)">'+s+'</div>').join('');
+        document.getElementById('packingList').innerHTML=list;
+      });
+
+      // footer year
+      document.getElementById('year').textContent = new Date().getFullYear();
+
+    })();
+  </script>
+</body>
+</html>

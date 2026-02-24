@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Method — How We Work</title>
+  <style>
+    :root{--bg:#f8fffb;--card:#fff;--accent:#27624c;--muted:#2f4f43}
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--muted)}
+    .wrap{max-width:1000px;margin:0 auto;padding:20px}
+    header{display:flex;align-items:center}
+    nav{margin-left:auto}
+    nav a{margin-left:10px;color:var(--accent);text-decoration:none}
+    .hero{display:flex;gap:18px;align-items:flex-start}
+    .card{background:var(--card);padding:16px;border-radius:10px;box-shadow:0 10px 26px rgba(18,60,50,0.04)}
+    .meta{color:#214a3e;font-size:0.95rem}
+    .timeline{margin-top:12px}
+    .steps{display:flex;gap:10px;flex-wrap:wrap}
+    .step{flex:1 1 30%;min-width:180px;padding:12px;border-radius:8px;background:linear-gradient(180deg,#f6fff8,#fff);border:1px solid rgba(30,80,60,0.04)}
+    .moodselect{margin-top:12px}
+    .moodselect button{padding:8px 10px;border-radius:8px;border:1px solid rgba(20,60,50,0.08);background:#fff;color:var(--accent);cursor:pointer}
+    .moodselect button.active{background:var(--accent);color:#fff}
+    .dynamic{margin-top:10px;padding:10px;border-radius:8px;background:#f2fff7}
+    .cta{display:inline-block;padding:10px 14px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none}
+    @media(max-width:880px){.steps{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <header>
+      <div style='display:flex;align-items:center;gap:12px'>
+        <svg width='38' height='38' viewBox='0 0 32 32' aria-hidden='true'><rect x='2' y='2' width='28' height='28' rx='6' fill='#27624c'></rect></svg>
+        <div>
+          <div style='font-weight:600;color:var(--accent)'>Care Method</div>
+          <div class='meta'>A practical, layered approach to steady progress</div>
+        </div>
+      </div>
+      <nav>
+        <a href='index.html'>Home</a>
+        <a href='services.html'>Care Catalog</a>
+        <a href='conditions.html'>What We Address</a>
+        <a href='approach.html'>Method</a>
+        <a href='pricing.html'>Plans</a>
+        <a href='about.html'>Team</a>
+        <a href='book.html'>Reserve</a>
+        <a href='contact.html'>Reach</a>
+      </nav>
+    </header>
+
+    <section class='hero' style='margin-top:18px'>
+      <div class='card' style='flex:1'>
+        <h2 style='margin:0 0 8px 0;color:#153827'>An anatomy of our approach</h2>
+        <p style='margin:0 0 10px 0'>We combine observational framing, brief targeted interventions, and skill-building so changes can last. Below is a short, visual breakdown and an interactive planner to customize pace.</p>
+
+        <div class='timeline card' role='group' aria-label='Three phase method'>
+          <div class='steps'>
+            <div class='step'>
+              <strong>Phase 1 — Observe & Reduce Strain</strong>
+              <div style='margin-top:8px'>Collect data, stabilize sleep and meals, reduce acute drivers of symptoms.</div>
+            </div>
+            <div class='step'>
+              <strong>Phase 2 — Practice & Rebuild</strong>
+              <div style='margin-top:8px'>Introduce movement, nutrition adjustments, and coping skills at manageable doses.</div>
+            </div>
+            <div class='step'>
+              <strong>Phase 3 — Adapt for Life</strong>
+              <div style='margin-top:8px'>Move toward self-directed maintenance and adapt strategies to your routine and goals.</div>
+            </div>
+          </div>
+        </div>
+
+        <div style='margin-top:12px'>
+          <strong style='display:block'>Timeline planner</strong>
+          <p style='margin:6px 0 8px 0'>Pick a pace and see the estimated weeks for each phase. This tool is educational — not diagnostic.</p>
+
+          <div style='display:flex;gap:8px;align-items:center'>
+            <label for='speed'>Pace</label>
+            <select id='speed'>
+              <option value='slow'>Slow</option>
+              <option value='norm' selected>Norm</option>
+              <option value='fast'>Fast</option>
+            </select>
+            <div id='summary' style='margin-left:12px;color:#214a3e;font-weight:600'></div>
+          </div>
+
+          <div id='phasedetails' style='margin-top:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px'>
+            <div style='padding:10px;border-radius:8px;background:#fff;border:1px solid rgba(20,70,55,0.04)'>
+              <div style='font-weight:700' id='p1-weeks'></div>
+              <div style='font-size:0.92rem;color:#345a4b'>Phase 1 weeks</div>
+            </div>
+            <div style='padding:10px;border-radius:8px;background:#fff;border:1px solid rgba(20,70,55,0.04)'>
+              <div style='font-weight:700' id='p2-weeks'></div>
+              <div style='font-size:0.92rem;color:#345a4b'>Phase 2 weeks</div>
+            </div>
+            <div style='padding:10px;border-radius:8px;background:#fff;border:1px solid rgba(20,70,55,0.04)'>
+              <div style='font-weight:700' id='p3-weeks'></div>
+              <div style='font-size:0.92rem;color:#345a4b'>Phase 3 weeks</div>
+            </div>
+          </div>
+
+          <p style='margin-top:10px;font-size:0.88rem;color:#2b4f43'>Disclaimer: The planner offers an approximate timeline. Individual health circumstances and testing results may alter pace and steps.</p>
+        </div>
+
+      </div>
+
+      <aside style='width:360px'>
+        <div class='card'>
+          <h3 style='margin:0 0 8px 0;color:#153827'>Mood-to-Method</h3>
+          <p style='margin:0 0 8px 0'>Choose how you feel now and we will suggest a first action and tailored micro-habits to begin.</p>
+
+          <div class='moodselect' role='tablist' aria-label='Mood selector'>
+            <button data-key='overloaded' class='active' type='button'>Overloaded</button>
+            <button data-key='drained' type='button'>Drained</button>
+            <button data-key='aching' type='button'>Aching</button>
+          </div>
+
+          <div class='dynamic' id='method-box'>
+            <strong id='method-title'>Micro-reset for overloaded days</strong>
+            <div id='method-copy' style='margin-top:8px'>Two simple steps: 1) a 5-minute grounding routine; 2) a one-day sleep-focused priority. These are practical, small wins to reduce reactivity.</div>
+            <a id='method-cta' class='cta' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a>
+          </div>
+
+          <script>
+            (function(){
+              const options = {
+                overloaded: {title:'Micro-reset for overloaded days',copy:'Short grounding and a very light evening plan to dampen reactivity. Recommended: Resilience Sessions to layer skills.',label:'Book a short session',url:'{{PRIMARY_CTA_URL}}?entry=overload'},
+                drained: {title:'Energy-first microplan',copy:'Small nutrition and pacing cues to protect energy across the day. Recommended: Nourish pathway.',label:'Start an energy check',url:'{{PRIMARY_CTA_URL}}?entry=energy'},
+                aching: {title:'Pacing & gentle mobility steps',copy:'Three mobility mini-sessions and sleep tweaks to reduce flare risk. Recommended: Pain & Movement Pathway.',label:'Learn about pain pathway',url:'{{PRIMARY_CTA_URL}}?entry=pain'}
+              };
+              const buttons = Array.from(document.querySelectorAll('.moodselect button'));
+              const title = document.getElementById('method-title');
+              const copy = document.getElementById('method-copy');
+              const cta = document.getElementById('method-cta');
+
+              function set(key,btn){
+                buttons.forEach(b=>b.classList.remove('active'));
+                if(btn) btn.classList.add('active');
+                const info = options[key];
+                title.textContent = info.title; copy.textContent = info.copy; cta.textContent = info.label; cta.setAttribute('href', info.url);
+              }
+              buttons.forEach(b=>b.addEventListener('click',()=>set(b.getAttribute('data-key'), b)));
+              set('overloaded', document.querySelector("button[data-key='overloaded']"));
+            })();
+          </script>
+
+        </div>
+
+        <div style='height:18px'></div>
+
+        <div class='card' style='padding:12px'>
+          <h4 style='margin:0 0 6px 0;color:#153827'>Micro-habits we often teach</h4>
+          <ul style='margin:0 0 0 16px;color:#27493f'>
+            <li>2-minute mid-day reset: breath and posture</li>
+            <li>Evening wind-down without screens for 45 minutes</li>
+            <li>Protein + fiber at breakfast to stabilize energy</li>
+          </ul>
+        </div>
+
+      </aside>
+    </section>
+
+    <section style='margin-top:18px'>
+      <div class='card'>
+        <h3 style='margin:0 0 8px 0;color:#153827'>Coordination & realistic expectations</h3>
+        <p style='margin:0'>We coordinate with primary care and specialists when needed. Our work emphasizes gradual, measurable change rather than abrupt fixes. Your clinician will note expected timeframes and safety considerations during visits.</p>
+        <p style='margin-top:8px;font-size:0.9rem;color:#2b4f43'>If you have urgent symptoms or unstable medical issues, seek immediate medical attention rather than using this site as a substitute for care.</p>
+      </div>
+    </section>
+
+    <footer style='margin-top:18px;color:#2b4f43'>
+      <div class='wrap' style='display:flex;justify-content:space-between;align-items:center;padding:0'>
+        <div>Contact <a href='mailto:{{EMAIL}}' style='color:var(--accent)'>{{EMAIL}}</a> • <a href='tel:{{PHONE}}' style='color:var(--accent)'>{{PHONE}}</a></div>
+        <div style='font-size:0.9rem'>Serving {{CITY}}, {{STATE}}</div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

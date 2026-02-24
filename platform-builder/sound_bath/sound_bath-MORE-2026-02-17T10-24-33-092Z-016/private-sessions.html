@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Sanctuary — Private Sessions | {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#08121a;--card:#07121a;--accent:#FFD27A;--calm:#7CE7C6;--muted:#9FB3BA}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:linear-gradient(180deg,#041018,#071422);color:#eaf7f4}
+    .site{max-width:980px;margin:28px auto;padding:22px}
+    header{display:flex;align-items:center;justify-content:space-between}
+    .logo{font-weight:900;background:linear-gradient(90deg,var(--accent),var(--calm));-webkit-background-clip:text;background-clip:text;color:transparent;font-size:20px}
+    nav a{color:#cfeef0;text-decoration:none;margin-left:14px;font-weight:700}
+    .hero{margin-top:18px;padding:22px;background:rgba(255,255,255,0.02);border-radius:16px;display:flex;gap:20px}
+    .hero .left{flex:1}
+    h1{margin:0;font-size:24px}
+    p.lead{color:var(--muted);margin-top:8px}
+    .book-cta{margin-top:14px}
+    .btn{padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent),var(--calm));color:#042328;font-weight:800;text-decoration:none}
+    .side{width:320px;background:rgba(255,255,255,0.02);padding:14px;border-radius:12px}
+    .session-list{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+    .session{background:rgba(255,255,255,0.01);padding:12px;border-radius:10px}
+    .price{font-weight:900;color:var(--accent);font-size:18px}
+    .micro-compare{display:flex;gap:10px;align-items:center;margin-top:14px}
+    .toggle{background:#06202a;padding:6px;border-radius:999px;display:inline-flex}
+    .toggle button{background:transparent;border:0;color:var(--muted);padding:6px 10px;border-radius:999px;font-weight:700}
+    .toggle button.active{background:linear-gradient(90deg,var(--accent),var(--calm));color:#042328}
+    .proof{margin-top:18px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);padding:14px;border-radius:12px}
+    .testi{min-height:80px;display:flex;gap:12px;align-items:center}
+    .avatar{width:56px;height:56px;border-radius:10px;background:linear-gradient(180deg,#124857,#082b2b);display:grid;place-items:center;font-weight:800}
+    .quote{color:var(--muted)}
+    .badges{display:flex;gap:8px;margin-top:10px}
+    .badge{background:#061c21;padding:8px 10px;border-radius:8px;cursor:pointer;color:#bfece6;font-size:13px}
+    .tooltip{position:absolute;background:#042128;padding:8px;border-radius:8px;color:#d7faf3;font-size:13px;box-shadow:0 6px 18px rgba(2,8,10,0.6)}
+    .disclaimer{margin-top:12px;color:#cfe8e3;font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="site">
+    <header>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="logo">{{BUSINESS_NAME}}</div>
+        <div style="color:var(--muted);font-size:13px">Private sound work • one-to-one & small duets</div>
+      </div>
+      <nav>
+        <a href="index.html">Gatherings</a>
+        <a href="events.html">Calendar</a>
+        <a href="private-sessions.html">Sanctuary</a>
+        <a href="pricing.html">Value</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="left">
+        <h1>Private sound sessions — tailored listening</h1>
+        <p class="lead">Quietly tailored, carefully timed sessions for nervous-system regulation, personal recalibration, or guided rest. Choose a single session or a phased package for deeper work.</p>
+
+        <div class="micro-compare" aria-hidden>
+          <div style="font-size:13px;color:var(--muted);font-weight:700">View pricing:</div>
+          <div class="toggle" id="toggleSessions">
+            <button data-mode="single" class="active">Single</button>
+            <button data-mode="pack">Package</button>
+          </div>
+          <div style="margin-left:auto;font-weight:900;color:var(--accent)" id="livePrice">$120</div>
+        </div>
+
+        <div style="margin-top:12px">
+          <a class="btn" href="book.html">Begin Private Booking</a>
+        </div>
+
+        <div class="disclaimer">Contraindications: Private sessions involve sustained tones and subtle vibration. Not advised for those with pacemakers, implanted devices, or uncontrolled seizure disorders. If pregnant or under medical care, consult a provider first.</div>
+
+        <div class="proof" id="proof">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <strong>Proof Gallery</strong>
+            <div style="font-size:13px;color:var(--muted)">Real reflections & third-party cred</div>
+          </div>
+          <div class="testi" id="testiArea">
+            <div class="avatar">JM</div>
+            <div>
+              <div style="font-weight:800;color:#e8fbf9" id="testiName">—</div>
+              <div class="quote" id="testiText">—</div>
+            </div>
+          </div>
+          <div class="badges" id="badges">
+            <div class="badge" data-tip="Featured: City Wellness Review">City Wellness</div>
+            <div class="badge" data-tip="Guest workshop at Blue Lotus Studio">Blue Lotus</div>
+            <div class="badge" data-tip="Endorsed by a local therapist collective">Therapist Collective</div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="side">
+        <h4 style="margin:0 0 8px">Session types</h4>
+        <div class="session-list">
+          <div class="session">
+            <div style="display:flex;justify-content:space-between"><div>Guided Sound Session</div><div class="price">$120</div></div>
+            <div style="color:var(--muted);font-size:13px;margin-top:6px">45–60 min • focused restorative work</div>
+          </div>
+          <div class="session">
+            <div style="display:flex;justify-content:space-between"><div>Pairing Session</div><div class="price">$180</div></div>
+            <div style="color:var(--muted);font-size:13px;margin-top:6px">For two people • shared recalibration</div>
+          </div>
+        </div>
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,0.02);margin:12px 0">
+        <div style="font-size:13px;color:var(--muted)">Sessions by appointment. Gift certificates available. Call <a href="tel:{{PHONE}}" style="color:#dff8f0">{{PHONE}}</a>.</div>
+      </aside>
+    </section>
+
+    <footer style="margin-top:18px;color:var(--muted);font-size:13px;display:flex;justify-content:space-between">
+      <div>&copy; {{BUSINESS_NAME}}</div>
+      <div>Email: <a href="mailto:{{EMAIL}}" style="color:#dff8f0">{{EMAIL}}</a></div>
+    </footer>
+  </div>
+
+  <script>
+    // Micro pricing toggle with animated numbers
+    (function(){
+      const toggle = document.getElementById('toggleSessions');
+      const btns = toggle.querySelectorAll('button');
+      const livePrice = document.getElementById('livePrice');
+      const pricing = {single:120, pack:520}; // pack is 5-session package effective price
+      let current = 'single';
+
+      function animateValue(el, start, end, duration){
+        const range = end - start; let startTime = null;
+        function step(ts){
+          if(!startTime) startTime = ts;
+          const progress = Math.min((ts - startTime)/duration,1);
+          const value = Math.round(start + range*progress);
+          el.textContent = '$' + value;
+          if(progress<1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+
+      btns.forEach(b=>b.addEventListener('click', ()=>{
+        btns.forEach(x=>x.classList.remove('active'));
+        b.classList.add('active');
+        const mode = b.getAttribute('data-mode');
+        const from = parseInt(livePrice.textContent.replace(/[^0-9]/g,''))||0;
+        const to = pricing[mode];
+        animateValue(livePrice, from, to, 420);
+        current = mode;
+      }));
+
+      // initial value
+      livePrice.textContent = '$' + pricing[current];
+    })();
+
+    // Proof Gallery rotating testimonials and badge tooltips
+    (function(){
+      const testimonials = [
+        {name:'Marin K', text:'A gentle, unmistakable settling — quiet but powerful. I slept deeply the next two nights.'},
+        {name:'A. Rivera', text:'The session supported a long week of travel. I left with calmer shoulders and clearer thinking.'},
+        {name:'S. Patel', text:'Precise listening, generous holding. Felt seen by sound that never shouted.'}
+      ];
+      let idx=0; const nameEl = document.getElementById('testiName');
+      const textEl = document.getElementById('testiText');
+      function show(i){
+        const t = testimonials[i%testimonials.length];
+        nameEl.textContent = t.name;
+        textEl.textContent = t.text;
+      }
+      show(0);
+      setInterval(()=>{idx=(idx+1)%testimonials.length;show(idx);},4200);
+
+      // badges tooltip
+      const badges = document.getElementById('badges');
+      let tipEl;
+      badges.addEventListener('mouseover', e=>{
+        const b = e.target.closest('.badge'); if(!b) return;
+        const tip = b.getAttribute('data-tip');
+        tipEl = document.createElement('div');
+        tipEl.className = 'tooltip'; tipEl.textContent = tip; document.body.appendChild(tipEl);
+        const r = b.getBoundingClientRect(); tipEl.style.left = (r.left + window.scrollX + r.width/2 - tipEl.offsetWidth/2) + 'px';
+        tipEl.style.top = (r.top + window.scrollY - 10 - tipEl.offsetHeight) + 'px';
+      });
+      badges.addEventListener('mouseout', e=>{ if(tipEl){tipEl.remove(); tipEl = null;} });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Praise — {{BUSINESS_NAME}}</title>
+<style>
+:root{--accent:#6b9bd1;--muted:#56707a}
+*{box-sizing:border-box}body{font-family:Inter,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:0;background:#fcfeff;color:#052b34}
+header{display:flex;align-items:center;justify-content:space-between;padding:16px 26px}
+.logo{font-weight:700;color:var(--accent)}
+nav a{margin:0 8px;color:#052b34;text-decoration:none}
+.container{max-width:980px;margin:20px auto;padding:0 20px}
+.top{display:flex;align-items:center;justify-content:space-between}
+h1{margin:0;font-size:26px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+.card{background:white;padding:16px;border-radius:12px;box-shadow:0 10px 30px rgba(9,30,26,0.04)}
+.quote{font-style:italic;color:#09323a}
+.by{display:block;margin-top:10px;font-weight:700;color:#042c35}
+.role{color:var(--muted);font-size:13px}
+.section{opacity:0;transform:translateY(14px);transition:opacity .55s ease,transform .55s ease;margin-top:18px}
+.section.revealed{opacity:1;transform:none}
+.gallery{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
+.thumb{background:linear-gradient(135deg,#eaf8ff,#f6fbff);padding:12px;border-radius:8px;text-align:center}
+.cta{margin-top:20px}
+.btn{background:var(--accent);color:white;padding:10px 14px;border-radius:10px;border:none;cursor:pointer}
+.footer{padding:20px;text-align:center;color:var(--muted);font-size:14px;margin-top:28px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}.gallery{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<header>
+<div class="logo">{{BUSINESS_NAME}}</div>
+<nav>
+<a href="index.html">Home</a>
+<a href="about.html">Story</a>
+<a href="programs.html">Cohorts</a>
+<a href="pricing.html">Invest</a>
+<a href="book.html">Book</a>
+</nav>
+</header>
+<main class="container">
+<section class="section" data-reveal>
+<h1>What people say after a cohort</h1>
+<p class="small">True-to-life notes on habit change, frameworks that stuck, and the practical moves people actually kept.</p>
+</section>
+<section class="grid section" data-reveal>
+<div class="card">
+<p class="quote">"The tools here turned chaos into a few repeatable moves I can do every morning — small entries that make a measurable difference."</p>
+<span class="by">A. Rivera</span><span class="role">Product Manager, remote</span>
+</div>
+<div class="card">
+<p class="quote">"I stopped starting over. The cohort felt like a lab: try a tweak, report back, refine. That loop mattered more than grand plans."</p>
+<span class="by">Sam T.</span><span class="role">Teacher</span>
+</div>
+<div class="card">
+<p class="quote">"I couldn't commit to big blocks — the short actionable prompts were perfect. I built momentum without overwhelm."</p>
+<span class="by">Nadia R.</span><span class="role">Freelancer</span>
+</div>
+</section>
+<section class="gallery section" data-reveal>
+<div class="thumb">"Week 1 rewired my morning" — J</div>
+<div class="thumb">"Small practices, steady change" — L</div>
+<div class="thumb">"The templates are gold" — K</div>
+<div class="thumb">"I can teach this to my team" — R</div>
+</section>
+<section class="section" data-reveal>
+<h3>Would you like to share your story?</h3>
+<p class="small">Send a note — we may include an anonymous excerpt to help others choose the right cohort.</p>
+<form style="margin-top:10px;display:grid;gap:8px;max-width:650px">
+<input placeholder="Your name" />
+<input placeholder="Email" />
+<textarea rows="4" placeholder="A quick note on your experience"></textarea>
+<div style="display:flex;gap:8px"><button class="btn" type="button">Share</button><button class="btn" style="background:#334155;">Maybe later</button></div>
+</form>
+</section>
+<div class="cta section" data-reveal>
+<p>Ready to try a cohort? <button class="btn" onclick="location.href='programs.html'">See cohort dates</button></p>
+</div>
+<div class="footer section" data-reveal>
+<p>{{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></p>
+</div>
+</main>
+<script>
+(function(){
+var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var nodes = document.querySelectorAll('[data-reveal]');
+if(reduced){nodes.forEach(function(n){n.classList.add('revealed')});return}
+var obs = new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('revealed');obs.unobserve(e.target)}});},{threshold:0.12});
+nodes.forEach(function(n){obs.observe(n)});
+})();
+</script>
+</body>
+</html>

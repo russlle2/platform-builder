@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Common Concerns — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbf7f2;--deep:#6a4031;--warm:#c78662;--muted:#86624f}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto;color:var(--deep);background:linear-gradient(180deg,#fffaf6,#fbf7f2)}
+    .container{max-width:980px;margin:36px auto;padding:22px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    .logo{width:56px;height:56px;background:radial-gradient(#c78a66,#8b5a3d);border-radius:12px;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
+    nav a{margin-left:12px;text-decoration:none;color:var(--muted);font-weight:600}
+    .hero{background:#fff;padding:20px;border-radius:12px;margin-top:18px;box-shadow:0 8px 24px rgba(104,67,51,0.06)}
+    .hero h1{margin:0;color:var(--deep)}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:20px;margin-top:16px}
+    .list{background:linear-gradient(180deg,#fff,#fff6f2);padding:16px;border-radius:12px}
+    .condition{padding:12px;border-radius:10px;margin-bottom:10px;border-left:4px solid rgba(167,109,86,0.12)}
+    .condition h3{margin:0 0 6px}
+    .disclaimer{font-size:13px;color:var(--muted);margin-top:6px}
+    .aside{background:#fff;padding:16px;border-radius:12px}
+    .cta{display:inline-block;padding:10px 14px;background:var(--deep);color:#fff;border-radius:10px;text-decoration:none;font-weight:700}
+    .svg-bg{position:absolute;left:10px;bottom:10px;opacity:0.06;width:300px;height:300px;pointer-events:none}
+    @media(max-width:880px){.grid{grid-template-columns:1fr}.svg-bg{display:none}}
+  </style>
+</head>
+<body>
+  <svg class="svg-bg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <defs>
+      <linearGradient id="gA" x1="0" x2="1"><stop offset="0" stop-color="#fff0e6"/><stop offset="1" stop-color="#fdeee1"/></linearGradient>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#gA)" rx="40"/>
+    <g fill="#e8c9b2">
+      <rect x="20" y="30" width="60" height="60" rx="12"/>
+      <circle cx="220" cy="200" r="70"/>
+    </g>
+  </svg>
+
+  <div class="container">
+    <header>
+      <div style="display:flex;gap:12px;align-items:center">
+        <div class="logo">HM</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:var(--muted)">Holistic care with scientific curiosity</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Main</a>
+        <a href="services.html">Offerings</a>
+        <a href="conditions.html" style="color:var(--deep);font-weight:700">What we help</a>
+        <a href="approach.html">How we work</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <h1>Concerns we commonly address</h1>
+      <p class="disclaimer">We take a whole-person approach—educational guidance, lifestyle interventions and collaborative care. Nothing here is a guaranteed cure; recommendations are personalized and evidence-informed.</p>
+    </section>
+
+    <div class="grid">
+      <div class="list">
+        <div class="condition">
+          <h3>Chronic stress & burnout</h3>
+          <p class="disclaimer">Support for nervous system regulation, sleep, boundaries and nutrition to reduce physiological load. We focus on practical practices and measurable steps.</p>
+        </div>
+        <div class="condition">
+          <h3>Sleep dysregulation</h3>
+          <p class="disclaimer">Assessment of sleep habits, circadian cues and targeted interventions (behavioral, nutritional, supplement education) to improve sleep quality.</p>
+        </div>
+        <div class="condition">
+          <h3>Digestive symptoms</h3>
+          <p class="disclaimer">Bloating, irregularity and discomfort are explored via diet patterns, motility support and optional testing when indicated. Education-first; tests used selectively.</p>
+        </div>
+        <div class="condition">
+          <h3>Low energy & fatigue</h3>
+          <p class="disclaimer">We look at sleep, nutrition, stress, thyroid and metabolic contributors and co-create a prioritized plan.</p>
+        </div>
+        <div class="condition">
+          <h3>Inflammation & aches</h3>
+          <p class="disclaimer">Lifestyle measures, anti-inflammatory nutrition frameworks and targeted support may reduce symptom burden. Referral to specialists when necessary.</p>
+        </div>
+
+        <div style="margin-top:12px;font-size:13px;color:var(--muted)">If you have a serious or urgent medical issue, please call your primary care provider or emergency services. Our care complements—but does not replace—medical diagnosis or emergency care.</div>
+      </div>
+
+      <aside class="aside">
+        <h3 style="margin-top:0">How we decide next steps</h3>
+        <ol style="color:var(--muted)">
+          <li>Detailed intake and history</li>
+          <li>Targeted, time-bound plan</li>
+          <li>Follow-ups and education</li>
+        </ol>
+        <p style="color:var(--muted);font-size:13px">Optional labs (stool, hormone panels, micronutrient screens) are used sparingly as educational tools and discussed before ordering.</p>
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">Book a consult</a>
+        <div style="margin-top:10px;font-size:13px;color:var(--muted)">Questions? Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call {{PHONE}}</div>
+      </aside>
+    </div>
+
+    <section style="margin-top:22px;background:#fff;padding:14px;border-radius:10px;border-left:6px solid #e6c7b2">
+      <strong>Myth vs Truth</strong>
+      <p class="disclaimer" style="margin-top:8px">Myth: "A single supplement will fix everything." Truth: Holistic care combines layered interventions—habits, diet, stress resilience and, when appropriate, targeted supports—to create durable change.</p>
+    </section>
+
+    <footer style="margin-top:26px;color:var(--muted)">Care is individualized. Services provided by {{PRACTITIONER_NAME}}, {{CREDENTIALS}}. Licensed care and collaborative referrals as needed.</footer>
+  </div>
+</body>
+</html>

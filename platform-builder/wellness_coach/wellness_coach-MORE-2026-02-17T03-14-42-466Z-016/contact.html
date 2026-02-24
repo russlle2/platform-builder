@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contact • {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff8f2;--card:#ffffff;--accent:#ff6b6b;--muted:#6b6b6b;--glass:rgba(255,255,255,0.7);--shadow:0 6px 20px rgba(17,17,17,0.08);font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#fff);color:#111;-webkit-font-smoothing:antialiased}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;position:relative}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#ffb199);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:18px}
+    nav{display:flex;gap:14px;align-items:center}
+    nav a{color:#333;text-decoration:none;padding:8px 10px;border-radius:8px;font-weight:600}
+    nav a:hover{background:var(--glass)}
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;padding:32px;margin:20px;align-items:start}
+    .hero-card{background:var(--card);border-radius:16px;padding:28px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+    .pattern{position:absolute;inset:auto 0 -40% -10%;opacity:0.12;pointer-events:none}
+    h1{margin:0 0 10px;font-size:28px}
+    p.lead{margin:0 0 18px;color:var(--muted)}
+    .contact-form{display:flex;flex-direction:column;gap:12px}
+    input[type=text],input[type=email],textarea,select{padding:12px;border-radius:10px;border:1px solid #ececec;font-size:14px}
+    button.cta{background:var(--accent);color:#fff;padding:12px 14px;border-radius:10px;border:0;font-weight:700;cursor:pointer}
+    .side{background:linear-gradient(180deg,#fff,#fff8f2);padding:20px;border-radius:12px}
+
+    /* Mood-to-Method */
+    .mood{display:flex;flex-direction:column;gap:12px}
+    .mood-controls{display:flex;gap:8px;flex-wrap:wrap}
+    .mood-btn{padding:10px 12px;border-radius:10px;border:1px solid #eee;background:#fff;cursor:pointer}
+    .mood-btn.active{background:var(--accent);color:#fff;border-color:transparent}
+    .method{margin-top:12px;padding:12px;border-radius:10px;background:#fff;border:1px solid #f3e7e7}
+    .method h3{margin:0 0 8px}
+    .method p{margin:0;color:var(--muted)}
+
+    /* Pricing comparator */
+    .pricing{display:flex;gap:12px;flex-direction:column}
+    .toggle{display:inline-flex;background:#fff;border-radius:999px;padding:6px;border:1px solid #eee}
+    .toggle button{border:0;background:transparent;padding:6px 12px;border-radius:999px;cursor:pointer}
+    .toggle button.active{background:var(--accent);color:#fff}
+    .plans{display:flex;gap:12px;margin-top:12px}
+    .plan{flex:1;padding:16px;background:#fff;border-radius:12px;box-shadow:var(--shadow)}
+    .price{font-size:22px;font-weight:800;margin:6px 0}
+    .note{font-size:13px;color:var(--muted)}
+
+    /* Footer CTA */
+    footer{padding:28px;display:flex;justify-content:space-between;align-items:center}
+    .small{color:var(--muted);font-size:13px}
+
+    @media (max-width:900px){
+      .hero{grid-template-columns:1fr;}
+      nav{display:none}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">WC</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="/index.html">Home</a>
+      <a href="/about.html">Why It Works</a>
+      <a href="/programs.html">Series</a>
+      <a href="/services.html">Offerings</a>
+      <a href="/pricing.html">Investment</a>
+      <a href="/testimonials.html">Feedback</a>
+      <a href="/book.html">Reserve</a>
+      <a href="/contact.html">Say Hello</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-card">
+        <svg class="pattern" width="640" height="280" viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg"><rect width="640" height="280" fill="url(#g)"/></svg>
+        <h1>Reach out, share a moment, start a plan</h1>
+        <p class="lead">Use this form to tell us how you're feeling right now — we'll recommend a short, practical path and match you with an upcoming session or series.</p>
+
+        <form class="contact-form" id="contactForm">
+          <input type="text" name="name" placeholder="Your name" required>
+          <input type="email" name="email" placeholder="Email — we'll write back" required>
+          <input type="text" name="phone" placeholder="Phone (optional)">
+
+          <label style="font-size:13px;color:var(--muted);">Pick how you feel right now</label>
+          <div id="moodSelector" class="mood-controls">
+            <button type="button" class="mood-btn" data-mood="overwhelmed">Overwhelmed</button>
+            <button type="button" class="mood-btn" data-mood="restless">Restless</button>
+            <button type="button" class="mood-btn" data-mood="stuck">Stuck</button>
+            <button type="button" class="mood-btn" data-mood="energized">Energized</button>
+          </div>
+
+          <div id="methodDisplay" class="method" aria-live="polite">
+            <h3>Choose a mood to see a suggested approach</h3>
+            <p class="muted">Suggestions are practice-driven routines and offer a clear next step; they'll not replace professional advice.</p>
+          </div>
+
+          <input type="hidden" name="selectedMood" id="selectedMood">
+
+          <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+            <button type="submit" id="primaryCta" class="cta">{{PRIMARY_CTA_LABEL}}</button>
+            <div style="color:var(--muted);font-size:13px">or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+          </div>
+        </form>
+      </div>
+
+      <aside class="side">
+        <h3 style="margin:0 0 8px">Quick pricing snapshot</h3>
+        <p class="note">Toggle between monthly support and single-series packages to compare value. Numbers animate so you can feel the difference.</p>
+
+        <div style="margin-top:12px" class="pricing">
+          <div class="toggle" role="tablist" aria-label="Pricing type">
+            <button id="monthlyBtn" class="active">Monthly</button>
+            <button id="packageBtn">Package</button>
+          </div>
+
+          <div class="plans">
+            <div class="plan">
+              <div style="font-weight:700">Rhythm Session</div>
+              <div class="price" data-monthly="99" data-package="249">$99</div>
+              <div class="note">Short monthly check-ins to stabilize rhythms</div>
+            </div>
+            <div class="plan">
+              <div style="font-weight:700">Momentum Series</div>
+              <div class="price" data-monthly="175" data-package="499">$175</div>
+              <div class="note">6-week guided series for steady progress</div>
+            </div>
+            <div class="plan">
+              <div style="font-weight:700">Reset Retreat</div>
+              <div class="price" data-monthly="0" data-package="899">$0</div>
+              <div class="note">Single intensive weekend format</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:14px; font-size:13px; color:var(--muted)">Have a specific budget? Reply below with an amount and we'll show a fit.</div>
+      </aside>
+    </section>
+
+    <section style="margin:20px;padding:20px;display:flex;gap:20px;flex-wrap:wrap">
+      <div style="flex:1;min-width:320px;background:#fff;padding:18px;border-radius:12px;box-shadow:var(--shadow)">
+        <h3 style="margin-top:0">How a message helps</h3>
+        <p class="note">When you tell us how you are in the moment, we select a practical manual — a focused method for the next 7–14 days, and a suggestion for which event or series to join.</p>
+
+        <ul style="color:var(--muted)">
+          <li>Practical routines you can test in the coming week</li>
+          <li>Clear next session or series to book</li>
+          <li>Simple tracking suggestions you can reuse</li>
+        </ul>
+      </div>
+
+      <div style="width:320px;background:#fff;padding:18px;border-radius:12px;box-shadow:var(--shadow)">
+        <h4 style="margin:0 0 8px">Need a quick call?</h4>
+        <p class="note">If you prefer a call, include your phone and a few times that work. We'll confirm availability.</p>
+        <div style="font-weight:700;margin-top:12px">Phone</div>
+        <div class="small">{{PHONE}}</div>
+        <div style="margin-top:12px"><a href="/book.html" class="cta" style="display:inline-block;text-decoration:none">Schedule a slot</a></div>
+      </div>
+    </section>
+
+    <section style="margin:20px;padding:20px;display:flex;gap:20px;flex-direction:column">
+      <div style="background:#fff;padding:18px;border-radius:12px;box-shadow:var(--shadow)">
+        <h3 style="margin-top:0">Selected stories</h3>
+        <p class="note">Short notes from people who have tried the series and sessions.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:12px">
+          <blockquote style="background:#fff8f8;padding:12px;border-radius:10px">“Practical checkpoints that actually fit my week.” — S</blockquote>
+          <blockquote style="background:#fff8f8;padding:12px;border-radius:10px">“A clear next session and follow-up steps.” — M</blockquote>
+          <blockquote style="background:#fff8f8;padding:12px;border-radius:10px">“Helped me pick a small habit and stick to it.” — A</blockquote>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="small">Reach out any time — <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    <div><a href="/book.html" class="cta" style="text-decoration:none">{{PRIMARY_CTA_LABEL}}</a></div>
+  </footer>
+
+  <script>
+    // Mood-to-Method logic
+    const moodButtons = document.querySelectorAll('.mood-btn');
+    const methodDisplay = document.getElementById('methodDisplay');
+    const selectedMoodInput = document.getElementById('selectedMood');
+    const primaryCta = document.getElementById('primaryCta');
+
+    const methods = {
+      overwhelmed: {
+        title: 'Short-reset routine',
+        desc: 'Three focused anchors to reduce friction across your busiest hours: a 10-minute morning checklist, a 5-minute midday pause, and a 7-minute evening review. Ideal for testing immediate relief and consistency.',
+        cta: 'Request a Short-Reset'
+      },
+      restless: {
+        title: 'Stabilize-and-route',
+        desc: 'A sequence that channels scattered energy into two simple, repeatable moves: an evening wind-down and a micro-practice before high-energy tasks. Great when you feel jumpy and unfocused.',
+        cta: 'Show me the plan'
+      },
+      stuck: {
+        title: 'Momentum mini-series',
+        desc: 'A 4-week scaffold that pairs small wins with weekly check-ins: build a single anchor habit, measure weekly, adapt quickly. Designed to break inertia without overwhelming your schedule.',
+        cta: 'Preview the series'
+      },
+      energized: {
+        title: 'Amplify & structure',
+        desc: 'When energy is high, focus it: an 8-session plan to map priorities into short, high-leverage actions and keep momentum. Ideal for launching a new habit or project phase.',
+        cta: 'Match me to a slot'
+      }
+    };
+
+    function setMood(mood){
+      moodButtons.forEach(b=>b.classList.toggle('active', b.dataset.mood===mood));
+      const m = methods[mood];
+      if(!m) return;
+      methodDisplay.innerHTML = `<h3>${m.title}</h3><p>${m.desc}</p>`;
+      primaryCta.textContent = m.cta;
+      selectedMoodInput.value = mood;
+      // add a small pulse animation to CTA
+      primaryCta.animate([{transform:'scale(1)'},{transform:'scale(1.03)'},{transform:'scale(1)'}],{duration:420});
+    }
+
+    moodButtons.forEach(btn=>btn.addEventListener('click',()=>setMood(btn.dataset.mood)));
+
+    // Pricing comparator logic with animated numbers
+    const monthlyBtn = document.getElementById('monthlyBtn');
+    const packageBtn = document.getElementById('packageBtn');
+    const priceEls = document.querySelectorAll('.price');
+
+    let mode = 'monthly';
+
+    function animateValue(el, start, end, duration){
+      const startTime = performance.now();
+      function step(now){
+        const t = Math.min(1, (now - startTime)/duration);
+        const val = Math.round(start + (end - start)*t);
+        el.textContent = '$' + val;
+        if(t < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    function setPrices(newMode){
+      priceEls.forEach(el=>{
+        const monthly = Number(el.dataset.monthly) || 0;
+        const pkg = Number(el.dataset.package) || 0;
+        const target = newMode === 'monthly' ? monthly : pkg;
+        const current = Number(el.textContent.replace(/[^0-9]/g,'')) || 0;
+        animateValue(el, current, target, 520);
+      });
+    }
+
+    monthlyBtn.addEventListener('click',()=>{
+      if(mode==='monthly') return;
+      mode='monthly';
+      monthlyBtn.classList.add('active'); packageBtn.classList.remove('active');
+      setPrices('monthly');
+    });
+    packageBtn.addEventListener('click',()=>{
+      if(mode==='package') return;
+      mode='package';
+      packageBtn.classList.add('active'); monthlyBtn.classList.remove('active');
+      setPrices('package');
+    });
+
+    // Initialize display
+    setPrices('monthly');
+
+    // Form submission (local demo)
+    document.getElementById('contactForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      const form = new FormData(this);
+      const name = form.get('name');
+      const email = form.get('email');
+      const mood = form.get('selectedMood') || 'unspecified';
+      alert('Thanks, ' + name + '! We received your note and will suggest next steps based on "' + mood + '".');
+      // In a real implementation: POST to server or send email
+      this.reset();
+      methodDisplay.innerHTML = '<h3>Thanks — we\'ll be in touch</h3><p class="muted">Look for a reply at ' + email + '.</p>';
+      primaryCta.textContent = '{{PRIMARY_CTA_LABEL}}';
+    });
+  </script>
+</body>
+</html>

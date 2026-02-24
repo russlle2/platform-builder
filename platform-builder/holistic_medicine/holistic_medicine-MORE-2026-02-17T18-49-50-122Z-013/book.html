@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fffaf6;--muted:#5c5046;--accent:#70412b}
+    body{margin:0;font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;background:var(--bg);color:var(--muted)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:linear-gradient(180deg,#fffaf6,#fff7f2);box-shadow:0 1px 0 rgba(112,65,43,0.04)}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none}
+    .wrap{max-width:980px;margin:28px auto;padding:20px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:20px}
+    .card{background:#fff;padding:16px;border-radius:12px;box-shadow:0 10px 30px rgba(100,70,50,0.04)}
+    label{display:block;font-size:13px;margin-top:10px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(112,65,43,0.06);margin-top:6px}
+    button{background:var(--accent);color:#fff;padding:10px 12px;border-radius:10px;border:0;cursor:pointer}
+    .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none!important;transform:none;opacity:1}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(180deg,#f7ece1,#fff7f1);display:flex;align-items:center;justify-content:center;color:var(--accent);font-weight:700">HM</div>
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+    </div>
+    <nav>
+      <a href="index.html">Root</a>
+      <a href="services.html">Offerings</a>
+      <a href="pricing.html">Rates</a>
+      <a href="about.html">Our Story</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="reveal card">
+      <h1 style="margin:0;color:var(--accent)">Reserve a session</h1>
+      <p style="margin-top:8px;color:var(--muted)">Select an offering below and sketch a short plan. We’ll follow up with available times.</p>
+
+      <form id="bookingForm" style="margin-top:12px">
+        <label>Preferred offering</label>
+        <select id="offering">
+          <option value="single">Single session — $140</option>
+          <option value="block">Harmony Block — $380</option>
+          <option value="monthly">Seasonal Tune — $95 / mo</option>
+        </select>
+
+        <label>Your name</label>
+        <input type="text" id="name" required>
+
+        <label>Email</label>
+        <input type="text" id="email" required>
+
+        <label>Primary concern (brief)</label>
+        <input type="text" id="concern" placeholder="What brought you here">
+
+        <label>Notes & preferences</label>
+        <textarea id="notes" rows="4" placeholder="Modality preferences, accessibility needs, time constraints"></textarea>
+
+        <div style="display:flex;gap:10px;margin-top:12px">
+          <button type="button" id="preview">Preview plan</button>
+          <button type="submit" style="background:#3b2b22">Request time</button>
+        </div>
+      </form>
+    </section>
+
+    <aside class="reveal">
+      <div class="card">
+        <h3 style="margin:0;color:var(--accent)">Session Planner</h3>
+        <p style="color:var(--muted);margin-top:8px">Draft a short plan and copy a plaintext summary you can include in your booking message.</p>
+        <label>Weekly time</label>
+        <select id="pTime"><option value="15">15 min</option><option value="30">30 min</option><option value="60">60 min</option></select>
+        <label>Frequency</label>
+        <select id="pFreq"><option value="single">Single session</option><option value="block">3-session block</option><option value="monthly">Monthly tune</option></select>
+        <label>Preferences</label>
+        <input id="pPrefs" placeholder="Herbal, movement, breathwork...">
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button id="pBuild">Build</button>
+          <button type="button" id="pCopy" style="background:#fff;border:1px solid rgba(112,65,43,0.08);color:var(--accent)">Copy</button>
+        </div>
+        <pre id="pOut" style="white-space:pre-wrap;margin-top:12px;background:#fff7f3;padding:10px;border-radius:8px;min-height:90px"></pre>
+      </div>
+
+      <div style="margin-top:16px;text-align:center;color:var(--muted);font-size:13px">Or call <a href="tel:{{PHONE}}">{{PHONE}}</a> for scheduling help</div>
+    </aside>
+  </main>
+
+  <script>
+    (function(){
+      // Scroll reveal
+      function initReveal(){
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const items = document.querySelectorAll('.reveal');
+        if(prefersReduced){items.forEach(i=>i.classList.add('visible'));return}
+        const obs = new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}}),{threshold:0.06});
+        items.forEach(i=>obs.observe(i));
+      }
+
+      // Planner build
+      function buildSummary(data){
+        const lines=[];
+        lines.push('Reservation draft — '+(new Date()).toLocaleDateString());
+        lines.push('Name: '+(data.name||'—'));
+        lines.push('Email: '+(data.email||'—'));
+        lines.push('Offering: '+data.offeringText);
+        lines.push('Primary concern: '+(data.concern||'—'));
+        if(data.prefs) lines.push('Preferences: '+data.prefs);
+        lines.push('Weekly time: '+data.time+' min');
+        lines.push('\nSuggested plan:');
+        if(data.freq==='single') lines.push('- One session: assessment and 2–3 practical steps');
+        if(data.freq==='block') lines.push('- 3 sessions: assess, practice, refine');
+        if(data.freq==='monthly') lines.push('- Ongoing monthly tune to maintain progress');
+        lines.push('\nEstimated cost: '+data.estimate);
+        return lines.join('\n');
+      }
+      function estimate(off){if(off==='single')return '$140'; if(off==='block')return '$380'; return '$95 / month'}
+
+      document.addEventListener('DOMContentLoaded',function(){
+        initReveal();
+
+        const form=document.getElementById('bookingForm');
+        const preview=document.getElementById('preview');
+        preview.addEventListener('click',()=>{
+          const offering=document.getElementById('offering').value;
+          const offeringText = document.getElementById('offering').selectedOptions[0].text;
+          const name=document.getElementById('name').value.trim();
+          const email=document.getElementById('email').value.trim();
+          const concern=document.getElementById('concern').value.trim();
+          const notes=document.getElementById('notes').value.trim();
+          const time=document.getElementById('pTime')?document.getElementById('pTime').value:'30';
+          const data={name,email,offering:offering,offeringText,concern,prefs:notes,time,freq:offering,estimate:estimate(offering)};
+          const txt=buildSummary(data);
+          alert('Preview:\n\n'+txt);
+        });
+
+        form.addEventListener('submit',function(e){
+          e.preventDefault();
+          // Simulate submission: show composed text and next steps
+          const offering=document.getElementById('offering').value;
+          const offeringText = document.getElementById('offering').selectedOptions[0].text;
+          const name=document.getElementById('name').value.trim();
+          const email=document.getElementById('email').value.trim();
+          const concern=document.getElementById('concern').value.trim();
+          const notes=document.getElementById('notes').value.trim();
+          const data={name,email,offering:offering,offeringText,concern,prefs:notes,time:document.getElementById('pTime')?document.getElementById('pTime').value:'30',freq:offering,estimate:estimate(offering)};
+          const text=buildSummary(data);
+          // For now, copy to clipboard and inform user
+          if(navigator.clipboard){navigator.clipboard.writeText(text).then(()=>{alert('Request prepared and copied to clipboard. We will follow up at '+email)}).catch(()=>{alert('Request prepared. Please copy and email to '+ '{{EMAIL}}');});}
+          else{alert('Request prepared. Please copy and email to '+ '{{EMAIL}}');}
+        });
+
+        // Sidebar planner
+        const pBuild=document.getElementById('pBuild');
+        const pCopy=document.getElementById('pCopy');
+        const pOut=document.getElementById('pOut');
+        pBuild.addEventListener('click',()=>{
+          const pTime=document.getElementById('pTime').value;
+          const pFreq=document.getElementById('pFreq').value;
+          const pPrefs=document.getElementById('pPrefs').value.trim();
+          const data={name:'',email:'',offeringText: pFreq==='single'? 'Single session' : pFreq==='block'? '3-session block' : 'Monthly tune',concern:document.getElementById('concern').value.trim(),prefs:pPrefs,time:pTime,freq:pFreq,estimate:estimate(pFreq)};
+          pOut.textContent = buildSummary(data);
+        });
+        pCopy.addEventListener('click',async()=>{
+          try{await navigator.clipboard.writeText(pOut.textContent||'');pCopy.textContent='Copied';setTimeout(()=>pCopy.textContent='Copy',1400);}catch(e){alert('Copy failed — select the text and copy.')}
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

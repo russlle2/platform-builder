@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Investment & Plans — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fcfcfb;--muted:#6b6b6b;--accent:#0b6b5a;--card:#ffffff;--glass:rgba(11,107,90,0.06);font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:#111;line-height:1.45}
+    .wrap{max-width:980px;margin:48px auto;padding:32px}
+    nav{display:flex;justify-content:space-between;align-items:center;padding-bottom:24px}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-size:14px}
+    .brand{font-weight:700;color:#0b6b5a}
+    header.hero{display:grid;grid-template-columns:1fr 340px;gap:32px;align-items:center;margin-bottom:28px}
+    .hero-copy h1{margin:0 0 12px 0;font-size:28px}
+    .hero-copy p{margin:0;color:var(--muted)}
+    .hero-art{padding:28px;background:var(--card);border-radius:12px;box-shadow:0 6px 20px rgba(20,20,20,0.04)}
+    .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:26px}
+    .plan{background:var(--card);padding:22px;border-radius:12px;border:1px solid #eef2ef}
+    .plan.primary{box-shadow:0 10px 30px rgba(11,107,90,0.06);transform:translateY(-4px);border-color:transparent}
+    .plan h3{margin:0 0 8px 0;font-size:18px}
+    .price{font-size:22px;color:var(--accent);margin:10px 0}
+    .features{margin:12px 0;color:var(--muted);font-size:14px}
+    .btn{display:inline-block;padding:10px 14px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none}
+    .ghost{background:transparent;border:1px solid #e6e6e6;color:var(--muted)}
+    .faq{margin-top:30px;padding:22px;background:var(--glass);border-radius:10px}
+    footer{margin-top:36px;color:var(--muted);font-size:14px}
+    @media(max-width:880px){header.hero{grid-template-columns:1fr;}
+      .plans{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <nav>
+      <div class='brand'>{{BUSINESS_NAME}}</div>
+      <div>
+        <a href='index.html'>Home</a>
+        <a href='programs.html'>Programs</a>
+        <a href='book.html'>Book a Call</a>
+      </div>
+    </nav>
+
+    <header class='hero'>
+      <div class='hero-copy'>
+        <h1>Transparent pricing for lasting habits</h1>
+        <p>{{TAGLINE}} — coaching that favors simple routines, steady wins, and measurable momentum.</p>
+        <p style='margin-top:14px;color:var(--muted)'>Each tier is organized around outcomes, not just hours. Choose the rhythm that fits your life.</p>
+      </div>
+
+      <figure class='hero-art' aria-hidden='true'>
+        <!-- unique SVG visually representing steady growth; local asset concept: assets/img/hero.svg -->
+        <svg width='300' height='180' viewBox='0 0 300 180' fill='none' xmlns='http://www.w3.org/2000/svg'>
+          <rect rx='12' width='300' height='180' fill='#f7fbf9'/>
+          <g transform='translate(24,20)'>
+            <path d='M0 112 L36 88 L72 70 L108 48 L144 68 L180 40 L216 56' stroke='#0b6b5a' stroke-width='6' stroke-linecap='round' stroke-linejoin='round' fill='none' opacity='0.98'/>
+            <circle cx='216' cy='56' r='8' fill='#0b6b5a'/>
+            <g transform='translate(0,120)'>
+              <rect x='0' y='0' width='240' height='6' rx='3' fill='#e6f3ef'/>
+            </g>
+          </g>
+        </svg>
+      </figure>
+
+    </header>
+
+    <section class='plans' aria-label='Plans'>
+      <div class='plan'>
+        <h3>Starter Habit</h3>
+        <div class='price'>$149 / month</div>
+        <div class='features'>Ideal for building two sustainable habits. Weekly check-in, habit tracker, micro-goals.</div>
+        <p style='margin-top:12px'><a class='btn' href='book.html'>Start with a Discovery</a></p>
+      </div>
+
+      <div class='plan primary'>
+        <h3>Momentum Path</h3>
+        <div class='price'>$349 / month</div>
+        <div class='features'>A focused 3-month path: habit stacking, accountability, and a personalized framework that fits your routine.</div>
+        <p style='margin-top:12px'><a class='btn' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a></p>
+      </div>
+
+      <div class='plan'>
+        <h3>Transform Ritual</h3>
+        <div class='price'>Custom + 1:1</div>
+        <div class='features'>For clients ready for a full lifestyle redesign — includes deep-dive sessions, weekly coaching, and email support.</div>
+        <p style='margin-top:12px'><a class='btn ghost' href='contact.html'>Request Pricing</a></p>
+      </div>
+    </section>
+
+    <section class='faq' aria-label='FAQ'>
+      <h4 style='margin:0 0 12px 0'>Questions people ask</h4>
+      <dl>
+        <dt style='font-weight:600'>How long until I notice change?</dt>
+        <dd style='margin:6px 0 12px 0;color:var(--muted)'>Most clients see behavior shifts within 3–6 weeks; deeper routines form over months. Your plan is paced to keep progress sustainable.</dd>
+        <dt style='font-weight:600'>Do I have to commit to a year?</dt>
+        <dd style='margin:6px 0 12px 0;color:var(--muted)'>No. Monthly options are available; the Momentum Path is recommended for 3 months to build repeatable systems.</dd>
+        <dt style='font-weight:600'>Is this medical advice?</dt>
+        <dd style='margin:6px 0 12px 0;color:var(--muted)'>No. Coaching focuses on habits, mindset, and practical tools. We do not diagnose or prescribe medical treatment.</dd>
+      </dl>
+    </section>
+
+    <footer>
+      <div style='display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap'>
+        <div>
+          <strong>{{BUSINESS_NAME}}</strong> — {{TAGLINE}}<br>
+          {{COACH_NAME}}, {{CREDENTIALS}} • {{CITY}}, {{STATE}}
+        </div>
+        <div style='text-align:right'>
+          <div>Call: <a href='tel:{{PHONE}}' style='color:var(--muted);text-decoration:none'>{{PHONE}}</a></div>
+          <div>Email: <a href='mailto:{{EMAIL}}' style='color:var(--muted);text-decoration:none'>{{EMAIL}}</a></div>
+        </div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

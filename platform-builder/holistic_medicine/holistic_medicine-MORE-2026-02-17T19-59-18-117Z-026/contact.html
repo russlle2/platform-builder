@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Contact — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reach out for a whole-person conversation. Questions, registrations, or curious first steps — we listen and plan together." />
+  <style>
+    :root{--primary:#6b8e6f;--accent:#b07b6b;--muted:#6b6b6b;--bg:#fffef8;--card:#ffffff;--glass:rgba(255,255,255,0.6);--shadow:0 6px 24px rgba(24,24,24,0.08);--radius:12px}
+    *{box-sizing:border-box}
+    body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;line-height:1.45;color:#222;background:linear-gradient(180deg,var(--bg) 0%,#fbfbfb 100%);margin:0}
+    header{position:sticky;top:0;backdrop-filter:blur(6px);background:linear-gradient(180deg,rgba(255,255,255,0.6),rgba(255,255,255,0.4));border-bottom:1px solid rgba(0,0,0,0.04)}
+    .nav{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    nav a{color:inherit;text-decoration:none;margin-left:18px;font-weight:600;font-size:14px}
+    .hero{position:relative;overflow:hidden;padding:56px 20px 32px}
+    .hero-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:center}
+    .panel{background:linear-gradient(180deg,var(--card),#fbfbfd);padding:28px;border-radius:var(--radius);box-shadow:var(--shadow)}
+    .split{position:relative;padding:34px;border-radius:18px;clip-path:polygon(0 0,100% 0,84% 100%,0% 100%);background:linear-gradient(135deg,#fff 0%,#f6fff7 100%)}
+    h1{margin:0 0 8px;font-size:26px;color:#123}
+    p.lead{margin:0 0 18px;color:var(--muted)}
+    .muted{color:var(--muted);font-size:14px}
+    .contact-grid{display:flex;flex-direction:column;gap:16px}
+    label{display:block;font-weight:600;font-size:13px;margin-bottom:6px}
+    input[type=text],input[type=email],textarea,select{width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(10,10,10,0.06);background:white}
+    textarea{min-height:100px;resize:vertical}
+    .row{display:flex;gap:12px}
+    .btn{display:inline-flex;align-items:center;gap:10px;padding:10px 14px;background:var(--primary);color:white;border-radius:10px;border:0;cursor:pointer;font-weight:700}
+    .btn.ghost{background:transparent;color:var(--primary);border:1px solid rgba(107,142,111,0.14)}
+    .note{font-size:13px;color:var(--muted)}
+    .aside{padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(176,123,107,0.06),rgba(107,142,111,0.02));border:1px solid rgba(107,142,111,0.06)}
+    .inventory{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .chk{display:flex;align-items:center;gap:8px;padding:8px;border-radius:10px;border:1px solid rgba(0,0,0,0.04);background:white}
+    .result{margin-top:12px;padding:12px;border-radius:10px;background:#fffef8;border:1px dashed rgba(107,142,111,0.12)}
+    .modal-backdrop{position:fixed;inset:0;background:rgba(5,5,5,0.36);display:none;align-items:center;justify-content:center;padding:20px;z-index:40}
+    .modal{width:100%;max-width:680px;background:white;border-radius:14px;padding:18px;box-shadow:0 30px 60px rgba(6,10,14,0.4);position:relative}
+    .modal h3{margin:0 0 8px}
+    .close-x{position:absolute;right:12px;top:10px;border:0;background:transparent;font-weight:800;font-size:18px;cursor:pointer}
+    .exercise-visual{height:120px;display:flex;align-items:center;justify-content:center}
+    .circle{width:96px;height:96px;border-radius:50%;background:linear-gradient(135deg,#fff,#f0fff4);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 24px rgba(107,142,111,0.12)}
+    .gallery{display:flex;gap:12px;margin-top:18px}
+    .card{flex:1;padding:14px;border-radius:12px;background:linear-gradient(180deg,#ffffff,#fbfbfb);border:1px solid rgba(0,0,0,0.04)}
+    footer{padding:28px 20px;margin-top:28px;border-top:1px solid rgba(0,0,0,0.04);background:linear-gradient(180deg,transparent,#fffef8)}
+    .small{font-size:13px;color:var(--muted)}
+    /* responsive */
+    @media (max-width:920px){.hero-inner{grid-template-columns:1fr}.inventory{grid-template-columns:repeat(1,minmax(0,1fr))}.row{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand">
+        <div class="logo">HM</div>
+        <div>
+          <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+          <div class="small muted">Holistic & Integrative Medicine in {{CITY}}, {{STATE}}</div>
+        </div>
+      </div>
+      <nav aria-label="Main navigation">
+        <a href="/">Home</a>
+        <a href="/services.html">Offerings</a>
+        <a href="/conditions.html">Conditions</a>
+        <a href="/approach.html">Our Way</a>
+        <a href="/about.html">Team</a>
+        <a href="/book.html">Schedule</a>
+        <a href="/contact.html">Connect</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="panel split">
+          <h1>Start the conversation about the whole you</h1>
+          <p class="lead">If you have questions, want a screening visit, or are curious how integrative care could fit into your routines — tell us a little and we will send a clear first-session agenda and a suggested follow-up plan.</p>
+
+          <div style="display:flex;gap:12px;align-items:center;margin-top:14px">
+            <button class="btn" id="open-inventory">Take the Whole-Person Inventory</button>
+            <button class="btn ghost" id="open-exercise">Try a short practice</button>
+            <a href="{{PRIMARY_CTA_URL}}" class="btn" style="background:var(--accent);text-decoration:none">{{PRIMARY_CTA_LABEL}}</a>
+          </div>
+
+          <div class="gallery">
+            <div class="card">
+              <div style="font-weight:700">Phone</div>
+              <div class="muted">{{PHONE}}</div>
+            </div>
+            <div class="card">
+              <div style="font-weight:700">Email</div>
+              <div class="muted">{{EMAIL}}</div>
+            </div>
+            <div class="card">
+              <div style="font-weight:700">Clinic</div>
+              <div class="muted">{{CITY}}, {{STATE}}</div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="aside">
+          <div style="font-weight:800;margin-bottom:6px">Get in touch</div>
+          <form id="contactForm" class="contact-grid" onsubmit="return submitContact(event)">
+            <div class="row">
+              <div style="flex:1">
+                <label for="name">Your name</label>
+                <input id="name" name="name" type="text" placeholder="Alicia" required />
+              </div>
+              <div style="width:140px">
+                <label for="phone">Phone</label>
+                <input id="phone" name="phone" type="text" placeholder="(555) 555-5555" />
+              </div>
+            </div>
+            <div>
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" placeholder="you@example.com" required />
+            </div>
+            <div>
+              <label for="message">How can we help?</label>
+              <textarea id="message" name="message" placeholder="Questions, goals, timing..." ></textarea>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="btn" type="submit">Send message</button>
+              <button type="button" class="btn ghost" id="clearContact">Clear</button>
+            </div>
+            <div class="note">We respond within 48 business hours. If this is a medical emergency, call local emergency services.</div>
+          </form>
+        </aside>
+      </div>
+    </section>
+
+    <section style="max-width:1100px;margin:22px auto;padding:0 20px">
+      <div class="panel">
+        <h2 style="margin-top:0">What to expect when we plan together</h2>
+        <p class="muted">We’ll treat this as an educational conversation — aiming to map the parts that shape how you feel day-to-day, then propose practical next steps. Nothing promised, only clearer options and an agenda to try.</p>
+
+        <div style="display:flex;gap:12px;margin-top:16px;align-items:flex-start;flex-wrap:wrap">
+          <div style="flex:1;min-width:220px">
+            <div style="font-weight:700">First session</div>
+            <div class="small">A listening visit: time to map medical history, lifestyle, medications, and the areas you checked in the inventory. We include basic measures and a guided prioritization.</div>
+          </div>
+          <div style="flex:1;min-width:220px">
+            <div style="font-weight:700">Follow-up plan</div>
+            <div class="small">We suggest a cadence: email check-ins, brief follow-ups, or a short learning track with optional retail supports tailored to your goals.</div>
+          </div>
+          <div style="flex:1;min-width:220px">
+            <div style="font-weight:700">Educational focus</div>
+            <div class="small">Our notes are about options, trade-offs, and steps to try — with references and safe pacing. No magic promises, just clear next actions.</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 340px;gap:18px;margin-top:18px">
+        <div class="panel">
+          <h3 style="margin-top:0">Common questions</h3>
+          <div style="margin-top:8px">
+            <strong>Do you take my insurance?</strong>
+            <div class="small muted">We take select plans. For billing questions, call us or note your insurer in the contact form and we’ll confirm.</div>
+          </div>
+          <div style="margin-top:8px">
+            <strong>Is this an alternative to my current care?</strong>
+            <div class="small muted">We coordinate with your existing clinicians. Our work aims to be complementary and transparent.</div>
+          </div>
+          <div style="margin-top:8px">
+            <strong>What about supplements and retail items?</strong>
+            <div class="small muted">We recommend only evidence-aware supports. You can opt-in to retail add-ons during booking.</div>
+          </div>
+        </div>
+
+        <aside class="panel">
+          <div style="font-weight:800">Drop us a line</div>
+          <div class="muted" style="margin-top:8px">Prefer to call? Phone hours M–F, 9–4. To schedule, use our booking link.</div>
+          <div style="margin-top:12px">
+            <a class="btn" href="tel:{{PHONE}}">Call {{PHONE}}</a>
+          </div>
+          <div style="margin-top:12px" class="small muted">Address details and in-clinic safety guidance provided after scheduling.</div>
+        </aside>
+      </div>
+    </section>
+
+    <section style="max-width:1100px;margin:22px auto;padding:0 20px">
+      <div class="panel">
+        <h3 style="margin-top:0">A short invitation</h3>
+        <p class="muted">If you want a place to practice a slow reset, try one of our micro-exercises. They are brief, guided, and designed for people who want a modest pause during a busy day.</p>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="btn" id="open-exercise-2">Try breathing (2–5 min)</button>
+          <button class="btn ghost" id="open-exercise-journal">Try journaling (5 min)</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:6px 20px;flex-wrap:wrap">
+      <div class="small">© <span id="year"></span> {{BUSINESS_NAME}} — Integrative care and practical learning in {{CITY}}, {{STATE}}</div>
+      <div class="small">Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </div>
+  </footer>
+
+  <!-- Inventory Modal -->
+  <div id="inventoryModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document" aria-labelledby="inventoryTitle">
+      <button class="close-x" id="closeInventory">×</button>
+      <h3 id="inventoryTitle">Whole-Person Inventory</h3>
+      <p class="muted">Check the areas you want us to focus on. We’ll prepare a suggested agenda and cadence for follow-up.</p>
+      <form id="inventoryForm">
+        <div class="inventory" style="margin-top:12px">
+          <label class="chk"><input type="checkbox" name="areas" value="Sleep"> Sleep & rest</label>
+          <label class="chk"><input type="checkbox" name="areas" value="Energy"> Energy & fatigue</label>
+          <label class="chk"><input type="checkbox" name="areas" value="Mood"> Mood & emotional balance</label>
+          <label class="chk"><input type="checkbox" name="areas" value="Movement"> Movement & pain</label>
+          <label class="chk"><input type="checkbox" name="areas" value="Digestion"> Digestion & gut</label>
+          <label class="chk"><input type="checkbox" name="areas" value="Metabolism"> Weight & metabolism</label>
+          <label class="chk"><input type="checkbox" name="areas" value="Habits"> Daily habits & routine</label>
+          <label class="chk"><input type="checkbox" name="areas" value="Stress"> Stress & coping</label>
+          <label class="chk"><input type="checkbox" name="areas" value="Relationships"> Relationships & support</label>
+          <label class="chk"><input type="checkbox" name="areas" value="Purpose"> Purpose & meaning</label>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
+          <button class="btn" type="button" id="inventoryRun">Create agenda</button>
+          <button class="btn ghost" type="button" id="inventoryClose">Close</button>
+        </div>
+
+        <div id="inventoryResult" class="result" style="display:none"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Exercise Modal -->
+  <div id="exerciseModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document" aria-labelledby="exerciseTitle">
+      <button class="close-x" id="closeExercise">×</button>
+      <h3 id="exerciseTitle">Micro-Practice</h3>
+      <p class="muted">Choose a short practice. No setup required; these are safe for most people, but if you have health concerns, pause and check in with your clinician.</p>
+
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn" id="startBreath">Breathing</button>
+        <button class="btn ghost" id="startJournal">Guided Journaling</button>
+        <button class="btn ghost" id="startIntention">Set an Intention</button>
+      </div>
+
+      <div id="exerciseArea" style="margin-top:14px"></div>
+    </div>
+  </div>
+
+  <script>
+    // small helpers
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Contact form handling (local only)
+    function submitContact(e){
+      e.preventDefault();
+      var name = document.getElementById('name').value.trim();
+      var email = document.getElementById('email').value.trim();
+      var message = document.getElementById('message').value.trim();
+      var phone = document.getElementById('phone').value.trim();
+      var summary = 'Name: '+name+'\nEmail: '+email+'\nPhone: '+phone+'\nMessage: '+message;
+      // simulate sending
+      alert('Thanks, '+name+'! We received your note.\n\n'+summary+'\n\nWe will follow up within 48 business hours.');
+      e.target.reset();
+      return false;
+    }
+    document.getElementById('clearContact').addEventListener('click',function(){document.getElementById('contactForm').reset()});
+
+    // Inventory modal
+    var inventoryModal = document.getElementById('inventoryModal');
+    function openInventory(){inventoryModal.style.display='flex';inventoryModal.setAttribute('aria-hidden','false')}
+    function closeInventory(){inventoryModal.style.display='none';inventoryModal.setAttribute('aria-hidden','true')}
+    document.getElementById('open-inventory').addEventListener('click',openInventory);
+    document.getElementById('closeInventory').addEventListener('click',closeInventory);
+    document.getElementById('inventoryClose').addEventListener('click',closeInventory);
+
+    // Build agenda from inventory
+    document.getElementById('inventoryRun').addEventListener('click',function(){
+      var checks = Array.from(document.querySelectorAll('#inventoryForm input[name="areas"]:checked')).map(function(n){return n.value});
+      var out = document.getElementById('inventoryResult');
+      if(!checks.length){out.style.display='block';out.innerHTML='<strong>No areas selected.</strong> Choose a few topics you want to address and we will prepare a focused agenda.';return}
+      // prioritize: a simple scoring based on order in list
+      var weights = {"Sleep":6,"Energy":5,"Mood":5,"Movement":4,"Digestion":4,"Metabolism":3,"Habits":3,"Stress":5,"Relationships":2,"Purpose":2};
+      checks.sort(function(a,b){return (weights[b]||0)-(weights[a]||0)});
+
+      // generate agenda items with suggested focus times
+      var agenda = checks.map(function(item,i){
+        var minutes = 12 - Math.min(i*2,8); // front-load more time to higher priorities
+        return '<li><strong>'+item+'</strong> — suggested focus: '+minutes+' min; notes: bring recent examples, routines, or logs.</li>';
+      }).join('');
+
+      // follow-up cadence: derive from number of items
+      var cadence = checks.length <= 2 ? 'One follow-up in 2–3 weeks, then a monthly check if useful.' : (checks.length <=5 ? 'Two short check-ins (2 weeks and 6 weeks), with a monthly review after that.' : 'Initial follow-ups every 10–14 days for the first 2 months, then monthly reviews as progress stabilizes.');
+
+      var retail = 'Retail add-ons (optional): targeted supplements, supportive topicals, or a short home-practice kit. Discuss during booking.';
+
+      out.style.display='block';
+      out.innerHTML = '<div style="font-weight:800;margin-bottom:6px">Your tailored consultation agenda</div>'+
+      '<ol style="padding-left:18px;margin:0 0 10px">'+agenda+'</ol>'+
+      '<div style="margin-top:6px"><strong>Suggested follow-up cadence:</strong> '+cadence+'</div>'+
+      '<div style="margin-top:8px;font-size:14px;color:#555"><em>'+retail+'</em></div>'+
+      '<div style="margin-top:12px"><button class="btn" id="applyAgenda">Add to booking</button> <button class="btn ghost" id="printAgenda">Print</button></div>';
+
+      // attach actions
+      document.getElementById('applyAgenda').addEventListener('click',function(){
+        alert('Agenda saved to your booking notes. You can review it when scheduling.');
+      });
+      document.getElementById('printAgenda').addEventListener('click',function(){
+        var w = window.open('','_blank');
+        w.document.write('<pre>'+out.textContent+'</pre>');
+        w.document.close();
+      });
+    });
+
+    // Exercise modal logic
+    var exerciseModal = document.getElementById('exerciseModal');
+    function openExercise(){exerciseModal.style.display='flex';exerciseModal.setAttribute('aria-hidden','false')}
+    function closeExercise(){exerciseModal.style.display='none';exerciseModal.setAttribute('aria-hidden','true');stopTimers();}
+    document.getElementById('open-exercise').addEventListener('click',openExercise);
+    document.getElementById('open-exercise-2').addEventListener('click',openExercise);
+    document.getElementById('open-exercise-journal').addEventListener('click',openExercise);
+    document.getElementById('closeExercise').addEventListener('click',closeExercise);
+
+    var timers = [];
+    function stopTimers(){timers.forEach(function(t){clearInterval(t)});timers=[];document.getElementById('exerciseArea').innerHTML='';}
+
+    // BREATHING practice
+    document.getElementById('startBreath').addEventListener('click',function(){
+      stopTimers();
+      var area = document.getElementById('exerciseArea');
+      area.innerHTML = ''+
+        '<div class="exercise-visual"><div class="circle" id="breathCircle"><div id="breathLabel" style="font-weight:700">Ready</div></div></div>'+
+        '<div style="margin-top:12px" class="muted">Follow the prompts. Choose a comfortable posture. This practice runs for about 3 minutes.</div>'+
+        '<div style="display:flex;gap:8px;margin-top:12px"><button class="btn" id="beginBreath">Begin</button><button class="btn ghost" id="stopBreath">Stop</button></div>';
+
+      var phases = [{label:'Breathe in',duration:4},{label:'Hold',duration:4},{label:'Breathe out',duration:6}];
+      var running=false,phaseIdx=0,phaseTime=0;var phaseInterval;
+
+      function renderCircle(scale){var c=document.getElementById('breathCircle');c.style.transform='scale('+scale+')';}
+      document.getElementById('beginBreath').addEventListener('click',function(){
+        if(running){return}
+        running=true;phaseIdx=0;phaseTime=phases[0].duration;document.getElementById('breathLabel').textContent=phases[0].label;renderCircle(1.0);
+        phaseInterval = setInterval(function(){
+          phaseTime--;
+          var p = phases[phaseIdx];
+          // gentle scaling animation
+          var tfrac = (p.duration - phaseTime)/(p.duration||1);
+          var scale = phaseIdx===0?1+0.12*tfrac:phaseIdx===2?1.12-0.12*tfrac:1.08;
+          renderCircle(scale);
+          document.getElementById('breathLabel').textContent = p.label + ' ('+phaseTime+'s)';
+          if(phaseTime<=0){
+            phaseIdx = (phaseIdx+1)%phases.length;phaseTime=phases[phaseIdx].duration;document.getElementById('breathLabel').textContent = phases[phaseIdx].label + ' ('+phaseTime+'s)';
+          }
+        },1000);
+        timers.push(phaseInterval);
+      });
+      document.getElementById('stopBreath').addEventListener('click',function(){clearInterval(phaseInterval);running=false;renderCircle(1);document.getElementById('breathLabel').textContent='Stopped'});
+    });
+
+    // GUIDED JOURNAL
+    document.getElementById('startJournal').addEventListener('click',function(){
+      stopTimers();
+      var area = document.getElementById('exerciseArea');
+      area.innerHTML = ''+
+        '<div class="muted">A short written prompt. You can type in the box or use voice-to-text tools. Recommended: 5 minutes.</div>'+
+        '<div style="margin-top:10px"><label class="muted">Prompt</label><div style="font-weight:700;padding:10px;border-radius:8px;background:#fff;border:1px solid rgba(0,0,0,0.04)">What matters most to you this week, and one small step you could take toward it?</div></div>'+
+        '<textarea id="journalText" placeholder="Write for 5 minutes..." style="margin-top:10px"></textarea>'+
+        '<div style="display:flex;gap:8px;margin-top:8px"><button class="btn" id="startJournalTimer">Start 5-min timer</button><button class="btn ghost" id="saveJournal">Save</button></div>'+
+        '<div id="journalTimer" style="margin-top:8px" class="muted"></div>';
+
+      var timerId=null;var remaining=300;
+      document.getElementById('startJournalTimer').addEventListener('click',function(){
+        if(timerId) return;remaining=300;document.getElementById('journalTimer').textContent='05:00';
+        timerId = setInterval(function(){remaining--;var m=Math.floor(remaining/60);var s=String(remaining%60).padStart(2,'0');document.getElementById('journalTimer').textContent=m+':'+s; if(remaining<=0){clearInterval(timerId);timerId=null;alert('Time is up — nice work.');}},1000);
+        timers.push(timerId);
+      });
+      document.getElementById('saveJournal').addEventListener('click',function(){
+        var text = document.getElementById('journalText').value.trim();
+        if(!text){alert('Nothing to save — try writing a sentence or two.');return}
+        alert('Saved locally. You can copy this into your notes or include it when booking.');
+      });
+    });
+
+    // INTENTION setting
+    document.getElementById('startIntention').addEventListener('click',function(){
+      stopTimers();
+      var area = document.getElementById('exerciseArea');
+      area.innerHTML = ''+
+        '<div class="muted">Set a short, clear intention for the day. We guide you through a brief reflection (about 90 seconds).</div>'+
+        '<div style="margin-top:12px;font-weight:700">Choose one focus</div>'+
+        '<div style="display:flex;gap:8px;margin-top:8px"><button class="btn" data-focus="Presence">Presence</button><button class="btn ghost" data-focus="Clarity">Clarity</button><button class="btn ghost" data-focus="Kindness">Kindness</button></div>'+
+        '<div id="intentionResult" style="margin-top:12px"></div>';
+
+      area.querySelectorAll('button[data-focus]').forEach(function(b){b.addEventListener('click',function(){
+        var f=b.getAttribute('data-focus');
+        var r = document.getElementById('intentionResult');
+        r.innerHTML = '<div style="font-weight:700">Intention: '+f+'</div><div class="muted" style="margin-top:8px">Repeat this phrase silently for 30 seconds, then take three slow breaths. When ready, leave space for a small action you can do in the next hour.</div>'+
+        '<div style="margin-top:10px"><button class="btn" id="beginInt">Begin 90s</button> <button class="btn ghost" id="captureInt">Capture</button></div>';
+        document.getElementById('beginInt').addEventListener('click',function(){
+          var seconds=90;var label = document.createElement('div');label.className='muted';label.style.marginTop='8px';r.appendChild(label);
+          var id = setInterval(function(){seconds--;var m=Math.floor(seconds/60);var s=String(seconds%60).padStart(2,'0');label.textContent='Remaining '+m+':'+s; if(seconds<=0){clearInterval(id);label.textContent='Done — take a slow breath and open your eyes.';}},1000);
+          timers.push(id);
+        });
+        document.getElementById('captureInt').addEventListener('click',function(){
+          var note = prompt('Write a short note to capture the intention (one sentence):');
+          if(note) alert('Saved locally: "'+note+'" — you can include this when booking.');
+        });
+      })});
+    });
+
+    // open direct links to exercises
+    document.getElementById('open-exercise').addEventListener('click',function(){/* handled above */});
+    document.getElementById('open-exercise-2').addEventListener('click',function(){/* handled above */});
+
+    // keyboard accessibility
+    window.addEventListener('keydown',function(e){if(e.key==='Escape'){closeInventory();closeExercise();}});
+  </script>
+</body>
+</html>

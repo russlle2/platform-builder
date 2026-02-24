@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Offerings & Pricing — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Accessible aromatherapy supports and retail add-ons — clear options for your everyday rituals.">
+  <style>
+    :root{--bg:#f7f4f2;--muted:#7b6f66;--accent:#7aa27a;--card:#fff;--ink:#2b2623}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;line-height:1.45;color:var(--ink);margin:0;background:linear-gradient(180deg, #fbfaf9 0%, #f7f4f2 100%);}
+    header{position:sticky;top:0;backdrop-filter: blur(6px);background:rgba(255,255,255,0.7);border-bottom:1px solid rgba(43,38,35,0.06);z-index:50}
+    .nav{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#8bbf8b);display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none;font-weight:600;font-size:14px}
+    .cta{background:var(--ink);color:white;padding:8px 14px;border-radius:8px;text-decoration:none;font-weight:700}
+    main{max-width:1100px;margin:28px auto;padding:20px}
+    .hero{display:grid;grid-template-columns:1fr 340px;gap:28px;align-items:start}
+    .hero .lead{background:var(--card);padding:28px;border-radius:12px;box-shadow:0 6px 18px rgba(43,38,35,0.06)}
+    h1{margin:0 0 8px;font-size:28px}
+    p.lead-strap{margin:0;color:var(--muted)}
+    .aside-card{background:linear-gradient(180deg,#fff 0%,#fbfcfb 100%);padding:20px;border-radius:12px;border:1px solid rgba(43,38,35,0.03)}
+    .plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:24px}
+
+    .plan{background:var(--card);padding:18px;border-radius:12px;border:1px solid rgba(43,38,35,0.04);min-height:180px;display:flex;flex-direction:column;justify-content:space-between}
+    .plan h3{margin:0 0 6px}
+    .price{font-size:20px;font-weight:800;color:var(--accent)}
+    .features{color:var(--muted);font-size:14px;margin:10px 0 0}
+    .add-ons{margin-top:14px;border-top:1px dashed rgba(43,38,35,0.06);padding-top:12px;font-size:13px}
+    .grid-fine{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+    .faq{margin-top:28px;background:linear-gradient(180deg,#fff 0%,#fbfcfb 100%);padding:18px;border-radius:12px;border:1px solid rgba(43,38,35,0.03)}
+    .faq h4{margin:0 0 8px}
+
+    .try-btn{display:inline-block;background:transparent;border:2px solid var(--accent);color:var(--accent);padding:8px 12px;border-radius:8px;font-weight:700;text-decoration:none}
+
+    footer{max-width:1100px;margin:48px auto 80px;padding:12px;color:var(--muted);font-size:13px}
+
+    /* reveal animation */
+    .reveal-on-scroll{opacity:0;transform:translateY(18px);transition:opacity 520ms ease,transform 520ms cubic-bezier(.2,.9,.2,1)}
+    .reveal-on-scroll.revealed{opacity:1;transform:translateY(0)}
+    @media (prefers-reduced-motion:reduce){.reveal-on-scroll{transition:none;opacity:1;transform:none}}
+
+    /* simple modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(11,9,8,0.45);display:none;align-items:center;justify-content:center;padding:20px;z-index:200}
+    .modal{background:var(--card);width:100%;max-width:720px;border-radius:14px;padding:18px;box-shadow:0 18px 60px rgba(43,38,35,0.25)}
+    .modal h3{margin:0 0 8px}
+    .modal .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .btn{padding:8px 12px;border-radius:10px;border:1px solid rgba(43,38,35,0.06);background:#fff}
+    .primary{background:var(--accent);color:white;border:none}
+    .circle{width:120px;height:120px;border-radius:999px;border:8px solid rgba(122,162,122,0.25);display:flex;align-items:center;justify-content:center;margin:auto}
+    .circle .count{font-size:20px;font-weight:700;color:var(--accent)}
+    .textarea{width:100%;min-height:90px;padding:8px;border-radius:8px;border:1px solid rgba(43,38,35,0.06)}
+
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand">
+        <div class="logo">A</div>
+        <div>
+          <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+          <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav aria-label="Primary navigation">
+        <a href="index.html">Home</a>
+        <a href="services.html">Offerings</a>
+        <a href="blends.html">Synergies</a>
+        <a href="shop.html">Market</a>
+        <a href="pricing.html">Tiers</a>
+        <a href="about.html">Story</a>
+        <a href="book.html" class="cta">{{PRIMARY_CTA_LABEL}}</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero reveal-on-scroll">
+      <div class="lead">
+        <h1>Clear options for scent support</h1>
+        <p class="lead-strap">Thoughtful blends, approachable subscriptions, and retail add-ons assembled so you can choose what fits your rhythm. Pricing is simple and transparent — each tier lists recommended uses and optional items to purchase separately.</p>
+        <div style="margin-top:16px">
+          <a class="try-btn" id="open-exercise">Try a Moment</a>
+          <a href="book.html" style="margin-left:8px" class="try-btn">Reserve a Session</a>
+        </div>
+      </div>
+      <aside class="aside-card">
+        <strong style="display:block">Quick guide</strong>
+        <p style="margin:6px 0;color:var(--muted)">Choose a plan below for suggested uses. Add single items from Market for at-home support. Consult FAQ for safety tips.</p>
+
+        <div style="margin-top:12px">
+          <div style="font-size:13px;color:var(--muted)">Contact</div>
+          <div style="font-weight:700;margin-top:6px">{{PHONE}}</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:10px">Location</div>
+          <div style="font-weight:700">{{CITY}}, {{STATE}}</div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="plans reveal-on-scroll" aria-label="Pricing plans">
+      <div class="plan">
+        <div>
+          <h3>Intro Kit</h3>
+          <div class="price">$39</div>
+          <div class="features">A modest starter set that may support calm moments: single roll-on, simple ritual card, usage notes.</div>
+        </div>
+        <div>
+          <div class="add-ons">Add-ons: diffuser sticks $12 · travel pouch $10</div>
+          <div style="display:flex;gap:8px;margin-top:12px"><a class="btn" href="shop.html">Add to cart</a><a class="btn primary" href="book.html">Book consult</a></div>
+        </div>
+      </div>
+
+      <div class="plan">
+        <div>
+          <h3>Rhythm Plan</h3>
+          <div class="price">$95 / month</div>
+          <div class="features">Monthly curated blend, ritual guide, and a short check-in to tailor scents. Great for testing routines.</div>
+        </div>
+        <div>
+          <div class="add-ons">Optional: extra 10ml blend $22 · refill subscription 15% off</div>
+          <div style="display:flex;gap:8px;margin-top:12px"><a class="btn" href="shop.html">See blends</a><a class="btn primary" href="book.html">Start plan</a></div>
+        </div>
+      </div>
+
+      <div class="plan">
+        <div>
+          <h3>Studio Session</h3>
+          <div class="price">$145</div>
+          <div class="features">A one-hour guided appointment: ritual design, blend recommendations, and take-home sample. May support mindful shifts when used thoughtfully.</div>
+        </div>
+        <div>
+          <div class="add-ons">Retail: personal 10ml $20 · diffuser $45</div>
+          <div style="display:flex;gap:8px;margin-top:12px"><a class="btn" href="book.html">Schedule</a><a class="btn" href="contact.html">Ask a question</a></div>
+        </div>
+      </div>
+
+    </section>
+
+    <section class="faq reveal-on-scroll" aria-labelledby="faq-heading">
+      <h4 id="faq-heading">Frequently asked safety notes</h4>
+      <div class="grid-fine">
+        <div>
+          <strong>Patch test</strong>
+          <p style="margin:6px 0;color:var(--muted)">Always test blends on a small skin area before regular use. If irritation occurs, discontinue use.</p>
+        </div>
+        <div>
+          <strong>Dilution</strong>
+          <p style="margin:6px 0;color:var(--muted)">We recommend dilutions appropriate for topical use; ask about safe percentages for your needs.</p>
+        </div>
+        <div>
+          <strong>Pregnancy & medical</strong>
+          <p style="margin:6px 0;color:var(--muted)">Some oils are not recommended during pregnancy or certain health conditions — consult your healthcare provider before use.</p>
+        </div>
+        <div>
+          <strong>Pets</strong>
+          <p style="margin:6px 0;color:var(--muted)">Certain essential oils may affect animals. Keep blends away from pets unless confirmed safe by a veterinary professional.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="max-width:1100px;margin:0 auto;padding:12px 20px;color:var(--muted);font-size:13px">© <span id="year"></span> {{BUSINESS_NAME}} · For general well-being and sensory support, not a replacement for medical advice. Email: {{EMAIL}}</div>
+  </footer>
+
+  <!-- Modal: Try it now guided exercise -->
+  <div class="modal-backdrop" id="modal" role="dialog" aria-hidden="true">
+    <div class="modal" role="document">
+      <h3 id="exercise-title">Try a short practice</h3>
+      <p id="exercise-desc" style="color:var(--muted);margin-top:6px">Choose a practice to try: simple breath, a short journaling prompt, or intention setting.</p>
+
+      <div style="margin-top:12px">
+        <div class="controls">
+          <button class="btn" data-mode="breath">Breathing</button>
+          <button class="btn" data-mode="journal">Journaling</button>
+          <button class="btn" data-mode="intention">Intention</button>
+          <button class="btn" id="close-modal" style="margin-left:auto">Close</button>
+        </div>
+
+        <div id="exercise-area" style="margin-top:16px"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // header year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // scroll reveal
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if(prefersReduced){
+        document.querySelectorAll('.reveal-on-scroll').forEach(el=>el.classList.add('revealed'));
+        return;
+      }
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{
+          if(e.isIntersecting){
+            e.target.classList.add('revealed');
+            io.unobserve(e.target);
+          }
+        })
+      },{threshold:0.12});
+      document.querySelectorAll('.reveal-on-scroll').forEach(el=>io.observe(el));
+    })();
+
+    // Modal behavior
+    const modal = document.getElementById('modal');
+    const openBtn = document.getElementById('open-exercise');
+    const closeBtn = document.getElementById('close-modal');
+    const area = document.getElementById('exercise-area');
+
+    openBtn.addEventListener('click', ()=>{
+      modal.style.display='flex';
+      modal.setAttribute('aria-hidden','false');
+      showMode('breath');
+    });
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e)=>{ if(e.target===modal) closeModal(); });
+    function closeModal(){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); stopBreath(); }
+
+    // exercise logic
+    function showMode(mode){
+      area.innerHTML='';
+      if(mode==='breath') renderBreathing();
+      if(mode==='journal') renderJournal();
+      if(mode==='intention') renderIntention();
+    }
+
+    document.querySelectorAll('[data-mode]').forEach(btn=>btn.addEventListener('click', ()=>showMode(btn.getAttribute('data-mode'))));
+
+    // Breathing exercise
+    let breathTimer=null;
+    function renderBreathing(){
+      area.innerHTML = '<div style="text-align:center"><div class="circle" id="circle"><div class="count" id="count">3</div></div><div style="margin-top:12px;color:var(--muted)">Follow a slow 4-4-6 pattern: inhale 4, hold 4, exhale 6. Total cycles: 3</div><div style="margin-top:12px;display:flex;gap:8px;justify-content:center"><button class="btn primary" id="start-breath">Start</button><button class="btn" id="stop-breath">Stop</button></div></div>';
+      const countEl = document.getElementById('count');
+      const circle = document.getElementById('circle');
+      const start = document.getElementById('start-breath');
+      const stop = document.getElementById('stop-breath');
+      start.addEventListener('click', ()=>startBreath(3));
+      stop.addEventListener('click', stopBreath);
+
+      let cycle=0;
+      function startBreath(reps){
+        if(breathTimer) return;
+        cycle=0;
+        runCycle();
+        breathTimer = true; // flag
+      }
+      function runCycle(){
+        if(cycle>=3){ countEl.textContent='Done'; breathTimer=null; return; }
+        cycle++;
+        // inhale 4
+        animatePhase('Inhale',4,()=>{
+          // hold 4
+          animatePhase('Hold',4,()=>{
+            // exhale 6
+            animatePhase('Exhale',6,()=>{
+              setTimeout(runCycle,400);
+            });
+          });
+        });
+      }
+      function animatePhase(label,seconds,done){
+        let t=0; countEl.textContent=label+" " + seconds; circle.style.transition='transform '+seconds+'s ease-in-out, border-color '+seconds+'s';
+        // visual: scale circle
+        circle.style.transform='scale(1.18)';
+        circle.style.borderColor='rgba(122,162,122,0.6)';
+        const start = Date.now();
+        const id = setInterval(()=>{
+          t = (Date.now()-start)/1000;
+          if(t>=seconds){ clearInterval(id); circle.style.transform='scale(1)'; circle.style.borderColor='rgba(122,162,122,0.25)'; done(); }
+        },120);
+      }
+      function stopBreath(){ breathTimer=null; countEl.textContent='Stopped'; circle.style.transform='scale(1)'; circle.style.borderColor='rgba(122,162,122,0.25)'; }
+    }
+
+    // simple journaling
+    function renderJournal(){
+      area.innerHTML = '<div><label style="font-weight:700">Prompt</label><p style="color:var(--muted);margin-top:4px">In two sentences: what feeling would you like to invite today?</p><textarea class="textarea" id="journal-text" placeholder="Write a short response..."></textarea><div style="display:flex;gap:8px;margin-top:8px"><button class="btn primary" id="save-journal">Save</button><button class="btn" id="clear-journal">Clear</button></div><div id="journal-saved" style="margin-top:8px;color:var(--muted)"></div></div>';
+      const ta = document.getElementById('journal-text');
+      const save = document.getElementById('save-journal');
+      const clear = document.getElementById('clear-journal');
+      const saved = document.getElementById('journal-saved');
+      save.addEventListener('click', ()=>{
+        const v = ta.value.trim();
+        if(!v){ saved.textContent='Write something first.'; return; }
+        localStorage.setItem('journalSample', v);
+        saved.textContent='Saved to your browser.';
+      });
+      clear.addEventListener('click', ()=>{ ta.value=''; saved.textContent=''; localStorage.removeItem('journalSample'); });
+      // load if present
+      const prev = localStorage.getItem('journalSample'); if(prev) ta.value=prev;
+    }
+
+    // intention setting
+    function renderIntention(){
+      area.innerHTML = '<div><p style="color:var(--muted)">Choose a word to hold as an intention for the next hour, then place a reminder in your mind.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-intent="Focus">Focus</button><button class="btn" data-intent="Calm">Calm</button><button class="btn" data-intent="Ground">Ground</button><button class="btn" data-intent="Breathe">Breathe</button></div><div id="chosen" style="margin-top:12px;color:var(--muted)"></div></div>';
+      document.querySelectorAll('[data-intent]').forEach(b=>b.addEventListener('click', ()=>{
+        const val=b.getAttribute('data-intent');
+        document.getElementById('chosen').textContent = 'Intention set: "' + val + '" — hold this gently in mind.';
+      }));
+    }
+
+    // expose for debugging (no external libs)
+    window._exercise = {open: ()=>openBtn.click(),close: closeModal};
+  </script>
+</body>
+</html>

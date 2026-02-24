@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Investment — Pricing | {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Pricing and packages for group gatherings and private sessions. See flexible options and community credits.">
+  <style>
+    :root{--bg:#07121a;--glass:rgba(255,255,255,0.03);--accent:#c7f2d9;--muted:#bcd6e0}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial;background:radial-gradient(1000px 400px at 10% 10%,rgba(199,242,217,0.03),transparent),linear-gradient(180deg,#02131a 0%, #051923 100%);color:#e8fbf4;min-height:100vh}
+    header{padding:1rem 2rem;display:flex;align-items:center;gap:1rem;border-bottom:1px solid rgba(255,255,255,0.03)}
+    header .brand{font-weight:800}
+    header nav{margin-left:auto;display:flex;gap:0.75rem}
+    header a{color:var(--muted);text-decoration:none}
+    .wrap{max-width:1100px;margin:2rem auto;padding:1rem}
+    .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:1rem;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    h1{margin:0 0 0.5rem 0;color:#fff}
+    .muted{color:var(--muted)}
+    .price{font-size:1.35rem;font-weight:800;color:var(--accent)}
+    .calc{margin-top:1rem;background:rgba(255,255,255,0.02);padding:0.75rem;border-radius:10px}
+    .cta{display:inline-block;padding:8px 12px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#bffad1);color:#022b21;font-weight:800;text-decoration:none}
+    .note{font-size:0.9rem;color:var(--muted)}
+
+    @media(max-width:980px){.grid{grid-template-columns:1fr}.calc{order:3}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="events.html">Gatherings</a>
+      <a href="private-sessions.html">One-on-One</a>
+      <a href="pricing.html">Investment</a>
+      <a href="book.html">Reserve</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <h1>Investment and packages</h1>
+    <p class="muted">Simple framing so you can choose what fits: single access, recurring membership credit, or tailored private offerings.</p>
+
+    <div class="grid" id="price-grid">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center"><div>
+          <div style="font-weight:800">Drop-in Gatherings</div>
+          <div class="muted">Pay per open session</div>
+        </div><div class="price">$28</div></div>
+        <div style="margin-top:0.75rem" class="muted">Access to public gatherings. Sliding scale available — select at checkout.</div>
+        <div style="margin-top:0.75rem"><a href="book.html" class="cta">Book a seat</a></div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center"><div>
+          <div style="font-weight:800">Series Credits</div>
+          <div class="muted">5-session pack, shareable</div>
+        </div><div class="price">$120</div></div>
+        <div style="margin-top:0.75rem" class="muted">Receive a credit for five gatherings. Good for group sessions, transferable to a friend once.</div>
+        <div style="margin-top:0.75rem"><a href="book.html" class="cta">Buy credits</a></div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center"><div>
+          <div style="font-weight:800">Private Session</div>
+          <div class="muted">60–75 minutes, customized</div>
+        </div><div class="price">From $85</div></div>
+        <div style="margin-top:0.75rem" class="muted">One-on-one sessions tailored by intensity and length. Includes intake and integration guidance.</div>
+        <div style="margin-top:0.75rem"><a href="private-sessions.html" class="cta">Request a private</a></div>
+      </div>
+    </div>
+
+    <div class="calc card" style="margin-top:1rem">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><strong>Build a pack</strong><div class="muted">Choose your mix of gatherings and private time</div></div>
+        <div class="muted">Estimated total: <strong id="pack-total">$28</strong></div>
+      </div>
+
+      <div style="display:flex;gap:1rem;margin-top:0.75rem;align-items:center">
+        <label class="muted">Gatherings</label>
+        <select id="gather-count">
+          <option value="1">1</option>
+          <option value="3">3</option>
+          <option value="5" selected>5</option>
+        </select>
+
+        <label class="muted" style="margin-left:8px">Private sessions</label>
+        <select id="private-count">
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="3">3</option>
+        </select>
+
+        <div style="margin-left:auto"><a href="book.html" class="cta">Proceed</a></div>
+      </div>
+
+      <p class="note" style="margin-top:0.6rem">If cost is a barrier, inquire about sliding-scale credits at <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</p>
+    </div>
+
+    <div style="margin-top:1rem" class="card">
+      <div style="font-weight:800">Payment & policy notes</div>
+      <div class="muted" style="margin-top:0.5rem">Deposits hold private bookings; group sessions can be reserved with card on file. Please cancel 24 hours prior for a refund credit. Contraindications: If pregnant or with medical implants, seek provider guidance before booking.</div>
+    </div>
+
+  </main>
+
+  <footer style="padding:2rem;text-align:center;color:var(--muted)">
+    <div>{{BUSINESS_NAME}} — Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+  </footer>
+
+  <script>
+    // Pricing pack calculator
+    const gatherPrice = 28; // per drop-in
+    const privateBase = 85; // per private
+    const gsel = document.getElementById('gather-count');
+    const psel = document.getElementById('private-count');
+    const totalEl = document.getElementById('pack-total');
+
+    function updateTotal(){
+      const g = Number(gsel.value);
+      const p = Number(psel.value);
+      // slight discount for packs: 5 gatherings => $22 each
+      let gPrice = g * (g>=5 ? 22 : gatherPrice);
+      let pPrice = p * privateBase;
+      const total = gPrice + pPrice;
+      totalEl.textContent = '$'+total;
+    }
+
+    gsel.addEventListener('change', updateTotal);
+    psel.addEventListener('change', updateTotal);
+    updateTotal();
+
+    // Ensure CTAs show friendly phrasing if placeholders remain
+    document.querySelectorAll('a').forEach(a=>{ if(a.textContent.trim()==='{{PRIMARY_CTA_LABEL}}') a.textContent='Proceed'; });
+  </script>
+</body>
+</html>

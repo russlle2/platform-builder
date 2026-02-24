@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Fees & Plans — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7fbfb;--card:#ffffff;--muted:#6b7280;--accent:#2b6cb0;--accent-2:#4c51bf;--glass:rgba(255,255,255,0.7)}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:#0f172a;line-height:1.4}
+    header{background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.3));backdrop-filter: blur(6px);border-bottom:1px solid rgba(15,23,42,0.04)}
+    .nav{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:18px}
+    .brand{font-weight:600}
+    nav a{margin-left:18px;color:var(--muted);text-decoration:none;font-size:15px}
+    .hero{max-width:1100px;margin:28px auto;padding:28px;background:linear-gradient(90deg,#fff, #fbfdff);border-radius:12px;display:grid;grid-template-columns:1fr 380px;gap:22px;align-items:center}
+    .hero h1{margin:0 0 6px 0;font-size:22px}
+    .hero p{margin:0;color:var(--muted)}
+    .pattern{height:120px;background:url('assets/img/pattern.svg') center/cover no-repeat;border-radius:8px}
+
+    .switch{display:flex;align-items:center;background:var(--card);padding:10px;border-radius:999px;gap:8px;width:220px}
+    .switch button{flex:1;background:transparent;border:0;padding:8px 10px;border-radius:999px;cursor:pointer;font-weight:600}
+    .switch .active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff}
+
+    .cards{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .card{background:var(--card);padding:18px;border-radius:10px;border:1px solid rgba(15,23,42,0.04)}
+    .price{font-size:28px;font-weight:700;margin:6px 0}
+    .muted{color:var(--muted);font-size:14px}
+    .features{margin-top:12px;font-size:14px;color:var(--muted)}
+    .cta{display:inline-block;margin-top:14px;padding:10px 14px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none}
+
+    .note{max-width:1100px;margin:16px auto;color:var(--muted);font-size:13px}
+    footer{max-width:1100px;margin:24px auto;padding:18px 0;color:var(--muted);font-size:13px}
+
+    @media (max-width:900px){.hero{grid-template-columns:1fr;}.cards{grid-template-columns:1fr}.nav{padding:12px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <nav aria-label="primary">
+        <a href="index.html">Overview</a>
+        <a href="approach.html">How I Work</a>
+        <a href="specialties.html">Focus Areas</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="fees-title">
+      <div>
+        <h1 id="fees-title">Flexible ways to access care and steady supports</h1>
+        <p>Choose what fits your rhythm — ongoing membership for steady check-ins, or short focused blocks when you want concentrated work.</p>
+
+        <div style="margin-top:18px;display:flex;align-items:center;gap:12px">
+          <div class="switch" role="tablist" aria-label="Pricing toggle">
+            <button id="monthlyBtn" class="active" role="tab" aria-selected="true">Monthly</button>
+            <button id="packageBtn" role="tab" aria-selected="false">Package</button>
+          </div>
+          <div style="font-size:13px;color:var(--muted)">Prices animate to show comparable value</div>
+        </div>
+
+      </div>
+      <aside>
+        <div class="pattern" aria-hidden="true"></div>
+        <div style="margin-top:12px;color:var(--muted);font-size:13px">Need help choosing? Try the short comparison or call <a href="tel:{{PHONE}}">{{PHONE}}</a>.</div>
+      </aside>
+    </section>
+
+    <section class="cards" aria-label="pricing plans" style="max-width:1100px;margin:18px auto">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-weight:700">Continuity Membership</div>
+            <div class="muted">Weekly or biweekly check-ins for ongoing support</div>
+          </div>
+          <div style="text-align:right">
+            <div class="price"><span data-price-month="175" data-price-package="960">$175</span><span style="font-weight:500;color:var(--muted);font-size:13px"> / session</span></div>
+            <div class="muted">Auto-scheduling available</div>
+          </div>
+        </div>
+        <div class="features">
+          - Collaborative casework and short-term skills between sessions
+          <br>- Priority booking within membership roster
+          <br>- Brief check-ins via secure messaging (as available)
+        </div>
+        <a id="cta-membership" class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-weight:700">Focused Progress Block</div>
+            <div class="muted">A contained package of 6 sessions for targeted work</div>
+          </div>
+          <div style="text-align:right">
+            <div class="price"><span data-price-month="160" data-price-package="840">$160</span><span style="font-weight:500;color:var(--muted);font-size:13px"> / session</span></div>
+            <div class="muted">Paid upfront for the full block</div>
+          </div>
+        </div>
+        <div class="features">
+          - Structured plan with measurable goals
+          <br>- Brief homework and practical tools
+          <br>- Review and recommendations at conclusion
+        </div>
+        <a id="cta-package" class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </section>
+
+    <div class="note">
+      Confidentiality: Sessions are conducted with standard ethical protections. Scope and limits of confidentiality, including legal exceptions, are discussed during intake. This site is not for emergency contact — if you are in crisis, contact local emergency services or the crisis line in your area.
+    </div>
+  </main>
+
+  <footer>
+    <div style="max-width:1100px;margin:0 auto">Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a> • {{CITY}}, {{STATE}}</div>
+  </footer>
+
+  <script>
+    // Pricing comparator: toggle and animate numbers
+    (function(){
+      const monthlyBtn = document.getElementById('monthlyBtn');
+      const packageBtn = document.getElementById('packageBtn');
+      const priceEls = document.querySelectorAll('[data-price-month]');
+      let mode = 'monthly';
+
+      function animate(el, from, to, duration){
+        const start = performance.now();
+        function tick(now){
+          const t = Math.min(1,(now-start)/duration);
+          const v = Math.round(from + (to-from)*t);
+          el.textContent = '$' + v;
+          if(t<1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      }
+
+      function setMode(m){
+        mode = m;
+        priceEls.forEach(el => {
+          const month = parseInt(el.getAttribute('data-price-month'),10);
+          const pack = parseInt(el.getAttribute('data-price-package'),10);
+          const current = parseInt(el.textContent.replace(/[^0-9]/g,''),10) || (m==='monthly'?pack:month);
+          const target = (m==='monthly') ? month : pack/6 ? Math.round(pack/6) : pack; // show per-session for package
+          animate(el, current, target, 600);
+        });
+      }
+
+      monthlyBtn.addEventListener('click', ()=>{
+        monthlyBtn.classList.add('active');
+        packageBtn.classList.remove('active');
+        monthlyBtn.setAttribute('aria-selected','true');
+        packageBtn.setAttribute('aria-selected','false');
+        setMode('monthly');
+      });
+      packageBtn.addEventListener('click', ()=>{
+        packageBtn.classList.add('active');
+        monthlyBtn.classList.remove('active');
+        packageBtn.setAttribute('aria-selected','true');
+        monthlyBtn.setAttribute('aria-selected','false');
+        setMode('package');
+      });
+
+      // Initialize
+      priceEls.forEach(el => {
+        const month = parseInt(el.getAttribute('data-price-month'),10);
+        el.textContent = '$' + month;
+      });
+
+    })();
+  </script>
+</body>
+</html>

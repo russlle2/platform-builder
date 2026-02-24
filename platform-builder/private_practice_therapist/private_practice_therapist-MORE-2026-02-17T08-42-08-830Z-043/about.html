@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfcfd;--accent:#2b556b;--muted:#58666f;--card:#ffffff;--accent-2:#86b4c3}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; color:var(--accent);background:var(--bg);}
+    a{color:var(--accent);text-decoration:none}
+    .nav{display:flex;justify-content:space-between;align-items:center;padding:18px 28px}
+    .nav .brand{font-weight:700;letter-spacing:0.2px}
+    .nav .links{display:flex;gap:18px;font-size:14px}
+    .hero{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:40px;padding:48px;position:relative;overflow:hidden}
+    .hero .panel{background:linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.6));padding:34px;border-radius:12px;box-shadow:0 6px 24px rgba(22,38,47,0.06)}
+    .split{position:relative;padding:28px}
+    .diag{position:absolute;inset:0;background-image:url('assets/img/pattern.svg');opacity:0.06;transform:skewX(-12deg);transform-origin:left top}
+    h1{margin:0 0 8px 0;font-size:28px}
+    p.lead{margin:0;color:var(--muted);line-height:1.5}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;padding:28px}
+    .card{background:var(--card);padding:20px;border-radius:10px;box-shadow:0 6px 18px rgba(22,38,47,0.04)}
+    .muted{color:var(--muted);font-size:14px}
+    footer{padding:28px;text-align:center;font-size:13px;color:var(--muted)}
+    .cta{display:inline-block;background:var(--accent);color:white;padding:10px 16px;border-radius:8px}
+    /* reveal */
+    .reveal{opacity:0;transform:translateY(14px);transition:opacity .52s ease,transform .52s cubic-bezier(.2,.9,.2,1)}
+    .reveal.is-revealed{opacity:1;transform:none}
+    @media(max-width:880px){.hero{grid-template-columns:1fr;padding:28px}.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <div class="links">
+      <a href="index.html">Home</a>
+      <a href="about.html" aria-current="page">Practice</a>
+      <a href="specialties.html">Care Areas</a>
+      <a href="approach.html">Approach</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="diag" aria-hidden="true"></div>
+    <div class="split panel reveal">
+      <h1>Clinical presence that helps you make readable progress</h1>
+      <p class="lead">I work with adults and older adolescents to untangle what’s getting in the way of clearer choices and steadier days. Practical, evidence-aware methods meet thoughtful listening—so you leave a session with something useful to try.</p>
+      <p class="muted" style="margin-top:16px">Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a> • Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+      <p style="margin-top:18px"><a class="cta" href="book.html">Request a consultation</a></p>
+    </div>
+    <div class="panel reveal">
+      <h2 style="margin-top:0">Clinician statement</h2>
+      <p class="muted">I bring years of clinical work with adults facing anxiety, relationship shifts, grief, and career transitions. My stance is collaborative: we form a practical plan together, check in on what’s changing, and adapt. Sessions are confidential within the limits of the law (see below).</p>
+      <div style="margin-top:14px">
+        <strong>Typical session length</strong>
+        <div class="muted">50 or 80 minutes, scheduled weekly or biweekly depending on need</div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="grid" style="padding-top:10px">
+      <article class="card reveal">
+        <h3 style="margin-top:0">What to expect</h3>
+        <p class="muted">In our first meetings we clarify your concerns and immediate priorities. You’ll leave with small, concrete steps to experiment with between sessions—no jargon, just useful practice.</p>
+      </article>
+      <article class="card reveal">
+        <h3 style="margin-top:0">Confidentiality & scope</h3>
+        <p class="muted">Sessions are private within legal limits. I do not provide emergency services: if you are in crisis or at immediate risk of harm, call local emergency services or crisis lines right away. I can help arrange referrals as needed.</p>
+      </article>
+      <article class="card reveal">
+        <h3 style="margin-top:0">Professional boundaries</h3>
+        <p class="muted">I maintain clinical boundaries for the safety and effectiveness of therapy. I aim to be clear about scheduling, fees, and communication so the work stays focused on your goals.</p>
+      </article>
+      <article class="card reveal">
+        <h3 style="margin-top:0">Practical notes</h3>
+        <p class="muted">I offer telehealth across {{STATE}} and limited in-person slots in {{CITY}}. Insurance varies—I can provide a superbill on request.</p>
+      </article>
+    </section>
+
+    <section style="padding:28px">
+      <div class="card reveal">
+        <h3 style="margin-top:0">A short word on collaboration</h3>
+        <p class="muted">Therapy is a collaborative craft: we notice patterns, try small interventions, and pay attention to what shifts. There are no guarantees—only steady, evidence-informed steps and your experience in the room to guide adjustments.</p>
+        <p style="margin-top:12px"><a class="cta" href="contact.html">Start a conversation</a></p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="muted">Licensed clinician. Confidentiality subject to legal limits. Not an emergency service. For immediate danger contact emergency services.</div>
+    <div style="margin-top:8px">&copy; <span id="year"></span> {{BUSINESS_NAME}} • {{CITY}}, {{STATE}}</div>
+  </footer>
+
+  <script>
+    (function(){
+      document.getElementById('year').textContent = new Date().getFullYear();
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const reveals = document.querySelectorAll('.reveal');
+      if(prefersReduced){reveals.forEach(el=>el.classList.add('is-revealed'));return}
+      if('IntersectionObserver' in window){
+        const io = new IntersectionObserver((entries, obs)=>{
+          entries.forEach(e=>{
+            if(e.isIntersecting){e.target.classList.add('is-revealed');obs.unobserve(e.target)}
+          })
+        },{threshold:0.12});
+        reveals.forEach(r=>io.observe(r));
+      } else {reveals.forEach(el=>el.classList.add('is-revealed'))}
+    })();
+  </script>
+</body>
+</html>

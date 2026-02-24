@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{
+      --bg-1: linear-gradient(180deg, rgba(18,18,20,0.5), rgba(10,12,15,0.55));
+      --glass: rgba(255,255,255,0.06);
+      --glass-2: rgba(255,255,255,0.04);
+      --accent: rgba(140,196,255,0.18);
+      --glass-border: rgba(255,255,255,0.12);
+      --text: #e8f0ff;
+      --muted: #b9c6d8;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    html,body{height:100%;margin:0;background:var(--bg-1);color:var(--text);overflow-y:auto}
+    /* patterned backdrop */
+    body::before{
+      content:'';position:fixed;inset:0;background-image:url('assets/img/pattern.svg');background-size:600px;opacity:0.08;mix-blend-mode:overlay;pointer-events:none;
+      filter: hue-rotate(10deg) saturate(120%);
+    }
+    .page{max-width:1000px;margin:48px auto;padding:28px;backdrop-filter: blur(8px) saturate(1.05);}
+    header{display:flex;align-items:center;justify-content:space-between;gap:24px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg, rgba(255,255,255,0.07), rgba(255,255,255,0.02));box-shadow:0 6px 18px rgba(10,12,15,0.6);display:flex;align-items:center;justify-content:center;border:1px solid var(--glass-border);font-weight:700}
+    nav a{color:var(--muted);text-decoration:none;margin:0 10px;font-size:15px}
+    nav a:hover{color:var(--text)}
+    main{display:grid;grid-template-columns:1fr;gap:22px;margin-top:28px}
+    .hero{padding:26px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid var(--glass-border);display:flex;gap:18px;align-items:center}
+    .hero h1{margin:0;font-size:26px}
+    .hero p{margin:4px 0 0;color:var(--muted)}
+    .columns{display:grid;grid-template-columns:1fr 360px;gap:20px}
+    .card{padding:18px;border-radius:12px;background:var(--glass);border:1px solid var(--glass-border)}
+    .muted{color:var(--muted);font-size:14px}
+    .list{margin:12px 0;padding-left:18px}
+    footer{display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding-top:18px;border-top:1px solid rgba(255,255,255,0.03);color:var(--muted);font-size:14px}
+    .cta{background:linear-gradient(90deg, rgba(130,190,255,0.14), rgba(170,120,255,0.09));padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);color:var(--text);text-decoration:none}
+    .small{font-size:13px;color:var(--muted)}
+    @media (max-width:880px){.columns{grid-template-columns:1fr}.page{margin:18px}}
+  </style>
+</head>
+<body>
+  <div class='page'>
+    <header>
+      <div class='brand'>
+        <div class='logo'>SB</div>
+        <div>
+          <div style='font-weight:600'>{{BUSINESS_NAME}}</div>
+          <div class='small'>A sensory, clinically calm sound experience</div>
+        </div>
+      </div>
+      <nav>
+        <a href='index.html'>Home</a>
+        <a href='events.html'>Upcoming</a>
+        <a href='private-sessions.html'>Sessions</a>
+        <a href='pricing.html'>Rates</a>
+        <a href='book.html' style='font-weight:600;color:var(--text)'>Reserve</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class='hero card'>
+        <div style='flex:1'>
+          <h1>About {{BUSINESS_NAME}}</h1>
+          <p class='muted'>We curate premium sound baths that combine precise tone, spacious acoustics, and clinical care to support nervous-system regulation.</p>
+        </div>
+        <div style='text-align:right'>
+          <div class='small'>Questions? Call</div>
+          <div style='font-weight:700'>{{PHONE}}</div>
+        </div>
+      </section>
+
+      <div class='columns'>
+        <section>
+          <div class='card'>
+            <h2 style='margin-top:0'>Our philosophy</h2>
+            <p class='muted'>We focus on sensory precision and somatic safety. Sessions are designed to be accessible: low lights, comfortable temperature, and carefully considered instrument timbre to avoid overstimulation while encouraging deep rest.</p>
+            <h3 style='margin-bottom:6px'>Facilitator</h3>
+            <p>{{FACILITATOR_NAME}} blends clinical training with decades of live sound work. Their approach is measured, trauma-aware, and informed by physiology.</p>
+            <h3 style='margin-top:12px'>Signature instruments</h3>
+            <ul class='list'>
+              <li>Crystal singing bowls tuned to whole-body resonances</li>
+              <li>Himalayan-style gong for long-form overtone wash</li>
+              <li>Koshi and wind chimes for gentle, high-frequency articulation</li>
+            </ul>
+            <p class='muted small'>Each event's instrumentation is selected to cultivate safety-first immersion; the combination varies by intent and space acoustics.</p>
+          </div>
+
+          <div class='card' style='margin-top:16px'>
+            <h3>What people experience</h3>
+            <p class='muted'>Participants commonly report slowed breathing, reduced muscle tension, clearer thinking afterward, and a heightened sense of presence. Experiences vary; all sessions are non-psychotherapeutic and meant as supportive wellness practices.</p>
+          </div>
+
+        </section>
+
+        <aside>
+          <div class='card'>
+            <h3 style='margin-top:0'>Plan your visit</h3>
+            <p class='muted'>We host events at {{VENUE_NAME}} in {{CITY}}, {{STATE}}. The space is accessible and climate-controlled; street parking and transit options are available nearby.</p>
+            <h4 style='margin-bottom:6px'>What to bring</h4>
+            <ul class='list'>
+              <li>Yoga mat or blanket to lie on</li>
+              <li>A pillow and light covering for comfort</li>
+              <li>Optional eye mask and water bottle</li>
+            </ul>
+            <h4>Contraindications (clinical note)</h4>
+            <p class='muted'>Sound baths are generally safe, but please avoid participation if you have uncontrolled epilepsy, recent head trauma, or severe auditory hypersensitivity. If pregnant, use discretion and consult your care provider. For implants or medical devices, check with your clinician. If in doubt, contact us at {{EMAIL}} before booking.</p>
+            <a class='cta' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a>
+          </div>
+
+          <div class='card' style='margin-top:14px'>
+            <h4 style='margin:0 0 8px 0'>Event flow (what to expect)</h4>
+            <ol class='muted' style='padding-left:18px;margin:0'>
+              <li>Check-in and brief intention-setting (5–8 mins)</li>
+              <li>Guided settling and breathwork (8–12 mins)</li>
+              <li>Sound journey with gradual dynamics (35–50 mins)</li>
+              <li>Soft re-orientation and optional sharing (10–12 mins)</li>
+            </ol>
+          </div>
+        </aside>
+      </div>
+
+      <section>
+        <div class='card'>
+          <h3 style='margin-top:0'>Community care and accessibility</h3>
+          <p class='muted'>We offer limited low-sensory seating and a small number of full-reimbursement seats for those with financial need when available. Please email {{EMAIL}} with requests at least 72 hours prior.</p>
+        </div>
+      </section>
+
+    </main>
+
+    <footer>
+      <div class='small'>© {{BUSINESS_NAME}} — nurturing nervous systems across {{CITY}}, {{STATE}}</div>
+      <div>
+        <a href='book.html' class='cta'>Book a spot</a>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

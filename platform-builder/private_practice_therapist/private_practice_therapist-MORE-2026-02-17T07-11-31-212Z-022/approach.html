@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Process & method — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7fbff;--card:#ffffff;--muted:#58606a;--accent:#7b61ff;--accent-2:#32b89a;--text:#0b1220}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;background:var(--bg);color:var(--text)}
+    .nav{max-width:1100px;margin:0 auto;padding:12px;display:flex;align-items:center;justify-content:space-between}
+    .logo{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;padding:8px;border-radius:8px;font-weight:700}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none}
+
+    .hero{max-width:1100px;margin:22px auto;padding:28px;border-radius:12px;display:flex;gap:20px;align-items:center;background:linear-gradient(90deg,rgba(123,97,255,0.06),rgba(50,184,154,0.02));background-image:url('assets/img/pattern.svg');background-position:left bottom;background-repeat:no-repeat}
+    .hero h1{margin:0}
+    .muted{color:var(--muted)}
+
+    main{max-width:1100px;margin:20px auto;padding:0 18px}
+    .flow{display:flex;gap:12px}
+    .step{background:var(--card);padding:14px;border-radius:10px;border:1px solid rgba(11,15,26,0.04)}
+
+    .reveal-hidden{opacity:0;transform:translateY(14px);transition:opacity 520ms ease,transform 520ms ease}
+    .reveal-show{opacity:1;transform:none}
+    @media (max-width:900px){.flow{flex-direction:column}}
+
+    .modal-backdrop{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,0.45);z-index:70}
+    .modal{background:#fff;padding:16px;border-radius:10px;width:720px;max-width:94%}
+    .btn{padding:8px 12px;border-radius:8px;border:1px solid rgba(11,15,26,0.04);background:transparent}
+    .primary{background:var(--accent);color:#fff;border:none}
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <div style="display:flex;gap:12px;align-items:center"><div class="logo">TP</div><div style="font-weight:700">{{BUSINESS_NAME}}</div></div>
+    <nav>
+      <a href="index.html">Start</a>
+      <a href="about.html">About</a>
+      <a href="specialties.html">Areas</a>
+      <a href="approach.html">Process</a>
+      <a href="fees.html">Investment</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+    <div><a class="btn primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+  </div>
+
+  <div class="hero" role="banner">
+    <div style="flex:1">
+      <h1>Process that names patterns and creates manageable change</h1>
+      <p class="muted">My work mixes careful assessment, skill-building, and short experiments. The aim is steady, private progress — not quick fixes.</p>
+      <div style="margin-top:12px"><button class="btn" id="try-now">Try it now</button></div>
+    </div>
+    <div style="width:280px;padding:12px;border-radius:10px;background:rgba(123,97,255,0.04)">
+      <div style="font-weight:700">Typical timeline</div>
+      <div class="muted" style="margin-top:6px">Assessment → short plan → practice & review.</div>
+    </div>
+  </div>
+
+  <main>
+    <section class="step reveal-hidden" data-reveal>
+      <h2>1. Initial conversation</h2>
+      <p class="muted">A brief consult to clarify the concern, mutual fit, and possible options. This helps us pick an entry point — a short package, assessment, or ongoing work.</p>
+    </section>
+
+    <section class="step reveal-hidden" data-reveal style="margin-top:12px">
+      <h2>2. Assessment & planning</h2>
+      <p class="muted">We identify patterns, resources, and a small set of objectives. The plan is practical: clear, measurable, and time-bound when helpful.</p>
+    </section>
+
+    <section class="step reveal-hidden" data-reveal style="margin-top:12px">
+      <h2>3. Practice and review</h2>
+      <p class="muted">You try small experiments between sessions. We review what worked and adjust. I provide concise tools to practice moment-to-moment changes.</p>
+    </section>
+
+    <section class="step reveal-hidden" data-reveal style="margin-top:12px">
+      <h2>4. Decide next steps</h2>
+      <p class="muted">After an initial block, we evaluate whether brief additional work, ongoing sessions, or wrapping up best serves your goals.</p>
+    </section>
+
+    <section class="card reveal-hidden" data-reveal style="margin-top:16px">
+      <h2>What I do not offer</h2>
+      <p class="muted">This practice does not provide emergency services, court testimony, or forensic evaluations. I will discuss limits to confidentiality as needed and refer when specialist services are required.</p>
+      <p class="small muted" style="margin-top:8px">If you are experiencing a crisis, call emergency services or your local crisis line immediately.</p>
+    </section>
+
+    <section class="card reveal-hidden" data-reveal style="margin-top:14px">
+      <h2>Micro-practices</h2>
+      <p class="muted">Short actions between sessions help learning stick: a minute of paced breathing, a one-line journal note, or a planned behavioral test. These are optional but often helpful.</p>
+      <div style="margin-top:8px"><button class="btn" id="try-now-2">Try it now</button></div>
+    </section>
+
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <a class="btn primary" href="book.html">Book a consult</a>
+      <a class="btn" href="fees.html">See investment options</a>
+    </div>
+  </main>
+
+  <div class="modal-backdrop" id="modal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div style="display:flex;justify-content:space-between;align-items:center"><strong id="title">Guided exercise</strong><button id="close">Close</button></div>
+      <div id="exercise-area" style="margin-top:8px"></div>
+    </div>
+  </div>
+
+  <script>
+    // Shared modal and exercises (consistent but slightly different UI)
+    (function(){
+      const modal = document.getElementById('modal');
+      const openers = [document.getElementById('try-now'), document.getElementById('try-now-2')];
+      const close = document.getElementById('close');
+      const area = document.getElementById('exercise-area');
+      openers.forEach(o=>o && o.addEventListener('click',()=>{
+        modal.style.display='flex'; modal.setAttribute('aria-hidden','false'); area.innerHTML = '<div style="display:flex;gap:8px"><button class="btn" id="bre">Breathing</button><button class="btn" id="journ">Journaling</button><button class="btn" id="intent">Intention</button></div>';
+        setTimeout(()=>{ document.getElementById('bre').focus(); },40);
+        document.getElementById('bre').addEventListener('click',()=>{ area.innerHTML = '<div style="text-align:center"><div style="width:110px;height:110px;border-radius:50%;background:linear-gradient(90deg,#7b61ff22,#32b89a22);display:grid;place-items:center;margin:12px auto"><strong id="num">4</strong></div><div class="muted">Breathe: inhale 4, hold 4, exhale 6. Press start.</div><div style="margin-top:10px"><button class="primary btn" id="start">Start</button></div></div>'; document.getElementById('start').addEventListener('click',()=>{ let n=0; const seq=[4,4,6]; const el=document.getElementById('num'); const t=setInterval(()=>{ n++; const phase = Math.floor((n-1)/4)%3; const step = ((n-1)%4)+1; el.textContent = seq[phase]-step+1; if(n>=36) clearInterval(t); },1000); }); });
+        document.getElementById('journ').addEventListener('click',()=>{ area.innerHTML = '<div><div class="muted">Prompt: What is one small observation about today that feels important?</div><textarea id="jt" rows="5" style="width:100%;margin-top:8px;padding:8px;border-radius:8px;border:1px solid rgba(11,15,26,0.04)"></textarea><div style="margin-top:8px"><button class="btn" id="save">Save</button></div></div>'; document.getElementById('save').addEventListener('click',()=>{ const v=document.getElementById('jt').value.trim(); if(!v) return alert('Nothing to save'); localStorage.setItem('journ-'+Date.now(),v); alert('Saved locally'); }); });
+        document.getElementById('intent').addEventListener('click',()=>{ area.innerHTML = '<div><input id="in" placeholder="I will..." style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(11,15,26,0.04)"><div style="margin-top:8px"><button class="primary btn" id="savei">Keep</button></div><div id="out" class="muted" style="margin-top:8px"></div></div>'; document.getElementById('savei').addEventListener('click',()=>{ const v=document.getElementById('in').value.trim(); if(!v) { document.getElementById('out').textContent='Write a short intention.'; return; } localStorage.setItem('intent',v); document.getElementById('out').textContent='Saved: "'+v+'"'; }); });
+      }));
+      close && close.addEventListener('click',()=>{ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); area.innerHTML=''; });
+      modal.addEventListener('click',e=>{ if(e.target===modal) { modal.style.display='none'; modal.setAttribute('aria-hidden','true'); area.innerHTML=''; } });
+      document.addEventListener('keydown',e=>{ if(e.key==='Escape' && modal.style.display==='flex') { modal.style.display='none'; modal.setAttribute('aria-hidden','true'); area.innerHTML=''; } });
+    })();
+
+    // Scroll reveal with reduced-motion check
+    (function(){
+      const items = document.querySelectorAll('[data-reveal]');
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if(reduced){ items.forEach(i=>i.classList.add('reveal-show')); return; }
+      const obs = new IntersectionObserver(entries=>{ entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('reveal-show'); en.target.classList.remove('reveal-hidden'); obs.unobserve(en.target); } }); },{threshold:0.12});
+      items.forEach(i=>{ i.classList.add('reveal-hidden'); obs.observe(i); });
+    })();
+  </script>
+</body>
+</html>

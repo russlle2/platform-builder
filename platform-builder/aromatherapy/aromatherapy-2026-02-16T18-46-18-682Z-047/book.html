@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fffe;--brand:#5f8f6b;--muted:#556a58}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:linear-gradient(180deg,#fbfff9,#f2fbf2);color:#163}
+    header{display:flex;justify-content:space-between;padding:16px 22px}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none}
+    .wrap{max-width:1080px;margin:18px auto;padding:0 18px}
+    .top{display:grid;grid-template-columns:1fr 340px;gap:18px;align-items:start}
+    .panel{background:#fff;padding:18px;border-radius:12px;border:1px solid rgba(10,10,10,0.03)}
+    h1{margin:0 0 6px}
+    .meta{color:var(--muted);font-size:14px}
+    .form{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+    input,select,textarea{padding:10px;border-radius:8px;border:1px solid rgba(10,10,10,0.06);font-size:14px}
+    .controls{display:flex;gap:10px}
+    .btn{background:var(--brand);color:white;padding:10px 12px;border-radius:8px;border:none}
+    .secondary{background:transparent;border:1px solid rgba(6,6,6,0.06)}
+    .check{font-size:13px;color:var(--muted)}
+    .faq{margin-top:12px;color:var(--muted);font-size:14px}
+    .habit-list{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .habit{background:#fff;padding:8px 10px;border-radius:10px;border:1px solid rgba(10,10,10,0.03)}
+    svg.bg{position:absolute;right:0;top:0;opacity:0.06}
+    @media(max-width:900px){.top{grid-template-columns:1fr}.bg{display:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div><strong>{{BUSINESS_NAME}}</strong></div>
+    <nav>
+      <a href="index.html">Start</a>
+      <a href="services.html">Services</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Shop</a>
+      <a href="pricing.html">Rates</a>
+      <a href="about.html">Meet</a>
+      <a href="book.html">Reserve</a>
+    </nav>
+  </header>
+
+  <div class="wrap">
+    <div class="top">
+      <div class="panel">
+        <h1>Reserve your session or series</h1>
+        <p class="meta">Choose a format, pick dates, and we’ll confirm details by email. Events are limited to small groups when applicable.</p>
+
+        <form class="form" action="/book" method="post" novalidate>
+          <label>
+            I want to:
+            <select name="type">
+              <option>Single Session — 60 min</option>
+              <option>Mini Series (4 x 45 min)</option>
+              <option>Community Circle (drop-in)</option>
+            </select>
+          </label>
+
+          <label>
+            Preferred date or start week:
+            <input name="date" placeholder="e.g. 2026-03-02 or flexible" />
+          </label>
+
+          <label>
+            Your name:
+            <input name="name" required />
+          </label>
+
+          <label>
+            Email:
+            <input name="email" type="email" required />
+          </label>
+
+          <label>
+            Notes (allergies, pregnancy, pets, sensitivities):
+            <textarea name="notes" rows="3" placeholder="Please mention pregnancy, epilepsy, or pet concerns"></textarea>
+          </label>
+
+          <div style="display:flex;gap:10px;align-items:center">
+            <button class="btn" type="submit">Request Reservation</button>
+            <a class="secondary" href="contact.html" style="display:inline-block;padding:10px 12px;border-radius:8px;text-decoration:none;color:var(--muted)">Contact</a>
+          </div>
+
+          <div class="check">
+            <label><input type="checkbox" name="agree" required /> I understand sessions are educational and not a substitute for medical care.</label>
+          </div>
+        </form>
+
+        <div class="faq">
+          <strong>Quick safety notes</strong>
+          <p style="margin:6px 0 0">Patch testing is recommended. Inform us if you are pregnant, breastfeeding, have asthma, seizure history, or care for pets. We will tailor suggestions appropriately.</p>
+        </div>
+      </div>
+
+      <aside style="display:flex;flex-direction:column;gap:12px">
+        <div class="panel">
+          <h3 style="margin:0 0 8px">What to expect</h3>
+          <ol style="margin:0 0 8px 18px;color:var(--muted)">
+            <li>Short intake and safety check</li>
+            <li>Guided scent exploration</li>
+            <li>Micro-habit and take-home notes</li>
+          </ol>
+          <div style="margin-top:8px"><a class="btn" href="pricing.html">See Rates</a></div>
+        </div>
+
+        <div class="panel">
+          <h3 style="margin:0 0 8px">Pre-session micro-habits</h3>
+          <div class="habit-list">
+            <div class="habit">Avoid heavy perfumes</div>
+            <div class="habit">Note any new skin issues</div>
+            <div class="habit">Have a small notebook</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3 style="margin:0 0 8px">Cancellation &amp; policies</h3>
+          <p style="margin:0;color:var(--muted)">Please notify 48 hours before group sessions and 24 hours for one-on-one. Contact for exceptions: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+        </div>
+      </aside>
+    </div>
+
+    <div style="margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:18px">
+      <div class="panel">
+        <h3 style="margin:0 0 8px">Diagnostic checklist</h3>
+        <ul style="color:var(--muted);margin:0 0 0 18px">
+          <li>Have you performed a patch test? (We will guide you.)</li>
+          <li>Any current medications or conditions to note?</li>
+          <li>Are you pregnant or breastfeeding? Please specify in notes.</li>
+          <li>Do you live with pets? Which kinds?</li>
+        </ul>
+      </div>
+
+      <div class="panel">
+        <h3 style="margin:0 0 8px">Aftercare plan</h3>
+        <p style="margin:0;color:var(--muted)">Following each meeting you'll receive concise micro-habits: 30s daily inhalation, a journaling prompt, and a simple home ritual to keep scent approachable.</p>
+      </div>
+    </div>
+
+    <div style="margin:22px 0 80px;display:flex;gap:12px;align-items:center">
+      <a class="btn" href="pricing.html">Review Rates</a>
+      <a class="secondary" href="contact.html" style="padding:10px 12px;border-radius:8px;text-decoration:none;color:var(--muted)">Questions before booking?</a>
+    </div>
+  </div>
+
+  <!-- subtle unique wave SVG for booking page -->
+  <svg class="bg" width="360" height="260" viewBox="0 0 360 260" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <defs>
+      <linearGradient id="bgG" x1="0" x2="1"><stop offset="0" stop-color="#eef9ef"/><stop offset="1" stop-color="#ffffff"/></linearGradient>
+    </defs>
+    <rect width="360" height="260" fill="url(#bgG)" rx="20"/>
+    <g fill="#86b089" opacity="0.14">
+      <circle cx="40" cy="200" r="80"/>
+      <path d="M120 100 C180 30, 260 30, 320 100 L320 260 L120 260 Z"/>
+    </g>
+  </svg>
+</body>
+</html>

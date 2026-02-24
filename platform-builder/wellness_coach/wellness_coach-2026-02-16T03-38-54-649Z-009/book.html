@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--accent:#ff6b9f;--muted:#6b7280}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,#fff,#fbfbff);color:#0b1220}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    .container{max-width:880px;margin:20px auto;padding:20px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .card{background:#ffffff;padding:20px;border-radius:14px;box-shadow:0 10px 30px rgba(15,20,30,0.06)}
+    h1{margin:0 0 8px}
+    .muted{color:var(--muted)}
+    form{display:flex;flex-direction:column;gap:10px}
+    input,textarea,select{padding:12px;border-radius:10px;border:1px solid #e6e9ef;font-size:14px}
+    .btn{background:var(--accent);color:#fff;padding:12px;border-radius:10px;border:none;font-weight:700}
+    .note{font-size:13px;color:var(--muted)}
+    .pattern{width:100%;height:120px;margin-bottom:12px}
+    @media(max-width:880px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="programs.html">Programs</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div class="grid">
+      <section class="card">
+        <div class="label">Reserve your clarity call</div>
+        <h1>Reserve Your Light Session</h1>
+        <p class="muted">A 30-minute consult to map a simple, practical habit plan. This is an exploratory session — no pressure, clear next steps.</p>
+
+        <div class="pattern" aria-hidden="true">
+          <!-- Unique pattern SVG -->
+          <svg width="100%" height="120" viewBox="0 0 480 120" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="p" x1="0" x2="1">
+                <stop offset="0" stop-color="#fff0f6"/>
+                <stop offset="1" stop-color="#fff6f9"/>
+              </linearGradient>
+            </defs>
+            <rect width="480" height="120" rx="12" fill="url(#p)" />
+            <g fill="#ffdbe6" opacity="0.9">
+              <circle cx="60" cy="40" r="28"/>
+              <circle cx="140" cy="80" r="18"/>
+              <circle cx="320" cy="50" r="34"/>
+            </g>
+            <path d="M0 110c80-30 240-30 480 0" stroke="#ffe6f2" stroke-width="6" fill="none" opacity="0.7"/>
+          </svg>
+        </div>
+
+        <form action="{{PRIMARY_CTA_URL}}" method="post">
+          <label>Name
+            <input type="text" name="name" placeholder="Your full name" required />
+          </label>
+          <label>Email
+            <input type="email" name="email" placeholder="you@domain.com" required />
+          </label>
+          <label>Phone
+            <input type="tel" name="phone" placeholder="{{PHONE}}" />
+          </label>
+          <label>Preferred session
+            <select name="session">
+              <option>30-min clarity call</option>
+              <option>60-min planning session</option>
+            </select>
+          </label>
+          <label>Current focus
+            <textarea name="focus" rows="3" placeholder="Sleep, focus, energy, mood..." ></textarea>
+          </label>
+          <div style="display:flex;gap:10px;align-items:center">
+            <button class="btn" type="submit">Book my session</button>
+            <div class="note">Or call <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+          </div>
+        </form>
+
+        <div style="margin-top:12px" class="muted">After booking you'll receive a short diagnostic to complete before our call — this makes the session focused and useful.</div>
+      </section>
+
+      <aside class="card">
+        <div class="label">What to expect</div>
+        <h3 style="margin:6px 0">A practical, soulful conversation</h3>
+        <p class="muted">We start with a quick diagnostic: routines, stressors, and one small habit to test. Then we sketch a plan that fits your life rhythm.</p>
+
+        <div style="margin-top:12px">
+          <strong>Quick diagnostic (example)</strong>
+          <ul class="muted">
+            <li>When do you feel most scattered?</li>
+            <li>What habit could you try for one week?</li>
+            <li>How will you check progress?</li>
+          </ul>
+        </div>
+
+        <div style="margin-top:12px">
+          <strong>Program pathways</strong>
+          <p class="muted">Seed guide, Lumina cohort, Sage private — we'll match the right pathway in the session.</p>
+        </div>
+
+        <div style="margin-top:12px">
+          <a href="pricing.html" style="display:inline-block;padding:10px 12px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none">See investment</a>
+        </div>
+      </aside>
+    </div>
+
+    <section style="margin-top:18px" id="micro_habits">
+      <div class="card">
+        <div class="label">Micro-habit primer</div>
+        <h3 style="margin:6px 0">A one-question test</h3>
+        <p class="muted">If a habit takes less than five minutes and you can do it daily, it can become the lever for a wider change. We design those together.</p>
+        <div style="margin-top:12px"><a href="testimonials.html" style="text-decoration:none;padding:10px 12px;background:#fff;border-radius:8px;border:1px solid #eee;color:#111">Read stories</a></div>
+      </div>
+    </section>
+
+    <footer style="margin-top:18px;text-align:center;color:var(--muted)">
+      <div>{{BUSINESS_NAME}} • {{COACH_NAME}}, {{CREDENTIALS}} • {{CITY}}, {{STATE}}</div>
+      <div style="margin-top:6px">Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </footer>
+  </main>
+</body>
+</html>

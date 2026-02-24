@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>How I Work — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#082028;--card:#081a20;--accent:#f3a1c2;--muted:#a8c1c7}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#07141a;color:#e6f7fb}
+    .wrap{max-width:980px;margin:28px auto;padding:20px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{color:#cfeff6;margin:0 10px;text-decoration:none;font-weight:600}
+    h1{margin:0 0 8px 0;color:#fff}
+    .lead{color:var(--muted)}
+    .three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:16px}
+    .tile{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:14px;border-radius:12px}
+    .tile h3{margin:0 0 8px 0}
+    .mood-area{margin-top:18px;padding:14px;border-radius:12px;background:linear-gradient(180deg,#071e24,transparent)}
+    select{padding:10px;border-radius:8px;border:0;background:#06242a;color:#e6fbff}
+    .method-detail{margin-top:12px;color:var(--muted)}
+    .cta{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:10px;background:var(--accent);color:#07141b;text-decoration:none;font-weight:700}
+    .accordion{margin-top:18px}
+    .acc-item{margin-bottom:10px}
+    .acc-btn{width:100%;text-align:left;padding:12px;border-radius:9px;background:transparent;border:0;color:#dff7ee;font-weight:700}
+    .acc-body{padding:10px;color:#bfeee6;display:none}
+    .crisis{margin-top:12px;padding:12px;border-radius:9px;background:#3a2020;color:#ffeaea;font-size:13px}
+    @media(max-width:860px){.three{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <strong style="color:var(--accent)">{{BUSINESS_NAME}}</strong>
+        <div style="color:var(--muted);font-size:13px">Compassionate, practical therapy — cohorts & individual options</div>
+      </div>
+      <nav>
+        <a href="index.html">Welcome</a>
+        <a href="about.html">Story</a>
+        <a href="specialties.html">Focus Areas</a>
+        <a href="approach.html">How I Work</a>
+        <a href="fees.html">Rates</a>
+      </nav>
+    </header>
+
+    <main>
+      <h1>How I tend to work with people</h1>
+      <p class="lead">I borrow from several well-researched approaches and adapt them to each person or cohort. The emphasis is on practices you can use, clear expectations, and safety. Below are the key commitments I bring to therapy.</p>
+
+      <div class="three">
+        <div class="tile">
+          <h3>Practical orientation</h3>
+          <p class="method-detail">We identify small, testable steps rather than only talking. Goals are revisited and adjusted—therapy should connect to daily life.</p>
+        </div>
+        <div class="tile">
+          <h3>Collaborative clarity</h3>
+          <p class="method-detail">We set agreements about focus, confidentiality, communication, and what happens between sessions.</p>
+        </div>
+        <div class="tile">
+          <h3>Safety & pacing</h3>
+          <p class="method-detail">I track safety concerns explicitly and slow down when material is intense. I’ll offer referrals when the work is outside my scope.</p>
+        </div>
+      </div>
+
+      <section class="mood-area">
+        <label for="mood-method" style="font-weight:700">How are you today? Pick a brief state to see a recommended method.</label>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+          <select id="mood-method">
+            <option value="breathe">Overwhelmed / reactive</option>
+            <option value="weigh">Ambivalent / stuck</option>
+            <option value="grieve">Grieving / low energy</option>
+            <option value="patterns">Repeating patterns</option>
+            <option value="skills">Want concrete skills</option>
+          </select>
+          <a id="approachCta" class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+
+        <div id="approach-detail" style="margin-top:12px;color:var(--muted)">
+          <strong id="approach-title">Suggested approach:</strong>
+          <div id="approach-text" style="margin-top:6px">Choose a state to see a tailored suggestion. I’ll match pacing and method to your needs—no assumptions, just options.</div>
+        </div>
+      </section>
+
+      <div class="accordion">
+        <div class="acc-item">
+          <button class="acc-btn" data-acc="ap-bound">Session boundaries ▸</button>
+          <div class="acc-body" id="ap-bound">Typical sessions are 45–55 minutes. We’ll agree on cancellation policies, response times for messages, and how to handle missed sessions. Cohorts have attendance norms shared in advance.</div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-btn" data-acc="ap-conf">Confidentiality & scope ▸</button>
+          <div class="acc-body" id="ap-conf">Your privacy is respected. Exceptions are required by law: imminent risk of harm, suspected abuse, or mandated reporting. If the work goes beyond my scope, I’ll suggest appropriate referrals.</div>
+        </div>
+
+        <div class="crisis">If you are in immediate danger, call local emergency services. For urgent mental health crisis in the U.S., dial 988. I am not a crisis hotline and do not provide emergency services via email.</div>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    // Accordion behavior
+    document.querySelectorAll('.acc-btn').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const next = btn.nextElementSibling;
+        const open = next.style.display === 'block';
+        document.querySelectorAll('.acc-body').forEach(b=>b.style.display='none');
+        document.querySelectorAll('.acc-btn').forEach(x=>x.textContent = x.textContent.replace('▾','▸'));
+        if(!open){ next.style.display='block'; btn.textContent = btn.textContent.replace('▸','▾'); }
+      });
+    });
+
+    // Mood-to-method mapping for approach page
+    const methods = {
+      breathe:{title:'Short stabilization & grounding',text:'Begin with grounding, pacing, and safety checks. Sessions focus on immediate relief strategies and a plan for next steps.',cta:'Book a stabilization consult'},
+      weigh:{title:'Decision-focused brief series',text:'Three to four sessions centered on mapping options, values-based choices, and small experiments to test what feels possible.',cta:'Start a short series'},
+      grieve:{title:'Paced supportive sequence',text:'A gentle, paced approach that honors loss, tracks mood, and builds small routines for restoration.',cta:'Arrange a supportive consult'},
+      patterns:{title:'Pattern mapping & practice',text:'Identify recurring interpersonal or emotional patterns and practice alternative responses in-session and between sessions.',cta:'Schedule a pattern session'},
+      skills:{title:'Skills-oriented sessions',text:'Hands-on skills training (emotion regulation, communication, distress tolerance) tailored to your priorities.',cta:'Request skills-focused session'}
+    };
+
+    const sel = document.getElementById('mood-method');
+    const title = document.getElementById('approach-title');
+    const text = document.getElementById('approach-text');
+    const cta = document.getElementById('approachCta');
+    sel.addEventListener('change',()=>{
+      const v = sel.value;
+      const pick = methods[v]||methods.skills;
+      title.textContent = 'Suggested approach: ' + pick.title;
+      text.textContent = pick.text;
+      cta.textContent = pick.cta + ' — ' + cta.textContent;
+    });
+  </script>
+</body>
+</html>

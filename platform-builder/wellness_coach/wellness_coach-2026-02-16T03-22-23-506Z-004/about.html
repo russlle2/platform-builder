@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--ink:#0b0b0b;--accent:#5a3ad6;--muted:#6b6b6b;--soft:#f6f4ff}
+    body{font-family: Georgia, 'Times New Roman', serif; margin:0; color:var(--ink); background:var(--soft);}
+    header{background:linear-gradient(180deg,rgba(90,58,214,0.06),transparent);padding:48px 6vw 36px;border-bottom:1px solid rgba(11,11,11,0.04)}
+    nav{display:flex;gap:24px;align-items:center;justify-content:space-between}
+    .brand{font-weight:700;font-size:20px;letter-spacing:0.6px}
+    .nav-links a{color:var(--ink);text-decoration:none;padding:8px 10px;border-radius:6px}
+    .nav-links a.cta{background:var(--accent);color:#fff}
+    .container{max-width:980px;margin:36px auto;padding:0 24px}
+    .hero{display:grid;grid-template-columns:1fr 320px;gap:28px;align-items:center}
+    h1{font-size:38px;margin:0 0 12px}
+    p.lead{color:var(--muted);font-size:16px;margin:0 0 18px}
+    .card{background:#fff;padding:22px;border-radius:12px;box-shadow:0 8px 30px rgba(14,14,14,0.06)}
+    .avatar{display:flex;gap:14px;align-items:center}
+    .small{font-size:14px;color:var(--muted)}
+    section{margin:32px 0}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .list{display:flex;flex-direction:column;gap:12px}
+    .btn{display:inline-block;padding:10px 16px;border-radius:8px;background:var(--accent);color:#fff;text-decoration:none}
+    footer{padding:32px 6vw;background:#fff;border-top:1px solid rgba(11,11,11,0.04);text-align:center;color:var(--muted)}
+    /* editorial accent */
+    .eyebrow{font-weight:700;color:var(--accent);letter-spacing:1px}
+    @media(max-width:800px){.hero{grid-template-columns:1fr;}.grid-2{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <nav>
+        <div class="brand">{{BUSINESS_NAME}}</div>
+        <div class="nav-links">
+          <a href="index.html">Home</a>
+          <a href="programs.html">Paths</a>
+          <a href="services.html">Offerings</a>
+          <a href="contact.html">Connect</a>
+          <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div>
+        <div class="eyebrow">About the practice</div>
+        <h1>A Gentle Map to Your Well-Being</h1>
+        <p class="lead">I combine soulful inquiry with practical micro-habits — a luminous path to steady energy, calm clarity, and meaningful routines you live with joy.
+        My approach is trauma-informed, habit-forward, and outcome-driven without medical claims.</p>
+
+        <div class="card">
+          <div class="avatar">
+            <!-- Inline unique avatar SVG for about page -->
+            <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+              <defs>
+                <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#f7f3ff"/><stop offset="1" stop-color="#e6dbff"/></linearGradient>
+              </defs>
+              <rect rx="12" width="64" height="64" fill="url(#g1)"/>
+              <circle cx="32" cy="22" r="10" fill="#6b46ff" opacity="0.15"/>
+              <path d="M16 50c4-8 22-8 32 0" stroke="#5a3ad6" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            </svg>
+            <div>
+              <div style="font-weight:700">{{COACH_NAME}}, {{CREDENTIALS}}</div>
+              <div class="small">Based in {{CITY}}, {{STATE}} — guiding small cohorts + one-on-one clients</div>
+            </div>
+          </div>
+        </div>
+
+        <p style="margin-top:14px">I teach compact frameworks so you can hold change: diagnose current energy, pick a clarifying plan, layer micro-habits, and measure progress. If you want a downloadable starter ritual, claim the free guide at the bottom.</p>
+
+        <p style="margin-top:10px"><a class="btn" href="book.html">Book a Clarity Call</a> <a href="#lead" style="margin-left:10px">Free guide</a></p>
+      </div>
+
+      <aside>
+        <div class="card">
+          <h3 style="margin-top:0">Quick Diagnostic</h3>
+          <p class="small">A fast self-check to reveal which pillar needs attention.</p>
+          <form action="{{PRIMARY_CTA_URL}}" method="get">
+            <label class="small">Sleep & energy</label>
+            <select name="sleep" style="width:100%;margin:8px 0;padding:8px;border-radius:8px">
+              <option>Restorative</option>
+              <option>Fragmented</option>
+              <option>Not enough</option>
+            </select>
+            <label class="small">Daily routine</label>
+            <select name="routine" style="width:100%;margin:8px 0;padding:8px;border-radius:8px">
+              <option>Intentional</option>
+              <option>Busy, reactive</option>
+              <option>No routine</option>
+            </select>
+            <button class="btn" type="submit" style="width:100%;margin-top:8px">Reveal my next step</button>
+          </form>
+          <p class="small" style="margin-top:10px">Results land with practical next steps and an invitation to the right program.</p>
+        </div>
+
+        <div style="height:18px"></div>
+
+        <div class="card">
+          <h4 style="margin:0">Philosophy</h4>
+          <p class="small" style="margin:8px 0 0">Small consistent practices beat big ad hoc efforts. We choose three micro-habits first, then build systems that support them.</p>
+        </div>
+      </aside>
+    </section>
+
+    <section>
+      <h2 style="margin-bottom:8px">How I work (a simple plan)</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h3>1. Diagnose the pattern</h3>
+          <p class="small">We translate your lived experience into measurable pillars: sleep, stress rhythm, nourishment, movement, social fuel.</p>
+        </div>
+        <div class="card">
+          <h3>2. Design a tailored plan</h3>
+          <p class="small">Short frameworks — 6–10 weeks — organized around one clarifying promise (energy, calm, presence).</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 style="margin-bottom:8px">Micro-habits that hold</h2>
+      <div class="list">
+        <div class="card">Morning anchor: 6-minute breath + movement sequence to orient attention.</div>
+        <div class="card">Midday reset: a 3-minute ritual to downshift and choose clarity.</div>
+        <div class="card">Evening close: a short reflective practice that improves sleep quality without rules.</div>
+      </div>
+    </section>
+
+    <section>
+      <h2 id="lead">Download: The Starter Ritual</h2>
+      <div class="card">
+        <p class="small">Enter your email and receive a concise PDF with rituals, a one-week micro-habit plan, and a gentle tracking sheet.</p>
+        <form action="{{PRIMARY_CTA_URL}}" method="post">
+          <input name="email" placeholder="you@domain.com" style="width:100%;padding:10px;border-radius:8px;border:1px solid #e6e0ff;margin-top:8px">
+          <button class="btn" style="width:100%;margin-top:10px">Send my guide</button>
+        </form>
+      </div>
+    </section>
+
+    <section>
+      <h2>Pricing snapshot</h2>
+      <div class="grid-2">
+        <div class="card">
+          <strong>Clarity Session</strong>
+          <p class="small">60-minute intake. We map priorities and pick immediate micro-habits.</p>
+          <p style="margin-top:10px"><a class="btn" href="book.html">Book — {{PRIMARY_CTA_LABEL}}</a></p>
+        </div>
+        <div class="card">
+          <strong>Inner Map Mentorship</strong>
+          <p class="small">3-month mentorship for professionals who want a steady, soulful routine. Payment options discussed on call.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="card">
+        <h3 style="margin-top:0">Ready to begin?</h3>
+        <p class="small">Book a conversation. We’ll clarify the best next step — cohort, mentorship, or short course.</p>
+        <p style="margin-top:10px"><a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="small">Questions? Call {{PHONE}} or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    <div style="margin-top:8px" class="small">© {{BUSINESS_NAME}}</div>
+  </footer>
+</body>
+</html>

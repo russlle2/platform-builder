@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{
+      --bg:#fbfaf8; --muted:#68717a; --accent:#6b8f7a; --ink:#132522; --card:#ffffff;
+      --glass: rgba(255,255,255,0.6);
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#f3f7f4);color:var(--ink);-webkit-font-smoothing:antialiased}
+    nav{display:flex;gap:18px;padding:22px 36px;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;font-weight:600;font-size:14px}
+    nav a:hover{color:var(--ink)}
+    .brand{font-weight:700;color:var(--ink);letter-spacing:0.2px}
+
+    .hero{position:relative;overflow:hidden;padding:56px 36px;border-bottom:1px solid rgba(19,37,34,0.04)}
+    .pattern-svg{position:absolute;inset:0;opacity:0.12;mix-blend-mode:multiply}
+    .hero-inner{max-width:980px;margin:0 auto;display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+    .headline{font-size:28px;line-height:1.08;margin:0 0 12px}
+    .sub{color:var(--muted);margin:0 0 18px}
+    .contact-card{background:linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.7));padding:18px;border-radius:12px;box-shadow:0 6px 24px rgba(19,37,34,0.06)}
+    .muted{color:var(--muted);font-size:13px}
+    .cta-row{display:flex;gap:12px;margin-top:14px}
+    .btn{display:inline-block;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px}
+    .btn-primary{background:var(--accent);color:#fff}
+    .btn-ghost{background:transparent;border:1px solid rgba(19,37,34,0.06);color:var(--ink)}
+
+    main{max-width:980px;margin:28px auto;padding:0 18px}
+    .panel{background:var(--card);padding:18px;border-radius:12px;margin-bottom:18px;box-shadow:0 6px 20px rgba(19,37,34,0.04)}
+    h2{margin:0 0 10px;font-size:18px}
+    .moods{display:flex;gap:10px;flex-wrap:wrap}
+    .mood{padding:10px 12px;border-radius:10px;background:var(--glass);cursor:pointer;border:1px solid rgba(19,37,34,0.04)}
+    .mood.active{border-color:var(--accent);box-shadow:0 6px 18px rgba(107,143,122,0.08)}
+    .result{margin-top:14px;color:var(--muted)}
+
+    .timeline{display:flex;gap:12px;align-items:flex-start}
+    .phase{flex:1;padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#fbfff9);border:1px solid rgba(19,37,34,0.04)}
+    .phase h3{margin:0 0 6px;font-size:15px}
+    .phase small{color:var(--muted)}
+    .disclaimer{font-size:12px;color:var(--muted);margin-top:10px}
+
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .program{padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#fcfff8);border:1px solid rgba(19,37,34,0.04)}
+    .program .price{font-weight:800;color:var(--accent);margin-top:8px}
+
+    form{display:grid;gap:10px}
+    input,textarea,select{padding:10px;border-radius:8px;border:1px solid rgba(19,37,34,0.06);font-size:14px}
+    textarea{min-height:110px}
+    .note{font-size:13px;color:var(--muted)}
+
+    footer{padding:24px;text-align:center;color:var(--muted);font-size:13px}
+
+    @media(max-width:880px){
+      .hero-inner{grid-template-columns:1fr}
+      .grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <div style="flex:1"></div>
+    <a href="index.html">Begin</a>
+    <a href="services.html">Offerings</a>
+    <a href="conditions.html">Notes</a>
+    <a href="approach.html">Way</a>
+    <a href="pricing.html">Invest</a>
+    <a href="about.html">Studio</a>
+    <a href="book.html">Reserve</a>
+    <a href="contact.html">Connect</a>
+  </nav>
+
+  <header class="hero" role="banner">
+    <!-- decorative SVG pattern (unique, inline) -->
+    <svg class="pattern-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <defs>
+        <linearGradient id="g1" x1="0" x2="1">
+          <stop offset="0" stop-color="#e6f0ea"/>
+          <stop offset="1" stop-color="#f7fbf8"/>
+        </linearGradient>
+        <pattern id="p1" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(18)">
+          <rect width="40" height="40" fill="url(#g1)"/>
+          <path d="M0 20h40M20 0v40" stroke="#d8e6dd" stroke-width="0.8"/>
+          <circle cx="10" cy="10" r="1.4" fill="#cde0d3"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#p1)"/>
+      <g opacity="0.06" transform="translate(80,40)">
+        <path d="M0 0 C120 80 240 -40 360 40 C480 120 600 20 720 80" stroke="#9fbdae" stroke-width="38" fill="none" stroke-linecap="round"/>
+      </g>
+    </svg>
+
+    <div class="hero-inner">
+      <div>
+        <h1 class="headline">Reach a kinder rhythm</h1>
+        <p class="sub">A short note, a plan, a place to begin. We listen, map, and offer practical steps you can try.
+        <br><span class="muted">Local practice — {{CITY}}, {{STATE}} • Phone: {{PHONE}} • {{EMAIL}}</span></p>
+        <div class="panel contact-card">
+          <div class="muted">Ready to find a first step?</div>
+          <div class="cta-row">
+            <a id="primary-cta" class="btn btn-primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            <a id="mood-cta" class="btn btn-ghost" href="#">Suggest a path</a>
+          </div>
+          <div class="muted" style="margin-top:10px;font-size:13px">Appointments by arrangement. Educational resources and gentle guidance — not emergency care.</div>
+        </div>
+      </div>
+
+      <aside class="contact-card" aria-label="contact details">
+        <div style="font-weight:700">Connect</div>
+        <div class="muted" style="margin-top:8px">Call: <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+        <div class="muted">Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+        <div class="muted" style="margin-top:12px">Hours by request. Please note: this site offers educational guidance and planning—not urgent treatment.</div>
+      </aside>
+    </div>
+  </header>
+
+  <main>
+    <section id="diagnostic" class="panel" aria-labelledby="diag-title">
+      <h2 id="diag-title">Mood-to-Method</h2>
+      <p class="muted">Choose a current state to see an approach that may fit your pace. The selection rephrases the suggested next step and updates the action button so you can begin with intention.</p>
+      <div class="moods" role="list">
+        <button class="mood" data-key="weary">Weary</button>
+        <button class="mood" data-key="wired">Wired</button>
+        <button class="mood" data-key="uncertain">Uncertain</button>
+        <button class="mood" data-key="curious">Curious</button>
+        <button class="mood" data-key="steady">Steady</button>
+      </div>
+      <div id="mood-result" class="result" aria-live="polite">Select a state to see a suggested approach.</div>
+    </section>
+
+    <section id="plan" class="panel" aria-labelledby="plan-title">
+      <h2 id="plan-title">Three-Phase Roadmap</h2>
+      <p class="muted">A gentle outline you can adapt. This is educational and not a clinical prescription. Phases are examples — we tailor them in conversation.</p>
+      <div class="timeline" id="timeline">
+        <div class="phase" data-phase="1">
+          <h3>Phase 1 — Grounding</h3>
+          <small>Weeks: <span class="weeks">2</span></small>
+          <div style="margin-top:8px" class="muted">Observation, gentle habits, short sessions to orient and collect data.</div>
+        </div>
+        <div class="phase" data-phase="2">
+          <h3>Phase 2 — Explore</h3>
+          <small>Weeks: <span class="weeks">6</span></small>
+          <div style="margin-top:8px" class="muted">Broader practices introduced, consistent weekly check-ins, refine what helps.</div>
+        </div>
+        <div class="phase" data-phase="3">
+          <h3>Phase 3 — Integrate</h3>
+          <small>Weeks: <span class="weeks">8</span></small>
+          <div style="margin-top:8px" class="muted">Sustain, scale tools that fit your life, plan for maintenance.</div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <label class="muted">Adjust Phase Durations (weeks): </label>
+        <input id="phase1" type="number" min="1" max="12" value="2" style="width:70px">
+        <input id="phase2" type="number" min="1" max="24" value="6" style="width:70px">
+        <input id="phase3" type="number" min="1" max="40" value="8" style="width:70px">
+        <button id="apply-timeline" class="btn btn-ghost">Update timeline</button>
+      </div>
+
+      <div class="disclaimer">Disclaimer: The roadmap is a planning aid, not a diagnosis or guaranteed outcome. Always seek immediate care for urgent needs.</div>
+    </section>
+
+    <section id="micro_habits" class="panel" aria-labelledby="micro-title">
+      <h2 id="micro-title">Micro-practices</h2>
+      <p class="muted">Small, repeatable actions you can try between sessions.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <label style="background:var(--glass);padding:8px;border-radius:8px"><input type="checkbox" class="micro" data-id="breath"> 1–3 mindful breaths</label>
+        <label style="background:var(--glass);padding:8px;border-radius:8px"><input type="checkbox" class="micro" data-id="walk"> 6-minute gentle walk</label>
+        <label style="background:var(--glass);padding:8px;border-radius:8px"><input type="checkbox" class="micro" data-id="note"> Short, two-line note about mood</label>
+      </div>
+      <div class="muted" style="margin-top:10px">Tally the items you try this week and bring notes to your session.</div>
+    </section>
+
+    <section id="pricing" class="panel" aria-labelledby="price-title">
+      <h2 id="price-title">Offerings & Investment</h2>
+      <p class="muted">Programs named for their pace. Pricing shown as starting points; custom packages available.</p>
+      <div class="grid" role="list">
+        <div class="program" role="listitem">
+          <div style="font-weight:700">Seed Plan</div>
+          <div class="muted">Short cycle for orientation and immediate practices.</div>
+          <div class="price">From $95 / session</div>
+        </div>
+        <div class="program" role="listitem">
+          <div style="font-weight:700">Compass Path</div>
+          <div class="muted">A multi-week course to explore and refine tools.</div>
+          <div class="price">From $520 / 6 weeks</div>
+        </div>
+        <div class="program" role="listitem">
+          <div style="font-weight:700">Harbor Plan</div>
+          <div class="muted">Closer support and planning for sustained change.</div>
+          <div class="price">From $1,200 / personalized package</div>
+        </div>
+      </div>
+      <div class="muted" style="margin-top:10px">Prices and program names may vary by provider and region. No guarantees implied.</div>
+    </section>
+
+    <section id="cta" class="panel" aria-labelledby="cta-title">
+      <h2 id="cta-title">Send a note</h2>
+      <p class="muted">Tell us what feels most important right now. We reply within a few business days.</p>
+      <form id="contact-form">
+        <input id="name" name="name" placeholder="Your name" required>
+        <input id="phone" name="phone" placeholder="Phone (optional)" value="{{PHONE}}">
+        <input id="email" name="email" placeholder="Email" value="{{EMAIL}}" required>
+        <select id="interest" name="interest">
+          <option value="seed">Seed Plan</option>
+          <option value="compass">Compass Path</option>
+          <option value="harbor">Harbor Plan</option>
+        </select>
+        <textarea id="message" name="message" placeholder="A few lines about why you are reaching out"></textarea>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button type="submit" class="btn btn-primary">Request a conversation</button>
+          <div class="note">Or call <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+        </div>
+        <div id="form-status" class="muted" aria-live="polite" style="margin-top:8px"></div>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} — Gentle, evidence-minded approaches. Educational resources only; not emergency care.</div>
+  </footer>
+
+  <script>
+    // Mood-to-Method logic
+    (function(){
+      const moods = document.querySelectorAll('.mood');
+      const result = document.getElementById('mood-result');
+      const moodCta = document.getElementById('mood-cta');
+      const primaryCta = document.getElementById('primary-cta');
+
+      const map = {
+        weary: {
+          title: 'Short, steady sessions',
+          desc: 'Begin with brief, regular check-ins and a few micro-practices to build small signal changes.',
+          cta:'Start a brief course'
+        },
+        wired: {
+          title: 'Regulate & rest',
+          desc: 'Tools to downshift nervous activation: breathed pauses, boundary-setting, short rituals before bed.',
+          cta:'Explore calming steps'
+        },
+        uncertain: {
+          title: 'Map and try',
+          desc: 'We gather a few data points, try two small practices, and meet to review what helps.',
+          cta:'Request a mapping session'
+        },
+        curious: {
+          title: 'Learn and select',
+          desc: 'A guided exploration of options with clear takeaways you can test between sessions.',
+          cta:'Begin an exploratory series'
+        },
+        steady: {
+          title: 'Maintain and refine',
+          desc: 'Sustain practices, try subtle adaptations, and set a long-term maintenance plan.',
+          cta:'Plan a maintenance review'
+        }
+      };
+
+      function clearActive(){moods.forEach(b=>b.classList.remove('active'))}
+      function setMood(key, el){
+        clearActive(); el.classList.add('active');
+        const m = map[key];
+        result.innerHTML = '<strong>'+m.title+'</strong><div style="margin-top:6px" class="muted">'+m.desc+'</div>';
+        // Update the mood CTA and primary CTA text dynamically
+        moodCta.textContent = m.cta;
+        // Primary CTA becomes contextual but keeps original link
+        primaryCta.textContent = m.cta.split(' ')[0] + ' — ' + '{{PRIMARY_CTA_LABEL}}';
+      }
+
+      moods.forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          setMood(btn.getAttribute('data-key'), btn);
+        });
+      });
+
+      // Timeline planner logic
+      const p1 = document.getElementById('phase1');
+      const p2 = document.getElementById('phase2');
+      const p3 = document.getElementById('phase3');
+      const apply = document.getElementById('apply-timeline');
+
+      function updateTimeline(){
+        document.querySelectorAll('.phase').forEach(ph=>{
+          const idx = ph.getAttribute('data-phase');
+          const weeks = idx==='1'?p1.value: idx==='2'?p2.value: p3.value;
+          ph.querySelector('.weeks').textContent = weeks;
+        });
+      }
+
+      apply.addEventListener('click',()=>{
+        updateTimeline();
+        // show a gentle reminder/disclaimer
+        apply.textContent = 'Updated';
+        setTimeout(()=>apply.textContent='Update timeline',1200);
+      });
+
+      // Contact form (local demo)
+      const form = document.getElementById('contact-form');
+      const status = document.getElementById('form-status');
+      form.addEventListener('submit', (e)=>{
+        e.preventDefault();
+        status.textContent = 'Sending…';
+        const payload = {
+          name: form.name.value,
+          email: form.email.value,
+          phone: form.phone.value,
+          interest: form.interest.value,
+          message: form.message.value
+        };
+        // Simulate network
+        setTimeout(()=>{
+          status.textContent = 'Thanks — we received your note. We will reply within a few business days.';
+          form.reset();
+        },900);
+        console.log('Contact payload (demo):', payload);
+      });
+
+      // init
+      updateTimeline();
+    })();
+  </script>
+</body>
+</html>

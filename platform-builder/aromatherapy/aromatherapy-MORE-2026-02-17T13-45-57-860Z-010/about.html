@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Our Path — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fffaf6;--muted:#5f5f5f;--accent:#7aa884;--deep:#274235}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:var(--bg);color:var(--deep)}
+    header{padding:18px 22px;border-bottom:1px solid rgba(39,66,53,0.06);position:sticky;top:0;background:rgba(255,250,246,0.8);backdrop-filter:blur(3px);z-index:30}
+    .wrap{max-width:980px;margin:0 auto}
+    .nav{display:flex;align-items:center;justify-content:space-between}
+    .nav a{color:var(--deep);text-decoration:none;padding:8px;border-radius:8px}
+    .primary{background:var(--accent);color:white;padding:8px 12px;border-radius:8px}
+
+    .hero{padding:30px 0;display:grid;gap:12px}
+    h1{margin:0 0 6px}
+    .meta{color:var(--muted)}
+
+    .story{display:grid;grid-template-columns:1fr;gap:16px}
+    .card{background:white;padding:18px;border-radius:12px;border:1px solid rgba(39,66,53,0.04)}
+
+    .framework{display:flex;flex-direction:column;gap:12px;margin-top:12px}
+    .pillar{display:flex;gap:12px;align-items:flex-start}
+    .pill-title{font-weight:700}
+
+    .try{margin-top:14px}
+
+    .footer{margin-top:26px;padding:18px 0;color:var(--muted);font-size:14px}
+
+    .reveal{opacity:0;transform:translateY(14px);transition:opacity 480ms ease,transform 480ms ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none;opacity:1;transform:none}}
+
+    @media(min-width:900px){.story{grid-template-columns:2fr 320px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap nav">
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html">Welcome</a>
+        <a href="services.html">Offerings</a>
+        <a href="blends.html">Blends</a>
+        <a href="shop.html">Shop</a>
+        <a href="pricing.html">Membership</a>
+        <a href="about.html" class="primary">Our Path</a>
+        <a href="book.html">Reserve</a>
+        <a href="contact.html">Reach</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero reveal" data-reveal>
+      <h1>Practices that help you notice and choose</h1>
+      <p class="meta">Clinical calm, clear direction — small scent-based rituals designed to fit into your day. Practices are framed to be supportive and mindful rather than prescriptive.</p>
+    </section>
+
+    <section class="story reveal" data-reveal>
+      <div class="card">
+        <h2>How we work</h2>
+        <p class="meta">We craft short, repeatable practices and simple blends that may support attention, rest, or transition. Sessions emphasize safety, a gentle pace, and practical instructions for home use.</p>
+        <div style="margin-top:12px">
+          <h4>Foundational steps</h4>
+          <ol style="color:var(--muted)">
+            <li>Assess context and sensitivities</li>
+            <li>Introduce low-dose scent options and dilution guidance</li>
+            <li>Practice breathing and journaling prompts paired with scent</li>
+          </ol>
+        </div>
+      </div>
+
+      <aside class="card">
+        <h4>Quick note</h4>
+        <p class="meta">We avoid medical claims and use language like “may support.” Expect guidance about dilution, patch testing, and considerations for pregnancy and pets.</p>
+        <div style="margin-top:10px"><button class="primary" id="open-try-about">Try a short pause</button></div>
+      </aside>
+    </section>
+
+    <section class="framework reveal" data-reveal>
+      <h3>Our framework</h3>
+      <div class="pillar">
+        <div style="width:10px;height:10px;border-radius:3px;background:var(--accent);margin-top:6px"></div>
+        <div>
+          <div class="pill-title">Assessment</div>
+          <div style="color:var(--muted)">A brief intake to learn preferences and sensitivities before suggesting blends or rituals.</div>
+        </div>
+      </div>
+      <div class="pillar">
+        <div style="width:10px;height:10px;border-radius:3px;background:#b9d8c8;margin-top:6px"></div>
+        <div>
+          <div class="pill-title">Guidance</div>
+          <div style="color:var(--muted)">Simple, repeatable steps that you can practice alone at home or in short group sessions.</div>
+        </div>
+      </div>
+      <div class="pillar">
+        <div style="width:10px;height:10px;border-radius:3px;background:#dfeee6;margin-top:6px"></div>
+        <div>
+          <div class="pill-title">Care</div>
+          <div style="color:var(--muted)">Safety-forward instructions for dilution, patch testing, pregnancy guidance, and pets.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="reveal" data-reveal style="margin-top:18px">
+      <h3>Meet the lead practitioner</h3>
+      <div class="card">
+        <p class="meta">A certified aromatherapy practitioner with a clinical, safety-forward approach. Sessions are small, attentive, and structured to help you integrate scent into daily routines in a way that may support steadiness.</p>
+        <p style="margin-top:10px">Want to talk? <a href="book.html">Reserve a short orientation</a> or <a href="contact.html">email us</a>.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="wrap footer">
+    <div>Contact: {{PHONE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+  </footer>
+
+  <script>
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const reveals = document.querySelectorAll('[data-reveal]');
+      if(prefersReduced){ reveals.forEach(r=>r.classList.add('visible')); }
+      else{
+        const io = new IntersectionObserver((entries)=>entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); } }),{threshold:0.08});
+        reveals.forEach(r=>io.observe(r));
+      }
+
+      // Reuse modal from other pages if included
+      function openSimpleTry(){
+        // Minimal guided exercise: inline prompt overlay
+        const overlay = document.createElement('div');
+        overlay.style.position='fixed';overlay.style.inset=0;overlay.style.display='flex';overlay.style.alignItems='center';overlay.style.justifyContent='center';overlay.style.background='rgba(10,10,8,0.36)';overlay.style.zIndex=120;
+        overlay.innerHTML = '<div role="dialog" aria-modal="true" style="background:white;padding:18px;border-radius:12px;max-width:520px;box-shadow:0 20px 60px rgba(18,30,20,0.35)"><h3 style="margin-top:0">A short pause — 2 minutes</h3><p style="color:var(--muted)">Seated: inhale 4, exhale 6, repeat for one minute. Then write a single line about intention. Close when ready.</p><div style="margin-top:12px;display:flex;gap:8px"><button id="closeSimple" style="padding:8px 12px;border-radius:8px;background:#7aa884;color:white;border:0">Close</button></div></div>';
+        document.body.appendChild(overlay);
+        overlay.querySelector('#closeSimple').addEventListener('click',()=>overlay.remove());
+        document.addEventListener('keydown',function esc(e){ if(e.key==='Escape'){ overlay.remove(); document.removeEventListener('keydown',esc); } });
+      }
+
+      document.getElementById('open-try-about').addEventListener('click',openSimpleTry);
+    })();
+  </script>
+</body>
+</html>

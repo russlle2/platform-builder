@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Voices — Testimonials — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#02101a;--muted:#9fb3c1;--accent:#8ee3c7}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:linear-gradient(180deg,#03121a 0%,#061822 100%);color:#e8fbff}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px}
+    .logo{width:44px;height:44;border-radius:10px;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center;color:var(--accent);font-weight:700}
+    nav a{color:#cfefff;margin:0 8px;text-decoration:none}
+    main{max-width:980px;margin:30px auto;padding:0 18px}
+    h1{margin:6px 0 18px 0}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .testimonial{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .who{font-weight:700}
+    .meta{color:var(--muted);font-size:0.9rem}
+    .quote{margin:10px 0;color:#dff7ff}
+    .try{margin-top:12px}
+    .reveal-on-scroll{opacity:0;transform:translateY(18px);transition:opacity 480ms ease,transform 480ms ease}
+    .revealed{opacity:1;transform:none}
+    .cta{display:flex;justify-content:center;margin-top:22px}
+    .primary{background:linear-gradient(90deg,var(--accent),#60a5fa);padding:10px 14px;border-radius:8px;color:#042023;text-decoration:none;font-weight:700}
+    footer{max-width:980px;margin:40px auto;padding:18px;color:var(--muted)}
+    @media (max-width:880px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo">WC</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:0.85rem;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Begin</a>
+      <a href="about.html">Story</a>
+      <a href="services.html">Sessions</a>
+      <a href="programs.html">Rhythms</a>
+      <a href="pricing.html">Invest</a>
+      <a href="testimonials.html">Voices</a>
+      <a class="primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      <button id="tryNow" style="margin-left:10px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:inherit;padding:8px 10px;border-radius:8px">Try it now</button>
+    </nav>
+  </header>
+
+  <main>
+    <h1 class="reveal-on-scroll">Voices — What people carry forward</h1>
+    <p class="reveal-on-scroll" style="color:var(--muted);margin-top:0">Accounts here focus on practices and habit shifts: concrete steps clients used to anchor energy and priorities.</p>
+
+    <section class="grid" id="stories">
+      <article class="testimonial reveal-on-scroll">
+        <div class="who">Ava, product manager</div>
+        <div class="meta">Pulse intensive • {{CITY}}</div>
+        <p class="quote">"I left with a morning map I use every day. It reduced decision friction and kept my afternoons calmer. The plan was small enough to keep."</p>
+      </article>
+
+      <article class="testimonial reveal-on-scroll">
+        <div class="who">Miguel, creative director</div>
+        <div class="meta">Arc program • remote</div>
+        <p class="quote">"We built a weekly tuning ritual that slots into my unpredictable schedule. The checkpoints actually fit between meetings."</p>
+      </article>
+
+      <article class="testimonial reveal-on-scroll">
+        <div class="who">Lina, attorney</div>
+        <div class="meta">Compass cohort</div>
+        <p class="quote">"The habit ladder helped me patch a weekend routine; now my Monday reset is faster and less stressful. It’s a toolbox, not a rulebook."</p>
+      </article>
+
+      <article class="testimonial reveal-on-scroll">
+        <div class="who">Sam, entrepreneur</div>
+        <div class="meta">Pulse intensive</div>
+        <p class="quote">"Simple frameworks that acknowledge a packed day. The micro-practices are easy to test and adapt — that’s the difference."</p>
+      </article>
+    </section>
+
+    <div class="cta reveal-on-scroll">
+      <a class="primary" href="book.html">Begin your session</a>
+    </div>
+
+  </main>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
+      <div>{{BUSINESS_NAME}} • <span style="color:var(--muted)">{{CITY}}, {{STATE}}</span></div>
+      <div style="color:var(--muted)">Contact: <a href="mailto:{{EMAIL}}" style="color:inherit">{{EMAIL}}</a> • <a href="tel:{{PHONE}}" style="color:inherit">{{PHONE}}</a></div>
+    </div>
+  </footer>
+
+  <!-- Modal reused -->
+  <div id="modalBackdrop" style="display:none;position:fixed;inset:0;background:rgba(2,6,23,0.7);align-items:center;justify-content:center;z-index:80">
+    <div style="background:#071122;padding:18px;border-radius:12px;width:90%;max-width:600px;color:#eaf6ff"> 
+      <button id="close" style="float:right;background:transparent;border:0;color:var(--muted);cursor:pointer">✕</button>
+      <h4 id="mTitle">Quick Practice</h4>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="step" data-type="breath">Breathing</button>
+        <button class="step" data-type="journal">Journal</button>
+        <button class="step" data-type="intention">Intention</button>
+      </div>
+      <div id="mArea" style="margin-top:14px"></div>
+    </div>
+  </div>
+
+  <script>
+    // Share simple reveal logic with reduced-motion respect
+    (function(){
+      var prefers = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var nodes = document.querySelectorAll('.reveal-on-scroll');
+      function showAll(){ nodes.forEach(n=>n.classList.add('revealed')) }
+      if(prefers){ showAll(); return }
+      function check(){ var h=window.innerHeight; nodes.forEach(function(n){ if(n.classList.contains('revealed')) return; var r=n.getBoundingClientRect(); if(r.top <= h-80) n.classList.add('revealed'); }); }
+      window.addEventListener('scroll', check, {passive:true}); window.addEventListener('resize', check); check();
+    })();
+
+    // Modal operations
+    var mb = document.getElementById('modalBackdrop');
+    document.getElementById('tryNow').addEventListener('click', function(){ mb.style.display='flex'; });
+    document.getElementById('close').addEventListener('click', function(){ mb.style.display='none'; clearInterval(window._testimonialTimer); });
+    mb.addEventListener('click', function(e){ if(e.target===mb) mb.style.display='none'; });
+
+    function formatTime(s){ var m=Math.floor(s/60);var r=s%60;return m+':'+(r<10?'0'+r:r); }
+    function runTimerIn(el, secs){ var rem=secs; el.textContent=formatTime(rem); clearInterval(window._testimonialTimer); window._testimonialTimer=setInterval(function(){ rem--; if(rem<=0){ clearInterval(window._testimonialTimer); el.textContent='Done'; } else el.textContent=formatTime(rem); },1000); }
+
+    document.querySelectorAll('#modalBackdrop .step').forEach(function(btn){ btn.addEventListener('click', function(){ var t=btn.getAttribute('data-type'); var area=document.getElementById('mArea'); area.innerHTML=''; if(t==='breath'){ var d=document.createElement('div'); d.innerHTML='<div style="font-size:1.6rem" id="t">2:00</div><div style="color:var(--muted);margin-top:8px">4-6 count breath: inhale 4, exhale 6. Repeat.</div>'; area.appendChild(d); runTimerIn(document.getElementById('t'),120);} if(t==='journal'){ var d=document.createElement('div'); d.innerHTML='<div style="font-size:1.6rem" id="t">3:00</div><textarea style="width:100%;height:90px;margin-top:8px;border-radius:8px;padding:8px;background:#04101a;color:#e6eef6;border:1px solid rgba(255,255,255,0.03)"></textarea>'; area.appendChild(d); runTimerIn(document.getElementById('t'),180);} if(t==='intention'){ var d=document.createElement('div'); d.innerHTML='<div style="font-size:1.6rem" id="t">1:30</div><input style="width:100%;padding:8px;margin-top:8px;border-radius:8px;background:#04101a;color:#e6eef6;border:1px solid rgba(255,255,255,0.03)" placeholder="Type an intention">'; area.appendChild(d); runTimerIn(document.getElementById('t'),90);} }); });
+  </script>
+</body>
+</html>

@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Contact • {{BUSINESS_NAME}}</title>
+  <style>
+    :root{
+      --bg:#fbfcff; --muted:#6b7280; --accent:#6b4cff; --accent-2:#2bb673; --card:#ffffff; --glass:rgba(255,255,255,0.7);
+      --radius:14px; --maxw:980px; --mono:ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:linear-gradient(180deg,#fbfdff 0%, #f6f7ff 100%); color:#0b1220}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px;max-width:1200px;margin:0 auto}
+    .logo{display:flex;gap:12px;align-items:center}
+    .brandmark{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#8d6bff);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;box-shadow:0 6px 20px rgba(107,76,255,0.18)}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-weight:600}
+    nav a.cta{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px}
+
+    main{max-width:var(--maxw);margin:18px auto;padding:22px}
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:start}
+    .hero-card{background:var(--card);border-radius:var(--radius);padding:22px;box-shadow:0 8px 30px rgba(12,20,40,0.06)}
+    .hero h1{margin:0;font-size:26px}
+    .hero p.lead{color:var(--muted);margin:10px 0 18px}
+
+    /* pattern accent */
+    .pattern-strip{height:86px;border-radius:12px;background-image:url('assets/img/pattern.svg');background-size:contain;background-repeat:repeat-x;opacity:0.9}
+
+    /* contact form */
+    form.contact{display:flex;flex-direction:column;gap:12px}
+    label{font-size:13px;color:var(--muted)}
+    input[type=text],input[type=email],textarea,select{padding:12px;border-radius:10px;border:1px solid #e6e9ef;font-size:15px}
+    textarea{min-height:120px;resize:vertical}
+    .row{display:flex;gap:12px}
+    .small{font-size:13px;color:var(--muted)}
+    button.primary{background:linear-gradient(90deg,var(--accent),#8b68ff);color:#fff;padding:12px 16px;border-radius:12px;border:0;font-weight:700}
+    button.ghost{background:transparent;border:1px solid #e6e9ef;padding:10px;border-radius:10px}
+
+    /* Mixer */
+    .mixer{display:flex;flex-direction:column;gap:12px;padding:14px;border-radius:12px;background:linear-gradient(180deg,rgba(107,76,255,0.06),rgba(43,182,115,0.02));border:1px solid rgba(107,76,255,0.06)}
+    .mixer .options{display:flex;gap:8px}
+    .mixer button{flex:1;padding:10px;border-radius:10px;border:0;background:transparent;font-weight:700}
+    .mixer button.active{background:#fff;box-shadow:0 6px 20px rgba(12,20,40,0.06)}
+
+    /* Recommendations */
+    .recs{display:grid;gap:10px}
+    .rec{padding:12px;background:var(--card);border-radius:10px;border:1px solid #f0f2f6}
+    .rec .title{font-weight:700}
+    .rec .meta{color:var(--muted);font-size:13px}
+
+    /* Proof gallery */
+    .proof{margin-top:22px;border-radius:12px;overflow:hidden;border:1px solid #eef1fc}
+    .proof-top{display:flex;align-items:center;justify-content:space-between;padding:12px;background:linear-gradient(90deg,#fff, rgba(107,76,255,0.02))}
+    .testimonials{padding:18px;background:linear-gradient(180deg,rgba(43,182,115,0.02),transparent);min-height:140px;position:relative}
+    .test{position:absolute;inset:18px;transition:opacity .45s ease;opacity:0}
+    .test.active{opacity:1;position:relative}
+    .badges{display:flex;gap:10px}
+    .badge{padding:8px 10px;border-radius:10px;background:#fff;border:1px solid #eef1f6;font-weight:700;position:relative}
+    .badge .tip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#0b1220;color:#fff;padding:8px;border-radius:8px;font-size:13px;white-space:nowrap;display:none}
+    .badge:focus .tip,.badge:hover .tip{display:block}
+
+    /* accessibility & small screens */
+    @media (max-width:880px){
+      .hero{grid-template-columns:1fr;}
+      .hero-card{order:2}
+    }
+
+    footer{padding:28px;text-align:center;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <div class="brandmark">SB</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Gatherings</a>
+      <a href="events.html">Calendar</a>
+      <a href="private-sessions.html">Private</a>
+      <a href="pricing.html">Investment</a>
+      <a href="about.html">Story</a>
+      <a href="faq.html">Answers</a>
+      <a href="book.html" class="cta">Join the Wave</a>
+      <a href="contact.html" style="margin-left:12px;font-weight:800">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-card">
+        <div class="pattern-strip" aria-hidden="true"></div>
+        <h1>Get in touch — plan your next cohort or ask about accessibility</h1>
+        <p class="lead">Prefer a tone that leans gentle, medium, or intense? Use the mixer to set what you need now and we’ll suggest the right cohort experience for your group.</p>
+
+        <div style="display:flex;gap:12px;margin-top:14px">
+          <div style="flex:1">
+            <strong>Phone</strong>
+            <div class="small">{{PHONE}}</div>
+          </div>
+          <div style="flex:1">
+            <strong>Email</strong>
+            <div class="small">{{EMAIL}}</div>
+          </div>
+        </div>
+
+        <div style="margin-top:14px;display:flex;gap:10px">
+          <a href="{{PRIMARY_CTA_URL}}" class="primary" style="display:inline-block;text-decoration:none">{{PRIMARY_CTA_LABEL}}</a>
+          <button class="ghost" onclick="document.getElementById('contact-form').scrollIntoView({behavior:'smooth'})">Send a note</button>
+        </div>
+      </div>
+
+      <aside class="hero-card">
+        <div style="font-weight:800;margin-bottom:8px">Tell us your preference</div>
+        <div class="mixer" role="region" aria-label="Sound preference mixer">
+          <div style="font-size:13px;color:var(--muted)">How do you want the sound to land for this booking?</div>
+          <div class="options" role="tablist" aria-label="Intensity options">
+            <button id="opt-gentle" role="tab" aria-selected="true" class="active" data-mode="gentle">Gentle</button>
+            <button id="opt-medium" role="tab" aria-selected="false" data-mode="medium">Medium</button>
+            <button id="opt-intense" role="tab" aria-selected="false" data-mode="intense">Intense</button>
+          </div>
+          <div style="font-size:13px;color:var(--muted)">We'll tailor cohort suggestions below and include your choice in the request to our bookings team.</div>
+        </div>
+
+        <div style="margin-top:12px">
+          <div style="font-weight:800">Recommended programs</div>
+          <div class="recs" id="recs">
+            <!-- JS will populate recommendations based on mixer selection -->
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="proof hero-card" aria-live="polite">
+      <div class="proof-top">
+        <div style="font-weight:800">Proof Gallery</div>
+        <div class="badges" aria-hidden="false">
+          <div class="badge" tabindex="0">Community Center<span class="tip">Monthly host since 2020 — 100+ sessions</span></div>
+          <div class="badge" tabindex="0">Wellness Guild<span class="tip">Endorsed training provider</span></div>
+          <div class="badge" tabindex="0">Local Press<span class="tip">Featured in "City Calm" column</span></div>
+        </div>
+      </div>
+      <div class="testimonials" id="testimonials">
+        <!-- testimonials rotate -->
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;padding:12px;background:#fff;justify-content:space-between">
+        <div style="display:flex;gap:8px;align-items:center">
+          <button id="prev" class="ghost">Prev</button>
+          <button id="next" class="ghost">Next</button>
+          <div id="dots" style="display:flex;gap:6px"></div>
+        </div>
+        <div style="font-size:13px;color:var(--muted)">Rotates automatically — hover to pause</div>
+      </div>
+    </section>
+
+    <section class="hero-card" id="contact-form">
+      <h2 style="margin-top:0">Send a request</h2>
+      <form class="contact" onsubmit="submitForm(event)">
+        <input type="hidden" id="selectedMode" name="selectedMode" value="gentle">
+        <div class="row">
+          <div style="flex:1">
+            <label for="name">Your name</label>
+            <input id="name" name="name" type="text" required placeholder="First & last" />
+          </div>
+          <div style="flex:1">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required placeholder="you@domain.com" />
+          </div>
+        </div>
+        <div>
+          <label for="group">Group / Organization</label>
+          <input id="group" name="group" type="text" placeholder="Optional — name of your cohort or venue" />
+        </div>
+        <div>
+          <label for="message">Message</label>
+          <textarea id="message" name="message" placeholder="Tell us dates, size, accessibility needs, or questions"></textarea>
+        </div>
+
+        <div style="display:flex;gap:12px;align-items:center">
+          <button type="submit" class="primary">Claim Your Spot</button>
+          <button type="button" class="ghost" onclick="prefillDemo()">Quick sample</button>
+        </div>
+
+        <div style="margin-top:12px;font-size:13px;color:var(--muted)">
+          By contacting us, you consent to be reached at the details above. For urgent needs call {{PHONE}}.
+        </div>
+
+        <div style="margin-top:12px;padding:12px;border-radius:10px;background:#fff;display:flex;gap:10px;align-items:flex-start">
+          <div style="font-weight:800">Health & Contraindications</div>
+          <div style="color:var(--muted);font-size:13px">Sound gatherings are gentle but not medical treatment. If you are pregnant, have a recent concussion, active seizures, uncontrolled psychiatric conditions, or are on heavy medication that affects consciousness, consult a healthcare provider before attending. If in doubt, contact us and we will help evaluate safe options.</div>
+        </div>
+
+      </form>
+    </section>
+
+    <section class="hero-card">
+      <h3 style="margin-top:0">Where we gather</h3>
+      <p class="small">We host cohorts across {{CITY}}, {{STATE}} — public evenings and bespoke daytime sessions. Tell us your desired neighborhood and we’ll recommend a nearby location.</p>
+      <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="ghost" onclick="location.href='events.html'">Next Events</button>
+        <button class="ghost" onclick="location.href='private-sessions.html'">Host a Private</button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} — Gentle group sound experiences and focused cohort learning. Contact: {{EMAIL}} • {{PHONE}}</div>
+    <div style="margin-top:8px">Small-print: Not a substitute for medical care. If you have concerns, consult a professional before booking.</div>
+  </footer>
+
+  <script>
+    // --- Mixer logic ---
+    const recsEl = document.getElementById('recs');
+    const selectedModeInput = document.getElementById('selectedMode');
+    const modes = {
+      gentle: [
+        {title:'Harbor Cohort — Breath & Ease', meta:'6-week gently guided group • Seats: cohort of 12'},
+        {title:'Lilt Session — Intro Series', meta:'Single session • Great for first-timers'}
+      ],
+      medium: [
+        {title:'Tide Collective — Balanced Flow', meta:'4-week practical recalibration • Cohort of 16'},
+        {title:'Midline Workshop', meta:'Two-hour practical session • Bring a mat'}
+      ],
+      intense: [
+        {title:'Deep Resonance — Immersive Cohort', meta:'6-week immersive practice • Smaller group'},
+        {title:'Focus Intensive', meta:'Half-day focused cohort • Recommended for returning participants'}
+      ]
+    };
+
+    function renderRecs(mode){
+      recsEl.innerHTML='';
+      const list = modes[mode] || [];
+      list.forEach(it=>{
+        const div = document.createElement('div');
+        div.className='rec';
+        div.innerHTML = '<div class="title">'+it.title+'</div><div class="meta">'+it.meta+'</div>';
+        recsEl.appendChild(div);
+      });
+    }
+
+    // init
+    renderRecs('gentle');
+
+    document.querySelectorAll('.mixer .options button').forEach(btn=>{
+      btn.addEventListener('click',e=>{
+        document.querySelectorAll('.mixer .options button').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-selected','false')});
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected','true');
+        const mode = btn.getAttribute('data-mode');
+        selectedModeInput.value = mode;
+        renderRecs(mode);
+      })
+    });
+
+    // --- Proof gallery rotator ---
+    const testimonials = [
+      {quote:'This is the calmest hour I have had in years. Our team left with a new way to breathe through stress.',who:'A. Rivera — Community Manager'},
+      {quote:'We booked a cohort for staff and the results were immediate: clearer focus and fewer afternoon meltdowns.',who:'M. Singh — HR Lead'},
+      {quote:'Thoughtful facilitation — accessible and quietly powerful. Our group appreciated the progressive pacing.',who:'L. Cho — Wellness Coordinator'}
+    ];
+
+    const testimonialsEl = document.getElementById('testimonials');
+    const dotsEl = document.getElementById('dots');
+    let current = 0; let intervalID;
+
+    function renderTestimonials(){
+      testimonialsEl.innerHTML='';
+      dotsEl.innerHTML='';
+      testimonials.forEach((t,i)=>{
+        const el = document.createElement('div');
+        el.className = 'test'+(i===current? ' active':'');
+        el.innerHTML = '<blockquote style="margin:0;font-style:italic">"'+t.quote+'"</blockquote><div style="margin-top:8px;font-weight:700">'+t.who+'</div>';
+        testimonialsEl.appendChild(el);
+
+        const dot = document.createElement('button');
+        dot.className='ghost';
+        dot.style.padding='6px';
+        dot.setAttribute('aria-label','Show testimonial '+(i+1));
+        dot.addEventListener('click',()=>{goTo(i)});
+        dot.textContent = i+1;
+        dotsEl.appendChild(dot);
+      });
+    }
+
+    function goTo(i){
+      current = i;
+      renderTestimonials();
+      resetInterval();
+    }
+
+    function next(){
+      current = (current + 1) % testimonials.length;
+      renderTestimonials();
+    }
+
+    function prev(){
+      current = (current - 1 + testimonials.length) % testimonials.length;
+      renderTestimonials();
+    }
+
+    document.getElementById('next').addEventListener('click',()=>{next(); resetInterval();});
+    document.getElementById('prev').addEventListener('click',()=>{prev(); resetInterval();});
+
+    function startInterval(){
+      intervalID = setInterval(next,4500);
+    }
+    function resetInterval(){
+      clearInterval(intervalID); startInterval();
+    }
+
+    testimonialsEl.addEventListener('mouseenter',()=>clearInterval(intervalID));
+    testimonialsEl.addEventListener('mouseleave',()=>startInterval());
+
+    renderTestimonials(); startInterval();
+
+    // --- form handling (local demo) ---
+    function submitForm(e){
+      e.preventDefault();
+      const data = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        group: document.getElementById('group').value,
+        message: document.getElementById('message').value,
+        mode: selectedModeInput.value
+      };
+      // For this static demo we simply show a confirmation overlay
+      alert('Thanks, '+data.name+' — request sent with preference: '+data.mode+' . We will reply to '+data.email+'.');
+      e.target.reset();
+      renderRecs('gentle');
+      document.querySelector('#opt-gentle').click();
+    }
+
+    function prefillDemo(){
+      document.getElementById('name').value = 'Sam Demo';
+      document.getElementById('email').value = '{{EMAIL}}';
+      document.getElementById('group').value = 'Studio Collective';
+      document.getElementById('message').value = 'We are a group of 12 curious attendees. Interested in a medium-intensity cohort in early May.';
+      document.getElementById('opt-medium').click();
+      document.getElementById('message').focus();
+    }
+
+  </script>
+</body>
+</html>

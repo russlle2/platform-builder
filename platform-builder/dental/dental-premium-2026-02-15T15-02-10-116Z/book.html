@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Book Online | {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reserve your dental appointment with {{BUSINESS_NAME}} in {{CITY}}, {{STATE}}. Same‑week availability.">
+  <link rel="canonical" href="/book.html">
+  <meta name="robots" content="index,follow">
+  <meta property="og:title" content="Book Online | {{BUSINESS_NAME}}">
+  <meta property="og:description" content="Find a time that works for you and reserve in seconds.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="/book.html">
+  <meta property="og:image" content="/assets/img/hero-abstract.svg">
+  <meta property="og:site_name" content="{{BUSINESS_NAME}}">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Book Online | {{BUSINESS_NAME}}">
+  <meta name="twitter:description" content="Reserve your appointment online.">
+  <meta name="twitter:image" content="/assets/img/hero-abstract.svg">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <header class="header">
+    <div class="announcement">Online booking available 24/7 — or call <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    <div class="container navbar">
+      <a class="brand" href="/index.html"><span class="brand-logo"></span><span class="brand-text">{{BUSINESS_NAME}}<small>{{TAGLINE}}</small></span></a>
+      <button class="menu-toggle" aria-label="Menu" aria-expanded="false">☰</button>
+      <nav class="nav" aria-label="Primary">
+        <a href="/index.html">Home</a>
+        <a href="/services.html">Services</a>
+        <a href="/insurance.html">Insurance</a>
+        <a href="/new-patient.html">New Patients</a>
+        <a href="/about.html">About</a>
+        <a href="/reviews.html">Reviews</a>
+        <a class="active" href="/book.html">Book</a>
+        <a href="/contact.html">Contact</a>
+      </nav>
+      <div class="nav-cta">
+        <a class="btn btn-outline" href="tel:{{PHONE}}">Call {{PHONE}}</a>
+        <a class="btn btn-primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="content">
+    <section class="hero-mini">
+      <div class="container page-title">
+        <div>
+          <nav class="breadcrumbs"><a href="/index.html">Home</a> › Book Online</nav>
+          <h1>Find a time that fits your day</h1>
+          <p class="small">Choose a slot below and we’ll send a confirmation to your email.</p>
+        </div>
+        <div class="flex">
+          <a class="btn btn-outline" href="tel:{{PHONE}}">Prefer to call?</a>
+          <a class="btn btn-primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container grid-2">
+        <div>
+          <h2 class="mt-0">Available times</h2>
+          <div id="slots" class="flex-col" aria-live="polite"></div>
+        </div>
+        <form id="booking-form" class="card form" action="#" method="post" data-validate novalidate>
+          <h3 class="mt-0">Reserve your visit</h3>
+          <div class="field-inline">
+            <div>
+              <label class="small" for="preferred-date">Date</label>
+              <input id="preferred-date" name="date" class="input" type="text" placeholder="Select from available times" required readonly>
+            </div>
+            <div>
+              <label class="small" for="preferred-time">Time</label>
+              <input id="preferred-time" name="time" class="input" type="text" placeholder="Select from available times" required readonly>
+            </div>
+          </div>
+          <label class="small" for="full-name">Full name</label>
+          <input id="full-name" name="name" class="input" type="text" placeholder="Your name" required>
+          <label class="small" for="email">Email</label>
+          <input id="email" name="email" class="input" type="email" placeholder="you@example.com" required>
+          <label class="small" for="phone">Phone</label>
+          <input id="phone" name="phone" class="input" type="tel" placeholder="{{PHONE}}" required>
+          <label class="small" for="notes">Notes (optional)</label>
+          <textarea id="notes" name="notes" class="textarea" rows="4" placeholder="Tell us about your goals or concerns"></textarea>
+          <div class="notice small">By requesting a time, you agree to be contacted at the details provided to finalize your appointment.</div>
+          <div class="flex">
+            <button class="btn btn-primary" type="submit">Request appointment</button>
+            <button class="btn btn-ghost" type="reset">Reset</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container cta-ribbon">
+        <div class="page-title">
+          <div>
+            <h2 class="mt-0 mb-0">Need an emergency visit?</h2>
+            <p class="mb-0">Call us now. We hold same‑day openings for urgent care.</p>
+          </div>
+          <div class="actions">
+            <a class="btn btn-outline" href="tel:{{PHONE}}">Call {{PHONE}}</a>
+            <a class="btn btn-primary" href="/contact.html">Send a message</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container columns">
+      <section>
+        <h3 class="mt-0">{{BUSINESS_NAME}}</h3>
+        <p class="small">{{TAGLINE}}</p>
+        <p class="small"><strong>Address</strong><br>{{ADDRESS}}, {{CITY}}, {{STATE}} {{ZIP}}</p>
+        <p class="small"><strong>Hours</strong><br>{{HOURS}}</p>
+      </section>
+      <section>
+        <h4 class="mt-0">Explore</h4>
+        <nav class="flex-col"><a href="/services.html">Services</a><a href="/insurance.html">Insurance</a><a href="/about.html">About</a></nav>
+      </section>
+      <section>
+        <h4 class="mt-0">Contact</h4>
+        <p class="small">Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a><br>Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+      </section>
+      <section>
+        <small>© <span id="year"></span> {{BUSINESS_NAME}}</small>
+      </section>
+    </div>
+  </footer>
+  <script src="assets/js/main.js"></script>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>

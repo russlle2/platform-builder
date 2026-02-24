@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contact — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Connect with {{PRACTITIONER_NAME}} for evidence-minded, safety-forward aromatherapy sessions in {{CITY}}, {{STATE}}.">
+  <style>
+    :root{
+      --bg1: linear-gradient(135deg, rgba(245,251,255,0.9), rgba(230,240,255,0.75));
+      --glass: rgba(255,255,255,0.22);
+      --accent: rgba(72,149,143,0.95);
+      --muted: #51606a;
+      --card-edge: 1px solid rgba(255,255,255,0.18);
+      --radius: 14px;
+      --max: 1100px;
+      --shadow: 0 6px 30px rgba(40,50,60,0.12);
+      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      color-scheme: light;
+    }
+    html,body{height:100%;margin:0;background:var(--bg1);}
+    .stage{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:48px 20px;
+      background-image: url('assets/img/pattern.svg');
+      background-size: 540px;
+      background-repeat: repeat;
+      background-position: center;
+    }
+    /* fallback inline pattern for when assets not present */
+    .pattern-fallback{position:fixed;inset:0;pointer-events:none;opacity:0.08}
+
+    .container{
+      width:100%;max-width:var(--max);display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:start;
+    }
+    header.nav{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand .logo{
+      width:56px;height:56px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.55), rgba(255,255,255,0.15));box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;border:var(--card-edge);
+      backdrop-filter: blur(6px);
+    }
+    .brand h1{font-size:16px;margin:0;color:var(--muted);letter-spacing:0.2px}
+    nav a{margin-left:14px;text-decoration:none;color:var(--muted);font-weight:600;font-size:13px}
+    nav a.primary{background:linear-gradient(90deg,var(--accent), #3ea29c);color:white;padding:10px 14px;border-radius:10px}
+
+    /* Glass card */
+    .card{background:var(--glass);border-radius:var(--radius);border:var(--card-edge);padding:22px;box-shadow:var(--shadow);backdrop-filter: blur(8px);}
+
+    .hero{display:flex;flex-direction:column;gap:12px}
+    .hero h2{margin:0;font-size:20px;color:#08303a}
+    .hero p{margin:0;color:var(--muted);line-height:1.5}
+
+    .split{display:flex;flex-direction:column;gap:18px}
+    .contact-info{display:flex;flex-direction:column;gap:12px}
+    .k{font-size:13px;color:var(--muted)}
+    .big{font-weight:700;font-size:18px;color:#06323a}
+
+    form input, form textarea, form select{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(7,11,14,0.06);font-size:14px}
+    form label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    .actions{display:flex;gap:10px;align-items:center;margin-top:10px}
+    .btn{background:var(--accent);color:white;padding:10px 14px;border-radius:10px;border:0;font-weight:700}
+    .btn.ghost{background:transparent;border:1px solid rgba(7,11,14,0.06);color:var(--muted)}
+
+    .small-note{font-size:12px;color:var(--muted);line-height:1.4}
+
+    /* FAQ */
+    .faq .q{margin-bottom:12px}
+    .question{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.3),rgba(255,255,255,0.18));border:1px solid rgba(255,255,255,0.06);cursor:pointer}
+    .answer{padding:10px 12px;margin-top:8px;background:rgba(255,255,255,0.06);border-radius:8px;color:var(--muted);font-size:13px}
+
+    footer.cta{grid-column:1/-1;margin-top:20px;display:flex;justify-content:space-between;align-items:center}
+    footer.cta .note{color:var(--muted)}
+
+    @media (max-width:980px){
+      .container{grid-template-columns:1fr;}
+      nav a{display:none}
+      nav a.primary{display:inline-block}
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <svg class="pattern-fallback" xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0" stop-color="#eaf9f6" />
+          <stop offset="1" stop-color="#f6fbff" />
+        </linearGradient>
+        <pattern id="p1" width="120" height="120" patternUnits="userSpaceOnUse">
+          <rect width="120" height="120" fill="url(#g1)" />
+          <path d="M0 60c30-40 90-40 120 0" fill="none" stroke="#dff2ef" stroke-width="1.8" opacity="0.9"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#p1)" />
+    </svg>
+
+    <main class="container">
+      <header class="nav">
+        <div class="brand">
+          <div class="logo" aria-hidden>
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="2" width="20" height="20" rx="6" fill="white" fill-opacity="0.7"/>
+              <path d="M6 14c2-4 8-4 10 0" stroke="#2f8d86" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+              <circle cx="9.5" cy="8" r="1.8" fill="#2f8d86" />
+            </svg>
+          </div>
+          <h1>{{BUSINESS_NAME}}</h1>
+        </div>
+        <nav>
+          <a href="index.html">Home</a>
+          <a href="services.html">Offerings</a>
+          <a href="blends.html">Blends</a>
+          <a href="shop.html">Boutique</a>
+          <a href="pricing.html">Rates</a>
+          <a href="about.html">About</a>
+          <a class="primary" href="book.html">{{PRIMARY_CTA_LABEL}}</a>
+        </nav>
+      </header>
+
+      <section class="card hero">
+        <h2>Connect with thoughtful aromatherapy care</h2>
+        <p class="k">Reach out to schedule a consult, ask about safe use, or inquire about custom blends. I prioritize safety and transparency: aromatherapy is complementary and not a substitute for medical care.</p>
+        <div class="split">
+          <div class="contact-info">
+            <div>
+              <div class="k">Clinic</div>
+              <div class="big">{{BUSINESS_NAME}} — {{CITY}}, {{STATE}}</div>
+            </div>
+            <div>
+              <div class="k">Practitioner</div>
+              <div class="big">{{PRACTITIONER_NAME}}</div>
+            </div>
+            <div>
+              <div class="k">Phone</div>
+              <div class="big">{{PHONE}}</div>
+            </div>
+            <div>
+              <div class="k">Email</div>
+              <div class="big">{{EMAIL}}</div>
+            </div>
+          </div>
+
+          <form class="card" action="{{PRIMARY_CTA_URL}}" method="post" aria-label="Contact form">
+            <label for="name">Full name</label>
+            <input id="name" name="name" type="text" placeholder="Your name" required />
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="you@example.com" required />
+
+            <label for="phone">Phone (optional)</label>
+            <input id="phone" name="phone" type="tel" placeholder="(555) 555-5555" />
+
+            <label for="reason">How can I help?</label>
+            <select id="reason" name="reason">
+              <option>Request a consult</option>
+              <option>Custom blend inquiry</option>
+              <option>Wholesale / partnership</option>
+              <option>General question</option>
+            </select>
+
+            <label for="message">Message</label>
+            <textarea id="message" name="message" rows="4" placeholder="Tell me a little about your goals or questions..." required></textarea>
+
+            <div class="small-note">I aim to reply within 2 business days. For urgent matters, please call {{PHONE}}. All messages are treated respectfully and confidentially.</div>
+
+            <div class="actions">
+              <button class="btn" type="submit">Send message</button>
+              <a class="btn ghost" href="book.html">Book a consult</a>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <aside>
+        <div class="card">
+          <h3 style="margin-top:0">What to expect</h3>
+          <p class="small-note">A first consult begins with a careful intake that includes current medications, allergies, pregnancy status, and pet exposure. Sessions are educational and client-centered; I provide guidance on safe dilution, storage, and patch testing. No medical claims are made.</p>
+          <hr style="border:none;border-top:1px solid rgba(255,255,255,0.06);margin:12px 0" />
+          <h4 style="margin:6px 0">Session types</h4>
+          <ul style="padding-left:18px;margin:6px 0;color:var(--muted)">
+            <li>60-min in-depth consult</li>
+            <li>30-min follow-up</li>
+            <li>Custom blend design</li>
+          </ul>
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <a class="btn" href="book.html">Schedule</a>
+            <a class="btn ghost" href="pricing.html">View rates</a>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <h4 style="margin-top:0">Practice hours</h4>
+          <div class="k">Mon–Fri</div>
+          <div class="big">9:00 AM — 5:00 PM</div>
+          <div class="k" style="margin-top:8px">By appointment only; virtual options available.</div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <h4 style="margin-top:0">Quick links</h4>
+          <nav style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+            <a href="blends.html">Explore blends</a>
+            <a href="shop.html">Shop the boutique</a>
+            <a href="about.html">Meet {{PRACTITIONER_NAME}}</a>
+          </nav>
+        </div>
+      </aside>
+
+      <section class="card faq" style="grid-column:1/-1;margin-top:6px">
+        <h3 style="margin-top:0">Common safety questions</h3>
+
+        <div class="q">
+          <div class="question" role="button" tabindex="0" onclick="toggle(this)">
+            <div>
+              <strong>How should I dilute essential oils?</strong>
+            </div>
+            <div style="color:var(--muted)">Safe dilution guidance</div>
+          </div>
+          <div class="answer" hidden>
+            General guidance: adults often use 1–3% dilution for blends applied to skin (6–18 drops per 30 mL carrier). Lower dilutions are recommended for older adults, children, and sensitive skin. Specific guidance is personalized during consultation.
+          </div>
+        </div>
+
+        <div class="q">
+          <div class="question" role="button" tabindex="0" onclick="toggle(this)">
+            <div>
+              <strong>What is a patch test and why do one?</strong>
+            </div>
+            <div style="color:var(--muted)">Simple precaution</div>
+          </div>
+          <div class="answer" hidden>
+            A patch test applies a small amount of diluted oil to the forearm for 24 hours to check for irritation or sensitization. It is the simplest way to reduce risk of adverse skin reactions.
+          </div>
+        </div>
+
+        <div class="q">
+          <div class="question" role="button" tabindex="0" onclick="toggle(this)">
+            <div>
+              <strong>Are essential oils safe around pets?</strong>
+            </div>
+            <div style="color:var(--muted)">Pet-aware guidance</div>
+          </div>
+          <div class="answer" hidden>
+            Some essential oils can be toxic to pets at certain exposures. During intake I ask about household animals and provide specific, conservative guidance for diffusing and topical use to reduce risk.
+          </div>
+        </div>
+
+        <div class="q">
+          <div class="question" role="button" tabindex="0" onclick="toggle(this)">
+            <div>
+              <strong>Can I use essential oils during pregnancy?</strong>
+            </div>
+            <div style="color:var(--muted)">Precautionary note</div>
+          </div>
+          <div class="answer" hidden>
+            Pregnancy raises special considerations. I follow safety-forward protocols and will discuss which oils and dilutions are appropriate. Always disclose pregnancy status during booking.
+          </div>
+        </div>
+
+      </section>
+
+      <footer class="cta card">
+        <div>
+          <div style="font-weight:700">Ready to begin?</div>
+          <div class="small-note">Schedule a session or send a message — I aim for clarity, safety, and practical guidance.</div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center">
+          <a class="btn" href="book.html">Book a consult</a>
+          <a class="btn ghost" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    // Simple accordion behavior
+    function toggle(el){
+      const ans = el.nextElementSibling;
+      if(!ans) return;
+      const showing = !ans.hasAttribute('hidden');
+      document.querySelectorAll('.faq .answer').forEach(a=>a.setAttribute('hidden','')); // close all
+      if(showing){
+        ans.setAttribute('hidden','');
+      } else {
+        ans.removeAttribute('hidden');
+        ans.scrollIntoView({behavior:'smooth',block:'center'});
+      }
+    }
+    // keyboard accessible
+    document.querySelectorAll('.question').forEach(q=>{
+      q.addEventListener('keydown', e=>{
+        if(e.key==='Enter' || e.key===' '){ e.preventDefault(); toggle(q); }
+      })
+    })
+  </script>
+</body>
+</html>

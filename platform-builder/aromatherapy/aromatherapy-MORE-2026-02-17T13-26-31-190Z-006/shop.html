@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Apothecary — Products</title>
+  <meta name="description" content="Small-batch blends and starter kits. Safety notes included.">
+  <style>
+    :root{--bg:#fbfffd;--card:#fff;--accent:#6a7a6a;--muted:#5f5f5f;--maxw:980px}
+    html,body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;margin:0;background:var(--bg);color:#222}
+    header{position:sticky;top:0;background:rgba(255,255,255,0.8);backdrop-filter:blur(3px);border-bottom:1px solid rgba(0,0,0,0.04)}
+    .navwrap{max-width:var(--maxw);margin:0 auto;padding:12px;display:flex;align-items:center}
+    .brand{font-weight:800;color:var(--accent)}
+    nav{margin-left:auto}
+    nav a{margin-left:16px;text-decoration:none;color:#333;font-weight:600}
+    .container{max-width:var(--maxw);margin:28px auto;padding:0 20px}
+    h1{margin:0 0 8px 0}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+    .item{background:var(--card);padding:12px;border-radius:12px;display:flex;flex-direction:column;gap:8px}
+    .price{font-weight:800;color:var(--accent)}
+    .muted{color:var(--muted)}
+    .actions{margin-top:auto;display:flex;gap:8px}
+    footer{margin-top:28px;color:var(--muted);text-align:center}
+
+    @media (max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:620px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="navwrap">
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="services.html">Offerings</a>
+        <a href="blends.html">Scent Lab</a>
+        <a href="shop.html">Apothecary</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <h1>Apothecary</h1>
+    <p class="muted">Small-batch blends, starter kits, and single oils. Safety notes are included with each product. No medical claims—products are for sensory use and may support everyday rituals.</p>
+
+    <section class="grid" id="catalog">
+      <div class="item" data-id="kit-1">
+        <strong>Starter Kit — The Home Set</strong>
+        <div class="muted">3 sample blends, dilution card, and a small inhaler. Good for someone new to mixing.</div>
+        <div class="price">$28</div>
+        <div class="actions"><button class="add btn">Add</button><button class="btn secondary" onclick="location.href='book.html'">Questions?</button></div>
+      </div>
+
+      <div class="item" data-id="roll-1">
+        <strong>Evening Roll — 10ml</strong>
+        <div class="muted">Pre-diluted 3% roll-on for topical use. Patch test before use; not for pregnancy without review.</div>
+        <div class="price">$18</div>
+        <div class="actions"><button class="add btn">Add</button><button class="btn secondary" onclick="alert('All products ship from the small-batch studio.');">Details</button></div>
+      </div>
+
+      <div class="item" data-id="diff-1">
+        <strong>Room Blend — 10ml</strong>
+        <div class="muted">Blend for a diffuser or short inhalations. Keep away from cats; follow small-home guidelines for children.</div>
+        <div class="price">$14</div>
+        <div class="actions"><button class="add btn">Add</button><button class="btn secondary" onclick="openSafety()">Safety</button></div>
+      </div>
+
+      <div class="item" data-id="oil-1">
+        <strong>Single: Lavender — 5ml</strong>
+        <div class="muted">Pure steam-distilled. Use diluted; store out of sunlight.</div>
+        <div class="price">$9</div>
+        <div class="actions"><button class="add btn">Add</button><button class="btn secondary" onclick="alert('Single oils are shown for educational use. Always dilute.')">Info</button></div>
+      </div>
+
+      <div class="item" data-id="kit-2">
+        <strong>Scent Lab Sample Pack</strong>
+        <div class="muted">Samples used in workshops—great for a quick exploration.</div>
+        <div class="price">$22</div>
+        <div class="actions"><button class="add btn">Add</button><button class="btn secondary" onclick="location.href='blends.html'">See recipes</button></div>
+      </div>
+
+      <div class="item" data-id="gift-1">
+        <strong>Gift Voucher — Workshop Credit</strong>
+        <div class="muted">A digital credit redeemable toward a Lab or Private Practice session.</div>
+        <div class="price">$45</div>
+        <div class="actions"><button class="add btn">Add</button><button class="btn secondary" onclick="location.href='pricing.html'">Redeem</button></div>
+      </div>
+    </section>
+
+    <section style="margin-top:18px" id="cart">
+      <h3>Cart</h3>
+      <div id="cart-items" style="min-height:40px;padding:12px;background:#fff;border-radius:10px;border:1px solid rgba(0,0,0,0.04)"><em class="muted">No items yet.</em></div>
+      <div style="margin-top:8px"><button class="btn" id="checkout">Proceed</button></div>
+    </section>
+
+    <section style="margin-top:18px;background:linear-gradient(180deg,#fff,#fbfcff);padding:12px;border-radius:12px">
+      <h4>Notes on safety</h4>
+      <p class="muted">Products come with a guidance card. Dilute for topical use and patch test. If pregnant, nursing, on medication, or caring for animals, review product details and ask before use.</p>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="max-width:var(--maxw);margin:20px auto;padding:0 20px;text-align:center;color:var(--muted)">{{BUSINESS_NAME}} · {{TAGLINE}} · <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+  </footer>
+
+  <script>
+    // Minimal cart handling
+    (function(){
+      const cart = [];
+      const items = document.querySelectorAll('.item .add');
+      const cartEl = document.getElementById('cart-items');
+      items.forEach((btn,i)=>btn.addEventListener('click',function(){
+        const parent = btn.closest('.item'); const id = parent.dataset.id; const title = parent.querySelector('strong').textContent; const price = parent.querySelector('.price').textContent;
+        cart.push({id,title,price}); renderCart();
+      }));
+      document.getElementById('checkout').addEventListener('click',function(){ if(cart.length===0){ alert('Your cart is empty.'); return; } alert('Checkout is manual for now. Email ' + '{{EMAIL}}' + ' with your order.'); });
+      function renderCart(){ cartEl.innerHTML=''; cart.forEach(c=>{ const d = document.createElement('div'); d.style.padding='8px 0'; d.textContent = c.title + ' — ' + c.price; cartEl.appendChild(d); }); if(cart.length===0) cartEl.innerHTML='<em class="muted">No items yet.</em>';
+      }
+      renderCart();
+    })();
+
+    function openSafety(){ alert('Safety tip: Always dilute and patch test. Ask about pregnancy, medications, and pets before using new products.'); }
+  </script>
+</body>
+</html>

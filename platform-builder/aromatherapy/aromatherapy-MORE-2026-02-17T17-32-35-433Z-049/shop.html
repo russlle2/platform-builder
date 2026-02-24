@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Apothecary — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--muted:#687064;--card:#fff;--accent:#5a6f4f}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:var(--bg);color:#111}
+    header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    main{max-width:1100px;margin:12px auto;padding:0 18px}
+    .catalog{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .product{background:#fbfff9;padding:14px;border-radius:12px;border:1px solid #eef2ea}
+    .product h4{margin:0 0 6px}
+    .muted{color:var(--muted);font-size:13px}
+    .reveal{opacity:0;transform:translateY(14px);transition:opacity 480ms ease,transform 480ms ease}
+    .reveal.in-view{opacity:1;transform:none}
+    @media (max-width:980px){.catalog{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:640px){.catalog{grid-template-columns:1fr}}    
+    .plan-trigger{position:fixed;right:18px;bottom:18px;background:var(--accent);color:#fff;border-radius:999px;padding:12px 14px;box-shadow:0 8px 22px rgba(20,20,20,0.12);cursor:pointer}
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(10,10,10,0.36)}
+    .modal.open{display:flex}
+    .modal .sheet{width:480px;background:#fff;padding:18px;border-radius:12px}
+    .small{font-size:13px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:40px;height:40px;border-radius:8px;background:linear-gradient(135deg,#eaf2e4,#fff);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent)">A</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Essences</a>
+      <a href="shop.html">Apothecary</a>
+      <a href="pricing.html">Plans</a>
+      <a href="book.html">Schedule</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+  <main>
+    <h2 style="margin-top:6px">Apothecary</h2>
+    <p class="muted">Thoughtful essentials and simple tools to support short scent practices at home. Each product page includes dilution and safety notes.</p>
+
+    <section style="margin-top:12px" class="catalog">
+      <article class="product reveal">
+        <h4>Sample set — 5 x 2ml</h4>
+        <div class="muted">Try four blends + one single note. Helps you discover preferences.</div>
+        <div style="margin-top:8px;font-weight:700">$24</div>
+      </article>
+
+      <article class="product reveal">
+        <h4>10ml Calm Thread</h4>
+        <div class="muted">A premixed vial for inhalation and home dilution. Comes with dilution card.</div>
+        <div style="margin-top:8px;font-weight:700">$18</div>
+      </article>
+
+      <article class="product reveal">
+        <h4>Glass personal inhaler</h4>
+        <div class="muted">Refillable inhaler for quick access to a chosen blend.</div>
+        <div style="margin-top:8px;font-weight:700">$12</div>
+      </article>
+
+      <article class="product reveal">
+        <h4>Mini diffuser</h4>
+        <div class="muted">Low-output diffuser for bedside or desk use.</div>
+        <div style="margin-top:8px;font-weight:700">$38</div>
+      </article>
+
+      <article class="product reveal">
+        <h4>Roller bottle kit</h4>
+        <div class="muted">Empty rollers + stickers for labeling your blends.</div>
+        <div style="margin-top:8px;font-weight:700">$16</div>
+      </article>
+
+      <article class="product reveal">
+        <h4>Gift card</h4>
+        <div class="muted">Give a session credit or product credit. Redeemable online or in a booking.</div>
+        <div style="margin-top:8px;font-weight:700">From $50</div>
+      </article>
+    </section>
+
+    <section style="margin-top:18px" class="reveal card" id="safety" style="padding:14px">
+      <div style="background:#fff;padding:14px;border-radius:10px;border:1px solid #eef2ea">
+        <h3 style="margin-top:0">Safe use reminders</h3>
+        <p class="small">Products are sold with guidance. For topical use dilute appropriately; test a small patch of skin and wait 24 hours. If pregnant, nursing, or medicated, consult before topical application. If you have pets, ask for pet-safe options — not all essential oils are safe for animals.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <button class="plan-trigger" id="open-planner">Plan a session</button>
+
+  <div class="modal" id="planner-modal" aria-hidden="true">
+    <div class="sheet">
+      <h3 style="margin-top:0">Session Planner</h3>
+      <p class="small">Build a plan and copy a plaintext summary you can email or bring to a consult.</p>
+      <div style="margin-top:8px">
+        <label class="small">Intent</label>
+        <select id="m-goal" style="width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9e3;margin-bottom:8px">
+          <option value="ease">Manage stress</option>
+          <option value="sleep">Support sleep</option>
+          <option value="focus">Focus</option>
+          <option value="mood">Mood lift</option>
+        </select>
+        <label class="small">Notes</label>
+        <input id="m-notes" type="text" style="width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9e3;margin-bottom:8px" placeholder="Citrus preferred" />
+        <div style="display:flex;gap:8px">
+          <button id="m-build">Create</button>
+          <button id="m-copy" class="secondary" style="background:#fff;border:1px solid #eee;color:var(--accent)">Copy</button>
+          <button id="m-close" style="margin-left:auto;background:#eee;color:#111;border-radius:8px;padding:8px 10px">Close</button>
+        </div>
+        <textarea id="m-out" rows="7" style="width:100%;margin-top:8px;padding:10px;border-radius:8px;border:1px solid #e6e9e3"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // reveal
+    (function(){
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const nodes = document.querySelectorAll('.reveal');
+      if(reduced){ nodes.forEach(n=>n.classList.add('in-view')); return; }
+      const io = new IntersectionObserver((entries)=>{ entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in-view'); io.unobserve(e.target); } }); },{threshold:0.08});
+      nodes.forEach(n=>io.observe(n));
+    })();
+
+    // modal planner
+    (function(){
+      const open = document.getElementById('open-planner');
+      const modal = document.getElementById('planner-modal');
+      const close = document.getElementById('m-close');
+      const build = document.getElementById('m-build');
+      const copy = document.getElementById('m-copy');
+      const out = document.getElementById('m-out');
+
+      open.addEventListener('click', ()=>{ modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); });
+      close.addEventListener('click', ()=>{ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); });
+      modal.addEventListener('click', (e)=>{ if(e.target===modal){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); } });
+
+      const map = { ease: 'Calm Thread — 0.5–1% dilution, inhalation or short diffusion.', sleep: 'Dusk Ease — 0.5–1% dilution, diffuse low for 20–30 minutes before bed.', focus: 'Bright Line — use in a personal inhaler or brief desk diffusion.', mood: 'Sunsmall — small inhaler or roller diluted to 0.5–1%.' };
+
+      build.addEventListener('click', ()=>{
+        const g = document.getElementById('m-goal').value;
+        const n = document.getElementById('m-notes').value.trim();
+        let text = 'Session plan — Intent: ' + g + '\n' + (map[g]||'Custom') + '\n';
+        if(n) text += 'Preferences: '+n+'\n';
+        text += '\nSafety: patch test topical uses; choose pet-safe blends when animals are present.';
+        out.value = text;
+      });
+
+      copy.addEventListener('click', async ()=>{ try{ await navigator.clipboard.writeText(out.value); copy.textContent='Copied'; setTimeout(()=>copy.textContent='Copy',1200);}catch(e){ alert('Copy failed'); } });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfbfb;--card:#fff;--muted:#6b6b6b;--accent:#0a6b5a;--glass:rgba(10,107,90,0.06);font-family:Inter,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    html,body{height:100%;background:var(--bg);color:#111;margin:0}
+    .site{max-width:980px;margin:32px auto;padding:28px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .brand{display:flex;flex-direction:column}
+    .brand h1{margin:0;font-size:18px;letter-spacing:0.2px}
+    .brand p{margin:0;color:var(--muted);font-size:13px}
+    nav{display:flex;gap:12px}
+    nav a{color:var(--muted);text-decoration:none;font-size:14px}
+    .hero{background:linear-gradient(180deg,rgba(10,107,90,0.06),transparent);border-radius:10px;padding:22px;margin-top:18px;display:grid;grid-template-columns:1fr 260px;gap:20px;align-items:center}
+    .hero h2{margin:0;font-size:20px}
+    .hero p{margin:8px 0 0;color:var(--muted)}
+    .aside-cta{background:var(--card);padding:14px;border-radius:8px;box-shadow:0 6px 18px rgba(10,10,10,0.04)}
+    .btn{display:inline-block;background:var(--accent);color:#fff;padding:10px 14px;border-radius:8px;text-decoration:none;font-weight:600}
+    section{margin-top:26px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+    .card{background:var(--card);padding:16px;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,0.04);opacity:0;transform:translateY(12px);transition:opacity 420ms ease,transform 420ms ease}
+    .card.is-revealed{opacity:1;transform:none}
+    .card h3{margin:0 0 8px;font-size:16px}
+    .muted{color:var(--muted);font-size:13px}
+    .price{margin-top:10px;font-weight:700;color:var(--accent)}
+    footer{margin-top:36px;padding:16px 0;color:var(--muted);font-size:13px}
+    /* Session Planner */
+    .planner{background:linear-gradient(180deg,var(--card),#fff);padding:14px;border-radius:10px;border:1px solid var(--glass)}
+    .planner label{display:block;font-size:13px;margin:8px 0 4px}
+    .planner input[type=text],.planner select,.planner textarea{width:100%;padding:8px;border-radius:8px;border:1px solid #e6e6e6;font-size:13px}
+    .planner .row{display:flex;gap:8px}
+    .copy-note{display:inline-block;margin-left:8px;color:var(--muted);font-size:13px}
+    .small{font-size:13px;color:var(--muted)}
+    /* subtle pattern anchor */
+    .pattern-anchor{position:fixed;right:8px;bottom:8px;opacity:0.12;width:160px;height:160px;background-image:url('assets/img/pattern.svg');background-size:cover;pointer-events:none}
+    @media (max-width:720px){.hero{grid-template-columns:1fr}.site{padding:18px}}
+  </style>
+</head>
+<body>
+  <div class="pattern-anchor" aria-hidden="true"></div>
+  <div class="site">
+    <header>
+      <div class="brand">
+        <h1>{{BUSINESS_NAME}}</h1>
+        <p class="small">Integrative guidance — direct and practical</p>
+      </div>
+      <nav aria-label="Main navigation">
+        <a href="index.html">Overview</a>
+        <a href="services.html">Offerings</a>
+        <a href="conditions.html">Concerns</a>
+        <a href="approach.html">Method</a>
+        <a href="pricing.html">Investment</a>
+        <a href="about.html">Who</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </header>
+
+    <div class="hero" role="region" aria-label="Offerings hero">
+      <div>
+        <h2>Practical integrative sessions for busy lives</h2>
+        <p class="muted">A la carte and paced programs designed to fit your rhythm — both focused sessions and short-term pathways.</p>
+      </div>
+      <aside class="aside-cta">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div class="small">Start with a clear first step</div>
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <div class="small">Or call <strong>{{PHONE}}</strong></div>
+        </div>
+      </aside>
+    </div>
+
+    <section aria-labelledby="offers">
+      <h3 id="offers">How we work — options that adapt</h3>
+      <p class="muted">Each offering combines evidence-aware modalities: lifestyle coaching, targeted manual approaches, movement primers, and mindful regulation tools. Pricing frames toward outcomes and time commitment rather than a single model.</p>
+      <div class="grid" id="offer-grid">
+        <article class="card reveal" data-reveal>
+          <h3>Foundations Session — 75 min</h3>
+          <p class="muted">A focused intake to clarify priorities, current supports, and three immediate actions you can use this week.</p>
+          <div class="price">Investment: per session</div>
+        </article>
+        <article class="card reveal" data-reveal>
+          <h3>Integration Track — 8 weeks</h3>
+          <p class="muted">A short pathway with two touchpoints per month, tailored micro-practices, and one goal-focused review.</p>
+          <div class="price">Billed as a short program</div>
+        </article>
+        <article class="card reveal" data-reveal>
+          <h3>VIP Day — Deep Reset</h3>
+          <p class="muted">A concentrated day for re-mapping routines and building a stepwise plan to carry forward.</p>
+          <div class="price">One-shot design + follow-up options</div>
+        </article>
+        <article class="card reveal" data-reveal>
+          <h3>Monthly Support — Ongoing</h3>
+          <p class="muted">A flexible monthly cadence for accountability, adjustment, and steady momentum.</p>
+          <div class="price">Subscription-style engagement</div>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="planner">
+      <h3 id="planner">Session Planner — build your next session</h3>
+      <p class="muted">Experiment here to sketch a focused plan. Export a one-page summary to bring to a session or save for your notes.</p>
+
+      <div class="planner" id="planner-widget">
+        <label for="p-name">Your name</label>
+        <input id="p-name" type="text" placeholder="Optional">
+
+        <label for="p-concern">Primary concern or focus</label>
+        <input id="p-concern" type="text" placeholder="e.g., sleep, stress, energy, digestion">
+
+        <label>Preferred approaches</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+          <label><input type="checkbox" value="Lifestyle" data-mod> Lifestyle</label>
+          <label><input type="checkbox" value="Movement" data-mod> Movement</label>
+          <label><input type="checkbox" value="Mindfulness" data-mod> Mindfulness</label>
+          <label><input type="checkbox" value="Nutrition" data-mod> Nutrition</label>
+          <label><input type="checkbox" value="Manual" data-mod> Manual work</label>
+        </div>
+
+        <label for="p-time">Weekly time available (minutes)</label>
+        <input id="p-time" type="range" min="0" max="420" step="15" value="60">
+        <div class="small" id="p-time-display">About 60 minutes / week</div>
+
+        <label for="p-goal">Specific short-term goal (4 weeks)</label>
+        <input id="p-goal" type="text" placeholder="One concise goal">
+
+        <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
+          <button id="p-build" class="btn">Create plan</button>
+          <button id="p-copy" class="btn" style="background:#3b3b3b">Copy summary</button>
+          <div class="copy-note" id="p-status" aria-live="polite"></div>
+        </div>
+
+        <pre id="p-output" style="white-space:pre-wrap;margin-top:12px;background:#fafafa;padding:10px;border-radius:8px;border:1px solid #eee;min-height:80px;font-size:13px"></pre>
+      </div>
+    </section>
+
+    <footer>
+      <div>Not medical advice. Content is educational and supports planning conversations with your care team. Contact <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call {{PHONE}} to arrange a consult.</div>
+    </footer>
+  </div>
+
+  <script>
+    // Scroll reveal with reduced-motion support
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const els = document.querySelectorAll('[data-reveal]');
+      if(prefersReduced){els.forEach(e=>e.classList.add('is-revealed'));return}
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(ent=>{if(ent.isIntersecting){ent.target.classList.add('is-revealed');io.unobserve(ent.target)}},{rootMargin:'-10% 0px'});
+      });
+      els.forEach(e=>io.observe(e));
+    })();
+
+    // Session Planner logic
+    (function(){
+      const time = document.getElementById('p-time');
+      const timeDisplay = document.getElementById('p-time-display');
+      const build = document.getElementById('p-build');
+      const copyBtn = document.getElementById('p-copy');
+      const output = document.getElementById('p-output');
+      const status = document.getElementById('p-status');
+
+      time.addEventListener('input',()=>{timeDisplay.textContent = `About ${time.value} minutes / week`});
+
+      function collect(){
+        const name = document.getElementById('p-name').value.trim();
+        const concern = document.getElementById('p-concern').value.trim() || 'General wellness';
+        const mods = Array.from(document.querySelectorAll('[data-mod]')).filter(c=>c.checked).map(c=>c.value);
+        const minutes = parseInt(time.value,10) || 0;
+        const goal = document.getElementById('p-goal').value.trim() || 'Improve energy and daily resilience';
+        return {name,concern,mods,minutes,goal};
+      }
+
+      function makePlan(data){
+        const header = `${data.name?data.name + " — ":''}Plan created for: ${data.concern}`;
+        const approaches = data.mods.length? data.mods.join(', '): 'mixed practical practices';
+        const micro = [];
+        if(data.minutes >= 150){micro.push('Daily short practices (2–3x) and weekly movement session');}
+        else if(data.minutes >= 60){micro.push('3 to 5 brief practices across the week and 20–30 minute movement sessions');}
+        else if(data.minutes > 0){micro.push('2 micro-practices per week plus a brief nightly routine');}
+        else{micro.push('Weekly reflective steps and planning prompts to fit into busy schedules');}
+
+        const plan = [];
+        plan.push(header);
+        plan.push('Primary short-term goal: ' + data.goal);
+        plan.push('Preferred approaches: ' + approaches);
+        plan.push('Weekly availability: ' + data.minutes + ' minutes');
+        plan.push('Suggested structure:');
+        plan.push('- Initial intake (60–90 min) to map priorities and set 2 immediate actions');
+        plan.push(`- 4-week micro-track: ${micro.join(' ')} (focused check-in at 2 weeks)`);
+        plan.push('- Tools: brief movement prompts, a nightly reset ritual, and one focused behavioral experiment per week');
+        plan.push('- Measurement: 1 simple tracked metric (energy, sleep hours, mood check) and a short weekly note');
+        plan.push('Next steps: bring this summary to a session and we will refine measures and timelines together');
+        plan.push('\nNote: Not a medical prescription. Use this plan to guide conversations with your care provider.');
+        return plan.join('\n');
+      }
+
+      build.addEventListener('click',()=>{
+        const data = collect();
+        output.textContent = makePlan(data);
+        status.textContent = 'Plan ready — click Copy to save';
+      });
+
+      copyBtn.addEventListener('click',async ()=>{
+        try{
+          await navigator.clipboard.writeText(output.textContent || '');
+          status.textContent = 'Summary copied to clipboard';
+        }catch(e){
+          status.textContent = 'Copy failed — select the text and copy manually';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

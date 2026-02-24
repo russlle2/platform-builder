@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Book — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Book group or private sound bath sessions with {{BUSINESS_NAME}}. Policies, what to bring and contraindications." />
+  <style>
+    :root{--bg:#08161a;--panel:#0d2a2e;--accent:#8be0d4;--muted:#b7e9e0;--cta:#ffcd72}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter, system-ui, -apple-system,'Segoe UI', Roboto, Arial;background:linear-gradient(180deg,#051419,#071b1c);color:#eafbf7}
+    .container{max-width:960px;margin:32px auto;padding:24px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    .nav a{color:#cfeee7;text-decoration:none;margin-left:16px;font-weight:700}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:18px;border-radius:12px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px}
+    label{display:block;margin-bottom:6px;font-weight:700}
+    input,select,textarea{width:100%;padding:10px;border-radius:10px;border:0;background:rgba(255,255,255,0.03);color:inherit}
+    .cta{background:linear-gradient(90deg,var(--cta),#ffb357);color:#062423;padding:12px 16px;border-radius:12px;border:0;font-weight:800;cursor:pointer}
+    .muted{color:var(--muted)}
+    .notice{padding:12px;border-radius:10px;background:rgba(255,255,255,0.02);margin-bottom:12px}
+    .svgbg{position:fixed;right:-10%;top:-8%;width:520px;height:520px;opacity:0.08;z-index:0}
+    @media (max-width:920px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <!-- Decorative svg motif for booking page -->
+  <svg class="svgbg" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <defs>
+      <radialGradient id="bg1" cx="30%" cy="20%">
+        <stop offset="0" stop-color="#5ad0b8" />
+        <stop offset="1" stop-color="#06353f" />
+      </radialGradient>
+    </defs>
+    <circle cx="120" cy="140" r="180" fill="url(#bg1)" />
+    <g fill="#02333a" opacity="0.2">
+      <path d="M80 320c40-40 160-60 240-40-70 30-180 60-240 40z" />
+    </g>
+  </svg>
+
+  <div class="container">
+    <header>
+      <div>
+        <h2 style="margin:0">Reserve your session</h2>
+        <div class="muted">Book group circles or private experiences with {{FACILITATOR_NAME}}</div>
+      </div>
+      <div class="nav">
+        <a href="index.html">Return</a>
+        <a href="events.html">Events</a>
+        <a href="contact.html">Help</a>
+      </div>
+    </header>
+
+    <div class="grid">
+      <div>
+        <div class="card">
+          <h3 style="margin-top:0">Booking form</h3>
+          <form id="bookingForm" action="{{PRIMARY_CTA_URL}}" method="post">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div>
+                <label for="name">Full name</label>
+                <input id="name" name="name" placeholder="Your name" required />
+              </div>
+              <div>
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" placeholder="you@example.com" required />
+              </div>
+            </div>
+
+            <div style="margin-top:12px">
+              <label for="phone">Phone</label>
+              <input id="phone" name="phone" placeholder="{{PHONE}}" />
+            </div>
+
+            <div style="margin-top:12px;display:flex;gap:12px">
+              <div style="flex:1">
+                <label for="type">Session type</label>
+                <select id="type" name="type">
+                  <option>Group circle (in-person)</option>
+                  <option>1:1 private</option>
+                  <option>Couples healing</option>
+                  <option>Corporate wellness</option>
+                </select>
+              </div>
+
+              <div style="width:160px">
+                <label for="date">Preferred date</label>
+                <input id="date" name="date" type="date" value="{{NEXT_EVENT_DATE}}" />
+              </div>
+            </div>
+
+            <div style="margin-top:12px">
+              <label for="count">Number of attendees</label>
+              <input id="count" name="count" type="number" min="1" value="1" />
+            </div>
+
+            <div style="margin-top:12px">
+              <label for="message">Message (requests, accessibility)</label>
+              <textarea id="message" name="message" rows="4" placeholder="Let us know about mobility, scent sensitivity, or anything else"></textarea>
+            </div>
+
+            <div style="margin-top:14px;display:flex;gap:12px;align-items:center">
+              <button type="submit" class="cta">Request booking</button>
+              <div style="color:var(--muted);font-weight:700">Or call: {{PHONE}}</div>
+            </div>
+
+            <div style="margin-top:12px" class="notice muted">
+              By submitting you agree to be contacted about this booking. For private bookings a deposit or contract may be required. Cancellation: 48–72 hours depending on the format.
+            </div>
+          </form>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <h3 style="margin-top:0">Flow & what to expect</h3>
+          <p class="muted">Our sessions are intentionally paced. A typical private or group booking includes:</p>
+          <ol class="muted">
+            <li>Welcome & intention setting (5–15 min)</li>
+            <li>Immersive soundscape (30–60 min) — instruments vary; we often combine gongs, crystal bowls, chimes or a monochord drone</li>
+            <li>Grounding & gentle return (5–15 min) — tuning forks, breath prompts</li>
+          </ol>
+
+          <h4 style="margin-top:12px">What to bring</h4>
+          <ul class="muted">
+            <li>Blanket, layers and an eye pillow if you use one</li>
+            <li>A mat or cushion for comfort</li>
+            <li>Water — hydrate before and after</li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <h3 style="margin-top:0">Contraindications — please read</h3>
+          <p class="muted">If you are pregnant, have uncontrolled epilepsy, recent inner-ear or neurologic surgery, a pacemaker, or severe cardiovascular conditions, consult your clinician before participating. Certain instruments (e.g. large gongs) produce low-frequency energy — disclose devices or implants when booking. If in doubt, email <a href="mailto:{{EMAIL}}" style="color:var(--accent)">{{EMAIL}}</a>.</p>
+        </div>
+      </div>
+
+      <aside>
+        <div class="card">
+          <h3 style="margin-top:0">Private sessions</h3>
+          <p class="muted">Options: 1:1 healing, couples sessions, corporate wellness workshops. Each can be tailored: we can bring a compact kit (bowls, tuning forks, chimes) to your space or host at {{VENUE_NAME}}.</p>
+          <a href="private-sessions.html" style="display:inline-block;margin-top:12px;padding:10px 12px;border-radius:10px;background:linear-gradient(90deg,#67d6c2,#48c9b0);color:#042b27;text-decoration:none;font-weight:800">Explore private offerings</a>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin-top:0">Instruments in rotation</h4>
+          <p class="muted">We favor a balanced palette: crystal singing bowls for clarity, chimes for articulation, tuning forks for targeted resonance, occasional gong swells for depth.</p>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin-top:0">Policies</h4>
+          <ul class="muted">
+            <li>Deposit policy varies by booking type</li>
+            <li>Arrive 10–15 minutes early</li>
+            <li>Refunds for group events 48 hrs prior</li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin-top:0">Need help?</h4>
+          <p class="muted">Call {{PHONE}} or email <a href="mailto:{{EMAIL}}" style="color:var(--accent)">{{EMAIL}}</a> — we can advise on best session type for your needs.</p>
+        </div>
+      </aside>
+    </div>
+
+    <footer style="margin-top:18px;color:var(--muted)">
+      <div>By booking you accept our terms and acknowledge the safety guidance shared above. For corporate or venue inquiries, contact <a href="mailto:{{EMAIL}}" style="color:var(--accent)">{{EMAIL}}</a>.</div>
+    </footer>
+  </div>
+
+  <script>
+    // minimal front-end validation and feedback
+    document.getElementById('bookingForm').addEventListener('submit', function(e){
+      var name = document.getElementById('name').value.trim();
+      var email = document.getElementById('email').value.trim();
+      if(!name || !email){
+        e.preventDefault();
+        alert('Please provide your name and email to continue booking.');
+      } else {
+        // Allow submission to PRIMARY_CTA_URL — in many integrations this is handled server-side
+      }
+    });
+  </script>
+</body>
+</html>

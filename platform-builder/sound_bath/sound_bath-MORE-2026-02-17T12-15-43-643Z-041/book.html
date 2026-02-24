@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#081018;--card:#0b1520;--accent:#b78f66;--muted:#9bb0bc}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:linear-gradient(180deg,#061018 0%,#08121a 100%);color:#eaf3f7}
+    header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px}
+    nav a{color:var(--muted);text-decoration:none;margin-left:16px}
+    main{max-width:1100px;margin:18px auto;padding:0 20px}
+    .split{display:grid;grid-template-columns:1fr 420px;gap:20px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px}
+    h1{margin:0 0 8px 0}
+    label{display:block;margin-top:12px;font-size:14px}
+    select,input[type="text"],textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+    .planner{margin-top:12px}
+    .options{display:flex;gap:8px;margin-top:8px}
+    .opt{padding:8px 10px;border-radius:8px;background:rgba(255,255,255,0.02);cursor:pointer}
+    .opt.active{background:linear-gradient(180deg,var(--accent),#8f7358);color:#081018}
+    .summary{white-space:pre-wrap;background:rgba(255,255,255,0.02);padding:12px;border-radius:8px;margin-top:12px}
+    .copy{margin-top:8px;padding:10px 12px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#8f7358);color:#081018;border:none;cursor:pointer}
+    .seats{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .seat{width:44px;height:36px;border-radius:8px;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center;cursor:pointer}
+    .seat.taken{background:#2c2f33;color:#777}
+    .seat.selected{background:linear-gradient(180deg,#ffd9b6,#c9a07a);color:#081018}
+    .booking-actions{display:flex;gap:8px;margin-top:12px}
+    .btn-primary{background:linear-gradient(135deg,var(--accent),#886b4f);padding:10px 12px;border-radius:8px;border:none;color:#081018;font-weight:700;cursor:pointer}
+    .muted{color:var(--muted);font-size:13px}
+    @media(max-width:960px){.split{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:40px;height:40px;border-radius:8px;background:linear-gradient(135deg,#b78f66,#7b5f48);display:flex;align-items:center;justify-content:center;font-weight:700;color:#081018">S</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Gatherings</a>
+      <a href="events.html">Events</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="faq.html">FAQ</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Plan a session</h1>
+    <p class="muted">Use the planner to craft a short program and lock a seat. The summary can be copied and saved for your records.</p>
+
+    <div class="split" role="region">
+      <div>
+        <div class="card">
+          <label for="sessionName">Your name</label>
+          <input id="sessionName" type="text" placeholder="First & last">
+
+          <label style="margin-top:12px">Session length</label>
+          <div class="options planner" id="lengthOpts">
+            <div class="opt" data-val="30">30 min</div>
+            <div class="opt active" data-val="60">60 min</div>
+            <div class="opt" data-val="90">90 min</div>
+          </div>
+
+          <label>Focus (choose up to 2)</label>
+          <div class="options" id="focusOpts">
+            <div class="opt" data-val="rest">Deep rest</div>
+            <div class="opt" data-val="sleep">Sleep prep</div>
+            <div class="opt" data-val="reset">Stress release</div>
+            <div class="opt" data-val="clarity">Mental clarity</div>
+          </div>
+
+          <label>Accessibility notes</label>
+          <textarea id="notes" rows="3" placeholder="Tell us about mobility, noise sensitivity, etc."></textarea>
+
+          <div class="booking-actions">
+            <button id="build" class="btn-primary">Build plan</button>
+            <button id="clear" style="padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--muted)">Reset</button>
+          </div>
+
+          <div class="summary" id="planSummary" aria-live="polite">Your personalized plan will appear here.</div>
+          <button class="copy" id="copyPlan">Copy summary</button>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h3 style="margin:0">Seat selection</h3>
+          <p class="muted">Choose a date then pick a seat. This is a local demo — no real reservation is made.</p>
+
+          <label style="margin-top:8px">Date</label>
+          <select id="eventDate">
+            <option value="2026-02-28">Sat, Feb 28 — 7:00pm</option>
+            <option value="2026-03-06">Fri, Mar 6 — 7:30pm</option>
+            <option value="2026-03-14">Sun, Mar 14 — 4:00pm</option>
+          </select>
+
+          <div class="seats" id="bookSeats" aria-hidden="false" style="margin-top:12px"></div>
+
+          <div style="margin-top:12px" class="muted">Selected: <span id="seatChosen">none</span></div>
+          <div style="margin-top:12px"><button id="confirm" class="btn-primary">Confirm (demo)</button></div>
+
+          <div class="muted" style="margin-top:12px">If you need help by phone: {{PHONE}}</div>
+        </div>
+
+      </div>
+
+      <aside>
+        <div class="card">
+          <h3 style="margin:0">What to bring</h3>
+          <p class="muted">We offer a quick generator: choose your seat type to get a compact packing list.</p>
+
+          <label style="margin-top:8px">Seat type</label>
+          <select id="seatType">
+            <option value="mat">Floor mat</option>
+            <option value="chair">Chair</option>
+            <option value="bolster">Bolster</option>
+          </select>
+
+          <div style="margin-top:8px"><button id="genBring" class="btn-primary">Generate list</button></div>
+          <div class="summary" id="bringList">Nothing yet — generate a list.</div>
+
+          <div style="margin-top:12px;color:var(--muted)"><strong>Access needs?</strong> Add notes in the planner above or email {{EMAIL}}.</div>
+
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <strong>Contraindications & safety</strong>
+          <p class="muted" style="margin-top:8px">Please consult your medical provider if you have recent head injury, seizure disorder, or other conditions sensitive to vibration or sound. If pregnant, seek clearance. Notify our team of implants or medical devices.</p>
+        </div>
+      </aside>
+    </div>
+
+  </main>
+
+  <script>
+    // Session planner logic
+    const lengthOpts = document.getElementById('lengthOpts');
+    const focusOpts = document.getElementById('focusOpts');
+    const buildBtn = document.getElementById('build');
+    const clearBtn = document.getElementById('clear');
+    const planDiv = document.getElementById('planSummary');
+    const copyBtn = document.getElementById('copyPlan');
+
+    lengthOpts.addEventListener('click', (e)=>{
+      if(!e.target.classList.contains('opt')) return;
+      Array.from(lengthOpts.children).forEach(n=>n.classList.remove('active'));
+      e.target.classList.add('active');
+    });
+
+    focusOpts.addEventListener('click',(e)=>{
+      if(!e.target.classList.contains('opt')) return;
+      // toggle but limit to 2
+      const active = Array.from(focusOpts.querySelectorAll('.opt.active'));
+      if(e.target.classList.contains('active')){ e.target.classList.remove('active'); return; }
+      if(active.length>=2){
+        active[0].classList.remove('active');
+      }
+      e.target.classList.add('active');
+    });
+
+    buildBtn.addEventListener('click',()=>{
+      const name = document.getElementById('sessionName').value || 'Guest';
+      const length = lengthOpts.querySelector('.opt.active').dataset.val;
+      const foci = Array.from(focusOpts.querySelectorAll('.opt.active')).map(n=>n.dataset.val);
+      const notes = document.getElementById('notes').value || 'None';
+      const summary = [
+        'Session Plan for: '+name,
+        'Length: '+length+' min',
+        'Focus: '+(foci.length?foci.join(', '):'General'),
+        '',
+        'Accessibility notes:',
+        notes,
+        '',
+        'Arrival: arrive 10–15 minutes early; bring what you need to be still and warm.'
+      ].join('\n');
+      planDiv.textContent = summary;
+    });
+
+    clearBtn.addEventListener('click',()=>{
+      document.getElementById('sessionName').value='';
+      document.getElementById('notes').value='';
+      Array.from(lengthOpts.children).forEach((n,i)=>{n.classList.toggle('active', i===1)});
+      Array.from(focusOpts.children).forEach(n=>n.classList.remove('active'));
+      planDiv.textContent='Your personalized plan will appear here.';
+    });
+
+    copyBtn.addEventListener('click',async ()=>{
+      const text = planDiv.textContent;
+      try{ await navigator.clipboard.writeText(text); copyBtn.textContent='Copied'; setTimeout(()=>copyBtn.textContent='Copy summary',1200);}catch(e){alert('Copy not supported');}
+    });
+
+    // Seat map (fake)
+    const seatContainer = document.getElementById('bookSeats');
+    const seatChosen = document.getElementById('seatChosen');
+    const confirmBtn = document.getElementById('confirm');
+    let seatsState = []; // 0 free, 1 taken, 2 selected
+
+    const renderSeats = ()=>{
+      seatContainer.innerHTML='';
+      seatsState.forEach((s,i)=>{
+        const b = document.createElement('button');
+        b.className='seat'+(s===1?' taken':'')+(s===2?' selected':'');
+        b.textContent=i+1;
+        b.addEventListener('click',()=>{
+          if(s===1) return; // taken
+          // clear previous selection
+          seatsState = seatsState.map(x=>x===2?0:x);
+          seatsState[i] = 2;
+          updateDisplay();
+          renderSeats();
+        });
+        seatContainer.appendChild(b);
+      });
+    };
+
+    const updateDisplay = ()=>{
+      const sel = seatsState.findIndex(s=>s===2);
+      seatChosen.textContent = sel===-1? 'none': String(sel+1);
+    };
+
+    const randomizeTaken = ()=>{
+      seatsState = Array.from({length:12}, ()=> Math.random()>0.8?1:0);
+      renderSeats(); updateDisplay();
+    };
+
+    document.getElementById('eventDate').addEventListener('change',()=>{
+      randomizeTaken();
+    });
+
+    confirmBtn.addEventListener('click',()=>{
+      const sel = seatsState.findIndex(s=>s===2);
+      if(sel===-1){ alert('Please pick a seat first.'); return; }
+      alert('Demo reservation confirmed for seat '+(sel+1)+'. This is a local demo only.');
+    });
+
+    // Packing list generator
+    const genBring = document.getElementById('genBring');
+    const bringList = document.getElementById('bringList');
+    genBring.addEventListener('click',()=>{
+      const type = document.getElementById('seatType').value;
+      const items = ['Water bottle','Layered sweater','Socks or slippers','Optional eye-cover'];
+      if(type==='mat') items.unshift('Mat or yoga mat');
+      if(type==='bolster') items.unshift('Firm bolster or rolled blanket');
+      if(type==='chair') items.unshift('Low cushion for lumbar support');
+      bringList.textContent = items.join('\n');
+    });
+
+    // init
+    randomizeTaken();
+  </script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+/* Core styles for aromatic, gallery-style landing */
+:root{
+  --bg:#FBFEFF; --muted:#6B7B88; --accent1:#A3D9C8; --accent2:#8CC7E7; --deep:#2B3A42; --card:#FFFFFF;
+  --radius:12px; --max-width:1100px;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;margin:0;color:var(--deep);background:linear-gradient(180deg,var(--bg),#f6fbff)}
+.inner{max-width:var(--max-width);margin:0 auto;padding:28px}
+.site-header{background:transparent;position:sticky;top:0;z-index:40;padding:10px 0}
+.site-header .inner{display:flex;align-items:center;gap:18px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--deep)}
+.brand .name{font-weight:700}
+.main-nav{margin-left:auto;display:flex;gap:12px}
+.main-nav a{color:var(--deep);text-decoration:none;padding:8px 10px;border-radius:8px}
+.main-nav a.book{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#fff}
+.menu-toggle{display:none;background:none;border:0;font-size:20px}
+
+/* Hero */
+.hero{position:relative;padding:48px 0;overflow:hidden}
+.hero .pattern{position:absolute;inset:0;opacity:0.12;background-image:url('assets/img/pattern.svg');background-repeat:repeat;mix-blend-mode:multiply}
+.hero-inner{display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:center}
+.hero-copy h1.eyebrow{font-size:14px;text-transform:uppercase;color:var(--muted);margin:0}
+.hero-copy h2{font-size:32px;margin:6px 0 12px}
+.lead{color:var(--muted);margin-bottom:18px}
+.btn{display:inline-block;text-decoration:none;padding:10px 16px;border-radius:10px;border:1px solid transparent}
+.btn.primary{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#08303A}
+.btn.ghost{background:transparent;border-color:rgba(43,58,66,0.06);color:var(--deep)}
+.btn.small{padding:8px 12px;font-size:14px}
+.hero-aside .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(39,50,56,0.06)}
+.contact-small{margin-top:12px;font-size:14px}
+
+/* Social proof */
+.social-proof{padding-top:12px}
+.proof-grid{display:flex;gap:18px;align-items:center}
+.testimonial{background:linear-gradient(180deg,rgba(255,255,255,0.8),#fff);padding:18px;border-radius:12px;flex:1}
+.logos{display:flex;gap:8px}
+.logo-pill{background:#fff;padding:6px 10px;border-radius:999px;border:1px solid rgba(11,20,26,0.04)}
+
+/* Benefits */
+.benefits .benefit-list{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;list-style:none;padding:0}
+.benefit-list li{background:var(--card);padding:16px;border-radius:12px}
+
+/* Process steps */
+.process .steps{list-style:none;padding:0;display:grid;gap:12px}
+.process .step-num{display:inline-block;background:linear-gradient(90deg,var(--accent2),var(--accent1));width:36px;height:36px;border-radius:50%;color:#062427;text-align:center;line-height:36px;margin-right:12px}
+.process .steps li{display:flex;align-items:flex-start}
+
+/* FAQ accordion */
+.accordion .item{margin-bottom:8px}
+.accordion .q{width:100%;text-align:left;padding:12px;border-radius:10px;background:#fff;border:1px solid rgba(11,20,26,0.06);cursor:pointer}
+.accordion .a{padding:12px 14px;margin-top:6px;background:linear-gradient(180deg,#fff,#fcfeff);border-radius:8px;display:none;color:var(--muted)}
+
+/* Lead magnet */
+.lead-magnet .magnet-grid{display:grid;grid-template-columns:1fr 360px;gap:18px;align-items:center}
+.magnet-form{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 30px rgba(11,20,26,0.06)}
+.magnet-form input,.magnet-form select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(11,20,26,0.06);margin-bottom:8px}
+.fine-print{font-size:12px;color:var(--muted)}
+
+/* CTA */
+.cta{background:linear-gradient(90deg,rgba(163,217,200,0.12),rgba(140,199,231,0.06));padding:20px;border-radius:12px;text-align:center}
+.cta-actions{display:flex;gap:12px;justify-content:center;margin-top:12px}
+
+/* Footer */
+.site-footer{padding:28px 0;margin-top:28px;border-top:1px solid rgba(11,20,26,0.04)}
+.footer-grid{display:flex;gap:18px;align-items:center}
+.legal{text-align:center;color:var(--muted);margin-top:12px}
+
+/* Responsive */
+@media (max-width:900px){
+  .hero-inner{grid-template-columns:1fr}
+  .lead-magnet .magnet-grid{grid-template-columns:1fr}
+  .main-nav{display:none}
+  .menu-toggle{display:block;margin-left:auto}
+  .benefit-list{grid-template-columns:1fr}
+}

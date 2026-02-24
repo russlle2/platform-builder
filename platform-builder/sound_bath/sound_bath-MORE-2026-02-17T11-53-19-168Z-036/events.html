@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Events — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1113;--card:#0b0d0e;--muted:#9aa3a6;--accent:#8fd3c7;--glass:rgba(255,255,255,0.04);font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    html,body{height:100%}
+    body{margin:0;background-color:var(--bg);color:#ecf6f4;line-height:1.45}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background-image:url('assets/img/pattern.svg');background-size:240px;height:84px}
+    .brand{display:flex;flex-direction:column}
+    .title{font-weight:700;letter-spacing:0.4px}
+    nav a{color:#cfeee7;text-decoration:none;margin-left:18px;font-weight:600}
+    .container{max-width:1100px;margin:36px auto;padding:0 20px}
+    .hero{display:flex;gap:28px;align-items:center;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:36px;border-radius:12px}
+    .hero .left{flex:1}
+    .hero h1{margin:0 0 8px 0;font-size:28px}
+    .lead{color:var(--muted);margin:0 0 14px 0}
+    .cta-row{display:flex;gap:12px;flex-wrap:wrap}
+    .btn{background:linear-gradient(90deg,rgba(143,211,199,0.12),rgba(143,211,199,0.06));border:1px solid rgba(143,211,199,0.14);padding:10px 14px;border-radius:8px;color:var(--accent);cursor:pointer}
+    .ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+    .card{background:var(--card);padding:18px;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.6)}
+    .next-event{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center}
+    .calendar-list{margin-top:18px;display:grid;gap:10px}
+    .event-item{display:flex;justify-content:space-between;padding:12px;border-radius:8px;background:var(--glass);align-items:center}
+    .small{font-size:13px;color:var(--muted)}
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+    .reveal.visible{opacity:1;transform:none}
+    footer{padding:28px;text-align:center;color:var(--muted)}
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;background:linear-gradient(180deg,rgba(4,6,6,0.6),rgba(4,6,6,0.8));display:none;align-items:center;justify-content:center;z-index:60}
+    .modal{width:min(720px,94%);background:#051010;padding:22px;border-radius:12px}
+    .modal h2{margin:0 0 8px 0}
+    .modal p{margin:0 0 12px 0;color:var(--muted)}
+    .meter{height:10px;background:rgba(255,255,255,0.06);border-radius:8px;overflow:hidden}
+    .meter > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#c1f0ea);width:0%}
+    /* accessible focus */
+    :focus{outline:2px solid rgba(143,211,199,0.22);outline-offset:2px}
+    @media (max-width:720px){header{height:96px;align-items:flex-start;padding:18px} .hero{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="title">{{BUSINESS_NAME}}</div>
+      <div class="small">{{TAGLINE}}</div>
+    </div>
+    <nav>
+      <a href="index.html">Gatherings</a>
+      <a href="events.html">Schedule</a>
+      <a href="private-sessions.html">Private</a>
+      <a href="pricing.html">Rates</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main class="container">
+
+    <section class="hero card reveal" data-reveal>
+      <div class="left">
+        <h1>Upcoming sound journeys and shorter rhythms</h1>
+        <p class="lead">Join gentle, instrument-led rooms across the week — each session tuned for rest, focus, or letting go. Newcomers welcome. Drop-in or reserve a mat.</p>
+        <div class="cta-row">
+          <button class="btn" id="open-try">Try it now</button>
+          <a class="btn ghost" href="book.html">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </div>
+      <div style="width:360px">
+        <div class="card next-event">
+          <div>
+            <div class="small">Next public gathering</div>
+            <div id="next-event-display" style="font-weight:700;margin-top:6px">Loading…</div>
+            <div class="small" id="next-event-venue" style="margin-top:6px"></div>
+            <div class="small" style="margin-top:10px">Capacity is limited. Reservations are suggested.</div>
+          </div>
+          <div style="text-align:right">
+            <div class="small">{{CITY}}, {{STATE}}</div>
+            <a class="btn" href="book.html" style="margin-top:10px;display:inline-block">Reserve a spot</a>
+          </div>
+        </div>
+        <div class="card" style="margin-top:12px">
+          <div class="small">Calendar</div>
+          <div class="calendar-list" id="calendar-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card reveal" data-reveal style="margin-top:22px;padding:20px">
+      <h3 style="margin:0 0 8px 0">What to expect</h3>
+      <p class="small">Sessions move through three phases: settling, sound field, and gentle return. Expect guided cues, varied instruments (bowls, gongs, voice), and short guidance before and after the sound work.</p>
+      <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap">
+        <div class="card" style="flex:1;min-width:200px;padding:12px;background:rgba(255,255,255,0.02)">
+          <div style="font-weight:700">Arrival</div>
+          <div class="small">Doors open 15 min early for check-in and quiet settling.</div>
+        </div>
+        <div class="card" style="flex:1;min-width:200px;padding:12px;background:rgba(255,255,255,0.02)">
+          <div style="font-weight:700">Sound Field</div>
+          <div class="small">A curated progression of tone and silence lasting 35–50 minutes.</div>
+        </div>
+        <div class="card" style="flex:1;min-width:200px;padding:12px;background:rgba(255,255,255,0.02)">
+          <div style="font-weight:700">Reintegration</div>
+          <div class="small">A short closing exchange to ground and capture intentions.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card reveal" data-reveal style="margin-top:22px;padding:18px">
+      <h3 style="margin:0 0 8px 0">Practical schedule & list</h3>
+      <div class="small">Below is our public run of upcoming sessions. Times are local. If you're unsure about attendance because of health, see contraindications at the bottom.</div>
+      <div id="full-list" style="margin-top:12px"></div>
+    </section>
+
+    <section class="card reveal" data-reveal style="margin-top:22px;padding:16px">
+      <h3 style="margin:0 0 8px 0">Contraindications & care notes</h3>
+      <p class="small">Sound gatherings are generally gentle, but please avoid attendance or consult a clinician if you have: uncontrolled epilepsy, recent major surgery, severe hypertension, implanted medical devices sensitive to vibrations, or are pregnant and have specific medical concerns. If you have severe anxiety around loud noises, consider a private 1:1 session instead. Our facilitators are available to speak with you beforehand at {{PHONE}} or {{EMAIL}}.</p>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} • <a href="contact.html" style="color:var(--accent)">{{EMAIL}}</a> • <a href="tel:{{PHONE}}" style="color:var(--accent)">{{PHONE}}</a></div>
+  </footer>
+
+  <!-- Modal: Try it now guided exercise -->
+  <div id="modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document" aria-labelledby="modal-title">
+      <h2 id="modal-title">Try a short guided cycle</h2>
+      <p class="small">Three mini-steps: breathing, a quick journaling prompt, and an intention moment. This is designed for a 4-minute micro-reset.</p>
+      <div id="modal-content">
+        <div id="step-0">
+          <div style="font-weight:700">Breathing — 90 seconds</div>
+          <p class="small">Follow the onscreen pulse. Breathe in for 4, hold 3, out 6. Repeat until the meter completes.</p>
+          <div style="margin-top:12px" class="meter"><i id="meter-fill"></i></div>
+          <div style="margin-top:8px"><button class="btn" id="start-breath">Begin</button> <button class="btn ghost" id="skip-breath">Skip</button></div>
+        </div>
+        <div id="step-1" style="display:none">
+          <div style="font-weight:700">Journaling prompt — 60 seconds</div>
+          <p class="small">Write a single sentence: "Right now I most need…"</p>
+          <textarea id="journal" rows="3" style="width:100%;margin-top:8px;padding:10px;border-radius:8px;background:#041414;border:1px solid rgba(255,255,255,0.03);color:#dff5f0"></textarea>
+          <div style="margin-top:8px;text-align:right"><button class="btn" id="save-journal">Save</button></div>
+        </div>
+        <div id="step-2" style="display:none">
+          <div style="font-weight:700">Set an intention — 30 seconds</div>
+          <p class="small">Choose one short phrase to carry forward, then close the modal.</p>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn" data-intent="Be present">Be present</button>
+            <button class="btn" data-intent="Breathe steady">Breathe steady</button>
+            <button class="btn" data-intent="Gentle focus">Gentle focus</button>
+          </div>
+          <div style="margin-top:12px;text-align:right"><button class="btn" id="close-modal">Close</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Simple scroll reveal with prefers-reduced-motion support
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const revealables = document.querySelectorAll('[data-reveal]');
+      if(prefersReduced){
+        revealables.forEach(el=>el.classList.add('visible'));
+        return;
+      }
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting){entry.target.classList.add('visible');io.unobserve(entry.target)}
+        });
+      },{threshold:0.12});
+      revealables.forEach(el=>io.observe(el));
+    })();
+
+    // Calendar and next-event logic
+    (function(){
+      const calendar = [
+        {date:'2026-03-02T19:00:00',title:'Evening Drift — bowl & voice',venue:'Studio A'},
+        {date:'2026-03-06T10:30:00',title:'Morning Reset — light gong',venue:'Green Room'},
+        {date:'2026-03-10T18:00:00',title:'Slow Field — multi-instrument',venue:'Studio A'},
+        {date:'2026-03-15T20:00:00',title:'New Moon Gathering',venue:'Green Room'}
+      ];
+      const now = new Date();
+      const upcoming = calendar.map(c=>({...c,ts:new Date(c.date)})).filter(c=>c.ts>now).sort((a,b)=>a.ts-b.ts);
+      const list = document.getElementById('calendar-list');
+      const fullList = document.getElementById('full-list');
+      if(upcoming.length===0){
+        list.innerHTML='<div class="small">No upcoming public sessions listed yet.</div>';
+        document.getElementById('next-event-display').textContent='TBA';
+      } else {
+        const next = upcoming[0];
+        document.getElementById('next-event-display').textContent = next.ts.toLocaleString();
+        document.getElementById('next-event-venue').textContent = next.title + ' — ' + next.venue;
+        // populate small list
+        list.innerHTML = upcoming.slice(0,3).map(e=>`<div class="event-item"><div><div style=\"font-weight:700\">${e.title}</div><div class=\"small\">${e.ts.toLocaleString()}</div></div><div class=\"small\">${e.venue}</div></div>`).join('');
+        fullList.innerHTML = upcoming.map(e=>`<div class=\"event-item\"><div><div style=\"font-weight:700\">${e.title}</div><div class=\"small\">${e.ts.toLocaleString()}</div></div><div><a class=\"btn\" href=\"book.html\">Reserve</a></div></div>`).join('');
+      }
+    })();
+
+    // Modal guided exercise
+    (function(){
+      const openBtn = document.getElementById('open-try');
+      const modal = document.getElementById('modal');
+      const startBreath = document.getElementById('start-breath');
+      const skipBreath = document.getElementById('skip-breath');
+      const meterFill = document.getElementById('meter-fill');
+      const step0 = document.getElementById('step-0');
+      const step1 = document.getElementById('step-1');
+      const step2 = document.getElementById('step-2');
+      const journal = document.getElementById('journal');
+      const saveJournal = document.getElementById('save-journal');
+      const closeModal = document.getElementById('close-modal');
+
+      function open(){ modal.style.display='flex'; modal.setAttribute('aria-hidden','false'); modal.querySelector('button,textarea').focus(); }
+      function close(){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); resetModal(); }
+      function resetModal(){ meterFill.style.width='0%'; step0.style.display='block'; step1.style.display='none'; step2.style.display='none'; journal.value=''; }
+
+      openBtn.addEventListener('click',open);
+      closeModal && closeModal.addEventListener('click',close);
+
+      skipBreath.addEventListener('click',()=>{ step0.style.display='none'; step1.style.display='block'; journal.focus(); });
+
+      // Breath animation with prefer-reduced-motion respect
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      startBreath.addEventListener('click',()=>{
+        step0.style.opacity=1;
+        if(reduced){ meterFill.style.width='100%'; setTimeout(()=>{ step0.style.display='none'; step1.style.display='block'; journal.focus(); },800); return; }
+        const total = 90; // seconds
+        let elapsed = 0; meterFill.style.width='0%';
+        const start = Date.now();
+        const id = setInterval(()=>{
+          elapsed = Math.floor((Date.now()-start)/1000);
+          const pct = Math.min(100,Math.round((elapsed/total)*100));
+          meterFill.style.width = pct + '%';
+          // audible-less cues through subtle title flash (no audio)
+          if(elapsed>=total){ clearInterval(id); step0.style.display='none'; step1.style.display='block'; journal.focus(); }
+        },250);
+      });
+
+      saveJournal.addEventListener('click',()=>{ step1.style.display='none'; step2.style.display='block'; });
+      // quick intent buttons
+      step2.querySelectorAll('button[data-intent]').forEach(btn=>btn.addEventListener('click',(e)=>{ const v=e.target.getAttribute('data-intent'); alert('Intent set: '+v); close(); }));
+
+      // close on backdrop click
+      modal.addEventListener('click',(e)=>{ if(e.target===modal) close(); });
+
+      // trap esc
+      document.addEventListener('keydown',(e)=>{ if(e.key==='Escape' && modal.style.display==='flex') close(); });
+    })();
+  </script>
+</body>
+</html>

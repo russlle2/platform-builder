@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Rates & Offerings</title>
+  <style>
+    :root{--bg:#ffffff;--ink:#222;--muted:#666;--accent:#3b6b5b}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:16px 22px;background:linear-gradient(180deg,transparent,rgba(0,0,0,0.02));position:sticky;top:0}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none}
+    .wrap{max-width:980px;margin:26px auto;padding:0 20px}
+    .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+    .card{background:#fff;border-radius:12px;padding:18px;box-shadow:0 8px 24px rgba(20,20,20,0.04)}
+    h1{margin:0 0 8px}
+    .muted{color:var(--muted)}
+    .price{font-weight:800;font-size:20px;margin-top:6px}
+    .note{font-size:13px;color:#7a2a2a;background:#fff7f7;padding:10px;border-radius:8px;margin-top:12px}
+    .pattern{position:fixed;inset:0;background-image:url('assets/img/pattern.svg');opacity:0.05;pointer-events:none}
+    .calculator{margin-top:16px;background:#fafafa;padding:12px;border-radius:10px}
+    label{display:block;margin-top:8px;font-weight:600}
+    select,input[type=number]{width:100%;padding:8px;margin-top:6px}
+    @media(max-width:880px){.grid-3{grid-template-columns:1fr}} 
+  </style>
+</head>
+<body>
+  <div class="pattern" aria-hidden></div>
+  <header>
+    <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="events.html">Gatherings</a>
+      <a href="private-sessions.html">Bespoke</a>
+      <a class="active" href="pricing.html">Rates</a>
+      <a href="about.html">Origins</a>
+      <a href="faq.html">Need-to-know</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <h1>Offer frames and rates</h1>
+    <p class="muted">Transparent, modular pricing for single sessions, private gatherings, and ongoing practice support.</p>
+
+    <section style="margin-top:16px" class="grid-3">
+      <div class="card">
+        <h3 style="margin:0">Open Gathering</h3>
+        <div class="muted">A shared offering for individuals. Limited seating.</div>
+        <div class="price">$28 • single session</div>
+        <div style="margin-top:8px" class="muted">Discounts for a 5-pack, enquire by email.</div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin:0">Bespoke Private</h3>
+        <div class="muted">Tailored session for 1–12 people, arranged to need and space.</div>
+        <div class="price">Starting $120 • 60 min</div>
+        <div class="muted" style="margin-top:8px">Travel & bespoke design may adjust the fee.</div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin:0">Practice Membership</h3>
+        <div class="muted">Access to recurring gatherings and member rates on private sessions.</div>
+        <div class="price">$45 / month</div>
+        <div class="muted" style="margin-top:8px">Cancel anytime. Members save on bespoke bookings.</div>
+      </div>
+    </section>
+
+    <section style="margin-top:18px" class="card">
+      <h3 style="margin:0">Estimator & custom quote</h3>
+      <div class="calculator">
+        <label for="people">Number of attendees</label>
+        <input id="people" type="number" min="1" value="4">
+
+        <label for="duration">Duration (minutes)</label>
+        <select id="duration">
+          <option value="45">45</option>
+          <option value="60" selected>60</option>
+          <option value="90">90</option>
+          <option value="120">120</option>
+        </select>
+
+        <label for="format">Format</label>
+        <select id="format">
+          <option value="in">In-person</option>
+          <option value="remote">Remote</option>
+        </select>
+
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <button id="calcBtn">Estimate price</button>
+          <button class="outline" id="contactQuote">Request quote</button>
+        </div>
+
+        <div id="estimate" class="muted" style="margin-top:10px">No estimate yet.</div>
+      </div>
+
+      <div class="note">Important: If participants have sensory sensitivities or specific medical conditions, discuss accommodations before booking. This is not clinical care.</div>
+    </section>
+
+    <section style="margin-top:18px" class="card">
+      <h3 style="margin:0">Payment & policies</h3>
+      <div class="muted" style="margin-top:8px">Deposit required for private bookings. Cancellations within 48 hours may be partially retained. Contact {{EMAIL}} for group billing.</div>
+    </section>
+
+    <section style="margin-top:18px;text-align:center">
+      <a href="book.html"><button>Start a booking</button></a>
+      <div class="muted" style="margin-top:8px">Questions? Call {{PHONE}} or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </section>
+
+  </main>
+
+  <footer style="text-align:center;padding:28px 0;color:var(--muted)">Serving {{CITY}}, {{STATE}} · {{BUSINESS_NAME}}</footer>
+
+  <script>
+    document.getElementById('calcBtn').addEventListener('click',()=>{
+      const people = Number(document.getElementById('people').value)||1;
+      const dur = Number(document.getElementById('duration').value);
+      const format = document.getElementById('format').value;
+      // Base per person rule for private: $25 per person per 60min, plus base technician fee $60
+      let baseTech = 60;
+      let perPerson = 25 * (dur/60);
+      if(people<=2) perPerson = 40 * (dur/60);
+      let total = Math.round(baseTech + perPerson * people);
+      if(format==='remote') total = Math.round(total*0.9);
+      document.getElementById('estimate').textContent = 'Estimated total: $'+total+' (incl. set-up)';
+    });
+
+    document.getElementById('contactQuote').addEventListener('click',()=>{
+      alert('To request a custom quote, email {{EMAIL}} with the details.');
+    });
+  </script>
+</body>
+</html>

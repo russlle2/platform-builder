@@ -1,0 +1,82 @@
+/* Lux gallery — restrained, spacious, image-forward */
+:root{
+  --bg:#fbfaf9;
+  --muted:#6b6b6b;
+  --accent:#3b6b6f;
+  --accent-2:#c9a77a;
+  --card:#ffffff;
+  --max-width:1100px;
+  --radius:12px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;line-height:1.45;color:#222;background:var(--bg);margin:0}
+.container{max-width:var(--max-width);margin:0 auto;padding:28px}
+.site-header{background:linear-gradient(180deg,rgba(255,255,255,0.6),transparent);backdrop-filter:blur(4px);position:sticky;top:0;z-index:40}
+.nav-wrap{display:flex;align-items:center;justify-content:space-between;padding:14px 18px}
+.brand{font-weight:700;color:var(--accent);text-decoration:none;font-size:1.05rem}
+.main-nav a{margin:0 10px;color:var(--muted);text-decoration:none}
+.main-nav .primary{background:var(--accent);color:#fff;padding:8px 12px;border-radius:8px}
+.menu-btn{display:none}
+
+/* Hero */
+.gallery-hero{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center;padding:40px 0}
+.hero-media img{width:100%;height:auto;border-radius:14px;box-shadow:0 8px 30px rgba(20,20,20,0.08)}
+.hero-title{font-size:clamp(1.6rem,3vw,2.4rem);margin:0 0 10px;color:#111}
+.hero-sub{color:var(--muted);margin-bottom:18px}
+.hero-actions .btn{margin-right:10px}
+.small-meta{color:var(--muted);font-size:0.87rem;margin-top:10px}
+
+/* Cards */
+.values .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
+.card{background:var(--card);padding:20px;border-radius:12px;box-shadow:0 6px 22px rgba(13,13,13,0.04)}
+.card h3{margin:0 0 8px;color:var(--accent)}
+
+.methods{padding:28px 0}
+.modalities{list-style:disc;margin-left:20px;color:var(--muted)}
+.note{font-size:0.95rem;color:var(--muted);margin-top:12px}
+
+/* Objections */
+.objections .qa-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.qa{background:linear-gradient(180deg,#fff,#fbfbfb);padding:16px;border-radius:10px}
+.qa h4{margin:0 0 8px}
+
+/* Testimonials */
+.testimonials{padding:38px 0}
+.testa-grid, .testi-grid{display:grid;grid-template-columns:1fr 1fr 200px;gap:18px;align-items:center}
+.testimonial{background:var(--card);padding:18px;border-radius:10px;box-shadow:0 8px 30px rgba(20,20,20,0.05)}
+.avatar-wrap{text-align:center}
+.avatar-wrap img{width:120px;height:120px;border-radius:50%}
+.byline{font-size:0.9rem;color:var(--muted)}
+
+/* Lead magnet */
+.lead-magnet{padding:26px 0;text-align:left}
+.lead-form{display:flex;gap:8px;margin-top:10px}
+.lead-form input{flex:1;padding:10px;border-radius:8px;border:1px solid #e6e6e6}
+.lead-form .btn{padding:10px 14px}
+
+/* CTA */
+.gallery-cta{background:linear-gradient(180deg,rgba(59,107,111,0.06),transparent);padding:30px;border-radius:12px;text-align:center}
+.large{padding:14px 22px;font-size:1.05rem}
+
+/* Footer */
+.site-footer{border-top:1px solid #eee;margin-top:28px;background:transparent;padding:28px 0}
+.footer-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px}
+.footer-grid h5{margin-bottom:8px}
+.legal{text-align:center;color:var(--muted);padding-top:14px}
+.disclaimer{color:#a33;font-weight:600}
+
+/* Responsive */
+@media (max-width:900px){
+  .gallery-hero{grid-template-columns:1fr;}
+  .values .cards{grid-template-columns:1fr}
+  .objections .qa-grid{grid-template-columns:1fr}
+  .testi-grid{grid-template-columns:1fr}
+  .main-nav a{display:none}
+  .menu-btn{display:inline-block}
+}
+
+/* Utilities */
+.btn{display:inline-block;border:0;border-radius:10px;padding:8px 12px;text-decoration:none;background:#eee;color:#111}
+.btn.ghost{background:transparent;border:1px solid #ddd}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}

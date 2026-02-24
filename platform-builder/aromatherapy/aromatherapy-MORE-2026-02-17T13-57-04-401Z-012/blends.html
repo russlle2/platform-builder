@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Custom Blends — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#071119;--card:#071a1c;--muted:#9fb2b3;--accent:#b995ff;--accent2:#7fe0cf}
+    html,body{margin:0;padding:0;background:linear-gradient(180deg,#041214,#071119);font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;color:#e9fbf6}
+    .wrap{max-width:1000px;margin:32px auto;padding:20px}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    .nav a{color:var(--muted);text-decoration:none;margin-left:12px}
+    .hero{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:22px;border-radius:12px}
+    .hero h1{margin:0 0 4px;font-size:28px}
+    .hero p{margin:0;color:var(--muted)}
+    .builder{display:grid;grid-template-columns:380px 1fr;gap:18px;margin-top:18px}
+    .card{background:rgba(255,255,255,0.02);padding:16px;border-radius:12px}
+    label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+    select,input[type=range]{width:100%;border-radius:8px;padding:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:#e9fbf6}
+    .small{font-size:13px;color:var(--muted)}
+    .btn{background:var(--accent2);color:#022626;border:0;padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:700}
+    .blendCard{margin-top:12px;padding:12px;background:linear-gradient(135deg,rgba(127,224,207,0.06),rgba(185,149,255,0.04));border-radius:10px;color:#052022}
+    .output{white-space:pre-wrap;font-family:monospace;color:#053235;background:rgba(255,255,255,0.02);padding:12px;border-radius:8px}
+    .preset{display:flex;gap:12px;align-items:center;margin:8px 0;padding:8px;border-radius:8px;background:rgba(0,0,0,0.12)}
+    .preset button{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted);padding:8px;border-radius:8px}
+    .faq{margin-top:14px;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:44px;height:44px;border-radius:8px;background:linear-gradient(45deg,var(--accent2),var(--accent));"></div>
+        <div>
+          <div style="font-weight:700">Custom Blends</div>
+          <div style="font-size:12px;color:var(--muted)">Create a small, safe blend card for home use</div>
+        </div>
+      </div>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="services.html">Sessions</a>
+        <a href="blends.html">Blends</a>
+        <a href="shop.html">Apothecary</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <section class="hero card">
+      <h1>Blend builder — design a small, safe bottle</h1>
+      <p class="small">Choose a vibe, bottle size, and intensity; get a dilution guide and a printable blend card. These tools are safety-first and informational only.</p>
+    </section>
+
+    <div class="builder">
+      <aside class="card">
+        <label for="vibe">Choose a vibe</label>
+        <select id="vibe">
+          <option value="calming">Calming</option>
+          <option value="energizing">Energizing</option>
+          <option value="focus">Clear focus</option>
+          <option value="grounding">Grounding</option>
+          <option value="sleep">Sleep support</option>
+        </select>
+
+        <label for="intensity" style="margin-top:10px">Intensity</label>
+        <select id="intensity">
+          <option value="soft">Soft (lower dilution)</option>
+          <option value="moderate">Moderate</option>
+          <option value="strong">Higher (short-term)</option>
+        </select>
+
+        <label style="margin-top:10px">Bottle size (ml)</label>
+        <select id="bottle">
+          <option value="5">5 ml</option>
+          <option value="10" selected>10 ml</option>
+          <option value="15">15 ml</option>
+        </select>
+
+        <label style="margin-top:10px">Carrier oil</label>
+        <select id="carrier">
+          <option>Fractionated Coconut Oil</option>
+          <option>Jojoba</option>
+          <option>Sweet Almond</option>
+        </select>
+
+        <label style="margin-top:10px"><input type="checkbox" id="pregCheck"> I am pregnant/nursing (adjust suggestions)</label>
+        <label><input type="checkbox" id="petsCheck"> Pets at home (recommend pet-safer options)</label>
+
+        <div style="margin-top:12px;display:flex;gap:8px"><button class="btn" id="buildBlend">Build blend</button><button class="btn" id="clearBlend" style="background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.04)">Reset</button></div>
+
+        <div class="faq">
+          <strong>Notes</strong>
+          <p class="small">All dilution guidance below is a conservative starting point. If pregnant, nursing, or with pets, reduce dilution and consult a qualified practitioner for personalized guidance. Not medical advice.</p>
+        </div>
+      </aside>
+
+      <main class="card">
+        <h3 style="margin-top:0">Blend preview</h3>
+        <div id="blendArea" class="blendCard">
+          <div style="color:var(--muted)">No blend yet — pick options and press "Build blend".</div>
+        </div>
+
+        <div style="margin-top:12px">
+          <h4 style="margin:0 0 8px">Presets</h4>
+          <div class="preset"><div style="flex:1"><strong>Calming Mist</strong><div class="small">Lavender + Bergamot + Cedarwood</div></div><button onclick="applyPreset('calming')">Use</button></div>
+          <div class="preset"><div style="flex:1"><strong>Morning Focus</strong><div class="small">Rosemary + Lemon + Frankincense</div></div><button onclick="applyPreset('focus')">Use</button></div>
+          <div class="preset"><div style="flex:1"><strong>Evening Ground</strong><div class="small">Vetiver + Patchouli + Lavender</div></div><button onclick="applyPreset('grounding')">Use</button></div>
+        </div>
+
+        <div style="margin-top:14px">
+          <h4 style="margin:0 0 6px">Blend card (copyable)</h4>
+          <pre id="blendCardText" class="output">—</pre>
+          <div style="display:flex;gap:8px;margin-top:8px"><button id="copyBlend" class="btn">Copy blend card</button><a class="btn" href="shop.html" style="background:var(--accent);color:#021617;text-decoration:none">Find ingredients</a></div>
+        </div>
+      </main>
+    </div>
+
+    <section style="margin-top:18px" class="card">
+      <h4 style="margin:0 0 6px">Safety & dilution primer</h4>
+      <p class="small">Typical safe topical dilutions for adults: 1% for daily use, 2% for short-term targeted support, and up to 3% when used briefly and with awareness of sensitivity. For children, older adults, pregnancy, or pets, choose lower dilutions (0.25–0.5% or consult a specialist).</p>
+    </section>
+
+    <footer style="margin-top:18px;color:var(--muted);font-size:13px">Questions? Email <a href="mailto:{{EMAIL}}" style="color:var(--muted)">{{EMAIL}}</a> or call {{PHONE}}.</footer>
+  </div>
+
+  <script>
+    (function(){
+      const vibeRecipes = {
+        calming:{name:'Calming', oils:[{n:'Lavender',p:40},{n:'Bergamot',p:35},{n:'Cedarwood',p:25}]},
+        energizing:{name:'Energizing', oils:[{n:'Sweet Orange',p:50},{n:'Peppermint',p:20},{n:'Grapefruit',p:30}]},
+        focus:{name:'Focus', oils:[{n:'Rosemary',p:40},{n:'Lemon',p:35},{n:'Frankincense',p:25}]},
+        grounding:{name:'Grounding', oils:[{n:'Vetiver',p:35},{n:'Patchouli',p:35},{n:'Cedarwood',p:30}]},
+        sleep:{name:'Sleep', oils:[{n:'Lavender',p:50},{n:'Roman Chamomile',p:30},{n:'Ylang Ylang',p:20}]}
+      };
+
+      const buildBtn = document.getElementById('buildBlend');
+      const clearBtn = document.getElementById('clearBlend');
+      const blendArea = document.getElementById('blendArea');
+      const blendCardText = document.getElementById('blendCardText');
+      const copyBlend = document.getElementById('copyBlend');
+
+      function computeDilution(intensity, pregnant, pets){
+        // conservative base values
+        let base = {soft:1, moderate:2, strong:3};
+        let val = base[intensity] || 1;
+        if(pregnant) val = Math.min(val,1.0);
+        if(pets) val = Math.min(val,1.5);
+        return Math.round(val*100)/100; // percent
+      }
+
+      function dropsFor(ml, percent){
+        // industry average ~20 drops per ml for EO
+        const totalDrops = Math.round(ml * 20 * (percent/100));
+        return totalDrops;
+      }
+
+      buildBtn.addEventListener('click', ()=>{
+        const vibeKey = document.getElementById('vibe').value;
+        const intensity = document.getElementById('intensity').value;
+        const bottle = Number(document.getElementById('bottle').value);
+        const carrier = document.getElementById('carrier').value;
+        const pregnant = document.getElementById('pregCheck').checked;
+        const pets = document.getElementById('petsCheck').checked;
+
+        const recipe = vibeRecipes[vibeKey] || vibeRecipes['calming'];
+        const dilution = computeDilution(intensity,pregnant,pets);
+        const totalDrops = dropsFor(bottle,dilution);
+
+        // distribute drops by proportion
+        const oils = recipe.oils.map(o => ({name:o.n, drops: Math.max(1, Math.round(totalDrops * (o.p/100)))}));
+        // adjust rounding so sum matches
+        let sum = oils.reduce((s,x)=>s+x.drops,0);
+        while(sum !== totalDrops){
+          if(sum < totalDrops) { oils[0].drops++; sum++; }
+          else { oils[oils.length-1].drops--; sum--; }
+        }
+
+        // safety adjustment note
+        const notes = [];
+        notes.push('Dilution: ' + dilution + '% of essential oil in ' + bottle + ' ml carrier.');
+        notes.push('Suggested use: topical (after patch test) or a few drops in a diffuser for short bursts.');
+        if(pregnant) notes.push('Pregnancy note: reduced dilution suggested; consult a qualified practitioner before regular topical use.');
+        if(pets) notes.push('Pets note: use lower diffusion intensity and choose pet-safer options; avoid prolonged diffusion around small animals.');
+        notes.push('Patch test: apply a 1 cm drop of diluted blend to inner forearm and watch for 24 hours. Avoid eyes and mucous membranes.');
+
+        // build display
+        const lines = [];
+        lines.push(recipe.name + ' — Blend card');
+        lines.push('Bottle: ' + bottle + ' ml, Carrier: ' + carrier);
+        lines.push('\nOils:');
+        oils.forEach(o=> lines.push('• ' + o.name + ': ' + o.drops + ' drops'));
+        lines.push('\n' + notes.join('\n'));
+
+        blendArea.innerHTML = '<div style="font-weight:700;color:var(--muted)">' + recipe.name + ' — ' + dilution + '% dilution</div>'+
+          '<div style="margin-top:8px;color:var(--muted)">Bottle: ' + bottle + ' ml • Carrier: ' + carrier + '</div>'+
+          '<ul style="margin-top:12px;color:#052022">'+ oils.map(o=>'<li>'+o.name+': <strong>'+o.drops+' drops</strong></li>').join('') +'</ul>'+
+          '<div class="small" style="margin-top:8px;color:var(--muted)">' + notes.join('<br>') + '</div>';
+
+        blendCardText.textContent = lines.join('\n');
+      });
+
+      clearBtn.addEventListener('click', ()=>{
+        document.getElementById('vibe').value = 'calming';
+        document.getElementById('intensity').value = 'moderate';
+        document.getElementById('bottle').value = '10';
+        document.getElementById('carrier').value = 'Fractionated Coconut Oil';
+        document.getElementById('pregCheck').checked = false;
+        document.getElementById('petsCheck').checked = false;
+        blendArea.innerHTML = '<div style="color:var(--muted)">No blend yet — pick options and press "Build blend".</div>';
+        blendCardText.textContent = '—';
+      });
+
+      copyBlend.addEventListener('click', ()=>{
+        const text = blendCardText.textContent || '';
+        navigator.clipboard && navigator.clipboard.writeText(text).then(()=>{
+          copyBlend.textContent = 'Copied';
+          setTimeout(()=>copyBlend.textContent='Copy blend card',1200);
+        });
+      });
+
+      // expose preset helper
+      window.applyPreset = function(key){
+        if(!vibeRecipes[key]) return;
+        document.getElementById('vibe').value = key;
+        document.getElementById('intensity').value = 'moderate';
+        document.getElementById('bottle').value = '10';
+        document.getElementById('carrier').value = 'Fractionated Coconut Oil';
+        document.getElementById('pregCheck').checked = false;
+        document.getElementById('petsCheck').checked = false;
+        document.getElementById('buildBlend').click();
+      }
+
+    })();
+  </script>
+</body>
+</html>

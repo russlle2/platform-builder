@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Investment — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfaf7;--accent:#6b8a6f;--muted:#6b6b6b;--card:#fff;--glass:rgba(255,255,255,0.6);--shadow:0 6px 24px rgba(25,25,25,0.08);font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
+    html,body{height:100%;margin:0;background:linear-gradient(120deg,var(--bg),#f1f6f2);color:#112;}
+    header{display:flex;align-items:center;justify-content:space-between;padding:22px 28px;max-width:1100px;margin:0 auto}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:56px;height:56px;display:grid;place-items:center;border-radius:10px;background:linear-gradient(180deg,var(--accent),#8bb08a);color:white;font-weight:700;font-size:18px}
+    nav{display:flex;gap:12px;flex-wrap:wrap}
+    nav a{text-decoration:none;color:var(--muted);padding:8px 12px;border-radius:8px;font-weight:600}
+    nav a.primary{background:var(--accent);color:#fff}
+    main{max-width:1100px;margin:22px auto;padding:28px}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+    .card{background:var(--card);border-radius:14px;padding:18px;box-shadow:var(--shadow)}
+    h1{margin:0 0 10px;font-size:28px}
+    p.lead{color:var(--muted);margin:0 0 18px}
+    .price-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:12px}
+    .plan{padding:16px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.8),var(--glass));border:1px solid rgba(100,120,100,0.06)}
+    .plan h3{margin:0 0 6px}
+    .price{font-size:20px;font-weight:700;margin:8px 0}
+    .muted{color:var(--muted);font-size:14px}
+    .cta-row{display:flex;gap:10px;margin-top:12px}
+    .btn{padding:10px 14px;border-radius:10px;border:0;background:var(--accent);color:#fff;font-weight:700;text-decoration:none}
+    .btn.secondary{background:transparent;border:1px solid rgba(50,50,50,0.06);color:var(--muted)}
+    /* session planner styles */
+    .planner{display:flex;flex-direction:column;gap:10px}
+    .field{display:flex;flex-direction:column;gap:6px}
+    label{font-weight:600;font-size:13px}
+    input[type=text],select,textarea{padding:10px;border-radius:8px;border:1px solid #e6e6e6;font-size:14px}
+    textarea{min-height:90px}
+    .output{white-space:pre-wrap;background:#f7fff7;padding:10px;border-radius:8px;border:1px dashed rgba(100,120,100,0.12)}
+    .small{font-size:13px;color:var(--muted)}
+    footer{max-width:1100px;margin:30px auto;padding:18px;color:var(--muted);font-size:13px}
+    /* reveal animation */
+    .reveal-on-scroll{opacity:0;transform:translateY(18px);transition:opacity 520ms cubic-bezier(.2,.9,.2,1),transform 520ms cubic-bezier(.2,.9,.2,1)}
+    .reveal-on-scroll.revealed{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){
+      .reveal-on-scroll{transition:none;opacity:1;transform:none}
+    }
+    /* decorative SVG background */
+    .pattern{position:absolute;right:-80px;top:-60px;opacity:0.08;width:480px;height:480px;pointer-events:none}
+  </style>
+</head>
+<body>
+  <svg class="pattern" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><pattern id="p1" width="20" height="20" patternUnits="userSpaceOnUse" patternTransform="rotate(15)"><rect width="10" height="10" fill="#a7c3a1"/><rect x="10" y="10" width="10" height="10" fill="#dff0df"/></pattern></defs><rect width="100%" height="100%" fill="url(#p1)" rx="20"/></svg>
+
+  <header>
+    <div class="brand">
+      <div class="logo">HM</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div class="small">{{CITY}}, {{STATE}} • <span style="color:var(--muted)">{{PHONE}}</span></div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Welcome</a>
+      <a href="services.html">Offerings</a>
+      <a href="pricing.html" class="primary">Investment</a>
+      <a href="book.html">Reserve a Visit</a>
+      <a href="contact.html">Reach Out</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="card reveal-on-scroll">
+        <h1>Practical packages for steady progress</h1>
+        <p class="lead">We design short, layered offerings that fit into busy schedules. Choose a core session or a focused cycle, and add supportive retail items when helpful.</p>
+
+        <div class="price-grid">
+          <div class="plan">
+            <h3>Core Consult</h3>
+            <div class="price">$155 — 60 minutes</div>
+            <div class="muted">Initial visit for whole-person review, tailored education, and a co-created plan.</div>
+            <div class="cta-row"><a class="btn" href="book.html">Reserve {{PRIMARY_CTA_LABEL}}</a><a class="btn secondary" href="approach.html">How we work</a></div>
+          </div>
+
+          <div class="plan">
+            <h3>Focused Cycle</h3>
+            <div class="price">$420 — 3 visits</div>
+            <div class="muted">A short series for targeted change: habit shifts, sleep, digestion, or stress pathways.</div>
+            <div class="cta-row"><a class="btn" href="book.html">Schedule Cycle</a><a class="btn secondary" href="services.html">What’s included</a></div>
+          </div>
+
+          <div class="plan">
+            <h3>Support Add-ons</h3>
+            <div class="price">Retail + guidance</div>
+            <div class="muted">Evidence-informed supplements, ritual kits, and at-home tools recommended to support your plan.</div>
+            <div class="cta-row"><a class="btn" href="contact.html">Ask about products</a></div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="card reveal-on-scroll">
+        <h3>Session Planner</h3>
+        <p class="small">Build a simple, exportable plan to bring to your first meeting. This helps shape our shared priorities.</p>
+
+        <div class="planner" aria-live="polite">
+          <div class="field">
+            <label for="goal">Primary goal</label>
+            <input id="goal" type="text" placeholder="e.g., sleep 6.5–7 hrs consistently" />
+          </div>
+          <div class="field">
+            <label for="duration">Timeline</label>
+            <select id="duration">
+              <option>4 weeks</option>
+              <option>8 weeks</option>
+              <option>12 weeks</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="focus">Areas to focus</label>
+            <select id="focus" multiple size="4">
+              <option>Sleep</option>
+              <option>Digestion</option>
+              <option>Stress & energy</option>
+              <option>Movement</option>
+            </select>
+            <div class="small">(Cmd/Ctrl+click to select multiple)</div>
+          </div>
+          <div class="field">
+            <label for="constraints">Practical constraints</label>
+            <textarea id="constraints" placeholder="Allergies, schedule limits, access to kitchen, budget considerations"></textarea>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button id="build" class="btn">Create summary</button>
+            <button id="clear" class="btn secondary">Reset</button>
+          </div>
+
+          <div class="field">
+            <label>Plan preview</label>
+            <div id="preview" class="output">No plan yet. Click “Create summary.”</div>
+          </div>
+
+          <div style="display:flex;gap:8px;align-items:center">
+            <button id="copy" class="btn">Copy text</button>
+            <a id="download" class="btn secondary" href="#">Download .txt</a>
+            <div class="small" style="margin-left:auto">Confidential — bring to visit</div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="card reveal-on-scroll" style="margin-top:18px">
+      <h3>Transparent billing</h3>
+      <p class="muted">Sessions are billed per visit. Focused cycles include brief check-ins; add-ons are optional retail items that reinforce between-session work. We’ll discuss what’s appropriate — nothing is pushed.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} • <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    <div style="margin-top:6px">Licensed clinicians and evidence-forward recommendations. No guaranteed cures — educational and supportive care.</div>
+  </footer>
+
+  <script>
+    // Scroll reveal with reduced-motion respect
+    (function(){
+      const prefersReduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const targets = document.querySelectorAll('.reveal-on-scroll');
+      if(prefersReduce){
+        targets.forEach(el=>el.classList.add('revealed'));
+        return;
+      }
+      const obs = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('revealed'); obs.unobserve(e.target); } });
+      },{threshold:0.12});
+      targets.forEach(t=>obs.observe(t));
+    })();
+
+    // Session Planner logic
+    (function(){
+      const $ = id => document.getElementById(id);
+      const buildBtn = $('build'), clearBtn = $('clear'), copyBtn = $('copy'), download = $('download');
+      const preview = $('preview');
+      function collect(){
+        const goal = $('goal').value.trim();
+        const duration = $('duration').value;
+        const focus = Array.from($('focus').selectedOptions).map(o=>o.value);
+        const constraints = $('constraints').value.trim();
+        return {goal,duration,focus,constraints};
+      }
+      function makeText(data){
+        const lines = [];
+        lines.push('{{BUSINESS_NAME}} — Personalized Session Plan');
+        lines.push('Primary goal: ' + (data.goal||'— not specified —'));
+        lines.push('Timeline: ' + data.duration);
+        if(data.focus && data.focus.length) lines.push('Focus areas: ' + data.focus.join(', '));
+        if(data.constraints) lines.push('Constraints: ' + data.constraints);
+        lines.push('Recommendation snapshot:');
+        // simple generator
+        const recs = [];
+        if(data.focus.includes('Sleep')) recs.push('- Night rhythm: consistent wind-down 60–90 minutes before bed; avoid stimulating screens.');
+        if(data.focus.includes('Digestion')) recs.push('- Gentle evening meals, mindful chewing, short walk post-meal.');
+        if(data.focus.includes('Stress & energy')) recs.push('- Micro-breaks each 90 minutes and a 6–8 min breathing practice twice daily.');
+        if(data.focus.includes('Movement')) recs.push('- Three 20–30 min sessions per week emphasizing mobility and breath.');
+        if(!recs.length) recs.push('- Begin with baseline tracking: sleep, mood, and one small habit to change.');
+        lines.push(...recs);
+        lines.push('\nSuggested visit structure:');
+        lines.push('- Core consult: whole-person review, co-created targets');
+        lines.push('- Follow-ups: focused check-ins to adapt strategies');
+        lines.push('\nNotes: These are educational recommendations and not medical guarantees. Discuss with your clinician.');
+        return lines.join('\n');
+      }
+      buildBtn.addEventListener('click',()=>{
+        const data = collect();
+        const text = makeText(data);
+        preview.textContent = text;
+        // update download link
+        const blob = new Blob([text],{type:'text/plain'});
+        download.href = URL.createObjectURL(blob);
+        download.download = 'session-plan.txt';
+      });
+      clearBtn.addEventListener('click',()=>{
+        ['goal','constraints'].forEach(id=>$(id).value='');
+        Array.from($('focus').options).forEach(o=>o.selected=false);
+        preview.textContent = 'No plan yet. Click \u201cCreate summary.\u201d';
+        download.href = '#';
+      });
+      copyBtn.addEventListener('click',async()=>{
+        try{
+          await navigator.clipboard.writeText(preview.textContent);
+          copyBtn.textContent = 'Copied';
+          setTimeout(()=>copyBtn.textContent='Copy text',1600);
+        }catch(e){
+          alert('Copy failed — you can select and copy the text manually.');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

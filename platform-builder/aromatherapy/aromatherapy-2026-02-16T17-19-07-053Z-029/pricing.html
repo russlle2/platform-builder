@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Pricing — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1724;--glass:rgba(255,255,255,0.06);--accent:linear-gradient(135deg,#9be7ff 0%,#c39fff 100%);--muted:rgba(255,255,255,0.65);}    
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;color:var(--muted);background:radial-gradient(1200px 600px at 10% 10%,rgba(67,56,202,0.12),transparent),radial-gradient(800px 400px at 90% 90%,rgba(3,218,198,0.06),transparent),var(--bg);background-attachment:fixed}
+    body{display:flex;align-items:flex-start;justify-content:center;padding:32px}
+    .wrap{width:100%;max-width:1100px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:28px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:14px;background:var(--glass);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(2,6,23,0.6) inset}
+    .logo svg{width:36px;height:36px}
+    nav a{color:var(--muted);text-decoration:none;margin-left:14px;font-size:14px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:16px;padding:24px;box-shadow:0 6px 32px rgba(2,6,23,0.6);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.04)}
+    .hero{display:grid;grid-template-columns:1fr 320px;gap:24px;margin-bottom:20px}
+    h1{margin:0;color:#fff;font-size:28px}
+    p.lead{margin:8px 0 0;color:var(--muted)}
+    .tiers{display:flex;gap:18px;margin-top:18px}
+    .tier{flex:1;padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.015),transparent);border:1px solid rgba(255,255,255,0.04)}
+    .tier h3{margin:0 0 8px;color:#fff}
+    .price{font-size:20px;color:#fff;margin:10px 0}
+    .features{font-size:14px;color:var(--muted);line-height:1.5}
+    .btn{display:inline-block;padding:10px 14px;border-radius:10px;background:var(--accent);color:#021023;text-decoration:none;font-weight:600;margin-top:12px}
+    .muted-sm{font-size:13px;color:rgba(255,255,255,0.6)}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+    .faq dt{font-weight:700;color:#fff;margin-top:12px}
+    .faq dd{margin:6px 0 12px;color:var(--muted);font-size:14px}
+    footer{margin-top:22px;text-align:center;color:rgba(255,255,255,0.45);font-size:13px}
+    /* subtle background pattern */
+    .bg-pattern{position:fixed;inset:0;z-index:-1;opacity:0.12;background-image:url('/assets/img/pattern.svg');background-repeat:repeat}
+    @media(max-width:880px){.hero{grid-template-columns:1fr;}.tiers{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <div class="bg-pattern" aria-hidden="true"></div>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo card"><svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><defs></defs><rect x="6" y="6" width="52" height="52" rx="10" fill="url(#g)" opacity="0.95"/><g fill="#021023" opacity="0.18"><path d="M32 20c-6 0-10 5-10 12s4 12 10 12 10-5 10-12-4-12-10-12z"/></g><defs><linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#9be7ff"/><stop offset="1" stop-color="#c39fff"/></linearGradient></defs></svg></div>
+        <div>
+          <div style="color:#fff;font-weight:700">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="services.html">Sessions</a>
+        <a href="book.html">Reserve</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <section class="card hero" aria-label="Pricing hero">
+      <div>
+        <h1>Transparent pricing for thoughtful aromatherapy</h1>
+        <p class="lead">Choose the right way to work together — from starter kits to an immersive VIP Day that deep-dives into your needs. Safe, evidence-informed guidance for aromatic wellbeing practices (non-medical).</p>
+        <div class="tiers" role="list">
+          <div class="tier" role="listitem">
+            <h3>Starter Consultation</h3>
+            <div class="price">$95 — 45 minutes</div>
+            <div class="features">A focused session to match blends to your lifestyle, patch-test guidance, and a simple at-home plan.</div>
+            <a class="btn" href="book.html?plan=starter">Book starter</a>
+          </div>
+
+          <div class="tier" role="listitem">
+            <h3>Essential Plan</h3>
+            <div class="price">$295 — includes custom roll-on kit</div>
+            <div class="features">Personal blend formula, dilution chart, and a follow-up check-in. Ideal for building a safe routine.</div>
+            <a class="btn" href="book.html?plan=essential">Reserve Essential</a>
+          </div>
+
+          <div class="tier" role="listitem">
+            <h3>VIP Day (single intensive)</h3>
+            <div class="price">$1,800 — 6 hours</div>
+            <div class="features">A dedicated day: lifestyle intake, sensory mapping, full blend creation, and a take-home bespoke kit. Fast, focused, and private.</div>
+            <a class="btn" href="book.html?plan=vip">Book VIP Day</a>
+          </div>
+        </div>
+      </div>
+
+      <aside class="card" style="align-self:start">
+        <div style="font-weight:700;color:#fff">Why our VIP Day?</div>
+        <p class="muted-sm">In one day you'll co-create practical blends, learn safe dilution and storage, and leave with a clear at-home plan. The experience is structured — ideal if you want rapid progress without medical advice.</p>
+        <div style="margin-top:12px">
+          <a class="btn" href="book.html?plan=vip">Schedule a VIP Day</a>
+        </div>
+      </aside>
+    </section>
+
+    <section class="card" style="margin-top:18px">
+      <h2 style="color:#fff;margin:0">Client stories</h2>
+      <p class="muted-sm">Real people, practical results — focused on lifestyle support, not cures.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+        <blockquote style="margin:0;padding:12px;border-radius:10px;background:rgba(255,255,255,0.02)"><strong style="color:#fff">"A gentle, precise approach."</strong><div class="muted-sm">— S., found a calming nightly routine</div></blockquote>
+        <blockquote style="margin:0;padding:12px;border-radius:10px;background:rgba(255,255,255,0.02)"><strong style="color:#fff">"I felt guided, safe, and informed."</strong><div class="muted-sm">— RL, received a custom blend</div></blockquote>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:18px">
+      <h2 style="color:#fff;margin:0">How pricing and process work</h2>
+      <div class="grid-2" style="margin-top:12px">
+        <div>
+          <h3 style="color:#fff;margin-top:0">Transparent steps</h3>
+          <ol style="color:var(--muted);padding-left:18px">
+            <li>Choose a plan — Starter, Essential, or VIP Day.</li>
+            <li>Complete the intake form after booking.</li>
+            <li>Attend your session; receive blend files, dilution guidance, and care notes.</li>
+            <li>Receive a follow-up summary and recommended products (non-medical).</li>
+          </ol>
+        </div>
+        <div>
+          <h3 style="color:#fff;margin-top:0">What's included</h3>
+          <ul style="color:var(--muted);padding-left:18px">
+            <li>Personalized blend recipes (top/mid/base notes).</li>
+            <li>Clear dilution charts and safe-use tips.</li>
+            <li>Patch test and pet-safety reminders.</li>
+            <li>Storage and sourcing suggestions.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:18px">
+      <h2 style="color:#fff;margin:0">Frequently asked — pricing & safety</h2>
+      <dl class="faq" style="margin-top:12px">
+        <dt>Do prices include blends and materials?</dt>
+        <dd>Starter consultations are session-only; Essential and VIP include a small take-home kit detailed on booking pages.</dd>
+        <dt>What about dilution and patch tests?</dt>
+        <dd>Every formula includes a dilution recommendation and a step-by-step patch-test. Always test on a small area and wait 24 hours for reactions.</dd>
+        <dt>Are blends safe around pets?</dt>
+        <dd>Many oils can affect pets. I provide pet-safety notes and alternatives; do not diffuse near animals without prior guidance.</dd>
+        <dt>Pregnancy and sensitive populations?</dt>
+        <dd>I avoid recommending oils contraindicated in pregnancy and will adapt blends for sensitive cases. Consult your healthcare provider for medical concerns.</dd>
+      </dl>
+    </section>
+
+    <section class="card" style="margin-top:18px;display:flex;gap:12px;align-items:center;justify-content:space-between">
+      <div>
+        <strong style="color:#fff">Get the pricing guide + dilution chart</strong>
+        <p class="muted-sm">Download a free two-page guide covering dilution basics and safe-at-home practices.</p>
+      </div>
+      <form action="/lead" method="post" style="display:flex;gap:8px;align-items:center">
+        <input name="email" type="email" placeholder="you@domain.com" style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:var(--muted)" required>
+        <button class="btn">Send guide</button>
+      </form>
+    </section>
+
+    <footer>
+      <div>{{PRACTITIONER_NAME}} — {{CITY}}, {{STATE}} • <a href="tel:{{PHONE}}" style="color:var(--muted);text-decoration:none">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}" style="color:var(--muted);text-decoration:none">{{EMAIL}}</a></div>
+      <div style="margin-top:8px;font-size:12px;color:rgba(255,255,255,0.35)">Safe practice statement: information provided is educational and safety-focused, not medical advice.</div>
+    </footer>
+  </div>
+</body>
+</html>

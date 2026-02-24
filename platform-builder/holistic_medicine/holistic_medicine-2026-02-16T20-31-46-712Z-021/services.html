@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>{{BUSINESS_NAME}} — Integrative Services</title>
+  <style>
+    :root{
+      --accent:#6bbf59;
+      --muted:#6b7280;
+      --bg1:linear-gradient(180deg,#f7fbf7 0%,#eef7ef 100%);
+      --card-bg:rgba(255,255,255,0.7);
+      --glass:rgba(255,255,255,0.8);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;
+      background:var(--bg1);color:#0f172a;line-height:1.45;
+      -webkit-font-smoothing:antialiased;
+    }
+    header{display:flex;align-items:center;justify-content:space-between;padding:22px 28px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:52px;height:52px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),#2aa6b7);color:white;font-weight:700}
+    nav a{color:var(--muted);text-decoration:none;margin:0 10px;padding:8px 6px;border-radius:8px}
+    nav a[href='services.html']{color:#043927;font-weight:600;background:rgba(3,57,40,0.06)}
+    .wrap{max-width:1120px;margin:18px auto;padding:20px}
+
+    /* hero */
+    .hero{position:relative;display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:center;padding:48px;border-radius:14px;overflow:hidden;background:linear-gradient(90deg,rgba(107,191,89,0.06),rgba(42,166,183,0.04));}
+    .hero .copy h1{font-size:2.1rem;margin:0 0 10px}
+    .hero .copy p{color:var(--muted);margin:0 0 18px}
+    .cta-row{display:flex;gap:12px}
+    .btn{background:var(--accent);color:white;padding:12px 16px;border-radius:10px;text-decoration:none;font-weight:600}
+    .muted-btn{background:transparent;border:1px solid rgba(3,57,40,0.06);padding:12px 14px;border-radius:10px;color:#0f172a;text-decoration:none}
+
+    /* svg pattern */
+    .pattern{position:absolute;right:-80px;top:-40px;opacity:0.14;transform:rotate(18deg);width:520px;height:520px;pointer-events:none}
+
+    /* services grid */
+    .services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:28px}
+    .card{background:var(--card-bg);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(13,18,25,0.06)}
+    .card h3{margin:0 0 8px;font-size:1.05rem}
+    .card p{margin:0;color:var(--muted);font-size:0.95rem}
+
+    /* packages */
+    .packages{display:flex;gap:14px;margin-top:30px}
+    .package{flex:1;padding:16px;border-radius:12px;background:var(--glass);border:1px solid rgba(3,57,40,0.04)}
+    .package b{display:block;margin-bottom:8px;color:#06432b}
+
+    footer{margin-top:34px;padding:18px;border-top:1px solid rgba(3,57,40,0.04);color:var(--muted);text-align:center}
+
+    /* responsive */
+    @media (max-width:880px){
+      .hero{grid-template-columns:1fr;}
+      .services-grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media (max-width:560px){
+      .services-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class='brand'>
+      <div class='logo'>HM</div>
+      <div>
+        <div style='font-weight:700'>{{BUSINESS_NAME}}</div>
+        <div style='font-size:0.85rem;color:var(--muted)'>{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href='index.html'>Explore</a>
+      <a href='services.html'>Offerings</a>
+      <a href='conditions.html'>Concerns</a>
+      <a href='approach.html'>How We Work</a>
+      <a href='pricing.html'>Fees</a>
+      <a href='book.html'>Reserve</a>
+    </nav>
+  </header>
+
+  <main class='wrap'>
+    <section class='hero'>
+      <div class='copy'>
+        <h1>Personalized integrative care for the whole person</h1>
+        <p>We combine evidence-informed nutrition, botanical support, mind-body tools, and targeted diagnostics to help you feel steadier, more resilient, and capable. Care is collaborative — education is central.</p>
+        <div class='cta-row'>
+          <a class='btn' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a>
+          <a class='muted-btn' href='contact.html'>Request a consult</a>
+        </div>
+      </div>
+
+      <div style='padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.85),rgba(255,255,255,0.9));box-shadow:0 10px 30px rgba(9,20,14,0.04)'>
+        <h3 style='margin:0 0 8px'>A snapshot of what we do</h3>
+        <p style='margin:0 0 12px;color:var(--muted)'>Short visits focused on root causes and practical steps you can use immediately.</p>
+        <ul style='margin:0;padding-left:18px;color:var(--muted)'>
+          <li>Comprehensive integrative consultations</li>
+          <li>Nutrition & lifestyle coaching</li>
+          <li>Herbal & supplemental guidance</li>
+          <li>Mind-body techniques (breath, somatic practices)</li>
+          <li>Coordination of functional labs when appropriate</li>
+        </ul>
+      </div>
+
+      <svg class='pattern' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'>
+        <defs>
+          <linearGradient id='g1' x1='0' x2='1'>
+            <stop offset='0' stop-color='#d8f5d6'/>
+            <stop offset='1' stop-color='#c7eef5'/>
+          </linearGradient>
+        </defs>
+        <g fill='none' stroke='url(#g1)' stroke-width='8' opacity='0.9'>
+          <path d='M10 30 C40 5, 60 5, 90 30 S150 60, 180 30' />
+          <circle cx='40' cy='120' r='38' fill='rgba(107,191,89,0.06)' />
+          <circle cx='130' cy='150' r='20' fill='rgba(42,166,183,0.06)' />
+        </g>
+      </svg>
+    </section>
+
+    <section style='margin-top:28px'>
+      <h2 style='margin:0 0 12px'>Modalities & specialties</h2>
+      <p style='color:var(--muted);margin:0 0 18px'>We prioritize gentle, sustainable changes. Below are core services commonly used together in a plan.</p>
+
+      <div class='services-grid'>
+        <div class='card'>
+          <h3>Integrative Consultations</h3>
+          <p>Structured intake to map history, lifestyle, and priorities — the foundation for any personalized plan.</p>
+        </div>
+        <div class='card'>
+          <h3>Nutritional & Lifestyle Coaching</h3>
+          <p>Practical habits, meal patterns, and movement strategies suited to your life and goals.</p>
+        </div>
+        <div class='card'>
+          <h3>Herbal & Nutraceutical Guidance</h3>
+          <p>Evidence-informed botanical and supplement recommendations tailored to interactions and goals.</p>
+        </div>
+        <div class='card'>
+          <h3>Mind-Body & Stress Resilience</h3>
+          <p>Tools for sleep, breath work, and paced activity to restore nervous-system balance.</p>
+        </div>
+        <div class='card'>
+          <h3>Functional Lab Review (Educational)</h3>
+          <p>Optional review of advanced labs (when clinically indicated) to inform next steps — not routine for every client.</p>
+        </div>
+        <div class='card'>
+          <h3>Care Coordination</h3>
+          <p>Collaboration with your existing practitioners to integrate plans and avoid overlaps.</p>
+        </div>
+      </div>
+
+      <div class='packages'>
+        <div class='package'>
+          <b>Single Session</b>
+          A focused 60-minute visit to address one priority or begin a plan. Ideal for targeted education and next steps.
+        </div>
+        <div class='package'>
+          <b>Starter Series</b>
+          Three visits over 2–3 months to establish routines, monitor response, and refine recommendations.
+        </div>
+        <div class='package'>
+          <b>VIP Day</b>
+          A deep-dive half- or full-day intensive for complex situations and condensed planning. (Ask about preparation.)
+        </div>
+      </div>
+    </section>
+
+    <section style='margin-top:30px;display:flex;gap:18px;align-items:center'>
+      <div style='flex:1'>
+        <h3 style='margin:0 0 8px'>A learning-centered approach</h3>
+        <p style='margin:0;color:var(--muted)'>We prioritize patient education so you can steward your own health — small wins compound into lasting change.</p>
+      </div>
+      <div>
+        <a class='btn' href='{{PRIMARY_CTA_URL}}'>Book a VIP Day</a>
+      </div>
+    </section>
+
+    <footer>
+      <div>{{PRACTITIONER_NAME}}, {{CREDENTIALS}} | {{CITY}}, {{STATE}} • <a href='tel:{{PHONE}}' style='color:inherit;text-decoration:none'>{{PHONE}}</a> • <a href='mailto:{{EMAIL}}' style='color:inherit;text-decoration:none'>{{EMAIL}}</a></div>
+    </footer>
+  </main>
+</body>
+</html>

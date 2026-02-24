@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Blends — {{BUSINESS_NAME}}</title>
+<style>
+:root{--accent:#00b894;--muted:#5b5b5b;--bg:#fbfff8;--card:#fff;--glass:rgba(255,255,255,0.7)}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:#0b0b0b;background:var(--bg);margin:0;padding:0;background-image:var(--bg-pattern);background-size:360px}
+header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:linear-gradient(90deg,rgba(0,184,148,0.06),transparent)}
+.brand{font-weight:700}
+.nav{display:flex;gap:12px}
+.nav a{color:inherit;text-decoration:none;padding:8px;border-radius:8px}
+.container{max-width:980px;margin:26px auto;padding:0 20px}
+.hero{padding:22px;border-radius:12px;background:linear-gradient(180deg,rgba(0,184,148,0.05),transparent)}
+.hero h1{margin:0;font-size:1.6rem}
+.lead{color:var(--muted)}
+.blocks{display:grid;grid-template-columns:1fr 300px;gap:16px;margin-top:18px}
+.card{background:var(--card);padding:14px;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,0.04)}
+.blend-list{display:flex;flex-direction:column;gap:10px}
+.blend{padding:10px;border-radius:10px;background:linear-gradient(90deg,rgba(0,0,0,0.02),transparent)}
+.blend h4{margin:0}
+.controls{display:flex;gap:8px;margin-top:10px}
+.btn{padding:8px 12px;border-radius:8px;background:var(--accent);color:white;text-decoration:none}
+.badges{display:flex;gap:10px;margin-top:12px}
+.badge{position:relative;padding:8px;border-radius:8px;background:var(--glass)}
+.badge .tip{display:none;position:absolute;top:-36px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:6px;border-radius:6px;font-size:12px}
+.badge:hover .tip{display:block}
+.faq dt{font-weight:700;margin-top:12px}
+.faq dd{color:var(--muted)}
+.cta{display:flex;justify-content:space-between;align-items:center;padding:14px;margin-top:14px;border-radius:12px;background:linear-gradient(180deg,rgba(0,184,148,0.03),transparent)}
+@media(max-width:860px){.blocks{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+<div class="brand">{{BUSINESS_NAME}}</div>
+<nav class="nav">
+<a href="index.html">Home</a>
+<a href="blends.html">Blends</a>
+<a href="services.html">Offerings</a>
+<a href="shop.html">Aroma Shop</a>
+<a href="about.html">Meet</a>
+<a href="book.html">Reserve</a>
+</nav>
+</header>
+<main class="container">
+<section class="hero card" aria-labelledby="heroTitle">
+<h1 id="heroTitle">Signature blends — small, considered formulas</h1>
+<p class="lead">Curated blends crafted for inhalation, aromatherapy design at home, or dilution for topical use with appropriate guidance. Each blend comes with recommended dilutions and patch-test instructions.</p>
+</section>
+<section class="blocks">
+<div class="card">
+<h3 style="margin-top:0">Available formulas</h3>
+<div class="blend-list" id="blend-list">
+<div class="blend" data-id="clarity"><h4>Clarity Blend</h4><div class="small">bright top notes, crisp middle</div></div>
+<div class="blend" data-id="anchor"><h4>Anchor Blend</h4><div class="small">soft base, supportive presence</div></div>
+<div class="blend" data-id="evening"><h4>Evening Ease</h4><div class="small">warm, rounded finish</div></div>
+</div>
+<div class="controls">
+<a class="btn" id="sample-btn">Sample aroma</a>
+<a class="btn" href="shop.html">Explore the shop</a>
+</div>
+</div>
+<aside class="card">
+<h3 style="margin-top:0">Blend details</h3>
+<div id="blend-detail">
+<p class="small">Select a blend to see notes, dilution guidance, and suggested ritual cues.</p>
+</div>
+<div class="badges">
+<div class="badge" data-tip="Small-batch, handcrafted">
+<svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ffe6b3"/></svg>
+<div class="tip">Small-batch, handcrafted</div>
+</div>
+<div class="badge" data-tip="Third-party purity screen">
+<svg width="20" height="20" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4" fill="#d2f8d2"/></svg>
+<div class="tip">Third-party purity screen</div>
+</div>
+</div>
+</aside>
+</section>
+<section class="card" id="what">
+<h3 style="margin-top:0">How to use blends</h3>
+<p class="small">Blends may be used in a diffuser, inhaler stick, or diluted for topical application. Recommended dilutions are provided. Perform a patch test before topical use.</p>
+<div style="margin-top:10px">
+<h4>Patch test</h4>
+<p class="small">Mix the intended dilution, apply a small amount to the inner forearm, wait 24 hours. If any irritation occurs, discontinue use.</p>
+</div>
+</section>
+<section class="card faq">
+<h3 style="margin-top:0">Safety & FAQs</h3>
+<dl>
+<dt>Can children use these blends?</dt>
+<dd>Some blends may be appropriate at lower dilutions; disclose age and health during booking. We will advise child-safe options.</dd>
+<dt>What about pets?</dt>
+<dd>We avoid certain oils near pets or recommend restricted use; always ventilate spaces when diffusing around animals.</dd>
+<dt>Pregnancy?</dt>
+<dd>Certain botanicals are avoided. Please inform us; we will provide pregnancy-safe alternatives.</dd>
+</dl>
+</section>
+<section class="cta card">
+<div>
+<strong>Need a custom blend?</strong>
+<div class="small">Custom formulas available as consultations; includes dilution & patch test recommendations.</div>
+</div>
+<div>
+<a class="btn" href="{{PRIMARY_CTA_URL}}">Book a blend consult</a>
+</div>
+</section>
+</main>
+<footer style="text-align:center;padding:18px;color:var(--muted)">Contact <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a></footer>
+<svg id="page-pattern" xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240" style="display:none">
+<defs>
+<linearGradient id="bgrad" x1="0" x2="1"><stop offset="0" stop-color="#f7fff2"/><stop offset="1" stop-color="#f2fff9"/></linearGradient>
+</defs>
+<rect width="240" height="240" fill="url(#bgrad)"/>
+<g opacity="0.05" fill="#00b894">
+<path d="M30 20 q30 40 60 0 q30 -40 60 0"/>
+</g>
+<circle cx="180" cy="180" r="10" fill="#ffe6b3" opacity="0.06"/>
+</svg>
+<script>
+// pattern
+(function(){
+  const svg = document.getElementById('page-pattern').outerHTML;
+  const url = 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+  document.documentElement.style.setProperty('--bg-pattern','url("'+url+'")');
+})();
+// Blend detail interactions & proof gallery reused
+(function(){
+  const blends = {
+    clarity: {notes:'Top: bergamot, lemon. Middle: rosemary, jasmine. Base: cedar. Dilution: 1-2% for topical.', desc:'A bright, focused formula ideal for short inhalation practices.'},
+    anchor: {notes:'Top: lavender. Middle: clary sage. Base: vetiver. Dilution: 1% topical.', desc:'A grounding composition that may support steadying the breath.'},
+    evening: {notes:'Top: mandarin. Middle: frankincense. Base: sandalwood. Dilution: 0.8-1%', desc:'A soft blend for evening routines.'}
+  };
+  document.getElementById('blend-list').addEventListener('click',function(e){
+    const el = e.target.closest('[data-id]');
+    if(!el) return;
+    const id = el.dataset.id; const info = blends[id];
+    document.getElementById('blend-detail').innerHTML = '<h4>'+el.querySelector('h4').textContent+'</h4><p class="small">'+info.desc+'</p><p class="small"><strong>Notes:</strong> '+info.notes+'</p>';
+  });
+  // sample aroma reveals a short description modal-like
+  document.getElementById('sample-btn').addEventListener('click',function(){
+    alert('Sample aroma: a small inhalation strip is described. Please book a consultation to experience.');
+  });
+})();
+</script>
+</body>
+</html>

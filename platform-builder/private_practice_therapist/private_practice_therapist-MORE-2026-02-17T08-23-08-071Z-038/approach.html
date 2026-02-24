@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>How I Work — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f8fafb;--card:#fff;--muted:#55616b;--accent:#1f6f6f;--accent-2:#f59e0b}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui; background:var(--bg); color:#072029}
+    .wrap{max-width:980px;margin:0 auto;padding:20px}
+    header{display:flex;align-items:center;justify-content:space-between}
+    .nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    .hero{padding:18px 0}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 10px 30px rgba(2,6,23,.04)}
+    h1{margin:0;font-size:22px}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:16px;margin-top:16px}
+    .morph{display:flex;gap:12px;align-items:flex-start}
+    .icon{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    .options{display:flex;gap:8px;flex-wrap:wrap}
+    .options button{padding:8px 10px;border-radius:10px;border:1px solid rgba(7,32,41,.06);background:white;cursor:pointer}
+    .options button.active{background:linear-gradient(90deg,rgba(31,111,111,.08),transparent);border-color:var(--accent)}
+    .approachDetail{padding:12px;border-radius:10px;border:1px dashed rgba(7,32,41,.06);background:linear-gradient(180deg,rgba(31,111,111,.03),transparent)}
+    .cta{display:inline-block;padding:10px 12px;background:var(--accent);color:white;border-radius:10px;text-decoration:none}
+    footer{margin-top:18px;font-size:13px;color:var(--muted)}
+    @media(max-width:880px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <header>
+      <div style='font-weight:700'>{{BUSINESS_NAME}}</div>
+      <nav class='nav' aria-label='site'>
+        <a href='index.html'>Home</a>
+        <a href='about.html'>The Clinician</a>
+        <a href='specialties.html'>Areas</a>
+        <a href='approach.html' aria-current='page'>How I Work</a>
+        <a href='contact.html'>Reach Out</a>
+      </nav>
+    </header>
+
+    <section class='hero card'>
+      <h1>How I work with people</h1>
+      <p class='muted' style='margin-top:8px'>My approach is collaborative and pragmatic — we set a direction, try small experiments, and track the effects. Below is an interactive way to match what you need now with an approach to begin.</p>
+    </section>
+
+    <div class='grid'>
+      <main class='card'>
+        <h2 style='margin-top:0'>Mood-to-Method selector</h2>
+        <p class='muted'>Pick the state that best matches you. The recommended pathway and the action button will morph to reflect that starting point.</p>
+
+        <div style='margin-top:12px' class='morph'>
+          <div id='mIcon' class='icon'>M</div>
+          <div style='flex:1'>
+            <div class='options' id='moodOptions' role='tablist' aria-label='Choose mood'>
+              <button data-key='anxious'>Anxious</button>
+              <button data-key='uncertain'>Uncertain</button>
+              <button data-key='resolved'>Seeking clarity</button>
+              <button data-key='steady'>Steady & reflective</button>
+            </div>
+
+            <div id='approachArea' class='approachDetail' style='margin-top:12px'>
+              <strong id='approachTitle'>Initial approach</strong>
+              <div id='approachBody' class='muted' style='margin-top:8px'>Select an option to see a suggested first pathway and tailored next step.</div>
+              <div style='margin-top:10px'><a id='approachCTA' class='cta' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a></div>
+            </div>
+          </div>
+        </div>
+
+        <section style='margin-top:16px'>
+          <h3>Method metaphors</h3>
+          <p class='muted small'>I use different metaphors to help make change tangible: a compass for navigation, a toolkit for skills practice, and a map for planning. Which image helps you get moving is personal.</p>
+        </section>
+      </main>
+
+      <aside class='card'>
+        <h3 style='margin-top:0'>Clinical orientation</h3>
+        <p class='muted small'>My practice integrates evidence-informed techniques—behavioral experiments, brief cognitive strategies, and values-based planning—applied collaboratively. Work is shaped to your priorities and paced to your tolerance for change.</p>
+
+        <div style='margin-top:12px'>
+          <strong>Session formats</strong>
+          <ul class='muted small'>
+            <li>Single session: focused problem or planning</li>
+            <li>Short package: 4–8 sessions with a concrete goal</li>
+            <li>Ongoing: weekly or biweekly for deeper work</li>
+          </ul>
+        </div>
+
+        <div style='margin-top:12px'>
+          <strong>Boundaries & crisis note</strong>
+          <p class='muted small'>Conversations are confidential except when disclosure is legally required. This practice does not provide crisis response—if you are in immediate danger, contact emergency services.</p>
+        </div>
+      </aside>
+    </div>
+
+    <footer class='muted' style='margin-top:18px'>
+      <div class='card'>
+        <h4 style='margin:0'>A note on expectations</h4>
+        <p class='muted small' style='margin-top:8px'>Therapy is a collaborative process without guaranteed outcomes. I aim to offer consistent, evidence-informed support and will work with you to set realistic, measurable goals.</p>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Mood-to-Method with morphing icon and CTA text
+    (function(){
+      const map = {
+        anxious: {
+          icon: '⚖️',
+          title: 'Stabilize & small wins',
+          body: 'Start with brief stabilization: reduce immediate distress through grounding and short behavioral experiments. We plan tiny, achievable steps and track effects.',
+          cta: 'Book a stabilization session'
+        },
+        uncertain: {
+          icon: '🧭',
+          title: 'Navigation & clarity',
+          body: 'If choices feel unclear, we use decision-mapping and values clarification to create a compass for next steps and reduce decision fatigue.',
+          cta: 'Begin clarity work'
+        },
+        resolved: {
+          icon: '🗺️',
+          title: 'Short focused plan',
+          body: 'For a specific issue, a short series with defined check-ins helps test changes and measure outcomes; often 4–8 sessions provide momentum.',
+          cta: 'Explore a short plan'
+        },
+        steady: {
+          icon: '🛠️',
+          title: 'Skills & maintenance',
+          body: 'If you seek ongoing refinement, we focus on sustained practices, periodic check-ins, and strategies to maintain gains over time.',
+          cta: 'Arrange ongoing support'
+        }
+      };
+
+      const options = document.getElementById('moodOptions');
+      const buttons = options.querySelectorAll('button');
+      const icon = document.getElementById('mIcon');
+      const title = document.getElementById('approachTitle');
+      const body = document.getElementById('approachBody');
+      const cta = document.getElementById('approachCTA');
+
+      function set(key, btn){
+        buttons.forEach(b=>{b.classList.remove('active');b.setAttribute('aria-pressed','false')});
+        btn.classList.add('active');btn.setAttribute('aria-pressed','true');
+        const item = map[key];
+        // morph icon (simple text change with small animation)
+        icon.animate([{opacity:.2,transform:'scale(.9)'},{opacity:1,transform:'scale(1)'}],{duration:300,fill:'forwards'});
+        icon.textContent = item.icon;
+        title.textContent = item.title;
+        body.textContent = item.body;
+        cta.textContent = item.cta;
+        // subtle color change of icon background
+        icon.style.background = key==='steady' ? 'linear-gradient(135deg,#1f6f6f,#f59e0b)' : 'linear-gradient(135deg,#1f6f6f,#f59e0b)';
+      }
+
+      buttons.forEach(btn=>btn.addEventListener('click',()=>set(btn.dataset.key,btn)));
+      // default
+      buttons[1] && buttons[1].click();
+    })();
+  </script>
+
+  <footer style='max-width:980px;margin:18px auto 40px;font-size:13px;color:var(--muted)'>
+    Confidentiality & crisis guidance: Records are private except where disclosure is required by law. If you are at immediate risk, please contact emergency services or local crisis resources.
+  </footer>
+</body>
+</html>

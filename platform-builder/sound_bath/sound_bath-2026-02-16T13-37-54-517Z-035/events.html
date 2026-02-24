@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gatherings — {{BUSINESS_NAME}} Sound Baths</title>
+  <style>
+    :root{
+      --bg1:#F5EFE6; /* warm sand */
+      --bg2:#E8D6C2; /* beige */
+      --accent:#7A5230; /* clay */
+      --muted:#6A6A6A;
+      --card:#FFF8F3;
+      --glass:rgba(255,255,255,0.6);
+      --radius:16px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg1),var(--bg2));color:var(--accent);}
+    .site{min-height:100vh;display:flex;flex-direction:column;}
+    header{display:flex;justify-content:space-between;align-items:center;padding:28px 32px}
+    .brand{display:flex;align-items:center;gap:16px}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#B88A64,#E6D3C0);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;box-shadow:0 6px 18px rgba(122,82,48,0.12)}
+    nav a{margin-left:18px;text-decoration:none;color:var(--accent);font-weight:600}
+
+    /* Hero */
+    .hero{position:relative;padding:48px 32px 64px;display:grid;grid-template-columns:1fr 420px;gap:32px;align-items:center}
+    .hero-card{background:var(--card);border-radius:var(--radius);padding:32px;box-shadow:0 8px 30px rgba(109,73,47,0.08);backdrop-filter:blur(6px)}
+    h1{margin:0;font-size:40px;line-height:1.02}
+    p.lead{color:var(--muted);margin-top:12px}
+    .cta{display:inline-block;margin-top:18px;padding:12px 18px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#A46B45);color:white;text-decoration:none;font-weight:700}
+
+    /* calendar */
+    .calendar{background:linear-gradient(180deg,rgba(255,255,255,0.6),rgba(255,255,255,0.8));border-radius:12px;padding:18px}
+    .next{font-size:14px;color:#8A5A3B;font-weight:700}
+    .next-date{font-size:26px;margin-top:8px}
+    .list{margin-top:12px}
+    .list li{padding:10px 0;border-bottom:1px dashed rgba(122,82,48,0.12);color:var(--muted)}
+
+    /* sections */
+    section{padding:36px 32px}
+    .wrap{max-width:1100px;margin:0 auto}
+    .grid{display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start}
+    .card{background:var(--glass);padding:20px;border-radius:12px}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#F0E2D7;color:#7A5230;font-weight:700;margin-right:8px}
+
+    ul.habit{display:flex;flex-direction:column;gap:10px;padding-left:18px}
+    footer{padding:28px 32px;color:var(--muted)}
+
+    /* SVG pattern overlay */
+    .pattern{position:absolute;right:0;top:0;bottom:0;width:420px;pointer-events:none;opacity:0.14}
+
+    @media(max-width:880px){
+      .hero{grid-template-columns:1fr;}
+      .grid{grid-template-columns:1fr}
+      .pattern{display:none}
+    }
+  </style>
+</head>
+<body>
+  <div class="site">
+    <header>
+      <div class="brand">
+        <div class="logo">SB</div>
+        <div>
+          <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+          <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Nest</a>
+        <a href="events.html">Gatherings</a>
+        <a href="private-sessions.html">Private</a>
+        <a href="pricing.html">Fees</a>
+        <a href="about.html">Our Story</a>
+      </nav>
+    </header>
+
+    <!-- HERO -->
+    <main class="hero wrap">
+      <div class="hero-card">
+        <span class="pill">Upcoming</span>
+        <h1>Sound Bath Gatherings — communal rest reimagined</h1>
+        <p class="lead">A 75-minute immersive session with layered harmonics, intentional silence and a warming, earthy atmosphere. We blend tone and breath to guide you into slow, restorative nervous system states.</p>
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+
+        <section style="margin-top:20px">
+          <h3 style="margin:0">What to bring</h3>
+          <p style="color:var(--muted);margin-top:8px">A yoga mat or blanket, a cozy blanket for warmth, an eye pillow if you prefer, and water. Wear layers for comfort.</p>
+        </section>
+
+        <section style="margin-top:16px">
+          <h3 style="margin:0">Contraindications</h3>
+          <p style="color:var(--muted);margin-top:8px;font-size:14px">Not suitable for those advised to avoid vibrational therapies, with acute psychiatric crises, or certain cardiac implants. Contact <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> for specifics.</p>
+        </section>
+      </div>
+
+      <aside class="calendar">
+        <div class="next">Next Event</div>
+        <div class="next-date">{{NEXT_EVENT_DATE}}</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:6px">{{VENUE_NAME}} • {{CITY}}, {{STATE}}</div>
+        <ul class="list" style="margin-top:12px">
+          <li><strong>Mar 05</strong> • Equinox Evening — 6:30pm</li>
+          <li><strong>Mar 19</strong> • Full Tone Flow — 10:30am</li>
+          <li><strong>Apr 02</strong> • Weekend Calm — 4:00pm</li>
+          <li><strong>Apr 16</strong> • Evening Reset — 7:00pm</li>
+        </ul>
+        <div style="margin-top:12px">
+          <a class="cta" href="book.html">Reserve a seat</a>
+        </div>
+      </aside>
+
+      <svg class="pattern" viewBox="0 0 400 800" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#E6D3C0"/><stop offset="1" stop-color="#B88A64"/></linearGradient>
+          <pattern id="p1" width="80" height="80" patternUnits="userSpaceOnUse" patternTransform="rotate(12)">
+            <rect width="80" height="80" fill="url(#g1)"/>
+            <path d="M0 60 C20 40 60 20 80 0" stroke="#CFA58A" stroke-opacity="0.18" stroke-width="6" fill="none"/>
+            <circle cx="12" cy="12" r="4" fill="#A46B45" fill-opacity="0.14"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#p1)"/>
+      </svg>
+    </main>
+
+    <!-- DIAGNOSTIC -->
+    <section class="wrap">
+      <div class="grid">
+        <div>
+          <h2>Why you might come</h2>
+          <p style="color:var(--muted)">People come when they crave a deep nervous-system reset, an evening without screens, or a gentle container for grief and creativity. Typical outcomes: clearer sleep, softened tension, and expanded breath.</p>
+
+          <div style="display:flex;gap:12px;margin-top:18px">
+            <div class="card">
+              <strong>Signs you’ll benefit</strong>
+              <ul style="margin:8px 0 0 18px;color:var(--muted)">
+                <li>Restless nights or fragmented sleep</li>
+                <li>Sustained tension in neck/shoulders</li>
+                <li>Difficulty switching off from work</li>
+              </ul>
+            </div>
+            <div class="card">
+              <strong>Not right for</strong>
+              <ul style="margin:8px 0 0 18px;color:var(--muted)">
+                <li>Severe claustrophobia in shared rooms</li>
+                <li>Unmanaged psychiatric emergencies</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <aside>
+          <div class="card">
+            <h4 style="margin-top:0">Instruments on this series</h4>
+            <p style="color:var(--muted);margin-top:8px">Crystal bowls, koshi chimes, bowed gong, and subtle tuning forks woven with breath cues — a tonal palette designed for full-body resonance.</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- PLAN -->
+    <section class="wrap" style="background:linear-gradient(180deg,transparent,rgba(255,250,246,0.6));border-top:1px solid rgba(122,82,48,0.06)">
+      <h2 style="margin-top:0">Session Flow — what happens</h2>
+      <div class="grid">
+        <div>
+          <ol style="color:var(--muted);line-height:1.8">
+            <li>Arrival & gentle seating — 10 minutes (soft grounding prompts)</li>
+            <li>Short breath practice — 8 minutes to anchor</li>
+            <li>Main sound offering — 45 minutes of layered bowls, gong wash, and chimes</li>
+            <li>Return & integration — sustained quiet, then soft talkback — 12 minutes</li>
+          </ol>
+          <p style="color:var(--muted);margin-top:12px">We pace the sound intentionally: sustained tones give tissues time to attune, and silence between layers allows the nervous system to reorganize.</p>
+        </div>
+
+        <aside>
+          <div class="card">
+            <h4 style="margin-top:0">Accessibility & format</h4>
+            <p style="color:var(--muted);margin-top:8px">Mats and blocks available on request. Rooms kept dim and temperature-moderate. If you need a seat instead of floor, notify us when you book.</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- MICRO HABITS -->
+    <section class="wrap">
+      <h2>Micro practices to take home</h2>
+      <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap">
+        <div class="card" style="flex:1;min-width:240px">
+          <strong>2-minute breath reset</strong>
+          <p style="color:var(--muted)">4-count inhale, 6-count exhale, repeat four times. Anchor with hand on belly.</p>
+        </div>
+        <div class="card" style="flex:1;min-width:240px">
+          <strong>Sound-scan</strong>
+          <p style="color:var(--muted)">Hum once, listen for internal echoes, then breathe into the area that springs to attention.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING TEASER -->
+    <section class="wrap">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap">
+        <div>
+          <h3 style="margin:0">Attend a gathering</h3>
+          <p style="color:var(--muted);margin-top:8px">Drop-in seats and small group passes available — see full rates on the Rates page.</p>
+        </div>
+        <div>
+          <a class="cta" href="pricing.html">See rates</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA FOOTER -->
+    <section class="wrap" style="padding-bottom:56px">
+      <div class="card" style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <strong>Ready to rest in harmonic company?</strong>
+          <div style="color:var(--muted);margin-top:6px">Reserve your spot — small group sizes to keep the field intimate.</div>
+        </div>
+        <div>
+          <a class="cta" href="book.html">Book a seat</a>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="wrap" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="color:var(--muted)">Questions? <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

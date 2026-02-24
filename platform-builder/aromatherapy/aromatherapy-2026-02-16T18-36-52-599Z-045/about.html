@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#FFFDF9;--accent:#3C6E71;--warm:#F6B1C3;--muted:#555}
+    html,body{height:100%;margin:0;font-family:Georgia, 'Times New Roman', serif;color:#222}
+    body{background:linear-gradient(180deg,#FFFDF9,#F7FBFF);display:flex;flex-direction:column}
+    .pattern{position:fixed;inset:0;opacity:0.08;pointer-events:none;z-index:0}
+    header{display:flex;justify-content:space-between;align-items:center;padding:22px 30px;position:relative;z-index:3}
+    .brand{font-weight:700;color:var(--accent)}
+    nav a{margin:0 8px;text-decoration:none;color:#333}
+    main{z-index:3;max-width:980px;margin:20px auto;padding:18px}
+    .hero{padding:26px;background:linear-gradient(90deg,#fff,#FFFBFE);border-radius:14px;box-shadow:0 10px 30px rgba(100,80,120,0.06)}
+    h1{margin:0 0 6px 0;color:var(--accent);font-family:Inter,system-ui,sans-serif}
+    .subtitle{margin:6px 0 0 0;color:var(--muted)}
+    .story{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
+    .bio{background:#fff;padding:18px;border-radius:12px}
+    .pillars{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+    .pillar{padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#fff7);border-left:4px solid var(--warm)}
+    .case{margin-top:14px;padding:12px;border-radius:10px;background:#fff}
+    .cta{margin-top:18px;text-align:center}
+    .btn{background:var(--accent);color:#fff;padding:10px 16px;border-radius:10px;text-decoration:none}
+    footer{padding:20px;text-align:center;color:#777}
+    @media (max-width:900px){.story{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <!-- unique inline SVG pattern for about page -->
+  <svg class="pattern" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <linearGradient id="ag" x1="0" x2="1"><stop offset="0" stop-color="#FFF1F3"/><stop offset="1" stop-color="#E8FFF7"/></linearGradient>
+      <pattern id="ap" patternUnits="userSpaceOnUse" width="200" height="120">
+        <rect width="200" height="120" fill="url(#ag)"/>
+        <path d="M0 60 Q50 20 100 60 T200 60" stroke="#3C6E71" stroke-opacity="0.04" fill="none"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#ap)"/>
+  </svg>
+
+  <header>
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Nest</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Our Blends</a>
+      <a href="shop.html">Shop</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>About the alchemy at {{BUSINESS_NAME}}</h1>
+      <p class="subtitle">We blend scent, ritual, and care into approachable aromatic experiences. Playful, premium, and always safety-forward.</p>
+    </section>
+
+    <section class="story">
+      <div>
+        <div class="bio">
+          <h3>Our ethos</h3>
+          <p class="subtitle">Aromatherapy is an artful practice of scenting life with intention. We prioritize clear guidance, respectful listening, and evidence-informed safety practices — no medical promises, only thoughtful support.</p>
+
+          <div class="pillars">
+            <div class="pillar"><strong>Pillar — Traceable Quality</strong><p class="subtitle">We source therapeutic-grade oils with transparent origins and batch notes.</p></div>
+            <div class="pillar"><strong>Pillar — Safety & Respect</strong><p class="subtitle">Dilution, patch tests, pet-friendly choices — these are central to our recommendations.</p></div>
+            <div class="pillar"><strong>Pillar — Sensory Design</strong><p class="subtitle">We design routines that fit your life: short rituals, discreet roll-ons, or immersive practices.</p></div>
+          </div>
+        </div>
+
+        <div class="case">
+          <h4>Practice approach</h4>
+          <p class="subtitle">Sessions blend consultation, scent exploration, and practical takeaways: labeled samples, dilution charts, and safe storage tips. Our intensive model is supportive and structured.</p>
+        </div>
+      </div>
+
+      <aside>
+        <div class="panel" style="background:#fff;padding:16px;border-radius:12px">
+          <h4>About the practitioner</h4>
+          <p class="subtitle"><strong>{{PRACTITIONER_NAME}}</strong> crafts bespoke aromatic pathways with a playful, premium touch. Trained in aromatic safety and client-centered facilitation.</p>
+          <p class="subtitle">Favorite blend: <em>{{FAVORITE_BLEND}}</em></p>
+          <div style="margin-top:10px"><a class="btn" href="book.html">Book a consult</a></div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="case" style="margin-top:18px">
+      <h4>Client vignettes</h4>
+      <p class="subtitle">We keep anonymized notes and craft long-term scent plans when requested. Sessions are documented with clear safety and dilution instructions so you can reproduce blends at home.</p>
+    </section>
+
+    <section class="cta">
+      <a class="btn" href="{{PRIMARY_CTA_URL}}">Start a conversation — {{PRIMARY_CTA_LABEL}}</a>
+    </section>
+
+    <p style="font-size:13px;color:#777;margin-top:14px">Health notice: Aromatherapy complements lifestyle and ritual. It is not a replacement for medical care. If you are pregnant, nursing, or have health concerns, mention this when booking. We provide pregnancy-safe and pet-conscious options.</p>
+  </main>
+
+  <footer>
+    <div>Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • Call <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    <div style="margin-top:8px;color:#999">© {{BUSINESS_NAME}} — practicing in {{CITY}}, {{STATE}}</div>
+  </footer>
+</body>
+</html>

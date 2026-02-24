@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Rates — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--glass:#ffffff22;--accent:#7dd3fc;--muted:#cbd5e1;--bg:#0f172a;--card:#ffffff10}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial;background:linear-gradient(180deg,#07102a 0%, #071827 60%);color:#e6eef8}
+    .site{min-height:100%;display:flex;flex-direction:column;background-image:url("assets/img/pattern.svg");background-repeat:repeat;}
+    header{backdrop-filter:blur(6px);background:linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));padding:18px 28px;border-bottom:1px solid rgba(255,255,255,0.04)}
+    .nav{display:flex;gap:18px;align-items:center;max-width:1100px;margin:0 auto}
+    .brand{font-weight:700;letter-spacing:0.4px}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:8px}
+    nav a.cta{background:linear-gradient(90deg,var(--accent),#60a5fa);color:#04263a;font-weight:600}
+    main{flex:1;max-width:1100px;margin:28px auto;padding:0 20px}
+    .hero{display:flex;gap:24px;align-items:center;padding:28px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 4px 32px rgba(2,6,23,0.6)}
+    .hero .left{flex:1}
+    h1{margin:0 0 8px 0;font-size:28px}
+    p.lead{margin:0;color:var(--muted)}
+
+    /* Pricing cards */
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:22px}
+    .card{padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.04)}
+    .price{font-size:22px;font-weight:700;color:#e6f7ff}
+    .muted{color:var(--muted);font-size:13px}
+
+    /* Toggle */
+    .toggle{display:inline-flex;align-items:center;background:var(--card);padding:6px;border-radius:999px;border:1px solid rgba(255,255,255,0.03)}
+    .toggle button{background:transparent;border:0;color:var(--muted);padding:8px 12px;border-radius:999px;cursor:pointer}
+    .toggle button.active{background:linear-gradient(90deg,var(--accent),#60a5fa);color:#04263a;font-weight:700}
+
+    /* Proof gallery */
+    .proof{margin-top:28px;padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03);display:flex;gap:16px;align-items:center}
+    .testimony{flex:1}
+    .quote{font-style:italic;color:#dff6ff}
+    .badges{display:flex;gap:10px}
+    .badge{position:relative;padding:8px 10px;border-radius:8px;background:#0b1a26;border:1px solid rgba(255,255,255,0.03);font-size:13px;color:var(--muted);cursor:default}
+    .badge:hover{transform:translateY(-3px);transition:all .18s}
+    .badge .tip{visibility:hidden;opacity:0;position:absolute;left:50%;transform:translateX(-50%) translateY(-8px);bottom:calc(100% + 8px);background:#021725;color:#dff6ff;padding:8px;border-radius:8px;font-size:12px;border:1px solid rgba(255,255,255,0.04);white-space:nowrap}
+    .badge:hover .tip{visibility:visible;opacity:1}
+
+    footer{padding:28px;text-align:center;color:var(--muted);font-size:13px}
+
+    /* small responsive */
+    @media (max-width:720px){.hero{flex-direction:column;align-items:flex-start}}
+
+  </style>
+</head>
+<body>
+  <div class="site">
+    <header>
+      <div class="nav">
+        <div class="brand">{{BUSINESS_NAME}}</div>
+        <nav style="margin-left:18px;flex:1">
+          <a href="index.html">Welcome</a>
+          <a href="services.html">Offerings</a>
+          <a href="conditions.html">Conditions</a>
+          <a href="approach.html">Our Path</a>
+          <a href="pricing.html" style="color:#e6f7ff;font-weight:700">Rates</a>
+          <a href="about.html">Story</a>
+          <a href="book.html" class="cta">{{PRIMARY_CTA_LABEL}}</a>
+        </nav>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div class="muted">{{CITY}}, {{STATE}}</div>
+        </div>
+      </div>
+    </header>
+    <main>
+      <section class="hero">
+        <div class="left">
+          <h1>Flexible care, framed for your days</h1>
+          <p class="lead">Choose a rhythm that fits — brief single sessions, steady monthly support, or a bundled series designed to review progress and adapt the plan.</p>
+          <div style="margin-top:12px;font-size:14px">
+            <span class="muted">Questions? </span><a href="contact.html" style="color:var(--accent);text-decoration:none;">Reach out</a>
+          </div>
+        </div>
+        <div style="width:320px">
+          <div style="background:rgba(255,255,255,0.02);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <div class="muted">Billing view</div>
+              <div class="toggle" role="tablist">
+                <button id="monthlyBtn" class="active">Monthly</button>
+                <button id="packageBtn">Package</button>
+              </div>
+            </div>
+            <div class="card" style="margin:0">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <div>
+                  <div style="font-size:12px;color:var(--muted)">Monthly Nourish Plan</div>
+                  <div class="muted">One 50-min visit + messaging</div>
+                </div>
+                <div style="text-align:right">
+                  <div class="price" id="priceA">$120</div>
+                  <div class="muted" style="font-size:12px">per month</div>
+                </div>
+              </div>
+            </div>
+            <div style="margin-top:10px;display:flex;gap:8px">
+              <div class="card" style="flex:1">
+                <div class="muted" style="font-size:12px">Intro Session</div>
+                <div class="price" id="priceB">$95</div>
+              </div>
+              <div class="card" style="flex:1">
+                <div class="muted" style="font-size:12px">Renewal Package (6)</div>
+                <div class="price" id="priceC">$660</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section style="margin-top:22px;display:flex;gap:18px;align-items:flex-start">
+        <div style="flex:1">
+          <h3 style="margin:0 0 8px 0">What these rates mean</h3>
+          <p class="muted">Pricing reflects a focus on continuity and learning. Packages include planning and progress reviews. Nothing is obligatory — every plan can be adapted to your needs.</p>
+          <div class="grid" style="margin-top:16px">
+            <div class="card">
+              <div style="font-weight:700">Single Visit</div>
+              <div class="muted" style="margin-top:6px">A focused consultation and practical suggestions to try between visits.</div>
+            </div>
+            <div class="card">
+              <div style="font-weight:700">Monthly Support</div>
+              <div class="muted" style="margin-top:6px">Rhythm-based follow-up, brief check-ins, and adjustments as life shifts.</div>
+            </div>
+            <div class="card">
+              <div style="font-weight:700">Course Package</div>
+              <div class="muted" style="margin-top:6px">Curated sequence with outcome checkpoints and a wrap-up review.</div>
+            </div>
+          </div>
+        </div>
+        <aside style="width:320px">
+          <div class="card">
+            <div style="font-weight:700">Need help choosing?</div>
+            <div class="muted" style="margin-top:8px">Book a 15-minute orientation call to align on goals and practical next steps.</div>
+            <div style="margin-top:12px"><a class="cta" href="book.html" style="display:inline-block;padding:10px 12px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#60a5fa);color:#04263a;text-decoration:none">Reserve orientation</a></div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="proof" aria-label="Proof gallery">
+        <div style="width:72px;height:72px;border-radius:10px;background:linear-gradient(135deg,#052233,#063244);display:flex;align-items:center;justify-content:center;font-weight:700">P</div>
+        <div class="testimony">
+          <div class="quote" id="quoteText">"I finally felt like my day-to-day needs were seen and a sensible plan followed."</div>
+          <div class="muted" style="margin-top:8px" id="quoteAuthor">— A client in {{CITY}}</div>
+          <div class="badges" style="margin-top:12px">
+            <div class="badge">Licensed Clinician<div class="tip">Board-certified practitioner with clinical training</div></div>
+            <div class="badge">Community Choice<div class="tip">Voted community favorite for supportive care</div></div>
+            <div class="badge">Press: Local Health<div class="tip">Featured in Local Health Magazine editorial</div></div>
+          </div>
+        </div>
+        <div style="width:200px;text-align:right">
+          <div style="font-size:13px;color:var(--muted)">Proof Gallery</div>
+          <div style="margin-top:8px"><button id="prevT" style="padding:8px 10px;border-radius:8px;background:#081a25;border:0;color:var(--muted);cursor:pointer">◀</button> <button id="nextT" style="padding:8px 10px;border-radius:8px;background:#081a25;border:0;color:var(--muted);cursor:pointer">▶</button></div>
+        </div>
+      </section>
+
+      <section style="margin-top:22px">
+        <h4>Frequently asked</h4>
+        <div class="grid" style="margin-top:10px">
+          <div class="card"><div class="muted">Are treatments guaranteed?</div><div style="margin-top:6px;color:var(--muted)">Care is educational and supportive. We work together to design strategies; individual results vary.</div></div>
+          <div class="card"><div class="muted">Do I need a referral?</div><div style="margin-top:6px;color:var(--muted)">No referral required. If useful, we coordinate with other professionals with your consent.</div></div>
+        </div>
+      </section>
+
+      <section style="margin-top:26px;padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03)">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-weight:700">Ready to pick a pace?</div>
+            <div class="muted" style="margin-top:6px">Start with a single session or save with a curated package.</div>
+          </div>
+          <div><a href="book.html" class="cta" style="display:inline-block;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#60a5fa);color:#04263a;text-decoration:none">{{PRIMARY_CTA_LABEL}}</a></div>
+        </div>
+      </section>
+
+    </main>
+    <footer>
+      <div class="muted">Phone: <a href="tel:{{PHONE}}" style="color:var(--muted);text-decoration:none">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}" style="color:var(--muted);text-decoration:none">{{EMAIL}}</a></div>
+    </footer>
+  </div>
+
+  <script>
+    // Pricing comparator with animated numbers
+    (function(){
+      const monthlyBtn = document.getElementById('monthlyBtn');
+      const packageBtn = document.getElementById('packageBtn');
+      const priceA = document.getElementById('priceA');
+      const priceB = document.getElementById('priceB');
+      const priceC = document.getElementById('priceC');
+
+      const monthly = {a:120,b:95,c:660};
+      const pack = {a:105*6/1,b:85,c:540}; // presented as alternative math
+
+      let current = monthly;
+
+      function animateNumber(el, start, end, duration){
+        const startTime = performance.now();
+        function tick(now){
+          const t = Math.min(1,(now - startTime)/duration);
+          const val = Math.round(start + (end-start)*t);
+          el.textContent = '$' + val;
+          if(t < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      }
+
+      function setView(view){
+        monthlyBtn.classList.toggle('active', view === 'monthly');
+        packageBtn.classList.toggle('active', view === 'package');
+        const next = view === 'monthly' ? monthly : pack;
+        animateNumber(priceA, parseInt(priceA.textContent.replace('$','')) || 0, Math.round(next.a), 450);
+        animateNumber(priceB, parseInt(priceB.textContent.replace('$','')) || 0, Math.round(next.b), 450);
+        animateNumber(priceC, parseInt(priceC.textContent.replace('$','')) || 0, Math.round(next.c), 450);
+        current = next;
+      }
+
+      monthlyBtn.addEventListener('click', ()=>setView('monthly'));
+      packageBtn.addEventListener('click', ()=>setView('package'));
+    })();
+
+    // Proof gallery rotate and controls
+    (function(){
+      const quotes = [
+        {text:'"I finally felt like my day-to-day needs were seen and a sensible plan followed."',author:'— A client in '+('{{CITY}}')},
+        {text:'"The package helped me track progress and tweak what wasn\'t working with gentle adjustments."',author:'— Someone who completed a course'},
+        {text:'"Warm, practical guidance that I could actually apply between visits."',author:'— Community member'}
+      ];
+      let idx = 0;
+      const quoteText = document.getElementById('quoteText');
+      const quoteAuthor = document.getElementById('quoteAuthor');
+      const prevBtn = document.getElementById('prevT');
+      const nextBtn = document.getElementById('nextT');
+
+      function show(i){
+        idx = (i + quotes.length) % quotes.length;
+        quoteText.style.opacity = 0;
+        quoteAuthor.style.opacity = 0;
+        setTimeout(()=>{
+          quoteText.textContent = quotes[idx].text;
+          quoteAuthor.textContent = quotes[idx].author;
+          quoteText.style.opacity = 1;
+          quoteAuthor.style.opacity = 1;
+        },200);
+      }
+
+      prevBtn.addEventListener('click', ()=>show(idx-1));
+      nextBtn.addEventListener('click', ()=>show(idx+1));
+
+      let auto = setInterval(()=>show(idx+1),5000);
+      [prevBtn,nextBtn].forEach(b=>b.addEventListener('mouseenter', ()=>clearInterval(auto)));
+      [prevBtn,nextBtn].forEach(b=>b.addEventListener('mouseleave', ()=>auto = setInterval(()=>show(idx+1),5000)));
+
+      show(0);
+    })();
+  </script>
+</body>
+</html>

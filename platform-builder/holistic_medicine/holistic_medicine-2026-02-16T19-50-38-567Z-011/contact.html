@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reach out to {{PRACTITIONER_NAME}} — thoughtful intake, compassionate guidance, and gentle next steps for whole-person care." />
+  <style>
+    :root{
+      --bg:#0f1720; --card:#0f1728; --muted:#9aa4ae; --accent1:#88e0c7; --accent2:#a0d6ff; --glass:rgba(255,255,255,0.04);
+      --radius:14px; --maxw:920px; --pad:28px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%;}
+    body{margin:0; background: radial-gradient(1200px 600px at 10% 20%, rgba(136,224,199,0.08), transparent), radial-gradient(800px 400px at 90% 80%, rgba(160,214,255,0.06), transparent), var(--bg); color:#e6eef5; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;max-width:1200px;margin:0 auto}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent1),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:700;color:#05323a}
+    .brand h1{margin:0;font-size:16px;letter-spacing:0.4px}
+    nav{display:flex;gap:14px;align-items:center;font-size:14px}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:10px}
+    nav a.active, nav a:hover{background:var(--glass);color:#fff}
+
+    main{max-width:var(--maxw);margin:28px auto;padding:var(--pad);display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:start}
+
+    .panel{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:var(--radius);padding:24px;box-shadow:0 6px 30px rgba(2,6,23,0.6);}
+    h2{margin:0 0 10px 0;font-size:20px}
+    p.lead{color:var(--muted);margin-top:0}
+
+    .contact-info{display:flex;flex-direction:column;gap:12px;margin-top:12px}
+    .info-row{display:flex;gap:12px;align-items:center}
+    .chip{background:rgba(255,255,255,0.03);padding:8px 12px;border-radius:999px;font-size:13px;color:var(--muted)}
+
+    form{display:flex;flex-direction:column;gap:12px}
+    label{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:8px}
+    input[type="text"], input[type="email"], input[type="tel"], select, textarea{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:12px;border-radius:10px;color:#eaf6f1;font-size:14px}
+    textarea{min-height:120px;resize:vertical}
+    .row{display:flex;gap:10px}
+    .row .col{flex:1}
+
+    .actions{display:flex;gap:12px;align-items:center;margin-top:6px}
+    .btn{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#05323a;padding:11px 14px;border-radius:12px;border:none;font-weight:600;cursor:pointer}
+    .ghost{background:transparent;border:1px solid rgba(255,255,255,0.05);color:var(--muted);padding:10px 12px;border-radius:10px}
+
+    .note{font-size:12px;color:var(--muted);line-height:1.45}
+    footer{max-width:var(--maxw);margin:24px auto;padding:18px 28px;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+
+    /* Decorative SVG pattern anchor */
+    .pattern-wrap{position:fixed;inset:auto 0 0 0;height:260px;pointer-events:none;z-index:0;opacity:0.8}
+    .card-accent{position:relative;z-index:2}
+
+    @media(max-width:980px){main{grid-template-columns:1fr;padding:18px} .pattern-wrap{height:220px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo" aria-hidden="true">HM</div>
+      <div>
+        <h1>{{BUSINESS_NAME}}</h1>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="approach.html">Your Story</a>
+      <a href="pricing.html">Investment</a>
+      <a href="about.html">Meet</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html" class="active">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="panel card-accent">
+      <h2>Let's find thoughtful next steps</h2>
+      <p class="lead">If you have questions about holistic options, classes, or our upcoming events series, tell us a bit below. We respond within 2 business days and will guide you toward intake, education, or a tailored care conversation.</p>
+
+      <div class="contact-info">
+        <div class="info-row"><div class="chip">Phone</div><div>{{PHONE}}</div></div>
+        <div class="info-row"><div class="chip">Email</div><div>{{EMAIL}}</div></div>
+        <div class="info-row"><div class="chip">Location</div><div>{{CITY}}, {{STATE}}</div></div>
+        <div class="info-row"><div class="chip">Practitioner</div><div>{{PRACTITIONER_NAME}}, {{CREDENTIALS}}</div></div>
+      </div>
+
+      <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03);margin:16px 0">
+
+      <div class="note">Please note: we focus on education and whole-person support. We do not promise cures. Any discussion of testing or treatment is educational and individualized.</div>
+    </section>
+
+    <aside class="panel">
+      <h2>Send a message</h2>
+      <p class="lead">A few quick details help us prepare. Choose "Consult" for a new intake, or "Event" for workshop and series inquiries.</p>
+
+      <form method="post" action="{{PRIMARY_CTA_URL}}/contact" aria-label="Contact form">
+        <label>Full name
+          <input type="text" name="name" placeholder="Your name" required />
+        </label>
+        <label>Email
+          <input type="email" name="email" placeholder="you@example.com" required />
+        </label>
+        <label>Phone
+          <input type="tel" name="phone" placeholder="Optional" />
+        </label>
+        <div class="row">
+          <div class="col">
+            <label>Preferred reach
+              <select name="contact_method">
+                <option>Email</option>
+                <option>Phone</option>
+                <option>Video</option>
+              </select>
+            </label>
+          </div>
+          <div class="col">
+            <label>Type of inquiry
+              <select name="inquiry_type">
+                <option>Consult (new)</option>
+                <option>Follow-up</option>
+                <option>Group / Event</option>
+                <option>General question</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <label>Message
+          <textarea name="message" placeholder="Briefly share your top concern or what you'd like to learn about..." required></textarea>
+        </label>
+
+        <label>Preferred dates (optional)
+          <input type="text" name="dates" placeholder="e.g. week of March 8 — mornings" />
+        </label>
+
+        <div class="actions">
+          <button type="submit" class="btn">{{PRIMARY_CTA_LABEL}}</button>
+          <a class="ghost" href="{{PRIMARY_CTA_URL}}">See availability</a>
+        </div>
+
+        <p class="note">By sending this message you agree to our privacy approach. We will follow up to schedule an intake and, where appropriate, discuss educational lab options and next steps.</p>
+      </form>
+    </aside>
+  </main>
+
+  <div class="pattern-wrap" aria-hidden="true">
+    <!-- Decorative SVG pattern: organic waves, rings, and constellations to suggest whole-person rhythm -->
+    <svg viewBox="0 0 1200 260" width="100%" height="100%" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="g1" x1="0" x2="1">
+          <stop offset="0" stop-color="#88e0c7" stop-opacity="0.12" />
+          <stop offset="1" stop-color="#a0d6ff" stop-opacity="0.08" />
+        </linearGradient>
+        <filter id="blur"><feGaussianBlur stdDeviation="18" /></filter>
+      </defs>
+      <g filter="url(#blur)">
+        <path d="M-50 120 C150 40, 350 200, 600 120 C850 40, 1050 200, 1250 120 L1250 300 L-50 300 Z" fill="url(#g1)" />
+      </g>
+      <g fill="none" stroke="#9bdac9" stroke-opacity="0.12" stroke-width="1.2">
+        <circle cx="110" cy="80" r="28" />
+        <circle cx="220" cy="30" r="14" />
+        <circle cx="460" cy="120" r="22" />
+        <circle cx="760" cy="60" r="18" />
+        <circle cx="980" cy="110" r="30" />
+      </g>
+      <g stroke="#a7d9ff" stroke-opacity="0.08">
+        <path d="M40 150 L240 90" stroke-width="1.2" />
+        <path d="M300 140 L520 60" stroke-width="1.2" />
+        <path d="M680 120 L940 80" stroke-width="1.2" />
+      </g>
+      <g fill="#c9f1e8" fill-opacity="0.06">
+        <circle cx="520" cy="30" r="6" />
+        <circle cx="760" cy="180" r="5" />
+      </g>
+    </svg>
+  </div>
+
+  <footer>
+    <div>&copy; <span id="yr"></span> {{BUSINESS_NAME}} — gentle, integrative support</div>
+    <div style="text-align:right">Questions? <a href="mailto:{{EMAIL}}" style="color:var(--accent2);text-decoration:none">{{EMAIL}}</a> • <a href="tel:{{PHONE}}" style="color:var(--accent2);text-decoration:none">{{PHONE}}</a></div>
+  </footer>
+
+  <script>
+    document.getElementById('yr').textContent = new Date().getFullYear();
+    // minimal client-side validation / note
+    (function(){
+      const form = document.querySelector('form');
+      form && form.addEventListener('submit', function(e){
+        // friendly nudge — let server handle true validation
+        const msg = form.querySelector('textarea').value.trim();
+        if(msg.length < 10){
+          e.preventDefault();
+          alert('A short note helps us prepare. Please add a few words about your goals.');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

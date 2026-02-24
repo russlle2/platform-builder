@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Pricing — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff7f2;--accent:#ff6b6b;--muted:#6b6b6b;--card:#ffffff;--glass:rgba(255,255,255,0.6);--ink:#1b1b1b}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:var(--ink);background:linear-gradient(180deg,var(--bg),#fff);}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 26px;background:linear-gradient(90deg,rgba(255,107,107,0.08),transparent);backdrop-filter:blur(6px)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:48px;height:48px;border-radius:10px;background:conic-gradient(from 200deg,#ff9b9b,#ff6b6b,#ffcf9b);display:grid;place-items:center;color:white;font-weight:700}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none;font-weight:600}
+    nav a.active{color:var(--accent)}
+    .cta{background:var(--accent);color:white;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+
+    main{max-width:1100px;margin:28px auto;padding:22px}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:22px;align-items:start}
+    .hero-card{background:var(--card);border-radius:14px;padding:22px;box-shadow:0 6px 18px rgba(20,20,20,0.06)}
+    h1{margin:0 0 8px 0;font-size:26px}
+    p.lead{color:var(--muted);margin:0 0 16px}
+
+    .mood{display:flex;flex-direction:column;gap:10px}
+    .mood .row{display:flex;gap:10px}
+    .mood button{flex:1;padding:10px;border-radius:10px;border:1px solid rgba(27,27,27,0.06);background:linear-gradient(180deg,#fff,#fff9);cursor:pointer}
+    .mood button.active{border-color:var(--accent);box-shadow:0 6px 18px rgba(255,107,107,0.12)}
+
+    .cohorts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+    .cohort{padding:16px;border-radius:12px;background:linear-gradient(180deg,var(--glass),#fff);border:1px solid rgba(27,27,27,0.05)}
+    .price{font-size:22px;font-weight:800;color:var(--accent)}
+    .meta{color:var(--muted);font-size:13px}
+    .cohort button{margin-top:12px;padding:10px 12px;border-radius:10px;border:none;background:var(--accent);color:white;font-weight:700;cursor:pointer}
+
+    .map{margin-top:18px}
+    .goals{display:flex;gap:8px;flex-wrap:wrap}
+    .goal{padding:8px 12px;border-radius:999px;border:1px solid rgba(27,27,27,0.06);background:white;cursor:pointer}
+    .goal.selected{background:linear-gradient(90deg,#ffdede,#fff);border-color:var(--accent)}
+
+    .timeline{margin-top:14px;padding:12px;border-radius:10px;background:#fff;box-shadow:0 6px 14px rgba(16,16,16,0.04)}
+    svg.pathmap{width:100%;height:110px}
+    .plan-list{margin-top:12px;font-size:14px;color:var(--muted)}
+
+    footer{margin-top:32px;padding:22px;text-align:center;color:var(--muted);font-size:13px}
+
+    /* small screens */
+    @media(max-width:880px){.hero{grid-template-columns:1fr}.cohorts{grid-template-columns:1fr}.logo{width:40px;height:40px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">WC</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Story</a>
+      <a href="services.html">Solutions</a>
+      <a href="programs.html">Gatherings</a>
+      <a class="active" href="pricing.html">Pricing</a>
+      <a href="testimonials.html">Praise</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+    <a id="primaryCta" class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div>
+        <div class="hero-card">
+          <h1>Choose the cohort that moves you forward</h1>
+          <p class="lead">Cohort seats, guided practice, weekly checkpoints. Pick a rhythm that suits this season of your life.</p>
+
+          <div class="mood" aria-label="Mood to Method">
+            <div style="font-size:13px;color:var(--muted);margin-bottom:6px">How are you feeling today?</div>
+            <div class="row">
+              <button data-mood="frayed">Frayed</button>
+              <button data-mood="flat">Flat</button>
+              <button data-mood="busy">Busy</button>
+              <button data-mood="curious">Curious</button>
+            </div>
+            <div id="moodSummary" style="margin-top:10px;padding:10px;border-radius:10px;background:#fff;font-weight:600">Pick a mood to see the recommended approach</div>
+          </div>
+
+          <div class="map">
+            <div style="font-size:13px;color:var(--muted);margin-bottom:6px">Select the goals to shape your 30-day path</div>
+            <div class="goals" id="goals">
+              <div class="goal" data-goal="sleep">Sleep rhythm</div>
+              <div class="goal" data-goal="movement">Gentle movement</div>
+              <div class="goal" data-goal="mind">Mind practice</div>
+              <div class="goal" data-goal="food">Simple meals</div>
+              <div class="goal" data-goal="boundaries">Boundaries</div>
+            </div>
+
+            <div class="timeline" id="timeline">
+              <svg class="pathmap" viewBox="0 0 600 120" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#ffdede"/><stop offset="1" stop-color="#ffe6b3"/></linearGradient>
+                </defs>
+                <path id="route" d="M20 60 C140 10, 260 110, 380 60 C460 20, 560 100, 580 60" fill="none" stroke="url(#g1)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+                <g id="nodes"></g>
+              </svg>
+              <div class="plan-list" id="planList">Select goals to preview a 30-day focus map.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="hero-card">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div>
+              <div style="font-size:13px;color:var(--muted)">Featured cohort</div>
+              <div style="font-size:18px;font-weight:800">Starter Cohort</div>
+            </div>
+            <div style="text-align:right">
+              <div class="price">$199</div>
+              <div class="meta">per seat · 6 weeks</div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;color:var(--muted);font-size:14px">Small groups. Habits that stick. Weekly check-ins and micro-assignments.</div>
+          <button class="joinBtn" style="width:100%;margin-top:14px">Join Starter</button>
+
+          <hr style="margin:16px 0;border:none;border-top:1px dashed rgba(27,27,27,0.06)">
+          <div style="font-size:13px;color:var(--muted)">Want a custom seat (team or private)?</div>
+          <a href="contact.html" style="display:inline-block;margin-top:8px;color:var(--accent);font-weight:700">Ask about private slots</a>
+        </div>
+
+        <div style="height:14px"></div>
+        <div class="hero-card">
+          <div style="font-size:13px;color:var(--muted)">Still not sure?</div>
+          <div style="font-weight:800;margin-top:6px">Try a pay-what-you-can intro workshop</div>
+          <a href="book.html" style="display:inline-block;margin-top:12px;background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 12px;border-radius:10px;text-decoration:none">Reserve a spot</a>
+        </div>
+      </aside>
+    </div>
+
+    <section style="margin-top:18px">
+      <div class="hero-card">
+        <h3 style="margin:0 0 6px">Cohorts and what they focus on</h3>
+        <div style="color:var(--muted);font-size:14px">Seats open on a rolling basis. Everything is cohort-based: peer rhythm + guided tasks for the month.</div>
+
+        <div class="cohorts">
+          <div class="cohort" data-cohort="starter">
+            <div style="font-size:15px;font-weight:800">Starter Cohort</div>
+            <div class="meta">6 weeks • beginner-friendly</div>
+            <div class="price">$199</div>
+            <div style="margin-top:8px;color:var(--muted);font-size:13px">Build two reliable habits and a small weekly routine.</div>
+            <button data-action="enroll">Enroll — Starter</button>
+          </div>
+
+          <div class="cohort" data-cohort="momentum">
+            <div style="font-size:15px;font-weight:800">Momentum Cohort</div>
+            <div class="meta">8 weeks • guided checkpoints</div>
+            <div class="price">$349</div>
+            <div style="margin-top:8px;color:var(--muted);font-size:13px">Group practice with weekly tuning and shared templates.</div>
+            <button data-action="enroll">Reserve — Momentum</button>
+          </div>
+
+          <div class="cohort" data-cohort="deep">
+            <div style="font-size:15px;font-weight:800">Deep Habit Cohort</div>
+            <div class="meta">12 weeks • small groups</div>
+            <div class="price">$599</div>
+            <div style="margin-top:8px;color:var(--muted);font-size:13px">For people who want durable shifts and a clear monthly playbook.</div>
+            <button data-action="enroll">Save my seat — Deep</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} • <span style="color:var(--muted)">{{CITY}}, {{STATE}}</span> • <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+  </footer>
+
+  <script>
+    // Mood-to-Method
+    const moodButtons = document.querySelectorAll('.mood button');
+    const moodSummary = document.getElementById('moodSummary');
+    const primaryCta = document.getElementById('primaryCta');
+    const joinButtons = document.querySelectorAll('.joinBtn, .cohort button');
+
+    const moodMap = {
+      frayed: {label:'Repair & Reset',cta:'Start a soft reset',desc:'Short practices to restore calm and re-establish a few essentials: sleep rhythm, micro-moves, and boundary rituals.'},
+      flat: {label:'Gentle Momentum',cta:'Pick a gentle cohort',desc:'Low-friction habits to reintroduce energy—micro-checkins, 3-minute breathing, and simple movement anchors.'},
+      busy: {label:'Micro-Rules',cta:'Join a focused cohort',desc:'Tools that fit between meetings: 10-minute resets, short templates, and a week-by-week checklist.'},
+      curious: {label:'Experiment & Track',cta:'Try the workshop',desc:'Playful experiments, tracking prompts, and a 30-day lab to see what lands for you.'}
+    };
+
+    moodButtons.forEach(btn=>btn.addEventListener('click',()=>{
+      moodButtons.forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const key = btn.getAttribute('data-mood');
+      const pick = moodMap[key];
+      moodSummary.textContent = pick.label + ' — ' + pick.desc;
+      // update main CTA
+      primaryCta.textContent = pick.cta;
+      // update cohort buttons to include mood hint
+      joinButtons.forEach(b=>{
+        b.textContent = b.textContent.split(' — ')[0] + ' — ' + pick.cta;
+      });
+    }));
+
+    // Goals / Progress meter & path map
+    const goalEls = document.querySelectorAll('.goal');
+    const nodesGroup = document.getElementById('nodes');
+    const planList = document.getElementById('planList');
+
+    const goalTemplates = {
+      sleep: ['Set a 10pm wind-down','Shift bedtime by 15 min x3','Keep caffeine before 2pm','Create a 20-min evening ritual'],
+      movement: ['Daily 6-min movement','3 mini walks each week','Try a short stretch loop','Add posture checks to hours'],
+      mind: ['3-minute morning calm','Evening jot — 2 items','Weeknight guided practice','Mini gratitude note'],
+      food: ['Simple breakfasts','Veg-forward lunches 3x/wk','Hydration checkpoints','Prep two easy recipes'],
+      boundaries: ['Phone-free dinner','Set a daily stop time','Schedule protected work blocks','Say no to one extra task']
+    };
+
+    function renderMap(selected){
+      // nodes: one per selected goal times 4 (weeks) max 12 nodes
+      nodesGroup.innerHTML = '';
+      if(selected.length===0){
+        planList.textContent = 'Select goals to preview a 30-day focus map.';return;
+      }
+      const totalNodes = selected.length * 4; // weekly nodes per goal
+      const w = 580; const startX = 20; const pathWidth = w - 40;
+      const points = [];
+      for(let i=0;i<totalNodes;i++){
+        const t = i/(totalNodes-1||1);
+        // sample path function similar to SVG path: use cubic variation
+        const x = startX + t*pathWidth;
+        const y = 60 + Math.sin(t*3.14*1.4)*36;
+        points.push({x,y});
+      }
+      // create node circles
+      points.forEach((pt,idx)=>{
+        const colorIndex = idx % selected.length;
+        const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        circle.setAttribute('cx',pt.x);circle.setAttribute('cy',pt.y);circle.setAttribute('r',8);
+        const colors = ['#ff9b9b','#ffd39b','#ffe6a3','#bfefff'];
+        circle.setAttribute('fill',colors[colorIndex%colors.length]);
+        circle.setAttribute('stroke','#fff');circle.setAttribute('stroke-width','2');
+        nodesGroup.appendChild(circle);
+      });
+
+      // build a 30-day list condensed into weekly guidance
+      const weeks = 4; let out = '';
+      for(let widx=0;widx<weeks;widx++){
+        out += 'Week ' + (widx+1) + ': ';
+        const parts = [];
+        selected.forEach(g=>{
+          const templ = goalTemplates[g] || ['Practice small action'];
+          parts.push(templ[widx%templ.length]);
+        });
+        out += parts.join(' · ') + '\n';
+      }
+      planList.textContent = out;
+    }
+
+    const selectedGoals = new Set();
+    goalEls.forEach(el=>el.addEventListener('click',()=>{
+      const key = el.getAttribute('data-goal');
+      if(selectedGoals.has(key)){selectedGoals.delete(key);el.classList.remove('selected');}
+      else{selectedGoals.add(key);el.classList.add('selected');}
+      renderMap(Array.from(selectedGoals));
+    }));
+
+    // Enrollment buttons link to booking with cohort query
+    document.querySelectorAll('[data-action="enroll"]').forEach(btn=>{
+      btn.addEventListener('click',e=>{
+        const cohort = btn.closest('.cohort').getAttribute('data-cohort');
+        // attach query
+        window.location.href = 'book.html?cohort='+cohort;
+      });
+    });
+
+    // joinBtn for featured
+    document.querySelectorAll('.joinBtn').forEach(b=>b.addEventListener('click',()=>{
+      window.location.href = 'book.html?cohort=starter';
+    }));
+  </script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>My Approach — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#ffffff;--ink:#23302a;--accent:#5aa05f;--soft:#f4faf3}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,Arial;background:linear-gradient(135deg,var(--soft),#ffffff);color:var(--ink)}
+    .wrap{max-width:920px;margin:26px auto;padding:26px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    header a{color:var(--accent);font-weight:600}
+    h1{margin:12px 0;color:#274b34}
+
+    .split{display:grid;grid-template-columns:1fr 320px;gap:18px;align-items:start}
+    .panel{background:#fff;border-radius:12px;padding:16px;box-shadow:0 10px 30px rgba(20,30,20,0.04)}
+    .step{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px}
+    .dot{width:44px;height:44px;border-radius:10px;background:linear-gradient(180deg,var(--accent),#7bca86);color:white;display:inline-grid;place-items:center;font-weight:700}
+    .muted{color:#5f6b63}
+
+    .labs{margin-top:10px;padding-left:6px}
+
+    footer{margin-top:18px;color:#6b746c}
+    @media (max-width:880px){.split{grid-template-columns:1fr}}
+
+    /* diagonal divider svg */
+    .diag{position:absolute;left:0;top:0;width:220px;height:220px;opacity:.08}
+  </style>
+</head>
+<body>
+  <svg class="diag" viewBox="0 0 200 200" aria-hidden>
+    <defs>
+      <linearGradient id="dg" x1="0" x2="1"><stop offset="0" stop-color="#dff4e1"/><stop offset="1" stop-color="#eefbf0"/></linearGradient>
+    </defs>
+    <rect width="200" height="200" fill="url(#dg)"/>
+    <path d="M0 120 L120 0 L200 0 L200 200 L0 200 Z" fill="#cfe9c8"/>
+  </svg>
+
+  <div class="wrap">
+    <header>
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+      <div style="font-size:.95rem">
+        <a href="index.html">Back</a> • <a href="services.html">Offerings</a> • <a href="conditions.html">Concerns</a>
+      </div>
+    </header>
+
+    <h1>How the work unfolds — a gentle sequence</h1>
+
+    <div class="split">
+      <div>
+        <section class="panel">
+          <div class="step">
+            <div class="dot">1</div>
+            <div>
+              <strong>Intake (discovery)</strong>
+              <p class="muted">We map your story: symptoms, lifestyle, sleep, movement, stressors, medical history, and current medications. This is a listening, educational session where questions guide clarity.</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="dot">2</div>
+            <div>
+              <strong>Personalized plan</strong>
+              <p class="muted">A concise plan framed as experiments—small, measurable changes you can try for 2–6 weeks. Plans include nutrition guidance, sleep architecture, movement, and mind-body practices when appropriate.</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="dot">3</div>
+            <div>
+              <strong>Follow-ups</strong>
+              <p class="muted">Regular check-ins (25–40 mins) to review data, adjust strategies, and support habit formation. We prioritize learning and refinement over quick fixes.</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="dot">4</div>
+            <div>
+              <strong>Longer-term care</strong>
+              <p class="muted">For persistent or complex patterns, we scale support—add sessions, involve collaborators, and use education-focused labs to guide choices.</p>
+            </div>
+          </div>
+
+        </section>
+
+        <section class="panel" style="margin-top:12px">
+          <h3 style="margin:0 0 8px 0;color:#274b34">Optional educational labs</h3>
+          <p class="muted">Labs are offered as tools to understand patterns—not as mandates. Commonly discussed options include basic metabolic panels, thyroid function, targeted nutrient testing, and functional digestive assessments. Each is considered for its potential to inform a practical plan.</p>
+          <ul class="labs muted" style="margin:8px 0 0 18px">
+            <li>Basic labs (CBC, metabolic panel)</li>
+            <li>Thyroid hormones (TSH, free T4/T3)</li>
+            <li>Vitamin D, B12, iron studies when indicated</li>
+            <li>Targeted digestive markers when warranted</li>
+          </ul>
+        </section>
+      </div>
+
+      <aside class="panel">
+        <h3 style="margin-top:0;color:#274b34">Principles that shape our work</h3>
+        <p class="muted">We favor small, sustainable experiments; clear education over jargon; shared decision-making; and safety-first recommendations. Nothing is imposed—choices are collaborative.</p>
+
+        <h4 style="margin-top:12px;color:#274b34">Coordination</h4>
+        <p class="muted">I collaborate with your primary care or specialists when needed. If urgent or specialist care is necessary, I will help guide next steps or referrals.</p>
+
+        <h4 style="margin-top:12px;color:#274b34">What I do not do</h4>
+        <p class="muted">I do not provide emergency services, and I do not promise cures. My role is education, support, and whole-person planning.</p>
+
+        <a href="book.html" style="display:inline-block;margin-top:14px;background:var(--accent);color:#fff;padding:10px 12px;border-radius:10px;text-decoration:none">Book a consult</a>
+      </aside>
+    </div>
+
+    <footer>
+      <p style="margin-top:16px">If you have questions about process, fees, or suitability, email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a>. Practitioner: {{PRACTITIONER_NAME}}, {{CREDENTIALS}} — {{CITY}}, {{STATE}}.</p>
+    </footer>
+  </div>
+</body>
+</html>

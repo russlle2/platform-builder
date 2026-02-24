@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Gatherings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#ffd166;--muted:#98a0b3;--glass:rgba(255,255,255,0.04);--accent-2:#6dd3b2}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#e6eef8;background:linear-gradient(180deg,var(--bg) 0%, #071124 60%);}
+    header{display:flex;justify-content:space-between;align-items:center;padding:24px 32px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.02));}
+    nav a{color:var(--muted);margin:0 10px;text-decoration:none;font-weight:600}
+    .logo{font-weight:800;color:white;letter-spacing:0.6px}
+    .hero{padding:44px 32px;display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+    .panel{background:linear-gradient(180deg,var(--card),rgba(8,12,20,0.9));padding:20px;border-radius:14px;box-shadow:0 8px 30px rgba(2,6,12,0.6)}
+    h1{margin:0 0 8px 0;font-size:28px;color:#fff}
+    p.lead{margin:0 0 16px 0;color:var(--muted);line-height:1.5}
+    .pattern{width:100%;height:120px;border-radius:10px;background-image:url('assets/img/pattern.svg');background-size:cover;background-position:center;margin-top:12px}
+    .next-event{border-left:4px solid var(--accent);padding-left:14px}
+    .calendar{margin-top:18px}
+    .date-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px dashed rgba(255,255,255,0.03)}
+    .mute{color:var(--muted);font-size:13px}
+    .controls{display:flex;flex-direction:column;gap:12px}
+    .seg{display:flex;gap:8px}
+    .seg button{background:var(--glass);border:1px solid rgba(255,255,255,0.04);padding:10px 12px;border-radius:10px;color:#fff;cursor:pointer}
+    .seg button.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#081018}
+    .recommend{margin-top:12px;padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,209,102,0.06),transparent)}
+    .cta{display:inline-block;margin-top:12px;padding:12px 16px;border-radius:10px;background:var(--accent);color:#081018;font-weight:700;text-decoration:none}
+    footer{padding:20px 32px;color:var(--muted);font-size:13px}
+    .disclaimer{margin-top:14px;font-size:12px;color:#ffebe0;background:linear-gradient(90deg,rgba(255,129,129,0.05),transparent);padding:10px;border-radius:8px}
+    @media(max-width:880px){.hero{grid-template-columns:1fr;}.pattern{height:80px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="/events.html">Gatherings</a>
+      <a href="/private-sessions.html">Sessions</a>
+      <a href="/pricing.html">Rates</a>
+      <a href="/about.html">About</a>
+      <a href="/book.html">Book</a>
+      <a href="/contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="panel">
+        <h1>Join an Evening of Held Sound</h1>
+        <p class="lead">A simple calendar for shared listening and gentle recalibration. Choose an upcoming gathering and set how you want to arrive — we'll shape the sound to meet that shape.</p>
+        <div class="pattern" aria-hidden="true"></div>
+
+        <div style="margin-top:18px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+          <div style="min-width:160px">
+            <label class="mute">Mood to Method</label>
+            <div class="seg" id="moodSeg">
+              <button data-mood="worn">Worn Out</button>
+              <button data-mood="rushed">Rushed</button>
+              <button data-mood="curious">Curious</button>
+              <button data-mood="rest">Seeking Rest</button>
+            </div>
+          </div>
+
+          <div style="min-width:180px">
+            <label class="mute">Sound Preference</label>
+            <div class="seg" id="intensitySeg">
+              <button data-int="gentle">Gentle</button>
+              <button data-int="medium">Medium</button>
+              <button data-int="intense">Intense</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="recommend" id="recommend">
+          <strong>Recommendation:</strong>
+          <div id="recommendText" style="margin-top:8px;color:var(--muted)">Pick a mood and an intensity to see a suggested approach and the next steps.</div>
+          <a id="primaryCta" class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+
+        <div class="disclaimer">
+          Important: If you are pregnant, have epilepsy, a heart condition, or other medical concerns, please consult a clinician before attending. Sound sessions can be deeply affecting; leave if you feel unwell.
+        </div>
+      </div>
+
+      <aside class="panel">
+        <div class="next-event">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div>
+              <div class="mute">Next Gathering</div>
+              <h2 style="margin:6px 0 0 0">Liminal Drift — Live Ensemble</h2>
+              <div class="mute" style="margin-top:6px">Sat • Feb 28 • 6:30pm • {{CITY}}, {{STATE}}</div>
+            </div>
+          </div>
+          <div style="margin-top:12px">An evening of layered bowls, breath-led transitions, and short guided pauses. Doors open 20 minutes prior.</div>
+          <a href="/book.html?event=next" class="cta" style="display:inline-block;margin-top:12px">Reserve a Seat</a>
+        </div>
+
+        <div class="calendar" aria-label="upcoming dates">
+          <div class="date-row"><div>Mar 6 • Thu • 7:00pm</div><div class="mute">Open Circle</div></div>
+          <div class="date-row"><div>Mar 13 • Thu • 7:00pm</div><div class="mute">Sound & Breath</div></div>
+          <div class="date-row"><div>Mar 20 • Thu • 7:00pm</div><div class="mute">Guided Drift</div></div>
+          <div style="margin-top:8px;color:var(--muted);font-size:13px">Sign up to hold a spot. Capacity is limited to preserve spaciousness.</div>
+        </div>
+
+      </aside>
+    </section>
+  </main>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div>{{BUSINESS_NAME}} • <span class="mute">{{PHONE}} • {{EMAIL}}</span></div>
+      <div class="mute">Small group gatherings • Please arrive mindful and hydrated</div>
+    </div>
+  </footer>
+
+  <script>
+    (function(){
+      const moodMap = {
+        worn: {method:'Slow Drift', blurb:'Soft, extended tones with generous silence — for those who feel depleted and need steady, slow re-tuning.'},
+        rushed: {method:'Grounded Wave', blurb:'Rhythmic pulses and shorter breaths to help re-anchor when you are hurried or scattered.'},
+        curious: {method:'Exploratory Tones', blurb:'A textured palette and playful phrasing for those who want to notice edges and curiosities.'},
+        rest: {method:'Deep Resonance', blurb:'Long sustain and low-frequency led spaces, designed to support deep unwinding.'}
+      };
+      const intensityMap = {
+        gentle:{label:'Gentle',note:'Light touch — bowls and chimes for a softer spectrum.'},
+        medium:{label:'Medium',note:'Balanced dynamics — body presence with melodic contour.'},
+        intense:{label:'Intense',note:'Deeper vibrations and fuller ensemble — more visceral experience.'}
+      };
+
+      let selectedMood=null, selectedIntensity=null;
+      const recommendText = document.getElementById('recommendText');
+      const primaryCta = document.getElementById('primaryCta');
+
+      function updateUI(){
+        if(!selectedMood || !selectedIntensity){
+          recommendText.textContent = 'Pick a mood and an intensity to see a suggested approach and the next steps.';
+          primaryCta.textContent = '{{PRIMARY_CTA_LABEL}}';
+          primaryCta.href = '{{PRIMARY_CTA_URL}}';
+          return;
+        }
+        const m = moodMap[selectedMood];
+        const i = intensityMap[selectedIntensity];
+        const title = m.method + ' — ' + i.label;
+        const body = m.blurb + ' ' + i.note;
+        recommendText.innerHTML = '<strong>'+title+'</strong><div style="margin-top:6px;color:var(--muted)">'+body+'</div>';
+        // CTA phrasing morphs
+        const ctaLabels = {
+          gentle: 'Reserve a Gentle Spot',
+          medium: 'Join This Session',
+          intense: 'Book an Intense Experience'
+        };
+        primaryCta.textContent = ctaLabels[selectedIntensity] || '{{PRIMARY_CTA_LABEL}}';
+        // append query to URL for tracking
+        primaryCta.href = '{{PRIMARY_CTA_URL}}?method='+encodeURIComponent(m.method)+'&intensity='+selectedIntensity+'&mood='+selectedMood;
+      }
+
+      document.querySelectorAll('#moodSeg button').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          document.querySelectorAll('#moodSeg button').forEach(b=>b.classList.remove('active'));
+          btn.classList.add('active');
+          selectedMood = btn.getAttribute('data-mood');
+          updateUI();
+        });
+      });
+      document.querySelectorAll('#intensitySeg button').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          document.querySelectorAll('#intensitySeg button').forEach(b=>b.classList.remove('active'));
+          btn.classList.add('active');
+          selectedIntensity = btn.getAttribute('data-int');
+          updateUI();
+        });
+      });
+
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Rates & Membership — Plans</title>
+  <style>
+    :root{--bg:#f7fffd;--card:#fff;--accent:#2f847c;--muted:#6b6f76;--shadow:0 10px 30px rgba(11,20,19,0.06);font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto}
+    body{margin:0;background:var(--bg);color:#071212}
+    header{padding:12px 18px;border-bottom:1px solid rgba(7,18,18,0.04)}
+    .nav{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+    .nav a{margin-left:14px;text-decoration:none;color:inherit}
+    main{max-width:1100px;margin:20px auto;padding:0 16px}
+    .wrap{display:grid;grid-template-columns:1fr 380px;gap:18px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:var(--shadow)}
+    h1{margin:0 0 8px 0}
+
+    .toggle{display:inline-flex;background:#f0fffb;padding:6px;border-radius:999px;border:1px solid rgba(47,132,124,0.06)}
+    .toggle button{background:transparent;border:0;padding:8px 12px;border-radius:999px;font-weight:700;color:var(--muted);cursor:pointer}
+    .toggle button.active{background:linear-gradient(90deg,var(--accent),#55bdb2);color:#fff}
+
+    .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+    .plan{padding:14px;border-radius:12px;background:linear-gradient(180deg,#fff,#fbffff);border:1px solid rgba(12,20,20,0.03)}
+    .price{font-weight:900;font-size:20px;color:var(--accent);margin-top:8px}
+    .small{font-size:13px;color:var(--muted)}
+
+    .compare{margin-top:12px}
+    .note{margin-top:12px;color:var(--muted)}
+
+    @media (max-width:980px){.wrap{grid-template-columns:1fr}.plans{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#80c9bf);display:flex;align-items:center;justify-content:center;color:white;font-weight:800">SB</div>
+        <div>
+          <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+          <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <div>
+        <a href="/index.html">Home</a>
+        <a href="/events.html">Gatherings</a>
+        <a href="/private-sessions.html">Solo Sessions</a>
+        <a href="/pricing.html">Rates</a>
+        <a href="/book.html">Book</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <section class="card">
+        <h1>Plans — monthly membership or session packages</h1>
+        <p class="small">Flexible options for regular attendees and occasional visitors. Toggle between Monthly membership and Package credits below to see animated pricing values and effective per-session cost.</p>
+
+        <div style="margin-top:12px;display:flex;align-items:center;justify-content:space-between">
+          <div class="toggle" role="tablist" aria-label="Pricing type">
+            <button id="monthlyBtn" class="active" aria-pressed="true">Monthly</button>
+            <button id="packageBtn">Package</button>
+          </div>
+          <div class="small">All plans include priority booking and guest passes</div>
+        </div>
+
+        <div class="plans" id="plans">
+          <div class="plan">
+            <div style="font-weight:800">Starter</div>
+            <div class="price" data-monthly="49" data-package="39">$49</div>
+            <div class="small">Monthly: 1 session credit / Package: 5-session credit</div>
+            <div style="margin-top:10px"><a class="cta" href="/book.html">Join</a></div>
+          </div>
+
+          <div class="plan">
+            <div style="font-weight:800">Steady</div>
+            <div class="price" data-monthly="89" data-package="72">$89</div>
+            <div class="small">Monthly: 2 sessions / Package: 10-session credit</div>
+            <div style="margin-top:10px"><a class="cta" href="/book.html">Join</a></div>
+          </div>
+
+          <div class="plan">
+            <div style="font-weight:800">Dedicated</div>
+            <div class="price" data-monthly="150" data-package="128">$150</div>
+            <div class="small">Monthly: 4 sessions / Package: 20-session credit</div>
+            <div style="margin-top:10px"><a class="cta" href="/book.html">Join</a></div>
+          </div>
+        </div>
+
+        <div class="compare" id="comparator" aria-hidden="false">
+          <div style="display:flex;gap:14px;margin-top:12px">
+            <div style="flex:1;padding:12px;border-radius:10px;background:#fbffff;border:1px solid rgba(12,20,20,0.03)">
+              <div class="small">Effective per-session (example)</div>
+              <div style="font-weight:800;margin-top:8px"><span id="perSession">—</span></div>
+            </div>
+            <div style="flex:1;padding:12px;border-radius:10px;background:#fff;border:1px solid rgba(12,20,20,0.03)">
+              <div class="small">Savings vs drop-in</div>
+              <div style="font-weight:800;margin-top:8px;color:var(--accent)" id="savings">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="note">Drop-in rate: $28 per session. Memberships and packages reduce effective cost; packages assume full use of credits within 12 months.</div>
+      </section>
+
+      <aside>
+        <div class="card">
+          <h4 style="margin:0 0 8px 0">Package details</h4>
+          <p class="small">Packages are transferable within a household. Memberships auto-renew monthly; cancel anytime with 30 days notice. Contraindications and safety notes apply — see event or private session pages for specifics.</p>
+          <div style="margin-top:12px"><a href="/contact.html" class="cta">Questions? Contact us</a></div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h5 style="margin:0 0 8px 0">Need a custom plan?</h5>
+          <p class="small">We can craft institutional or workplace offers. Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> for bulk pricing.</p>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    // Pricing comparator: monthly vs package, animated numbers
+    const monthlyBtn = document.getElementById('monthlyBtn');
+    const packageBtn = document.getElementById('packageBtn');
+    const prices = Array.from(document.querySelectorAll('.price'));
+    const perSessionEl = document.getElementById('perSession');
+    const savingsEl = document.getElementById('savings');
+
+    let mode = 'monthly';
+
+    function setActive(btnA, btnB){btnA.classList.add('active');btnA.setAttribute('aria-pressed','true');btnB.classList.remove('active');btnB.setAttribute('aria-pressed','false');}
+
+    function animateNumber(el, to){
+      const from = parseInt(el.textContent.replace(/[^0-9]/g,'')) || 0;
+      const start = Date.now();
+      const dur = 420;
+      const step = ()=>{
+        const now = Date.now();
+        const t = Math.min(1,(now-start)/dur);
+        const v = Math.round(from + (to-from)*t);
+        el.textContent = '$' + v;
+        if(t<1) requestAnimationFrame(step);
+      };
+      step();
+    }
+
+    function updateUI(){
+      prices.forEach(pEl=>{
+        const m = parseInt(pEl.getAttribute('data-monthly'),10);
+        const pkg = parseInt(pEl.getAttribute('data-package'),10);
+        const target = mode === 'monthly' ? m : pkg;
+        animateNumber(pEl, target);
+      });
+
+      // compute a simple per-session example for the middle plan
+      const midMonthly = parseInt(prices[1].getAttribute('data-monthly'),10);
+      const midPackage = parseInt(prices[1].getAttribute('data-package'),10);
+      let per = 0, savings=0;
+      if(mode==='monthly'){ per = Math.round(midMonthly / 2); savings = Math.round(28 - per); }
+      else { per = Math.round(midPackage / 10); savings = Math.round(28 - per); }
+      // animate per session and savings
+      const pNum = perSessionEl;
+      const sNum = savingsEl;
+      const fromP = parseInt((pNum.textContent||'').replace(/[^0-9]/g,''))||0;
+      const fromS = parseInt((sNum.textContent||'').replace(/[^0-9]/g,''))||0;
+      const start=Date.now();const dur=420;
+      (function step(){const now=Date.now();const t=Math.min(1,(now-start)/dur);const np=Math.round(fromP+(per-fromP)*t);const ns=Math.round(fromS+(savings-fromS)*t);pNum.textContent='$'+np; sNum.textContent='$'+ns; if(t<1)requestAnimationFrame(step);}());
+    }
+
+    monthlyBtn.addEventListener('click',()=>{mode='monthly';setActive(monthlyBtn,packageBtn);updateUI();});
+    packageBtn.addEventListener('click',()=>{mode='package';setActive(packageBtn,monthlyBtn);updateUI();});
+
+    // init
+    updateUI();
+  </script>
+</body>
+</html>

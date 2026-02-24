@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Contact {{BUSINESS_NAME}} — sensible coaching for sustainable change.">
+  <style>
+    :root{--bg:#fbfcfb;--muted:#667085;--accent:#0b67d0;--card:#ffffff;--radius:12px}
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial; background:var(--bg);color:#0b1220}
+    header{display:flex;align-items:center;justify-content:space-between;padding:28px 36px}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:54px;height:54px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(180deg,#eaf4ff,white);font-weight:700;color:var(--accent)}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-weight:600}
+    main{max-width:920px;margin:28px auto;padding:28px}
+    .hero{display:grid;grid-template-columns:1fr;gap:18px;background:transparent;padding:28px 0}
+    .hero-card{background:var(--card);border-radius:var(--radius);padding:30px;box-shadow:0 6px 24px rgba(8,15,30,0.06)}
+    .eyebrow{color:var(--muted);font-size:13px;font-weight:600}
+    h1{margin:10px 0 6px;font-size:28px;line-height:1.06;color:#061427}
+    p.lead{margin:0;color:var(--muted);font-size:15px}
+    .two-col{display:grid;grid-template-columns:1fr 320px;gap:24px;margin-top:18px}
+    .card{background:var(--card);padding:20px;border-radius:12px;box-shadow:0 6px 18px rgba(9,18,30,0.04)}
+    label{display:block;font-weight:600;margin-bottom:8px;font-size:13px}
+    input,textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef8;font-size:14px}
+    textarea{min-height:120px;resize:vertical}
+    .muted{color:var(--muted);font-size:13px}
+    .btn{display:inline-block;background:var(--accent);color:white;padding:10px 14px;border-radius:10px;border:none;font-weight:700;text-decoration:none}
+    footer{max-width:920px;margin:32px auto;padding:16px;color:var(--muted);font-size:13px}
+    .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+    .pillar{padding:14px;border-radius:10px;background:linear-gradient(180deg,#fff,#fbfdff);border:1px solid #eef6ff}
+    .truths{display:grid;gap:10px;margin-top:18px}
+    .truth-item{padding:12px;border-radius:10px;background:#fff;border:1px solid #f1f5f9}
+    .case-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+    .case{padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#fcfdff);border:1px solid #eef6ff}
+    details{background:#fff;border-radius:10px;padding:12px;border:1px solid #f2f6fb}
+    @media(max-width:880px){.two-col{grid-template-columns:1fr;}.pillars{grid-template-columns:1fr}.case-grid{grid-template-columns:1fr}.logo{width:46px;height:46px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">{{BUSINESS_NAME}}</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="programs.html">Paths</a>
+      <a href="services.html">Offerings</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html" style="color:var(--accent)">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero-card hero" aria-labelledby="hero-heading">
+      <div>
+        <div class="eyebrow">Ready for a practical reset?</div>
+        <h1 id="hero-heading">Talk with someone who maps the process — not just motivation</h1>
+        <p class="lead">I’m {{COACH_NAME}} ({{CREDENTIALS}}). I design habit-first plans that fit busy lives. Schedule a short clarity call to test whether I can help you build durable routines without fads.</p>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <h2 style="margin-top:0">Tell me what matters</h2>
+          <form id="contact-form" onsubmit="submitForm(event)">
+            <label for="name">Your name</label>
+            <input id="name" name="name" required placeholder="First and last">
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required placeholder="you@example.com">
+
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" placeholder="Optional — {{PHONE}}">
+
+            <label for="interest">I’m interested in</label>
+            <select id="interest" name="interest">
+              <option>One-on-one coaching</option>
+              <option>Group program</option>
+              <option>Workplace wellness</option>
+              <option>Not sure — need guidance</option>
+            </select>
+
+            <label for="message">Quick note</label>
+            <textarea id="message" name="message" placeholder="Share a goal or constraint"></textarea>
+
+            <div style="display:flex;gap:10px;align-items:center;margin-top:12px">
+              <button class="btn" type="submit">{{PRIMARY_CTA_LABEL}}</button>
+              <a class="muted" href="mailto:{{EMAIL}}">Or email: {{EMAIL}}</a>
+            </div>
+
+            <p class="muted" style="margin-top:10px;font-size:13px">I respect your time — expect a reply in 48 business hours. No medical advice; coaching supports behavior, habits and lifestyle strategies.</p>
+          </form>
+        </div>
+
+        <aside>
+          <div class="card" style="margin-bottom:12px">
+            <h3 style="margin:0 0 8px">Free resource: Habit Starter Checklist</h3>
+            <p class="muted" style="margin:0 0 12px">A one-page framework to pick one small habit and keep it. Useful before your clarity call.</p>
+            <a class="btn" href="{{PRIMARY_CTA_URL}}">Get the checklist</a>
+          </div>
+
+          <div class="card">
+            <h4 style="margin:0 0 8px">Quick details</h4>
+            <p class="muted" style="margin:0 0 6px">Location: {{CITY}}, {{STATE}}</p>
+            <p class="muted" style="margin:0">Availability: Limited monthly intake. Phone: {{PHONE}}</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- PILLARS -->
+    <section aria-labelledby="pillars-heading" style="margin-top:22px">
+      <h2 id="pillars-heading">How I structure change</h2>
+      <p class="muted">Frameworks not fads — three guiding pillars that shape each plan.</p>
+      <div class="pillars" role="list">
+        <div class="pillar" role="listitem">
+          <strong>Micro-actions</strong>
+          <p class="muted">A habit is a system of tiny moments that add up. We pick the right smallest action first.</p>
+        </div>
+        <div class="pillar" role="listitem">
+          <strong>Evidence loops</strong>
+          <p class="muted">Trackable signals instead of willpower. Decide what to measure and why it moves the needle.</p>
+        </div>
+        <div class="pillar" role="listitem">
+          <strong>Context design</strong>
+          <p class="muted">Change the environment around the behavior so the choice becomes obvious.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- MYTH vs TRUTH -->
+    <section aria-labelledby="myths-heading" style="margin-top:22px">
+      <h2 id="myths-heading">Common myths I clear up</h2>
+      <div class="truths">
+        <div class="truth-item"><strong>Myth:</strong> ‘‘Motivation is the answer.’" <br><span class="muted">Truth: Reliable systems matter more — motivation fluctuates, systems don’t.</span></div>
+        <div class="truth-item"><strong>Myth:</strong> ‘‘I should change everything at once.’" <br><span class="muted">Truth: Focused, incremental wins scale sustainably.</span></div>
+        <div class="truth-item"><strong>Myth:</strong> ‘‘Willpower wins.’" <br><span class="muted">Truth: Remove friction and design triggers instead of relying on willpower alone.</span></div>
+      </div>
+    </section>
+
+    <!-- CASE STUDIES -->
+    <section aria-labelledby="cases" style="margin-top:22px">
+      <h2 id="cases">Representative short studies</h2>
+      <p class="muted">Snapshots of outcomes people notice within 6–12 weeks (anonymous, composite summaries).</p>
+      <div class="case-grid">
+        <div class="case">
+          <strong>Engineer — built a 10-minute evening routine</strong>
+          <p class="muted">Result: Better sleep onset, steady energy. First 3 weeks focused on cue consolidation and environment tweaks.</p>
+        </div>
+        <div class="case">
+          <strong>Manager — habit-linked micro-exercises</strong>
+          <p class="muted">Result: Regular movement breaks and reduced afternoon slumps by structuring context at the desk.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section aria-labelledby="faq-heading" style="margin-top:22px">
+      <h2 id="faq-heading">Questions people often ask</h2>
+      <details>
+        <summary>How is coaching different from therapy?</summary>
+        <p class="muted">Coaching focuses on forward-looking behavior change and measurable routines. It doesn’t provide clinical diagnosis or treatment.</p>
+      </details>
+      <details>
+        <summary>What if I can’t commit long-term?</summary>
+        <p class="muted">We work in shorter blocks with clear, time-bound experiments so you can test whether the approach fits your life.</p>
+      </details>
+      <details>
+        <summary>Do you offer sliding scale or group options?</summary>
+        <p class="muted">Yes — I offer both group cohorts with structured curricula and limited sliding-scale spots. Ask on the form.</p>
+      </details>
+    </section>
+
+    <!-- CALL TO ACTION -->
+    <section style="margin-top:26px;background:linear-gradient(180deg,#fff,#fbfeff);border-radius:12px;padding:18px;border:1px solid #e6f0ff">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div>
+          <h3 style="margin:0">Ready to test one small change?</h3>
+          <p class="muted" style="margin:6px 0 0">Start with a 20-minute clarity call — get a short roadmap tailored to your week.</p>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <a class="muted" href="pricing.html">View programs</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+      <div class="muted">© <strong>{{BUSINESS_NAME}}</strong> • Coaching by {{COACH_NAME}}, {{CREDENTIALS}}</div>
+      <div class="muted">Contact: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> — <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    </div>
+  </footer>
+
+  <script>
+    function submitForm(e){
+      e.preventDefault();
+      const btn = document.querySelector('.btn');
+      const original = btn.textContent;
+      btn.textContent = 'Sending…'; btn.disabled = true;
+      // Simulated async submission
+      setTimeout(() => {
+        alert('Thanks — your request was received. I will reply within 48 business hours.');
+        btn.textContent = original; btn.disabled = false;
+        document.getElementById('contact-form').reset();
+      }, 800);
+    }
+  </script>
+</body>
+</html>

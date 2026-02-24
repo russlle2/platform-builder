@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Investment & Rates — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#07121a;--card:#0b161b;--accent:#86ffd9;--muted:#9db8b3;--maxw:980px}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto;background:linear-gradient(180deg,#041018,#071827);color:#ecfffb}
+    .bg-svg{position:fixed;inset:0;z-index:-1;opacity:0.08}
+    header{max-width:var(--maxw);margin:26px auto;padding:16px 20px;display:flex;align-items:center}
+    .brand{font-weight:800}
+    nav{margin-left:auto;display:flex;gap:12px}
+    nav a{color:var(--muted);text-decoration:none}
+    main{max-width:var(--maxw);margin:22px auto;padding:20px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);border-radius:14px}
+    .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}
+    .tier{background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+    .price{font-size:20px;color:var(--accent);font-weight:800}
+    .muted{color:var(--muted)}
+    .cta{margin-top:14px}
+    .btn{display:inline-block;padding:10px 12px;border-radius:12px;background:linear-gradient(90deg,#6ef0d8,#9ef1df);color:#042f30;text-decoration:none;font-weight:700}
+    .tiny{font-size:13px}
+    footer{max-width:var(--maxw);margin:32px auto;color:var(--muted);font-size:13px}
+    @media (max-width:900px){.tiers{grid-template-columns:1fr} nav{display:none}}
+  </style>
+</head>
+<body>
+  <!-- Unique SVG pattern for pricing page -->
+  <svg class="bg-svg" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <defs>
+      <radialGradient id="rg" cx="0.2" cy="0.2"><stop offset="0" stop-color="#86ffd9" stop-opacity="0.12"/><stop offset="1" stop-color="#3fcbb0" stop-opacity="0.02"/></radialGradient>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#rg)"/>
+    <g fill="#ffffff" opacity="0.02">
+      <rect x="60" y="140" width="360" height="2" />
+      <rect x="420" y="340" width="600" height="2" />
+    </g>
+  </svg>
+
+  <header>
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Main</a>
+      <a href="events.html">Gather</a>
+      <a href="private-sessions.html">Sessions</a>
+      <a href="pricing.html">Rates</a>
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <h1 style="margin:0">Investment</h1>
+      <p class="muted" style="margin-top:8px">Transparent pricing for sound baths and private offerings. We recommend selecting what best supports your intention — rest, reset, or deep work.</p>
+    </section>
+
+    <section class="tiers">
+      <div class="tier">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><strong>Drop-in Group</strong><div class="tiny muted">Single sound bath gathering</div></div>
+          <div class="price">$35</div>
+        </div>
+        <p class="muted tiny" style="margin-top:10px">75 minutes. Includes guided centering and a 45–50 minute sound immersion. Instruments vary per event — crystal bowls, chimes, light gong textures.</p>
+        <div class="cta"><a class="btn" href="{{PRIMARY_CTA_URL}}">Book a spot</a></div>
+      </div>
+
+      <div class="tier">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><strong>Series — 4 sessions</strong><div class="tiny muted">Recommended for deeper nervous system change</div></div>
+          <div class="price">$120</div>
+        </div>
+        <p class="muted tiny" style="margin-top:10px">Four curated gatherings across lunar cycles. Instruments include crystal bowls, tuning forks, and a chorus of soft chimes to scaffold progressive relaxation.</p>
+        <div class="cta"><a class="btn" href="{{PRIMARY_CTA_URL}}">Reserve series</a></div>
+      </div>
+
+      <div class="tier">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><strong>Private 1:1 Intensive</strong><div class="tiny muted">Tailored, longer session</div></div>
+          <div class="price">From $149</div>
+        </div>
+        <p class="muted tiny" style="margin-top:10px">75–90 minutes, bespoke sound palette: tuning forks, bowed monochord, subtle vocal toning. Includes intake and aftercare guidance.</p>
+        <div class="cta"><a class="btn" href="{{PRIMARY_CTA_URL}}">Request booking</a></div>
+      </div>
+    </section>
+
+    <section style="margin-top:18px">
+      <h3 style="margin-bottom:8px">Add-ons & group options</h3>
+      <ul class="muted tiny">
+        <li>Couples session upgrade — +$80 (shared experience)</li>
+        <li>Corporate or private group workshops — custom pricing</li>
+        <li>On-site travel surcharge applies for venues outside {{CITY}} area</li>
+      </ul>
+
+      <h4 style="margin-top:12px">A note on contraindications</h4>
+      <p class="muted tiny">Sound is powerful. Guests with epilepsy, recent surgery, serious cardiovascular conditions, pregnancy, or implanted medical devices should consult their provider and disclose on booking. We can modify offerings for comfort and safety.</p>
+
+      <h4 style="margin-top:12px">What to bring</h4>
+      <p class="muted tiny">Mat or blanket, eye covering, pillow, and water bottle. Arrive 10 minutes early for check-in. Need a loaner blanket? Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</p>
+    </section>
+
+    <section style="margin-top:18px;display:flex;gap:12px;align-items:center;justify-content:space-between">
+      <div>
+        <strong>Ready to book?</strong>
+        <div class="muted tiny">Spaces fill quickly for evening gatherings and weekend private sessions.</div>
+      </div>
+      <div>
+        <a class="btn" href="{{PRIMARY_CTA_URL}}">Secure your session</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="max-width:var(--maxw);margin:24px auto;color:var(--muted);font-size:13px">Questions? Contact <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call {{PHONE}} • {{BUSINESS_NAME}} — {{TAGLINE}}</div>
+  </footer>
+</body>
+</html>

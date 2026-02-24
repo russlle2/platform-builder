@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Plans — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfdfc;--ink:#0f2b2b;--muted:#556868;--accent:#7bb67b}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--ink)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px}
+    nav a{margin:0 8px;text-decoration:none;color:var(--ink);font-size:14px}
+    .wrap{max-width:980px;margin:22px auto;padding:0 20px}
+    .intro{display:flex;gap:18px;align-items:center}
+    .card{background:#fff;padding:16px;border-radius:12px;box-shadow:0 8px 26px rgba(8,10,9,.04)}
+    .plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:18px}
+    .plan{padding:14px;border-radius:10px;border:1px solid rgba(86,111,86,.06)}
+    .price{font-weight:700;font-size:20px;color:var(--accent)}
+    .muted{color:var(--muted)}
+    .cta{display:inline-block;margin-top:10px;padding:8px 10px;border-radius:8px;background:var(--accent);color:white;text-decoration:none}
+    .note{font-size:13px;color:var(--muted);margin-top:8px}
+    .try{margin-top:12px}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:600">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Story</a>
+      <a href="services.html">Offerings</a>
+      <a href="programs.html">Plans</a>
+      <a href="contact.html">Hello</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="intro">
+      <div style="flex:1">
+        <div class="card">
+          <h1>Plans framed around what you want to keep</h1>
+          <p class="muted">No cookie-cutter tiers. Each plan names the commitment level and the practice it supports.</p>
+        </div>
+      </div>
+      <aside style="width:280px">
+        <div class="card">
+          <strong>Support model</strong>
+          <p class="muted">A hybrid of coaching calls and practical deliverables: short daily tasks, weekly reflections, and a living habit map.</p>
+        </div>
+      </aside>
+    </section>
+
+    <section class="plans">
+      <div class="plan card" id="sprint">
+        <h3>Practice Sprint</h3>
+        <div class="price">$320 / 4 weeks</div>
+        <div class="muted">Pick one habit. Daily micro-checks with two coaching calls. Designed for quick, visible change.</div>
+        <a class="cta" href="book.html">Join a sprint</a>
+        <div class="note">Space is limited — plan includes a short onboarding sequence to keep focus.</div>
+      </div>
+
+      <div class="plan card" id="steady">
+        <h3>Steady Course</h3>
+        <div class="price">$880 / 6 weeks</div>
+        <div class="muted">Weekly sessions, tailored experiments, and a shared habit map you keep. Meant for gradual, durable shifts.</div>
+        <a class="cta" href="book.html">Enroll in the course</a>
+        <div class="note">Includes email check-ins and two short reflections between calls.</div>
+      </div>
+
+      <div class="plan card">
+        <h3>Personal Framework</h3>
+        <div class="price">Custom</div>
+        <div class="muted">If you want a bespoke structure (team or extended project), we design a framework and a living plan together.</div>
+        <a class="cta" href="contact.html">Request a proposal</a>
+        <div class="note">We frame pricing around time commitments and deliverables — flexible, transparent.</div>
+      </div>
+    </section>
+
+    <section style="margin-top:18px">
+      <div class="card">
+        <h3>Try a guided practice</h3>
+        <p class="muted">Experience a short reset: choose breathing, journaling, or a simple intention setting.</p>
+        <div class="try" style="display:flex;gap:8px">
+          <button class="cta" style="background:#4f9a55;border:none" onclick="openExercise('breathing')">Breathing reset</button>
+          <button class="cta" style="background:#3d8b4a;border:none" onclick="openExercise('journaling')">Journaling prompt</button>
+          <button class="cta" style="background:#2f7f3f;border:none" onclick="openExercise('intention')">Set intention</button>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:18px">
+      <div class="card">
+        <h3>Questions</h3>
+        <div style="margin-top:8px">
+          <div style="margin-bottom:8px"><strong>How are plans priced?</strong><div class="muted">Pricing ties to duration and level of hands-on design. You’ll see clear deliverables up front.</div></div>
+          <div style="margin-bottom:8px"><strong>Are these medical services?</strong><div class="muted">No. These are coaching and habit-design services focused on habits, outcomes, and frameworks.</div></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="exercise-modal" style="display:none;position:fixed;left:0;top:0;width:100%;height:100%;align-items:center;justify-content:center;background:rgba(6,8,6,.36)" aria-hidden="true">
+    <div style="background:white;padding:18px;border-radius:12px;max-width:520px;margin:40px auto;position:relative">
+      <button onclick="closeExercise()" style="position:absolute;right:12px;top:10px;border:none;background:none;font-size:16px">✕</button>
+      <div id="exercise-content"></div>
+    </div>
+  </div>
+
+  <script>
+    // Reuse the guided exercise logic similar to services.html but self-contained here.
+    const modal = document.getElementById('exercise-modal');
+    const content = document.getElementById('exercise-content');
+    let intervalRef = null;
+
+    function openExercise(type){
+      buildExercise(type);
+      modal.style.display='flex'; modal.setAttribute('aria-hidden','false');
+    }
+    function closeExercise(){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); if(intervalRef) clearInterval(intervalRef); }
+
+    function buildExercise(type){
+      if(intervalRef) clearInterval(intervalRef);
+      if(type==='breathing'){
+        content.innerHTML = `
+          <h2>Breathe — quick minute</h2>
+          <div style="width:120px;height:120px;border-radius:50%;margin:12px auto;background:linear-gradient(180deg,#9fe2a6,#6aa96a);display:flex;align-items:center;justify-content:center;color:white;font-weight:700" id="c">Inhale</div>
+          <div style="text-align:center;color:#556868;font-size:18px" id="t">60</div>
+          <p style="color:#556868">Inhale 4s • hold 4s • exhale 6s. Follow the circle.</p>
+        `;
+        let t=60;const timer=document.getElementById('t');const circle=document.getElementById('c');const phases=['Inhale','Hold','Exhale'];let phase=0,cnt=0;
+        intervalRef=setInterval(()=>{t--;timer.textContent=t;cnt++;if(phase===2){if(cnt>=6){phase=0;cnt=0}}else{if(cnt>=4){phase++;cnt=0}};circle.textContent=phases[phase];circle.style.transform = phase===0? 'scale(1.2)':'scale(1)';if(t<=0){clearInterval(intervalRef);timer.textContent='Done';setTimeout(()=>closeExercise(),800)}},1000);
+      } else if(type==='journaling'){
+        content.innerHTML = `
+          <h2>Journaling — prompt</h2>
+          <p style="color:#556868">Write for three minutes. Keep the pen moving.</p>
+          <div style="margin-top:8px"><strong>Prompt:</strong> What one small thing would make today slightly easier?</div>
+          <textarea id="j" style="width:100%;height:150px;margin-top:8px;padding:10px;border-radius:8px;border:1px solid #eee"></textarea>
+          <div style="text-align:center;color:#556868;font-size:18px" id="jt">180</div>
+        `;
+        let t=180;const timer=document.getElementById('jt');intervalRef=setInterval(()=>{t--;timer.textContent=t;if(t<=0){clearInterval(intervalRef);timer.textContent='End';setTimeout(()=>closeExercise(),900)}},1000);
+      } else if(type==='intention'){
+        content.innerHTML = `
+          <h2>One-line intention</h2>
+          <p style="color:#556868">Name it. Repeat it. Let it be a guide for the next hour.</p>
+          <input id="it" style="width:100%;padding:10px;border-radius:8px;border:1px solid #eee" placeholder="I will..." />
+          <div style="margin-top:12px;display:flex;justify-content:flex-end"><button onclick="saveIntent()" class="cta">Save</button></div>
+        `;
+      }
+    }
+    function saveIntent(){const v=document.getElementById('it').value; if(v.trim()){alert('Saved: '+v);} closeExercise();}
+  </script>
+</body>
+</html>

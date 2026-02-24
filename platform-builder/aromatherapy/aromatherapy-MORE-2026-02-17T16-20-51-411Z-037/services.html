@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfaf8;--ink:#222;--muted:#6b6b6b;--accent:#6aa84f;--accent-2:#6fa8dc;--card:#fff;--glass:rgba(255,255,255,0.6)}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; color:var(--ink);background:linear-gradient(180deg,#fbfbfb 0%,#f7f7f6 100%)}
+    header{position:relative;padding:28px 32px;display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:56px;height:56px;display:grid;place-items:center;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;font-weight:700}
+    nav a{margin-left:18px;color:var(--muted);text-decoration:none;font-weight:600}
+    .hero{padding:40px 32px;display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+    .hero-inner{background:var(--card);padding:28px;border-radius:14px;box-shadow:0 6px 30px rgba(39,39,39,0.06)}
+    h1{margin:0 0 10px 0;font-size:24px}
+    p.lead{margin:0;color:var(--muted)}
+    .pattern{position:absolute;right:10px;top:10px;opacity:0.06;pointer-events:none}
+
+    /* Diagnostic / Mood-to-Method */
+    .mood-box{background:linear-gradient(180deg,rgba(255,255,255,0.9),var(--glass));padding:18px;border-radius:12px}
+    .mood-grid{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+    .mood-btn{padding:10px 12px;border-radius:10px;border:1px solid #e7e7e7;background:white;cursor:pointer;color:var(--muted);font-weight:600}
+    .mood-btn.active{background:linear-gradient(135deg,var(--accent-2),var(--accent));color:white;border:none}
+    .method-panel{margin-top:14px;padding:14px;border-radius:10px;background:#fff8;backdrop-filter:blur(6px)}
+    .method-title{font-weight:700}
+    .method-copy{color:var(--muted);margin-top:6px}
+    .cta-row{display:flex;gap:12px;margin-top:16px}
+    .btn{display:inline-block;padding:10px 14px;border-radius:10px;text-decoration:none;background:var(--accent);color:white;font-weight:700}
+    .btn.secondary{background:#fff;border:1px solid #e7e7e7;color:var(--ink)}
+
+    /* Services list */
+    .services{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:18px}
+    .svc{background:var(--card);padding:14px;border-radius:10px;box-shadow:0 4px 18px rgba(39,39,39,0.04)}
+    .svc h3{margin:0;font-size:16px}
+    .svc p{margin:6px 0 0;color:var(--muted);font-size:14px}
+
+    /* Pricing comparator */
+    .pricing{margin-top:22px;background:linear-gradient(180deg,#ffffff, #fcfff7);padding:16px;border-radius:12px}
+    .toggle{display:flex;align-items:center;gap:12px}
+    .switch{width:52px;height:28px;background:#e8e8e8;border-radius:28px;position:relative;cursor:pointer}
+    .switch .knob{position:absolute;left:4px;top:4px;width:20px;height:20px;border-radius:20px;background:white;box-shadow:0 2px 8px rgba(0,0,0,0.08);transition:transform 280ms cubic-bezier(.2,.9,.28,1)}
+    .switch.on{background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+    .switch.on .knob{transform:translateX(24px)}
+    .price-row{display:flex;gap:18px;margin-top:12px}
+    .price{flex:1;padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#fafafa);text-align:center}
+    .price .num{font-size:20px;font-weight:800}
+    .muted-sm{font-size:13px;color:var(--muted)}
+
+    footer{padding:28px 32px;color:var(--muted);font-size:13px}
+    @media (max-width:900px){.hero{grid-template-columns:1fr;}
+      .services{grid-template-columns:1fr;} .hero-inner{padding:18px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">A</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Blends Bar</a>
+      <a href="shop.html">Shoppe</a>
+      <a href="pricing.html">Rates</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+    <svg class="pattern" width="160" height="160" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g1" x1="0%" x2="100%" y1="0%" y2="100%">
+          <stop offset="0%" stop-color="#d9ead3"/>
+          <stop offset="100%" stop-color="#cfe2f3"/>
+        </linearGradient>
+      </defs>
+      <rect x="0" y="0" width="100" height="100" fill="url(#g1)" rx="18"/>
+      <g fill-opacity="0.08" fill="#000">
+        <circle cx="18" cy="22" r="6"/>
+        <circle cx="46" cy="42" r="4"/>
+        <circle cx="72" cy="68" r="8"/>
+      </g>
+    </svg>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-inner">
+        <h1>Personalized scent care for daily ease</h1>
+        <p class="lead">Short consultations, crafted blends, and gentle at-home practices that may support focused rest, calm, or energy.</p>
+
+        <div class="services">
+          <div class="svc">
+            <h3>Pulse Session — 30 min</h3>
+            <p>Quick intake, targeted aroma choices, take-home roller. Good for a focused reset.</p>
+          </div>
+          <div class="svc">
+            <h3>Signature Consultation — 60 min</h3>
+            <p>Deeper intake, scent map, and a personalized blend recipe you can repeat at home.</p>
+          </div>
+          <div class="svc">
+            <h3>At-Home Ritual Kit</h3>
+            <p>Custom-labeled roller + guide for a week of small scent practices to support routine.</p>
+          </div>
+          <div class="svc">
+            <h3>Group Scenting Workshop</h3>
+            <p>Short experiential gatherings to learn blending basics and simple at-home protocols.</p>
+          </div>
+        </div>
+
+        <div style="margin-top:16px">
+          <a id="bookNow" class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <a class="btn secondary" href="pricing.html">See options</a>
+        </div>
+      </div>
+
+      <aside>
+        <div class="mood-box">
+          <div style="font-weight:800">Mood-to-Method</div>
+          <div style="font-size:13px;color:var(--muted)">Tap how you feel and the page will suggest the best next scent approach.</div>
+          <div class="mood-grid" id="moodGrid">
+            <button class="mood-btn" data-key="tired">Tired</button>
+            <button class="mood-btn" data-key="wired">Wired</button>
+            <button class="mood-btn" data-key="low">Low Mood</button>
+            <button class="mood-btn" data-key="focus">Foggy Focus</button>
+            <button class="mood-btn" data-key="sleepless">Sleepless</button>
+          </div>
+
+          <div class="method-panel" id="methodPanel">
+            <div class="method-title">Choose a state above</div>
+            <div class="method-copy">We’ll suggest whether a quick inhalation protocol, a roller, or a nightly mist may fit right now.</div>
+            <div class="cta-row">
+              <a id="methodAction" class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+              <a class="btn secondary" href="book.html">Book a consult</a>
+            </div>
+          </div>
+
+          <div style="margin-top:10px;font-size:12px;color:var(--muted)">
+            Safety note: aromatics are supportive and not a substitute for medical advice. Always patch-test new oils and consult professionals if pregnant, nursing, or caring for pets.
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="pricing" aria-labelledby="pricingHeading">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div id="pricingHeading" style="font-weight:800">Membership and Packages</div>
+          <div class="muted-sm">Select the cadence that fits your routine.</div>
+        </div>
+        <div class="toggle">
+          <div style="font-size:13px;color:var(--muted)">Monthly</div>
+          <div id="switch" class="switch" role="switch" aria-checked="false">
+            <div class="knob"></div>
+          </div>
+          <div style="font-size:13px;color:var(--muted)">Package</div>
+        </div>
+      </div>
+
+      <div class="price-row">
+        <div class="price">
+          <div class="muted-sm">Refresh Kit</div>
+          <div class="num" data-month="18" data-package="48">$18</div>
+          <div class="muted-sm">per month or single</div>
+        </div>
+        <div class="price">
+          <div class="muted-sm">Monthly Scent Plan</div>
+          <div class="num" data-month="48" data-package="240">$48</div>
+          <div class="muted-sm">charged monthly</div>
+        </div>
+        <div class="price">
+          <div class="muted-sm">Consult Bundle</div>
+          <div class="num" data-month="0" data-package="220">$0</div>
+          <div class="muted-sm">one-time pack (3 sessions)</div>
+        </div>
+      </div>
+      <div style="margin-top:12px;color:var(--muted);font-size:13px">Tip: Flip the toggle to compare per-month and package pricing. Numbers animate to show totals.</div>
+    </section>
+
+    <section style="margin:22px 32px;padding:18px;background:var(--card);border-radius:12px">
+      <h2 style="margin-top:0">How a typical session flows</h2>
+      <ol style="color:var(--muted)">
+        <li>Brief intake and scent history (5–10 min)</li>
+        <li>Guided sniffing and preference mapping</li>
+        <li>Tailored blend creation + dilution guidance</li>
+        <li>Simple at-home ritual to try for one week</li>
+      </ol>
+      <div style="margin-top:12px;font-size:13px;color:var(--muted)">FAQ snapshot: Dilution guidance, patch testing, and pet/pregnancy notes are discussed at intake. Aromatherapy may support comfort but is not a medical treatment.</div>
+    </section>
+  </main>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div>{{CITY}}, {{STATE}} • <a style="color:var(--muted);text-decoration:none" href="tel:{{PHONE}}">{{PHONE}}</a></div>
+      </div>
+      <div style="text-align:right">Questions? <a href="contact.html">Contact</a> • Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </div>
+  </footer>
+
+  <script>
+    // Mood-to-Method logic
+    (function(){
+      const map = {
+        tired:{title:'Gentle Uplift',copy:'A light inhalation sequence and a citrus-woody roller may support gentle renewal. Try a 3-breath protocol in the afternoon.',cta:'Begin a Uplift — {{PRIMARY_CTA_LABEL}}'},
+        wired:{title:'Calm-Down Protocol',copy:'Grounding anchors and a soft floral or resinous inhaler can aid settling. Follow with a 5-minute breath work pairing.',cta:'Start Calm-Down — {{PRIMARY_CTA_LABEL}}'},
+        low:{title:'Brighten Routine',copy:'Warm citrus with a soft green note may feel buoyant. A daytime pendant or roller is easy to carry.',cta:'Try Brighten — {{PRIMARY_CTA_LABEL}}'},
+        focus:{title:'Focus Sequence',copy:'Peppermint or rosemary micro-inhalations and a ritual sniff before tasks can support concentration.',cta:'Activate Focus — {{PRIMARY_CTA_LABEL}}'},
+        sleepless:{title:'Evening Grounding',copy:'A low-volatile floral and light woody base in a mist or pillow spray may fit best before bed.',cta:'Prepare for Rest — {{PRIMARY_CTA_LABEL}}'}
+      };
+      const grid = document.getElementById('moodGrid');
+      const panel = document.getElementById('methodPanel');
+      const action = document.getElementById('methodAction');
+      const bookNow = document.getElementById('bookNow');
+
+      grid.addEventListener('click', (e)=>{
+        const btn = e.target.closest('.mood-btn');
+        if(!btn) return;
+        document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        const key = btn.dataset.key;
+        const info = map[key];
+        panel.querySelector('.method-title').textContent = info.title;
+        panel.querySelector('.method-copy').textContent = info.copy;
+        action.textContent = info.cta;
+        // update main CTA gently
+        bookNow.textContent = info.cta;
+      });
+    })();
+
+    // Pricing comparator with animated numbers
+    (function(){
+      const sw = document.getElementById('switch');
+      const nums = Array.from(document.querySelectorAll('.num'));
+      let on = false;
+      function animate(el, start, end, duration){
+        const startTime = performance.now();
+        const fmt = (v)=>'$'+v;
+        function frame(now){
+          const t = Math.min(1,(now-startTime)/duration);
+          const val = Math.round(start + (end-start)*t);
+          el.textContent = fmt(val);
+          if(t<1) requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+      }
+      nums.forEach(n=>{
+        // initialize to month values
+        const m = parseInt(n.dataset.month,10)||0;
+        n.textContent = '$'+m;
+      });
+      sw.addEventListener('click', ()=>{
+        on = !on;
+        sw.classList.toggle('on', on);
+        sw.setAttribute('aria-checked', String(on));
+        nums.forEach(n=>{
+          const from = parseInt(n.textContent.replace('$',''))||0;
+          const to = parseInt(on? n.dataset.package : n.dataset.month,10)||0;
+          animate(n, from, to, 600);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

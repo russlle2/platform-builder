@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Pricing — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7f9fb;--card:#ffffff;--muted:#60707a;--accent:#2b7a78;--glass:rgba(255,255,255,0.85);font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+    body{margin:0;background:var(--bg);color:#083344}
+    .wrap{max-width:980px;margin:40px auto;padding:32px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{width:52px;height:52px;background:linear-gradient(135deg,#e6f7f6,#dff0ef);border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent)}
+    nav a{margin-left:18px;color:var(--muted);text-decoration:none;font-weight:600}
+    .hero{display:grid;grid-template-columns:1fr 320px;gap:28px;align-items:center;margin-top:28px}
+    .hero-card{background:var(--card);padding:28px;border-radius:12px;box-shadow:0 6px 18px rgba(8,51,68,0.06)}
+    h1{margin:0 0 8px;font-size:24px}
+    p.lead{margin:0;color:var(--muted)}
+    .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px}
+    .tier{background:var(--glass);padding:20px;border-radius:10px;border:1px solid rgba(11,55,59,0.06)}
+    .tier h3{margin:0 0 6px;color:var(--accent)}
+    .price{font-size:20px;font-weight:700;margin:8px 0}
+    ul{padding-left:18px;color:var(--muted)}
+    .primary{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:8px;background:var(--accent);color:white;text-decoration:none;font-weight:700}
+    .note{font-size:13px;color:#496568;margin-top:8px}
+    .lead-magnet{display:flex;gap:14px;align-items:center;padding:18px;margin-top:28px;background:linear-gradient(180deg,#ffffff,#f4fbfa);border-radius:12px;border:1px solid rgba(43,122,120,0.06)}
+    .faq{margin-top:28px}
+    .faq h4{margin:10px 0}
+    footer{margin-top:36px;padding-top:18px;border-top:1px solid rgba(8,51,68,0.04);display:flex;justify-content:space-between;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <header>
+      <div class='brand'>
+        <div class='logo'>WC</div>
+        <div>
+          <div style='font-weight:800'>{{BUSINESS_NAME}}</div>
+          <div style='font-size:12px;color:var(--muted)'>{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href='index.html'>Home</a>
+        <a href='about.html'>About</a>
+        <a href='programs.html'>Paths</a>
+        <a href='services.html'>Services</a>
+        <a href='pricing.html' style='color:var(--accent)'>Pricing</a>
+        <a href='contact.html'>Contact</a>
+      </nav>
+    </header>
+
+    <section class='hero'>
+      <div class='hero-card'>
+        <h1>Transparent pricing, designed for steady change</h1>
+        <p class='lead'>Choose a structure that meets your momentum — from monthly momentum work to a focused VIP Day with {{COACH_NAME}}.</p>
+
+        <div class='tiers'>
+          <div class='tier'>
+            <h3>Momentum Track</h3>
+            <div class='price'>$450 / month</div>
+            <ul>
+              <li>Bi-weekly 50-minute sessions</li>
+              <li>Simple habit frameworks</li>
+              <li>Progress checks + email support</li>
+            </ul>
+            <a class='primary' href='book.html'>Start Momentum</a>
+          </div>
+
+          <div class='tier'>
+            <h3>Sustained Care</h3>
+            <div class='price'>$1,200 / 3 months</div>
+            <ul>
+              <li>Weekly 45-minute sessions</li>
+              <li>Custom habit library</li>
+              <li>Phone check-ins and worksheets</li>
+            </ul>
+            <a class='primary' href='book.html'>Begin 3-Month</a>
+          </div>
+
+          <div class='tier'>
+            <h3>VIP Day: Focus Reset</h3>
+            <div class='price'>$2,400 one-time</div>
+            <ul>
+              <li>Full-day intensive with {{COACH_NAME}}</li>
+              <li>Personalized rhythm plan</li>
+              <li>Follow-up + implementation guide</li>
+            </ul>
+            <a class='primary' href='book.html'>Book VIP Day</a>
+          </div>
+        </div>
+
+        <div class='note'>All programs focus on habits, actionable routines and measurable outcomes. No medical advice is offered.</div>
+      </div>
+
+      <aside style='background:var(--card);padding:20px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center'>
+        <img src='assets/img/avatar.svg' alt='Coach' style='width:120px;height:120px;margin-bottom:12px'>
+        <div style='text-align:center'>
+          <div style='font-weight:700'>{{COACH_NAME}}, {{CREDENTIALS}}</div>
+          <div style='font-size:13px;color:var(--muted)'>Based in {{CITY}}, {{STATE}}</div>
+          <a href='book.html' class='primary' style='margin-top:10px'>{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </aside>
+    </section>
+
+    <section class='lead-magnet'>
+      <div style='flex:1'>
+        <strong>Free guide:</strong>
+        <div style='color:var(--muted)'>7 Small Routines That Shift Your Day — a practical PDF to start building the first 14 days of reliable habits.</div>
+      </div>
+      <div>
+        <a href='contact.html' class='primary' style='background:#0f6f6d'>Get the Guide</a>
+      </div>
+    </section>
+
+    <section class='faq'>
+      <h2 style='margin:16px 0 8px'>Common questions about investing in coaching</h2>
+      <div>
+        <h4>How quickly will I see results?</h4>
+        <p style='color:var(--muted)'>Most clients report improved routines within 2–6 weeks when they commit to the habit steps and short daily practices we design together.</p>
+      </div>
+      <div>
+        <h4>Is the VIP Day a replacement for ongoing coaching?</h4>
+        <p style='color:var(--muted)'>The VIP Day is a strategic intensive to accelerate clarity and habits — it's ideal as a jumpstart and pairs well with follow-up sessions for long-term change.</p>
+      </div>
+      <div>
+        <h4>What is your cancellation policy?</h4>
+        <p style='color:var(--muted)'>Sessions rescheduled with 48 hours' notice are accommodated. For details, please contact {{EMAIL}}.</p>
+      </div>
+    </section>
+
+    <footer>
+      <div>Questions? Call <strong>{{PHONE}}</strong> or email <a href='mailto:{{EMAIL}}' style='color:var(--muted)'>{{EMAIL}}</a></div>
+      <div style='text-align:right'>
+        <div style='font-weight:700'>{{BUSINESS_NAME}}</div>
+        <div style='font-size:13px;color:var(--muted)'>{{TAGLINE}}</div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

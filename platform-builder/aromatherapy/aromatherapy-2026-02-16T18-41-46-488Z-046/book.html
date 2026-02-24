@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f3fbf9;--ink:#053235;--muted:#4f6b69;--accent:#5fb49f;--card:#ffffff}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#eef9f6);font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:var(--ink)}
+    .wrap{max-width:980px;margin:28px auto;padding:20px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:10px;color:var(--muted);text-decoration:none}
+
+    .booking{display:grid;grid-template-columns:1fr 360px;gap:20px;margin-top:20px}
+    .panel{background:var(--card);padding:16px;border-radius:12px;border:1px solid rgba(10,20,18,0.04)}
+    .slot{padding:12px;border-radius:10px;margin-bottom:10px;border:1px dashed rgba(10,30,25,0.06)}
+    .btn{padding:10px 12px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#8bd2bf);color:white;text-decoration:none;display:inline-block}
+
+    .policy{font-size:13px;color:var(--muted);margin-top:10px}
+
+    .svg-top{position:fixed;right:-6vw;top:-6vh;width:44vw;height:50vh;opacity:0.12;pointer-events:none}
+
+    details{margin-top:8px}
+
+    @media (max-width:920px){.booking{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <svg class="svg-top" viewBox="0 0 800 600">
+    <defs>
+      <linearGradient id="bg2" x1="0" x2="1"><stop offset="0" stop-color="#e9fbf6"/><stop offset="1" stop-color="#f3fff9"/></linearGradient>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#bg2)"/>
+    <g fill="#cfeee5"><circle cx="160" cy="80" r="100"/></g>
+    <g fill="#e2f7f0"><path d="M400 300c120-80 260-60 360 0v300H0V300c100-60 260-70 400 0z"/></g>
+  </svg>
+
+  <div class="wrap">
+    <header>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#6fb29f,#9bdac8);display:flex;align-items:center;justify-content:center;color:white;font-weight:700">{{PRACTITIONER_NAME?substr(0,1):"P"}}</div>
+        <div>
+          <div style="font-weight:700">Schedule with {{BUSINESS_NAME}}</div>
+          <div class="muted" style="font-size:13px">Appointments that centre safety & clarity</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="services.html">What we do</a>
+        <a href="pricing.html">Fees</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <main class="booking">
+      <section>
+        <div class="panel">
+          <h2 style="margin:0 0 6px">Book a consult</h2>
+          <div class="muted">Choose a time for an Initial Consultation (60 min) or Follow-up (30 min). A short intake form will be sent after booking.</div>
+
+          <div style="margin-top:12px">
+            <div class="slot"><strong>Mon 10:00 — 11:00</strong><div class="muted">Initial Consult — Online</div><div style="margin-top:8px"><a class="btn" href="{{PRIMARY_CTA_URL}}">Book</a></div></div>
+            <div class="slot"><strong>Wed 14:00 — 14:30</strong><div class="muted">Follow-up — In person</div><div style="margin-top:8px"><a class="btn" href="{{PRIMARY_CTA_URL}}">Book</a></div></div>
+            <div class="slot"><strong>Fri 09:30 — 10:30</strong><div class="muted">Initial Consult — Online</div><div style="margin-top:8px"><a class="btn" href="{{PRIMARY_CTA_URL}}">Book</a></div></div>
+          </div>
+
+          <div class="policy">
+            <strong>Booking policies</strong>
+            <div style="margin-top:6px">A confirmation email will include an intake form and safety checklist. Cancellations less than 24 hours may be charged a fee. Sessions are educational and supportive, not medical care.</div>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:14px">
+          <h3 style="margin:0 0 8px">Pre-booking checklist</h3>
+          <ul style="margin:0;padding-left:18px;color:var(--muted)">
+            <li>Note any allergies or skin sensitivities</li>
+            <li>Mention pregnancy or breastfeeding status</li>
+            <li>Inform about household pets</li>
+          </ul>
+          <div style="margin-top:8px" class="muted">If you have complex health concerns, please consult your healthcare provider alongside booking a consult.</div>
+        </div>
+      </section>
+
+      <aside>
+        <div class="panel">
+          <h4 style="margin:0 0 8px">Why a guided consult?</h4>
+          <div class="muted">Personalised guidance reduces risk: appropriate dilution, patch testing, and guidance about home use are part of every consult. We focus on practical, safe steps you can follow independently.</div>
+        </div>
+
+        <div class="panel" style="margin-top:12px">
+          <h4 style="margin:0 0 8px">Short FAQ</h4>
+          <details>
+            <summary>Do I need a patch test?</summary>
+            <div class="muted">Yes, when topical use is planned we recommend a patch test at a conservative dilution before regular application.</div>
+          </details>
+          <details>
+            <summary>Are smells safe around cats and dogs?</summary>
+            <div class="muted">Some oils are hazardous to pets. We'll discuss safer alternatives and diffusion limits during your consult.</div>
+          </details>
+          <details>
+            <summary>What about pregnancy?</summary>
+            <div class="muted">Pregnancy changes safety recommendations. We tailor guidance and often recommend seeking approval from your healthcare provider.</div>
+          </details>
+        </div>
+
+        <div class="panel" style="margin-top:12px">
+          <h4 style="margin:0 0 8px">Intake & documentation</h4>
+          <div class="muted">After booking you will receive a short intake form. Consult notes are kept anonymised and focused on safety and use instructions.</div>
+          <a href="contact.html" class="btn" style="display:inline-block;margin-top:10px">Contact</a>
+        </div>
+      </aside>
+    </main>
+
+    <section style="max-width:980px;margin:18px auto">
+      <h3 style="margin:0 0 8px">Practice safeguards & truths</h3>
+      <div class="panel">
+        <strong>Myth: oils are harmless if natural</strong>
+        <div class="muted" style="margin-top:8px">Responsible practice recognises concentrated plant extracts can cause irritation, interact with medications, or be unsafe in pregnancy and around certain pets. Guidance reduces those risks.</div>
+      </div>
+
+      <div class="panel" style="margin-top:12px">
+        <strong>Core pillars</strong>
+        <ul style="margin:8px 0 0;padding-left:18px;color:var(--muted)">
+          <li>Screen for contraindications</li>
+          <li>Recommend conservative dilutions</li>
+          <li>Teach safe application & storage</li>
+        </ul>
+      </div>
+    </section>
+
+    <footer style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
+      <div class="muted">Questions? Email {{EMAIL}} or call {{PHONE}}. Serving {{CITY}}, {{STATE}}.</div>
+      <div><a class="btn" href="{{PRIMARY_CTA_URL}}">Proceed to booking</a></div>
+    </footer>
+  </div>
+</body>
+</html>

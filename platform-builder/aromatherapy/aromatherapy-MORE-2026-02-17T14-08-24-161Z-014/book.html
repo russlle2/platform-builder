@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fdf8f3;--card:#fff;--muted:#666;--accent:#8a5a2b}
+    body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial;color:#232323}
+    header{display:flex;justify-content:space-between;align-items:center;padding:1rem}
+    nav a{margin-left:1rem;text-decoration:none;color:var(--muted)}
+    main{max-width:980px;margin:1.2rem auto;padding:1rem}
+    .wrap{display:grid;grid-template-columns:1fr 380px;gap:1rem}
+    .card{background:var(--card);padding:1rem;border-radius:12px;box-shadow:0 10px 30px rgba(30,20,10,0.06)}
+    h1{margin:0 0 .4rem}
+    .muted{color:var(--muted)}
+    label{display:block;margin-top:.6rem}
+    input,select,textarea{width:100%;padding:.6rem;border-radius:8px;border:1px solid #ece1d5}
+    .small{font-size:.88rem;color:var(--muted)}
+    .actions{display:flex;gap:.5rem;margin-top:.7rem}
+    .btn{padding:.6rem .9rem;border-radius:8px;border:none}
+    .btn-primary{background:var(--accent);color:#fff}
+    .btn-ghost{background:transparent;border:1px solid var(--accent);color:var(--accent)}
+    .reveal{opacity:0;transform:translateY(12px);transition:opacity .6s ease,transform .6s ease}
+    .reveal-visible{opacity:1;transform:none}
+    @media(prefers-reduced-motion:reduce){.reveal{transition:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:.8rem;align-items:center">
+      <div style="width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,#c08a55,#8a5a2b);display:grid;place-items:center;color:#fff;font-weight:700">A</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:.85rem;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Nest</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Formulations</a>
+      <a href="shop.html">Boutique</a>
+      <a href="pricing.html">Rates</a>
+      <a href="about.html">About</a>
+      <a href="book.html" style="font-weight:700;color:var(--accent)">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <section class="card reveal" data-reveal>
+        <h1>Reserve a session</h1>
+        <p class="muted">Use the form below to request a time. If you built a Session Plan from Rates, paste it into "Session notes" to speed your intake.</p>
+
+        <form id="bookingForm">
+          <label for="fullname">Full name</label>
+          <input id="fullname" name="fullname" type="text" required>
+
+          <label for="email">Email</label>
+          <input id="email" name="email" type="text" placeholder="you@example.com" required>
+
+          <label for="phone">Phone</label>
+          <input id="phone" name="phone" type="text" placeholder="Optional">
+
+          <label for="service">Choose service</label>
+          <select id="service" name="service">
+            <option value="intro">Intro Support — 60 min</option>
+            <option value="series">Scent Series — 3 sessions</option>
+            <option value="circle">Scent Circle — monthly check-in</option>
+          </select>
+
+          <label for="notes">Session notes / paste plan</label>
+          <textarea id="notes" name="notes" rows="6" placeholder="Paste planner summary or tell us about goals, pets, pregnancy, allergies."></textarea>
+
+          <div class="actions">
+            <button class="btn btn-primary" type="submit">Request time</button>
+            <button class="btn btn-ghost" type="button" id="openPlanner">Open Session Planner</button>
+          </div>
+        </form>
+
+        <p class="small muted" style="margin-top:.6rem">We will follow up with available times. If this is urgent call {{PHONE}}.</p>
+      </section>
+
+      <aside class="card reveal" data-reveal>
+        <h3>Quick Planner</h3>
+        <p class="small muted">Build a short plan and copy it into the booking notes. This mini-planner creates a plain-text summary for your intake.</p>
+
+        <div style="margin-top:.6rem">
+          <label for="miniGoal">Goal</label>
+          <select id="miniGoal"><option value="calm">Calm</option><option value="focus">Focus</option><option value="sleep">Sleep</option><option value="uplift">Uplift</option></select>
+
+          <label style="margin-top:.5rem">Aromas</label>
+          <div style="display:flex;gap:.5rem;margin-top:.3rem"><button class="btn btn-ghost" data-aroma="lavender">Lavender</button><button class="btn btn-ghost" data-aroma="sweetorange">Sweet Orange</button></div>
+
+          <label style="margin-top:.5rem">Household notes</label>
+          <div style="display:flex;gap:.4rem"><label><input type="checkbox" id="miniPets"> Pets</label><label style="margin-left:.5rem"><input type="checkbox" id="miniPreg"> Pregnancy</label></div>
+
+          <div style="display:flex;gap:.5rem;margin-top:.6rem"><button class="btn btn-primary" id="miniBuild">Create</button><button class="btn btn-ghost" id="miniCopy">Copy</button></div>
+
+          <div id="miniOut" style="margin-top:.6rem;white-space:pre-wrap;background:#fbf6f2;padding:.6rem;border-radius:8px;border:1px dashed #efe0d0;display:none"></div>
+        </div>
+
+        <hr style="margin:1rem 0">
+        <h4 style="margin:0">Booking policies</h4>
+        <p class="small muted">Cancellations accepted up to 48 hours before. All sessions include safety guidance and a suggested dilution when appropriate.</p>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    // reveal
+    (function(){
+      const prefersReduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const items = document.querySelectorAll('[data-reveal]');
+      if(prefersReduce){ items.forEach(i=>i.classList.add('reveal-visible')); return; }
+      const io = new IntersectionObserver((entries)=>{ entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('reveal-visible'); io.unobserve(e.target); } }); },{threshold:0.12});
+      items.forEach(i=>io.observe(i));
+    })();
+
+    // Booking form simple behaviour (local only)
+    document.getElementById('bookingForm').addEventListener('submit',function(e){
+      e.preventDefault();
+      const name = document.getElementById('fullname').value;
+      alert('Thanks, '+(name||'there')+'. We received your request and will follow up.');
+      this.reset();
+    });
+
+    // Mini session planner in booking page (smaller, but still exports plain text)
+    (function(){
+      const miniBuild = document.getElementById('miniBuild');
+      const miniCopy = document.getElementById('miniCopy');
+      const miniOut = document.getElementById('miniOut');
+      const miniGoal = document.getElementById('miniGoal');
+      const miniPets = document.getElementById('miniPets');
+      const miniPreg = document.getElementById('miniPreg');
+      const aromaButtons = document.querySelectorAll('[data-aroma]');
+      let chosenAromas = [];
+
+      aromaButtons.forEach(b=>b.addEventListener('click',function(){
+        const v = this.getAttribute('data-aroma');
+        if(!chosenAromas.includes(v)) chosenAromas.push(v);
+        this.style.opacity = 0.6;
+      }));
+
+      function buildMini(){
+        const goal = miniGoal.value;
+        const notes = [];
+        if(miniPets.checked) notes.push('Pets in home');
+        if(miniPreg.checked) notes.push('Pregnancy/breastfeeding');
+        const aromaText = chosenAromas.length? chosenAromas.join(', '): 'No preference';
+        const text = ['Goal: '+goal, 'Aromas: '+aromaText, 'Household notes: '+(notes.join('; ')||'None'), '', 'Suggested next step: bring this note to intake for tailored guidance and patch-test instructions.'].join('\n');
+        miniOut.textContent = text; miniOut.style.display='block';
+      }
+
+      miniBuild.addEventListener('click',buildMini);
+
+      miniCopy.addEventListener('click',async ()=>{
+        const txt = miniOut.textContent || '';
+        if(!txt) return;
+        try{ await navigator.clipboard.writeText(txt); miniCopy.textContent='Copied'; setTimeout(()=>miniCopy.textContent='Copy',1000);}catch(e){ miniCopy.textContent='Copy failed'; }
+      });
+
+      // Open the fuller planner on Rates
+      document.getElementById('openPlanner').addEventListener('click',function(){ window.location.href='pricing.html#planner'; });
+
+    })();
+  </script>
+</body>
+</html>

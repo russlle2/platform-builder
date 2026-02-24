@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{BUSINESS_NAME}} — Aromatic moments that arrive softly</title>
+  <meta name="description" content="A focused, mild approach to aromatherapy that may support calm, focus, and sleep. Session planning and custom blends.">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="/">{{BUSINESS_NAME}}</a>
+      <nav class="nav">
+        <a href="services.html">Offerings</a>
+        <a href="blends.html">Blends</a>
+        <a href="shop.html">Boutique</a>
+        <a href="pricing.html">Rates</a>
+        <a href="about.html">Story</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html">Reach</a>
+      </nav>
+      <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="hero">
+      <div class="wrap">
+        <h1 class="title">Soft frames for daily balance</h1>
+        <p class="lead">Small, intentional aromatic choices that may support your nervous system, sleep, and focus. Tailored sessions, portable rituals, and bespoke blends.</p>
+        <div class="hero-actions">
+          <a class="btn" href="book.html">Plan a session</a>
+          <a class="btn ghost" href="blends.html">Explore blends</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="diagnostic" id="diagnostic">
+      <div class="wrap">
+        <h2>Session Planner</h2>
+        <p class="muted">Build a short, personal aromatherapy plan. This non-medical planner may support a gentle shift in mood or routine.</p>
+
+        <form id="planner-form">
+          <label>Primary goal</label>
+          <select id="goal">
+            <option value="calm">Calm & unwind</option>
+            <option value="focus">Focus & clarity</option>
+            <option value="sleep">Sleep support</option>
+            <option value="mood">Uplift mood</option>
+            <option value="energy">Wakeful energy</option>
+          </select>
+
+          <label>Session length</label>
+          <select id="length">
+            <option value="10">10 minutes</option>
+            <option value="20">20 minutes</option>
+            <option value="45">45 minutes (guided)</option>
+          </select>
+
+          <label>Environment</label>
+          <select id="environment">
+            <option value="bedroom">Bedroom</option>
+            <option value="desk">Desk / workspace</option>
+            <option value="living">Living room</option>
+            <option value="portable">On the go (travel)</option>
+          </select>
+
+          <label>Notes (allergies, pregnancy, pets)</label>
+          <input id="notes" placeholder="e.g. cat at home, sensitive skin" />
+
+          <div class="planner-actions">
+            <button type="button" id="build-plan" class="btn">Create plan</button>
+            <button type="button" id="copy-plan" class="btn ghost" disabled>Copy summary</button>
+          </div>
+        </form>
+
+        <pre id="plan-output" class="plan-output" aria-live="polite"></pre>
+      </div>
+    </section>
+
+    <section class="plan" id="plan">
+      <div class="wrap">
+        <h2>How a session unfolds</h2>
+        <ol class="plan-list">
+          <li><strong>Set intention</strong> — one short sentence to ground the session.</li>
+          <li><strong>Choose application</strong> — inhalation, nebulizer, diluted topical roll-on (safe dilution guidance below).</li>
+          <li><strong>Anchor</strong> — a posture, few breaths, or a brief ritual that frames the time.</li>
+        </ol>
+
+        <aside class="safety">Safety note: Aromatherapy may support wellbeing but is not a medical treatment. Always patch test diluted blends on inner forearm 24 hours before wider use; consult a professional for pregnancy, nursing, or severe medical conditions. Keep essential oils away from pets and young children.</aside>
+      </div>
+    </section>
+
+    <section class="micro_habits" id="micro_habits">
+      <div class="wrap">
+        <h2>Micro-rituals</h2>
+        <p class="muted">Tiny practices that accumulate: carry a roll-on, scent a pillowcase, or add a drop to a diffuser pad.</p>
+        <ul class="habit-grid">
+          <li><strong>Two-breath reset</strong><br/>A single inhale from a personal inhaler between meetings.</li>
+          <li><strong>Pre-sleep mist</strong><br/>A light spritz to the top of your pillowcase (avoid direct skin contact).</li>
+          <li><strong>Focus strip</strong><br/>A small cloth with a steady citrus-wood blend kept at your desk.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="blend-builder" id="blend-builder">
+      <div class="wrap">
+        <h2>Blend Builder</h2>
+        <p class="muted">Pick a vibe, and we’ll suggest a simple safe dilution guide and a printable blend card. Non-medical, safety-forward guidance.</p>
+
+        <div class="builder">
+          <label>Desired vibe</label>
+          <select id="vibe">
+            <option value="calm">Calm (lavender-forward)</option>
+            <option value="focus">Focus (citrus-wood)</option>
+            <option value="sleep">Sleep (soft floral)">Sleep (soft floral)</option>
+            <option value="energize">Energize (bright citrus)</option>
+          </select>
+
+          <label>Container size</label>
+          <select id="container">
+            <option value="10">10 ml (roll-on)</option>
+            <option value="30">30 ml (spray or bottle)</option>
+            <option value="5">5 ml (sample vial)</option>
+          </select>
+
+          <label>Preferred carrier</label>
+          <select id="carrier">
+            <option value="jojoba">Jojoba oil</option>
+            <option value="sweet_almond">Sweet almond oil</option>
+            <option value="grapeseed">Grapeseed oil</option>
+            <option value="ethanol">Ethanol (spray)</option>
+          </select>
+
+          <div class="builder-actions">
+            <button id="build-blend" class="btn">Create blend</button>
+            <button id="copy-blend" class="btn ghost" disabled>Copy blend</button>
+          </div>
+        </div>
+
+        <div id="blend-output" class="blend-output"></div>
+      </div>
+    </section>
+
+    <section class="pricing-tease" id="pricing">
+      <div class="wrap">
+        <h2>Programs &amp; ways to work</h2>
+        <p class="muted">Short consultations, seasonal mini-series, and tailored packages. Pricing framed as "pathways"—choose what fits your rhythm.</p>
+        <div class="paths">
+          <div class="card">
+            <h3>Single Session</h3>
+            <p class="price">From $85</p>
+            <p class="desc">Focused 45-minute session with a bespoke plan you can carry forward.</p>
+          </div>
+          <div class="card">
+            <h3>Starter Trio</h3>
+            <p class="price">From $220</p>
+            <p class="desc">Three sessions over six weeks with ongoing adjustment and a starter blend.</p>
+          </div>
+          <div class="card">
+            <h3>Ritual Path</h3>
+            <p class="price">From $480</p>
+            <p class="desc">A seasonal package that maps micro-habits and blends for three months.</p>
+          </div>
+        </div>
+        <p><a class="btn" href="pricing.html">See full rates</a></p>
+      </div>
+    </section>
+
+    <section class="cta" id="cta">
+      <div class="wrap">
+        <h2>Start quietly</h2>
+        <p class="muted">If you’re curious, book a short consult to explore safe, plant-based approaches that may support your day.</p>
+        <a class="btn big" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="left">
+        <strong>{{BUSINESS_NAME}}</strong>
+        <div class="muted">{{TAGLINE}}</div>
+      </div>
+      <div class="right">
+        <div>{{CITY}}, {{STATE}}</div>
+        <div><a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

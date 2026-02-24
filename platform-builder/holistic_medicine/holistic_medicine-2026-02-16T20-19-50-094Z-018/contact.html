@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Contact — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Get in touch with {{BUSINESS_NAME}} — whole-person, integrative care in {{CITY}}, {{STATE}}. Book a consult or ask a question." />
+  <style>
+    :root{
+      --bg-1:#fffaf6;
+      --bg-2:linear-gradient(135deg,#e8fff7 0%,#fff7ff 100%);
+      --accent:#7b6cff;
+      --muted:#556067;
+      --card:#ffffff;
+      --glass:rgba(255,255,255,0.6);
+      --radius:18px;
+      --max-width:1080px;
+      --shadow: 0 10px 30px rgba(34,50,70,0.08);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%;margin:0;background:var(--bg-2);color:#0f1720;-webkit-font-smoothing:antialiased}
+    /* Split diagonal layout */
+    .wrap{min-height:100vh;display:grid;grid-template-columns:1fr;align-items:center;padding:48px 20px}
+    .canvas{max-width:var(--max-width);margin:0 auto;position:relative;display:grid;grid-template-columns:1fr 420px;gap:28px}
+
+    /* Diagonal panel */
+    .promo{
+      position:relative;overflow:hidden;border-radius:calc(var(--radius) + 6px);background:var(--card);padding:48px 40px 56px 56px;box-shadow:var(--shadow);
+      clip-path: polygon(0 0, 100% 0, 85% 100%, 0% 100%);
+    }
+    .right{
+      align-self:start;display:flex;flex-direction:column;gap:18px;position:relative
+    }
+
+    h1{margin:0 0 8px;font-size:clamp(28px,4vw,36px);line-height:1.03;color:#081127}
+    p.lead{margin:0 0 18px;color:var(--muted);font-size:15px}
+
+    .meta{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
+    .pill{display:inline-flex;align-items:center;gap:10px;padding:8px 12px;border-radius:999px;background:linear-gradient(180deg,rgba(123,108,255,0.12),rgba(123,108,255,0.06));color:var(--accent);font-weight:600;font-size:13px}
+
+    /* subtle SVG texture */
+    .texture{position:absolute;inset:0;opacity:0.12;pointer-events:none}
+    .texture svg{width:100%;height:100%;display:block}
+
+    /* contact card */
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.7),rgba(255,255,255,0.85));backdrop-filter: blur(6px);border-radius:14px;padding:22px;box-shadow:0 12px 30px rgba(12,30,40,0.06)}
+    label{display:block;font-size:13px;color:#16304a;margin-bottom:6px;font-weight:600}
+    input[type=text],input[type=email],textarea,select{width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(11,22,33,0.06);font-size:14px;background:white;box-shadow:inset 0 1px 0 rgba(255,255,255,0.6)}
+    textarea{min-height:110px;resize:vertical}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .muted{font-size:13px;color:var(--muted)}
+
+    .cta{display:inline-flex;align-items:center;gap:10px;padding:12px 16px;border-radius:12px;background:linear-gradient(90deg,var(--accent),#5fb5ff);color:white;font-weight:700;border:none;cursor:pointer;text-decoration:none}
+
+    .small-list{display:flex;flex-direction:column;gap:8px}
+    .small-list b{font-weight:700;color:#10304a}
+
+    /* social proof */
+    .trust{display:flex;gap:12px;align-items:center;margin-top:16px}
+    .logo-dot{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#fff,#f8faff);display:grid;place-items:center;color:var(--accent);font-weight:700}
+
+    /* map placeholder */
+    .map{height:160px;border-radius:12px;background:linear-gradient(180deg,rgba(7,20,40,0.02),rgba(7,20,40,0.01));border:1px dashed rgba(7,20,40,0.06);display:flex;align-items:center;justify-content:center;color:var(--muted);font-weight:600}
+
+    /* small footer CTA */
+    .contact-meta{display:flex;flex-direction:column;gap:10px}
+    a.link{color:var(--accent);font-weight:700;text-decoration:none}
+
+    /* responsive */
+    @media (max-width:880px){
+      .canvas{grid-template-columns:1fr;gap:20px}
+      .promo{clip-path:none;padding:28px}
+      .row{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="canvas">
+
+      <section class="promo" aria-labelledby="contact-title">
+        <div class="texture" aria-hidden="true">
+          <!-- Inline unique SVG pattern (playful + premium) -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="g1" x1="0" x2="1">
+                <stop offset="0" stop-color="#e9f7f1" />
+                <stop offset="1" stop-color="#f7f2ff" />
+              </linearGradient>
+              <pattern id="p1" width="80" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(15)">
+                <rect width="80" height="40" fill="url(#g1)" />
+                <circle cx="12" cy="8" r="2.8" fill="#cfdfff" opacity="0.9" />
+                <circle cx="28" cy="22" r="2.2" fill="#bfece4" opacity="0.95" />
+              </pattern>
+              <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="18" result="b" />
+                <feBlend in="SourceGraphic" in2="b" mode="screen" />
+              </filter>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#p1)" />
+            <g filter="url(#soft)" opacity="0.8">
+              <ellipse cx="120" cy="50" rx="90" ry="34" fill="#7b6cff" opacity="0.06" />
+              <ellipse cx="480" cy="300" rx="220" ry="70" fill="#5fb5ff" opacity="0.04" />
+            </g>
+          </svg>
+        </div>
+
+        <div style="position:relative;z-index:2;">
+          <div class="pill">Reach {{BUSINESS_NAME}}</div>
+          <h1 id="contact-title">Let's make a plan for your whole health</h1>
+          <p class="lead">Friendly, evidence-informed integrative care in {{CITY}}, {{STATE}}. Whether you have a specific concern or want a guided reset, we focus on lifestyle, labs (optional), and a stepwise plan you can live with.</p>
+
+          <div class="meta">
+            <div class="trust">
+              <div class="logo-dot">HM</div>
+              <div class="small-list">
+                <span style="font-size:13px;color:var(--muted)">Open to new patients &mdash; flexible telehealth options</span>
+                <span style="font-size:13px;color:var(--muted)">Care led by {{PRACTITIONER_NAME}}, {{CREDENTIALS}}</span>
+              </div>
+            </div>
+
+            <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+              <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            </div>
+          </div>
+
+          <div style="margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="card" aria-labelledby="reach-title">
+              <h3 id="reach-title" style="margin:0 0 8px;font-size:15px">Call or Email</h3>
+              <div class="contact-meta">
+                <div class="muted">Phone</div>
+                <a class="link" href="tel:{{PHONE}}">{{PHONE}}</a>
+                <div class="muted">Email</div>
+                <a class="link" href="mailto:{{EMAIL}}">{{EMAIL}}</a>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3 style="margin:0 0 8px;font-size:15px">Location & Hours</h3>
+              <div class="muted">{{CITY}}, {{STATE}}</div>
+              <div style="margin-top:8px" class="muted">Mon &ndash; Fri: 9:00am &ndash; 5:00pm<br/>Sat: By appointment</div>
+              <div style="margin-top:12px" class="map">Map / telehealth info</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="right">
+        <div class="card" aria-labelledby="form-title">
+          <h2 id="form-title" style="margin:0 0 8px;font-size:18px">Send a note</h2>
+          <p class="muted" style="margin:0 0 12px">Tell us a bit about why you're reaching out. No medical advice here; this starts a conversation about care options.</p>
+
+          <form method="post" action="mailto:{{EMAIL}}" enctype="text/plain" style="display:grid;gap:10px"> 
+            <div class="row">
+              <div>
+                <label for="name">Your name</label>
+                <input id="name" name="name" type="text" placeholder="Full name" required />
+              </div>
+              <div>
+                <label for="phone">Phone</label>
+                <input id="phone" name="phone" type="text" placeholder="Mobile or preferred" />
+              </div>
+            </div>
+
+            <div>
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" placeholder="you@email.com" required />
+            </div>
+
+            <div>
+              <label for="reason">Reason (brief)</label>
+              <select id="reason" name="reason">
+                <option>New patient consult</option>
+                <option>Follow-up / ongoing care</option>
+                <option>Lab review</option>
+                <option>Billing / insurance</option>
+                <option>Other</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="message">Message</label>
+              <textarea id="message" name="message" placeholder="Tell us what matters most right now..."></textarea>
+            </div>
+
+            <div style="display:flex;gap:10px;align-items:center;justify-content:flex-end;margin-top:6px">
+              <button type="submit" class="cta">Send message</button>
+            </div>
+
+            <div class="muted" style="font-size:12px;margin-top:8px">We will respond within 2 business days. For urgent medical matters please call local emergency services.</div>
+          </form>
+        </div>
+
+        <div style="display:grid;gap:12px;margin-top:12px">
+          <div class="card">
+            <h4 style="margin:0 0 8px;font-size:14px">How we help</h4>
+            <div class="muted">Educational visits, individualized plans, lifestyle support, and optional lab-informed suggestions. No guarantees — just clear steps to better balance.</div>
+            <div style="margin-top:10px"><a class="link" href="approach.html">Learn about our approach →</a></div>
+          </div>
+
+          <div class="card">
+            <h4 style="margin:0 0 8px;font-size:14px">Meet the clinician</h4>
+            <div style="font-weight:700">{{PRACTITIONER_NAME}}, {{CREDENTIALS}}</div>
+            <div class="muted" style="margin-top:6px">Blends conventional testing with nutrition, movement, and stress tools. Focus on evidence and what fits your life.</div>
+            <div style="margin-top:10px"><a class="link" href="about.html">Read bio →</a></div>
+          </div>
+        </div>
+
+      </aside>
+
+    </div>
+
+    <nav style="max-width:var(--max-width);margin:28px auto 0;display:flex;gap:12px;justify-content:center;align-items:center;color:var(--muted);font-size:14px">
+      <a href="index.html" class="link">Home</a>
+      <a href="services.html" class="link">What We Do</a>
+      <a href="conditions.html" class="link">Common Concerns</a>
+      <a href="approach.html" class="link">Our Way</a>
+      <a href="pricing.html" class="link">Plans</a>
+      <a href="about.html" class="link">Meet</a>
+      <a href="book.html" class="link">Book</a>
+      <a href="contact.html" style="font-weight:700;color:var(--accent)">Reach Us</a>
+    </nav>
+
+  </div>
+</body>
+</html>

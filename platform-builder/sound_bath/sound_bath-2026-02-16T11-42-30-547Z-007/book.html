@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Book — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg1:#0b1020;--accent:#ffb86b;--accent2:#6b8cff;--glass:rgba(255,255,255,0.06)}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial;background:linear-gradient(180deg,var(--bg1),#061021);color:#f2f5fb}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 26px}
+    .logo{font-weight:900;color:var(--accent2)}
+    nav a{color:rgba(255,255,255,0.8);text-decoration:none;margin-left:12px}
+    .wrap{max-width:980px;margin:28px auto;padding:0 22px}
+    .grid{display:grid;grid-template-columns:1fr 380px;gap:18px;align-items:start}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:14px;border:1px solid rgba(255,255,255,0.03)}
+    label{display:block;margin-top:12px;font-size:13px;color:#dfe8ff}
+    input,select,textarea{width:100%;padding:10px;margin-top:6px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:#fff}
+    button.primary{margin-top:14px;padding:12px 14px;border-radius:12px;border:0;background:linear-gradient(90deg,var(--accent2),var(--accent));color:#061021;font-weight:800}
+    .muted{color:#b9c6ff;font-size:13px}
+    .timeline{display:flex;flex-direction:column;gap:8px}
+    .step{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;border-left:4px solid rgba(255,255,255,0.03)}
+    .svg-deco{position:absolute;left:0;top:80px;opacity:0.9;pointer-events:none}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}.svg-deco{display:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Start</a>
+      <a href="events.html">Events</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main class="wrap" role="main">
+    <svg class="svg-deco" width="320" height="220" viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="bgA" x1="0" x2="1">
+          <stop offset="0" stop-color="#6b8cff" stop-opacity="0.9" />
+          <stop offset="1" stop-color="#ffb86b" stop-opacity="0.9" />
+        </linearGradient>
+        <pattern id="dotz" width="20" height="20" patternUnits="userSpaceOnUse">
+          <circle cx="2" cy="2" r="2" fill="#fff" opacity="0.06" />
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" rx="18" fill="url(#bgA)"/>
+      <rect width="100%" height="100%" rx="18" fill="url(#dotz)"/>
+    </svg>
+
+    <div class="grid">
+      <div>
+        <div class="card">
+          <h2 style="margin:0 0 6px">Reserve a VIP Day or Session</h2>
+          <div class="muted">A practical guide to booking and what happens next</div>
+
+          <form id="bookingForm" onsubmit="return submitForm(event)">
+            <label for="name">Full name</label>
+            <input id="name" name="name" required />
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required />
+
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" type="tel" />
+
+            <label for="type">Session type</label>
+            <select id="type" name="type">
+              <option>VIP Day — private immersion (VIP_DAY)</option>
+              <option>1:1 private session</option>
+              <option>Couples session</option>
+              <option>Corporate / team event</option>
+            </select>
+
+            <label for="date">Preferred date</label>
+            <input id="date" name="date" placeholder="e.g. 2026-03-15" />
+
+            <label for="notes">Notes, contraindications, or accessibility needs</label>
+            <textarea id="notes" name="notes" rows="4" placeholder="Please tell us if you have pacemaker, pregnancy, epilepsy, recent surgery, or other medical considerations"></textarea>
+
+            <div style="display:flex;gap:12px;align-items:center;margin-top:12px">
+              <input id="confirm" type="checkbox" required />
+              <label for="confirm" style="margin:0;font-size:13px;color:#dfe8ff">I acknowledge the contraindications and consent to participate.</label>
+            </div>
+
+            <button class="primary" type="submit">Request booking — {{PRIMARY_CTA_LABEL}}</button>
+          </form>
+
+          <div style="margin-top:12px" class="muted">We will send a booking confirmation and a short intake form to customize instruments, volume, and the flow. For urgent questions call <a href="tel:{{PHONE}}" style="color:inherit">{{PHONE}}</a>.</div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <h3 style="margin-top:0">Session flow (what will happen)</h3>
+          <div class="timeline">
+            <div class="step"><strong>Consult</strong> — A quick check-in to tailor the session and note any contraindications (15–30 min).</div>
+            <div class="step"><strong>Arrival & attunement</strong> — Set intention and get comfortable (10–15 min).</div>
+            <div class="step"><strong>Immersive sound</strong> — The main sound field; length varies by session type (45–90 min).</div>
+            <div class="step"><strong>Integration</strong> — Gentle close and next-steps, tea, or short reflection (10–20 min).</div>
+          </div>
+        </div>
+
+      </div>
+
+      <aside>
+        <div class="card">
+          <h4 style="margin:0">What to bring</h4>
+          <ul style="margin:12px 0 0;padding-left:1rem;color:#f5f8ff">
+            <li>Yoga mat / thick blanket</li>
+            <li>Pillow and warm layer</li>
+            <li>Water bottle (plastic or BPA-free)</li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0">Contraindications</h4>
+          <p style="margin-top:8px;color:#dfe8ff;font-size:13px">If you have a pacemaker, were recently hospitalized, are pregnant, or have a history of seizures, inform us before booking. Loud instruments are adjustable and we can offer softer alternatives.</p>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0">Instruments for this booking</h4>
+          <p style="margin-top:8px;color:#f5f8ff">For private work we commonly select a curated mix. This booking form lets you request emphasis.</p>
+          <ul style="margin:8px 0 0;padding-left:1rem;color:#f5f8ff">
+            <li>Crystal bowls — long, crystalline sustains</li>
+            <li>Gong — rich foundational sweep</li>
+            <li>Harmonic monochord — subtle string warmth</li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0">Need to change?</h4>
+          <p style="margin-top:8px;color:#dfe8ff;font-size:13px">Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a>. Cancellations and reschedules follow our standard policy listed on the pricing page.</p>
+        </div>
+      </aside>
+    </div>
+
+  </main>
+
+  <script>
+    function submitForm(e){
+      e.preventDefault();
+      const form = document.getElementById('bookingForm');
+      const data = {name:form.name.value,email:form.email.value,phone:form.phone.value,type:form.type.value,date:form.date.value,notes:form.notes.value};
+      // In real implementation we'd POST to a server. For this template we simulate success.
+      alert('Thanks '+(data.name||'')+" — we've received your request. We'll follow up at " + (data.email||'your email') + '.');
+      form.reset();
+      return false;
+    }
+  </script>
+</body>
+</html>

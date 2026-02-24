@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'/>
+  <meta name='viewport' content='width=device-width,initial-scale=1'/>
+  <title>Concerns — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#07131a;--panel:#082426;--accent:#ffd2a6;--muted:#cfe9e1}
+    html,body{height:100%;margin:0;background:radial-gradient(circle at 10% 10%,#07323a 0%,var(--bg) 40%);font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--muted)}
+    .shell{max-width:1000px;margin:48px auto;padding:28px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:14px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    .logo{background:linear-gradient(90deg,var(--accent),#a3ffcf);width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#062;font-weight:700}
+    nav a{color:var(--muted);text-decoration:none;margin-left:14px}
+    h1{color:#fff;margin-top:14px}
+    .lead{color:var(--muted);margin-bottom:12px}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+    .concern{background:linear-gradient(180deg,rgba(255,255,255,0.01),rgba(0,0,0,0.06));padding:16px;border-radius:10px;border-left:4px solid rgba(255,210,166,0.06)}
+    .concern h3{margin:0;color:#fff}
+    .concern p{margin:8px 0;color:var(--muted);font-size:14px}
+    .note{font-size:13px;color:#f6dfc7;background:rgba(255,210,166,0.04);padding:10px;border-radius:8px;margin-top:12px}
+    .disclaimer{margin-top:12px;color:#f4b7a6;font-size:13px}
+    footer{margin-top:18px;display:flex;justify-content:space-between;align-items:center}
+    .pattern{position:absolute;left:-100px;bottom:-80px;opacity:0.08;width:420px;height:420px}
+    @media (max-width:800px){.grid{grid-template-columns:1fr}.pattern{display:none}}
+  </style>
+</head>
+<body>
+  <svg class='pattern' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <defs>
+      <linearGradient id='gg' x1='0' x2='1'><stop offset='0' stop-color='#ffd2a6'/><stop offset='1' stop-color='#a3ffcf'/></linearGradient>
+      <pattern id='dots' width='16' height='16' patternUnits='userSpaceOnUse'>
+        <rect width='16' height='16' fill='transparent'></rect>
+        <circle cx='8' cy='8' r='1.5' fill='#ffd2a6' />
+      </pattern>
+    </defs>
+    <rect width='200' height='200' rx='24' fill='url(#dots)' />
+    <circle cx='40' cy='40' r='36' fill='url(#gg)' opacity='0.14'/>
+  </svg>
+
+  <div class='shell'>
+    <header>
+      <div style='display:flex;align-items:center;gap:12px'>
+        <div class='logo'>HM</div>
+        <div>
+          <div style='color:#fff;font-weight:700'>{{BUSINESS_NAME}}</div>
+          <div style='font-size:13px;color:var(--muted)'>{{CITY}}, {{STATE}} • {{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href='index.html'>Home</a>
+        <a href='services.html'>Offerings</a>
+        <a href='conditions.html' style='font-weight:700;color:#fff'>Concerns</a>
+        <a href='approach.html'>How we work</a>
+        <a href='book.html'>Book</a>
+      </nav>
+    </header>
+
+    <h1>Common concerns we support</h1>
+    <p class='lead'>Below are frequent health themes we explore together. Each entry is educational — not a promise of cure. If you are experiencing an emergency or severe symptoms, please seek urgent medical care.</p>
+
+    <div class='grid'>
+      <div class='concern'>
+        <h3>Stress & Anxiety Regulation</h3>
+        <p>Approaches include breath-based practices, sleep/behavioral strategies, targeted botanicals and lifestyle coaching to improve resilience.</p>
+      </div>
+
+      <div class='concern'>
+        <h3>Sleep Difficulties</h3>
+        <p>We emphasize sleep architecture education, circadian-supportive routines, and non-pharmacologic options. Supplements may be used cautiously as an adjunct.</p>
+      </div>
+
+      <div class='concern'>
+        <h3>Digestion & Gut Function</h3>
+        <p>Nutritional patterning, targeted botanical and enzyme strategies, and selective testing when indicated to clarify underlying factors.</p>
+      </div>
+
+      <div class='concern'>
+        <h3>Chronic Inflammation</h3>
+        <p>Dietary anti-inflammatory patterns, movement therapy and risk-reduction strategies are prioritized; we discuss lab monitoring if helpful.</p>
+      </div>
+
+      <div class='concern'>
+        <h3>Low Energy & Metabolic Balance</h3>
+        <p>Assessment looks at sleep, nutrition, thyroid and metabolic context. We focus on sustainable habits and measured interventions.</p>
+      </div>
+
+      <div class='concern'>
+        <h3>Pain & Musculoskeletal Tension</h3>
+        <p>Movement-based plans, bodywork referrals, and calming nervous-system tools are commonly useful parts of a personalized plan.</p>
+      </div>
+    </div>
+
+    <div class='note'>
+      These summaries are educational. Individual evaluation is required to make safe, effective recommendations. We do not offer guarantees of cure.
+    </div>
+
+    <div class='disclaimer'>If symptoms are sudden, severe, or life-threatening (chest pain, severe shortness of breath, sudden neurological changes), call emergency services immediately.</div>
+
+    <footer>
+      <div style='color:var(--muted)'>Ready to discuss? Call {{PHONE}} or <a href='contact.html' style='color:#fff'>reach out</a>.</div>
+      <div><a href='book.html' style='background:linear-gradient(90deg,#ffd2a6,#a3ffcf);padding:8px 12px;border-radius:10px;color:#062;text-decoration:none;font-weight:700'>Book a Visit</a></div>
+    </footer>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Pricing — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Clear, playful pricing for scent supports, seasonal sets, and one-off consults.">
+  <style>
+    :root{--bg:#fff7ef;--accent:#9c5cff;--accent-2:#ff7ab6;--muted:#6b6b6b;--card:#ffffff;--glass:rgba(255,255,255,0.6)}
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue';background:linear-gradient(180deg,var(--bg),#fff);color:#2b2b2b}
+    header{display:flex;align-items:center;justify-content:space-between;padding:22px 28px;position:sticky;top:0;background:linear-gradient(180deg,rgba(255,255,255,0.85),rgba(255,255,255,0.6));backdrop-filter:blur(6px);border-bottom:1px solid #fff}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;color:white;font-weight:700;font-size:18px}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none;font-weight:600}
+    nav a.active{color:var(--accent)}
+
+    .hero{display:grid;grid-template-columns:1fr;gap:18px;padding:44px 28px;background-image:url('assets/img/pattern.svg');background-repeat:repeat;background-size:220px}
+    .hero-card{background:var(--card);padding:28px;border-radius:14px;box-shadow:0 8px 28px rgba(16,16,16,0.06);display:flex;flex-direction:column;gap:12px}
+    .kicker{color:var(--accent);font-weight:700}
+    h1{margin:0;font-size:28px}
+    p.lead{margin:0;color:var(--muted)}
+
+    .comparator{display:flex;gap:12px;align-items:center;padding:16px;background:linear-gradient(90deg,#fff,#fff);border-radius:12px}
+    .toggle{display:inline-flex;background:linear-gradient(90deg,#f6f2ff,#fff);border-radius:999px;padding:4px;position:relative}
+    .toggle button{border:0;background:transparent;padding:8px 14px;border-radius:999px;cursor:pointer;font-weight:700;color:var(--muted)}
+    .toggle button.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white}
+
+    .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
+    .plan{background:var(--card);padding:18px;border-radius:12px;position:relative;overflow:hidden}
+    .plan h3{margin:6px 0}
+    .price{font-size:28px;font-weight:800;color:var(--accent)}
+    .meta{color:var(--muted);margin-top:8px}
+    .cta{margin-top:12px;padding:10px 12px;border-radius:10px;background:var(--accent);color:#fff;border:0;cursor:pointer}
+
+    .proof{margin-top:24px;display:flex;gap:18px;align-items:flex-start}
+    .testimonials{flex:1;background:linear-gradient(180deg,rgba(255,255,255,0.6),#fff);padding:14px;border-radius:12px}
+    .testimonial{display:none}
+    .testimonial.active{display:block}
+    .cred{width:160px;padding:12px;background:linear-gradient(180deg,#fff,#fff);border-radius:12px;box-shadow:0 8px 18px rgba(16,16,16,0.04)}
+    .badge{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;margin-bottom:10px}
+    .badge img{width:28px;height:28px;border-radius:6px;background:#eee}
+    .badge .bname{font-weight:700}
+    .tooltip{font-size:13px;color:var(--muted)}
+
+    footer{padding:28px;text-align:center;color:var(--muted)}
+
+    @media(max-width:900px){.plans{grid-template-columns:1fr}.hero{padding:20px}.proof{flex-direction:column}.cred{width:100%}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">A</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Shop</a>
+      <a href="pricing.html" class="active">Price Guide</a>
+      <a href="about.html">About</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-card">
+        <div class="kicker">Transparent support</div>
+        <h1>Simple pricing for scent supports and refillable kits</h1>
+        <p class="lead">We offer single purchases, seasonal packages, and a gentle monthly option—you choose how scent fits into your rhythm. All offerings prioritize safety and clear guidance; aromas may support calm, focus, or restful transition for your day.
+        </p>
+
+        <div class="comparator">
+          <div style="flex:1">Compare:</div>
+          <div class="toggle" role="tablist" aria-label="Pricing type">
+            <button class="ptype active" data-type="monthly">Monthly</button>
+            <button class="ptype" data-type="package">Package</button>
+          </div>
+        </div>
+
+        <div class="plans" id="plans">
+          <div class="plan">
+            <div style="font-size:12px;color:var(--accent);font-weight:800">Starter Ritual</div>
+            <h3>Mini Scent Kit</h3>
+            <div class="price" data-month="9" data-package="24">$<span class="num">9</span></div>
+            <div class="meta">Monthly: 1 small vial + guide • Package: 3 refills</div>
+            <button class="cta" data-plan="starter">Choose</button>
+          </div>
+
+          <div class="plan" style="border:2px solid rgba(156,92,255,0.12)">
+            <div style="font-size:12px;color:var(--accent-2);font-weight:800">Best Value</div>
+            <h3>Seasonal Set</h3>
+            <div class="price" data-month="29" data-package="79">$<span class="num">29</span></div>
+            <div class="meta">Monthly: curated trio • Package: full seasonal kit + refills</div>
+            <button class="cta" data-plan="seasonal">Pick this</button>
+          </div>
+
+          <div class="plan">
+            <div style="font-size:12px;color:#7b8;font-weight:800">Support Add-on</div>
+            <h3>Consult + Blend</h3>
+            <div class="price" data-month="59" data-package="160">$<span class="num">59</span></div>
+            <div class="meta">Monthly: short check-in • Package: one deep consult + blend</div>
+            <button class="cta" data-plan="consult">Book</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid;align-self:start;gap:12px">
+        <div class="hero-card" style="width:320px">
+          <strong>How it works</strong>
+          <p class="lead" style="font-size:14px;color:var(--muted);margin-top:8px">Pick Monthly for ongoing support or Package for a one-time focused experience. You can pause, swap blends, or request dilution guidance anytime.</p>
+        </div>
+
+        <div class="cred">
+          <div style="font-weight:800;margin-bottom:8px">Proof & Credibility</div>
+          <div class="badge" data-tip="Featured in a lifestyle column for thoughtful small-business craft"><img alt="mag" src="#"> <div><div class="bname">Bloom Journal</div><div class="tooltip">press</div></div></div>
+          <div class="badge" data-tip="Natural products certification verified by an independent lab"><img alt="lab" src="#"> <div><div class="bname">Green Lab</div><div class="tooltip">certified</div></div></div>
+          <div class="badge" data-tip="Local business award for sensory services"><img alt="local" src="#"> <div><div class="bname">Community Picks</div><div class="tooltip">award</div></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="proof" aria-label="Testimonials and badges">
+      <div class="testimonials" id="testimonials">
+        <div class="testimonial active">
+          <strong>"Snatches of calm on busy days"</strong>
+          <p style="margin-top:8px;color:var(--muted)">I use the Seasonal Set each morning. The little ritual helps me move into the day with a steady breath. — Mira, {{CITY}}</p>
+        </div>
+        <div class="testimonial">
+          <strong>"Pets friendly guidance was a relief"</strong>
+          <p style="margin-top:8px;color:var(--muted)">Clear instructions about dilution and patch testing made it safe for my home with two curious cats. — Jonah, {{STATE}}</p>
+        </div>
+        <div class="testimonial">
+          <strong>"A thoughtful gift I keep returning to"</strong>
+          <p style="margin-top:8px;color:var(--muted)">I bought a package for my sister and ended up subscribing. The refill options are delightful. — Ana</p>
+        </div>
+      </div>
+      <aside class="cred" id="credBox">
+        <div style="font-weight:800">Credibility</div>
+        <div class="badge" tabindex="0" data-tip="Two decades of combined aromabotanical study among our makers"><img alt="study" src="#"> <div><div class="bname">Practitioner Collective</div><div class="tooltip">team</div></div></div>
+        <div class="badge" tabindex="0" data-tip="Non-medical guidance: scent notes may support relaxation and attention, not a substitute for medical care"><img alt="note" src="#"> <div><div class="bname">Safety First</div><div class="tooltip">policy</div></div></div>
+      </aside>
+    </section>
+
+    <section style="padding:28px">
+      <div style="background:var(--card);padding:18px;border-radius:12px">
+        <strong>Need a custom quote?</strong>
+        <p style="color:var(--muted)">Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a>. For pregnancy, nursing, or sensitive environments we provide tailored dilution guidance and patch-test plans.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} — Serving {{CITY}}, {{STATE}} • <a href="book.html">{{PRIMARY_CTA_LABEL}}</a></div>
+  </footer>
+
+  <script>
+    // Pricing comparator with animated numbers
+    (function(){
+      const buttons = document.querySelectorAll('.ptype');
+      const nums = document.querySelectorAll('.num');
+      let current = 'monthly';
+
+      function animateValue(el, start, end, duration){
+        const startTime = performance.now();
+        function tick(now){
+          const t = Math.min((now-startTime)/duration,1);
+          const eased = (--t)*t*t+1; // ease-out cubic
+          const value = Math.round(start + (end-start)*eased);
+          el.textContent = value;
+          if(now - startTime < duration) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      }
+
+      function refresh(to){
+        nums.forEach(n => {
+          const parent = n.closest('.price');
+          const from = Number(n.textContent);
+          const target = Number(parent.getAttribute('data-' + to));
+          animateValue(n, from, target, 550);
+        });
+      }
+
+      buttons.forEach(b => b.addEventListener('click', ()=>{
+        buttons.forEach(x=>x.classList.remove('active'));
+        b.classList.add('active');
+        const to = b.getAttribute('data-type');
+        if(to === current) return;
+        current = to;
+        refresh(to);
+      }));
+
+      // initial state: monthly
+      document.addEventListener('DOMContentLoaded', ()=>{
+        refresh('monthly');
+      });
+    })();
+
+    // Testimonial rotator and tooltip micro-interactions
+    (function(){
+      const items = document.querySelectorAll('#testimonials .testimonial');
+      let idx = 0;
+      setInterval(()=>{
+        items[idx].classList.remove('active');
+        idx = (idx + 1) % items.length;
+        items[idx].classList.add('active');
+      },4500);
+
+      // badges tooltips
+      document.querySelectorAll('.badge').forEach(b => {
+        b.addEventListener('mouseenter', ()=>{
+          const tip = b.getAttribute('data-tip');
+          const node = document.createElement('div');
+          node.className = 'tippop';
+          node.textContent = tip;
+          Object.assign(node.style,{position:'absolute',background:'#111',color:'#fff',padding:'8px 10px',borderRadius:'8px',fontSize:'12px',zIndex:999});
+          b.appendChild(node);
+          b._tip = node;
+        });
+        b.addEventListener('mouseleave', ()=>{ if(b._tip){b._tip.remove();b._tip=null;} });
+      });
+    })();
+  </script>
+</body>
+</html>

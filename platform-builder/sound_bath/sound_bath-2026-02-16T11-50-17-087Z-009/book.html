@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reserve your place at {{BUSINESS_NAME}} — sensory sound baths in {{CITY}}, {{STATE}}.">
+  <style>
+    :root{--bg:#041018;--card:#092028;--muted:#9ec3bd;--accent:#7fe0c6}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,#06151a 0%,#031016 100%);color:#e9fbf6}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px}
+    .logo{background:linear-gradient(135deg,var(--accent),#5bbfde);padding:8px 10px;border-radius:10px;color:#042426;font-weight:700}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none}
+    .container{max-width:980px;margin:18px auto;padding:18px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:20px}
+    .panel{background:var(--card);padding:18px;border-radius:12px}
+    h1{margin:0 0 8px 0}
+    .tiny{color:var(--muted);font-size:14px}
+    form{display:flex;flex-direction:column;gap:12px}
+    input,select,textarea{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);padding:10px;border-radius:10px;color:#e6fbf8}
+    button.primary{background:linear-gradient(90deg,var(--accent),#6fd0dc);border:0;padding:12px;border-radius:12px;color:#042426;font-weight:700}
+    .note{font-size:13px;color:var(--muted)}
+    @media(max-width:880px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo">{{BUSINESS_NAME}}</div>
+      <div class="note">Reserve your sensory session</div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="events.html">Upcoming</a>
+      <a href="private-sessions.html">Private</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="faq.html">Help</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- hero -->
+    <section class="panel" style="margin-bottom:18px">
+      <h1>Reserve a session</h1>
+      <p class="tiny">Choose a group session or inquire about private facilitation. Please read the guidelines below before booking.</p>
+    </section>
+
+    <div class="grid">
+      <div>
+        <!-- pillars (booking-focused) -->
+        <section class="panel">
+          <h3 style="margin-top:0">Flow & what to expect</h3>
+          <ol class="note" style="margin-top:8px 0 0 18px">
+            <li>Arrival & intake (10–20 min): brief health check & comfort setup.</li>
+            <li>Grounding (10–15 min): gentle breathing cues & orientation.</li>
+            <li>Sound immersion (40–60 min): layered instruments for sustained resonance.</li>
+            <li>Guided reorientation (10 min): slow return, hydration suggestion, post-session notes.</li>
+          </ol>
+
+          <h4 style="margin-top:12px">What to bring</h4>
+          <ul class="note" style="margin-left:18px;margin-top:8px">
+            <li>Yoga mat or padded surface</li>
+            <li>Blanket, pillow, eye mask</li>
+            <li>Water bottle — no heavy meals immediately beforehand</li>
+          </ul>
+
+          <h4 style="margin-top:12px">Contraindications & safety</h4>
+          <p class="note">If you have epilepsy, recent head injury, severe psychiatric conditions, are pregnant with complications, or use devices that are sensitive to vibration (e.g., certain implants), please consult your clinician and contact us prior to booking. We can often adapt volume and instrument selection.</p>
+        </section>
+
+        <!-- myth_vs_truth (booking variant) -->
+        <section class="panel" style="margin-top:12px">
+          <h4>Myth vs. Practice</h4>
+          <p class="note">Myth: louder is better. Practice: calibrated amplitude and spectral balance produce deeper relaxation with fewer startle responses.</p>
+        </section>
+
+        <!-- case_notes (booking) -->
+        <section class="panel" style="margin-top:12px">
+          <h4>Recent note</h4>
+          <p class="note">We adjusted low-frequency content for a cohort with vestibular sensitivity; no adverse reactions and high ratings for comfort.</p>
+        </section>
+      </div>
+
+      <aside>
+        <!-- booking form + faq compact -->
+        <div class="panel">
+          <h3 style="margin-top:0">Book now</h3>
+          <form action="{{PRIMARY_CTA_URL}}" method="post">
+            <label class="note">Name</label>
+            <input name="name" type="text" placeholder="Your full name" required>
+            <label class="note">Email</label>
+            <input name="email" type="email" placeholder="you@example.com" required>
+            <label class="note">Phone</label>
+            <input name="phone" type="tel" placeholder="Optional">
+            <label class="note">Select session</label>
+            <select name="session">
+              <option>Next group session — {{NEXT_EVENT_DATE}}</option>
+              <option>Private 1:1 — request time</option>
+              <option>Couples session — request time</option>
+            </select>
+            <label class="note">Notes / contraindications</label>
+            <textarea name="notes" rows="4" placeholder="Please share any medical notes we should know."></textarea>
+            <div class="note">By booking you confirm you have read the safety note and understand this is a sensory support service, not a substitute for medical care.</div>
+            <button class="primary" type="submit" style="margin-top:8px">Reserve</button>
+          </form>
+        </div>
+
+        <div class="panel" style="margin-top:12px">
+          <h4 style="margin-top:0">Quick FAQ</h4>
+          <div class="note">Arrive 15 minutes early for check-in. We provide extra blankets. Refunds processed per the rates policy.</div>
+          <div style="margin-top:10px">
+            <strong class="note">Instruments for typical groups</strong>
+            <div class="note" style="margin-top:6px">Tibetan singing bowls • Koshi chimes • Bass gong</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- final cta -->
+    <section style="margin-top:18px;display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <h3 style="margin:0">Need a tailored session?</h3>
+        <p class="note" style="margin-top:6px">We offer hybrid options for corporate, couples, and 1:1 facilitation — reach out to plan.</p>
+      </div>
+      <div>
+        <a href="private-sessions.html" style="background:transparent;border:1px solid rgba(255,255,255,0.06);padding:10px;border-radius:10px;color:var(--muted);text-decoration:none">Private & corporate</a>
+        <a href="tel:{{PHONE}}" style="margin-left:8px;display:inline-block;background:linear-gradient(90deg,var(--accent),#6fd0dc);padding:10px;border-radius:10px;color:#042426;text-decoration:none">Call to consult</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer style="padding:18px;text-align:center;color:var(--muted)">
+    <div>{{BUSINESS_NAME}} • {{VENUE_NAME}} • {{CITY}}, {{STATE}}</div>
+    <div style="margin-top:6px">Questions? <a href="mailto:{{EMAIL}}" style="color:var(--muted)">{{EMAIL}}</a> • <a href="tel:{{PHONE}}" style="color:var(--muted)">{{PHONE}}</a></div>
+  </footer>
+</body>
+</html>

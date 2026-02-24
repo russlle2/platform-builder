@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{BUSINESS_NAME}} — Our Approach</title>
+  <style>
+    :root{--accent:#0b5f73;--bg:#f3fff9;--muted:#475257}
+    body{font-family:Inter,ui-sans-serif,system-ui,Arial;color:#062526;background:var(--bg);margin:0}
+    .wrap{max-width:1050px;margin:28px auto;padding:18px}
+    .nav{display:flex;justify-content:space-between;align-items:center}
+    .nav a{color:var(--accent);text-decoration:none;font-weight:700}
+    .hero{margin-top:18px;padding:18px;background:white;border-radius:12px;box-shadow:0 8px 30px rgba(8,40,35,0.04)}
+    .h2{font-size:20px;margin:0}
+    .muted{color:var(--muted)}
+    .timeline{display:flex;flex-direction:column;gap:12px;margin-top:18px}
+    .phase{background:linear-gradient(90deg,#fff,#f7fffb);border-radius:12px;padding:14px;border:1px solid rgba(3,27,24,0.04)}
+    .phase h4{margin:0 0 6px 0}
+    .controls{margin-top:10px;display:flex;gap:8px}
+    .btn{background:var(--accent);color:white;padding:8px 10px;border-radius:8px;text-decoration:none;font-weight:700}
+    .mini{background:transparent;border:1px solid var(--accent);padding:8px;border-radius:8px;color:var(--accent);text-decoration:none}
+    .roadmap{display:flex;gap:12px;margin-top:12px}
+    .step{flex:1;padding:10px;border-radius:10px;text-align:center;background:white}
+    .disclaimer{margin-top:12px;background:#fff6f6;border-left:4px solid #ff6b6b;padding:10px;border-radius:8px}
+    .pattern{position:fixed;right:10px;top:80px;width:140px;height:140px;opacity:.06}
+    @media(max-width:900px){.roadmap{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="nav">
+      <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+      <div style="display:flex;gap:12px">
+        <a href="index.html">Home</a>
+        <a href="services.html">Programs</a>
+        <a href="conditions.html">Conditions</a>
+        <a href="pricing.html">Rates</a>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px">
+        <div style="flex:1">
+          <h2 class="h2">A pragmatic pathway: plan, practice, refine.</h2>
+          <p class="muted">We balance evidence-informed options and real-world constraints: short cycles, clear measurements, and referral-ready handoffs when care requires specialists.</p>
+        </div>
+        <div style="width:240px;text-align:right">
+          <a class="btn" href="book.html">Plan a VIP Day</a>
+          <div style="height:10px"></div>
+          <a class="mini" href="contact.html">Ask a question</a>
+        </div>
+      </div>
+
+      <div class="timeline" aria-live="polite">
+        <div class="phase" id="phase1">
+          <h4>Phase 1 — Intake & Stabilize</h4>
+          <div class="muted">A focused intake to clarify priorities, safety screening, and two planning contacts to establish immediate supports.</div>
+          <div class="controls">
+            <button class="btn" data-phase="1">Select Phase 1</button>
+            <button class="mini" data-info="1">Details</button>
+          </div>
+        </div>
+
+        <div class="phase" id="phase2">
+          <h4>Phase 2 — Build Skills</h4>
+          <div class="muted">Active skill-building and short experiments over 4–8 weeks to test adjustments and build resilience.</div>
+          <div class="controls">
+            <button class="btn" data-phase="2">Select Phase 2</button>
+            <button class="mini" data-info="2">Details</button>
+          </div>
+        </div>
+
+        <div class="phase" id="phase3">
+          <h4>Phase 3 — Integrate & Handoff</h4>
+          <div class="muted">Consolidation of successful habits, relapse planning, and referrals or transition plans when needed.</div>
+          <div class="controls">
+            <button class="btn" data-phase="3">Select Phase 3</button>
+            <button class="mini" data-info="3">Details</button>
+          </div>
+        </div>
+
+        <div class="disclaimer">
+          <strong>Clinical note:</strong>
+          <p class="muted">This planner is for collaborative planning and educational use. It is not a diagnostic tool and does not replace urgent medical attention. Timelines vary by individual and condition.</p>
+        </div>
+      </div>
+
+      <div class="roadmap" id="roadmap" style="margin-top:18px">
+        <div class="step" id="s1"><strong>Intake</strong><div class="muted">2 weeks</div></div>
+        <div class="step" id="s2"><strong>Active Work</strong><div class="muted">4–8 weeks</div></div>
+        <div class="step" id="s3"><strong>Transition</strong><div class="muted">Ongoing</div></div>
+      </div>
+
+    </section>
+
+    <section style="margin-top:16px">
+      <div class="card" style="padding:14px;background:white;border-radius:12px;box-shadow:0 6px 18px rgba(6,40,36,0.03)">
+        <h3 style="margin:0">Build-your-day planner</h3>
+        <p class="muted" style="margin-top:8px">Use the quick planner to map when you might schedule sessions and practice slots. This is a guide — your calendar, priorities, and safety needs come first.</p>
+
+        <form id="planner" style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+          <label class="muted">Preferred start week: <input type="date" name="start" required></label>
+          <label class="muted">Intensity: <select name="intensity"><option>Low (1x/mo)</option><option>Medium (1x/wk)</option><option>High (2x/wk)</option></select></label>
+          <label class="muted">Target phase: <select name="phase"><option value="1">Phase 1</option><option value="2">Phase 2</option><option value="3">Phase 3</option></select></label>
+          <button class="btn" type="submit">Produce roadmap</button>
+        </form>
+
+        <div id="planResult" style="margin-top:12px;color:var(--muted);"></div>
+      </div>
+    </section>
+
+    <svg class="pattern" viewBox="0 0 100 100" aria-hidden="true">
+      <defs>
+        <pattern id="a" width="12" height="12" patternUnits="userSpaceOnUse">
+          <rect width="12" height="12" fill="#f3fff9"/>
+          <path d="M0 6h12" stroke="#0b5f73" stroke-opacity="0.04" stroke-width="1"/>
+        </pattern>
+      </defs>
+      <rect width="100" height="100" fill="url(#a)"/>
+      <circle cx="18" cy="18" r="12" fill="#0b5f73" opacity="0.06"/>
+    </svg>
+
+    <footer style="margin-top:18px;color:var(--muted);font-size:13px">Questions about fit? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="book.html">Reserve a planning session</a></footer>
+  </div>
+
+  <script>
+    // Phase selection highlights roadmap
+    document.querySelectorAll('[data-phase]').forEach(btn=>{
+      btn.addEventListener('click',e=>{
+        const p=e.currentTarget.getAttribute('data-phase');
+        document.querySelectorAll('.step').forEach((s,i)=>{
+          s.style.boxShadow='none';s.style.border='1px solid rgba(0,0,0,0.04)';
+        });
+        if(p==='1') document.getElementById('s1').style.boxShadow='0 8px 20px rgba(11,95,115,0.12)';
+        if(p==='2') document.getElementById('s2').style.boxShadow='0 8px 20px rgba(11,95,115,0.12)';
+        if(p==='3') document.getElementById('s3').style.boxShadow='0 8px 20px rgba(11,95,115,0.12)';
+        // friendly reminder
+        alert('Selected Phase '+p+'. This is a planning selection — timing and steps are individualized.');
+      });
+    });
+
+    // info buttons
+    document.querySelectorAll('[data-info]').forEach(b=>{
+      b.addEventListener('click',e=>{
+        const id=e.currentTarget.getAttribute('data-info');
+        if(id==='1') alert('Phase 1 focuses on safety, immediate supports, and a short stabilization plan.');
+        if(id==='2') alert('Phase 2 is where we test skills and institute short experiments with regular check-ins.');
+        if(id==='3') alert('Phase 3 consolidates wins, plans for relapse, and arranges further referrals if needed.');
+      });
+    });
+
+    // Planner submit
+    document.getElementById('planner').addEventListener('submit',function(e){
+      e.preventDefault();
+      const fd=new FormData(e.target);
+      const start=fd.get('start');
+      const intensity=fd.get('intensity');
+      const phase=fd.get('phase');
+      let note='Estimated rhythm: ';
+      if(intensity.includes('Low')) note+='Monthly sessions; slower integration.';
+      if(intensity.includes('Medium')) note+='Weekly sessions; active skill building.';
+      if(intensity.includes('High')) note+='Bi-weekly sessions; focused, faster cycle.';
+      note+=' Target: Phase '+phase+'. Start: '+start+'.';
+      note+='\n\nDisclaimer: This is a suggested plan for discussion; adapt as needed and seek urgent care for severe symptoms.';
+      document.getElementById('planResult').textContent=note;
+    });
+  </script>
+</body>
+</html>

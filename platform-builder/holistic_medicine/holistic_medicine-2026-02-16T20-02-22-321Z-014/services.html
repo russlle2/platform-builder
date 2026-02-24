@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Services — {{BUSINESS_NAME}}</title>
+  <meta name='description' content='Holistic & integrative service offerings centered on whole-person care.'>
+  <style>
+    :root{--bg1:#f7fbf9;--accent:#6c5ce7;--muted:#6b7280;--card:#ffffff;--glass:rgba(255,255,255,0.6)}
+    *{box-sizing:border-box;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+    body{margin:0;background:linear-gradient(180deg,var(--bg1),#eef7f6);color:#0f1724;min-height:100vh}
+    header{position:sticky;top:0;backdrop-filter: blur(6px);background:linear-gradient(90deg,rgba(255,255,255,0.6),rgba(255,255,255,0.4));border-bottom:1px solid rgba(15,23,36,0.06);display:flex;align-items:center;justify-content:space-between;padding:14px 28px;z-index:20}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#00bfa6);display:grid;place-items:center;color:white;font-weight:700}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none;font-weight:600}
+    nav a:hover{color:var(--accent)}
+    .hero{padding:64px 6vw 48px;position:relative;overflow:hidden}
+    .pattern{position:absolute;inset:0;opacity:0.12}
+    .hero .inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:center}
+    .kicker{display:inline-block;background:linear-gradient(90deg,var(--accent),#00bfa6);color:white;padding:6px 10px;border-radius:999px;font-weight:700}
+    h1{font-size:32px;margin:12px 0 8px;line-height:1.05}
+    p.lead{color:#213547;margin:0 0 18px}
+    .cta{display:inline-block;padding:12px 18px;border-radius:10px;background:var(--accent);color:white;text-decoration:none;font-weight:700}
+    .card{background:var(--card);border-radius:14px;padding:18px;box-shadow:0 6px 20px rgba(12,15,20,0.06)}
+    .services-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:18px}
+    .service{padding:14px;border-radius:10px;background:linear-gradient(180deg,#fff,#fbfdfe);border:1px solid rgba(12,15,20,0.04)}
+    .muted{color:var(--muted)}
+    .section{max-width:1100px;margin:36px auto;padding:0 6vw}
+    .framework{display:grid;grid-template-columns:1fr 320px;gap:22px}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#f1f5f9;color:#0f1724;font-weight:700}
+    .offers-list{display:flex;flex-direction:column;gap:10px}
+    .testimonials{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+    footer{padding:32px 6vw;text-align:center;color:var(--muted);font-size:14px}
+    @media (max-width:900px){.hero .inner{grid-template-columns:1fr;}.framework{grid-template-columns:1fr}.services-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class='brand'>
+      <div class='logo'>HM</div>
+      <div>
+        <div style='font-weight:800;'>{{BUSINESS_NAME}}</div>
+        <div style='font-size:12px;color:var(--muted);margin-top:2px;'>{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href='index.html'>Home</a>
+      <a href='services.html' style='color:var(--accent)'>Offerings</a>
+      <a href='conditions.html'>Concerns</a>
+      <a href='approach.html'>How We Work</a>
+      <a href='pricing.html'>Fees</a>
+      <a href='book.html'>Book</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class='hero'>
+      <svg class='pattern' viewBox='0 0 800 400' preserveAspectRatio='none'>
+        <defs>
+          <linearGradient id='g1' x1='0' x2='1' y1='0' y2='1'>
+            <stop offset='0' stop-color='#f9feff'/>
+            <stop offset='1' stop-color='#eefaf8'/>
+          </linearGradient>
+          <filter id='wobble' x='-20%' y='-20%' width='140%' height='140%'>
+            <feTurbulence baseFrequency='0.01' numOctaves='2' seed='2' result='t'/>
+            <feDisplacementMap in='SourceGraphic' in2='t' scale='10'/>
+          </filter>
+        </defs>
+        <rect width='800' height='400' fill='url(#g1)' filter='url(#wobble)'></rect>
+        <g fill='none' stroke='#6c5ce7' stroke-opacity='0.12' stroke-width='2'>
+          <path d='M0 200 C150 100,350 300,800 180'/>
+          <path d='M0 120 C200 220,400 40,800 120'/>
+        </g>
+      </svg>
+
+      <div class='inner'>
+        <div>
+          <div class='kicker'>Whole-person care</div>
+          <h1>Tailored integrative services for lasting balance</h1>
+          <p class='lead'>We blend evidence-informed nutrition, botanicals, mindful movement, and lifestyle design to support your resilience. No quick fixes — just thoughtful, intensive care.</p>
+          <a class='cta' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a>
+          <div style='margin-top:16px;color:var(--muted)'>Sessions via telehealth and in {{CITY}}, {{STATE}} • Call <a href='tel:{{PHONE}}'>{{PHONE}}</a></div>
+        </div>
+
+        <div class='card'>
+          <div style='font-weight:800;margin-bottom:8px'>Featured packages</div>
+          <div class='services-grid'>
+            <div class='service'>
+              <strong>Foundational Intake</strong>
+              <div class='muted' style='font-size:13px;margin-top:6px'>90–120 min comprehensive assessment</div>
+            </div>
+            <div class='service'>
+              <strong>Personalized Protocol</strong>
+              <div class='muted' style='font-size:13px;margin-top:6px'>7–12 week plan, lifestyle + nutrition + botanicals</div>
+            </div>
+            <div class='service'>
+              <strong>Mind-Body Coaching</strong>
+              <div class='muted' style='font-size:13px;margin-top:6px'>Stress resilience, breathwork, sleep habits</div>
+            </div>
+            <div class='service'>
+              <strong>Lab-guided Investigation</strong>
+              <div class='muted' style='font-size:13px;margin-top:6px'>Optional functional labs for deeper clues</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class='section' aria-labelledby='why'>
+      <div class='framework card'>
+        <div>
+          <h2 id='why'>How our intensive model works</h2>
+          <p class='muted'>We focus on root patterns and practical steps. Your plan is collaborative and evolves with your life.</p>
+
+          <ol style='margin-top:12px'>
+            <li><strong>Deep Intake</strong> — listening, timelines, prior tests.</li>
+            <li><strong>Hypothesis & Plan</strong> — individualized recommendations and small experiments.</li>
+            <li><strong>Implementation Support</strong> — coaching, recipes, and check-ins.</li>
+            <li><strong>Review & Adjust</strong> — outcomes, labs, and refinement.</li>
+          </ol>
+        </div>
+        <aside style='padding-left:12px'>
+          <div class='pill'>Intensive option</div>
+          <p style='margin-top:12px;color:var(--muted)'>Combine an extended intake with weekly follow-ups for 8–12 weeks for concentrated progress.</p>
+          <div style='margin-top:14px'><a href='book.html' class='cta' style='display:inline-block;padding:9px 12px;background:#00bfa6'>Start an intake</a></div>
+        </aside>
+      </div>
+    </section>
+
+    <section class='section'>
+      <h3 style='margin-bottom:8px'>Offerings you can mix and match</h3>
+      <div class='offers-list'>
+        <div class='card'>
+          <strong>Nutrition rehabilitation</strong>
+          <div class='muted' style='margin-top:6px'>Personalized eating plans with attention to digestion, sleep, and energy.</div>
+        </div>
+        <div class='card'>
+          <strong>Botanical supports</strong>
+          <div class='muted' style='margin-top:6px'>Herbal options discussed with safety and interactions in mind — educational and cautious.</div>
+        </div>
+        <div class='card'>
+          <strong>Stress & sleep pathway</strong>
+          <div class='muted' style='margin-top:6px'>Practical tools for nervous system regulation and restorative sleep routines.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class='section'>
+      <h3>What clients say</h3>
+      <div class='testimonials'>
+        <div class='card'>
+          <div style='font-weight:800'>"Thoughtful, practical, and kind"</div>
+          <div class='muted' style='margin-top:8px'>"I learned small changes that added up — no promises, just real progress."</div>
+        </div>
+        <div class='card'>
+          <div style='font-weight:800'>"A roadmap, finally"</div>
+          <div class='muted' style='margin-top:8px'>"We mapped my energy dips and made the patterns understandable."</div>
+        </div>
+      </div>
+    </section>
+
+    <section class='section card' style='text-align:center'>
+      <h3>Ready to begin an intensive plan?</h3>
+      <p class='muted'>Book an initial intake to explore priorities and see if this model fits your needs.</p>
+      <a class='cta' href='{{PRIMARY_CTA_URL}}' style='margin-top:12px;display:inline-block'>{{PRIMARY_CTA_LABEL}}</a>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>{{PRACTITIONER_NAME}} {{CREDENTIALS}} • <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a> • <a href='tel:{{PHONE}}'>{{PHONE}}</a></div>
+    <div style='margin-top:8px' class='muted'>Serving {{CITY}}, {{STATE}} • Educational, integrative care — not a substitute for medical emergency care.</div>
+  </footer>
+</body>
+</html>

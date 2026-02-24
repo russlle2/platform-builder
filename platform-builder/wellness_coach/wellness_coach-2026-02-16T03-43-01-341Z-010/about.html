@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{
+      --bg:#F6EFEA; --card:#FFF7F1; --accent:#B07A52; --muted:#7A5A44; --dark:#4A3529;
+      --radius:14px; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, 'Helvetica Neue', Arial;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg, var(--bg), #FFF);color:var(--dark);}
+    .wrap{max-width:1100px;margin:36px auto;padding:28px;}
+    nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand h1{font-size:20px;margin:0;color:var(--dark)}
+    .brand p{margin:0;font-size:12px;color:var(--muted)}
+    .navlinks a{margin-left:18px;color:var(--muted);text-decoration:none;font-weight:600}
+    header.hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:center;margin-bottom:26px}
+    .hero-card{background:var(--card);border-radius:var(--radius);padding:28px;box-shadow:0 8px 30px rgba(74,53,41,0.08)}
+    h2{margin:0 0 12px 0;font-size:28px;color:var(--dark)}
+    p.lead{margin:0;color:var(--muted);line-height:1.45}
+    .avatar{display:flex;gap:12px;align-items:center;margin-top:18px}
+    .avatar svg{width:84px;height:84px;border-radius:12px}
+    .meta{font-size:14px}
+    section{margin:28px 0}
+    .values{display:flex;flex-wrap:wrap;gap:16px}
+    .value{background:linear-gradient(180deg,#FFF 0%,#FFF7F1 100%);padding:18px;border-radius:12px;flex:1 1 220px;box-shadow:0 6px 18px rgba(112,82,58,0.06)}
+    .methods{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .method{background:#fff;padding:18px;border-radius:12px;border-left:6px solid var(--accent)}
+    .faq{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .lead-magnet{background:linear-gradient(180deg,#FFF7F1, #F6E9DE);padding:20px;border-radius:12px;display:flex;align-items:center;gap:18px}
+    .lead-magnet form{display:flex;gap:8px}
+    input[type="email"]{padding:10px;border-radius:8px;border:1px solid #E6D6C8}
+    button.primary{background:var(--accent);color:#fff;padding:10px 14px;border:none;border-radius:8px;font-weight:700}
+    footer.cta{display:flex;justify-content:space-between;align-items:center;background:#FFF7F1;padding:20px;border-radius:12px;margin-top:26px}
+    .testimonials{display:flex;flex-direction:column;gap:12px}
+    .testi{background:#fff;padding:14px;border-radius:10px}
+    /* svg pattern placement */
+    .pattern{position:absolute;right:20px;top:20px;opacity:.06}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <div class="brand">
+        <!-- assets/img/avatar.svg (about variant) -->
+        <svg width="44" height="44" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="logo">
+          <defs>
+            <linearGradient id="g1" x1="0" x2="1">
+              <stop offset="0" stop-color="#B07A52"/>
+              <stop offset="1" stop-color="#D99E72"/>
+            </linearGradient>
+          </defs>
+          <rect rx="10" width="64" height="64" fill="url(#g1)"/>
+          <circle cx="32" cy="26" r="10" fill="#fff" opacity="0.12"/>
+          <path d="M18 48c6-8 22-8 28 0" stroke="#fff" stroke-opacity="0.18" stroke-width="4" fill="none" stroke-linecap="round"/>
+        </svg>
+        <div>
+          <h1>{{BUSINESS_NAME}}</h1>
+          <p>{{TAGLINE}}</p>
+        </div>
+      </div>
+      <div class="navlinks">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="services.html">Services</a>
+        <a href="programs.html">Paths</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="testimonials.html">Stories</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </nav>
+
+    <header class="hero">
+      <div class="hero-card">
+        <h2>Meet {{COACH_NAME}} — a practical guide to sustainable change</h2>
+        <p class="lead">I partner with busy professionals to turn small daily choices into measurable wellbeing. No fad diets, no wishful thinking — frameworks you can apply today to sleep better, move more, and free up mental energy for what matters.</p>
+        <div class="avatar">
+          <!-- assets/img/avatar.svg (about - personal portrait stylized) -->
+          <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect width="120" height="120" rx="18" fill="#FFF7F1"/>
+            <g transform="translate(12,12)">
+              <circle cx="36" cy="28" r="18" fill="#B07A52" opacity="0.95"/>
+              <rect x="6" y="56" width="60" height="38" rx="10" fill="#D99E72" opacity="0.9"/>
+            </g>
+          </svg>
+          <div class="meta">
+            <strong>{{COACH_NAME}}, {{CREDENTIALS}}</strong>
+            <div style="color:var(--muted);font-size:13px">Based in {{CITY}}, {{STATE}} • Executive wellness coach</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px;align-self:start">
+        <div class="hero-card">
+          <h3 style="margin:0 0 8px 0;color:var(--accent)">Quick outcomes I help clients reach</h3>
+          <ul style="margin:0;padding-left:18px;color:var(--muted)">
+            <li>Consistent morning and evening routines that stick</li>
+            <li>Built-in micro-habits to reduce stress across the day</li>
+            <li>Clear, measurable weekly goals with accountability</li>
+          </ul>
+        </div>
+        <div class="hero-card">
+          <h3 style="margin:0 0 8px 0;color:var(--accent)">Ready to start?</h3>
+          <a href="{{PRIMARY_CTA_URL}}"><button class="primary">{{PRIMARY_CTA_LABEL}}</button></a>
+          <p style="margin:10px 0 0 0;color:var(--muted);font-size:13px">Or call <a href="tel:{{PHONE}}">{{PHONE}}</a></p>
+        </div>
+      </div>
+    </header>
+
+    <section>
+      <h3 style="margin-bottom:12px">Core values that shape our work</h3>
+      <div class="values">
+        <div class="value">
+          <strong>Evidence-minded simplicity</strong>
+          <p style="margin:8px 0 0;color:var(--muted)">We choose a few high-leverage practices and refine them until they're automatic.</p>
+        </div>
+        <div class="value">
+          <strong>Accountable compassion</strong>
+          <p style="margin:8px 0 0;color:var(--muted)">Direct feedback wrapped in supportive, practical steps.</p>
+        </div>
+        <div class="value">
+          <strong>Context-first strategy</strong>
+          <p style="margin:8px 0 0;color:var(--muted)">Plans tailored to your schedule, energy patterns, and goals.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h3 style="margin-bottom:12px">Proven frameworks I use with every client</h3>
+      <div class="methods">
+        <div class="method">
+          <strong>Micro-Routines</strong>
+          <p style="margin-top:8px;color:var(--muted)">20 minute windows built into your day to anchor habit formation.</p>
+        </div>
+        <div class="method">
+          <strong>Data-light Tracking</strong>
+          <p style="margin-top:8px;color:var(--muted)">Simple weekly metrics that show progress without overwhelm.</p>
+        </div>
+        <div class="method">
+          <strong>Behavioral Design</strong>
+          <p style="margin-top:8px;color:var(--muted)">Designing your environment so healthy choices become the easy choice.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h3 style="margin-bottom:12px">Real concerns, clear answers</h3>
+      <div class="faq">
+        <div class="testi" style="background:#FFF7F1">
+          <strong>Will coaching fit into my schedule?</strong>
+          <p style="margin:8px 0 0;color:var(--muted)">Yes. Programs are built around your existing commitments — we adapt timelines and micro-actions to what you actually do each day.</p>
+        </div>
+        <div class="testi" style="background:#FFF7F1">
+          <strong>How is this different from an app?</strong>
+          <p style="margin:8px 0 0;color:var(--muted)">You get human accountability, tailored adaptations, and a strategy that evolves with your progress.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h3 style="margin-bottom:12px">What clients say</h3>
+      <div class="testimonials">
+        <div class="testi">
+          "Working with {{COACH_NAME}} helped me go from 'trying' to actually doing — without burning out. My mornings feel settled and focused." — A.M., Senior Manager
+        </div>
+        <div class="testi">
+          "I reduced nightly screen time and finally sleep better. The plan was straightforward and realistic." — J.T., Consultant
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h3 style="margin-bottom:12px">Free guide: The 7-Day Reset Blueprint</h3>
+      <div class="lead-magnet">
+        <!-- assets/img/pattern.svg (about pattern variant) -->
+        <svg width="84" height="84" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect width="100" height="100" rx="16" fill="#FFF"/>
+          <path d="M6 80 C30 40, 70 40, 94 80" stroke="#B07A52" stroke-width="6" fill="none" stroke-linecap="round" opacity="0.18"/>
+        </svg>
+        <div style="flex:1">
+          <p style="margin:0;color:var(--muted)">A concise, practical download to kickstart a week of small, cumulative wins.</p>
+        </div>
+        <form action="{{PRIMARY_CTA_URL}}" method="get">
+          <input type="email" name="email" placeholder="Your email" aria-label="email" required />
+          <button class="primary">Get the guide</button>
+        </form>
+      </div>
+    </section>
+
+    <footer class="cta">
+      <div>
+        <strong style="font-size:16px">Ready to design a calmer, more energized life?</strong>
+        <div style="color:var(--muted);font-size:13px">Schedule a discovery call with {{COACH_NAME}} — transparent paths, measurable outcomes.</div>
+      </div>
+      <div>
+        <a href="{{PRIMARY_CTA_URL}}"><button class="primary">{{PRIMARY_CTA_LABEL}}</button></a>
+        <div style="margin-top:8px;color:var(--muted);text-align:right">Or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

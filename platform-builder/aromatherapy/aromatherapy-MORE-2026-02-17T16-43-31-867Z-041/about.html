@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Story — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#07121a;--glass:rgba(255,255,255,0.04);--accent:#B2E6D9;--muted:#9bb0b0;font-family:"Segoe UI",Roboto,Arial,Helvetica,sans-serif}
+    body{margin:0;min-height:100vh;background:linear-gradient(180deg,#061014 0%,#07121a 100%);color:#e8fbf3}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 26px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,0.03)}
+    .logo{display:flex;gap:12px;align-items:center}
+    .logo-box{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#9bded0,#7fb7d8);display:flex;align-items:center;justify-content:center;font-weight:700;color:#022429}
+    nav a{color:#cfeee1;margin-left:10px;text-decoration:none}
+    main{max-width:980px;margin:30px auto;padding:20px}
+    .intro{display:flex;gap:20px;align-items:flex-start}
+    .glass{background:linear-gradient(180deg,rgba(255,255,255,0.03),transparent);border:1px solid rgba(255,255,255,0.04);padding:18px;border-radius:12px}
+    h1{margin:0 0 6px;font-size:26px}
+    p.lead{margin:0;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:18px;margin-top:16px}
+    .timeline{list-style:none;padding:0;margin:0}
+    .timeline li{padding:10px 0;border-bottom:1px dashed rgba(255,255,255,0.03)}
+    .cred{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .cred .item{padding:10px 12px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)}
+
+    /* Proof gallery */
+    .proof-wrap{margin-top:16px}
+    .proof-display{padding:14px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid rgba(255,255,255,0.03)}
+    .quote{font-size:15px;margin:0}
+    .who{color:var(--muted);font-size:13px;margin-top:8px}
+    .cred-badges{display:flex;gap:8px;margin-top:12px}
+    .cred-badges .badge{position:relative;padding:8px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.03)}
+    .cred-badges .badge .tip{display:none;position:absolute;left:50%;transform:translateX(-50%);top:-36px;background:#012126;padding:8px;border-radius:8px;font-size:12px}
+    .cred-badges .badge:hover .tip{display:block}
+
+    footer{margin-top:26px;padding:18px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);display:flex;justify-content:space-between}
+
+    @media(max-width:880px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo"><div class="logo-box">A</div><div style="font-weight:700">{{BUSINESS_NAME}}</div></div>
+    <nav>
+      <a href="index.html">Sanctum</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Formulas</a>
+      <a href="shop.html">Apothecary</a>
+      <a href="pricing.html">Investment</a>
+      <a href="about.html" style="font-weight:600;color:#fff">Story</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="intro">
+      <div class="glass" style="flex:1">
+        <h1>Our approach — craft, care, and clarity</h1>
+        <p class="lead">We use botanical aromatics as a supportive craft—designing scent experiences that may support moments of calm, focus, or ritual. Every plan begins with safety screening and a practical at-home guide.</p>
+
+        <div style="margin-top:12px">
+          <strong>Core values</strong>
+          <div class="cred" aria-hidden>
+            <div class="item">Safety-first instruction</div>
+            <div class="item">Evidence-informed sourcing</div>
+            <div class="item">Small, repeatable practices</div>
+          </div>
+        </div>
+      </div>
+
+      <aside style="width:340px">
+        <div class="glass">
+          <strong>Quick facts</strong>
+          <ul style="padding-left:18px;margin:8px 0;color:var(--muted)">
+            <li>In-person and remote sessions</li>
+            <li>All blends include dilution guidelines</li>
+            <li>Patch-test procedures provided</li>
+          </ul>
+          <div style="margin-top:8px"><button onclick="location.href='book.html'" style="background:linear-gradient(90deg,var(--accent),#76c9d9);border:none;padding:10px 12px;border-radius:10px;color:#012222;font-weight:700;cursor:pointer">Begin a session</button></div>
+        </div>
+      </aside>
+    </section>
+
+    <div class="grid">
+      <div class="glass">
+        <h3 style="margin-top:0">Journey & qualifications</h3>
+        <ul class="timeline">
+          <li><strong>2015</strong> — Trained in clinical aromatics and botanical safety protocols.</li>
+          <li><strong>2018</strong> — Launched small-group scent workshops for community care.</li>
+          <li><strong>2021</strong> — Developed guided at-home scent practices and materials.</li>
+        </ul>
+
+        <div style="margin-top:12px">
+          <h4 style="margin:0">Testimonials</h4>
+          <div class="proof-wrap">
+            <div class="proof-display" id="proof">
+              <p class="quote">"Professional, practical, and somehow gentle in approach."</p>
+              <div class="who">— K., Oakland</div>
+            </div>
+
+            <div class="cred-badges" id="credBadges">
+              <div class="badge">Accredited Training<div class="tip">Verified aromatherapy certification</div></div>
+              <div class="badge">Ethical Sourcing<div class="tip">Plant-forward sourcing policies</div></div>
+              <div class="badge">Client-reviewed<div class="tip">Ratings from independent clients</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass">
+        <h3 style="margin-top:0">How we measure care</h3>
+        <p style="color:var(--muted)">Consultation includes a safety checklist, allergy and pregnancy screening, guidance for households with pets, and a patch-test routine before any concentrated blend is recommended.</p>
+
+        <h4 style="margin-top:10px">Safety notes</h4>
+        <ul style="color:var(--muted);padding-left:18px">
+          <li>All blends include dilution percentages and storage notes.</li>
+          <li>Patch testing is recommended at least 24–48 hours prior to concentrated use.</li>
+          <li>We provide pet-safety guidance; please disclose all animals during booking.</li>
+          <li>If pregnant or nursing, discuss with your care provider; we avoidRecommend concentrated use without oversight.</li>
+        </ul>
+
+        <div style="margin-top:12px"><button onclick="location.href='contact.html'" style="background:transparent;border:1px solid rgba(255,255,255,0.06);padding:10px;border-radius:10px;color:#cdeee6">Ask about safety</button></div>
+      </div>
+    </div>
+
+    <footer>
+      <div>
+        <strong>Ready to explore?</strong>
+        <div style="color:var(--muted)">Book an exploratory session or ask a question: <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a></div>
+      </div>
+      <div><button onclick="location.href='book.html'" style="background:linear-gradient(90deg,#9bded0,#7fb7d8);color:#012426;border:none;padding:10px 14px;border-radius:10px">Reserve time</button></div>
+    </footer>
+  </main>
+
+  <script>
+    // Rotate proof snippets and cycle badges tooltips
+    (function(){
+      const snippets = [
+        {q:'"Professional, practical, and somehow gentle in approach."', who:'— K., Oakland'},
+        {q:'"Clear instructions, nourishing blends, and thoughtful follow-up."', who:'— S., Boston'},
+        {q:'"The at-home notes made all the difference — easy to use."', who:'— T., Austin'}
+      ];
+      let idx=0;
+      const display=document.getElementById('proof');
+      function rotate(){
+        display.querySelector('.quote').textContent = snippets[idx].q;
+        display.querySelector('.who').textContent = snippets[idx].who;
+        idx=(idx+1)%snippets.length;
+      }
+      rotate();setInterval(rotate,4800);
+
+      // subtle badge animation
+      const badges=document.querySelectorAll('#credBadges .badge');
+      badges.forEach((b,i)=>{b.addEventListener('mouseenter',()=>{b.style.transform='translateY(-6px)';});b.addEventListener('mouseleave',()=>{b.style.transform='translateY(0)';});});
+    })();
+  </script>
+</body>
+</html>

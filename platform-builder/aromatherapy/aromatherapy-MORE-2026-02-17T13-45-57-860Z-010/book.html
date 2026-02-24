@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f6fbf8;--muted:#58635a;--accent:#4f8b64;--deep:#163c2d}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:var(--bg);color:var(--deep)}
+    header{padding:12px 18px;border-bottom:1px solid rgba(22,60,45,0.06);background:white}
+    .wrap{max-width:920px;margin:0 auto}
+    nav a{margin-left:10px;text-decoration:none;color:var(--deep)}
+
+    main{padding:24px}
+    .hero{padding:18px;background:white;border-radius:12px;border:1px solid rgba(22,60,45,0.04)}
+    h1{margin:0 0 6px}
+    .steps{display:grid;gap:12px;margin-top:14px}
+    .step{background:white;padding:12px;border-radius:10px;border:1px solid rgba(22,60,45,0.04)}
+    .muted{color:var(--muted)}
+
+    form{margin-top:18px;display:grid;gap:10px}
+    input,select,textarea{padding:10px;border-radius:8px;border:1px solid rgba(22,60,45,0.08);font-size:15px}
+    .actions{display:flex;gap:10px;align-items:center}
+    .btn{background:var(--accent);color:white;padding:10px 12px;border-radius:8px;border:0}
+
+    .policies{margin-top:12px;color:var(--muted);font-size:14px}
+
+    .reveal{opacity:0;transform:translateY(12px);transition:opacity 480ms ease,transform 480ms ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none;opacity:1;transform:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap" style="display:flex;align-items:center;justify-content:space-between">
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html">Welcome</a>
+        <a href="services.html">Offerings</a>
+        <a href="pricing.html">Membership</a>
+        <a href="about.html">Our Path</a>
+        <a href="contact.html">Reach</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero reveal" data-reveal>
+      <h1>Reserve a short orientation</h1>
+      <p class="muted">A 20-minute session to review preferences, sensitivities, and a safe introduction to simple blends and practices. Sessions are private and safety-first.</p>
+    </section>
+
+    <section class="steps reveal" data-reveal>
+      <div class="step">
+        <strong>Step 1</strong> — Choose a slot. If you are pregnant or have significant health concerns, select the "safety consult" option and note that on the form.
+      </div>
+      <div class="step">
+        <strong>Step 2</strong> — Fill the intake below. We will ask about allergies, pets in the home, and any medication that may be relevant to scent sensitivity.
+      </div>
+      <div class="step">
+        <strong>Step 3</strong> — Bring a notepad. The session includes practical dilution notes and a short at-home practice you can repeat.
+      </div>
+    </section>
+
+    <form class="reveal" data-reveal aria-label="Booking form" onsubmit="event.preventDefault();handleBooking(this)">
+      <input name="name" placeholder="Full name" required />
+      <input name="email" type="email" placeholder="Email" required />
+      <input name="phone" placeholder="Phone (optional)" />
+      <select name="type" required>
+        <option value="orientation">20-minute orientation</option>
+        <option value="safety">Safety consult (pregnancy/pets)</option>
+        <option value="member">Member check-in (existing)</option>
+      </select>
+      <textarea name="notes" rows="4" placeholder="Any allergies, sensitivities, or questions"></textarea>
+      <div class="actions">
+        <button class="btn" type="submit">Request a reservation</button>
+        <button type="button" class="btn" style="background:#88bfa1" id="try-book">Try a moment</button>
+      </div>
+      <div class="policies">
+        By requesting a reservation you agree to our safety-first approach. If pregnant or nursing, please book a safety consult. We provide dilution & patch test instructions before any topical recommendations.
+      </div>
+    </form>
+
+    <section class="reveal" data-reveal style="margin-top:18px">
+      <h3>FAQ — Safety highlights</h3>
+      <p class="muted">Patch test: dilute recommended blends and apply a small amount on the inner forearm; wait 24 hours to check for irritation. Pets: certain oils affect animals; we provide pet-safe alternatives. Pregnancy: avoid certain oil types; we will always recommend a pregnancy-safe plan when asked.</p>
+    </section>
+  </main>
+
+  <script>
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const reveals = document.querySelectorAll('[data-reveal]');
+      if(prefersReduced){ reveals.forEach(r=>r.classList.add('visible')); }
+      else{
+        const io = new IntersectionObserver((entries)=>entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); } }),{threshold:0.06});
+        reveals.forEach(r=>io.observe(r));
+      }
+
+      window.handleBooking = function(form){
+        const data = new FormData(form);
+        const name = data.get('name');
+        alert('Thanks, ' + (name||'there') + '. We received your request and will follow up via email with available times.');
+        form.reset();
+      };
+
+      // simple mini-practice modal
+      function openMini(){
+        const overlay = document.createElement('div');
+        overlay.style.position='fixed';overlay.style.inset=0;overlay.style.background='rgba(10,10,8,0.36)';overlay.style.display='flex';overlay.style.alignItems='center';overlay.style.justifyContent='center';overlay.style.zIndex=120;
+        overlay.innerHTML = '<div role="dialog" aria-modal="true" style="background:white;padding:18px;border-radius:12px;max-width:520px"><h3 style="margin-top:0">Two-minute focus</h3><p style="color:var(--muted)">Sit comfortably: three slow breaths, then note one intention. Close when you feel grounded.</p><div style="margin-top:12px"><button id="closeMini" style="padding:8px 12px;border-radius:8px;background:#4f8b64;color:white;border:0">Close</button></div></div>';
+        document.body.appendChild(overlay);
+        overlay.querySelector('#closeMini').addEventListener('click',()=>overlay.remove());
+        document.addEventListener('keydown',function esc(e){ if(e.key==='Escape'){ overlay.remove(); document.removeEventListener('keydown',esc); } });
+      }
+
+      document.getElementById('try-book').addEventListener('click',openMini);
+    })();
+  </script>
+</body>
+</html>

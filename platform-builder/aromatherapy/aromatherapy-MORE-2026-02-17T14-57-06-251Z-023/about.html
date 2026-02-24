@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg1:#fffdfa;--glass:#ffffffcc;--muted:#6a6a6a;--accent:#7b5cff}
+    *{box-sizing:border-box;font-family:Georgia,serif}
+    body{margin:0;background:linear-gradient(180deg,var(--bg1),#fff);color:#222}
+    .nav{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;background:rgba(255,255,255,0.6);backdrop-filter:blur(6px)}
+    .brand{font-weight:700;color:var(--accent)}
+    .menu a{margin-left:14px;text-decoration:none;color:#333}
+    .hero{padding:40px 24px}
+    .story{max-width:900px;margin:0 auto;background:linear-gradient(180deg,rgba(255,255,255,0.85),rgba(255,255,255,0.95));padding:22px;border-radius:14px;box-shadow:0 10px 30px rgba(20,15,40,0.03)}
+    h1{margin:0 0 6px;font-family:Georgia,serif}
+    p.lead{margin:0;color:var(--muted);font-size:16px}
+
+    .sections{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px;padding:0 24px}
+    .panel{background:rgba(255,255,255,0.9);padding:18px;border-radius:12px}
+    .process{display:flex;flex-direction:column;gap:12px}
+    .step{padding:10px;border-radius:10px;background:linear-gradient(180deg,#fff,#faf8ff);border:1px solid rgba(0,0,0,0.03)}
+
+    .wheel-wrap{display:flex;justify-content:center}
+    svg.wheel{width:260px;height:260px}
+    .note-info{font-size:14px;color:var(--muted);margin-top:12px}
+
+    .cta{display:inline-block;margin-top:12px;padding:10px 14px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none}
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <div class="menu">
+      <a href="index.html">Gather</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Boutique</a>
+      <a href="pricing.html">Investment</a>
+      <a href="about.html">About</a>
+      <a href="book.html">Sessions</a>
+      <a href="contact.html">Reach</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="story">
+      <h1>We tell little scent stories</h1>
+      <p class="lead">At {{BUSINESS_NAME}}, the work is simple: translate how you want to move through a moment into a small, repeatable scent practice you can keep. Each approach is safety-minded and tailored to your daily shape.</p>
+      <div style="margin-top:12px;color:var(--muted)">Contact: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    </div>
+  </header>
+
+  <main class="sections">
+    <section>
+      <div class="panel">
+        <h3>Our idea of care</h3>
+        <p style="color:var(--muted)">We see scent as a small companion for intention rather than a cure. Sessions teach safe use, patch testing, and how to keep formulas simple so they actually live in your routines.</p>
+
+        <div style="margin-top:16px" class="process">
+          <div class="step"><strong>Listen</strong> — a short conversation about rhythms and scent history.</div>
+          <div class="step"><strong>Map</strong> — a lightweight plan: when to spritz, roll, or diffuse.</div>
+          <div class="step"><strong>Create</strong> — either a ready blend or a recipe you can repeat at home.</div>
+          <div class="step"><strong>Leave with notes</strong> — safety, dilution, pet considerations, and upkeep guidance.</div>
+        </div>
+      </div>
+
+      <div style="margin-top:18px" class="panel">
+        <h3>Social proof</h3>
+        <blockquote style="margin:0;color:var(--muted)">"Simple, clear, and I still use what we made months later." — A client, {{CITY}}</blockquote>
+      </div>
+
+      <div style="margin-top:18px" class="panel">
+        <h3>FAQ</h3>
+        <details style="margin-top:8px"><summary>Are these medical treatments?</summary><div style="color:var(--muted);margin-top:6px">No. Aromatherapy may support everyday comfort and mood for some people. It is not medical advice.</div></details>
+        <details style="margin-top:8px"><summary>How do you ensure safety?</summary><div style="color:var(--muted);margin-top:6px">Dilution guidelines and a patch test are always provided. If you have specific health concerns, consult a knowledgeable provider.</div></details>
+        <details style="margin-top:8px"><summary>Pets and oils?</summary><div style="color:var(--muted);margin-top:6px">Some essential oils can be harmful to pets. Keep oils away from drinking water and ask about pet-safe alternatives during sessions.</div></details>
+      </div>
+    </section>
+
+    <aside>
+      <div class="panel">
+        <h4>Meet the method</h4>
+        <div class="wheel-wrap" aria-hidden="false">
+          <svg class="wheel" viewBox="0 0 240 240" role="img" aria-label="Aroma wheel with top, middle, and base notes">
+            <defs>
+              <linearGradient id="rad" x1="0" x2="1"><stop offset="0" stop-color="#ffb6b9"/><stop offset="1" stop-color="#7b5cff"/></linearGradient>
+            </defs>
+            <circle cx="120" cy="120" r="110" fill="url(#rad)" opacity="0.08"/>
+            <!-- three concentric rings as interactive notes -->
+            <g id="aromawheel">
+              <circle class="slice" data-type="Top" cx="120" cy="40" r="18" fill="#ffd27f" stroke="#fff" stroke-width="2"/>
+              <circle class="slice" data-type="Middle" cx="200" cy="120" r="18" fill="#a7e3a0" stroke="#fff" stroke-width="2"/>
+              <circle class="slice" data-type="Base" cx="40" cy="120" r="18" fill="#cdb8ff" stroke="#fff" stroke-width="2"/>
+            </g>
+          </svg>
+        </div>
+        <div id="note-desc" class="note-info">Hover over each dot to learn how the note behaves — quick to fade, the heart, or long-lasting anchors.</div>
+        <a class="cta" href="book.html" style="display:block;text-align:center;margin-top:12px">Start a session</a>
+      </div>
+
+      <div style="margin-top:18px" class="panel">
+        <h4>Connect</h4>
+        <p style="color:var(--muted)">Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a></p>
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    // Aroma wheel hover descriptions
+    const notes = document.querySelectorAll('circle.slice');
+    const desc = document.getElementById('note-desc');
+    const info = {
+      Top: 'Top notes: bright, quick-to-evaporate scents best for an initial lift. Think citrus or light herbs.',
+      Middle: 'Middle notes: the body of a blend — florals, spices, and green notes that shape the mood.',
+      Base: 'Base notes: rich anchors that last longer like woods, resins, and vanillas; they give staying power.'
+    };
+    notes.forEach(n=>{
+      n.addEventListener('mouseenter', ()=>{desc.textContent = info[n.getAttribute('data-type')]; n.style.transform='scale(1.08)'; n.style.transition='transform 0.12s';});
+      n.addEventListener('mouseleave', ()=>{desc.textContent = 'Hover over each dot to learn how the note behaves — quick to fade, the heart, or long-lasting anchors.'; n.style.transform='scale(1)';});
+      n.addEventListener('click', ()=>{const t=n.getAttribute('data-type'); alert(t + ' notes are highlighted — they help you choose blends.');});
+    });
+  </script>
+</body>
+</html>

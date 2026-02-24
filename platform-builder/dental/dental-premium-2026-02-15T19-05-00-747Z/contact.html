@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0e7c86">
+  <title>Contact | {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Contact {{BUSINESS_NAME}} in {{CITY}}, {{STATE}}. Call {{PHONE}} or email {{EMAIL}}. Get directions and hours.">
+  <link rel="canonical" href="/contact.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Contact {{BUSINESS_NAME}}">
+  <meta property="og:description" content="Call, email, and directions for our dental office in {{CITY}}, {{STATE}}.">
+  <meta property="og:url" content="/contact.html">
+  <meta property="og:image" content="assets/img/hero-abstract.svg">
+  <meta property="og:site_name" content="{{BUSINESS_NAME}}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Contact {{BUSINESS_NAME}}">
+  <meta name="twitter:description" content="We’re here to help. Reach out with questions or to book.">
+  <meta name="twitter:image" content="assets/img/hero-abstract.svg">
+  <link rel="icon" href="assets/img/hero-abstract.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script defer src="assets/js/main.js"></script>
+  <script type="application/ld+json">{
+    "@context":"https://schema.org",
+    "@type":"Dentist",
+    "name":"{{BUSINESS_NAME}}",
+    "telephone":"{{PHONE}}",
+    "email":"{{EMAIL}}",
+    "url":"/contact.html",
+    "address":{"@type":"PostalAddress","streetAddress":"{{ADDRESS}}","addressLocality":"{{CITY}}","addressRegion":"{{STATE}}","postalCode":"{{ZIP}}"},
+    "openingHours":"{{HOURS}}"
+  }</script>
+</head>
+<body>
+  <a class="sr-only" href="#main">Skip to main content</a>
+  <div class="topbar"><div class="container topbar-inner"><span class="pill">We’d love to hear from you</span><a class="btn btn--accent" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div></div>
+  <header class="header"><div class="container nav"><a class="logo" href="/"><span class="mark"></span><span>{{BUSINESS_NAME}}</span></a><nav class="nav-links"><a href="/services.html">Services</a><a href="/insurance.html">Insurance</a><a href="/new-patient.html">New Patients</a><a href="/about.html">About</a><a href="/reviews.html">Reviews</a><a class="btn btn--primary" href="/book.html">{{PRIMARY_CTA_LABEL}}</a><a aria-current="page" href="/contact.html">Contact</a></nav><button class="menu-toggle" aria-controls="mobile-menu" aria-expanded="false" aria-label="Toggle menu">☰</button></div><div id="mobile-menu" class="mobile-panel"><nav><a href="/services.html">Services</a><a href="/insurance.html">Insurance</a><a href="/new-patient.html">New Patients</a><a href="/about.html">About</a><a href="/reviews.html">Reviews</a><a class="btn btn--primary" href="/book.html">{{PRIMARY_CTA_LABEL}}</a><a aria-current="page" href="/contact.html">Contact</a></nav></div></header>
+
+  <main id="main" class="section">
+    <div class="container grid-2">
+      <section class="card" style="padding:1.5rem">
+        <h1 class="h1">Contact us</h1>
+        <p class="text-muted">Have a question? Want to schedule by phone? We’re here to help.</p>
+        <form id="contact-form" class="form" data-mock-submit>
+          <div class="input"><label for="c-name">Full name</label><input id="c-name" name="name" type="text" autocomplete="name" required></div>
+          <div class="inline">
+            <div class="input" style="flex:1 1 220px"><label for="c-email">Email</label><input id="c-email" name="email" type="email" autocomplete="email" required></div>
+            <div class="input" style="flex:1 1 220px"><label for="c-phone">Phone</label><input id="c-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel"></div>
+          </div>
+          <div class="input"><label for="c-message">Message</label><textarea id="c-message" name="message" rows="5" required></textarea></div>
+          <div class="input"><label><input type="checkbox" required> I consent to receive communication regarding my inquiry.</label></div>
+          <button type="submit" class="btn btn--primary">Send message</button>
+          <p class="form-confirm callout mt-2" tabindex="-1" hidden>Your message was saved locally. Connect this form to your backend to receive submissions.</p>
+        </form>
+      </section>
+
+      <aside class="card" style="padding:1.5rem">
+        <h2 class="h2">Visit our office</h2>
+        <address class="text-muted" style="font-style:normal">{{ADDRESS}}<br>{{CITY}}, {{STATE}} {{ZIP}}</address>
+        <p><strong>Hours:</strong> {{HOURS}}</p>
+        <div class="map" aria-label="Map placeholder for our location"></div>
+        <hr>
+        <h3 class="h3">Parking & directions</h3>
+        <p class="text-muted">Free parking in the lot behind the building. Elevator access available from the main lobby.</p>
+        <div class="flex mt-1">
+          <a class="btn btn--accent" href="tel:{{PHONE}}">Call {{PHONE}}</a>
+          <a class="btn btn--ghost" href="mailto:{{EMAIL}}">Email</a>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="footer section--tight"><div class="container subfooter"><div class="flex justify-between flex-wrap"><span>© <span id="year"></span> {{BUSINESS_NAME}}</span><span><a href="tel:{{PHONE}}">{{PHONE}}</a> · <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></span></div></div><script>document.getElementById('year').textContent=new Date().getFullYear()</script></footer>
+</body>
+</html>

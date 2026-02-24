@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Method & Practice — {{BUSINESS_NAME}}</title>
+  <meta name='description' content='Our clinical ethos, cohort format, and how we translate evidence into everyday practices.'>
+  <style>
+    :root{--bg:#f7f8fb;--ink:#081230;--muted:#586174;--accent:#d86b5e}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:var(--bg);color:var(--ink)}
+    .container{max-width:980px;margin:26px auto;padding:22px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:10px;color:var(--muted);text-decoration:none}
+    .lead{background:#fff;padding:18px;border-radius:12px;box-shadow:0 8px 28px rgba(6,10,16,0.03);margin-top:16px}
+    .three{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+    .box{background:#fff;padding:14px;border-radius:12px}
+    .muted{color:var(--muted)}
+    .pattern{height:120px;border-radius:10px;margin-top:12px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='120' viewBox='0 0 240 120'><rect width='240' height='120' fill='none'/><g stroke='%23d86b5e' stroke-opacity='0.08' stroke-width='2'><path d='M0 30 C30 0 60 60 90 30 S150 0 180 30 S240 60 240 60'/></g></svg>");background-repeat:no-repeat;background-position:center}
+    .widget{margin-top:16px}
+    .output{background:#081230;color:#e8f6f1;padding:12px;border-radius:8px}
+    button.cta{background:var(--accent);color:#fff;border:0;padding:10px 12px;border-radius:10px;cursor:pointer}
+    footer{margin-top:18px;color:var(--muted)}
+    @media(max-width:740px){.three{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class='container'>
+    <header>
+      <div>
+        <strong>{{BUSINESS_NAME}}</strong>
+        <div class='muted'>A practical method for lasting adjustments</div>
+      </div>
+      <nav>
+        <a href='index.html'>Home</a>
+        <a href='services.html'>Programs</a>
+        <a href='conditions.html'>Concerns</a>
+        <a href='approach.html'>Method</a>
+        <a href='book.html'>Reserve</a>
+      </nav>
+    </header>
+
+    <section class='lead'>
+      <h2 style='margin:0'>How we work — practice, measurement, and learning together</h2>
+      <p class='muted' style='margin-top:8px'>We weave short experiments into daily life and review progress in small groups. Clinical judgment guides adaptations; participants keep practical records.</p>
+      <div class='pattern'></div>
+    </section>
+
+    <div class='three'>
+      <div class='box'>
+        <h4 style='margin-top:0'>Listening first</h4>
+        <p class='muted'>Stories matter: what you notice, when symptoms rise and fall, and how daily structure affects health.</p>
+      </div>
+      <div class='box'>
+        <h4 style='margin-top:0'>Small experiments</h4>
+        <p class='muted'>Micro-interventions you can try for 1–2 weeks to see what shifts. We build on measurable wins, not recipes.</p>
+      </div>
+      <div class='box'>
+        <h4 style='margin-top:0'>Shared reflection</h4>
+        <p class='muted'>Cohort meetings surface lessons and increase follow-through — a social engine for habit change.</p>
+      </div>
+    </div>
+
+    <div class='box widget' style='margin-top:16px'>
+      <h3 style='margin-top:0'>Session Planner</h3>
+      <p class='muted'>Draft a compact agenda to bring to your next meeting. This helps clinicians and cohort members focus faster.</p>
+      <div>
+        <label class='muted'>Primary outcome</label>
+        <input id='primary' placeholder='e.g., improve sleep efficiency' style='width:100%;padding:8px;border-radius:8px;border:1px solid #eceff3;margin-top:6px'/>
+      </div>
+      <div style='margin-top:8px;display:flex;gap:8px'>
+        <input id='weeks' type='number' min='1' value='8' style='width:86px;padding:8px;border-radius:8px;border:1px solid #eceff3'/> <button class='cta' onclick='buildPlan()'>Build plan</button>
+      </div>
+      <pre class='output' id='approachPlan' style='margin-top:10px'>Your plan will appear here.</pre>
+      <button onclick='copyPlan()' style='margin-top:8px;padding:8px 10px;border-radius:8px;background:#0b6a53;color:white;border:0;cursor:pointer'>Copy</button>
+    </div>
+
+    <div class='box' style='margin-top:16px'>
+      <h3 style='margin-top:0'>Whole-person checklist</h3>
+      <p class='muted'>Quickly mark the domains you'd like included in your plan; we generate a suggested check-in rhythm.</p>
+      <form id='domainForm'>
+        <label><input type='checkbox' name='d' value='Sleep'/> Sleep</label><br>
+        <label><input type='checkbox' name='d' value='Nutrition'/> Nutrition</label><br>
+        <label><input type='checkbox' name='d' value='Movement'/> Movement</label><br>
+        <label><input type='checkbox' name='d' value='Stress'/> Stress</label><br>
+      </form>
+      <div style='margin-top:8px'>
+        <button class='cta' onclick='composeAgenda()'>Compose agenda & cadence</button>
+      </div>
+      <pre class='output' id='approachAgenda' style='margin-top:10px'>Select domains to prepare an agenda.</pre>
+      <button onclick='copyApproach("approachAgenda")' style='margin-top:8px;padding:8px 10px;border-radius:8px;background:#0b6a53;color:white;border:0;cursor:pointer'>Copy</button>
+    </div>
+
+    <footer>
+      <div class='muted'>Educational support only. For urgent problems, seek immediate medical attention.</div>
+    </footer>
+  </div>
+
+  <script>
+    function buildPlan(){
+      const primary = document.getElementById('primary').value || 'Priority goal';
+      const weeks = parseInt(document.getElementById('weeks').value) || 6;
+      const lines = [];
+      lines.push('Plan overview — '+primary);
+      lines.push('Duration: '+weeks+' weeks');
+      lines.push('\nPhase 1 (weeks 1–2): observation & micro-changes');
+      lines.push('- Track baseline for 7 days');
+      lines.push('- Implement 1 small habit with simple metrics');
+      lines.push('\nPhase 2 (weeks 3–'+Math.min(weeks,6)+') : consolidate and scale');
+      lines.push('- Review data with clinician or cohort');
+      lines.push('- Adjust practices and introduce a second micro-change');
+      if(weeks>6) lines.push('\nPhase 3 (weeks 7–'+weeks+'): maintenance and integration');
+      lines.push('- Plan for sustaining changes; peer check-ins or alumni review');
+      document.getElementById('approachPlan').textContent = lines.join('\n');
+    }
+    function copyPlan(){
+      const txt = document.getElementById('approachPlan').textContent;
+      if(navigator.clipboard) navigator.clipboard.writeText(txt).then(()=>alert('Copied'));
+    }
+    function composeAgenda(){
+      const checked = Array.from(document.querySelectorAll('#domainForm input[name="d"]:checked')).map(i=>i.value);
+      if(checked.length===0){document.getElementById('approachAgenda').textContent='No domains selected.';return}
+      const out = [];
+      out.push('Agenda (60 min):');
+      out.push('- Opening: goals and measures');
+      out.push('- Focus: '+ checked[0]);
+      if(checked.length>1) out.push('- Secondary review: '+checked.slice(1).join(', '));
+      out.push('- Practical experiment to try this week');
+      out.push('\nFollow-up cadence:');
+      out.push('- 1–2 week micro-check (15 min)');
+      out.push('- 6-week review (group or individual)');
+      document.getElementById('approachAgenda').textContent = out.join('\n');
+    }
+    function copyApproach(id){
+      const txt = document.getElementById(id).textContent;
+      if(navigator.clipboard) navigator.clipboard.writeText(txt).then(()=>alert('Copied'));
+    }
+  </script>
+</body>
+</html>

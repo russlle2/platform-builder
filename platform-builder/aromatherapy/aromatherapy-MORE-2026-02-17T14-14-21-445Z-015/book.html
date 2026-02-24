@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book — Sessions | {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#071322;--card:#0b1a28;--muted:#9fb0bf;--accent:#ffb86b}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#071322 0%, #041018 100%);color:#eaf6ff}
+    .wrap{max-width:980px;margin:28px auto;padding:26px}
+    nav{display:flex;gap:14px;margin-bottom:12px}
+    nav a{color:#cfe;text-decoration:none;font-weight:600}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
+    .card{background:var(--card);padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    h1{margin:0 0 8px 0}
+    p.lead{color:var(--muted);margin:0 0 12px 0}
+
+    .moodPanel{display:flex;gap:8px;flex-wrap:wrap}
+    .moodBtn{padding:8px 10px;border-radius:999px;background:rgba(255,255,255,0.02);border:1px solid transparent;cursor:pointer;color:var(--muted)}
+    .moodBtn.active{background:linear-gradient(90deg,rgba(255,184,107,0.12),rgba(255,184,107,0.06));color:#081018;border-color:rgba(255,184,107,0.16)}
+    .method{margin-top:12px;padding:12px;border-radius:10px;background:#05202b;color:var(--muted)}
+    .bookForm{display:flex;flex-direction:column;gap:10px}
+    .input,textarea,select{padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+    .primary{display:inline-block;padding:10px 12px;background:var(--accent);color:#071322;border-radius:8px;text-decoration:none;font-weight:700}
+
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Elixirs</a>
+      <a href="shop.html">Shop</a>
+      <a href="pricing.html">Investment</a>
+      <a href="about.html">Story</a>
+      <a href="book.html">Sessions</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+
+    <div class="grid">
+      <main class="card">
+        <h1>Book a session</h1>
+        <p class="lead">Choose how you feel and we’ll suggest an approach that may support that state. This selector changes the recommended method and the CTA so your booking aligns with needs.</p>
+
+        <div>
+          <div style="font-weight:700;margin-bottom:8px">Mood-to-Method selector</div>
+          <div class="moodPanel" id="moods">
+            <button class="moodBtn" data-key="anxious">Anxious</button>
+            <button class="moodBtn" data-key="flat">Flat</button>
+            <button class="moodBtn" data-key="overwhelmed">Overwhelmed</button>
+            <button class="moodBtn" data-key="seeking">Seeking clarity</button>
+          </div>
+
+          <div class="method" id="method">
+            <strong style="color:#fff">Select a mood to see a suggested approach.</strong>
+          </div>
+
+          <div style="margin-top:12px">
+            <form class="bookForm" id="bookingForm" action="{{PRIMARY_CTA_URL}}" method="GET">
+              <input class="input" name="name" placeholder="Your name" required />
+              <input class="input" name="email" placeholder="Email" type="email" required />
+              <label style="color:var(--muted);font-size:13px">Preferred date (optional)</label>
+              <input class="input" name="date" type="date" />
+              <input type="hidden" name="method" id="methodInput" value="" />
+              <button class="primary" id="bookBtn">{{PRIMARY_CTA_LABEL}}</button>
+            </form>
+            <div style="margin-top:8px;color:var(--muted);font-size:13px">Sessions are designed to be safety-forward. Please disclose pregnancy, medical conditions, and pet exposures during intake.</div>
+          </div>
+        </div>
+      </main>
+
+      <aside class="card">
+        <h3 style="margin:0 0 8px 0">How the selector works</h3>
+        <p style="margin:0 0 12px 0;color:var(--muted)">Pick a brief state and the page will suggest a practice shape. Use that as a conversation starter during intake; final recommendations are adapted to your context and safety needs.</p>
+
+        <div style="margin-top:8px">
+          <strong style="display:block;margin-bottom:6px">Quick reference</strong>
+          <ul style="margin:0;color:var(--muted);padding-left:18px">
+            <li>Brief consults: 30–40 minutes</li>
+            <li>Ritual & blends: guidance + recipe notes</li>
+            <li>Packages: deeper, paced work</li>
+          </ul>
+        </div>
+
+        <div style="margin-top:12px;color:var(--muted);font-size:13px">
+          <strong>Safety note:</strong> Essential oils should be diluted and patch-tested. Avoid certain oils if pregnant or if you have particular health conditions. Keep concentrated materials away from pets.
+        </div>
+      </aside>
+    </div>
+
+    <section style="max-width:920px;margin:20px auto;color:var(--muted)">
+      <h3 style="color:#fff;margin-bottom:8px">Session types (examples)</h3>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;min-width:220px">Short Intake — 30 min, single focused conversation and immediate at-home suggestions.</div>
+        <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;min-width:220px">Ritual Design — 60 min, a custom ritual and blend notes you can repeat at home.</div>
+        <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;min-width:220px">Package Series — multi-session pathway for changes that need time and reflection.</div>
+      </div>
+    </section>
+  </div>
+
+<script>
+(function(){
+  var moodMap = {
+    'anxious':{title:'Ground & Ease — 50–60 min',desc:'A focused session with calming notes and breathing cues. Includes a small-batch calming roll-on recipe and a pacing guide.',cta:'Book Ground & Ease',code:'ground_ease'},
+    'flat':{title:'Brighten & Move — 40 min',desc:'An enlivening approach with bright citrus and energetic cues to support subtle lifting. Includes blend recipe and micro-rituals.',cta:'Book Brighten Session',code:'brighten_move'},
+    'overwhelmed':{title:'Simplify Protocol — 60 min',desc:'Stepwise method to reduce overwhelm: prioritization prompts, grounding scent cues, and brief ritual framing.',cta:'Request Simplify',code:'simplify_protocol'},
+    'seeking':{title:'Clarity Consult — 45 min',desc:'Exploratory consult focused on attention and mental clarity with a clarifying fragrant sequence.',cta:'Reserve Clarity Consult',code:'clarity_consult'}
+  };
+
+  var moodBtns = document.querySelectorAll('.moodBtn');
+  var method = document.getElementById('method');
+  var methodInput = document.getElementById('methodInput');
+  var bookBtn = document.getElementById('bookBtn');
+
+  function updateSelection(key){
+    var data = moodMap[key];
+    method.innerHTML = '<strong style="color:#fff">'+data.title+'</strong><div style="margin-top:8px;color:var(--muted)">'+data.desc+'</div>';
+    methodInput.value = data.code;
+    bookBtn.textContent = data.cta;
+    // update form action to include mood
+    var form = document.getElementById('bookingForm');
+    form.action = '{{PRIMARY_CTA_URL}}?mood=' + encodeURIComponent(key);
+  }
+
+  moodBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      moodBtns.forEach(function(b){b.classList.remove('active')});
+      btn.classList.add('active');
+      updateSelection(btn.getAttribute('data-key'));
+    });
+  });
+
+})();
+</script>
+</body>
+</html>

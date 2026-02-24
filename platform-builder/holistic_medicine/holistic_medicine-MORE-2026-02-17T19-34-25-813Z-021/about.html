@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>About — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Our integrative approach and team background." />
+  <style>
+    :root{--bg:#f8f3ec;--accent:#6e4f3a;--muted:#9d8f86;--card:#fff;--accent-2:#b68f6a}
+    html,body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:var(--bg);color:#3b3229}
+    .pattern{position:fixed;inset:0;opacity:.14;background-image:url("assets/img/pattern.svg");background-repeat:repeat;z-index:0}
+    .wrap{max-width:980px;margin:0 auto;padding:28px}
+    header{position:relative;z-index:2;background:transparent;padding-bottom:8px}
+    nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+    a.logo{font-weight:700;color:var(--accent);text-decoration:none}
+    a.navlink{color:#4a4038;text-decoration:none;padding:6px 8px;border-radius:8px}
+    .lead{font-size:15px;color:var(--muted);margin:6px 0 20px}
+
+    .bio{display:grid;grid-template-columns:1fr 320px;gap:20px}
+    .card{background:var(--card);padding:16px;border-radius:12px;border:1px solid rgba(80,60,40,.04);box-shadow:0 10px 28px rgba(60,50,40,.04)}
+    h1{margin:0;color:var(--accent)}
+    .mission{margin-top:8px}
+    .values{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+    .value{background:#fff;border-radius:8px;padding:10px;border:1px solid rgba(60,50,40,.03);flex:1}
+
+    /* inventory */
+    .widget{margin-top:12px}
+    .checklist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+    .checkitem{display:flex;gap:8px;align-items:center}
+
+    footer{margin-top:24px;color:var(--muted);font-size:13px}
+    @media(max-width:880px){.bio{grid-template-columns:1fr}.checklist{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="pattern" aria-hidden></div>
+  <header class="wrap">
+    <nav>
+      <a class="logo" href="index.html">{{BUSINESS_NAME}}</a>
+      <a class="navlink" href="services.html">Services</a>
+      <a class="navlink" href="approach.html">How we work</a>
+      <a class="navlink" href="pricing.html">Join</a>
+      <a class="navlink" href="book.html">Reserve</a>
+      <a class="navlink" href="contact.html">Reach out</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="bio">
+      <div>
+        <div class="card">
+          <h1>About {{BUSINESS_NAME}}</h1>
+          <p class="lead">We practice an integrative, evidence-aware approach that focuses on practical change and continuity of care. We pair clinical assessment with lifestyle and systems work to support sustainable improvement.</p>
+          <div class="values">
+            <div class="value"><strong>Assessment first</strong><div class="small">Understand context and constraints.</div></div>
+            <div class="value"><strong>Action-oriented</strong><div class="small">Small, measurable steps you can keep doing.</div></div>
+            <div class="value"><strong>Tracking</strong><div class="small">Use focused measures, not endless tests.</div></div>
+          </div>
+        </div>
+
+        <div class="card widget">
+          <h3 style="margin-top:0;color:var(--accent)">Team highlights</h3>
+          <p class="small">Our clinicians hold combined training in primary care, nutrition, behavioral medicine, and integrative therapies. Consultations are collaborative; we partner with your other clinicians when helpful.</p>
+          <ul style="margin-top:12px;color:#3b3229">
+            <li><strong>Clinical lead:</strong> board-certified primary care with integrative fellowship</li>
+            <li><strong>Nutritionist:</strong> evidence-focused counseling for digestion & energy</li>
+            <li><strong>Behavioral coach:</strong> habit shaping and nervous system regulation</li>
+          </ul>
+        </div>
+      </div>
+
+      <aside>
+        <div class="card">
+          <h4 style="color:var(--accent);margin-top:0">Whole-person inventory</h4>
+          <p class="small">Use this quick checklist to see what a first consultation would prioritize. The output gives a suggested agenda and a reasonable follow-up cadence.</p>
+          <form id="aboutInventory">
+            <div class="checklist">
+              <label class="checkitem"><input type="checkbox" name="area" value="Sleep"> Sleep</label>
+              <label class="checkitem"><input type="checkbox" name="area" value="Nutrition"> Nutrition</label>
+              <label class="checkitem"><input type="checkbox" name="area" value="Movement"> Movement</label>
+              <label class="checkitem"><input type="checkbox" name="area" value="Stress"> Stress regulation</label>
+              <label class="checkitem"><input type="checkbox" name="area" value="Work"> Work-life balance</label>
+              <label class="checkitem"><input type="checkbox" name="area" value="Medical"> Medical context</label>
+            </div>
+            <div style="margin-top:12px;display:flex;gap:8px">
+              <button type="button" class="btn" id="aboutGenerate" style="background:var(--accent);color:#fff;padding:8px;border-radius:8px;border:none">Generate plan</button>
+              <button type="button" id="aboutClear" class="btn" style="background:#fff;border:1px solid rgba(60,50,40,.06);color:var(--accent);padding:8px;border-radius:8px">Clear</button>
+            </div>
+          </form>
+          <pre id="aboutOutput" style="display:none;margin-top:10px;white-space:pre-wrap;background:#fbf7f2;padding:10px;border-radius:8px;border:1px solid rgba(60,50,40,.03)"></pre>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="card">
+          <h4 style="color:var(--accent);margin-top:0">Contact</h4>
+          <p class="small">Questions? Reach us at <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call {{PHONE}}. Office based in {{CITY}}, {{STATE}}.</p>
+          <p><a class="btn" href="book.html" style="text-decoration:none">Schedule an introductory visit</a></p>
+        </div>
+      </aside>
+    </section>
+
+    <section style="margin-top:18px">
+      <div class="card">
+        <h3 style="margin-top:0;color:var(--accent)">Philosophy in practice</h3>
+        <p class="small">We avoid long, unfocused plans. Each visit produces a short list of tested actions. We then measure and adapt. Our goal is to reduce friction so you can sustain improvements long term.</p>
+      </div>
+    </section>
+
+    <footer>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div class="small">&copy; {{BUSINESS_NAME}}</div>
+        <div class="small">{{CITY}}, {{STATE}} • <a href="contact.html">Contact</a></div>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    // Simple inventory for about page
+    const aboutForm = document.getElementById('aboutInventory');
+    const aboutGenerate = document.getElementById('aboutGenerate');
+    const aboutOutput = document.getElementById('aboutOutput');
+    const aboutClear = document.getElementById('aboutClear');
+
+    aboutGenerate.addEventListener('click',()=>{
+      const checked = Array.from(aboutForm.querySelectorAll('input[name="area"]:checked')).map(i=>i.value);
+      if(!checked.length){ aboutOutput.style.display='block'; aboutOutput.textContent='No items selected. Consider 2–3 priorities for an initial visit.'; return; }
+      let text = 'Suggested consultation agenda:\n';
+      checked.slice(0,3).forEach((c,i)=> text += (i+1)+'. '+c+' — focused assessment and 1–2 short actions\n');
+      if(checked.length>3) text += '\nAdditional areas: '+checked.slice(3).join(', ')+"\n";
+      text += '\nFollow-up cadence: '; if(checked.length<=2) text += '1–2 check-ins over 4 weeks.'; else text += 'monthly reviews with brief mid-cycle check-ins.';
+      aboutOutput.style.display='block'; aboutOutput.textContent = text;
+    });
+    aboutClear.addEventListener('click',()=>{aboutForm.reset();aboutOutput.style.display='none'});
+  </script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#061022;--card:#071926;--accent:#ff9fb3;--muted:#9fb0b9}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto;background:linear-gradient(180deg,var(--bg),#021018);color:#eaf6f9}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 26px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent)}
+    .brand{font-weight:800;color:var(--accent)}
+    nav a{color:#dff2f6;margin-left:14px;text-decoration:none;font-weight:700}
+    .wrap{max-width:980px;margin:28px auto;padding:0 18px}
+    h1{margin:0;font-size:28px}
+    .lead{color:var(--muted);margin-top:8px}
+    .mood-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}
+    .mood-card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:14px;border-radius:10px;text-align:center;cursor:pointer;border:1px solid rgba(255,255,255,0.02)}
+    .mood-card.selected{box-shadow:0 6px 18px rgba(255,159,179,0.08);border-color:rgba(255,159,179,0.18)}
+    .approach{margin-top:18px;padding:16px;border-radius:12px;background:linear-gradient(90deg,rgba(255,159,179,0.03),transparent);border:1px solid rgba(255,159,179,0.04)}
+    .approach h3{margin:0}
+    .cta{margin-top:14px}
+    .cta a{display:inline-block;padding:12px 16px;background:var(--accent);color:#08101a;border-radius:10px;text-decoration:none;font-weight:900}
+    form{margin-top:18px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:16px;border-radius:12px}
+    label{display:block;margin-top:12px;font-size:13px;color:var(--muted)}
+    input,select,textarea{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#eaf6f9}
+    .pattern{position:fixed;right:-80px;bottom:-120px;width:420px;height:420px;opacity:0.06;background:url('assets/img/pattern.svg') no-repeat center/cover;transform:rotate(12deg);pointer-events:none}
+    @media(max-width:800px){.mood-grid{grid-template-columns:repeat(2,1fr)}}
+  </style>
+</head>
+<body>
+  <div class="pattern" aria-hidden="true"></div>
+  <header>
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Nest</a>
+      <a href="about.html">Profile</a>
+      <a href="specialties.html">Focus Areas</a>
+      <a href="approach.html">Way I Work</a>
+      <a href="fees.html">Investment</a>
+      <a href="faq.html">FAQ</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <h1>Reserve time</h1>
+    <p class="lead">Pick what matches your current state. The recommendation will adjust and the action button will change to reflect a suitable first step.</p>
+
+    <div class="mood-grid" id="moodGrid">
+      <div class="mood-card" data-key="overwhelmed">
+        <div style="font-weight:800">Overwhelmed</div>
+        <div class="small">Need immediate clarity</div>
+      </div>
+      <div class="mood-card" data-key="stuck">
+        <div style="font-weight:800">Stuck</div>
+        <div class="small">Repeating patterns</div>
+      </div>
+      <div class="mood-card" data-key="curious">
+        <div style="font-weight:800">Curious</div>
+        <div class="small">Want to explore options</div>
+      </div>
+      <div class="mood-card" data-key="transition">
+        <div style="font-weight:800">Transitioning</div>
+        <div class="small">Life changes</div>
+      </div>
+    </div>
+
+    <div class="approach" id="approach">
+      <h3 id="approach-title">Suggested first step</h3>
+      <div id="approach-body" style="margin-top:8px;color:var(--muted)">Choose a mood to see a suggested way of working and a tailored call-to-action.</div>
+      <div class="cta" id="actionWrap"><a id="actionBtn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+    </div>
+
+    <form id="bookingForm" aria-label="Booking form">
+      <label for="name">Full name</label>
+      <input id="name" name="name" placeholder="Your name" required>
+
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" placeholder="you@example.com" required>
+
+      <label for="phone">Phone (optional)</label>
+      <input id="phone" name="phone" placeholder="{{PHONE}}">
+
+      <label for="notes">Brief note — what's bringing you now?</label>
+      <textarea id="notes" name="notes" rows="4" placeholder="A few sentences helps me prepare"></textarea>
+
+      <label for="when">Preferred timing</label>
+      <select id="when" name="when">
+        <option>Within 1 week</option>
+        <option>2–4 weeks</option>
+        <option>Flexible</option>
+      </select>
+
+      <div style="display:flex;gap:10px;margin-top:14px">
+        <button type="submit" style="flex:1;padding:12px 16px;border-radius:10px;border:0;background:var(--accent);font-weight:800;color:#08101a;cursor:pointer">Confirm request</button>
+        <a href="contact.html" style="display:inline-block;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);color:var(--muted);text-decoration:none">Ask a question</a>
+      </div>
+    </form>
+
+    <div style="margin-top:12px;color:var(--muted)">Confidentiality: sessions are private within ethical limits. If you are in crisis, call local emergency services or a crisis line—this service is not for emergencies.</div>
+  </main>
+
+  <script>
+    // Mood-to-Method main logic
+    const cards = Array.from(document.querySelectorAll('.mood-card'));
+    const approachTitle = document.getElementById('approach-title');
+    const approachBody = document.getElementById('approach-body');
+    const actionBtn = document.getElementById('actionBtn');
+
+    const map = {
+      overwhelmed: {title:'Short clarity session',body:'A single focused session (50 minutes) to sort priorities and create a first, practical step-by-step plan.',cta:'Reserve a clarity session',href:'{{PRIMARY_CTA_URL}}?intent=clarity'},
+      stuck: {title:'Short package (3 sessions)',body:'A tight sequence of three meetings to test strategies, stay accountable, and refine small changes.',cta:'Start a short package',href:'{{PRIMARY_CTA_URL}}?intent=short_package'},
+      curious: {title:'Try the next cohort',body:'Joining a small cohort provides structure and shared reflection—good for exploring themes with peers and learning practical tools.',cta:'Join the cohort waitlist',href:'{{PRIMARY_CTA_URL}}?intent=cohort'},
+      transition: {title:'Intake + plan',body:'A fuller intake to clarify longer-term goals and decide whether a package or ongoing support feels right.',cta:'Schedule an intake',href:'{{PRIMARY_CTA_URL}}?intent=intake'}
+    };
+
+    function selectKey(key){
+      cards.forEach(c=>c.classList.toggle('selected', c.getAttribute('data-key')===key));
+      const m = map[key];
+      // animated text morph (simple fade)
+      approachTitle.style.opacity = '0';
+      approachBody.style.opacity = '0';
+      actionBtn.style.opacity = '0';
+      setTimeout(()=>{
+        approachTitle.textContent = m.title;
+        approachBody.textContent = m.body;
+        actionBtn.textContent = m.cta;
+        actionBtn.setAttribute('href', m.href);
+        approachTitle.style.opacity = '1';
+        approachBody.style.opacity = '1';
+        actionBtn.style.opacity = '1';
+      },220);
+    }
+
+    cards.forEach(c=>c.addEventListener('click',()=>selectKey(c.getAttribute('data-key'))));
+
+    // Initialize selection from query string if present
+    const params = new URLSearchParams(location.search);
+    const intent = params.get('intent');
+    if(intent && Object.keys(map).includes(intent)){
+      selectKey(intent);
+    } else {
+      // default
+      selectKey('overwhelmed');
+    }
+
+    // Minimal form handler (no network) — just a UX ack
+    document.getElementById('bookingForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      const name = document.getElementById('name').value || 'there';
+      alert('Thanks, ' + name + '. Your request has been noted. I will follow up to schedule a time.');
+      this.reset();
+    });
+  </script>
+</body>
+</html>

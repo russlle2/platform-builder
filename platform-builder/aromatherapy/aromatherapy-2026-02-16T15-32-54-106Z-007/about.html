@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>About — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="The story, practice foundations, and safety approach behind {{BUSINESS_NAME}}." />
+  <style>
+    :root{--bg:#f2efe9;--accent:#6a3f2a;--muted:#7b6050;--card:#fffaf5;--radius:12px;font-family:Georgia,serif}
+    body{margin:0;background:radial-gradient(circle at 10% 10%,#fffaf0, var(--bg));color:#3d2b22}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px}
+    .nav a{margin-left:12px;text-decoration:none;color:var(--muted);font-weight:600}
+    .nav a.active{color:var(--accent);border-bottom:2px solid rgba(106,63,42,0.08)}
+    main{max-width:980px;margin:18px auto;padding:20px}
+    .hero{padding:26px;border-radius:16px;background:linear-gradient(180deg,#fff,#fff7f1);box-shadow:0 8px 24px rgba(60,40,30,0.06);display:flex;gap:18px}
+    .portrait{width:160px;height:160px;border-radius:12px;background:linear-gradient(135deg,#d9b89a,#7a4b2b);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800}
+    .bio h1{margin:0;color:var(--accent)}
+    .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+    .pillar{background:var(--card);padding:12px;border-radius:10px;border:1px solid rgba(106,63,42,0.05)}
+    .notes{margin-top:18px;background:#fff;padding:14px;border-radius:10px}
+    .cta{display:inline-block;background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+    svg.bgpat{position:fixed;left:8px;bottom:6vh;width:300px;height:300px;opacity:0.06;pointer-events:none}
+    @media (max-width:760px){.hero{flex-direction:column}.pillars{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <!-- about has its own unique inline pattern -->
+  <svg xmlns="http://www.w3.org/2000/svg" class="bgpat" aria-hidden="true">
+    <defs>
+      <linearGradient id="gA" x1="0" x2="1"><stop offset="0" stop-color="#efe3d6"/><stop offset="1" stop-color="#f9f0e6"/></linearGradient>
+      <pattern id="pattern-about" width="40" height="40" patternUnits="userSpaceOnUse">
+        <rect width="40" height="40" fill="url(#gA)"/>
+        <path d="M0 20 Q10 10 20 20 T40 20" stroke="#6a3f2a" stroke-opacity="0.05" fill="none"/>
+        <circle cx="30" cy="10" r="2" fill="#6a3f2a" opacity="0.03"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#pattern-about)"/>
+  </svg>
+
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,#a67a55,#6a3f2a);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800">{{PRACTITIONER_NAME:0}}</div>
+      <div style="font-weight:800;color:var(--accent)">{{BUSINESS_NAME}}</div>
+    </div>
+    <nav class="nav">
+      <a href="index.html">Start</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Synergies</a>
+      <a href="shop.html">Store</a>
+      <a href="pricing.html">Plans</a>
+      <a href="about.html" class="active">Story</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="portrait">{{PRACTITIONER_NAME}}</div>
+      <div class="bio">
+        <h1>Small-batch aromatherapy, rooted in care</h1>
+        <p style="margin:8px 0;color:#5f483e">I craft approachable blends and teach safe, scent-led rituals. My work favors gentle language and practical safety: dilution guidance, patch tests, and conscientious care when scenting around pets or pregnancy.</p>
+        <a class="cta" href="book.html">Book a consult</a>
+      </div>
+    </section>
+
+    <section class="pillars" aria-label="Practice pillars">
+      <div class="pillar">
+        <h3 style="margin:0;color:var(--accent)">1. Safety-Forward Craft</h3>
+        <p style="margin:8px 0;color:var(--muted)">Every blend includes a card with dilution ratios and a prompt to patch test. No medical promises—only sensory support and ritual ideas.</p>
+      </div>
+      <div class="pillar">
+        <h3 style="margin:0;color:var(--accent)">2. Seasonal Rituals</h3>
+        <p style="margin:8px 0;color:var(--muted)">I design seasonal mini-cycles that invite slow attention to scent, movement, and breath as a mindful practice.</p>
+      </div>
+      <div class="pillar">
+        <h3 style="margin:0;color:var(--accent)">3. Education & Care</h3>
+        <p style="margin:8px 0;color:var(--muted)">Workshops and short consults emphasize safe handling, pet- and pregnancy-aware adjustments, and how to choose a scent profile that suits you.</p>
+      </div>
+    </section>
+
+    <section class="notes">
+      <h3 style="margin:0 0 6px;color:var(--accent)">A short story</h3>
+      <p style="margin:0;color:#5b4539">It started with a jar of rosemary on a winter table and a patient curiosity about how scent can mark time. Today, I mix small batches that arrive with clear instructions and a little card that reads like a note from a friend. If you want to learn what safe, simple aromatherapy feels like, I invite you to connect.</p>
+      <div style="margin-top:10px;color:var(--muted)">Serving {{CITY}}, {{STATE}} — reach me at <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none">{{PHONE}}</a>.</div>
+    </section>
+
+    <section style="margin-top:18px">
+      <h3 style="color:var(--accent)">Client notes (anonymized)</h3>
+      <div style="margin-top:8px;color:#5b4539">
+        <blockquote style="margin:0;padding-left:12px;border-left:3px solid rgba(106,63,42,0.08);">"Gentle guidance, clear safety tips — I appreciated the patch-test reminder and the easy dilution card." — S.</blockquote>
+      </div>
+    </section>
+
+    <footer style="margin-top:20px;color:var(--muted)">© {{BUSINESS_NAME}} — {{PRACTITIONER_NAME}}. No medical advice provided. Products and workshop suggestions are part of a mindful aromatherapy practice.</footer>
+  </main>
+</body>
+</html>

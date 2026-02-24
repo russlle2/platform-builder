@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contact • {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reach out to our integrative clinic in {{CITY}}, {{STATE}} — events, consultations, and learning programs to support your daily balance.">
+  <style>
+    :root{
+      --bg:#f6faf6;
+      --card:#fff;
+      --muted:#6b6f76;
+      --accent:#2b7a5e;
+      --accent-2:#1f5a45;
+      --glass:rgba(255,255,255,0.8);
+      --shadow:0 6px 18px rgba(18,20,24,0.08);
+      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#eef7ee 60%);color:#14221a}
+    /* unique patterned band using external asset reference */
+    header{background: url('assets/img/pattern.svg') repeat-x center top / auto 120px, linear-gradient(180deg, rgba(43,122,94,0.06), transparent);
+      padding:20px 24px;box-shadow:var(--shadow);position:sticky;top:0;z-index:20}
+    .wrap{max-width:1100px;margin:0 auto}
+    nav{display:flex;align-items:center;gap:18px}
+    nav a{color:#0f2b1f;text-decoration:none;font-weight:600}
+    nav .brand{font-size:1.05rem}
+    .cta-btn{margin-left:auto;background:var(--accent);color:#fff;padding:10px 14px;border-radius:8px;text-decoration:none;font-weight:700}
+
+    main{max-width:1100px;margin:28px auto;padding:0 20px}
+    .hero{display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start}
+    .hero h1{margin:0 0 6px;font-size:1.7rem}
+    .hero p{color:var(--muted);margin:0 0 14px}
+
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:var(--shadow)}
+    .contact-card{position:relative;overflow:hidden}
+    .contact-meta{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+    .meta-line{display:flex;gap:10px;align-items:center;color:var(--muted)}
+    .meta-line strong{color:var(--accent-2)}
+
+    form .row{display:flex;gap:10px}
+    input,textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid #e6ece6;background:transparent}
+    textarea{min-height:100px}
+    .btn{background:var(--accent);color:#fff;padding:10px 12px;border-radius:8px;border:none;font-weight:700;cursor:pointer}
+    .small{font-size:0.86rem;color:var(--muted)}
+
+    /* Proof gallery */
+    .proof{margin-top:22px}
+    .proof .viewport{height:140px;position:relative;overflow:hidden}
+    .testimonial{position:absolute;inset:0;opacity:0;transform:translateY(10px);transition:all 420ms cubic-bezier(.2,.9,.25,1);padding:12px}
+    .testimonial.show{opacity:1;transform:none}
+    .quote{font-style:italic;color:#0d281e}
+    .t-author{margin-top:10px;font-weight:700;color:var(--accent-2)}
+    .badges{display:flex;gap:8px;margin-top:12px}
+    .badge{background:#fff;border-radius:8px;padding:6px 8px;border:1px solid #e7efe7;font-size:0.82rem;position:relative}
+    .badge .tip{visibility:hidden;opacity:0;transition:all 160ms;position:absolute;left:50%;transform:translateX(-50%) translateY(-8px);bottom:calc(100% + 8px);background:#0f2b1f;color:#fff;padding:6px 8px;border-radius:6px;font-size:0.76rem;white-space:nowrap}
+    .badge:focus .tip,.badge:hover .tip{visibility:visible;opacity:1;transform:translateX(-50%) translateY(0)}
+
+    /* Pricing comparator */
+    .pricing{margin-top:22px;display:grid;grid-template-columns:1fr;gap:12px}
+    .toggle{display:flex;align-items:center;gap:12px}
+    .switch{width:56px;height:28px;background:#e8f4ea;border-radius:18px;padding:3px;cursor:pointer;display:inline-flex;align-items:center}
+    .thumb{width:22px;height:22px;background:var(--accent-2);border-radius:50%;transition:transform 260ms}
+    .switch[data-mode="package"] .thumb{transform:translateX(28px)}
+    .plans{display:flex;gap:12px;margin-top:12px}
+    .plan{flex:1;padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#fbfff9);text-align:center}
+    .price{font-size:1.6rem;color:var(--accent);transition:all 420ms}
+    .sub{color:var(--muted);font-size:0.9rem}
+
+    footer{max-width:1100px;margin:30px auto;padding:18px 20px;color:var(--muted);font-size:0.9rem}
+
+    @media(max-width:880px){
+      .hero{grid-template-columns:1fr}
+      nav{gap:10px}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav>
+        <a class="brand" href="index.html">{{BUSINESS_NAME}}</a>
+        <a href="index.html">Home</a>
+        <a href="services.html">Programs</a>
+        <a href="conditions.html">Conditions</a>
+        <a href="approach.html">Philosophy</a>
+        <a href="pricing.html">Investment</a>
+        <a href="about.html">Team</a>
+        <a href="book.html">Events</a>
+        <a href="contact.html">Connect</a>
+        <a class="cta-btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero wrap">
+      <div>
+        <h1>Reach us — questions, scheduling, or event enrollment</h1>
+        <p>We're available for short consultations, workshop bookings, and referral conversations. Tell us the best way to follow up and we'll respond within two business days.</p>
+        <div class="card contact-card">
+          <div class="contact-meta">
+            <div class="meta-line">Phone: <strong>{{PHONE}}</strong></div>
+            <div class="meta-line">Email: <strong>{{EMAIL}}</strong></div>
+            <div class="meta-line small">Office: {{CITY}}, {{STATE}} — events and remote appointments available</div>
+          </div>
+
+          <form id="contactForm" aria-label="Contact form">
+            <div class="row">
+              <input type="text" name="name" placeholder="Your name" required>
+              <input type="email" name="email" placeholder="Email address" required>
+            </div>
+            <div style="margin-top:10px" class="row">
+              <input type="tel" name="phone" placeholder="Phone (optional)">
+              <select name="contact_pref" aria-label="Preferred contact">
+                <option value="email">Email</option>
+                <option value="phone">Phone</option>
+                <option value="event">Invite to event</option>
+              </select>
+            </div>
+            <div style="margin-top:10px">
+              <textarea name="message" placeholder="How can we help today? (brief)" required></textarea>
+            </div>
+            <div style="display:flex;gap:10px;align-items:center;margin-top:12px">
+              <button class="btn" type="submit">Send message</button>
+              <div class="small">We reply weekdays. This form is for administrative contact and event interest — not for urgent medical needs.</div>
+            </div>
+          </form>
+
+          <div class="proof" aria-live="polite">
+            <h3 style="margin:12px 0 8px">Community notes</h3>
+            <div class="viewport card" id="proofViewport">
+              <div class="testimonial" data-id="1">
+                <div class="quote">"Workshops helped me build a simple morning routine that cut my stress spikes in half."</div>
+                <div class="t-author">— R., program attendee</div>
+              </div>
+              <div class="testimonial" data-id="2">
+                <div class="quote">"The team explained options clearly and gave me practical steps I could try immediately."</div>
+                <div class="t-author">— M., consultation</div>
+              </div>
+              <div class="testimonial" data-id="3">
+                <div class="quote">"I liked the steady pace of the events — real tools and space to practice between sessions."</div>
+                <div class="t-author">— L., events series</div>
+              </div>
+            </div>
+
+            <div class="badges" role="list">
+              <div tabindex="0" class="badge" role="listitem">Certified Practitioners
+                <div class="tip">Licensed clinicians and trained facilitators</div>
+              </div>
+              <div tabindex="0" class="badge" role="listitem">Peer-reviewed curriculum
+                <div class="tip">Approaches built from evidence and lived experience</div>
+              </div>
+              <div tabindex="0" class="badge" role="listitem">Community events
+                <div class="tip">Small cohort learning with ongoing support</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <aside style="position:relative">
+        <div class="card">
+          <h3 style="margin-top:0">Quick booking</h3>
+          <p class="small">Prefer to reserve a slot? Use this form to request availability for consultations or the next events cycle.</p>
+
+          <div style="margin-top:10px" class="pricing">
+            <div class="toggle">
+              <div class="small">Show:</div>
+              <div id="priceSwitch" class="switch" role="switch" aria-checked="false" data-mode="monthly" tabindex="0">
+                <div class="thumb"></div>
+              </div>
+              <div class="small">Monthly / Package</div>
+            </div>
+
+            <div class="plans">
+              <div class="plan">
+                <div class="sub">Intro Series</div>
+                <div class="price" data-monthly="79" data-package="199">$79</div>
+                <div class="sub">per month or one-time package</div>
+                <div style="margin-top:10px"><button class="btn" onclick="location.href='{{PRIMARY_CTA_URL}}'">Reserve a spot</button></div>
+              </div>
+              <div class="plan">
+                <div class="sub">Stability Program</div>
+                <div class="price" data-monthly="129" data-package="349">$129</div>
+                <div class="sub">monthly / single payment</div>
+                <div style="margin-top:10px"><button class="btn" onclick="location.href='book.html'">Join an event</button></div>
+              </div>
+              <div class="plan">
+                <div class="sub">Restore Package</div>
+                <div class="price" data-monthly="199" data-package="549">$199</div>
+                <div class="sub">monthly / full series</div>
+                <div style="margin-top:10px"><button class="btn" onclick="location.href='pricing.html'">View details</button></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div style="height:12px"></div>
+        <div class="card small">
+          <strong style="display:block;margin-bottom:8px">Office hours</strong>
+          Weekdays 9:00–5:00. Appointments available evenings and weekends by request.
+        </div>
+      </aside>
+
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div>{{BUSINESS_NAME}} — administrative contact: {{EMAIL}} • {{PHONE}}</div>
+      <div style="margin-top:6px;color:var(--muted);font-size:0.86rem">This site provides general information and event details. Content is educational and not a substitute for professional medical advice. For urgent care, contact your local emergency services.</div>
+    </div>
+  </footer>
+
+  <script>
+    // Contact form: simple client-side acknowledgement
+    (function(){
+      const form = document.getElementById('contactForm');
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        const btn = form.querySelector('.btn');
+        btn.disabled = true; btn.textContent = 'Sending...';
+        setTimeout(()=>{
+          btn.textContent = 'Message sent';
+          btn.classList.add('sent');
+          form.reset();
+          setTimeout(()=>{ btn.disabled=false; btn.textContent='Send message'; btn.classList.remove('sent') },3000);
+        },900);
+      });
+    })();
+
+    // Proof gallery rotation
+    (function(){
+      const view = document.getElementById('proofViewport');
+      const items = Array.from(view.querySelectorAll('.testimonial'));
+      let idx = 0;
+      function show(i){
+        items.forEach((it, j)=>{
+          it.classList.toggle('show', j===i);
+        });
+      }
+      show(0);
+      setInterval(()=>{ idx = (idx+1) % items.length; show(idx); }, 5200);
+    })();
+
+    // Pricing comparator with animated numbers
+    (function(){
+      const sw = document.getElementById('priceSwitch');
+      const plans = Array.from(document.querySelectorAll('.price'));
+      function animatePrices(toMode){
+        plans.forEach(el=>{
+          const from = parseInt(el.textContent.replace(/[^0-9]/g,''),10) || 0;
+          const to = parseInt(el.dataset[toMode],10) || 0;
+          const start = performance.now();
+          const duration = 480;
+          function tick(now){
+            const t = Math.min(1,(now-start)/duration);
+            const val = Math.round(from + (to-from) * (1 - Math.pow(1-t,3)) );
+            el.textContent = '$' + val;
+            if(t < 1) requestAnimationFrame(tick);
+          }
+          requestAnimationFrame(tick);
+        });
+      }
+
+      function toggleMode(){
+        const mode = sw.getAttribute('data-mode') === 'monthly' ? 'package' : 'monthly';
+        sw.setAttribute('data-mode', mode);
+        sw.setAttribute('aria-checked', mode === 'package');
+        animatePrices(mode === 'monthly' ? 'monthly' : 'package');
+      }
+
+      sw.addEventListener('click', toggleMode);
+      sw.addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleMode(); } });
+
+      // initialize with monthly values
+      document.addEventListener('DOMContentLoaded', ()=>{ animatePrices('monthly'); });
+    })();
+  </script>
+</body>
+</html>

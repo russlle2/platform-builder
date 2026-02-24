@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Book a Visit — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#091421;--card:#071826;--accent:#7DE3B8;--muted:#9fb0c3}
+    *{box-sizing:border-box;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto;}
+    body{margin:0;background:linear-gradient(180deg,#051021 0%,#072036 100%);color:#e8f6f2}
+    header{display:flex;justify-content:space-between;align-items:center;padding:22px}
+    .logo{font-weight:800}
+    nav a{color:var(--muted);text-decoration:none;margin:0 8px}
+    .wrap{max-width:960px;margin:28px auto;padding:18px}
+    .grid{display:grid;grid-template-columns:1fr 380px;gap:22px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px}
+    label{display:block;margin-top:10px;font-size:13px;color:var(--muted)}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.02);color:#e8f6f2}
+    .btn{display:inline-block;margin-top:12px;padding:10px 14px;background:linear-gradient(90deg,var(--accent),#9be1ff);color:#022;border-radius:10px;border:none;font-weight:800;text-decoration:none}
+    .mini{font-size:13px;color:var(--muted)}
+    .svg-deco{position:fixed;right:-120px;bottom:-140px;opacity:0.12}
+    @media(max-width:880px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Services</a>
+      <a href="pricing.html">Fees</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <h1 style="margin:0 0 8px 0">Reserve your first visit</h1>
+    <p class="mini" style="margin:0 0 18px 0">Choose a session type and tell us a little about what brought you here. We focus on teaching skills and building a plan together.</p>
+
+    <div class="grid">
+      <section class="card">
+        <form action="{{PRIMARY_CTA_URL}}" method="post" onsubmit="return handleSubmit(event)">
+          <label for="name">Full name</label>
+          <input id="name" name="name" required>
+
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required>
+
+          <label for="phone">Phone</label>
+          <input id="phone" name="phone" type="tel">
+
+          <label for="session">Session type</label>
+          <select id="session" name="session">
+            <option>Comprehensive Initial — 120 min</option>
+            <option>Starter Visit — 60 min</option>
+            <option>Follow-up — 45 min</option>
+            <option>Package (inquire)</option>
+          </select>
+
+          <label for="concern">Primary concerns (check all that apply)</label>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <label class="mini"><input type="checkbox" name="concern" value="stress"> Stress</label>
+            <label class="mini"><input type="checkbox" name="concern" value="sleep"> Sleep</label>
+            <label class="mini"><input type="checkbox" name="concern" value="digestion"> Digestion</label>
+            <label class="mini"><input type="checkbox" name="concern" value="inflammation"> Inflammation</label>
+            <label class="mini"><input type="checkbox" name="concern" value="energy"> Energy</label>
+          </div>
+
+          <label for="notes">Brief notes (what would you like to address?)</label>
+          <textarea id="notes" name="notes" rows="4"></textarea>
+
+          <label style="margin-top:12px;display:flex;gap:10px;align-items:center"><input type="checkbox" id="consent" required>
+            <span class="mini">I understand the care is educational and collaborative. I acknowledge there are no guaranteed cures and I consent to an integrative approach.</span>
+          </label>
+
+          <button class="btn" type="submit">Request booking</button>
+        </form>
+
+        <script>
+          function handleSubmit(e){
+            e.preventDefault();
+            // lightweight simulated submit
+            alert('Thanks — we received your request. {{PRACTITIONER_NAME}}\'s team will reply to ' + document.getElementById('email').value + '.');
+            return false;
+          }
+        </script>
+      </section>
+
+      <aside class="card">
+        <h3 style="margin-top:0">Before you book</h3>
+        <p class="mini">Please note: our approach centers on teaching and whole-person plans. While we may suggest labs or supplements as educational tools, they are optional and not guarantees of outcomes.</p>
+
+        <h4 style="margin-top:12px">Quick policy notes</h4>
+        <ul class="mini" style="margin:6px 0 0 18px">
+          <li>48-hour cancellation required for refunds.</li>
+          <li>Payments via card; packages available.</li>
+          <li>Superbills provided for out-of-network claims.</li>
+        </ul>
+
+        <div style="margin-top:14px">
+          <strong>Need help now?</strong>
+          <div class="mini">Call: <a href="tel:{{PHONE}}" style="color:var(--muted)">{{PHONE}}</a></div>
+        </div>
+
+        <div style="margin-top:12px;border-top:1px dashed rgba(255,255,255,0.03);padding-top:12px">
+          <strong style="color:var(--accent)">Package highlight</strong>
+          <div class="mini">Accelerated Intensive: intake + five check-ins. Ask about payment plans.</div>
+        </div>
+      </aside>
+    </div>
+
+    <section style="margin-top:18px" class="card">
+      <h3 style="margin:0 0 6px 0">Where we work</h3>
+      <p class="mini">In-person in {{CITY}}, {{STATE}} and virtual visits. We adapt the format to meet your needs.</p>
+      <p class="mini">Email: <a href="mailto:{{EMAIL}}" style="color:var(--muted)">{{EMAIL}}</a></p>
+    </section>
+  </main>
+
+  <svg class="svg-deco" width="340" height="340" viewBox="0 0 340 340" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <defs>
+      <linearGradient id="bgG" x1="0" x2="1"><stop offset="0" stop-color="#7DE3B8"/><stop offset="1" stop-color="#9BE1FF"/></linearGradient>
+      <pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse">
+        <circle cx="2" cy="2" r="1.2" fill="rgba(255,255,255,0.06)" />
+      </pattern>
+    </defs>
+    <rect width="340" height="340" rx="28" fill="url(#dots)" opacity="0.12"/>
+    <ellipse cx="60" cy="280" rx="120" ry="40" fill="url(#bgG)" opacity="0.08"/>
+  </svg>
+
+  <footer style="text-align:center;padding:22px;color:var(--muted)">
+    <div>{{BUSINESS_NAME}} &middot; <a href="mailto:{{EMAIL}}" style="color:var(--muted)">{{EMAIL}}</a></div>
+  </footer>
+</body>
+</html>

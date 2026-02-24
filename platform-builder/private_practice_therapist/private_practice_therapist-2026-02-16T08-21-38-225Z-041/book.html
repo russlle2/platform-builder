@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Start a Session — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff7f0;--card:#fff;--accent:#7b5a3e;--muted:#675e56}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:var(--bg);color:#2f2924;margin:0}
+    .wrap{max-width:880px;margin:30px auto;padding:22px}
+    header{display:flex;align-items:center;justify-content:space-between}
+    nav a{color:var(--muted);text-decoration:none;margin-left:12px}
+    .lead{margin-top:12px;color:var(--muted)}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 10px 22px rgba(30,20,18,0.04);margin-top:16px}
+    label{display:block;margin-top:12px;color:#2d2722;font-weight:600}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6dfd7;margin-top:6px}
+    .btn{background:var(--accent);color:#fff;padding:10px 14px;border-radius:8px;border:none;margin-top:14px;cursor:pointer;font-weight:700}
+    .muted{color:var(--muted);font-size:13px}
+    .inline{display:flex;gap:10px}
+    .note{font-size:13px;color:var(--muted);margin-top:10px}
+    @media(max-width:720px){.inline{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <header>
+      <div>
+        <h3 style='margin:0;color:var(--accent)'>{{BUSINESS_NAME}}</h3>
+        <nav style='margin-top:8px'>
+          <a href='index.html'>Home</a>
+          <a href='about.html'>Meet</a>
+          <a href='specialties.html'>Focus Areas</a>
+          <a href='approach.html'>Method</a>
+          <a href='fees.html'>Work With Me</a>
+          <a href='faq.html'>FAQ</a>
+          <a href='book.html' style='color:var(--accent)'>Start</a>
+          <a href='contact.html'>Contact</a>
+        </nav>
+      </div>
+      <div class='muted' style='text-align:right'>
+        <div>{{THERAPIST_NAME}}, {{LICENSE}}</div>
+        <div>{{CITY}}, {{STATE}}</div>
+      </div>
+    </header>
+
+    <section class='card' aria-labelledby='book-title'>
+      <h1 id='book-title' style='margin:0'>Schedule an initial appointment</h1>
+      <p class='lead'>A short intake helps us clarify needs, immediate safety, and the best path forward. If you're unsure which option fits, use the notes field below.</p>
+
+      <form action='{{PRIMARY_CTA_URL}}' method='post' style='margin-top:14px'>
+        <label for='name'>Full name</label>
+        <input id='name' name='name' required placeholder='First Last' />
+
+        <label for='email'>Email</label>
+        <input id='email' name='email' type='email' required placeholder='you@example.com' />
+
+        <label for='phone'>Phone</label>
+        <input id='phone' name='phone' type='tel' placeholder='(555) 555-5555' />
+
+        <div class='inline'>
+          <div style='flex:1'>
+            <label for='type'>Session type</label>
+            <select id='type' name='type'>
+              <option>Telehealth (secure video)</option>
+              <option>In-person ({{CITY}} office)</option>
+              <option>Phone session</option>
+            </select>
+          </div>
+
+          <div style='flex:1'>
+            <label for='goal'>Primary concern</label>
+            <select id='goal' name='goal'>
+              <option>Anxiety</option>
+              <option>Depression</option>
+              <option>Relationship stress</option>
+              <option>Trauma recovery</option>
+              <option>Burnout / work stress</option>
+            </select>
+          </div>
+        </div>
+
+        <label for='notes'>Brief note (what brings you here?)</label>
+        <textarea id='notes' name='notes' rows='4' placeholder='A few lines helps me prepare.'></textarea>
+
+        <label for='time'>Preferred days/times</label>
+        <input id='time' name='time' placeholder='Weekday mornings, Thursdays, etc.' />
+
+        <div style='display:flex;gap:12px;align-items:center;margin-top:10px'>
+          <button class='btn' type='submit'>{{PRIMARY_CTA_LABEL}}</button>
+          <div class='muted'>You will receive an intake packet and consent forms if we move forward.</div>
+        </div>
+
+        <p class='note'>Fees: Single sessions, blocks, and membership options are available. I provide superbills for out-of-network reimbursement. For detailed investment options, see the Investments page.</p>
+
+      </form>
+    </section>
+
+    <section class='card' style='margin-top:16px' aria-labelledby='what-to-expect'>
+      <h3 id='what-to-expect' style='margin-top:0'>What happens after you request a time</h3>
+      <ol class='muted' style='line-height:1.6'>
+        <li>I will review your request and follow up within 48 business hours with available times and intake paperwork.</li>
+        <li>The intake form covers confidentiality, emergency planning, and questions about goals and history.</li>
+        <li>We discuss mutual fit; if I am not the best match, I will offer referrals.</li>
+      </ol>
+    </section>
+
+    <section class='card' style='margin-top:16px' aria-labelledby='book-faq'>
+      <h4 id='book-faq' style='margin-top:0'>Booking — quick FAQs</h4>
+      <div class='muted'>
+        <strong>First appointment:</strong> A structured intake and assessment; you can expect some paperwork and our first therapeutic steps.
+      </div>
+      <div class='muted' style='margin-top:8px'>
+        <strong>Telehealth or in-person?</strong> Both. Telehealth uses a secure, HIPAA-aligned platform unless otherwise agreed.
+      </div>
+      <div class='muted' style='margin-top:8px'>
+        <strong>How to prepare:</strong> Have a quiet private space, a stable internet connection for video, and a list of immediate concerns or questions you want to address.
+      </div>
+    </section>
+
+    <section class='card' style='margin-top:16px' aria-labelledby='pillars-book'>
+      <h4 id='pillars-book' style='margin-top:0'>Therapeutic priorities</h4>
+      <p class='muted'>My work emphasizes safety, measurable skills, and collaborative problem-solving — a blend of practical tools and reflective inquiry to support meaningful change.</p>
+    </section>
+
+    <div style='text-align:center;margin-top:18px'>
+      <a class='btn' href='contact.html'>Send a question</a>
+    </div>
+
+    <footer style='margin-top:20px' class='muted'>
+      <p>Confidentiality: Your information is confidential within professional boundaries. Scope & boundaries: I treat adults for anxiety, trauma, relationship concerns, life transitions, and burnout. I do not provide emergency services; if you are currently in crisis, call emergency services or a crisis hotline.</p>
+    </footer>
+  </div>
+</body>
+</html>

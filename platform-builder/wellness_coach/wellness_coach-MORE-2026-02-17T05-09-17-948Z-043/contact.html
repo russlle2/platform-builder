@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contact • {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f6fbf9;--muted:#6b7280;--accent:#3b8b6a;--card:#ffffff;--glass:rgba(255,255,255,0.7);font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#eef6f3);color:#063a2b}
+    header{background:linear-gradient(135deg,rgba(59,139,106,0.12) 0%,rgba(59,139,106,0.02) 60%),url('assets/img/pattern.svg');background-size:320px 320px;padding:36px 20px;clip-path:polygon(0 0,100% 0,100% 78%,0 100%);}    
+    .wrap{max-width:980px;margin:0 auto}
+    nav{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{font-weight:700;font-size:18px}
+    .navlinks{display:flex;gap:10px;flex-wrap:wrap}
+    .navlinks a{color:var(--accent);text-decoration:none;padding:8px 10px;border-radius:8px;font-size:14px}
+    .hero{display:flex;gap:20px;align-items:center;padding:28px 0 32px}
+    .hero h1{margin:0;font-size:28px;line-height:1.05}
+    .hero p{margin:6px 0 0;color:var(--muted)}
+
+    main{max-width:980px;margin:18px auto;padding:20px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:20px}
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(6,58,43,0.06)}
+    form label{display:block;font-size:13px;margin-top:10px;color:var(--muted)}
+    input,textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid #e6efe9;margin-top:6px;font-size:14px}
+    button.primary{background:var(--accent);color:white;padding:10px 14px;border:0;border-radius:10px;cursor:pointer;font-weight:600}
+    .muted{color:var(--muted);font-size:13px}
+
+    /* Habit maker styles */
+    .habit-controls{display:flex;flex-direction:column;gap:8px}
+    .checks{margin-top:12px}
+    .print-area{border-radius:10px;padding:12px;border:1px dashed #e1efe6;background:linear-gradient(180deg,#fff,#fbfffd)}
+
+    /* Modal */
+    .overlay{position:fixed;inset:0;background:rgba(4,22,18,0.5);display:none;align-items:center;justify-content:center;padding:20px}
+    .modal{background:var(--card);width:720px;max-width:100%;border-radius:12px;padding:18px;box-shadow:0 20px 60px rgba(2,30,22,0.45)}
+    .modal h3{margin:0 0 6px}
+    .modal .tabs{display:flex;gap:8px;margin-bottom:12px}
+    .tabbtn{padding:8px 10px;border-radius:8px;border:1px solid #e6efe9;background:var(--glass);cursor:pointer}
+    .active{box-shadow:inset 0 -2px 0 var(--accent);}
+    .modal .stage{min-height:160px}
+    .circle{width:110px;height:110px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#cdf1e1,#e7fff7);display:flex;align-items:center;justify-content:center;margin:10px auto;font-weight:700}
+    .controls{display:flex;gap:8px;justify-content:center;margin-top:8px}
+
+    footer{padding:20px;text-align:center;color:var(--muted);font-size:13px}
+
+    @media (max-width:880px){.grid{grid-template-columns:1fr}.hero{flex-direction:column;align-items:flex-start}.navlinks{display:none}}
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <nav>
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <div class="navlinks" aria-hidden="false">
+        <a href="index.html">Home Base</a>
+        <a href="about.html">Approach</a>
+        <a href="services.html">Offerings</a>
+        <a href="programs.html">Journeys</a>
+        <a href="pricing.html">Access</a>
+        <a href="testimonials.html">Stories</a>
+        <a href="book.html">Reserve</a>
+        <a href="contact.html">Connect</a>
+      </div>
+    </nav>
+
+    <div class="hero">
+      <div>
+        <h1>Let’s tune the small patterns that make daily life kinder.</h1>
+        <p class="muted">Reach out for membership details, a sample week, or a short guided practice—no pressure, clear steps.</p>
+      </div>
+      <div style="margin-left:auto">
+        <a class="primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="grid">
+    <section class="card">
+      <h2>Connect</h2>
+      <p class="muted">I respond to practical questions about routines, membership, and how a seven-day reset fits your schedule. Prefer a call? {{PHONE}}.</p>
+      <form id="contactForm" onsubmit="event.preventDefault();alert('Thanks — we\'ll be in touch!')">
+        <label>Name <input name="name" required></label>
+        <label>Email <input name="email" type="email" required></label>
+        <label>Message <textarea name="message" rows="4"></textarea></label>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="primary" type="submit">Send message</button>
+          <button type="button" onclick="openTryNow()">Try a guided 3‑minute practice</button>
+        </div>
+      </form>
+
+      <hr style="margin:18px 0;border:none;border-top:1px solid #eef6f3">
+
+      <h3>Quick details</h3>
+      <p class="muted">Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a><br>Located in {{CITY}}, {{STATE}}</p>
+
+    </section>
+
+    <aside class="card">
+      <h3>Build a 7‑day starter</h3>
+      <p class="muted">Choose one habit. The generator creates short daily cues, a compact checklist, and a printable sheet to tuck into your planner.</p>
+      <div class="habit-controls" style="margin-top:8px">
+        <label>Habit (eg. Morning water, Evening journaling)<input id="habitName" placeholder="Write one clear habit"/></label>
+        <label>Daily time <input id="habitTime" type="time"/></label>
+        <label>Start date <input id="habitStart" type="date"/></label>
+        <label>Intensity
+          <select id="habitIntensity">
+            <option value="gentle">Gentle (2–4 min)</option>
+            <option value="steady" selected>Steady (5–10 min)</option>
+            <option value="firm">Firm (10–15 min)</option>
+          </select>
+        </label>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="primary" id="buildBtn">Create 7‑day plan</button>
+          <button id="clearBtn" type="button">Clear</button>
+        </div>
+      </div>
+      <div class="checks card" id="checklist" style="margin-top:12px;display:none"></div>
+    </aside>
+  </div>
+
+  <section style="margin-top:18px" class="card">
+    <h3>Contact flow & quick practices</h3>
+    <p class="muted">Try short practices anytime. These run locally—no data leaves your browser. Saved notes are kept in your device storage and can be printed or copied.</p>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="primary" onclick="openTryNow('breath')">Try breathing now</button>
+      <button onclick="openTryNow('journal')">Try journaling now</button>
+      <button onclick="openTryNow('intention')">Set an intention</button>
+    </div>
+  </section>
+
+</main>
+
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="modal" role="document">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h3 id="modalTitle">Guided practice</h3>
+      <div>
+        <button onclick="closeTryNow()" aria-label="Close">Close</button>
+      </div>
+    </div>
+    <div class="tabs" role="tablist" aria-label="practice types">
+      <button class="tabbtn active" data-tab="breath" onclick="switchTab(event)">Breathing</button>
+      <button class="tabbtn" data-tab="journal" onclick="switchTab(event)">Journaling</button>
+      <button class="tabbtn" data-tab="intention" onclick="switchTab(event)">Intention</button>
+    </div>
+
+    <div class="stage">
+      <div id="breathPanel">
+        <p class="muted">A paced breathing for calm: inhale, hold, exhale cycles. Set cycles and start.</p>
+        <div class="circle" id="breathCircle">Ready</div>
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:6px;align-items:center">
+          <label class="muted">Cycles <input id="breathCycles" type="number" min="1" max="12" value="4" style="width:70px;margin-left:8px"></label>
+        </div>
+        <div class="controls">
+          <button class="primary" id="breathStart">Start</button>
+          <button id="breathReset">Reset</button>
+        </div>
+      </div>
+
+      <div id="journalPanel" style="display:none">
+        <p class="muted">Short timed prompts to get words flowing. Use the timer or jot freely.</p>
+        <label>Pick a prompt:
+          <select id="journalPrompt">
+            <option>What am I noticing right now?</option>
+            <option>One small win from today</option>
+            <option>What could I let go of this week?</option>
+          </select>
+        </label>
+        <label style="margin-top:8px">Minutes <input id="journalMinutes" type="number" min="1" max="20" value="5" style="width:80px;margin-left:8px"></label>
+        <textarea id="journalText" rows="6" placeholder="Write here..." style="margin-top:8px"></textarea>
+        <div class="controls">
+          <button class="primary" id="journalStart">Start timer</button>
+          <button id="journalSave">Save note</button>
+        </div>
+        <div style="margin-top:8px" id="journalTimer" class="muted"></div>
+      </div>
+
+      <div id="intentPanel" style="display:none">
+        <p class="muted">Name a short intention you can repeat across the day.</p>
+        <input id="intentText" placeholder="My intention for today..." />
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="primary" id="intentSave">Save intention</button>
+          <button id="intentCopy">Copy</button>
+        </div>
+        <div id="intentSaved" style="margin-top:8px;color:var(--muted)"></div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <div style="max-width:980px;margin:0 auto;padding:8px 20px">
+    <div class="muted">Need quick help? Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</div>
+  </div>
+</footer>
+
+<script>
+// Habit builder
+const buildBtn = document.getElementById('buildBtn');
+const clearBtn = document.getElementById('clearBtn');
+const checklist = document.getElementById('checklist');
+
+function formatDate(d){return d.toISOString().slice(0,10)}
+function addDays(date,days){const nd=new Date(date);nd.setDate(nd.getDate()+days);return nd}
+
+buildBtn.addEventListener('click',()=>{
+  const name = document.getElementById('habitName').value.trim();
+  const time = document.getElementById('habitTime').value;
+  const start = document.getElementById('habitStart').value || formatDate(new Date());
+  const intensity = document.getElementById('habitIntensity').value;
+  if(!name){alert('Please name the habit.');return}
+  const tips = {gentle:'Keep it tiny. 2–4 min.',steady:'Aim for a reliable 5–10 min window.',firm:'Commit to a fuller 10–15 min routine.'}[intensity];
+  let html = `<div class=\"print-area\"><strong>7‑day plan: ${escapeHtml(name)}</strong><div class=\"muted\">${escapeHtml(tips)} ${time ? 'Time: '+escapeHtml(time)+'.' : ''} Start: ${escapeHtml(start)}</div><ol style=\"margin-top:12px\">`;
+  const sd = new Date(start);
+  for(let i=0;i<7;i++){
+    const day = addDays(sd,i);
+    const label = day.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'});
+    html += `<li style=\"margin:8px 0\"><label><input type=\"checkbox\" data-day=\"${i+1}\"> <strong>${escapeHtml(label)}</strong> — ${escapeHtml(shortCue(name,i))}</label></li>`;
+  }
+  html += `</ol><div style=\"display:flex;gap:8px;margin-top:8px\"><button onclick=\"printPlan()\" class=\"primary\">Print checklist</button><button onclick=\"downloadPlan()\">Download</button></div></div>`;
+  checklist.innerHTML = html; checklist.style.display='block';
+});
+
+clearBtn.addEventListener('click',()=>{document.getElementById('habitName').value='';document.getElementById('habitTime').value='';document.getElementById('habitStart').value='';checklist.style.display='none';checklist.innerHTML='';});
+
+function shortCue(name,idx){
+  // small variation across the week
+  const starters=['Start with one focused minute','Add a small anchor (breath/water)','Notice one sensation','Repeat the core step','Notice resistance, return','Shorten or simplify if stuck','Celebrate and plan next week'];
+  return `${starters[idx%starters.length]} — ${name}`;
+}
+
+function printPlan(){
+  const content = checklist.innerHTML;
+  const win = window.open('','_blank');
+  win.document.write('<!doctype html><html><head><meta charset="utf-8"><title>7-day plan</title><style>body{font-family:system-ui,Segoe UI,Roboto;padding:20px;color:#0b3a2b}h1{font-size:18px}label{display:block;margin:8px 0}</style></head><body>' + content + '</body></html>');
+  win.document.close();
+  win.print();
+}
+
+function downloadPlan(){
+  const text = checklist.innerText || '';
+  const blob = new Blob([text],{type:'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download='7-day-plan.txt'; a.click(); URL.revokeObjectURL(url);
+}
+
+function escapeHtml(str){return String(str).replace(/[&<>\"']/g,tag=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[tag]));}
+
+// Guided practice modal
+const overlay = document.getElementById('overlay');
+const modalTitle = document.getElementById('modalTitle');
+function openTryNow(tab){overlay.style.display='flex';overlay.setAttribute('aria-hidden','false');
+  if(tab) switchTabTo(tab); else switchTabTo('breath');
+}
+function closeTryNow(){overlay.style.display='none';overlay.setAttribute('aria-hidden','true');stopBreath();stopJournalTimer();}
+
+function switchTab(e){const tab = e.currentTarget.getAttribute('data-tab');switchTabTo(tab);} 
+function switchTabTo(tab){document.querySelectorAll('.tabbtn').forEach(b=>b.classList.toggle('active',b.getAttribute('data-tab')===tab));
+  document.getElementById('breathPanel').style.display = tab==='breath' ? '' : 'none';
+  document.getElementById('journalPanel').style.display = tab==='journal' ? '' : 'none';
+  document.getElementById('intentPanel').style.display = tab==='intention' ? '' : 'none';
+  modalTitle.textContent = {breath:'Breathing practice',journal:'Free journaling',intention:'Set an intention'}[tab]||'Guided practice';
+}
+
+// Breathing
+let breathTimer = null;let breathStep = 0;let breathCycleRemain = 0;
+const breathCircle = document.getElementById('breathCircle');
+const breathStart = document.getElementById('breathStart');
+const breathReset = document.getElementById('breathReset');
+
+breathStart.addEventListener('click',()=>{
+  const cycles = Math.max(1,parseInt(document.getElementById('breathCycles').value || 4));
+  startBreath(cycles);
+});
+breathReset.addEventListener('click',()=>{stopBreath();breathCircle.textContent='Ready';});
+
+function startBreath(cycles){stopBreath();breathCycleRemain = cycles; breathStep=0; runBreathStep();}
+function runBreathStep(){
+  const phases = [ {text:'Inhale',sec:4},{text:'Hold',sec:4},{text:'Exhale',sec:4} ];
+  let phase = phases[breathStep%3];
+  let sec = phase.sec; breathCircle.textContent = `${phase.text} \n${sec}`;
+  let count = sec;
+  breathTimer = setInterval(()=>{
+    count--; breathCircle.textContent = `${phase.text} \n${count}`;
+    if(count<=0){
+      clearInterval(breathTimer); breathTimer=null; breathStep++;
+      if(breathStep%3===0){ breathCycleRemain--; }
+      if(breathCycleRemain>0){ setTimeout(runBreathStep,250); } else { breathCircle.textContent='Done'; }
+    }
+  },1000);
+}
+function stopBreath(){ if(breathTimer) clearInterval(breathTimer); breathTimer=null; }
+
+// Journaling timer
+let journalInterval=null; let journalRemaining=0;
+const journalTimer = document.getElementById('journalTimer');
+const journalStartBtn = document.getElementById('journalStart');
+const journalSaveBtn = document.getElementById('journalSave');
+
+journalStartBtn.addEventListener('click',()=>{
+  const mins = Math.max(1,parseInt(document.getElementById('journalMinutes').value||5));
+  journalRemaining = mins*60; startJournalTimer();
+});
+journalSaveBtn.addEventListener('click',()=>{const text=document.getElementById('journalText').value; if(!text){alert('Write a few lines to save.');return} saveNote(text); alert('Saved locally.');});
+
+function startJournalTimer(){stopJournalTimer(); updateJournalDisplay(); journalInterval=setInterval(()=>{journalRemaining--; updateJournalDisplay(); if(journalRemaining<=0){stopJournalTimer(); alert('Time\'s up — feel free to save your note.')} },1000);} 
+function stopJournalTimer(){ if(journalInterval) clearInterval(journalInterval); journalInterval=null; }
+function updateJournalDisplay(){ const m=Math.floor(journalRemaining/60), s=journalRemaining%60; journalTimer.textContent=`Time left: ${m}:${s.toString().padStart(2,'0')}`; }
+function saveNote(text){ const notes=JSON.parse(localStorage.getItem('wc_journal_notes')||'[]'); notes.push({text,when:new Date().toISOString()}); localStorage.setItem('wc_journal_notes',JSON.stringify(notes)); }
+
+// Intention
+const intentSave = document.getElementById('intentSave');
+const intentCopy = document.getElementById('intentCopy');
+const intentSaved = document.getElementById('intentSaved');
+
+intentSave.addEventListener('click',()=>{const t=document.getElementById('intentText').value.trim(); if(!t){alert('Write a short intention.');return} localStorage.setItem('wc_intention',t); intentSaved.textContent='Saved — you can copy or repeat it aloud.';});
+intentCopy.addEventListener('click',()=>{const t=localStorage.getItem('wc_intention')||document.getElementById('intentText').value||''; if(!t){alert('No intention to copy.');return} navigator.clipboard?.writeText(t).then(()=>alert('Copied'))});
+
+// small helper to open modal focused on type
+function openTryNow(type){ openTryNow; openTryNowCalled(type); }
+function openTryNowCalled(type){ overlay.style.display='flex'; overlay.setAttribute('aria-hidden','false'); switchTabTo(type||'breath'); }
+
+// Keep existing openTryNow used by inline buttons
+window.openTryNow = function(p){ if(p) openTryNowCalled(p); else openTryNowCalled('breath'); };
+window.closeTryNow = closeTryNow;
+window.switchTab = switchTab;
+window.printPlan = printPlan;
+window.downloadPlan = downloadPlan;
+
+// Close overlay on click outside
+overlay.addEventListener('click',(e)=>{ if(e.target===overlay) closeTryNow(); });
+
+</script>
+</body>
+</html>

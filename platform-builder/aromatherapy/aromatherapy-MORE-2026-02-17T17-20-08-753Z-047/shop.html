@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Boutique — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#08161d;--card:#08141a;--accent:#b8f1e3;--muted:#9db0b8}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#e8fbf6;background:linear-gradient(180deg,#041217 0%,#041827 70%)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:16px 22px;background:rgba(255,255,255,0.02);position:sticky;top:0}
+    .nav a{color:var(--muted);text-decoration:none;margin:0 8px}
+    main{max-width:1100px;margin:28px auto;padding:0 18px}
+    .top{display:flex;align-items:center;gap:18px}
+    .catalog{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+    .item{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:14px;border-radius:12px}
+    .buy{display:inline-block;padding:8px 12px;border-radius:10px;background:var(--accent);color:#052026;text-decoration:none;font-weight:600}
+    .muted{color:var(--muted);font-size:13px}
+    .mini-wheel{width:120px;height:120px;border-radius:50%;background:conic-gradient(#f7efe2 0 120deg,#e8f9f4 120deg 240deg,#eef7e9 240deg 360deg);display:grid;place-items:center;margin-left:auto}
+    @media (max-width:1000px){.catalog{grid-template-columns:repeat(2,1fr)}.top{flex-direction:column;align-items:flex-start}.mini-wheel{margin-left:0}}
+    @media (max-width:640px){.catalog{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div style="width:40px;height:40px;border-radius:8px;background:linear-gradient(135deg,#b8f1e3,#86e7d0)"></div>
+      <div>
+        <div style="font-weight:600">{{BUSINESS_NAME}}</div>
+        <div class="muted">A small boutique of prepared scent supports</div>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html" style="color:var(--accent)">Boutique</a>
+      <a href="pricing.html">Rates</a>
+      <a href="about.html">Story</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="top">
+      <div>
+        <h1 style="margin:0">Boutique</h1>
+        <div class="muted" style="margin-top:6px">Prepared roll-ons, inhalers, and diffuser blends with clear care instructions.</div>
+      </div>
+      <div class="mini-wheel" title="Aroma quick wheel" aria-hidden>
+        <div style="font-size:12px;color:#052026">Top / Mid / Base</div>
+      </div>
+    </section>
+
+    <section class="catalog" aria-live="polite">
+      <article class="item" id="morning">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-weight:700">Morning Bright — inhaler</div>
+            <div class="muted">A citrus-forward inhaler for short lifts.</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-weight:700;color:var(--accent)">$18</div>
+            <div class="muted">Ready to ship</div>
+          </div>
+        </div>
+        <div style="margin-top:10px" class="muted">Includes a practice card, recommended inhaler use, and a brief note on pet/pregnancy safety.</div>
+        <div style="margin-top:10px"><a class="buy" href="#" data-sku="morning">Add</a></div>
+      </article>
+
+      <article class="item" id="night">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-weight:700">Calm Night — roll-on</div>
+            <div class="muted">Low-dose floral-middles for evening ease.</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-weight:700;color:var(--accent)">$24</div>
+            <div class="muted">Hand-blended</div>
+          </div>
+        </div>
+        <div style="margin-top:10px" class="muted">Pre-diluted; patch testing is still recommended before regular topical use.</div>
+        <div style="margin-top:10px"><a class="buy" href="#" data-sku="night">Add</a></div>
+      </article>
+
+      <article class="item" id="focus">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-weight:700">Focus Tincture — diffuser blend</div>
+            <div class="muted">A green-herbal mix for short diffusion sessions.</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-weight:700;color:var(--accent)">$16</div>
+            <div class="muted">Concentrated</div>
+          </div>
+        </div>
+        <div style="margin-top:10px" class="muted">Includes dilution suggestions if you plan to use topically; not all blends are suitable for pets.</div>
+        <div style="margin-top:10px"><a class="buy" href="#" data-sku="focus">Add</a></div>
+      </article>
+
+    </section>
+
+    <section style="margin-top:20px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:14px;border-radius:12px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="flex:1">
+          <div style="font-weight:700">Mood-to-Method quick chooser</div>
+          <div class="muted" style="margin-top:6px">Select how you feel and see a suggested product and phrasing for checkout.</div>
+          <div style="margin-top:10px">
+            <select id="shopMood" style="padding:10px;border-radius:8px;background:rgba(255,255,255,0.02);color:#e8fbf6;border:1px solid rgba(255,255,255,0.02)">
+              <option value="lift">I want a lift</option>
+              <option value="calm">I need to unwind</option>
+              <option value="focus">I need focus</option>
+            </select>
+            <a id="shopAction" class="buy" style="margin-left:10px" href="#">Add recommended</a>
+          </div>
+        </div>
+        <div class="muted" style="width:260px">Selected suggestion will update the button text and target. Checkout remains simple and local — we will contact you to confirm safety details and offer dilution notes.</div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer style="color:var(--muted);padding:18px;text-align:center">
+    &copy; <span id="yr"></span> {{BUSINESS_NAME}} • <span>{{CITY}}, {{STATE}}</span> • <a href="contact.html" style="color:var(--accent);text-decoration:none">Contact</a>
+  </footer>
+
+  <script>
+    document.getElementById('yr').textContent = new Date().getFullYear();
+
+    const buyButtons = document.querySelectorAll('.buy[data-sku]');
+    const cart = [];
+    buyButtons.forEach(b=>{
+      b.addEventListener('click', e=>{
+        e.preventDefault(); const sku = b.dataset.sku; cart.push(sku);
+        b.textContent = 'Added'; b.style.opacity = 0.9; setTimeout(()=>{b.textContent = 'Add';b.style.opacity=1},1200);
+        console.log('Cart:',cart);
+      });
+    });
+
+    // Mood-to-Method in shop
+    const shopMood = document.getElementById('shopMood');
+    const shopAction = document.getElementById('shopAction');
+
+    const shopMap = {
+      'lift':{label:'Add Morning Bright',sku:'morning'},
+      'calm':{label:'Add Calm Night',sku:'night'},
+      'focus':{label:'Add Focus Tincture',sku:'focus'}
+    };
+
+    function updateShop(){
+      const v = shopMood.value; const data = shopMap[v];
+      shopAction.textContent = data.label;
+      shopAction.onclick = function(e){ e.preventDefault(); document.querySelector('.buy[data-sku="'+data.sku+'"]').click(); };
+    }
+    shopMood.addEventListener('change', updateShop);
+    updateShop();
+  </script>
+</body>
+</html>

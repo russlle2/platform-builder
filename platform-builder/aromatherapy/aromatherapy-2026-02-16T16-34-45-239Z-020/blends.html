@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Blends & Notes — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfbff;--card:#fff;--accent:#ff7aa2;--muted:#444}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:var(--bg);color:#111}
+    .pattern{position:fixed;inset:0;pointer-events:none;opacity:0.09}
+    header{display:flex;justify-content:space-between;padding:22px 28px;align-items:center}
+    .nav a{margin-left:14px;color:var(--muted);text-decoration:none}
+    .wrap{max-width:1100px;margin:18px auto;padding:20px}
+    .hero{background:linear-gradient(135deg,#fff,#fff6fb);padding:22px;border-radius:14px;display:flex;justify-content:space-between;align-items:center}
+    .hero h1{margin:0;font-size:26px}
+    .subtitle{color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+    .card{background:var(--card);padding:14px;border-radius:12px;border:1px solid rgba(20,20,20,0.04)}
+    .notes{font-size:13px;color:var(--muted);margin-top:8px}
+    .meta{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+    .badge{background:linear-gradient(90deg,#fff,#fff6f0);padding:6px 10px;border-radius:999px;font-weight:700}
+    .cta{display:block;text-align:center;margin-top:18px}
+    .btn-primary{background:#6c5ce7;color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+    @media (max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:600px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <!-- Unique svg motif for blends.html -->
+  <svg class="pattern" viewBox="0 0 900 500" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <defs>
+      <radialGradient id="bgA"><stop offset="0" stop-color="#f9edef"/><stop offset="1" stop-color="#fff"/></radialGradient>
+      <filter id="b"><feGaussianBlur stdDeviation="24"/></filter>
+    </defs>
+    <g filter="url(#b)">
+      <ellipse cx="120" cy="420" rx="260" ry="120" fill="#ffdcd6" opacity="0.9"/>
+      <circle cx="760" cy="80" r="120" fill="#cbeafe" opacity="0.85"/>
+    </g>
+  </svg>
+
+  <header>
+    <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+    <nav class="nav">
+      <a href="index.html">Nest</a>
+      <a href="services.html">Sessions</a>
+      <a href="shop.html">Shop</a>
+    </nav>
+  </header>
+
+  <div class="wrap">
+    <section class="hero">
+      <div>
+        <h1>Curated Blends</h1>
+        <div class="subtitle">Small-batch recipes with clear notes. Use with safe dilution and patch testing.</div>
+      </div>
+      <div>
+        <a class="btn-primary" href="services.html">Book a blend lab</a>
+      </div>
+    </section>
+
+    <section style="margin-top:16px">
+      <div class="grid">
+
+        <article class="card">
+          <strong>Sunrise Ease</strong>
+          <div class="notes">Top: Sweet Orange; Mid: Lavender; Base: Vetiver</div>
+          <div style="font-size:13px;margin-top:8px;color:var(--muted)">Aroma: bright, soft, grounding</div>
+          <div class="meta"><div class="badge">Supports gentle morning routines</div><div style="font-size:12px;color:var(--muted)">1% topical</div></div>
+        </article>
+
+        <article class="card">
+          <strong>Mellow Window</strong>
+          <div class="notes">Top: Bergamot; Mid: Geranium; Base: Cedarwood</div>
+          <div style="font-size:13px;margin-top:8px;color:var(--muted)">Aroma: citrus-floral-woody</div>
+          <div class="meta"><div class="badge">Supports calm focus (non-medical)</div><div style="font-size:12px;color:var(--muted)">Diffuser blend</div></div>
+        </article>
+
+        <article class="card">
+          <strong>Evening Velvet</strong>
+          <div class="notes">Top: Mandarin; Mid: Roman Chamomile; Base: Sandalwood</div>
+          <div style="font-size:13px;margin-top:8px;color:var(--muted)">Aroma: sweet, warm, plush</div>
+          <div class="meta"><div class="badge">Supports restful habits</div><div style="font-size:12px;color:var(--muted)">0.5–1% topical</div></div>
+        </article>
+
+        <article class="card">
+          <strong>Clear Harbor</strong>
+          <div class="notes">Top: Eucalyptus; Mid: Rosemary; Base: Pine</div>
+          <div style="font-size:13px;margin-top:8px;color:var(--muted)">Aroma: crisp, green, resinous</div>
+          <div class="meta"><div class="badge">Supports breathable spaces</div><div style="font-size:12px;color:var(--muted)">Diffuse with care around kids/pets</div></div>
+        </article>
+
+        <article class="card">
+          <strong>Cozy Nook</strong>
+          <div class="notes">Top: Cinnamon Leaf; Mid: Clove Bud; Base: Vanilla CO2</div>
+          <div style="font-size:13px;margin-top:8px;color:var(--muted)">Aroma: warm spice and sweet roundness</div>
+          <div class="meta"><div class="badge">Supports seasonal comfort</div><div style="font-size:12px;color:var(--muted)">Diffuse briefly</div></div>
+        </article>
+
+        <article class="card">
+          <strong>Lively Grove</strong>
+          <div class="notes">Top: Lemon; Mid: Grapefruit; Base: Petitgrain</div>
+          <div style="font-size:13px;margin-top:8px;color:var(--muted)">Aroma: zesty, fresh, crisp</div>
+          <div class="meta"><div class="badge">Supports energizing rituals</div><div style="font-size:12px;color:var(--muted)">0.5% topical suggested</div></div>
+        </article>
+
+        <article class="card">
+          <strong>Moonlit Drift</strong>
+          <div class="notes">Top: Lavender; Mid: Clary Sage; Base: Blue Tansy</div>
+          <div style="font-size:13px;margin-top:8px;color:var(--muted)">Aroma: herbal-sweet, dreamy</div>
+          <div class="meta"><div class="badge">Supports evening unwind</div><div style="font-size:12px;color:var(--muted)">Patch test recommended</div></div>
+        </article>
+
+        <article class="card">
+          <strong>Forest Walk</strong>
+          <div class="notes">Top: Black Spruce; Mid: Cypress; Base: Atlas Cedar</div>
+          <div style="font-size:13px;margin-top:8px;color:var(--muted)">Aroma: resinous, piney, grounding</div>
+          <div class="meta"><div class="badge">Supports centering breathwork</div><div style="font-size:12px;color:var(--muted)">Diffuser or inhaler</div></div>
+        </article>
+
+        <article class="card">
+          <strong>Petal Quiet</strong>
+          <div class="notes">Top: Neroli; Mid: Rose Otto; Base: Benzoin</div>
+          <div style="font-size:13px;margin-top:8px;color:var(--muted)">Aroma: floral, warm, balsamic</div>
+          <div class="meta"><div class="badge">Supports gentle emotional holding</div><div style="font-size:12px;color:var(--muted)">Avoid topical use if sensitivity</div></div>
+        </article>
+
+      </div>
+
+      <div style="margin-top:18px;text-align:center">
+        <div style="color:var(--muted);font-size:13px">Each blend lists top / middle / base plus an aroma profile and suggested uses. Recommendations are informational only.</div>
+        <a href="book.html" class="btn-primary" style="display:inline-block;margin-top:12px;padding:10px 14px;background:#ff7aa2;color:#fff;border-radius:10px;text-decoration:none">Create a custom blend</a>
+      </div>
+    </section>
+
+    <section style="margin-top:22px;background:#fff;padding:14px;border-radius:12px;border:1px solid rgba(0,0,0,0.04)">
+      <h3 style="margin:0">Safety Notes</h3>
+      <p style="color:var(--muted);margin-top:8px">Always check for allergies, perform a patch test, use appropriate dilutions, and avoid certain oils during pregnancy or with pets—ask before using. These blends are not medical treatments.</p>
+    </section>
+  </div>
+
+  <footer style="text-align:center;padding:20px;color:#666">Made with care by {{PRACTITIONER_NAME}} • <a href="contact.html">Contact</a></footer>
+</body>
+</html>

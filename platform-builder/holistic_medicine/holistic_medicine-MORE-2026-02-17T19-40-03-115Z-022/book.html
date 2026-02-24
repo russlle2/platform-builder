@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Plan a visit — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfdfb;--accent:#2f6d58;--muted:#56666a}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:#071216}
+    header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.2rem}
+    nav a{margin:0 .5rem;color:var(--muted);text-decoration:none}
+    main{max-width:980px;margin:1.6rem auto;padding:1rem}
+    .stage{display:grid;grid-template-columns:1fr;gap:1rem}
+    .panel{background:#fff;padding:1rem;border-radius:12px;border:1px solid rgba(7,18,22,0.04)}
+    .small{font-size:.9rem;color:var(--muted)}
+    label{display:block;margin:.4rem 0}
+    input,select,textarea{width:100%;padding:.6rem;border-radius:8px;border:1px solid rgba(7,18,22,0.06);box-sizing:border-box}
+    .row{display:flex;gap:.6rem}
+    button.primary{background:var(--accent);color:#fff;border:0;padding:.6rem .9rem;border-radius:8px}
+    .planner-output{white-space:pre-wrap;background:linear-gradient(180deg,rgba(47,109,88,0.03),transparent);padding:.8rem;border-radius:8px;margin-top:.6rem}
+    footer{padding:1.2rem;text-align:center;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="pricing.html">Investment</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="stage">
+      <div class="panel">
+        <h1>Session Planner</h1>
+        <p class="small">Compose a focused plan for your first visits. The planner creates a plain-text summary you can copy and bring to the appointment.</p>
+        <form id="plannerForm" onsubmit="event.preventDefault();buildPlan()">
+          <label>Preferred format</label>
+          <select id="format"><option value="Virtual">Virtual session (video)</option><option value="In-person">In-person</option><option value="Hybrid">Hybrid (mix)</option></select>
+
+          <label>Primary goal (one sentence)</label>
+          <input id="goal" placeholder="e.g., sleep regularity, calmer stress response, clearer energy" />
+
+          <label>Choose focus areas</label>
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:.4rem">
+            <label><input type="checkbox" name="focus" value="Sleep"> Sleep</label>
+            <label><input type="checkbox" name="focus" value="Stress"> Stress / mood</label>
+            <label><input type="checkbox" name="focus" value="Nutrition"> Nutrition</label>
+            <label><input type="checkbox" name="focus" value="Movement"> Movement</label>
+            <label><input type="checkbox" name="focus" value="Work"> Work rhythm</label>
+            <label><input type="checkbox" name="focus" value="Medical"> Medical history/meds</label>
+          </div>
+
+          <label>Session tempo</label>
+          <select id="tempo"><option>Single intake</option><option>Short track (2 months)</option><option>Ongoing collaboration</option></select>
+
+          <label>Available days / constraints (optional)</label>
+          <input id="constraints" placeholder="Mornings only, limited childcare, etc." />
+
+          <div style="display:flex;gap:.6rem;margin-top:.6rem">
+            <button class="primary" type="submit">Build plan</button>
+            <button type="button" onclick="resetPlanner()" style="background:transparent;border:1px solid rgba(7,18,22,0.06);padding:.5rem .8rem;border-radius:8px">Reset</button>
+          </div>
+        </form>
+
+        <div id="plannerResult" class="planner-output" style="display:none"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Quick intake components</h2>
+        <p class="small">What we'll bring to the first meeting: concise review of history, prioritized goal setting, and 2–4 practical steps you can try immediately. Recommendations are educational and tailored to your context.</p>
+        <h3 style="margin-top:1rem">Export & share</h3>
+        <p class="small">The planner creates plain text you can copy or email. Use it as a checklist for the session.</p>
+        <div style="display:flex;gap:.6rem;margin-top:.6rem">
+          <button onclick="copyPlanner()" class="primary">Copy plan text</button>
+          <button onclick="emailPlanner()" style="background:transparent;border:1px solid rgba(7,18,22,0.06);padding:.5rem .8rem;border-radius:8px">Email to me</button>
+        </div>
+
+      </div>
+
+      <div class="panel">
+        <h2>Whole-person inventory (repeat)</h2>
+        <p class="small">Tick the areas you'd like us to include. We'll add them to your session agenda and suggest a follow-up cadence.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem">
+          <label><input type="checkbox" name="inv2" value="Sleep"> Sleep</label>
+          <label><input type="checkbox" name="inv2" value="Mood"> Mood</label>
+          <label><input type="checkbox" name="inv2" value="Digestion"> Digestion</label>
+          <label><input type="checkbox" name="inv2" value="Movement"> Movement</label>
+          <label><input type="checkbox" name="inv2" value="Work"> Work life</label>
+          <label><input type="checkbox" name="inv2" value="Med"> Medical notes</label>
+        </div>
+        <div style="margin-top:.6rem">
+          <button onclick="applyInventory()">Add to plan</button>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <footer>
+    <small>{{BUSINESS_NAME}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • <a href="tel:{{PHONE}}">{{PHONE}}</a></small>
+  </footer>
+
+  <script>
+    function buildPlan(){
+      const format = document.getElementById('format').value;
+      const goal = document.getElementById('goal').value.trim() || 'Unspecified';
+      const tempo = document.getElementById('tempo').value;
+      const constraints = document.getElementById('constraints').value.trim()||'None noted';
+      const checks = Array.from(document.querySelectorAll('input[name="focus"]:checked')).map(n=>n.value);
+      const focus = checks.length?checks.join(', '):'General review';
+
+      // Simple translation into actions
+      const actions = [];
+      actions.push('1. Intake (30–60 min): clarify history and the one priority — "'+goal+'".');
+      actions.push('2. Focus areas: '+focus+'.');
+      actions.push('3. Initial recommendations: 2 practical practices to try for 2 weeks.');
+      if(tempo==='Single intake') actions.push('4. Follow-up: single check-in if needed.');
+      else if(tempo==='Short track (2 months)') actions.push('4. Follow-up cadence: 2–3 short check-ins across 8 weeks, with one review session.');
+      else actions.push('4. Follow-up cadence: ongoing collaboration with weekly or biweekly touchpoints as needed.');
+
+      const planText = 'Session Planner Summary\nFormat: '+format+'\nPrimary goal: '+goal+'\nFocus: '+focus+'\nConstraints: '+constraints+'\n\nPlan actions:\n'+actions.join('\n')+'\n\nPrepared for your first visit to {{BUSINESS_NAME}}.';
+
+      const out = document.getElementById('plannerResult');
+      out.style.display='block';
+      out.textContent=planText;
+      // store for copy
+      out.dataset.plain = planText;
+    }
+
+    function copyPlanner(){
+      const out = document.getElementById('plannerResult');
+      const txt = out && out.dataset && out.dataset.plain ? out.dataset.plain : '';
+      if(!txt){alert('Build a plan first.');return}
+      navigator.clipboard.writeText(txt).then(()=>alert('Plan copied to clipboard'));
+    }
+
+    function emailPlanner(){
+      const out = document.getElementById('plannerResult');
+      const txt = out && out.dataset && out.dataset.plain ? encodeURIComponent(out.dataset.plain) : '';
+      if(!txt){alert('Build a plan first.');return}
+      const subject = encodeURIComponent('{{BUSINESS_NAME}}: Session plan');
+      window.location.href = 'mailto:{{EMAIL}}?subject='+subject+'&body='+txt;
+    }
+
+    function resetPlanner(){
+      document.getElementById('plannerForm').reset();
+      const out=document.getElementById('plannerResult');out.style.display='none';out.textContent='';out.dataset.plain='';
+    }
+
+    function applyInventory(){
+      const checked = Array.from(document.querySelectorAll('input[name="inv2"]:checked')).map(n=>n.value);
+      if(checked.length===0){alert('Select at least one area.');return}
+      // simple cadence heuristic like earlier
+      let cadence='';
+      if(checked.length<=2) cadence='One follow-up in 2–3 weeks.';
+      else if(checked.length<=4) cadence='Biweekly follow-ups for first 6–8 weeks.';
+      else cadence='Weekly touchpoints for the first month, then reassess.';
+      // append to planner if exists
+      const out = document.getElementById('plannerResult');
+      const addition = '\n\nInventory items: '+checked.join(', ')+'\nSuggested cadence: '+cadence;
+      if(out && out.dataset && out.dataset.plain){
+        out.dataset.plain += addition;
+        out.textContent += addition;
+        alert('Inventory appended to current plan.');
+      } else {
+        out.style.display='block';
+        const text = 'Inventory items: '+checked.join(', ')+'\nSuggested cadence: '+cadence;
+        out.textContent = text;
+        out.dataset.plain = text;
+      }
+    }
+  </script>
+</body>
+</html>

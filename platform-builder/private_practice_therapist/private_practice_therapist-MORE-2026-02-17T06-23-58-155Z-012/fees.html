@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Investments — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#faf8f6;--card:#ffffff;--muted:#6b6b6b;--accent:#6b4cff;--accent-2:#00b59b;--glass:rgba(255,255,255,0.7);font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;}
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#f6f3f9 60%);color:#222;line-height:1.45}
+    header{position:relative;padding:28px 24px 40px;overflow:hidden}
+    .nav{display:flex;gap:18px;align-items:center;max-width:1100px;margin:0 auto}
+    .brand{font-weight:700;color:var(--accent);font-size:18px}
+    .links{margin-left:auto;display:flex;gap:12px}
+    .links a{color:#444;text-decoration:none;padding:8px 10px;border-radius:8px}
+    .links a[href$="fees.html"]{background:var(--accent);color:#fff}
+    .hero{max-width:1100px;margin:28px auto 18px;padding:28px;background:linear-gradient(180deg,rgba(107,76,255,0.06),transparent);border-radius:12px;display:flex;gap:20px;align-items:center}
+    .hero .left{flex:1}
+    .hero h1{margin:0 0 8px;font-size:24px}
+    .hero p{margin:0;color:var(--muted)}
+    .pattern{position:absolute;right:-120px;top:-40px;opacity:.15;width:420px;height:420px}
+    .grid{max-width:1100px;margin:22px auto;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(35,30,60,0.05)}
+    .price{font-weight:700;font-size:20px;color:var(--accent-2)}
+    .list{margin:10px 0 0;padding:0 0 0 16px;color:var(--muted)}
+    .muted{color:var(--muted);font-size:14px}
+    .cta{display:inline-block;margin-top:12px;padding:10px 14px;background:var(--accent);color:#fff;border-radius:10px;text-decoration:none}
+
+    /* Accordion */
+    .accordion{max-width:900px;margin:28px auto;padding:0 24px}
+    .acc-item{background:var(--card);border-radius:10px;margin-bottom:12px;overflow:hidden}
+    .acc-head{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;cursor:pointer}
+    .acc-body{padding:0 16px 16px;color:var(--muted);display:none}
+    .crisis{background:#fff3f2;border-left:4px solid #ff6b6b;padding:12px;margin-top:12px;border-radius:8px;color:#7a2a2a}
+
+    footer{max-width:1100px;margin:28px auto;padding:22px 24px;color:var(--muted)}
+    small{display:block;color:var(--muted)}
+    @media(min-width:720px){.hero h1{font-size:28px}}
+  </style>
+</head>
+<body>
+  <header>
+    <svg class="pattern" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+      <defs>
+        <linearGradient id="g1" x1="0" x2="1">
+          <stop offset="0" stop-color="#6b4cff" />
+          <stop offset="1" stop-color="#00b59b" />
+        </linearGradient>
+      </defs>
+      <rect x="0" y="0" width="200" height="200" rx="24" fill="url(#g1)" opacity="0.12"/>
+      <g fill="#fff" opacity="0.06">
+        <circle cx="40" cy="40" r="6"/>
+        <circle cx="80" cy="80" r="6"/>
+        <circle cx="140" cy="30" r="6"/>
+      </g>
+    </svg>
+    <nav class="nav">
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <div class="links">
+        <a href="index.html">Welcome</a>
+        <a href="specialties.html">What I Do</a>
+        <a href="fees.html">Investments</a>
+        <a href="book.html">Book Time</a>
+        <a href="contact.html">Connect</a>
+        <a href="about.html">About</a>
+      </div>
+    </nav>
+    <div class="hero" role="region" aria-label="Fees overview">
+      <div class="left">
+        <h1>Flexible options that meet real life — and real budgets.</h1>
+        <p class="muted">Sessions and short series designed for clarity, not complexity. Choose what fits your schedule and needs. If cost is a barrier, I’m open to discussing a sliding option.</p>
+      </div>
+      <div style="text-align:right;min-width:180px">
+        <div class="muted">Phone</div>
+        <div style="font-weight:700">{{PHONE}}</div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="grid" aria-label="service options">
+      <article class="card">
+        <h3>Single Sessions</h3>
+        <div class="price">$140–$180</div>
+        <p class="muted">One-off appointments to check in, troubleshoot, or make a plan for a specific concern.</p>
+        <ul class="list">
+          <li>50–55 minutes</li>
+          <li>Evidence-informed clinical approach</li>
+        </ul>
+        <a class="cta" href="book.html">Book a single session</a>
+      </article>
+
+      <article class="card">
+        <h3>Foundations Series</h3>
+        <div class="price">3 sessions • $400</div>
+        <p class="muted">A short, structured series to build momentum on one focused goal or transition.</p>
+        <ul class="list">
+          <li>3 x 50 minutes</li>
+          <li>Practical tools and meeting notes</li>
+        </ul>
+        <a class="cta" href="book.html">Reserve a Foundations slot</a>
+      </article>
+
+      <article class="card">
+        <h3>Bridge Package</h3>
+        <div class="price">6 sessions • $760</div>
+        <p class="muted">For when you want a steadier rhythm for navigating change. Ideal for pacing and follow-through.</p>
+        <ul class="list">
+          <li>6 x 50 minutes</li>
+          <li>Optional between-session check-ins</li>
+        </ul>
+        <a class="cta" href="book.html">Start a Bridge Package</a>
+      </article>
+
+      <article class="card">
+        <h3>Cohort Group: Seasonal Reset</h3>
+        <div class="price">Group rate • sliding scale</div>
+        <p class="muted">A small, time-limited cohort that meets weekly for six weeks — skills, reflection, and clinician-guided discussion.</p>
+        <ul class="list">
+          <li>6-week cohort</li>
+          <li>Limited seats; group participation required</li>
+        </ul>
+        <a class="cta" href="contact.html">Ask about the next cohort</a>
+      </article>
+    </section>
+
+    <section class="accordion" aria-label="Policy and confidentiality">
+      <div class="acc-item">
+        <button class="acc-head" aria-expanded="false">Session boundaries & cancellations <span aria-hidden>▾</span></button>
+        <div class="acc-body">
+          <p class="muted">Sessions are typically 50–55 minutes. I ask for 48 hours notice for cancellations; late cancellations or missed sessions may be billed at a reduced fee. If you need flexibility, let me know and we can discuss alternatives.</p>
+        </div>
+      </div>
+
+      <div class="acc-item">
+        <button class="acc-head" aria-expanded="false">Confidentiality & scope of practice <span aria-hidden>▾</span></button>
+        <div class="acc-body">
+          <p class="muted">What we discuss in session is confidential except in specific, legally required situations (e.g., concerns about imminent harm to self or others, or instances of abuse). I will always aim to speak with you transparently about limits to confidentiality before taking steps that involve others.</p>
+          <p class="muted">I provide psychotherapy and support for life transitions, emotional regulation, and relationship concerns. I do not provide forensic services, emergency response, or medical treatment. If your needs fall outside my scope, I will offer referrals.</p>
+        </div>
+      </div>
+
+      <div class="acc-item">
+        <button class="acc-head" aria-expanded="false">Data & records <span aria-hidden>▾</span></button>
+        <div class="acc-body">
+          <p class="muted">Clinical notes are kept to support continuity of care. You have the right to request access to your records; we can discuss what that looks like and any necessary steps.</p>
+        </div>
+      </div>
+
+      <div class="crisis" role="alert">
+        If you are in immediate danger or are considering harming yourself, please contact local emergency services or go to the nearest emergency room. If you are in {{STATE}} and need urgent support, call or text your local crisis line or dial 988 (U.S.); if elsewhere, contact the equivalent local emergency resource.
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <small>Email: {{EMAIL}}</small>
+    <small>Location: {{CITY}}, {{STATE}}</small>
+    <small>My work follows professional and ethical guidelines. This site does not replace an in-person evaluation. If you have questions about fit or accessibility, please reach out.</small>
+  </footer>
+
+  <script>
+    // Accordion behavior
+    document.querySelectorAll('.acc-head').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        var expanded = this.getAttribute('aria-expanded') === 'true';
+        this.setAttribute('aria-expanded', String(!expanded));
+        var body = this.nextElementSibling;
+        if(!expanded){ body.style.display = 'block'; } else { body.style.display = 'none'; }
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>FAQ — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfbfc;--ink:#0b2222;--accent:#6a7;--card:#fff}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--ink)}
+    .wrap{max-width:880px;margin:28px auto;padding:20px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:12px;color:var(--ink);text-decoration:none}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:16px;margin-top:18px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(2,10,12,0.04)}
+    h1{margin:0 0 8px 0}
+    .qa{margin-bottom:10px}
+    .q{font-weight:700}
+    .a{color:#465;line-height:1.5}
+    .wizard{display:flex;flex-direction:column;gap:8px}
+    .step{padding:8px;border-radius:8px;border:1px solid #eef}
+    .controls{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
+    button{padding:8px 10px;border-radius:8px;border:0;background:var(--accent);color:#022;font-weight:700}
+    .muted{font-size:13px;color:#556}
+    @media(max-width:820px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <header>
+      <div>
+        <strong>{{BUSINESS_NAME}}</strong>
+        <div class='muted'>A thoughtful, clinical approach</div>
+      </div>
+      <nav>
+        <a href='index.html'>Home</a>
+        <a href='about.html'>Practice</a>
+        <a href='fees.html'>Fees</a>
+        <a href='book.html'>Arrange a visit</a>
+      </nav>
+    </header>
+
+    <div class='grid'>
+      <main>
+        <section class='card'>
+          <h1>Common questions</h1>
+          <div class='qa'>
+            <div class='q'>How long are sessions?</div>
+            <div class='a'>Standard sessions are 50 minutes. For some needs we can discuss longer or shorter formats.</div>
+          </div>
+
+          <div class='qa'>
+            <div class='q'>Do you accept insurance?</div>
+            <div class='a'>I do not bill insurance directly. I can provide a receipt you may be able to submit to your carrier for out-of-network reimbursement.</div>
+          </div>
+
+          <div class='qa'>
+            <div class='q'>What is your cancellation policy?</div>
+            <div class='a'>I ask for 48 hours notice when possible so I can offer that time to someone else. Specifics will be discussed before we agree to work together.</div>
+          </div>
+
+          <div class='qa'>
+            <div class='q'>How do I know if I should start?</div>
+            <div class='a'>If you have questions about starting, a brief consult call can help clarify priorities and next steps. Below is a brief self-check you can use to prepare for that call.</div>
+          </div>
+        </section>
+
+        <section class='card' style='margin-top:14px'>
+          <h2 style='margin-top:0'>Self-screening intake wizard</h2>
+          <p class='muted'>This is not a diagnosis. It is an invitation to notice what's most important to bring to a consultation.</p>
+
+          <div id='wizard' class='wizard'>
+            <div id='stepArea' class='step'>Welcome — click Next to begin the brief reflection.</div>
+            <div class='controls'>
+              <button id='prev' style='background:#dde'>Back</button>
+              <button id='next'>Next</button>
+            </div>
+            <div id='summary' style='margin-top:8px;background:#f8faf8;padding:10px;border-radius:8px;display:none'></div>
+            <div style='display:flex;gap:8px;margin-top:8px'>
+              <button id='copySummary' style='background:#244'>Copy summary</button>
+              <a href='book.html' style='background:#fff;padding:8px;border-radius:8px;border:1px solid #efefef;text-decoration:none;color:var(--accent)'>Prepare to book</a>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <aside>
+        <div class='card'>
+          <h3 style='margin-top:0'>Quick notes</h3>
+          <p class='muted'>Bring this generated summary to your first contact. It helps focus the scheduling conversation and the initial session.</p>
+        </div>
+
+        <div class='card' style='margin-top:12px'>
+          <h4 style='margin-top:0'>Confidentiality & safety</h4>
+          <p class='muted'>Conversations are private within legal limits. If you are in immediate danger or a life-threatening crisis, please call local emergency services or a crisis hotline. I am not an emergency service.</p>
+        </div>
+      </aside>
+    </div>
+
+    <footer style='margin-top:18px' class='muted'>Scope: I provide outpatient psychotherapy and clinical consultation. If your needs require urgent medical or psychiatric care, I will help you find appropriate support.</footer>
+  </div>
+
+  <script>
+    (function(){
+      const steps = [
+        {prompt:'What brought you here in one sentence?',key:'concern'},
+        {prompt:'How long have you noticed this is a concern?',key:'duration'},
+        {prompt:'What would you like to be able to do differently?',key:'goal'},
+        {prompt:'What supports or strengths do you currently have?',key:'supports'},
+        {prompt:'Is there anything else you want your clinician to know?',key:'other'}
+      ];
+
+      let idx = -1;
+      const stepArea = document.getElementById('stepArea');
+      const prev = document.getElementById('prev');
+      const next = document.getElementById('next');
+      const summary = document.getElementById('summary');
+      const copySummary = document.getElementById('copySummary');
+      const answers = {};
+
+      function render(){
+        if(idx < 0){ stepArea.innerHTML = 'Welcome — click Next to begin the brief reflection.'; prev.disabled=true; summary.style.display='none'; return; }
+        if(idx >= steps.length){
+          // finished
+          const text = ['Self-check summary:', '', ...steps.map(s=> (s.prompt+"\n- "+(answers[s.key]||'—')))].join('\n\n');
+          summary.textContent = text; summary.style.display='block'; stepArea.innerHTML = '<strong>Complete.</strong> Use the summary to guide your call or first visit.';
+          prev.disabled=false; next.disabled=true; return;
+        }
+        // render current question with input
+        const s = steps[idx];
+        const val = answers[s.key] || '';
+        stepArea.innerHTML = "<label style='display:block;font-weight:700;margin-bottom:8px'>"+s.prompt+"</label><textarea id='q' rows='3' style='width:100%;padding:8px;border-radius:8px;border:1px solid #e8eef0'>"+escapeHtml(val)+"</textarea>";
+        prev.disabled=false; next.disabled=false;
+      }
+
+      function escapeHtml(str){return (''+str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+      prev.addEventListener('click',function(){ if(idx<=-1) return; saveCurrent(); idx--; render(); });
+      next.addEventListener('click',function(){ if(idx < steps.length) saveCurrent(); idx++; render(); });
+
+      function saveCurrent(){
+        const ta = document.getElementById('q');
+        if(ta){ answers[steps[idx].key] = ta.value.trim(); }
+      }
+
+      copySummary.addEventListener('click',function(){
+        if(summary.style.display==='none') return alert('Complete the wizard first.');
+        const txt = summary.textContent;
+        if(navigator.clipboard){ navigator.clipboard.writeText(txt).then(()=>{ copySummary.textContent='Copied'; setTimeout(()=>copySummary.textContent='Copy summary',1200); }); }
+        else { const ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); alert('Summary copied'); }
+      });
+
+      // initialize
+      render();
+    })();
+  </script>
+</body>
+</html>

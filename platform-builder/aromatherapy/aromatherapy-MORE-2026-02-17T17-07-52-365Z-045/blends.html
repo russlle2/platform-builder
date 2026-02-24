@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Blends — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#071018;--card:#07151a;--muted:#96a6a4;--accent:#b88f5d}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#eaf4ee;background:var(--bg);background-image:url('/assets/img/pattern.svg');background-size:500px}
+    .wrap{max-width:980px;margin:28px auto;padding:24px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{color:var(--muted);margin-left:12px;text-decoration:none}
+    .hero{margin-top:18px;padding:22px;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent)}
+    .hero h1{margin:0 0 6px 0}
+    .grid{display:grid;grid-template-columns:1fr 300px;gap:14px;margin-top:16px}
+    .list{display:grid;gap:10px}
+    .blend{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
+    .blend h4{margin:0;color:var(--accent)}
+    .notes{color:var(--muted);font-size:13px}
+    .reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+    .reveal.visible{opacity:1;transform:none}
+    .cart{background:rgba(0,0,0,0.2);padding:12px;border-radius:10px}
+    .cart h3{margin:0 0 8px 0}
+    .cart .items{font-size:14px;color:var(--muted)}
+    .btn{background:var(--accent);color:#071018;padding:8px 10px;border-radius:8px;border:none;font-weight:700}
+    .planner{margin-top:16px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.02)}
+    footer{margin-top:18px;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <strong style="font-size:18px">{{BUSINESS_NAME}}</strong>
+        <div style="color:var(--muted);font-size:12px">Custom blends & scent guidance</div>
+      </div>
+      <nav>
+        <a href="/index.html">Home</a>
+        <a href="/services.html">Offerings</a>
+        <a href="/blends.html">Blends</a>
+        <a href="/shop.html">Boutique</a>
+        <a href="/pricing.html">Pricing</a>
+        <a href="/contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <section class="hero reveal" id="hero">
+      <h1>Curated Aromas for Everyday Use</h1>
+      <p style="color:var(--muted)">Single-note profiles and small bespoke blends. Each recipe comes with dilution guidance and a brief patch-test protocol.</p>
+    </section>
+
+    <div class="grid">
+      <div class="list">
+        <section class="reveal" id="blend-list">
+          <div class="blend">
+            <h4>Bright Focus — inhaler blend</h4>
+            <p class="notes">Lemon peel, rosemary top, and a subtle herbal heart. Designed for short inhalation during focused tasks. May support alertness.</p>
+            <div style="margin-top:8px"><button class="btn add" data-name="Bright Focus">Add to cart</button></div>
+          </div>
+          <div class="blend">
+            <h4>Quiet Harbor — restful roll-on</h4>
+            <p class="notes">A gentle mix of lavender, mandarin, and a soft base. For calming bedside rituals. Patch test recommended. May support relaxation.</p>
+            <div style="margin-top:8px"><button class="btn add" data-name="Quiet Harbor">Add to cart</button></div>
+          </div>
+          <div class="blend">
+            <h4>Forest Anchor — grounding room mist</h4>
+            <p class="notes">Cedarwood, petitgrain, and sweet orange. For creating a steady atmosphere in practice spaces. Avoid undiluted topical use.</p>
+            <div style="margin-top:8px"><button class="btn add" data-name="Forest Anchor">Add to cart</button></div>
+          </div>
+        </section>
+
+        <section class="reveal" id="myth">
+          <h3 style="margin-top:12px">Myth vs Reality</h3>
+          <p style="color:var(--muted)">Myth: Essential oils are a cure-all. Reality: They are tools that may support mood and presence; they are not medical therapies. Safe use matters.</p>
+        </section>
+
+        <section class="reveal" id="planner">
+          <div class="planner">
+            <h4 style="margin:0">Mini Planner</h4>
+            <p style="color:var(--muted);margin:6px 0 8px 0">Choose ambience and get a suggested small-use format.</p>
+            <label style="color:var(--muted);font-size:13px">Ambience</label>
+            <select id="ambience2">
+              <option value="clarity">Clarity</option>
+              <option value="rest">Rest</option>
+              <option value="ground">Grounding</option>
+            </select>
+            <label style="color:var(--muted);font-size:13px">Pets at home?</label>
+            <input type="checkbox" id="pets2"> Yes
+            <div style="margin-top:8px"><button id="make" class="btn">Suggest use</button></div>
+            <div id="mini" style="margin-top:8px;color:var(--muted)"></div>
+          </div>
+        </section>
+      </div>
+
+      <aside class="reveal cart" id="cart">
+        <h3>Cart</h3>
+        <div class="items" id="items">No items yet</div>
+        <div style="margin-top:10px"><button id="checkout" class="btn">Proceed</button></div>
+      </aside>
+    </div>
+
+    <footer>
+      <p style="color:var(--muted)">Safety note: Always perform a patch test. If pregnant, breastfeeding, or living with pets, consult the FAQ or contact us for tailored guidance. Email: {{EMAIL}}</p>
+    </footer>
+  </div>
+
+  <script>
+    // Scroll reveal
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const els = document.querySelectorAll('.reveal');
+      if(prefersReduced){ els.forEach(e=>e.classList.add('visible')); return; }
+      const obs = new IntersectionObserver((entries,o)=>{ entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('visible'); o.unobserve(en.target);} }); },{threshold:0.15});
+      els.forEach(e=>obs.observe(e));
+    })();
+
+    // Simple cart
+    (function(){
+      const itemsEl = document.getElementById('items');
+      const addBtns = document.querySelectorAll('.add');
+      const checkout = document.getElementById('checkout');
+      let cart = [];
+      function render(){ itemsEl.textContent = cart.length ? cart.map(c=>`• ${c}`).join('\n') : 'No items yet'; }
+      addBtns.forEach(b=>b.addEventListener('click',()=>{ cart.push(b.dataset.name); render(); }));
+      checkout.addEventListener('click',()=>{
+        if(cart.length===0) return alert('Your cart is empty.');
+        const summary = 'Order summary:\n' + cart.map((c,i)=>`${i+1}. ${c}`).join('\n') + '\n\nPlease email ' + '{{EMAIL}}' + ' to complete purchase or arrange pickup.';
+        alert(summary);
+      });
+    })();
+
+    // Mini planner
+    (function(){
+      const make = document.getElementById('make');
+      const mini = document.getElementById('mini');
+      make.addEventListener('click',()=>{
+        const amb = document.getElementById('ambience2').value;
+        const pets = document.getElementById('pets2').checked;
+        let rec = '';
+        if(amb==='clarity') rec = 'Suggest: inhaler (2-3 drops of Bright Focus). Short bursts while working.';
+        if(amb==='rest') rec = 'Suggest: roll-on (Quiet Harbor) applied to wrists and chest at bedside.';
+        if(amb==='ground') rec = 'Suggest: mist in the room (Forest Anchor), 4-6 sprays onto fabric far from pets.';
+        if(pets) rec += ' Use pet-safe mode: avoid diffusing in shared spaces for long periods.';
+        mini.textContent = rec;
+      });
+    })();
+  </script>
+</body>
+</html>

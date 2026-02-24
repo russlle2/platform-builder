@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <meta name='description' content='Reach out to schedule an in-depth integrative consultation, ask a question, or try a short guided practice now.'>
+  <style>
+    :root{
+      --bg:#f4efe6; --accent:#7a5036; --muted:#6b6b6b; --card:#fff7f0; --glass:rgba(255,255,255,0.6);
+      --radius:14px; font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    html,body{height:100%;}
+    body{margin:0;background:linear-gradient(180deg,var(--bg) 0%,#efe9e0 100%);color:#2b2b2b;}
+    header{display:flex;align-items:center;justify-content:space-between;padding:28px 36px;background:transparent}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#b58978,#7a5036);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;box-shadow:0 6px 18px rgba(122,80,54,0.14)}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none;font-weight:600}
+    .hero{max-width:980px;margin:18px auto;padding:36px;border-radius:16px;background:linear-gradient(180deg,var(--card),#fff);box-shadow:0 10px 30px rgba(46,42,42,0.05);display:grid;grid-template-columns:1fr 360px;gap:28px}
+    .hero h1{margin:0;color:var(--accent);font-size:28px}
+    .hero p{color:var(--muted);line-height:1.5}
+    .actions{display:flex;gap:12px;margin-top:18px}
+    .btn{padding:12px 16px;border-radius:12px;border:0;cursor:pointer;font-weight:700}
+    .btn--primary{background:var(--accent);color:white}
+    .btn--ghost{background:transparent;border:1px solid rgba(122,80,54,0.12);color:var(--accent)}
+
+    /* card list */
+    .panel{background:var(--glass);padding:18px;border-radius:12px}
+    .inventory{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+    .area{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:rgba(255,255,255,0.6)}
+    .area input{width:18px;height:18px}
+
+    .agenda{margin-top:18px;padding:14px;border-radius:10px;background:#fffefb;border:1px solid rgba(122,80,54,0.04)}
+    .agenda h3{margin:0 0 8px 0;color:#5b3d2d}
+
+    .cta-row{display:flex;gap:14px;align-items:center}
+    form.contact-form{display:grid;gap:8px}
+    input,textarea,select{padding:12px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);font-size:15px}
+    textarea{min-height:120px}
+    footer{max-width:980px;margin:30px auto;padding:18px;color:var(--muted);font-size:13px}
+
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(19,12,8,0.48);display:none;align-items:center;justify-content:center;padding:24px}
+    .modal{background:linear-gradient(180deg,#fffaf6,#fff);padding:20px;border-radius:14px;max-width:680px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.18)}
+    .modal header{display:flex;justify-content:space-between;align-items:center}
+    .step{display:none}
+    .step.active{display:block}
+    .timer{font-weight:800;font-size:20px;color:var(--accent)}
+
+    /* responsive */
+    @media (max-width:900px){.hero{grid-template-columns:1fr;}
+      nav{display:none}
+      .logo{width:48px;height:48px}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class='brand'>
+      <div class='logo'>HM</div>
+      <div>
+        <div style='font-weight:800;color:var(--accent)'>{{BUSINESS_NAME}}</div>
+        <div style='font-size:12px;color:var(--muted)'>Integrative consultations and focused intensives</div>
+      </div>
+    </div>
+    <nav>
+      <a href='index.html'>Home</a>
+      <a href='approach.html'>Our Way</a>
+      <a href='services.html'>Offerings</a>
+      <a href='about.html'>Team</a>
+      <a href='book.html'>Schedule</a>
+      <a href='contact.html' style='color:var(--accent)'>Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class='hero' aria-labelledby='hero-heading'>
+      <div>
+        <h1 id='hero-heading'>Start the conversation about the life you want to feel in.</h1>
+        <p>Not quick fixes — thoughtful sessions that gather signals across body, mind, rhythm and relationships. Begin with a short inventory below to shape a first consultation plan.</p>
+        <div class='panel'>
+          <div style='font-weight:700;margin-bottom:8px'>Quick contact</div>
+          <form class='contact-form' id='quick-contact' onsubmit='return false'>
+            <input name='name' placeholder='Your name' required>
+            <input name='email' type='email' placeholder='Email (so we can reply)' required>
+            <input name='phone' placeholder='Phone (optional)'>
+            <select name='interest' aria-label='Reason for contacting'>
+              <option value=''>I'm getting started</option>
+              <option value='intensive'>Short intensive</option>
+              <option value='program'>Multi-month support</option>
+              <option value='question'>General question</option>
+            </select>
+            <div class='cta-row'>
+              <button class='btn btn--primary' id='submit-contact' type='submit'>{{PRIMARY_CTA_LABEL}}</button>
+              <button class='btn btn--ghost' id='try-now'>Try a short practice</button>
+            </div>
+            <div id='contact-note' style='font-size:13px;color:var(--muted);margin-top:8px'>We respond in 2–4 business days. Or call us at <a href='tel:{{PHONE}}'>{{PHONE}}</a>.</div>
+          </form>
+        </div>
+
+        <div style='margin-top:18px' class='panel'>
+          <div style='font-weight:700;margin-bottom:10px'>Whole-person inventory</div>
+          <div style='font-size:13px;color:var(--muted);margin-bottom:10px'>Tick the areas you want us to prioritize. We will craft a focused consultation agenda and a follow-up cadence based on what you check.</div>
+          <div class='inventory' id='inventory'>
+            <label class='area'><input type='checkbox' value='Sleep'> Sleep & rhythm</label>
+            <label class='area'><input type='checkbox' value='Nutrition'> Nutrition & digestion</label>
+            <label class='area'><input type='checkbox' value='Stress'> Stress & resilience</label>
+            <label class='area'><input type='checkbox' value='Movement'> Movement & mobility</label>
+            <label class='area'><input type='checkbox' value='Energy'> Energy & fatigue</label>
+            <label class='area'><input type='checkbox' value='Mood'> Mood & emotional tone</label>
+            <label class='area'><input type='checkbox' value='Relationships'> Relationships & social support</label>
+            <label class='area'><input type='checkbox' value='Meaning'> Purpose, values & meaning</label>
+            <label class='area'><input type='checkbox' value='Hormones'> Hormonal balance</label>
+            <label class='area'><input type='checkbox' value='Immune'> Immune & recovery</label>
+          </div>
+
+          <div style='display:flex;gap:10px;margin-top:12px'>
+            <button class='btn btn--primary' id='generate'>Generate agenda</button>
+            <button class='btn btn--ghost' id='clear'>Clear</button>
+          </div>
+
+          <div class='agenda' id='agenda' aria-live='polite' style='display:none'></div>
+        </div>
+      </div>
+
+      <aside>
+        <div class='panel'>
+          <div style='font-weight:800;color:var(--accent);font-size:16px'>Contact</div>
+          <div style='margin-top:10px;color:var(--muted)'>Phone: <a href='tel:{{PHONE}}'>{{PHONE}}</a></div>
+          <div style='color:var(--muted)'>Email: <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a></div>
+
+          <hr style='border:none;border-top:1px dashed rgba(0,0,0,0.05);margin:12px 0'>
+          <div style='font-weight:700'>Session types</div>
+          <ul style='color:var(--muted);padding-left:18px;margin:8px 0'>
+            <li>Focused Intake — 60 min</li>
+            <li>Deep Intensive — 120 min</li>
+            <li>Follow-up visits — 30–45 min</li>
+          </ul>
+
+          <div style='margin-top:12px'>
+            <a href='book.html' class='btn btn--primary' style='display:inline-block;text-decoration:none'>Book a first visit</a>
+          </div>
+        </div>
+
+        <div class='panel' style='margin-top:14px'>
+          <div style='font-weight:700'>Location</div>
+          <div style='color:var(--muted);margin-top:6px'>{{CITY}}, {{STATE}}</div>
+          <div style='font-size:13px;color:var(--muted);margin-top:12px'>We offer remote consultations and limited in-person visits. Ask us when you contact.</div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- small FAQ / reassurance -->
+    <section style='max-width:980px;margin:18px auto;padding:18px'>
+      <div style='display:grid;grid-template-columns:1fr 1fr;gap:16px'>
+        <div class='panel'>
+          <strong>Privacy & safety</strong>
+          <p style='color:var(--muted)'>Notes are confidential. We share educational information and do not promise cures. If you have urgent medical concerns, please contact emergency services.</p>
+        </div>
+        <div class='panel'>
+          <strong>How quick is the reply?</strong>
+          <p style='color:var(--muted)'>We typically respond within 2–4 business days with next available intake appointments and a brief orientation message.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div style='max-width:980px;margin:0 auto;display:flex;justify-content:space-between;align-items:center'>
+      <div style='color:var(--muted)'>© <span id='year'></span> {{BUSINESS_NAME}} — thoughtful integrative support.</div>
+      <div style='color:var(--muted)'>Call <a href='tel:{{PHONE}}'>{{PHONE}}</a> • <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a></div>
+    </div>
+  </footer>
+
+  <!-- Modal for guided exercise -->
+  <div class='modal-backdrop' id='modal'>
+    <div class='modal' role='dialog' aria-modal='true' aria-labelledby='modal-title'>
+      <header>
+        <h2 id='modal-title' style='margin:0;color:var(--accent)'>A brief guided practice</h2>
+        <button id='close-modal' class='btn btn--ghost' aria-label='Close'>Close</button>
+      </header>
+      <main style='margin-top:10px'>
+        <div id='steps'>
+          <section class='step active' data-step='1'>
+            <h3 style='margin-top:0'>Breath: 4-count balance</h3>
+            <p style='color:var(--muted)'>Follow the count. Inhale, hold, exhale, hold — each for the same count. Adjust for comfort.</p>
+            <div style='display:flex;gap:12px;align-items:center'>
+              <div class='timer' id='breath-timer'>Ready</div>
+              <button class='btn btn--primary' id='start-breath'>Start 2-minute practice</button>
+            </div>
+          </section>
+
+          <section class='step' data-step='2'>
+            <h3>Reflective journaling</h3>
+            <p style='color:var(--muted)'>Spend a few minutes with a single prompt. No editing — let the first thoughts flow.</p>
+            <div style='font-size:13px;color:var(--muted);margin-bottom:8px'>Prompt: "What feels most important to tend to in the next two weeks?"</div>
+            <textarea id='journal' placeholder='Write freely here...'></textarea>
+            <div style='display:flex;justify-content:space-between;align-items:center;margin-top:8px'>
+              <div style='color:var(--muted);font-size:13px'>You can skip or type a line.</div>
+              <div>
+                <button class='btn btn--ghost' id='skip-journal'>Skip</button>
+                <button class='btn btn--primary' id='save-journal'>Save note</button>
+              </div>
+            </div>
+          </section>
+
+          <section class='step' data-step='3'>
+            <h3>Set one intention</h3>
+            <p style='color:var(--muted)'>Pick a small, concrete action you can try tomorrow.</p>
+            <div style='display:flex;gap:10px;flex-wrap:wrap'>
+              <button class='btn btn--ghost intention'>10-minute walk</button>
+              <button class='btn btn--ghost intention'>Earlier bedtime</button>
+              <button class='btn btn--ghost intention'>One nourishing meal</button>
+              <button class='btn btn--ghost intention'>5-min breathing</button>
+            </div>
+            <div style='display:flex;justify-content:flex-end;margin-top:12px'>
+              <button class='btn btn--primary' id='finish-practice'>Finish</button>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // small helpers
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Inventory -> Agenda logic
+    const inventory = document.getElementById('inventory');
+    const generate = document.getElementById('generate');
+    const clear = document.getElementById('clear');
+    const agendaEl = document.getElementById('agenda');
+
+    function buildAgenda(checked){
+      if(!checked.length) return '<div style="color:var(--muted)">No areas selected. Choose items above to create a session outline.</div>';
+      const parts = [];
+      const timePer = {small:20,medium:30,deep:45};
+      // map suggestions
+      const map = {
+        'Sleep':'Assess rhythm; light sleep hygiene adjustments; plan 2-week bedtime experiment.',
+        'Nutrition':'Review patterns; targeted digestive supports; 1-week food log and easing plan.',
+        'Stress':'Identify triggers; introduce micro-resilience practices; 3-session cadence for tooling.',
+        'Movement':'Mobility screen; short daily routines; progressive plan for 4 weeks.',
+        'Energy':'Baseline labs review option; pacing and micro-tasks; personalized energy map.',
+        'Mood':'Brief mood inventory; behavioral activation steps; 6-week check-in schedule.',
+        'Relationships':'Communication priorities; support mapping; suggested family or dyadic focus.',
+        'Meaning':'Values clarification; small experiments to test shifts; intention-review cadence.',
+        'Hormones':'Symptom review and targeted labs if appropriate; collaborative management planning.',
+        'Immune':'Recovery patterns; sleep/nutrition supports; return-to-activity plan.
+'
+      };
+
+      // build agenda lines
+      checked.forEach((area,i)=>{
+        const desc = map[area] || 'Exploration and practical next steps.';
+        const estimate = (i<2) ? timePer.deep : (i<5 ? timePer.medium : timePer.small);
+        parts.push({area,desc,estimate});
+      });
+
+      // cadence logic
+      let cadence = '';
+      if(checked.length <=2) cadence = 'One focused intake (60–75 min) + a 30-min check at 2 weeks.';
+      else if(checked.length <=5) cadence = 'Deeper intake (90–120 min) then 3 follow-ups across 8 weeks.';
+      else cadence = 'Two-part intake (split sessions) then regular touchpoints over 12 weeks.';
+
+      // assemble HTML
+      let html = '<h3>Proposed consultation agenda</h3>';
+      html += '<ol style="margin:8px 0 0 18px;padding:0;color:var(--muted)">';
+      parts.forEach((p)=>{
+        html += `<li style=\'margin-bottom:8px\'><strong>${p.area} — ~${p.estimate} min</strong><div style=\'margin-top:6px;color:#5b473b\'>${p.desc}</div></li>`;
+      });
+      html += '</ol>';
+      html += `<div style=\'margin-top:12px;padding-top:12px;border-top:1px dashed rgba(0,0,0,0.04);color:var(--muted)\'><strong>Suggested follow-up cadence</strong><div style=\'margin-top:6px\'>${cadence}</div></div>`;
+      html += `<div style=\'margin-top:12px;display:flex;gap:10px\'><a href=\'${{PRIMARY_CTA_URL}}\' class=\'btn btn--primary\' style=\'text-decoration:none;\'>Request this plan</a><button class=\'btn btn--ghost\' id=\'export-agenda\'>Copy agenda</button></div>`;
+      return html;
+    }
+
+    generate.addEventListener('click',()=>{
+      const checked = Array.from(inventory.querySelectorAll('input:checked')).map(i=>i.value);
+      agendaEl.innerHTML = buildAgenda(checked);
+      agendaEl.style.display = 'block';
+      // copy handler
+      const copyBtn = document.getElementById('export-agenda');
+      if(copyBtn){
+        copyBtn.addEventListener('click',()=>{
+          const text = checked.length ? checked.map(a=>`- ${a}`).join('\n') : 'No areas selected';
+          navigator.clipboard && navigator.clipboard.writeText(text).then(()=>alert('Agenda copied.'));
+        });
+      }
+    });
+
+    clear.addEventListener('click',()=>{
+      inventory.querySelectorAll('input').forEach(i=>i.checked=false);
+      agendaEl.style.display = 'none';
+      agendaEl.innerHTML = '';
+    });
+
+    // Quick contact submit (fake)
+    document.getElementById('quick-contact').addEventListener('submit',(e)=>{
+      e.preventDefault();
+      document.getElementById('submit-contact').textContent = 'Sending...';
+      setTimeout(()=>{
+        alert('Thanks — we received your note. We will reach out to schedule next steps.');
+        document.getElementById('submit-contact').textContent = '{{PRIMARY_CTA_LABEL}}';
+        document.getElementById('quick-contact').reset();
+      },900);
+    });
+
+    // Guided practice modal
+    const modal = document.getElementById('modal');
+    const tryNow = document.getElementById('try-now');
+    const closeModal = document.getElementById('close-modal');
+    const steps = Array.from(document.querySelectorAll('.step'));
+    let current = 0;
+
+    function showModal(){ modal.style.display = 'flex'; current = 0; showStep(current); }
+    function hideModal(){ modal.style.display = 'none'; }
+    function showStep(n){ steps.forEach((s,i)=>s.classList.toggle('active', i===n)); }
+
+    tryNow.addEventListener('click',showModal);
+    closeModal.addEventListener('click',hideModal);
+    modal.addEventListener('click',(e)=>{ if(e.target===modal) hideModal(); });
+
+    // Breath practice logic
+    const startBreath = document.getElementById('start-breath');
+    const breathTimer = document.getElementById('breath-timer');
+    let breathInterval;
+    startBreath.addEventListener('click',()=>{
+      clearInterval(breathInterval);
+      let cycles = 6; // ~2 minutes at 4s per phase
+      let phase = 0; // 0 inhale,1 hold,2 exhale,3 hold
+      breathTimer.textContent = 'Begin: inhale';
+      breathInterval = setInterval(()=>{
+        phase = (phase+1)%4;
+        const label = ['Inhale','Hold','Exhale','Hold'][phase];
+        breathTimer.textContent = label + ' — 4s';
+        if(--cycles<=0 && phase===3){
+          clearInterval(breathInterval);
+          breathTimer.textContent = 'Completed';
+          // move to next step
+          nextStep();
+        }
+      },4000);
+    });
+
+    // Step navigation helpers
+    function nextStep(){
+      if(current < steps.length-1) current += 1;
+      showStep(current);
+    }
+
+    document.getElementById('skip-journal').addEventListener('click',()=>{ nextStep(); });
+    document.getElementById('save-journal').addEventListener('click',()=>{
+      const text = document.getElementById('journal').value.trim();
+      if(text) {
+        // store in session (temporary)
+        sessionStorage.setItem('guided-journal',text);
+      }
+      nextStep();
+    });
+
+    // intention selection
+    Array.from(document.querySelectorAll('.intention')).forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        document.querySelectorAll('.intention').forEach(b=>b.style.border='1px solid rgba(0,0,0,0.06)');
+        btn.style.border='2px solid var(--accent)';
+      });
+    });
+
+    document.getElementById('finish-practice').addEventListener('click',()=>{
+      // save intention if any
+      const chosen = Array.from(document.querySelectorAll('.intention')).find(b=>b.style.border.includes('var(--accent)'));
+      if(chosen) sessionStorage.setItem('guided-intention',chosen.textContent.trim());
+      hideModal();
+      alert('Practice complete. You can reference your note in the contact form when booking.');
+    });
+
+    // accessibility: keyboard
+    document.addEventListener('keydown',(e)=>{
+      if(e.key==='Escape') hideModal();
+    });
+
+  </script>
+</body>
+</html>

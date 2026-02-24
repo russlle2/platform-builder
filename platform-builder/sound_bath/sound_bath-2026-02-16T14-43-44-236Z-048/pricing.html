@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pricing & Membership — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--dark:#071027;--card:#0b1220;--accent:#8b5cf6;--soft:#60a5fa;--muted:#bcd4ff}
+    body{margin:0;background:linear-gradient(180deg,#041022 0%,#071027 100%);font-family:Inter,system-ui,Segoe UI,Roboto;color:var(--muted)}
+    .container{max-width:1100px;margin:2.4rem auto;padding:1rem}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{color:#9fb7e9;margin-left:1rem;text-decoration:none}
+    .hero{padding:1.6rem;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);margin-top:1rem}
+    .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1rem}
+    .plan{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:1.1rem;border-radius:12px}
+    .muted{color:#a5b4fc}
+    .cta{background:linear-gradient(90deg,var(--accent),var(--soft));padding:.6rem 1rem;border-radius:10px;color:#021024;text-decoration:none;font-weight:700}
+    .benefits{display:flex;gap:1rem;margin-top:1rem}
+    .benefits .item{flex:1;background:rgba(255,255,255,0.02);padding:1rem;border-radius:10px}
+    .faq{margin-top:1rem}
+    footer{margin-top:2rem;color:#8da6df;font-size:13px}
+    @media(max-width:900px){.plans{grid-template-columns:1fr}.benefits{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <div style="font-weight:800;color:#fff">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:#9fb7ea">Simple pricing for restorative ritual and membership</div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="events.html">Events</a>
+        <a href="private-sessions.html">Sessions</a>
+        <a href="pricing.html" style="font-weight:700;color:#fff">Pricing</a>
+        <a href="book.html">Book</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" id="hero">
+        <h1 style="margin:0;color:#fff">Transparent, membership-forward pricing</h1>
+        <p class="muted">Memberships unlock priority booking, session credits, and discounts on private work. Pay-per-event options are also available.</p>
+      </section>
+
+      <section class="plans" id="plans">
+        <div class="plan">
+          <strong style="color:#fff;font-size:18px">Drop-in • Event</strong>
+          <div class="muted">One-time entry to a public sound bath</div>
+          <div style="font-size:22px;color:#fff;margin-top:.6rem">$35</div>
+          <p class="muted" style="margin-top:.6rem">Includes tea & short integration talk. Suitable for first-timers.</p>
+          <a class="cta" href="book.html">Reserve a spot</a>
+        </div>
+
+        <div class="plan">
+          <strong style="color:#fff;font-size:18px">Private 1:1</strong>
+          <div class="muted">Deep session tailored to your needs</div>
+          <div style="font-size:22px;color:#fff;margin-top:.6rem">$120 — 60 min</div>
+          <p class="muted" style="margin-top:.6rem">Includes intake and follow-up suggestions.</p>
+          <a class="cta" href="private-sessions.html">Book private</a>
+        </div>
+
+        <div class="plan">
+          <strong style="color:#fff;font-size:18px">Membership • Monthly</strong>
+          <div class="muted">Priority access + credits</div>
+          <div style="font-size:22px;color:#fff;margin-top:.6rem">$55 / month</div>
+          <ul style="color:#bcd4ff;margin-top:.6rem">
+            <li>One event credit / month</li>
+            <li>10% off private sessions</li>
+            <li>Exclusive audio library access</li>
+          </ul>
+          <a class="cta" href="contact.html">Become a member</a>
+        </div>
+      </section>
+
+      <section class="benefits" id="benefits">
+        <div class="item">
+          <strong style="color:#fff">Value for regular practice</strong>
+          <p class="muted">Membership incentivizes ritual — regular sessions compound benefits more than occasional drop-ins.</p>
+        </div>
+        <div class="item">
+          <strong style="color:#fff">Credits & transfers</strong>
+          <p class="muted">Unused credits roll over within a limited period. Membership holders can share a limited number of guest passes per year.</p>
+        </div>
+        <div class="item">
+          <strong style="color:#fff">Cancellation & safety</strong>
+          <p class="muted">48-hour cancellation for events; 72 for private sessions. We prioritize safety — please review contraindications on session pages.</p>
+        </div>
+      </section>
+
+      <section class="faq" id="faq">
+        <h3 style="color:#fff">FAQ</h3>
+        <div style="margin-top:.6rem">
+          <strong>Do members get priority for private sessions?</strong>
+          <p class="muted">Yes — members receive a booking window and a small discount on private work.</p>
+        </div>
+        <div style="margin-top:.6rem">
+          <strong>Can I gift a membership?</strong>
+          <p class="muted">Yes — email {{EMAIL}} to arrange a gift membership or voucher.</p>
+        </div>
+      </section>
+
+      <section style="margin-top:1rem" id="lead-magnet">
+        <div style="background:linear-gradient(90deg,rgba(139,92,246,0.08),rgba(96,165,250,0.06));padding:1rem;border-radius:12px;display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <strong style="color:#fff">Free guided primer</strong>
+            <p class="muted">Subscribe for an introductory listening exercise to prepare you for your first session.</p>
+          </div>
+          <form onsubmit="alert('Subscribed (placeholder)');return false;" style="display:flex;gap:.6rem;align-items:center">
+            <input required type="email" placeholder="you@domain.com" style="padding:.6rem;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#fff" />
+            <button class="cta">Get it</button>
+          </form>
+        </div>
+      </section>
+
+      <section style="margin-top:1rem" id="cta">
+        <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.02);padding:1rem;border-radius:12px">
+          <div>
+            <strong style="color:#fff">Questions about pricing or membership?</strong>
+            <div class="muted">Call {{PHONE}} or email {{EMAIL}} — we welcome a short consult.</div>
+          </div>
+          <a class="cta" href="contact.html">Contact us</a>
+        </div>
+      </section>
+
+    </main>
+
+    <footer>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>© {{BUSINESS_NAME}}</div>
+        <div class="muted">{{VENUE_NAME}} • {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}" style="color:#9fb7e9">{{EMAIL}}</a></div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contact • {{PRACTITIONER_NAME}} {{CREDENTIALS}}</title>
+  <meta name="description" content="Reach {{BUSINESS_NAME}} — integrative, whole-person care. Inquiry form, hours, and a free guide to getting started.">
+  <style>
+    :root{
+      --bg1: #f6fbf9; /* soft mint */
+      --bg2: #fffefc; /* warm cream */
+      --accent: #2f7c6b; /* deep sea green */
+      --accent-2: #7bd389; /* lighter green */
+      --muted: #6d6d6d;
+      --glass: rgba(255,255,255,0.6);
+      --card: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(250,255,250,0.85));
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg1),var(--bg2));color:#0f1720}
+    .page{min-height:100vh;display:flex;flex-direction:column}
+
+    /* header */
+    header{position:relative;z-index:10}
+    nav{display:flex;gap:14px;align-items:center;justify-content:space-between;padding:20px 28px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:46px;height:46px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:white;font-weight:700}
+    .nav-links{display:flex;gap:14px;align-items:center}
+    .nav-links a{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:8px;font-weight:600}
+    .nav-links a.cta{background:var(--accent);color:white}
+
+    /* hero */
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:center;padding:34px 28px 18px}
+    .hero-card{padding:28px;border-radius:18px;background:var(--card);box-shadow:0 10px 30px rgba(33,50,43,0.06);backdrop-filter:blur(6px)}
+    h1{margin:0 0 10px;font-size:28px;color:#04332a}
+    p.lead{margin:0;color:var(--muted);font-size:15px}
+
+    /* svg pattern backdrop */
+    .hero-visual{position:relative;height:320px;border-radius:18px;overflow:hidden}
+    .pattern-bg{position:absolute;inset:0}
+    .contact-box{position:relative;padding:22px;z-index:2}
+    form{display:flex;flex-direction:column;gap:10px}
+    input[type=text],input[type=email],textarea,select{padding:12px;border-radius:10px;border:1px solid rgba(12,20,17,0.06);font-size:14px}
+    textarea{min-height:110px;resize:vertical}
+    .row{display:flex;gap:10px}
+    .row .col{flex:1}
+    .small{font-size:13px;color:var(--muted)}
+    .btn{display:inline-block;padding:12px 16px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#2f9a78);color:white;border:none;font-weight:700;cursor:pointer}
+
+    /* sections */
+    main{padding:18px 28px 60px;display:grid;gap:18px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .card{padding:18px;background:white;border-radius:12px;box-shadow:0 6px 20px rgba(14,25,20,0.04)}
+    .muted{color:var(--muted)}
+
+    /* testimonials */
+    .testimonials{display:flex;gap:12px;overflow:auto;padding-bottom:8px}
+    .testimonial{min-width:220px;padding:12px;border-radius:12px;background:linear-gradient(180deg,#ffffff,#f8fffb)}
+
+    /* faq */
+    details{background:transparent;padding:12px;border-radius:10px}
+    summary{font-weight:700;cursor:pointer}
+
+    /* lead magnet */
+    .lead-magnet{display:flex;gap:12px;align-items:center;padding:18px;border-radius:12px;border:1px dashed rgba(47,124,107,0.12);background:linear-gradient(90deg,rgba(127,215,179,0.06),transparent)}
+
+    /* footer */
+    footer{padding:24px 28px;color:var(--muted);font-size:13px;border-top:1px solid rgba(10,10,10,0.04)}
+
+    /* responsive */
+    @media (max-width:900px){
+      .hero{grid-template-columns:1fr;}
+      .grid-3{grid-template-columns:1fr}
+      .testimonials{flex-wrap:nowrap}
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <nav>
+        <div class="brand">
+          <div class="logo">HM</div>
+          <div>
+            <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px">{{TAGLINE}}</div>
+          </div>
+        </div>
+        <div class="nav-links">
+          <a href="index.html">Welcome</a>
+          <a href="services.html">Offerings</a>
+          <a href="conditions.html">Concerns</a>
+          <a href="approach.html">Philosophy</a>
+          <a href="pricing.html">Investment</a>
+          <a href="about.html">Meet</a>
+          <a href="book.html">Schedule</a>
+          <a href="contact.html" class="cta">Reach Us</a>
+        </div>
+      </nav>
+      <div class="hero">
+        <div class="hero-card">
+          <h1>Let's talk about your whole health — the gentle way.</h1>
+          <p class="lead">A welcoming intake, time to listen, and a personalized plan that blends evidence-informed medicine with lifestyle, nutrition, and mind–body support. No promises of cures — just careful, collaborative care.</p>
+          <div style="display:flex;gap:12px;margin-top:16px">
+            <a href="book.html" class="btn">{{PRIMARY_CTA_LABEL}}</a>
+            <a href="#lead-magnet" style="padding:12px 16px;border-radius:10px;background:transparent;border:1px solid rgba(47,124,107,0.12);text-decoration:none;color:var(--accent);font-weight:700">Free Starter Guide</a>
+          </div>
+
+          <div style="margin-top:18px;display:flex;gap:12px;align-items:center">
+            <div style="background:rgba(47,124,107,0.08);padding:10px;border-radius:10px">
+              <div style="font-weight:800">{{PHONE}}</div>
+              <div class="small muted">Call or text</div>
+            </div>
+            <div style="background:rgba(47,124,107,0.04);padding:10px;border-radius:10px">
+              <div style="font-weight:800">{{EMAIL}}</div>
+              <div class="small muted">Email us</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <!-- Inline SVG pattern for unique visual texture (no external assets) -->
+          <svg class="pattern-bg" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="g1" x1="0" x2="1">
+                <stop offset="0" stop-color="#e6fff4"/>
+                <stop offset="1" stop-color="#f1fffb"/>
+              </linearGradient>
+              <pattern id="p" width="64" height="64" patternUnits="userSpaceOnUse">
+                <rect width="64" height="64" fill="url(#g1)"/>
+                <path d="M0 48 L16 32 L32 48 L48 32 L64 48" fill="none" stroke="#e0f6ee" stroke-width="2"/>
+                <circle cx="8" cy="8" r="2" fill="#c7f0df" />
+                <circle cx="56" cy="56" r="3" fill="#baf3d6" />
+              </pattern>
+              <filter id="soft">
+                <feGaussianBlur stdDeviation="18" result="blur" />
+                <feBlend in="SourceGraphic" in2="blur" mode="normal"/>
+              </filter>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#p)" />
+            <g filter="url(#soft)">
+              <ellipse cx="120" cy="80" rx="160" ry="70" fill="#cfeee2" opacity="0.9" />
+              <ellipse cx="420" cy="260" rx="220" ry="100" fill="#e6fff4" opacity="0.8" />
+            </g>
+
+            <!-- decorative shapes -->
+            <g fill-opacity="0.7">
+              <path d="M540 20 C470 60 380 40 340 90 C300 140 240 70 180 100 C120 130 80 60 20 80 L20 400 L600 400 L600 20 Z" fill="#f6fff8"/>
+            </g>
+          </svg>
+
+          <div class="contact-box" style="position:absolute;right:18px;top:28px;width:360px">
+            <div style="font-weight:800;margin-bottom:8px">Send a note</div>
+            <form id="contactForm" action="{{PRIMARY_CTA_URL}}" method="post">
+              <input type="text" name="name" placeholder="Your name" required>
+              <input type="email" name="email" placeholder="Your email" required>
+              <div class="row">
+                <div class="col"><input type="text" name="phone" placeholder="Phone (optional)"></div>
+                <div class="col"><select name="best_time"><option value="any">Best time to reach</option><option>Morning</option><option>Afternoon</option><option>Evening</option></select></div>
+              </div>
+              <textarea name="message" placeholder="Briefly share what brings you here..." required></textarea>
+              <label style="display:flex;gap:8px;align-items:center;font-size:13px"><input type="checkbox" name="consent" required> I understand this is an inquiry and not a medical visit.</label>
+              <div style="display:flex;gap:10px;align-items:center;margin-top:6px">
+                <button class="btn" type="submit">Send message</button>
+                <button type="button" onclick="window.location='book.html'" style="padding:10px;border-radius:10px;background:transparent;border:1px solid rgba(47,124,107,0.12)">Book a visit</button>
+              </div>
+            </form>
+            <div id="thanks" style="display:none;margin-top:12px;padding:10px;border-radius:8px;background:#f1fff6">Thanks — we'll reply within 2 business days.</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- social proof -->
+      <section>
+        <h2 style="margin-bottom:6px">A few notes from people who've tried this path</h2>
+        <div class="testimonials" aria-label="testimonials">
+          <div class="testimonial card">
+            <div style="font-weight:700">Gently thorough</div>
+            <div class="muted" style="margin-top:6px">"The intake looked at my sleep, stress, and digestion together — not in isolation. I finally have clear next steps." — a client</div>
+          </div>
+          <div class="testimonial card">
+            <div style="font-weight:700">Time and care</div>
+            <div class="muted" style="margin-top:6px">"We built a plan that feels sustainable. No buzzwords — just practical changes." — a client</div>
+          </div>
+          <div class="testimonial card">
+            <div style="font-weight:700">Evidence-forward</div>
+            <div class="muted" style="margin-top:6px">"Labs were explained clearly; options were discussed. I felt informed and involved." — a client</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- benefits -->
+      <section>
+        <h3>What this approach helps with</h3>
+        <div class="grid-3" style="margin-top:10px">
+          <div class="card">
+            <strong>Stress & resilience</strong>
+            <div class="muted small" style="margin-top:8px">Tools for nervous system support, sleep hygiene, and lifestyle shifts to improve daily resilience.</div>
+          </div>
+          <div class="card">
+            <strong>Energy & vitality</strong>
+            <div class="muted small" style="margin-top:8px">Personalized nutrition, movement, and rest strategies that address root contributors to low energy.</div>
+          </div>
+          <div class="card">
+            <strong>Digestion & comfort</strong>
+            <div class="muted small" style="margin-top:8px">Educational guidance about gut health, sensible testing when indicated, and integrative interventions.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- process -->
+      <section>
+        <h3>Our process — what to expect</h3>
+        <div style="display:flex;gap:12px;margin-top:10px;flex-wrap:wrap">
+          <div class="card" style="flex:1;min-width:220px">
+            <strong>1. Intake & story</strong>
+            <div class="muted small" style="margin-top:6px">A thorough conversation about your history, current symptoms, and goals — we listen first.</div>
+          </div>
+          <div class="card" style="flex:1;min-width:220px">
+            <strong>2. Shared plan</strong>
+            <div class="muted small" style="margin-top:6px">Collaborative recommendations that integrate lifestyle, botanicals or supplements as appropriate, and conventional care when needed.</div>
+          </div>
+          <div class="card" style="flex:1;min-width:220px">
+            <strong>3. Follow-up & learning</strong>
+            <div class="muted small" style="margin-top:6px">Regular check-ins to adjust the plan, track progress, and help you learn what works for your life.</div>
+          </div>
+          <div class="card" style="flex:1;min-width:220px">
+            <strong>4. Optional tests</strong>
+            <div class="muted small" style="margin-top:6px">When useful, we discuss labs (bloodwork, functional testing) strictly as educational tools to guide decisions.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- faq -->
+      <section>
+        <h3>Questions people often have</h3>
+        <div style="display:grid;gap:8px;margin-top:10px">
+          <details>
+            <summary>How long is an initial visit?</summary>
+            <div class="muted small" style="margin-top:6px">Initial visits typically range from 60–90 minutes. This lets us explore your story without rushing.</div>
+          </details>
+          <details>
+            <summary>Do you accept insurance?</summary>
+            <div class="muted small" style="margin-top:6px">We provide superbills for many plans; insurance coverage varies. Book or contact us to discuss your situation.</div>
+          </details>
+          <details>
+            <summary>Is telehealth available?</summary>
+            <div class="muted small" style="margin-top:6px">Yes. Many follow-ups and intakes can be done via secure telehealth. Local in-person visits available in {{CITY}}, {{STATE}} as appropriate.</div>
+          </details>
+          <details>
+            <summary>What about privacy and records?</summary>
+            <div class="muted small" style="margin-top:6px">We follow standard privacy practices. Any optional testing and records are discussed with informed consent.</div>
+          </details>
+        </div>
+      </section>
+
+      <!-- lead magnet -->
+      <section id="lead-magnet">
+        <div class="lead-magnet">
+          <div style="flex:1">
+            <div style="font-weight:800">Free Guide: "What to Bring to an Integrative Intake"</div>
+            <div class="muted small" style="margin-top:6px">A concise checklist to prepare for your visit — what to track, which meds to list, and questions to consider.</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input id="lmEmail" type="email" placeholder="Your email" style="padding:10px;border-radius:10px;border:1px solid rgba(12,20,17,0.06)">
+            <button class="btn" onclick="downloadGuide()">Get the guide</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- cta -->
+      <section>
+        <div style="display:flex;gap:12px;align-items:center;justify-content:space-between;padding:18px;border-radius:12px;background:linear-gradient(90deg,rgba(47,124,107,0.06),transparent);box-shadow:0 10px 30px rgba(12,20,17,0.03)">
+          <div>
+            <div style="font-weight:800">Ready for focused, compassionate care?</div>
+            <div class="muted small" style="margin-top:6px">Start with a thoughtful intake that centers your story.</div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <a href="book.html" class="btn">{{PRIMARY_CTA_LABEL}}</a>
+            <a href="mailto:{{EMAIL}}" style="padding:12px;border-radius:10px;border:1px solid rgba(47,124,107,0.12);text-decoration:none;color:var(--accent);font-weight:700">Email us</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+        <div>
+          <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+          <div class="muted small">{{PRACTITIONER_NAME}} {{CREDENTIALS}} • {{CITY}}, {{STATE}}</div>
+        </div>
+        <div class="muted small">Phone: <strong style="color:var(--accent)">{{PHONE}}</strong> • Email: <a href="mailto:{{EMAIL}}" style="color:inherit;text-decoration:none">{{EMAIL}}</a></div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Basic form handling — progressive enhancement: attempts to POST, falls back to showing a confirmation.
+    document.getElementById('contactForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      var form = e.target;
+      var data = new FormData(form);
+      var url = form.action || window.location.href;
+      fetch(url, {method:'POST', body: data}).then(function(res){
+        // even if server not configured, show friendly reply
+        form.style.display = 'none';
+        document.getElementById('thanks').style.display = 'block';
+      }).catch(function(){
+        form.style.display = 'none';
+        document.getElementById('thanks').style.display = 'block';
+      });
+    });
+
+    function downloadGuide(){
+      var email = document.getElementById('lmEmail').value || '';
+      // For demo: create a small downloadable text. In production replace with real asset delivery.
+      var content = 'Guide: What to bring to an integrative intake\n\n1) A concise medication/supplement list\n2) Recent labs if available\n3) Sleep and diet notes\n4) Your goals and priorities\n\nThank you — this guide is educational and not a substitute for a visit.';
+      var blob = new Blob([content],{type:'text/plain'});
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'Getting-Started-Guide.txt';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      if(email) alert('Thanks — the guide is downloaded. We may email tips to ' + email + ' if you opt-in.');
+    }
+  </script>
+</body>
+</html>

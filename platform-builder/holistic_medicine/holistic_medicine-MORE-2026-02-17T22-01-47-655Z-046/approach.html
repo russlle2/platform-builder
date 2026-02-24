@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Method — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--accent:#365b45;--muted:#5e6b66;--card:#ffffff}
+    html,body{margin:0;padding:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:#07221f;background:#f7fcfb}
+    .wrap{max-width:980px;margin:28px auto;padding:20px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    .brand{font-weight:800;color:var(--accent)}
+    nav a{margin-left:12px;color:var(--accent);text-decoration:none}
+
+    .intro{display:flex;gap:20px;align-items:flex-start;margin-top:18px}
+    .how{flex:1;background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 20px rgba(10,20,18,0.04)}
+    .side{width:260px}
+
+    .steps{display:grid;gap:12px;margin-top:12px}
+    .step{background:#fff;padding:12px;border-radius:10px;border:1px solid rgba(0,0,0,0.03)}
+    .step h4{margin:0 0 6px 0}
+    .step p{margin:0;color:var(--muted)}
+
+    .micro{margin-top:16px;background:#fff;padding:12px;border-radius:10px}
+
+    .testimonial-compact{margin-top:12px;background:linear-gradient(180deg,#fff,#f6fffb);padding:10px;border-radius:8px}
+
+    footer{margin-top:20px;color:var(--muted);font-size:14px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html">Start</a>
+        <a href="services.html">Offerings</a>
+        <a href="conditions.html">Conditions</a>
+        <a href="approach.html">Method</a>
+        <a href="about.html">Team</a>
+        <a href="book.html">Schedule</a>
+      </nav>
+    </header>
+
+    <section class="intro">
+      <div class="how">
+        <h2>How we design a manageable way forward</h2>
+        <p style="color:var(--muted)">We use a layered approach: clear small steps, short trials, and scalable supports so you can test what helps without overhauling your life. The focus is on actionable changes and feedback loops you can track.</p>
+
+        <div class="steps" aria-label="Approach steps">
+          <div class="step">
+            <h4>Map first</h4>
+            <p>Identify moments that matter — the routines, triggers, and small wins that shape your day.</p>
+          </div>
+          <div class="step">
+            <h4>Try a focused experiment</h4>
+            <p>Design a short, measurable practice to see if it nudges the pattern in the desired direction.</p>
+          </div>
+          <div class="step">
+            <h4>Adjust with data</h4>
+            <p>We review progress, pare back what doesn’t work, and build supports around what does.</p>
+          </div>
+        </div>
+
+        <div class="micro">
+          <strong>Pricing snapshot</strong>
+          <p style="margin:8px 0;color:var(--muted)">A preview to help you choose the right pathway.</p>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button id="mBtn" class="activeSmall" style="padding:6px 10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:#e9fff6;cursor:pointer">Monthly</button>
+            <button id="pBtn" style="padding:6px 10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:#fff;cursor:pointer">Series</button>
+          </div>
+
+          <div style="display:flex;gap:12px;margin-top:10px">
+            <div style="flex:1;background:#fff;padding:10px;border-radius:8px;text-align:center">
+              <div style="font-size:12px;color:var(--muted)">Trial Session</div>
+              <div class="value" data-month="80" data-package="60">$80</div>
+              <div style="font-size:12px;color:var(--muted)">per session</div>
+            </div>
+            <div style="flex:1;background:#fff;padding:10px;border-radius:8px;text-align:center">
+              <div style="font-size:12px;color:var(--muted)">Small Series</div>
+              <div class="value" data-month="220" data-package="180">$220</div>
+              <div style="font-size:12px;color:var(--muted)">package</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <aside class="side">
+        <div style="background:#fff;padding:12px;border-radius:10px;margin-bottom:12px;box-shadow:0 6px 14px rgba(10,20,18,0.03)">
+          <strong>When this helps</strong>
+          <p style="color:var(--muted);margin:8px 0 0 0">People who need clear, short experiments and coaching to fit busy lives — not long protocols or rigid schedules.</p>
+        </div>
+
+        <div class="testimonial-compact" id="miniProof">
+          <div style="font-size:14px;color:#08302f;font-weight:600">Patient insight</div>
+          <div style="color:var(--muted);margin-top:8px">"Breaking things into two-week trials changed how I feel about trying new habits." — R.T.</div>
+        </div>
+      </aside>
+    </section>
+
+    <footer>
+      <p style="color:var(--muted)">Questions about fit? Reach out: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a>. We can discuss whether a short series, single consult, or workshop best matches your needs.</p>
+    </footer>
+  </div>
+
+  <script>
+    // Micro pricing toggle with animation for approach page
+    (function(){
+      const mBtn = document.getElementById('mBtn');
+      const pBtn = document.getElementById('pBtn');
+      const values = Array.from(document.querySelectorAll('.value'));
+
+      function animate(el, from, to){
+        const start = performance.now();
+        function tick(now){
+          const t = Math.min(1,(now-start)/450);
+          const v = Math.round(from + (to-from)*(t));
+          el.textContent = '$' + v;
+          if(t<1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      }
+
+      function set(mode){
+        values.forEach(v=>{
+          const target = Number(v.dataset[mode]);
+          const current = Number(v.textContent.replace(/[^0-9]/g,'')) || 0;
+          animate(v,current,target);
+        });
+      }
+
+      mBtn.addEventListener('click',()=>{ mBtn.style.background = '#e9fff6'; pBtn.style.background = '#fff'; set('month'); });
+      pBtn.addEventListener('click',()=>{ pBtn.style.background = '#e9fff6'; mBtn.style.background = '#fff'; set('package'); });
+
+      // init
+      values.forEach(v=>v.textContent = '$' + v.dataset.month);
+    })();
+  </script>
+</body>
+</html>

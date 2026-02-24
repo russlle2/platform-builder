@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Praise — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--accent:#6a8a6a;--muted:#6b6b6b}
+    body{font-family:Inter,system-ui,Helvetica,Arial;color:#162;line-height:1.5;margin:0;background:linear-gradient(180deg,#fbfbfb,#fff)}
+    header{padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
+    .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#7fb79f);display:flex;align-items:center;justify-content:center;color:white;font-weight:800}
+    nav a{margin:0 12px;text-decoration:none;color:#2a4;font-weight:700}
+    .container{max-width:1000px;margin:20px auto;padding:0 20px}
+    .cards{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .card{background:#fff;border-radius:12px;padding:16px;border:1px solid rgba(0,0,0,0.04)}
+    blockquote{margin:0;padding:0 0 8px;border-left:4px solid rgba(106,138,106,0.12);padding-left:12px}
+    .meta{font-size:13px;color:var(--muted);margin-top:8px}
+    .cta{margin-top:14px}
+    .btn{background:var(--accent);color:white;padding:10px 12px;border-radius:10px;text-decoration:none;font-weight:700}
+    .builder{margin-top:16px;padding:14px;background:linear-gradient(180deg,#fff,#f7f7f5);border-radius:10px;border:1px solid #eee}
+    label{display:block;margin:8px 0 6px;font-weight:600}
+    input[type="text"],select{width:100%;padding:8px;border-radius:8px;border:1px solid #e6e6e6}
+    ol.checklist li{background:#fff;padding:8px;border-radius:8px;margin-bottom:6px;list-style:none}
+    footer{margin-top:32px;padding:24px 20px;background:#fff}
+    @media(max-width:800px){.cards{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo">WC</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Studio</a>
+      <a href="about.html">Meet</a>
+      <a href="services.html">Offerings</a>
+      <a href="programs.html">Programs</a>
+      <a href="pricing.html">Rates</a>
+      <a href="testimonials.html">Praise</a>
+      <a href="book.html">Reserve</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h1 style="margin:8px 0 4px">Praise from recent cohorts</h1>
+    <p style="margin:0 0 18px;color:var(--muted)">Snapshot notes from people who built small, steady practices with cohort support.</p>
+
+    <section class="cards">
+      <article class="card">
+        <blockquote>"I finally have a weekly shape that fits: short, doable activities that stack into reliable mornings. The group nudges kept me honest in the best way."</blockquote>
+        <div class="meta">— S., product designer</div>
+      </article>
+
+      <article class="card">
+        <blockquote>"Three months later, I can see what I tweak weekly to feel less scattered. The prompts and templates were surprisingly human — not overwhelming."</blockquote>
+        <div class="meta">— A., teacher</div>
+      </article>
+
+      <article class="card">
+        <blockquote>"I brought one tiny habit into the course and it kept multiplying. I appreciate the clarity and the check-ins — gentle, structured, kind."</blockquote>
+        <div class="meta">— R., engineer</div>
+      </article>
+
+      <article class="card">
+        <blockquote>"Regular, small goals made my week feel deliberate. I now use the simple templates the coach shared whenever I need to reset."</blockquote>
+        <div class="meta">— M., entrepreneur</div>
+      </article>
+    </section>
+
+    <section style="margin-top:20px">
+      <div class="card">
+        <h3 style="margin-top:0">Try a 7-day taster — make a checklist</h3>
+        <p class="small">Build a tiny challenge to test a new routine for a week. Print and tape it somewhere visible.</p>
+
+        <div class="builder">
+          <label for="tName">Challenge title</label>
+          <input id="tName" type="text" placeholder="e.g., Evening unwind" />
+          <label for="tAction">What you'll do</label>
+          <input id="tAction" type="text" placeholder="e.g., 10 minute calm practice: stretch + breath" />
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button id="tBuild" class="btn">Create checklist</button>
+            <button id="tPrint" style="padding:10px;border-radius:8px;border:1px solid #e6e6e6;background:#fff">Print</button>
+          </div>
+          <ol id="tChecklist" class="checklist"></ol>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:18px">
+      <div class="card">
+        <h3 style="margin:0 0 8px">Share a quick note</h3>
+        <p class="small">If a cohort or session helped, it means a lot. Share short feedback or an experience for others to see.</p>
+        <div style="margin-top:12px">
+          <a class="btn" href="mailto:{{EMAIL}}?subject=Feedback">Send a note</a>
+          <a style="margin-left:10px" class="btn" href="book.html">Book a 1:1 follow-up</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="max-width:1000px;margin:18px auto;padding:0 20px;color:var(--muted)">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
+        <div>{{BUSINESS_NAME}} — serving {{CITY}}, {{STATE}}</div>
+        <div><a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Small habit builder used on this page too
+    (function(){
+      const buildBtn = document.getElementById('tBuild');
+      const printBtn = document.getElementById('tPrint');
+      const nameIn = document.getElementById('tName');
+      const actionIn = document.getElementById('tAction');
+      const list = document.getElementById('tChecklist');
+
+      buildBtn.addEventListener('click', function(){
+        list.innerHTML = '';
+        const name = nameIn.value || '7-day challenge';
+        const action = actionIn.value || 'Do the practice';
+        for(let d=1; d<=7; d++){
+          const li = document.createElement('li');
+          li.textContent = 'Day ' + d + ': ' + action;
+          list.appendChild(li);
+        }
+      });
+
+      printBtn.addEventListener('click', function(){
+        const name = nameIn.value || '7-day challenge';
+        const action = actionIn.value || 'Do the practice';
+        let w = window.open('','_blank');
+        w.document.write('<html><head><title>' + name + '</title></head><body>');
+        w.document.write('<h2>' + name + '</h2>');
+        w.document.write('<ol>');
+        for(let i=1;i<=7;i++) w.document.write('<li>Day ' + i + ': ' + action + '</li>');
+        w.document.write('</ol>');
+        w.document.write('<script>setTimeout(function(){window.print();},200);</script>');
+        w.document.write('</body></html>');
+        w.document.close();
+      });
+    })();
+  </script>
+</body>
+</html>

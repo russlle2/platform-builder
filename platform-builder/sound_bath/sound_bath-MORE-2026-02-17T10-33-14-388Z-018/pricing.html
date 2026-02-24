@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Investment — Pricing — {{BUSINESS_NAME}}</title>
+<style>
+:root{--bg:#071016;--card:#08121a;--accent:#ffd6a5;--muted:#9fb3b9}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#eef8f6;background:linear-gradient(180deg,#021214 0%,#06131a 60%), url('assets/img/pattern.svg');background-size:360px}
+.header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px}
+.brand{font-weight:700;color:var(--accent)}
+.nav a{color:var(--muted);text-decoration:none;margin-left:14px}
+.container{padding:28px}
+.toggle{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.02);padding:10px;border-radius:999px;width:max-content}
+.switch{width:44px;height:24px;border-radius:999px;background:#0b2a2c;position:relative;cursor:pointer}
+.knob{width:20px;height:20px;border-radius:50%;background:var(--accent);position:absolute;top:2px;left:2px;transition:left .28s cubic-bezier(.2,.9,.2,1)}
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:18px}
+.plan{background:rgba(255,255,255,0.02);padding:16px;border-radius:12px}
+.price{font-size:28px;font-weight:800;color:var(--accent)}
+.small{color:var(--muted)}
+.footnote{font-size:13px;color:var(--muted);margin-top:12px}
+.cta{display:inline-block;padding:9px 12px;background:var(--accent);color:#041818;border-radius:8px;text-decoration:none;font-weight:700;margin-top:10px}
+.disclaimer{font-size:13px;color:#dceeea;margin-top:12px}
+@media(max-width:800px){.header{padding:14px}}
+</style>
+</head>
+<body>
+<header class="header">
+<div class="brand">{{BUSINESS_NAME}}</div>
+<nav class="nav">
+<a href="pricing.html">Value</a>
+<a href="events.html">Gatherings</a>
+<a href="private-sessions.html">Sessions</a>
+<a href="faq.html">FAQs</a>
+<a href="book.html">{{PRIMARY_CTA_LABEL}}</a>
+</nav>
+</header>
+
+<main class="container">
+<h1 style="margin:0 0 8px 0">Investment options</h1>
+<p class="small">Transparent options that frame sound work as either a recurring practice or a block purchase. Toggle to compare.</p>
+
+<div style="margin-top:18px" aria-label="Pricing comparator">
+<div class="toggle" id="pricingToggle" role="switch" aria-checked="false" tabindex="0">
+<div style="font-size:13px;color:var(--muted)">Monthly</div>
+<div class="switch" id="switch">
+<div class="knob" id="knob"></div>
+</div>
+<div style="font-size:13px;color:var(--muted)">Package</div>
+</div>
+</div>
+
+<div class="pricing-grid" id="plans">
+<div class="plan" data-month="35" data-package="180">
+<h3 style="margin-top:0">Entry Flow</h3>
+<div class="price" data-target>—</div>
+<div class="small">Ideal for those starting a brief weekly practice. Includes recordings.</div>
+<a class="cta" href="book.html?plan=entry" id="cta-entry">Choose</a>
+</div>
+
+<div class="plan" data-month="65" data-package="340">
+<h3 style="margin-top:0">Core Sequence</h3>
+<div class="price" data-target>—</div>
+<div class="small">Our most popular rhythm: consistent work over a month for steady results.</div>
+<a class="cta" href="book.html?plan=core" id="cta-core">Choose</a>
+</div>
+
+<div class="plan" data-month="120" data-package="640">
+<h3 style="margin-top:0">Bespoke Block</h3>
+<div class="price" data-target>—</div>
+<div class="small">A package of prioritized sessions, custom scheduling and a prep call.</div>
+<a class="cta" href="book.html?plan=bespoke" id="cta-bespoke">Choose</a>
+</div>
+</div>
+
+<div class="footnote">Package prices reflect pre-paid bundles; monthly reflects typical per-session cost when billed across a cycle.</div>
+
+<div class="disclaimer">
+<h4 style="margin:6px 0">Health & safety</h4>
+<p class="small">If you have a pacemaker, inner ear implants, are pregnant without medical clearance, or have a recent concussion, please consult your provider before attending. Reach out to <a href="mailto:{{EMAIL}}" style="color:var(--accent)">{{EMAIL}}</a> with concerns.</p>
+</div>
+
+</main>
+
+<script>
+(function(){
+const toggle = document.getElementById('pricingToggle');
+const switchEl = document.getElementById('switch');
+const knob = document.getElementById('knob');
+let packageMode = false;
+function animateNumber(el,from,to,duration=700){
+let start = null;
+const diff = to - from;
+function step(ts){
+if(!start) start = ts;
+const p = Math.min((ts-start)/duration,1);
+const val = Math.round(from + diff * (1 - Math.pow(1-p,3)));
+el.textContent = '$' + val;
+if(p<1) requestAnimationFrame(step);
+}
+requestAnimationFrame(step);
+}
+function refreshPrices(){
+document.querySelectorAll('.plan').forEach(plan=>{
+const month = parseInt(plan.dataset.month,10);
+const pack = parseInt(plan.dataset.package,10);
+const target = plan.querySelector('[data-target]');
+const from = parseInt(target.textContent.replace(/[^0-9]/g,''))||0;
+const to = packageMode ? pack : month;
+animateNumber(target,from,to);
+});
+}
+toggle.addEventListener('click',function(){
+packageMode = !packageMode;
+knob.style.left = packageMode ? '22px' : '2px';
+toggle.setAttribute('aria-checked', packageMode);
+refreshPrices();
+});
+// keyboard support
+toggle.addEventListener('keydown',function(e){ if(e.key==='Enter' || e.key===' ') { e.preventDefault(); toggle.click(); }});
+
+// initial render
+document.querySelectorAll('.plan').forEach((p,i)=>{
+const el = p.querySelector('[data-target]');
+el.textContent = '$' + p.dataset.month;
+});
+setTimeout(refreshPrices,300);
+
+// CTA text morph: change phrasing depending on mode
+function updateCTAs(){
+document.querySelectorAll('.plan').forEach(p=>{
+const id = p.querySelector('.cta').id;
+const base = p.querySelector('h3').textContent;
+const a = p.querySelector('.cta');
+if(packageMode){
+a.textContent = 'Buy package';
+a.href = 'book.html?package='+encodeURIComponent(base.toLowerCase());
+} else {
+a.textContent = 'Subscribe';
+a.href = 'book.html?monthly='+encodeURIComponent(base.toLowerCase());
+}
+});
+}
+toggle.addEventListener('click',updateCTAs);
+updateCTAs();
+
+})();
+</script>
+
+</body>
+</html>

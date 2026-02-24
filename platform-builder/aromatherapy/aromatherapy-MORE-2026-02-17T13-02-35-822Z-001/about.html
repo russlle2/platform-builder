@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — Aromatherapy Practice</title>
+  <style>
+    :root{--bg:#fbf7f2;--accent:#6b422a;--muted:#856451;--card:#fff7f2;--glass:rgba(255,255,255,0.7);--radius:12px}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--accent);background:var(--bg)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 26px;background:linear-gradient(90deg,rgba(107,66,42,0.04),transparent)}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(180deg,#f7decf,#e9b892);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none}
+    main{max-width:1000px;margin:26px auto;padding:18px}
+    .intro{padding:18px;border-radius:var(--radius);background:linear-gradient(180deg,var(--card),#fff);box-shadow:0 10px 24px rgba(107,66,42,0.04)}
+    h1{margin:6px 0;color:var(--accent)}
+    p{color:var(--muted);line-height:1.5}
+    .two{display:grid;grid-template-columns:1fr 340px;gap:18px;margin-top:18px}
+    .bio{padding:16px;background:#fff;border-radius:12px}
+    aside{padding:14px;border-radius:12px;background:linear-gradient(180deg,rgba(234,216,200,0.5),transparent)}
+    .builder{margin-top:10px;padding:12px;background:#fff;border-radius:10px}
+    label{display:block;font-size:13px;margin-top:8px;color:var(--muted)}
+    select,input[type=text]{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(133,100,81,0.12);margin-top:6px}
+    button{margin-top:10px;padding:10px 12px;border-radius:10px;border:0;background:var(--accent);color:#fff}
+    .card{margin-top:12px;padding:12px;border-radius:8px;background:#fff;border:1px solid rgba(107,66,42,0.06)}
+    .legal{font-size:13px;color:var(--muted);margin-top:12px}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo">A</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Shop</a>
+      <a href="pricing.html">Investment</a>
+      <a href="about.html" style="font-weight:700;color:var(--accent)">About</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="intro">
+      <h1>A quiet approach to scent and routine</h1>
+      <p>We sit with evidence-informed safety, careful dilution, and simple rituals you can return to. Aromatics may support moments of calm, clearer windows of attention, and improved at-home ritual consistency. Our focus is practical: usable blends, clear patch test instructions, and guidance that fits daily life.</p>
+    </section>
+
+    <div class="two">
+      <div class="bio">
+        <h2 style="margin-top:0">Practice note</h2>
+        <p style="color:var(--muted)">Sessions blend sensory education with practical templates — how to diffuse thoughtfully, how to dilute for topical use, and how to build a short ritual that fits morning or evening. We emphasize the least-invasive option first and include notes for pregnancy, children, and pets.</p>
+
+        <div class="card">
+          <strong>What to expect in a consult</strong>
+          <ul style="color:var(--muted);margin:8px 0 0 18px">
+            <li>30–60 minute intake focused on preferences and safety</li>
+            <li>Clear dilution and patch-test instructions</li>
+            <li>Personalized blend card and simple ritual</li>
+          </ul>
+        </div>
+
+        <div class="legal">All guidance is educational. Essential oils are concentrated substances. Always patch test and consult a healthcare provider for specific medical questions. See FAQ for dilution, pregnancy, and pet notes.</div>
+      </div>
+
+      <aside>
+        <h3 style="margin:0">Blend Builder</h3>
+        <div style="color:var(--muted);margin-top:8px">Choose a vibe below and get a non-medical blend card plus a safe dilution guide you can use at home.</div>
+
+        <div class="builder" id="blendBuilder">
+          <label for="vibe">Desired vibe</label>
+          <select id="vibe">
+            <option value="calm">Calm / Grounded</option>
+            <option value="focus">Focus / Clarity</option>
+            <option value="sleep">Sleep / Wind-down</option>
+            <option value="bright">Uplift / Cheer</option>
+          </select>
+
+          <label for="volume">Target bottle size</label>
+          <select id="volume">
+            <option value="10">10 mL (roller or small bottle)</option>
+            <option value="30">30 mL (spray / bottle)</option>
+          </select>
+
+          <label for="carrier">Carrier oil</label>
+          <select id="carrier">
+            <option>Fractionated coconut oil</option>
+            <option>Sweet almond oil</option>
+            <option>Apricot kernel oil</option>
+            <option>Jojoba</option>
+          </select>
+
+          <button id="buildBtn">Create blend card</button>
+
+          <div id="blendResult" class="card" aria-live="polite" style="display:none"></div>
+        </div>
+
+        <div class="legal">Notes: This builder gives non-medical suggestions and conservative dilutions. If pregnant, nursing, on medication, or caring for animals, follow the FAQ and consult a clinician before topical use.</div>
+      </aside>
+    </div>
+
+    <section style="margin-top:18px;padding:14px;border-radius:12px;background:#fff;border:1px solid rgba(107,66,42,0.04)">
+      <h3 style="margin-top:0">Questions commonly answered</h3>
+      <details style="margin-top:8px"><summary style="cursor:pointer;color:var(--accent)">How strong should topical blends be?</summary>
+        <div style="color:var(--muted);margin-top:8px">Typical starting dilutions: 0.5–1% for facial areas, 1–2% for general adult topical use, and 0.25–0.5% for older adults or sensitive skin. This tool gives drop-per-bottle guidance; always patch test before widespread use.</div>
+      </details>
+
+      <details style="margin-top:8px"><summary style="cursor:pointer;color:var(--accent)">What about pets?</summary>
+        <div style="color:var(--muted);margin-top:8px">Many essential oils affect animals differently. Keep blends out of reach, avoid concentrated topical use on pets, and avoid diffusing strong oils in small enclosed spaces with pets present. Consult a vet for specific guidance.</div>
+      </details>
+
+      <details style="margin-top:8px"><summary style="cursor:pointer;color:var(--accent)">Pregnancy and nursing</summary>
+        <div style="color:var(--muted);margin-top:8px">Some oils are contraindicated in pregnancy. If you are pregnant or nursing, discuss blends with a qualified clinician before use. We will always recommend extremely conservative dilutions and prioritise diffusion over topical use when appropriate.</div>
+      </details>
+    </section>
+
+    <section style="margin-top:18px;display:flex;justify-content:space-between;align-items:center">
+      <div style="color:var(--muted)">Ready to build a blend and receive a printable card? Book a consult or create a starter blend now.</div>
+      <div>
+        <a href="book.html" style="padding:10px 14px;background:var(--accent);color:#fff;border-radius:10px;text-decoration:none">Book a consult</a>
+      </div>
+    </section>
+
+    <footer style="margin-top:26px;padding:18px;text-align:center;color:var(--muted)">Contact: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • {{PHONE}} • Serving {{CITY}}, {{STATE}}</footer>
+  </main>
+
+  <script>
+    (function(){
+      const vibes = {
+        calm: {name:'Calm / Grounded',notes:['Lavender','Frankincense','Cedarwood'],profile:'earthy, floral'},
+        focus:{name:'Focus / Clarity',notes:['Rosemary','Bergamot','Peppermint'],profile:'bright, herbal'},
+        sleep:{name:'Sleep / Wind-down',notes:['Lavender','Roman Chamomile','Vetiver'],profile:'soft, resinous'},
+        bright:{name:'Uplift / Cheer',notes:['Sweet Orange','Grapefruit','Ginger'],profile:'citrus, spicy'}
+      };
+
+      function dropsForDilution(volumeMl, percent){
+        // approximate: 1 mL ~ 20 drops
+        const totalDrops = Math.round(volumeMl * 20);
+        return Math.max(1, Math.round(totalDrops * (percent/100)));
+      }
+
+      document.getElementById('buildBtn').addEventListener('click', function(){
+        const vibeKey = document.getElementById('vibe').value;
+        const vol = Number(document.getElementById('volume').value);
+        const carrier = document.getElementById('carrier').value;
+        const info = vibes[vibeKey];
+        // choose conservative dilution for general use
+        const dilutionPercent = vol <= 10 ? 1.0 : 2.0; // 1% for 10mL, 2% for 30mL
+
+        // split drops among 3 notes
+        const totalDrops = dropsForDilution(vol,dilutionPercent);
+        const perNote = Math.max(1, Math.round(totalDrops/3));
+
+        const card = {
+          title: info.name,
+          notes: info.notes,
+          profile: info.profile,
+          volumeMl: vol,
+          carrier: carrier,
+          dilutionPercent: dilutionPercent,
+          dropsPerNote: perNote,
+          instructions: 'Combine drops of essential oil into ' + vol + 'mL ' + carrier + '. Shake gently. Patch test on inner forearm and wait 24 hours.'
+        };
+
+        const out = document.getElementById('blendResult');
+        out.style.display='block';
+        out.innerHTML = ''+
+          '<strong style="color:var(--accent)">'+card.title+'</strong>'+ 
+          '<div style="color:var(--muted);margin-top:8px">Profile: '+card.profile+'</div>'+ 
+          '<div style="margin-top:10px"><em>Notes</em>:</div>'+ 
+          '<ul style="color:var(--muted);margin-top:6px">' + card.notes.map(n=>'<li>'+n+': '+card.dropsPerNote+' drop(s)</li>').join('') + '</ul>'+ 
+          '<div style="margin-top:8px;color:var(--muted)">Dilution: ~'+card.dilutionPercent+'% total. '+card.instructions+'</div>'+ 
+          '<button id="copyBlend" style="margin-top:10px;padding:8px 10px;border-radius:8px;background:var(--accent);color:#fff;border:0">Copy blend card</button>';
+
+        document.getElementById('copyBlend').addEventListener('click', function(){
+          const text = 'Blend: '+card.title+'\nProfile: '+card.profile+'\nVolume: '+card.volumeMl+' mL\nCarrier: '+card.carrier+'\nDilution: '+card.dilutionPercent+'%\nNotes:'+card.notes.map((n,i)=>'\n - '+n+': '+card.dropsPerNote+' drop(s)').join('')+'\n'+card.instructions+'\n\nSafety: Patch test. Avoid in pregnancy without guidance. Keep away from pets.';
+          navigator.clipboard && navigator.clipboard.writeText(text).then(()=>{
+            alert('Blend card copied to clipboard');
+          }).catch(()=>{ alert('Unable to copy — select and copy manually'); });
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

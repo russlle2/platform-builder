@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Membership & Fees — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{
+      --bg:#F3EFE6;--card:#FFF;--muted:#6B695F;--accent:#A86A3B;--accent-2:#C79A73;--shadow:rgba(22,22,20,0.06);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#EFEAE0);color:#1E1C19}
+    header{display:flex;align-items:center;justify-content:space-between;padding:28px 36px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:48px;height:48px;background:linear-gradient(135deg,var(--accent),var(--accent-2));border-radius:10px;display:grid;place-items:center;color:white;font-weight:700}
+    nav a{margin-left:18px;color:var(--muted);text-decoration:none;font-size:15px}
+    main{max-width:980px;margin:28px auto;padding:24px}
+    .hero{display:flex;gap:22px;align-items:flex-start}
+    .hero .intro{background:var(--card);padding:22px;border-radius:12px;box-shadow:0 6px 18px var(--shadow);flex:1}
+    h1{margin:0 0 6px 0;font-size:26px}
+    p.lead{margin:0;color:var(--muted)}
+    .tiers{display:flex;gap:18px;margin-top:20px}
+    .tier{background:var(--card);padding:18px;border-radius:10px;flex:1;box-shadow:0 6px 18px var(--shadow)}
+    .tier h3{margin:0 0 6px 0}
+    .price{font-size:22px;color:var(--accent);margin:8px 0}
+    .note{font-size:13px;color:var(--muted)}
+    .muted-block{margin-top:14px;color:var(--muted);font-size:14px}
+    .planner{margin-top:20px;background:linear-gradient(180deg,#fff,#FEF9F4);padding:16px;border-radius:10px}
+    label{display:block;margin-top:10px;font-size:13px;color:var(--muted)}
+    input[type="text"],select,textarea{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid #E6E3DD}
+    button.btn{background:var(--accent);color:white;padding:10px 12px;border-radius:8px;border:0;margin-top:12px;cursor:pointer}
+    .summary{white-space:pre-wrap;background:#FBF7F2;padding:12px;border-radius:8px;margin-top:12px;font-family:Menlo,monospace;font-size:13px}
+    footer{max-width:980px;margin:28px auto;color:var(--muted);font-size:13px;padding:0 24px}
+    .small{font-size:12px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">TP</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">Supportive clinical membership and focused work.</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="specialties.html">Focus Areas</a>
+      <a href="approach.html">Approach</a>
+      <a href="fees.html">Membership & Fees</a>
+      <a href="book.html">Schedule</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="intro">
+        <h1>Membership & Fees</h1>
+        <p class="lead">Transparent options for steady clinical support and shorter, focused work when you need it. Choose what fits your life; we will adapt the plan in session.</p>
+
+        <div class="tiers" aria-hidden>
+          <div class="tier">
+            <h3>Continuity Membership</h3>
+            <div class="price">Starting at $150 / month</div>
+            <div class="note">Monthly model for ongoing weekly or biweekly sessions. Includes priority scheduling, brief check-ins between sessions (as agreed), and access to member resources.</div>
+          </div>
+
+          <div class="tier">
+            <h3>Focused Series</h3>
+            <div class="price">Blocks from $480 (4 sessions)</div>
+            <div class="note">Time-limited, goal-oriented series for a particular concern or project. We map objectives together and review progress at the end of the block.</div>
+          </div>
+
+          <div class="tier">
+            <h3>Single Sessions</h3>
+            <div class="price">$140 / session</div>
+            <div class="note">One-off sessions available for specific questions, planning, or transitions.</div>
+          </div>
+        </div>
+
+        <div class="muted-block">
+          Fee estimates are provided as a guide. Exact details, including sliding scale options at clinician discretion, are discussed during an initial consult. Sessions are confidential except as required by law; see scope and crisis notes below.
+        </div>
+
+      </div>
+
+      <aside style="width:340px">
+        <div class="planner" id="planner">
+          <strong>Session Planner</strong>
+          <p class="note">Design a plan that fits your rhythm—create a short summary you can bring when you book.</p>
+          <label>Primary goal (1–2 sentences)</label>
+          <input type="text" id="goal" placeholder="e.g., manage work stress, improve sleep"/>
+
+          <label>Preferred cadence</label>
+          <select id="cadence">
+            <option value="weekly">Weekly</option>
+            <option value="biweekly">Biweekly</option>
+            <option value="monthly">Monthly check-in</option>
+          </select>
+
+          <label>Length of attention</label>
+          <select id="duration">
+            <option value="12 weeks">Approx. 12 weeks</option>
+            <option value="24 weeks">Approx. 24 weeks</option>
+            <option value="8 weeks">Focused 8-week block</option>
+          </select>
+
+          <label>Type of plan</label>
+          <select id="planType">
+            <option value="Continuity Membership">Continuity Membership</option>
+            <option value="Focused Series">Focused Series</option>
+            <option value="Single Sessions">Single Sessions</option>
+          </select>
+
+          <button class="btn" id="buildPlan">Build plan summary</button>
+          <div class="summary" id="planSummary" aria-live="polite" style="display:none"></div>
+          <button class="btn" id="copyPlan" style="display:none">Copy summary</button>
+        </div>
+      </aside>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>
+      <strong>Clinical notes</strong>
+      <p class="small">Sessions are therapeutic and not a substitute for emergency services. Confidentiality is maintained except in legal or safety situations required by law. If there is immediate danger to yourself or others, call local emergency services or reach crisis lines in {{CITY}}, {{STATE}}. For scheduling or billing questions, contact {{EMAIL}} or {{PHONE}}.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Session Planner logic
+    (function(){
+      const build = document.getElementById('buildPlan');
+      const copyBtn = document.getElementById('copyPlan');
+      const summary = document.getElementById('planSummary');
+
+      function buildText(){
+        const goal = document.getElementById('goal').value.trim() || '(no goal entered)';
+        const cadence = document.getElementById('cadence').value;
+        const duration = document.getElementById('duration').value;
+        const type = document.getElementById('planType').value;
+        const now = new Date().toLocaleDateString();
+
+        return [
+          'Personal session plan — ' + now,
+          'Plan type: ' + type,
+          'Primary focus: ' + goal,
+          'Cadence: ' + cadence,
+          'Estimated attention span: ' + duration,
+          '',
+          'Notes to bring to consultation:',
+          '- What you hope to change or achieve',
+          '- Recent patterns that matter (sleep, mood, routines)',
+          '- Any current supports or barriers',
+          '',
+          'Preference: schedule a consult to confirm timing and cost.'
+        ].join('\n');
+      }
+
+      build.addEventListener('click', function(){
+        const txt = buildText();
+        summary.style.display = 'block';
+        summary.textContent = txt;
+        copyBtn.style.display = 'inline-block';
+      });
+
+      copyBtn.addEventListener('click', function(){
+        const text = summary.textContent;
+        if(!text) return;
+        navigator.clipboard && navigator.clipboard.writeText(text).then(()=>{
+          copyBtn.textContent = 'Copied';
+          setTimeout(()=>copyBtn.textContent = 'Copy summary',1500);
+        }, ()=>{
+          // fallback
+          const ta = document.createElement('textarea');
+          ta.value = text; document.body.appendChild(ta); ta.select();
+          try{document.execCommand('copy'); copyBtn.textContent='Copied';}catch(e){}
+          document.body.removeChild(ta);
+          setTimeout(()=>copyBtn.textContent = 'Copy summary',1500);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

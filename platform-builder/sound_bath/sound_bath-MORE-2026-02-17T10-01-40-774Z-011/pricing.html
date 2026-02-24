@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pricing · {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#071226;--card:#081427;--accent:#b1f5ec;--muted:#cfeeea}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,#041018 0%,#071226 100%);color:var(--muted)}
+    .container{max-width:980px;margin:36px auto;padding:24px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;margin-left:14px}
+    h1{margin:8px 0 0 0;color:#e9ffff}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
+    .plan{padding:12px;border-radius:10px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.02);margin-bottom:12px}
+    .price{font-weight:800;color:#e9ffff}
+    .cta{display:inline-block;padding:8px 12px;border-radius:10px;background:linear-gradient(180deg,var(--accent),#8df0e6);color:#032423;text-decoration:none;font-weight:700}
+    .muted{color:#9fbfbf;font-size:13px}
+    .switch{display:flex;gap:8px;margin-top:8px}
+    .switch button{padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--muted)}
+    .switch button.active{background:linear-gradient(90deg,rgba(177,245,236,0.08),rgba(141,240,230,0.04));border-color:var(--accent);color:#042f2f}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <div style="font-weight:700;color:#fff">{{BUSINESS_NAME}}</div>
+        <div class="muted">Transparent pricing for groups and private support</div>
+      </div>
+      <nav>
+        <a href="index.html">Nest</a>
+        <a href="events.html">Gatherings</a>
+        <a href="private-sessions.html">Private</a>
+        <a href="pricing.html">Invest</a>
+      </nav>
+    </header>
+
+    <h1>Investment options</h1>
+    <div class="grid">
+      <main>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-weight:700;color:#fff">Pick a texture</div>
+              <div class="muted">Your selected sound density will adjust what we recommend below.</div>
+            </div>
+            <div class="switch" id="priceDensity">
+              <button data-density="gentle">Gentle</button>
+              <button data-density="medium">Medium</button>
+              <button data-density="intense">Intense</button>
+            </div>
+          </div>
+
+          <div style="margin-top:12px" id="plans">
+            <!-- plans injected -->
+          </div>
+
+          <div style="margin-top:10px;font-size:13px;color:#9fbfbf">All plans include short orientation and post-session integration notes. Contraindications: review medical conditions before booking and contact <a style="color:var(--accent);text-decoration:none" href="mailto:{{EMAIL}}">{{EMAIL}}</a> if necessary.</div>
+        </div>
+
+        <div style="margin-top:12px" class="card">
+          <div style="font-weight:700;color:#fff">Membership rhythm</div>
+          <div class="muted" style="margin-top:8px">A rolling pass for regular attendance and priority booking. Choose monthly or quarterly cadence.</div>
+        </div>
+      </main>
+
+      <aside>
+        <div class="card">
+          <div style="font-weight:700;color:#fff">Quick guide</div>
+          <div style="margin-top:8px;color:#bfe6e4">Gentle — best for settling and sleep work. Medium — versatile for most aims. Intense — recommended when a strong energetic shift is desired.</div>
+        </div>
+
+        <div style="margin-top:12px" class="card">
+          <div style="font-weight:700;color:#fff">Need help choosing?</div>
+          <div style="margin-top:8px"><a class="cta" id="contactCta" href="mailto:{{EMAIL}}">Ask us — {{EMAIL}}</a></div>
+        </div>
+      </aside>
+    </div>
+
+    <div style="margin-top:18px;color:#9fbfbf;font-size:13px;display:flex;justify-content:space-between;align-items:center">
+      <div>Questions? <a style="color:var(--accent);text-decoration:none" href="tel:{{PHONE}}">{{PHONE}}</a></div>
+      <div>© <span id="year"></span> {{BUSINESS_NAME}}</div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      document.getElementById('year').textContent = new Date().getFullYear();
+      const densityBtns = document.getElementById('priceDensity');
+      const plansWrap = document.getElementById('plans');
+
+      const planSets = {
+        gentle:[
+          {name:'Micro — 30m',price:'$45',desc:'Quick reset for sleep or brief relief'},
+          {name:'Standard — 60m',price:'$85',desc:'Deeper private or group-standard session'},
+          {name:'Mini-series (3)',price:'$240',desc:'Three gentle sessions to build a nightly rhythm'}
+        ],
+        medium:[
+          {name:'Standard — 60m',price:'$95',desc:'Full private session or standard group format'},
+          {name:'Group drop-in',price:'$18',desc:'Per-session drop-in for a single gathering'},
+          {name:'Series (5)',price:'$360',desc:'Five sessions spread across weeks for sustained practice'}
+        ],
+        intense:[
+          {name:'Deep — 90m',price:'$160',desc:'Extended private with active sound scaffolding'},
+          {name:'Immersion (2x90)',price:'$300',desc:'Back-to-back deep work for major shifts'},
+          {name:'Small cohort',price:'$420',desc:'A small-series for high-intensity work, per-person pricing'}
+        ]
+      };
+
+      let density='medium';
+
+      function render(){
+        plansWrap.innerHTML='';
+        (planSets[density]||planSets.medium).forEach(p=>{
+          const el = document.createElement('div');
+          el.className='plan';
+          el.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center"><div><div style=\"font-weight:700;color:#e9ffff\">'+p.name+'</div><div class=\"muted\" style=\"margin-top:6px\">'+p.desc+'</div></div><div style=\"text-align:right\"><div class=\"price\">'+p.price+'</div><div style=\"margin-top:6px\"><a class=\"cta\" href=\"'+ '{{PRIMARY_CTA_URL}}' + '\">' + '{{PRIMARY_CTA_LABEL}}' + '</a></div></div></div>';
+          plansWrap.appendChild(el);
+        });
+      }
+
+      densityBtns.querySelectorAll('button').forEach(b=>{
+        b.addEventListener('click',()=>{
+          densityBtns.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
+          b.classList.add('active');
+          density=b.dataset.density;
+          render();
+        });
+      });
+
+      // init
+      densityBtns.querySelector('button[data-density="medium"]').classList.add('active');
+      render();
+    })();
+  </script>
+</body>
+</html>

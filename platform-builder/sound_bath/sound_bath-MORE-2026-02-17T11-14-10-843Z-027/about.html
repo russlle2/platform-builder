@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f6efe6;--card:#fff6f0;--accent:#7a5a3c;--muted:#6b6b6b;--green:#8aa57a}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#2b2b2b;background:var(--bg) url('assets/img/pattern.svg') repeat}
+    header{background:linear-gradient(180deg,rgba(122,90,60,0.06),transparent);padding:22px 18px;border-bottom:1px solid rgba(122,90,60,0.06)}
+    .nav{max-width:980px;margin:0 auto;display:flex;gap:18px;align-items:center}
+    .brand{font-weight:700;color:var(--accent);font-size:18px}
+    nav a{color:var(--accent);text-decoration:none;padding:8px 10px;border-radius:6px}
+    nav a:hover{background:rgba(122,90,60,0.06)}
+
+    main{max-width:980px;margin:28px auto;padding:0 18px}
+    .lead{display:grid;grid-template-columns:1fr 360px;gap:20px;align-items:start}
+    .panel{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(37,31,25,0.04)}
+    h1{margin:0 0 8px 0;color:var(--accent)}
+    p.lead-copy{margin:0;color:var(--muted);line-height:1.5}
+
+    .aside{font-size:14px}
+    .cta{display:inline-block;margin-top:12px;background:var(--accent);color:#fff;padding:10px 14px;border-radius:9px;text-decoration:none}
+
+    .features{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
+    .feature{padding:14px;border-radius:10px;background:linear-gradient(180deg,rgba(138,165,122,0.04),transparent)}
+    .feature h3{margin:0 0 6px 0;font-size:15px;color:var(--accent)}
+    .feature p{margin:0;color:var(--muted);font-size:13px}
+
+    .process{margin-top:22px;display:flex;gap:12px}
+    .step{flex:1;padding:14px;border-radius:10px;background:#fff}
+    footer{max-width:980px;margin:36px auto;padding:18px;color:var(--muted);font-size:13px}
+
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(15,15,15,0.45);display:none;align-items:center;justify-content:center;padding:20px}
+    .modal{background:#fff;padding:20px;border-radius:12px;max-width:720px;width:100%;box-shadow:0 24px 60px rgba(19,14,11,0.25)}
+    .modal .controls{display:flex;gap:8px;margin-top:14px}
+    .pulse{width:120px;height:120px;border-radius:999px;border:6px solid rgba(122,90,60,0.12);display:flex;align-items:center;justify-content:center;margin:12px auto}
+    .pulse .inner{width:68px;height:68px;border-radius:999px;background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    .sr-only{position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden}
+
+    .disclaimer{margin-top:16px;padding:12px;border-radius:8px;background:#fff3f0;border-left:4px solid rgba(122,90,60,0.14);font-size:13px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <nav style="margin-left:18px;display:flex;gap:6px;align-items:center">
+        <a href="index.html">Home</a>
+        <a href="events.html">Gatherings</a>
+        <a href="private-sessions.html">Solo Sessions</a>
+        <a href="pricing.html">Circle Plans</a>
+        <a href="about.html" aria-current="page">About & Practice</a>
+        <a href="faq.html">Help</a>
+        <a href="book.html">Reserve</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+      <div style="margin-left:auto">
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="lead">
+      <div>
+        <div class="panel">
+          <h1>About the method</h1>
+          <p class="lead-copy">Our sessions are an intentional container: warm tones, measured pacing, and simple invitations to restore breath and attention. We combine long-form harmonic textures with guided focal moments so you return to daily life steadier.</p>
+          <a class="cta" href="pricing.html" style="display:inline-block;margin-top:12px">Explore Circle Plans</a>
+
+          <div class="features" style="margin-top:14px">
+            <div class="feature">
+              <h3>Measured design</h3>
+              <p>Rituals built for clarity: entry, sound, and reorientation—each portion timed and explained.</p>
+            </div>
+            <div class="feature">
+              <h3>Membership focus</h3>
+              <p>Regular practice with gentle commitment, tiered access, and member-only assemblies.</p>
+            </div>
+            <div class="feature">
+              <h3>Quiet care</h3>
+              <p>We pay attention to contraindications and welcome conversation about safety in advance.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="process">
+          <div class="step panel">
+            <strong>Step 1</strong>
+            <p style="margin-top:6px;color:var(--muted);font-size:14px">Set your intent. You can arrive with a single, short phrase to hold through the practice.</p>
+          </div>
+          <div class="step panel">
+            <strong>Step 2</strong>
+            <p style="margin-top:6px;color:var(--muted);font-size:14px">Enter the room. Guided beginning, extended tone field, and a calm close.</p>
+          </div>
+          <div class="step panel">
+            <strong>Step 3</strong>
+            <p style="margin-top:6px;color:var(--muted);font-size:14px">Return with a few minutes of journaling or quiet walking to integrate.</p>
+          </div>
+        </div>
+
+        <div class="disclaimer">
+          <strong>Contraindications & safety</strong>
+          <p style="margin:8px 0 0 0;color:var(--muted);font-size:13px">Sound immersion is gentle but not always suitable. If you have recent head injury, epilepsy, pregnancy concerns, severe anxiety triggered by sound, or active substance effects, please consult your healthcare provider and contact us before booking.</p>
+        </div>
+
+      </div>
+
+      <aside class="panel aside">
+        <h3 style="margin-top:0;color:var(--accent)">Try a short practice</h3>
+        <p style="color:var(--muted);font-size:14px">A brief guided moment: breath and an intention prompt to feel the pattern of your own attention.</p>
+        <button id="openPractice" style="margin-top:12px;padding:10px 12px;border-radius:8px;background:var(--accent);color:#fff;border:0">Try it now — quick session</button>
+
+        <div style="margin-top:16px;border-radius:8px;padding:12px;background:linear-gradient(180deg,rgba(122,90,60,0.03),transparent)}">
+          <strong style="display:block;color:var(--accent)">Contact</strong>
+          <div style="margin-top:8px;color:var(--muted);font-size:14px">Phone: {{PHONE}}<br>Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <footer>
+    <div style="max-width:980px;margin:0 auto">© <span id="year"></span> {{BUSINESS_NAME}} — {{CITY}}, {{STATE}} · For membership enquiries, see the Circle Plans page.</div>
+  </footer>
+
+  <div id="practiceModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document">
+      <h2 style="margin-top:0;color:var(--accent)">Guided minute — breathe & note</h2>
+      <div style="display:flex;gap:16px;align-items:center">
+        <div class="pulse" aria-hidden="true"><div class="inner" id="pulseLabel">3</div></div>
+        <div style="flex:1">
+          <p id="stageText" style="margin:0;color:var(--muted)">When you’re ready, press start. The short sequence will guide 3 rounds of paced breathing then a 90-second journaling prompt.</p>
+          <div class="controls">
+            <button id="startBtn" style="padding:8px 10px;border-radius:8px;border:0;background:var(--accent);color:#fff">Start</button>
+            <button id="skipBtn" style="padding:8px 10px;border-radius:8px;border:1px solid #ddd;background:#fff">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Practice modal
+    const modal = document.getElementById('practiceModal');
+    const open = document.getElementById('openPractice');
+    const startBtn = document.getElementById('startBtn');
+    const skipBtn = document.getElementById('skipBtn');
+    const pulseLabel = document.getElementById('pulseLabel');
+    const stageText = document.getElementById('stageText');
+    let intervalId = null;
+
+    open.addEventListener('click', ()=>{ modal.style.display='flex'; modal.setAttribute('aria-hidden','false'); });
+    skipBtn.addEventListener('click', closeModal);
+
+    function closeModal(){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); clearInterval(intervalId); pulseLabel.textContent='3'; stageText.textContent='When you\'re ready, press start. The short sequence will guide 3 rounds of paced breathing then a 90-second journaling prompt.' }
+
+    startBtn.addEventListener('click', ()=>{
+      let rounds = 3; let step=0; // step cycles: inhale(4s), hold(4s), exhale(6s)
+      stageText.textContent='Follow the circle: inhale for 4, hold for 4, exhale for 6. Round 1 of ' + rounds;
+      pulseLabel.textContent = rounds;
+      const phases = [ {label:'Inhale', secs:4}, {label:'Hold', secs:4}, {label:'Exhale', secs:6} ];
+      let phaseIndex=0; let phaseTime=phases[0].secs; let phaseRemaining=phaseTime;
+
+      intervalId = setInterval(()=>{
+        // update display
+        pulseLabel.textContent = phaseRemaining;
+        stageText.textContent = phases[phaseIndex].label + ' — ' + phaseRemaining + 's remaining. Round ' + (step+1) + ' of ' + rounds;
+        phaseRemaining--;
+        if(phaseRemaining<0){
+          phaseIndex++;
+          if(phaseIndex>=phases.length){
+            phaseIndex=0; step++;
+            if(step>=rounds){
+              clearInterval(intervalId);
+              // journaling prompt
+              pulseLabel.textContent='J';
+              stageText.textContent='Take 90 seconds to write a sentence or two: What feels different? A short note will help anchor the session.';
+              // 90 second countdown
+              let t=90; intervalId = setInterval(()=>{
+                pulseLabel.textContent = t; t--; if(t<0){ clearInterval(intervalId); pulseLabel.textContent='✓'; stageText.textContent='Done. When you\'re ready, close this window and return slowly.' } },1000);
+              return;
+            }
+          }
+          phaseTime = phases[phaseIndex].secs; phaseRemaining = phaseTime;
+        }
+      },1000);
+    });
+
+    // close on backdrop click
+    modal.addEventListener('click', function(e){ if(e.target===modal) closeModal(); });
+  </script>
+</body>
+</html>

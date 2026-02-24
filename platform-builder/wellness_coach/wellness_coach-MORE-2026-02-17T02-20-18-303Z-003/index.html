@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{BUSINESS_NAME}} — {{TAGLINE}}</title>
+  <meta name="description" content="Practical frameworks, daily habits, measurable outcomes — coaching that fits life in {{CITY}}, {{STATE}}.">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="aura">
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="/">{{BUSINESS_NAME}}</a>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="about.html">Approach</a>
+        <a href="services.html">Sessions</a>
+        <a href="programs.html">Programs</a>
+        <a href="pricing.html">Rates</a>
+        <a href="testimonials.html">Stories</a>
+        <a href="book.html" class="cta">{{PRIMARY_CTA_LABEL}}</a>
+        <a href="contact.html" class="muted">Reach</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <h1>{{TAGLINE}}</h1>
+          <p class="lead">Tiny, repeatable practices. Clear outcomes. A framework that meets your life where it is.</p>
+          <p class="meta">Start with a short Session or pick a guided Program — both built around habits you can keep.</p>
+          <p class="controls">
+            <a class="button primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            <a class="button ghost" href="programs.html">Explore Programs</a>
+          </p>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <svg class="pattern" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <pattern id="p" width="40" height="40" patternUnits="userSpaceOnUse">
+                <rect width="40" height="40" fill="#fff" />
+                <path d="M0 20 Q10 10 20 20 T40 20" fill="none" stroke="#e6f0ea" stroke-width="2"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#p)" />
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- Plan (Session Planner) -->
+    <section id="plan" class="panel plan">
+      <div class="wrap">
+        <div class="panel-head">
+          <h2>Session Planner — design your first mini-plan</h2>
+          <p class="muted">Build a realistic, personalized session roadmap you can start this week. Export as a plain-text summary to save or share.</p>
+        </div>
+        <div class="panel-body planner-grid">
+          <form id="sessionForm" class="planner" onsubmit="return false;">
+            <label>Primary Focus
+              <select id="focus" required>
+                <option value="clarity">Clarity & direction</option>
+                <option value="energy">Sustained energy</option>
+                <option value="stress">Stress resilience</option>
+                <option value="sleep">Sleep refresh</option>
+                <option value="habit">Habit momentum</option>
+              </select>
+            </label>
+
+            <label>Duration (weeks)
+              <input id="weeks" type="number" min="1" max="12" value="4">
+            </label>
+
+            <label>Sessions per week
+              <input id="freq" type="number" min="1" max="7" value="1">
+            </label>
+
+            <label>Session length
+              <select id="length">
+                <option>20 minutes</option>
+                <option>30 minutes</option>
+                <option>45 minutes</option>
+                <option>60 minutes</option>
+              </select>
+            </label>
+
+            <label>Preferred approaches
+              <div class="chips">
+                <label><input type="checkbox" value="mindfulness" checked> Mindfulness</label>
+                <label><input type="checkbox" value="movement"> Movement</label>
+                <label><input type="checkbox" value="nutrition"> Practical nutrition</label>
+                <label><input type="checkbox" value="planning"> Habit planning</label>
+              </div>
+            </label>
+
+            <label>Top outcome you want to track
+              <input id="outcome" type="text" placeholder="E.g. Wake up refreshed, 30 min of focused work, fewer evening snacks">
+            </label>
+
+            <div class="form-actions">
+              <button id="generatePlan" class="button primary">Compose Plan</button>
+              <button id="clearPlan" class="button ghost">Reset</button>
+            </div>
+          </form>
+
+          <div class="planner-output">
+            <h3>Your session summary</h3>
+            <textarea id="planOutput" readonly rows="10" aria-label="Session summary"></textarea>
+            <div class="output-actions">
+              <button id="copyPlan" class="button">Copy summary</button>
+              <a id="downloadPlan" class="button ghost" href="#">Download .txt</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Diagnostic -->
+    <section id="diagnostic" class="panel diagnostic">
+      <div class="wrap">
+        <div class="panel-head">
+          <h2>Quick diagnostic — where to start</h2>
+          <p class="muted">A fast-check that highlights one high-leverage habit to try this week.</p>
+        </div>
+        <div class="panel-body diagnostic-grid">
+          <div class="diag-card">
+            <h4>Energy snapshot</h4>
+            <p>Rate your daytime energy (1–5)</p>
+            <div class="scale" id="energyScale">
+              <button data-val="1">1</button>
+              <button data-val="2">2</button>
+              <button data-val="3">3</button>
+              <button data-val="4">4</button>
+              <button data-val="5">5</button>
+            </div>
+          </div>
+          <div class="diag-card">
+            <h4>Sleep check</h4>
+            <p>Are you waking rested?</p>
+            <div class="scale" id="sleepScale">
+              <button data-val="no">No</button>
+              <button data-val="some">Sometimes</button>
+              <button data-val="yes">Yes</button>
+            </div>
+          </div>
+          <div class="diag-card">
+            <h4>Stress balance</h4>
+            <p>How often do you notice overwhelm?</p>
+            <select id="stressFreq">
+              <option>Rarely</option>
+              <option>Occasionally</option>
+              <option>Often</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Micro habits (7-day challenge generator) -->
+    <section id="micro_habits" class="panel habits">
+      <div class="wrap">
+        <div class="panel-head">
+          <h2>7‑Day Challenge — habit builder</h2>
+          <p class="muted">Pick one simple habit and get a printable 7-day checklist to carry with you.</p>
+        </div>
+        <div class="panel-body habits-grid">
+          <form id="habitForm" class="habit-form" onsubmit="return false;">
+            <label>Habit name
+              <input id="habitName" placeholder="E.g. Evening wind-down, Morning 10-min walk, Hydrate 8oz every 2 hours">
+            </label>
+            <label>Small win goal
+              <select id="habitGoal">
+                <option>Complete a short ritual</option>
+                <option>Move for 10 minutes</option>
+                <option>Record one reflection</option>
+                <option>Drink water consistently</option>
+              </select>
+            </label>
+            <label>Start on
+              <select id="startDay">
+                <option>Monday</option>
+                <option>Tuesday</option>
+                <option>Wednesday</option>
+                <option>Thursday</option>
+                <option>Friday</option>
+                <option>Saturday</option>
+                <option>Sunday</option>
+              </select>
+            </label>
+            <div class="form-actions">
+              <button id="generateHabit" class="button primary">Make 7‑Day Checklist</button>
+              <button id="printHabit" class="button ghost">Print checklist</button>
+            </div>
+          </form>
+
+          <div class="habit-output">
+            <h3>Your checklist</h3>
+            <ol id="checklist" class="checklist" aria-live="polite"></ol>
+            <p class="muted small">Tip: keep this page bookmarked or print a fresh copy each week.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing -->
+    <section id="pricing" class="panel pricing">
+      <div class="wrap">
+        <div class="panel-head">
+          <h2>Rates framed as pathways</h2>
+          <p class="muted">Transparent options: choose a short commitment or a guided pathway designed for habit change.</p>
+        </div>
+        <div class="panel-body pricing-grid">
+          <div class="card">
+            <h3>Starter Session</h3>
+            <p class="price">$75</p>
+            <p class="muted">Single, focused 30-minute session to craft a 2-week habit micro-plan.</p>
+            <a class="button" href="book.html">Book a Starter</a>
+          </div>
+          <div class="card featured">
+            <h3>Momentum Pathway</h3>
+            <p class="price">$240 / 4 weeks</p>
+            <p class="muted">Four sessions + weekly check-ins. Habit systems, tracking template, and adjustments.</p>
+            <a class="button primary" href="programs.html">Start Momentum</a>
+          </div>
+          <div class="card">
+            <h3>Self-Guided Kit</h3>
+            <p class="price">$49</p>
+            <p class="muted">Templates, habit checklist PDFs, and a 4-week planner to run on your own.</p>
+            <a class="button ghost" href="pricing.html">Get the Kit</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section id="cta" class="panel cta">
+      <div class="wrap cta-grid">
+        <div>
+          <h2>Ready to start a realistic routine?</h2>
+          <p class="muted">Book a short Session and leave with one compact habit to try this week.</p>
+        </div>
+        <div class="cta-actions">
+          <a class="button big primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <a class="button big ghost" href="contact.html">Email: {{EMAIL}}</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <strong>{{BUSINESS_NAME}}</strong>
+        <p class="muted">Serving {{CITY}}, {{STATE}} • <a href="tel:{{PHONE}}">{{PHONE}}</a></p>
+      </div>
+      <nav class="foot-nav">
+        <a href="about.html">Approach</a>
+        <a href="programs.html">Programs</a>
+        <a href="testimonials.html">Stories</a>
+        <a href="contact.html">Reach</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

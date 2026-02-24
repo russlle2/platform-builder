@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Contact • {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Connect with {{COACH_NAME}} — small, sustainable habit changes for clearer energy and steadier days." />
+  <style>
+    :root{
+      --bg:#ffffff; --muted:#64707a; --accent:#6aa84f; --ink:#0b1720; --radius:10px;
+      --max-width:900px; --pad:28px;
+      --glass: rgba(11,23,32,0.04);
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%;}
+    body{margin:0;background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+    .wrap{max-width:var(--max-width);margin:48px auto;padding:0 20px}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:36px}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:48px;height:48px;border-radius:12px;background:var(--glass);display:flex;align-items:center;justify-content:center}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-weight:600}
+    .hero{display:grid;grid-template-columns:1fr 320px;gap:28px;align-items:center;margin-bottom:42px}
+    .hero__copy h1{margin:0 0 8px 0;font-size:32px;letter-spacing:-0.02em}
+    .hero__copy p{margin:0;color:var(--muted)}
+    .hero__image{border-radius:12px;overflow:hidden;background:var(--glass);display:flex;align-items:center;justify-content:center;padding:18px}
+    section.card{background:linear-gradient(180deg,rgba(255,255,255,0.9),#fff);border-radius:14px;padding:22px;margin-bottom:24px;box-shadow:0 6px 18px rgba(3,10,14,0.04)}
+    .social-proof{display:flex;gap:16px;align-items:center}
+    .stars{color:var(--accent);font-weight:700}
+    .benefits ul{list-style:none;padding:0;margin:10px 0 0 0;display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .benefits li{background:var(--glass);padding:10px;border-radius:8px}
+    .process ol{padding-left:18px;margin:8px 0}
+    .lead-magnet{display:flex;gap:12px;align-items:center}
+    .lead-magnet input[type=email]{flex:1;padding:10px;border-radius:8px;border:1px solid #e6eef0}
+    .btn{display:inline-block;background:var(--ink);color:white;padding:10px 14px;border-radius:8px;text-decoration:none;font-weight:700}
+    .btn--accent{background:var(--accent);color:white}
+    form.contact-form{display:grid;gap:10px}
+    input,textarea{padding:10px;border-radius:8px;border:1px solid #e9eef0}
+    textarea{min-height:120px;resize:vertical}
+    footer{margin-top:28px;color:var(--muted);font-size:13px;display:flex;justify-content:space-between;align-items:center}
+    @media (max-width:880px){
+      .hero{grid-template-columns:1fr;}
+      nav a{margin-left:10px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true">
+          <img src="assets/img/avatar.svg" alt="" width="34" height="34" />
+        </div>
+        <div>
+          <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="programs.html">Paths</a>
+        <a href="pricing.html">Rates</a>
+        <a href="testimonials.html">Stories</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </header>
+
+    <!-- Hero (rippled from index) -->
+    <section class="hero card" aria-labelledby="hero-heading">
+      <div class="hero__copy">
+        <h1 id="hero-heading">A gentle way back to balance</h1>
+        <p>Quiet coaching for lasting habit change — guided frameworks, kinder accountability, clearer days. Connect to explore a plan that honors your rhythm.</p>
+        <p style="margin-top:14px">
+          <a class="btn btn--accent" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <a style="margin-left:12px;color:var(--muted);font-weight:700" href="/book.html">Schedule a free consult</a>
+        </p>
+      </div>
+      <div class="hero__image" role="img" aria-label="Calm illustration">
+        <img src="assets/img/hero.svg" alt="Soothing minimal illustration" style="width:100%;height:auto;max-height:240px" />
+      </div>
+    </section>
+
+    <!-- Social Proof (ripple) -->
+    <section class="card social-proof" aria-labelledby="trust-heading">
+      <div>
+        <div id="trust-heading" style="font-weight:800">Trusted by people in {{CITY}}</div>
+        <div style="color:var(--muted);font-size:14px">Real outcomes: calmer mornings, reliable sleep cues, small steps that stick.</div>
+      </div>
+      <div style="margin-left:auto;text-align:right">
+        <div class="stars">★★★★★</div>
+        <div style="font-size:13px;color:var(--muted)">Average client rating</div>
+      </div>
+    </section>
+
+    <!-- Benefits (ripple) -->
+    <section class="card benefits" aria-labelledby="benefits-heading">
+      <h2 id="benefits-heading" style="margin:0 0 8px 0">What you can expect</h2>
+      <p style="margin:0 0 12px 0;color:var(--muted)">Practices and shifts organized into manageable habits — not quick fixes.</p>
+      <ul>
+        <li>Clearer daily routines without overwhelm</li>
+        <li>Better energy distribution through gentle scheduling</li>
+        <li>Practical frameworks for consistent self-care</li>
+        <li>Meaningful metrics that track what matters</li>
+      </ul>
+    </section>
+
+    <!-- Process (ripple) -->
+    <section class="card process" aria-labelledby="process-heading">
+      <h3 id="process-heading">My 5-phase guiding framework</h3>
+      <ol>
+        <li><strong>Listen:</strong> We map your current rhythm and stress points.</li>
+        <li><strong>Clarify:</strong> Identify 1–3 habits to shift for visible impact.</li>
+        <li><strong>Design:</strong> Build bite-sized experiments aligned with your life.</li>
+        <li><strong>Support:</strong> Gentle accountability and weekly check-ins.</li>
+        <li><strong>Embed:</strong> Anchor practices so they become the new baseline.</li>
+      </ol>
+    </section>
+
+    <!-- Lead magnet (ripple) -->
+    <section class="card" aria-labelledby="magnet-heading">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
+        <div>
+          <h4 id="magnet-heading" style="margin:0 0 6px 0">Free Habit Reset Guide</h4>
+          <div style="color:var(--muted);font-size:14px;margin-bottom:10px">A short workbook with 7 prompts to reframe overwhelm into tiny, repeatable wins.</div>
+          <form action="/" method="post" class="lead-magnet" onsubmit="return subscribe(event)">
+            <input type="email" name="email" placeholder="Your email" aria-label="Email for guide" required />
+            <button class="btn btn--accent" type="submit">Send me the guide</button>
+          </form>
+        </div>
+        <div style="width:160px;text-align:center;color:var(--muted);font-size:13px">
+          <div style="font-weight:800">No spam</div>
+          <div>Unsubscribe anytime. Your email is for delivery only.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ (ripple) -->
+    <section class="card" aria-labelledby="faq-heading">
+      <h4 id="faq-heading" style="margin:0 0 8px 0">Quick questions people ask</h4>
+      <div style="color:var(--muted);">
+        <p><strong>Q:</strong> How long before I notice a change?</p>
+        <p><strong>A:</strong> Many clients notice shifts in routine and mood within 2–6 weeks; deep habits take a few months. We prioritize steps you can repeat daily.</p>
+        <p><strong>Q:</strong> Is coaching medical advice?</p>
+        <p><strong>A:</strong> Coaching focuses on habits, routines, and mindset. It is not a substitute for medical care.</p>
+        <p><strong>Q:</strong> I have a busy schedule — can this fit?</p>
+        <p><strong>A:</strong> Yes. We design micro-practices that slide into existing life patterns rather than adding more to your plate.</p>
+      </div>
+    </section>
+
+    <!-- Contact form + CTA -->
+    <section class="card" aria-labelledby="contact-heading">
+      <h3 id="contact-heading">Start with a calming chat</h3>
+      <p style="color:var(--muted);margin-top:0">Share a few details and I will reply within 48 hours to set a gentle next step.</p>
+      <form class="contact-form" action="/book.html" method="get">
+        <input name="name" type="text" placeholder="Your name" required />
+        <input name="email" type="email" placeholder="Email" required />
+        <input name="phone" type="tel" placeholder="Phone (optional)" />
+        <textarea name="message" placeholder="A brief note about what you want to change..."></textarea>
+        <div style="display:flex;gap:12px;align-items:center">
+          <button class="btn btn--accent" type="submit">{{PRIMARY_CTA_LABEL}}</button>
+          <a href="tel:{{PHONE}}" style="color:var(--muted);font-weight:700">Call: {{PHONE}}</a>
+          <a href="mailto:{{EMAIL}}" style="color:var(--muted);font-weight:700">Email: {{EMAIL}}</a>
+        </div>
+      </form>
+    </section>
+
+    <footer>
+      <div>© {{BUSINESS_NAME}} • {{COACH_NAME}}, {{CREDENTIALS}}</div>
+      <div style="text-align:right">Based in {{CITY}}, {{STATE}} • <a href="/privacy.html" style="color:var(--muted)">Privacy</a></div>
+    </footer>
+  </div>
+
+  <script>
+    // Minimal client-side behavior for the lead magnet (no external services)
+    function subscribe(e){
+      e.preventDefault();
+      const email = (e.target.querySelector('input[type=email]')||{}).value;
+      if(!email) return alert('Please add your email');
+      // Simulate success flow
+      alert('Thanks — the Habit Reset Guide will arrive at ' + email + ' shortly.');
+      e.target.reset();
+      return false;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FAQ — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f6efe7;--accent:#6b4a36;--muted:#8d6e5a;--card:#fff}
+    body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:0;background:var(--bg);color:var(--accent)}
+    .wrap{max-width:980px;margin:28px auto;padding:20px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    header a{color:var(--muted);text-decoration:none;margin-left:10px}
+    h1{margin:6px 0}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.04)}
+    .faq-item{border-bottom:1px dashed #eee;padding:12px 0}
+    .q{font-weight:700}
+    .a{color:var(--muted);margin-top:6px}
+    .small{font-size:13px;color:var(--muted)}
+    .try{display:block;margin-top:12px}
+    .contra{background:#fff3e6;padding:10px;border-radius:8px;border-left:4px solid #f1c27a;color:#7a4f3a}
+    footer{margin-top:22px;text-align:center;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+      <div>
+        <a href="index.html">Gather</a>
+        <a href="events.html">Calendar</a>
+        <a href="book.html">Reserve</a>
+      </div>
+    </header>
+
+    <main class="grid">
+      <section>
+        <div class="card">
+          <h1>Helpful questions</h1>
+          <p class="small">Short, direct answers to what most people ask before coming. If you need a tailored response, email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</p>
+
+          <div style="margin-top:12px">
+            <div class="faq-item">
+              <div class="q">What should I expect at my first gathering?</div>
+              <div class="a">A short intake, a guided settling, and sound layers. Most sessions last between 45 and 75 minutes. Expect low lights, soft mats, and moments of silence between sound layers.</div>
+            </div>
+
+            <div class="faq-item">
+              <div class="q">Do I need experience with meditation or breathwork?</div>
+              <div class="a">No. Sessions are accessible. Instructions invite simple breath patterns and gentle listening — you are always free to rest or open your eyes.</div>
+            </div>
+
+            <div class="faq-item">
+              <div class="q">Can I move or leave early?</div>
+              <div class="a">Yes. You are encouraged to listen to your body. If you need assistance during a session, discreetly signal a facilitator.</div>
+            </div>
+
+            <div class="faq-item">
+              <div class="q">What about sound sensitivity or headphones?</div>
+              <div class="a">We can adapt the experience. Many sounds are resonant, not loud. If you have heightened sensitivity, tell us during booking and we will reduce intensity or offer a seat further from instruments.</div>
+            </div>
+
+            <div class="faq-item">
+              <div class="q">Is this a cure or medical treatment?</div>
+              <div class="a">No. Sound and breath are supportive practices. If you have medical questions or conditions, consult your healthcare provider before attending.</div>
+            </div>
+
+          </div>
+        </div>
+
+        <div style="height:14px"></div>
+
+        <div class="card">
+          <h2 style="margin-top:0">Booking & logistics</h2>
+          <div class="faq-item"><div class="q">How to reserve?</div><div class="a">Use the Reserve link or call <a href="tel:{{PHONE}}">{{PHONE}}</a>. Spaces often fill; we recommend booking early.</div></div>
+          <div class="faq-item"><div class="q">Payment</div><div class="a">We accept card and bank transfers. Group pricing and private sessions are custom — see Investment for details.</div></div>
+          <div class="faq-item"><div class="q">Late arrivals</div><div class="a">Doors close a few minutes after start to protect the container. If you arrive late, we will help you find a gentle entry point.</div></div>
+        </div>
+
+      </section>
+
+      <aside>
+        <div class="card">
+          <h3 style="margin-top:0">Contraindications</h3>
+          <div class="contra">
+            <strong>Please note:</strong> If you have epilepsy, are pregnant, have had a recent head injury, use a pacemaker, or are currently under intensive psychiatric care, contact us before booking. Some forms of vibration, pulsed sound, and sustained low frequencies are not advised for these conditions. This note is informational and is not a substitute for medical advice.
+          </div>
+
+          <div style="margin-top:12px">
+            <div class="small">Need a short practice now?</div>
+            <button id="try-now" class="btn try" style="background:var(--accent);color:#fff;border-radius:8px;padding:8px 10px">Try a 90s breath</button>
+            <a href="book.html" class="btn" style="display:inline-block;margin-top:10px;background:transparent;border:1px solid rgba(107,74,54,0.12);color:var(--accent);padding:8px 10px;border-radius:8px;text-decoration:none">Reserve a seat</a>
+          </div>
+
+          <div style="margin-top:14px;color:var(--muted);font-size:13px">Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="card">
+          <h4 style="margin-top:0">Quick links</h4>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+            <a href="events.html">Next gatherings</a>
+            <a href="private-sessions.html">Private sessions</a>
+            <a href="pricing.html">Pricing</a>
+            <a href="contact.html">Contact</a>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      <div style="color:var(--muted)">© {{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </footer>
+  </div>
+
+  <script>
+    // Tiny guided breath triggered from FAQ
+    const btn = document.getElementById('try-now');
+    btn.addEventListener('click', ()=>{
+      // Quick visual breathing overlay
+      const overlay = document.createElement('div'); overlay.style.position='fixed';overlay.style.inset=0;overlay.style.background='rgba(0,0,0,0.36)';overlay.style.display='flex';overlay.style.alignItems='center';overlay.style.justifyContent='center';overlay.style.zIndex=9999;
+      overlay.innerHTML = '<div style="background:#fff;padding:20px;border-radius:12px;max-width:460px;width:90%;text-align:center"><div style="font-weight:700;margin-bottom:6px">90-second breath</div><div id="dot" style="width:120px;height:120px;border-radius:50%;margin:12px auto;background:radial-gradient(circle at center,#6b4a36 0%,#c89b7f 40%,transparent 60%)"></div><div style="color:#8d6e5a">Inhale 4s · Exhale 6s · Repeat</div><button id="close" style="margin-top:12px;padding:8px 12px;border-radius:8px;border:0;background:#6b4a36;color:#fff">Close</button></div>';
+      document.body.appendChild(overlay);
+      const dot = overlay.querySelector('#dot');
+      let phase=0;let step=0;const cycle=[4,6];let elapsed=0;const iv=setInterval(()=>{elapsed+=0.2; if(elapsed>cycle[step]){elapsed=0;step=(step+1)%2} const pct = step===0? (elapsed/cycle[0]) : (1 - elapsed/cycle[1]); dot.style.transform = `scale(${1 + 0.3*pct})`; },200);
+      overlay.querySelector('#close').addEventListener('click', ()=>{clearInterval(iv);document.body.removeChild(overlay)});
+      setTimeout(()=>{clearInterval(iv); if(document.body.contains(overlay)) document.body.removeChild(overlay);},90000);
+    });
+  </script>
+</body>
+</html>

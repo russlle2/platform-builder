@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Investments — Programs & Packages</title>
+  <style>
+    :root{--bg:#fbfaf8;--card:#ffffff;--muted:#6b6b6b;--accent:#6a8f6a;--accent-2:#b07c6c;--glass:rgba(255,255,255,0.6)}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;color:#222}
+    body{background-image:url('assets/img/pattern.svg');background-repeat:repeat; background-size:200px; background-color:var(--bg);}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:linear-gradient(180deg,rgba(255,255,255,0.7),transparent);backdrop-filter:blur(6px)}
+    nav a{margin:0 12px;color:#333;text-decoration:none;font-weight:600;font-size:14px}
+    .brand{font-weight:700;letter-spacing:0.6px}
+    .wrap{max-width:1100px;margin:32px auto;padding:20px}
+    .hero{display:flex;gap:28px;align-items:center}
+    .hero .intro{flex:1}
+    h1{margin:0 0 8px 0;font-size:28px}
+    p.lead{margin:0;color:var(--muted)}
+    .toggle{display:flex;align-items:center;margin-top:18px}
+    .switch{width:56px;height:32px;background:#e9e9e9;border-radius:999px;position:relative;cursor:pointer;margin-right:12px}
+    .knob{width:26px;height:26px;border-radius:50%;background:white;position:absolute;top:3px;left:3px;box-shadow:0 3px 8px rgba(0,0,0,0.12);transition:left .28s cubic-bezier(.2,.9,.3,1)}
+    .switch.on{background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+    .switch.on .knob{left:27px}
+    .label{font-size:13px;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:24px}
+    .card{background:var(--card);border-radius:10px;padding:18px;box-shadow:0 6px 18px rgba(20,20,20,0.04);display:flex;flex-direction:column}
+    .card h3{margin:0 0 6px 0;font-size:16px}
+    .price{font-size:22px;font-weight:700;margin:8px 0;color:#222}
+    .meta{font-size:13px;color:var(--muted)}
+    .cta{margin-top:auto;padding:10px 12px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;border:none;border-radius:8px;cursor:pointer;font-weight:700}
+    .small{font-size:12px;color:var(--muted);margin-top:10px}
+    footer{padding:26px;text-align:center;color:var(--muted);font-size:13px}
+    .note{background:#fff7ee;border-left:4px solid var(--accent-2);padding:10px;border-radius:6px;margin-top:12px;font-size:13px}
+    @media(max-width:880px){.grid{grid-template-columns:1fr}.hero{flex-direction:column}.wrap{padding:12px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">Welcome</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Practices</a>
+      <a href="blends.html">Bespoke Blends</a>
+      <a href="shop.html">Marketplace</a>
+      <a href="pricing.html">Investments</a>
+      <a href="about.html">Team</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="intro">
+        <h1>Programs and one-off engagements</h1>
+        <p class="lead">Simplified offerings framed as choices: ongoing support, compact session packages, or a focused VIP Day. Pricing below switches between monthly plans and single-package investments.</p>
+
+        <div class="toggle" aria-hidden="false">
+          <div id="pricingSwitch" class="switch" tabindex="0" role="button" aria-pressed="false">
+            <div class="knob"></div>
+          </div>
+          <div class="label">View: <strong id="viewMode">Monthly</strong></div>
+        </div>
+
+        <div class="note">All sessions are safety-forward: formulations follow dilution guidance and include patch-test recommendations. See FAQ for notes on pregnancy and pets.</div>
+      </div>
+      <div style="width:320px">
+        <div style="background:linear-gradient(180deg,rgba(255,255,255,0.5),transparent);border-radius:10px;padding:14px;box-shadow:0 8px 20px rgba(30,30,30,0.04)">
+          <strong>Compare at a glance</strong>
+          <p class="meta" style="margin-top:8px">Toggle to animate the price perspective. Numbers represent suggested investment and do not include taxes or add-ons.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid" aria-live="polite">
+      <article class="card">
+        <h3>Starter Rituals</h3>
+        <div class="price"><span class="amount" data-monthly="28" data-package="78">$28</span><span class="unit">/mo</span></div>
+        <div class="meta">Monthly access to two short guided scent sessions; package equals three single visits.</div>
+        <div class="small">Includes basic blend formula and usage notes.</div>
+        <button class="cta" data-href="{{PRIMARY_CTA_URL}}?pkg=starter">{{PRIMARY_CTA_LABEL}}</button>
+      </article>
+
+      <article class="card">
+        <h3>Balance Sequence</h3>
+        <div class="price"><span class="amount" data-monthly="68" data-package="195">$68</span><span class="unit">/mo</span></div>
+        <div class="meta">A 3-session pack or a subscription for steady practice: guided sessions plus a custom portable blend.</div>
+        <div class="small">Recommended for those building a short daily ritual.</div>
+        <button class="cta" data-href="{{PRIMARY_CTA_URL}}?pkg=balance">{{PRIMARY_CTA_LABEL}}</button>
+      </article>
+
+      <article class="card">
+        <h3>Signature Immersion — VIP Day</h3>
+        <div class="price"><span class="amount" data-monthly="190" data-package="750">$190</span><span class="unit">/mo</span></div>
+        <div class="meta">A focused full-day immersion (single package) for comprehensive scent strategy; available as a one-off investment.</div>
+        <div class="small">Includes extended consultation, custom formulas, and an at-home plan.</div>
+        <button class="cta" data-href="{{PRIMARY_CTA_URL}}?pkg=vip">{{PRIMARY_CTA_LABEL}}</button>
+      </article>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>Questions? Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+  </footer>
+
+  <script>
+    // Pricing toggle with animated numbers
+    (function(){
+      const switchEl = document.getElementById('pricingSwitch');
+      const viewText = document.getElementById('viewMode');
+      const amounts = Array.from(document.querySelectorAll('.amount'));
+      let mode = 'monthly';
+
+      function animate(el, from, to){
+        const duration = 550;
+        let start = null;
+        function step(ts){
+          if (!start) start = ts;
+          const progress = Math.min((ts - start)/duration,1);
+          const value = Math.round(from + (to - from)*progress);
+          el.textContent = '$' + value;
+          if(progress < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+
+      function updateMode(newMode){
+        mode = newMode;
+        viewText.textContent = (mode === 'monthly') ? 'Monthly' : 'Package';
+        document.querySelectorAll('.unit').forEach(u=>u.textContent = (mode === 'monthly') ? '/mo' : '');
+        amounts.forEach(a=>{
+          const from = parseInt(a.textContent.replace(/[^0-9]/g,''),10) || 0;
+          const to = parseInt(a.dataset[newMode],10) || 0;
+          animate(a, from, to);
+        });
+        if(mode === 'package') switchEl.classList.add('on'); else switchEl.classList.remove('on');
+        switchEl.setAttribute('aria-pressed', mode === 'package');
+      }
+
+      switchEl.addEventListener('click', ()=>{
+        updateMode(mode === 'monthly' ? 'package' : 'monthly');
+      });
+
+      // Initialize
+      amounts.forEach(a=>a.textContent = '$' + a.dataset['monthly']);
+      updateMode('monthly');
+
+      // Wire CTAs
+      document.querySelectorAll('.cta').forEach(b=>{
+        b.addEventListener('click', ()=>{
+          const href = b.dataset.href || '{{PRIMARY_CTA_URL}}';
+          location.href = href;
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+/* Earthy warm palette, subtle texture via SVG pattern */
+:root{
+  --bg:#f7f2eb;
+  --muted:#7b6b5a;
+  --accent:#8a5a3b;
+  --accent-2:#c9a66b;
+  --text:#2b2b2b;
+  --card:#fff8f2;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;line-height:1.5;color:var(--text);background:var(--bg)}
+.container{max-width:980px;margin:0 auto;padding:2rem}
+.container.narrow{max-width:760px}
+.site-pattern{position:fixed;right:0;bottom:0;width:320px;height:320px;opacity:.12;pointer-events:none}
+.site-header{background:linear-gradient(180deg,rgba(255,255,255,0.6),rgba(255,255,255,0.95));backdrop-filter: blur(4px);border-bottom:1px solid rgba(0,0,0,0.03)}
+.site-header .container{display:flex;align-items:center;gap:1rem}
+.brand{font-weight:700;color:var(--accent);text-decoration:none}
+.main-nav{margin-left:auto;position:relative}
+.nav-toggle{display:none}
+.main-nav ul{list-style:none;margin:0;padding:0;display:flex;gap:1rem}
+.main-nav a{color:var(--muted);text-decoration:none}
+.cta.primary{margin-left:1rem;background:var(--accent);color:#fff;padding:.6rem .9rem;border-radius:6px;text-decoration:none}
+.hero{padding:4rem 0;background:transparent}
+.hero h1{font-size:clamp(1.4rem,2.6vw,2.2rem);margin:0 0 .5rem}
+.lead{color:var(--muted);margin:0 0 1rem}
+.hero-actions{display:flex;gap:.6rem;align-items:center}
+.btn{background:var(--accent-2);border:none;color:#222;padding:.6rem .9rem;border-radius:8px;text-decoration:none;cursor:pointer}
+.btn.ghost{background:transparent;border:1px solid rgba(0,0,0,0.06)}
+.btn.large{padding:1rem 1.2rem;font-weight:700}
+.narrow .card{background:var(--card);padding:1rem;border-radius:8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem}
+.card h3{margin:0 0.5rem 0.4rem;color:var(--accent)}
+.testimonials{list-style:none;padding:0;margin:0;display:grid;gap:.6rem}
+.testimonials li{background:var(--card);padding:.8rem;border-radius:8px}
+.steps{list-style:none;padding:0;margin:0;display:grid;gap:.8rem}
+.steps li{background:linear-gradient(180deg,#fff,#fff8f6);padding:.8rem;border-radius:8px}
+.cta-block{background:linear-gradient(90deg,rgba(200,166,107,0.08),transparent);padding:2rem;border-radius:10px}
+.faq-preview dl{margin:0}
+.faq-preview dt{font-weight:700}
+.faq-preview dd{margin:0 0 1rem 0;color:var(--muted)}
+.site-footer{border-top:1px solid rgba(0,0,0,0.05);padding:2rem 0;margin-top:2rem}
+.site-footer .container{display:flex;justify-content:space-between;gap:1rem}
+.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(10,10,10,0.35);padding:2rem}
+.modal[aria-hidden="false"]{display:flex}
+.modal-panel{background:#fff;padding:1.2rem;border-radius:10px;max-width:540px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,0.12)}
+.modal-close{background:none;border:0;font-size:1.4rem;position:absolute;right:1.4rem;top:1rem}
+.exercise-controls{display:flex;gap:1rem;flex-wrap:wrap}
+.exercise-area{margin-top:1rem;min-height:120px}
+.modal-actions{display:flex;gap:.6rem;justify-content:flex-end;margin-top:1rem}
+/* reveal animations */
+.reveal{opacity:0;transform:translateY(10px);transition:opacity .5s ease,transform .5s ease}
+.reveal.visible{opacity:1;transform:none}
+/* reduced motion fallback */
+@media (prefers-reduced-motion: reduce){
+  .reveal{transition:none}
+}
+/* responsive */
+@media (max-width:720px){
+  .main-nav ul{display:none}
+  .nav-toggle{display:inline-block}
+  .site-header .container{align-items:flex-start}
+}

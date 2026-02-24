@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7faf9;--card:#ffffff;--muted:#556;--accent:#6b5cff;--accent-2:#00b894;--glass:rgba(255,255,255,0.6)}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;line-height:1.45;color:var(--muted);background:linear-gradient(180deg,#fbfdff, #f1f6fb)}
+    header{position:relative;padding:2rem 1.25rem;background:url('assets/img/pattern.svg') repeat center/300px;border-bottom:1px solid rgba(0,0,0,0.04)}
+    .wrap{max-width:980px;margin:0 auto}
+    nav{display:flex;gap:1rem;align-items:center;justify-content:space-between}
+    .brand{font-weight:700;color:var(--accent);letter-spacing:0.2px}
+    .navlinks{display:flex;gap:.6rem}
+    .navlinks a{color:var(--muted);text-decoration:none;padding:.35rem .6rem;border-radius:6px;font-size:.95rem}
+    .navlinks a:hover{background:rgba(107,92,255,0.06);color:var(--accent)}
+    main{max-width:980px;margin:1.5rem auto;padding:1rem}
+
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:1.25rem;align-items:start}
+    .panel{background:var(--card);padding:1.25rem;border-radius:12px;box-shadow:0 6px 20px rgba(30,40,60,0.06)}
+    .lead{font-size:1.05rem;color:#2f3b45;margin:0 0 .6rem}
+    h1{margin:0 0 .4rem;font-size:1.45rem;color:#14202a}
+    p.small{margin:.2rem 0;color:#5b6b74}
+
+    /* Mood-to-Method */
+    .mood-card{padding:1rem;border-radius:10px;background:linear-gradient(180deg,rgba(107,92,255,0.04),rgba(0,184,148,0.02));}
+    .moods{display:flex;flex-wrap:wrap;gap:.5rem;margin:.5rem 0}
+    .mood{padding:.45rem .65rem;border-radius:999px;background:rgba(0,0,0,0.03);cursor:pointer;font-weight:600;color:#1f2b33}
+    .mood.active{background:var(--accent);color:white;box-shadow:0 6px 18px rgba(107,92,255,0.12)}
+    .recommend{margin-top:.8rem;padding:.75rem;border-radius:8px;background:rgba(255,255,255,0.6);border:1px solid rgba(20,32,42,0.03)}
+    .cta{display:inline-block;margin-top:.8rem;padding:.6rem 1rem;border-radius:8px;background:var(--accent);color:#fff;text-decoration:none;font-weight:700}
+    .cta.secondary{background:transparent;border:1px solid rgba(20,32,42,0.06);color:var(--muted);font-weight:600}
+
+    form.row{display:flex;flex-direction:column;gap:.6rem}
+    label{font-size:.85rem;color:#324147}
+    input,textarea,select{padding:.6rem .7rem;border-radius:8px;border:1px solid rgba(20,32,42,0.06);font-size:1rem}
+    textarea{min-height:120px}
+
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+    .meta{font-size:.9rem;color:#47575f}
+
+    .accordion{margin-top:.8rem}
+    .acc-item{border-top:1px solid rgba(20,32,42,0.03)}
+    .acc-button{width:100%;text-align:left;padding:.8rem;background:transparent;border:0;font-weight:700;color:#20303a;display:flex;justify-content:space-between;align-items:center}
+    .acc-panel{padding:.75rem .8rem;color:#44545a;display:none}
+    .acc-panel.open{display:block}
+
+    .crisis{margin-top:1rem;padding:.7rem;border-radius:8px;background:#fff3f0;border:1px solid #ffd6cf;color:#6b2b26;font-size:.95rem}
+
+    footer{margin:2rem auto;text-align:center;color:#83929a}
+
+    @media (max-width:900px){
+      .hero{grid-template-columns:1fr;}
+      .navlinks{display:none}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav>
+        <div class="brand">{{BUSINESS_NAME}}</div>
+        <div class="navlinks" role="navigation" aria-label="primary">
+          <a href="index.html">Home</a>
+          <a href="about.html">Who I Am</a>
+          <a href="approach.html">How I Work</a>
+          <a href="specialties.html">Focus Areas</a>
+          <a href="fees.html">Rates & Options</a>
+          <a href="faq.html">Help</a>
+          <a href="book.html">Reserve</a>
+          <a href="contact.html">Connect</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="panel">
+        <h1>Let's find a fit that feels right</h1>
+        <p class="lead">If you prefer to write first, use the form. If phone or an online booking works better, call or tap the booking button. I’ll respond within a few business days.</p>
+        <div class="meta">Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a> • Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+
+        <hr style="margin:.9rem 0;border:none;border-top:1px solid rgba(20,32,42,0.04)">
+
+        <div class="mood-card" aria-labelledby="mood-title">
+          <div id="mood-title" style="font-weight:700;color:#24303a">Mood-to-Method selector</div>
+          <p class="small">Pick how you feel today — the site will suggest a focused way to start, and the main booking button will update.</p>
+
+          <div class="moods" role="tablist" aria-label="moods">
+            <button class="mood" data-key="anxious" role="tab">Anxious</button>
+            <button class="mood" data-key="stuck" role="tab">Stuck</button>
+            <button class="mood" data-key="overwhelmed" role="tab">Overwhelmed</button>
+            <button class="mood" data-key="grieving" role="tab">Grieving</button>
+            <button class="mood" data-key="curious" role="tab">Curious</button>
+          </div>
+
+          <div class="recommend" aria-live="polite">
+            <div style="font-weight:800;color:#102226" id="method-title">Recommended: Brief intake</div>
+            <div id="method-copy" style="margin-top:.45rem;color:#2f4046">A short intake gives us a place to start — practical steps to manage immediate stressors and plan next sessions.</div>
+            <div id="method-session" class="small" style="margin-top:.5rem;color:#49606a">Suggested starting time: 50 minutes</div>
+            <a id="primary-cta" class="cta" href="{{PRIMARY_CTA_URL}}">Request an introductory session</a>
+            <a id="alt-cta" class="cta secondary" href="mailto:{{EMAIL}}?subject=Quick%20question" style="margin-left:.6rem">Send a question</a>
+          </div>
+        </div>
+
+        <div style="margin-top:1rem">
+          <h3 style="margin:.3rem 0">Session options — simple framing</h3>
+          <ul style="margin:.4rem 0 0 1.1rem;color:#44545a">
+            <li><strong>Intro session</strong> — 50 minutes; a focused start to set goals and next steps.</li>
+            <li><strong>Focus Session</strong> — 90 minutes; deep work on a single concern so we leave with tangible steps.</li>
+            <li><strong>Short Check-in</strong> — 30 minutes; for quick recalibration or planning between sessions.</li>
+          </ul>
+          <p class="small" style="margin-top:.6rem">I offer a sliding-fee framework for some appointments. Details and scheduling available on the booking page.</p>
+        </div>
+
+      </div>
+
+      <aside class="panel">
+        <h2 style="margin:0 0 .4rem">Connect securely</h2>
+        <p class="small">Use this form to share what’s on your mind. If this is urgent, please see the crisis note below.</p>
+
+        <form id="contact-form" class="row" action="mailto:{{EMAIL}}" method="post" enctype="text/plain">
+          <div class="grid-2">
+            <div>
+              <label for="name">Your name</label>
+              <input id="name" name="name" placeholder="First and last" required>
+            </div>
+            <div>
+              <label for="phone">Phone</label>
+              <input id="phone" name="phone" placeholder="Optional">
+            </div>
+          </div>
+
+          <div>
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="you@example.com" required>
+          </div>
+
+          <div>
+            <label for="mood">What brought you here? (brief)</label>
+            <select id="mood" name="mood">
+              <option value="anxious">Anxious</option>
+              <option value="stuck">Stuck</option>
+              <option value="overwhelmed">Overwhelmed</option>
+              <option value="grieving">Grieving</option>
+              <option value="curious">Curious</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="message">Message</label>
+            <textarea id="message" name="message" placeholder="A few lines about what you'd like support with"></textarea>
+          </div>
+
+          <input type="hidden" name="source" value="contact-page">
+          <div style="display:flex;gap:.5rem;align-items:center;margin-top:.4rem">
+            <button type="submit" class="cta" style="border:none">Send inquiry</button>
+            <a class="cta secondary" href="tel:{{PHONE}}">Call {{PHONE}}</a>
+          </div>
+        </form>
+
+        <div class="accordion" id="confidentiality">
+          <div class="acc-item">
+            <button class="acc-button" aria-expanded="false">Confidentiality & limits <span aria-hidden="true">▾</span></button>
+            <div class="acc-panel">I treat what you share as confidential within legal and ethical boundaries. Exceptions include imminent risk to yourself or others, suspected abuse of a child or vulnerable adult, and court orders. We can discuss confidentiality in more detail during your first meeting.</div>
+          </div>
+
+          <div class="acc-item">
+            <button class="acc-button" aria-expanded="false">Session boundaries & cancellations <span aria-hidden="true">▾</span></button>
+            <div class="acc-panel">Sessions are scheduled for a set time. I ask for at least 24 hours notice for cancellations when possible; late cancellations or no-shows may incur a fee. If you need to reschedule, email or call as soon as you can to find an alternative.</div>
+          </div>
+        </div>
+
+        <div class="crisis" role="region" aria-label="crisis">
+          If you are in immediate danger or believe you may harm yourself or someone else, call emergency services right away. If you're in the US and need support now, contact the Suicide & Crisis Lifeline by dialing or texting 988, or visit 988lifeline.org. If you are elsewhere, please contact your local emergency number or crisis line.
+        </div>
+
+      </aside>
+    </section>
+
+    <section style="margin-top:1rem" class="panel">
+      <h3 style="margin:0 0 .5rem">A few notes from my professional practice</h3>
+      <p class="small">I am a licensed clinician offering psychotherapy and consultation. I aim to describe what I do clearly: I provide clinical support, not medical treatment or guarantees. Together we identify goals, boundaries, and an approach that fits your life. If I’m not the right fit, I will offer referrals or resources.</p>
+
+      <div style="margin-top:.8rem;display:flex;gap:1rem;flex-wrap:wrap">
+        <div style="flex:1;min-width:220px"><strong>Location</strong><div class="small">{{CITY}}, {{STATE}}</div></div>
+        <div style="flex:1;min-width:220px"><strong>Contact</strong><div class="small">{{PHONE}} • {{EMAIL}}</div></div>
+        <div style="flex:1;min-width:220px"><strong>Scheduling</strong><div class="small">Primary booking through the booking link; phone scheduling available by request.</div></div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="small">If you need basic accessibility or language accommodations for appointments, please let me know when you reach out.</div>
+      <div style="margin-top:.6rem">© {{BUSINESS_NAME}} — committed to respectful, confidential care.</div>
+    </footer>
+  </main>
+
+  <script>
+    (function(){
+      const moodMap = {
+        anxious: {
+          title: 'Stabilizing strategies',
+          copy: 'Short-term, practical techniques to lower immediate arousal and build a plan for next steps. We pair symptom-focused work with values-oriented goals.',
+          session: 'Suggested starting time: 50 minutes',
+          cta: 'Book a 50-minute support session'
+        },
+        stuck: {
+          title: 'Exploratory pathway',
+          copy: 'A collaborative look at patterns keeping you stuck and small experiments to try between sessions. Useful for decision fatigue and transitions.',
+          session: 'Suggested starting time: 50–90 minutes',
+          cta: 'Reserve an exploratory session'
+        },
+        overwhelmed: {
+          title: 'Load management plan',
+          copy: 'Tactical prioritization, boundary-setting, and brief skills to reduce overwhelm so you can regain breathing room in your schedule and mind.',
+          session: 'Suggested starting time: 50 minutes',
+          cta: 'Schedule a load-management visit'
+        },
+        grieving: {
+          title: 'Attunement & meaning work',
+          copy: 'A gentle space to process loss, adjust expectations, and tend to grief in ways that honor what matters to you.',
+          session: 'Suggested starting time: 50–90 minutes',
+          cta: 'Book a grief-focused session'
+        },
+        curious: {
+          title: 'Inquiry appointment',
+          copy: 'A short consultation to explore fit, clinical approach, and appropriate next steps — useful if you are assessing options.',
+          session: 'Suggested starting time: 30–50 minutes',
+          cta: 'Request a consultation'
+        }
+      };
+
+      const moodButtons = Array.from(document.querySelectorAll('.mood'));
+      const titleEl = document.getElementById('method-title');
+      const copyEl = document.getElementById('method-copy');
+      const sessionEl = document.getElementById('method-session');
+      const ctaEl = document.getElementById('primary-cta');
+      const moodSelect = document.getElementById('mood');
+
+      function setMood(key, skipFocus){
+        const m = moodMap[key] || moodMap['anxious'];
+        titleEl.textContent = 'Recommended: ' + m.title;
+        copyEl.textContent = m.copy;
+        sessionEl.textContent = m.session;
+        ctaEl.textContent = m.cta;
+        // Update booking URL to include mood as query parameter so booking system can prefill
+        const base = '{{PRIMARY_CTA_URL}}';
+        try{
+          const url = new URL(base, location.href);
+          url.searchParams.set('mood', key);
+          ctaEl.href = url.toString();
+        }catch(e){
+          // fallback: append simple query
+          ctaEl.href = base + (base.includes('?')? '&':'?') + 'mood=' + encodeURIComponent(key);
+        }
+        // Sync select and aria states
+        moodSelect.value = key;
+        moodButtons.forEach(b=>{
+          const k = b.getAttribute('data-key');
+          b.classList.toggle('active', k===key);
+          b.setAttribute('aria-selected', k===key);
+        });
+      }
+
+      moodButtons.forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          setMood(btn.getAttribute('data-key'));
+        });
+        btn.addEventListener('keydown', e=>{
+          if(e.key==='Enter' || e.key===' '){ e.preventDefault(); btn.click(); }
+        });
+      });
+
+      moodSelect.addEventListener('change',()=> setMood(moodSelect.value));
+
+      // Initialize default
+      setMood('anxious');
+
+      // Accordion behavior
+      document.querySelectorAll('.acc-item').forEach(item=>{
+        const btn = item.querySelector('.acc-button');
+        const panel = item.querySelector('.acc-panel');
+        btn.addEventListener('click', ()=>{
+          const open = panel.classList.toggle('open');
+          btn.setAttribute('aria-expanded', open);
+        });
+      });
+
+      // Form - small enhancement: attach mood to subject on mailto fallback
+      const form = document.getElementById('contact-form');
+      form.addEventListener('submit', function(e){
+        // Let normal mailto submission occur for simple clients; for browsers that block, build a mailto link as fallback
+        setTimeout(()=>{
+          // no-op placeholder: server handling recommended for production
+        }, 10);
+      });
+
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Connect — {{BUSINESS_NAME}} • Contact</title>
+  <style>
+    :root{--bg:#0f1113;--card:#0f1618;--muted:#98a3a6;--accent:#a1d9d2;--accent-2:#ffd7a6;--glass:rgba(255,255,255,0.03);--glass-2:rgba(255,255,255,0.02)}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;font-size:16px;color:#e6f3f1;background:linear-gradient(180deg,var(--bg),#071014);}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:transparent;position:sticky;top:0;z-index:40}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:#042b2d;font-weight:700;font-size:18px}
+    nav{display:flex;gap:12px;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:8px;font-weight:600}
+    nav a:hover{color:var(--accent)}
+    .primary-cta{background:linear-gradient(90deg,var(--accent),#8fe2d4);color:#022b29;padding:9px 14px;border-radius:10px;font-weight:700;text-decoration:none}
+
+    .hero{padding:48px 28px;background-image:url('assets/img/pattern.svg');background-size:300px 300px;background-repeat:repeat;}
+    .wrap{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 420px;gap:26px}
+
+    .card{background:linear-gradient(180deg,var(--card),#071617);padding:20px;border-radius:14px;box-shadow:0 6px 24px rgba(2,10,10,0.5);border:1px solid rgba(255,255,255,0.03)}
+    h1{margin:0 0 6px 0;font-size:26px;color:#f3fffd}
+    p.lead{margin:0 0 18px 0;color:var(--muted)}
+
+    form .row{display:flex;gap:10px}
+    input[type=text],input[type=email],textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#dff7f3}
+    textarea{min-height:120px;resize:vertical}
+    .muted{color:var(--muted);font-size:13px}
+    .small{font-size:13px}
+
+    /* Side tools */
+    .tool{margin-bottom:18px}
+    .selector{display:flex;gap:8px;align-items:center}
+    .seat-controls{display:flex;align-items:center;gap:8px;margin-top:8px}
+    .btn{background:var(--accent);padding:9px 12px;border-radius:10px;color:#042b2d;font-weight:700;border:none;cursor:pointer}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--accent-2)}
+    .pill{background:var(--glass);padding:6px 10px;border-radius:999px;color:var(--muted);font-weight:700}
+
+    /* Modal */
+    .modal-backdrop{position:fixed;inset:0;background:linear-gradient(180deg,rgba(2,6,6,0.6),rgba(2,6,6,0.85));display:none;align-items:center;justify-content:center;z-index:60}
+    .modal{width:min(760px,96vw);background:linear-gradient(180deg,#071013,#071617);padding:22px;border-radius:14px;border:1px solid rgba(255,255,255,0.04)}
+    .modal-header{display:flex;justify-content:space-between;align-items:center}
+    .tabs{display:flex;gap:10px;margin:12px 0}
+    .tab{padding:8px 12px;border-radius:10px;background:var(--glass);cursor:pointer;color:var(--muted)}
+    .tab.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#042b29}
+    .breath-circle{width:160px;height:160px;border-radius:50%;margin:14px auto;background:radial-gradient(circle at 30% 30%, rgba(161,217,210,0.18), rgba(255,215,166,0.05));display:flex;align-items:center;justify-content:center}
+
+    .disclaimer{margin-top:16px;padding:12px;background:linear-gradient(180deg,rgba(255,255,255,0.01),rgba(255,255,255,0.02));border-left:3px solid rgba(255,120,100,0.12);border-radius:8px;color:var(--muted);font-size:13px}
+
+    footer{padding:18px 28px;color:var(--muted);font-size:13px}
+
+    @media (max-width:980px){.wrap{grid-template-columns:1fr;}.hero{padding:24px}nav{display:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">SB</div>
+      <div>
+        <div style="font-weight:800;color:#e8fffb">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="events.html">Gatherings</a>
+      <a href="private-sessions.html">Private Rituals</a>
+      <a href="pricing.html">Plan & Price</a>
+      <a href="about.html">Where I Sound</a>
+      <a href="faq.html">FAQ & Care</a>
+      <a class="primary-cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+    </nav>
+  </header>
+
+  <main class="hero">
+    <div class="wrap">
+      <section>
+        <div class="card">
+          <h1>Say hello — or choose a practical path to join</h1>
+          <p class="lead">Reach out for questions, bespoke bookings in {{CITY}}, {{STATE}}, or to ask about bringing a cohort. Prefer a quick, useful demo? Try the guided exercise below or reserve a tentative seat.</p>
+
+          <form id="contactForm" onsubmit="return false;">
+            <div class="row" style="margin-bottom:10px">
+              <input id="name" type="text" placeholder="Your name" required>
+              <input id="email" type="email" placeholder="Email" required>
+            </div>
+            <div style="margin-bottom:10px">
+              <input id="phone" type="text" placeholder="Phone (optional) — e.g. {{PHONE}}">
+            </div>
+            <div style="margin-bottom:10px">
+              <select id="inquiryType">
+                <option>General question</option>
+                <option>Book a group session</option>
+                <option>Private session</option>
+                <option>Press / partnership</option>
+              </select>
+            </div>
+            <div style="margin-bottom:12px">
+              <textarea id="message" placeholder="Tell us what you're after — date ranges, group size, intentions..." ></textarea>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="btn" id="sendBtn">Send message</button>
+              <button class="btn ghost" id="bookNow" onclick="location.href='book.html';return false;">See availability</button>
+              <div class="pill muted">or call <a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none">{{PHONE}}</a></div>
+            </div>
+          </form>
+
+          <div class="disclaimer" style="margin-top:14px">
+            <strong>Contraindications & care:</strong> Sound gatherings can amplify relaxation and somatic release. If you are pregnant, have uncontrolled epilepsy, serious heart or blood pressure conditions, or are currently undergoing intense psychiatric treatment, consult your clinician before attending. If you take medication that affects consciousness, please check in with a healthcare professional first. If you experience dizziness or discomfort during a session, you are encouraged to step out and notify the facilitator.
+          </div>
+        </div>
+
+        <div style="height:18px"></div>
+
+        <div class="card">
+          <h2 style="margin:0 0 6px 0">Prefer to book a cohort?</h2>
+          <p class="muted">We run cohort offers with tiered guidance. Use the reservation tools at right to test a quick hold, then reach out for custom proposals.</p>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <a href="private-sessions.html" class="btn">Request group pricing</a>
+            <a href="events.html" class="btn ghost">Upcoming gatherings</a>
+          </div>
+        </div>
+
+      </section>
+
+      <aside>
+        <div class="card tool">
+          <h3 style="margin:0">Seat tester & packing list</h3>
+          <p class="muted" style="margin:6px 0 12px 0">Pick a session type, choose seats, then reserve a trial seat or generate a practical packing list.</p>
+
+          <label class="small">Session</label>
+          <select id="sessionType">
+            <option value="sound_bath">Calm Wave — sound session</option>
+            <option value="gong_immersive">Gong Immersion</option>
+            <option value="guided_vocal">Vocal Journey</option>
+            <option value="restorative">Restorative & rest</option>
+          </select>
+
+          <div class="seat-controls">
+            <button class="btn ghost" id="dec">−</button>
+            <div class="pill" id="seatCount">1</div>
+            <button class="btn ghost" id="inc">+</button>
+            <button class="btn" id="reserve">Reserve</button>
+          </div>
+
+          <div id="reserveResult" class="muted small" style="margin-top:8px">Capacity check: unknown</div>
+
+          <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03);margin:12px 0">
+
+          <h4 style="margin:0 0 6px 0">Packing list builder</h4>
+          <p class="muted">Tailored list appears based on session flavour and number of seats.</p>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn ghost" id="genList">Generate</button>
+            <button class="btn ghost" id="copyList">Copy</button>
+          </div>
+
+          <ul id="packingList" style="margin-top:10px;color:var(--muted)"></ul>
+        </div>
+
+        <div class="card tool">
+          <h3 style="margin:0">Try it now — a tiny guided practice</h3>
+          <p class="muted" style="margin:6px 0 12px 0">No audio required. Choose a short exercise to centre yourself: breath, a journaling prompt, or a micro-intention sequence.</p>
+          <div style="display:flex;gap:8px">
+            <button class="btn" id="openModal">Try the exercise</button>
+            <a class="btn ghost" href="faq.html">Care notes</a>
+          </div>
+        </div>
+
+        <div class="card tool">
+          <h4 style="margin:0">Contact directory</h4>
+          <p class="muted" style="margin:6px 0">Email — <a href="mailto:{{EMAIL}}" style="color:var(--accent)">{{EMAIL}}</a></p>
+          <p class="muted">Location — {{CITY}}, {{STATE}}</p>
+          <div style="margin-top:8px">
+            <a class="btn" href="book.html">Tentative hold</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <div class="modal-backdrop" id="modal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-header">
+        <div>
+          <div id="modalTitle" style="font-weight:800;color:#e6fffb">Micro practice</div>
+          <div class="muted small">Choose a 2–6 minute guided micro practice. No sign-in, just presence.</div>
+        </div>
+        <button class="btn ghost" id="closeModal">Close</button>
+      </div>
+
+      <div class="tabs" role="tablist">
+        <div class="tab active" data-mode="breath">Breathing rhythm</div>
+        <div class="tab" data-mode="journal">Journaling prompt</div>
+        <div class="tab" data-mode="intention">Set an intention</div>
+      </div>
+
+      <div id="modalBody">
+        <!-- Breathing -->
+        <div data-panel="breath">
+          <div class="breath-circle" id="breathCircle"><div id="breathLabel" style="font-weight:700;color:#01302f">Ready</div></div>
+          <div style="display:flex;gap:8px;justify-content:center;align-items:center;margin-top:8px">
+            <button class="btn" id="startBreath">Start</button>
+            <button class="btn ghost" id="pauseBreath">Pause</button>
+            <div class="pill" id="cycleCount">Cycles: 0</div>
+          </div>
+          <div class="muted small" style="margin-top:10px">Default: 4s inhale • 4s hold • 6s exhale. Adjust in settings on the left.</div>
+        </div>
+
+        <!-- Journal -->
+        <div data-panel="journal" style="display:none">
+          <div style="display:flex;gap:10px;align-items:center">
+            <select id="journalTimer"><option value="2">2 min</option><option value="4">4 min</option><option value="6">6 min</option></select>
+            <button class="btn" id="startJournal">Start</button>
+          </div>
+          <div style="margin-top:12px">
+            <div class="muted">Prompt</div>
+            <div id="prompt" style="margin-top:8px;font-weight:700;color:#e9fffb">What do I need most from this hour?</div>
+            <textarea id="journalArea" placeholder="Write freely — your text stays on this device." style="margin-top:10px"></textarea>
+          </div>
+        </div>
+
+        <!-- Intention -->
+        <div data-panel="intention" style="display:none">
+          <div class="muted">A short sequence of reflection and a single-word intention exercise.</div>
+          <div style="margin-top:12px">
+            <button class="btn" id="startIntent">Begin</button>
+          </div>
+          <div id="intentionFlow" style="margin-top:10px;color:var(--muted)"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div style="max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center">
+      <div class="muted">© <span id="year"></span> {{BUSINESS_NAME}} — A cohort-based offering. <span title="disclaimer" style="margin-left:10px;color:var(--muted)">Care information applies — see our FAQ.</span></div>
+      <div class="muted">Built for {{CITY}}, {{STATE}}</div>
+    </div>
+  </footer>
+
+  <script>
+    // Utilities
+    const el = id => document.getElementById(id);
+    // Seat selector
+    let seats = 1; const cap = 20;
+    const seatCountEl = el('seatCount');
+    el('inc').addEventListener('click',()=>{ if(seats<10){ seats++; seatCountEl.textContent=seats; }});
+    el('dec').addEventListener('click',()=>{ if(seats>1){ seats--; seatCountEl.textContent=seats; }});
+
+    function randomAvailability(selected){
+      // fake availability logic: vary by session type
+      const type = document.getElementById('sessionType').value;
+      const base = {sound_bath:12,gong_immersive:8,guided_vocal:14,restorative:10}[type]||10;
+      const available = Math.max(0, Math.floor(base - Math.random()*6));
+      return available;
+    }
+
+    el('reserve').addEventListener('click',()=>{
+      const want = seats;
+      const avail = randomAvailability();
+      const out = el('reserveResult');
+      if(avail>=want){
+        out.textContent = `Success — ${want} seat(s) tentatively held. Capacity remaining: ${avail-want}. (local test hold)`;
+        out.style.color = 'var(--accent)';
+        // save to localStorage as a local test hold
+        const holds = JSON.parse(localStorage.getItem('holds')||'[]');
+        holds.push({id:Date.now(), seats:want, type:document.getElementById('sessionType').value});
+        localStorage.setItem('holds',JSON.stringify(holds));
+      } else if(avail>0){
+        out.textContent = `Partial availability: only ${avail} left. Try fewer seats or another date.`;
+        out.style.color = '#ffd7a6';
+      } else {
+        out.textContent = 'No seats available for the selected session. Try another date or contact us.';
+        out.style.color = '#ffb3b3';
+      }
+    });
+
+    // Packing list generator
+    el('genList').addEventListener('click',()=>{
+      const type = document.getElementById('sessionType').value;
+      const n = seats;
+      const list = [];
+      // Basics
+      list.push('Mat or comfortable floor pad');
+      list.push('Light blanket');
+      list.push('Water bottle');
+      list.push('Comfortable clothing');
+      if(type==='gong_immersive'){
+        list.push('Earplugs (optional — loud moments)');
+        list.push('Pillow for neck support');
+      }
+      if(type==='guided_vocal'){
+        list.push('Warm layer for vocal work');
+      }
+      if(type==='restorative'){
+        list.push('Eye covering or mask');
+      }
+      if(n>3) list.push('Sharing note: arrive a touch early to help set up');
+      // render
+      const container = el('packingList'); container.innerHTML='';
+      list.forEach(it=>{const li=document.createElement('li');li.textContent=it;container.appendChild(li)});
+    });
+
+    el('copyList').addEventListener('click',()=>{
+      const items = Array.from(document.querySelectorAll('#packingList li')).map(li=>li.textContent).join('\n');
+      if(!items){ alert('Generate list first'); return; }
+      navigator.clipboard?.writeText(items).then(()=>alert('Packing list copied to clipboard'));
+    });
+
+    // Modal & guided practice
+    const modal = el('modal');
+    el('openModal').addEventListener('click',()=>{ modal.style.display='flex'; });
+    el('closeModal').addEventListener('click',()=>{ stopBreath(); modal.style.display='none'; });
+
+    // Tabs
+    document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+      document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+      t.classList.add('active');
+      const mode = t.getAttribute('data-mode');
+      document.querySelectorAll('[data-panel]').forEach(p=>p.style.display = p.getAttribute('data-panel')===mode?'block':'none');
+      // pause others
+      if(mode!=='breath') stopBreath();
+    }));
+
+    // Breathing exercise: simple timer with inhale/hold/exhale
+    let breathTimer=null; let breathPhase=0; let breathCycles=0; let running=false;
+    const breathLabel = el('breathLabel'); const breathCircle = el('breathCircle'); const cycleCount = el('cycleCount');
+
+    function startBreath(){ if(running) return; running=true; breathPhase=0; breathCycles=0; cycleCount.textContent='Cycles: 0'; nextBreathPhase(); }
+    function stopBreath(){ running=false; if(breathTimer) clearTimeout(breathTimer); breathTimer=null; breathLabel.textContent='Paused'; breathCircle.style.transform='scale(1)'; }
+
+    function nextBreathPhase(){
+      if(!running) return;
+      // 0=inhale,1=hold,2=exhale
+      const pattern = [4,4,6];
+      const labels = ['Inhale','Hold','Exhale'];
+      const colors = ['#bff0ea','#ffd7a6','#c7f3ff'];
+      breathLabel.textContent = labels[breathPhase];
+      breathCircle.style.transition = `transform ${pattern[breathPhase]}s ease-in-out, background-color 350ms`;
+      // animate circle
+      if(breathPhase===0) breathCircle.style.transform='scale(1.18)';
+      if(breathPhase===1) breathCircle.style.transform='scale(1.05)';
+      if(breathPhase===2) breathCircle.style.transform='scale(0.86)';
+      breathCircle.style.background = `radial-gradient(circle at 30% 30%, ${colors[breathPhase]}33, rgba(255,255,255,0.02))`;
+      breathTimer = setTimeout(()=>{
+        breathPhase = (breathPhase+1)%3;
+        if(breathPhase===0) { breathCycles++; cycleCount.textContent = 'Cycles: '+breathCycles; }
+        nextBreathPhase();
+      }, pattern[breathPhase]*1000);
+    }
+
+    el('startBreath').addEventListener('click',startBreath);
+    el('pauseBreath').addEventListener('click',stopBreath);
+
+    // Journal prompt generator and timer
+    const prompts = [
+      'What did I notice about my body today?',
+      'One thing I can let go of right now is...',
+      'A small win this week that I haven’t acknowledged is...',
+      'What would make this day feel kinder to me?',
+      'What feels important to hold in mind today?'
+    ];
+    function randomPrompt(){ return prompts[Math.floor(Math.random()*prompts.length)]; }
+    el('prompt').textContent = randomPrompt();
+
+    let journalInterval=null; el('startJournal').addEventListener('click',()=>{
+      const minutes = Number(el('journalTimer').value)||2; const area = el('journalArea');
+      el('prompt').textContent = randomPrompt();
+      area.value='';
+      let t = minutes*60; area.placeholder = `You have ${minutes} minutes — write freely.`;
+      journalInterval = setInterval(()=>{
+        t--; if(t<=0){ clearInterval(journalInterval); alert('Time! If you liked this, keep writing or save to your device.'); }
+      },1000);
+    });
+
+    // Save journal locally
+    el('journalArea').addEventListener('input',()=>{
+      localStorage.setItem('micro_journal', el('journalArea').value);
+    });
+    el('journalArea').value = localStorage.getItem('micro_journal')||'';
+
+    // Intention flow
+    el('startIntent').addEventListener('click',()=>{
+      const flow = el('intentionFlow'); flow.innerHTML='';
+      const steps = [
+        'Take three slow breaths to settle.',
+        'Remember a moment when you felt steady.',
+        'Choose one word you want to inhabit for the next hour.'
+      ];
+      let i=0; const id = setInterval(()=>{
+        if(i>=steps.length){ clearInterval(id); const word = prompt('Pick one word as your intention (e.g. "softness", "focus")'); if(word){ flow.innerHTML = `<div style="font-weight:800;color:var(--accent)">Your intention: ${word}</div>`; } return; }
+        flow.innerHTML = '<div>'+steps[i]+'</div>';
+        i++;
+      }, 2600);
+    });
+
+    // Small UX
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Contact form send (mock)
+    el('sendBtn').addEventListener('click',()=>{
+      const payload = {name:el('name').value,email:el('email').value,phone:el('phone').value,type:el('inquiryType').value,message:el('message').value};
+      if(!payload.name||!payload.email){ alert('Please give a name and email'); return; }
+      // fake send
+      el('sendBtn').textContent='Sent ✓'; el('sendBtn').disabled=true; setTimeout(()=>{ el('sendBtn').textContent='Send message'; el('sendBtn').disabled=false; alert('Message delivered (simulated). We will reply to '+payload.email); },900);
+    });
+
+    // small accessibility: close modal with ESC
+    document.addEventListener('keydown',(e)=>{ if(e.key==='Escape'){ modal.style.display='none'; stopBreath(); } });
+  </script>
+</body>
+</html>

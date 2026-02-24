@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfcff;--muted:#666;--accent:#6b8cff;--accent-2:#00bfa6;font-family:Georgia,serif}
+    body{margin:0;background:linear-gradient(180deg,#fbfcff,#fffef9);color:#111}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 26px;border-bottom:1px solid #eee}
+    .logo{font-weight:900;background:linear-gradient(90deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+    nav a{margin:0 8px;color:#333;text-decoration:none}
+    .container{max-width:1000px;margin:28px auto;padding:0 20px}
+    .lead{display:grid;grid-template-columns:1fr 320px;gap:20px}
+    h1{margin:0;font-size:28px}
+    .story{background:#fff;padding:18px;border-radius:12px;box-shadow:0 10px 30px rgba(20,20,30,0.04)}
+    .sidebar{padding:18px;border-radius:12px;background:linear-gradient(90deg,rgba(107,140,255,0.05),rgba(0,191,166,0.03))}
+    .framework{margin-top:18px;display:flex;gap:12px}
+    .pill{background:#fff;padding:10px;border-radius:10px;border:1px solid #f0f0f5}
+    .wheel{margin-top:16px}
+    .cta{display:inline-block;padding:10px 14px;border-radius:10px;background:var(--accent);color:#fff;text-decoration:none}
+    .faq{margin-top:18px}
+    .faq h4{margin:10px 0 6px}
+    .faq p{margin:6px 0;color:var(--muted)}
+    footer{margin-top:22px;padding:18px;text-align:center;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Shop</a>
+      <a href="pricing.html">Memberships</a>
+      <a href="about.html">About</a>
+      <a href="book.html">Schedule</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="lead">
+      <div class="story">
+        <h1>Quietly designed scent care</h1>
+        <p style="color:var(--muted)">We blend knowledge of aromatic material with practical, repeatable approaches you can use at home. Our practice favors safety, small rituals, and clear guidance. Results vary and are not medical advice; essential oils and aromatic practices may support everyday wellbeing.</p>
+        <div class="framework">
+          <div class="pill">
+            <strong>Observe</strong>
+            <div style="color:var(--muted);font-size:13px">Notice what you need right now — energy, rest, or steadiness.</div>
+          </div>
+          <div class="pill">
+            <strong>Choose</strong>
+            <div style="color:var(--muted);font-size:13px">Pick a short, repeatable method or blend suited to that moment.</div>
+          </div>
+          <div class="pill">
+            <strong>Practice</strong>
+            <div style="color:var(--muted);font-size:13px">Small steps repeated are how scent becomes a helpful cue.</div>
+          </div>
+        </div>
+
+        <div style="margin-top:16px">
+          <a class="cta" href="book.html">Schedule a consult</a>
+        </div>
+      </div>
+
+      <aside class="sidebar">
+        <strong style="display:block">Meet the approach</strong>
+        <p style="color:var(--muted);font-size:13px">We use focused, safety-minded blending and stepwise programs to help you build scent habits. We advise on dilution, patch tests, pet safety, and pregnancy considerations.</p>
+
+        <div style="margin-top:12px">
+          <strong>Try the Mood-to-Method</strong>
+          <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+            <button class="mood" data-mood="calm" style="padding:8px 10px;border-radius:8px;border:1px solid #eee;background:#fff">Calm</button>
+            <button class="mood" data-mood="alert" style="padding:8px 10px;border-radius:8px;border:1px solid #eee;background:#fff">Alert</button>
+            <button class="mood" data-mood="sleep" style="padding:8px 10px;border-radius:8px;border:1px solid #eee;background:#fff">Sleep</button>
+          </div>
+          <div id="aboutMethod" style="margin-top:10px;color:var(--muted);font-size:13px">Select a state to see suggested ways to incorporate scent safely.</div>
+        </div>
+
+      </aside>
+    </section>
+
+    <section class="wheel">
+      <div style="display:flex;gap:18px;align-items:flex-start">
+        <div style="flex:1" class="card">
+          <strong>Interactive Aroma Wheel</strong>
+          <p style="color:var(--muted);margin-top:8px">Hover segments to explore top, middle, and base notes and how they might be combined.</p>
+          <div style="margin-top:12px;text-align:center">
+            <svg id="wheel2" viewBox="0 0 200 200" width="320" height="320">
+              <g transform="translate(100,100)">
+                <circle r="92" fill="#fff" stroke="#f2f2f6"/>
+                <g id="segments">
+                  <path id="segTop" d="M0,-92 A92,92 0 0,1 79,-51 L0,0 Z" fill="#ffe7d6" stroke="#fff"/>
+                  <path id="segMid" d="M79,-51 A92,92 0 0,1 79,51 L0,0 Z" fill="#e6f7ff" stroke="#fff"/>
+                  <path id="segBase" d="M79,51 A92,92 0 0,1 0,92 L0,0 Z" fill="#e7ffd9" stroke="#fff"/>
+                </g>
+                <circle r="46" fill="#fff"/>
+                <text x="0" y="6" text-anchor="middle" style="font-size:12px;fill:#444">Notes</text>
+              </g>
+            </svg>
+          </div>
+          <div style="margin-top:12px">
+            <div style="font-weight:700" id="wheelName">Hover to learn</div>
+            <div style="color:var(--muted);font-size:13px" id="wheelDesc">Top: bright; Middle: body; Base: lingering anchors.</div>
+          </div>
+        </div>
+
+        <aside style="width:320px">
+          <div class="pill" style="padding:14px">
+            <strong>Philosophy</strong>
+            <p style="color:var(--muted);font-size:13px;margin-top:8px">We believe small, repeatable scent practices can be accessible. Guidance prioritizes safety and clarity: dilution, testing, and consideration of household factors are standard parts of our care.</p>
+          </div>
+
+          <div style="margin-top:12px" class="pill">
+            <strong>FAQ</strong>
+            <div style="font-size:13px;color:var(--muted);margin-top:8px">
+              <div><strong>Patch test:</strong> Apply a diluted spot to the inside of your arm and observe for 24 hours.</div>
+              <div style="margin-top:6px"><strong>Dilution:</strong> We provide dilution ratios — particularly for topical use — and do not recommend undiluted application.</div>
+              <div style="margin-top:6px"><strong>Pets & pregnancy:</strong> Discuss oils and use with us before using around pets or in pregnancy; some oils may be contraindicated.</div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <footer>
+      <div style="color:var(--muted)">{{BUSINESS_NAME}} • Serving {{CITY}}, {{STATE}} • <a href="contact.html">Contact</a></div>
+    </footer>
+  </main>
+
+  <script>
+    // Mood-to-Method quick handler on about
+    const moodBtns = document.querySelectorAll('.mood');
+    const aboutMethod = document.getElementById('aboutMethod');
+    const aboutMap = {
+      calm:'A short breathing ritual with lavender and bergamot may support relaxation. Use a gentle diffusion for 10–15 minutes.',
+      alert:'A citrus-focused, transient diffusion or a spritz may lift attention for a focused window.',
+      sleep:'A warm, base-forward roll with safe dilution may help establish a pre-sleep routine.'
+    };
+    moodBtns.forEach(b=>b.addEventListener('click', ()=>{ aboutMethod.textContent = aboutMap[b.dataset.mood] || aboutMap.calm }))
+
+    // aroma wheel hover
+    const segTop = document.getElementById('segTop');
+    const segMid = document.getElementById('segMid');
+    const segBase = document.getElementById('segBase');
+    const wheelName = document.getElementById('wheelName');
+    const wheelDesc = document.getElementById('wheelDesc');
+
+    const wmap = {
+      segTop:{name:'Top notes',desc:'Citrus, light herbs and zesty oils that appear quickly and fade sooner.'},
+      segMid:{name:'Middle notes',desc:'Floral and spicy accords that create the character of the blend.'},
+      segBase:{name:'Base notes',desc:'Resins, woods and vanillic notes that persist and ground a blend.'}
+    };
+
+    function hoverSegment(elKey){
+      const item = wmap[elKey];
+      wheelName.textContent = item.name;
+      wheelDesc.textContent = item.desc;
+    }
+    function leaveWheel(){ wheelName.textContent = 'Hover to learn'; wheelDesc.textContent = 'Top: bright; Middle: body; Base: lingering anchors.' }
+
+    segTop.addEventListener('mouseenter', ()=>hoverSegment('segTop'));
+    segMid.addEventListener('mouseenter', ()=>hoverSegment('segMid'));
+    segBase.addEventListener('mouseenter', ()=>hoverSegment('segBase'));
+    segTop.addEventListener('mouseleave', leaveWheel);
+    segMid.addEventListener('mouseleave', leaveWheel);
+    segBase.addEventListener('mouseleave', leaveWheel);
+  </script>
+</body>
+</html>

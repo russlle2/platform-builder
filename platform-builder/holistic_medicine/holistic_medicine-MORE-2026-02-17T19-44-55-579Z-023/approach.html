@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Method — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7faf7;--accent:#0a6b5a;--muted:#6d6d6d;font-family:Inter,system-ui,Segoe UI,Roboto,Arial}
+    body{margin:0;background:var(--bg);color:#111}
+    .container{max-width:980px;margin:28px auto;padding:22px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;margin-left:12px}
+    .lead{margin-top:8px;color:var(--muted)}
+    .pillars{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap}
+    .pillar{flex:1 1 220px;background:#fff;padding:14px;border-radius:10px;border-left:6px solid var(--accent);opacity:0;transform:translateY(12px);transition:opacity 420ms ease,transform 420ms ease}
+    .pillar.is-revealed{opacity:1;transform:none}
+    .pillar h3{margin-top:0}
+    .notes{margin-top:18px;background:#fff;padding:12px;border-radius:10px}
+    .planner{margin-top:18px;background:linear-gradient(180deg,#fff, #fbfbfb);padding:12px;border-radius:10px;border:1px solid rgba(10,107,90,0.06)}
+    .planner label{display:block;margin-top:8px;font-size:13px}
+    .planner input[type=text],.planner textarea{width:100%;padding:8px;border-radius:8px;border:1px solid #eaeaea}
+    .cta-row{display:flex;gap:10px;margin-top:12px}
+    .btn{padding:10px 14px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none;border:0}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>Method</h1>
+        <div class="lead">A practical, stepwise approach to integrate different supports into everyday life.</div>
+      </div>
+      <nav aria-label="Method nav">
+        <a href="index.html">Overview</a>
+        <a href="services.html">Offerings</a>
+        <a href="conditions.html">Concerns</a>
+        <a href="about.html">Who</a>
+      </nav>
+    </header>
+
+    <section>
+      <h2>Core pillars</h2>
+      <div class="pillars">
+        <div class="pillar reveal" data-reveal>
+          <h3>Signal: measurement</h3>
+          <p class="muted">Start small and track one reliable signal. The signal guides what we change next.</p>
+        </div>
+        <div class="pillar reveal" data-reveal>
+          <h3>Leverage: tiny experiments</h3>
+          <p class="muted">Short, testable adjustments replace sweeping promises. We treat each change as data.</p>
+        </div>
+        <div class="pillar reveal" data-reveal>
+          <h3>Structure: routines that hold</h3>
+          <p class="muted">Pack supports into daily anchors so practices survive busy weeks.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="notes" aria-labelledby="case-notes">
+      <h2 id="case-notes">Practical examples</h2>
+      <p class="muted">Brief, de-identified notes show how small tests can change a day-to-day pattern without overhauling a life: one client added a 7-minute pre-sleep routine and shifted wake energy across 3 weeks; another chose a single mid-day walk to break prolonged sitting, improving afternoon clarity. These are examples, not promises.</p>
+    </section>
+
+    <section class="planner" aria-labelledby="planner-title">
+      <h2 id="planner-title">Session Planner</h2>
+      <p class="muted">Use this tool to sketch the structure of a first meeting and export a one-page summary to save or share.</p>
+
+      <label for="a-name">Your name</label>
+      <input id="a-name" type="text" placeholder="Optional">
+
+      <label for="a-focus">Main focus for session</label>
+      <input id="a-focus" type="text" placeholder="e.g., improve afternoon focus">
+
+      <label for="a-expect">Biggest barrier right now</label>
+      <input id="a-expect" type="text" placeholder="What gets in the way?">
+
+      <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
+        <button id="a-build" class="btn">Sketch session</button>
+        <button id="a-copy" class="btn" style="background:#333">Copy summary</button>
+        <div id="a-status" class="muted" aria-live="polite" style="margin-left:8px"></div>
+      </div>
+
+      <pre id="a-output" style="margin-top:12px;background:#fafafa;padding:10px;border-radius:8px;border:1px solid #eee;min-height:88px"></pre>
+    </section>
+
+    <footer style="margin-top:18px;color:var(--muted);font-size:13px">Educational content only. For clinical decisions, consult your healthcare professional. To schedule, reach <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or use the book page.</footer>
+  </div>
+
+  <script>
+    // Reveal support with reduced-motion consideration
+    (function(){
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const list = document.querySelectorAll('.reveal');
+      if(reduced){list.forEach(i=>i.classList.add('is-revealed'));return}
+      const obs = new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('is-revealed');obs.unobserve(e.target)}}),{threshold:0.14});
+      list.forEach(i=>obs.observe(i));
+    })();
+
+    // Planner logic (another local instance)
+    (function(){
+      const build = document.getElementById('a-build');
+      const copyBtn = document.getElementById('a-copy');
+      const output = document.getElementById('a-output');
+      const status = document.getElementById('a-status');
+
+      function gather(){
+        const name = document.getElementById('a-name').value.trim();
+        const focus = document.getElementById('a-focus').value.trim() || 'General support';
+        const barrier = document.getElementById('a-expect').value.trim() || 'Unclear barrier';
+        return {name,focus,barrier};
+      }
+
+      function buildText(d){
+        const title = `${d.name?d.name + ' — ':''}${d.focus}`;
+        const lines = [];
+        lines.push(title);
+        lines.push('Primary barrier: ' + d.barrier);
+        lines.push('\nSuggested flow for first session:');
+        lines.push('- 15 min: clarify priorities and a specific short-term metric');
+        lines.push('- 35–45 min: co-design 2 micro-experiments and brief practices');
+        lines.push('- 10 min: concrete planning and scheduling of the first week');
+        lines.push('\nBring this to your session to focus the time. Not medical advice.');
+        return lines.join('\n');
+      }
+
+      build.addEventListener('click',()=>{const d=gather();output.textContent=buildText(d);status.textContent='Ready';});
+      copyBtn.addEventListener('click',async ()=>{try{await navigator.clipboard.writeText(output.textContent||'');status.textContent='Copied';}catch(e){status.textContent='Unable to copy';}});
+    })();
+  </script>
+</body>
+</html>

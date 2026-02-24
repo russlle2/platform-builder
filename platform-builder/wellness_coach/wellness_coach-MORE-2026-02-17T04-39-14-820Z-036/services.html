@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fffdfb;--ink:#0b1220;--muted:#6b7280;--accent:#059669;--card:#fff}
+    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,Arial;background:var(--bg);color:var(--ink)}
+    header{padding:20px;background:linear-gradient(180deg,rgba(5,150,105,0.06),transparent),url('assets/img/pattern.svg');background-size:360px 360px}
+    nav{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+    .logo{font-weight:900}
+    .links{display:flex;gap:12px}
+    .links a{color:var(--ink);text-decoration:none;font-weight:600}
+    main{max-width:1100px;margin:26px auto;padding:0 20px}
+    .grid{display:grid;grid-template-columns:1fr 300px;gap:18px}
+    .panel{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 10px 30px rgba(2,6,23,0.04)}
+    h1{margin:0 0 8px 0}
+    .muted{color:var(--muted)}
+    .service{border-radius:10px;padding:14px;background:linear-gradient(180deg,#f8fff8,white);margin-bottom:12px}
+    .price{font-weight:800;color:var(--accent)}
+    .cta{display:inline-block;padding:8px 12px;background:var(--accent);color:#fff;border-radius:10px;text-decoration:none;font-weight:700}
+    .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+    .reveal.active{opacity:1;transform:none}
+    @media (prefers-reduced-motion: reduce){.reveal{transition:none!important;opacity:1!important;transform:none!important}}
+    @media (max-width:900px){.grid{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <div class="logo">{{BUSINESS_NAME}}</div>
+      <div class="links">
+        <a href="index.html">Home</a>
+        <a href="about.html">Story</a>
+        <a href="services.html">Offerings</a>
+        <a href="programs.html">Courses</a>
+        <a href="contact.html">Reach</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <div class="grid">
+      <section class="panel reveal" data-reveal>
+        <h1>Offerings and formats</h1>
+        <p class="muted">Practical, scoped services for habit change, delivered as single sessions, short intensives, or multi-week cohorts. No medical promises — only tools and steady practice.</p>
+
+        <div style="margin-top:14px">
+          <div class="service">
+            <div style="display:flex;justify-content:space-between;align-items:center"><div><strong>Pulse Check</strong><div class="muted" style="font-size:13px">Single 45-minute session</div></div><div class="price">$95</div></div>
+            <div class="muted" style="margin-top:8px">A focused diagnostic: three immediate habit tweaks and a one-week experiment to try.</div>
+          </div>
+
+          <div class="service">
+            <div style="display:flex;justify-content:space-between;align-items:center"><div><strong>Habit Architecture</strong><div class="muted" style="font-size:13px">3-week intensive</div></div><div class="price">$350</div></div>
+            <div class="muted" style="margin-top:8px">Design and test a small system — daily micro-tasks, accountability touchpoints, and a tidy playbook.</div>
+          </div>
+
+          <div class="service">
+            <div style="display:flex;justify-content:space-between;align-items:center"><div><strong>Cohort Catalyst</strong><div class="muted" style="font-size:13px">8-week cohort (6–10 people)</div></div><div class="price">From $680</div></div>
+            <div class="muted" style="margin-top:8px">Group learning, ongoing habit practice, and weekly check-ins to build momentum together.</div>
+          </div>
+        </div>
+
+        <div style="margin-top:14px">
+          <a class="cta" href="{{PRIMARY_CTA_URL}}">Book an intro</a>
+          <a style="margin-left:10px" class="try-btn" id="open-exercise-2">Try a quick practice</a>
+        </div>
+      </section>
+
+      <aside class="panel reveal" data-reveal>
+        <div style="font-weight:800">How pricing works</div>
+        <p class="muted" style="margin-top:8px">Simple tiers based on time and group size. Cohorts include design materials and a short playbook. Drop-in sessions are straightforward — pay per session.</p>
+
+        <h4 style="margin-top:12px">Extras</h4>
+        <ul style="padding-left:18px;color:var(--muted);">
+          <li>Custom playbook — one-time $75</li>
+          <li>Private coaching add-ons — priced per hour</li>
+        </ul>
+
+        <div style="margin-top:12px;color:var(--muted)">Questions? Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Modal (reused) -->
+  <div id="modal2" style="display:none;position:fixed;inset:0;background:rgba(2,6,23,0.5);align-items:center;justify-content:center;padding:20px;z-index:60">
+    <div style="background:#fff;padding:18px;border-radius:12px;max-width:640px;width:100%">
+      <div style="display:flex;justify-content:space-between;align-items:center"><strong id="m-title">Quick practice</strong><button id="close2">✕</button></div>
+      <div id="m-body" style="margin-top:12px;color:var(--muted)">Choose a practice to try breathing or a short journaling prompt.</div>
+      <div style="margin-top:12px;display:flex;gap:8px"><button class="cta" id="breath2">Start Breathing</button><button class="try-btn" id="journal2">Start Journaling</button></div>
+    </div>
+  </div>
+
+  <script>
+    // reveal
+    (function(){
+      const prefReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const nodes = document.querySelectorAll('[data-reveal]');
+      if(prefReduced){nodes.forEach(n=>n.classList.add('active'));return}
+      const io = new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('active');io.unobserve(e.target)}}),{threshold:0.12});
+      nodes.forEach(n=>io.observe(n));
+    })();
+
+    // small modal exercise reuse
+    (function(){
+      const modal = document.getElementById('modal2');
+      document.getElementById('open-exercise-2').addEventListener('click',function(e){e.preventDefault();modal.style.display='flex'});
+      document.getElementById('close2').addEventListener('click',()=>modal.style.display='none');
+      document.getElementById('breath2').addEventListener('click',()=>{
+        alert('Breathing exercise: inhale 4s, hold 4s, exhale 6s — repeat 3 times.');
+      });
+      document.getElementById('journal2').addEventListener('click',()=>{
+        const ans = prompt('Two-minute prompt: What would make the next hour easier?');
+        if(ans) localStorage.setItem('quick_note', ans);
+      });
+    })();
+  </script>
+</body>
+</html>

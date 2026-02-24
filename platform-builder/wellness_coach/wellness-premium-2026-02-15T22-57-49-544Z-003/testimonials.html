@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Testimonials — Swell & Still Wellness</title>
+  <meta name="description" content="Real client stories and outcomes from Swell & Still Wellness. Explore transformations and results from our playful, premium coaching." />
+  <link rel="canonical" href="/testimonials.html" />
+  <style>
+    :root {
+      --teal: #075e63;
+      --teal-ink: #0f2f2d;
+      --teal-deep: #034347;
+      --sand: #e9decf;
+      --off: #f7f5ef;
+      --accent: #f5b44d;
+      --success: #2e7d32;
+      --danger: #b00020;
+      --radius: 16px;
+      --shadow: 0 10px 30px rgba(7, 94, 99, 0.15);
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--teal-ink);
+      background: var(--off);
+      line-height: 1.55;
+    }
+    a { color: var(--teal); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { width: min(1200px, 92vw); margin: 0 auto; }
+    header {
+      position: sticky; top: 0; z-index: 50;
+      background: linear-gradient(180deg, #ffffffcc, #ffffffcc), url('assets/img/pattern.svg');
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid #e6e2d9;
+    }
+    .nav { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: 0.2px; color: var(--teal-deep); }
+    .brand-badge { width: 36px; height: 36px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, var(--accent), #ffcf74); border: 3px solid var(--teal); box-shadow: var(--shadow); }
+    .menu { display: flex; gap: 20px; align-items: center; }
+    .menu a { font-weight: 600; color: var(--teal-deep); padding: 8px 10px; border-radius: 10px; }
+    .menu a:hover { background: var(--sand); text-decoration: none; }
+    .cta { background: var(--teal); color: #fff; padding: 10px 16px; border-radius: 999px; border: 2px solid var(--teal); box-shadow: var(--shadow); font-weight: 700; }
+    .cta:hover { background: var(--teal-deep); text-decoration: none; }
+    .nav-toggle { display: none; background: var(--teal); color: #fff; border: none; padding: 10px 12px; border-radius: 10px; }
+
+    .hero {
+      position: relative; overflow: clip; isolation: isolate;
+      background: linear-gradient(135deg, var(--sand), #fff 60%);
+    }
+    .hero .wrap { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 36px; align-items: center; padding: 56px 0; }
+    .hero-card { background: #fff; border: 1px solid #eee4d2; border-radius: 24px; padding: 26px; box-shadow: var(--shadow); }
+    .hero h1 { margin: 0 0 10px; font-size: clamp(28px, 3.2vw, 42px); line-height: 1.15; }
+    .eyebrow { text-transform: uppercase; font-size: 12px; letter-spacing: 1.6px; color: var(--teal); font-weight: 800; }
+    .hero p.lead { font-size: clamp(16px, 2vw, 18px); margin: 10px 0 20px; }
+    .hero-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 18px; border-radius: 999px; font-weight: 700; border: 2px solid transparent; }
+    .btn-primary { background: var(--teal); color: #fff; box-shadow: var(--shadow); }
+    .btn-primary:hover { background: var(--teal-deep); }
+    .btn-ghost { background: #fff; color: var(--teal); border-color: var(--teal); }
+    .art { position: relative; }
+    .art img { width: 100%; height: auto; border-radius: 22px; border: 6px solid #fff; box-shadow: var(--shadow); background: url('assets/img/pattern.svg'), #fefefe; }
+
+    .section { padding: 60px 0; }
+    .section h2 { font-size: clamp(22px, 2.4vw, 32px); margin: 0 0 14px; }
+    .section p.sub { color: #4d6563; margin-top: 0; }
+
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+    .card { background: #fff; border: 1px solid #eee4d2; border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
+    .pill { display: inline-block; padding: 6px 10px; border-radius: 999px; background: var(--sand); color: var(--teal-deep); font-weight: 700; font-size: 12px; }
+
+    .benefit h3, .tier h3 { margin-top: 0; }
+    .benefit p { margin-bottom: 0; }
+
+    .testimonial { display: grid; grid-template-columns: 64px 1fr; gap: 16px; }
+    .testimonial img { width: 64px; height: 64px; border-radius: 50%; background: #fff; border: 2px solid var(--sand); }
+    .testimonial blockquote { margin: 0; font-size: 16px; }
+    .stars { color: #f5a524; }
+
+    details.faq { background: #fff; border: 1px solid #eee4d2; border-radius: var(--radius); padding: 14px 16px; }
+    details.faq + details.faq { margin-top: 10px; }
+    .faq summary { cursor: pointer; font-weight: 700; }
+    .faq p { margin: 10px 0 0; color: #375a57; }
+
+    .newsletter { background: linear-gradient(135deg, var(--teal), var(--teal-deep)); color: #fff; border-radius: 24px; padding: 28px; position: relative; overflow: hidden; }
+    .newsletter:after { content: ""; position: absolute; right: -60px; bottom: -60px; width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, var(--accent), #ffd67a); opacity: 0.8; }
+    .newsletter form { display: grid; grid-template-columns: 2fr 1fr; gap: 10px; max-width: 560px; }
+    .input { width: 100%; padding: 12px 14px; border: 2px solid #e6e2d9; border-radius: 12px; font-size: 16px; }
+    .input.error { border-color: var(--danger); }
+    .hint { font-size: 12px; color: #ffe5e5; min-height: 16px; }
+
+    footer { background: #0d3e3a; color: #d6efe8; padding: 40px 0; }
+    footer a { color: #fff; }
+    .footgrid { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 20px; }
+    .tiny { font-size: 12px; color: #a8dad5; }
+
+    @media (max-width: 960px) {
+      .hero .wrap { grid-template-columns: 1fr; }
+      .grid-3 { grid-template-columns: 1fr; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .newsletter form { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 760px) {
+      .menu { display: none; position: absolute; left: 0; right: 0; top: 60px; background: #fff; border-bottom: 1px solid #eee4d2; padding: 10px 14px; flex-direction: column; }
+      .menu.open { display: flex; }
+      .nav-toggle { display: inline-flex; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main" style="position:absolute;left:-999px;top:auto;width:1px;height:1px;overflow:hidden;">Skip to content</a>
+  <header>
+    <div class="wrap nav" role="navigation" aria-label="Primary">
+      <a class="brand" href="/">
+        <span class="brand-badge" aria-hidden="true"></span>
+        <span>Swell & Still Wellness</span>
+      </a>
+      <button class="nav-toggle" data-nav-toggle aria-expanded="false" aria-controls="menu">Menu</button>
+      <nav id="menu" class="menu">
+        <a href="/index.html">Home</a>
+        <a href="/about.html">About</a>
+        <a href="/services.html">Services</a>
+        <a href="/programs.html">Programs</a>
+        <a href="/pricing.html">Pricing</a>
+        <a href="/testimonials.html" aria-current="page">Testimonials</a>
+        <a href="/book.html">Book</a>
+        <a href="/contact.html">Contact</a>
+        <a class="cta" href="{{PRIMARY_CTA_URL}}" aria-label="{{PRIMARY_CTA_LABEL}}">{{PRIMARY_CTA_LABEL}}</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <div class="wrap">
+        <div class="hero-card">
+          <span class="eyebrow">Client Stories</span>
+          <h1>{{BUSINESS_NAME}} — {{TAGLINE}}</h1>
+          <p class="lead">Playful, premium coaching that treats your wellbeing like the work of art it is. Peek behind the curtain and see the shifts our clients are celebrating.</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="/book.html">Book a Discovery Call</a>
+            <a class="btn btn-ghost" href="#faqs">Browse FAQs</a>
+          </div>
+        </div>
+        <div class="art" aria-hidden="true">
+          <img src="assets/img/hero.svg" alt="Abstract shapes in deep teal and sand forming a playful premium composition" />
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <h2>Outcomes clients rave about</h2>
+        <p class="sub">Small, joyful experiments. Big, steady wins.</p>
+        <div class="grid-3">
+          <div class="card benefit">
+            <span class="pill">Energy +38%</span>
+            <h3>Morning spark</h3>
+            <p>Clients report steadier AM energy and calmer evenings within 3 weeks using our rhythm-first routines.</p>
+          </div>
+          <div class="card benefit">
+            <span class="pill">Stress −41%</span>
+            <h3>Nervous system ease</h3>
+            <p>Breath-led resets and boundary play drastically shrink stress spikes during the workweek.</p>
+          </div>
+          <div class="card benefit">
+            <span class="pill">Habits that stick</span>
+            <h3>Friction-free habits</h3>
+            <p>Tiny habit loops designed for your actual life, not your ideal calendar.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="stories">
+      <div class="wrap">
+        <h2 id="stories">Stories from our community</h2>
+        <div class="grid-2">
+          <article class="card testimonial">
+            <img src="assets/img/avatar.svg" alt="Client avatar" />
+            <div>
+              <header style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+                <strong>Maya R.</strong>
+                <span class="stars" aria-label="5 out of 5 stars">★★★★★</span>
+              </header>
+              <blockquote>By week 2, my 3pm crash was gone. We didn’t overhaul my life—just 10-minute tweaks that felt...kind. My team noticed I was less reactive, too.</blockquote>
+              <p class="tiny">Wins: fewer headaches, consistent lunch, 2 walks/day</p>
+            </div>
+          </article>
+
+          <article class="card testimonial">
+            <img src="assets/img/avatar.svg" alt="Client avatar" />
+            <div>
+              <header style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+                <strong>Kenji T.</strong>
+                <span class="stars" aria-label="5 out of 5 stars">★★★★★</span>
+              </header>
+              <blockquote>I came for sleep. I stayed for the coaching. We rebuilt evenings I actually look forward to, and my WHOOP finally agrees.</blockquote>
+              <p class="tiny">Wins: +75 min sleep, caffeine cut in half</p>
+            </div>
+          </article>
+
+          <article class="card testimonial">
+            <img src="assets/img/avatar.svg" alt="Client avatar" />
+            <div>
+              <header style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+                <strong>Alejandra C.</strong>
+                <span class="stars" aria-label="5 out of 5 stars">★★★★★</span>
+              </header>
+              <blockquote>The playful vibe kept me from ghosting my own goals. I finally learned how to rest without guilt.</blockquote>
+              <p class="tiny">Wins: 1 tech-free night/week, gentler mornings</p>
+            </div>
+          </article>
+
+          <article class="card testimonial">
+            <img src="assets/img/avatar.svg" alt="Client avatar" />
+            <div>
+              <header style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+                <strong>Samir P.</strong>
+                <span class="stars" aria-label="5 out of 5 stars">★★★★★</span>
+              </header>
+              <blockquote>I thought I needed more discipline. Turns out I needed better systems and a coach who makes progress feel fun.</blockquote>
+              <p class="tiny">Wins: 3 strength sessions/wk, Sunday prep ritual</p>
+            </div>
+          </article>
+
+          <article class="card testimonial">
+            <img src="assets/img/avatar.svg" alt="Client avatar" />
+            <div>
+              <header style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+                <strong>Nina V.</strong>
+                <span class="stars" aria-label="5 out of 5 stars">★★★★★</span>
+              </header>
+              <blockquote>It felt luxurious to be this supported. The templates, check-ins, and goofy encouragement were everything.</blockquote>
+              <p class="tiny">Wins: reduced anxiety spikes, mindful snacks</p>
+            </div>
+          </article>
+
+          <article class="card testimonial">
+            <img src="assets/img/avatar.svg" alt="Client avatar" />
+            <div>
+              <header style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+                <strong>Jordan W.</strong>
+                <span class="stars" aria-label="5 out of 5 stars">★★★★★</span>
+              </header>
+              <blockquote>We made healthy the path of least resistance. I’ve never kept habits this long. It finally feels like me.</blockquote>
+              <p class="tiny">Wins: meal cadence, breath resets before calls</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="tiers">
+      <div class="wrap">
+        <h2 id="tiers">Program tiers, real-world friendly</h2>
+        <p class="sub">Choose the vibe that fits your season. Each tier includes compassionate accountability and science-backed tools.</p>
+        <div class="grid-3">
+          <div class="card tier">
+            <span class="pill">RESET</span>
+            <h3>Reset</h3>
+            <p>4 weeks to steady your rhythm and reclaim your mornings.</p>
+            <ul>
+              <li>Weekly 45‑min 1:1</li>
+              <li>Custom micro-habit map</li>
+              <li>Text check-ins 2x/week</li>
+            </ul>
+          </div>
+          <div class="card tier" style="border:2px solid var(--teal);">
+            <span class="pill" style="background:var(--accent);">RISE</span>
+            <h3>Rise</h3>
+            <p>8 weeks of momentum across sleep, stress, and movement.</p>
+            <ul>
+              <li>Weekly 60‑min 1:1</li>
+              <li>Habit lab + templates</li>
+              <li>Priority voice notes</li>
+            </ul>
+          </div>
+          <div class="card tier">
+            <span class="pill">RADIANT</span>
+            <h3>Radiant</h3>
+            <p>12 weeks to design a lifestyle you won’t abandon.</p>
+            <ul>
+              <li>Weekly 60‑min 1:1 + bonus intensives</li>
+              <li>Environment + routine redesign</li>
+              <li>VIP day and graduation plan</li>
+            </ul>
+          </div>
+        </div>
+        <div style="margin-top:16px; display:flex; gap:12px; flex-wrap:wrap;">
+          <a class="btn btn-primary" href="/book.html#booking">Start with a free call</a>
+          <a class="btn btn-ghost" href="/programs.html">Explore program details</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="faqs" class="section" aria-labelledby="faq-title">
+      <div class="wrap">
+        <h2 id="faq-title">FAQ</h2>
+        <p class="sub">Transparent, just like our coaching.</p>
+        <details class="faq">
+          <summary>How fast will I see results?</summary>
+          <p>Most clients feel meaningful improvements within 2–3 weeks. We prioritize simple experiments that compound, not overnight overhauls.</p>
+        </details>
+        <details class="faq">
+          <summary>Is this therapy?</summary>
+          <p>No. Coaching focuses on present‑to‑future behavior change. If therapy would better support you, we’ll help you find a great referral.</p>
+        </details>
+        <details class="faq">
+          <summary>Do you offer corporate packages?</summary>
+          <p>Yes. We support mindful teams with workshops and small‑group coaching. Inquire via <a href="/contact.html">our contact page</a>.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap newsletter">
+        <div style="max-width:680px; position:relative; z-index:1;">
+          <h2>Free guide: The 7‑Day Gentle Reset</h2>
+          <p class="sub" style="color:#e9fbf7;">A breezy, evidence‑based reset for energy and ease—no perfection required. Delivered instantly to your inbox.</p>
+          <form class="validate" novalidate>
+            <label class="sr-only" for="nl-name">Name</label>
+            <input id="nl-name" name="name" class="input" placeholder="Your name" required />
+            <div class="hint" data-error-for="nl-name"></div>
+
+            <label class="sr-only" for="nl-email">Email</label>
+            <input id="nl-email" name="email" type="email" class="input" placeholder="you@example.com" required />
+            <div class="hint" data-error-for="nl-email"></div>
+
+            <button class="btn btn-primary" type="submit">Send my guide</button>
+            <div class="hint" aria-live="polite" data-form-status></div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-label="Booking call to action">
+      <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;">
+        <div>
+          <h2>Ready to feel Swell & Still?</h2>
+          <p class="sub">Your next chapter starts with one friendly conversation.</p>
+        </div>
+        <a class="btn btn-primary" href="/book.html#booking">Book your free discovery call</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap footgrid">
+      <div>
+        <strong>Swell & Still Wellness</strong>
+        <p class="tiny">Guided by {{COACH_NAME}}, {{CREDENTIALS}}. Playful premium coaching for real‑life wellbeing.</p>
+      </div>
+      <div>
+        <strong>Visit</strong>
+        <p class="tiny">{{ADDRESS}}<br/>{{CITY}}, {{STATE}} {{ZIP}}</p>
+        <p class="tiny">Hours: {{HOURS}}</p>
+      </div>
+      <div>
+        <strong>Contact</strong>
+        <p class="tiny">Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a><br/>Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+        <p class="tiny">Coach: {{COACH_NAME}}</p>
+      </div>
+    </div>
+    <div class="wrap" style="margin-top:14px;">
+      <p class="tiny">© <span id="year"></span> Swell & Still Wellness. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile nav
+    const navToggle = document.querySelector('[data-nav-toggle]');
+    const menu = document.getElementById('menu');
+    if (navToggle && menu) {
+      navToggle.addEventListener('click', () => {
+        const open = menu.classList.toggle('open');
+        navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+    }
+
+    // Smooth scroll for hash links
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const id = a.getAttribute('href').slice(1);
+        const el = document.getElementById(id);
+        if (el) {
+          e.preventDefault();
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          history.pushState(null, '', '#' + id);
+        }
+      });
+    });
+
+    // Accordion behavior: allow one open at a time
+    const faqs = Array.from(document.querySelectorAll('details.faq'));
+    faqs.forEach(d => {
+      d.addEventListener('toggle', () => {
+        if (d.open) faqs.filter(x => x !== d).forEach(x => x.open = false);
+      });
+    });
+
+    // Form validation hints
+    function attachValidation(form) {
+      const status = form.querySelector('[data-form-status]');
+      form.addEventListener('submit', e => {
+        const fields = Array.from(form.querySelectorAll('input, textarea, select'));
+        let valid = true;
+        fields.forEach(f => {
+          const hint = form.querySelector(`[data-error-for="${f.id}"]`);
+          if (!f.checkValidity()) {
+            valid = false;
+            f.classList.add('error');
+            f.setAttribute('aria-invalid', 'true');
+            if (hint) hint.textContent = f.validationMessage;
+          } else {
+            f.classList.remove('error');
+            f.removeAttribute('aria-invalid');
+            if (hint) hint.textContent = '';
+          }
+        });
+        if (!valid) {
+          e.preventDefault();
+          if (status) status.textContent = 'Please fix the highlighted fields.';
+        } else {
+          e.preventDefault();
+          if (status) status.textContent = 'Success! Check your inbox for the guide.';
+          form.reset();
+        }
+      });
+      form.addEventListener('input', e => {
+        const f = e.target;
+        const hint = form.querySelector(`[data-error-for="${f.id}"]`);
+        if (hint) hint.textContent = f.checkValidity() ? '' : f.validationMessage;
+        if (f.checkValidity()) f.classList.remove('error');
+      });
+    }
+    document.querySelectorAll('form.validate').forEach(attachValidation);
+
+    // Year
+    const y = document.getElementById('year'); if (y) y.textContent = new Date().getFullYear();
+  </script>
+  <noscript>Your experience will be even smoother with JavaScript enabled.</noscript>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Method — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="How therapy sessions are structured and what to expect — clear agreements, simple experiments, and steady reflection.">
+  <style>
+    :root{--bg:#071519;--card:#0f2a2b;--accent:#a1ffe6;--muted:#9bd5c9}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto;color:#eafefb;background:linear-gradient(180deg,#08141a 0%,#041014 100%);min-height:100vh}
+    header{padding:12px 20px}
+    .nav{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:16px}
+    .nav a{color:#cdeee7;text-decoration:none;padding:8px;border-radius:6px}
+    .nav a.active{background:rgba(161,255,230,0.06);color:var(--accent)}
+    main{max-width:1100px;margin:28px auto;padding:18px;display:grid;grid-template-columns:1fr 360px;gap:22px}
+    .card{background:var(--card);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+    h1{margin:0 0 8px}
+    .pillars{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+    .pillar{flex:1 1 160px;padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent)}
+    .case{margin-top:14px;background:rgba(255,255,255,0.02);padding:12px;border-radius:10px}
+    .cta{background:var(--accent);color:#022524;padding:10px 12px;border-radius:8px;text-decoration:none;font-weight:700}
+    .mood-sbox{margin-top:10px}
+    .pattern{position:fixed;inset:0;pointer-events:none;opacity:0.07;background-image:url('assets/img/pattern.svg');background-repeat:repeat}
+    @media(max-width:880px){main{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="pattern" aria-hidden="true"></div>
+  <header>
+    <nav class="nav" aria-label="Primary">
+      <div style="font-weight:700;color:var(--accent)">{{BUSINESS_NAME}}</div>
+      <a href="index.html">Practice</a>
+      <a href="about.html">Profile</a>
+      <a href="specialties.html">Offerings</a>
+      <a href="approach.html" class="active">Method</a>
+      <a href="fees.html">Investment</a>
+      <a href="faq.html">Questions</a>
+      <a href="book.html">Begin</a>
+      <a href="contact.html">Reach Out</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="card">
+      <h1>How I work</h1>
+      <p style="color:var(--muted);margin-top:6px">My approach blends clear structure with empathic presence. Sessions are practical, reflective, and tailored to what you need right now.</p>
+
+      <div class="pillars">
+        <div class="pillar">
+          <strong>Clarify</strong>
+          <div class="small" style="color:var(--muted);margin-top:6px;font-size:13px">Define specific aims so we measure change that matters to you.</div>
+        </div>
+        <div class="pillar">
+          <strong>Test</strong>
+          <div class="small" style="color:var(--muted);margin-top:6px;font-size:13px">Try small experiments between sessions — practical, low-risk adjustments.</div>
+        </div>
+        <div class="pillar">
+          <strong>Reflect</strong>
+          <div class="small" style="color:var(--muted);margin-top:6px;font-size:13px">Notice what shifts and why, then refine the plan together.</div>
+        </div>
+      </div>
+
+      <div class="case">
+        <strong>Case note (anonymized)</strong>
+        <p style="margin:8px 0 0;color:var(--muted);font-size:14px">A client arrived feeling stuck at work. We clarified the specific decision, arranged two brief experiments to test energy and reactions, and used one-session summaries to guide the next meeting. The focus stayed on manageable moves rather than wholesale life redesign.</p>
+      </div>
+
+      <div style="margin-top:12px;display:flex;gap:10px;align-items:center">
+        <a id="method-cta" class="cta" href="{{PRIMARY_CTA_URL}}">Plan a first meeting</a>
+        <div style="color:var(--muted);font-size:13px">Typical session length 45–60 min; intensives available on request.</div>
+      </div>
+    </section>
+
+    <aside class="card">
+      <div>
+        <label for="mood3" style="display:block;color:var(--muted);margin-bottom:8px">Select your current phrase</label>
+        <select id="mood3" style="width:100%;padding:10px;border-radius:8px;background:#081b1c;color:#dff7f3;border:1px solid rgba(255,255,255,0.03)">
+          <option value="racing">Racing thoughts</option>
+          <option value="tentative">Tentative — want to try something small</option>
+          <option value="lonely">Lonely — seeking connection</option>
+          <option value="stagnant">Stagnant — not moving forward</option>
+          <option value="urgent">Urgent — need immediate clarity</option>
+        </select>
+
+        <div id="mood3-desc" style="margin-top:12px;color:var(--muted)">Choose to see a recommended session shape and a tailored CTA.</div>
+        <a id="mood3-cta" class="cta" style="display:inline-block;margin-top:12px">Choose a starting step</a>
+
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,0.02);margin:16px 0">
+
+        <details style="color:var(--muted);font-size:14px">
+          <summary style="cursor:pointer;font-weight:600">Confidentiality and scope</summary>
+          <div style="margin-top:8px">Information shared in sessions is confidential, with exceptions for safety and legal requirements. We will review limits and record-keeping practices before beginning work together.</div>
+        </details>
+
+        <p style="margin-top:12px;font-size:13px;color:var(--muted)">If you are in immediate danger, call your local emergency services or a crisis line (e.g., 988 in the U.S.). This service does not replace emergency responders.</p>
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    (function(){
+      const sel = document.getElementById('mood3');
+      const desc = document.getElementById('mood3-desc');
+      const cta = document.getElementById('mood3-cta');
+      const map = {
+        racing:{text:'A short, paced session with grounding tools and a single decision task helps reduce cognitive noise.',cta:'Book a noise-reduction visit'},
+        tentative:{text:'One low-stakes experiment and a reflective check-in; we keep the steps small and trackable.',cta:'Try a micro-experiment'},
+        lonely:{text:'We focus on relationship patterns and safe ways to practice connection; sessions include communication scripts to try between meetings.',cta:'Begin relational work'},
+        stagnant:{text:'A short series that targets one bottleneck with practical steps and accountability.',cta:'Start a targeted series'},
+        urgent:{text:'An extended intake or an intensive session can help create immediate clarity and next steps.',cta:'Request an intensive'}
+      };
+      function update(){
+        const v = sel.value;
+        desc.textContent = map[v].text;
+        cta.textContent = map[v].cta;
+        cta.href = '{{PRIMARY_CTA_URL}}';
+      }
+      sel.addEventListener('change',update);
+      update();
+    })();
+  </script>
+</body>
+</html>

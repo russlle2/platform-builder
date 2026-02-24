@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--accent:#6b4cff;--muted:#667085;--bg:#0f1724;--card:#0b1220;--glass:rgba(255,255,255,0.04);--soft:#e6eef8}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial;color:#e6eef8;background:linear-gradient(180deg,#071023 0%, #07182a 60%);}
+    .page{max-width:980px;margin:40px auto;padding:28px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:14px;box-shadow:0 8px 30px rgba(2,6,23,0.7);position:relative;overflow:hidden}
+    .pattern{position:absolute;inset:0;opacity:.06;background-image:url('assets/img/pattern.svg');background-repeat:repeat;background-size:220px;mix-blend-mode:screen}
+    header{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:2}
+    header h1{margin:0;font-size:20px;letter-spacing:0.6px}
+    nav{display:flex;gap:12px}
+    nav a{color:var(--soft);text-decoration:none;padding:8px 12px;border-radius:8px;font-size:13px}
+    nav a.active{background:rgba(107,76,255,0.12);color:var(--accent)}
+
+    .hero{display:grid;grid-template-columns:1fr;gap:18px;padding:28px 0}
+    .tag{font-size:28px;font-weight:600;color:#fff}
+    .sub{color:var(--muted);max-width:68ch}
+
+    .row{display:flex;gap:20px;align-items:flex-start}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:18px;border-radius:12px;flex:1;border:1px solid rgba(255,255,255,0.03)}
+    .muted{color:var(--muted);font-size:14px}
+
+    .expect ul{padding-left:18px}
+    .expect li{margin:8px 0}
+
+    /* Proof Gallery */
+    .proof{display:flex;flex-direction:column;gap:12px}
+    .testimonial{min-height:84px;display:flex;flex-direction:column;justify-content:center}
+    .quote{font-style:italic;color:#dfe9ff}
+    .author{font-size:13px;color:var(--muted);margin-top:8px}
+    .badges{display:flex;gap:8px;margin-top:12px}
+    .badge{background:rgba(255,255,255,0.03);padding:8px 10px;border-radius:999px;font-size:12px;position:relative;cursor:default}
+    .badge[data-tip]:hover::after{content:attr(data-tip);position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 8px);white-space:nowrap;background:#0b1220;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);font-size:12px;color:var(--soft)}
+
+    .cta{margin-top:18px}
+    .btn{background:var(--accent);color:white;padding:12px 16px;border-radius:10px;text-decoration:none;font-weight:600}
+
+    footer{margin-top:28px;color:var(--muted);font-size:13px;display:flex;justify-content:space-between;align-items:center}
+
+    @media (max-width:720px){.row{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <div class='page'>
+    <div class='pattern' aria-hidden='true'></div>
+    <header>
+      <h1>{{BUSINESS_NAME}}</h1>
+      <nav>
+        <a href='index.html'>Home</a>
+        <a href='events.html'>Gatherings</a>
+        <a href='private-sessions.html'>Private</a>
+        <a href='pricing.html'>Rates</a>
+        <a href='about.html' class='active'>About</a>
+        <a href='faq.html'>FAQ</a>
+        <a href='book.html'>Reserve</a>
+        <a href='contact.html'>Connect</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class='hero' aria-labelledby='about-heading'>
+        <div>
+          <div id='about-heading' class='tag'>A thoughtful pause in sound</div>
+          <div class='sub'>{{TAGLINE}} — a place to arrive without rushing. We host small gatherings and individual sessions that use tuned instruments and gentle sequences to help you drop out of busy thinking and into steadier presence.</div>
+        </div>
+      </section>
+
+      <div class='row'>
+        <section class='card expect'>
+          <h3>How a visit unfolds</h3>
+          <p class='muted'>A concise flow so you know what to expect.</p>
+          <ul>
+            <li>Welcome & orientation — a calm start, 5–10 minutes.</li>
+            <li>Settling phase with grounding tones and breath guidance.</li>
+            <li>Active resonance portion: layered bowls, chimes, and subtle percussion.</li>
+            <li>Gentle return and time to rehydrate and share impressions.</li>
+          </ul>
+          <p class='muted'>Sessions run 50–75 minutes depending on the offering. Wear comfortable clothes and bring a mat or blanket if you prefer.</p>
+        </section>
+
+        <aside class='card proof' aria-label='Proof Gallery'>
+          <h3>Testimonials & trust</h3>
+          <div id='testimonial' class='testimonial'>
+            <div class='quote' id='quote'>"The evening left a calm I carried for days — clear and soft at once."</div>
+            <div class='author' id='author'>— M., local educator</div>
+          </div>
+
+          <div class='badges' id='badges'>
+            <div class='badge' data-tip='Featured by regional wellness journal'>Wellness Mag</div>
+            <div class='badge' data-tip='Verified community-hosted gatherings'>Neighborhood Arts</div>
+            <div class='badge' data-tip='Clinically informed safety practices'>Safety Review</div>
+          </div>
+
+          <div class='cta'>
+            <a class='btn' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a>
+            <div style='margin-top:8px;color:var(--muted);font-size:13px'>Or call <a href='tel:{{PHONE}}' style='color:var(--soft);text-decoration:none'>{{PHONE}}</a></div>
+          </div>
+        </aside>
+      </div>
+
+      <section style='margin-top:20px' class='card'>
+        <h3>Health & safety</h3>
+        <p class='muted'>We welcome most people but some conditions need extra care. Please consult with your provider or our team before reserving if any of the following apply:</p>
+        <ul>
+          <li>Epilepsy or seizure disorders.</li>
+          <li>Pregnancy in the first trimester or any pregnancy with complications — check with your clinician.</li>
+          <li>Implanted medical devices like pacemakers.</li>
+          <li>Active severe psychiatric episodes or unmanaged psychosis.</li>
+        </ul>
+        <p class='muted'>If in doubt, contact us at <a href='mailto:{{EMAIL}}' style='color:var(--soft);text-decoration:none'>{{EMAIL}}</a> for guidance.</p>
+      </section>
+
+    </main>
+
+    <footer>
+      <div>Serving {{CITY}}, {{STATE}}</div>
+      <div>Contact: <a href='mailto:{{EMAIL}}' style='color:var(--soft);text-decoration:none'>{{EMAIL}}</a> • <a href='tel:{{PHONE}}' style='color:var(--soft);text-decoration:none'>{{PHONE}}</a></div>
+    </footer>
+  </div>
+
+  <script>
+    // Rotating testimonials and badges
+    (function(){
+      const items = [
+        {quote: 'I slept deeper the night after the session — a welcome reset.', author: 'K., designer', badges: ['Local Press','Community Vetted']},
+        {quote: 'The tones were precise and kind; the room felt safe to unwind.', author: 'S., nurse', badges: ['Practitioner Endorsed','Safety Review']},
+        {quote: 'A simple, powerful practice that fits into a busy week.', author: 'T., parent', badges: ['Wellness Mag','Neighborhood Arts']}
+      ];
+      const quoteEl = document.getElementById('quote');
+      const authorEl = document.getElementById('author');
+      const badgesEl = document.getElementById('badges');
+      let i=0;
+      function show(idx){
+        const it = items[idx];
+        quoteEl.textContent = '"' + it.quote + '"';
+        authorEl.textContent = '— ' + it.author;
+        // rebuild badges
+        badgesEl.innerHTML = '';
+        it.badges.forEach(b=>{
+          const d = document.createElement('div');
+          d.className = 'badge';
+          d.textContent = b;
+          d.setAttribute('data-tip', b + ' — click to learn more');
+          badgesEl.appendChild(d);
+        });
+      }
+      show(0);
+      setInterval(()=>{ i = (i+1) % items.length; show(i); }, 4200);
+    })();
+  </script>
+</body>
+</html>

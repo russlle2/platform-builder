@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Our Approach</title>
+  <style>
+    :root{--bg:#fff8ff;--accent:#ff6b6b;--muted:#5a4b4b;font-family:Inter, system-ui, -apple-system}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#fff5f7);color:#2b2b2b}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px}
+    nav{display:flex;gap:12px}
+    nav a{text-decoration:none;color:#2b2b2b;padding:8px 10px;border-radius:8px}
+    .wrap{max-width:1000px;margin:22px auto;padding:18px}
+    .lead{background:#fff;padding:18px;border-radius:12px;box-shadow:0 10px 30px rgba(250,90,90,0.06)}
+    .columns{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
+    .panel{background:#fff;padding:14px;border-radius:12px}
+    .steps{display:flex;flex-direction:column;gap:12px;margin-top:12px}
+    .step{padding:12px;border-radius:10px;border-left:6px solid rgba(255,107,107,0.12)}
+    .small{font-size:13px;color:var(--muted)}
+    @media(max-width:880px){.columns{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Welcome</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Support</a>
+      <a href="book.html">Book</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="lead">
+      <h1>How we weave clinical curiosity with practical life tools</h1>
+      <p class="small">Our method balances approachable science, group learning, and individualized tweaks — aimed at changes you can carry into real days.</p>
+    </section>
+
+    <div class="columns">
+      <div>
+        <div class="panel">
+          <h3>Core principles</h3>
+          <div class="steps">
+            <div class="step"><strong>Start with what matters</strong><div class="small">We map priorities with a brief intake and a whole-person snapshot.</div></div>
+            <div class="step"><strong>Teach, then practice</strong><div class="small">Short lessons paired with daily micro-tasks make habits stick.</div></div>
+            <div class="step"><strong>Measure kindnessably</strong><div class="small">Simple indicators that reflect lived change, not just numbers.</div></div>
+            <div class="step"><strong>Respect context</strong><div class="small">Plans fit family, work, culture — not a one-size template.</div></div>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:14px">
+          <h3>Enrollment & timing</h3>
+          <p class="small">We run cohorts on cycles. New cohorts open periodically; you can join before a cycle or await the next opening. Each cycle has scheduled group sessions and a couple of individual alignment meetings.</p>
+          <div style="margin-top:10px"><a class="small" href="{{PRIMARY_CTA_URL}}" style="background:var(--accent);color:white;padding:8px 12px;border-radius:10px;text-decoration:none">Start your enrollment</a></div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="panel">
+          <h4>Quick intake tool</h4>
+          <p class="small">Use this to highlight where to focus during your first consult. It feeds an agenda and a suggested follow-up cadence.</p>
+          <!-- mini inventory (same logic, compact) -->
+          <div style="margin-top:8px">
+            <label style="display:block"><input type="checkbox" value="Sleep" class="mini"> Sleep</label>
+            <label style="display:block"><input type="checkbox" value="Stress" class="mini"> Stress</label>
+            <label style="display:block"><input type="checkbox" value="Movement" class="mini"> Movement</label>
+            <label style="display:block"><input type="checkbox" value="Digestion" class="mini"> Digestion</label>
+            <button id="miniMake" style="margin-top:8px;padding:8px 10px;border-radius:8px;background:var(--accent);color:white;border:none">Make agenda</button>
+            <div id="miniOut" class="small" style="margin-top:8px;color:var(--muted)"></div>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:12px">
+          <h4>Why cohorts?</h4>
+          <p class="small">Short group cycles create social learning, accountability, and shared practice — while keeping individual support baked in.</p>
+        </div>
+      </aside>
+    </div>
+
+    <section style="margin-top:18px">
+      <div class="panel">
+        <h3>Tools you'll meet</h3>
+        <ul class="small">
+          <li>Short guided breath sequences</li>
+          <li>Micro-journaling prompts to track experiments</li>
+          <li>Movement checks that adapt to daily capacity</li>
+        </ul>
+      </div>
+    </section>
+
+    <footer style="margin-top:18px;color:var(--muted);text-align:center">
+      <div>Questions? Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </footer>
+  </main>
+
+  <script>
+    // mini inventory agenda maker
+    (function(){
+      const miniMake = document.getElementById('miniMake');
+      const miniOut = document.getElementById('miniOut');
+      miniMake.addEventListener('click', ()=>{
+        const checks = Array.from(document.querySelectorAll('.mini:checked')).map(i=>i.value);
+        if(!checks.length){ miniOut.textContent = 'Select a few areas to build a short agenda.'; return; }
+        const map = { Sleep:'Sleep review + 1-week bedtime routine', Stress:'Stress mapping + short breathing practice', Movement:'Mobility check + gentle daily movement', Digestion:'Food log + simple rhythm adjustments' };
+        let lines = checks.map(c=>'- '+c+': '+(map[c]||'Focused review'));
+        let cadence = checks.length>2 ? 'Suggested cadence: 8-week cycle with biweekly 1:1' : 'Suggested cadence: 6-week cycle with one mid-cycle 1:1';
+        miniOut.textContent = lines.join(' | ') + ' — ' + cadence;
+      });
+    })();
+  </script>
+</body>
+</html>

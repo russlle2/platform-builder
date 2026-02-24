@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{
+      --bg:#FFF8F2; --card:#FFF; --accent:#B55E2B; --muted:#6B4F3A; --soft:#E8D6C9; --shadow:0 8px 30px rgba(101,66,50,0.08);
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#FFF);color:var(--muted);line-height:1.5}
+    .wrap{max-width:980px;margin:36px auto;padding:28px}
+    nav{display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand img{width:56px;height:56px;border-radius:12px;background:var(--soft);padding:8px}
+    .nav-links{display:flex;gap:18px;align-items:center}
+    .nav-links a{color:var(--muted);text-decoration:none;font-weight:600}
+    header.hero{display:grid;grid-template-columns:1fr 340px;gap:28px;margin-top:20px;align-items:center}
+    .hero-card{background:var(--card);border-radius:18px;padding:28px;box-shadow:var(--shadow)}
+    .hero h1{margin:0 0 8px 0;color:#3f2d22;font-size:28px}
+    .hero p{margin:0 0 16px 0;color:var(--muted)}
+    .meta{display:flex;gap:10px;align-items:center}
+    .cta{background:var(--accent);color:#fff;padding:10px 16px;border-radius:10px;text-decoration:none;font-weight:700}
+    .small{font-size:13px;color:#8a6f61}
+    section.card{margin-top:26px;padding:22px;border-radius:14px;background:linear-gradient(180deg,var(--soft),#FFF)}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:12px}
+    .pill{background:#fff;padding:14px;border-radius:10px;box-shadow:0 6px 18px rgba(101,66,50,0.05)}
+    .case{display:flex;gap:12px;align-items:flex-start}
+    .case img{width:64px;height:64px;border-radius:10px;background:#fff;padding:8px}
+    footer{margin-top:28px;padding:18px;border-radius:12px;background:transparent;color:var(--muted);text-align:center}
+    .faq dt{font-weight:700;margin-top:12px}
+    .faq dd{margin:6px 0 12px 0;color:#6d564b}
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <nav>
+      <div class='brand'>
+        <img src='assets/img/avatar.svg' alt='avatar'/>
+        <div>
+          <div style='font-weight:800;color:#3f2d22'>{{BUSINESS_NAME}}</div>
+          <div style='font-size:12px;color:#8a6f61'>{{TAGLINE}}</div>
+        </div>
+      </div>
+      <div class='nav-links'>
+        <a href='index.html'>Home</a>
+        <a href='services.html'>Services</a>
+        <a href='programs.html'>Paths</a>
+        <a href='contact.html'>Contact</a>
+      </div>
+    </nav>
+
+    <header class='hero hero-card'>
+      <div class='hero'>
+        <h1>Evidence-minded guidance for everyday wellbeing</h1>
+        <p>I blend habit science, simple rhythms, and measurable frameworks so you get sustainable energy, clearer focus, and a calmer routine without fads.</p>
+        <div class='meta'>
+          <a href='{{PRIMARY_CTA_URL}}' class='cta'>{{PRIMARY_CTA_LABEL}}</a>
+          <div class='small'>Call <strong>{{PHONE}}</strong> or email <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a></div>
+        </div>
+
+        <div class='card' style='margin-top:16px;padding:14px;border-radius:12px'>
+          <strong>About {{COACH_NAME}}, {{CREDENTIALS}}</strong>
+          <p class='small' style='margin:8px 0 0'>I use a measurable approach: baseline metrics, incremental habit windows, and iteration. Clients see lasting change because we test what works, then make it routine.</p>
+        </div>
+      </div>
+
+      <div style='display:flex;flex-direction:column;gap:12px;align-items:center'>
+        <img src='assets/img/hero.svg' alt='illustration' style='width:100%;border-radius:12px;box-shadow:var(--shadow)'>
+        <div style='font-size:13px;color:#8a6f61'>Based in {{CITY}}, {{STATE}}</div>
+      </div>
+    </header>
+
+    <section class='card' aria-labelledby='myth'>
+      <h2 id='myth'>Clarifying common myths — a scientific lens</h2>
+      <div class='grid' style='grid-template-columns:1fr 1fr 1fr'>
+        <div class='pill'>
+          <strong>Myth: Quick fixes stick</strong>
+          <p class='small'>Truth: Short bursts can jumpstart change, but durable transformation needs repetition and feedback loops.</p>
+        </div>
+        <div class='pill'>
+          <strong>Myth: Willpower wins</strong>
+          <p class='small'>Truth: Context and design matter more than willpower. We shape environments and cues to reduce friction.</p>
+        </div>
+        <div class='pill'>
+          <strong>Myth: One plan fits all</strong>
+          <p class='small'>Truth: We test small adaptations to find what your biology and schedule actually tolerate.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class='card' aria-labelledby='pillars'>
+      <h2 id='pillars'>Core frameworks I teach</h2>
+      <div style='display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px'>
+        <div class='pill'>
+          <strong>Micro-Rituals</strong>
+          <p class='small'>Tiny actions anchored to existing routines to reliably build momentum.</p>
+        </div>
+        <div class='pill'>
+          <strong>Measure → Adjust</strong>
+          <p class='small'>Short cycles of tracking, reflection, and parameter tuning so changes are evidence-based.</p>
+        </div>
+        <div class='pill'>
+          <strong>Environment Sculpting</strong>
+          <p class='small'>Small alterations to your spaces that lower friction for good choices.</p>
+        </div>
+        <div class='pill'>
+          <strong>Compounding Habits</strong>
+          <p class='small'>Designing sequences that multiply benefits over months.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class='card'>
+      <h2>Illustrative case studies</h2>
+      <div style='display:grid;gap:12px;margin-top:10px'>
+        <div class='case'>
+          <img src='assets/img/avatar.svg' alt='client' />
+          <div>
+            <strong>From chaotic evenings to a consistent recovery routine</strong>
+            <p class='small'>A client implemented 3-minute micro-rituals and a 7-day tracking window — improvements in sleep timing and morning energy followed within 6 weeks.</p>
+          </div>
+        </div>
+        <div class='case'>
+          <img src='assets/img/avatar.svg' alt='client' />
+          <div>
+            <strong>Migrating work stress into brief, ritualized breaks</strong>
+            <p class='small'>We shaped short, measurable pauses through cue-triggered breathing and posture resets, reducing perceived overwhelm while maintaining productivity.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class='card faq' aria-labelledby='faq'>
+      <h2 id='faq'>Questions I hear often</h2>
+      <dl>
+        <dt>How quickly will I notice change?</dt>
+        <dd>Small habits can shift mood and routine within 2–6 weeks; durable behavioral patterns typically need 3–6 months of iteration.</dd>
+        <dt>Is coaching data-heavy?</dt>
+        <dd>We collect simple, low-effort signals (timing, duration, subjective score) — just enough to guide adjustments without creating busywork.</dd>
+      </dl>
+    </section>
+
+    <section class='card' style='text-align:center'>
+      <h3>Ready to design your next 12 weeks?</h3>
+      <p class='small'>Start with a short diagnostic session to map priorities and build a lean plan.</p>
+      <a href='{{PRIMARY_CTA_URL}}' class='cta'>{{PRIMARY_CTA_LABEL}}</a>
+    </section>
+
+    <footer>
+      <div class='small'>© {{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a> • {{PHONE}}</div>
+    </footer>
+  </div>
+</body>
+</html>

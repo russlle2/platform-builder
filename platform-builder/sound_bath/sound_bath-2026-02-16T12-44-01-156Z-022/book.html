@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#07121a;--card:#081827;--accent:#ffd68a;--muted:#bfcad2}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:#fff;background:radial-gradient(circle at 10% 10%,#0b2330 0%,#051018 40%,#041018 100%)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 26px}
+    nav a{color:rgba(255,255,255,0.9);text-decoration:none;margin-left:14px}
+    .container{max-width:900px;margin:20px auto;padding:24px}
+    .hero{padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent)}
+    form{margin-top:16px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:18px;border-radius:12px}
+    label{display:block;margin-bottom:8px;font-weight:700}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--muted)}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .footnote{color:var(--muted);font-size:13px;margin-top:8px}
+    .btn{display:inline-block;padding:12px 16px;border-radius:10px;text-decoration:none;font-weight:700;background:linear-gradient(90deg,var(--accent),#ff9f6b);color:#07121a}
+    .meta{margin-top:14px;color:var(--muted)}
+    svg.pattern{position:fixed;left:0;bottom:0;width:420px;opacity:0.08;pointer-events:none}
+    @media(max-width:720px){.row{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <svg class="pattern" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+      <linearGradient id="b" x1="0" x2="1"><stop offset="0" stop-color="#ffd68a"/><stop offset="1" stop-color="#ff9f6b"/></linearGradient>
+      <pattern id="squares" width="30" height="30" patternUnits="userSpaceOnUse"><rect width="30" height="30" fill="none"/><circle cx="3" cy="3" r="1" fill="#fff" opacity="0.02"/></pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#squares)"/>
+    <ellipse cx="260" cy="200" rx="220" ry="120" fill="url(#b)"/>
+  </svg>
+
+  <header>
+    <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Overview</a>
+      <a href="events.html">Attend</a>
+      <a href="private-sessions.html">Private Work</a>
+      <a href="about.html">Story</a>
+      <a href="faq.html">Help</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div class="hero">
+      <h1>Reserve your spot</h1>
+      <p class="meta">Choose a public gathering or request private sessions. We offer 1:1, couples, and small-group corporate experiences.</p>
+    </div>
+
+    <form action="{{PRIMARY_CTA_URL}}" method="get" aria-labelledby="booking-form">
+      <div style="display:flex;justify-content:space-between;gap:12px">
+        <div style="flex:1">
+          <label for="type">Session type</label>
+          <select id="type" name="type">
+            <option>Public sound bath</option>
+            <option>1:1 private session</option>
+            <option>Couples session</option>
+            <option>Corporate / team session</option>
+          </select>
+        </div>
+        <div style="width:220px">
+          <label for="date">Preferred date</label>
+          <input id="date" name="date" type="date" aria-label="Preferred date" />
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:12px">
+        <div>
+          <label for="name">Your name</label>
+          <input id="name" name="name" type="text" placeholder="Full name" required />
+        </div>
+        <div>
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="you@example.com" required />
+        </div>
+      </div>
+
+      <div style="margin-top:12px">
+        <label for="notes">Notes & accessibility</label>
+        <textarea id="notes" name="notes" rows="4" placeholder="Let us know about mobility, sensitivities, or questions."></textarea>
+      </div>
+
+      <section style="margin-top:14px" aria-labelledby="flow">
+        <h3 id="flow">What to expect — the flow</h3>
+        <p class="footnote">Sessions typically follow this tempo: arrival and settling (10–15m), opening tonality and breathwork (5–8m), main soundscape (30–40m) — often featuring bowed instruments like the monochord, soft crystal bowls, and chimes — and a gentle integration period (5–10m). Timing adapts to the room.</p>
+      </section>
+
+      <section style="margin-top:14px">
+        <h3>What to bring</h3>
+        <p class="footnote">Mat or blanket, a pillow/bolster for neck support, layered clothing, water, and an eye covering if desired. If traveling for a private session, consider yoga props for comfort.</p>
+      </section>
+
+      <section style="margin-top:14px">
+        <h3>Health & safety</h3>
+        <p class="footnote">Contraindications include epilepsy, recent surgery, and certain implanted devices. If in doubt, consult your medical provider and reach out to us at {{EMAIL}} before booking.</p>
+      </section>
+
+      <div style="margin-top:18px;display:flex;gap:10px;align-items:center">
+        <button type="submit" class="btn">Proceed to Reserve</button>
+        <a href="faq.html" style="color:var(--muted);text-decoration:none">See full FAQs</a>
+      </div>
+    </form>
+
+    <aside style="margin-top:20px" class="card">
+      <h4>Private sessions</h4>
+      <p class="muted" style="margin-top:8px">Options include 60–90 minute 1:1 sessions, intimate couples work, and tailored corporate experiences focusing on relaxation and team cohesion. Instruments in private work rotate — tuning forks, soft gongs, and warm steel tongue drums are often used to support specific outcomes.</p>
+      <p class="muted" style="margin-top:8px">For group bookings, email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a>.</p>
+    </aside>
+  </main>
+
+  <footer style="text-align:center;color:#9fb0bf;padding:22px">{{BUSINESS_NAME}} • {{VENUE_NAME}} • {{CITY}}, {{STATE}}</footer>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Areas of Focus — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Clinical areas and typical needs I support in private practice membership and short-term care in {{CITY}}, {{STATE}}." />
+  <style>
+    :root{--bg:#fffdf9;--card:#fff;--accent:#6b4f3a;--ink:#2b2b2b;--muted:#6a6a6a;--radius:12px;--max-width:980px}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#fff);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+    .wrap{max-width:var(--max-width);margin:0 auto;padding:28px}
+    header{padding-bottom:8px}
+    nav{display:flex;justify-content:space-between;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;margin-left:12px}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+    .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 8px 22px rgba(22,22,22,0.04)}
+    h1{margin:0}
+    .desc{color:var(--muted);margin-top:6px}
+    .reveal{opacity:0;transform:translateY(14px);transition:opacity 420ms ease,transform 420ms ease}
+    .reveal.is-visible{opacity:1;transform:none}
+    .tag{display:inline-block;background:rgba(107,79,58,0.08);color:var(--accent);padding:6px 8px;border-radius:9px;font-size:13px}
+    .planner{margin-top:12px}
+
+    @media (max-width:900px){.grid{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <nav>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#6b4f3a,#b88663);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">PT</div>
+          <div>
+            <div style="font-weight:600">{{BUSINESS_NAME}}</div>
+            <div style="font-size:13px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+          </div>
+        </div>
+        <div>
+          <a href="index.html">Start</a>
+          <a href="about.html">About</a>
+          <a href="specialties.html" aria-current="page">Areas</a>
+          <a href="approach.html">Method</a>
+          <a href="contact.html">Connect</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <h1>Areas I commonly support</h1>
+      <p class="desc">Below are broad themes where I help people find steady, practical changes—either through a focused series of sessions or ongoing membership support.</p>
+
+      <section class="grid">
+        <article class="card reveal" data-reveal>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <strong>Stress & Overwhelm</strong><span class="tag">Short-term & membership</span>
+          </div>
+          <p style="color:var(--muted)">Tools to reduce reactivity, clarify priorities, and create simple rhythms that reduce decision fatigue. We often track one daily micro-habit.</p>
+        </article>
+
+        <article class="card reveal" data-reveal>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <strong>Relationship Patterns</strong><span class="tag">Couples & individuals</span>
+          </div>
+          <p style="color:var(--muted)">Focus on communication cycles, boundaries, and identifying repeated responses that keep problems active. Work can be behavioral and reflective.</p>
+        </article>
+
+        <article class="card reveal" data-reveal>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <strong>Transitions & Role Change</strong><span class="tag">Career, parenthood, relocations</span>
+          </div>
+          <p style="color:var(--muted)">Support for reframing identity shifts and building practical routines during change. Emphasis on small, testable adjustments to daily structure.</p>
+        </article>
+
+        <article class="card reveal" data-reveal>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <strong>Anxiety — performance & daily</strong><span class="tag">Skills-focused</span>
+          </div>
+          <p style="color:var(--muted)">Skill-building for momentary regulation and longer-term exposure to reduce avoidance. Collaborative planning and repeated practice between sessions.</p>
+        </article>
+
+        <article class="card reveal" data-reveal>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <strong>Mood fluctuations</strong><span class="tag">Monitoring & structure</span>
+          </div>
+          <p style="color:var(--muted)">Tracking mood patterns, sleep, and activity to create a stabilizing framework. Work emphasizes behavioral activation and routine supports.</p>
+        </article>
+
+        <article class="card reveal" data-reveal>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <strong>Caregiver fatigue</strong><span class="tag">Sustained support</span>
+          </div>
+          <p style="color:var(--muted)">Practical boundary-setting, values clarification, and micro-practices to reduce burnout while maintaining necessary responsibilities.</p>
+        </article>
+      </section>
+
+      <section style="margin-top:18px" class="reveal" data-reveal>
+        <div class="card">
+          <h3 style="margin-top:0">How I frame services</h3>
+          <p style="color:var(--muted)">I offer a flexible membership for ongoing support and single-course engagements for focused needs. Membership is framed around the rhythm you want: frequent check-ins for active change, or monthly visits for maintenance and troubleshooting.</p>
+
+          <div style="margin-top:12px">
+            <strong>Session Planner</strong>
+            <div class="planner">
+              <label for="s-concern">Main concern</label>
+              <input id="s-concern" type="text" placeholder="e.g., work stress" />
+              <label for="s-frequency">Rhythm</label>
+              <select id="s-frequency"><option value="weekly">Weekly</option><option value="biweekly">Every 2 weeks</option><option value="monthly">Monthly</option></select>
+              <div style="display:flex;gap:8px;margin-top:8px">
+                <button id="s-build">Create plan</button>
+                <button id="s-copy" style="background:#556b5f">Copy</button>
+              </div>
+              <div id="s-out" class="output" style="margin-top:10px">No plan yet.</div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </main>
+
+    <footer style="margin-top:18px;color:var(--muted)">Clinical notes: This content is informational and not a substitution for crisis care. Confidentiality and exclusion criteria apply. For emergencies call local emergency services.</footer>
+  </div>
+
+  <script>
+    // Reveal
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const els = document.querySelectorAll('[data-reveal]');
+      if(prefersReduced){els.forEach(e=>e.classList.add('is-visible'));return}
+      const obs = new IntersectionObserver((list)=>{list.forEach(i=>{if(i.isIntersecting){i.target.classList.add('is-visible');obs.unobserve(i.target)}}),{threshold:0.12});
+      els.forEach(e=>obs.observe(e));
+    })();
+
+    // Planner
+    (function(){
+      const build = document.getElementById('s-build');
+      const copy = document.getElementById('s-copy');
+      const out = document.getElementById('s-out');
+      function make(){
+        const c = document.getElementById('s-concern').value.trim()||'[not specified]';
+        const f = document.getElementById('s-frequency').value;
+        const lines = [];
+        lines.push('Planner export');
+        lines.push('Concern: '+c);
+        lines.push('Rhythm: '+(f==='weekly'?'Weekly':f==='biweekly'?'Every 2 weeks':'Monthly'));
+        lines.push('Suggested short plan: choose one small action to practice within the week, note one barrier, bring both to session.');
+        return lines.join('\n');
+      }
+      build.addEventListener('click', ()=>{ out.textContent = make(); });
+      copy.addEventListener('click', ()=>{
+        const t = out.textContent || make();
+        if(navigator.clipboard){ navigator.clipboard.writeText(t).then(()=>{ copy.textContent='Copied'; setTimeout(()=>copy.textContent='Copy',1200); }); } else {
+          const ta = document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); copy.textContent='Copied'; setTimeout(()=>copy.textContent='Copy',1200);
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

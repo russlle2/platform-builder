@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Contact • {{BUSINESS_NAME}}</title>
+  <style>
+    :root{
+      --bg1:#FFF8FB; --bg2:#F3FFF9; --accent:#6C4BF6; --muted:#6b6b6b; --card:#ffffff; --glass:rgba(255,255,255,0.75);
+      --max-width:1100px; --radius:14px; --shadow: 0 8px 30px rgba(34,34,34,0.08);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(135deg,var(--bg1),var(--bg2));color:#122;}
+    .canvas{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+    svg#pattern{width:160vh;height:160vh;position:absolute;right:-20vh;top:-10vh;opacity:0.08;transform:rotate(12deg);}
+    header{position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;padding:28px 6vw}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#FF6BA7);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;box-shadow:var(--shadow)}
+    nav a{margin-left:18px;text-decoration:none;color:var(--muted);font-weight:600;font-size:14px}
+    .wrap{max-width:var(--max-width);margin:30px auto;padding:28px;position:relative;z-index:2}
+
+    /* Hero */
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:center}
+    .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:28px}
+    .hero h1{margin:0 0 8px;font-size:34px;line-height:1.02;color:#0b1020}
+    .subtitle{color:var(--muted);margin-bottom:18px}
+    .cta{display:inline-block;background:linear-gradient(90deg,var(--accent),#FF6BA7);color:white;padding:12px 18px;border-radius:10px;text-decoration:none;font-weight:700}
+
+    /* Sections */
+    section{margin-top:20px}
+    .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .pill{display:flex;gap:12px;align-items:flex-start}
+    .icon{width:52px;height:52px;border-radius:12px;flex:0 0 52px;background:linear-gradient(135deg,#fff,#f6f7ff);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(17,24,39,0.06)}
+    .muted{color:var(--muted);font-size:14px}
+
+    /* Case note */
+    .case{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .note{background:linear-gradient(180deg,rgba(255,255,255,0.9),var(--glass));padding:18px;border-radius:12px}
+
+    /* FAQ */
+    .faq-item{margin-bottom:12px}
+    .q{font-weight:700}
+
+    /* Contact form */
+    form{display:flex;flex-direction:column;gap:10px}
+    input,textarea,select{padding:12px;border-radius:10px;border:1px solid #e6e9f2;font-size:15px}
+    button[type=submit]{background:var(--accent);color:white;border:0;padding:12px;border-radius:10px;font-weight:700}
+    footer{padding:28px 6vw;color:var(--muted);text-align:center}
+
+    @media (max-width:900px){
+      .hero{grid-template-columns:1fr;}
+      .case{grid-template-columns:1fr}
+      nav a{display:none}
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas" aria-hidden="true">
+    <svg id="pattern" viewBox="0 0 800 800" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#FFE6F0" stop-opacity="0.9"/><stop offset="1" stop-color="#E8FFF7" stop-opacity="0.9"/></linearGradient>
+        <pattern id="dots" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
+          <rect width="80" height="80" fill="url(#g1)"/>
+          <circle cx="14" cy="14" r="2.5" fill="#6C4BF6" opacity="0.22" />
+          <circle cx="66" cy="66" r="2.5" fill="#FF6BA7" opacity="0.18" />
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#dots)" />
+      <g fill-opacity="0.03" transform="translate(40,40)">
+        <path d="M0 120 C120 30, 220 200, 400 80 S700 220 800 40" stroke="#6C4BF6" stroke-width="180" fill="none" stroke-linecap="round"/>
+      </g>
+    </svg>
+  </div>
+
+  <header>
+    <div class="brand">
+      <div class="logo">A</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav aria-label="Main navigation">
+      <a href="index.html">Nest</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Shoppe</a>
+      <a href="pricing.html">Fees</a>
+      <a href="about.html">About</a>
+      <a href="book.html">Book now</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="card">
+        <h1>Hey — I design scent experiences that stick.</h1>
+        <p class="subtitle">I’m {{PRACTITIONER_NAME}}. My approach is safety-first, science-curious, and wildly sensory. Let's craft a custom aroma strategy for your life or space.</p>
+        <div style="display:flex;gap:12px;align-items:center">
+          <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <div style="color:var(--muted);font-weight:600">Prefer a quick chat? <a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none">Call {{PHONE}}</a></div>
+        </div>
+      </div>
+
+      <aside class="card" aria-labelledby="contact-box">
+        <h3 id="contact-box">Get in touch</h3>
+        <p class="muted">Drop a note and I’ll reply within two business days. For urgent scheduling, please call or text.</p>
+        <div style="margin-top:12px;font-size:14px">
+          <strong>Email</strong><div class="muted">{{EMAIL}}</div>
+          <strong style="margin-top:8px;display:block">Location</strong><div class="muted">{{CITY}}, {{STATE}}</div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="card" aria-labelledby="myth">
+      <h2 id="myth">Myths & Truths — straight talk</h2>
+      <div style="margin-top:10px" class="muted">Aromatherapy is rich in folklore. Here’s a clear, safety-focused take.</div>
+      <div style="margin-top:14px;display:grid;gap:10px">
+        <div style="display:flex;gap:12px"><strong>Myth:</strong><div class="muted">Essential oils cure disease.</div></div>
+        <div style="display:flex;gap:12px"><strong>Truth:</strong><div class="muted">They may support comfort and a positive sensory environment but are not a replacement for medical care. Always consult medical professionals for health issues.</div></div>
+        <div style="display:flex;gap:12px"><strong>Myth:</strong><div class="muted">If it’s natural, it’s always safe.</div></div>
+        <div style="display:flex;gap:12px"><strong>Truth:</strong><div class="muted">Many oils are potent. Dilution, patch testing, and context (pets, pregnancy, medications) matter.</div></div>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="pillars">
+      <h2 id="pillars">Three core pillars of my practice</h2>
+      <div class="grid3" style="margin-top:12px">
+        <div class="pill">
+          <div class="icon" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2l3 7h7l-5.5 4 2 7-6.5-4-6.5 4 2-7L2 9h7l3-7z" fill="#6C4BF6"/></svg></div>
+          <div>
+            <div style="font-weight:700">Safety & Standards</div>
+            <div class="muted">Protocols for dilution, storage, and product quality — so you enjoy scent without surprises.</div>
+          </div>
+        </div>
+
+        <div class="pill">
+          <div class="icon" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" fill="#FF6BA7"/></svg></div>
+          <div>
+            <div style="font-weight:700">Personalized Blends</div>
+            <div class="muted">Your preferences + lifestyle + safety notes become the blueprint for a custom blend.</div>
+          </div>
+        </div>
+
+        <div class="pill">
+          <div class="icon" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="4" fill="#FFC857"/></svg></div>
+          <div>
+            <div style="font-weight:700">Education & Care</div>
+            <div class="muted">Clear instructions for dilution, patch testing, and safe use around family and pets.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="case">
+      <h2 id="case">Case notes — an anonymized intensive</h2>
+      <div class="case" style="margin-top:12px">
+        <div class="note">
+          <div style="font-weight:700">Client: “M.” — shift-worker, sensitive skin</div>
+          <div class="muted" style="margin-top:8px">Session: 90-minute consultation + sensory profiling</div>
+          <p style="margin-top:12px">We created a small-batch roll-on focused on grounding (top: bergamot, middle: lavender, base: cedarwood) at a conservative 1.5% dilution. Patch test confirmed skin tolerance. M. reported improved sleep ritual satisfaction and fewer scent-triggered headaches after switching to the curated blend and diffuser schedule. Follow-up plan: tweak marine notes and provide travel-safe sample kit.</p>
+        </div>
+        <div class="note">
+          <div style="font-weight:700">What made it intensive?</div>
+          <ul class="muted" style="margin-top:8px">
+            <li>Detailed history & medication caution-checks</li>
+            <li>Multiple patch tests and diluted samples</li>
+            <li>Custom instructions for safe use around a pet cat</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="faq">
+      <h2 id="faq">FAQ — quick guidance</h2>
+      <div style="margin-top:12px">
+        <div class="faq-item"><div class="q">How do I dilute oils safely?</div><div class="muted">We recommend 0.5–3% for topical blends for adults depending on use-case. I provide clear dilution tables with every custom blend.</div></div>
+        <div class="faq-item"><div class="q">Should I patch test?</div><div class="muted">Yes. Apply a tiny amount of the diluted blend to the inner forearm and wait 24–48 hours. Stop use if irritation occurs.</div></div>
+        <div class="faq-item"><div class="q">Are essential oils safe around pets?</div><div class="muted">Some oils are not safe for pets. Diffusion in short, supervised bursts and avoiding direct topical use on animals helps reduce risk. Share your pet’s species and health notes before use.</div></div>
+        <div class="faq-item"><div class="q">What about pregnancy?</div><div class="muted">Certain oils are not recommended during pregnancy. If you are pregnant or breastfeeding, we’ll use pregnancy-safe protocols and coordinate with your care team as needed.</div></div>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="reach">
+      <h2 id="reach">Ready for an intensive?</h2>
+      <p class="muted">Tell me about your space, scent history, and any safety flags. I’ll design an approach that’s both luxurious and responsible.</p>
+      <form action="/submit-contact" method="post" novalidate style="margin-top:12px">
+        <input name="name" type="text" placeholder="Your name" required />
+        <input name="email" type="email" placeholder="Email — {{EMAIL}}" required />
+        <input name="phone" type="tel" placeholder="Phone — {{PHONE}}" />
+        <select name="interest" aria-label="Service interest">
+          <option value="consult">Intensive consultation</option>
+          <option value="blend">Custom blend</option>
+          <option value="kit">Signature kit</option>
+        </select>
+        <textarea name="message" rows="4" placeholder="Tell me about your goals, any pets, pregnancy, or medication notes..."></textarea>
+        <label style="font-size:13px;color:var(--muted)"><input type="checkbox" name="safety_ack" required /> I acknowledge I have read the safety note and understand this is not medical advice.</label>
+        <button type="submit">Send inquiry</button>
+      </form>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="max-width:var(--max-width);margin:0 auto;padding:18px">Questions? Call <a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none">{{PHONE}}</a> • Email <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a></div>
+    <div style="font-size:13px;color:var(--muted)">© {{BUSINESS_NAME}} — Aromatherapy practice. All blends are created with attention to safety. Not a substitute for medical advice.</div>
+  </footer>
+
+</body>
+</html>

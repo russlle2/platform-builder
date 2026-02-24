@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f9fbff;--card:#fff;--muted:#6f6f6f;--accent:#7c5cff;--accent-2:#ff8273}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:#222}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px}
+    .logo{width:46px;height:46px;border-radius:8px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;display:grid;place-items:center;font-weight:700}
+    nav a{margin-left:10px;color:var(--muted);text-decoration:none}
+    main{max-width:920px;margin:20px auto;padding:18px}
+    .intro{background:var(--card);padding:18px;border-radius:12px;border:1px solid #f1ecf8}
+    h1{margin:0;font-size:22px}
+    .selector{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+    .mood{padding:10px 12px;background:#fff;border-radius:10px;border:1px solid #efe8f3;cursor:pointer}
+    .mood.active{box-shadow:0 10px 30px rgba(124,92,255,0.08);border-color:transparent}
+    .panel{margin-top:18px;background:linear-gradient(180deg,#fff,#fffefc);padding:18px;border-radius:12px;border:1px solid #efeaf5;display:flex;gap:18px;align-items:center}
+    .panel .left{flex:1}
+    .approach-name{font-weight:800;font-size:18px;margin:0}
+    .approach-desc{color:var(--muted);margin:8px 0}
+    .book-cta{display:inline-flex;gap:10px;align-items:center}
+    .book-btn{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+    .secondary{background:transparent;border:1px solid #efe8f3;padding:8px 12px;border-radius:10px}
+
+    .info{font-size:13px;color:var(--muted);margin-top:12px}
+
+    .morph{transition:all 420ms cubic-bezier(.2,.9,.2,1)}
+
+    @media (max-width:760px){.panel{flex-direction:column;align-items:flex-start}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="logo">T</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="specialties.html">Specialties</a>
+      <a href="approach.html">Method</a>
+      <a href="fees.html">Rates</a>
+      <a href="faq.html">FAQ</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="intro">
+      <h1>Choose how you’d like to begin</h1>
+      <p style="color:var(--muted);margin-top:8px">Select the word that best fits how you feel today. The recommendation below will adjust language and the primary booking button so what you schedule feels aligned with your aim.</p>
+
+      <div class="selector" role="tablist" aria-label="Mood selector">
+        <button class="mood active" data-mood="overwhelmed">Overwhelmed</button>
+        <button class="mood" data-mood="stuck">Stuck</button>
+        <button class="mood" data-mood="decision">Facing a choice</button>
+        <button class="mood" data-mood="growth">Want sustained change</button>
+      </div>
+    </section>
+
+    <section class="panel morph" id="recommendation" aria-live="polite">
+      <div class="left">
+        <div class="approach-name" id="approachName">Stabilizing Session</div>
+        <div class="approach-desc" id="approachDesc">A focused meeting to create immediate breathing room and a short plan that fits your current capacity.</div>
+        <div class="info">Length options: 30–90 minutes. We'll tailor timing to what feels most useful.</div>
+      </div>
+      <div class="right" style="text-align:right">
+        <div style="margin-bottom:10px;color:var(--muted)" id="ctaNote">Recommended for pressing stress</div>
+        <div class="book-cta">
+          <a href="{{PRIMARY_CTA_URL}}" id="primaryCta" class="book-btn">{{PRIMARY_CTA_LABEL}}</a>
+          <a href="contact.html" class="secondary">Ask a question</a>
+        </div>
+      </div>
+    </section>
+
+    <div style="margin-top:18px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+      <div style="background:#fff;padding:12px;border-radius:10px;border:1px solid #f1eef8">
+        <strong>Short options</strong>
+        <p style="color:var(--muted);margin:8px 0 0">One or two targeted sessions to regain footing and plan next steps.</p>
+      </div>
+      <div style="background:#fff;padding:12px;border-radius:10px;border:1px solid #f1eef8">
+        <strong>Moderate series</strong>
+        <p style="color:var(--muted);margin:8px 0 0">3–6 sessions when you want a measurable shift without open-ended commitment.</p>
+      </div>
+      <div style="background:#fff;padding:12px;border-radius:10px;border:1px solid #f1eef8">
+        <strong>Ongoing work</strong>
+        <p style="color:var(--muted);margin:8px 0 0">Regular meetings to build skills and integrate change over months.</p>
+      </div>
+    </div>
+
+    <div style="margin-top:18px;background:#fff;padding:14px;border-radius:10px;border:1px solid #efeaf5">
+      <strong>Confidentiality & scope</strong>
+      <p style="color:var(--muted);margin-top:8px">Sessions are confidential within legal and ethical limits. This clinician does not provide emergency services; if you are in immediate danger, call emergency services or your local crisis line.</p>
+    </div>
+
+  </main>
+
+  <script>
+    (function(){
+      const moods = document.querySelectorAll('.mood');
+      const approachName = document.getElementById('approachName');
+      const approachDesc = document.getElementById('approachDesc');
+      const primaryCta = document.getElementById('primaryCta');
+      const ctaNote = document.getElementById('ctaNote');
+
+      const palette = {
+        overwhelmed: {
+          name: 'Stabilizing Session',
+          desc: 'A focused meeting to create immediate breathing room and a short plan that fits your current capacity.',
+          ctaText: 'Book a stabilizing session',
+          note: 'Recommended for pressing stress',
+          url: '{{PRIMARY_CTA_URL}}?focus=stabilize'
+        },
+        stuck: {
+          name: 'Clarity Series',
+          desc: 'A short sequence (3–4 meetings) to identify stuck patterns and test small changes between sessions.',
+          ctaText: 'Reserve a clarity series',
+          note: 'A practical path when change feels tangled',
+          url: '{{PRIMARY_CTA_URL}}?focus=clarity'
+        },
+        decision: {
+          name: 'Decision Conversation',
+          desc: 'One extended session to weigh options, map values, and outline a sensible next step you can live with.',
+          ctaText: 'Schedule a decision conversation',
+          note: 'Helpful when a single choice matters',
+          url: '{{PRIMARY_CTA_URL}}?focus=decision'
+        },
+        growth: {
+          name: 'Sustained Support',
+          desc: 'Regular sessions to build skills, practice new habits, and integrate changes into daily life.',
+          ctaText: 'Start sustained support',
+          note: 'A collaborative long-term rhythm',
+          url: '{{PRIMARY_CTA_URL}}?focus=growth'
+        }
+      };
+
+      function setActive(el){
+        moods.forEach(m=>m.classList.remove('active'));
+        el.classList.add('active');
+      }
+
+      function morphTo(key){
+        const info = palette[key];
+        // gentle animated morph: fade out, change, fade in
+        const panel = document.getElementById('recommendation');
+        panel.style.opacity = 0.4;
+        setTimeout(()=>{
+          approachName.textContent = info.name;
+          approachDesc.textContent = info.desc;
+          primaryCta.textContent = info.ctaText;
+          primaryCta.href = info.url;
+          ctaNote.textContent = info.note;
+          panel.style.opacity = 1;
+        },220);
+      }
+
+      moods.forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          setActive(btn);
+          morphTo(btn.getAttribute('data-mood'));
+        });
+      });
+
+      // initialize from query param if present
+      function paramMood(){
+        try{
+          const url = new URL(window.location.href);
+          const m = url.searchParams.get('mood') || url.searchParams.get('focus');
+          if(m && palette[m]) return m;
+        }catch(e){/* ignore */}
+        return null;
+      }
+      const preset = paramMood();
+      if(preset){
+        const btn = document.querySelector('.mood[data-mood="'+preset+'"]');
+        if(btn){ setActive(btn); morphTo(preset); }
+      } else {
+        morphTo('overwhelmed');
+      }
+
+    })();
+  </script>
+</body>
+</html>

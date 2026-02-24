@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Questions — FAQ — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#07121a;--card:#07171e;--accent:#b7f0db;--muted:#9bb0b8}
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:#e6f6f0;background-image:url('assets/img/pattern.svg');background-size:300px}
+    .wrap{max-width:920px;margin:28px auto;padding:20px}
+    nav{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+    nav a{color:#cfeee6;text-decoration:none;padding:6px 8px;border-radius:8px}
+    nav a:nth-child(6){background:rgba(255,255,255,0.02)}
+    h1{margin:0 0 10px}
+    .faq{display:grid;grid-template-columns:1fr 320px;gap:18px}
+    .qa{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:14px;border-radius:12px}
+    .question{cursor:pointer;display:flex;justify-content:space-between;gap:12px;align-items:center}
+    .answer{margin-top:10px;color:var(--muted);max-height:0;overflow:hidden;transition:all .28s ease}
+    .open .answer{max-height:220px}
+    .sidetip{background:rgba(255,255,255,0.02);padding:12px;border-radius:12px}
+    .small{font-size:13px;color:var(--muted)}
+    .btn{display:inline-block;background:var(--accent);color:#072023;padding:8px 12px;border-radius:10px;text-decoration:none;font-weight:700}
+    @media(max-width:880px){.faq{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <a href="index.html">Gatherings</a>
+      <a href="events.html">Calendar</a>
+      <a href="private-sessions.html">Solo Immersions</a>
+      <a href="pricing.html">Investment</a>
+      <a href="about.html">Our Approach</a>
+      <a href="faq.html" class="active">Questions</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Reach Us</a>
+    </nav>
+
+    <header>
+      <h1>Questions people often ask</h1>
+      <p class="small">Practical answers about what to expect, safety, and how to make a session work for your day.</p>
+    </header>
+
+    <main class="faq">
+      <div>
+        <div class="qa" data-id="q1">
+          <div class="question"><strong>Will I have to speak during the session?</strong><span>+</span></div>
+          <div class="answer">No. Most of the session is received silently. We begin with an optional brief check-in and end with a short grounding. If you prefer full silence, indicate when you arrive and the facilitator will honor that.</div>
+        </div>
+
+        <div class="qa" data-id="q2">
+          <div class="question"><strong>Can I fall asleep during the sound bath?</strong><span>+</span></div>
+          <div class="answer">Yes — falling into rest is common and welcomed. We advise not to drive immediately if you feel very drowsy; ask staff about post-session options if you need time to reorient.</div>
+        </div>
+
+        <div class="qa" data-id="q3">
+          <div class="question"><strong>Are there cases where I should not attend?</strong><span>+</span></div>
+          <div class="answer">If you have uncontrolled epilepsy, certain implanted medical devices, acute psychiatric symptoms, or are pregnant without clinical clearance, check with a clinician first. For individualized guidance, contact us at {{EMAIL}}.</div>
+        </div>
+
+        <div class="qa" data-id="q4">
+          <div class="question"><strong>What should I bring?</strong><span>+</span></div>
+          <div class="answer">Comfortable layers, any props for body support (blanket, pillow), and an openness to rest. We provide mats and basic bolsters; bring your own if you prefer.</div>
+        </div>
+
+        <div class="qa" data-id="q5">
+          <div class="question"><strong>How often should I come?</strong><span>+</span></div>
+          <div class="answer">There’s no single prescription. Many people begin with a weekly or biweekly rhythm for a month and then adjust. We offer short series for consistent practice and single sessions for resets.</div>
+        </div>
+      </div>
+
+      <aside class="sidetip">
+        <h4 style="margin:0 0 8px">Need help choosing?</h4>
+        <p class="small" style="margin:0 0 12px">Try our quick selector on the Reserve page to match your current state to a recommended session and a CTA tailored to that choice.</p>
+        <a class="btn" href="book.html">Go to Reserve</a>
+      </aside>
+    </main>
+
+    <section style="margin-top:18px">
+      <div class="small">Still have questions? Reach us at <a href="mailto:{{EMAIL}}" style="color:#cfeee6">{{EMAIL}}</a> or call <strong>{{PHONE}}</strong>.</div>
+    </section>
+  </div>
+
+  <script>
+    // simple accordion
+    document.querySelectorAll('.qa').forEach(function(node){
+      node.querySelector('.question').addEventListener('click',function(){
+        const open = node.classList.contains('open');
+        document.querySelectorAll('.qa').forEach(n=>n.classList.remove('open'));
+        if(!open) node.classList.add('open');
+      });
+    });
+  </script>
+</body>
+</html>

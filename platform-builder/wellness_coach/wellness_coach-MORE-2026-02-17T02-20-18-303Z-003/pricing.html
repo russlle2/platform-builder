@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Rates & Commitments — {{BUSINESS_NAME}}</title>
+  <meta name='description' content='Sustainable commitments, bespoke plans, clear pricing.'>
+  <style>
+    :root{--bg:#fbfbfb;--card:#fff;--muted:#6b6b6b;--accent:#5a9c7a;--accent-2:#6aa3c9;--glass: rgba(255,255,255,0.6);font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial}
+    *{box-sizing:border-box}
+    html,body{height:100%}body{margin:0;background:linear-gradient(180deg,var(--bg),#f2f8f6);color:#122;line-height:1.45}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:transparent}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:46px;height:46px;border-radius:10px;background:var(--accent);display:grid;place-items:center;color:#fff;font-weight:700}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none;font-size:14px}
+    .hero{padding:36px 28px;display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start}
+    .lead{background:linear-gradient(135deg,rgba(255,255,255,0.7),rgba(250,255,250,0.6));padding:28px;border-radius:12px;box-shadow:0 6px 20px rgba(17,22,16,0.06)}
+    h1{margin:0 0 8px 0;font-size:26px;color:#0f2b1e}
+    p.lead-desc{margin:0;color:var(--muted)}
+    .aside{padding:20px;border-radius:12px;background:var(--card);box-shadow:0 8px 30px rgba(12,18,14,0.06)}
+    .tiers{display:flex;gap:14px;margin:20px 0}
+    .tier{flex:1;padding:18px;border-radius:10px;background:var(--card);border:1px solid #e9efe9}
+    .tier h3{margin:0 0 6px 0}
+    .price{font-size:20px;color:var(--accent);font-weight:700}
+    .features{margin-top:12px;font-size:14px;color:var(--muted)}
+    .cta-row{display:flex;gap:12px;margin-top:14px}
+    .btn{padding:10px 14px;border-radius:8px;border:0;cursor:pointer}
+    .btn-primary{background:var(--accent);color:#fff}
+    .btn-ghost{background:transparent;border:1px solid #dbeee0;color:var(--accent)}
+    .note{font-size:13px;color:var(--muted);margin-top:10px}
+    footer{padding:28px;text-align:center;color:var(--muted);font-size:13px}
+
+    /* Habit builder */
+    .habit-widget{margin-top:16px;padding:14px;border-radius:10px;background:linear-gradient(180deg,#fff,#fcfffd);border:1px solid #eef7f1}
+    .habit-controls{display:flex;gap:8px;flex-wrap:wrap}
+    .input{padding:8px 10px;border-radius:8px;border:1px solid #e6efe8}
+    .days{margin-top:12px}
+    ul.checklist{list-style:none;padding:0;margin:0 0 8px 0}
+    ul.checklist li{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;border:1px dashed rgba(90,156,122,0.08);margin-bottom:8px;background:#fff}
+    .print-area{display:none}
+
+    /* pattern background */
+    .pattern-wrap{position:absolute;inset:0;pointer-events:none;opacity:0.06}
+    svg.pattern{width:100%;height:100%}
+
+    @media(max-width:880px){.hero{grid-template-columns:1fr}.aside{order:2}}
+  </style>
+</head>
+<body>
+  <div class='pattern-wrap' aria-hidden='true'>
+    <svg class='pattern' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'>
+      <defs>
+        <pattern id='p1' x='0' y='0' width='80' height='80' patternUnits='userSpaceOnUse'>
+          <rect width='80' height='80' fill='none'/>
+          <path d='M0 40 Q20 0 40 40 T80 40' fill='none' stroke='%236aa3c9' stroke-width='1' stroke-opacity='0.12'/>
+          <circle cx='12' cy='12' r='2' fill='%235a9c7a' fill-opacity='0.18'/>
+        </pattern>
+      </defs>
+      <rect width='100%' height='100%' fill='url(%23p1)' />
+    </svg>
+  </div>
+
+  <header>
+    <div class='brand'>
+      <div class='logo'>W</div>
+      <div>
+        <div style='font-weight:700'>{{BUSINESS_NAME}}</div>
+        <div style='font-size:12px;color:var(--muted)'>small rhythms, steady momentum</div>
+      </div>
+    </div>
+    <nav aria-label='Primary'>
+      <a href='index.html'>Root</a>
+      <a href='about.html'>Philosophy</a>
+      <a href='services.html'>Offerings</a>
+      <a href='programs.html'>Journeys</a>
+      <a href='pricing.html' style='font-weight:600;color:var(--accent)'>Rates</a>
+      <a href='testimonials.html'>Voices</a>
+      <a href='book.html'>Reserve</a>
+      <a href='contact.html'>Reach</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class='hero'>
+      <div class='lead'>
+        <h1>Clear commitments, crafted for your life</h1>
+        <p class='lead-desc'>Choose how you want to cultivate change — short focus sprints, steady monthly practice, or a blended pathway with coaching check-ins and self-guided habits. Pricing is framed around the time you dedicate and the outcomes you track.</p>
+
+        <div class='tiers'>
+          <div class='tier'>
+            <h3>Starter Sprint</h3>
+            <div class='price'>$120 / 4 weeks</div>
+            <div class='features'>Two coaching conversations + 4 micro-frameworks + habit checklist</div>
+            <div class='cta-row'>
+              <button class='btn btn-primary' onclick="location.href='book.html'">Begin the Sprint</button>
+              <button class='btn btn-ghost' onclick="alert('Ask us about sliding scale options at {{EMAIL}}')">Ask about scale</button>
+            </div>
+          </div>
+          <div class='tier'>
+            <h3>Steady Course</h3>
+            <div class='price'>$320 / 12 weeks</div>
+            <div class='features'>Weekly session option + tailored habit builder + progress maps</div>
+            <div class='cta-row'>
+              <button class='btn btn-primary' onclick="location.href='book.html'">Enroll in Course</button>
+              <button class='btn btn-ghost' onclick="alert('Details via {{EMAIL}}')">Request syllabus</button>
+            </div>
+          </div>
+          <div class='tier'>
+            <h3>Hybrid Pathway</h3>
+            <div class='price'>$880 / 6 months</div>
+            <div class='features'>Blended coaching + habit architecture + quarterly reflection sessions</div>
+            <div class='cta-row'>
+              <button class='btn btn-primary' onclick="location.href='book.html'">Design my Pathway</button>
+              <button class='btn btn-ghost' onclick="alert('Call us: {{PHONE}}')">Talk with a guide</button>
+            </div>
+          </div>
+        </div>
+
+        <p class='note'>Payments may be split. Each commitment includes a bite-sized framework you can use independently. No medical advice here — we focus on daily habits, clarity, and sustainable routines.</p>
+      </div>
+
+      <aside class='aside'>
+        <h4 style='margin:0 0 8px 0'>7-Day Challenge: build a tiny practice</h4>
+        <p style='margin:0 0 12px 0;color:var(--muted)'>Create a 7-day checklist you can print or save — designed to cut friction and create forward motion.</p>
+
+        <div class='habit-widget' id='habitWidget'>
+          <div class='habit-controls'>
+            <input class='input' id='habitName' placeholder='Habit to try (e.g., 10-min walk)'>
+            <select id='habitIntensity' class='input' aria-label='Intensity'>
+              <option value='light'>Light — daily nudge</option>
+              <option value='steady' selected>Steady — daily anchor</option>
+              <option value='bold'>Bold — stretch practice</option>
+            </select>
+            <button class='btn btn-primary' id='genChallenge'>Make checklist</button>
+          </div>
+
+          <div class='days' id='challengeContainer' aria-live='polite'></div>
+
+          <div style='display:flex;gap:8px;margin-top:12px'>
+            <button class='btn' id='printChallenge'>Print checklist</button>
+            <button class='btn btn-ghost' id='downloadTxt'>Download text</button>
+          </div>
+        </div>
+
+      </aside>
+    </section>
+  </main>
+
+  <footer>
+    <div>Questions? <a href='contact.html'>Reach out</a> — or call <strong>{{PHONE}}</strong></div>
+    <div style='margin-top:6px'>&copy; <span id='year'></span> {{BUSINESS_NAME}}</div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Habit builder logic
+    function generateChallenge(name, intensity){
+      if(!name) name = 'Daily practice';
+      const base = {
+        light: ['Minute intention','Short practice','Reflect briefly','Move gently','Breathe','Gratitude note','Mini tidy'],
+        steady: ['Set intention (1m)','Core practice (10m)','Hydrate/Move','Note progress','Micro-reflection','Connect with someone','Reset for next day'],
+        bold: ['Intent + planning','Focused practice (20m)','Stretch or walk','Journal (5m)','Share progress','Deep breathing','One new boundary']
+      }[intensity || 'steady'];
+
+      const days = base.map((task,i)=>({day:i+1,task: `${name}: ${task}`}));
+      return days;
+    }
+
+    function renderChallenge(days){
+      const c = document.getElementById('challengeContainer');
+      c.innerHTML = '';
+      const ul = document.createElement('ul'); ul.className='checklist';
+      days.forEach(d=>{
+        const li = document.createElement('li');
+        const cb = document.createElement('input'); cb.type='checkbox'; cb.id='d'+d.day;
+        const label = document.createElement('label'); label.setAttribute('for','d'+d.day); label.textContent = 'Day '+d.day+' — '+d.task;
+        li.appendChild(cb); li.appendChild(label); ul.appendChild(li);
+      });
+      c.appendChild(ul);
+    }
+
+    document.getElementById('genChallenge').addEventListener('click', ()=>{
+      const name = document.getElementById('habitName').value.trim();
+      const intensity = document.getElementById('habitIntensity').value;
+      const days = generateChallenge(name, intensity);
+      renderChallenge(days);
+    });
+
+    document.getElementById('printChallenge').addEventListener('click', ()=>{
+      const html = document.getElementById('challengeContainer').innerHTML || '<p style="color:#888">No challenge yet</p>';
+      const win = window.open('', '_blank', 'width=600,height=800');
+      win.document.write('<!doctype html><html><head><meta charset="utf-8"><title>7-Day Checklist</title></head><body style="font-family:Helvetica,Arial,sans-serif;padding:20px">');
+      win.document.write('<h2>7-Day Checklist</h2>');
+      win.document.write(html);
+      win.document.write('<p style="font-size:12px;color:#666">Generated from {{BUSINESS_NAME}}</p>');
+      win.document.write('</body></html>');
+      win.document.close();
+      win.print();
+    });
+
+    document.getElementById('downloadTxt').addEventListener('click', ()=>{
+      const ul = document.querySelectorAll('#challengeContainer ul.checklist li label');
+      if(!ul.length){ alert('Make a checklist first'); return; }
+      let out = '7-Day Challenge from {{BUSINESS_NAME}}\n\n';
+      ul.forEach((l,i)=>{ out += (i+1)+'. '+l.textContent+'\n'; });
+      const blob = new Blob([out], {type: 'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = '7-day-challenge.txt'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    });
+  </script>
+</body>
+</html>

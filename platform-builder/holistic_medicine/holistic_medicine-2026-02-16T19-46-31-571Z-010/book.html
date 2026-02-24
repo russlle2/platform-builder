@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Book an appointment — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Request a spot in a series or book a private intake." />
+  <style>
+    :root{--bg:#fcf7ff;--ink:#031021;--muted:#667085;--accent:#a78bfa}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto;background:linear-gradient(180deg,var(--bg),#fff);color:var(--ink)}
+    .shell{max-width:920px;margin:24px auto;padding:26px}
+    nav{display:flex;justify-content:space-between;align-items:center}
+    .nav a{color:var(--muted);text-decoration:none;margin-left:12px}
+    .top{display:flex;justify-content:space-between;align-items:center;margin-top:14px}
+    h1{margin:0;font-size:22px}
+    .sub{color:var(--muted);margin-top:6px}
+    .columns{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
+    .card{background:#fff;padding:16px;border-radius:12px;box-shadow:0 8px 30px rgba(2,6,23,0.04)}
+    label{display:block;font-weight:600;margin-top:10px}
+    input,select,textarea{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid #e6edf3}
+    .small{font-size:13px;color:var(--muted);margin-top:8px}
+    .btn{display:inline-block;padding:10px 14px;border-radius:8px;background:linear-gradient(90deg,var(--accent),#60a5fa);color:white;text-decoration:none;border:none}
+    .note{font-size:13px;color:var(--muted)}
+    .aside ul{padding-left:18px}
+    .svgCorner{position:fixed;right:-120px;bottom:-120px;opacity:0.06}
+    @media (max-width:820px){.columns{grid-template-columns:1fr}.svgCorner{display:none}}
+  </style>
+</head>
+<body>
+  <svg class="svgCorner" width="520" height="520" viewBox="0 0 520 520" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <defs>
+      <linearGradient id="lg" x1="0" x2="1"><stop offset="0" stop-color="#a78bfa"/><stop offset="1" stop-color="#60a5fa"/></linearGradient>
+      <pattern id="grid2" width="36" height="36" patternUnits="userSpaceOnUse">
+        <rect width="36" height="36" fill="url(#lg)"/>
+        <path d="M0 18 H36" stroke="#ffffff22" stroke-width="1" />
+        <path d="M18 0 V36" stroke="#ffffff22" stroke-width="1" />
+      </pattern>
+    </defs>
+    <rect width="520" height="520" rx="28" fill="url(#grid2)"/>
+  </svg>
+
+  <div class="shell">
+    <nav>
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+      <div>
+        <a href="index.html">Start</a>
+        <a href="services.html">Offerings</a>
+        <a href="conditions.html">Topics</a>
+        <a href="approach.html">Approach</a>
+        <a href="pricing.html">Rates</a>
+        <a href="about.html">About</a>
+        <a href="book.html" aria-current="page">Book</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </nav>
+
+    <div class="top">
+      <div>
+        <h1>Request a visit or reserve a seat</h1>
+        <div class="sub">Choose a private intake or join an event series. We will follow up with scheduling and intake details.</div>
+      </div>
+      <div style="text-align:right">
+        <div class="note">Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • {{PHONE}}</div>
+      </div>
+    </div>
+
+    <div class="columns">
+      <form class="card" method="post" action="{{PRIMARY_CTA_URL}}">
+        <label for="name">Full name</label>
+        <input id="name" name="name" placeholder="Your name" required />
+
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" placeholder="you@example.com" required />
+
+        <label for="phone">Phone</label>
+        <input id="phone" name="phone" placeholder="Optional" />
+
+        <label for="type">I am interested in</label>
+        <select id="type" name="type">
+          <option>Private intake (single)</option>
+          <option>Private series (multi-session)</option>
+          <option>Group series / event</option>
+        </select>
+
+        <label for="notes">Brief note — what brings you here?</label>
+        <textarea id="notes" name="notes" rows="4" placeholder="A few words about your concern, what you'd like to learn or address"></textarea>
+
+        <div class="small">By submitting you consent to a follow-up call or email. We do not offer guaranteed cures; services are educational and supportive.</div>
+
+        <div style="margin-top:14px">
+          <button class="btn" type="submit">Request booking</button>
+        </div>
+      </form>
+
+      <aside class="card aside">
+        <h3>What happens next</h3>
+        <ul>
+          <li class="note">We respond within 3 business days with scheduling options.</li>
+          <li class="note">Private intakes include a structured intake and personalized plan.</li>
+          <li class="note">Group series have limited seats; registering secures your spot.</li>
+        </ul>
+
+        <h4 style="margin-top:12px">Appointment types</h4>
+        <div class="note">Intake — 60–75 min: deep history and plan. Follow-up — 30–45 min: adjust and teach. Series — multi-week: educational and practice-focused.</div>
+
+        <h4 style="margin-top:12px">Cancellation & privacy</h4>
+        <div class="note">Please allow 48 hours for cancellations. Personal information is treated confidentially and only used to provide care and scheduling.</div>
+
+        <div style="margin-top:14px">
+          <a class="btn" href="mailto:{{EMAIL}}">Email us</a>
+          <div style="font-size:13px;color:var(--muted);margin-top:8px">Or call {{PHONE}} to ask about scholarships or sliding scale.</div>
+        </div>
+      </aside>
+    </div>
+
+  </div>
+</body>
+</html>

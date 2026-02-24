@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'/>
+  <meta name='viewport' content='width=device-width,initial-scale=1'/>
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg1:#0f1724;--bg2:#0b3a2e;--accent:#a8ffcf;--muted:#bcd8d0;--card:#0e1b18}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--muted);background:linear-gradient(180deg,var(--bg1),var(--bg2));}
+    .wrap{max-width:1100px;margin:48px auto;padding:28px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.12));border-radius:16px;box-shadow:0 10px 40px rgba(2,6,23,0.6);position:relative;overflow:hidden}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#7be9d0);display:flex;align-items:center;justify-content:center;color:#012;font-weight:700;box-shadow:0 6px 20px rgba(0,0,0,0.5)}
+    nav a{color:var(--muted);text-decoration:none;margin-left:16px;font-size:15px}
+    nav a.active{color:#fff;border-bottom:2px solid rgba(168,255,207,0.12);padding-bottom:6px}
+    .hero{display:grid;grid-template-columns:1fr 340px;gap:28px;align-items:start;margin-top:8px}
+    .hero .lead{padding:20px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent)}
+    h1{color:#fff;margin:0 0 10px 0;font-size:28px;letter-spacing:0.4px}
+    p.lead{color:var(--muted);margin:0 0 12px 0;line-height:1.5}
+    .cta{display:inline-block;background:linear-gradient(90deg,var(--accent),#89ffd6);color:#012;padding:10px 16px;border-radius:10px;text-decoration:none;font-weight:600}
+    .contact{font-size:13px;color:#cde9df;margin-top:8px}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:20px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.08));padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .card h3{margin:0 0 8px 0;color:#fff;font-size:16px}
+    .card p{margin:0;color:var(--muted);font-size:14px}
+    .retail{margin-top:18px;padding:16px;border-radius:12px;background:linear-gradient(90deg,rgba(120,220,190,0.04),rgba(120,120,140,0.01));border:1px dashed rgba(168,255,207,0.06)}
+    .retail h4{color:#e8fff6;margin:0 0 8px 0}
+    .case-notes{margin-top:18px;display:flex;flex-direction:column;gap:8px}
+    .case-notes .note{background:linear-gradient(180deg,rgba(255,255,255,0.01),rgba(0,0,0,0.06));padding:12px;border-radius:10px;font-size:14px;color:var(--muted)}
+    .faq{margin-top:18px}
+    .faq details{background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;margin-bottom:8px}
+    footer{display:flex;justify-content:space-between;align-items:center;margin-top:22px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.03)}
+    .pattern-svg{position:absolute;right:-120px;top:-60px;opacity:0.12;width:560px;height:560px;pointer-events:none}
+    @media (max-width:880px){.hero{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.pattern-svg{display:none}}
+  </style>
+</head>
+<body>
+  <!-- decorative SVG pattern unique to this page -->
+  <svg class='pattern-svg' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+    <defs>
+      <linearGradient id='g1' x1='0' x2='1' y1='0' y2='1'>
+        <stop offset='0' stop-color='#a8ffcf' stop-opacity='0.9'/>
+        <stop offset='1' stop-color='#7be9d0' stop-opacity='0.6'/>
+      </linearGradient>
+      <pattern id='p1' width='20' height='20' patternUnits='userSpaceOnUse'>
+        <rect width='10' height='10' fill='rgba(255,255,255,0.02)' />
+        <circle cx='15' cy='5' r='3' fill='url(#g1)' />
+      </pattern>
+    </defs>
+    <rect width='200' height='200' fill='url(#p1)' rx='16'/>
+    <g fill='none' stroke='rgba(255,255,255,0.06)' stroke-width='1'>
+      <path d='M14 170 C50 120 140 160 186 20' />
+    </g>
+  </svg>
+
+  <div class='wrap'>
+    <header>
+      <div class='brand'>
+        <div class='logo'>HM</div>
+        <div style='line-height:1'>
+          <div style='color:#fff;font-weight:700'>{{BUSINESS_NAME}}</div>
+          <div style='font-size:12px;color:var(--muted)'>{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href='index.html'>Home</a>
+        <a href='services.html' class='active'>Offerings</a>
+        <a href='conditions.html'>Concerns</a>
+        <a href='approach.html'>Method</a>
+        <a href='pricing.html'>Pricing</a>
+        <a href='about.html'>About</a>
+        <a href='book.html'>Book</a>
+        <a href='contact.html'>Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class='hero'>
+        <div class='lead'>
+          <h1>Services for whole-person wellbeing</h1>
+          <p class='lead'>We combine evidence-informed nutrition, herbal wisdom, movement and mind-body approaches to help you move toward balance. Our work is educational and supportive — not a promise of cure.</p>
+          <a class='cta' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a>
+          <div class='contact'>Phone: {{PHONE}} • Email: {{EMAIL}}</div>
+        </div>
+
+        <aside style='padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent)'>
+          <h3 style='color:#fff;margin-top:0'>Quick intake</h3>
+          <p style='margin:6px 0;color:var(--muted)'>Initial consults are 60–75 minutes. Follow-ups 30–45 minutes. Labs and supplements offered as optional add-ons.</p>
+          <a class='cta' href='book.html' style='display:inline-block;margin-top:10px'>Schedule a Visit</a>
+        </aside>
+      </section>
+
+      <section class='grid' aria-label='services list'>
+        <div class='card'>
+          <h3>Integrative Health Consultation</h3>
+          <p>Whole-person intake, lifestyle mapping, and a collaborative plan rooted in clinical evidence and patient context.</p>
+        </div>
+        <div class='card'>
+          <h3>Nutrition & Functional Food Guidance</h3>
+          <p>Personalized food-based strategies to address digestion, metabolism, inflammation and energy regulation.</p>
+        </div>
+        <div class='card'>
+          <h3>Herbal & Botanical Recommendations</h3>
+          <p>Plant-based options selected for safety and synergy — education on interactions and proper sourcing.</p>
+        </div>
+        <div class='card'>
+          <h3>Mind-Body & Stress Resilience</h3>
+          <p>Breathwork, movement, and behavioral tools to support sleep, stress and nervous-system balance.</p>
+        </div>
+      </section>
+
+      <section class='retail' aria-label='retail add-ons'>
+        <h4>Retail add-ons: formulations & supplements</h4>
+        <p style='margin:0 0 10px 0;color:var(--muted)'>Curated supplements and targeted formulations are offered as a retail add-on when clinically appropriate. All products are discussed transparently; you may decline at any time.</p>
+        <div style='display:flex;gap:12px;margin-top:12px;flex-wrap:wrap'>
+          <div style='background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;min-width:200px'>
+            <strong style='color:#fff'>Digestive Support Trio</strong>
+            <div style='color:var(--muted);font-size:13px;margin-top:6px'>Enzymes + bitters + herbal support for gentle digestive function.</div>
+          </div>
+          <div style='background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;min-width:200px'>
+            <strong style='color:#fff'>Calming Botanical Blend</strong>
+            <div style='color:var(--muted);font-size:13px;margin-top:6px'>A standardized formula to support sleep onset and nervous-system balance.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class='case-notes' aria-label='case notes'>
+        <div class='note'>
+          <strong style='color:#fff'>Case note:</strong> A client with chronic bloating used dietary patterning, targeted botanicals and supportive breathing practices to move from daily discomfort to more predictable digestion over 4 months (individual results vary).
+        </div>
+        <div class='note'>
+          <strong style='color:#fff'>Case note:</strong> Working with sleep hygiene, a personalised supplement trial and stress management, one client improved sleep continuity. This is educational and not a guaranteed outcome.
+        </div>
+      </section>
+
+      <section class='faq' aria-label='faq'>
+        <details>
+          <summary style='cursor:pointer;color:#fff'>Do you guarantee outcomes?</summary>
+          <div style='padding-top:8px;color:var(--muted)'>We focus on education and a tailored plan; we cannot guarantee cures. Our goal is sustainable progress and shared decision-making.</div>
+        </details>
+        <details>
+          <summary style='cursor:pointer;color:#fff'>Do you work with lab testing?</summary>
+          <div style='padding-top:8px;color:var(--muted)'>Optional functional or conventional labs may be recommended for clarity; we explain risks, benefits and costs beforehand.</div>
+        </details>
+      </section>
+
+    </main>
+
+    <footer>
+      <div style='font-size:14px;color:var(--muted)'>Prefer a conversation? Call {{PHONE}} • {{EMAIL}}</div>
+      <div>
+        <a class='cta' href='{{PRIMARY_CTA_URL}}' style='padding:8px 12px;font-size:14px'>{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </footer>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff7f0;--accent:#7b4f3b;--muted:#8b6a57;--card:#fff;--glass:rgba(255,255,255,0.6);--accent-2:#a86f4b}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue';color:var(--accent);background:linear-gradient(180deg,#fffaf7 0%,#fff2ea 100%);}
+    .wrap{max-width:1100px;margin:40px auto;padding:28px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent) 0%,var(--accent-2) 100%);box-shadow:0 6px 18px rgba(123,79,59,0.14);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    nav a{color:var(--muted);text-decoration:none;margin:0 10px;font-weight:600}
+    nav a.active{color:var(--accent)}
+    /* hero */
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;margin-top:28px;align-items:center}
+    .hero-card{background:var(--card);border-radius:14px;padding:28px;box-shadow:0 8px 30px rgba(27,20,14,0.06)}
+    h1{margin:0 0 8px;font-size:28px;color:var(--accent)}
+    p.lead{margin:0 0 16px;color:var(--muted)}
+    .cta{display:inline-block;padding:12px 18px;background:linear-gradient(90deg,var(--accent) 0%,var(--accent-2) 100%);color:#fff;border-radius:10px;text-decoration:none;font-weight:700}
+    .muted{color:var(--muted);font-size:14px}
+    /* services grid */
+    .services{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:20px}
+    .service{background:var(--glass);padding:18px;border-radius:12px;backdrop-filter:blur(6px);border:1px solid rgba(160,120,100,0.06)}
+    .service h3{margin:0 0 6px;color:var(--accent)}
+    .pill{display:inline-block;background:#fff1e8;border-radius:999px;padding:6px 10px;font-size:12px;color:var(--accent-2);margin-top:8px}
+    /* pattern svg background */
+    .bg-svg{position:fixed;right:0;top:60px;opacity:0.08;pointer-events:none;width:520px;height:520px}
+    /* pillars */
+    .pillars{display:flex;gap:16px;margin-top:26px}
+    .pillar{flex:1;background:#fff;padding:16px;border-radius:12px;border-left:6px solid var(--accent);box-shadow:0 6px 18px rgba(123,79,59,0.05)}
+    .case{margin-top:22px;background:linear-gradient(180deg,#fff 0%,#fff7f2 100%);padding:16px;border-radius:10px;border:1px dashed rgba(123,79,59,0.06)}
+    .faq{margin-top:22px}
+    .faq-item{margin-bottom:12px}
+    .faq button{width:100%;text-align:left;padding:12px;border-radius:10px;border:1px solid rgba(139,106,87,0.06);background:#fff}
+    footer{margin-top:34px;text-align:center;color:var(--muted);font-size:13px}
+    @media(max-width:880px){.hero{grid-template-columns:1fr;}.services{grid-template-columns:1fr}.bg-svg{display:none}}
+  </style>
+</head>
+<body>
+  <svg class="bg-svg" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#f9e7df"/><stop offset="1" stop-color="#ffe6d8"/></linearGradient>
+      <pattern id="p1" width="40" height="40" patternUnits="userSpaceOnUse">
+        <rect width="40" height="40" fill="url(#g1)" />
+        <path d="M0 40 L40 0" stroke="#f2cdb8" stroke-width="1" />
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#p1)" rx="30"/>
+    <g transform="translate(60,60)" fill="#f6d2bc" opacity="0.9">
+      <circle cx="90" cy="50" r="80" />
+      <circle cx="280" cy="220" r="120" />
+    </g>
+  </svg>
+
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">HM</div>
+        <div>
+          <div style="font-weight:700;color:var(--accent)">{{BUSINESS_NAME}}</div>
+          <div class="muted">Playful. Precise. Person-centered.</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="services.html" class="active">Offerings</a>
+        <a href="conditions.html">Conditions</a>
+        <a href="approach.html">Our Way</a>
+        <a href="book.html">Book</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="hero-card">
+        <h1>Integrated, intensive care that meets the whole you</h1>
+        <p class="lead">We weave nutrition, lifestyle, evidence-informed herbs and optional functional testing into focused plans. Designed for people who want measurable change—without the fluff.</p>
+        <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        <p class="muted" style="margin-top:10px">Telehealth + in-person available in {{CITY}}, {{STATE}} • {{PRACTITIONER_NAME}}, {{CREDENTIALS}}</p>
+      </div>
+
+      <aside style="padding:18px;background:linear-gradient(180deg,#fff8f4,#fff);border-radius:12px;border:1px solid rgba(123,79,59,0.06);box-shadow:0 6px 20px rgba(27,20,14,0.04)">
+        <h3 style="margin:0 0 8px;color:var(--accent)">Intensive packages</h3>
+        <p class="muted" style="margin:0 0 12px">Focused 8–12 week programs for lasting shifts—education, coaching and close follow-up.</p>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="background:#fff;padding:12px;border-radius:10px">
+            <strong>Reset Intensive</strong>
+            <div class="muted" style="font-size:13px">Deep baseline, weekly touchpoints, personalized food & lifestyle plan</div>
+          </div>
+          <div style="background:#fff;padding:12px;border-radius:10px">
+            <strong>Balance & Flow</strong>
+            <div class="muted" style="font-size:13px">Stress resilience, sleep tuning, hormone-supportive nutrition</div>
+          </div>
+          <a href="pricing.html" class="muted" style="text-decoration:underline;margin-top:6px">See packages & investment →</a>
+        </div>
+      </aside>
+    </section>
+
+    <section class="services">
+      <div class="service">
+        <h3>Comprehensive Integrative Consult</h3>
+        <p class="muted">A 90–120 minute intake to map your history, labs and lifestyle. We prioritize what moves the needle fastest.</p>
+        <div class="pill">Evidence-forward</div>
+      </div>
+      <div class="service">
+        <h3>Intensive Reset Plan</h3>
+        <p class="muted">8–12 week guided plan with weekly coaching, meal frameworks, targeted supplements and check-ins.</p>
+        <div class="pill">Intensive</div>
+      </div>
+      <div class="service">
+        <h3>Mind–Body Coaching</h3>
+        <p class="muted">Stress, sleep and resilience work with practical practices you can actually keep up.</p>
+        <div class="pill">Sustainable</div>
+      </div>
+      <div class="service">
+        <h3>Nutrition & Botanicals</h3>
+        <p class="muted">Personalized, plant-forward nutrition plans and herbal guidance integrated with your goals.</p>
+        <div class="pill">Person-first</div>
+      </div>
+    </section>
+
+    <section class="pillars">
+      <div class="pillar">
+        <strong>Nourish</strong>
+        <div class="muted">Food as framing: anti-inflammatory, blood-sugar steadying, joy-friendly.</div>
+      </div>
+      <div class="pillar">
+        <strong>Balance</strong>
+        <div class="muted">Stress physiology, sleep architecture and movement prescription tailored to you.</div>
+      </div>
+      <div class="pillar">
+        <strong>Restore</strong>
+        <div class="muted">Target inflammation & gut resilience with a combination of lifestyle, nutrition and optional testing.</div>
+      </div>
+    </section>
+
+    <section class="case">
+      <strong>Case note — illustrative (anonymized)</strong>
+      <p class="muted" style="margin-top:8px">Initial: 34F, chronic bloating, inconsistent sleep, low energy x2y. Plan: eliminate high-FODMAP triggers for 4 weeks, implement nightly wind-down routine, trial low-dose herbal bitters and magnesium glycinate, review stool panel if symptoms persist. Follow-up 4 weeks.</p>
+      <div style="font-size:12px;color:var(--muted);margin-top:8px">Note: this is an example—not medical advice. Individual plans vary.</div>
+    </section>
+
+    <section class="faq">
+      <h3 style="color:var(--accent)">Questions people often ask</h3>
+      <div class="faq-item">
+        <button onclick="this.nextElementSibling.style.display=(this.nextElementSibling.style.display==='block')?'none':'block'">Do you offer labs or tests?</button>
+        <div style="display:none;padding:10px 12px;color:var(--muted);background:#fff;border-radius:8px;border:1px solid rgba(139,106,87,0.04);margin-top:8px">Yes—optional functional labs are available for educational insight. Tests are ordered thoughtfully and discussed in context; they are never the only tool we use.</div>
+      </div>
+      <div class="faq-item">
+        <button onclick="this.nextElementSibling.style.display=(this.nextElementSibling.style.display==='block')?'none':'block'">How long until I see change?</button>
+        <div style="display:none;padding:10px 12px;color:var(--muted);background:#fff;border-radius:8px;border:1px solid rgba(139,106,87,0.04);margin-top:8px">Many clients notice shifts in 2–6 weeks for energy and sleep; digestion and chronic inflammation may take longer. We focus on measurable, sustainable steps.</div>
+      </div>
+    </section>
+
+    <section style="margin-top:20px;text-align:center">
+      <a class="cta" href="{{PRIMARY_CTA_URL}}">Start a focused program — {{PRIMARY_CTA_LABEL}}</a>
+      <div class="muted" style="margin-top:8px">Questions? Call {{PHONE}} or email <a href="mailto:{{EMAIL}}" style="color:var(--accent)">{{EMAIL}}</a></div>
+    </section>
+
+    <footer>
+      © {{BUSINESS_NAME}} • Serving {{CITY}}, {{STATE}} • Licensed care and collaborative referrals available
+    </footer>
+  </div>
+
+  <script>
+    // tiny progressive enhancement for FAQ
+    document.querySelectorAll('.faq button').forEach(b=>{b.addEventListener('click',()=>{const ans=b.nextElementSibling;ans.style.display=(ans.style.display==='block')?'none':'block'});});
+  </script>
+</body>
+</html>

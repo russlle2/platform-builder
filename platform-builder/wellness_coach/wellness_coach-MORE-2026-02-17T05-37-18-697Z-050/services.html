@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Membership and skill offerings for steady wellbeing.">
+  <style>
+    :root{--bg:#ffffff;--ink:#0f172a;--muted:#6b7280;--accent:#1363a8;--card:#ffffff}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:linear-gradient(180deg,#ffffff,#f8fbfc);color:var(--ink)}
+    header{padding:18px 20px;display:flex;align-items:center;justify-content:space-between}
+    .logo{display:flex;gap:12px;align-items:center}
+    .logo .mark{width:44px;height:44;border-radius:8px;background:linear-gradient(135deg,#1363a8,#0ea5a0);color:white;display:flex;align-items:center;justify-content:center;font-weight:800}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none;font-weight:700}
+    .hero{padding:28px 20px;background:linear-gradient(90deg,rgba(19,99,168,0.04),rgba(14,165,160,0.02));display:flex;gap:18px;align-items:center}
+    .hero .left{flex:1}
+    .hero h1{margin:0;font-size:20px}
+    .hero p{margin:6px 0 0;color:var(--muted)}
+    .offer-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:20px}
+    .offer-card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 22px rgba(12,17,28,0.04)}
+    .price{font-weight:800;font-size:20px;color:var(--accent)}
+    .cta{background:var(--accent);color:white;padding:8px 12px;border-radius:10px;text-decoration:none;font-weight:700}
+    .muted{color:var(--muted)}
+    .meta{font-size:13px;color:var(--muted)}
+    .tools{padding:20px;display:flex;gap:18px;flex-wrap:wrap}
+    .tool{flex:1;min-width:220px;background:white;padding:14px;border-radius:12px;border:1px solid #eef6fb}
+    /* modal (same pattern but separate instances) */
+    .modal-backdrop{position:fixed;inset:0;display:none;background:rgba(2,6,23,0.48);align-items:center;justify-content:center;padding:22px}
+    .modal{background:white;border-radius:12px;max-width:680px;width:100%;padding:18px}
+    .btn{padding:8px 12px;border-radius:10px;border:0;background:#f3f4f6;color:var(--ink);font-weight:700;cursor:pointer}
+    .outline{background:transparent;border:1px solid #e6eef8}
+    @media (max-width:980px){.offer-grid{grid-template-columns:1fr}.hero{flex-direction:column;align-items:flex-start}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo"><div class="mark">W</div><div><div style="font-weight:800">{{BUSINESS_NAME}}</div><div class="meta">Planning habits into practice</div></div></div>
+    <nav>
+      <a href="index.html">Anchor</a>
+      <a href="services.html">Offerings</a>
+      <a href="programs.html">Courses</a>
+      <a href="pricing.html">Rates</a>
+      <a href="testimonials.html">Stories</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="left">
+        <h1>Offerings designed around consistent practice</h1>
+        <p class="muted">Memberships, targeted cycles, and one-off planning sessions focused on observable habits and reflection systems.</p>
+        <div style="margin-top:12px">
+          <a class="cta" href="{{PRIMARY_CTA_URL}}">Join the membership</a>
+          <button class="btn outline" id="try-offering">Try it now</button>
+        </div>
+      </div>
+      <div style="width:320px">
+        <div class="offer-card">
+          <div style="display:flex;justify-content:space-between;align-items:center"><div>
+            <div class="meta">Membership — rolling</div>
+            <div class="price">Member Tier</div>
+            <div class="muted">Weekly micro-lessons, monthly planning, shared check-ins</div>
+          </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="offer-grid">
+      <div class="offer-card">
+        <h3>Core Habit Cycle</h3>
+        <p class="muted">A 6-week scaffold that turns one choice into a repeatable habit. We pair a tiny anchor action, a weekly check, and a reflection prompt.</p>
+        <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center"><div class="muted">Start anytime</div><a class="cta" href="programs.html">Plan a cycle</a></div>
+      </div>
+
+      <div class="offer-card">
+        <h3>Micro-Practice Lab</h3>
+        <p class="muted">Short guided practices (breathing, journaling, intention setting) you can do anywhere — each one includes pacing and brief notes to track change.</p>
+        <div style="margin-top:12px"><button class="btn" id="try-breathing-2">Try a micro-practice</button></div>
+      </div>
+
+      <div class="offer-card">
+        <h3>One-off Planning Session</h3>
+        <p class="muted">A focused ninety-minute session to map 2–3 starter habits and an accountability plan for the first 30 days.</p>
+        <div style="margin-top:12px"><a class="cta" href="book.html">Book a session</a></div>
+      </div>
+    </section>
+
+    <section class="tools">
+      <div class="tool">
+        <h4>Simple frameworks</h4>
+        <p class="muted">Our frameworks translate goals into a daily prompt, a tiny action, and a reflection question.</p>
+      </div>
+      <div class="tool">
+        <h4>Measurement</h4>
+        <p class="muted">Weekly check-ins record observable behaviors and minutes practiced — no jargon, just patterns.</p>
+      </div>
+      <div class="tool">
+        <h4>Community</h4>
+        <p class="muted">Optional small groups that practice together and compare simple metrics weekly.</p>
+      </div>
+    </section>
+
+    <section style="padding:20px">
+      <div class="offer-card">
+        <h3>Try a guided exercise</h3>
+        <p class="muted">This demo launches three short practices. No sign-up required — try breathing pacing, a brief journal prompt, or an intention-set.</p>
+        <div style="margin-top:12px"><button class="btn" id="try-offering-2">Try it now</button></div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="modal-backdrop-2" class="modal-backdrop" role="dialog" aria-hidden="true">
+    <div class="modal" role="document">
+      <header style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <strong id="modal-title-2">Guided exercise</strong>
+          <div class="muted" id="modal-sub-2" style="font-size:13px">Select a short practice to follow</div>
+        </div>
+        <button class="btn" id="modal-close-2">Close</button>
+      </header>
+      <div id="modal-body-2" style="margin-top:12px">
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn" data-ex="breathing">Breathing</button>
+          <button class="btn" data-ex="journaling">Journaling</button>
+          <button class="btn" data-ex="intention">Intention</button>
+        </div>
+        <div id="exercise-area-2" style="margin-top:12px"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      // Modal instance 2
+      const backdrop = document.getElementById('modal-backdrop-2');
+      const bodyArea = document.getElementById('exercise-area-2');
+      function open(){backdrop.style.display='flex';backdrop.setAttribute('aria-hidden','false');document.body.style.overflow='hidden'}
+      function close(){backdrop.style.display='none';backdrop.setAttribute('aria-hidden','true');document.body.style.overflow='auto';stopBreath2();}
+      document.getElementById('modal-close-2').addEventListener('click',close);
+      document.getElementById('try-offering').addEventListener('click',open);
+      document.getElementById('try-offering-2').addEventListener('click',open);
+      document.getElementById('try-breathing-2').addEventListener('click',open);
+
+      backdrop.addEventListener('click',function(e){if(e.target===backdrop) close();});
+      const exBtns = Array.from(backdrop.querySelectorAll('[data-ex]'));
+      exBtns.forEach(b=>b.addEventListener('click',()=>select(b.getAttribute('data-ex'))));
+
+      // breathing logic for this instance
+      let brTimer=null, brPhase=0, brTotal=120;
+      function select(type){bodyArea.innerHTML='';if(type==='breathing') renderB();if(type==='journaling') renderJ();if(type==='intention') renderI();}
+      function renderB(){const node=document.createElement('div');node.innerHTML = '<div style="text-align:center"><div id="circle2" style="width:140px;height:140px;border-radius:50%;background:#e8f3ff;display:flex;align-items:center;justify-content:center;font-weight:800;color:#1363a8;margin:0 auto">Ready</div><div style="margin-top:10px"><button class="btn" id="start2">Start 2-min</button><button class="btn outline" id="stop2" style="margin-left:8px">Stop</button></div><div id="phase2" class="muted" style="margin-top:10px"></div></div>';
+        bodyArea.appendChild(node);
+        document.getElementById('start2').addEventListener('click',startBr);
+        document.getElementById('stop2').addEventListener('click',stopBreath2);
+      }
+      function startBr(){stopBreath2();brTotal=120;brPhase=0;const circle=document.getElementById('circle2');const info=document.getElementById('phase2');const seq=[{l:'Inhale',s:4,sc:1.2},{l:'Hold',s:3,sc:1.0},{l:'Exhale',s:5,sc:0.6}];brTimer=setInterval(()=>{const p=seq[brPhase%seq.length];info.textContent=p.l+' — seconds left: '+(brTotal);circle.style.transform='scale('+p.sc+')';circle.textContent=p.l;brPhase++;brTotal--;if(brTotal<=0){stopBreath2();info.textContent='Done — return when ready.'}},1000)}
+      function stopBreath2(){if(brTimer){clearInterval(brTimer);brTimer=null;const c=document.getElementById('circle2');if(c){c.style.transform='scale(1)';c.textContent='Stopped'}}}
+
+      // journaling for instance 2
+      function renderJ(){const n=document.createElement('div');n.innerHTML='<div><div class="muted">Prompt</div><div style="font-weight:700;margin-top:8px">Name one small step you can repeat</div><textarea id="j2" style="width:100%;height:120px;margin-top:10px;padding:10px;border-radius:8px;border:1px solid #eef6fb"></textarea><div style="margin-top:8px"><button class="btn" id="savej">Save</button></div><pre id="saved2" class="note hidden" style="margin-top:10px"></pre></div>';bodyArea.appendChild(n);document.getElementById('savej').addEventListener('click',()=>{const v=document.getElementById('j2').value.trim();const out=document.getElementById('saved2');out.textContent='Saved:\n'+v;out.classList.remove('hidden');});}
+
+      // intention for instance 2
+      function renderI(){const el=document.createElement('div');el.innerHTML='<div><input id="i2" placeholder="I will..." style="width:100%;padding:10px;border-radius:8px;border:1px solid #eef6fb"/><div style="margin-top:8px"><button class="btn" id="si2">Set</button></div><div id="o2" class="muted" style="margin-top:8px"></div></div>';bodyArea.appendChild(el);document.getElementById('si2').addEventListener('click',()=>{const v=document.getElementById('i2').value.trim();document.getElementById('o2').textContent = v?('Intention: "'+v+'"'):'Enter a short intention.'});}
+
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Schedule — {{BUSINESS_NAME}}</title>
+  <style>
+    body{margin:0;font-family:Inter,system-ui,Arial;background:#f9fbf9;color:#132}
+    header{display:flex;align-items:center;justify-content:space-between;padding:16px 24px}
+    nav a{margin-left:14px;color:#144; text-decoration:none;font-weight:600}
+    main{max-width:980px;margin:22px auto;padding:18px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .panel{background:#fff;padding:18px;border-radius:12px;box-shadow:0 8px 26px rgba(20,28,20,0.06)}
+    .form-row{margin-bottom:10px}
+    label{display:block;font-size:13px;color:#667}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e7efe9}
+    .book-btn{display:inline-block;padding:10px 14px;background:#2b7a6f;color:#fff;border-radius:10px;text-decoration:none;font-weight:800}
+    .timeline{margin-top:14px}
+    .roadmap{display:flex;flex-direction:column;gap:8px}
+    .step{padding:10px;border-radius:8px;border:1px solid rgba(18,40,36,0.04);background:linear-gradient(180deg,#fff,#fbfffd)}
+    .step .title{font-weight:700;color:#123}
+    .disclaimer{font-size:13px;color:#6b6b6b;margin-top:10px}
+    .calendar{height:200px;border-radius:8px;background:linear-gradient(180deg,#fbfffb,#f8fff8);display:grid;place-items:center;color:#2a5b4f}
+    @media(max-width:920px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#e9fbf3,#dff6ee);display:grid;place-items:center;font-weight:800">HM</div>
+      <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Issues</a>
+      <a href="approach.html">Method</a>
+      <a href="pricing.html">Plans</a>
+      <a href="about.html">Team</a>
+      <a href="book.html">Schedule</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="grid">
+      <section class="panel">
+        <h2 style="margin-top:0">Book an appointment</h2>
+        <p style="margin:6px 0 12px 0;color:#556">Choose a time and tell us what matters most. If you’re unsure, use the mood selector to see a suggested session type.</p>
+
+        <div class="form-row">
+          <label for="mood-book">How do you feel today?</label>
+          <select id="mood-book">
+            <option value="overwhelmed">Overwhelmed / anxious</option>
+            <option value="drained">Drained / fatigued</option>
+            <option value="curious">Curious / wanting a plan</option>
+            <option value="steady">Steady / maintenance</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label>Suggested session</label>
+          <div id="session-suggest" style="padding:10px;border-radius:8px;background:linear-gradient(180deg,#fff,#fbfffb);border:1px solid rgba(18,50,44,0.03)">Intro Discovery — 45 minutes</div>
+        </div>
+
+        <div class="form-row">
+          <label for="name">Name</label>
+          <input id="name" placeholder="Your name">
+        </div>
+        <div class="form-row">
+          <label for="email">Email</label>
+          <input id="email" placeholder="you@example.com">
+        </div>
+        <div class="form-row">
+          <label for="note">A short note about priorities</label>
+          <textarea id="note" rows="3" placeholder="What matters most right now?"></textarea>
+        </div>
+
+        <div style="display:flex;gap:10px;align-items:center">
+          <a id="book-now" class="book-btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <div style="color:#6b6b6b;font-size:13px">or call <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+        </div>
+
+        <div style="margin-top:14px;color:#6b6b6b;font-size:13px">By booking you acknowledge that services are educational and supportive; specific medical advice may require coordination with your physician.</div>
+
+      </section>
+
+      <aside>
+        <div class="panel">
+          <h3 style="margin-top:0">Quick planner</h3>
+          <div class="roadmap" id="roadmap">
+            <div class="step" data-step="1"><div class="title">Phase 1 — Clarify</div><div class="muted">Information gathering, baseline priorities, two immediate actions.</div></div>
+            <div class="step" data-step="2"><div class="title">Phase 2 — Build</div><div class="muted">Introduce daily supports, brief coaching, and tracking.</div></div>
+            <div class="step" data-step="3"><div class="title">Phase 3 — Maintain</div><div class="muted">Consolidate routines and plan longer-term check-ins.</div></div>
+          </div>
+
+          <div class="disclaimer">This timeline is educational. People progress at different rates; individualized pacing and clinical decisions are determined collaboratively during care.</div>
+
+          <div style="margin-top:14px">
+            <div class="calendar">Available times appear after you request a slot</div>
+          </div>
+
+        </div>
+
+        <div style="height:18px"></div>
+
+        <div class="panel">
+          <h4 style="margin-top:0">Need a different option?</h4>
+          <p class="muted">We offer single sessions, multi-week sequences, and subscription-style maintenance. Use the mood selector on the left to tailor the suggestion and the booking label will update to match.</p>
+        </div>
+      </aside>
+    </div>
+
+  </main>
+
+  <footer style="text-align:center;padding:20px;color:#667">Questions? Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • {{BUSINESS_NAME}}</footer>
+
+  <script>
+    (function(){
+      const map = {
+        overwhelmed:{label:'Book Stabilizer — 30–45m',session:'Short Stabilizer — 30–45 minutes'},
+        drained:{label:'Book Recharge — 60m',session:'Recharge Session — 60 minutes'},
+        curious:{label:'Book Discovery — 45m',session:'Intro Discovery — 45 minutes'},
+        steady:{label:'Book Maintenance — 30m',session:'Maintenance Check — 30 minutes'}
+      };
+      const sel = document.getElementById('mood-book');
+      const suggest = document.getElementById('session-suggest');
+      const btn = document.getElementById('book-now');
+
+      function apply(){
+        const v = map[sel.value] || map.curious;
+        suggest.textContent = v.session;
+        btn.textContent = v.label;
+        // keep the booking link ready
+        btn.href = '{{PRIMARY_CTA_URL}}?type=' + encodeURIComponent(v.session);
+      }
+      sel.addEventListener('change',apply);
+      apply();
+
+      // Small interactive roadmap: click to mark phase as chosen.
+      document.querySelectorAll('.step').forEach(s=>{
+        s.addEventListener('click',()=>{
+          document.querySelectorAll('.step').forEach(x=>x.style.borderColor='rgba(18,40,36,0.04)');
+          s.style.borderColor='rgba(43,122,111,0.18)';
+        });
+      });
+
+    })();
+  </script>
+</body>
+</html>

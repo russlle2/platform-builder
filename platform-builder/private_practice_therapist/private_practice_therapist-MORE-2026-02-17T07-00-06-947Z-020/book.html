@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Schedule — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#041027;--glass:rgba(255,255,255,0.04);--muted:#c7d6e6;--accent:#7bd389}
+    body{margin:0;background:linear-gradient(180deg,#02101b,#061728),url('assets/img/pattern.svg');background-size:650px 650px;color:var(--muted);font-family:Inter,system-ui,Arial}
+    .wrap{max-width:920px;margin:28px auto;padding:20px}
+    header{display:flex;align-items:center;justify-content:space-between}
+    .brand h1{margin:0;color:#fff;font-size:18px}
+    nav{display:flex;gap:10px}
+    nav a{color:var(--muted);text-decoration:none;padding:6px 10px;border-radius:8px}
+    nav a:hover{background:var(--glass);color:#fff}
+
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:16px;margin-top:18px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:16px;border-radius:12px}
+    h2{color:#fff;margin:0 0 8px 0}
+    label{display:block;font-size:13px;color:var(--muted);margin-top:10px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--muted)}
+    .btn{background:var(--accent);border:0;padding:10px 12px;border-radius:10px;color:#042a15;font-weight:600;cursor:pointer;margin-top:12px}
+
+    /* Mood-to-Method prominent */
+    .mood-panel{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .mood-panel button{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted);padding:8px 10px;border-radius:8px;cursor:pointer}
+    .mood-panel button.active{background:rgba(255,255,255,0.03);border-color:var(--accent);color:#fff}
+
+    .method{margin-top:14px;padding:12px;border-radius:10px;background:linear-gradient(90deg,rgba(123,211,137,0.03),rgba(90,163,255,0.02));color:#eafaf0}
+
+    @media (max-width:900px){.grid{grid-template-columns:1fr}.wrap{padding:12px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <h1>{{BUSINESS_NAME}}</h1>
+        <div style="color:var(--muted);font-size:13px">Book a consult, series, or ongoing visits</div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="approach.html">How I Work</a>
+        <a href="specialties.html">Services</a>
+        <a href="fees.html">Pricing</a>
+        <a href="faq.html">FAQs</a>
+        <a href="book.html" class="active">Book</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <div class="grid">
+      <main class="card">
+        <h2>Start here</h2>
+        <div style="color:var(--muted);font-size:14px">Choose what you need and share a few details. If you’d rather email first, try <a href="mailto:{{EMAIL}}" style="color:var(--accent)">{{EMAIL}}</a>.</div>
+
+        <div class="mood-panel" role="tablist" aria-label="Mood to method">
+          <button data-mood="overwhelmed">Overwhelmed</button>
+          <button data-mood="stuck">Stuck</button>
+          <button data-mood="transitioning">Transitioning</button>
+          <button data-mood="curious">Curious</button>
+        </div>
+
+        <div class="method" id="method">
+          <strong id="method-title">Select how you feel — I’ll suggest a path</strong>
+          <div id="method-desc" style="margin-top:8px;color:#e8f8ee">Selecting a mood updates the recommended approach and adjusts the booking button so you can continue directly into scheduling the right option.</div>
+        </div>
+
+        <form id="book-form" style="margin-top:12px">
+          <label for="name">Full name</label>
+          <input id="name" name="name" required />
+
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required />
+
+          <label for="phone">Phone (optional)</label>
+          <input id="phone" name="phone" />
+
+          <label for="need">What brings you in (short)</label>
+          <textarea id="need" name="need" rows="4"></textarea>
+
+          <label for="choice">Preferred option</label>
+          <select id="choice" name="choice">
+            <option value="series">Short series (4 sessions)</option>
+            <option value="monthly">Weekly ongoing</option>
+            <option value="brief">Brief consult</option>
+            <option value="navigate">Navigation plan</option>
+          </select>
+
+          <label for="time">Preferred times</label>
+          <input id="time" name="time" placeholder="mornings, evenings, weekdays..." />
+
+          <div style="display:flex;gap:8px;align-items:center">
+            <button type="submit" id="submit-btn" class="btn">{{PRIMARY_CTA_LABEL}}</button>
+            <div style="color:var(--muted);font-size:13px">Or call <a href="tel:{{PHONE}}" style="color:var(--accent)">{{PHONE}}</a></div>
+          </div>
+        </form>
+
+      </main>
+
+      <aside class="card">
+        <div style="font-size:14px;color:#fff">Booking guide</div>
+        <div style="margin-top:8px;color:var(--muted);font-size:14px">If you’re new, a 50–60 minute intake is scheduled first. Follow-up visits are usually 45–50 minutes. Payment is discussed at booking.</div>
+
+        <div style="margin-top:12px">
+          <div style="font-weight:600;color:#fff">Quick prices</div>
+          <ul style="margin-top:8px;color:var(--muted);padding-left:18px">
+            <li>Short series: see pricing page for package cost</li>
+            <li>Weekly support: billed per session</li>
+            <li>Brief consult: single session rate applies</li>
+          </ul>
+        </div>
+
+        <div style="margin-top:12px;font-size:13px;color:var(--muted)">Confidentiality & safety: Records are kept private within legal limits; I do not provide emergency services. If you are in danger, contact emergency services or a crisis hotline.</div>
+      </aside>
+    </div>
+
+  </div>
+
+  <script>
+    // Mood-to-Method implementation — updates method panel and CTA text
+    (function(){
+      const map = {
+        overwhelmed:{title:'Contain and reduce immediate strain',desc:'Short weekly sessions with clear action steps to create immediate relief and a plan for the following weeks.',choice:'series',cta:'Request a short series',link:'?plan=series'},
+        stuck:{title:'Build steady momentum',desc:'Ongoing weekly sessions to explore patterns, test changes, and adjust approach over time.',choice:'monthly',cta:'Request weekly support',link:'?plan=monthly'},
+        transitioning:{title:'Navigation-focused support',desc:'Targeted sessions to clarify values, decide practical next steps, and manage change.',choice:'navigate',cta:'Request a navigation plan',link:'?plan=navigate'},
+        curious:{title:'Try a consult',desc:'A single consult to assess fit and plan next steps if you want to test how we work together.',choice:'brief',cta:'Request a consult',link:'?plan=brief'}
+      };
+
+      const buttons = document.querySelectorAll('[data-mood]');
+      const title = document.getElementById('method-title');
+      const desc = document.getElementById('method-desc');
+      const select = document.getElementById('choice');
+      const submit = document.getElementById('submit-btn');
+      const form = document.getElementById('book-form');
+
+      function setMood(key){
+        if(!map[key]) return;
+        buttons.forEach(b=>b.classList.toggle('active', b.getAttribute('data-mood')===key));
+        title.textContent = map[key].title;
+        desc.textContent = map[key].desc;
+        // adjust choice and button text
+        select.value = map[key].choice;
+        submit.textContent = map[key].cta;
+        // make form action hint (local) — append plan to action
+        form.dataset.plan = map[key].choice;
+      }
+
+      buttons.forEach(b=>b.addEventListener('click',()=>{
+        setMood(b.getAttribute('data-mood'));
+      }));
+
+      // read query params to preselect
+      const q = new URLSearchParams(location.search);
+      if(q.has('mood')){
+        setMood(q.get('mood'));
+      } else if(q.has('plan')){
+        // if plan present set button and select accordingly
+        const p = q.get('plan');
+        // map plan to mood if possible
+        const reverse = {series:'overwhelmed',monthly:'stuck',navigate:'transitioning',brief:'curious'};
+        if(reverse[p]) setMood(reverse[p]); else select.value = p;
+      }
+
+      // Simple submit handler — simulate booking flow locally
+      form.addEventListener('submit',(e)=>{
+        e.preventDefault();
+        const name = document.getElementById('name').value || 'No name';
+        const email = document.getElementById('email').value || 'No email';
+        const choice = select.value;
+        // local confirmation overlay (simple)
+        alert('Thanks, ' + name + '. Your request for ' + choice + ' has been received. We will contact ' + email + ' to confirm scheduling.');
+        form.reset();
+        submit.textContent = '{{PRIMARY_CTA_LABEL}}';
+      });
+    })();
+  </script>
+</body>
+</html>

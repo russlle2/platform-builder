@@ -1,0 +1,69 @@
+/* Core styles for split-diagonal layout */
+:root{
+  --accent:#2b8a6f;
+  --muted:#66757f;
+  --bg:#fbfdfb;
+  --card:#ffffff;
+  --glass:rgba(255,255,255,0.7);
+  --radius:12px;
+  font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:#0b1a15;line-height:1.45}
+.site-header{position:sticky;top:0;backdrop-filter: blur(6px);background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.3));border-bottom:1px solid rgba(10,10,10,0.03);}
+.nav{display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;max-width:1100px;margin:0 auto}
+.logo{font-weight:700;color:var(--accent);text-decoration:none;font-size:1.1rem}
+.nav-list{list-style:none;margin:0;padding:0;display:flex;gap:0.5rem;flex:1;align-items:center}
+.nav-list a{color:#0b1a15;text-decoration:none;padding:0.25rem 0.5rem;border-radius:8px}
+.nav-list a:hover{background:rgba(11,26,21,0.04)}
+.cta-wrap{margin-left:auto}
+.btn{display:inline-block;padding:0.6rem 1rem;border-radius:10px;border:1px solid rgba(11,26,21,0.06);background:var(--card);cursor:pointer}
+.btn.primary-cta{background:var(--accent);color:#fff;border:none}
+.btn.ghost{background:transparent;border:1px dashed rgba(11,26,21,0.06)}
+.nav-toggle{display:none;background:none;border:none;font-size:1.25rem}
+
+.split-diagonal .hero{position:relative;overflow:hidden;padding:3.5rem 1.25rem}
+.hero-pattern{position:absolute;right:-10%;top:-10%;width:60%;height:120%;opacity:0.9}
+.hero-inner{display:grid;grid-template-columns:1fr 360px;gap:2rem;align-items:start;max-width:1100px;margin:0 auto}
+.hero-copy h2{font-size:1.75rem;margin:0 0 0.5rem}
+.eyebrow{color:var(--accent);font-weight:700;margin:0 0 0.5rem}
+.lead{color:var(--muted);margin-bottom:1rem}
+.hero-actions{display:flex;gap:0.75rem}
+.hero-form{background:var(--card);padding:1rem;border-radius:14px;box-shadow:0 6px 18px rgba(9,10,10,0.03)}
+.inventory-form fieldset{border:none;padding:0;margin:0}
+.inventory-form label{display:block;padding:0.25rem 0;color:#214c3f}
+.form-actions{display:flex;gap:0.5rem;margin-top:0.5rem}
+.inventory-result{margin-top:0.75rem;background:var(--glass);padding:0.75rem;border-radius:10px;font-size:0.95rem}
+
+.gallery{padding:2.25rem 1.25rem;max-width:1100px;margin:0 auto}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:1rem}
+.card{padding:1rem;border-radius:12px;background:linear-gradient(180deg, #fff, #fafdfa);box-shadow:0 6px 12px rgba(13,18,15,0.03)}
+.card .price{font-weight:700;color:var(--accent)}
+.try-section{margin-top:1rem}
+
+.section-title{font-size:1.1rem;margin-bottom:0.25rem}
+.what-to-expect{padding:1.25rem;background:linear-gradient(90deg,#f7fff9,transparent);border-top:1px solid rgba(11,26,21,0.03)}
+.objections{padding:1.25rem}
+.cta-join{padding:2rem;text-align:center;background:linear-gradient(90deg, rgba(43,138,111,0.06), rgba(255,255,255,0));border-top:1px solid rgba(11,26,21,0.02)}
+.site-footer{padding:1rem;text-align:center;font-size:0.9rem;color:var(--muted)}
+
+/* Modal */
+.modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(6,8,7,0.35);visibility:hidden;opacity:0;transition:opacity 200ms ease}
+.modal[aria-hidden="false"]{visibility:visible;opacity:1}
+.modal-content{width:680px;max-width:92%;background:#fff;padding:1rem;border-radius:12px;position:relative}
+.modal-close{position:absolute;right:8px;top:8px;border:none;background:none;font-size:1.1rem}
+.modal-tabs{display:flex;gap:0.5rem;margin-bottom:0.75rem}
+.tab{padding:0.5rem 0.75rem;border-radius:8px;border:1px solid rgba(10,10,10,0.03);background:#f6f9f7}
+.tab.active{background:var(--accent);color:#fff}
+.panel{display:block}
+.panel.hidden{display:none}
+.breath-visual{width:160px;height:160px;border-radius:50%;margin:0.5rem auto;background:radial-gradient(circle at 35% 35%, rgba(43,138,111,0.18), rgba(43,138,111,0.06));transition:transform 600ms ease}
+.controls{display:flex;gap:0.5rem;align-items:center;justify-content:center;margin-top:0.75rem}
+#journalText{width:100%;min-height:120px;border-radius:8px;padding:0.75rem;border:1px solid rgba(10,10,10,0.06)}
+
+/* Responsive */
+@media(max-width:880px){
+  .hero-inner{grid-template-columns:1fr;}
+  .nav-list{display:none}
+  .nav-toggle{display:inline-block}
+}

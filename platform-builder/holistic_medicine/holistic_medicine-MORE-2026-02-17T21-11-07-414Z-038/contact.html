@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Connect with {{BUSINESS_NAME}} for an integrative intake, Session Planner, and whole-person inventory to shape a pragmatic care plan.">
+  <style>
+    :root{--bg:#0f1720;--card:#0b1220;--muted:#9fb3b0;--accent:#a3d9c8;--accent2:#7be4d1;--glass:rgba(255,255,255,0.03)}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; color:#e6f6f2;background:linear-gradient(180deg,var(--bg),#051018 60%);}
+    header{display:flex;align-items:center;justify-content:space-between;padding:22px 28px;background:transparent}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:700;color:#032;box-shadow:0 6px 20px rgba(10,20,20,0.6)}
+    nav a{color:var(--muted);margin:0 10px;text-decoration:none;font-size:15px}
+    nav a:hover{color:var(--accent)}
+    .hero{padding:36px 28px 18px;display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:start}
+    .intro{background:linear-gradient(180deg,rgba(10,18,22,0.55),rgba(6,10,12,0.3));padding:28px;border-radius:14px;box-shadow:0 10px 30px rgba(2,8,10,0.6)}
+    h1{margin:0 0 8px;font-family:serif, Georgia, 'Times New Roman';font-size:28px;color:#dff6ef}
+    p.lead{color:var(--muted);margin:0 0 16px}
+    .contact-card{background:var(--card);padding:20px;border-radius:12px;color:var(--muted);box-shadow:0 8px 30px rgba(0,0,0,0.5)}
+    label{display:block;font-size:13px;color:#cdebe1;margin-bottom:6px}
+    input[type=text],input[type=email],textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.02);color:var(--accent);margin-bottom:12px}
+    button{background:linear-gradient(90deg,var(--accent),var(--accent2));border:none;padding:10px 14px;border-radius:10px;color:#033;cursor:pointer;font-weight:600}
+    .muted{color:var(--muted);font-size:13px}
+    .small{font-size:13px}
+    .widget{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:16px;border-radius:12px}
+    .areas{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+    .areas label{display:flex;align-items:center;gap:10px;background:var(--glass);padding:8px;border-radius:8px}
+    .output{white-space:pre-wrap;background:#021015;padding:12px;border-radius:10px;color:#cfeee6;margin-top:12px;font-size:14px}
+    footer{padding:18px 28px;color:var(--muted);font-size:13px}
+    .kbd{background:#062426;padding:6px 8px;border-radius:6px;font-weight:600;color:var(--accent)}
+    .disclaimer{color:#9bb7b4;font-size:13px;margin-top:8px}
+    .row{display:flex;gap:12px}
+    .flex{display:flex;gap:12px;align-items:center}
+    .nav-cta{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:10px;color:var(--muted)}
+    /* subtle patterned backdrop using referenced svg */
+    body::before{content:'';position:fixed;inset:0;background-image:url('/assets/img/pattern.svg');opacity:0.06;mix-blend-mode:screen;pointer-events:none}
+    @media(max-width:900px){.hero{grid-template-columns:1fr}.brand{gap:8px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">HM</div>
+      <div>
+        <div style="font-weight:700;color:#dff6ef">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">An integrative practice in {{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="/index.html">Home</a>
+      <a href="/services.html">Offerings</a>
+      <a href="/conditions.html">Conditions</a>
+      <a href="/approach.html">Method</a>
+      <a href="/pricing.html">Investment</a>
+      <a href="/about.html">Who We Are</a>
+      <a href="/book.html">Sessions</a>
+      <a class="nav-cta" href="/contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="intro">
+        <h1>Connect, inventory, and begin a plan that fits your life</h1>
+        <p class="lead">Use the Session Planner and Whole-Person Inventory below to draft a pragmatic, person-centered consultation agenda. This is educational guidance to support your conversations — not medical advice.</p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="contact-card">
+            <div style="font-weight:700;color:var(--accent);margin-bottom:8px">Get in touch</div>
+            <div class="small">Call: <span class="kbd">{{PHONE}}</span></div>
+            <div class="small">Email: <a href="mailto:{{EMAIL}}" style="color:var(--accent)">{{EMAIL}}</a></div>
+            <p class="muted" style="margin-top:8px">Prefer a planning session first? Use the Session Planner to build a tailored agenda, then click "{{PRIMARY_CTA_LABEL}}" to request time.</p>
+            <div style="margin-top:8px"><a href="{{PRIMARY_CTA_URL}}"><button>{{PRIMARY_CTA_LABEL}}</button></a></div>
+          </div>
+
+          <div class="contact-card">
+            <div style="font-weight:700;color:var(--accent);margin-bottom:8px">Office</div>
+            <div class="small">Serving {{CITY}}, {{STATE}} — in-person & remote visits</div>
+            <p class="muted" style="margin-top:8px">New patient intake typically starts with an extended session to map priorities and set a rhythm of care. Use the planner to estimate a practical course.</p>
+          </div>
+        </div>
+      </div>
+
+      <aside style="display:flex;flex-direction:column;gap:14px">
+        <div class="widget">
+          <strong style="color:var(--accent)">Session Planner</strong>
+          <p class="muted">Build a personalized plan, then copy a plaintext summary for your records or to paste into an intake form.</p>
+
+          <label for="clientName">Name</label>
+          <input id="clientName" type="text" placeholder="Your name (optional)">
+
+          <label for="goals">Primary goals (short)</label>
+          <input id="goals" type="text" placeholder="e.g., stabilize sleep, reduce GI symptoms, manage stress">
+
+          <label for="sessions">Planned number of sessions</label>
+          <select id="sessions">
+            <option>1</option>
+            <option selected>3</option>
+            <option>6</option>
+            <option>12</option>
+          </select>
+
+          <label>Session length</label>
+          <div class="row">
+            <select id="length"><option>30</option><option selected>60</option><option>90</option></select>
+            <div class="muted">minutes</div>
+          </div>
+
+          <label>Intensity</label>
+          <div class="row">
+            <select id="intensity"><option>Low</option><option selected>Moderate</option><option>High</option></select>
+            <div class="muted">Pace and touchpoints</div>
+          </div>
+
+          <div style="margin-top:8px">
+            <div style="font-size:13px;color:#cfeee6;font-weight:700;margin-bottom:6px">Areas to explore</div>
+            <div class="areas" id="plannerAreas">
+              <label><input type="checkbox" value="Sleep"> Sleep</label>
+              <label><input type="checkbox" value="Nutrition"> Nutrition</label>
+              <label><input type="checkbox" value="Movement"> Movement</label>
+              <label><input type="checkbox" value="Stress"> Stress</label>
+              <label><input type="checkbox" value="Relationships"> Relationships</label>
+              <label><input type="checkbox" value="Work"> Work/Career</label>
+              <label><input type="checkbox" value="Environment"> Environment</label>
+              <label><input type="checkbox" value="Spirituality"> Spirituality</label>
+              <label><input type="checkbox" value="Digestive"> Digestive Health</label>
+              <label><input type="checkbox" value="Energy"> Energy / Fatigue</label>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button id="buildPlan">Build plan</button>
+            <button id="copyPlan">Copy summary</button>
+          </div>
+
+          <div id="planOutput" class="output" aria-live="polite">Use the planner and click "Build plan" to see a tailored session agenda and follow-up cadence.</div>
+        </div>
+
+        <div class="widget">
+          <strong style="color:var(--accent)">Whole-person inventory</strong>
+          <p class="muted">Quick checklist that creates a suggested consultation agenda and follow-up cadence. Use before your intake or to prepare a focused session.</p>
+
+          <div class="areas" id="inventoryAreas">
+            <label><input type="checkbox" value="Sleep"> Sleep</label>
+            <label><input type="checkbox" value="Nutrition"> Nutrition</label>
+            <label><input type="checkbox" value="Movement"> Movement</label>
+            <label><input type="checkbox" value="Stress"> Stress</label>
+            <label><input type="checkbox" value="Mental Health"> Mental Health</label>
+            <label><input type="checkbox" value="Medications"> Medications / Supplements</label>
+            <label><input type="checkbox" value="Digestive"> Digestive Health</label>
+            <label><input type="checkbox" value="Energy"> Energy / Fatigue</label>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button id="inventoryBuild">Draft agenda</button>
+            <button id="inventoryCopy">Copy agenda</button>
+          </div>
+
+          <div id="inventoryOutput" class="output">Select areas and click "Draft agenda" to generate a consultation structure and recommended check-in cadence.</div>
+        </div>
+      </aside>
+    </section>
+
+    <section style="padding:18px 28px 0">
+      <div style="background:linear-gradient(180deg,rgba(2,8,10,0.35),rgba(3,10,12,0.15));padding:18px;border-radius:12px;color:var(--muted)">
+        <strong style="color:var(--accent)">Important</strong>
+        <p class="disclaimer">This site provides educational, integrative health planning tools. Nothing here is a diagnosis or a promise of improvement. Clinical care recommendations come from a licensed practitioner during consultation. If you have an urgent medical concern, contact emergency services or your clinician.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>&copy; <span style="font-weight:700">{{BUSINESS_NAME}}</span> — Serving {{CITY}}, {{STATE}}</div>
+      <div class="muted">Built to help you start a calm, honest plan — not to replace clinical care.</div>
+    </div>
+  </footer>
+
+<script>
+(function(){
+  // simple library to build plaintext plan
+  function listChecked(containerId){
+    var el=document.getElementById(containerId);
+    var checks=el.querySelectorAll('input[type=checkbox]');
+    var out=[];
+    checks.forEach(function(c){if(c.checked) out.push(c.value)});
+    return out;
+  }
+
+  function mapIntervention(area){
+    var map={
+      'Sleep':'Review sleep routine; introduce 1–3 evening practices; sleep timing experiment',
+      'Nutrition':'Short dietary log + targeted tweaks (timing, fiber, simple swaps)',
+      'Movement':'Functional movement routine and micro-activities for energy',
+      'Stress':'Brief stress inventory; introduce breathwork and 10-min rituals',
+      'Relationships':'Identify friction points, communication micro-goals',
+      'Work':'Workload triage and boundary experiments',
+      'Environment':'Tidy triggers + sensory adjustments; light and air strategies',
+      'Spirituality':'Values mapping and small reflective practices',
+      'Digestive':'Symptom log + elimination/reintroduction guidance',
+      'Energy':'Energy mapping, timing, and gentle pacing plan',
+      'Mental Health':'Mood tracking, basic CBT-style tools, referral guidance',
+      'Medications / Supplements':'Medication reconciliation and safety check'
+    };
+    return map[area]||'General review and prioritization';
+  }
+
+  function cadenceFromIntensity(intensity, sessions){
+    var base;
+    if(intensity==='High') base='weekly';
+    else if(intensity==='Moderate') base='every 2 weeks';
+    else base='monthly';
+    // if single session, suggest a single intake
+    if(Number(sessions)===1) return 'One extended consultation; follow-up as needed';
+    return base;
+  }
+
+  function allocateTime(areas, length){
+    var mins=Number(length);
+    var per=Math.max(8, Math.floor(mins/Math.max(1,areas.length)));
+    var out=[];
+    areas.forEach(function(a){ out.push(a+': '+per+' min'); });
+    return out;
+  }
+
+  function buildPlan(){
+    var name=document.getElementById('clientName').value.trim();
+    var goals=document.getElementById('goals').value.trim();
+    var sessions=document.getElementById('sessions').value;
+    var length=document.getElementById('length').value;
+    var intensity=document.getElementById('intensity').value;
+    var areas=listChecked('plannerAreas');
+    if(areas.length===0){ document.getElementById('planOutput').textContent='Please select at least one area to explore.'; return; }
+
+    var sb='';
+    sb += (name?('Name: '+name+'\n'):'');
+    sb += 'Goals: '+(goals||'General assessment')+'\n';
+    sb += 'Planned sessions: '+sessions+' x '+length+' min ('+intensity+' pace)\n\n';
+    sb += 'Suggested agenda and time allocation:\n';
+
+    var allocations=allocateTime(areas, length);
+    allocations.forEach(function(a){ sb += '- '+a+'\n'; });
+    sb += '\nInterventions to consider:\n';
+    areas.forEach(function(a){ sb += '- '+a+': '+mapIntervention(a)+'\n'; });
+
+    sb += '\nRecommended follow-up cadence: '+cadenceFromIntensity(intensity, sessions)+'\n';
+    sb += '\nNotes: This plan is a concise, shareable draft to prepare for consultation. It is educational and not a substitute for clinical assessment.\n';
+
+    document.getElementById('planOutput').textContent=sb;
+  }
+
+  function copyText(id){
+    var txt=document.getElementById(id).textContent;
+    if(!txt){ alert('Nothing to copy'); return; }
+    navigator.clipboard.writeText(txt).then(function(){
+      alert('Summary copied to clipboard');
+    }, function(){ alert('Unable to copy'); });
+  }
+
+  // inventory function (focused output)
+  function buildInventory(){
+    var sel=listChecked('inventoryAreas');
+    if(sel.length===0){ document.getElementById('inventoryOutput').textContent='Select one or more areas to draft an agenda.'; return; }
+    var sb='Consultation agenda (30-90 min structure):\n';
+    sb += '- 0–10 min: Intake & priority check (patient story; goals)\n';
+    sb += '- 10–35 min: Deep dive into top areas in order (presented below)\n';
+    sb += '- 35–50 min: Immediate measurable actions & safety checks\n';
+    sb += '- Remaining time: Plan next steps and clarifying questions\n\n';
+
+    sb += 'Area-focused items and time suggestion:\n';
+    var tbase=Math.max(8, Math.floor(40/sel.length));
+    sel.forEach(function(a){ sb += '- '+a+': review history, targeted questions, quick interventions ('+tbase+' min)\n'; });
+
+    sb += '\nSuggested follow-up cadence per area:\n';
+    sel.forEach(function(a){
+      var cadence='Every 2 weeks';
+      if(['Sleep','Stress','Energy','Digestive'].indexOf(a)!==-1) cadence='Weekly – short check-in recommended';
+      else if(['Nutrition','Movement'].indexOf(a)!==-1) cadence='Every 2–4 weeks depending on early response';
+      sb += '- '+a+': '+cadence+'\n';
+    });
+
+    sb += '\nThis is an educational draft to guide a clinical intake; adjustments will be made by your clinician.\n';
+    document.getElementById('inventoryOutput').textContent=sb;
+  }
+
+  // wire up buttons
+  document.getElementById('buildPlan').addEventListener('click', buildPlan);
+  document.getElementById('copyPlan').addEventListener('click', function(){ copyText('planOutput'); });
+  document.getElementById('inventoryBuild').addEventListener('click', buildInventory);
+  document.getElementById('inventoryCopy').addEventListener('click', function(){ copyText('inventoryOutput'); });
+
+  // small accessibility: allow Enter to build in name field
+  document.getElementById('clientName').addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); buildPlan(); }});
+})();
+</script>
+</body>
+</html>

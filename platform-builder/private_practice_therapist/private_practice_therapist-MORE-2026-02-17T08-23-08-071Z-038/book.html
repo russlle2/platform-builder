@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book a session — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7fbfb;--accent:#6d8c78;--accent-2:#7a5b8c;--card:#fff;--muted:#52606b;font-family:Inter,system-ui,Roboto,Arial}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#fff);color:#122}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none}
+    .wrap{max-width:980px;margin:28px auto;padding:18px}
+
+    .grid{display:grid;grid-template-columns:1fr;gap:18px}
+    .panel{background:var(--card);padding:16px;border-radius:12px;border:1px solid rgba(18,24,30,0.04)}
+    .hero-title{display:flex;justify-content:space-between;align-items:center}
+    h1{margin:0;font-size:1.4rem}
+    .sub{color:var(--muted);margin-top:8px}
+
+    /* Mood selector prominent here */
+    .moods{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .moods button{padding:10px 12px;border-radius:10px;border:1px solid rgba(18,24,30,0.05);background:transparent;cursor:pointer}
+    .moods button.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;border-color:transparent}
+
+    .summary{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+    .summary .row{display:flex;justify-content:space-between;font-weight:700}
+    .summary .muted{font-weight:600;color:var(--muted);font-size:0.95rem}
+
+    form{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+    input,textarea,select{padding:10px;border-radius:8px;border:1px solid rgba(18,24,30,0.06)}
+    .row-flex{display:flex;gap:8px}
+    .btn{background:var(--accent);color:#fff;padding:10px;border-radius:10px;text-decoration:none;border:0;font-weight:700;cursor:pointer}
+
+    .disclaimer{margin-top:12px;color:var(--muted);font-size:0.9rem}
+
+    @media(min-width:900px){
+      .grid{grid-template-columns:1fr 380px}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Bio</a>
+      <a href="specialties.html">Specialties</a>
+      <a href="approach.html">Method</a>
+      <a href="fees.html">Rates</a>
+      <a href="faq.html">FAQ</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <div class="grid">
+      <section class="panel">
+        <div class="hero-title">
+          <div>
+            <h1>Reserve a session</h1>
+            <div class="sub">Choose the starting point that fits how you're feeling—I'll follow your pace from there.</div>
+          </div>
+          <div style="text-align:right;color:var(--muted)">Availability updated weekly</div>
+        </div>
+
+        <div class="moods" role="tablist" aria-label="Select how you are feeling">
+          <button data-key="overwhelmed">Overwhelmed</button>
+          <button data-key="stuck">Stuck</button>
+          <button data-key="exhausted">Exhausted</button>
+          <button data-key="curious">Curious</button>
+        </div>
+
+        <div class="summary" id="summary">
+          <div class="row"><div id="method-label">Suggested: Exploratory Visit</div><div id="method-price">$150</div></div>
+          <div class="muted" id="method-desc">A single session to map concerns, set priorities, and plan next steps.</div>
+        </div>
+
+        <form id="book-form" onsubmit="handleSubmit(event)">
+          <input name="name" placeholder="Your name" required>
+          <div class="row-flex">
+            <input name="email" placeholder="Email" required>
+            <input name="phone" placeholder="Phone (optional)">
+          </div>
+          <label style="font-size:0.9rem;color:var(--muted)">Preferred days / times</label>
+          <input name="times" placeholder="e.g. Weekday mornings, Tue/Thu after 6pm">
+          <label style="font-size:0.9rem;color:var(--muted)">Anything you'd like me to know?</label>
+          <textarea name="notes" rows="4" placeholder="Optional context"></textarea>
+
+          <div style="display:flex;gap:10px;align-items:center;margin-top:6px">
+            <button type="submit" class="btn">{{PRIMARY_CTA_LABEL}}</button>
+            <a href="mailto:{{EMAIL}}" style="color:var(--muted);text-decoration:none">Or email: {{EMAIL}}</a>
+          </div>
+        </form>
+
+        <div class="disclaimer">
+          Confidentiality and scope: Sessions are confidential with ethical/legal limits. This booking does not replace medical care. If you are in crisis, call emergency services or a local crisis number immediately.
+        </div>
+      </section>
+
+      <aside class="panel" aria-labelledby="how-it-works">
+        <h3 id="how-it-works">How the first weeks usually go</h3>
+        <ol style="color:var(--muted);margin-top:8px">
+          <li>First session: assessment and priorities.</li>
+          <li>Weeks 2–6: practical experiments and adjustments.</li>
+          <li>After 6 sessions: review progress and choose next steps.</li>
+        </ol>
+
+        <div style="margin-top:12px">
+          <strong>Quick price guide</strong>
+          <div style="margin-top:8px;color:var(--muted)">
+            Single session: <span id="aside-price">$150</span><br>
+            Focus Series (6): <span class="muted">Package pricing available in Rates</span>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <strong>Contact</strong>
+          <div style="color:var(--muted);margin-top:6px">Phone: {{PHONE}}<br>Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    // Mood-to-method for booking page
+    (function(){
+      const buttons = Array.from(document.querySelectorAll('.moods button'));
+      const label = document.getElementById('method-label');
+      const desc = document.getElementById('method-desc');
+      const price = document.getElementById('method-price');
+      const asidePrice = document.getElementById('aside-price');
+
+      const map = {
+        overwhelmed: {label:'Grounding visit', desc:'Shorter session to stabilize and create immediate coping steps.', price:120},
+        stuck: {label:'6-session Focus Series', desc:'A compact sequence designed to test changes and build momentum.', price:125},
+        exhausted: {label:'Extended session', desc:'Longer initial session for deeper review and pacing.', price:180},
+        curious: {label:'Exploratory Visit', desc:'A single session to orient and map possibilities.', price:150}
+      };
+
+      function update(key, btn){
+        buttons.forEach(b=>b.classList.toggle('active', b===btn));
+        const pick = map[key];
+        // subtle number animation
+        const from = parseFloat(price.textContent.replace('$','')) || pick.price;
+        const to = pick.price;
+        const start = performance.now();
+        const dur = 360;
+        (function tick(now){
+          const t = Math.min(1,(now-start)/dur);
+          const val = Math.round(from + (to-from)*t);
+          price.textContent = '$' + val;
+          asidePrice.textContent = '$' + val;
+          if(now-start < dur) requestAnimationFrame(tick);
+        })(start);
+
+        label.textContent = 'Suggested: ' + pick.label;
+        desc.textContent = pick.desc;
+      }
+
+      buttons.forEach(btn=>btn.addEventListener('click', ()=> update(btn.dataset.key, btn)));
+      // default
+      buttons[0].click();
+
+      // form submission: build a mailto with the details and open user's mail client (no server required)
+      window.handleSubmit = function(e){
+        e.preventDefault();
+        const form = e.target;
+        const data = new FormData(form);
+        const name = data.get('name') || '';
+        const email = data.get('email') || '';
+        const phone = data.get('phone') || '';
+        const times = data.get('times') || '';
+        const notes = data.get('notes') || '';
+        const subject = encodeURIComponent('Booking request from ' + name);
+        const body = encodeURIComponent('Name: '+name+'\nEmail: '+email+'\nPhone: '+phone+'\nPreferred times: '+times+'\nNotes: '+notes);
+        // open mailto to initiate contact; primary CTA URL is fallback link
+        const mailto = 'mailto:{{EMAIL}}?subject='+subject+'&body='+body;
+        window.location.href = mailto;
+      };
+    })();
+  </script>
+</body>
+</html>

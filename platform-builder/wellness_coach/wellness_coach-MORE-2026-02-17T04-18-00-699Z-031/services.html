@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f8fafb;--card:#ffffff;--muted:#5b6b73;--accent:#0f766e;--accent-2:#f59e0b}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;color:#062022;background:var(--bg)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 26px}
+    .logo{font-weight:800}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none;font-weight:600}
+    .wrap{max-width:1100px;margin:18px auto;padding:0 20px}
+    .top{display:flex;gap:20px;align-items:center}
+    .title{flex:1}
+    h1{margin:0;font-size:26px}
+    p.sub{margin:6px 0 0;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
+    .plan{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 24px rgba(7,24,24,0.04);position:relative}
+    .plan h3{margin:0 0 8px}
+    .price{font-size:22px;font-weight:800;color:var(--accent);display:flex;align-items:baseline;gap:8px}
+    .muted{color:var(--muted)}
+    .toggle{display:inline-flex;background:#fff;border-radius:999px;padding:6px;border:1px solid rgba(2,6,23,0.06)}
+    .toggle button{border:0;background:transparent;padding:8px 12px;border-radius:999px;font-weight:700;cursor:pointer}
+    .toggle button.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff}
+    .compare{display:flex;align-items:center;gap:14px}
+    .foot{margin-top:20px;color:var(--muted);font-size:13px}
+    @media (max-width:1000px){.grid{grid-template-columns:1fr} .top{flex-direction:column;align-items:flex-start}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="programs.html">Programs</a>
+      <a href="pricing.html">Investments</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <div class="top">
+      <div class="title">
+        <h1>Offerings framed around outcomes</h1>
+        <p class="sub">Pick the cadence that fits you. Services below show monthly retainer cost and an alternative packaged investment for short intensives.</p>
+      </div>
+
+      <div class="compare">
+        <div style="font-size:13px;color:var(--muted);font-weight:700">Price view</div>
+        <div class="toggle" role="tablist" aria-label="Pricing view">
+          <button id="viewMonthly" class="active">Monthly</button>
+          <button id="viewPackage">Package</button>
+        </div>
+      </div>
+    </div>
+
+    <section class="grid" aria-live="polite">
+      <article class="plan" data-month="550" data-package="1800">
+        <h3>Focused Habit Kit</h3>
+        <div class="price"><span class="amount">$550</span><span class="muted">/month</span></div>
+        <p class="muted">Weekly check-ins, a 6-week habit pathway, and template tools to embed new routines into your days.</p>
+        <div style="margin-top:12px"><a class="book" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+      </article>
+
+      <article class="plan" data-month="850" data-package="2800">
+        <h3>Weekly Structure Lab</h3>
+        <div class="price"><span class="amount">$850</span><span class="muted">/month</span></div>
+        <p class="muted">A practical restructuring of your week with task batching, energy windows, and checklists to limit decision fatigue.</p>
+        <div style="margin-top:12px"><a class="book" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+      </article>
+
+      <article class="plan" data-month="200" data-package="700">
+        <h3>One-Off VIP Day</h3>
+        <div class="price"><span class="amount">$200</span><span class="muted">/month</span></div>
+        <p class="muted">A concentrated design session to emerge with a lean schedule and a checklist you can use on Monday morning.</p>
+        <div style="margin-top:12px"><a class="book" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+      </article>
+    </section>
+
+    <div class="foot">Notes: Monthly figures reflect standard coaching cadence. Package prices are a single investment for a defined engagement. No clinical claims — outcomes, routines, and accountability only.</div>
+  </main>
+
+  <script>
+    // Pricing Comparator: toggles and animates numbers
+    (function(){
+      const btnMonthly = document.getElementById('viewMonthly');
+      const btnPackage = document.getElementById('viewPackage');
+      const plans = Array.from(document.querySelectorAll('.plan'));
+      let mode = 'month';
+
+      function animateTo(el, from, to, suffix){
+        const duration = 450;
+        const start = performance.now();
+        function frame(now){
+          const t = Math.min(1,(now-start)/duration);
+          const v = Math.round(from + (to-from) * (1 - Math.pow(1-t,3)) );
+          el.textContent = '$' + v;
+          if(t<1) requestAnimationFrame(frame);
+          else el.textContent = '$' + to;
+        }
+        requestAnimationFrame(frame);
+      }
+
+      function update(toMode){
+        mode = toMode;
+        plans.forEach(plan=>{
+          const amtEl = plan.querySelector('.amount');
+          const from = parseInt(amtEl.textContent.replace('$','')) || 0;
+          const to = parseInt(plan.dataset[toMode==='month'?'month':'package']);
+          const mut = plan.querySelector('.muted');
+          mut.textContent = toMode==='month'?'/month':'/package';
+          animateTo(amtEl, from, to, mut.textContent);
+        });
+      }
+
+      btnMonthly.addEventListener('click',function(){
+        if(this.classList.contains('active')) return;
+        btnMonthly.classList.add('active');btnPackage.classList.remove('active');
+        update('month');
+      });
+      btnPackage.addEventListener('click',function(){
+        if(this.classList.contains('active')) return;
+        btnPackage.classList.add('active');btnMonthly.classList.remove('active');
+        update('package');
+      });
+
+      // initial values ensure animation consistent
+      plans.forEach(p=>{
+        const start = parseInt(p.dataset.month);
+        p.querySelector('.amount').textContent = '$' + start;
+      });
+    })();
+  </script>
+</body>
+</html>

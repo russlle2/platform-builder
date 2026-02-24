@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'/>
+  <meta name='viewport' content='width=device-width,initial-scale=1'/>
+  <title>Services — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{
+      --glass-bg: rgba(255,255,255,0.06);
+      --glass-border: rgba(255,255,255,0.12);
+      --accent: #6aa8a1;
+      --muted: #d8efe9;
+      --text: #eaf6f2;
+      --glass-blur: 8px;
+      --card-radius: 14px;
+      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      color-scheme: light;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#e8f7f4 0%,#f6fcfb 45%,#ffffff 100%);color:var(--text)}
+    .page{min-height:100%;position:relative;overflow:hidden;padding:36px}
+    /* Inline SVG backdrop */
+    .pattern{position:absolute;inset:0;opacity:0.18;mix-blend-mode:screen;pointer-events:none}
+    header{display:flex;align-items:center;justify-content:space-between;gap:18px;position:relative;z-index:2}
+    .brand{display:flex;flex-direction:column}
+    .brand .name{font-weight:700;font-size:18px;color:#08363a}
+    .brand .tag{font-size:12px;color:#2b6b66}
+    nav a{margin-left:14px;color:#063a38;text-decoration:none;font-size:14px}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:center;margin-top:28px}
+    .card{background:var(--glass-bg);backdrop-filter:blur(var(--glass-blur));border:1px solid var(--glass-border);border-radius:var(--card-radius);padding:22px}
+    h1{margin:0 0 8px 0;color:#073938}
+    p.lead{margin:0;color:#255c58}
+    .cta{margin-top:18px;display:flex;gap:12px}
+    .btn{background:linear-gradient(90deg,var(--accent),#7bc6c0);border:none;color:#063a38;padding:10px 14px;border-radius:10px;font-weight:600;cursor:pointer}
+    .outline{background:transparent;border:1px solid rgba(6,58,56,0.12);padding:10px 12px;border-radius:10px;color:#063a38}
+    /* sections */
+    section{margin-top:20px}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    ul.features{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+    ul.features li{padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.6),rgba(255,255,255,0.36));border:1px solid rgba(0,0,0,0.04)}
+    footer{margin-top:36px;opacity:0.9;color:#234d49}
+    .faq dt{font-weight:700;margin-top:12px}
+    .small{font-size:13px;color:#2b6b66}
+    @media (max-width:900px){.hero{grid-template-columns:1fr;}.grid-2{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class='page'>
+    <svg class='pattern' viewBox='0 0 800 600' preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'>
+      <defs>
+        <linearGradient id='g1' x1='0' x2='1'><stop offset='0' stop-color='#d1f0ec'/><stop offset='1' stop-color='#f6fbfa'/></linearGradient>
+        <pattern id='p1' width='120' height='120' patternUnits='userSpaceOnUse'>
+          <rect width='120' height='120' fill='url(#g1)'/>
+          <g stroke='#cdebe7' stroke-width='1' opacity='0.8'>
+            <path d='M0 20 L120 20 M20 0 L20 120' />
+          </g>
+        </pattern>
+      </defs>
+      <rect width='100%' height='100%' fill='url(#p1)'/>
+      <g transform='translate(600,40)' opacity='0.1' fill='#7ac1bb'>
+        <circle cx='0' cy='0' r='120'/>
+      </g>
+    </svg>
+
+    <header>
+      <div class='brand'>
+        <div class='name'>{{BUSINESS_NAME}}</div>
+        <div class='tag'>Clinical aromatherapy • {{CITY}}, {{STATE}}</div>
+      </div>
+      <nav>
+        <a href='index.html'>Welcome</a>
+        <a href='services.html'>Offerings</a>
+        <a href='blends.html'>Formulations</a>
+        <a href='shop.html'>Store</a>
+        <a href='book.html'>Reserve</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class='hero'>
+        <div>
+          <div class='card'>
+            <h1>Clinical assessments & tailored blends</h1>
+            <p class='lead'>An evidence-minded, safety-first consultation to create a personalized aromatherapy plan. We combine scent profiling, allergen screening, and practical routines to fit your life.</p>
+            <div class='cta'>
+              <a class='btn' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a>
+              <a class='outline' href='contact.html'>Ask a question</a>
+            </div>
+            <p class='small' style='margin-top:12px'>Consultations available in-person and remote via secure telehealth-style meeting. Hybrid delivery options available.</p>
+          </div>
+        </div>
+        <aside>
+          <div class='card'>
+            <h3 style='margin:0'>Quick diagnostic</h3>
+            <p class='small'>A 4-step screen that highlights scent preferences, sensitivities, and daily patterns.</p>
+            <ul class='features' style='margin-top:12px'>
+              <li>Safety & contraindication review</li>
+              <li>Scent preference mapping</li>
+              <li>Patch-test guidance</li>
+              <li>Practical inhalation & topical plans</li>
+            </ul>
+          </div>
+        </aside>
+      </section>
+
+      <section id='diagnostic' class='card'>
+        <h2 style='margin-top:0'>Diagnostic: what we evaluate</h2>
+        <div class='grid-2'>
+          <div>
+            <p class='small'>Our intake covers exposures, skin sensitivity history, medication review (safety-forward), and environmental factors that influence scent use.</p>
+            <ul>
+              <li>Allergen & sensitivity history</li>
+              <li>Medication and pregnancy considerations</li>
+              <li>Household pets & safety measures</li>
+            </ul>
+          </div>
+          <div>
+            <p class='small'>Results inform an individualized plan: recommended blends, dilution ranges, and safe application methods.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id='plan' class='card'>
+        <h2>Personalized plan — practical steps</h2>
+        <p class='small'>A clear, staged approach so you may adopt aromatherapy without guesswork: assessment, trial, refine, integrate. Emphasis on low-risk application and reliable sourcing.</p>
+        <ol>
+          <li>Review intake & safety considerations</li>
+          <li>Create a 1-2 blend trial at conservative dilution</li>
+          <li>Patch-test and log sensory response for 7 days</li>
+          <li>Adjust notes, dilution, or method (inhalation/topical/application)</li>
+        </ol>
+      </section>
+
+      <section id='micro_habits' class='card'>
+        <h2>Micro-habits: small rituals for consistent benefit</h2>
+        <p class='small'>Short, repeatable actions maintain safety and help scent learning. These are lifestyle prompts, not medical treatment.</p>
+        <ul>
+          <li>Single deep inhalation in the morning with a designated scaffold blend</li>
+          <li>Daily patch test log if introducing topical use</li>
+          <li>Rotate blends weekly to avoid olfactory fatigue when appropriate</li>
+        </ul>
+      </section>
+
+      <section id='pricing' class='card'>
+        <h2>Fees & packages</h2>
+        <div class='grid-2'>
+          <div>
+            <h4>Introductory consult</h4>
+            <p class='small'>45 minutes — intake, safety screen, preliminary scent mapping</p>
+            <strong>$95</strong>
+          </div>
+          <div>
+            <h4>Comprehensive plan</h4>
+            <p class='small'>90 minutes — custom blends, written plan, 2-week follow-up</p>
+            <strong>$180</strong>
+          </div>
+        </div>
+        <p class='small' style='margin-top:12px'>Add-on: sample roll-on kit, sourcing guidance, formulation handout. Payment and scheduling available at the booking page.</p>
+      </section>
+
+      <section class='card'>
+        <h2>FAQ — safety essentials</h2>
+        <dl class='faq'>
+          <dt>How should I dilute essential oils?</dt>
+          <dd class='small'>Dilution recommendations are conservative and individualized. Typical topical dilutions are 0.5–3% depending on age, skin sensitivity, and context. A practitioner will recommend a starting dilution.</dd>
+
+          <dt>What is a patch test and why do it?</dt>
+          <dd class='small'>A patch test is a small topical trial to observe skin response over 24–72 hours. It reduces the chance of irritation and helps guide safe topical use.</dd>
+
+          <dt>Are oils safe around pets?</dt>
+          <dd class='small'>Some essential oils can affect animals. We include pet-safe guidance and alternatives; never apply undiluted oils near pets or use diffusers in confined spaces without supervision.</dd>
+
+          <dt>What about pregnancy?</dt>
+          <dd class='small'>Pregnancy requires care. We do not make medical claims; pregnant clients receive a tailored review with recommended safe options and referral to their healthcare provider when appropriate.</dd>
+        </dl>
+      </section>
+
+      <section class='card' style='text-align:center'>
+        <h3>Ready to begin a mindful scent plan?</h3>
+        <a class='btn' href='{{PRIMARY_CTA_URL}}'>Start your consultation</a>
+        <p class='small' style='margin-top:10px'>Questions? Call {{PHONE}} or email <a href='mailto:{{EMAIL}}' style='color:#063a38'>{{EMAIL}}</a></p>
+      </section>
+    </main>
+
+    <footer>
+      <div style='display:flex;justify-content:space-between;align-items:center'>
+        <div class='small'>© {{PRACTITIONER_NAME}} • {{BUSINESS_NAME}} • {{CITY}}, {{STATE}}</div>
+        <div class='small'>Phone: {{PHONE}} • <a href='mailto:{{EMAIL}}' style='color:#063a38'>Contact</a></div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

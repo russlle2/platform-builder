@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reach {{BUSINESS_NAME}} for sound baths, private sessions, and event hosting in {{CITY}}, {{STATE}}.">
+  <style>
+    :root{
+      --bg-1:#F6F1E6; /* warm sand */
+      --bg-2:#E8D8C3; /* soft clay */
+      --accent:#8B5E3C; /* deep amber */
+      --muted:#6B5543; /* earthy text */
+      --glass: rgba(255,255,255,0.6);
+      --card: rgba(255,250,245,0.85);
+      --shadow: 0 8px 30px rgba(104,72,50,0.12);
+      --radius:14px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;line-height:1.45;color:var(--muted);
+      background:linear-gradient(180deg,var(--bg-1),var(--bg-2));
+      -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+      padding:32px;
+    }
+    /* subtle anchored pattern using inline SVG data URI */
+    body::before{
+      content:"";position:fixed;inset:0;z-index:0;opacity:0.12;pointer-events:none;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400"><defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="%23F3ECE0"/><stop offset="1" stop-color="%23EADCC6"/></linearGradient><pattern id="p" width="80" height="80" patternUnits="userSpaceOnUse"><rect width="80" height="80" fill="url(%23g)"/><path d="M0 60 Q20 40 40 60 T80 60" fill="none" stroke="%238B5E3C" stroke-opacity="0.08" stroke-width="2"/></pattern></defs><rect width="100%" height="100%" fill="url(%23p)"/></svg>');
+      background-repeat:repeat;mix-blend-mode:multiply;filter:blur(2px);
+    }
+    .wrap{max-width:1100px;margin:0 auto;position:relative;z-index:3}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 12px 36px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#C78A5A);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:18px;box-shadow:var(--shadow)}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-weight:600}
+    nav a.active{color:var(--accent)}
+
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:center;margin-bottom:28px}
+    .hero-card{background:var(--card);padding:34px;border-radius:var(--radius);box-shadow:var(--shadow)}
+    h1{margin:0;font-size:28px;color:#4B362A}
+    p.lead{margin:12px 0 0;color:#5e4b41}
+    .contact-pane{padding:28px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,248,242,0.95));box-shadow:var(--shadow)}
+    .contact-row{display:flex;gap:12px;align-items:center;margin:10px 0}
+    .contact-vec{width:46px;height:46px;border-radius:10px;background:#FFF7F1;border:1px solid rgba(139,94,60,0.06);display:flex;align-items:center;justify-content:center}
+    .muted-small{font-size:13px;color:#6f5b4a}
+
+    form{display:flex;flex-direction:column;gap:12px}
+    input[type=text],input[type=email],textarea,select{padding:12px;border-radius:10px;border:1px solid rgba(107,85,67,0.12);background:transparent;font-size:15px}
+    textarea{min-height:120px;resize:vertical}
+    .btn{background:linear-gradient(180deg,var(--accent),#A25A34);color:white;padding:12px 16px;border-radius:10px;border:none;font-weight:700;cursor:pointer}
+    .meta{font-size:13px;color:#7a6350}
+
+    section.panel{margin:20px 0;padding:22px;border-radius:12px;background:rgba(255,255,255,0.6);box-shadow:0 6px 20px rgba(104,72,50,0.06)}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .pill{background:linear-gradient(180deg,rgba(255,255,255,0.8),rgba(250,244,238,0.9));padding:14px;border-radius:10px}
+    .disclaimer{font-size:13px;color:#7c5e4a}
+
+    footer{margin-top:36px;padding:22px 0;color:#624A3A;font-size:14px}
+
+    @media(max-width:920px){
+      .hero{grid-template-columns:1fr;}
+      .grid-3{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">SB</div>
+        <div>
+          <div style="font-weight:800;color:#4B362A">{{BUSINESS_NAME}}</div>
+          <div style="font-size:12px;color:#7a6350">A sensory practice in {{CITY}}, {{STATE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Gather</a>
+        <a href="events.html">Events</a>
+        <a href="private-sessions.html">Private</a>
+        <a href="pricing.html">Investment</a>
+        <a href="about.html">About</a>
+        <a href="faq.html">Help</a>
+        <a href="book.html">Reserve</a>
+        <a href="contact.html" class="active">Connect</a>
+      </nav>
+    </header>
+
+    <main>
+      <div class="hero">
+        <div class="hero-card">
+          <h1>Connect with {{FACILITATOR_NAME}} — let's find your next pause</h1>
+          <p class="lead">For questions about the series, private sessions, or hosting at {{VENUE_NAME}}, reach out. We hold space for tenderness, sound, and quiet renewal.</p>
+
+          <section class="panel" aria-labelledby="contact-heading">
+            <div class="contact-pane">
+              <div class="contact-row">
+                <div class="contact-vec">☎</div>
+                <div>
+                  <div class="muted-small">Phone</div>
+                  <div style="font-weight:700">{{PHONE}}</div>
+                </div>
+              </div>
+              <div class="contact-row">
+                <div class="contact-vec">✉</div>
+                <div>
+                  <div class="muted-small">Email</div>
+                  <div style="font-weight:700">{{EMAIL}}</div>
+                </div>
+              </div>
+              <div class="contact-row">
+                <div class="contact-vec">📍</div>
+                <div>
+                  <div class="muted-small">Location</div>
+                  <div style="font-weight:700">{{CITY}}, {{STATE}}</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h3 style="margin-top:0">Hours & Booking</h3>
+            <p class="meta">We respond within 48 hours. For urgent availability, call the number above. To reserve a space for the next group offering click <a href="book.html">Reserve</a> or use the form.</p>
+          </section>
+        </div>
+
+        <aside>
+          <div class="contact-pane">
+            <form action="{{PRIMARY_CTA_URL}}" method="post">
+              <input type="text" name="name" placeholder="Your full name" required>
+              <input type="email" name="email" placeholder="Email address" required>
+              <label class="muted-small">I'm interested in</label>
+              <select name="interest">
+                <option>Next group event</option>
+                <option>Private 1:1 session</option>
+                <option>Couples session</option>
+                <option>Corporate/retreat</option>
+                <option>Venue booking/info</option>
+              </select>
+              <textarea name="message" placeholder="Tell us a little about your needs, dates, or questions"></textarea>
+              <div style="display:flex;gap:12px;align-items:center;justify-content:space-between;margin-top:8px">
+                <div style="font-size:13px;color:#7a6350">Prefer to call? <strong>{{PHONE}}</strong></div>
+                <button class="btn" type="submit">{{PRIMARY_CTA_LABEL}}</button>
+              </div>
+              <div class="meta" style="margin-top:8px">We respect your privacy. By contacting you consent to be contacted about bookings and events.</div>
+            </form>
+          </div>
+
+          <div style="height:12px"></div>
+
+          <section class="panel">
+            <h4 style="margin:0 0 8px 0">What to bring</h4>
+            <div class="pill">
+              <ul style="margin:0;padding-left:18px;color:#6b5345">
+                <li>Something soft to lie on — yoga mat + blanket.</li>
+                <li>Pillow for neck/head comfort.</li>
+                <li>Water bottle to hydrate after the sound journey.</li>
+                <li>Optional: eye mask or scarf for gentle darkness.</li>
+              </ul>
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="panel">
+        <h3>Flow of a session — what to expect</h3>
+        <p class="meta">Each gathering is crafted as a gentle arc. We begin seated for arrival and intention, move into a guided breath and subtle movement, and then enter the sound landscape. Instruments are played with attention to breath and space, inviting deep resonance and rest. We close with soft return, journaling, and time to integrate.</p>
+
+        <div class="grid-3" style="margin-top:12px">
+          <div class="pill">
+            <strong>Arrival</strong>
+            <div class="muted-small">Check-in, settle, brief orientation. (10–15 mins)</div>
+          </div>
+          <div class="pill">
+            <strong>Immersion</strong>
+            <div class="muted-small">A layered sound journey using curated instruments. (35–55 mins)</div>
+          </div>
+          <div class="pill">
+            <strong>Return</strong>
+            <div class="muted-small">Soft landing, hydration, and optional sharing. (10–20 mins)</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h3>Contraindications & safety</h3>
+        <p class="disclaimer">Sound experiences are generally safe but not suitable for everyone. Please consult us prior to booking if you are pregnant, have epilepsy, severe heart conditions, recent surgeries, pacemakers, or are under intensive psychiatric care. Sound can be potent — do not attend under the influence of substances that significantly impair perception. If in doubt, contact us at {{EMAIL}}.</p>
+      </section>
+
+      <section class="panel">
+        <h3>Quick FAQ</h3>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px">
+          <div style="flex:1;min-width:220px">
+            <strong>How long are events?</strong>
+            <div class="muted-small">Most group baths run 60–90 minutes including arrival and close.</div>
+          </div>
+          <div style="flex:1;min-width:220px">
+            <strong>Are props provided?</strong>
+            <div class="muted-small">We supply bolsters and some blankets. Bringing your own creates extra comfort.</div>
+          </div>
+          <div style="flex:1;min-width:220px">
+            <strong>Payment & cancellations</strong>
+            <div class="muted-small">See <a href="pricing.html">Investment</a> for options. We appreciate 24–48 hours notice for cancellations.</div>
+          </div>
+        </div>
+      </section>
+
+      <section style="text-align:center;margin-top:18px">
+        <a href="book.html" class="btn" style="display:inline-block;padding:14px 28px;border-radius:16px;">Reserve your space</a>
+        <div class="meta" style="margin-top:8px">Prefer to ask first? Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <strong>{{PHONE}}</strong>.</div>
+      </section>
+
+    </main>
+
+    <footer>
+      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px">
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div class="muted-small">{{TAGLINE}}</div>
+        </div>
+        <div style="text-align:right">
+          <div class="muted-small">Hosted at {{VENUE_NAME}} • Facilitated by {{FACILITATOR_NAME}}</div>
+          <div style="margin-top:6px;color:#7a6350">Want to host a private retreat? <a href="private-sessions.html">Inquire</a></div>
+        </div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

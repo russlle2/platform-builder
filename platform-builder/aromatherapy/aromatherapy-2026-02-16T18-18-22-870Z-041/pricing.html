@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Investment — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7fbf9;--card:#ffffff;--accent:#6aa19a;--muted:#6b7b75;--glass:rgba(255,255,255,0.7);--maxw:1100px}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;line-height:1.45;color:#173d3a;background:linear-gradient(180deg,var(--bg),#eef7f5);}
+    header{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:20px;max-width:var(--maxw);margin:18px auto}
+    nav a{color:#173d3a;text-decoration:none;margin:0 10px;font-weight:600}
+    .wrap{max-width:var(--maxw);margin:0 auto;padding:24px}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:center;padding:28px;border-radius:16px;background:linear-gradient(135deg,rgba(106,161,154,0.06),rgba(166,219,212,0.04));box-shadow:0 6px 24px rgba(20,40,36,0.06);}
+    .title{font-size:28px;color:#0f3331;margin:0 0 8px}
+    .subtitle{color:var(--muted);margin:0 0 18px}
+    .card{background:var(--card);padding:20px;border-radius:12px;box-shadow:0 4px 18px rgba(15,51,49,0.06)}
+    .price-list{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
+    .price-item{padding:18px;border-radius:10px;border:1px solid #eef6f5;background:linear-gradient(180deg,#fff,#fbfffe)}
+    .price-item h3{margin:0 0 6px;font-size:16px;color:#0b3a38}
+    .price{font-size:20px;font-weight:700;color:var(--accent);margin:6px 0}
+    .muted{color:var(--muted);font-size:14px}
+    footer{max-width:var(--maxw);margin:36px auto 80px;padding:24px;text-align:center;color:var(--muted)}
+    .cta{display:inline-block;padding:12px 18px;border-radius:999px;background:linear-gradient(90deg,var(--accent),#4e8c84);color:#fff;text-decoration:none;font-weight:700}
+    .grid-2{display:grid;grid-template-columns:1fr 320px;gap:20px}
+    .faq dt{font-weight:700;margin-top:12px}
+    .faq dd{margin:6px 0 12px;color:var(--muted)}
+    .svg-bg{position:fixed;right:-120px;top:-60px;opacity:0.38;transform:rotate(12deg);pointer-events:none}
+    @media (max-width:880px){.hero,.grid-2{grid-template-columns:1fr;}.price-list{grid-template-columns:1fr}.svg-bg{display:none}}
+  </style>
+</head>
+<body>
+  <svg class="svg-bg" width="520" height="520" viewBox="0 0 520 520" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#cfeae6"/><stop offset="1" stop-color="#e7faf7"/></linearGradient>
+      <pattern id="p1" width="60" height="60" patternUnits="userSpaceOnUse">
+        <rect width="60" height="60" fill="url(#g1)"/>
+        <circle cx="10" cy="10" r="3" fill="#d2efe9"/>
+        <circle cx="40" cy="40" r="3" fill="#d2efe9"/>
+      </pattern>
+    </defs>
+    <rect width="520" height="520" fill="url(#p1)" rx="26"/>
+  </svg>
+
+  <header>
+    <div style="display:flex;flex-direction:column">
+      <strong>{{BUSINESS_NAME}}</strong>
+      <small style="color:var(--muted)">{{TAGLINE}}</small>
+    </div>
+    <nav aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Blends</a>
+      <a href="pricing.html" style="opacity:0.95">Invest</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div>
+        <h1 class="title">Thoughtful pricing for bespoke aromatherapy care</h1>
+        <p class="subtitle">Clear investment options for sessions and our signature VIP Day — safety-focused, personalized, and guided by scent literacy.</p>
+        <div class="card">
+          <p style="margin:0 0 8px" class="muted">Need a custom plan? Ask about package pricing and sliding-scale options during booking.</p>
+          <a href="book.html" class="cta">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </div>
+      <aside class="card">
+        <h4 style="margin:0 0 6px">Popular: VIP Day</h4>
+        <p class="muted" style="margin:0 0 12px">Deep work, blend creation, and take-home kit in one focused day with {{PRACTITIONER_NAME}}.</p>
+        <div style="font-size:20px;font-weight:700;color:var(--accent)">$1,200</div>
+        <div style="margin-top:10px"><small class="muted">Includes consultation, on-site blending, 30m follow-up, and a starter kit.</small></div>
+      </aside>
+    </section>
+
+    <section style="margin-top:24px" class="grid-2">
+      <div>
+        <h2 style="margin:0 0 8px">Packages and single sessions</h2>
+        <p class="muted">Options designed for different levels of support: short consults, standard sessions, and immersive VIP experiences.</p>
+        <div class="price-list" aria-hidden>
+          <div class="price-item">
+            <h3>Intro Consult</h3>
+            <div class="price">$75</div>
+            <div class="muted">30 minutes by video — scent history + safe-use tips.</div>
+          </div>
+          <div class="price-item">
+            <h3>Standard Session</h3>
+            <div class="price">$160</div>
+            <div class="muted">60 minutes — individualized blend + protocol notes.</div>
+          </div>
+          <div class="price-item">
+            <h3>VIP Day</h3>
+            <div class="price">$1,200</div>
+            <div class="muted">Full-day immersive session — co-create blends and a home ritual.</div>
+          </div>
+        </div>
+
+        <h3 style="margin-top:18px">Payment & policy</h3>
+        <p class="muted">Deposit required for VIP Day. We accept card and bank transfer. Cancellations with 72+ hours notice receive a full credit; within 72 hours, deposits are retained but transferable once.</p>
+      </div>
+
+      <aside>
+        <div class="card">
+          <h4 style="margin:0 0 6px">What’s included with the VIP Day</h4>
+          <ul style="margin:0;padding-left:18px;color:var(--muted)">
+            <li>Pre-visit questionnaire and scent history</li>
+            <li>6–8 custom blends scaled for home use</li>
+            <li>Starter kit of labeled vials and roller bottles</li>
+            <li>30-minute follow-up for adjustments</li>
+          </ul>
+          <div style="margin-top:12px"><a href="book.html" class="cta">Reserve a VIP Day</a></div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <h4 style="margin:0 0 6px">Sliding scale</h4>
+          <p class="muted" style="margin:0">Partial scholarship or payment plan available on a limited basis — please inquire when booking.</p>
+        </div>
+      </aside>
+    </section>
+
+    <section style="margin-top:28px" class="card">
+      <h3 style="margin:0 0 8px">What to expect</h3>
+      <p class="muted">Every visit blends clinical care with creativity. We begin with a safety review (allergies, medications, pregnancy, and pet exposure), then move to scent exploration and blend formulation. Recommendations focus on safe topical dilution and odor profiles — not medical diagnosis.</p>
+    </section>
+
+    <section style="margin-top:18px" class="card">
+      <h3 style="margin:0 0 8px">Frequently asked — safety first</h3>
+      <dl class="faq">
+        <dt>How do you determine dilution?</dt>
+        <dd>We use conservative dilution guidelines tailored to age, skin sensitivity, and intended use. Typical adult topical dilutions range from 1–3% depending on context; we document your personalized dilution on every blend label.</dd>
+        <dt>Is a patch test recommended?</dt>
+        <dd>Yes — we always recommend a small patch test (inner forearm) 24–48 hours before wider topical use to check for irritation or allergy.</dd>
+        <dt>Are essential oils safe around pets?</dt>
+        <dd>Some oils are poorly tolerated by animals. During your consultation we will review household pets and recommend pet-safe scent strategies and diffuser placement to avoid exposure.</dd>
+        <dt>What if I’m pregnant?</dt>
+        <dd>Pregnancy involves special considerations. We follow conservative practice and will avoid certain botanicals and provide pregnancy-safe alternatives. Always consult your care provider for clinical guidance.</dd>
+      </dl>
+    </section>
+
+    <section style="margin-top:20px;text-align:center">
+      <a href="book.html" class="cta">Book your session — {{PRIMARY_CTA_LABEL}}</a>
+      <p class="muted" style="margin-top:8px">Questions? Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+    </section>
+  </main>
+
+  <footer>
+    <small>Serving {{CITY}}, {{STATE}} — {{BUSINESS_NAME}} by {{PRACTITIONER_NAME}}.</small>
+  </footer>
+</body>
+</html>

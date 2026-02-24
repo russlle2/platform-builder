@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book a Session — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--accent:#6b8e74;--muted:#888}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#fff;color:#111}
+    .wrap{max-width:760px;margin:56px auto;padding:28px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none}
+    .hero{margin-top:18px}
+    h1{margin:6px 0;font-size:26px}
+    .lead{color:var(--muted)}
+    .form-card{background:#fbfbfb;padding:18px;border-radius:12px;margin-top:16px}
+    label{display:block;margin-top:10px;font-size:14px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e6e6;margin-top:6px}
+    .cta{background:var(--accent);color:#fff;padding:10px 12px;border-radius:10px;border:none;margin-top:12px}
+    .mini{font-size:13px;color:var(--muted)}
+    .process{display:flex;gap:10px;margin-top:12px}
+    .process div{background:#fff;padding:10px;border-radius:8px}
+    .social{margin-top:18px}
+    footer{margin-top:28px;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <strong>{{BUSINESS_NAME}}</strong>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="services.html">Work</a>
+        <a href="programs.html">Paths</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <h1>Schedule a 20-minute Clarity Session</h1>
+      <p class="lead">A brief conversation to map one immediate, practical step you can use this week. No pressure — just clarity and a simple plan.</p>
+    </section>
+
+    <main>
+      <div class="form-card">
+        <form action="/book" method="post">
+          <label for="name">Your name</label>
+          <input id="name" name="name" placeholder="First & last" required />
+
+          <label for="email">Email</label>
+          <input id="email" name="email" placeholder="you@domain.com" required />
+
+          <label for="service">Choose a focus</label>
+          <select id="service" name="service">
+            <option>Morning Simplification (15 min follow-up)</option>
+            <option>Evening Reset & Sleep Routine</option>
+            <option>Workday Energy Planning</option>
+            <option>Custom: Habit Mapping</option>
+          </select>
+
+          <label for="notes">Short note — what feels most urgent?</label>
+          <textarea id="notes" name="notes" rows="4" placeholder="A sentence or two is fine"></textarea>
+
+          <label for="times">Preferred times (optional)</label>
+          <input id="times" name="times" placeholder="Mornings, evenings, specific days" />
+
+          <div style="display:flex;gap:10px;align-items:center;margin-top:10px">
+            <button class="cta" type="submit">Request a slot</button>
+            <a href="{{PRIMARY_CTA_URL}}" class="mini" style="align-self:center">Or schedule via the main booking link</a>
+          </div>
+
+          <p class="mini" style="margin-top:10px">Sessions are offered virtually. A short intake will confirm fit and availability.</p>
+        </form>
+      </div>
+
+      <section style="margin-top:18px">
+        <div class="card" style="background:transparent;padding:0">
+          <h3 style="margin:6px 0">What this session achieves</h3>
+          <div class="process">
+            <div><strong>Listen</strong><div class="mini">Understand your current pattern</div></div>
+            <div><strong>Choose</strong><div class="mini">One practical habit to try</div></div>
+            <div><strong>Plan</strong><div class="mini">Steps and a simple check-in</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="social">
+        <div style="background:#fbfbfb;padding:14px;border-radius:12px">
+          <strong>Client snapshot</strong>
+          <p class="mini" style="margin-top:8px">"That single session gave me one concrete change I relied on for months." — L.</p>
+          <p class="mini">"I left with a plan I could actually do — and I did it." — B.</p>
+        </div>
+      </section>
+
+      <section style="margin-top:16px" class="card">
+        <h4 style="margin:0 0 8px">Practical details</h4>
+        <p class="mini">A short session is complimentary for new clients. Multi-session packages and longer coaching options are available after the clarity session.</p>
+        <p class="mini">If you prefer, call <a href="tel:{{PHONE}}">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</p>
+      </section>
+
+      <section style="margin-top:16px" class="card">
+        <h4 style="margin:0 0 8px">Questions people ask before booking</h4>
+        <p class="mini"><strong>Is this for mental health?</strong> This is habit-focused coaching and is not a substitute for clinical care.</p>
+        <p class="mini"><strong>How many sessions will I need?</strong> Many clients start with 6–12 weeks; the clarity call will help us choose.</p>
+        <p class="mini"><strong>Do you work with time zones?</strong> Yes — we’ll coordinate a convenient time for you.</p>
+      </section>
+
+      <section style="margin-top:16px" class="card">
+        <h4 style="margin:0 0 8px">Free starter worksheet</h4>
+        <p class="mini">Get a short reflection that prepares you for the call. It helps make the first session efficient and gentle.</p>
+        <form>
+          <input placeholder="Email" style="padding:8px;border-radius:8px;border:1px solid #e6e6e6;width:60%" />
+          <button class="cta" style="display:inline-block;margin-left:8px">Send worksheet</button>
+        </form>
+      </section>
+
+    </main>
+
+    <footer>
+      <div>{{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </footer>
+  </div>
+</body>
+</html>

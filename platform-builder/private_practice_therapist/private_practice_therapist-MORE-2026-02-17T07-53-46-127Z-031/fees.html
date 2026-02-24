@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Investment & Sessions — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--accent:#6b5b95;--muted:#6f6f6f;--bg:#fbfbfb;--card:#ffffff}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#222;background:var(--bg)}
+    .wrap{max-width:980px;margin:32px auto;padding:28px}
+    header{display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:48px;height:48px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#c06);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none}
+    .hero{background:linear-gradient(90deg,rgba(107,91,149,0.06),rgba(192,108,132,0.04));border-radius:12px;padding:20px;margin-top:18px;display:flex;gap:18px;align-items:center}
+    .hero svg{width:120px;height:80px;flex:0 0 120px}
+    .hero h1{margin:0;font-size:20px}
+    .hero p{margin:6px 0 0;color:var(--muted)}
+
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
+    .card{background:var(--card);padding:16px;border-radius:10px;border:1px solid #eee;box-shadow:0 1px 0 rgba(0,0,0,0.02)}
+    .card h3{margin:0 0 8px}
+    .price{font-size:20px;color:var(--accent);font-weight:600}
+    .muted{color:var(--muted);font-size:14px}
+    .small{font-size:13px;color:var(--muted)}
+
+    .widget{margin-top:26px;background:#fff;border-radius:10px;padding:16px;border:1px solid #eee}
+    label{display:block;margin:8px 0 6px;font-weight:600}
+    select,input[type="number"],textarea{width:100%;padding:8px;border-radius:6px;border:1px solid #ddd}
+    .row{display:flex;gap:10px}
+    .row > *{flex:1}
+    button{background:var(--accent);color:#fff;border:0;padding:10px 14px;border-radius:8px;cursor:pointer}
+    .out{white-space:pre-wrap;background:#fafafa;border:1px dashed #eee;padding:12px;border-radius:8px;margin-top:12px}
+
+    footer{margin-top:36px;color:var(--muted);font-size:13px}
+    .note{background:#fff;padding:12px;border-radius:8px;border:1px solid #f2f2f2;margin-top:12px}
+
+    /* small responsive */
+    @media(max-width:820px){.grid{grid-template-columns:1fr}.hero{flex-direction:column;align-items:flex-start}.brand .logo{width:40px;height:40px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">TP</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div class="small">Private practice in {{CITY}}, {{STATE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">The Clinician</a>
+        <a href="specialties.html">Areas</a>
+        <a href="approach.html">How I Work</a>
+        <a href="fees.html">Investment</a>
+        <a href="faq.html">Quick Answers</a>
+        <a href="book.html">Begin</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <!-- unique inline SVG pattern -->
+      <svg viewBox="0 0 200 120" aria-hidden>
+        <defs>
+          <linearGradient id="g1" x1="0" x2="1">
+            <stop stop-color="#6b5b95" offset="0" stop-opacity="0.85"/>
+            <stop stop-color="#c06" offset="1" stop-opacity="0.9"/>
+          </linearGradient>
+          <pattern id="p1" width="20" height="20" patternUnits="userSpaceOnUse">
+            <rect width="20" height="20" fill="white" />
+            <path d="M0 10 L10 0 M10 20 L20 10" stroke="#f3eefc" stroke-width="1"/>
+          </pattern>
+        </defs>
+        <rect width="200" height="120" fill="url(#p1)"/>
+        <g transform="translate(30,15)">
+          <rect x="0" y="0" width="140" height="80" rx="8" fill="url(#g1)" opacity="0.14"/>
+          <circle cx="20" cy="20" r="10" fill="#6b5b95" opacity="0.2"/>
+        </g>
+      </svg>
+      <div>
+        <h1>Investment in focused therapeutic work</h1>
+        <p class="muted">Transparent options for individual work—build a rhythm that fits your life and needs. Fees here are listed as standard investments; we can discuss adjustments during a consultation.</p>
+      </div>
+    </section>
+
+    <section class="grid" aria-label="packages">
+      <div class="card">
+        <h3>First Meeting — Intake Session</h3>
+        <div class="price">$160 — 60 min</div>
+        <p class="small">A comprehensive first session to understand your concern and plan suitable next steps. Includes initial paperwork and a short follow-up note summarizing our plan.</p>
+      </div>
+      <div class="card">
+        <h3>Focused Short Series</h3>
+        <div class="price">$480 — 4 sessions</div>
+        <p class="small">A focused block—ideal for resolving a specific stressor, trying tools, or testing the fit of therapy. Sessions can be weekly or biweekly.</p>
+      </div>
+      <div class="card">
+        <h3>Ongoing Sessions</h3>
+        <div class="price">$140 — 45 min</div>
+        <p class="small">Regular hour or 45-minute sessions for continuing work. Frequency tailored to goals and lifestyle.</p>
+      </div>
+    </section>
+
+    <section class="widget" id="planner">
+      <h3 style="margin:0 0 6px">Session Planner</h3>
+      <p class="small">Build a simple plan to discuss at your first meeting. Export the summary to copy into a message or print.</p>
+
+      <label for="focus">Primary focus for sessions</label>
+      <select id="focus">
+        <option value="Relationship patterns">Relationship patterns</option>
+        <option value="Anxiety or worry">Anxiety or worry</option>
+        <option value="Depression or low mood">Depression or low mood</option>
+        <option value="Life transition or decision">Life transition or decision</option>
+        <option value="Work / career stress">Work / career stress</option>
+        <option value="Other">Other</option>
+      </select>
+
+      <div class="row" style="margin-top:8px">
+        <div>
+          <label for="sessionLength">Session length</label>
+          <select id="sessionLength">
+            <option value="45 min">45 min</option>
+            <option value="60 min">60 min</option>
+          </select>
+        </div>
+        <div>
+          <label for="frequency">Preferred frequency</label>
+          <select id="frequency">
+            <option value="Weekly">Weekly</option>
+            <option value="Every 2 weeks">Every 2 weeks</option>
+            <option value="Monthly">Monthly check-ins</option>
+          </select>
+        </div>
+      </div>
+
+      <label for="goals">What would you most like to work toward?</label>
+      <textarea id="goals" rows="3" placeholder="A clearer decision, calmer evenings, better boundaries..."></textarea>
+
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button id="buildPlan">Build plan</button>
+        <button id="clearPlan" style="background:#eee;color:#333">Clear</button>
+      </div>
+
+      <div class="out" id="planOut" aria-live="polite">Your personalized plan will appear here.</div>
+      <div style="margin-top:10px;display:flex;gap:8px">
+        <button id="copyPlan">Copy summary</button>
+        <a href="{{PRIMARY_CTA_URL}}" style="text-decoration:none"><button style="background:#2b8f7a">{{PRIMARY_CTA_LABEL}}</button></a>
+      </div>
+    </section>
+
+    <section class="note">
+      <strong>Confidentiality & scope</strong>
+      <p class="small">Conversations are confidential within the limits of the law (exceptions include risk of harm to self or others, or where required by court order). This page is informational and not a substitute for a clinical assessment.</p>
+      <p class="small">If you are in crisis or feel unsafe, please call local emergency services or a crisis line immediately.</p>
+    </section>
+
+    <footer>
+      <div class="small">Questions about sliding scale or insurance? Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call {{PHONE}}</div>
+    </footer>
+  </div>
+
+  <script>
+    // Session Planner logic
+    function buildPlanText(){
+      var focus = document.getElementById('focus').value;
+      var length = document.getElementById('sessionLength').value;
+      var freq = document.getElementById('frequency').value;
+      var goals = document.getElementById('goals').value.trim() || 'Not specified';
+      var text = 'Session Plan for initial discussion:\n';
+      text += '- Primary focus: ' + focus + '\n';
+      text += '- Session length: ' + length + '\n';
+      text += '- Preferred frequency: ' + freq + '\n';
+      text += '- Key goals: ' + goals + '\n';
+      text += '\nNotes: Bring any recent events or examples that illustrate the concern.\n';
+      text += 'Prepared for: ' + '{{BUSINESS_NAME}}' + ' — first conversation in ' + '{{CITY}}' + ', ' + '{{STATE}}' + '.';
+      return text;
+    }
+
+    document.getElementById('buildPlan').addEventListener('click', function(){
+      document.getElementById('planOut').textContent = buildPlanText();
+    });
+    document.getElementById('clearPlan').addEventListener('click', function(){
+      document.getElementById('goals').value = '';
+      document.getElementById('planOut').textContent = 'Your personalized plan will appear here.';
+    });
+    document.getElementById('copyPlan').addEventListener('click', function(){
+      var text = document.getElementById('planOut').textContent;
+      if(!navigator.clipboard) return alert('Copy not supported in this browser.');
+      navigator.clipboard.writeText(text).then(function(){
+        alert('Plan copied to clipboard.');
+      });
+    });
+  </script>
+</body>
+</html>

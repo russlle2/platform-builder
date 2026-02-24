@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg1:#081018;--bg2:#0d2230;--accent:#c6a0ff;--muted:#b9c6d0}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:#eaf7ff;background:linear-gradient(180deg,var(--bg1),var(--bg2));}
+    .container{max-width:1000px;margin:28px auto;padding:26px}
+    header{display:flex;justify-content:space-between;align-items:center;color:var(--accent)}
+    nav a{color:#dfeeff;margin-left:14px;text-decoration:none}
+    .hero{padding:20px 0;display:flex;gap:22px;align-items:center}
+    h1{margin:0;font-size:34px}
+    .columns{display:grid;grid-template-columns:1fr 340px;gap:20px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.04)}
+    label{display:block;margin-top:12px;font-weight:600}
+    input,select,textarea{width:100%;padding:10px;margin-top:6px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);color:#eaf7ff}
+    .btn-primary{display:inline-block;margin-top:12px;padding:10px 14px;background:linear-gradient(90deg,var(--accent),#8bd1ff);color:#021224;border-radius:10px;text-decoration:none;font-weight:700}
+    .note{color:var(--muted);font-size:14px;margin-top:8px}
+    .pattern{position:absolute;left:2%;bottom:6%;opacity:0.07;width:420px;height:420px}
+    @media (max-width:880px){.columns{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <!-- page-specific decorative svg -->
+  <svg class="pattern" viewBox="0 0 420 420" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <defs>
+      <radialGradient id="r1"><stop offset="0" stop-color="#c6a0ff" stop-opacity="0.9"/><stop offset="1" stop-color="#8bd1ff" stop-opacity="0.2"/></radialGradient>
+      <filter id="b"><feGaussianBlur stdDeviation="14"/></filter>
+    </defs>
+    <ellipse cx="210" cy="210" rx="160" ry="120" fill="url(#r1)" filter="url(#b)"/>
+    <g opacity="0.06" fill="#fff"><rect x="40" y="300" width="20" height="20" rx="3"/></g>
+  </svg>
+
+  <div class="container">
+    <header>
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html">Begin</a>
+        <a href="events.html">Schedule</a>
+        <a href="about.html">Who we are</a>
+        <a href="faq.html">Questions</a>
+      </nav>
+    </header>
+
+    <div class="hero">
+      <div>
+        <h1>Reserve your place</h1>
+        <p class="note">Book a drop-in, a membership plan, or inquire about private sessions with {{FACILITATOR_NAME}} at {{VENUE_NAME}}.</p>
+      </div>
+      <div style="margin-left:auto">
+        <div class="card" style="text-align:right">
+          <div style="font-size:12px;color:var(--muted)">Next event</div>
+          <div style="font-weight:700">{{NEXT_EVENT_DATE}}</div>
+          <div style="margin-top:8px"><a class="btn-primary" href="events.html">See full calendar</a></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="columns">
+      <main>
+        <div class="card">
+          <h2 style="margin-top:0">Booking form</h2>
+          <p class="note">Complete this form and we will reserve your spot. Membership holders: enter your email to apply the member rate.</p>
+          <form action="{{PRIMARY_CTA_URL}}" method="POST" style="margin-top:12px">
+            <label for="name">Full name</label>
+            <input id="name" name="name" placeholder="Your name" required />
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="you@domain.com" required />
+
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" placeholder="Optional" />
+
+            <label for="event">Choose an offering</label>
+            <select id="event" name="event">
+              <option>Drop-in: Evening Sound Bath — {{NEXT_EVENT_DATE}}</option>
+              <option>Monthly Membership — recurring</option>
+              <option>Private 1:1 session with {{FACILITATOR_NAME}}</option>
+              <option>Couples sound experience</option>
+            </select>
+
+            <label for="notes">Notes / accessibility</label>
+            <textarea id="notes" name="notes" rows="4" placeholder="Any sensitivities, hearing devices, pregnancy, or other concerns"></textarea>
+
+            <div style="display:flex;gap:12px;align-items:center;margin-top:10px">
+              <button class="btn-primary" type="submit">Reserve now</button>
+              <a class="btn-primary" href="mailto:{{EMAIL}}" style="background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)">Email us</a>
+            </div>
+
+            <p class="note">By reserving you acknowledge our <a href="faq.html" style="color:var(--muted)">safety guidelines</a>.</p>
+          </form>
+        </div>
+
+        <!-- micro_habits placed earlier on this page -->
+        <div class="card" style="margin-top:14px">
+          <h3 style="margin-top:0">Tiny listening practices</h3>
+          <ul style="color:var(--muted)">
+            <li>1-minute bell before bed for three nights.</li>
+            <li>Midday pause: notice sounds without labeling them.</li>
+            <li>Weekly member check-in recording — five minutes.</li>
+          </ul>
+        </div>
+      </main>
+
+      <aside>
+        <div class="card">
+          <h4 style="margin-top:0">Practical details</h4>
+          <p class="note">Arrive 15–20 minutes early to settle. Typical flow: greeting, centering, 50 minutes of sound, five minutes of silence and reorientation. We ask guests to be quiet in the lobby to preserve the field.</p>
+
+          <h5 style="margin-top:12px">What to bring</h5>
+          <ul style="color:var(--muted)">
+            <li>Cushion or mat (we provide for members)</li>
+            <li>Warm blanket and socks</li>
+            <li>Earplugs if you are sensitive to low frequencies</li>
+          </ul>
+
+          <h5 style="margin-top:12px">Contraindications & safety</h5>
+          <p class="note">If you have epilepsy, pacemakers, severe psychiatric conditions or are pregnant without clearance, contact us before booking. For louder instruments we can arrange a less intense placement.</p>
+
+          <h5 style="margin-top:12px">Sound palette for your booking</h5>
+          <p class="note">For private bookings we often include crystal singing bowls, koshi chimes, and a shruti box to create layered, intimate resonance.</p>
+
+          <div style="margin-top:12px"><a class="btn-primary" href="private-sessions.html">Private session options</a></div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin-top:0">Need help?</h4>
+          <p class="note">Call <strong>{{PHONE}}</strong> or email <a href="mailto:{{EMAIL}}" style="color:var(--muted)">{{EMAIL}}</a></p>
+        </div>
+      </aside>
+    </div>
+
+    <footer style="margin-top:18px;color:var(--muted);text-align:center">Thank you for giving time to yourself — {{BUSINESS_NAME}} at {{VENUE_NAME}}, {{CITY}}, {{STATE}}</footer>
+  </div>
+</body>
+</html>

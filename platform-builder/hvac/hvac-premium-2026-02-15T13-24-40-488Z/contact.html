@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contact | {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Contact {{BUSINESS_NAME}} — your HVAC pros in {{CITY}}, {{STATE}}. Call {{PHONE}}, email {{EMAIL}}, or send a message.">
+  <meta name="robots" content="index,follow">
+  <meta property="og:site_name" content="{{BUSINESS_NAME}}">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Contact — {{BUSINESS_NAME}}">
+  <meta property="og:description" content="Reach our team for installs, repairs, and questions. We’re here to help.">
+  <meta property="og:image" content="assets/img/hero-abstract.svg">
+  <meta property="og:url" content="contact.html">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="assets/img/hero-abstract.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script defer src="assets/js/main.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HVACBusiness",
+    "name": "{{BUSINESS_NAME}}",
+    "description": "{{TAGLINE}}",
+    "telephone": "{{PHONE}}",
+    "email": "{{EMAIL}}",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "{{ADDRESS}}",
+      "addressLocality": "{{CITY}}",
+      "addressRegion": "{{STATE}}",
+      "postalCode": "{{ZIP}}"
+    },
+    "areaServed": "{{CITY}}, {{STATE}}",
+    "openingHours": "{{HOURS}}",
+    "url": "contact.html"
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header" data-enhance="sticky">
+    <div class="topbar">
+      <div class="container flex between center">
+        <span class="topbar-item">Serving {{CITY}}, {{STATE}}</span>
+        <nav class="topbar-contact" aria-label="Top contact">
+          <a class="topbar-item" href="tel:{{PHONE}}">Call {{PHONE}}</a>
+          <span class="divider" aria-hidden="true">•</span>
+          <a class="topbar-item" href="mailto:{{EMAIL}}">{{EMAIL}}</a>
+          <span class="divider" aria-hidden="true">•</span>
+          <span class="topbar-item">Hours: {{HOURS}}</span>
+        </nav>
+      </div>
+    </div>
+    <div class="navwrap">
+      <div class="container flex between center">
+        <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">HVAC</span><span class="brand-name">{{BUSINESS_NAME}}</span></a>
+        <button class="nav-toggle" aria-controls="site-menu" aria-expanded="false" aria-label="Toggle menu">
+          <span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span>
+        </button>
+        <nav id="site-menu" class="site-nav" aria-label="Primary">
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="pricing.html">Pricing</a></li>
+            <li><a href="financing.html">Financing</a></li>
+            <li><a href="reviews.html">Reviews</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a class="active" href="contact.html">Contact</a></li>
+          </ul>
+          <div class="nav-cta"><a class="btn btn-primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-hero slim">
+      <div class="container">
+        <h1>Get in touch</h1>
+        <p class="lead">We’re here to help with installs, repairs, and any HVAC questions.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container grid contact-grid">
+        <div>
+          <h2>Contact details</h2>
+          <ul class="list-plain">
+            <li><strong>Phone:</strong> <a href="tel:{{PHONE}}">{{PHONE}}</a></li>
+            <li><strong>Email:</strong> <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></li>
+            <li><strong>Address:</strong> <address>{{ADDRESS}}, {{CITY}}, {{STATE}} {{ZIP}}</address></li>
+            <li><strong>Hours:</strong> {{HOURS}}</li>
+          </ul>
+          <div class="mapbox" role="img" aria-label="Map placeholder for {{ADDRESS}}, {{CITY}}, {{STATE}} {{ZIP}}">
+            <img src="assets/img/hero-abstract.svg" alt="Decorative map placeholder" class="rounded">
+          </div>
+        </div>
+        <div>
+          <h2>Send a message</h2>
+          <form id="contact-form" class="form" novalidate>
+            <div class="grid form-grid">
+              <div class="field">
+                <label for="c-name">Full name</label>
+                <input type="text" id="c-name" name="name" required>
+                <span class="error" id="c-name-error"></span>
+              </div>
+              <div class="field">
+                <label for="c-email">Email</label>
+                <input type="email" id="c-email" name="email" required>
+                <span class="error" id="c-email-error"></span>
+              </div>
+              <div class="field">
+                <label for="c-phone">Phone</label>
+                <input type="tel" id="c-phone" name="phone">
+              </div>
+              <div class="field full">
+                <label for="c-message">Message</label>
+                <textarea id="c-message" name="message" rows="5" required></textarea>
+                <span class="error" id="c-message-error"></span>
+              </div>
+            </div>
+            <div class="actions">
+              <button class="btn btn-primary" type="submit">Send message</button>
+              <a class="btn btn-quiet" href="tel:{{PHONE}}">Or call {{PHONE}}</a>
+            </div>
+            <div id="contact-status" class="form-status" role="status" aria-live="polite"></div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-band section alt">
+      <div class="container flex between center wrap">
+        <div>
+          <h2>Prefer to book online?</h2>
+          <p>Pick a time that works for you — we’ll confirm shortly.</p>
+        </div>
+        <div class="actions"><a class="btn" href="book.html">Book now</a></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container grid footer-grid">
+      <div>
+        <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">HVAC</span><span class="brand-name">{{BUSINESS_NAME}}</span></a>
+        <p class="muted">{{TAGLINE}}</p>
+        <ul class="list-plain small">
+          <li><a href="tel:{{PHONE}}">{{PHONE}}</a></li>
+          <li><a href="mailto:{{EMAIL}}">{{EMAIL}}</a></li>
+          <li><address>{{ADDRESS}}, {{CITY}}, {{STATE}} {{ZIP}}</address></li>
+          <li>Hours: {{HOURS}}</li>
+        </ul>
+      </div>
+      <nav aria-label="Footer">
+        <h3 class="footer-title">Explore</h3>
+        <ul class="list-plain">
+          <li><a href="services.html">Services</a></li>
+          <li><a href="pricing.html">Pricing</a></li>
+          <li><a href="financing.html">Financing</a></li>
+          <li><a href="reviews.html">Reviews</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="book.html">Book</a></li>
+        </ul>
+      </nav>
+      <div>
+        <h3 class="footer-title">Service promises</h3>
+        <ul class="list-plain small">
+          <li>Upfront, written pricing</li>
+          <li>Clean home guarantee</li>
+          <li>Licensed, background-checked techs</li>
+          <li>Manufacturer-authorized</li>
+        </ul>
+      </div>
+    </div>
+    <div class="container footnote">
+      <p class="small muted">© <span id="year"></span> {{BUSINESS_NAME}}. All rights reserved.</p>
+    </div>
+  </footer>
+</body>
+</html>

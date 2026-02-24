@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--accent:#2f7a68;--muted:#6b7b80;--card:#ffffffef}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,#f6fbfa,#eef6f4);color:#072226}
+    .wrap{min-height:100vh;display:flex;flex-direction:column;background-image:url('assets/img/pattern.svg');background-repeat:repeat}
+    header{padding:18px 24px;display:flex;justify-content:space-between;align-items:center}
+    nav a{margin:0 10px;color:#133; text-decoration:none;font-weight:600}
+    main{padding:24px}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:18px}
+    .card{background:var(--card);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.6);box-shadow:0 8px 20px rgba(8,12,12,0.05)}
+    .selector{display:flex;gap:10px;flex-wrap:wrap}
+    .selector button{padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.04);background:white;cursor:pointer}
+    .selector button.active{background:linear-gradient(90deg,var(--accent),#67a890);color:#fff}
+    .summary{margin-top:14px}
+    .booking-cta{display:inline-block;padding:12px 16px;border-radius:12px;background:var(--accent);color:#fff;text-decoration:none;font-weight:700}
+    @media(max-width:980px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#61a289);display:grid;place-items:center;color:white;font-weight:800">HM</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div style="font-size:12px;color:var(--muted)">Reserve a time that reflects what matters most now</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Welcome</a>
+        <a href="services.html">Offerings</a>
+        <a href="conditions.html">Ailments</a>
+        <a href="approach.html">Method</a>
+        <a href="pricing.html">Investment</a>
+        <a href="about.html">Who We Are</a>
+        <a href="book.html">Reserve</a>
+        <a href="contact.html">Reach Out</a>
+      </nav>
+    </header>
+
+    <main>
+      <div class="grid">
+        <div>
+          <div class="card">
+            <h2>Reserve a session</h2>
+            <p style="color:var(--muted)">Pick what fits your immediate priorities. The selector helps match an appointment style and updates the action below.</p>
+
+            <div style="margin-top:14px">
+              <strong>Choose your current state</strong>
+              <div class="selector" role="radiogroup" aria-label="Mood to Method booking">
+                <button data-key="overwhelmed" class="active">Overwhelmed</button>
+                <button data-key="low_energy">Low energy</button>
+                <button data-key="tension">Tense / Wired</button>
+                <button data-key="curious">Exploring options</button>
+              </div>
+
+              <div class="summary card" id="booking-summary">
+                <h4 id="b-title">Stabilization Intake</h4>
+                <p id="b-desc" style="color:var(--muted)">45-minute intake focused on regulation, routine, and immediate practical steps.</p>
+                <div style="margin-top:10px">Suggested length: <strong id="b-length">45 min</strong></div>
+                <a id="b-cta" class="booking-cta" href="{{PRIMARY_CTA_URL}}">Reserve 45-min intake</a>
+              </div>
+
+            </div>
+          </div>
+
+          <div style="height:18px"></div>
+
+          <div class="card">
+            <h3 style="margin-top:0">What to expect</h3>
+            <ul style="color:var(--muted)">
+              <li>Concise intake to map priorities and safe first steps.</li>
+              <li>Personalized short-term practices and clear follow-up cadence.</li>
+              <li>Membership or packages recommended only when helpful.</li>
+            </ul>
+          </div>
+        </div>
+
+        <aside>
+          <div class="card">
+            <h4>Quick logistics</h4>
+            <p style="color:var(--muted)">We offer virtual and limited in-person times. Please have a brief list of current medications and recent labs (if any) for the intake.</p>
+            <div style="margin-top:10px">Questions? Call {{PHONE}} or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+          </div>
+
+          <div style="height:12px"></div>
+
+          <div class="card">
+            <h4>Accessibility</h4>
+            <p style="color:var(--muted)">If you need specific accommodations, note them when you reserve and we will confirm prior to the session.</p>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <footer style="padding:18px 24px;color:var(--muted)">Reservations coordinated by the team — supportive educational services only. If this is an emergency, seek urgent care.</footer>
+  </div>
+
+  <script>
+    // Booking mood selector
+    const bookingMap = {
+      overwhelmed: {title: 'Stabilization Intake', desc: '45-minute intake focused on regulation and immediate steps.', length: '45 min', cta: 'Reserve 45-min intake', lengthMinutes:45},
+      low_energy: {title: 'Energy Brief', desc: '30-minute focused visit to troubleshoot sleep, nutrition, and activity.', length: '30 min', cta: 'Reserve 30-min energy brief', lengthMinutes:30},
+      tension: {title: 'Nervous-System Visit', desc: '50-minute session to map tension triggers and regulation practices.', length: '50 min', cta: 'Reserve 50-min session', lengthMinutes:50},
+      curious: {title: 'Exploratory Chat', desc: '25-minute orientation to explore options and next steps.', length: '25 min', cta: 'Reserve exploratory chat', lengthMinutes:25}
+    };
+
+    const selButtons = document.querySelectorAll('.selector button');
+    const bTitle = document.getElementById('b-title');
+    const bDesc = document.getElementById('b-desc');
+    const bLength = document.getElementById('b-length');
+    const bCta = document.getElementById('b-cta');
+
+    function applyBooking(key, btn){
+      selButtons.forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const val = bookingMap[key];
+      // animate a small pulse
+      bTitle.style.transform = 'translateY(6px)'; bTitle.style.opacity = 0; bDesc.style.opacity = 0; bCta.style.transform='scale(0.98)';
+      setTimeout(()=>{
+        bTitle.textContent = val.title;
+        bDesc.textContent = val.desc;
+        bLength.textContent = val.length;
+        bCta.textContent = val.cta;
+        // craft a URL fragment to hint at context (no external service)
+        bCta.href = '{{PRIMARY_CTA_URL}}#type=' + encodeURIComponent(val.title) + '&len=' + val.lengthMinutes;
+        bTitle.style.transform='translateY(0)'; bTitle.style.opacity = 1; bDesc.style.opacity = 1; bCta.style.transform='scale(1)';
+      },180);
+    }
+
+    selButtons.forEach(b=>{
+      b.addEventListener('click',()=>applyBooking(b.getAttribute('data-key'), b));
+    });
+
+    // init with 'overwhelmed'
+    applyBooking('overwhelmed', document.querySelector('.selector button[data-key="overwhelmed"]'));
+  </script>
+</body>
+</html>

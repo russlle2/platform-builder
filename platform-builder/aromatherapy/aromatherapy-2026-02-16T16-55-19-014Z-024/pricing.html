@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Membership — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="A gentle membership for ongoing aromatherapy routines and seasonal blends.">
+  <style>
+    :root{--bg:#FFF7F2;--accent:#6b2d5b;--muted:#7b6f7a;--card:#fff;--glass:rgba(255,255,255,0.6)}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;color:#332a31;background:linear-gradient(120deg,var(--bg),#fff);}
+    a{color:var(--accent);text-decoration:none}
+    header{display:flex;align-items:center;justify-content:space-between;padding:28px 40px;background:transparent;position:relative;z-index:5}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{width:54px;height:54px;border-radius:12px;background:linear-gradient(135deg,#ffd8e0,#f6e7ff);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent)}
+    nav a{margin:0 10px;font-size:15px;color:var(--muted)}
+    .wrap{max-width:1100px;margin:40px auto;padding:28px}
+    /* diagonal split */
+    .stage{position:relative;overflow:hidden;border-radius:14px;padding:48px;background:linear-gradient(180deg,rgba(255,255,255,0.85),rgba(255,250,248,0.9));box-shadow:0 10px 30px rgba(40,25,30,0.06)}
+    .stage::before{content:"";position:absolute;inset:-30% -10% auto -10%;height:60%;background:linear-gradient(120deg,rgba(107,45,91,0.06),rgba(255,210,230,0));transform:skewY(-6deg);pointer-events:none}
+    /* pattern */
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:center}
+    .lead{padding:20px}
+    h1{font-size:28px;margin:0 0 12px;color:var(--accent)}
+    p.lead{color:var(--muted);margin:0 0 18px}
+    .cta{display:inline-block;padding:12px 18px;background:var(--accent);color:#fff;border-radius:10px}
+    .aside{background:linear-gradient(180deg,#fff,#fff0);border-radius:12px;padding:18px;box-shadow:inset 0 -6px 20px rgba(107,45,91,0.03)}
+    /* cards */
+    .cards{display:flex;gap:16px;margin-top:18px}
+    .card{background:var(--card);padding:16px;border-radius:12px;flex:1;box-shadow:0 6px 18px rgba(48,28,38,0.04);border:1px solid rgba(107,45,91,0.03)}
+    .price{font-size:22px;color:var(--accent);font-weight:700}
+    .muted{color:var(--muted);font-size:14px}
+    /* micro habits */
+    .micro{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+    .micro .pill{background:var(--glass);padding:10px 12px;border-radius:999px;font-size:13px;color:var(--accent);border:1px solid rgba(107,45,91,0.06)}
+    footer{padding:28px 40px;color:var(--muted);font-size:14px}
+    .faq{margin-top:16px}
+    /* responsive */
+    @media (max-width:880px){.hero{grid-template-columns:1fr;}.aside{order:-1}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand"><div class="logo">A</div><div><strong>{{BUSINESS_NAME}}</strong><div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div></div></div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Treatments</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Shop</a>
+      <a href="about.html">About</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="stage hero" aria-labelledby="hero-label">
+      <div class="lead">
+        <h1 id="hero-label">Membership for steady, seasonal routines</h1>
+        <p class="lead">Join a gentle circle of listeners: monthly blends, guided rituals, and practitioner access. Designed to support mood and ritual consistency — safety-first, supportive care, not medical advice.</p>
+        <a class="cta" href="#pricing">Join the circle</a>
+
+        <div class="cards" style="margin-top:22px">
+          <div class="card">
+            <div class="muted">Monthly credits</div>
+            <div class="price">1–3 credits / month</div>
+            <div class="muted">Use for rolls, consultations, or blend refills.</div>
+          </div>
+          <div class="card">
+            <div class="muted">Member-only blends</div>
+            <div class="price">New each season</div>
+            <div class="muted">Curated small-batch blends for members.</div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="aside">
+        <h3 style="margin-top:0">How it works</h3>
+        <ol style="padding-left:18px;margin:8px 0;color:var(--muted)">
+          <li>Choose a tier</li>
+          <li>Receive monthly ritual guidance</li>
+          <li>Use credits for products or support</li>
+        </ol>
+        <div style="margin-top:10px">
+          <strong>Need help choosing?</strong>
+          <div class="muted" style="margin-top:6px">Try our quick diagnostic to match scents and moods.</div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="stage" id="diagnostic" style="margin-top:20px">
+      <h2 style="margin:0 0 8px;color:var(--accent)">A quick scent check — what suits you?</h2>
+      <p class="muted">Pick the words that call to you. No tests, just a way to tune into scent preferences and safety notes.</p>
+      <form style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+        <label class="pill"><input type="checkbox"> Calm</label>
+        <label class="pill"><input type="checkbox"> Bright</label>
+        <label class="pill"><input type="checkbox"> Earthy</label>
+        <label class="pill"><input type="checkbox"> Floral</label>
+        <label class="pill"><input type="checkbox"> Spicy</label>
+        <button style="margin-left:auto;padding:10px 14px;border-radius:10px;background:var(--accent);color:#fff;border:0">See suggestion</button>
+      </form>
+      <p class="muted" style="margin-top:12px">Note: If pregnant, nursing, or with serious health concerns, consult your primary care provider before using concentrated essential oils. Patch test and correct dilution recommended.</p>
+    </section>
+
+    <section class="stage" id="plan" style="margin-top:20px">
+      <h2 style="color:var(--accent)">Plans shaped like seasonal rituals</h2>
+      <p class="muted">Memberships are month-to-month and focus on safe, small-batch aromatherapy. Each tier includes guidance on dilution, pet-safe options, and patch testing.</p>
+      <div class="cards" style="margin-top:14px">
+        <div class="card">
+          <div class="muted">Seedling</div>
+          <div class="price">$12 / month</div>
+          <div class="muted">One roll-on or refill + member blend notes</div>
+        </div>
+        <div class="card">
+          <div class="muted">Garden</div>
+          <div class="price">$28 / month</div>
+          <div class="muted">3 credits, one consult per quarter, seasonal blend</div>
+        </div>
+        <div class="card">
+          <div class="muted">Grove</div>
+          <div class="price">$58 / month</div>
+          <div class="muted">6 credits, monthly mini-check-ins, priority booking</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="stage" id="micro_habits" style="margin-top:20px">
+      <h3 style="color:var(--accent)">Small rituals — big comfort</h3>
+      <p class="muted">Tiny, repeatable habits you can do in 2–5 minutes.</p>
+      <div class="micro">
+        <div class="pill">Roll to pulse points — 1–2 gentle swipes</div>
+        <div class="pill">Diffuse on a 15/45 rhythm (15 min on, 45 min off)</div>
+        <div class="pill">Hand inhale before bedtime</div>
+        <div class="pill">Add 1–2 drops to unscented carrier oil</div>
+      </div>
+    </section>
+
+    <section class="stage" id="pricing" style="margin-top:20px">
+      <h2 style="color:var(--accent)">Pricing &amp; what you get</h2>
+      <p class="muted">Membership is curated for safety and sustainability. All plans include dilution guidance, patch-test instructions, and basic pet/pregnancy notes where applicable.</p>
+      <div class="cards" style="margin-top:14px">
+        <div class="card">
+          <h4>Seedling</h4>
+          <div class="price">$12</div>
+          <div class="muted">1 credit • Roll-on or refill • Email support</div>
+          <div style="margin-top:12px"><a class="cta" href="book.html">Start Seedling</a></div>
+        </div>
+        <div class="card">
+          <h4>Garden</h4>
+          <div class="price">$28</div>
+          <div class="muted">3 credits • Quarterly consult • Seasonal blend</div>
+          <div style="margin-top:12px"><a class="cta" href="book.html">Join Garden</a></div>
+        </div>
+        <div class="card">
+          <h4>Grove</h4>
+          <div class="price">$58</div>
+          <div class="muted">6 credits • Monthly check-in • Priority booking</div>
+          <div style="margin-top:12px"><a class="cta" href="book.html">Join Grove</a></div>
+        </div>
+      </div>
+
+      <div class="faq" style="margin-top:12px">
+        <h4 style="margin:0;color:var(--accent)">Safety highlights</h4>
+        <ul style="color:var(--muted);margin-top:8px;padding-left:18px">
+          <li>Always dilute essential oils into a carrier. Typical dilution ranges are provided in member guides.</li>
+          <li>Patch test new blends on a small area of skin 24–48 hours prior to use.</li>
+          <li>Use care around pets — some oils are not pet-safe. We include pet-safe alternatives.</li>
+          <li>If pregnant or nursing, consult your healthcare provider before use.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="stage" id="cta" style="margin-top:20px;text-align:center">
+      <h3 style="color:var(--accent)">Ready to make scent a steady practice?</h3>
+      <p class="muted">Members receive seasonal blends and safety-forward guidance from {{PRACTITIONER_NAME}}.</p>
+      <a class="cta" href="book.html">{{PRIMARY_CTA_LABEL}}</a>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center">
+      <div>{{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      <div>Call <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    </div>
+  </footer>
+</body>
+</html>

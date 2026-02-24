@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1113;--card:#0f1720;--muted:#9aa4b2;--accent:#8dd7d1;--glass:rgba(255,255,255,0.03);}
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;color:#e6eef3;background:linear-gradient(180deg,#071018 0%,#0f1720 60%);}
+    header{display:flex;justify-content:space-between;align-items:center;padding:20px 28px;background:linear-gradient(90deg,rgba(255,255,255,0.02),transparent);backdrop-filter:blur(6px);}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:44px;height:44px;background:linear-gradient(135deg,var(--accent),#6bd3c8);border-radius:10px;display:grid;place-items:center;color:#042126;font-weight:700}
+    nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-weight:600;font-size:14px}
+    nav a.active{color:var(--accent)}
+    .container{max-width:1000px;margin:36px auto;padding:28px;background:var(--glass);border-radius:14px;box-shadow:0 6px 30px rgba(2,6,9,0.6);}
+    .hero{display:grid;grid-template-columns:1fr 320px;gap:28px;align-items:start}
+    h1{margin:0;font-size:28px;color:#eef8f7}
+    p.lead{color:var(--muted);line-height:1.5}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .meta{font-size:13px;color:var(--muted);margin-top:12px}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}
+    .small{font-size:13px;color:var(--muted)}
+    footer{padding:20px;text-align:center;color:var(--muted);font-size:13px}
+    .pattern{position:fixed;right:-120px;top:-120px;opacity:0.08;width:480px;height:480px;pointer-events:none}
+    /* widget */
+    .widget{margin-top:18px}
+    .options{display:flex;gap:8px;flex-wrap:wrap}
+    .chip{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02);color:var(--muted);cursor:pointer}
+    .chip.active{background:linear-gradient(90deg,rgba(141,215,209,0.12),rgba(107,211,200,0.06));color:var(--accent);border-color:rgba(141,215,209,0.18)}
+    .rec{margin-top:12px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.02);color:#dff3f1}
+    .cta{display:inline-block;margin-top:14px;padding:10px 14px;border-radius:10px;background:var(--accent);color:#042126;font-weight:700;text-decoration:none}
+    @media(max-width:880px){.hero{grid-template-columns:1fr}.grid{grid-template-columns:1fr}} 
+  </style>
+</head>
+<body>
+  <div class="pattern">
+    <img src="assets/img/pattern.svg" alt="pattern" style="width:100%;height:100%">
+  </div>
+  <header>
+    <div class="brand">
+      <div class="logo">SB</div>
+      <div>
+        <div style="font-weight:700;color:#e6eef3">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="events.html">Gatherings</a>
+      <a href="private-sessions.html">Private</a>
+      <a href="pricing.html">Value</a>
+      <a href="about.html" class="active">Our Story</a>
+      <a href="faq.html">FAQ</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div>
+        <h1>Quiet craft and intentional resonance</h1>
+        <p class="lead">We host guided sound gatherings that use tuned overtones, breath guidance, and carefully paced silence. Sessions are mapped to re-centering goals: to steady a busy mind, to ease muscle tension, and to move you toward clearer presence.</p>
+        <div class="card">
+          <div class="meta">How we think about the work</div>
+          <p class="small">Sessions are designed as practical resets. They blend subtle harmonic layers with tempo and silence to encourage a shift in nervous-system tone — short enough to fit a busy day, considered enough to make a measurable difference.</p>
+          <div class="grid">
+            <div class="card small"><strong>Method</strong><div style="margin-top:8px">Layered Harmonics</div></div>
+            <div class="card small"><strong>Format</strong><div style="margin-top:8px">Group & Private</div></div>
+            <div class="card small"><strong>Length</strong><div style="margin-top:8px">30–75 minutes</div></div>
+          </div>
+        </div>
+      </div>
+      <aside>
+        <div class="card">
+          <div style="font-weight:700;color:#cfeeea">A moment to choose</div>
+          <div class="meta">Select your present tone — we show one recommended approach.</div>
+          <div class="widget">
+            <div class="options" id="moodOptions">
+              <div class="chip" data-mood="rattled">Rattled</div>
+              <div class="chip" data-mood="foggy">Foggy</div>
+              <div class="chip" data-mood="tight">Tight</div>
+              <div class="chip" data-mood="open">Open</div>
+            </div>
+            <div class="rec" id="miniRec">Choose a mood to get a short recommendation.</div>
+            <a href="book.html" class="cta" id="miniCta">{{PRIMARY_CTA_LABEL}}</a>
+          </div>
+        </div>
+        <div style="height:12px"></div>
+        <div class="card small">
+          <strong>Responsible practice</strong>
+          <p class="small" style="margin-top:8px">If you have epilepsy, are pregnant, have a pacemaker, or are under medical supervision for acute psychiatric conditions, consult your clinician before attending.</p>
+        </div>
+      </aside>
+    </section>
+
+    <section style="margin-top:24px">
+      <h2 style="margin:0;color:#e9f8f6">The team & approach</h2>
+      <p class="small">We blend acoustic instruments and guided breath with precise timing. Sessions are led by practitioners who hold a therapeutic posture — we listen first, then select sonic tools that match the group's tone.</p>
+      <div class="grid" style="margin-top:14px">
+        <div class="card small"><strong>Lead Facilitator</strong><div style="margin-top:6px">Acoustic protocols, holding the field</div></div>
+        <div class="card small"><strong>Support</strong><div style="margin-top:6px">Breath guidance & integration</div></div>
+        <div class="card small"><strong>Instruments</strong><div style="margin-top:6px">Bow, gongs, singing bowls, voice layers</div></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="small">Questions? Call us at {{PHONE}} or email <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a></div>
+    <div style="margin-top:8px">© <span style="opacity:0.7">{{BUSINESS_NAME}}</span></div>
+  </footer>
+
+  <script>
+    (function(){
+      const chips=document.querySelectorAll('#moodOptions .chip');
+      const miniRec=document.getElementById('miniRec');
+      const miniCta=document.getElementById('miniCta');
+      const recMap={
+        rattled:{title:'Ground & steady',desc:'A short paced wash with sustained harmonics to ease activation. 30–40 minutes.' ,cta:'Reserve a Grounding Session'},
+        foggy:{title:'Focus clearing',desc:'Clearer layers and longer intervals to sharpen attention. 40–50 minutes.',cta:'Reserve a Clarity Session'},
+        tight:{title:'Release wave',desc:'Deeper low-frequency emphasis to ease muscular tension. 50–75 minutes.',cta:'Reserve a Release Session'},
+        open:{title:'Gentle attunement',desc:'Light textures and longer silent spaces for soft integration. 30–45 minutes.',cta:'Reserve an Attunement'}
+      };
+      chips.forEach(c=>c.addEventListener('click',()=>{
+        chips.forEach(x=>x.classList.remove('active'));
+        c.classList.add('active');
+        const key=c.getAttribute('data-mood');
+        const r=recMap[key];
+        miniRec.innerHTML='<strong style="color:#cfeeea">'+r.title+'</strong><div style="margin-top:6px;color:var(--muted);font-size:13px">'+r.desc+'</div>';
+        miniCta.textContent=r.cta;
+        miniCta.href='book.html?preset='+key;
+      }));
+      // reveal default suggestion
+      // set default to foggy
+      document.querySelector('#moodOptions .chip[data-mood="foggy"]').click();
+    })();
+  </script>
+</body>
+</html>

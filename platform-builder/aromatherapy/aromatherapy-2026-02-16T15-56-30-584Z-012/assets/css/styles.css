@@ -1,0 +1,71 @@
+/* Luxe gallery theme — pure CSS + SVG pattern
+   Safety-forward visual language: soft gradients, organic shapes
+*/
+:root{
+  --bg:#fbfbfc;
+  --accent:#6b8a6b;
+  --accent-2:#a67fb5;
+  --muted:#6b6b6b;
+  --card:#ffffff;
+  --glass:rgba(255,255,255,0.6);
+  --radius:14px;
+  --max-width:1100px;
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:linear-gradient(180deg,var(--bg),#f6f7f9);color:#222;line-height:1.45}
+.container{max-width:var(--max-width);margin:0 auto;padding:48px 24px}
+.site-header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;background:transparent}
+.brand a{font-weight:700;color:#2a2a2a;text-decoration:none;font-size:18px}
+.brand .tag{margin:0;color:var(--muted);font-size:12px}
+.main-nav{position:relative}
+.nav-toggle{display:none;background:none;border:1px solid transparent;padding:8px;border-radius:8px}
+.nav-list{list-style:none;display:flex;gap:18px;margin:0;padding:0}
+.nav-list a{color:#333;text-decoration:none;font-weight:600}
+.hero{position:relative;padding:60px 0 40px}
+.hero-bg{position:absolute;inset:0;overflow:hidden;border-bottom-left-radius:60px;border-bottom-right-radius:60px}
+.hero-bg img{position:absolute;left:0;top:0;width:140%;height:100%;opacity:0.12;object-fit:cover}
+.hero-gradient{position:absolute;inset:0;background:radial-gradient(1000px 400px at 10% 20%, rgba(166,127,181,0.12), transparent 20%),linear-gradient(180deg, rgba(107,138,107,0.06), transparent 40%)}
+.hero-inner{display:grid;grid-template-columns:1fr 320px;gap:28px;align-items:center}
+.hero-copy h1{font-size:36px;margin:0 0 12px}
+.lead{color:var(--muted);max-width:56ch}
+.hero-ctas{margin-top:18px;display:flex;gap:12px}
+.btn{display:inline-block;padding:10px 16px;border-radius:10px;text-decoration:none;border:1px solid transparent;font-weight:700}
+.btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white}
+.btn.ghost{background:transparent;color:var(--accent);border-color:rgba(107,138,107,0.12)}
+.btn.sm{padding:8px 12px;font-size:14px}
+.hero-card{background:var(--card);padding:20px;border-radius:12px;box-shadow:0 6px 22px rgba(30,30,30,0.06)}
+.social-proof{padding-top:36px}
+.testimonials{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
+.testimonials blockquote{background:var(--card);padding:20px;border-radius:12px;border-left:4px solid var(--accent);font-style:italic}
+.muted{color:var(--muted)}
+.benefits{padding-top:22px}
+.benefit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;list-style:none;padding:0;margin:18px 0 0}
+.benefit-grid li{background:linear-gradient(180deg, rgba(255,255,255,0.9), var(--glass));padding:18px;border-radius:12px}
+.process{background:linear-gradient(180deg, rgba(255,255,255,0.7), transparent);margin-top:18px;padding:36px 0}
+.steps{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;padding:0;margin:16px 0 0;list-style:none}
+.steps li{background:var(--card);padding:16px;border-radius:12px;border-left:6px solid rgba(166,127,181,0.18)}
+.lead-magnet{display:block;margin-top:18px}
+.magnet-inner{display:flex;justify-content:space-between;gap:18px;align-items:center}
+.lead-form{display:flex;flex-direction:column;gap:8px;min-width:260px}
+.lead-form input{padding:10px;border-radius:10px;border:1px solid #e6e6e6}
+.fine-print{font-size:12px;color:var(--muted)}
+.faq{margin-top:22px}
+.accordion .item{margin-bottom:12px}
+.accordion .q{width:100%;text-align:left;padding:12px;border-radius:10px;border:1px solid #eee;background:linear-gradient(180deg,#fff,#fafafa);font-weight:700}
+.accordion .a{padding:12px 14px;margin-top:6px;background:#fff;border-radius:10px;border:1px solid #f2f2f2;display:none}
+.final-cta{margin:34px 0;padding:28px;background:linear-gradient(90deg,rgba(166,127,181,0.06),rgba(107,138,107,0.04));border-radius:16px}
+.cta-inner{display:flex;justify-content:space-between;align-items:center}
+.cta-actions{display:flex;gap:12px}
+.site-footer{padding:28px 24px;margin-top:24px;background:transparent;border-top:1px solid #f0f0f0}
+.footer-nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+@media (max-width:900px){
+  .hero-inner{grid-template-columns:1fr;}
+  .testimonials{grid-template-columns:1fr}
+  .nav-list{display:none}
+  .nav-toggle{display:inline-block}
+  .magnet-inner{flex-direction:column}
+  .steps{grid-template-columns:1fr}
+  .cta-inner{flex-direction:column;gap:12px}
+}

@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Our Way — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#081221;--glass:rgba(255,255,255,0.03);--accent:#92c4ff;--muted:#9fb6c9}
+    body{margin:0; font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial; color:#eaf6ff; background:linear-gradient(180deg,#031226 0%, #071a2a 70%)}
+    .wrap{max-width:1000px; margin:0 auto; padding:28px}
+    header{display:flex; align-items:center; gap:12px}
+    nav a{color:var(--muted); text-decoration:none; padding:8px}
+    .hero{margin-top:18px; padding:18px; border-radius:12px; background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.03)}
+    h1{margin:0}
+    .steps{display:flex; gap:12px; margin-top:18px}
+    .step{flex:1; padding:14px; border-radius:10px; background:var(--glass); border:1px solid rgba(255,255,255,0.02)}
+    .muted{color:var(--muted)}
+    .timeline{margin-top:18px}
+    .phase{padding:12px; margin-bottom:10px; border-radius:10px; background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005)); border:1px solid rgba(255,255,255,0.02)}
+    .cta{display:inline-block; padding:10px 14px; border-radius:10px; background:linear-gradient(90deg,var(--accent), #5aa6ff); color:#022133; font-weight:700; text-decoration:none}
+    .builder{margin-top:12px; display:flex; gap:8px}
+    input[type="date"], input[type="text"]{background:transparent; border:1px solid rgba(255,255,255,0.03); padding:8px; color:#eaf6ff; border-radius:8px}
+    .notes{margin-top:10px; font-size:13px; color:#cfe9ff}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+      <nav style="margin-left:18px">
+        <a href="index.html">Home</a>
+        <a href="approach.html">Our Way</a>
+        <a href="services.html">Care Options</a>
+        <a href="conditions.html">Concerns</a>
+        <a href="pricing.html">Plans</a>
+        <a href="about.html">Team</a>
+        <a href="book.html">Schedule</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <div style="margin-left:auto"><a href="{{PRIMARY_CTA_URL}}" class="cta">{{PRIMARY_CTA_LABEL}}</a></div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>Our approach: map, test, and steady the path forward</h1>
+        <p class="muted">We pair practical learning with short experiments. The goal is informed, sustainable movement — not instant fixes.</p>
+
+        <div class="steps">
+          <div class="step">
+            <strong>Listen</strong>
+            <div class="muted">Collect history and priorities; what matters most to you now?</div>
+          </div>
+          <div class="step">
+            <strong>Map</strong>
+            <div class="muted">Gather targeted data to reduce uncertainty.</div>
+          </div>
+          <div class="step">
+            <strong>Try</strong>
+            <div class="muted">Short, measurable experiments you can do at home.</div>
+          </div>
+        </div>
+
+        <div style="margin-top:14px">
+          <label style="display:block; margin-bottom:8px; color:var(--muted)">Mood-to-Method quick selector</label>
+          <select id="moodSelect" style="padding:10px; border-radius:8px; background:transparent; color:#eaf6ff; border:1px solid rgba(255,255,255,0.03)">
+            <option value="Calm Clarify">Calm Clarify — paced review</option>
+            <option value="Focus Renew">Focus Renew — attention tools</option>
+            <option value="Energy Rebuild">Energy Rebuild — sleep & rhythm</option>
+            <option value="Investigate">Investigate — targeted testing</option>
+          </select>
+          <div class="notes" id="approachNote">Select how you're feeling; we show an aligned plan and update the booking phrase.</div>
+          <div style="margin-top:10px"><a id="approachCta" href="{{PRIMARY_CTA_URL}}" class="cta">Book a Calm Clarify session — {{PRIMARY_CTA_LABEL}}</a></div>
+        </div>
+
+      </section>
+
+      <section class="timeline">
+        <h2 style="margin-top:18px">Three-phase planner</h2>
+        <div class="phase">
+          <h3>Phase 1 — Foundations</h3>
+          <p class="muted">Stabilize sleep, water, and immediate burden. Short checklist with daily micro-goals.</p>
+          <div class="builder"><input type="date" id="f1d"/><input type="text" id="f1note" placeholder="Primary focus (example: sleep window)"/></div>
+        </div>
+        <div class="phase">
+          <h3>Phase 2 — Investigate</h3>
+          <p class="muted">If patterns persist, use selective testing and structured trials to isolate drivers.</p>
+          <div class="builder"><input type="date" id="f2d"/><input type="text" id="f2note" placeholder="Investigation focus (example: iron, thyroid)"/></div>
+        </div>
+        <div class="phase">
+          <h3>Phase 3 — Integrate</h3>
+          <p class="muted">Translate what worked into sustainable habits and a follow-up cadence.</p>
+          <div class="builder"><input type="date" id="f3d"/><input type="text" id="f3note" placeholder="Integration goal (example: 30-min walk)"/></div>
+        </div>
+        <div class="disclaimer muted" style="margin-top:10px">This planner is a tool to structure thinking, not a substitute for clinical judgment. Timelines and tests depend on your care team and personal context.</div>
+        <div style="margin-top:12px"><button id="savePlan" style="padding:10px 12px;border-radius:8px;background:linear-gradient(90deg,var(--accent),#6aa8ff);border:none;color:#042536;font-weight:700">Save plan</button></div>
+      </section>
+
+      <section style="margin-top:18px" class="card">
+        <h3>How decisions are made</h3>
+        <p class="muted">We prioritize safety, minimize unnecessary testing, and choose interventions you can try with clear measures. When appropriate, we partner with specialists for medication or procedures.</p>
+
+        <h4 style="margin-top:10px">Documentation and learning</h4>
+        <p class="muted">Every plan includes clear steps, expected signals to watch for, and what to do if something doesn’t improve. This keeps learning efficient and humane.</p>
+      </section>
+
+      <div style="margin-top:18px; display:flex; gap:12px; align-items:center">
+        <a id="finalCta" href="{{PRIMARY_CTA_URL}}" class="cta">Start with a Calm Clarify visit — {{PRIMARY_CTA_LABEL}}</a>
+        <div class="muted">Or call <a href="tel:{{PHONE}}" style="color:var(--accent); text-decoration:none">{{PHONE}}</a></div>
+      </div>
+
+    </main>
+
+    <footer style="margin-top:22px; color:var(--muted)">© <span id="yr3"></span> {{BUSINESS_NAME}} · <a href="contact.html" style="color:var(--accent); text-decoration:none">Contact</a></footer>
+  </div>
+
+  <script>
+    (function(){
+      document.getElementById('yr3').textContent = new Date().getFullYear();
+      const moodSelect = document.getElementById('moodSelect');
+      const note = document.getElementById('approachNote');
+      const approachCta = document.getElementById('approachCta');
+      const finalCta = document.getElementById('finalCta');
+
+      function updateFromMood(val){
+        const phrases = {
+          'Calm Clarify': 'A paced review and recovery plan',
+          'Focus Renew': 'Tools to sharpen attention and reduce distraction',
+          'Energy Rebuild': 'Rhythm-based changes for steadier days',
+          'Investigate': 'Targeted tests and structured trials'
+        };
+        note.textContent = phrases[val] || '';
+        approachCta.textContent = 'Request ' + val + ' — {{PRIMARY_CTA_LABEL}}';
+        finalCta.textContent = 'Begin with ' + val + ' — {{PRIMARY_CTA_LABEL}}';
+      }
+      moodSelect.addEventListener('change', ()=>updateFromMood(moodSelect.value));
+      updateFromMood(moodSelect.value);
+
+      // Timeline save/load
+      const fields = ['f1d','f1note','f2d','f2note','f3d','f3note'];
+      fields.forEach(id=>{
+        const el = document.getElementById(id);
+        el.value = localStorage.getItem('ap_'+id) || '';
+      });
+      document.getElementById('savePlan').addEventListener('click', ()=>{
+        fields.forEach(id=>{
+          const el=document.getElementById(id);
+          localStorage.setItem('ap_'+id, el.value);
+        });
+        alert('Plan saved locally in your browser. Share these notes with your practitioner during visits.');
+      });
+
+    })();
+  </script>
+</body>
+</html>

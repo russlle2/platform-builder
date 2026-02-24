@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Investment — Offerings & Packages</title>
+  <style>
+    :root{--bg:#06121a;--card:rgba(255,255,255,0.035);--accent:#7fe1c3;--muted:#a9bcc2}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#031014, #06121a);color:#eafef8}
+    .center{max-width:1000px;margin:36px auto;padding:28px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{color:#bfece5;margin:0 10px;text-decoration:none}
+    .hero{background:var(--card);padding:18px;border-radius:12px;margin-top:18px}
+    .plans{display:flex;gap:14px;margin-top:18px}
+    .plan{flex:1;padding:14px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent)}
+    .title{font-weight:700}
+    .price{font-size:28px;font-weight:800;color:#e8fff9}
+
+    .comparator{display:flex;align-items:center;gap:12px;margin-top:12px}
+    .switch{background:rgba(255,255,255,0.02);padding:6px;border-radius:999px}
+    .switch button{background:transparent;border:0;padding:8px 12px;color:var(--muted);cursor:pointer;border-radius:999px}
+    .switch button.active{background:var(--accent);color:#022}
+
+    .feature-list{margin-top:10px;color:var(--muted);font-size:14px}
+    .cta{margin-top:16px}
+    .disclaimer{font-size:13px;color:var(--muted);margin-top:12px}
+
+    .pattern{position:absolute;left:-40px;bottom:-60px;opacity:0.08;width:420px;height:420px;background-image:url('assets/img/pattern.svg');background-size:cover}
+
+    @media(max-width:900px){.plans{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <div class="center">
+    <div class="pattern" aria-hidden="true"></div>
+    <header>
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="events.html">Gatherings</a>
+        <a href="private-sessions.html">Solo Sessions</a>
+        <a href="pricing.html">Investment</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <h1 style="margin:0">Offerings & packages</h1>
+      <div style="color:var(--muted);margin-top:6px">Transparent rates and short package options for repeat practice.</div>
+
+      <div class="comparator" style="margin-top:12px">
+        <div style="font-weight:700">Show:</div>
+        <div class="switch" role="tablist">
+          <button id="s-per" class="active">Per session</button>
+          <button id="s-package">Package</button>
+        </div>
+        <div style="margin-left:auto;color:var(--muted);font-size:14px">Toggle to compare solo session prices and bundle savings</div>
+      </div>
+    </section>
+
+    <div class="plans">
+      <div class="plan">
+        <div class="title">Short session</div>
+        <div class="price" data-per="70" data-pack="180" id="p1">$70</div>
+        <div class="feature-list">
+          <div>- 30 minutes</div>
+          <div>- Focused relief</div>
+          <div>- Great as a reset between busy days</div>
+        </div>
+        <div class="cta"><a href="book.html" style="background:var(--accent);color:#022;padding:10px 12px;border-radius:10px;text-decoration:none;font-weight:700">Book short</a></div>
+      </div>
+
+      <div class="plan">
+        <div class="title">Standard session</div>
+        <div class="price" data-per="120" data-pack="320" id="p2">$120</div>
+        <div class="feature-list">
+          <div>- 60 minutes</div>
+          <div>- Guided, full recalibration</div>
+          <div>- Best-seller for first-time guests</div>
+        </div>
+        <div class="cta"><a href="book.html" style="background:var(--accent);color:#022;padding:10px 12px;border-radius:10px;text-decoration:none;font-weight:700">Book standard</a></div>
+      </div>
+
+      <div class="plan">
+        <div class="title">Deep hour</div>
+        <div class="price" data-per="170" data-pack="450" id="p3">$170</div>
+        <div class="feature-list">
+          <div>- 90 minutes</div>
+          <div>- Extended, immersive work</div>
+          <div>- For layered restoration</div>
+        </div>
+        <div class="cta"><a href="book.html" style="background:var(--accent);color:#022;padding:10px 12px;border-radius:10px;text-decoration:none;font-weight:700">Book deep</a></div>
+      </div>
+    </div>
+
+    <div class="glass" style="margin-top:18px;padding:14px;border-radius:12px;background:rgba(255,255,255,0.02)">
+      <div style="display:flex;gap:12px;align-items:center">
+        <div style="font-weight:700">Savings note</div>
+        <div style="color:var(--muted)">Packages show the total for three sessions; billed up front. Savings reflect reduced per-session cost.</div>
+      </div>
+
+      <div class="disclaimer">Health & safety — If you have a pacemaker, are pregnant, have epilepsy, or any implanted device, consult a clinician before participating. Contact <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> with questions.</div>
+    </div>
+
+    <footer style="margin-top:18px;color:var(--muted)">Need a tailored plan? <a href="contact.html" style="color:var(--accent);text-decoration:none">Get in touch</a> • or call <a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none">{{PHONE}}</a></footer>
+  </div>
+
+  <script>
+    // Pricing comparator: animate numbers for all three plans
+    const perBtn = document.getElementById('s-per');
+    const packBtn = document.getElementById('s-package');
+    const prices = [document.getElementById('p1'),document.getElementById('p2'),document.getElementById('p3')];
+
+    function animate(el,from,to){
+      const start = performance.now();
+      const dur = 450;
+      function step(now){
+        const t = Math.min((now-start)/dur,1);
+        const val = Math.round(from + (to-from)*t);
+        el.textContent = '$'+val;
+        if(t<1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    function showMode(mode){
+      prices.forEach(p=>{
+        const per = parseInt(p.getAttribute('data-per'));
+        const pack = parseInt(p.getAttribute('data-pack'));
+        const from = parseInt(p.textContent.replace('$',''))||per;
+        const to = mode==='per' ? per : pack;
+        animate(p,from,to);
+      });
+    }
+
+    perBtn.addEventListener('click',()=>{perBtn.classList.add('active');packBtn.classList.remove('active');showMode('per')});
+    packBtn.addEventListener('click',()=>{packBtn.classList.add('active');perBtn.classList.remove('active');showMode('pack')});
+  </script>
+</body>
+</html>

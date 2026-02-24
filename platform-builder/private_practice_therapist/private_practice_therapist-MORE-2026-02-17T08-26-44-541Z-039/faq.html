@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FAQ — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--muted:#6b6f76;--accent:#ff7ab6}
+    body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:linear-gradient(180deg,#fff,#fbfdff);color:#1b1b1b}
+    header{padding:18px 26px;display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:16px;color:#333;text-decoration:none}
+    main{max-width:860px;margin:18px auto;padding:20px}
+    h1{margin:4px 0 18px 0}
+    .faq-list{display:grid;gap:10px}
+    .q{background:#fff;padding:14px;border-radius:10px;box-shadow:0 6px 20px rgba(30,30,60,0.04)}
+    .q button{display:flex;justify-content:space-between;width:100%;background:transparent;border:0;padding:0;text-align:left;font-size:16px}
+    .a{margin-top:8px;color:var(--muted);display:none}
+    .a.open{display:block}
+    .clinical{margin-top:18px;padding:12px;background:linear-gradient(180deg,#fff,#fffaf3);border-radius:10px}
+    .small{font-size:13px;color:var(--muted)}
+    .mood-mini{margin-top:14px;display:flex;gap:8px}
+    .mood-mini button{padding:8px 10px;border-radius:8px;border:1px solid #eee;background:white}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Intro</a>
+      <a href="about.html">Background</a>
+      <a href="fees.html">Invest</a>
+      <a href="book.html">Begin</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Questions people often ask</h1>
+
+    <div class="faq-list" id="faq-list">
+      <div class="q">
+        <button aria-expanded="false"><span>What should I expect in a first session?</span><span aria-hidden="true">+</span></button>
+        <div class="a">The first meeting is an opportunity to clarify why you’ve reached out, review history relevant to the concerns, and identify practical next steps. We’ll discuss what would be helpful and what you hope to get from sessions. Clinical notes are kept securely.</div>
+      </div>
+
+      <div class="q">
+        <button aria-expanded="false"><span>How long is a session and how often?</span><span aria-hidden="true">+</span></button>
+        <div class="a">Typical sessions are 50 minutes. Frequency varies by need: some people begin weekly, others benefit from biweekly or a short package of sessions. We’ll discuss rhythm that fits your life and goals.</div>
+      </div>
+
+      <div class="q">
+        <button aria-expanded="false"><span>Do you accept insurance?</span><span aria-hidden="true">+</span></button>
+        <div class="a">I provide a receipt you can submit to your insurer (superbill). Please check with your plan about out-of-network reimbursement. I do not bill insurers directly through this site.</div>
+      </div>
+
+      <div class="q">
+        <button aria-expanded="false"><span>Is therapy confidential?</span><span aria-hidden="true">+</span></button>
+        <div class="a">Yes: clinical work is confidential. Limits include risk of harm to self/others, suspicions of abuse of a vulnerable person, or court orders. Confidentiality details are reviewed at intake.</div>
+      </div>
+
+      <div class="q">
+        <button aria-expanded="false"><span>What if I’m in crisis?</span><span aria-hidden="true">+</span></button>
+        <div class="a">This practice does not provide crisis response. If you are in immediate danger or require urgent medical attention, call emergency services or a local crisis line. If you are within the U.S., you can call or text 988 for immediate support. For other urgent concerns, use local emergency channels.</div>
+      </div>
+    </div>
+
+    <div class="clinical">
+      <strong style="display:block;margin-bottom:8px">Clinical boundaries & confidentiality</strong>
+      <div class="small">The services listed are psychotherapy and supportive counseling. They are not a substitute for emergency or medical services. Records and notes are kept in a secure, private system. If you have questions about limits of confidentiality or how records are stored, please ask during intake.</div>
+    </div>
+
+    <section style="margin-top:18px">
+      <h2 style="margin-bottom:8px">Not sure what you need yet?</h2>
+      <div class="small">Try the quick selector — choose how you feel, and get a short explanation of an approach that might fit.</div>
+      <div class="mood-mini" id="mini-mood">
+        <button data-mood="overwhelmed">Overwhelmed</button>
+        <button data-mood="stuck">Stuck</button>
+        <button data-mood="anxious">Anxious</button>
+        <button data-mood="curious">Curious</button>
+      </div>
+      <div id="mini-reco" class="small" style="margin-top:10px">Select a mood to see a brief recommendation.</div>
+    </section>
+
+    <footer style="margin-top:18px;font-size:13px;color:var(--muted)">
+      <p>Communication: Email exchanges are not intended for urgent matters. Response times vary; if you need faster support, call {{PHONE}}. For intake questions, email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</p>
+    </footer>
+  </main>
+
+  <script>
+    // Simple accordion
+    document.querySelectorAll('.q button').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const a = btn.parentElement.querySelector('.a');
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', String(!expanded));
+        a.classList.toggle('open', !expanded);
+      });
+    });
+
+    // Mini Mood-to-Method
+    const moodMap = {
+      overwhelmed: 'A short stabilization session to make immediate coping steps and small plans.',
+      stuck: 'A series of focused meetings to explore obstacles and set actionable goals.',
+      anxious: 'Skills-oriented sessions to reduce worry and improve tolerance for uncertainty.',
+      curious: 'A single exploratory meeting to clarify goals and next steps.'
+    };
+    document.getElementById('mini-mood').addEventListener('click',(e)=>{
+      const mood = e.target.getAttribute('data-mood');
+      if(!mood) return;
+      document.getElementById('mini-reco').textContent = moodMap[mood] || moodMap['curious'];
+    });
+  </script>
+</body>
+</html>

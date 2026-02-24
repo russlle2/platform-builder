@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Targeted coaching offerings and short intensives to build reliable wellbeing routines.">
+  <style>
+    :root{--bg:#07131a;--card:#081016;--accent:#c7f0e8;--muted:#93a7aa}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;color:#eafaf6;background:radial-gradient(1200px 600px at 10% 10%,rgba(12,40,38,0.25),transparent),var(--bg)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 26px;background:transparent}
+    .logo{display:flex;gap:12px;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;margin-left:14px}
+    main{max-width:1100px;margin:28px auto;padding:22px}
+    h1{margin:0 0 10px 0}
+
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:22px}
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:14px}
+    .list{display:flex;flex-direction:column;gap:12px}
+    .service{padding:14px;border-radius:12px;background:linear-gradient(90deg,rgba(199,240,232,0.03),transparent);display:flex;justify-content:space-between;align-items:center}
+    .service h4{margin:0}
+    .price{font-weight:800;color:var(--accent)}
+    .muted{color:var(--muted)}
+
+    .reveal{opacity:0;transform:translateY(22px);transition:opacity 520ms ease,transform 520ms ease}
+    .reveal.revealed{opacity:1;transform:none}
+
+    .try{margin-top:12px}
+
+    footer{color:var(--muted);margin-top:22px;text-align:center}
+
+    @media (max-width:880px){.grid{grid-template-columns:1fr}.service{flex-direction:column;align-items:flex-start;gap:8px}}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo"><div style="width:40px;height:40px;border-radius:8px;background:linear-gradient(135deg,#063a36,#052026)"></div><div><strong>{{BUSINESS_NAME}}</strong><div style="font-size:12px;color:var(--muted)">Focused coaching offers</div></div></div>
+    <nav>
+      <a href="index.html">Start</a>
+      <a href="about.html">Story</a>
+      <a href="services.html" style="color:var(--accent)">Offerings</a>
+      <a href="programs.html">Journeys</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="grid">
+      <section class="panel reveal" id="list">
+        <h1>Offerings framed as short, testable intensives</h1>
+        <p class="muted">Each option pairs a concise session plan with simple practices to use between meetings. Choose a path, test for two weeks, then adapt.</p>
+
+        <div class="list" style="margin-top:14px">
+          <div class="service">
+            <div>
+              <h4>Focus Forge — 2-session sprint</h4>
+              <div class="muted">Clarify one priority and design rituals to protect it.</div>
+            </div>
+            <div style="text-align:right">
+              <div class="price">$450</div>
+              <div class="muted">Recommended 2-week trial</div>
+            </div>
+          </div>
+
+          <div class="service">
+            <div>
+              <h4>Rhythm Lab — 4-session lab</h4>
+              <div class="muted">Experiment with micro-habits to shift attention and energy across the day.</div>
+            </div>
+            <div style="text-align:right">
+              <div class="price">$1,100</div>
+              <div class="muted">Includes habit templates and check-ins</div>
+            </div>
+          </div>
+
+          <div class="service">
+            <div>
+              <h4>Anchor Quarter — 6-session cycle</h4>
+              <div class="muted">A season of planning, habit building, and progress reviews for a sustained rhythm change.</div>
+            </div>
+            <div style="text-align:right">
+              <div class="price">$2,200</div>
+              <div class="muted">Installable systems and a quarterly review</div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="try">
+          <button class="btn" id="try-button">Try an exercise</button>
+          <a href="book.html" class="ghost" style="margin-left:10px">Book a baseline session</a>
+        </div>
+      </section>
+
+      <aside class="panel reveal" id="faq">
+        <h3>How I work</h3>
+        <p class="muted">Short, measurable experiments. We treat each practice as a hypothesis: observe, adjust, repeat. I bring structure and practical frameworks — you bring context and choices.</p>
+
+        <h4 style="margin-top:14px">Common questions</h4>
+        <div style="color:var(--muted);line-height:1.5;margin-top:8px">
+          <strong>Are there templates?</strong> Yes — simple trackers and prompt sets you can use without extra tech.
+          <br/><br/>
+          <strong>How long before I see a difference?</strong> You'll notice shifts in clarity and daily rhythm within 1–3 weeks of consistent practice.
+        </div>
+      </aside>
+    </div>
+
+    <section class="panel reveal" id="pricingNote" style="margin-top:18px">
+      <h3>Pricing framed as short tests</h3>
+      <p class="muted">Think of these offerings as short experiments: pick one, commit to the micro-practices, and we’ll evaluate progress before scaling up.</p>
+      <div style="margin-top:12px"><a class="btn" href="pricing.html">View details & options</a></div>
+    </section>
+
+    <footer>
+      <div style="color:var(--muted)">Questions? Call <a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none">{{PHONE}}</a> or <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a></div>
+    </footer>
+  </main>
+
+  <!-- Include the modal code from other pages -->
+  <div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true" style="display:none"></div>
+
+  <script>
+    (function(){
+      // simple reveal
+      const prefersReduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const revealEls = Array.from(document.querySelectorAll('.reveal'));
+      if(prefersReduce){ revealEls.forEach(e=>e.classList.add('revealed')); }
+      else{ const onScroll=()=>{const H=window.innerHeight; revealEls.forEach(el=>{ if(el.classList.contains('revealed')) return; const r=el.getBoundingClientRect(); if(r.top< H-80) el.classList.add('revealed'); });}; onScroll(); window.addEventListener('scroll',onScroll,{passive:true}); }
+
+      // Minimal modal reuse: inject full modal when try button clicked to avoid duplicate HTML
+      const tryBtn = document.getElementById('try-button');
+      tryBtn.addEventListener('click', ()=>{
+        if(document.getElementById('modalBackdrop')){
+          showModal(); return;
+        }
+        const container = document.createElement('div'); container.innerHTML = `
+          <div id="modalBackdrop" class="modal-backdrop" style="display:flex;align-items:center;justify-content:center;padding:20px;position:fixed;inset:0;background:linear-gradient(180deg,rgba(3,8,12,0.6),rgba(2,6,9,0.8));">
+            <div class="modal" style="background:linear-gradient(180deg,#071a1a,#061219);padding:22px;border-radius:14px;max-width:720px;width:100%;color:#dff7f2">
+              <div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">Try a micro-exercise</h2><button id="closeModal" class="ghost">Close</button></div>
+              <p style="color:#93a7aa">Choose breathing, journaling, or intention setting for a brief guided practice.</p>
+              <div style="display:flex;gap:8px;margin-top:10px"><button class="btn" data-mode="breath">Breathing</button><button class="btn" data-mode="journal">Journaling</button><button class="btn" data-mode="intention">Intention</button></div>
+              <div id="stageBox" style="margin-top:12px"></div>
+            </div>
+          </div>`;
+        document.body.appendChild(container.firstElementChild);
+
+        // basic interactions
+        function close(){ const mb = document.getElementById('modalBackdrop'); if(mb) mb.remove(); }
+        document.getElementById('modalBackdrop').addEventListener('click', e=>{ if(e.target.id==='modalBackdrop') close(); });
+        document.getElementById('closeModal').addEventListener('click', close);
+        document.querySelectorAll('#modalBackdrop .btn[data-mode]').forEach(b=>{
+          b.addEventListener('click', ()=>{
+            const mode = b.getAttribute('data-mode'); const box = document.getElementById('stageBox'); box.innerHTML='';
+            if(mode==='breath') box.innerHTML=`<div style="text-align:center"><div style="width:120px;height:120px;border-radius:60px;margin:16px auto;background:radial-gradient(circle at 30% 30%,rgba(199,240,232,0.12),rgba(6,14,17,0.12))"></div><div style="color:#93a7aa">Follow a calm 1-minute cycle.</div></div>`;
+            if(mode==='journal') box.innerHTML=`<div style="color:#93a7aa">Prompt: What would make today a little gentler?</div><textarea style="width:100%;min-height:120px;margin-top:8px;border-radius:8px;padding:10px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:#eafffb"></textarea>`;
+            if(mode==='intention') box.innerHTML=`<div style="color:#93a7aa">Pick an intention for the next hour</div><div style="display:flex;gap:8px;margin-top:8px"><button class="ghost">Focus task</button><button class="ghost">Reset</button><button class="ghost">Connect</button></div>`;
+          });
+        });
+      });
+      function showModal(){ const mb = document.getElementById('modalBackdrop'); if(mb) mb.style.display='flex'; }
+    })();
+  </script>
+</body>
+</html>

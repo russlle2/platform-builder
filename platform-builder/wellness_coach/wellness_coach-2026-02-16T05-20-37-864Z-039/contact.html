@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Contact — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{
+      --bg:#f7faf9; --card:#ffffff; --muted:#6b7280; --accent:#0f766e; --accent-600:#0d9488; --glass:rgba(15,118,110,0.06);
+      --radius:12px; --max:1100px; font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#ffffff);color:#0f172a;line-height:1.45}
+    .wrap{max-width:var(--max);margin:40px auto;padding:32px;}
+    header{display:flex;align-items:center;justify-content:space-between;gap:24px}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:56px;height:56px;display:grid;place-items:center;border-radius:12px;background:var(--glass);}
+    .logo svg{width:44px;height:44px}
+    nav{display:flex;gap:18px;font-weight:600}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:8px}
+    nav a.cta{background:var(--accent);color:#fff}
+    main{display:grid;grid-template-columns:1fr 380px;gap:28px;margin-top:28px}
+
+    /* HERO */
+    .hero{background:var(--card);padding:28px;border-radius:var(--radius);display:flex;gap:28px;align-items:center}
+    .hero .copy{flex:1}
+    .hero h1{margin:0 0 8px 0;font-size:24px;color:#06202a}
+    .hero p{margin:0;color:var(--muted)}
+    .hero .art{width:220px;height:160px;display:flex;align-items:center;justify-content:center}
+
+    /* SIDEBAR CONTACT */
+    .card{background:var(--card);padding:20px;border-radius:12px;box-shadow:0 6px 20px rgba(11,22,31,0.04)}
+    .contact-lines{display:flex;flex-direction:column;gap:12px}
+    .contact-lines a{color:var(--accent);text-decoration:none;font-weight:600}
+
+    /* SECTIONS */
+    section{margin-top:20px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .pill{background:linear-gradient(180deg,#ffffff,var(--glass));padding:16px;border-radius:12px;border:1px solid rgba(12,74,72,0.04)}
+    .pill h3{margin:0 0 8px 0;font-size:15px}
+    .pill p{margin:0;color:var(--muted);font-size:14px}
+
+    .process{display:flex;gap:12px}
+    .step{flex:1;padding:14px;border-radius:10px;background:#fff;border:1px solid rgba(9,22,26,0.03)}
+    .step .n{width:36px;height:36px;background:var(--accent);color:#fff;border-radius:9px;display:grid;place-items:center;font-weight:700}
+
+    /* FAQ */
+    .faq .q{padding:14px;border-radius:10px;background:#fff;border:1px solid rgba(9,22,26,0.03);margin-bottom:10px}
+    .faq summary{cursor:pointer;font-weight:600}
+
+    /* Lead magnet */
+    .lead{display:flex;gap:12px;align-items:center;padding:16px;border-radius:12px;background:linear-gradient(90deg,#ecfeff, #ffffff);border:1px solid rgba(13,148,136,0.08)}
+    .lead input{flex:1;padding:12px;border-radius:10px;border:1px solid rgba(9,22,26,0.06)}
+    .btn{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;border:none;font-weight:700}
+
+    footer{margin-top:28px;color:var(--muted);font-size:14px}
+    @media(max-width:980px){main{grid-template-columns:1fr} .hero .art{display:none}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true">
+          <!-- small clinical monogram -->
+          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="logo">
+            <defs>
+              <linearGradient id="g1" x1="0" x2="1">
+                <stop offset="0" stop-color="#06b6a4" />
+                <stop offset="1" stop-color="#0d9488" />
+              </linearGradient>
+            </defs>
+            <rect x="6" y="6" width="52" height="52" rx="10" fill="url(#g1)" />
+            <path d="M20 38c6-8 16-8 20 0" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+          </svg>
+        </div>
+        <div>
+          <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="programs.html">Work With Me</a>
+        <a href="services.html">Paths</a>
+        <a href="pricing.html">Investment</a>
+        <a href="testimonials.html">Stories</a>
+        <a class="cta" href="book.html">{{PRIMARY_CTA_LABEL}}</a>
+      </nav>
+    </header>
+
+    <main>
+      <div>
+        <!-- HERO -->
+        <section id="hero" class="hero" aria-labelledby="hero-heading">
+          <div class="copy">
+            <h1 id="hero-heading">Reach Steady Momentum — Gentle, Practical Coaching</h1>
+            <p>I work with busy adults to build sustainable habits, simple routines, and a clear framework you can use forever — no fads, just steady progress. Book a consult or message me directly.</p>
+            <div style="margin-top:14px;display:flex;gap:10px">
+              <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+              <a href="mailto:{{EMAIL}}" style="align-self:center;color:var(--muted);text-decoration:none">Message {{COACH_NAME}}</a>
+            </div>
+          </div>
+          <div class="art" aria-hidden="true">
+            <!-- local hero svg (simple calm pattern) -->
+            <svg width="220" height="160" viewBox="0 0 220 160" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="hg" x1="0" x2="1">
+                  <stop offset="0" stop-color="#ecfeff"/>
+                  <stop offset="1" stop-color="#ffffff"/>
+                </linearGradient>
+              </defs>
+              <rect width="220" height="160" rx="16" fill="url(#hg)"/>
+              <g transform="translate(18,18)" fill="none" stroke="#0d9488" stroke-opacity="0.12" stroke-width="6">
+                <path d="M0 40 C30 10, 90 10, 120 40" stroke-linecap="round"/>
+                <path d="M20 80 C50 50, 110 50, 140 80" stroke-linecap="round"/>
+              </g>
+            </svg>
+          </div>
+        </section>
+
+        <!-- SOCIAL PROOF -->
+        <section id="social-proof" aria-labelledby="trusted">
+          <h2 id="trusted" style="margin:18px 0 8px 0;font-size:18px">Trusted by clients and teams</h2>
+          <div class="card" style="display:flex;gap:14px;align-items:center">
+            <div style="display:flex;flex-direction:column;gap:10px;flex:1">
+              <div style="display:flex;gap:12px;align-items:center">
+                <img src="assets/img/avatar.svg" alt="avatar" width="60" height="60" style="border-radius:10px;background:var(--glass);"/>
+                <div>
+                  <div style="font-weight:700">"A practical, compassionate coach"</div>
+                  <div style="font-size:13px;color:var(--muted)">— Satisfied client, {{CITY}}</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:10px;color:var(--muted);font-size:13px">Worked with solopreneurs · busy parents · corporate teams</div>
+            </div>
+            <div style="font-weight:700;color:var(--accent-600)">4.9 / 5 ★</div>
+          </div>
+        </section>
+
+        <!-- BENEFITS -->
+        <section id="benefits" aria-labelledby="pillars">
+          <h2 id="pillars" style="margin:18px 0 10px 0;font-size:18px">Outcome pillars</h2>
+          <div class="grid-3">
+            <div class="pill">
+              <h3>Daily Rhythms That Stick</h3>
+              <p>Small, repeatable habits that reduce decision fatigue and increase calm.</p>
+            </div>
+            <div class="pill">
+              <h3>Tools for Emotional Regulation</h3>
+              <p>Practical exercises you can use in 5 minutes to restore focus and safety.</p>
+            </div>
+            <div class="pill">
+              <h3>Clarity on Priorities</h3>
+              <p>A simple framework to align your days with what matters most.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- PROCESS -->
+        <section id="process" aria-labelledby="path">
+          <h2 id="path" style="margin:18px 0 10px 0;font-size:18px">Your 4-phase path</h2>
+          <div class="process">
+            <div class="step">
+              <div style="display:flex;gap:10px;align-items:center"><div class="n">1</div><div style="font-weight:700">Observe</div></div>
+              <p style="margin-top:8px;color:var(--muted)">We map routines, stressors, and quick wins together.</p>
+            </div>
+            <div class="step">
+              <div style="display:flex;gap:10px;align-items:center"><div class="n">2</div><div style="font-weight:700">Design</div></div>
+              <p style="margin-top:8px;color:var(--muted)">I give a tailored, evidence-aware framework you can try immediately.</p>
+            </div>
+            <div class="step">
+              <div style="display:flex;gap:10px;align-items:center"><div class="n">3</div><div style="font-weight:700">Practice</div></div>
+              <p style="margin-top:8px;color:var(--muted)">Hands-on coaching to strengthen new habits with accountability.</p>
+            </div>
+            <div class="step">
+              <div style="display:flex;gap:10px;align-items:center"><div class="n">4</div><div style="font-weight:700">Integrate</div></div>
+              <p style="margin-top:8px;color:var(--muted)">We make the plan flexible so it fits your changing life.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- FAQ -->
+        <section id="faq" aria-labelledby="faq-head" class="faq">
+          <h2 id="faq-head" style="margin:18px 0 10px 0;font-size:18px">Common coaching questions</h2>
+          <div class="card">
+            <details class="q">
+              <summary>How is your VIP Day different from ongoing coaching?</summary>
+              <div style="margin-top:8px;color:var(--muted)">A VIP Day is an intensive, focused session to redesign a routine or plan a reset. Ongoing coaching supports habit maintenance and incremental change over months.</div>
+            </details>
+            <details class="q">
+              <summary>Do you provide tools if I have a busy schedule?</summary>
+              <div style="margin-top:8px;color:var(--muted)">Yes — I prioritize micro-practices (2–10 minutes) and weekly anchors that scale with your availability.</div>
+            </details>
+            <details class="q">
+              <summary>Is coaching confidential and professional?</summary>
+              <div style="margin-top:8px;color:var(--muted)">Absolutely. Sessions are private. I work within coaching boundaries and won’t provide medical advice.</div>
+            </details>
+          </div>
+        </section>
+
+        <!-- LEAD MAGNET -->
+        <section id="lead-magnet" aria-labelledby="magnet">
+          <h2 id="magnet" style="margin:18px 0 10px 0;font-size:18px">Quick Reset Kit — free</h2>
+          <div class="lead">
+            <div style="width:56px;height:56px;border-radius:10px;background:var(--accent);display:grid;place-items:center;color:#fff;font-weight:700">R</div>
+            <div style="flex:1">
+              <div style="font-weight:700">A 7-step PDF to reset your day in 10 minutes</div>
+              <div style="font-size:13px;color:var(--muted)">Practical prompts, a 5-minute breathing sequence, and a micro-checklist.</div>
+            </div>
+            <form action="" onsubmit="event.preventDefault();alert('Thank you — check your inbox for the Quick Reset Kit.');" style="display:flex;gap:8px;align-items:center">
+              <input aria-label="Email for lead magnet" placeholder="Your email" />
+              <button class="btn" type="submit">Send</button>
+            </form>
+          </div>
+        </section>
+
+        <!-- CTA -->
+        <section id="cta" aria-labelledby="cta-head" style="margin-top:22px">
+          <div class="card" style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <h3 id="cta-head" style="margin:0 0 6px 0">Ready to start a VIP Day?</h3>
+              <div style="color:var(--muted);font-size:14px">A structured, single-day reset to build a practical plan and leave with tools you can use immediately.</div>
+            </div>
+            <div style="display:flex;gap:10px">
+              <a class="btn" href="book.html">Book a VIP Day</a>
+              <a href="mailto:{{EMAIL}}" style="align-self:center;color:var(--muted);text-decoration:none">Contact</a>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <aside>
+        <div class="card">
+          <h4 style="margin:0 0 8px 0">Contact</h4>
+          <div class="contact-lines">
+            <div><strong>{{COACH_NAME}}</strong>, {{CREDENTIALS}}</div>
+            <div>Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+            <div>Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+            <div>Location: {{CITY}}, {{STATE}}</div>
+            <a href="book.html" class="btn" style="display:inline-block;margin-top:6px">Book consult</a>
+          </div>
+        </div>
+
+        <div style="height:14px"></div>
+
+        <div class="card">
+          <h4 style="margin:0 0 8px 0">Availability</h4>
+          <div style="color:var(--muted);font-size:14px">Weekday mornings and select evenings. Ask about weekend VIP Days.</div>
+        </div>
+
+      </aside>
+    </main>
+
+    <footer>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="color:var(--muted)">© <span id="year"></span> {{COACH_NAME}} — All rights reserved</div>
+        <div style="color:var(--muted);font-size:13px">Privacy · Terms</div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Pathways — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#071018;--card:#08131b;--accent:#a3d8ff;--muted:#9fb0ba;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto}
+    body{margin:0;background:var(--bg);color:#eef7ff}
+    .wrap{max-width:1080px;margin:0 auto;padding:28px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;margin-left:12px}
+    .logo{font-weight:700;color:var(--accent)}
+    .intro{display:flex;gap:20px;margin-top:20px}
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .pathways{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+    .path{padding:12px;border-radius:10px;background:rgba(255,255,255,0.01)}
+    .muted{color:var(--muted)}
+    .cta{background:var(--accent);color:#042433;padding:10px 14px;border-radius:10px;text-decoration:none}
+    .tools{display:flex;gap:8px;margin-top:12px}
+    .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(3,6,12,0.6);z-index:60;opacity:0;pointer-events:none}
+    .modal.open{opacity:1;pointer-events:auto}
+    .modal-card{width:720px;max-width:94%;background:#04111a;border-radius:12px;padding:20px;border:1px solid rgba(255,255,255,0.04)}
+    .print-only{display:none}
+    @media print{body *{visibility:hidden} .print-only,.print-only *{visibility:visible} .print-only{position:fixed;left:0;top:0;width:100%}}
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <header>
+      <div style='display:flex;align-items:center;gap:18px'>
+        <div class='logo'>{{BUSINESS_NAME}}</div>
+        <nav>
+          <a href='index.html'>Home</a>
+          <a href='about.html'>About</a>
+          <a href='services.html'>Offerings</a>
+          <a href='programs.html' aria-current='page'>Pathways</a>
+          <a href='pricing.html'>Investment</a>
+          <a href='testimonials.html'>Voices</a>
+          <a href='book.html'>Reserve</a>
+          <a href='contact.html'>Reach</a>
+        </nav>
+      </div>
+      <div>
+        <a class='cta' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </header>
+
+    <main>
+      <section class='intro'>
+        <div style='flex:1' class='panel'>
+          <h1 style='margin:0'>Pathways: choose a practical arc</h1>
+          <p class='muted' style='margin-top:8px'>Programs shaped around a clear outcome and short milestones. Each includes daily micro-steps and a weekly checkpoint.</p>
+
+          <div class='tools'>
+            <button class='btn' id='open-guide-prog'>Try a guided practice</button>
+            <button class='btn' id='build-challenge-prog'>Generate a 7-day challenge</button>
+          </div>
+        </div>
+
+        <aside class='panel' style='width:300px'>
+          <h3 style='margin-top:0'>Quick snapshot</h3>
+          <div class='muted'>Pick a pathway that matches your immediate aim: focus, rest, or rhythm. Pricing and exact scope are tuned in the intake.</div>
+          <div style='margin-top:12px'><a class='cta' href='{{PRIMARY_CTA_URL}}'>Start intake</a></div>
+        </aside>
+      </section>
+
+      <section style='margin-top:18px'>
+        <div class='pathways'>
+          <div class='panel path'>
+            <h4 style='margin:0'>Focus Arc</h4>
+            <p class='muted' style='margin-top:8px'>A 6-week sprint to create two predictable focus windows per day and a short reset ritual.</p>
+            <div style='margin-top:8px' class='muted'>Includes habit map, two short coaching calls, and a weekly pivot email.</div>
+            <div style='margin-top:10px'><strong class='muted'>From $1,200</strong></div>
+          </div>
+
+          <div class='panel path'>
+            <h4 style='margin:0'>Rest & Reset</h4>
+            <p class='muted' style='margin-top:8px'>A four-week pathway focused on evening routines, wind-down practices, and sleep-friendly habits (non-medical).</p>
+            <div style='margin-top:8px' class='muted'>Includes templates and nightly prompts.</div>
+            <div style='margin-top:10px'><strong class='muted'>From $850</strong></div>
+          </div>
+
+          <div class='panel path'>
+            <h4 style='margin:0'>Weekly Rhythm</h4>
+            <p class='muted' style='margin-top:8px'>A compact program to shape your weekly review, priorities, and energy forecast so weeks feel manageable.</p>
+            <div style='margin-top:8px' class='muted'>Includes a printable weekly template and two progressive edits.</div>
+            <div style='margin-top:10px'><strong class='muted'>From $480</strong></div>
+          </div>
+        </div>
+      </section>
+
+      <section style='margin-top:18px' class='panel'>
+        <h3 style='margin-top:0'>Tailor a pathway</h3>
+        <p class='muted'>We often mix modules: short rituals, decision rules, and calibration sessions. Pick a base pathway and we'll adapt it in the intake.</p>
+        <div style='margin-top:12px;display:flex;gap:8px'>
+          <a class='cta' href='{{PRIMARY_CTA_URL}}'>Begin intake</a>
+          <button class='btn' id='ask-email'>Email a question</button>
+        </div>
+      </section>
+
+      <div id='modal' class='modal' aria-hidden='true'>
+        <div class='modal-card'>
+          <div style='display:flex;justify-content:space-between;align-items:center'>
+            <strong id='modal-title'>Practice</strong>
+            <button class='btn' id='close-modal'>Close</button>
+          </div>
+          <div id='modal-body' style='margin-top:12px'></div>
+        </div>
+      </div>
+
+      <div id='print-area' class='print-only'></div>
+
+    </main>
+
+    <script>
+      // Modal reuse
+      const modal = document.getElementById('modal');
+      const modalBody = document.getElementById('modal-body');
+      function openModal(){ modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); }
+      function closeModal(){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); }
+      document.getElementById('close-modal').addEventListener('click',closeModal);
+
+      document.getElementById('open-guide-prog').addEventListener('click',()=>{
+        modalBody.innerHTML = "<div class='muted'>Choose an option below to try a short, focused practice.</div>" +
+          "<div style='margin-top:10px'><button class='btn' id='breathe'>Breathing (2 min)</button> <button class='btn' id='journal'>Journaling (5 min)</button> <button class='btn' id='intent'>Intention (90s)</button></div>";
+        openModal();
+        setTimeout(()=>{
+          modalBody.querySelector('#breathe').addEventListener('click',()=>startBreath(120));
+          modalBody.querySelector('#journal').addEventListener('click',()=>startTimer(300,'Write freely.'));
+          modalBody.querySelector('#intent').addEventListener('click',()=>startTimer(90,'Set your intention.'));
+        },20);
+      });
+
+      // breathing animation
+      let breathIv=null;
+      function startBreath(sec){ if(breathIv) clearInterval(breathIv); let rem=sec; const ring = document.createElement('div'); ring.style.width='120px';ring.style.height='120px';ring.style.borderRadius='999px';ring.style.margin='12px auto';ring.style.background='radial-gradient(circle at 30% 30%, rgba(163,216,255,0.12), transparent)'; modalBody.appendChild(ring);
+        breathIv=setInterval(()=>{ rem--; if(rem<=0){ clearInterval(breathIv); modalBody.appendChild(document.createElement('div')).textContent='Done'; return; } ring.style.transform = 'scale('+(1+Math.sin(Date.now()/300)*0.07)+')'; },1000);
+      }
+
+      function startTimer(seconds,message){ let rem=seconds; const el=document.createElement('div'); el.className='muted'; el.style.marginTop='10px'; el.textContent=formatTime(rem); modalBody.appendChild(el); const iv=setInterval(()=>{ rem--; if(rem<=0){ clearInterval(iv); el.textContent='Done • '+message; } else el.textContent=formatTime(rem); },1000); }
+      function formatTime(s){ const m=Math.floor(s/60); const ss=s%60; return m+':'+(ss<10?'0':'')+ss; }
+
+      // Habit builder: generate 7-day checklist and printable area
+      function sampleHabits(){ return ['5-min morning clarity','Two focused work blocks','Move 15 minutes','5-min evening review','No screens 30m before bed','Healthy plate for one meal','Plan top 3 tomorrow']; }
+      function buildChallenge(title){ const base=sampleHabits(); const items=[]; for(let i=0;i<7;i++) items.push(base[(i + (title?title.length:0))%base.length]); return items; }
+      function renderChecklist(title,items){ const container=document.getElementById('print-area'); container.innerHTML=''; const h=document.createElement('div'); h.innerHTML='<h2>'+escapeHtml(title)+'</h2><div class="muted">A 7-day practice list</div>'; container.appendChild(h); const ol=document.createElement('ol'); ol.style.marginTop='12px'; items.forEach(it=>{ const li=document.createElement('li'); li.style.marginBottom='10px'; li.textContent=it; ol.appendChild(li); }); container.appendChild(ol); window.print(); }
+      function escapeHtml(s){ return s.replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+
+      document.getElementById('build-challenge-prog').addEventListener('click',()=>{
+        const title=prompt('Name your 7-day focus:','7-day path'); if(title!==null){ renderChecklist(title,buildChallenge(title)); }
+      });
+
+      // Ask email
+      document.getElementById('ask-email').addEventListener('click',()=>{ window.location.href = 'mailto:{{EMAIL}}?subject=Question%20about%20pathways'; });
+
+      window.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+    </script>
+  </div>
+</body>
+</html>

@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#041218;--card:#06202c;--accent:#ffd166;--muted:#9fb1b6}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:#f7fff7}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#60a5fa);display:grid;place-items:center;color:#012;font-weight:800}
+    nav a{color:#eaf7ef;margin-left:14px;text-decoration:none;font-size:14px}
+    .container{max-width:980px;margin:24px auto;padding:0 18px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:20px}
+    .card{background:linear-gradient(180deg,var(--card),rgba(255,255,255,0.02));padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+    label{display:block;margin-top:10px;color:var(--muted);font-size:13px}
+    input,select,textarea{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#f7fff7}
+    .btn{background:var(--accent);border:none;padding:10px 14px;border-radius:10px;color:#072;cursor:pointer;font-weight:700}
+    .muted{color:var(--muted)}
+    .habit-builder{margin-top:12px}
+    .checklist{margin-top:12px;background:rgba(0,0,0,0.18);padding:12px;border-radius:8px}
+    .print-btn{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#f7fff7;padding:8px;border-radius:8px;margin-left:8px}
+    footer{margin-top:30px;color:var(--muted);display:flex;justify-content:space-between}
+    .pattern{position:fixed;right:0;bottom:0;width:300px;height:100%;opacity:0.05}
+    @media(max-width:920px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="logo">W</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">Book a focused coaching session</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">Origin</a>
+      <a href="services.html">Offerings</a>
+      <a href="programs.html">Journeys</a>
+      <a href="pricing.html">Investment</a>
+      <a href="testimonials.html">Praise</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+      <button class="btn" id="mini-practice">Try a practice</button>
+    </nav>
+  </header>
+
+  <img class="pattern" src="/assets/img/pattern.svg" alt="decorative pattern" />
+
+  <main class="container">
+    <div class="grid">
+      <section class="card">
+        <h2 style="margin:0">Reserve your session</h2>
+        <p class="muted" style="margin-top:6px">Choose a format, pick a brief focus, and we'll shape a practical plan you can start immediately.</p>
+
+        <form id="book-form" style="margin-top:12px">
+          <label>Session type</label>
+          <select id="session-type">
+            <option>48-hour Weekend Reset</option>
+            <option>Four-session Momentum</option>
+            <option>8-week Rhythm Sustain</option>
+          </select>
+
+          <label>Primary focus (one line)</label>
+          <input id="focus" placeholder="Example: Morning structure that preserves energy" />
+
+          <label>Preferred date</label>
+          <input id="date" type="date" />
+
+          <label>Contact email</label>
+          <input id="email" type="email" placeholder="{{EMAIL}}" />
+
+          <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+            <button class="btn" type="button" id="submit-book">Request booking</button>
+            <button class="print-btn" type="button" id="open-habit">Create 7-day challenge</button>
+          </div>
+        </form>
+
+        <div class="muted" style="margin-top:12px">After you request booking we'll send a short diagnostic and a sample 7-day starter you can use right away.</div>
+      </section>
+
+      <aside class="card">
+        <h3 style="margin:0">7-day habit builder</h3>
+        <p class="muted" style="margin-top:6px">Design a compact challenge you you can print and follow: pick up to 3 micro-habits and generate a printable checklist.</p>
+
+        <div class="habit-builder">
+          <label>Choose 1–3 micro-habits</label>
+          <div style="display:flex;flex-direction:column;margin-top:8px">
+            <label><input type="checkbox" value="5-minute journaling" class="habit-choice" /> 5-minute journaling</label>
+            <label><input type="checkbox" value="10-minute movement" class="habit-choice" /> 10-minute movement</label>
+            <label><input type="checkbox" value="2-minute breathing" class="habit-choice" /> 2-minute breathing</label>
+            <label><input type="checkbox" value="Evening review" class="habit-choice" /> Evening review</label>
+            <label><input type="checkbox" value="Screen-free start" class="habit-choice" /> Screen-free start</label>
+          </div>
+
+          <label style="margin-top:10px">Start date</label>
+          <input type="date" id="start-date" />
+
+          <div style="margin-top:12px;display:flex;gap:8px">
+            <button class="btn" id="generate-checklist">Generate checklist</button>
+            <button class="print-btn" id="print-checklist">Print</button>
+          </div>
+
+          <div id="checklist-output" class="checklist" style="margin-top:12px">No checklist yet. Choose habits and start date.</div>
+        </div>
+      </aside>
+    </div>
+
+    <section style="margin-top:18px" class="card">
+      <h3 style="margin:0">Booking details</h3>
+      <p class="muted" style="margin-top:8px">We send an intake and a short assessment so our time together is sharply focused. If you'd like a sample practice now, use the guided minute button above.</p>
+    </section>
+
+    <footer>
+      <div class="muted">Questions? <a href="mailto:{{EMAIL}}" style="color:var(--accent)">{{EMAIL}}</a> • {{PHONE}}</div>
+      <div class="muted">Serving {{CITY}}, {{STATE}} — {{BUSINESS_NAME}}</div>
+    </footer>
+  </main>
+
+  <script>
+    // Booking simulation
+    document.getElementById('submit-book').addEventListener('click',()=>{
+      const focus=document.getElementById('focus').value.trim(); const date=document.getElementById('date').value; const email=document.getElementById('email').value.trim();
+      if(!focus||!date||!email) return alert('Please complete focus, date, and email to request booking.');
+      alert('Request sent. You will receive an intake form at '+email+'.');
+      document.getElementById('book-form').reset();
+    });
+
+    // Habit builder logic
+    function isoDatePlusDays(d,days){ const dt=new Date(d); dt.setDate(dt.getDate()+days); return dt.toISOString().slice(0,10); }
+    document.getElementById('generate-checklist').addEventListener('click',()=>{
+      const checked = Array.from(document.querySelectorAll('.habit-choice:checked')).map(i=>i.value);
+      const start=document.getElementById('start-date').value; if(!start) return alert('Pick a start date.');
+      if(checked.length===0) return alert('Choose at least one micro-habit.');
+      if(checked.length>3) return alert('Pick up to 3 habits so the checklist stays simple.');
+      // Build 7-day table
+      let html = '<div style="font-weight:800;margin-bottom:8px">7-day Starter — begins '+start+'</div>';
+      html += '<table style="width:100%;border-collapse:collapse">';
+      html += '<thead><tr style="text-align:left;color:#dcdcdc"><th style="padding:6px 8px">Date</th>';
+      checked.forEach(h=>{ html += '<th style="padding:6px 8px">'+escapeHtml(h)+'</th>'; });
+      html += '</tr></thead><tbody>';
+      for(let i=0;i<7;i++){
+        const day = isoDatePlusDays(start,i);
+        html += '<tr style="border-top:1px solid rgba(255,255,255,0.03)"><td style="padding:8px">'+day+'</td>';
+        checked.forEach(()=>{ html += '<td style="padding:8px"><input type="checkbox" /></td>'; });
+        html += '</tr>';
+      }
+      html += '</tbody></table>';
+      document.getElementById('checklist-output').innerHTML = html;
+    });
+
+    document.getElementById('print-checklist').addEventListener('click',()=>{
+      const content = document.getElementById('checklist-output').innerHTML;
+      if(!content || content.includes('No checklist yet')) return alert('Generate a checklist before printing.');
+      const w = window.open('', '_blank');
+      const html = `<!doctype html><html><head><meta charset="utf-8"><title>7-day checklist</title><style>body{font-family:Inter,Arial;margin:24px;color:#071218}table{width:100%;border-collapse:collapse}th,td{padding:8px;border:1px solid #ccc}</style></head><body><h2>7-day starter</h2>${content}</body></html>`;
+      w.document.write(html); w.document.close(); w.focus(); setTimeout(()=>w.print(),300);
+    });
+
+    function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    // Mini guided practice (reused simple modal)
+    const mini = document.getElementById('mini-practice');
+    mini.addEventListener('click',()=>{
+      const pick = confirm('Start a 60-second breathing practice? OK = Breathing • Cancel = Journaling');
+      if(pick){ runMiniBreath(); } else { runMiniJournal(); }
+    });
+    function runMiniBreath(){ let sec=60; alert('Quick breathing: inhale 4s, hold 4s, exhale 4s, hold 4s. Press OK to begin.'); const t= setInterval(()=>{ sec--; if(sec<=0){ clearInterval(t); alert('Practice complete.'); } },1000);}    
+    function runMiniJournal(){ alert('Prompt: What is one small action I can take tomorrow to move forward? Set a 3-minute timer and write freely.'); }
+  </script>
+</body>
+</html>

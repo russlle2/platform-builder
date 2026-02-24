@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Approaches — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f8fbfa;--muted:#58656a;--accent:#1f6d58;--card:#ffffff}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:#0b1313;background:var(--bg)}
+    header{background:url('assets/img/pattern.svg') center/cover no-repeat;padding:18px 20px;border-bottom:1px solid rgba(11,19,17,0.04)}
+    .nav{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+    .brand{font-weight:700;color:var(--accent)}
+    .nav a{color:var(--muted);text-decoration:none;margin-left:14px}
+    main{max-width:1100px;margin:28px auto;padding:0 20px}
+    .hero{display:flex;gap:28px;align-items:center}
+    .hero .left{flex:1}
+    h1{margin:0 0 6px 0;font-size:22px}
+    .muted{color:var(--muted)}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 28px rgba(12,18,16,0.04);margin-top:18px}
+    .controls{display:flex;gap:12px;align-items:center;margin-top:14px}
+    select{padding:10px 12px;border-radius:10px;border:1px solid rgba(11,18,16,0.06);font-weight:600}
+    .recommend{margin-top:14px;padding:14px;border-radius:10px;background:linear-gradient(180deg,rgba(31,109,88,0.04),transparent)}
+    .cta{display:inline-block;margin-top:12px;background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+    .methods{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:18px}
+    .method{padding:12px;border-radius:10px;background:#fff;border:1px solid rgba(11,18,16,0.04)}
+    .muted-small{font-size:13px;color:var(--muted)}
+    footer{max-width:1100px;margin:28px auto;padding:0 20px;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div style="display:flex;align-items:center;gap:18px">
+        <div class="brand">{{BUSINESS_NAME}}</div>
+        <a href="index.html">Begin</a>
+        <a href="about.html">Who I Help</a>
+        <a href="services.html">Approaches</a>
+        <a href="programs.html">Tracks</a>
+      </div>
+      <div>
+        <a href="pricing.html">Plans</a>
+        <a href="testimonials.html">Stories</a>
+        <a href="book.html">Book</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="left">
+        <h1>Choose how you feel. Get a short method mapped to that state.</h1>
+        <div class="muted">Quick selection -> tailored micro-plan. Select a mood to see a recommended approach and an immediate next step.</div>
+
+        <div class="card" aria-labelledby="mood-heading">
+          <div id="mood-heading" style="font-weight:700">Mood-to-Method selector</div>
+          <div class="muted-small">Tell the system how your energy and focus feel right now.</div>
+
+          <div class="controls" role="group" aria-label="mood">
+            <label for="mood" class="muted-small">I'm feeling</label>
+            <select id="mood" aria-describedby="mood-desc">
+              <option value="flat">Flat / Low energy</option>
+              <option value="wired">Wired / Anxious</option>
+              <option value="overwhelmed">Overwhelmed</option>
+              <option value="peppy">Alert / Productive</option>
+              <option value="sleepy">Sleepy / Foggy</option>
+            </select>
+            <button id="sample" class="cta">{{PRIMARY_CTA_LABEL}}</button>
+          </div>
+
+          <div id="mood-desc" class="recommend" aria-live="polite">
+            <strong id="method-title">Micro-sequence</strong>
+            <div id="method-copy" class="muted-small" style="margin-top:8px">Select your current state to reveal a short method and the best next step for the next 24–72 hours.</div>
+          </div>
+        </div>
+
+        <div class="muted-small" style="margin-top:10px">Each method is short and testable — members iterate weekly and keep what helps.</div>
+      </div>
+
+      <aside style="width:320px">
+        <div class="card">
+          <div style="font-weight:700">Quick approaches</div>
+          <div class="methods" style="margin-top:12px">
+            <div class="method"><strong>Rhythm Reset</strong><div class="muted-small">Small anchor actions for 7 days.</div></div>
+            <div class="method"><strong>Micro-Breaks</strong><div class="muted-small">Planned, short interruptions to reset energy.</div></div>
+            <div class="method"><strong>Slow Wind-down</strong><div class="muted-small">Evening sequence to improve sleep onset.</div></div>
+            <div class="method"><strong>Focused Sprints</strong><div class="muted-small">Compact work windows and recovery loops.</div></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <div class="muted-small">Need a direct start? Book a short orientation and we’ll map a 30‑day micro-plan with your first week pre-filled.</div>
+          <a class="cta" href="book.html" style="display:inline-block;margin-top:10px">Book an orientation</a>
+        </div>
+      </aside>
+    </section>
+
+    <section style="margin-top:18px">
+      <div class="card">
+        <h2 style="margin:0 0 6px 0">What the selector changes</h2>
+        <div class="muted-small">The page updates a suggested micro‑sequence, the headline CTA copy, and the landing link so the first steps match the approach.</div>
+
+        <div style="margin-top:12px;display:flex;gap:12px;flex-wrap:wrap">
+          <div style="padding:12px;border-radius:10px;background:#fff;border:1px solid rgba(11,18,16,0.04);flex:1">Personalized short tasks</div>
+          <div style="padding:12px;border-radius:10px;background:#fff;border:1px solid rgba(11,18,16,0.04);flex:1">An immediate next step to try</div>
+          <div style="padding:12px;border-radius:10px;background:#fff;border:1px solid rgba(11,18,16,0.04);flex:1">Option to join a track based on results</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="max-width:1100px;margin:20px auto;padding:0 20px;color:var(--muted)">Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> · {{PHONE}}</div>
+  </footer>
+
+  <script>
+    (function(){
+      const mood = document.getElementById('mood');
+      const title = document.getElementById('method-title');
+      const copy = document.getElementById('method-copy');
+      const cta = document.getElementById('sample');
+
+      const map = {
+        flat: {name:'Energy Micro-Boost',desc:'Three small actions to raise baseline energy across the day: a light movement sequence on wake, a midday anchor, and a short evening pause. Try 7 days.',ctaText: '{{PRIMARY_CTA_LABEL}}: Try Micro-Boost',slug:'micro-boost'},
+        wired: {name:'Calm Anchor',desc:'A compact breathing + pause sequence to lower reactivity and help re-focus. Practice at two natural breaks today and record a short note.',ctaText: '{{PRIMARY_CTA_LABEL}}: Start Calm Anchor',slug:'calm-anchor'},
+        overwhelmed: {name:'Sort-and-Shorten',desc:'A 48‑hour triage: pick the top three priorities and use 25‑minute focused work blocks with recovery rituals between each.',ctaText: '{{PRIMARY_CTA_LABEL}}: Begin Triage',slug:'triage'},
+        peppy: {name:'Focused Sprint',desc:'Channel higher energy into purposeful sprints: 45 minute work blocks, clearer breaks, and brief post-sprint reflection.',ctaText: '{{PRIMARY_CTA_LABEL}}: Launch Sprint',slug:'sprint'},
+        sleepy: {name:'Evening Setdown',desc:'A short wind-down routine to cue sleep onset: dim lights, a 12-minute sequence of low-activation tasks, and a 10-minute reflection.',ctaText: '{{PRIMARY_CTA_LABEL}}: Prep for Rest',slug:'setdown'}
+      };
+
+      function update(){
+        const m = mood.value;
+        const item = map[m];
+        title.textContent = item.name;
+        copy.textContent = item.desc;
+        cta.textContent = item.ctaText;
+        cta.href = '{{PRIMARY_CTA_URL}}?method=' + encodeURIComponent(item.slug);
+      }
+
+      mood.addEventListener('change', update);
+      // initialize
+      update();
+    })();
+  </script>
+</body>
+</html>

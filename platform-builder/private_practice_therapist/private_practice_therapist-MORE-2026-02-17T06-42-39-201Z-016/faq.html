@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FAQ — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#06121a;--card:#08212a;--accent:#7be4d1;--muted:#9fb6c0}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,color:#e6f8f5;background:linear-gradient(180deg,var(--bg),#021018);color:#e6fbf7}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 26px;background:rgba(255,255,255,0.02)}
+    .brand{font-weight:800;color:var(--accent)}
+    nav a{color:#cfeff0;margin-left:16px;text-decoration:none;font-weight:700}
+    .container{max-width:1000px;margin:28px auto;padding:0 20px}
+    h1{font-size:26px;margin:0}
+    .lead{color:var(--muted);margin-top:6px}
+    .accordion{margin-top:22px}
+    .item{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:12px;padding:14px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.03)}
+    .q{display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+    .q strong{font-weight:800}
+    .a{margin-top:10px;color:var(--muted);display:none}
+    .a.open{display:block}
+    .moodbar{display:flex;gap:8px;margin-top:18px}
+    .moodbar button{background:transparent;border:1px solid rgba(255,255,255,0.03);padding:8px 10px;border-radius:8px;color:#dff;cursor:pointer}
+    .moodbar button.active{background:linear-gradient(90deg,rgba(123,228,209,0.08),transparent);color:var(--accent);border-color:rgba(123,228,209,0.12)}
+    .cta{margin-top:18px}
+    .cta a{display:inline-block;padding:10px 14px;background:var(--accent);color:#013033;border-radius:10px;text-decoration:none;font-weight:800}
+    .pattern{position:fixed;left:-100px;bottom:-100px;width:480px;height:480px;opacity:0.06;background:url('assets/img/pattern.svg') no-repeat center/cover;transform:rotate(-20deg);pointer-events:none}
+    footer{max-width:1000px;margin:28px auto;padding:16px;color:var(--muted)}
+    .legal{font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="pattern" aria-hidden="true"></div>
+  <header>
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Nest</a>
+      <a href="about.html">Profile</a>
+      <a href="specialties.html">Focus Areas</a>
+      <a href="approach.html">Way I Work</a>
+      <a href="fees.html">Investment</a>
+      <a href="faq.html">FAQ</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h1>Questions people ask</h1>
+    <p class="lead">Short answers from a clinician's perspective. If something matters to you, let's make space for it in a session.</p>
+
+    <div class="moodbar" role="tablist">
+      <button data-mood="everyday" class="active">Everyday worries</button>
+      <button data-mood="transition">Life changes</button>
+      <button data-mood="relationships">Relationships</button>
+    </div>
+
+    <div style="margin-top:12px;color:var(--muted)">Select a state to see tailored guidance and a suggested next step.</div>
+
+    <div class="accordion" id="faq-list">
+      <div class="item" data-tags="everyday,transition">
+        <div class="q"><strong>How do we start?</strong><span class="toggle">+</span></div>
+        <div class="a">We begin with brief intake questions in your first meeting to identify priorities. We'll agree on what to focus on and set realistic pacing. Therapy is collaborative; you set the goals and we track progress.</div>
+      </div>
+
+      <div class="item" data-tags="everyday,relationships">
+        <div class="q"><strong>What if I'm unsure what I need?</strong><span class="toggle">+</span></div>
+        <div class="a">If you feel unsure, a single session is a low-effort way to explore what feels most urgent and consider next steps without committing long-term.</div>
+      </div>
+
+      <div class="item" data-tags="transition,relationships">
+        <div class="q"><strong>Do you work with couples or family members?</strong><span class="toggle">+</span></div>
+        <div class="a">I focus primarily on individual work. For couples or family therapy I can provide referrals or discuss whether a joint session would be appropriate within scope and consent.</div>
+      </div>
+
+      <div class="item" data-tags="transition">
+        <div class="q"><strong>How long until I notice change?</strong><span class="toggle">+</span></div>
+        <div class="a">Change depends on goals and consistency. Some people notice small shifts after one or two sessions; others benefit from a short sequence to practice new approaches. There are no guarantees, but we'll aim for measurable steps.</div>
+      </div>
+    </div>
+
+    <div class="cta"><a id="faq-cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+  </main>
+
+  <footer>
+    <div class="legal">Confidentiality: conversations are confidential within legal and ethical limits. This site is not a substitute for immediate emergency support. If you are in crisis, contact emergency services or a crisis line.</div>
+  </footer>
+
+  <script>
+    // Accordion behavior
+    document.querySelectorAll('.item').forEach(item=>{
+      const q = item.querySelector('.q');
+      const a = item.querySelector('.a');
+      const t = item.querySelector('.toggle');
+      q.addEventListener('click',()=>{
+        const open = a.classList.toggle('open');
+        t.textContent = open?'-':'+';
+      });
+    });
+
+    // Mood-to-Method: filter/surface answers and update CTA
+    const moodBtns = Array.from(document.querySelectorAll('.moodbar button'));
+    const items = Array.from(document.querySelectorAll('.item'));
+    const faqCta = document.getElementById('faq-cta');
+
+    const moodSuggested = {
+      everyday:{cta:'Book a single session',href:'book.html?intent=clarity'},
+      transition:{cta:'Explore a short package',href:'book.html?intent=package'},
+      relationships:{cta:'Schedule a focused session',href:'book.html?intent=relationship'}
+    };
+
+    function setMood(key){
+      items.forEach(it=>{
+        const tags = it.getAttribute('data-tags').split(',');
+        it.style.opacity = tags.includes(key)? '1':'0.45';
+      });
+      const m = moodSuggested[key];
+      faqCta.textContent = m.cta;
+      faqCta.setAttribute('href', m.href);
+      moodBtns.forEach(b=>b.classList.toggle('active', b.getAttribute('data-mood')===key));
+    }
+
+    moodBtns.forEach(b=>b.addEventListener('click',()=>setMood(b.getAttribute('data-mood'))));
+
+    // init
+    setMood('everyday');
+  </script>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Upcoming Sound Baths — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Warm, sensory sound baths in {{CITY}}, {{STATE}} — discover the next event and our calendar of gatherings.">
+  <style>
+    :root{--bg:#f6efe8;--earth:#6b4f3b;--sand:#e8d8c8;--leaf:#7aa37a;--accent:#b77b4b;--muted:#7d6a5a}
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--earth);background:linear-gradient(180deg,var(--bg),#fff);}
+    header{position:sticky;top:0;z-index:40;background:linear-gradient(180deg,rgba(255,255,255,0.6),rgba(255,255,255,0.4));backdrop-filter:blur(6px);border-bottom:1px solid rgba(107,79,59,0.06)}
+    .wrap{max-width:1100px;margin:0 auto;padding:24px}
+    nav{display:flex;gap:18px;align-items:center}
+    nav a{color:var(--earth);text-decoration:none;font-weight:600}
+    .brand{font-weight:800;color:var(--earth)}
+    .cta{margin-left:auto;padding:8px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#e7995a);color:white;text-decoration:none;font-weight:700}
+
+    /* Background SVG container */
+    .bg-anch{position:fixed;inset:0;z-index:-1;opacity:0.18}
+    .bg-anch svg{width:100%;height:100%;display:block}
+
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:center;padding:56px 0}
+    .hero h1{font-size:34px;margin:0 0 10px;color:var(--earth)}
+    .lead{color:var(--muted);line-height:1.5}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(250,244,240,0.9));border-radius:14px;padding:20px;box-shadow:0 6px 22px rgba(107,79,59,0.06)}
+    .next{font-weight:800;color:var(--leaf);font-size:16px}
+    .calendar{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+    .cal-item{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:10px;background:rgba(122,163,122,0.06)}
+
+    section{padding:46px 0;border-top:1px solid rgba(107,79,59,0.04)}
+    h2{margin:0 0 10px;font-size:22px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+    .pill{background:linear-gradient(180deg,#fff, #fbf7f5);padding:16px;border-radius:12px}
+    .muted{color:var(--muted)}
+
+    footer{padding:36px 0;text-align:center;color:var(--muted)}
+    .small{font-size:13px}
+
+    /* Responsive */
+    @media (max-width:880px){.hero{grid-template-columns:1fr;}.cta{margin-left:12px}}
+  </style>
+</head>
+<body>
+  <div class="bg-anch" aria-hidden="true">
+    <!-- unique SVG background pattern for this page: warm earthy waves + orbs -->
+    <svg viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g1" x1="0" x2="1">
+          <stop offset="0" stop-color="#f4e7dd"/>
+          <stop offset="1" stop-color="#fff8f2"/>
+        </linearGradient>
+        <radialGradient id="orb" cx="30%" cy="20%">
+          <stop offset="0" stop-color="#f2d9c7" stop-opacity="0.8"/>
+          <stop offset="1" stop-color="#f2d9c7" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <rect width="1200" height="800" fill="url(#g1)"/>
+      <g fill="url(#orb)">
+        <circle cx="200" cy="120" r="160" />
+        <circle cx="980" cy="640" r="220" />
+      </g>
+      <g fill-opacity="0.06" fill="#6b4f3b">
+        <path d="M0 480 C220 420 380 540 600 480 C820 420 980 540 1200 480 L1200 800 L0 800 Z" />
+      </g>
+    </svg>
+  </div>
+
+  <header>
+    <div class="wrap" style="display:flex;align-items:center;gap:18px">
+      <a class="brand" href="index.html">{{BUSINESS_NAME}}</a>
+      <nav style="flex:1">
+        <a href="index.html">Home</a>
+        <a href="events.html">Upcoming</a>
+        <a href="private-sessions.html">Sessions</a>
+        <a href="pricing.html">Rates</a>
+        <a href="about.html">About</a>
+      </nav>
+      <a class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div>
+        <h1>Gather. Breathe. Surrender to sound.</h1>
+        <p class="lead">A sensory, premium sound bath experience in {{CITY}}. We weave textured tones and gentle resonance to guide deep rest and nervous system recalibration.</p>
+        <div style="display:flex;gap:12px;margin-top:18px;align-items:center">
+          <div class="card">
+            <div class="next">Next event</div>
+            <div style="font-weight:800;margin-top:6px">{{NEXT_EVENT_DATE}}</div>
+            <div class="small muted" style="margin-top:8px">at {{VENUE_NAME}} • doors 6:30pm • sound begins 7:00pm</div>
+            <div style="margin-top:12px"><a class="cta" href="book.html">Reserve a Place</a></div>
+          </div>
+          <div class="card" style="width:220px">
+            <div style="font-weight:700">Featured instruments</div>
+            <ul class="muted" style="margin:8px 0 0;padding-left:18px">
+              <li>Crystal singing bowls</li>
+              <li>Large gong washes</li>
+              <li>Wind chimes & textural layers</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <aside class="card">
+        <div style="font-weight:700">Calendar — upcoming gatherings</div>
+        <div class="calendar">
+          <div class="cal-item"><div>Sat, {{NEXT_EVENT_DATE}}</div><div class="muted">Open seating</div></div>
+          <div class="cal-item"><div>Sat, 2026-03-14</div><div class="muted">Tickets available</div></div>
+          <div class="cal-item"><div>Sun, 2026-04-05</div><div class="muted">Intimate circle</div></div>
+          <div class="cal-item"><div>Sat, 2026-05-09</div><div class="muted">Full moon evening</div></div>
+        </div>
+        <div style="margin-top:12px" class="small muted">Doors usually open 30 minutes before. Arrive early to settle in.</div>
+      </aside>
+    </section>
+
+    <section id="myth-truth">
+      <h2>Myth vs. Truth</h2>
+      <div class="grid">
+        <div class="pill">
+          <strong>Myth:</strong> Sound baths are like loud concerts.
+          <p class="muted">Truth: Our gatherings are curated, low-volume soundscapes designed for inward listening and safety.</p>
+        </div>
+        <div class="pill">
+          <strong>Myth:</strong> You must meditate perfectly.
+          <p class="muted">Truth: No experience required. The sound carries you — resting, daydreaming, or sleeping is all welcomed.</p>
+        </div>
+        <div class="pill">
+          <strong>Myth:</strong> Results happen instantly.
+          <p class="muted">Truth: Many feel immediate calm; deeper integration often arrives over days. Consistency helps.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="flow">
+      <h2>What to expect — the flow</h2>
+      <div class="grid">
+        <div class="pill">
+          <strong>Arrival & settling</strong>
+          <p class="muted">We greet you, guide gentle grounding, and offer a short centering breath practice so bodies arrive as they are.</p>
+        </div>
+        <div class="pill">
+          <strong>Sound immersion</strong>
+          <p class="muted">An hour of layered tones — bowls, gong washes, chimes — moving through frequency that soothes the nervous system.</p>
+        </div>
+        <div class="pill">
+          <strong>Return & integration</strong>
+          <p class="muted">We close slowly: a soft bell, time to journal or sip herbal tea, and a brief check-in for any questions.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="prep">
+      <h2>Practical — what to bring & health note</h2>
+      <div class="grid">
+        <div class="pill">
+          <strong>What to bring</strong>
+          <ul class="muted" style="margin:8px 0 0;padding-left:18px">
+            <li>Yoga mat, blanket, and cosy pillows</li>
+            <li>Layered clothing, eye mask, water bottle</li>
+            <li>Optional: small bolsters or neck support</li>
+          </ul>
+        </div>
+        <div class="pill">
+          <strong>Contraindications</strong>
+          <p class="muted">If you are pregnant, have a pacemaker, recent surgery, or severe uncontrolled epilepsy, please consult your physician and contact us before booking. Sound can intensify sensations; we provide alternatives on request.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="case-notes">
+      <h2>Case notes & responses</h2>
+      <div class="grid">
+        <div class="pill">
+          <strong>Inner recalibration</strong>
+          <p class="muted">Participants often report slowed breathing, vivid imagery, and a softening of chronic tension after a single session.</p>
+        </div>
+        <div class="pill">
+          <strong>Sleep improvement</strong>
+          <p class="muted">Several attendees note deeper sleep over the following nights — not guaranteed, but a frequent pattern.</p>
+        </div>
+        <div class="pill">
+          <strong>Group coherence</strong>
+          <p class="muted">Shared silence and resonance create a gentle social reset: less reactivity, more calm connection.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq">
+      <h2>Frequently asked</h2>
+      <div class="grid">
+        <div class="pill"><strong>Do I need experience?</strong><p class="muted">No. We design the space for beginners and seasoned listeners alike.</p></div>
+        <div class="pill"><strong>Can I sleep?</strong><p class="muted">Yes — resting is part of the practice. You can leave quietly when ready.</p></div>
+        <div class="pill"><strong>Are recordings available?</strong><p class="muted">Live presence is central. We occasionally offer recorded short meditations for home practice.</p></div>
+      </div>
+    </section>
+
+    <section id="cta" style="text-align:center;padding-bottom:80px;">
+      <div style="display:inline-block;background:linear-gradient(180deg,#fff, #fff9f6);padding:26px;border-radius:16px;box-shadow:0 8px 30px rgba(107,79,59,0.06)">
+        <div style="font-size:20px;font-weight:800;margin-bottom:6px">Reserve your mat for {{NEXT_EVENT_DATE}}</div>
+        <div class="muted small" style="margin-bottom:14px">Limited seating to maintain an intimate, premium experience.</div>
+        <a class="cta" href="book.html">{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div style="display:flex;justify-content:center;gap:18px;align-items:center">
+        <div class="small">{{BUSINESS_NAME}} • {{CITY}}, {{STATE}}</div>
+        <div class="small">Call: {{PHONE}} • Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      </div>
+      <div style="margin-top:10px" class="muted small">Facilitated by {{FACILITATOR_NAME}} at {{VENUE_NAME}}</div>
+    </div>
+  </footer>
+</body>
+</html>

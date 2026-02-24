@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg1:#FFFBF6;--bg2:#F7F8FF;--accent:#6B8E6B;--muted:#6B6B6B;--card:#FFFFFF}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;color:#222}
+    .page{min-height:100%;display:flex;flex-direction:column;background:linear-gradient(180deg,var(--bg1),var(--bg2))}
+    header{position:sticky;top:0;background:rgba(255,255,255,0.6);backdrop-filter:blur(6px);border-bottom:1px solid rgba(100,100,100,0.06)}
+    .nav{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#E6F6E6,#FFF6E6);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent)}
+    nav a{margin:0 10px;color:#444;text-decoration:none;font-weight:600}
+    nav a.cta{background:var(--accent);color:white;padding:8px 12px;border-radius:8px}
+    main{flex:1;max-width:1100px;margin:28px auto;padding:28px;width:92%}
+    .hero{display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:center}
+    .hero .lead{background:linear-gradient(180deg,rgba(255,255,255,0.8),rgba(255,255,255,0.6));padding:28px;border-radius:16px;box-shadow:0 6px 24px rgba(100,100,120,0.06)}
+    h1{margin:0;font-size:28px;color:#123}
+    p.lead{color:#445;margin-top:10px;line-height:1.5}
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 8px 30px rgba(30,30,60,0.05)}
+    .diagnostic{display:flex;flex-direction:column;gap:10px}
+    .question{display:flex;gap:12px;align-items:center}
+    .question label{flex:1}
+    input[type="range"]{width:100%}
+    .plan-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+    .plan{padding:16px;border-radius:10px;border:1px solid rgba(120,120,140,0.06)}
+    .micro{display:flex;flex-direction:column;gap:12px;margin-top:18px}
+    .habit{display:flex;gap:12px;align-items:flex-start}
+    .habit .dot{width:12px;height:12px;border-radius:3px;background:linear-gradient(180deg,#FFD8A8,#FFC19A)}
+    .pricing-summary{display:flex;gap:12px;align-items:center;margin-top:20px}
+    .price{font-size:22px;font-weight:800;color:var(--accent)}
+    .cta-row{margin-top:16px}
+    footer{margin-top:40px;padding:28px 0;color:var(--muted);font-size:14px}
+    .svg-bg{position:fixed;right:-120px;top:-120px;opacity:0.12;pointer-events:none}
+    .safety{margin-top:12px;background:linear-gradient(90deg,#FFF8F0,#F6FFFB);padding:12px;border-radius:10px;border-left:4px solid #FFCF99;color:#444}
+    @media(max-width:880px){.hero{grid-template-columns:1fr;}.nav{padding:10px}.plan-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="nav">
+        <div class="brand"><div class="logo">A</div><div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+        </div></div>
+        <nav>
+          <a href="index.html">Home</a>
+          <a href="services.html" aria-current="page">Offerings</a>
+          <a href="blends.html">Blends</a>
+          <a href="shop.html">Marketplace</a>
+          <a href="contact.html" class="cta">{{PRIMARY_CTA_LABEL}}</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <div class="hero">
+        <section class="lead card">
+          <h1>Personalized aromatherapy paths — gentle, practical, seasonal</h1>
+          <p class="lead">I design scent-based practices that fit your days. No medical promises — only safe, aromatic rituals to support wellbeing and daily rhythm. Start with a quick assessment to shape your plan.</p>
+
+          <div class="diagnostic">
+            <div class="card">
+              <strong>Quick diagnostic</strong>
+              <p style="margin:8px 0 12px 0;color:var(--muted)">Slide to share where you are today — energy, sleep, calm.</p>
+              <div class="question">
+                <label>Energy: Low — High</label>
+                <input type="range" min="0" max="10" value="5">
+              </div>
+              <div class="question">
+                <label>Sleep quality: Restless — Restful</label>
+                <input type="range" min="0" max="10" value="6">
+              </div>
+              <div class="question">
+                <label>Stress levels: Busy — Calm</label>
+                <input type="range" min="0" max="10" value="4">
+              </div>
+            </div>
+
+            <div class="card plan">
+              <strong>Suggested path</strong>
+              <div class="plan-grid">
+                <div class="plan">
+                  <h4>Starter Ritual</h4>
+                  <p style="font-size:13px;color:var(--muted)">Weekly themes + two blends. Good for sampling routines.</p>
+                </div>
+                <div class="plan">
+                  <h4>Monthly Support</h4>
+                  <p style="font-size:13px;color:var(--muted)">Personalized blend, check-in, micro-habits to anchor change.</p>
+                </div>
+                <div class="plan">
+                  <h4>Membership</h4>
+                  <p style="font-size:13px;color:var(--muted)">Continuous curation, new seasonal blends, member pricing.</p>
+                </div>
+              </div>
+
+              <div class="micro">
+                <strong>Micro habits</strong>
+                <div class="habit"><div class="dot"></div><div><strong>2-3 deep breaths</strong> with a calming blend each morning.</div></div>
+                <div class="habit"><div class="dot"></div><div><strong>Pre-sleep ritual</strong> — roll a light blend on wrists and inhale mindfully for 2 minutes.</div></div>
+              </div>
+
+              <div class="pricing-summary">
+                <div>
+                  <div class="price">Membership from $24/mo</div>
+                  <div style="font-size:13px;color:var(--muted)">Includes blends, guides, and 10% store credit.</div>
+                </div>
+                <div style="margin-left:auto">
+                  <a href="pricing.html" style="background:var(--accent);color:white;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700">See Plans</a>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="safety"><strong>Safety first:</strong> Services are educational and supportive. I do not diagnose or treat medical conditions. Always consult your healthcare provider for medical concerns. See full safety notes on our shop and blends pages.</div>
+
+        </section>
+
+        <aside class="card">
+          <h3 style="margin-top:0">Your first steps with {{PRACTITIONER_NAME}}</h3>
+          <p style="color:var(--muted)">A friendly, home-deliverable sample kit or a guided remote consultation can help you start. Members receive seasonal blends and a monthly practice card.</p>
+
+          <div style="margin-top:12px">
+            <a href="book.html" style="display:inline-block;background:#FFF;border:1px solid rgba(100,100,100,0.06);padding:8px 12px;border-radius:10px;text-decoration:none;color:#123">Book a Consultation</a>
+            <a href="pricing.html" style="display:inline-block;margin-left:8px;background:var(--accent);color:#fff;padding:8px 12px;border-radius:10px;text-decoration:none">Join Membership</a>
+          </div>
+
+          <hr style="margin:18px 0;border:none;border-top:1px dashed rgba(120,120,120,0.08)">
+          <div style="font-size:13px;color:var(--muted)">
+            <strong>Contact</strong>
+            <div style="margin-top:6px">{{EMAIL}} • {{PHONE}}</div>
+            <div style="margin-top:8px"><em>Serving {{CITY}}, {{STATE}}</em></div>
+          </div>
+        </aside>
+      </div>
+
+      <section style="margin-top:28px" class="card">
+        <h3 style="margin:0 0 8px 0">How a plan grows — an illustrative timeline</h3>
+        <p style="color:var(--muted)">We begin with an assessment, offer a two-week starter, then tune your blends and daily cues. Memberships include reassessment each season.</p>
+        <ol style="margin-top:12px;color:var(--muted)">
+          <li>Initial questionnaire + one starter blend</li>
+          <li>Two-week micro-habit integration</li>
+          <li>Monthly check-in and blend refresh</li>
+        </ol>
+      </section>
+
+      <section style="margin-top:22px;display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">
+        <div class="card" style="flex:1;min-width:260px">
+          <h4 style="margin-top:0">Small rituals, big difference</h4>
+          <p style="color:var(--muted)">Short, consistent scent cues help anchor desired states. We craft blends with safety in mind — low concentrations and clear instructions.</p>
+        </div>
+
+        <div class="card" style="flex:1;min-width:260px">
+          <h4 style="margin-top:0">What to expect</h4>
+          <p style="color:var(--muted)">Practical guidance, printable ritual cards, blending notes, and clear dilution charts when you make blends at home.</p>
+        </div>
+      </section>
+
+      <div class="cta-row">
+        <a href="book.html" style="background:linear-gradient(90deg,var(--accent),#4C7A4C);color:white;padding:12px 18px;border-radius:12px;text-decoration:none;font-weight:700">Start your assessment</a>
+        <a href="shop.html" style="margin-left:10px;color:var(--muted);text-decoration:underline">Shop curated kits</a>
+      </div>
+
+      <footer>
+        <div style="max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center">
+          <div>&copy; {{BUSINESS_NAME}} — {{PRACTITIONER_NAME}} • Serving {{CITY}}, {{STATE}}</div>
+          <div style="color:var(--muted)">Questions? <a href="contact.html" style="color:inherit;text-decoration:underline">Connect</a></div>
+        </div>
+      </footer>
+    </main>
+
+    <svg class="svg-bg" width="420" height="420" viewBox="0 0 420 420" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#FFF6E6"/><stop offset="1" stop-color="#E6F6E6"/></linearGradient>
+      </defs>
+      <rect x="0" y="0" width="420" height="420" rx="60" fill="url(#g1)" />
+      <g fill-opacity="0.12" transform="translate(20,20)">
+        <circle cx="60" cy="60" r="40" fill="#C9E9D0" />
+        <circle cx="180" cy="120" r="56" fill="#FFE6C2" />
+        <circle cx="330" cy="200" r="28" fill="#D6F0E0" />
+      </g>
+    </svg>
+
+  </div>
+</body>
+</html>

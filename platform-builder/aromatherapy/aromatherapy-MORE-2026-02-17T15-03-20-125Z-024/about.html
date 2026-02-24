@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff9f4;--accent:#6a4f3a;--muted:#6b6b6b;--card:#fff;--glass:rgba(255,255,255,0.6)}
+    *{box-sizing:border-box}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;line-height:1.4;color:var(--accent);margin:0;background:linear-gradient(180deg,var(--bg),#fff);}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:linear-gradient(90deg,#fff,rgba(250,240,235,0.6));border-bottom:1px solid #eee}
+    nav a{margin:0 10px;color:var(--accent);text-decoration:none;font-weight:600}
+    .brand{font-size:18px;font-weight:700}
+    .hero{padding:40px 28px 28px;display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+    .panel{background:var(--card);padding:20px;border-radius:12px;box-shadow:0 6px 18px rgba(106,79,58,0.06)}
+    .kicker{font-size:13px;color:var(--muted);margin-bottom:8px}
+    h1{margin:0 0 8px;font-size:28px}
+    p.lead{margin:0;color:#563f2f}
+    .sidebar .cta{display:flex;flex-direction:column;gap:10px}
+    .btn{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;text-align:center}
+    .muted{color:var(--muted);font-size:13px}
+    /* pattern using inline data SVG for subtle texture */
+    .why{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><defs><linearGradient id='g' x1='0' x2='1'><stop stop-color='%23f8efe8' offset='0'/><stop stop-color='%23fffaf6' offset='1'/></linearGradient></defs><rect width='100%' height='100%' fill='url(%23g)'/><g fill='%23e6d8cf' opacity='0.16'><circle cx='30' cy='30' r='6'/><circle cx='80' cy='60' r='4'/><circle cx='150' cy='20' r='5'/></g></svg>");padding:28px;border-radius:12px}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+    .pill{padding:12px;border-radius:10px;background:var(--glass);border:1px solid rgba(106,79,58,0.06)}
+    .proof{margin-top:22px;padding:18px;border-radius:12px;background:linear-gradient(180deg,#fff,rgba(255,250,246,0.9))}
+    .testimonial{min-height:80px}
+    .badges{display:flex;gap:10px;margin-top:12px}
+    .badge{padding:8px 10px;border-radius:8px;background:#fff;border:1px solid #efe7e1;position:relative;font-size:13px}
+    .tooltip{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 8px);background:#3b2b23;color:#fff;padding:8px;border-radius:6px;font-size:12px;white-space:nowrap;display:none}
+    .badge:hover .tooltip{display:block}
+    footer{padding:24px 28px;text-align:center;color:var(--muted);font-size:13px;border-top:1px solid #f0e7e3}
+    @media(max-width:900px){.hero{grid-template-columns:1fr;}.grid{grid-template-columns:1fr 1fr}.sidebar{order:2}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <nav aria-label="Primary Navigation">
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Formulas</a>
+      <a href="shop.html">Apothecary</a>
+      <a href="pricing.html">Plans</a>
+      <a href="about.html">Studio</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="panel">
+        <div class="kicker">Studio</div>
+        <h1>A quiet craft: scent-guidance for small rhythms</h1>
+        <p class="lead">We prepare botanical blends and short sessions that may support calm, focus, or clearer rest. Practical guidance, safe use, and scent education are woven into each encounter.</p>
+        <div class="why">
+          <div class="kicker">How we think</div>
+          <div class="grid">
+            <div class="pill"><strong>Rooted safety</strong><div class="muted">Dilution and patch testing are standard; we prioritize safe application.</div></div>
+            <div class="pill"><strong>Tailored simplicity</strong><div class="muted">Sessions aim to fit your daily life, not replace it.</div></div>
+            <div class="pill"><strong>Evidence-aware</strong><div class="muted">We share what is traditional and what experiments suggest—no promises, only possible supports.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="sidebar panel">
+        <div class="kicker">Book a conversation</div>
+        <p class="muted">Start with a 20-min consult to map needs and preferences. Follow-ups and blends available.</p>
+        <div class="cta">
+          <a class="btn" href="book.html">Begin a short consult</a>
+          <a class="btn" href="pricing.html" style="background:#f2e9e3;color:var(--accent);border:1px solid #e6d7cd">Explore offerings</a>
+        </div>
+        <div style="margin-top:12px;font-size:13px;color:var(--muted)">Questions? <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> • {{PHONE}}</div>
+      </aside>
+    </section>
+
+    <section class="panel" style="margin:18px 28px;border-radius:12px">
+      <div class="kicker">Common hesitations</div>
+      <h2 style="margin-top:6px">Myth vs. truth</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+        <div style="padding:12px;border-radius:10px;background:#fff">Myth: Aromas are one-size-fits-all.<div class="muted">Truth: Preference, past, and sensitivity shape response; we tailor blends accordingly.</div></div>
+        <div style="padding:12px;border-radius:10px;background:#fff">Myth: Essential oils are risk-free.<div class="muted">Truth: They are concentrated. We use measured dilution and ask about meds, pregnancy, and pets.</div></div>
+      </div>
+    </section>
+
+    <section class="panel proof" style="margin:18px 28px">
+      <div class="kicker">Proof gallery</div>
+      <h3 style="margin:6px 0">Voices & trust</h3>
+      <div class="testimonial" id="testimonial">"The short consultation gave me a simple routine I could actually use each morning." — A client in {{CITY}}</div>
+      <div class="badges" id="badges">
+        <div class="badge" data-tip="Local wellness collective accreditation"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="#6a4f3a" stroke-width="1.2"/></svg><span style="margin-left:8px">Wellness Collab</span><div class="tooltip">Community collective membership</div></div>
+        <div class="badge" data-tip="Safety-focused training"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="5" width="18" height="14" rx="3" stroke="#6a4f3a" stroke-width="1.2"/></svg><span style="margin-left:8px">Safety Trained</span><div class="tooltip">Formal protocols for dilution and testing</div></div>
+        <div class="badge" data-tip="Local press feature"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 7h16" stroke="#6a4f3a" stroke-width="1.2"/></svg><span style="margin-left:8px">Press</span><div class="tooltip">Featured in a local guide to mindful living</div></div>
+      </div>
+    </section>
+
+    <section class="panel" style="margin:18px 28px">
+      <div class="kicker">Case notes</div>
+      <h3 style="margin:6px 0">A small record</h3>
+      <ul style="margin:10px 0;padding-left:18px;color:var(--muted)">
+        <li>Client A: 20-min consult → pocket blend for focus; notes: citrus top, rosemary mid, cedar base.</li>
+        <li>Client B: Seasonal sleep support course; diffuse at bedtime at low concentration; optional patch test used.</li>
+      </ul>
+    </section>
+
+    <section class="panel" style="margin:18px 28px">
+      <div class="kicker">FAQ</div>
+      <h3 style="margin:6px 0">Safety & use</h3>
+      <div style="margin-top:10px">
+        <p><strong>Do oils have side effects?</strong> Some people can be sensitive. We suggest small dilutions and a patch test before sustained use.</p>
+        <p><strong>Pregnancy & nursing</strong> Some botanicals are discouraged. Please mention pregnancy or nursing during booking; we will adapt recommendations.</p>
+        <p><strong>Pets</strong> Certain oils may be irritating to animals. We offer pet-safe options and usage guidance.</p>
+        <p><strong>Allergies</strong> We ask about skin and inhalant allergies and omit any suspect botanicals.</p>
+      </div>
+    </section>
+
+    <section class="panel" style="margin:18px 28px;text-align:center">
+      <div class="kicker">Next step</div>
+      <h3 style="margin:6px 0">If this feels right</h3>
+      <p class="muted">Schedule a short consult to map one clear, safe scent practice.</p>
+      <a class="btn" href="book.html">Reserve a consult</a>
+    </section>
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+  </footer>
+
+  <script>
+    (function(){
+      const quotes=[
+        '"Their guidance made scent something I could actually use." — Mira',
+        '"Clear steps and a gentle blend helped my evenings feel steadier." — J.',
+        '"Practical, safe, and readable recommendations." — L. in {{CITY}}'
+      ];
+      let i=0;const el=document.getElementById('testimonial');
+      setInterval(()=>{i=(i+1)%quotes.length;el.textContent=quotes[i];},4800);
+
+      // badges tooltips are handled via CSS .tooltip display on hover; for keyboard accessibility add focus handlers
+      const badges=document.querySelectorAll('.badge');
+      badges.forEach(b=>{b.tabIndex=0;b.addEventListener('focus',()=>b.querySelector('.tooltip').style.display='block');b.addEventListener('blur',()=>b.querySelector('.tooltip').style.display='none');});
+    })();
+  </script>
+</body>
+</html>

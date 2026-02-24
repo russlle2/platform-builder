@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Origins — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff8f3;--accent:#ff6b6b;--muted:#6b6b6b;--card:#ffffff}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:#24323f;background:linear-gradient(180deg,var(--bg),#fff);min-height:100vh}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:transparent}
+    nav a{margin:0 10px;color:#24323f;text-decoration:none;font-weight:600}
+    .wrap{max-width:980px;margin:28px auto;padding:0 20px}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:center}
+    .badge{display:inline-flex;align-items:center;background:var(--card);padding:8px 12px;border-radius:999px;box-shadow:0 6px 18px rgba(14,22,36,0.06)}
+    h1{margin:8px 0 12px;font-size:28px}
+    p.lead{margin:0;color:var(--muted)}
+    .panel{background:var(--card);border-radius:14px;padding:18px;box-shadow:0 8px 30px rgba(14,22,36,0.06)}
+    /* inline SVG pattern */
+    .pattern{position:fixed;right:-80px;top:20%;opacity:.08;width:380px;height:380px;pointer-events:none}
+    /* Mood-to-Method */
+    .mood{margin-top:18px}
+    .options{display:flex;gap:8px;flex-wrap:wrap}
+    .opt{padding:10px 12px;border-radius:10px;background:#fff;border:1px solid #f1f1f1;cursor:pointer}
+    .opt.active{background:linear-gradient(90deg,#fff 0%,#fff7f7 100%);border-color:rgba(255,107,107,0.15);box-shadow:0 8px 24px rgba(255,107,107,0.06)}
+    .method{margin-top:16px;display:flex;gap:12px;align-items:center}
+    .method .dot{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,#ffecec,#fff0f0);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent)}
+    .method .desc{flex:1}
+    .cta{display:inline-flex;align-items:center;gap:12px;padding:10px 14px;background:var(--accent);color:#fff;border-radius:10px;text-decoration:none;font-weight:700}
+    footer{margin:56px 0 120px;text-align:center;color:var(--muted)}
+    @media (max-width:880px){.hero{grid-template-columns:1fr;}.pattern{display:none}}
+  </style>
+</head>
+<body>
+  <svg class="pattern" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1">
+        <stop offset="0" stop-color="#ffd7d7"/>
+        <stop offset="1" stop-color="#fff6f6"/>
+      </linearGradient>
+      <pattern id="p1" width="80" height="80" patternUnits="userSpaceOnUse">
+        <rect width="80" height="80" fill="url(#g1)"/>
+        <circle cx="10" cy="10" r="4" fill="#ffd1d1" opacity="0.9"/>
+        <circle cx="60" cy="60" r="6" fill="#fff" opacity="0.6"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#p1)" rx="40"/>
+  </svg>
+
+  <header>
+    <div style="display:flex;align-items:center;gap:14px">
+      <a href="index.html" style="font-weight:800;color:#24323f;text-decoration:none">Start</a>
+      <nav aria-label="Main navigation">
+        <a href="about.html">Origins</a>
+        <a href="services.html">Offerings</a>
+        <a href="programs.html">Pathways</a>
+        <a href="pricing.html">Investment</a>
+        <a href="testimonials.html">Stories</a>
+        <a href="book.html">Reserve</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </div>
+    <div style="display:flex;gap:12px;align-items:center">
+      <a href="{{PRIMARY_CTA_URL}}" class="cta">{{PRIMARY_CTA_LABEL}}</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div>
+        <div class="badge">Origins & approach</div>
+        <h1>Designing steadier days: how we guide habits into the margins of your life</h1>
+        <p class="lead">I help people shape repeatable routines and clear decision rules so momentum becomes the default. Practical frameworks, focused outcomes, and small experiments—not radical overhauls.</p>
+
+        <div class="panel" style="margin-top:18px">
+          <strong style="display:block">Why this method?</strong>
+          <p style="margin:8px 0;color:var(--muted)">Years of coaching refined a few reliable mechanics: micro habits that stack, recovery checks, and a visible progress loop. Each step maps to a tangible daily choice so wins compound.</p>
+
+          <div style="display:flex;gap:10px;margin-top:12px">
+            <div style="flex:1">
+              <strong>Outcome focus</strong>
+              <div style="color:var(--muted);margin-top:6px">Clarity on one measurable target each month.</div>
+            </div>
+            <div style="flex:1">
+              <strong>Habit scaffolds</strong>
+              <div style="color:var(--muted);margin-top:6px">Tiny anchors you can keep long-term.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mood">
+          <label style="font-weight:700;display:block;margin-bottom:8px">Pick how you feel right now</label>
+          <div class="options" role="tablist" aria-label="Mood selector">
+            <button class="opt active" data-key="overwhelmed">Overwhelmed</button>
+            <button class="opt" data-key="stuck">Stalled</button>
+            <button class="opt" data-key="ready">Ready to ramp</button>
+            <button class="opt" data-key="curious">Curious/Exploring</button>
+          </div>
+
+          <div class="method" id="methodBox">
+            <div class="dot" id="methodDot">M</div>
+            <div class="desc">
+              <div id="methodTitle" style="font-weight:800">Mini Reset</div>
+              <div id="methodText" style="color:var(--muted);margin-top:6px">A short, three-step reset to reduce friction and create clear micro-routines for the day.</div>
+              <div style="margin-top:12px">
+                <a id="moodCta" class="cta" href="{{PRIMARY_CTA_URL}}">Book a Reset</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <aside>
+        <div class="panel">
+          <strong>Meet your guide</strong>
+          <p style="margin-top:8px;color:var(--muted)">A practical coach who maps goals to actionable habits and weekly experiments. No oversized promises—just repeatable practice and feedback loops.</p>
+          <dl style="margin-top:12px;color:var(--muted)">
+            <dt style="font-weight:700">Phone</dt>
+            <dd>{{PHONE}}</dd>
+            <dt style="font-weight:700;margin-top:8px">Email</dt>
+            <dd>{{EMAIL}}</dd>
+          </dl>
+        </div>
+
+        <div style="height:18px"></div>
+        <div class="panel">
+          <strong>Quick framing</strong>
+          <p style="color:var(--muted);margin-top:8px">Think in terms of systems, not willpower. We craft triggers, not rules; tiny nudges, not schedules.</p>
+        </div>
+      </aside>
+    </section>
+
+    <section style="margin-top:36px">
+      <div class="panel">
+        <strong>Core frameworks</strong>
+        <ul style="margin:12px 0 0 18px;color:var(--muted)">
+          <li>Anchor-Trigger-Reward chains to embed a habit into current routines.</li>
+          <li>Three-week micro-tests to evaluate fit before scaling.</li>
+          <li>Outcome-first mapping: one measurable target per cycle.</li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>{{CITY}}, {{STATE}} · <a href="contact.html">Contact</a></div>
+    <div style="margin-top:8px;color:var(--muted)">Copyright © <span id="year"></span> {{BUSINESS_NAME}}</div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const mapping = {
+      overwhelmed: {
+        title: 'Mini Reset',
+        text: 'A short, three-step reset to reduce decision fatigue and set a tiny win for the day.',
+        cta: 'Start a Reset',
+        color: '#ff6b6b',
+        dot: 'R'
+      },
+      stuck: {
+        title: 'Reset Framework',
+        text: 'We map the current blockers and pick two small tests to break the loop.',
+        cta: 'Plan a Reset',
+        color: '#ff8a5b',
+        dot: 'S'
+      },
+      ready: {
+        title: 'Scale Sprint',
+        text: 'We create a 4-week plan to steady momentum with daily anchors and accountability.',
+        cta: 'Join a Sprint',
+        color: '#6bd0b8',
+        dot: 'P'
+      },
+      curious: {
+        title: 'Playful Labs',
+        text: 'Quick experiments to discover what actually sticks—low-cost, low-risk trials.',
+        cta: 'Try a Lab',
+        color: '#6b9bff',
+        dot: 'L'
+      }
+    };
+
+    const opts = document.querySelectorAll('.opt');
+    const titleEl = document.getElementById('methodTitle');
+    const textEl = document.getElementById('methodText');
+    const ctaEl = document.getElementById('moodCta');
+    const dotEl = document.getElementById('methodDot');
+
+    function setMood(key, push=false){
+      const m = mapping[key];
+      titleEl.style.opacity = 0; textEl.style.opacity=0; dotEl.style.transform='scale(.92)';
+      setTimeout(()=>{
+        titleEl.textContent = m.title;
+        textEl.textContent = m.text;
+        ctaEl.textContent = m.cta;
+        ctaEl.href = '{{PRIMARY_CTA_URL}}' + (key==='ready'? '?focus=sprint':'');
+        dotEl.textContent = m.dot;
+        dotEl.style.background = 'linear-gradient(135deg,'+m.color+',#fff0f0)';
+        titleEl.style.opacity = 1; textEl.style.opacity=1; dotEl.style.transform='scale(1)';
+      },220);
+      opts.forEach(b=>b.classList.toggle('active', b.dataset.key===key));
+      if(push) history.replaceState(null,'', '#mood='+key);
+    }
+
+    opts.forEach(b=>b.addEventListener('click', ()=>setMood(b.dataset.key, true)));
+
+    // initialize from hash
+    const h = location.hash.match(/mood=(\w+)/);
+    if(h && mapping[h[1]]) setMood(h[1]);
+    else setMood('overwhelmed');
+  </script>
+</body>
+</html>

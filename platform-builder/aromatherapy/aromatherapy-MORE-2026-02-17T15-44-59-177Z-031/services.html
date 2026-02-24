@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfaf8;--ink:#20323a;--muted:#6b7d81;--accent:#7aa282;--accent-2:#c97d7d;--card:#fff;--glass:rgba(255,255,255,0.6)}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial; color:var(--ink);background:linear-gradient(180deg,var(--bg) 0%,#f4f6f5 100%);}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:transparent}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none;font-weight:600}
+    main{max-width:1100px;margin:18px auto;padding:22px}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:22px;align-items:start}
+    .hero-card{background:var(--card);padding:28px;border-radius:14px;box-shadow:0 6px 18px rgba(15,20,18,0.06)}
+    h1{margin:0 0 10px 0;font-size:28px}
+    p.lead{margin:0;color:var(--muted)}
+    .cta{display:inline-flex;gap:12px;margin-top:18px}
+    .btn{background:var(--accent);color:white;padding:12px 16px;border-radius:10px;text-decoration:none;font-weight:700}
+    .btn.ghost{background:transparent;border:1px solid rgba(32,50,58,0.06);color:var(--ink)}
+    /* Mood selector */
+    .mood-box{padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(122,162,130,0.06),rgba(201,125,125,0.04));}
+    .mood-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .mood-tile{padding:10px 12px;border-radius:10px;background:var(--card);cursor:pointer;border:1px solid rgba(32,50,58,0.04);font-weight:600}
+    .mood-tile.active{box-shadow:0 6px 14px rgba(122,162,130,0.12);border-color:var(--accent)}
+    .approach{margin-top:16px;padding:14px;border-radius:10px;background:var(--glass)}
+    .approach h3{margin:0 0 8px 0}
+    /* Small wheel preview */
+    .wheel-preview{display:flex;align-items:center;justify-content:center;height:200px}
+    /* Service cards */
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:20px}
+    .service{padding:18px;border-radius:12px;background:var(--card);box-shadow:0 8px 18px rgba(26,40,34,0.04)}
+    .price{font-weight:800;color:var(--accent-2)}
+    /* FAQ */
+    details{margin-top:12px;padding:12px;border-radius:8px;background:#fff;border:1px solid rgba(32,50,58,0.04)}
+    footer{margin-top:28px;padding:18px;text-align:center;color:var(--muted)}
+    /* responsive */
+    @media (max-width:880px){.hero{grid-template-columns:1fr}.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">AR</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Welcome</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Apothecary</a>
+      <a href="pricing.html">Plans</a>
+      <a href="about.html">Our Story</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-card">
+        <h1>What would you like to shift right now?</h1>
+        <p class="lead">Choose the moment that best fits your breath. We'll propose a gentle approach — single session, short course, or an ongoing ritual — and adapt the next step to what you pick. Results vary; may support a sense of calm, focus, or rest.</p>
+
+        <div class="mood-box">
+          <small style="color:var(--muted)">Pick a current state</small>
+          <div class="mood-list" id="moodList">
+            <button class="mood-tile" data-mood="calm">Wired → Calm</button>
+            <button class="mood-tile" data-mood="focus">Scattered → Focus</button>
+            <button class="mood-tile" data-mood="sleep">Tired → Deeper Sleep</button>
+            <button class="mood-tile" data-mood="lift">Low → Uplift</button>
+            <button class="mood-tile" data-mood="reset">Overwhelmed → Reset</button>
+          </div>
+
+          <div class="approach" id="approach">
+            <h3>Suggested approach</h3>
+            <p id="approachText">Select a mood to see a recommended path. All sessions include scent safety guidance; no medical diagnosis. Dilutions and patch-test reminders will be provided.</p>
+          </div>
+
+          <div style="margin-top:12px">
+            <a id="ctaLink" class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            <a class="btn ghost" href="book.html">See session times</a>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="service">
+            <div style="font-size:14px;color:var(--muted)">Signature Sync</div>
+            <div style="font-size:18px;font-weight:800;margin-top:6px">One guided session</div>
+            <div class="price">$85</div>
+            <p style="color:var(--muted);margin-top:10px">A focused 50-minute consultation plus a tailored inhaler or roller to continue practice at home.</p>
+          </div>
+
+          <div class="service">
+            <div style="font-size:14px;color:var(--muted)">Foundations Course</div>
+            <div style="font-size:18px;font-weight:800;margin-top:6px">3-session series</div>
+            <div class="price">$235</div>
+            <p style="color:var(--muted);margin-top:10px">Short lessons on safe blending, ritual design, and pocket practices for daily use.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <aside class="hero-card">
+        <div style="font-weight:700">A quick scent compass</div>
+        <div style="color:var(--muted);margin-top:8px">A concise snapshot of where scent can be most useful. Hover the notes below to learn role and character.</div>
+        <div class="wheel-preview" id="miniWheel" aria-hidden="false">
+          <!-- simple inline SVG wheel (preview) -->
+          <svg width="220" height="220" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#c97d7d"/><stop offset="1" stop-color="#7aa282"/></linearGradient>
+            </defs>
+            <circle cx="110" cy="110" r="100" fill="url(#g1)" opacity="0.06"/>
+            <g font-family="sans-serif" font-size="10" fill="#20323a" text-anchor="middle">
+              <text x="110" y="60">Top</text>
+              <text x="110" y="112">Middle</text>
+              <text x="110" y="170">Base</text>
+            </g>
+          </svg>
+        </div>
+        <p style="color:var(--muted);font-size:13px;margin-top:10px">Notes labeled "Top/Middle/Base" show how a blend unfolds. Hover blends on blends page for full tasting notes.</p>
+      </aside>
+    </section>
+
+    <section style="margin-top:22px">
+      <h2 style="margin:0 0 10px 0">Safety & brief FAQ</h2>
+      <details>
+        <summary>Do I need a patch test or dilution guidance?</summary>
+        <p style="color:var(--muted);margin-top:8px">Yes. For topical use we provide dilution guidelines and ask for a small patch test. We recommend conservative dilutions (1–3%) for most daily blends. Avoid applying undiluted essential oils to skin.</p>
+      </details>
+      <details>
+        <summary>What about pets and pregnancy?</summary>
+        <p style="color:var(--muted);margin-top:8px">Some essential oils are contraindicated in pregnancy and around sensitive animals. We will discuss household members, including pets and pregnancy status, when creating a plan. No medical advice is given; consult your care provider for medical concerns.</p>
+      </details>
+      <details>
+        <summary>Are these medical treatments?</summary>
+        <p style="color:var(--muted);margin-top:8px">No. Aromatherapy may support well-being and routines but is not a substitute for medical care. We focus on safe, sensory-based practices that may support relaxation, focus, or sleep.</p>
+      </details>
+    </section>
+
+    <footer>
+      <div>Questions? Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</div>
+      <div style="margin-top:6px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+    </footer>
+  </main>
+
+  <script>
+    (function(){
+      const map={
+        calm:{text:'Short guided inhalation + at-home inhaler. May support nervous-system ease.',cta:'Book a single session'},
+        focus:{text:'Rather than many scents, a focused inhaler + daytime micro-ritual. May support concentration.',cta:'Get a Focus Kit'},
+        sleep:{text:'Evening ritual with diluted roll-on and sleep-friendly diffuser routine. May support deeper rest.',cta:'Start a Sleep Ritual'},
+        lift:{text:'Bright top-note blend and morning ritual for lifting mood. May support energetic feel.',cta:'Try an Uplift Blend'},
+        reset:{text:'A short reset practice: breathing, grounding scent, and a quick toolkit. May support clarity.',cta:'Request a Reset Session'}
+      };
+
+      const tiles=document.querySelectorAll('.mood-tile');
+      const approachText=document.getElementById('approachText');
+      const ctaLink=document.getElementById('ctaLink');
+      tiles.forEach(t=>t.addEventListener('click',function(){
+        tiles.forEach(s=>s.classList.remove('active'));
+        this.classList.add('active');
+        const m=this.dataset.mood;
+        approachText.textContent=map[m].text;
+        // update CTA label but keep destination dynamic
+        ctaLink.textContent=map[m].cta;
+        // subtle visual feedback
+        ctaLink.animate([{transform:'translateY(-2px)'},{transform:'translateY(0)'}],{duration:240});
+      }));
+
+      // initial selection: gentle prompt
+      // keep primary CTA placeholder visible until mood chosen
+    })();
+  </script>
+</body>
+</html>

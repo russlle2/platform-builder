@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--accent:#6B8E6D;--muted:#6b7280;--bg:#f6fbf7}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:var(--bg);color:#082227}
+    .wrap{max-width:1000px;margin:0 auto;padding:36px}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 0}
+    .brand{font-weight:800;color:var(--accent)}
+    nav a{margin-left:12px;color:#475569;text-decoration:none}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:20px}
+    .card{background:#fff;padding:18px;border-radius:12px;box-shadow:0 8px 24px rgba(12,18,24,0.06)}
+    h1{margin:0 0 6px}
+    .muted{color:var(--muted)}
+    .method{padding:12px;border-radius:10px;background:#f9fff8;border:1px solid #eaf3ec;margin-top:12px}
+    .mood-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .mood{padding:8px 10px;border-radius:8px;border:1px solid #e6f3e9;background:#fff;cursor:pointer}
+    .mood.active{background:var(--accent);color:#fff}
+    .cta{display:inline-block;margin-top:12px;padding:10px 12px;border-radius:8px;background:var(--accent);color:#fff;text-decoration:none}
+    footer{margin-top:28px;padding-top:18px;border-top:1px solid #eef6ee;color:var(--muted)}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <header>
+      <div>
+        <div class='brand'>{{BUSINESS_NAME}}</div>
+        <div class='muted'>Contemporary integrative care</div>
+      </div>
+      <nav>
+        <a href='index.html'>Home</a>
+        <a href='services.html'>Offerings</a>
+        <a href='conditions.html'>Ailments</a>
+        <a href='approach.html'>Our Way</a>
+        <a href='pricing.html'>Investment</a>
+        <a href='about.html'>About</a>
+        <a href='book.html'>Book</a>
+      </nav>
+    </header>
+
+    <main class='grid'>
+      <section>
+        <div class='card'>
+          <h1>Who we are</h1>
+          <p class='muted'>An integrative practice blending evidence, lived experience, and thoughtful rhythm-setting. We listen first, then design practical steps you can try between sessions.</p>
+
+          <h3 style='margin-top:14px'>Our commitments</h3>
+          <ul class='muted'>
+            <li>No overpromises — education and skill-building first</li>
+            <li>Individualized pacing and measurable checkpoints</li>
+            <li>Collaborative records and referrals when helpful</li>
+          </ul>
+
+          <div class='method'>
+            <strong>Our approach</strong>
+            <div class='muted' style='margin-top:6px'>We blend short guided interventions with lifestyle framing to co-create pathways you can maintain. It’s practical, iterative, and tailored.</div>
+          </div>
+
+          <h3 style='margin-top:14px'>Programs rethought</h3>
+          <p class='muted'>We frame care as rhythms: short pulses to clarify, series to re-pattern, and intensives when layered work is needed.</p>
+
+        </div>
+
+        <div style='height:16px'></div>
+
+        <div class='card'>
+          <h3>Meet the lead</h3>
+          <p class='muted'>A clinician with broad training in whole-person care, emphasizing physiology, behavior, and contextual supports. Clinical decisions are collaborative and transparent.</p>
+
+          <h4 style='margin-top:12px'>Clinical ethos</h4>
+          <ol class='muted'>
+            <li>Start with clarity: what matters most now?</li>
+            <li>Design for your life’s rhythm</li>
+            <li>Measure, adapt, and teach skills you keep</li>
+          </ol>
+        </div>
+      </section>
+
+      <aside>
+        <div class='card'>
+          <div class='muted'>Feeling this page — now what?</div>
+          <div class='mood-row' id='moodBtns'>
+            <div class='mood' data-key='curious'>Curious</div>
+            <div class='mood' data-key='ready'>Ready to change</div>
+            <div class='mood' data-key='overloaded'>Overloaded</div>
+          </div>
+
+          <div id='methodPreview' style='margin-top:12px'>
+            <strong>Choose a state to see a suggested path</strong>
+          </div>
+
+          <a id='bookCta' class='cta' href='book.html'>Book a consult</a>
+
+        </div>
+
+        <div style='height:12px'></div>
+
+        <div class='card'>
+          <div class='muted'>Practicalities</div>
+          <div style='margin-top:8px' class='muted'>Sessions by appointment. Insurance friendly documentation provided; some services are self-pay options.</div>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      <div class='muted'>{{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a></div>
+    </footer>
+  </div>
+
+  <script>
+    (function(){
+      const map = {
+        curious:{title:'Start with a Pulse Tune',desc:'A single consult to orient, prioritize, and leave with a short plan.',cta:'Schedule a Pulse',href:'book.html?program=tune'},
+        ready:{title:'Consider the Alignment Series',desc:'Week-to-week supports and practice windows for steady change.',cta:'Enroll in Alignment',href:'book.html?program=align'},
+        overloaded:{title:'Begin with immediate relief',desc:'A Pulse Tune plus quick practical steps to reduce burden, then plan next moves.',cta:'Book Immediate Tune',href:'book.html?program=tune'}
+      };
+
+      const moodBtns = document.getElementById('moodBtns');
+      const preview = document.getElementById('methodPreview');
+      const bookCta = document.getElementById('bookCta');
+
+      moodBtns.addEventListener('click',function(e){
+        const btn = e.target.closest('.mood');
+        if(!btn) return;
+        [...moodBtns.children].forEach(n=>n.classList.remove('active'));
+        btn.classList.add('active');
+        const key = btn.getAttribute('data-key');
+        const info = map[key];
+        preview.innerHTML = '<strong>'+info.title+'</strong><div style="margin-top:8px" class="muted">'+info.desc+'</div>';
+        bookCta.textContent = info.cta; bookCta.href = info.href;
+      });
+    })();
+  </script>
+</body>
+</html>

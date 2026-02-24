@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Method — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfffe;--accent:#3b8276;--muted:#4d5a56}
+    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;margin:0;background:var(--bg);color:#092420}
+    header{display:flex;justify-content:space-between;align-items:center;padding:14px 22px;background:linear-gradient(180deg,#ffffffcc,#f9fffc);backdrop-filter:blur(6px);position:sticky;top:0}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#2f6f63,#5fb39f);display:flex;align-items:center;justify-content:center;color:white;font-weight:800}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none}
+    .container{max-width:1000px;margin:28px auto;padding:20px}
+    .hero{padding:18px;border-radius:12px;background:white;border:1px solid rgba(6,10,8,0.04);display:flex;gap:18px}
+    .col{flex:1}
+    .aside{width:320px}
+    .step{background:linear-gradient(180deg,#fff,#f6fff9);padding:12px;border-radius:10px;margin-bottom:10px;border:1px solid rgba(10,20,18,0.04)}
+    .micro{display:flex;gap:8px;flex-wrap:wrap}
+    .micro .chip{background:#f0fff9;padding:8px 10px;border-radius:8px;border:1px solid rgba(46,125,106,0.06)}
+    .btn{background:var(--accent);color:white;padding:10px 12px;border-radius:8px;text-decoration:none;font-weight:700}
+    /* modal repeated here too */
+    .modal{position:fixed;inset:0;background:rgba(8,12,11,0.45);display:none;align-items:center;justify-content:center;padding:24px}
+    .modal.open{display:flex}
+    .modal-card{width:720px;max-width:100%;background:white;border-radius:12px;padding:18px}
+    .breath-visual{width:200px;height:200px;border-radius:50%;margin:14px auto;background:conic-gradient(from 90deg, rgba(59,130,121,0.15), transparent);display:flex;align-items:center;justify-content:center}
+    footer{max-width:1000px;margin:28px auto;padding:18px;color:var(--muted)}
+    @media(max-width:880px){.hero{flex-direction:column}.aside{width:100%}} 
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="logo">HM</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Conditions</a>
+      <a href="approach.html" style="color:var(--accent)">Method</a>
+      <a href="book.html">Book</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="hero">
+      <div class="col">
+        <h1 style="margin-top:0">A practical method for layered care</h1>
+        <p class="muted">We combine assessment, short tests (experiments), and routine supports so recommendations are measurable and revisable. The result: clear early wins and a plan that fits your real schedule.</p>
+
+        <div style="margin-top:12px">
+          <h3>Three core moves</h3>
+          <div class="step"><strong>1. Clarify context</strong> — start with a compact timeline and daily map so we can see the real constraints.</div>
+          <div class="step"><strong>2. Run small experiments</strong> — one change at a time, typically 1–2 weeks, to learn what helps without overload.</div>
+          <div class="step"><strong>3. Build durable routines</strong> — layer micro-habits into existing anchors like morning or bedtime rituals.</div>
+        </div>
+
+        <div style="margin-top:14px">
+          <h3>Measurements we use</h3>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px">
+            <div class="chip">Simple symptom log</div>
+            <div class="chip">One-minute energy check</div>
+            <div class="chip">Sleep timing diary</div>
+            <div class="chip">Micro-habit streaks</div>
+          </div>
+        </div>
+
+        <div style="margin-top:18px;display:flex;gap:10px">
+          <a class="btn" href="book.html">Reserve a planning visit</a>
+          <button style="background:#eaf6f3;border:0;padding:10px 12px;border-radius:8px;cursor:pointer" id="openPractice">Open a guided exercise</button>
+        </div>
+
+      </div>
+
+      <aside class="aside">
+        <div style="padding:14px;background:white;border-radius:10px;border:1px solid rgba(6,10,8,0.04)">
+          <h4 style="margin-top:0">Sample first-session agenda</h4>
+          <div style="color:var(--muted)">
+            <ul style="padding-left:18px">
+              <li>10 min: goals & priorities</li>
+              <li>15 min: symptom/time mapping</li>
+              <li>10 min: select one experiment</li>
+              <li>5 min: plan follow-up</li>
+            </ul>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;padding:14px;background:white;border-radius:10px;border:1px solid rgba(6,10,8,0.04)">
+          <h4 style="margin-top:0">Micro-habit ideas</h4>
+          <div class="micro" style="margin-top:8px">
+            <div class="chip">3 breaths on wake</div>
+            <div class="chip">2-minute journaling</div>
+            <div class="chip">Night checklist (3 items)</div>
+            <div class="chip">Gentle stretch before coffee</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <section style="margin-top:18px;background:white;padding:14px;border-radius:10px;border:1px solid rgba(6,10,8,0.04)">
+      <h3 style="margin-top:0">Tools you can use between visits</h3>
+      <p class="muted">We emphasize low-friction tools that teach you as you do them: short logs, 1-question daily check-ins, and a handful of micro-habits you can sustain. These make follow-ups more informative and less wasteful.</p>
+    </section>
+
+  </div>
+
+  <div id="practiceModal" class="modal" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <strong id="prTitle">Guided practice</strong>
+          <div style="font-size:13px;color:var(--muted)">Short tools to ground attention. Choose one.</div>
+        </div>
+        <button id="closePractice">✕</button>
+      </div>
+
+      <div style="margin-top:12px;display:flex;gap:12px;align-items:center">
+        <select id="prType" style="padding:8px;border-radius:8px;border:1px solid #e6ece5">
+          <option value="breath">Breathing (3-min)</option>
+          <option value="journal">Quick journaling</option>
+          <option value="intent">Intention setting</option>
+        </select>
+        <button id="prStart" style="padding:8px 12px;border-radius:8px;background:var(--accent);color:white;border:0">Start</button>
+      </div>
+
+      <div id="prArea" style="margin-top:14px"></div>
+    </div>
+  </div>
+
+  <footer>
+    <div style="max-width:1000px;margin:0 auto;padding:18px;color:var(--muted)">If you have questions about our approach or need resources for a specific condition, email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a>.</div>
+  </footer>
+
+  <script>
+    // Duplicate guided exercise (different UI) to satisfy feature requirement
+    const openPractice = document.getElementById('openPractice');
+    const practiceModal = document.getElementById('practiceModal');
+    const closePractice = document.getElementById('closePractice');
+    const prStart = document.getElementById('prStart');
+    const prArea = document.getElementById('prArea');
+    const prType = document.getElementById('prType');
+    const prTitle = document.getElementById('prTitle');
+
+    openPractice.addEventListener('click', ()=>{ practiceModal.classList.add('open'); });
+    closePractice.addEventListener('click', ()=>{ practiceModal.classList.remove('open'); clearInterval(window._prInterval); });
+    practiceModal.addEventListener('click', (e)=>{ if(e.target===practiceModal) { practiceModal.classList.remove('open'); clearInterval(window._prInterval);} });
+
+    prStart.addEventListener('click', ()=>{
+      const t = prType.value; prTitle.textContent = {breath:'Breathing set',journal:'Journaling prompt',intent:'Set an intention'}[t];
+      prArea.innerHTML = '';
+      if(t==='breath') renderBreath2();
+      if(t==='journal') renderJournal2();
+      if(t==='intent') renderIntent2();
+    });
+
+    function renderBreath2(){
+      prArea.innerHTML = '<div class="breath-visual" id="bv"><div style="text-align:center"><div style="font-weight:800" id="bvLabel">Ready</div></div></div><div style="text-align:center;margin-top:10px"><button id="bvStart">Begin 3-min</button></div>';
+      document.getElementById('bvStart').addEventListener('click', ()=>{
+        const lab = document.getElementById('bvLabel'); const vis = document.getElementById('bv');
+        let total = 180; let phase = 0; const pattern=[4,1,6,1]; let remain=pattern[0];
+        window._prInterval = setInterval(()=>{
+          total--; remain--; if(remain<=0){ phase=(phase+1)%4; remain=pattern[phase]; }
+          vis.style.transform = 'scale('+(1 + (phase===0?0.22: phase===2?0.22:0))+')';
+          lab.textContent = Math.max(0,total)+'s — '+['inhale','hold','exhale','hold'][phase];
+          if(total<=0){ clearInterval(window._prInterval); lab.textContent='Done'; }
+        },1000);
+      });
+    }
+
+    function renderJournal2(){
+      prArea.innerHTML = '<div style="font-size:14px;color:var(--muted)">Prompt: What is one part of today I can make easier?</div><textarea style="width:100%;min-height:120px;margin-top:8px;padding:10px;border-radius:8px;border:1px solid #e6ece5" id="j2"></textarea><div style="display:flex;gap:8px;margin-top:8px"><button id="j2Save" class="btn">Save</button><button id="j2Clear" class="secondary">Clear</button></div><div id="j2State" style="margin-top:8px;color:var(--muted)"></div>';
+      document.getElementById('j2Save').addEventListener('click', ()=>{ const v=document.getElementById('j2').value.trim(); if(!v){document.getElementById('j2State').textContent='Write something.';return;} localStorage.setItem('hm_quick_journal',v); document.getElementById('j2State').textContent='Saved locally.'; });
+      document.getElementById('j2Clear').addEventListener('click', ()=>{ document.getElementById('j2').value=''; document.getElementById('j2State').textContent='Cleared.'; });
+    }
+
+    function renderIntent2(){
+      prArea.innerHTML = '<div style="font-size:14px;color:var(--muted)">Pick one tiny thing you will try today.</div><input style="width:100%;padding:10px;border-radius:8px;border:1px solid #e6ece5;margin-top:8px" id="i2"><div style="display:flex;gap:8px;margin-top:8px"><button id="i2Set" class="btn">Set</button><button id="i2Remove" class="secondary">Remove</button></div><div id="i2State" style="margin-top:8px;color:var(--muted)"></div>';
+      document.getElementById('i2Set').addEventListener('click', ()=>{ const v=document.getElementById('i2').value.trim(); if(!v){document.getElementById('i2State').textContent='Keep it specific and small.';return;} localStorage.setItem('hm_intent_v2',v); document.getElementById('i2State').textContent='Intention set: '+v; });
+      document.getElementById('i2Remove').addEventListener('click', ()=>{ localStorage.removeItem('hm_intent_v2'); document.getElementById('i2State').textContent='Removed.'; document.getElementById('i2').value=''; });
+    }
+  </script>
+</body>
+</html>

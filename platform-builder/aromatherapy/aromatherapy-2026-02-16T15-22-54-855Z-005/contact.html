@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Contact - {{BUSINESS_NAME}}</title>
+<style>
+:root{--accent:#7fb77e;--accent-dark:#3f6b4a;--bg:#fbfbfa;--muted:#6b6b6b}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(250,250,248,0.9)),url('assets/img/pattern.svg');background-size:300px; color:#222}
+.header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:linear-gradient(90deg,rgba(127,183,126,0.12),rgba(63,107,74,0.04));backdrop-filter:blur(6px)}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-dark));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;box-shadow:0 4px 14px rgba(63,107,74,0.12)}
+.nav a{margin:0 10px;color:var(--accent-dark);text-decoration:none;font-weight:600}
+.hero{padding:48px 28px;display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start}
+.hero-card{background:white;border-radius:14px;padding:28px;box-shadow:0 10px 30px rgba(0,0,0,0.06)}
+.hero h1{margin:0 0 10px;font-size:28px;color:var(--accent-dark)}
+.hero p{margin:0 0 16px;color:var(--muted)}
+.contact-panel{background:linear-gradient(180deg,white, #fbfffb);border-radius:12px;padding:18px}
+.field{display:flex;flex-direction:column;margin-bottom:12px}
+.field label{font-size:13px;color:#4b4b4b;margin-bottom:6px}
+.field input,.field textarea,.select{padding:10px;border:1px solid #e6e6e6;border-radius:8px;font-size:14px}
+.button{display:inline-block;background:var(--accent-dark);color:white;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+.social-proof{display:flex;gap:12px;margin-top:14px;align-items:center}
+.pill{background:rgba(127,183,126,0.12);padding:8px 12px;border-radius:999px;font-weight:700;color:var(--accent-dark)}
+.grid-two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.section{margin:20px 0}
+.benefits ul{padding-left:18px;color:#333}
+.process ol{padding-left:18px}
+.faq details{margin-bottom:8px;padding:12px;background:#fff;border-radius:8px;border:1px solid #f0f0f0}
+.lead{display:flex;gap:12px;align-items:center}
+.footer{padding:20px 28px;color:var(--muted);font-size:14px;border-top:1px solid #f0f0f0;margin-top:28px}
+@media(max-width:880px){.hero{grid-template-columns:1fr;}.contact-panel{order:2}}
+</style>
+</head>
+<body>
+<header class="header">
+<div class="brand"><div class="logo">A</div><div><div style="font-weight:800">{{BUSINESS_NAME}}</div><div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div></div></div>
+<nav class="nav"><a href="index.html">Home</a><a href="services.html">Offerings</a><a href="blends.html">Blends</a><a href="shop.html">Shop</a><a href="book.html">Book</a><a href="contact.html" aria-current="page">Connect</a></nav>
+</header>
+
+<main>
+<section class="hero">
+<div class="hero-card">
+<h1>Let’s design a calming, safety-first aromatherapy plan</h1>
+<p>Practical, evidence-aware aromatherapy sessions and a VIP day option to create blends and routines tailored to your lifestyle. No medical promises — just thoughtful scent support and best-practice safety guidance.</p>
+<div class="social-proof">
+<div class="pill">VIP Day available</div>
+<div style="font-size:13px;color:var(--muted)">Trusted by clients in {{CITY}}, {{STATE}}</div>
+</div>
+
+<div class="section benefits">
+<h2 style="margin-top:18px">What I focus on</h2>
+<ul>
+<li>Personalized scent profiles with dilution & safety plans</li>
+<li>Education on safe topical use, patch testing, and pet-friendly choices</li>
+<li>Blend recipes and a take-home protocol for daily use</li>
+</ul>
+</div>
+
+<div class="section process">
+<h2>How a VIP Day or session flows</h2>
+<ol>
+<li>Intro call: we review goals and safety considerations</li>
+<li>Session & scent discovery: guided inhalation and blending (non-medical)</li>
+<li>Documentation: recipes, dilution guidelines, and aftercare notes</li>
+</ol>
+</div>
+</div>
+
+<aside class="contact-panel">
+<h3 style="margin-top:0">Book or send a quick message</h3>
+<form action="{{PRIMARY_CTA_URL}}" method="post" onsubmit="event.preventDefault();alert('Form submitted — replace handler with real endpoint');" aria-label="Contact form">
+<div class="field"><label for="name">Name</label><input id="name" name="name" type="text" placeholder="Your name"></div>
+<div class="field"><label for="email">Email</label><input id="email" name="email" type="email" placeholder="{{EMAIL}}"></div>
+<div class="field"><label for="phone">Phone</label><input id="phone" name="phone" type="tel" placeholder="{{PHONE}}"></div>
+<div class="field"><label for="reason">Reason</label><select id="reason" name="reason" class="select"><option>Book VIP Day</option><option>Single session</option><option>Retail inquiry</option><option>Other</option></select></div>
+<div class="field"><label for="msg">Tell me briefly</label><textarea id="msg" name="message" rows="4" placeholder="Anything to share about sensitivities, pregnancy, pets, or preferences"></textarea></div>
+<div style="display:flex;gap:8px;align-items:center;justify-content:space-between">
+<a class="button" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+<button class="button" style="background:transparent;border:1px solid var(--accent-dark);color:var(--accent-dark)" onclick="alert('Message sent — demo only');return false;">Send message</button>
+</div>
+</form>
+
+<div style="margin-top:12px;font-size:13px;color:var(--muted)">
+<div><strong>Phone:</strong> <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+<div><strong>Email:</strong> <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+<div style="margin-top:8px">Serving: {{CITY}}, {{STATE}}</div>
+</div>
+</aside>
+</section>
+
+<section class="section" style="padding:0 28px">
+<h2>Common questions — safety first</h2>
+<div class="faq">
+<details open><summary style="font-weight:700">What dilution should I use for topical blends?</summary><div style="padding-top:8px;color:var(--muted)">Dilution depends on age, sensitivity, and purpose. A typical starting point for adults is 1–3% for general use and up to 5% for short-term targeted application. I always provide exact recipes and encourage patch testing. This is educational guidance, not medical advice.</div></details>
+
+<details><summary style="font-weight:700">How do I do a patch test?</summary><div style="padding-top:8px;color:var(--muted)">Apply a small amount of the diluted blend (a drop) to the inside of the forearm, cover with a bandage, and wait 24 hours. If irritation, redness, or itching occurs, discontinue use. We’ll walk through this in sessions.</div></details>
+
+<details><summary style="font-weight:700">Are essential oils safe for pets?</summary><div style="padding-top:8px;color:var(--muted)">Some oils can be harmful to pets. We prioritize pet-safe recommendations and will avoid or substitute oils known to be problematic. Always consult your veterinarian for specific medical concerns.</div></details>
+
+<details><summary style="font-weight:700">Pregnancy and breastfeeding considerations?</summary><div style="padding-top:8px;color:var(--muted)">Several oils are contraindicated during pregnancy or breastfeeding. I provide conservative, research-informed options and will refer to qualified medical professionals when appropriate. Your safety is the priority.</div></details>
+</div>
+</section>
+
+<section class="section" style="padding:0 28px">
+<h2>Download: Practical safety checklist</h2>
+<div class="lead">
+<form onsubmit="event.preventDefault();alert('Checklist emailed — demo');" style="display:flex;gap:8px;align-items:center">
+<input type="email" placeholder="Your email" style="padding:10px;border-radius:8px;border:1px solid #e6e6e6">
+<button class="button">Send checklist</button>
+</form>
+<div style="font-size:13px;color:var(--muted)">A concise one-page guide covering dilution, patch tests, pet & pregnancy notes — ideal before a session.</div>
+</div>
+</section>
+
+<section class="section" style="padding:0 28px">
+<h2>Ready to book a focused VIP Day?</h2>
+<p style="color:var(--muted)">In a VIP day we create blends, protocols, and a step-by-step plan you can follow at home. Includes a printed recipe kit and dilution chart.</p>
+<a class="button" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+</section>
+
+</main>
+
+<footer class="footer">
+<div>{{PRACTITIONER_NAME}} — {{BUSINESS_NAME}} · <a href="book.html">Schedule</a> · <a href="privacy.html">Privacy</a></div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Investment — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--glass:#ffffff22;--glass-2:#ffffff16;--accent:#4a8f7e;--muted:#7b8a90;--bg:#f4f7f6;--card:#ffffffee}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#123; background:linear-gradient(180deg,var(--bg),#eef3f2);}
+    .app{min-height:100vh;display:flex;flex-direction:column;background-image:url('assets/img/pattern.svg');background-repeat:repeat;}
+    header{backdrop-filter:blur(8px);background:linear-gradient(90deg,var(--glass),transparent);border-bottom:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:space-between;padding:18px 28px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#6fb7a3);display:grid;place-items:center;color:white;font-weight:700}
+    nav a{margin:0 10px;color:rgba(0,10,12,0.7);text-decoration:none;font-weight:600}
+    .hero{padding:48px 28px;display:flex;gap:24px;align-items:center}
+    .hero-left{flex:1}
+    h1{margin:0 0 8px 0;font-size:28px}
+    p.lead{margin:0;color:var(--muted)}
+    .controls{display:flex;gap:14px;align-items:center;margin-top:18px}
+    .toggle{background:var(--glass-2);border-radius:999px;padding:6px;border:1px solid rgba(255,255,255,0.06);display:inline-flex}
+    .toggle button{border:0;background:transparent;padding:8px 12px;border-radius:999px;cursor:pointer;color:var(--muted);font-weight:600}
+    .toggle button.active{background:linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02));color:var(--accent);box-shadow:0 6px 18px rgba(20,30,30,0.06)}
+    .plans{display:flex;gap:18px;padding:20px 28px 48px}
+    .card{background:var(--card);border-radius:14px;padding:18px;flex:1;box-shadow:0 8px 30px rgba(16,22,24,0.06);border:1px solid rgba(255,255,255,0.5)}
+    .card h3{margin:0 0 10px 0}
+    .price{font-size:26px;color:var(--accent);font-weight:800}
+    .meta{color:var(--muted);margin-top:6px}
+    .features{margin:12px 0 18px 0;color:#334}
+    .cta{display:inline-block;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#6fb7a3);color:#fff;text-decoration:none;font-weight:700}
+    footer{margin-top:auto;padding:18px 28px;color:var(--muted);font-size:13px}
+    /* small */
+    @media(max-width:880px){.plans{flex-direction:column}.hero{padding:28px}.hero-left h1{font-size:22px}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <div class="logo">HM</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div style="font-size:12px;color:var(--muted)">{{CITY}}, {{STATE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Welcome</a>
+        <a href="services.html">Offerings</a>
+        <a href="conditions.html">Ailments</a>
+        <a href="approach.html">Method</a>
+        <a href="pricing.html">Investment</a>
+        <a href="about.html">Who We Are</a>
+        <a href="book.html">Reserve</a>
+        <a href="contact.html">Reach Out</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-left">
+          <h1>Membership and short programs designed for real life shifts</h1>
+          <p class="lead">Flexible participation, clear milestones, and guided adjustments across body, mind, and lifestyle. Choose what fits your season.</p>
+
+          <div class="controls">
+            <div class="toggle" role="tablist" aria-label="Pricing view">
+              <button id="btn-monthly" class="active" aria-pressed="true">Monthly</button>
+              <button id="btn-package" aria-pressed="false">3-Month Package</button>
+            </div>
+            <div style="color:var(--muted);font-size:14px">Toggle to compare recurring vs. bundled engagement.</div>
+          </div>
+        </div>
+
+        <div style="max-width:360px">
+          <div style="background:var(--glass);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.06);">
+            <strong>Need help deciding?</strong>
+            <p style="margin:8px 0 0;color:var(--muted)">Try the "Mood-to-Method" in our About page to tailor a recommendation to how you feel today.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="plans" aria-live="polite">
+        <article class="card" data-monthly="89" data-package="240">
+          <h3>Starter Circle</h3>
+          <div class="price"><span class="num">89</span><span style="font-size:13px;color:var(--muted)"> /mo</span></div>
+          <div class="meta">Monthly access + biweekly group check-ins</div>
+          <div class="features">Weekly practices, resource library, monthly Q&amp;A</div>
+          <a class="cta" href="{{PRIMARY_CTA_URL}}">Join Starter</a>
+        </article>
+
+        <article class="card" data-monthly="169" data-package="460">
+          <h3>Root Support</h3>
+          <div class="price"><span class="num">169</span><span style="font-size:13px;color:var(--muted)"> /mo</span></div>
+          <div class="meta">One-on-one check-ins + personalized plan</div>
+          <div class="features">Initial consultation, monthly progress session, targeted adjustments</div>
+          <a class="cta" href="{{PRIMARY_CTA_URL}}">Enroll in Root Support</a>
+        </article>
+
+        <article class="card" data-monthly="329" data-package="880">
+          <h3>Foundations Intensive</h3>
+          <div class="price"><span class="num">329</span><span style="font-size:13px;color:var(--muted)"> /mo</span></div>
+          <div class="meta">Comprehensive plan with priority access</div>
+          <div class="features">Deep intake, weekly touchpoints, customized toolkit</div>
+          <a class="cta" href="{{PRIMARY_CTA_URL}}">Start Foundations</a>
+        </article>
+      </section>
+
+      <section style="padding:0 28px 28px">
+        <div style="display:flex;gap:18px;flex-wrap:wrap">
+          <div style="flex:1;min-width:240px;background:var(--card);padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.5)">
+            <h4 style="margin:0 0 6px 0">Save with packages</h4>
+            <p style="margin:0;color:var(--muted)">Three-month bundles reflect focused change cycles — clear checkpoints and measurable adjustments.</p>
+          </div>
+          <div style="flex:2;min-width:240px;background:var(--card);padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.5)">
+            <h4 style="margin:0 0 6px 0">Questions about fit?</h4>
+            <p style="margin:0;color:var(--muted)">Call us at {{PHONE}} or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> for a short fit conversation before committing.</p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
+        <div>{{BUSINESS_NAME}} &mdash; Membership offerings. No medical guarantees. Educational and supportive services only.</div>
+        <div style="color:var(--muted)">© <span id="year"></span></div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // pricing toggle with animated numbers
+    const btnMonthly = document.getElementById('btn-monthly');
+    const btnPackage = document.getElementById('btn-package');
+    const cards = document.querySelectorAll('.card');
+
+    function animateValue(el, start, end, duration){
+      const startTime = performance.now();
+      function tick(now){
+        const dt = Math.min(1, (now - startTime) / duration);
+        const val = Math.round(start + (end - start) * dt);
+        el.textContent = val;
+        if(dt < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+
+    function setMode(mode){
+      const isMonthly = mode === 'monthly';
+      btnMonthly.classList.toggle('active', isMonthly);
+      btnPackage.classList.toggle('active', !isMonthly);
+      btnMonthly.setAttribute('aria-pressed', isMonthly);
+      btnPackage.setAttribute('aria-pressed', !isMonthly);
+
+      cards.forEach(card =>{
+        const numEl = card.querySelector('.num');
+        const from = parseInt(numEl.textContent,10) || 0;
+        const to = parseInt(card.getAttribute(isMonthly ? 'data-monthly' : 'data-package'),10);
+        const suffix = isMonthly ? ' /mo' : ' per 3 mo';
+        animateValue(numEl, from, to, 600);
+        // update trailing text
+        const small = card.querySelector('.price span[style]');
+        if(small){
+          small.textContent = isMonthly ? ' /mo' : ' per 3 mo';
+        }
+      });
+    }
+
+    btnMonthly.addEventListener('click',()=>setMode('monthly'));
+    btnPackage.addEventListener('click',()=>setMode('package'));
+
+    // initial mode
+    setMode('monthly');
+  </script>
+</body>
+</html>

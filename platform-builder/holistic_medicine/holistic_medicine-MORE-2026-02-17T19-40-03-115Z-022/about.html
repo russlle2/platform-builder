@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fffefc;--ink:#0c1a1a;--accent:#3b7d6b;--muted:#697677}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:var(--ink);background:var(--bg)}
+    header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.2rem;border-bottom:1px solid rgba(11,23,32,0.04)}
+    nav a{margin:0 .5rem;color:var(--muted);text-decoration:none}
+    main{max-width:920px;margin:2rem auto;padding:1.2rem}
+    .lead{font-size:1.05rem;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:1fr;gap:1rem}
+    .bio{background:linear-gradient(180deg,rgba(59,125,107,0.04),transparent);padding:1rem;border-radius:12px}
+    .inventory{margin-top:1rem;padding:1rem;background:#fff;border-radius:12px;border:1px solid rgba(11,23,32,0.03)}
+    .areas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem}
+    label{display:flex;gap:.5rem;align-items:center;cursor:pointer}
+    input[type=checkbox]{width:18px;height:18px}
+    .result{margin-top:1rem;padding:.9rem;background:linear-gradient(180deg,rgba(59,125,107,0.02),transparent);border-radius:10px}
+    button{background:var(--accent);color:#fff;border:0;padding:.5rem .8rem;border-radius:8px}
+    footer{padding:1.2rem;text-align:center;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+    <nav aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="approach.html">Method</a>
+      <a href="pricing.html">Investment</a>
+      <a href="book.html">Plan a Visit</a>
+    </nav>
+  </header>
+  <main>
+    <section class="grid">
+      <div class="bio">
+        <h1>Roots and approach</h1>
+        <p class="lead">We weave clinical knowledge, lifestyle practice, and context-aware listening into care that helps you decide what to try next. Education and shared planning are core — not promises.</p>
+        <p style="color:var(--muted);margin-top:.8rem">Every relationship starts with an intake that clarifies goals and constraints. From there, we shape a clear agenda and an accountable cadence.</p>
+      </div>
+
+      <div class="inventory" aria-labelledby="inventory-title">
+        <h2 id="inventory-title">Whole-person inventory</h2>
+        <p class="lead">Check the areas you want to include in your first conversation. We translate your selections into a focused consultation agenda and a suggested follow-up cadence.</p>
+        <form id="inventoryForm">
+          <div class="areas">
+            <label><input type="checkbox" name="areas" value="Sleep"> Sleep & rest</label>
+            <label><input type="checkbox" name="areas" value="Stress"> Stress & mood</label>
+            <label><input type="checkbox" name="areas" value="Nutrition"> Nutrition & digestion</label>
+            <label><input type="checkbox" name="areas" value="Movement"> Movement & recovery</label>
+            <label><input type="checkbox" name="areas" value="Energy"> Energy & focus</label>
+            <label><input type="checkbox" name="areas" value="Relationships"> Relationships & boundaries</label>
+            <label><input type="checkbox" name="areas" value="Work"> Work life & rhythm</label>
+            <label><input type="checkbox" name="areas" value="Medical"> Medical history & meds</label>
+          </div>
+          <div style="margin-top:.8rem;display:flex;gap:.6rem">
+            <button type="button" onclick="generateAgenda()">Build agenda</button>
+            <button type="button" onclick="resetInventory()" style="background:transparent;border:1px solid rgba(11,23,32,0.06);color:var(--muted);padding:.45rem .7rem;border-radius:8px">Clear</button>
+          </div>
+        </form>
+
+        <div id="inventoryResult" class="result" aria-live="polite" style="display:none"></div>
+      </div>
+
+      <div style="background:#fff;padding:1rem;border-radius:12px;border:1px solid rgba(11,23,32,0.03)">
+        <h3>Our promise</h3>
+        <p class="lead">We commit to clear steps and realistic check-ins. Clinical recommendations are educational; we will coordinate with other providers when appropriate.</p>
+        <p style="color:var(--muted)">To talk about booking: <button onclick="location.href='book.html'">{{PRIMARY_CTA_LABEL}}</button></p>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <small>{{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></small>
+  </footer>
+
+  <script>
+    function generateAgenda(){
+      const checkboxes = Array.from(document.querySelectorAll('#inventoryForm input[name="areas"]'));
+      const checked = checkboxes.filter(c => c.checked).map(c => c.value);
+      const result = document.getElementById('inventoryResult');
+      if(checked.length===0){
+        result.style.display='block';
+        result.textContent='Select at least one area to build an agenda.';
+        return;
+      }
+      // Build consultation agenda
+      const agenda = [];
+      agenda.push('Intake goals: clarify what you most want to change and what matters right now.');
+      agenda.push('Areas to cover: '+checked.join(', ')+'.');
+      agenda.push('Focused assessments: brief screening and priorities discussion for each checked area.');
+      agenda.push('Actionable steps: 2–4 initial practices or adjustments with rationale.');
+      // Follow-up cadence heuristic
+      let cadence='';
+      if(checked.length<=2) cadence='One follow-up in 2–3 weeks to review simple adjustments.';
+      else if(checked.length<=4) cadence='Follow-up every 2 weeks for the first 2 months to iterate practices and check metrics.';
+      else cadence='Weekly check-ins for the first month, then biweekly as we stabilize shared goals.';
+
+      const plaintext = 'Consultation Agenda:\n- '+agenda.join('\n- ')+'\n\nSuggested follow-up cadence:\n'+cadence;
+      result.style.display='block';
+      result.innerHTML='<pre style="white-space:pre-wrap;margin:0">'+plaintext.replace(/\n/g,'\n')+'</pre><div style="margin-top:.6rem"><button onclick="copyText(`'+escapeForCopy(plaintext)+'')">Copy agenda</button></div>';
+    }
+    function resetInventory(){
+      document.querySelectorAll('#inventoryForm input[name="areas"]').forEach(i=>i.checked=false);
+      const r=document.getElementById('inventoryResult');r.style.display='none';r.textContent='';
+    }
+    function copyText(t){
+      const unescaped = unescapeForCopy(t);
+      navigator.clipboard.writeText(unescaped).then(()=>{alert('Agenda copied to clipboard')});
+    }
+    function escapeForCopy(s){
+      return s.replace(/\\/g,'\\\\').replace(/`/g,'\\`');
+    }
+    function unescapeForCopy(s){return s}
+  </script>
+</body>
+</html>

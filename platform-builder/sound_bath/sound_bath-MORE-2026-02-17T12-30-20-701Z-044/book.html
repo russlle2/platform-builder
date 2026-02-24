@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Choose your sound intensity and book an immersive session in {{CITY}}, {{STATE}}">
+  <style>
+    :root{--bg:#041418;--muted:#bfe9e8;--card:#062425;--accent:#8fd6d6;--cta:#d4fbfb}
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#021315 0%,#051d1d 100%);color:#e8fbfb}
+    header{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;background:rgba(255,255,255,0.02)}
+    .logo{width:40px;height:40px;border-radius:8px;background:linear-gradient(135deg,#caf3f3,#7ecfcf);display:grid;place-items:center;color:#042425;font-weight:800}
+    nav{display:flex;gap:12px}
+    nav a{color:var(--muted);text-decoration:none}
+    main{max-width:1060px;margin:22px auto;padding:18px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px}
+    h1{margin:0 0 8px 0}
+    .mixer{display:flex;gap:10px;align-items:center;margin-top:14px}
+    .mixer button{flex:1;padding:10px;border-radius:10px;border:0;background:rgba(255,255,255,0.02);color:var(--muted);font-weight:700;cursor:pointer}
+    .mixer button.active{background:linear-gradient(90deg,var(--accent),#6fbdbd);color:#012222}
+    .programs{display:grid;gap:12px;margin-top:16px}
+    .prog{padding:12px;border-radius:10px;background:rgba(255,255,255,0.02);display:flex;justify-content:space-between;align-items:center}
+    .price{font-weight:800;color:var(--cta)}
+    .bookform{display:flex;flex-direction:column;gap:10px}
+    input,select{padding:10px;border-radius:8px;border:0;background:rgba(255,255,255,0.03);color:inherit}
+    .reserve{padding:12px;border-radius:10px;border:0;background:var(--cta);color:#042425;font-weight:800;cursor:pointer}
+    .small{font-size:13px;color:var(--muted)}
+    .testimonials{margin-top:18px}
+    .testimonials blockquote{margin:0;color:var(--muted);font-style:italic}
+    .disclaimer{font-size:13px;color:#bfe9e8;margin-top:12px}
+    footer{padding:18px;color:var(--muted);display:flex;justify-content:space-between}
+    @media (max-width:980px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="logo">SB</div>
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="events.html">Offerings</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">Q&amp;A</a>
+      <a href="book.html">Reserve</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="grid">
+      <div>
+        <div class="card">
+          <h1>Reserve an immersion</h1>
+          <p class="small">Choose a sound preference and see personalized program suggestions. We call the setting a 'preference' because the facilitator can adapt dynamics at the door.</p>
+
+          <div class="mixer" role="tablist" aria-label="Sound preference">
+            <button id="gentle" data-level="gentle">Gentle</button>
+            <button id="medium" data-level="medium">Medium</button>
+            <button id="intense" data-level="intense">Intense</button>
+          </div>
+
+          <div class="programs" id="programs">
+            <!-- program cards injected here -->
+          </div>
+
+          <div style="margin-top:12px" class="small">Pricing shown below is illustrative; final options appear on confirmation.</div>
+
+          <div class="disclaimer">If you have epilepsy, a cardiac implant, are pregnant with specific guidance, or are in acute psychiatric crisis, contact us before booking. We can discuss adaptations or alternatives.</div>
+        </div>
+
+        <div class="card testimonials">
+          <h4 style="margin-top:0">What people notice</h4>
+          <blockquote id="book-quote">"A tightly held hour that felt like a slow recalibration." — K. L.</blockquote>
+        </div>
+      </div>
+
+      <aside>
+        <div class="card">
+          <h3>Reserve</h3>
+          <form class="bookform" id="bookForm" onsubmit="return false;">
+            <label class="small">Select session</label>
+            <select id="sessionSelect">
+              <option value="open-1">Next available — Open Group</option>
+              <option value="intensive-1">Next intensive — Focus Cohort</option>
+            </select>
+
+            <label class="small">Your name</label>
+            <input id="name" placeholder="Full name" required />
+            <label class="small">Contact email</label>
+            <input id="email" type="email" placeholder="you@domain.com" required />
+
+            <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+              <button class="reserve" id="confirm">{{PRIMARY_CTA_LABEL}}</button>
+            </div>
+
+            <div class="small" style="margin-top:8px">After you tap reserve, we'll confirm details and finalize payment on the booking page.</div>
+          </form>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin-top:0">Next events</h4>
+          <ul style="color:var(--muted);padding-left:18px">
+            <li><strong>Feb 26</strong> — Evening Focus Cohort</li>
+            <li><strong>Mar 5</strong> — Open Group (drop-in)</li>
+            <li><strong>Mar 18</strong> — Weekend Intensive</li>
+          </ul>
+          <div style="margin-top:8px"><a href="events.html" style="color:var(--accent);text-decoration:none">See full calendar</a></div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <div>Questions? <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a></div>
+    <div style="color:var(--muted)">{{BUSINESS_NAME}} — {{CITY}}, {{STATE}}</div>
+  </footer>
+
+  <script>
+    // Programs for each intensity
+    const catalog = {
+      gentle: [
+        {id:'g1',name:'Hearth Session — Gentle Drift',desc:'Low-tone cushions and short stretches, 40 minutes. Ideal for early evenings.',price:'$28'},
+        {id:'g2',name:'Ease Practice — Soft Arc',desc:'A gentle arc for orbiting attention without heavy vibrations.',price:'$34'}
+      ],
+      medium: [
+        {id:'m1',name:'Core Evening — Warm Density',desc:'Layered overtones and longer sustain, 50 minutes.',price:'$44'},
+        {id:'m2',name:'Quiet Intensives — Mid-Arc',desc:'For those seeking a firmer structure with integration prompts.',price:'$58'}
+      ],
+      intense: [
+        {id:'i1',name:'Focused Intensive — Deep Frame',desc:'Directed cohort work, deeper frequencies, 60+ minutes.',price:'$88'},
+        {id:'i2',name:'Sonic Sculpt — Extended Cohort',desc:'Extended evening with solo support and integration, 90 minutes.',price:'$140'}
+      ]
+    };
+
+    // initial state
+    let state = localStorage.getItem('sb_pref') || 'medium';
+    const buttons = {gentle:document.getElementById('gentle'),medium:document.getElementById('medium'),intense:document.getElementById('intense')};
+    const programsEl = document.getElementById('programs');
+    const bookQuote = document.getElementById('book-quote');
+
+    function renderPreference(pref){
+      // activate button
+      Object.keys(buttons).forEach(k=>buttons[k].classList.toggle('active',k===pref));
+      // render programs
+      programsEl.innerHTML='';
+      catalog[pref].forEach(p=>{
+        const div = document.createElement('div');div.className='prog';
+        div.innerHTML = `<div><strong>${p.name}</strong><div style=\"color:var(--muted);font-size:13px;margin-top:6px;max-width:640px\">${p.desc}</div></div><div style=\"text-align:right\"><div class=\"price\">${p.price}</div><div style=\"font-size:12px;color:var(--muted);margin-top:6px\">Per person</div></div>`;
+        programsEl.appendChild(div);
+      });
+
+      // update testimonial tone
+      const notes = {
+        gentle:'"A soft, clear landing for an evening." — M. R.',
+        medium:'"A dependable structure that helped me unwind with clarity." — S. P.',
+        intense:'"A potent container — gave me big shifts in focus." — N. K.'
+      };
+      bookQuote.textContent = notes[pref];
+      localStorage.setItem('sb_pref',pref);
+    }
+
+    // attach event listeners
+    Object.values(buttons).forEach(b=>b.addEventListener('click',()=>{renderPreference(b.getAttribute('data-level')); }));
+
+    // initialize
+    renderPreference(state);
+
+    // simple form flow
+    document.getElementById('confirm').addEventListener('click',async()=>{
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      if(!name || !email){alert('Please provide name and email to continue.');return}
+      // show pseudo confirmation
+      const pref = localStorage.getItem('sb_pref') || 'medium';
+      const selectedPrograms = catalog[pref].map(p=>p.name).join('\n- ');
+      const msg = `Thanks ${name}.\n\nYou selected: ${pref.toUpperCase()} preference.\nSuggested programs:\n- ${selectedPrograms}\n\nWe will email ${email} with the next steps to finalize your booking.`;
+      alert(msg);
+      // pretend to navigate
+      window.location.href = '{{PRIMARY_CTA_URL}}';
+    });
+
+    // also rotate a tiny testimonial in the programs area for motion
+    (function(){
+      const quotes = ['"A soft, clear landing for an evening." — M. R.','"A dependable structure that helped me unwind with clarity." — S. P.','"A potent container — gave me big shifts in focus." — N. K.'];
+      let i=0;setInterval(()=>{i=(i+1)%quotes.length;document.querySelectorAll('.testimonials blockquote')[0].textContent=quotes[i];},4800);
+    })();
+  </script>
+</body>
+</html>

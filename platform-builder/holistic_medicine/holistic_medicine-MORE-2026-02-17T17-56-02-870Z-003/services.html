@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfbf9;--ink:#1b1b18;--muted:#6c6b67;--accent:#6aa84f;--glass:rgba(255,255,255,0.6)}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--ink);background:var(--bg);}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background-image:url('assets/img/pattern.svg');background-size:260px;height:86px}
+    .brand{font-weight:700;letter-spacing:0.3px}
+    nav a{margin-left:18px;color:var(--ink);text-decoration:none;font-size:14px}
+    main{max-width:980px;margin:34px auto;padding:28px;background:linear-gradient(180deg,rgba(255,255,255,0.9),#fff);box-shadow:0 10px 30px rgba(20,22,20,0.04);border-radius:12px}
+    h1{margin:0 0 6px;font-size:28px}
+    p.lead{color:var(--muted);margin:0 0 18px}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:28px}
+    .card{padding:18px;border-radius:10px;background:var(--glass);backdrop-filter:blur(4px);}
+    .service{margin-bottom:12px}
+    .service h3{margin:0 0 6px;font-size:16px}
+    .service p{margin:0;color:var(--muted);font-size:14px}
+    .mood{display:flex;flex-direction:column;gap:10px}
+    select,button{font-size:15px;padding:10px 12px;border-radius:8px;border:1px solid #e6e6e4}
+    button.primary{background:var(--accent);color:white;border:0}
+    .method{margin-top:12px;padding:12px;border-radius:8px;background:linear-gradient(180deg,#fff,#f7fff2);border:1px solid rgba(106,168,79,0.12)}
+    .timeline{margin-top:18px}
+    .phases{display:flex;gap:10px}
+    .phase{flex:1;padding:12px;border-radius:8px;background:#fff;border:1px solid #eee;cursor:pointer}
+    .phase.active{border-color:var(--accent);box-shadow:0 6px 18px rgba(106,168,79,0.08)}
+    .disclaimer{font-size:13px;color:var(--muted);margin-top:10px}
+    footer{margin-top:22px;text-align:center;color:var(--muted);font-size:13px}
+    .micro{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+    .micro label{display:flex;align-items:center;gap:8px}
+    .muted-pill{font-size:13px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">{{BUSINESS_NAME}} — Nourish Studio</div>
+    <nav>
+      <a href="index.html">Hearth</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Conditions</a>
+      <a href="approach.html">Way</a>
+      <a href="pricing.html">Investment</a>
+      <a href="about.html">Story</a>
+      <a href="book.html">Reserve</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+  </header>
+  <main>
+    <h1>Curated supports for whole-life balance</h1>
+    <p class="lead">Gentle, evidence-informed guidance that meets your day where it is. A la carte sessions and short courses designed to feel like a light, steady hand.</p>
+
+    <div class="grid">
+      <section class="card">
+        <h2 style="margin-top:0">Offerings</h2>
+        <div class="service">
+          <h3>Foundational Consultation</h3>
+          <p>One deep visit: map sleep, stress, digestion, movement, and meaning. A map for steps that fit your life.</p>
+        </div>
+        <div class="service">
+          <h3>Rhythm Sessions</h3>
+          <p>Short follow-ups that tune routines — 30 or 45 minutes — for steady change rather than sudden overhaul.</p>
+        </div>
+        <div class="service">
+          <h3>Embodied Mini-Series</h3>
+          <p>Three-session tracks focused on breathing, sleep scaffolding, or digestion-friendly days.</p>
+        </div>
+
+        <div class="timeline">
+          <strong>Roadmap</strong>
+          <div class="phases" id="phases">
+            <div class="phase active" data-phase="1">Phase 1: Ground</div>
+            <div class="phase" data-phase="2">Phase 2: Weave</div>
+            <div class="phase" data-phase="3">Phase 3: Sustain</div>
+          </div>
+          <div id="phaseDetail" style="margin-top:10px;color:var(--muted);font-size:14px">Start with clarity: assessment, small baseline habits, immediate supports. No promises — iterative planning.</div>
+          <div class="disclaimer">Educational support and lifestyle guidance. Not a substitute for medical care.</div>
+        </div>
+      </section>
+
+      <aside class="card">
+        <div class="mood">
+          <label class="muted-pill">Choose how you feel</label>
+          <select id="moodSelect" aria-label="Mood selector">
+            <option value="calm">Seeking gentle rest</option>
+            <option value="anxious">Tense or on edge</option>
+            <option value="foggy">Brain fog, low clarity</option>
+            <option value="stuck">Low motivation</option>
+            <option value="restless">Difficulty settling</option>
+          </select>
+
+          <div class="method" id="methodBox">
+            <strong id="methodTitle">Breath & Baseline</strong>
+            <div id="methodDesc" style="margin-top:6px;color:var(--muted);font-size:14px">A short practice to anchor your nervous system and a 2-week tiny habit plan.</div>
+            <div class="micro">
+              <label><input type="checkbox" id="m1"> 2-minute guided breath each morning</label>
+              <label><input type="checkbox" id="m2"> Evening screen dim + 15-minute wind-down</label>
+              <label><input type="checkbox" id="m3"> Move for 8 minutes midday</label>
+            </div>
+          </div>
+
+          <a id="ctaBtn" class="" href="{{PRIMARY_CTA_URL}}">
+            <button id="ctaButton" class="primary">{{PRIMARY_CTA_LABEL}}</button>
+          </a>
+        </div>
+        <div style="margin-top:12px;font-size:13px;color:var(--muted)">Phone: {{PHONE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      </aside>
+    </div>
+
+    <section style="margin-top:22px;padding:16px;border-radius:10px;background:#fff;border:1px solid #f0f0ef">
+      <strong>How pricing is framed</strong>
+      <p class="muted-pill" style="margin:6px 0 0">Pick single visits or a short track. Investment is described per visit with optional 3-visit packages for guidance that grows in small stages.</p>
+    </section>
+
+    <footer>
+      <div class="muted-pill">Based in {{CITY}}, {{STATE}} • Care is educational and supportive; not a promise of cure.</div>
+    </footer>
+  </main>
+
+  <script>
+    (function(){
+      const mapping = {
+        calm: {title:'Breath & Baseline',desc:'Short guided breaths and evening rituals to deepen rest; tiny daily practices.',cta:'Book a calm check-in',url:'{{PRIMARY_CTA_URL}}?mood=calm'},
+        anxious: {title:'Anchor Protocol',desc:'Nervous-system first steps: grounding, paced breathing, and an immediate calming plan.',cta:'Schedule an anchor session',url:'{{PRIMARY_CTA_URL}}?mood=anxious'},
+        foggy: {title:'Clarify Track',desc:'Micro-habits to sharpen focus: light movement, timed breaks, and sleep supports.',cta:'Start a clarity consult',url:'{{PRIMARY_CTA_URL}}?mood=foggy'},
+        stuck: {title:'Momentum Path',desc:'Tiny, binary habits to build forward motion — no overwhelm, just one small win at a time.',cta:'Begin a momentum visit',url:'{{PRIMARY_CTA_URL}}?mood=stuck'},
+        restless: {title:'Settling Sequence',desc:'A short evening protocol to help the body downshift and welcome sleep.',cta:'Try a settling session',url:'{{PRIMARY_CTA_URL}}?mood=restless'}
+      };
+
+      const sel = document.getElementById('moodSelect');
+      const title = document.getElementById('methodTitle');
+      const desc = document.getElementById('methodDesc');
+      const btn = document.getElementById('ctaButton');
+      const link = document.getElementById('ctaBtn');
+
+      function apply(mood){
+        const m = mapping[mood] || mapping['calm'];
+        title.textContent = m.title;
+        desc.textContent = m.desc;
+        btn.textContent = m.cta;
+        link.href = m.url;
+        // subtle color shift
+        document.querySelectorAll('.phase').forEach(el=>el.classList.remove('active'));
+        document.querySelector('.phase[data-phase="1"]').classList.add('active');
+      }
+
+      sel.addEventListener('change',e=>apply(e.target.value));
+      apply(sel.value);
+
+      // timeline interactivity
+      document.getElementById('phases').addEventListener('click',function(e){
+        const p = e.target.closest('.phase');
+        if(!p) return;
+        document.querySelectorAll('.phase').forEach(el=>el.classList.remove('active'));
+        p.classList.add('active');
+        const phase = p.getAttribute('data-phase');
+        const detail = {
+          '1':'Phase 1: Assess & ground — intake, simple baselines, short-term supports. Plan is iterative and may change with new information.',
+          '2':'Phase 2: Integrate habits — build two to three consistent micro-practices over 4–8 weeks, with gentle metric checks.',
+          '3':'Phase 3: Maintain & evolve — periodic reviews, transition tools for independence, and relapse-aware supports.'
+        }[phase];
+        document.getElementById('phaseDetail').textContent = detail;
+      });
+    })();
+  </script>
+</body>
+</html>

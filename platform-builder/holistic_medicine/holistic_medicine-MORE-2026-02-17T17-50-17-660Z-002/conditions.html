@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Conditions & Support — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--dark:#07121a;--panel:#0b1720;--accent:#b3e0df;--muted:#9db0b8}
+    body{margin:0;font-family:Inter,system-ui,Arial;color:#e9fbff;background:linear-gradient(180deg,#041018,#07101a)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:16px 22px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent)}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#7fc9c5,#5da7b0);display:grid;place-items:center;font-weight:700}
+    nav a{color:#cfe8ef;margin:0 8px;text-decoration:none}
+    main{padding:20px}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .cond{background:var(--panel);padding:16px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
+    .cond h4{margin:0 0 8px 0}
+    .muted{color:var(--muted)}
+    .disclaimer{background:rgba(255,255,255,0.02);padding:12px;border-radius:8px;margin-bottom:12px}
+    .reveal{opacity:0;transform:translateY(10px);transition:opacity .5s ease,transform .5s ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+    @media(max-width:980px){.grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:600px){.grid{grid-template-columns:1fr}}
+    .pill{display:inline-block;background:rgba(255,255,255,0.03);padding:6px 8px;border-radius:999px;font-size:12px;color:#dff6fb}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center"><div class="logo">HM</div><div style="color:#e6fbff;font-weight:700">Conditions & Support</div></div>
+    <nav aria-label="site nav"><a href="/index.html">Home</a><a href="/services.html">Therapies</a><a href="/approach.html">Approach</a><a href="/pricing.html">Pricing</a><a href="/contact.html">Contact</a></nav>
+  </header>
+
+  <main>
+    <section style="margin-top:18px" class="reveal">
+      <div class="disclaimer">
+        <strong class="muted">Clinical note</strong>
+        <p class="muted" style="margin:8px 0 0 0">The information here is educational and supportive. Our services aim to offer strategies, symptom self-management, and lifestyle adjustments — not medical diagnoses or guaranteed cures. Always consult your primary care or specialist for urgent or complex medical needs.</p>
+      </div>
+    </section>
+
+    <section class="reveal">
+      <h2 style="color:#e6fbff">What we commonly work with</h2>
+      <p class="muted">Below are examples of areas where integrative approaches may provide tools and perspective. Individual responses vary.</p>
+
+      <div class="grid" style="margin-top:12px">
+        <div class="cond">
+          <h4>Sleep disruption</h4>
+          <div class="muted">Behavioral patterns, evening routines, light and movement cues. We offer pacing strategies and short daily practices to support regularity.</div>
+          <div style="margin-top:8px"><span class="pill">Tools</span> <span class="muted" style="margin-left:8px">Sleep logs • Wind‑down rituals • Timing</span></div>
+        </div>
+
+        <div class="cond">
+          <h4>Chronic stress & overwhelm</h4>
+          <div class="muted">Practical skills for nervous system regulation, boundary-setting, and brief in‑day micro-practices you can try immediately.</div>
+          <div style="margin-top:8px"><span class="pill">Tools</span> <span class="muted" style="margin-left:8px">Micro-practices • Breath work • Structure</span></div>
+        </div>
+
+        <div class="cond">
+          <h4>Digestive imbalance</h4>
+          <div class="muted">Pattern-oriented approaches that consider diet rhythm, stress interactions, and gentle movement to support digestion.</div>
+          <div style="margin-top:8px"><span class="pill">Tools</span> <span class="muted" style="margin-left:8px">Diet mapping • Behavioral trials • Logs</span></div>
+        </div>
+
+        <div class="cond">
+          <h4>Chronic pain & tension</h4>
+          <div class="muted">Strategies for pacing, graded movement, and attention‑shifts that can complement medical care.</div>
+          <div style="margin-top:8px"><span class="pill">Tools</span> <span class="muted" style="margin-left:8px">Graded activity • Body awareness • Pacing</span></div>
+        </div>
+
+        <div class="cond">
+          <h4>Energy inconsistency</h4>
+          <div class="muted">Small experiments with timing, nourishment, and movement to support steady energy across the day.</div>
+          <div style="margin-top:8px"><span class="pill">Tools</span> <span class="muted" style="margin-left:8px">Rhythm planning • Meals timing • Micro-practices</span></div>
+        </div>
+
+        <div class="cond">
+          <h4>Emotional regulation</h4>
+          <div class="muted">Short practices and planning strategies to support emotional shifts and daily functioning in partnership with therapy when needed.</div>
+          <div style="margin-top:8px"><span class="pill">Tools</span> <span class="muted" style="margin-left:8px">Anchors • Check-ins • Simple rituals</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:18px;padding:16px;background:linear-gradient(180deg,transparent,rgba(255,255,255,0.02))" class="reveal">
+      <h3 style="color:#e6fbff">Session Planner</h3>
+      <p class="muted">Use the planner to draft steps you can discuss with your clinician.</p>
+
+      <div style="margin-top:10px;padding:12px;background:var(--panel);border-radius:10px;border:1px solid rgba(255,255,255,0.02)">
+        <!-- Reuse planner structure minimal version -->
+        <div class="planner" id="planner-conditions">
+          <label for="goal-c">What would you like to improve in 4 weeks?</label>
+          <input id="goal-c" type="text" placeholder="e.g., reduce night waking">
+
+          <label style="margin-top:8px">Choose preferred supports</label>
+          <div class="chips" id="modalities-c">
+            <button class="chip" data-value="Movement" type="button">Movement</button>
+            <button class="chip" data-value="Nutrition" type="button">Nutrition</button>
+            <button class="chip" data-value="Mindfulness" type="button">Mindfulness</button>
+            <button class="chip" data-value="Behavioral" type="button">Behavioral</button>
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:10px">
+            <button class="btn" id="build-c">Build plan</button>
+            <button class="secondary small" id="clear-c">Clear</button>
+          </div>
+
+          <div style="margin-top:10px">
+            <div class="output" id="plan-output-c">Your plan summary will appear here.</div>
+            <div style="display:flex;gap:8px;margin-top:6px"><button class="btn small" id="copy-c">Copy</button><button class="secondary small" id="dl-c">Download</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:18px" class="reveal">
+      <h4 style="color:#e6fbff">When to seek immediate care</h4>
+      <p class="muted">If symptoms are severe, rapidly worsening, or life‑threatening (e.g., chest pain, difficulty breathing, sudden neurological changes), contact emergency services or your primary care right away.</p>
+    </section>
+
+  </main>
+
+  <script>
+    // reveal
+    (function(){
+      const prefersReduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const elems = document.querySelectorAll('.reveal');
+      if(prefersReduce){ elems.forEach(e=>e.classList.add('visible')); return; }
+      const obs = new IntersectionObserver((entries)=>{ entries.forEach(en=>{ if(en.isIntersecting) en.target.classList.add('visible'); }); },{threshold:0.06});
+      elems.forEach(e=>obs.observe(e));
+    })();
+
+    // planner behavior (simpler)
+    (function(){
+      const chips = document.querySelectorAll('#modalities-c .chip');
+      chips.forEach(c=>c.addEventListener('click', ()=>c.classList.toggle('selected')));
+      const build = document.getElementById('build-c');
+      const clear = document.getElementById('clear-c');
+      const out = document.getElementById('plan-output-c');
+      const copy = document.getElementById('copy-c');
+      const dl = document.getElementById('dl-c');
+
+      build.addEventListener('click', ()=>{
+        const goal = document.getElementById('goal-c').value.trim() || '(no goal)';
+        const mods = Array.from(document.querySelectorAll('#modalities-c .chip.selected')).map(n=>n.getAttribute('data-value'));
+        const summary = ['Condition planner','----------------','Goal: '+goal,'Selected supports: '+(mods.length?mods.join(', '):'None'),'', 'Suggested micro-step: pick one daily 4–7 minute practice to start.','Generated: '+(new Date()).toLocaleString()].join('\n');
+        out.textContent = summary;
+      });
+
+      clear.addEventListener('click', ()=>{ document.getElementById('goal-c').value=''; document.querySelectorAll('#modalities-c .chip.selected').forEach(c=>c.classList.remove('selected')); out.textContent='Your plan summary will appear here.'; });
+
+      copy.addEventListener('click', async ()=>{ try{ await navigator.clipboard.writeText(out.textContent); copy.textContent='Copied'; setTimeout(()=>copy.textContent='Copy',1200);}catch(e){ const ta=document.createElement('textarea'); ta.value=out.textContent; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); copy.textContent='Copied'; setTimeout(()=>copy.textContent='Copy',1200);} });
+
+      dl.addEventListener('click', ()=>{ const blob=new Blob([out.textContent],{type:'text/plain'}); const u=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=u; a.download='conditions-plan.txt'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(u); });
+    })();
+  </script>
+</body>
+</html>

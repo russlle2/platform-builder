@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Focus Areas — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7f9fb;--ink:#092028;--muted:#47565f;--accent:#2a9d8f}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Roboto,Arial;color:var(--ink);background:var(--bg)}
+    header{padding:20px;border-bottom:1px solid rgba(9,32,40,0.04)}
+    nav{max-width:1100px;margin:0 auto;display:flex;gap:18px}
+    nav a{color:var(--ink);text-decoration:none;font-weight:600}
+    .container{max-width:1100px;margin:28px auto;padding:0 20px}
+    h1{margin:0 0 6px}
+    p.lead{color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:18px}
+    .card{background:white;padding:16px;border-radius:10px;border:1px solid rgba(9,32,40,0.04)}
+    .tag{display:inline-block;background:rgba(42,157,143,0.08);color:var(--accent);padding:6px 8px;border-radius:999px;font-weight:700;font-size:12px}
+    ul{margin:10px 0 0;padding-left:18px;color:var(--muted)}
+    .wizard{margin-top:14px;padding:12px;border-radius:10px;border:1px solid rgba(9,32,40,0.04);background:linear-gradient(180deg,rgba(42,157,143,0.03),transparent)}
+    label{display:block;font-weight:700;margin-top:8px}
+    input,select,textarea{width:100%;padding:8px;margin-top:6px;border-radius:8px;border:1px solid rgba(9,32,40,0.06)}
+    button{margin-top:10px;background:var(--accent);color:white;padding:10px 12px;border-radius:8px;border:0;cursor:pointer}
+    .quiet{background:transparent;border:1px solid rgba(9,32,40,0.06);padding:8px;border-radius:8px}
+    .summary{white-space:pre-wrap;background:#f3faf8;padding:10px;border-radius:8px;border:1px dashed rgba(9,32,40,0.03);margin-top:10px;font-family:Menlo,monospace}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="index.html">Start</a>
+      <a href="about.html">About</a>
+      <a href="approach.html">Method</a>
+      <a href="fees.html">Fees</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+      <a href="faq.html">FAQ</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h1>Areas of focus</h1>
+    <p class="lead">Common pathways people seek: short, focused work for a specific concern, or a deeper series for layered change. Below are typical focal areas and the way I tend to frame the work.</p>
+
+    <div class="grid">
+      <div class="card">
+        <div class="tag">Transitions & Life Shifts</div>
+        <h3 style="margin-top:10px">When roles, places, or identities change</h3>
+        <p style="color:var(--muted)">Practical reframing, prioritizing, and experiments to move through uncertainty. Useful for job transitions, moves, separation, or new caregiving roles.</p>
+      </div>
+
+      <div class="card">
+        <div class="tag">Worry & Overwhelm</div>
+        <h3 style="margin-top:10px">Reducing reactivity & regaining agency</h3>
+        <p style="color:var(--muted)">Skills for noticing triggers, clarifying controllable steps, and practicing brief experiments that create new options.</p>
+      </div>
+
+      <div class="card">
+        <div class="tag">Relationship Patterns</div>
+        <h3 style="margin-top:10px">Repair, boundary, and communication work</h3>
+        <p style="color:var(--muted)">Short-term work to clarify patterns, set practical boundaries, and rehearse conversations that feel safer and clearer.</p>
+      </div>
+
+      <div class="card">
+        <div class="tag">Identity & Purpose</div>
+        <h3 style="margin-top:10px">Questions of values, identity, and next steps</h3>
+        <p style="color:var(--muted)">Exploratory work that honors complexity, with clear experiments to test possibilities in daily life.</p>
+      </div>
+    </div>
+
+    <section style="margin-top:18px">
+      <div class="card">
+        <h3 style="margin-top:0">Program pathways</h3>
+        <p style="color:var(--muted)">Rather than fixed packages, I offer three pathways that can be tuned to your needs:</p>
+        <ul>
+          <li><strong>Navigation Pack</strong> — 4 focused sessions to define a problem and try concrete steps.</li>
+          <li><strong>Intensive Series</strong> — 8 sessions for layered issues or faster momentum.</li>
+          <li><strong>Maintenance Sessions</strong> — monthly check-ins to support ongoing changes.</li>
+        </ul>
+        <p style="color:var(--muted)">Fees are presented as an investment in time-limited or ongoing work; we'll align on pacing during the first visit. No promises are made about outcomes.</p>
+      </div>
+    </section>
+
+    <section style="margin-top:18px">
+      <div class="card">
+        <h3 style="margin:0 0 8px">Self-screening intake wizard</h3>
+        <p style="margin:0;color:var(--muted)">Answer a few prompts to generate notes and suggested questions to bring to your consultation. This is not a diagnosis — it's a way to prepare.</p>
+
+        <div class="wizard" id="wizard">
+          <label for="concern">Primary concern</label>
+          <select id="concern">
+            <option value="Worry/Anxiety">Worry / Anxiety</option>
+            <option value="Low mood">Low mood</option>
+            <option value="Life transition">Life transition</option>
+            <option value="Relationship">Relationships</option>
+            <option value="Identity/exploration">Identity / exploration</option>
+            <option value="Sleep/energy">Sleep / energy</option>
+            <option value="Other">Other</option>
+          </select>
+
+          <label for="severity">How much does this interfere (1 = small, 10 = very)</label>
+          <input id="severity" type="number" min="1" max="10" value="5">
+
+          <label for="context">Context (brief)</label>
+          <input id="context" type="text" placeholder="Where or when does it matter most?">
+
+          <label for="coping">Current coping strategies</label>
+          <input id="coping" type="text" placeholder="What's helping? What's not?">
+
+          <label for="goalShort">Short-term goal (next 4–8 weeks)</label>
+          <input id="goalShort" type="text" placeholder="A practical next step you'd notice">
+
+          <div style="display:flex;gap:8px">
+            <button id="runWizard">Generate notes</button>
+            <button id="resetWizard" class="quiet">Reset</button>
+          </div>
+
+          <div id="wizardOutput" class="summary" style="display:none"></div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button id="copyWizard" style="display:none">Copy notes</button>
+            <a class="quiet" href="{{PRIMARY_CTA_URL}}">Schedule</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:18px;font-size:13px;color:var(--muted)">
+      <div class="card">
+        <strong>Ethics & crisis information</strong>
+        <p style="margin:6px 0 0">Sessions are confidential within legal and ethical boundaries. This intake is for preparation, not a clinical diagnosis. If you feel unsafe or in immediate danger, contact emergency services or a crisis line right away.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // Intake wizard logic
+    (function(){
+      function $id(i){return document.getElementById(i)}
+      var run = $id('runWizard'), reset = $id('resetWizard'), out = $id('wizardOutput'), copy = $id('copyWizard')
+      run.addEventListener('click', function(){
+        var concern = $id('concern').value
+        var severity = $id('severity').value
+        var context = $id('context').value.trim() || '[no context provided]'
+        var coping = $id('coping').value.trim() || '[not specified]'
+        var goal = $id('goalShort').value.trim() || '[no short-term goal]'
+        var created = new Date().toLocaleString()
+        var notes = 'Intake notes — ' + created + "\n\n" +
+          'Primary concern: ' + concern + "\n" +
+          'Interference (1-10): ' + severity + "\n" +
+          'Context: ' + context + "\n" +
+          'Coping strategies: ' + coping + "\n" +
+          'Short-term goal: ' + goal + "\n\n" +
+          'Suggested questions to bring to consultation:\n' +
+          '- What have I already tried that partially helps?\n' +
+          '- Which steps would be realistic in my weekly routine?\n' +
+          '- What would success look like in 4–8 weeks?\n' +
+          '- Are there any safety or sleep factors to address first?'
+        out.textContent = notes
+        out.style.display = 'block'
+        copy.style.display = 'inline-block'
+      })
+      reset.addEventListener('click', function(){
+        ['context','coping','goalShort'].forEach(function(id){document.getElementById(id).value=''})
+        $id('severity').value = 5
+        out.style.display='none'; copy.style.display='none'
+      })
+      copy.addEventListener('click', function(){
+        navigator.clipboard.writeText(out.textContent).then(function(){
+          copy.textContent='Copied'
+          setTimeout(function(){copy.textContent='Copy notes'},1000)
+        })
+      })
+    })()
+  </script>
+</body>
+</html>

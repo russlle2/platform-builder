@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Investments & Programs — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#F3ECE6;--card:#FFF;--accent:#AD7A5B;--ink:#352922;--muted:#76635B}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--ink)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none}
+    .logo{width:50px;height:50px;border-radius:10px;background:linear-gradient(135deg,#CFAE9D,#C18B70);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800}
+    main{max-width:980px;margin:20px auto;padding:18px}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:18px}
+    .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 8px 18px rgba(53,38,32,0.06)}
+    h1{margin:0}
+    .price{font-weight:800;font-size:22px;color:var(--accent)}
+    .muted{color:var(--muted)}
+    .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.9,.3,1)}
+    .reveal.visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion: reduce){.reveal{transition:none;opacity:1;transform:none}}
+    ul{padding-left:18px}
+    .cta{background:var(--accent);color:white;padding:10px 12px;border-radius:10px;text-decoration:none;font-weight:700}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="logo">SB</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div class="muted" style="font-size:13px">Offerings & access</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Homebase</a>
+      <a href="events.html">Live Gatherings</a>
+      <a href="private-sessions.html">Pods & Privates</a>
+      <a href="pricing.html" style="color:var(--accent)">Investments</a>
+      <a href="faq.html">Qs & Answers</a>
+      <a href="book.html">Reserve</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="card reveal" data-reveal>
+      <h1>Investment pathways</h1>
+      <p class="muted">We frame pricing to match intention: single experiences, small-group cohorts, and tailored private work. Choose what fits your rhythm.</p>
+    </section>
+
+    <section class="grid" style="margin-top:16px">
+      <div>
+        <div class="card reveal" data-reveal>
+          <h3>Single Sessions</h3>
+          <p class="muted">Attend a one-off group evening. Clear pricing for transparent planning.</p>
+          <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap">
+            <div style="flex:1;min-width:180px" class="card">
+              <div style="display:flex;justify-content:space-between;align-items:center"><div><strong>Evening Seat</strong><div class="muted" style="font-size:13px">Group session • 75 min</div></div><div class="price">$28</div></div>
+              <div class="muted" style="margin-top:8px">Drop-in price. Reserve a seat to hold your place.</div>
+            </div>
+            <div style="flex:1;min-width:180px" class="card">
+              <div style="display:flex;justify-content:space-between;align-items:center"><div><strong>Midweek Short</strong><div class="muted" style="font-size:13px">Group session • 45 min</div></div><div class="price">$22</div></div>
+              <div class="muted" style="margin-top:8px">A shorter arc when you need a quick reset.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card reveal" style="margin-top:14px" data-reveal>
+          <h3>Small Cohorts</h3>
+          <p class="muted">A series for those who want a regular container. We offer 4-week and 8-week cohort programs with discounted seats.</p>
+          <ul class="muted" style="margin-top:8px">
+            <li><strong>4-week rhythm</strong> — 4 sessions • $96 (save $16)</li>
+            <li><strong>8-week companion</strong> — 8 sessions • $176 (save $48)</li>
+          </ul>
+          <div style="margin-top:12px"><a class="cta" href="book.html">Join a cohort</a></div>
+        </div>
+
+        <div class="card reveal" style="margin-top:14px" data-reveal>
+          <h3>Private & Hosting</h3>
+          <p class="muted">Custom pricing for private pods, workplace visits, and one-on-one sessions. Includes travel for local hosting and pre-session intake.</p>
+          <ul class="muted" style="margin-top:8px">
+            <li><strong>Personal Attunement (1:1)</strong> — 60–75 min • $120</li>
+            <li><strong>Private Pod (2–6)</strong> — 75–90 min • from $220</li>
+            <li><strong>Hosting + Travel</strong> — quote provided on request</li>
+          </ul>
+          <div style="margin-top:12px"><a class="cta" href="contact.html">Request a quote</a></div>
+        </div>
+      </div>
+
+      <aside class="card reveal" data-reveal>
+        <h4>Small print & safety</h4>
+        <p class="muted">Sessions are non-diagnostic and meant for relaxation and presence. If you have serious medical conditions (epilepsy, recent head trauma, implanted devices like pacemakers) or are pregnant, consult your healthcare provider first. We collect intake information so we can adapt the session respectfully.</p>
+        <div style="margin-top:12px"><strong>Gift cards:</strong> Available on request. Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</div>
+        <div style="margin-top:12px"><strong class="muted">Corporate & cohort inquiries:</strong><div class="muted">We design recurring programs for small teams — contact us for a tailored plan.</div></div>
+      </aside>
+    </section>
+
+    <section class="card reveal" style="margin-top:16px;text-align:center" data-reveal>
+      <h3 style="margin-bottom:8px">Still deciding?</h3>
+      <p class="muted">If you want a recommendation, tell us the rhythm you prefer and we'll suggest a path.</p>
+      <div style="margin-top:12px"><a class="cta" href="contact.html">Ask for a recommendation</a></div>
+    </section>
+  </main>
+
+  <script>
+    // Scroll reveal
+    (function(){
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const els = document.querySelectorAll('[data-reveal]');
+      if(reduced){ els.forEach(e=>e.classList.add('visible')); return; }
+      const obs = new IntersectionObserver((entries)=>{
+        entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('visible'); obs.unobserve(en.target); } });
+      },{threshold:0.12});
+      els.forEach(e=>obs.observe(e));
+    })();
+  </script>
+</body>
+</html>

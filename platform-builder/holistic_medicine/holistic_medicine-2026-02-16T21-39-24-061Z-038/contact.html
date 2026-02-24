@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Reach Out — {{BUSINESS_NAME}}</title>
+  <meta name='description' content='Contact {{BUSINESS_NAME}} for integrative, whole-person care. Book an intensive consultation or ask about our approach.'>
+  <style>
+    :root{
+      --bg1:#f6fbf8;
+      --bg2:#fffefc;
+      --accent:#6c63ff;
+      --muted:#6a6f75;
+      --card:#ffffff;
+      --glass:rgba(255,255,255,0.6);
+      --shadow:0 8px 30px rgba(40,41,61,0.08);
+      --radius:14px;
+      --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    html,body{height:100%;margin:0;font-family:var(--sans);color:#24303a;background:linear-gradient(160deg,var(--bg1),var(--bg2));}
+    .site{min-height:100vh;display:flex;flex-direction:column;position:relative;overflow:hidden}
+    /* decorative svg sits behind content */
+    .art{position:absolute;inset:0;pointer-events:none;opacity:0.18}
+
+    header{display:flex;align-items:center;justify-content:space-between;padding:28px 36px;backdrop-filter:blur(6px)}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#2bd6c5);display:grid;place-items:center;color:white;font-weight:700}
+    .brand h1{font-size:16px;margin:0}
+    nav{display:flex;gap:12px;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;padding:10px 12px;border-radius:10px;font-size:14px}
+    nav a.active,nav a:hover{background:var(--glass);color:#17202a}
+
+    main{flex:1;display:grid;grid-template-columns:1fr 420px;gap:28px;padding:36px;align-items:start}
+
+    /* Hero / Contact form card */
+    .hero{background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,255,255,0.85));border-radius:var(--radius);padding:28px;box-shadow:var(--shadow)}
+    .hero h2{margin:0 0 8px 0;font-size:22px;color:#122022}
+    .hero p{margin:0 0 18px 0;color:var(--muted)}
+
+    form.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .field{display:flex;flex-direction:column}
+    label{font-size:13px;color:#334047;margin-bottom:6px}
+    input[type='text'],input[type='email'],input[type='tel'],textarea,select{padding:10px;border-radius:10px;border:1px solid #e6ecea;background:transparent;font-size:14px}
+    textarea{grid-column:1/-1;min-height:110px;resize:vertical}
+    .wide{grid-column:1/-1;display:flex;gap:12px}
+    .checkboxes{display:flex;flex-wrap:wrap;gap:8px}
+    .pill{padding:8px 10px;border-radius:20px;border:1px solid #e5efea;background:linear-gradient(180deg,#fff,#f8fffd);font-size:13px}
+
+    .actions{display:flex;gap:12px;align-items:center;margin-top:12px}
+    .cta{background:linear-gradient(90deg,var(--accent),#2bd6c5);color:white;padding:12px 16px;border-radius:12px;border:none;font-weight:600;cursor:pointer}
+    .secondary{background:transparent;border:1px solid #e6ecea;padding:10px 14px;border-radius:12px;color:var(--muted);cursor:pointer}
+
+    /* sidebar */
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.95),rgba(255,255,255,0.9));padding:20px;border-radius:16px;box-shadow:var(--shadow);position:sticky;top:28px}
+    .card h3{margin:0 0 8px 0}
+    .meta{font-size:14px;color:var(--muted);margin-bottom:10px}
+    .contact-list{display:flex;flex-direction:column;gap:8px}
+    .pill-info{background:#f1fbfa;padding:10px;border-radius:10px;color:#0f3b35;font-weight:600}
+
+    /* mini sections */
+    .testimonials{margin-top:18px;display:flex;flex-direction:column;gap:10px}
+    .testi{background:#fff;padding:12px;border-radius:10px;border:1px solid #f0f6f5}
+    .testi small{color:var(--muted);display:block;margin-top:8px}
+
+    .faq{margin-top:18px}
+    .faq-item{background:linear-gradient(180deg,#fff,#fbfffe);padding:12px;border-radius:10px;border:1px solid #eef7f5;margin-bottom:8px}
+    .faq-item summary{font-weight:600;cursor:pointer}
+    details[open] summary{color:var(--accent)}
+
+    footer{padding:20px 36px;color:var(--muted);font-size:13px}
+
+    /* Responsive */
+    @media (max-width:920px){main{grid-template-columns:1fr;padding:20px} .card{position:relative;top:auto}}
+
+    /* playful small touches */
+    .sparkle{display:inline-block;margin-left:8px;font-size:18px;transform:translateY(1px)}
+    .map{height:160px;border-radius:10px;background:linear-gradient(135deg,#eef9f7,#f6fbff);display:grid;place-items:center;color:#5d7771;border:1px dashed rgba(91,115,108,0.12)}
+  </style>
+</head>
+<body>
+  <div class='site'>
+    <!-- Decorative SVG pattern. Save a copy as assets/img/pattern.svg for reuse (see README). -->
+    <svg class='art' viewBox='0 0 1000 600' preserveAspectRatio='xMidYMid slice' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'>
+      <defs>
+        <linearGradient id='g1' x1='0' x2='1'>
+          <stop offset='0' stop-color='#fff6fb' stop-opacity='0.9'/>
+          <stop offset='1' stop-color='#f6fffb' stop-opacity='0.7'/>
+        </linearGradient>
+        <radialGradient id='g2' cx='30%' cy='20%'>
+          <stop offset='0' stop-color='#ffd7ff' stop-opacity='0.06'/>
+          <stop offset='1' stop-color='#6c63ff' stop-opacity='0.02'/>
+        </radialGradient>
+        <pattern id='dots' x='0' y='0' width='120' height='120' patternUnits='userSpaceOnUse'>
+          <circle cx='10' cy='10' r='2' fill='#cfeee6' />
+        </pattern>
+      </defs>
+      <rect width='100%' height='100%' fill='url(#g1)' />
+      <g transform='translate(60,40)'>
+        <circle cx='820' cy='80' r='180' fill='url(#g2)' />
+        <rect x='0' y='80' width='420' height='420' fill='url(#dots)' opacity='0.45' />
+        <path d='M220 400 C 320 320, 420 420, 520 360 C 620 300, 720 420, 820 340 L 1000 500 L 0 500 Z' fill='#e6fff8' opacity='0.9' />
+      </g>
+    </svg>
+
+    <header>
+      <div class='brand'>
+        <div class='logo' aria-hidden='true'>HM</div>
+        <div>
+          <h1>{{BUSINESS_NAME}}</h1>
+          <div style='font-size:12px;color:var(--muted)'>Integrative, whole-person care</div>
+        </div>
+      </div>
+      <nav aria-label='Primary navigation'>
+        <a href='index.html'>Home</a>
+        <a href='services.html'>Care</a>
+        <a href='conditions.html'>Conditions</a>
+        <a href='approach.html'>Our Way</a>
+        <a href='pricing.html'>Plans</a>
+        <a href='about.html'>Meet</a>
+        <a class='active' href='contact.html'>Reach Us</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class='hero' aria-labelledby='contact-heading'>
+        <h2 id='contact-heading'>Say hello — let's design your intensive path</h2>
+        <p>Prefer a focused, in-depth intake? Our intensive consultations are crafted to map your whole-person story — lifestyle, labs, and listening. No promises, just thoughtful guidance.</p>
+
+        <form id='contactForm' class='fields' autocomplete='off'>
+          <div class='field'>
+            <label for='name'>Full name</label>
+            <input id='name' name='name' type='text' placeholder='Your name' required>
+          </div>
+
+          <div class='field'>
+            <label for='email'>Email</label>
+            <input id='email' name='email' type='email' placeholder='you@domain.com' required>
+          </div>
+
+          <div class='field'>
+            <label for='phone'>Phone</label>
+            <input id='phone' name='phone' type='tel' placeholder='(555) 555-5555'>
+          </div>
+
+          <div class='field'>
+            <label for='when'>Preferred timing</label>
+            <select id='when' name='when'>
+              <option value='asap'>As soon as possible</option>
+              <option value='1week'>Within 1 week</option>
+              <option value='2weeks'>2+ weeks</option>
+            </select>
+          </div>
+
+          <div class='field wide'>
+            <label>Which concerns bring you here? (check any)</label>
+            <div class='checkboxes'>
+              <label class='pill'><input type='checkbox' name='concern' value='stress'> Stress</label>
+              <label class='pill'><input type='checkbox' name='concern' value='sleep'> Sleep</label>
+              <label class='pill'><input type='checkbox' name='concern' value='digestion'> Digestion</label>
+              <label class='pill'><input type='checkbox' name='concern' value='inflammation'> Inflammation</label>
+              <label class='pill'><input type='checkbox' name='concern' value='energy'> Energy</label>
+              <label class='pill'><input type='checkbox' name='concern' value='other'> Other</label>
+            </div>
+          </div>
+
+          <div class='field wide'>
+            <label for='message'>A short note about your history or goals</label>
+            <textarea id='message' name='message' placeholder='A sentence or two helps us prepare.'></textarea>
+          </div>
+
+          <div class='actions wide'>
+            <button type='submit' class='cta'>{{PRIMARY_CTA_LABEL}} <span class='sparkle'>✨</span></button>
+            <button type='button' class='secondary' id='bookNow'>Quick book</button>
+            <div style='margin-left:auto;color:var(--muted);font-size:13px'>Or call <strong>{{PHONE}}</strong></div>
+          </div>
+
+          <div style='grid-column:1/-1;font-size:12px;color:var(--muted);margin-top:8px'>
+            By contacting us you consent to brief communications about appointments. We do not offer guaranteed cures; our approach is educational and whole-person. For urgent care call local emergency services.
+          </div>
+        </form>
+
+        <section class='lead' style='margin-top:18px'>
+          <div style='display:flex;gap:12px;align-items:center'>
+            <div style='background:linear-gradient(135deg,#fff,#f7fffc);padding:10px;border-radius:10px;border:1px solid #eef7f5'>
+              <strong>Free guide</strong>
+            </div>
+            <div>
+              <div style='font-weight:700'>Free guide: Preparing for an intensive intake</div>
+              <div style='color:var(--muted);font-size:13px'>Get a checklist to gather labs, meds, and lifestyle notes — handy for your first deep visit.</div>
+            </div>
+            <button id='leadMagnet' class='secondary' style='margin-left:auto'>Send me the guide</button>
+          </div>
+        </section>
+
+      </section>
+
+      <aside class='card' aria-label='Contact details and quick info'>
+        <h3>Contact & location</h3>
+        <div class='meta'>Reach our practice in {{CITY}}, {{STATE}} — we blend nutrition, mind-body, botanicals, and selective testing.</div>
+        <div class='contact-list'>
+          <div class='pill-info'>Phone: <a href='tel:{{PHONE}}' style='color:inherit;text-decoration:none'>{{PHONE}}</a></div>
+          <div style='font-size:14px;color:var(--muted)'>Email: <a href='mailto:{{EMAIL}}' style='color:inherit;text-decoration:none'>{{EMAIL}}</a></div>
+          <div class='map' aria-hidden='true'>Map preview (add embed)</div>
+        </div>
+
+        <h3 style='margin-top:16px'>Meet your practitioner</h3>
+        <div style='font-weight:700'>{{PRACTITIONER_NAME}}, {{CREDENTIALS}}</div>
+        <div style='color:var(--muted);font-size:13px;margin-top:6px'>{{PRACTITIONER_NAME}} offers intensive consultations focused on whole-person assessment and evidence-informed recommendations. Optional laboratory testing may be discussed as an educational tool.</div>
+
+        <div class='testimonials'>
+          <div class='testi'>
+            "I felt heard — the intake was deep but friendly. Practical ideas I could try right away." <small>— A thoughtful client</small>
+          </div>
+          <div class='testi'>
+            "The focused session helped me prioritize. No quick fixes—just clear next steps." <small>— A happy patient</small>
+          </div>
+        </div>
+
+        <div class='faq'>
+          <h4 style='margin:10px 0 6px 0'>Quick FAQs</h4>
+          <details class='faq-item'>
+            <summary>What is an intensive visit?</summary>
+            <p style='margin:8px 0 0 0;color:var(--muted)'>An extended intake that reviews medical history, lifestyle, and goals. It is an educational consultation and may include lab discussion as appropriate.</p>
+          </details>
+          <details class='faq-item'>
+            <summary>Do you prescribe medications?</summary>
+            <p style='margin:8px 0 0 0;color:var(--muted)'>Prescribing depends on practitioner scope and is discussed in context. We emphasize shared decisions and education.</p>
+          </details>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      <div style='display:flex;justify-content:space-between;align-items:center;gap:10px'>
+        <div>© <span id='year'></span> {{BUSINESS_NAME}} — thoughtful integrative care</div>
+        <div style='color:var(--muted)'>Need help? <a href='mailto:{{EMAIL}}' style='color:var(--accent);text-decoration:none'>{{EMAIL}}</a></div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Simple form handler — opens booking link or mailto fallback
+    const form = document.getElementById('contactForm');
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      const name = encodeURIComponent(form.name.value || '');
+      const email = encodeURIComponent(form.email.value || '');
+      const phone = encodeURIComponent(form.phone.value || '');
+      const message = encodeURIComponent(form.message.value || '');
+      // Open booking URL in new tab with query params if provided
+      const base = '{{PRIMARY_CTA_URL}}' || '';
+      if(base){
+        const url = base + '?name=' + name + '&email=' + email + '&phone=' + phone + '&note=' + message;
+        window.open(url, '_blank');
+      } else {
+        // fallback: open mailto
+        const mailto = 'mailto:{{EMAIL}}?subject=' + encodeURIComponent('New intake request from ' + (form.name.value || 'someone')) + '&body=' + message + '%0A%0A' + phone;
+        window.location.href = mailto;
+      }
+    });
+
+    document.getElementById('bookNow').addEventListener('click', function(){
+      if('{{PRIMARY_CTA_URL}}') window.open('{{PRIMARY_CTA_URL}}','_blank');
+      else alert('Open booking link: {{PRIMARY_CTA_URL}}');
+    });
+
+    // Lead magnet quick handler
+    document.getElementById('leadMagnet').addEventListener('click', function(){
+      const email = document.getElementById('email').value;
+      const name = document.getElementById('name').value || 'friend';
+      if(!email){
+        alert('Please enter your email to receive the guide.');
+        return;
+      }
+      // Simulate sending and show playful confirmation
+      this.textContent = 'Sending...';
+      setTimeout(()=>{
+        this.textContent = 'Guide sent!';
+        alert('Thanks ' + name + '! The guide is on its way to ' + email + '.');
+      },700);
+    });
+  </script>
+</body>
+</html>

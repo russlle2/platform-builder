@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Gatherings — Events | {{BUSINESS_NAME}}</title>
+  <meta name='description' content='Group sound gatherings, micro-retreat evenings, and a clear event calendar.'>
+  <style>
+    :root{--bg:#0f1113;--card:#0f1720;--muted:#9aa5ad;--accent:#c7f3e6;--glass:rgba(255,255,255,0.03);--pill:#162027}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial;color:#e6f6f0;background:linear-gradient(180deg,var(--bg),#071018 60%);}
+    body{background-image:url('assets/img/pattern.svg');background-repeat:repeat;background-size:240px;}
+    .wrap{max-width:1100px;margin:40px auto;padding:28px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:14px;box-shadow:0 6px 30px rgba(0,0,0,0.6);} 
+    nav{display:flex;gap:18px;align-items:center;justify-content:space-between;padding-bottom:18px}
+    .brand{font-weight:700;letter-spacing:0.6px}
+    .navlinks a{color:var(--accent);text-decoration:none;padding:8px 12px;border-radius:10px}
+    .navlinks a:hover{background:var(--glass)}
+    .hero{display:flex;gap:20px;align-items:center;padding:18px 0;border-bottom:1px solid rgba(255,255,255,0.03)}
+    .hero .left{flex:1}
+    h1{margin:0;font-size:28px}
+    p.lead{color:var(--muted);margin-top:8px}
+    .cta{display:inline-block;margin-top:12px;padding:10px 16px;background:linear-gradient(90deg,#145b54,#0fbba1);color:#042827;border-radius:10px;font-weight:700;text-decoration:none}
+    .modules{display:grid;grid-template-columns:1fr 340px;gap:22px;margin-top:20px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .next-event{background:linear-gradient(90deg,#062323,#082b30);padding:18px;border-radius:12px;color:var(--accent)}
+    .next-event time{display:block;font-weight:700;font-size:20px}
+    .calendar{max-height:360px;overflow:auto;margin-top:12px}
+    .event-item{display:flex;justify-content:space-between;padding:10px;border-radius:10px;margin-bottom:8px;background:rgba(255,255,255,0.01)}
+    .event-item small{color:var(--muted)}
+    .proof{padding:12px;margin-top:18px}
+    .testimonial{min-height:110px;display:flex;flex-direction:column;justify-content:center}
+    .quote{font-style:italic;color:#e0fff6}
+    .author{margin-top:8px;color:var(--muted);font-size:14px}
+    .badges{display:flex;gap:10px;margin-top:12px}
+    .badge{position:relative;background:rgba(255,255,255,0.03);padding:8px;border-radius:8px;cursor:default}
+    .badge:hover .tip{opacity:1;transform:translateY(0)}
+    .tip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%) translateY(6px);background:#021617;color:var(--accent);padding:8px;border-radius:8px;white-space:nowrap;opacity:0;transition:all 180ms ease}
+    .controls{display:flex;gap:8px;margin-top:12px}
+    .controls button{background:transparent;border:1px solid rgba(255,255,255,0.03);color:var(--accent);padding:8px;border-radius:8px}
+    footer{margin-top:20px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.03);display:flex;justify-content:space-between;color:var(--muted)}
+    @media (max-width:880px){.modules{grid-template-columns:1fr;}.wrap{margin:18px}}
+  </style>
+</head>
+<body>
+  <main class='wrap' role='main'>
+    <nav>
+      <div class='brand'>{{BUSINESS_NAME}}</div>
+      <div class='navlinks'>
+        <a href='index.html'>Home</a>
+        <a href='events.html'>Schedule</a>
+        <a href='private-sessions.html'>Private Work</a>
+        <a href='pricing.html'>Invest</a>
+        <a href='about.html'>Who We Are</a>
+        <a href='faq.html'>Curiosities</a>
+        <a href='book.html'>Reserve</a>
+        <a href='contact.html'>Reach</a>
+      </div>
+    </nav>
+
+    <section class='hero'>
+      <div class='left'>
+        <h1>Gatherings of tuned breath and shared quiet</h1>
+        <p class='lead'>Join the next open circle — micro-retreat evenings with tuned bowls, gentle percussion, and guided pauses meant to clear the edges of your day.</p>
+        <a class='cta' href='book.html' id='primaryCta'>{{PRIMARY_CTA_LABEL}}</a>
+      </div>
+      <div class='meta'>
+        <div style='background:var(--pill);padding:14px;border-radius:10px;color:var(--accent);text-align:center'>
+          <div style='font-size:12px;color:var(--muted)'>Next Circle</div>
+          <div id='nextEventTime' style='font-weight:700;font-size:18px;margin-top:6px'>—</div>
+          <div style='margin-top:8px'><a href='events.html' style='color:var(--accent);text-decoration:none'>See full schedule</a></div>
+        </div>
+      </div>
+    </section>
+
+    <div class='modules'>
+      <div>
+        <div class='card next-event' aria-live='polite'>
+          <h3 style='margin:0'>Next available gathering</h3>
+          <time id='nextEvent' datetime=''>Loading…</time>
+          <p id='nextLocation' style='margin:6px 0;color:var(--muted)'>—</p>
+          <div style='display:flex;gap:8px'>
+            <a class='cta' href='book.html'>Claim Seat</a>
+            <a style='background:transparent;border:1px solid rgba(255,255,255,0.03);padding:10px;border-radius:8px;color:var(--accent);text-decoration:none' href='events.html#calendar'>Full Calendar</a>
+          </div>
+        </div>
+
+        <div class='card proof' aria-hidden='false'>
+          <h4 style='margin:0 0 8px 0'>Proof & Credentials</h4>
+          <div class='testimonial' id='testimonial'>
+            <div class='quote' id='quote'>“Soft tools, deep arrival. A chamber to land.”</div>
+            <div class='author' id='author'>— A participant</div>
+          </div>
+          <div class='badges' id='badges'>
+            <div class='badge' tabindex='0'>
+              <svg width='20' height='20' viewBox='0 0 24 24' fill='none' aria-hidden='true'><circle cx='12' cy='12' r='10' stroke='rgba(255,255,255,0.12)' stroke-width='1.5'/><path d='M8 12l2.5 2.5L16 9' stroke='#9ff0de' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>
+              <div class='tip'>Verified Facilitator Training</div>
+            </div>
+            <div class='badge' tabindex='0'>
+              <svg width='20' height='20' viewBox='0 0 24 24' fill='none'><rect x='3' y='3' width='18' height='18' rx='4' stroke='rgba(255,255,255,0.12)' stroke-width='1.5'/><path d='M7 12h10' stroke='#9ff0de' stroke-width='1.6' stroke-linecap='round'/></svg>
+              <div class='tip'>Community partner spaces</div>
+            </div>
+            <div class='badge' tabindex='0'>
+              <svg width='20' height='20' viewBox='0 0 24 24' fill='none'><path d='M12 3v18' stroke='rgba(255,255,255,0.12)' stroke-width='1.5'/></svg>
+              <div class='tip'>Insurance-friendly setups</div>
+            </div>
+          </div>
+          <div class='controls'>
+            <button id='prevTest'>Prev</button>
+            <button id='nextTest'>Next</button>
+          </div>
+        </div>
+      </div>
+
+      <aside>
+        <div class='card' id='calendarCard'>
+          <h4 style='margin:0 0 8px 0'>Upcoming Schedule</h4>
+          <div id='calendar' class='calendar' role='list' aria-label='Upcoming events'>
+            <!-- Filled by JS -->
+          </div>
+          <div style='margin-top:10px;color:var(--muted);font-size:13px'>Note: If you have recent surgery, epilepsy, or are in late-stage pregnancy, consult with a clinician before booking. See full contraindications on the booking page.</div>
+        </div>
+
+        <div class='card' style='margin-top:12px'>
+          <h4 style='margin:0 0 8px 0'>Quick info</h4>
+          <div style='color:var(--muted);font-size:14px'>Doors open 15 minutes before. Bring a mat, blanket, or we can provide. Quiet phones. Sessions last 60–75 minutes.</div>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      <div>Questions? <a href='mailto:{{EMAIL}}' style='color:var(--accent)'>{{EMAIL}}</a> • {{PHONE}}</div>
+      <div style='color:var(--muted)'>{{CITY}}, {{STATE}}</div>
+    </footer>
+  </main>
+
+  <script>
+    (function(){
+      // Sample events list
+      var events = [
+        {date:'2026-02-20T19:00:00',title:'Evening Circle — Resonant Chairs',loc:'Community Hall'},
+        {date:'2026-02-27T19:00:00',title:'Slow Night — Bowls + Breath',loc:'Studio A'},
+        {date:'2026-03-06T18:30:00',title:'Full-Range Sound Assembly',loc:'Studio B'},
+        {date:'2026-03-13T19:00:00',title:'Early Evening Ease',loc:'Community Hall'},
+        {date:'2026-03-20T19:30:00',title:'Deep Sit + Sound',loc:'Studio A'},
+        {date:'2026-03-27T18:00:00',title:'Ritual of Quiet',loc:'Studio B'}
+      ];
+
+      // parse and sort
+      events.sort(function(a,b){return new Date(a.date)-new Date(b.date)});
+
+      function renderCalendar(){
+        var list = document.getElementById('calendar');
+        list.innerHTML = '';
+        var now = new Date();
+        events.forEach(function(ev){
+          var d = new Date(ev.date);
+          if(d < now) return; // only upcoming
+          var item = document.createElement('div');
+          item.className = 'event-item';
+          var monthDay = d.toLocaleDateString(undefined,{month:'short',day:'numeric'});
+          item.innerHTML = "<div><strong>"+ev.title+"</strong><div style='color:var(--muted)'>"+ev.loc+"</div></div><div><small>"+monthDay+"</small><br><small>"+d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})+"</small></div>";
+          list.appendChild(item);
+        });
+      }
+
+      function setNextEvent(){
+        var now = new Date();
+        var nxt = events.find(function(e){return new Date(e.date) > now});
+        var nextEl = document.getElementById('nextEvent');
+        var nextTime = document.getElementById('nextEventTime');
+        var nextLoc = document.getElementById('nextLocation');
+        if(nxt){
+          var d = new Date(nxt.date);
+          nextEl.textContent = d.toLocaleString(undefined,{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+          nextEl.setAttribute('datetime', nxt.date);
+          nextTime.textContent = d.toLocaleString(undefined,{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+          nextLoc.textContent = nxt.loc;
+        } else {
+          nextEl.textContent = 'No scheduled events';
+          nextTime.textContent = '—';
+          nextLoc.textContent = '';
+        }
+      }
+
+      // Proof gallery rotating testimonials
+      var testimonials = [
+        {quote:'The evening felt like a small house of sound — warm, precise, and steady.',author:'Marin, attendee'},
+        {quote:'I left with a clearer sense of margin around my day.',author:'J. Patel'},
+        {quote:'Accessible, careful facilitation. My sleep improved that night.',author:'R. Gomez'}
+      ];
+      var testIndex = 0;
+      function showTest(i){
+        var q = testimonials[i%testimonials.length];
+        document.getElementById('quote').textContent = '“'+q.quote+'”';
+        document.getElementById('author').textContent = '— '+q.author;
+      }
+
+      document.getElementById('nextTest').addEventListener('click',function(){testIndex=(testIndex+1)%testimonials.length;showTest(testIndex);});
+      document.getElementById('prevTest').addEventListener('click',function(){testIndex=(testIndex-1+testimonials.length)%testimonials.length;showTest(testIndex);});
+
+      // Auto-rotate
+      setInterval(function(){testIndex=(testIndex+1)%testimonials.length;showTest(testIndex);},6000);
+
+      // Initial render
+      renderCalendar(); setNextEvent(); showTest(0);
+
+      // Primary CTA link update
+      var cta = document.getElementById('primaryCta');
+      if(cta){cta.href='book.html';}
+    })();
+  </script>
+</body>
+</html>

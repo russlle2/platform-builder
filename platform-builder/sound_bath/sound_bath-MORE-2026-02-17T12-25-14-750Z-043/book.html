@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7f2ec;--accent:#6a4730;--muted:#7a6458;--card:#fff}
+    body{margin:0;font-family:system-ui, -apple-system, 'Segoe UI', Roboto, Arial;background:var(--bg);color:#2b2b2b}
+    header{padding:14px 20px;background:linear-gradient(180deg,#fff,#fff4ed);border-bottom:1px solid rgba(0,0,0,0.04)}
+    .nav{max-width:1100px;margin:0 auto;display:flex;gap:10px;align-items:center}
+    .brand{font-weight:800;color:var(--accent)}
+    nav a{color:var(--muted);text-decoration:none;padding:6px 8px;border-radius:8px}
+    main{max-width:1000px;margin:22px auto;padding:0 18px}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:18px}
+    .panel{background:var(--card);padding:16px;border-radius:12px}
+    label{display:block;margin-top:10px;font-weight:600}
+    input,select,textarea{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)}
+    .muted{color:var(--muted)}
+    .actions{display:flex;gap:8px;margin-top:12px}
+    button.primary{background:var(--accent);color:#fff;border:none;padding:10px 12px;border-radius:10px;cursor:pointer}
+    button.ghost{background:transparent;border:1px solid rgba(0,0,0,0.06);padding:10px 12px;border-radius:10px}
+    .upcoming{display:flex;flex-direction:column;gap:8px}
+    .event{padding:10px;border-radius:10px;background:linear-gradient(180deg,#fff,#fff7f0);border-left:4px solid rgba(106,71,48,0.08)}
+    .note{font-size:0.92rem;color:#653}
+    /* reveal */
+    .reveal{opacity:0;transform:translateY(14px);transition:opacity 520ms ease,transform 520ms ease}
+    .reveal.is-visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){ .reveal{transition:none;opacity:1;transform:none} }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand">{{BUSINESS_NAME}}</div>
+      <nav style="margin-left:14px">
+        <a href="index.html">Home</a>
+        <a href="events.html">Gatherings</a>
+        <a href="private-sessions.html">Private</a>
+        <a href="pricing.html">Rates</a>
+        <a href="about.html">About</a>
+        <a href="faq.html">Help</a>
+        <a href="book.html" aria-current="page">Reserve</a>
+      </nav>
+      <div style="margin-left:auto;color:var(--muted)">
+        <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="grid">
+      <div>
+        <section class="panel reveal" data-reveal>
+          <h1>Reserve a spot — cohort & drop-in options</h1>
+          <p class="muted">We run small cohort series and occasional drop-in evenings. If you're selecting a cohort, we recommend signing up for the full set to get the cumulative benefit.</p>
+
+          <form id="bookingForm">
+            <label for="name">Full name</label>
+            <input id="name" name="name" required />
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required />
+
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" type="tel" />
+
+            <label for="type">Choose offering</label>
+            <select id="type" name="type">
+              <option value="cohort">Monthly Cohort Series — 4 sessions</option>
+              <option value="series">Mini-Series — 2 sessions</option>
+              <option value="dropin">Drop-in evening — single</option>
+              <option value="private">Private session (book consultation)</option>
+            </select>
+
+            <label for="date">Preferred date or start (if applicable)</label>
+            <input id="date" name="date" type="text" placeholder="e.g., March 3 — or 'Any'" />
+
+            <label for="notes">Special notes / accessibility</label>
+            <textarea id="notes" name="notes" rows="3" placeholder="Let us know if you need a chair or have sensory concerns"></textarea>
+
+            <div style="margin-top:8px">
+              <input type="checkbox" id="agree" required /> <label for="agree" style="display:inline">I acknowledge the health & safety notes and contraindications below.</label>
+            </div>
+
+            <div class="actions">
+              <button class="primary" type="submit">Request reservation</button>
+              <button type="button" class="ghost" id="preview">Preview</button>
+            </div>
+
+            <p class="muted note">We will confirm availability and send payment details. For immediate questions: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</p>
+          </form>
+        </section>
+
+        <section class="panel reveal" data-reveal style="margin-top:14px">
+          <h3>Booking terms — cohort model</h3>
+          <p class="muted">Cohort pricing is framed as a series investment rather than per-night tickets. This helps us plan consistent capacity and keeps rates accessible. If you join mid-series, prorated options may be available.</p>
+          <p class="muted"><strong>Contraindications:</strong> Please do not attend without clinical advice if you have uncontrolled epilepsy, a medical device that might react to vibration, are recovering from recent head or ear surgery, or have other concerns that make prolonged auditory exposure unsafe. Pregnancy and serious psychiatric diagnoses warrant a consult with a healthcare provider. Contact us at <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> if unsure.</p>
+        </section>
+      </div>
+
+      <aside>
+        <div class="panel reveal" data-reveal>
+          <h3>Upcoming & next</h3>
+          <div id="nextEvent" class="event">Loading next events…</div>
+          <div style="margin-top:12px"><a href="events.html" class="ghost">Full schedule & calendar</a></div>
+        </div>
+
+        <div class="panel reveal" data-reveal style="margin-top:12px">
+          <h4>Pricing snapshot</h4>
+          <p class="muted">Cohort Series: $120 — covers four sessions. Drop-in: $35. Private: by consultation.</p>
+          <p class="muted">We offer sliding options and payment plans on request. Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</p>
+        </div>
+
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    // reveal
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    (function(){ const els = document.querySelectorAll('[data-reveal]'); if(reduced){ els.forEach(e=>e.classList.add('is-visible')); return; } const obs = new IntersectionObserver((entries)=>{ entries.forEach(entry=>{ if(entry.isIntersecting) entry.target.classList.add('is-visible'); }); },{threshold:0.12}); els.forEach(e=>obs.observe(e)); })();
+
+    // Simple client-side booking preview
+    const form = document.getElementById('bookingForm');
+    const previewBtn = document.getElementById('preview');
+    form.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      // validation
+      if(!document.getElementById('agree').checked){ alert('Please agree to the health notes.'); return; }
+      const payload = {
+        name: form.name.value.trim(),
+        email: form.email.value.trim(),
+        phone: form.phone.value.trim(),
+        offering: form.type.value,
+        date: form.date.value.trim(),
+        notes: form.notes.value.trim(),
+      };
+      // pseudo-submit: show confirmation and direct to PRIMARY_CTA_URL for payment
+      const confirmText = `Thanks, ${payload.name || 'friend'} — we received your request. You'll get a confirmation by email with payment steps.`;
+      alert(confirmText);
+      // redirect to primary CTA as placeholder for payment flow
+      window.location.href = '{{PRIMARY_CTA_URL}}';
+    });
+
+    previewBtn.addEventListener('click', ()=>{
+      const name = form.name.value || '(name)';
+      const email = form.email.value || '(email)';
+      const type = form.type.value;
+      alert(`Preview:\nName: ${name}\nEmail: ${email}\nOffering: ${type}`);
+    });
+
+    // Next-event module: local example and small calendar list
+    (function(){
+      const now = new Date();
+      const sample = [
+        {date: addDays(now,3), title:'Evening — Sound & Settling'},
+        {date: addDays(now,10), title:'Cohort Night 2 — Midpoint'},
+        {date: addDays(now,17), title:'Drop-in: Gentle Textures'},
+      ];
+      const el = document.getElementById('nextEvent');
+      el.innerHTML = sample.map((s,i)=>`<div style=\"margin-bottom:8px\"><strong>${formatDate(s.date)}</strong><div class=\"muted\">${s.title}</div></div>`).join('');
+
+      // helper
+      function addDays(d,n){ const x=new Date(d); x.setDate(d.getDate()+n); return x; }
+      function formatDate(d){ return d.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'}); }
+    })();
+
+  </script>
+</body>
+</html>

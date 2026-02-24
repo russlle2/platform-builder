@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Services — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{
+      --warm-1:#3b2f2f; --warm-2:#a46b50; --warm-3:#e6c9b2; --muted:#6b625d; --accent:#8aa28f; --bg:#fff8f3; --card:#fffaf7;
+      --radius:12px; --maxw:1100px; font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--warm-1);line-height:1.45}
+    header{background:linear-gradient(180deg, rgba(180,145,130,0.12), transparent), url('assets/img/pattern.svg');padding:36px 20px;border-bottom:1px solid rgba(107,98,93,0.06)}
+    .wrap{max-width:var(--maxw);margin:0 auto}
+    nav{display:flex;gap:18px;align-items:center;justify-content:space-between}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--warm-2),var(--accent));display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    .navlinks{display:flex;gap:12px;font-weight:600}
+    .navlinks a{color:var(--warm-1);text-decoration:none;padding:8px 10px;border-radius:8px}
+    .navlinks a:hover{background:rgba(134,98,82,0.06)}
+    .cta a{background:var(--warm-2);color:white;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+
+    main{padding:40px 20px}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+    .hero-card{background:var(--card);padding:26px;border-radius:var(--radius);box-shadow:0 6px 18px rgba(59,47,47,0.06)}
+    h1{margin:0 0 8px;font-size:clamp(24px,3.6vw,34px)}
+    p.lead{color:var(--muted);margin:0 0 18px}
+    .actions{display:flex;gap:12px;align-items:center}
+    .btn{background:var(--warm-2);color:white;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700;border:none}
+    .btn.alt{background:transparent;color:var(--warm-2);border:2px solid rgba(164,107,80,0.12)}
+
+    .grid{display:grid;gap:18px;margin-top:22px}
+    .services-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+    .service{background:white;padding:16px;border-radius:12px;border:1px solid rgba(107,98,93,0.06)}
+    .price{font-weight:800;color:var(--warm-2)}
+
+    section{margin-top:36px}
+    .process{display:flex;flex-direction:column;gap:12px}
+    .step{display:flex;gap:12px;align-items:flex-start}
+    .step .num{width:38px;height:38px;border-radius:10px;background:var(--warm-3);display:flex;align-items:center;justify-content:center;font-weight:700}
+
+    footer{padding:28px 20px;margin-top:40px;border-top:1px solid rgba(107,98,93,0.06)}
+
+    .faq dt{font-weight:700;margin-top:14px}
+    .faq dd{margin:0 0 12px;color:var(--muted)}
+
+    /* reveal */
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+    .reveal.revealed{opacity:1;transform:none}
+    @media (prefers-reduced-motion: reduce){.reveal{opacity:1;transform:none;transition:none}}
+
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(11,10,9,0.5);display:none;align-items:center;justify-content:center;padding:24px}
+    .modal{background:white;border-radius:12px;max-width:640px;width:100%;padding:20px}
+    .modal.show{display:block}
+    .modal .stage{min-height:120px}
+    .breath-circle{width:120px;height:120px;border-radius:50%;margin:10px auto;background:radial-gradient(circle at 30% 30%,var(--accent),var(--warm-2));opacity:.95}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+    @media (max-width:800px){.hero{grid-template-columns:1fr} .brand span{display:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav>
+        <div class="brand">
+          <div class="logo">AR</div>
+          <div>
+            <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+            <div style="font-size:12px;color:var(--muted)">Aromatic planning & in-person studio work</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:18px">
+          <div class="navlinks">
+            <a href="index.html">Home</a>
+            <a href="services.html">Offerings</a>
+            <a href="blends.html">Custom Blends</a>
+            <a href="shop.html">Boutique</a>
+            <a href="pricing.html">Rates</a>
+            <a href="about.html">Meet</a>
+          </div>
+          <div class="cta"><a href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a></div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="hero-card reveal">
+        <h1>Personal scent work for targeted moments</h1>
+        <p class="lead">A compact suite of studio sessions and guided plans that may support focus, sleep routines, and calm transitions. Careful formulations, safety-first guidance.</p>
+        <div class="actions">
+          <button class="btn" id="openTry">Try it now — guided</button>
+          <a class="btn alt" href="book.html">Reserve a VIP Day</a>
+        </div>
+        <div style="margin-top:18px;color:var(--muted)">
+          <strong>Fast option:</strong> 60-minute Scent Studio Session — strategy + custom home plan.
+        </div>
+      </div>
+
+      <aside class="hero-card reveal" aria-hidden="false">
+        <div style="font-weight:800">Current offerings</div>
+        <div style="margin-top:12px" class="services-list">
+          <div class="service">
+            <div style="font-size:14px;color:var(--muted)">Scent Studio Session</div>
+            <div class="price">$220 • 60 min</div>
+            <div style="margin-top:8px;color:var(--muted)">Personal scent map + blending demo. May support short-term routines.</div>
+            <div style="margin-top:10px"><button class="btn" onclick="openTry()">Try it now</button></div>
+          </div>
+          <div class="service">
+            <div style="font-size:14px;color:var(--muted)">Blend Blueprint</div>
+            <div class="price">$420 • deep day</div>
+            <div style="margin-top:8px;color:var(--muted)">Full-day design intensive to leave with blends and at-home plan.</div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="reveal">
+      <h2 style="margin-top:8px">How we work</h2>
+      <div class="process">
+        <div class="step"><div class="num">1</div><div><strong>Conversation</strong><div style="color:var(--muted)">We start with what's important to you and safety notes (pets, pregnancy, sensitivities).</div></div></div>
+        <div class="step"><div class="num">2</div><div><strong>Studio session</strong><div style="color:var(--muted)">Scent exploration and blending with sample testing and a clear at-home plan.</div></div></div>
+        <div class="step"><div class="num">3</div><div><strong>Follow-up</strong><div style="color:var(--muted)">A short check-in to adjust dilutions or support home practice as needed.</div></div></div>
+      </div>
+    </section>
+
+    <section class="reveal" aria-labelledby="benefits">
+      <h2 id="benefits">Who can this be for?</h2>
+      <ul style="color:var(--muted)">
+        <li>People curious about scent supports for daily rituals.</li>
+        <li>Those seeking a clear, practical plan for at-home scent use.</li>
+        <li>Clients wanting studio-led blending and hands-on learning.</li>
+      </ul>
+    </section>
+
+    <section class="reveal">
+      <h2>Common questions</h2>
+      <dl class="faq">
+        <dt>Are these sessions safe?</dt>
+        <dd>Safety is central. We review allergies, medications, pregnancy, and pets. Suggestions are framed as supportive and non-medical.</dd>
+
+        <dt>What about dilution and patch testing?</dt>
+        <dd>Every blend comes with a recommended dilution and simple patch-test instructions. Always try a small patch and wait 24 hours before regular use.</dd>
+
+        <dt>Do you work with clients who have pets or are pregnant?</dt>
+        <dd>Yes, but recommendations will be adjusted. We avoid advising on medical conditions and instead offer scent choices and practical cautions tailored to your context.</dd>
+
+        <dt>How do I prepare for a session?</dt>
+        <dd>Bring notes on any fragrance sensitivities, pets, and current routines. There's a short intake form after booking.</dd>
+      </dl>
+    </section>
+
+    <section class="reveal">
+      <h2>Book a session</h2>
+      <p style="color:var(--muted)">Start with a focused hour or reserve a full design day. Both include a written plan and dilution guidance.</p>
+      <div style="margin-top:12px"><a class="btn" href="book.html">Plan my visit</a></div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wrap" style="display:flex;justify-content:space-between;align-items:center">
+      <div style="color:var(--muted)">Questions? Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      <div style="color:var(--muted);font-size:14px">&copy; <span id="year"></span> {{BUSINESS_NAME}}</div>
+    </div>
+  </footer>
+
+  <!-- Try-it modal -->
+  <div id="tryBackdrop" class="modal-backdrop" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal" role="document">
+      <button aria-label="Close" style="float:right;border:none;background:none;font-weight:700" id="modalClose">✕</button>
+      <h3 id="modalTitle">Try a quick guidance exercise</h3>
+      <div class="stage" id="modalStage">
+        <div id="intro" class="modal-stage">
+          <p style="color:var(--muted)">Choose one focus for a short supported practice: breathing, journaling, or intent-setting.</p>
+          <div style="display:flex;gap:10px">
+            <button class="btn" data-action="breath">Breathing</button>
+            <button class="btn" data-action="journal">Journaling</button>
+            <button class="btn" data-action="intent">Set intention</button>
+          </div>
+        </div>
+        <div id="breath" style="display:none">
+          <div class="breath-circle" id="breathCircle" aria-hidden="true"></div>
+          <p style="text-align:center;font-weight:700" id="breathInstruction">Get comfortable. Follow the circle.</p>
+          <div style="display:flex;justify-content:center;gap:8px;margin-top:8px">
+            <button class="btn" id="startBreath">Start 60s</button>
+            <button class="btn alt" id="stopBreath">Stop</button>
+          </div>
+        </div>
+        <div id="journal" style="display:none">
+          <p style="color:var(--muted)">A short prompt to guide five minutes of reflection. Type freely; your notes are local to your device.</p>
+          <label class="sr-only">Journal</label>
+          <textarea id="journalText" style="width:100%;height:120px;border-radius:8px;border:1px solid rgba(107,98,93,0.08);padding:8px"></textarea>
+          <div style="margin-top:10px;display:flex;gap:8px"><button class="btn" id="saveJournal">Save locally</button><button class="btn alt" id="clearJournal">Clear</button></div>
+        </div>
+        <div id="intent" style="display:none">
+          <p style="color:var(--muted)">Write a short intention for the rest of your day. Keep it simple and present-tense.</p>
+          <input id="intentInput" placeholder="I will..." style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(107,98,93,0.08)" />
+          <div style="margin-top:10px;display:flex;gap:8px"><button class="btn" id="saveIntent">Set intention</button><button class="btn alt" id="clearIntent">Clear</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Modal controls
+    const backdrop = document.getElementById('tryBackdrop');
+    const modalClose = document.getElementById('modalClose');
+    const openTryButtons = document.querySelectorAll('#openTry, button[onclick]');
+    function openTry(){backdrop.style.display='flex';backdrop.setAttribute('aria-hidden','false');document.getElementById('intro').style.display='block';document.getElementById('breath').style.display='none';document.getElementById('journal').style.display='none';document.getElementById('intent').style.display='none'}
+    function closeTry(){backdrop.style.display='none';backdrop.setAttribute('aria-hidden','true');stopBreathing();}
+    document.getElementById('openTry').addEventListener('click',openTry);
+    modalClose.addEventListener('click',closeTry);
+    backdrop.addEventListener('click',(e)=>{if(e.target===backdrop)closeTry()});
+
+    // Stage chooser
+    document.querySelectorAll('[data-action]').forEach(btn=>btn.addEventListener('click',e=>{
+      const action = e.currentTarget.getAttribute('data-action');
+      document.getElementById('intro').style.display='none';
+      document.getElementById('breath').style.display = action==='breath' ? 'block' : 'none';
+      document.getElementById('journal').style.display = action==='journal' ? 'block' : 'none';
+      document.getElementById('intent').style.display = action==='intent' ? 'block' : 'none';
+    }));
+
+    // Breathing exercise
+    let breathInterval=null; let breathStep=0;
+    const circle = document.getElementById('breathCircle');
+    const instr = document.getElementById('breathInstruction');
+    document.getElementById('startBreath').addEventListener('click',()=>{
+      if(breathInterval) return; breathStep=0; instr.textContent='Breathe with the cycle: inhale 4s, hold 2s, exhale 6s';
+      let cycle = 0; const pattern=[4,2,6]; let phase=0;
+      breathInterval = setInterval(()=>{
+        phase = cycle % 3; const t=pattern[phase];
+        // animate circle
+        circle.style.transition = 'transform '+t+'s ease-in-out, opacity '+t+'s linear';
+        if(phase===0){ circle.style.transform='scale(1.18)'; instr.textContent='Inhale ('+t+'s)'}
+        else if(phase===1){ circle.style.transform='scale(1.05)'; instr.textContent='Hold ('+t+'s)'}
+        else { circle.style.transform='scale(.76)'; instr.textContent='Exhale ('+t+'s)'}
+        cycle++;
+      },1000);
+    });
+    document.getElementById('stopBreath').addEventListener('click',stopBreathing);
+    function stopBreathing(){ if(breathInterval){clearInterval(breathInterval);breathInterval=null; circle.style.transform='scale(1)'; instr.textContent='Exercise stopped.'} }
+
+    // Journal local save (localStorage)
+    const journalKey='aroma_journal_v1';
+    const journalText = document.getElementById('journalText');
+    document.getElementById('saveJournal').addEventListener('click',()=>{localStorage.setItem(journalKey, journalText.value); alert('Saved to your browser.');});
+    document.getElementById('clearJournal').addEventListener('click',()=>{journalText.value=''; localStorage.removeItem(journalKey)});
+    // load
+    if(localStorage.getItem(journalKey)) journalText.value = localStorage.getItem(journalKey);
+
+    // Intent
+    document.getElementById('saveIntent').addEventListener('click',()=>{
+      const v=document.getElementById('intentInput').value.trim(); if(!v){alert('Type a short intention.');return;} alert('Intent set: "'+v+'"'); closeTry();
+    });
+    document.getElementById('clearIntent').addEventListener('click',()=>{document.getElementById('intentInput').value=''});
+
+    // Accessible keyboard close
+    document.addEventListener('keydown',e=>{ if(e.key==='Escape' && backdrop.style.display==='flex') closeTry(); });
+
+    // Scroll reveal with prefers-reduced-motion support
+    function initReveal(){
+      const prefersReduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const items = document.querySelectorAll('.reveal');
+      if(prefersReduce){ items.forEach(i=>i.classList.add('revealed')); return; }
+      const observer = new IntersectionObserver((entries)=>{
+        entries.forEach(entry=>{ if(entry.isIntersecting){ entry.target.classList.add('revealed'); observer.unobserve(entry.target); } });
+      },{threshold:0.12});
+      items.forEach(i=>observer.observe(i));
+    }
+    document.addEventListener('DOMContentLoaded',initReveal);
+  </script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tailored Sessions — Private Sound Work</title>
+  <style>
+    :root{--bg:#07121a;--card:#081622;--muted:#93a5b8;--accent:#a7f3d0}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#e6f8f2;background:linear-gradient(180deg,var(--bg),#041017);}
+    header{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:rgba(255,255,255,0.02)}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#052025,#08373b);display:flex;align-items:center;justify-content:center;color:#bff7ea;font-weight:800}
+    nav a{color:#cfeef0;margin:0 8px;text-decoration:none}
+
+    .wrap{max-width:980px;margin:28px auto;padding:0 18px}
+    .intro{display:flex;gap:18px}
+    .panel{background:linear-gradient(180deg,var(--card),rgba(255,255,255,0.02));padding:18px;border-radius:12px;flex:1}
+    h1{margin:0 0 6px}
+    .muted{color:var(--muted)}
+
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:14px}
+    .offer{padding:12px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)}
+
+    .mixer{display:flex;gap:8px;align-items:center;margin-top:12px}
+    .mixer input[type=range]{width:160px}
+
+    .cta{margin-top:14px}
+    .btn{background:var(--accent);border:0;padding:10px 12px;border-radius:10px;color:#012;font-weight:700;text-decoration:none}
+
+    .testimonials{margin-top:16px}
+    .badge-row{display:flex;gap:8px;margin-top:8px}
+    .badge{background:rgba(255,255,255,0.02);padding:6px 8px;border-radius:8px;font-size:13px}
+    .tip{position:absolute;background:#02242a;padding:8px;border-radius:6px;color:#cfffe8;font-size:13px;transform:translateY(6px);opacity:0;transition:all .15s}
+
+    .note{margin-top:8px;font-size:13px;color:var(--muted)}
+
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="logo">PS</div>
+      <div>
+        <div style="font-weight:700">Private Sessions</div>
+        <div class="muted" style="font-size:13px">Tailored, one-on-one sound work</div>
+      </div>
+    </div>
+    <nav aria-label="Main">
+      <a href="index.html">Home</a>
+      <a href="events.html">Gatherings</a>
+      <a href="private-sessions.html">Tailored</a>
+      <a href="pricing.html">Investment</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQ</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="intro">
+      <div class="panel">
+        <h1>Design a personal sound plan</h1>
+        <p class="muted">Private sessions focus on specific needs — recovery, stress-management, or deep relaxation. We tailor instruments, pacing, and verbal guidance to your context.</p>
+
+        <div class="mixer" aria-label="session intensity">
+          <label class="muted">Intensity</label>
+          <input id="intensityRange" type="range" min="1" max="3" value="2" />
+          <div id="intensityLabel" style="margin-left:8px;font-weight:700;color:#dfffe8">Medium</div>
+        </div>
+
+        <div class="note">Adjusting intensity updates recommended session structures below. Our staff will confirm suitability during intake; see contraindications in the FAQ.</div>
+
+        <div class="testimonials" id="testimonials">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-weight:700" id="testi-head">Focused Reset</div>
+              <div class="muted" id="testi-body">Customized 1:1 session for targeted release.</div>
+            </div>
+            <div>
+              <a class="btn" href="book.html">Request a consult</a>
+            </div>
+          </div>
+
+          <div class="badge-row">
+            <div class="badge" data-tip="Led by trained facilitators">Facilitator-Trained
+              <div class="tip">All leads complete safety protocol training.</div>
+            </div>
+            <div class="badge" data-tip="Available for workplace programs">Corporate Ready
+              <div class="tip">On-site and remote-friendly formats.</div>
+            </div>
+            <div class="badge" data-tip="Independent reviews available">Community Rated
+              <div class="tip">Local participants rate sessions 4.8/5 on independent surveys.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <aside class="panel" aria-labelledby="pricing-heading">
+        <h3 id="pricing-heading" style="margin-top:0">Session types</h3>
+        <div class="offer" id="offerings">
+          <!-- offerings populated by JS -->
+        </div>
+
+        <div class="cta"><a class="btn" href="pricing.html">See rates & packages</a></div>
+
+      </aside>
+    </section>
+
+    <section style="margin-top:18px">
+      <div class="panel">
+        <h3 style="margin-top:0">Process</h3>
+        <ol class="muted">
+          <li>Short intake to align goals and contraindications.</li>
+          <li>Session design: instruments, tempo, and presence level.</li>
+          <li>Post-session notes and at-home suggestions.</li>
+        </ol>
+        <div class="note">Sessions may incorporate bowls, gongs, voice, and intentional silence. If you are pregnant, have neurological conditions, or are under active psychiatric treatment, please consult your doctor before booking.</div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // Offerings adapt to intensity
+    const offerings = [
+      {id:'1',title:'Soothing Session',desc:'45 minutes, emphasis on breath & gentle bowls',levels:[1,2],price:'From $75'},
+      {id:'2',title:'Deep Harmonic',desc:'75 minutes, layered gongs and extended tones',levels:[2,3],price:'From $140'},
+      {id:'3',title:'Resonance Reset',desc:'Private short series (3x) for habit change',levels:[1,2,3],price:'Package pricing'}
+    ];
+    const offeringsEl = document.getElementById('offerings');
+    function renderOffers(level){
+      offeringsEl.innerHTML='';
+      offerings.forEach(o=>{
+        const fits = o.levels.includes(level);
+        const div = document.createElement('div'); div.className='offer';
+        div.innerHTML = `<div style=\"display:flex;justify-content:space-between;align-items:start\"><div><strong>${o.title}</strong><div class=\"muted\">${o.desc}</div></div><div style=\"text-align:right\"><div style=\"font-weight:700;color:#dfffe8\">${o.price}</div><div style=\"margin-top:8px\"><a class=\"btn\" href=\"book.html\">${fits? 'Recommended': 'View'}</a></div></div></div>`;
+        offeringsEl.appendChild(div);
+      });
+    }
+    const range = document.getElementById('intensityRange');
+    const label = document.getElementById('intensityLabel');
+    function updateIntensity(){
+      const v = Number(range.value);
+      if(v===1) label.textContent='Gentle';
+      if(v===2) label.textContent='Medium';
+      if(v===3) label.textContent='Intense';
+      renderOffers(v);
+    }
+    range.addEventListener('input',updateIntensity);
+    updateIntensity();
+
+    // Simple testimonial swap and badge tooltips
+    const testiHead = document.getElementById('testi-head');
+    const testiBody = document.getElementById('testi-body');
+    const testiSet = [
+      {h:'Focused Reset','b':'I booked a single session and built a short practice to daily ground. — Maya'},
+      {h:'Rest & Return','b':'The team adjusts their approach to my sensitivities — always comfortable. — Leo'},
+      {h:'Workplace Program','b':'Our staff reported clearer focus after a brief group session. — HR Lead'}
+    ];
+    let i=0; setInterval(()=>{i=(i+1)%testiSet.length; testiHead.textContent=testiSet[i].h; testiBody.textContent=testiSet[i].b;},4000);
+
+    // badge tooltips
+    document.querySelectorAll('.badge').forEach(b=>{
+      b.addEventListener('mouseenter',()=>{ const tip=b.querySelector('.tip'); if(tip){tip.style.opacity=1;tip.style.transform='translateY(0)';}});
+      b.addEventListener('mouseleave',()=>{ const tip=b.querySelector('.tip'); if(tip){tip.style.opacity=0;tip.style.transform='translateY(6px)';}});
+    });
+
+  </script>
+</body>
+</html>

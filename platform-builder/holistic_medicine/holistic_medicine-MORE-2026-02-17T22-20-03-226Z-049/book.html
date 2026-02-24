@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Schedule a Discovery — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reserve a discovery conversation. Choose a time, share priorities, and we’ll suggest a next-step pathway.">
+  <style>
+    :root{--bg:#071218;--muted:#9bc7bf;--accent:#76e1d0}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#e7f8f3;background:linear-gradient(180deg,#041214 0%, #061619 100%);min-height:100vh}
+    header{display:flex;align-items:center;gap:12px;padding:14px 20px}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#76e1d0,#0a6b57);display:flex;align-items:center;justify-content:center;color:#012}
+    nav{margin-left:auto;display:flex;gap:8px}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 10px}
+    .wrap{max-width:900px;margin:26px auto;padding:20px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    h1{margin:6px 0;color:#eafffb}
+    p{color:var(--muted);line-height:1.5}
+    form{margin-top:14px;display:grid;gap:10px}
+    input,select,textarea{padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:rgba(255,255,255,0.01);color:#e9fff8}
+    label{font-size:13px;color:var(--muted)}
+    button{background:linear-gradient(90deg,var(--accent),#34b99b);border:none;padding:12px;border-radius:10px;color:#012;font-weight:700}
+    .note{font-size:13px;color:var(--muted);margin-top:8px}
+    .small{font-size:13px;color:var(--muted)}
+    .slots{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+    .slot{padding:8px 10px;border-radius:8px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.02);cursor:pointer}
+    .slot.selected{background:linear-gradient(90deg,var(--accent),#2bb69f);color:#012}
+    .summary{margin-top:12px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.02)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">HS</div>
+    <nav>
+      <a href="/index.html">Home</a>
+      <a href="/services.html">Offerings</a>
+      <a href="/pricing.html">Rates</a>
+      <a href="/about.html">The Team</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <div class="card">
+      <h1>Reserve a discovery conversation</h1>
+      <p>Start with a short conversation to clarify priorities and determine whether a monthly pathway or an intensive is the better fit. There is no medical promise—only collaborative planning.</p>
+
+      <form id="bookForm" onsubmit="return false">
+        <div>
+          <label for="name">Full name</label>
+          <input id="name" name="name" required placeholder="Your name">
+        </div>
+        <div>
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required placeholder="you@example.com">
+        </div>
+        <div>
+          <label for="phone">Phone</label>
+          <input id="phone" name="phone" placeholder="Optional" value="{{PHONE}}">
+        </div>
+        <div>
+          <label for="goal">Primary goal (brief)</label>
+          <input id="goal" name="goal" placeholder="Better sleep, regain focus, reduce flare-ups...">
+        </div>
+
+        <div>
+          <label>Choose a tentative time</label>
+          <div class="slots" id="slots"></div>
+        </div>
+
+        <div>
+          <label for="notes">Anything to share in advance?</label>
+          <textarea id="notes" name="notes" rows="3" placeholder="Relevant history, recent tests, scheduling needs"></textarea>
+        </div>
+
+        <div style="display:flex;gap:10px;align-items:center;margin-top:8px">
+          <button id="submitBtn">Request discovery</button>
+          <div class="small">Or call <a href="tel:{{PHONE}}" style="color:var(--accent)">{{PHONE}}</a></div>
+        </div>
+
+      </form>
+
+      <div class="summary" id="summary">
+        <div style="font-weight:700;color:#e9fff6">Summary</div>
+        <div class="note">No commitment—after you request, we will reach out to confirm scheduling and next steps.</div>
+      </div>
+
+      <div class="note" style="margin-top:12px">Please be aware: our consultations are educational. If you have urgent medical concerns, contact local emergency services or your primary care provider.</div>
+    </div>
+  </main>
+
+  <script>
+    // Simple mock slot selection
+    (function(){
+      const slots = [
+        'Mon 9:00 AM','Mon 2:00 PM','Tue 10:30 AM','Wed 4:00 PM','Thu 11:00 AM','Fri 1:00 PM'
+      ];
+      const container = document.getElementById('slots');
+      let selected = null;
+      slots.forEach(s=>{
+        const el = document.createElement('div'); el.className='slot'; el.textContent = s; el.tabIndex=0;
+        el.addEventListener('click', ()=> selectSlot(el,s));
+        el.addEventListener('keydown',(e)=>{ if(e.key==='Enter') selectSlot(el,s); });
+        container.appendChild(el);
+      });
+      function selectSlot(el,s){
+        document.querySelectorAll('.slot').forEach(x=>x.classList.remove('selected'));
+        el.classList.add('selected'); selected = s; updateSummary();
+      }
+      function updateSummary(){
+        const name = document.getElementById('name').value || '—';
+        const goal = document.getElementById('goal').value || '—';
+        document.getElementById('summary').innerHTML = '<div style="font-weight:700;color:#e9fff6">Summary</div>'+
+          '<div class="note">Name: '+escapeHtml(name)+'<br>Goal: '+escapeHtml(goal)+'<br>Selected time: '+(selected||'—')+'</div>';
+      }
+      ['name','goal'].forEach(id=>document.getElementById(id).addEventListener('input', updateSummary));
+      // submit handler (local stub)
+      document.getElementById('submitBtn').addEventListener('click', function(){
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        if(!name || !email){ alert('Please provide name and email to request a discovery.'); return; }
+        const payload = {name:name,email:email,phone:document.getElementById('phone').value,goal:document.getElementById('goal').value,notes:document.getElementById('notes').value,slot:selected};
+        // For this local template we simply show a confirmation UI.
+        document.getElementById('summary').innerHTML = '<div style="font-weight:700;color:#e9fff6">Request sent</div><div class="note">Thanks, '+escapeHtml(name)+'. We will follow up at '+escapeHtml(email)+'.</div>';
+        this.disabled = true; this.textContent='Requested';
+      });
+      function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    })();
+  </script>
+</body>
+</html>

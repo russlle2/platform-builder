@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Memberships — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fffef9;--muted:#6b6b6b;--accent:#7a5cff;--accent-2:#00bfa6;--card:#fff;--glass:rgba(255,255,255,0.6);--shadow:0 8px 30px rgba(25,20,40,0.06);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,'Helvetica Neue',Arial}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg, #fffef9 0%, #f6fbfb 100%);color:#1b1b1b}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;border-bottom:1px solid #eee;background:linear-gradient(90deg, rgba(122,92,255,0.04), rgba(0,191,166,0.02));}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:44px;height:44px;background:linear-gradient(135deg,var(--accent),var(--accent-2));border-radius:10px;display:grid;place-items:center;color:#fff;font-weight:700}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none;font-weight:600}
+    .wrap{max-width:1100px;margin:36px auto;padding:0 20px}
+    .hero{display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start}
+    .hero h1{margin:0 0 8px;font-size:28px}
+    .hero p{color:var(--muted);margin:0 0 18px}
+    .card{background:var(--card);border-radius:14px;padding:18px;box-shadow:var(--shadow)}
+    .tiers{display:flex;gap:18px;margin-top:18px}
+    .tier{flex:1;padding:18px;border-radius:12px;border:1px solid #f0f0f5}
+    .tier h3{margin:0 0 8px}
+    .price{font-size:22px;font-weight:700;margin:6px 0}
+    .features{color:var(--muted);font-size:14px;margin:10px 0}
+    .cta{display:inline-flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;background:var(--accent);color:#fff;text-decoration:none;font-weight:700}
+    .secondary{background:transparent;border:1px solid #eee;padding:8px 12px;border-radius:8px}
+    .controls{display:flex;gap:10px;align-items:center;margin-top:12px}
+    .mood-pill{padding:8px 10px;border-radius:999px;border:1px solid #eee;background:#fff;cursor:pointer}
+    .mood-pill.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;border-color:transparent}
+    .method-panel{margin-top:14px;padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(122,92,255,0.06),rgba(0,191,166,0.03));color:#1b1b1b}
+    .wheel{width:100%;height:280px;display:grid;place-items:center}
+    /* aroma wheel segments */
+    .wheel svg{width:240px;height:240px}
+    .note-info{margin-top:12px;color:var(--muted);font-size:14px}
+    footer{padding:24px;text-align:center;color:var(--muted);font-size:13px}
+    .faq{margin-top:18px}
+    .faq p{margin:8px 0;color:var(--muted);font-size:14px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">AP</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Blends & Wheel</a>
+      <a href="shop.html">Shop</a>
+      <a href="pricing.html">Memberships</a>
+      <a href="about.html">About</a>
+      <a href="book.html">Schedule</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div>
+        <h1>Membership tiers shaped around gentle scent routines</h1>
+        <p>Flexible layers of support for using aroma as a daily companion. Each plan may support consistent ritual and a clearer habit of scenting without replacing professional care.</p>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <strong>Choose how you feel</strong>
+              <div style="color:var(--muted);font-size:13px">Select a mood to tailor the recommended membership below.</div>
+            </div>
+            <div class="controls">
+              <button class="mood-pill" data-mood="calm">Calm</button>
+              <button class="mood-pill" data-mood="alert">Alert</button>
+              <button class="mood-pill" data-mood="sleep">Sleep</button>
+              <button class="mood-pill" data-mood="ground">Grounded</button>
+            </div>
+          </div>
+
+          <div class="method-panel" id="methodPanel">
+            Recommended pathway: <strong id="methodTitle">Daily Rituals</strong>
+            <div class="note-info" id="methodDesc">A gentle, short ritual you can repeat each morning or evening to anchor your day.</div>
+            <div style="margin-top:10px">
+              <a id="primaryCta" class="cta" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+              <a class="secondary" href="book.html" style="margin-left:8px">Try a single session</a>
+            </div>
+          </div>
+
+        </div>
+
+        <div style="display:flex;gap:18px;margin-top:18px">
+          <div class="card" style="flex:1">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <strong>Why a membership?</strong>
+              <div style="font-size:12px;color:var(--muted)">Small, steady steps</div>
+            </div>
+            <p style="color:var(--muted);margin-top:8px">Memberships provide scheduled care, preferred team access, and curated blends — intended to help you keep scenting consistently, not to diagnose or treat conditions.</p>
+          </div>
+
+          <div class="card" style="width:240px">
+            <strong>Need a custom plan?</strong>
+            <p style="color:var(--muted);font-size:13px">Book a consultation to shape your membership benefits and delivery cadence.</p>
+            <a class="cta" href="book.html" style="display:inline-block;margin-top:8px">Plan a consultation</a>
+          </div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="card">
+          <strong style="display:block">Membership grid</strong>
+          <div class="tiers">
+            <div class="tier" data-tier="seedling">
+              <h3>Seedling</h3>
+              <div class="price" data-price-monthly="$12/mo" data-price-annual="$120/yr">$12/mo</div>
+              <div class="features">Monthly sample blend • One guided ritual (30m)</div>
+              <div style="margin-top:10px"><a class="cta" href="book.html">Join Seedling</a></div>
+            </div>
+            <div class="tier" data-tier="grove">
+              <h3>Grove</h3>
+              <div class="price" data-price-monthly="$29/mo" data-price-annual="$290/yr">$29/mo</div>
+              <div class="features">Full-size blends • Biweekly check-ins • 10% store credit</div>
+              <div style="margin-top:10px"><a class="cta" href="book.html">Join Grove</a></div>
+            </div>
+            <div class="tier" data-tier="orchard">
+              <h3>Orchard</h3>
+              <div class="price" data-price-monthly="$59/mo" data-price-annual="$590/yr">$59/mo</div>
+              <div class="features">Priority bookings • Personalized blends • Monthly consult</div>
+              <div style="margin-top:10px"><a class="cta" href="book.html">Join Orchard</a></div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;display:flex;gap:10px;align-items:center">
+            <label style="font-size:13px;color:var(--muted)">Billing</label>
+            <button id="toggleBilling" class="secondary">Monthly</button>
+          </div>
+
+          <div class="faq" style="margin-top:12px">
+            <strong>Safety & guidance</strong>
+            <p>All guidance is supportive and educational; essential oils may support wellbeing but are not a substitute for medical care.</p>
+            <p><strong>Patch test:</strong> We recommend a small patch test before regular use.</p>
+            <p><strong>Dilution:</strong> Follow dilution guidelines for topical use; full-strength essential oils are not applied neat.</p>
+            <p><strong>Pets & pregnancy:</strong> Some oils can affect animals or pregnancy—consult a qualified practitioner before use.</p>
+          </div>
+        </div>
+
+        <div style="height:18px"></div>
+        <div class="card">
+          <strong>Explore the aroma wheel</strong>
+          <div class="wheel">
+            <svg id="aromaWheel" viewBox="0 0 200 200" role="img" aria-label="Aroma wheel">
+              <defs>
+                <linearGradient id="g1" x1="0" x2="1">
+                  <stop offset="0" stop-color="#7a5cff"/>
+                  <stop offset="1" stop-color="#00bfa6"/>
+                </linearGradient>
+              </defs>
+              <g transform="translate(100,100)">
+                <circle r="80" fill="#fff8" stroke="#eee"/>
+                <!-- top notes -->
+                <path id="top" d="M0,-80 A80,80 0 0,1 69,-45 L0,0 Z" fill="#ffd1dc" stroke="#fff"/>
+                <!-- middle notes -->
+                <path id="middle" d="M69,-45 A80,80 0 0,1 69,45 L0,0 Z" fill="#d1f0ff" stroke="#fff"/>
+                <!-- base notes -->
+                <path id="base" d="M69,45 A80,80 0 0,1 0,80 L0,0 Z" fill="#e9ffd1" stroke="#fff"/>
+                <!-- filler arcs -->
+                <circle r="40" fill="#fff"/>
+                <text x="0" y="6" text-anchor="middle" style="font-size:12px;fill:#333">Aroma Wheel</text>
+              </g>
+            </svg>
+          </div>
+          <div id="noteName" style="font-weight:700;margin-top:8px">Hover to explore notes</div>
+          <div id="noteDesc" style="color:var(--muted);font-size:13px">Top notes tend to be light and transient; middle notes form body; base notes linger.</div>
+        </div>
+
+      </aside>
+    </section>
+
+    <section style="margin-top:26px;display:grid;grid-template-columns:1fr 320px;gap:18px">
+      <div class="card">
+        <strong>Membership framing</strong>
+        <p style="color:var(--muted);margin-top:8px">Our membership names and pricing are intended to make choosing easier: entry, steady care, and priority support. Every plan may support habitual scenting and access to curated blends; benefits vary by level.</p>
+        <ul style="color:var(--muted)">
+          <li>Seedling — light engagement for trying scent routines</li>
+          <li>Grove — steady rhythm, periodic guidance</li>
+          <li>Orchard — deep, personalized support and priority scheduling</li>
+        </ul>
+      </div>
+
+      <aside class="card">
+        <strong>Need an invoice?</strong>
+        <p style="color:var(--muted);font-size:13px;margin-top:8px">Email billing requests to <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a>.</p>
+      </aside>
+    </section>
+
+    <footer>
+      <div>{{BUSINESS_NAME}} • Serving {{CITY}}, {{STATE}} • <a href="contact.html">Contact</a></div>
+    </footer>
+  </main>
+
+  <script>
+    // Mood-to-Method
+    const moodButtons = document.querySelectorAll('.mood-pill');
+    const methodTitle = document.getElementById('methodTitle');
+    const methodDesc = document.getElementById('methodDesc');
+    const primaryCta = document.getElementById('primaryCta');
+
+    const methods = {
+      calm: {title:'Short grounding ritual',desc:'A brief breath-and-inhale blend practice to slow the system and support calm. Try this as a 3-minute pause.',ctaLabel:'Start a calming plan',ctaUrl:'book.html?focus=calm'},
+      alert: {title:'Sharpen + focus set',desc:'Crisp citrus and resin notes for clearer attention; usually applied as a diffused micro-session to lift midday fog.',ctaLabel:'Try a focus session',ctaUrl:'book.html?focus=alert'},
+      sleep: {title:'Evening wind-down',desc:'Soft florals and warm base notes to signal rest. Use diluted blends near bedtime to help create a predictable wind-down routine.',ctaLabel:'Book a sleep consult',ctaUrl:'book.html?focus=sleep'},
+      ground: {title:'Rooting bath & roll',desc:'Warming, grounding base notes for steady presence. Often used as a topical roll with safe dilution instructions.',ctaLabel:'Explore grounding options',ctaUrl:'book.html?focus=ground'}
+    };
+
+    function setMood(mood){
+      moodButtons.forEach(b=>b.classList.toggle('active', b.dataset.mood===mood));
+      const m = methods[mood] || methods.calm;
+      methodTitle.textContent = m.title;
+      methodDesc.textContent = m.desc;
+      primaryCta.textContent = m.ctaLabel;
+      primaryCta.href = m.ctaUrl;
+    }
+
+    moodButtons.forEach(b=>b.addEventListener('click', ()=>setMood(b.dataset.mood)));
+    // default
+    setMood('calm');
+
+    // Billing toggle
+    const toggle = document.getElementById('toggleBilling');
+    let monthly = true;
+    toggle.addEventListener('click', ()=>{
+      monthly = !monthly;
+      toggle.textContent = monthly ? 'Monthly' : 'Annual';
+      document.querySelectorAll('.price').forEach(p=>p.textContent = monthly ? p.dataset.priceMonthly : p.dataset.priceAnnual);
+    });
+
+    // Aroma wheel interactions
+    const wheel = document.getElementById('aromaWheel');
+    const noteName = document.getElementById('noteName');
+    const noteDesc = document.getElementById('noteDesc');
+
+    const map = {
+      top: {name:'Top notes',desc:'Bright, volatile scents that appear first; often citrus, herb, and light florals.'},
+      middle: {name:'Middle notes',desc:'The body of a blend: florals, spices, and leafy aromas that define character.'},
+      base: {name:'Base notes',desc:'Deep, long-lasting notes like woods, resins, and musks that anchor a blend.'}
+    };
+
+    ['top','middle','base'].forEach(id=>{
+      const el = document.getElementById(id);
+      el.addEventListener('mouseenter', ()=>{ noteName.textContent = map[id].name; noteDesc.textContent = map[id].desc; });
+      el.addEventListener('mouseleave', ()=>{ noteName.textContent = 'Hover to explore notes'; noteDesc.textContent = 'Top notes tend to be light and transient; middle notes form body; base notes linger.'; });
+    });
+  </script>
+</body>
+</html>

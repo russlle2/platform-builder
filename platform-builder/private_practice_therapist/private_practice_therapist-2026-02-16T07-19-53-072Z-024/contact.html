@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Contact — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Contact {{THERAPIST_NAME}} for focused, practical therapy in {{CITY}}, {{STATE}}. Confidential inquiries welcome.">
+  <style>
+    :root{--bg:#fbfbfa;--ink:#0f1720;--muted:#5b6770;--accent:#0f766e;--card:#ffffff}
+    html,body{height:100%}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+    header{display:flex;justify-content:space-between;align-items:center;padding:28px 36px}
+    .brand{font-weight:600;letter-spacing:0.02em}
+    nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
+    main{max-width:920px;margin:0 auto;padding:24px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:34px;align-items:start}
+    .hero{background:transparent;padding:28px 0}
+    h1{margin:0 0 12px 0;font-size:28px;line-height:1.1}
+    p.lead{color:var(--muted);margin:0 0 18px 0}
+    .card{background:var(--card);border-radius:10px;padding:20px;box-shadow:0 6px 18px rgba(11,15,19,0.04)}
+    form label{display:block;font-size:13px;color:var(--muted);margin-bottom:8px}
+    input[type=text],input[type=email],textarea,select{width:100%;padding:10px;border:1px solid #e7e9ea;border-radius:8px;font-size:14px;margin-bottom:12px}
+    textarea{min-height:110px;resize:vertical}
+    .btn{display:inline-block;background:var(--accent);color:white;padding:10px 14px;border-radius:8px;text-decoration:none;font-weight:600}
+    .muted{color:var(--muted);font-size:13px}
+    .section{margin:26px 0}
+    .meta{font-size:13px;color:var(--muted);margin-top:10px}
+    .list{display:flex;gap:10px;flex-wrap:wrap}
+    .pill{background:#f3f7f6;padding:8px 10px;border-radius:999px;font-size:13px;color:#083232}
+    footer{padding:24px 36px;color:var(--muted);font-size:13px}
+    img.svg-hero{width:100%;height:auto;border-radius:10px}
+    @media (max-width:880px){.grid{grid-template-columns:1fr;}.card{padding:16px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="specialties.html">Work With Me</a>
+      <a href="approach.html">Approach</a>
+      <a href="fees.html">Investment</a>
+      <a href="faq.html">FAQ</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="grid">
+        <div>
+          <h1>Reach a steady, practical space — start the conversation</h1>
+          <p class="lead">I work with adults facing anxiety, relationship strain, burnout, and life transitions. If you want clear next steps and steady support, reach out and we'll clarify what a focused path looks like for you.</p>
+
+          <div class="card">
+            <form action="{{PRIMARY_CTA_URL}}" method="post" novalidate>
+              <label for="name">Name</label>
+              <input id="name" name="name" type="text" placeholder="Your full name">
+
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" placeholder="you@domain.com">
+
+              <label for="phone">Phone (optional)</label>
+              <input id="phone" name="phone" type="text" placeholder="(555) 555‑5555">
+
+              <label for="focus">What would you like to focus on?</label>
+              <select id="focus" name="focus">
+                <option>General therapy / coaching</option>
+                <option>Anxiety & worry</option>
+                <option>Trauma & recovery</option>
+                <option>Relationships</option>
+                <option>Work stress & burnout</option>
+                <option>Life transitions</option>
+              </select>
+
+              <label for="message">A little about what brings you here</label>
+              <textarea id="message" name="message" placeholder="Briefly describe what's been happening"></textarea>
+
+              <div style="display:flex;gap:12px;align-items:center">
+                <button class="btn" type="submit">{{PRIMARY_CTA_LABEL}}</button>
+                <a class="muted" href="book.html">Prefer to pick a time? Book now →</a>
+              </div>
+
+              <p class="meta">I typically respond within 48 business hours. If this is an emergency or you are in crisis, please call 911 or your local emergency services. I do not provide crisis services via email or this form.</p>
+
+              <p class="meta">By contacting me you agree to receive replies at the address you provide. All communications are held to clinical confidentiality standards. See full privacy note below.</p>
+            </form>
+          </div>
+
+        </div>
+
+        <aside>
+          <div class="card">
+            <img class="svg-hero" src="assets/img/hero.svg" alt="abstract calm pattern">
+            <h3 style="margin-top:12px;margin-bottom:8px">Quick details</h3>
+            <p class="muted">{{THERAPIST_NAME}} — {{LICENSE}}<br>{{CITY}}, {{STATE}}</p>
+            <div style="margin-top:12px" class="list">
+              <div class="pill">Telehealth</div>
+              <div class="pill">Insurance accepted? Check fees</div>
+              <div class="pill">Adult clients 18+</div>
+            </div>
+            <p style="margin-top:12px" class="muted">Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a><br>Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+          </div>
+
+          <div class="card" style="margin-top:16px">
+            <h4 style="margin:0 0 8px 0">Free reflection guide</h4>
+            <p class="muted">Get my short worksheet: "A Five‑Step Reset for When Anxiety Feels Consuming." I use it with new clients to map next steps.</p>
+            <a class="btn" href="/assets/lead_magnet.pdf">Download guide</a>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="card">
+        <h3 style="margin-top:0">How I work — values that shape sessions</h3>
+        <p class="muted">I bring practical, evidence‑informed approaches with an emphasis on clarity, pacing, and compassionate accountability. Typical values that guide my work:</p>
+        <ul class="muted">
+          <li>Transparent goals and measurable steps</li>
+          <li>Collaborative planning — you guide priorities</li>
+          <li>Respect for your time and context</li>
+          <li>Careful attention to safety and boundaries</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="card">
+        <h3 style="margin-top:0">Practical methods I use</h3>
+        <p class="muted">I draw from short‑term, skill‑based modalities to keep work focused and actionable. Common methods include:</p>
+        <div class="list" style="margin-top:12px">
+          <div class="pill">Cognitive Behavioral Strategies</div>
+          <div class="pill">Trauma‑informed stabilization</div>
+          <div class="pill">Interpersonal practice</div>
+          <div class="pill">Values‑based planning</div>
+        </div>
+        <p class="meta" style="margin-top:12px">Modalities: {{MODALITIES}}</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="card">
+        <h3 style="margin-top:0">Common concerns I hear</h3>
+        <p class="muted">It's normal to have questions before starting. Here are a few I often address in early conversations:</p>
+        <ul class="muted">
+          <li><strong>Will this change feel like therapy forever?</strong> Most clients want focused change; I tailor pacing so you can meet short‑term goals and reassess regularly.</li>
+          <li><strong>What if I'm not sure what to say?</strong> That's common. Sessions begin with orientation—what matters most to you—then we proceed together.</li>
+          <li><strong>Is this confidential?</strong> Yes. Notes are kept in a secure system. Exceptions: imminent risk of harm to self/others, child or elder abuse, or court order.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="card">
+        <h3 style="margin-top:0">Client reflections</h3>
+        <p class="muted">These brief excerpts reflect the tone of work — thoughtful, pragmatic, steady.</p>
+        <blockquote style="margin:12px 0;color:var(--muted)">"Working together helped me make a plan I could actually follow. I felt heard and guided." — A client in {{CITY}}</blockquote>
+        <blockquote style="margin:12px 0;color:var(--muted)">"Practical tools and a calm framework made difficult decisions easier." — Another client</blockquote>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="card">
+        <h3 style="margin-top:0">How to move forward</h3>
+        <p class="muted">If you'd like to see whether I might be a fit, you can:</p>
+        <ol class="muted">
+          <li>Use the form above to send a short note</li>
+          <li>Book a 15‑minute consultation on the Book page</li>
+          <li>Call or email if you prefer direct contact</li>
+        </ol>
+        <p style="margin-top:12px"><a class="btn" href="book.html">Schedule a 15‑minute consult</a></p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="card">
+        <h3 style="margin-top:0">Privacy, scope & boundaries</h3>
+        <p class="muted">Confidentiality: Communications are treated as clinical records and stored securely. Exceptions to confidentiality include imminent risk of serious harm, suspected abuse of a vulnerable person, or legal obligation.</p>
+        <p class="muted">Scope: I provide outpatient therapy for adults. I do not provide emergency/crisis services, forensic assessments, or court testimony as part of routine therapy. If you require urgent care, please contact local emergency services or a crisis line.</p>
+        <p class="muted">Licensing: {{THERAPIST_NAME}}, {{LICENSE}}</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div style="max-width:920px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:16px">
+      <div class="muted">© {{BUSINESS_NAME}} • Serving {{CITY}}, {{STATE}}</div>
+      <div class="muted">Phone: <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </div>
+  </footer>
+</body>
+</html>

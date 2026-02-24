@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg1:#f6fbf9;--accent:#6aa84f;--muted:#5b6b63;--card:#ffffff;--glass:rgba(255,255,255,0.7)}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--muted);background:linear-gradient(180deg,var(--bg1),#eef6f0)}
+    a{color:var(--accent);text-decoration:none}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 32px;position:relative;z-index:10}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#8fd19f,var(--accent));display:grid;place-items:center;font-weight:700;color:#fff}
+    nav{display:flex;gap:18px;align-items:center}
+    nav a{font-size:0.95rem;color:rgba(0,0,0,0.6)}
+    .hero{max-width:980px;margin:28px auto 16px;padding:48px;border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,0.9),var(--glass));box-shadow:0 8px 30px rgba(102,119,97,0.08);position:relative}
+    .hero h1{margin:0 0 8px;font-size:clamp(1.6rem,2.6vw,2.4rem);color:#234b2f}
+    .hero p{margin:0 0 18px;line-height:1.45}
+    .cta-row{display:flex;gap:12px;flex-wrap:wrap}
+    .btn{background:linear-gradient(90deg,var(--accent),#4a8f3a);color:white;padding:10px 16px;border-radius:10px;border:0;cursor:pointer}
+    .muted-btn{background:transparent;border:1px solid rgba(0,0,0,0.06);padding:10px 14px;border-radius:10px}
+
+    .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-top:18px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(63,79,63,0.06)}
+    .card h3{margin:0 0 8px;color:#2f5a3f}
+    .micro{display:flex;flex-direction:column;gap:8px}
+
+    .pricing-wrap{max-width:1100px;margin:22px auto;padding:18px;border-radius:14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+    .tier{background:linear-gradient(180deg,#ffffff, #f7fff6);padding:16px;border-radius:12px;border:1px solid rgba(0,0,0,0.04)}
+    .tier strong{display:block;font-size:1.05rem;color:#24502f;margin-bottom:8px}
+    .small{font-size:0.9rem;color:rgba(0,0,0,0.55)}
+
+    .pattern{position:fixed;inset:0;z-index:0;opacity:0.45}
+    main{position:relative;z-index:5;padding:0 18px 80px}
+
+    footer{padding:28px 32px;border-top:1px solid rgba(0,0,0,0.04);display:flex;justify-content:space-between;align-items:center;color:rgba(0,0,0,0.5)}
+
+    @media(max-width:820px){.pricing-wrap{grid-template-columns:1fr}.hero{padding:26px}}
+  </style>
+</head>
+<body>
+  <svg class="pattern" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1">
+        <stop offset="0%" stop-color="#e8fbec" />
+        <stop offset="100%" stop-color="#f1fff8" />
+      </linearGradient>
+      <pattern id="p-serv" width="120" height="120" patternUnits="userSpaceOnUse">
+        <rect width="120" height="120" fill="url(#g1)" />
+        <circle cx="20" cy="20" r="6" fill="#d5f1d2" />
+        <circle cx="100" cy="100" r="6" fill="#d5f1d2" />
+        <path d="M0 60 L120 60" stroke="#e6f6e9" stroke-width="2" />
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#p-serv)" />
+  </svg>
+
+  <header>
+    <div class="brand"><div class="logo">HM</div><div>
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+      <div style="font-size:0.85rem;color:rgba(0,0,0,0.45)">{{TAGLINE}}</div>
+    </div></div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Offerings</a>
+      <a href="conditions.html">Concerns</a>
+      <a href="approach.html">Our Way</a>
+      <a href="pricing.html">Membership</a>
+      <a href="book.html">Book</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Thoughtful, whole-person care that grows with you</h1>
+      <p>We combine nutrition, lifestyle guidance, and evidence-informed therapies to help you feel steadier, clearer, and more resilient. Memberships prioritize continuity so you can track small gains into lasting change.</p>
+      <div class="cta-row">
+        <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        <a class="muted-btn" href="about.html">Meet {{PRACTITIONER_NAME}}</a>
+      </div>
+      <div class="cards" style="margin-top:22px">
+        <div class="card">
+          <h3>Personalized Consult</h3>
+          <p class="small">A full intake exploring history, habits, and priorities—used to craft a lasting roadmap.</p>
+        </div>
+        <div class="card">
+          <h3>Nutrition & Lifestyle</h3>
+          <p class="small">Practical, bite-sized changes that respect your day-to-day life and rhythms.</p>
+        </div>
+        <div class="card">
+          <h3>Mind-Body Support</h3>
+          <p class="small">Tools for stress resilience, sleep, and mindful routines—not quick fixes but steady strategies.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="pricing" aria-labelledby="plans" style="max-width:1100px;margin:24px auto">
+      <h2 id="plans" style="margin:0 0 10px;color:#234b2f">Membership tiers for steady progress</h2>
+      <p class="small">Memberships emphasize continuity: regular check-ins, priority scheduling, and evolving plans.</p>
+      <div class="pricing-wrap">
+        <div class="tier">
+          <strong>Starter</strong>
+          <div class="small">Monthly check-in, access to resources, care notes</div>
+        </div>
+        <div class="tier">
+          <strong>Core</strong>
+          <div class="small">Biweekly touchpoints, personalized micro-habits, priority booking</div>
+        </div>
+        <div class="tier">
+          <strong>Steward</strong>
+          <div class="small">Weekly support, deeper lab review (educational), and coaching</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="assessment" style="max-width:980px;margin:18px auto;padding:18px;background:transparent">
+      <h2 style="color:#24502f">How we assess what matters</h2>
+      <p class="small">Assessment is conversational and whole-person focused: symptoms, routines, stressors, and strengths. We blend clinical reasoning with practical supports—never promising cures, only clearer paths forward.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+        <div class="card">
+          <h3>Listening Intake</h3>
+          <p class="small">Your story is central. We look for patterns and opportunities for sustainable change.</p>
+        </div>
+        <div class="card">
+          <h3>Educational Review</h3>
+          <p class="small">We present options—habits, diet, movement, sleep strategies—so you can choose what fits.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="plan" style="max-width:980px;margin:18px auto;padding:18px">
+      <h2 style="color:#234b2f">A practical, evolving blueprint</h2>
+      <p class="small">Plans are modular: pick a small set of changes to start, measure how they land, then iterate. The goal is consistent, manageable progress that aligns with your life.</p>
+      <div class="micro">
+        <div class="card"><strong>Phase 1 — Stabilize</strong><p class="small">Sleep anchors, gentle nutrition shifts, stress boundaries.</p></div>
+        <div class="card"><strong>Phase 2 — Build</strong><p class="small">Introduce rhythm-supporting routines, movement, and targeted education.</p></div>
+        <div class="card"><strong>Phase 3 — Maintain</strong><p class="small">Small habits become defaults; review and adapt as seasons change.</p></div>
+      </div>
+    </section>
+
+    <section class="micro_habits" style="max-width:980px;margin:18px auto;padding:18px">
+      <h3 style="color:#2f5a3f">Micro-habits to try this week</h3>
+      <ul>
+        <li>Start evenings with a 10-minute wind-down (no screens).</li>
+        <li>Add a small portion of leafy greens to one meal daily.</li>
+        <li>Practice two 3-minute breath breaks spaced through the day.</li>
+      </ul>
+    </section>
+
+    <section class="cta" style="max-width:980px;margin:18px auto;padding:18px;text-align:center">
+      <h3 style="margin-bottom:8px;color:#234b2f">Ready to begin?</h3>
+      <p class="small">Memberships prioritize ongoing care. Choose a plan that fits and let us build from there.</p>
+      <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+    </section>
+  </main>
+
+  <footer>
+    <div>
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+      <div style="font-size:0.9rem">{{CITY}}, {{STATE}} • <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    </div>
+    <div style="text-align:right;font-size:0.9rem;color:rgba(0,0,0,0.45)">
+      <div>Contact: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      <div style="margin-top:6px">© {{PRACTITIONER_NAME}} {{CREDENTIALS}}</div>
+    </div>
+  </footer>
+</body>
+</html>

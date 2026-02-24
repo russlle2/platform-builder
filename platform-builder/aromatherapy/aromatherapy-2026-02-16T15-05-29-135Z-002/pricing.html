@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Pricing — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--accent:#7aa986;--muted:#6b6b6b;--bg:#fbfbfb;--card:#ffffff;--glass:rgba(255,255,255,0.6);--shadow:0 6px 18px rgba(46,60,41,0.08);font-family:Inter,system-ui,Segoe UI,Helvetica,Arial,sans-serif}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#f1f7f2);color:#213;}
+    /* Unique SVG pattern embedded as a data URL (also intended as assets/img/pattern.svg) */
+    :root{--pattern:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><defs><linearGradient id='g' x1='0' x2='1'><stop offset='0' stop-color='%237aa986'/><stop offset='1' stop-color='%23cbead8'/></linearGradient><pattern id='p' width='40' height='40' patternUnits='userSpaceOnUse'><rect width='40' height='40' fill='rgba(255,255,255,0.02)'/><circle cx='10' cy='10' r='4' fill='rgba(0,0,0,0.04)'/><path d='M0 40 L40 0' stroke='%237aa986' stroke-opacity='0.06' stroke-width='1'/></pattern></defs><rect width='100%' height='100%' fill='url(%23p)'/><rect x='0' y='0' width='200' height='200' fill='url(%23g)' opacity='0.06'/></svg>");}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;background:var(--card);backdrop-filter:blur(6px);box-shadow:var(--shadow);position:sticky;top:0;z-index:30}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#cdeecd);display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    nav a{margin-left:18px;color:#264; text-decoration:none;font-weight:600}
+    .container{max-width:1100px;margin:34px auto;padding:28px}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:center;background:var(--card);padding:28px;border-radius:12px;box-shadow:var(--shadow);background-image:var(--pattern)}
+    .hero h1{margin:0;font-size:28px;color:#17341f}
+    .hero p{color:var(--muted);margin-top:8px}
+    .price-card{background:linear-gradient(180deg,rgba(255,255,255,0.9),var(--glass));padding:20px;border-radius:10px}
+    .tier{display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:10px;background:var(--card);box-shadow:0 6px 18px rgba(34,50,34,0.04)}
+    .tiers{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:18px}
+    .benefits{display:flex;flex-direction:column;gap:10px}
+    .muted{color:var(--muted)}
+    .social{display:flex;gap:10px;align-items:center}
+    .avatar{width:44px;height:44px;border-radius:999px;background:#e9f7ef;display:inline-flex;align-items:center;justify-content:center;font-weight:700;color:#1b4}
+    footer{padding:36px;text-align:center;color:var(--muted)}
+    .faq{margin-top:22px;background:linear-gradient(180deg,#fff,#fbfffb);padding:18px;border-radius:10px}
+    .lead{display:flex;gap:12px;align-items:center;margin-top:18px}
+    input[type='email']{padding:12px;border-radius:8px;border:1px solid #e6efe6;flex:1}
+    button.primary{background:var(--accent);border:none;color:white;padding:12px 16px;border-radius:8px;font-weight:700}
+    .cta-row{display:flex;gap:12px;margin-top:16px}
+    @media(max-width:900px){.hero{grid-template-columns:1fr;}.tiers{grid-template-columns:1fr}.container{padding:16px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">A</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Start</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Boutique</a>
+      <a href="pricing.html">Rates</a>
+      <a href="about.html">About</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- HERO: Pricing container with a gentle safety-forward intro -->
+    <section class="hero" aria-label="Pricing">
+      <div>
+        <h1>Transparent pricing for mindful aromatherapy</h1>
+        <p class="muted">Clear, safety-first sessions and curated blends. No medical claims — just thoughtful guidance, plant intelligence, and practical rituals you can use at home.</p>
+
+        <div class="benefits" aria-hidden="false">
+          <div style="display:flex;gap:10px;align-items:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="#7aa986" stroke-width="2"/></svg><strong>One-hour VIP Day</strong> — a focused session for blend design and ritual planning.</div>
+          <div style="display:flex;gap:10px;align-items:center"><svg width="18" height="18" fill="#264" viewBox="0 0 24 24"><path d="M12 2 L22 8 L12 14 L2 8 Z"/></svg><strong>Follow-up care</strong> — straightforward notes and safety reminders after every session.</div>
+        </div>
+
+        <div class="cta-row">
+          <a class="primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <a href="contact.html" style="padding:12px 16px;border-radius:8px;background:transparent;border:1px solid #e2efe2;color:var(--muted);text-decoration:none">Ask a question</a>
+        </div>
+      </div>
+
+      <aside class="price-card" aria-label="Packages">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-size:14px;color:var(--muted)">Popular</div>
+            <div style="font-weight:800;font-size:20px">VIP Day — Custom Blend & Ritual</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:12px;color:var(--muted)">From</div>
+            <div style="font-weight:900;font-size:24px">$650</div>
+          </div>
+        </div>
+
+        <div class="tiers">
+          <div class="tier">
+            <div style="font-weight:700">Mini Care Session</div>
+            <div class="muted">30 minutes • consultation & safety overview</div>
+            <div style="margin-top:auto;font-weight:800">$120</div>
+          </div>
+
+          <div class="tier">
+            <div style="font-weight:700">Therapeutic Blend Kit</div>
+            <div class="muted">Includes 6ml blends & notes</div>
+            <div style="margin-top:auto;font-weight:800">$85</div>
+          </div>
+
+          <div class="tier">
+            <div style="font-weight:700">VIP Day</div>
+            <div class="muted">3–4 hour deep design + follow-ups</div>
+            <div style="margin-top:auto;font-weight:800">$650</div>
+          </div>
+        </div>
+
+        <div style="margin-top:14px;font-size:13px;color:var(--muted)">All packages include safety guidance, dilution charts, and simple usage notes. Subscriptions and product shipping available in {{CITY}}, {{STATE}}.</div>
+      </aside>
+    </section>
+
+    <!-- SOCIAL PROOF: short testimonials -->
+    <section style="margin-top:18px;display:flex;gap:12px;align-items:center;justify-content:space-between">
+      <div class="social">
+        <div class="avatar">JS</div>
+        <div>
+          <div style="font-weight:700">"Practical and gentle"</div>
+          <div class="muted">"I loved the step-by-step guidance and the dilution chart made it easy to use blends safely." — J. S.</div>
+        </div>
+      </div>
+
+      <div class="social">
+        <div class="avatar">AM</div>
+        <div>
+          <div style="font-weight:700">"Thoughtful sessions"</div>
+          <div class="muted">"A calming experience that left me confident to make blends at home." — A. M.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BENEFITS: short bullets focused on safety and usability -->
+    <section style="margin-top:22px;background:var(--card);padding:18px;border-radius:12px;box-shadow:var(--shadow)">
+      <h2 style="margin:0 0 8px 0">What you get</h2>
+      <ul class="muted">
+        <li>Personalized blend recipe with top/middle/base notes and aromatic profile.</li>
+        <li>Clear dilution recommendations and patch-test guidance.</li>
+        <li>Written notes and safe storage tips; non-medical wellbeing support.</li>
+      </ul>
+    </section>
+
+    <!-- FAQ: safety-first questions including dilution/patch/pets/pregnancy -->
+    <section class="faq" aria-label="FAQ">
+      <h3 style="margin-top:0">Common questions</h3>
+      <details>
+        <summary>How should I dilute essential oils?</summary>
+        <div class="muted" style="margin-top:8px">Dilution depends on age, skin sensitivity, and intended use. Typical topical dilutions range from 0.5% (children, sensitive skin) to 5% (adults, short-term use). Every session includes a personalized dilution plan. This is not medical advice.</div>
+      </details>
+
+      <details>
+        <summary>Do I need to do a patch test?</summary>
+        <div class="muted" style="margin-top:8px">Yes — we recommend a small patch test on the forearm with your intended dilution for 24 hours. If irritation occurs, discontinue use. Patch testing info is included in every care note.</div>
+      </details>
+
+      <details>
+        <summary>Are essential oils safe for pets?</summary>
+        <div class="muted" style="margin-top:8px">Some oils may be irritating to pets. We provide pet-safety guidance and list oils to avoid around cats and small mammals. Consult your veterinarian for medical concerns; our guidance is precautionary and safety-focused.</div>
+      </details>
+
+      <details>
+        <summary>What about pregnancy and breastfeeding?</summary>
+        <div class="muted" style="margin-top:8px">Pregnancy and breastfeeding require special caution. We offer pregnancy-safe options and will avoid contraindicated oils, but this is not a substitute for medical care. Always share pregnancy status before a session.</div>
+      </details>
+    </section>
+
+    <!-- LEAD MAGNET: email capture for a dilution chart PDF -->
+    <section style="margin-top:18px;display:flex;gap:12px;align-items:center;padding:16px;border-radius:12px;background:linear-gradient(180deg,#fff,#fbfffb);box-shadow:var(--shadow)">
+      <div style="flex:1">
+        <div style="font-weight:800">Free: Home Dilution Chart</div>
+        <div class="muted">Get a printable dilution chart and patch-test checklist. Safety-first, simple language.</div>
+      </div>
+      <form style="display:flex;gap:8px;flex:1;max-width:520px" onsubmit="event.preventDefault();alert('Thank you — we\'ll email the chart.');">
+        <input type="email" placeholder="Your email" aria-label="Email" required>
+        <button class="primary">Send me the chart</button>
+      </form>
+    </section>
+
+    <!-- CALL TO ACTION -->
+    <section style="margin-top:22px;display:flex;gap:12px;align-items:center;justify-content:space-between">
+      <div>
+        <div style="font-weight:800">Ready to design your blend?</div>
+        <div class="muted">Book a VIP Day or a shorter consult. We keep sessions practical, safety-focused, and rooted in aromatic skill.</div>
+      </div>
+      <div>
+        <a class="primary" href="book.html">Book a session</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} — {{PRACTITIONER_NAME}} • <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    <small class="muted">Serving {{CITY}}, {{STATE}} — All guidance is non-medical and safety-first.</small>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Services — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{
+      --accent:#7B61FF;
+      --muted:#6C6F74;
+      --bg1:linear-gradient(135deg,#FFFBF7 0%, #F7F2FF 100%);
+      --glass: rgba(255,255,255,0.7);
+      --card:#ffffff;
+      --pattern: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' x2='1'><stop offset='0' stop-color='%23FFF1FF'/><stop offset='1' stop-color='%23F0F7FF'/></linearGradient></defs><rect width='100' height='100' fill='url(%23g)'/><g fill='%23EDE6FF' opacity='0.6'><circle cx='20' cy='20' r='6'/><circle cx='80' cy='80' r='6'/><circle cx='50' cy='50' r='4'/></g><path d='M0 100 L100 0' stroke='%23F3E8FF' stroke-width='2' opacity='0.6'/></svg>");
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue';
+      background:var(--bg1);
+      color:#222;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    header{position:relative;padding:28px 6vw 0;display:flex;align-items:center;justify-content:space-between}
+    nav a{margin:0 10px;color:var(--muted);text-decoration:none;font-weight:600}
+    nav a.cta{background:var(--accent);color:white;padding:10px 14px;border-radius:12px;text-decoration:none}
+
+    /* diagonal hero split */
+    .hero{
+      margin:20px auto 40px;max-width:1100px;position:relative;padding:48px;border-radius:18px;background:var(--card);box-shadow:0 10px 30px rgba(80,60,120,0.08);overflow:hidden;
+    }
+    .hero::before{
+      content:'';position:absolute;inset:0;background:linear-gradient(120deg, rgba(123,97,255,0.08), rgba(255,230,200,0.06));transform:skewY(-6deg);transform-origin:0;pointer-events:none;
+    }
+    .hero-grid{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:center}
+    .lead{padding:10px}
+    h1{margin:4px 0 8px;font-size:28px;color:#24123B}
+    p.lead-desc{color:var(--muted);margin:0 0 18px}
+    .cta-row{display:flex;gap:12px}
+    .btn{background:var(--accent);color:white;padding:12px 16px;border-radius:12px;text-decoration:none;font-weight:700}
+    .muted-btn{background:transparent;border:1px solid #EEE;padding:10px 14px;border-radius:12px;color:var(--muted)}
+
+    /* right column pattern card */
+    .pattern-card{background-image: var(--pattern);border-radius:12px;padding:20px;min-height:160px;display:flex;flex-direction:column;justify-content:center}
+    .pattern-card h3{margin:0 0 6px;font-size:16px}
+    .pattern-card p{margin:0;color:var(--muted);font-size:13px}
+
+    /* services list */
+    .services{max-width:1100px;margin:20px auto;padding:0 6vw 60px}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.9),#FFFFFF);padding:18px;border-radius:14px;box-shadow:0 8px 20px rgba(20,20,40,0.04);}
+    .card h4{margin:0 0 6px}
+    .card p{margin:0;color:var(--muted);font-size:14px}
+    .icon{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#FF8DA1);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;margin-right:12px}
+    .service-row{display:flex;align-items:flex-start}
+
+    /* testimonial strip */
+    .strip{margin:30px 0;padding:20px;border-radius:12px;background:linear-gradient(90deg,#FFFFFF,rgba(240,245,255,0.7));display:flex;gap:18px;align-items:center}
+    .avatar{width:56px;height:56px;border-radius:12px;background:linear-gradient(180deg,#FFF1F8,#F3F6FF);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent)}
+    .quote{color:var(--muted)}
+
+    footer{max-width:1100px;margin:40px auto;padding:20px 6vw 80px;display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:14px}
+
+    @media (max-width:920px){.hero-grid{grid-template-columns:1fr;}.grid{grid-template-columns:repeat(2,1fr)} }
+    @media (max-width:620px){.grid{grid-template-columns:1fr}header{padding:18px 4vw}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style='display:flex;align-items:center;gap:14px'>
+      <div style='width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#FF8DA1,#7B61FF);display:flex;align-items:center;justify-content:center;color:white;font-weight:800'>HM</div>
+      <div>
+        <div style='font-weight:800'>{{BUSINESS_NAME}}</div>
+        <div style='font-size:12px;color:var(--muted)'>{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href='index.html'>Home</a>
+      <a href='services.html' style='color:#24123B;font-weight:700'>Offerings</a>
+      <a href='conditions.html'>What I Treat</a>
+      <a href='approach.html'>My Approach</a>
+      <a href='book.html' class='cta'>{{PRIMARY_CTA_LABEL}}</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class='hero' role='banner'>
+      <div class='hero-grid'>
+        <div class='lead'>
+          <div style='font-size:12px;color:var(--accent);font-weight:700'>Integrative · Personalized · Playful</div>
+          <h1>Your roadmap to balanced health — gentle, evidence-minded care</h1>
+          <p class='lead-desc'>We blend lifestyle coaching, supportive therapies, and education to help you regain clarity and energy. No quick fixes—just a friendly plan built around the whole person.</p>
+          <div class='cta-row'>
+            <a class='btn' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a>
+            <a class='muted-btn' href='contact.html'>Contact {{PRACTITIONER_NAME}}</a>
+          </div>
+        </div>
+        <div class='pattern-card' aria-hidden='true'>
+          <h3>Quick care highlights</h3>
+          <p>Initial exam, tailored plan, mindful movement, nutrition coaching, stress resilience tools, and educational labs when helpful.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class='services'>
+      <h2 style='margin:0 0 14px'>Services & Programs</h2>
+      <div class='grid'>
+        <div class='card'>
+          <div class='service-row'>
+            <div class='icon'>1</div>
+            <div>
+              <h4>Initial Comprehensive Intake</h4>
+              <p>A 75–90 minute exploration where we listen to your story, review history, and set initial goals. Education-forward and collaborative.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class='card'>
+          <div class='service-row'>
+            <div class='icon' style='background:linear-gradient(135deg,#FFB88A,#7B61FF)'>P</div>
+            <div>
+              <h4>Personalized Wellness Plan</h4>
+              <p>Nutrition, sleep hygiene, gentle movement, stress tools, and supplement guidance where appropriate. Plans are practical and sustainable.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class='card'>
+          <div class='service-row'>
+            <div class='icon' style='background:linear-gradient(135deg,#6EE7B7,#7B61FF)'>L</div>
+            <div>
+              <h4>Lab Education & Optional Testing</h4>
+              <p>We discuss evidence-based labs and help interpret results. Testing is educational—not a one-size solution.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class='card'>
+          <div class='service-row'>
+            <div class='icon' style='background:linear-gradient(135deg,#FFD580,#FF8DA1)'>C</div>
+            <div>
+              <h4>Coaching Sessions</h4>
+              <p>30–45 minute follow-ups to track progress, adapt plans, and build long-term habits with accountability you can actually enjoy.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class='card'>
+          <div class='service-row'>
+            <div class='icon' style='background:linear-gradient(135deg,#A0C4FF,#7B61FF)'>M</div>
+            <div>
+              <h4>Mind-Body Tools</h4>
+              <p>Breathwork, sleep rituals, relaxation techniques, and simple movement practices to reduce stress and restore balance.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class='card'>
+          <div class='service-row'>
+            <div class='icon' style='background:linear-gradient(135deg,#FFD1DC,#7B61FF)'>G</div>
+            <div>
+              <h4>Guided Supplement Support</h4>
+              <p>When appropriate, gentle, evidence-informed supplement suggestions to support nutrient gaps—explained clearly and minimally.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class='strip' style='margin-top:22px'>
+        <div class='avatar'>SR</div>
+        <div>
+          <div style='font-weight:700'>Real client note</div>
+          <div class='quote'>"I appreciated the calm, practical guidance — no overwhelm, just clear steps that made a real difference in sleep and energy."</div>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <footer>
+    <div>Ready for a thoughtful plan? <a href='{{PRIMARY_CTA_URL}}' style='color:var(--accent);text-decoration:none;font-weight:700'>Book a session</a></div>
+    <div>Contact: <a href='tel:{{PHONE}}' style='color:var(--muted);text-decoration:none'>{{PHONE}}</a> · <a href='mailto:{{EMAIL}}' style='color:var(--muted);text-decoration:none'>{{EMAIL}}</a></div>
+  </footer>
+</body>
+</html>

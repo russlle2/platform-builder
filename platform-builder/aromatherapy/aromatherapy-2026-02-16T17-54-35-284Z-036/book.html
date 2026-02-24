@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Book — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#00121a;--glass:rgba(255,255,255,0.03);--accent:#86efac;--muted:#c6d8df}
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,#00121a,#08121a);color:var(--muted);font-family:Inter, ui-sans-serif, system-ui, -apple-system}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px}
+    .nav a{color:var(--muted);margin-left:10px;text-decoration:none;padding:6px 8px;border-radius:8px}
+    .wrap{max-width:980px;margin:20px auto;padding:20px}
+    .hero{padding:22px;background:linear-gradient(90deg,rgba(134,239,172,0.06),rgba(139,92,246,0.02));border-radius:14px}
+    h1{margin:0;color:#e9fff6}
+    .subtitle{color:#a6d3bf;margin-top:8px}
+    .flow{display:flex;gap:14px;margin-top:18px}
+    .left{flex:2}
+    .right{flex:1}
+    .card{background:var(--glass);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+    label{display:block;font-size:13px;color:#cfead7;margin-bottom:6px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--muted);margin-bottom:10px}
+    .btn{display:inline-block;background:linear-gradient(90deg,var(--accent),#7dd3fc);padding:10px 14px;border-radius:10px;color:#042025;font-weight:700;text-decoration:none}
+    .note{font-size:13px;color:#9fb0ab}
+    .small{font-size:13px;color:#9fb0bf}
+    .safety{margin-top:12px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
+    .testi{margin-top:12px;padding:12px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);border-radius:10px}
+    @media (max-width:860px){.flow{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,#86efac,#7dd3fc);display:flex;align-items:center;justify-content:center;font-weight:800;color:#042025">{{PRACTITIONER_NAME|slice:0,1}}</div>
+      <div>
+        <div style="color:#fff;font-weight:700">Reserve • {{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:#9fb0bf">Quick bookings · events-first model</div>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="index.html">Root</a>
+      <a href="services.html">Services</a>
+      <a href="blends.html">Profiles</a>
+      <a href="pricing.html">Rates</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <h1>Pick a time, hold a small space</h1>
+      <p class="subtitle">Book an Intro, join an Events series, or reserve a private block. Sessions emphasize safety, dilution, and easy-to-use blends.</p>
+      <div style="margin-top:12px">
+        <span class="small">Questions? Call <a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a></span>
+      </div>
+    </section>
+
+    <div class="flow">
+      <div class="left">
+        <div class="card">
+          <h3 style="margin:0 0 8px;color:#fff">Book now</h3>
+          <form action="{{PRIMARY_CTA_URL}}" method="post">
+            <label for="type">Session type</label>
+            <select id="type" name="type">
+              <option>Intro Session — 60 min</option>
+              <option>Private Series (3)</option>
+              <option>Community Circle — Event</option>
+              <option>Custom blend consult</option>
+            </select>
+
+            <label for="name">Your name</label>
+            <input id="name" name="name" placeholder="Full name" required />
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="you@example.com" required />
+
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" placeholder="Optional" />
+
+            <label for="notes">Notes / sensitivities</label>
+            <textarea id="notes" name="notes" rows="4" placeholder="Allergies, pregnancy, pets at home, or scent sensitivities"></textarea>
+
+            <div style="display:flex;gap:10px;align-items:center;margin-top:8px">
+              <button class="btn" type="submit">{{PRIMARY_CTA_LABEL}}</button>
+              <a href="mailto:{{EMAIL}}" class="small" style="text-decoration:none;color:var(--muted)">Prefer email?</a>
+            </div>
+          </form>
+
+          <div class="safety">
+            <strong style="color:#fff">Safety first</strong>
+            <p class="small">Please indicate pregnancy, nursing, respiratory concerns, or pet exposure. I will offer diffusion-only options or modified blends when appropriate. This service is educational and not a substitute for medical advice.</p>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0 0 8px;color:#fff">Session flow</h4>
+          <ol class="small" style="padding-left:18px;margin:0">
+            <li>Brief intake and safety checklist</li>
+            <li>Scent education and choice of delivery (diffuser, roll-on, inhaler)</li>
+            <li>Guided blending/diffusion and written takeaways</li>
+          </ol>
+        </div>
+      </div>
+
+      <aside class="right">
+        <div class="card">
+          <h4 style="margin:0 0 8px;color:#fff">Upcoming events</h4>
+          <div style="color:var(--muted)">
+            • Sunday Circle — Breath & Citrus • Apr 18 • 4pm
+            <br/>• Rest & Resin — Resin-forward session • May 2 • 6pm
+          </div>
+          <a class="btn" href="book.html" style="display:inline-block;margin-top:10px">View all dates</a>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0 0 8px;color:#fff">Quick guidance</h4>
+          <div class="small">Patch test: apply a small dilution to inner forearm and wait 24 hours for reaction. Keep blends away from eyes and mucous membranes. If you keep companion animals, tell me — some oils are not recommended around pets.</div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0 0 8px;color:#fff">Testimonials</h4>
+          <div class="testi">“Helpful and gentle instruction — I now blend with confidence.” — S.</div>
+        </div>
+      </aside>
+    </div>
+
+  </main>
+
+  <footer style="padding:16px;text-align:center;color:var(--muted)">
+    <div>Questions before booking? <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a> • Call <a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none">{{PHONE}}</a></div>
+  </footer>
+</body>
+</html>

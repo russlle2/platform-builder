@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfbfa;--ink:#11221f;--muted:#556561;--accent:#8aa29b;--accent-dark:#6b8f83}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:linear-gradient(180deg,#fbfbfa,#f6f8f7);color:var(--ink);margin:0}
+    header{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;background:rgba(255,255,255,0.6);backdrop-filter: blur(6px)}
+    .logo{width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,#eef7f3,#f9fdfb);display:grid;place-items:center}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none}
+    main{max-width:980px;margin:26px auto;padding:12px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .card{background:white;padding:18px;border-radius:12px;box-shadow:0 8px 22px rgba(18,30,28,.04)}
+    h1{margin:0 0 8px 0}
+    .session{display:flex;justify-content:space-between;align-items:center;margin:12px 0;padding:12px;border-radius:10px;border:1px solid #eef3f1}
+    .session .meta{color:var(--muted);font-size:13px}
+    .seat-control{display:flex;gap:8px;align-items:center}
+    .seat-control button{padding:8px 10px;border-radius:8px;border:1px solid #e6eee9;background:white}
+    .addon{display:flex;gap:8px;align-items:center;margin-top:8px}
+    .packing{background:linear-gradient(180deg,#ffffff,#fbfefc);padding:12px;border-radius:10px;margin-top:12px}
+    .disclaimer{font-size:13px;color:#6f7f79;margin-top:12px}
+    .cta{display:block;padding:12px 14px;background:var(--accent);color:white;border-radius:10px;border:0;font-weight:700;text-align:center;margin-top:14px}
+    .muted{color:var(--muted)}
+    /* simple svg pattern header */
+    .pattern{width:100%;height:72px;background:linear-gradient(90deg,rgba(138,162,155,.06),rgba(138,162,155,.02));display:flex;align-items:center;justify-content:center;border-radius:10px;margin-bottom:12px}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo">SB</div>
+      <div style="font-weight:700">Reserve a place</div>
+    </div>
+    <nav>
+      <a href="index.html">Gatherings</a>
+      <a href="events.html">Calendar</a>
+      <a href="pricing.html">Flow & Fees</a>
+      <a href="faq.html">FAQ</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="grid">
+      <div>
+        <div class="card">
+          <div class="pattern" aria-hidden="true">
+            <!-- Unique inline SVG pattern: concentric arcs -->
+            <svg width="420" height="60" viewBox="0 0 420 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <defs>
+                <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#e6f0ec"/><stop offset="1" stop-color="#f6fbfa"/></linearGradient>
+              </defs>
+              <g fill="none" stroke="url(#g1)" stroke-width="2">
+                <path d="M10 54 Q80 6 160 54" opacity="0.9" />
+                <path d="M40 54 Q120 14 200 54" opacity="0.65" />
+                <path d="M90 54 Q180 24 270 54" opacity="0.45" />
+                <path d="M160 54 Q250 34 340 54" opacity="0.25" />
+              </g>
+            </svg>
+          </div>
+
+          <h1>Choose your session</h1>
+          <p class="muted">Select a date and number of seats. Add comforts and a take-home guide if you like.</p>
+
+          <div style="margin-top:12px">
+            <label class="muted">Upcoming time</label>
+            <div class="session" style="margin-top:8px">
+              <div>
+                <div style="font-weight:700">Friday Evening • 7:00PM</div>
+                <div class="meta">45–60 minutes • Soft lights • Limited to 14</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-weight:700">$25 / seat</div>
+                <div class="meta">Suggested contribution</div>
+              </div>
+            </div>
+
+            <div class="session">
+              <div>
+                <div style="font-weight:700">Sunday Midday • 11:00AM</div>
+                <div class="meta">45–60 minutes • Quiet entry • Limited to 10</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-weight:700">$28 / seat</div>
+                <div class="meta">Suggested contribution</div>
+              </div>
+            </div>
+
+            <div style="margin-top:14px">
+              <label class="muted">Pick a session</label>
+              <select id="sessionSelect" style="width:100%;padding:10px;border-radius:10px;border:1px solid #eef3f1;margin-top:6px">
+                <option value="fri" data-price="25">Friday 7:00PM — $25</option>
+                <option value="sun" data-price="28">Sunday 11:00AM — $28</option>
+              </select>
+            </div>
+
+            <div style="margin-top:12px">
+              <label class="muted">Seats</label>
+              <div class="seat-control" style="margin-top:6px">
+                <button id="decSeat" aria-label="Decrease">-</button>
+                <div style="min-width:52px;text-align:center;font-weight:700" id="seatCount">1</div>
+                <button id="incSeat" aria-label="Increase">+</button>
+                <div style="margin-left:12px;color:var(--muted)" id="capacityNote">(up to 6 online)</div>
+              </div>
+            </div>
+
+            <div style="margin-top:12px">
+              <label class="muted">Add-ons</label>
+              <div class="addon">
+                <input type="checkbox" id="mat" /> <label for="mat">Extra mat — $6</label>
+              </div>
+              <div class="addon">
+                <input type="checkbox" id="blanket" /> <label for="blanket">Cozy blanket rental — $4</label>
+              </div>
+              <div class="addon">
+                <input type="checkbox" id="eye" /> <label for="eye">Eye pillow — $5</label>
+              </div>
+            </div>
+
+            <div class="packing" id="packingBox">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <div style="font-weight:700">Packing list</div>
+                <button id="regen" style="background:transparent;border:1px solid #e6eee9;padding:6px;border-radius:8px">Refresh</button>
+              </div>
+              <div id="packingList" style="margin-top:8px;color:var(--muted)">A soft mat or towel, water bottle, and a small pillow or cushion. Consider a blanket for warmth.</div>
+            </div>
+
+            <div style="margin-top:12px;display:flex;gap:10px;align-items:center">
+              <div style="font-weight:700">Total</div>
+              <div id="totalSum" style="margin-left:8px;font-weight:700">$25</div>
+              <a id="confirmBtn" class="cta" href="{{PRIMARY_CTA_URL}}" style="margin-left:auto">{{PRIMARY_CTA_LABEL}}</a>
+            </div>
+
+            <div class="disclaimer">Please note: contraindications include uncontrolled seizures, certain implanted medical devices, and other conditions where vibration or sustained reclining may be unsafe. If pregnant or recently postpartum, consult your provider. Contact <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> for questions.</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <h3>Private and add-on options</h3>
+          <p class="muted">We offer private sessions and short one-on-one guidance before group sessions. Pricing and availability are discussed personally — reach out at <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</p>
+        </div>
+      </div>
+
+      <aside>
+        <div class="card">
+          <h4>Quick steps</h4>
+          <ol style="margin:0;padding-left:18px;color:var(--muted)">
+            <li>Choose your date.</li>
+            <li>Select seats and add comforts.</li>
+            <li>Click the button to confirm — you'll receive a confirmation email.</li>
+          </ol>
+          <div style="margin-top:12px">
+            <button class="btn" id="tryNow">Try a micro exercise</button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <h4>Refunds & transfers</h4>
+          <p class="muted">Transfers available up to 24 hours before your session. Refunds on a case-by-case basis. See full policies on the contact page.</p>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Guided modal reused here too -->
+  <div class="modal-backdrop" id="guidedModal" style="display:none;align-items:center;justify-content:center;position:fixed;inset:0;background:rgba(7,11,10,.45);z-index:60">
+    <div style="width:92%;max-width:640px;background:white;border-radius:12px;padding:18px">
+      <h3>Mini practice: settle in three stages</h3>
+      <p class="muted">Stage 1 — Breathe (1 minute). Stage 2 — Journal one line (45s). Stage 3 — Set one clear intention (30s).</p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:80px;height:80px;border-radius:999px;display:grid;place-items:center;background:linear-gradient(180deg,#eaf6f2,#f9fdfb);font-weight:800;color:var(--accent-dark)" id="miniRing">3</div>
+          <div style="flex:1">
+            <div id="miniStep" style="font-weight:700">Ready</div>
+            <div class="muted" style="font-size:13px">Press Start to begin the guided steps</div>
+          </div>
+        </div>
+        <textarea id="miniNote" placeholder="If something wants to be written, jot a single line." style="width:100%;min-height:70px;padding:8px;border-radius:8px;border:1px solid #eef3f1"></textarea>
+        <div style="display:flex;gap:8px;justify-content:flex-end">
+          <button class="btn" id="miniStart">Start</button>
+          <button class="btn" id="miniClose" style="background:transparent;border:1px solid #e6eee9;color:var(--ink)">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      // Seat selector + packing generator logic
+      var inc = document.getElementById('incSeat');
+      var dec = document.getElementById('decSeat');
+      var seatCount = document.getElementById('seatCount');
+      var sessionSelect = document.getElementById('sessionSelect');
+      var totalSum = document.getElementById('totalSum');
+      var mat = document.getElementById('mat');
+      var blanket = document.getElementById('blanket');
+      var eye = document.getElementById('eye');
+      var packingList = document.getElementById('packingList');
+      var regen = document.getElementById('regen');
+      var confirm = document.getElementById('confirmBtn');
+
+      var seats = 1; var maxSeats = 6; // local fake limit
+
+      function priceForSession(){
+        var opt = sessionSelect.options[sessionSelect.selectedIndex];
+        var p = parseFloat(opt.getAttribute('data-price')||25);
+        return p;
+      }
+      function updateTotal(){
+        var base = priceForSession();
+        var sum = seats * base;
+        if(mat.checked) sum += 6*seats;
+        if(blanket.checked) sum += 4*seats;
+        if(eye.checked) sum += 5*seats;
+        totalSum.textContent = '$' + sum;
+        // reflect params in confirm URL
+        var url = new URL('{{PRIMARY_CTA_URL}}', window.location.href);
+        url.searchParams.set('session', sessionSelect.value);
+        url.searchParams.set('seats', seats);
+        url.searchParams.set('addons', [mat.checked?'mat':'', blanket.checked?'blanket':'', eye.checked?'eye':''].filter(Boolean).join(','));
+        confirm.href = url.toString();
+      }
+
+      function regenPacking(){
+        var bits = [];
+        bits.push(seats>1?('Space for '+seats+' people'):'One person:');
+        var essentials = ['a soft mat or towel','a water bottle','a small pillow or cushion'];
+        if(mat.checked) essentials.unshift('your preferred mat');
+        if(blanket.checked) essentials.push('a blanket for warmth');
+        if(eye.checked) essentials.push('an eye pillow');
+        packingList.textContent = essentials.join(', ') + '. Consider earplugs if you prefer lower volume.';
+      }
+
+      inc.addEventListener('click',function(){ if(seats<maxSeats) seats++; seatCount.textContent=seats; updateTotal(); regenPacking(); });
+      dec.addEventListener('click',function(){ if(seats>1) seats--; seatCount.textContent=seats; updateTotal(); regenPacking(); });
+      sessionSelect.addEventListener('change',function(){ updateTotal(); });
+      mat.addEventListener('change',updateTotal);
+      blanket.addEventListener('change',updateTotal);
+      eye.addEventListener('change',updateTotal);
+      regen.addEventListener('click',regenPacking);
+
+      // initialize
+      seatCount.textContent = seats;
+      updateTotal(); regenPacking();
+
+      // Mini guided modal
+      var mini = document.getElementById('guidedModal');
+      var tryBtn = document.getElementById('tryNow');
+      var miniStart = document.getElementById('miniStart');
+      var miniClose = document.getElementById('miniClose');
+      var miniStep = document.getElementById('miniStep');
+      var miniRing = document.getElementById('miniRing');
+      var miniNote = document.getElementById('miniNote');
+
+      tryBtn.addEventListener('click',function(){ mini.style.display='flex'; miniNote.value=''; miniStep.textContent='Ready'; miniRing.textContent='3'; });
+      miniClose.addEventListener('click',function(){ mini.style.display='none'; });
+
+      miniStart.addEventListener('click',function(){
+        var seq = [60,45,30]; // seconds for three stages
+        var labels = ['Breathe','Journal','Intend'];
+        var idx=0; mini.style.display='flex';
+        function runStage(){
+          if(idx>=seq.length){ miniStep.textContent='Finished — carry the intention'; miniRing.textContent='•'; return; }
+          var remaining = seq[idx];
+          miniStep.textContent = labels[idx] + ' — ' + remaining + 's';
+          miniRing.textContent = Math.ceil(remaining/10);
+          var t = setInterval(function(){ remaining--; miniStep.textContent = labels[idx] + ' — ' + Math.max(remaining,0) + 's'; miniRing.textContent = Math.ceil(Math.max(remaining,0)/10); if(remaining<=0){ clearInterval(t); idx++; runStage(); } },1000);
+        }
+        runStage();
+      });
+
+      // small accessibility: close on backdrop click
+      mini.addEventListener('click',function(e){ if(e.target===mini){ mini.style.display='none'; } });
+
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reach out for an introductory conversation. Brief, practical planning and clear next steps to help you decide if we work well together.">
+  <style>
+    :root{
+      --bg:#f6efe6; /* warm paper */
+      --card:#fff8f0;
+      --accent:#7a5a3a; /* earthy brown */
+      --muted:#6b6b6b;
+      --accent-2:#b87a52;
+      --glass: rgba(255,255,255,0.6);
+      --radius:14px;
+      --max-width:980px;
+    }
+    html,body{height:100%;}
+    body{
+      margin:0;
+      font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: var(--bg) url('assets/img/pattern.svg');
+      color:#2b2b2b;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.45;
+      padding:32px 16px;
+      display:flex;
+      justify-content:center;
+    }
+    .wrap{max-width:var(--max-width);width:100%;}
+    header{
+      display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;
+    }
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;box-shadow:0 6px 18px rgba(122,90,58,0.14)}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none;font-weight:600}
+    nav a:hover{color:var(--accent)}
+
+    main{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:start}
+    @media (max-width:980px){main{grid-template-columns:1fr;}}
+
+    .panel{background:var(--card);padding:22px;border-radius:var(--radius);box-shadow:0 6px 30px rgba(60,40,20,0.06)}
+    .hero{padding:28px 22px;margin-bottom:14px}
+    h1{margin:0 0 8px 0;font-size:24px;color:var(--accent)}
+    p.lead{margin:0;color:var(--muted)}
+
+    .meta{display:flex;gap:12px;margin-top:14px;flex-wrap:wrap}
+    .meta a{display:inline-block;background:var(--glass);padding:8px 12px;border-radius:10px;color:var(--accent-2);text-decoration:none;font-weight:600}
+
+    .small{font-size:13px;color:var(--muted)}
+
+    /* Session Planner */
+    .planner h2{margin-top:0;color:#4b3626}
+    .form-row{margin-bottom:12px}
+    label{display:block;font-weight:700;font-size:13px;margin-bottom:6px;color:#3d2e24}
+    input[type=text],input[type=email],textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(80,60,40,0.08);background:transparent}
+    textarea{min-height:90px;resize:vertical}
+    .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    button{background:var(--accent);color:white;border:0;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer}
+    button.secondary{background:transparent;color:var(--accent);border:1px solid rgba(122,90,58,0.12)}
+    .result{white-space:pre-wrap;background:#fffdfb;border-radius:10px;padding:12px;border:1px dashed rgba(122,90,58,0.08);margin-top:12px}
+
+    /* reveal animation */
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity 550ms cubic-bezier(.2,.9,.3,1),transform 550ms cubic-bezier(.2,.9,.3,1)}
+    .reveal.is-visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion: reduce){
+      .reveal{transition:none;transform:none;opacity:1}
+    }
+
+    footer{margin-top:22px;color:var(--muted);font-size:13px}
+
+    /* accessibility focus */
+    a:focus,button:focus,input:focus,textarea:focus{outline:3px solid rgba(184,122,82,0.18);outline-offset:2px}
+
+    .disclaimer{font-size:13px;color:#5b4a3d;margin-top:12px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true">T</div>
+        <div>
+          <div style="font-weight:800;color:var(--accent);">{{BUSINESS_NAME}}</div>
+          <div class="small">A private practice offering focused therapeutic work</div>
+        </div>
+      </div>
+      <nav aria-label="Primary navigation">
+        <a href="index.html">Start</a>
+        <a href="about.html">Who I Am</a>
+        <a href="specialties.html">Areas</a>
+        <a href="approach.html">Method</a>
+        <a href="fees.html">Rates</a>
+        <a href="faq.html">FAQ</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="panel hero reveal" aria-labelledby="contact-heading">
+        <h1 id="contact-heading">A clear first step</h1>
+        <p class="lead">If you're considering therapy, a short conversation helps clarify what would be most helpful. I offer brief planning sessions, focused intensives, and longer-term work depending on what comes up together.</p>
+        <div class="meta">
+          <a href="tel:{{PHONE}}">Call: {{PHONE}}</a>
+          <a href="mailto:{{EMAIL}}">Email: {{EMAIL}}</a>
+          <a href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+        <div class="small" style="margin-top:12px">Sessions held by telehealth within {{STATE}} and in-person by arrangement in {{CITY}}.</div>
+      </section>
+
+      <aside class="panel reveal">
+        <div class="small" style="font-weight:700;margin-bottom:8px">Quick contact</div>
+        <form id="contact-form" aria-label="Contact form" novalidate>
+          <div class="form-row">
+            <label for="name">Your name</label>
+            <input id="name" name="name" type="text" required>
+          </div>
+          <div class="form-row">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required>
+          </div>
+          <div class="form-row">
+            <label for="message">Brief note (what brings you here)</label>
+            <textarea id="message" name="message"></textarea>
+          </div>
+          <div class="controls">
+            <button type="submit">Request a brief call</button>
+            <button type="button" class="secondary" id="planner-shortcut">Try the Session Planner</button>
+          </div>
+        </form>
+        <div class="disclaimer">
+          Confidentiality: communications are treated with clinical discretion. Email is not fully secure. For urgent medical or safety concerns, contact emergency services or local crisis lines immediately.
+        </div>
+      </aside>
+
+      <section class="panel planner reveal" aria-labelledby="planner-heading">
+        <h2 id="planner-heading">Session Planner</h2>
+        <p class="small">Build a short plan to identify what might help most right now. You can copy it or paste it into an email to share before a first session.</p>
+
+        <div class="form-row">
+          <label for="concerns">Primary concerns (short list)</label>
+          <textarea id="concerns" placeholder="e.g., decision fatigue, grief, pattern of avoidance"></textarea>
+        </div>
+
+        <div class="form-row">
+          <label for="goals">What would feel most useful in the next month?</label>
+          <input id="goals" type="text" placeholder="e.g., clearer routine, a plan for difficult conversations">
+        </div>
+
+        <div class="form-row">
+          <label for="time">How much time can you commit?</label>
+          <select id="time">
+            <option value="1">A single focused session</option>
+            <option value="3">Short series (2–4 sessions)</option>
+            <option value="6">Ongoing rhythm (6+ sessions)</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label for="tone">Preferred pace or tone</label>
+          <select id="tone">
+            <option>Reflective and exploratory</option>
+            <option>Direct skill-building</option>
+            <option>A mix — both reflection and action</option>
+          </select>
+        </div>
+
+        <div class="controls">
+          <button id="build-plan">Build plan</button>
+          <button id="clear-plan" type="button" class="secondary">Clear</button>
+        </div>
+
+        <div id="plan-output" class="result" aria-live="polite" tabindex="0">Your personalized plan will appear here after you click "Build plan".</div>
+
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button id="copy-plan" class="secondary">Copy plan</button>
+          <button id="email-plan" class="secondary">Open email</button>
+        </div>
+
+        <div class="small" style="margin-top:10px">Note: the planner is an aid to conversation, not a diagnostic tool. If you are in crisis or at immediate risk, please contact emergency services or a crisis line.</div>
+      </section>
+
+      <section class="panel reveal" style="grid-column:1 / -1;margin-top:18px">
+        <h2 style="margin-top:0;color:var(--accent)">How I typically work</h2>
+        <p class="small">I aim for clear agreements about goals and the work we do. Below are common pathways people choose; they're starting places we adapt together.</p>
+        <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+          <div style="flex:1;min-width:220px;background:linear-gradient(180deg,#fffdfa,#fff5ef);padding:12px;border-radius:10px">
+            <strong>Clarity Session</strong>
+            <div class="small">A single 60–90 minute session to map concerns and next steps.</div>
+          </div>
+          <div style="flex:1;min-width:220px;background:linear-gradient(180deg,#fffdfa,#fff5ef);padding:12px;border-radius:10px">
+            <strong>Short Track</strong>
+            <div class="small">2–4 sessions focused on a defined problem or transition.</div>
+          </div>
+          <div style="flex:1;min-width:220px;background:linear-gradient(180deg,#fffdfa,#fff5ef);padding:12px;border-radius:10px">
+            <strong>Exploratory Rhythm</strong>
+            <div class="small">A longer series for deeper shifts, paced to your life.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel reveal" style="grid-column:1 / -1;margin-top:18px">
+        <h2 style="margin-top:0;color:var(--accent)">Frequently asked</h2>
+        <div style="margin-top:8px">
+          <details>
+            <summary style="font-weight:700">How will I know what I need?</summary>
+            <div class="small" style="margin-top:8px">We begin with what matters to you now. A planning conversation helps us shape a short, focused path rather than guessing long-term commitments right away.</div>
+          </details>
+          <details style="margin-top:8px">
+            <summary style="font-weight:700">Is what I say confidential?</summary>
+            <div class="small" style="margin-top:8px">Yes — with standard, ethical exceptions (risk of harm to self/others, court orders). I will discuss limits of confidentiality before we begin.</div>
+          </details>
+        </div>
+      </section>
+
+      <footer>
+        <div class="small">By contacting {{BUSINESS_NAME}} you acknowledge this is for non-emergency communication. Crisis resources: dial your local emergency services or contact the national crisis line in your area if you are in immediate danger.</div>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    // Scroll reveal with prefers-reduced-motion support
+    (function(){
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var reveals = document.querySelectorAll('.reveal');
+      if(reduce){
+        reveals.forEach(function(el){el.classList.add('is-visible');});
+        return;
+      }
+      var observer = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if(entry.isIntersecting){
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },{rootMargin:'-10% 0px',threshold:0.08});
+      reveals.forEach(function(el){observer.observe(el);});
+    })();
+
+    // Session Planner logic
+    (function(){
+      var buildBtn = document.getElementById('build-plan');
+      var clearBtn = document.getElementById('clear-plan');
+      var copyBtn = document.getElementById('copy-plan');
+      var emailBtn = document.getElementById('email-plan');
+      var output = document.getElementById('plan-output');
+      var shortcut = document.getElementById('planner-shortcut');
+
+      function sanitize(s){return (s||'').trim();}
+
+      function suggestPlan(data){
+        var lines = [];
+        lines.push('Session Planner — summary');
+        lines.push('=========================');
+        lines.push('Concerns: ' + (data.concerns||'Not specified'));
+        lines.push('Short goal: ' + (data.goals||'Not specified'));
+        lines.push('Time commitment: ' + (data.timeLabel||'N/A'));
+        lines.push('Preferred tone: ' + (data.tone||'N/A'));
+        lines.push('');
+
+        // Unique recommendations (avoid direct medical claims)
+        if(data.time === '1'){
+          lines.push('Suggested approach: A focused clarity session to map your priorities and generate 1–2 practical next steps. This can be helpful to land on immediate actions and decide if further work is useful.');
+        } else if(data.time === '3'){
+          lines.push('Suggested approach: A short course of sessions concentrating on one clear theme. We make a 2–4 session agreement, name a measurable next step, and review progress mid-way.');
+        } else if(data.time === '6'){
+          lines.push('Suggested approach: A paced rhythm for deeper exploration and skill-building. We set flexible goals and adapt as you learn from practice between sessions.');
+        }
+
+        lines.push('Style note: ' + (data.tone||'A mixture of reflection and pragmatic tasks.'));
+        lines.push('\nNext steps: If this feels right, you can request a brief introductory call via phone or email to align on scheduling and logistics.');
+        lines.push('\n--');
+        lines.push('Contact: ' + '{{EMAIL}}' + ' | ' + '{{PHONE}}');
+        return lines.join('\n');
+      }
+
+      function collect(){
+        return {
+          concerns: sanitize(document.getElementById('concerns').value),
+          goals: sanitize(document.getElementById('goals').value),
+          time: document.getElementById('time').value,
+          timeLabel: document.getElementById('time').selectedOptions[0].textContent,
+          tone: document.getElementById('tone').value
+        };
+      }
+
+      buildBtn.addEventListener('click',function(){
+        var data = collect();
+        var text = suggestPlan(data);
+        output.textContent = text;
+        output.focus();
+      });
+
+      clearBtn.addEventListener('click',function(){
+        document.getElementById('concerns').value='';
+        document.getElementById('goals').value='';
+        document.getElementById('time').value='1';
+        document.getElementById('tone').value='Reflective and exploratory';
+        output.textContent = 'Your personalized plan will appear here after you click "Build plan".';
+      });
+
+      copyBtn.addEventListener('click',function(){
+        var text = output.textContent || '';
+        if(!text){
+          output.textContent = 'Nothing to copy. Build a plan first.';
+          return;
+        }
+        if(navigator.clipboard && navigator.clipboard.writeText){
+          navigator.clipboard.writeText(text).then(function(){
+            copyBtn.textContent = 'Copied';
+            setTimeout(function(){copyBtn.textContent='Copy plan';},1600);
+          },function(){
+            fallbackCopy(text);
+          });
+        } else {
+          fallbackCopy(text);
+        }
+      });
+
+      function fallbackCopy(text){
+        var ta = document.createElement('textarea');
+        ta.value = text; document.body.appendChild(ta); ta.select();
+        try{document.execCommand('copy');
+          copyBtn.textContent = 'Copied';
+          setTimeout(function(){copyBtn.textContent='Copy plan';},1600);
+        }catch(e){alert('Copy failed — you can select and copy the plan manually.');}
+        ta.remove();
+      }
+
+      emailBtn.addEventListener('click',function(){
+        var text = output.textContent || '';
+        var subject = encodeURIComponent('My session plan — from website');
+        var body = encodeURIComponent(text + '\n\nI am interested in discussing this.');
+        var mailto = 'mailto:' + '{{EMAIL}}' + '?subject=' + subject + '&body=' + body;
+        window.location.href = mailto;
+      });
+
+      // wire contact form to open mail client with content summary (local-only)
+      var contactForm = document.getElementById('contact-form');
+      contactForm.addEventListener('submit',function(e){
+        e.preventDefault();
+        var name = document.getElementById('name').value || 'Anonymous';
+        var email = document.getElementById('email').value || '';
+        var message = document.getElementById('message').value || '';
+        var body = encodeURIComponent('Name: ' + name + '\nEmail: ' + email + '\n\nMessage:\n' + message);
+        var mailto = 'mailto:' + '{{EMAIL}}' + '?subject=' + encodeURIComponent('Website contact: ' + name) + '&body=' + body;
+        window.location.href = mailto;
+      });
+
+      // shortcut to focus planner
+      shortcut.addEventListener('click',function(){
+        document.getElementById('concerns').focus();
+      });
+    })();
+  </script>
+</body>
+</html>

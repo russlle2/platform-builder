@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Begin — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Book a planning call or start a membership trial to explore outcomes, habits and frameworks.">
+  <style>
+    :root{--bg:#fbfdfb;--card:#ffffff;--muted:#6b7280;--accent:#175e4b;--accent-2:#0f4b45}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:var(--bg) url('assets/img/pattern.svg') repeat;color:#0f172a}
+    .wrap{max-width:820px;margin:0 auto;padding:18px}
+    header{display:flex;align-items:center;gap:14px;padding:12px 0}
+    .logo{font-weight:700;color:var(--accent-2)}
+    .nav{margin-left:auto;display:flex;gap:10px}
+    .nav a{color:var(--muted);text-decoration:none;padding:8px;border-radius:8px}
+
+    .panel{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(15,23,42,0.06)}
+    h1{margin:0;color:var(--accent-2)}
+    .muted{color:var(--muted)}
+
+    form{display:grid;gap:12px;margin-top:12px}
+    label{font-weight:700;color:var(--accent-2);font-size:14px}
+    input,select,textarea{padding:10px;border-radius:8px;border:1px solid rgba(15,23,42,0.06);font-size:14px}
+    .row{display:flex;gap:10px}
+    .row .col{flex:1}
+    .btn{padding:10px 14px;border-radius:10px;border:0;background:var(--accent);color:#fff;font-weight:700;text-decoration:none}
+    .note{font-size:13px;color:var(--muted)}
+    .success{padding:12px;border-radius:8px;background:linear-gradient(90deg,rgba(23,94,75,0.06),transparent);border:1px solid rgba(23,94,75,0.08)}
+
+    .options{display:flex;gap:10px;flex-wrap:wrap}
+    .option{padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.04);background:#fff;cursor:pointer}
+    .option.selected{background:linear-gradient(90deg,rgba(23,94,75,0.06),transparent);border-color:rgba(23,94,75,0.12)}
+
+    @media(max-width:720px){.row{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">{{BUSINESS_NAME}}</div>
+      <nav class="nav" aria-label="Primary navigation">
+        <a href="index.html">Overview</a>
+        <a href="services.html">Sessions</a>
+        <a href="programs.html">Journeys</a>
+        <a href="pricing.html">Investment</a>
+        <a href="testimonials.html">Proof</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="panel">
+        <h1>Start with a planning call</h1>
+        <p class="muted">Book a short conversation to clarify outcomes, select a membership path, or plan a three-month package. No medical advice — just actionable frameworks and habit-focused planning.</p>
+
+        <form id="booking" action="{{PRIMARY_CTA_URL}}" method="GET">
+          <div class="row">
+            <div class="col">
+              <label for="name">Your name</label>
+              <input id="name" name="name" required placeholder="First and last name">
+            </div>
+            <div class="col">
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" required placeholder="you@domain.com">
+            </div>
+          </div>
+
+          <label for="phone">Phone (optional)</label>
+          <input id="phone" name="phone" placeholder="(555) 555-5555">
+
+          <label>What would you like to book?</label>
+          <div class="options" role="listbox" aria-label="Booking options" id="options">
+            <div class="option" data-value="clarity">Quick Clarity (30 min)</div>
+            <div class="option" data-value="intro">Membership Intro (45 min)</div>
+            <div class="option" data-value="deep">Deep Planning (75 min)</div>
+          </div>
+
+          <label for="date">Preferred date & time</label>
+          <input id="date" name="date" type="datetime-local">
+
+          <label for="notes">Notes (what outcomes are you aiming for?)</label>
+          <textarea id="notes" name="notes" rows="4" placeholder="A few lines about what you want to change"></textarea>
+
+          <div style="display:flex;gap:10px;align-items:center;margin-top:6px">
+            <button class="btn" type="submit">{{PRIMARY_CTA_LABEL}}</button>
+            <a class="btn" href="mailto:{{EMAIL}}" style="background:transparent;border:1px solid rgba(15,23,42,0.06);color:var(--accent-2);text-decoration:none;padding:8px 12px;border-radius:8px">Email to book</a>
+          </div>
+
+          <p class="note">By booking you agree to a brief intake and an initial planning conversation. Memberships focused on habits and frameworks are available after the call.</p>
+        </form>
+
+        <div id="result" style="display:none;margin-top:12px"></div>
+      </section>
+
+      <section style="margin-top:12px" class="panel">
+        <h3 style="margin:0">What to expect</h3>
+        <p class="muted" style="margin-top:6px">A short intake, clear priorities for the first 4 weeks, and a recommended membership path. We focus on defining practical habits and repeatable routines.</p>
+        <ul style="margin-top:10px;color:var(--muted)">
+          <li>30–75 minute conversation depending on the option you choose</li>
+          <li>A short 1–2 page plan after the call with next steps</li>
+          <li>Member resources and habit trackers if you join a plan</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer style="padding:18px 0;text-align:center;color:var(--muted)">
+      <div>{{BUSINESS_NAME}} • Serving {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    </footer>
+  </div>
+
+  <script>
+    (function(){
+      const form = document.getElementById('booking');
+      const options = document.getElementById('options');
+      let selected = 'clarity';
+      options.addEventListener('click', (e)=>{
+        const opt = e.target.closest('.option');
+        if(!opt) return;
+        options.querySelectorAll('.option').forEach(o=>o.classList.remove('selected'));
+        opt.classList.add('selected');
+        selected = opt.dataset.value;
+      });
+      // default select first
+      options.querySelector('.option').classList.add('selected');
+
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        const data = new FormData(form);
+        data.append('choice', selected);
+        // Simulate a booking confirmation — in real usage the form action would be an external scheduler
+        const result = document.getElementById('result');
+        result.style.display='block';
+        result.innerHTML = '<div class="success"><strong>Thanks, ' + (data.get('name') || '') + '</strong><div style="margin-top:6px;color:var(--muted)">We received your request for a ' + selected.replace('-', ' ') + '. You will receive a confirmation at ' + (data.get('email') || 'your email') + ' with available times. If you prefer, call <a href="tel:{{PHONE}}">{{PHONE}}</a>.</div></div>';
+        // clear form visually, keep values for copy
+        form.reset();
+        options.querySelectorAll('.option').forEach(o=>o.classList.remove('selected'));
+      });
+    })();
+  </script>
+</body>
+</html>

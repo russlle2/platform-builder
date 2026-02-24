@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Connect — {{BUSINESS_NAME}} · Contact</title>
+  <meta name="description" content="Reach out for sound baths, private sessions, and collaborations in {{CITY}}, {{STATE}}.">
+  <style>
+    :root{
+      --bg1:#0f1720; --bg2:#07111a; --accent:#c6f6e6; --muted:#9aa7b2; --card:#0b1420; --glass:rgba(255,255,255,0.04);
+      --radius:14px; --maxw:980px; --gap:20px; --shadow:0 8px 30px rgba(2,6,23,0.6);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      color:var(--accent);
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg1),var(--bg2));}
+    /* Pattern and vignette */
+    .canvas{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+    .pattern{position:absolute;left:0;top:0;width:140%;height:140%;transform:translate(-10%,-10%);opacity:0.22;mix-blend-mode:screen}
+    .vignette{position:absolute;inset:0;background:radial-gradient(1200px 600px at 10% 20%, rgba(255,255,255,0.02), transparent 10%, transparent 40%), radial-gradient(900px 400px at 90% 80%, rgba(198,246,230,0.02), transparent 10%);opacity:1}
+
+    .wrap{position:relative;z-index:2;max-width:var(--maxw);margin:40px auto;padding:36px;border-radius:18px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:var(--shadow);backdrop-filter:blur(6px)}
+
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg, rgba(198,246,230,0.12), rgba(255,255,255,0.02));display:grid;place-items:center;font-weight:700;color:var(--accent);font-size:18px}
+    nav a{color:var(--muted);text-decoration:none;margin:0 8px;font-size:15px}
+    nav a.active{color:var(--accent);text-decoration:underline;text-underline-offset:6px}
+
+    .grid{display:grid;grid-template-columns:1fr 420px;gap:var(--gap)}
+    @media (max-width:1000px){.grid{grid-template-columns:1fr}nav{display:none}}
+
+    .hero{padding:28px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));border:1px solid rgba(255,255,255,0.02)}
+    h1{margin:0 0 6px 0;font-size:28px;letter-spacing:0.2px;color:#e9fff8}
+    p.lead{margin:0;color:var(--muted);line-height:1.5}
+
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+
+    form{display:grid;gap:10px}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input[type=text],input[type=email],input[type=tel],textarea,select{width:100%;padding:10px 12px;border-radius:10px;background:var(--card);border:1px solid rgba(255,255,255,0.03);color:var(--accent);font-size:15px}
+    textarea{min-height:110px;resize:vertical}
+    .row{display:flex;gap:10px}
+    .row > *{flex:1}
+    .muted{font-size:13px;color:var(--muted)}
+
+    .cta{display:inline-block;padding:12px 18px;border-radius:12px;background:linear-gradient(90deg,#7de3c6,#4fb9a3);color:#072023;font-weight:700;text-decoration:none}
+
+    .meta{display:flex;flex-direction:column;gap:12px}
+    .meta .line{display:flex;gap:10px;align-items:center}
+    .meta strong{color:#e8fff8}
+
+    footer{margin-top:18px;text-align:center;color:var(--muted);font-size:13px}
+
+    /* subtle ornaments */
+    .pill{display:inline-block;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,0.02);color:var(--muted);font-size:13px}
+
+    /* small accessibility focus */
+    input:focus,textarea:focus,select:focus{outline:2px solid rgba(127,231,205,0.12);outline-offset:2px}
+  </style>
+</head>
+<body>
+  <div class="canvas" aria-hidden="true">
+    <!-- unique SVG pattern (also available as assets/img/pattern.svg) -->
+    <svg class="pattern" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#9ff0dd" stop-opacity="0.12"/>
+          <stop offset="1" stop-color="#6fd1b8" stop-opacity="0.06"/>
+        </linearGradient>
+        <pattern id="p" width="120" height="120" patternUnits="userSpaceOnUse">
+          <rect width="120" height="120" fill="transparent"/>
+          <circle cx="20" cy="20" r="3" fill="url(#g1)"/>
+          <circle cx="60" cy="60" r="2.2" fill="url(#g1)"/>
+          <path d="M0,120 L120,0" stroke="url(#g1)" stroke-width="0.8" opacity="0.16"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#p)" />
+      <g transform="translate(200,80) rotate(-22)" opacity="0.14">
+        <rect x="0" y="0" width="460" height="460" rx="40" fill="url(#g1)" />
+      </g>
+    </svg>
+    <div class="vignette"></div>
+  </div>
+
+  <main class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">{{BUSINESS_NAME}}</div>
+        <div>
+          <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px">Facilitated by {{FACILITATOR_NAME}}</div>
+        </div>
+      </div>
+      <nav aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="events.html">Gatherings</a>
+        <a href="private-sessions.html">Private</a>
+        <a href="pricing.html">Invest</a>
+        <a href="about.html">Who we are</a>
+        <a href="faq.html">Q&amp;A</a>
+        <a href="book.html">Reserve</a>
+        <a class="active" href="contact.html">Connect</a>
+      </nav>
+    </header>
+
+    <div class="grid">
+      <section>
+        <div class="hero card">
+          <h1>Connect with {{BUSINESS_NAME}}</h1>
+          <p class="lead">A quiet invitation: reach out about events, private ceremonies, or corporate wellness. Tell us which sound you are hoping to meet — a gong's release, a bowl's bloom, or a custom session for your circle.</p>
+        </div>
+
+        <div style="height:18px"></div>
+
+        <div class="card">
+          <h2 style="margin:0 0 8px 0;color:#eafcf4;font-size:18px">How a conversation flows</h2>
+          <p class="muted" style="margin-top:0">We start with intention: a quick call to align timing, audience size, and goals. Then a bespoke plan — public set, intimate 1:1, or a team wellness workshop — followed by booking and a short pre-session questionnaire.</p>
+
+          <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap">
+            <span class="pill">Public events</span>
+            <span class="pill">Private sessions</span>
+            <span class="pill">Corporate & team</span>
+          </div>
+        </div>
+
+        <div style="height:18px"></div>
+
+        <div class="card">
+          <h3 style="margin:0 0 8px 0;color:#eafcf4;font-size:16px">What to bring</h3>
+          <ul style="margin:0 0 8px 18px;color:var(--muted);line-height:1.6">
+            <li>Yoga mat, cushion, blanket — layers to stay comfortable.</li>
+            <li>An eye mask or towel to soften the light.</li>
+            <li>Water bottle and an open intention.</li>
+          </ul>
+          <p class="muted" style="margin:6px 0 0 0">For private or corporate gatherings we can provide mats and props for an additional fee — note your needs in the form below.</p>
+        </div>
+
+        <div style="height:18px"></div>
+
+        <div class="card">
+          <h3 style="margin:0 0 8px 0;color:#eafcf4;font-size:16px">Contraindications & safety</h3>
+          <p class="muted" style="margin:0">Sound immersion is deeply restorative for many, but not suitable for everyone. Please consult a physician before attending if you have any of the following:</p>
+          <ul style="margin:8px 0 0 18px;color:var(--muted);line-height:1.6">
+            <li>Recent head injury, aneurysm, or severe cardiovascular conditions.</li>
+            <li>Severe uncontrolled epilepsy or light/sound-triggered conditions.</li>
+            <li>Pregnancy concerns — reach out and we will recommend adjustments.</li>
+          </ul>
+          <p class="muted" style="margin-top:8px">If you use a pacemaker or other implanted medical device, please tell us prior to booking so we can adapt the session safely.</p>
+        </div>
+
+      </section>
+
+      <aside>
+        <div class="card">
+          <h3 style="margin:0 0 8px 0;color:#eafcf4;font-size:16px">Get in touch</h3>
+          <form method="post" action="{{PRIMARY_CTA_URL}}">
+            <label for="name">Name</label>
+            <input id="name" name="name" type="text" placeholder="Your full name" required>
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="you@example.com" required>
+
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" type="tel" placeholder="{{PHONE}}">
+
+            <label for="interest">I'm interested in</label>
+            <select id="interest" name="interest">
+              <option>Public sound bath / Next event</option>
+              <option>Private 1:1 session</option>
+              <option>Couples or small group</option>
+              <option>Corporate / team wellness</option>
+            </select>
+
+            <div class="row">
+              <div>
+                <label for="date">Preferred date</label>
+                <input id="date" name="date" type="text" placeholder="e.g. {{NEXT_EVENT_DATE}} or flexible">
+              </div>
+              <div>
+                <label for="attendees"># Attendees</label>
+                <input id="attendees" name="attendees" type="text" placeholder="1 / 2 / 10">
+              </div>
+            </div>
+
+            <label for="message">Message / Notes</label>
+            <textarea id="message" name="message" placeholder="Share intentions, accessibility needs, or venue questions"></textarea>
+
+            <div style="display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap">
+              <button class="cta" type="submit">{{PRIMARY_CTA_LABEL}}</button>
+              <div class="muted">Or email <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a></div>
+            </div>
+          </form>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="card meta">
+          <div class="line"><strong>Phone</strong><span class="muted">{{PHONE}}</span></div>
+          <div class="line"><strong>Email</strong><span class="muted">{{EMAIL}}</span></div>
+          <div class="line"><strong>Location</strong><span class="muted">{{VENUE_NAME}} — {{CITY}}, {{STATE}}</span></div>
+          <div style="border-top:1px dashed rgba(255,255,255,0.02);padding-top:10px;margin-top:6px;color:var(--muted);font-size:13px">We reply within 48 hours. For urgent booking requests, call above.</div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="card">
+          <h4 style="margin:0 0 8px 0;color:#eafcf4;font-size:14px">Session palette</h4>
+          <p class="muted" style="margin:0">In our offerings you may encounter: crystal bowls, gong, chimes, tuning forks, monochord, and gentle percussion. Each container of sound is chosen to hold space for rest and resonance.</p>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      <div class="muted">© {{BUSINESS_NAME}} — calming gatherings · all rights reserved</div>
+    </footer>
+  </main>
+</body>
+</html>

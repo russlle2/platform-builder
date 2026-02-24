@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{BUSINESS_NAME}} — Connect</title>
+  <meta name="description" content="Contact {{BUSINESS_NAME}} for integrative, person-centered consultations, workshops, and guided practices.">
+  <style>
+    :root{
+      --bg:#fbfbf8; --card:#ffffff; --muted:#6b6b6b; --accent:#3b6b61; --accent-2:#7aa28c; --glass:rgba(255,255,255,0.7);
+      --maxw:980px; --radius:14px;
+    }
+    *{box-sizing:border-box}
+    body{font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:0;color:#24323a;background:linear-gradient(180deg, #fbfbf8 0%, #f3f7f6 100%);-webkit-font-smoothing:antialiased}
+    header{background:linear-gradient(180deg, rgba(59,107,97,0.06), rgba(122,162,140,0.02));padding:22px 18px;border-bottom:1px solid rgba(36,50,58,0.04);position:sticky;top:0;backdrop-filter: blur(6px);z-index:30}
+    .wrap{max-width:var(--maxw);margin:0 auto;padding:18px}
+    nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+    .brand{font-weight:700;color:var(--accent)}
+    .navlinks{display:flex;gap:8px;margin-left:12px}
+    .navlinks a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:8px;font-size:14px}
+    .navlinks a:hover{background:rgba(59,107,97,0.06);color:var(--accent)}
+
+    main{max-width:var(--maxw);margin:28px auto;padding:0 18px}
+    .hero{display:grid;grid-template-columns:1fr;gap:18px;align-items:center}
+    .hero-card{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:0 8px 20px rgba(35,50,50,0.04);position:relative;overflow:hidden}
+    /* unique SVG pattern as data URL for background visual depth */
+    .hero-card::before{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='200' viewBox='0 0 800 200'><defs><linearGradient id='g' x1='0' x2='1'><stop offset='0' stop-color='%233b6b61' stop-opacity='0.06'/><stop offset='1' stop-color='%237aa28c' stop-opacity='0.02'/></linearGradient></defs><rect width='800' height='200' fill='url(%23g)'/><g fill='none' stroke='%233b6b61' stroke-opacity='0.06' stroke-width='1'><path d='M0 60 C70 10,150 10,220 60 S360 110,430 60 S560 10,630 60 S760 110,800 60' /></g><g fill='%237aa28c' fill-opacity='0.03'><circle cx='80' cy='28' r='38'/><circle cx='420' cy='100' r='52'/></g></svg>");background-repeat:no-repeat;background-position:right -20px top -20px;background-size:cover;pointer-events:none}
+    .hero-row{display:flex;gap:18px;align-items:center}
+    .intro{flex:1}
+    h1{margin:0 0 6px 0;font-size:20px;color:#102824}
+    p.lead{margin:0;color:var(--muted);font-size:15px}
+    .cta{display:flex;gap:8px;margin-top:12px}
+    .btn{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:600}
+    .btn.secondary{background:transparent;border:1px solid rgba(36,50,58,0.08);color:var(--accent)}
+
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px}
+    .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(20,30,30,0.03)}
+    form .row{display:flex;gap:8px}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(36,50,58,0.08);font-size:14px}
+    textarea{min-height:120px;resize:vertical}
+    .small{font-size:13px;color:var(--muted)}
+
+    /* inventory */
+    .inventory{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+    .inventory label{display:flex;gap:10px;align-items:center;padding:10px;border-radius:10px;border:1px solid rgba(36,50,58,0.04);cursor:pointer}
+    .inventory input{accent-color:var(--accent)}
+    .results{margin-top:12px;padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(122,162,140,0.04),rgba(59,107,97,0.02));color:var(--accent)}
+
+    /* modals */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(10,12,12,0.45);display:none;align-items:center;justify-content:center;padding:24px;z-index:60}
+    .modal{background:var(--card);padding:18px;border-radius:12px;max-width:740px;width:100%;box-shadow:0 10px 40px rgba(10,20,20,0.25)}
+    .modal h3{margin:0 0 8px 0}
+    .breath-circle{width:160px;height:160px;border-radius:50%;margin:12px auto;background:radial-gradient(circle at 30% 30%, rgba(122,162,140,0.18), rgba(59,107,97,0.08));display:flex;align-items:center;justify-content:center}
+    .breath-dot{width:60px;height:60px;border-radius:50%;background:var(--accent);transform:scale(1);transition:transform 3s ease-in-out}
+    .timer{font-size:14px;color:var(--muted);text-align:center;margin-top:8px}
+    .modal .controls{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+
+    footer{padding:18px;text-align:center;color:var(--muted);font-size:13px}
+
+    @media (max-width:920px){.grid{grid-template-columns:1fr}.inventory{grid-template-columns:repeat(1,1fr)}.hero-row{flex-direction:column;align-items:flex-start}.hero-card::before{background-position:right top}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav>
+        <div class="brand">{{BUSINESS_NAME}}</div>
+        <div class="navlinks">
+          <a href="index.html">Home</a>
+          <a href="services.html">Offerings</a>
+          <a href="conditions.html">Ailments</a>
+          <a href="approach.html">Method</a>
+          <a href="pricing.html">Invest</a>
+          <a href="about.html">Team</a>
+          <a href="book.html">Book a Visit</a>
+          <a href="contact.html">Connect</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-card">
+        <div class="hero-row">
+          <div class="intro">
+            <h1>Reach out to {{BUSINESS_NAME}} — Practical, integrative support</h1>
+            <p class="lead">Start with a short inquiry. We'll co-create a thoughtful next step: a focused agenda for your first consult and an adaptive follow-up rhythm.</p>
+            <div class="cta">
+              <button class="btn" onclick="document.getElementById('contact-form').scrollIntoView({behavior:'smooth'})">{{PRIMARY_CTA_LABEL}}</button>
+              <button class="btn secondary" onclick="openExercise('breath')">Try a quick practice</button>
+              <button class="btn secondary" onclick="openExercise('journ')">Try journaling</button>
+            </div>
+          </div>
+          <div style="width:220px">
+            <div style="background:var(--glass);padding:12px;border-radius:12px;border:1px solid rgba(36,50,58,0.03)">
+              <div style="font-size:13px;color:var(--muted)">Phone</div>
+              <div style="font-weight:700;margin-top:6px">{{PHONE}}</div>
+              <div style="font-size:13px;color:var(--muted);margin-top:10px">Email</div>
+              <div style="font-weight:700;margin-top:6px">{{EMAIL}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div>
+        <div class="card">
+          <h2 style="margin-top:0">Contact & intake</h2>
+          <p class="small">Tell us briefly what brings you here. If this is urgent, please use the phone number above. Our approach is educational and supportive; we do not promise cures.</p>
+          <form id="contact-form">
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <div style="flex:1">
+                <label for="name">Name</label>
+                <input id="name" name="name" placeholder="Your name">
+              </div>
+              <div style="width:160px">
+                <label for="when">Preferred contact</label>
+                <select id="when" name="when">
+                  <option>Email</option>
+                  <option>Phone</option>
+                  <option>Either</option>
+                </select>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <div style="flex:1">
+                <label for="email">Email</label>
+                <input id="email" name="email" placeholder="{{EMAIL}}">
+              </div>
+              <div style="width:160px">
+                <label for="phone">Phone</label>
+                <input id="phone" name="phone" placeholder="{{PHONE}}">
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <div style="flex:1">
+                <label for="city">City</label>
+                <input id="city" name="city" placeholder="{{CITY}}">
+              </div>
+              <div style="width:160px">
+                <label for="state">State</label>
+                <input id="state" name="state" placeholder="{{STATE}}">
+              </div>
+            </div>
+
+            <div style="margin-top:12px">
+              <label for="message">Short note</label>
+              <textarea id="message" name="message" placeholder="A few lines about what you're hoping to address"></textarea>
+            </div>
+
+            <div style="margin-top:12px;display:flex;gap:8px;align-items:center;justify-content:space-between">
+              <div class="small">By sending this message you agree to be contacted about services. No medical promises. Educational support only.</div>
+              <div style="display:flex;gap:8px">
+                <button class="btn" type="submit">Send inquiry</button>
+                <button class="btn secondary" type="button" onclick="fillDemo()">Sample request</button>
+              </div>
+            </div>
+          </form>
+          <div id="sent" style="display:none;margin-top:12px;padding:10px;border-radius:8px;background:#eef9f4;color:#145a45">Thanks — we've received your message and will reply within 3 business days with a suggested next step and scheduling options.</div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h3 style="margin:0">Whole-person inventory</h3>
+          <p class="small">Select the areas you want to explore. Click "Build agenda" to create a personalized consultation roadmap and a suggested follow-up cadence.</p>
+          <div class="inventory" id="inventory">
+            <label><input type="checkbox" value="Sleep"> Sleep quality & patterns</label>
+            <label><input type="checkbox" value="Energy"> Energy & fatigue</label>
+            <label><input type="checkbox" value="Mood"> Mood, anxiety, or low mood</label>
+            <label><input type="checkbox" value="Movement"> Movement & function</label>
+            <label><input type="checkbox" value="Digestion"> Digestion & gut health</label>
+            <label><input type="checkbox" value="Nutrition"> Nutrition & appetite</label>
+            <label><input type="checkbox" value="Stress"> Stress & resilience</label>
+            <label><input type="checkbox" value="Relationships"> Relationships & social support</label>
+          </div>
+          <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+            <button class="btn" onclick="buildAgenda()">Build agenda</button>
+            <button class="btn secondary" onclick="clearInventory()">Clear</button>
+          </div>
+          <div id="agenda" class="results" style="display:none"></div>
+        </div>
+
+      </div>
+
+      <aside>
+        <div class="card">
+          <h3 style="margin-top:0">Quick options</h3>
+          <p class="small">If you're not ready for a consult: book a drop-in group, attend a workshop, or try a guided mini-practice right here.</p>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
+            <button class="btn" onclick="location.href='book.html'">Schedule an orientation</button>
+            <button class="btn secondary" onclick="openExercise('breath')">5‑minute breathing practice</button>
+            <button class="btn secondary" onclick="openExercise('journ')">Guided 10‑minute journaling</button>
+          </div>
+          <hr style="margin:14px 0;border:none;border-top:1px solid rgba(36,50,58,0.04)">
+          <div class="small">Business hours: Mon–Fri 9am–5pm local time. For clinical concerns, seek immediate medical help.</div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0">Contact details</h4>
+          <div style="margin-top:10px" class="small">Email: <strong>{{EMAIL}}</strong></div>
+          <div class="small">Phone: <strong>{{PHONE}}</strong></div>
+          <div class="small">Location: <strong>{{CITY}}, {{STATE}}</strong></div>
+        </div>
+      </aside>
+
+    </section>
+  </main>
+
+  <!-- Modals for guided practices -->
+  <div id="modal" class="modal-backdrop" role="dialog" aria-hidden="true">
+    <div class="modal" role="document" aria-modal="true">
+      <div id="modal-body"></div>
+      <div class="controls" style="display:flex;justify-content:flex-end;margin-top:12px">
+        <button class="btn secondary" onclick="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="wrap">© <span id="year"></span> {{BUSINESS_NAME}} — Thoughtful, integrative educational care. Not a substitute for emergency medical treatment.</div>
+  </footer>
+
+  <script>
+    // small utilities
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // contact form handling (demo)
+    document.getElementById('contact-form').addEventListener('submit', function(e){
+      e.preventDefault();
+      // simple validation
+      var name = document.getElementById('name').value.trim();
+      var email = document.getElementById('email').value.trim();
+      if(!name || !email){
+        alert('Please include a name and email so we can follow up.');
+        return;
+      }
+      // show confirmation and pretend to send
+      this.style.opacity = 0.6;
+      setTimeout(function(){
+        document.getElementById('contact-form').style.display = 'none';
+        document.getElementById('sent').style.display = 'block';
+      },700);
+    });
+    function fillDemo(){
+      document.getElementById('name').value = 'Alex Sample';
+      document.getElementById('email').value = '{{EMAIL}}';
+      document.getElementById('message').value = 'I am interested in support around sleep and energy. Looking for a 1:1 consult and a short plan.';
+    }
+
+    // Whole-person inventory -> builds agenda + follow-up cadence
+    const areaMap = {
+      'Sleep': {note:'Review current sleep patterns, timing, and hygiene; consider a two-week sleep log.', time:'20–30 min'},
+      'Energy': {note:'Assess daily energy troughs and restorative practices; review activity and nutrition patterns.', time:'20 min'},
+      'Mood': {note:'Screen for mood/anxiety features and coping strategies; explore brief psychotherapeutic skills.', time:'25–30 min'},
+      'Movement': {note:'Functional movement screen; set practical movement targets and resources.', time:'20 min'},
+      'Digestion': {note:'Dietary pattern snapshot and symptom timeline; identify simple elimination/food tracking steps.', time:'20 min'},
+      'Nutrition': {note:'Review eating patterns and small adjustments for better balance; identify barriers.', time:'20 min'},
+      'Stress': {note:'Explore stressors, coping, and quick resilience practices (breath, micro-breaks).', time:'15–20 min'},
+      'Relationships': {note:'Map social supports and relational stressors; set realistic communication practices.', time:'15–20 min'}
+    };
+
+    function buildAgenda(){
+      const checked = Array.from(document.querySelectorAll('#inventory input:checked')).map(i=>i.value);
+      const out = document.getElementById('agenda');
+      if(checked.length===0){
+        out.style.display='block'; out.innerHTML = '<strong>Please select one or more areas to explore. A short selection helps us focus the first visit.</strong>';
+        return;
+      }
+      // Construct agenda
+      let html = '<strong>Suggested initial consultation agenda</strong><br><ol style="margin:10px 0;padding-left:18px;color:#08302a">';
+      checked.forEach(a=>{
+        const info = areaMap[a] || {note:'Explore this area', time:'15 min'};
+        html += '<li><strong>'+a+'</strong> — '+info.note+' <span style="color:rgba(0,0,0,0.6)">('+info.time+')</span></li>';
+      });
+      html += '</ol>';
+
+      // Follow-up cadence generator: base timeline adjusted by number of areas
+      const baseWeeks = Math.max(2, Math.ceil(checked.length/2)*2);
+      html += '<div style="margin-top:8px"><strong>Suggested follow-up cadence</strong><div style="margin-top:6px;color:#073b2f">• Initial check-in: '+Math.min(10, baseWeeks)+' days after the visit to review immediate changes and practice adoption.<br>• Short progress review: '+baseWeeks+' weeks — discussion of early outcomes and tailoring.<br>• Broader review: '+(baseWeeks*2)+' weeks — decide on ongoing rhythm (monthly, bi-monthly, or programmatic course).</div></div>';
+
+      // Practical starter tasks
+      html += '<div style="margin-top:8px"><strong>Starter tasks to bring to the visit</strong><ul style="margin:6px 0 0 18px;color:#08302a"><li>One-week simple log relevant to chosen areas (sleep, meals, mood, symptoms).</li><li>List of current medications, supplements, and recent testing.</li><li>Two specific, realistic goals you want from the first 6 weeks.</li></ul></div>';
+
+      out.style.display='block'; out.innerHTML = html;
+      out.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+    function clearInventory(){
+      document.querySelectorAll('#inventory input').forEach(i=>i.checked=false);
+      document.getElementById('agenda').style.display='none';
+    }
+
+    // Guided practice modals (two variations)
+    const modal = document.getElementById('modal');
+    const modalBody = document.getElementById('modal-body');
+    let breathInterval = null;
+    let breathRunning = false;
+    function openExercise(kind){
+      if(kind === 'breath') renderBreath();
+      else renderJourn();
+      modal.style.display='flex';
+      modal.setAttribute('aria-hidden','false');
+    }
+    function closeModal(){
+      modal.style.display='none';
+      modal.setAttribute('aria-hidden','true');
+      // cleanup
+      if(breathInterval){ clearInterval(breathInterval); breathInterval=null; }
+      breathRunning=false;
+    }
+
+    // Breathing exercise: 3-3-6 pattern with circle grow/shrink
+    function renderBreath(){
+      modalBody.innerHTML = '';
+      const title = document.createElement('h3'); title.textContent = '5‑minute paced breathing';
+      const desc = document.createElement('div'); desc.className='small'; desc.textContent = 'A gentle guided breath to lower immediate tension and bring clarity before a visit.';
+      const circleWrap = document.createElement('div'); circleWrap.className='breath-circle';
+      const dot = document.createElement('div'); dot.className='breath-dot'; circleWrap.appendChild(dot);
+      const timer = document.createElement('div'); timer.className='timer'; timer.textContent = 'Ready — press Start';
+      const controls = document.createElement('div'); controls.style.display='flex'; controls.style.justifyContent='flex-end'; controls.style.gap='8px'; controls.style.marginTop='12px';
+      const start = document.createElement('button'); start.className='btn'; start.textContent='Start';
+      const stop = document.createElement('button'); stop.className='btn secondary'; stop.textContent='Stop';
+      controls.appendChild(stop); controls.appendChild(start);
+
+      modalBody.appendChild(title); modalBody.appendChild(desc); modalBody.appendChild(circleWrap); modalBody.appendChild(timer); modalBody.appendChild(controls);
+
+      let cycle = 0; // seconds
+      let total = 5*60; // max session 5 min
+      let elapsed = 0;
+      let phase = 'inhale';
+      let phaseTimer = 0;
+      const phases = [ {name:'inhale',sec:4},{name:'hold',sec:2},{name:'exhale',sec:6} ];
+
+      function updatePhase(){
+        phaseTimer = 0; phase = phases[cycle%phases.length].name;
+      }
+
+      function tick(){
+        if(elapsed >= total){ clearInterval(breathInterval); breathInterval=null; breathRunning=false; timer.textContent='Completed — well done'; dot.style.transform='scale(1)'; return; }
+        phaseTimer++;
+        const phaseLen = phases[cycle%phases.length].sec;
+        // animate dot scale based on phase progress
+        const progress = phaseTimer/phaseLen;
+        if(phases[cycle%phases.length].name === 'inhale') dot.style.transform = 'scale('+(1+0.8*progress)+')';
+        else if(phases[cycle%phases.length].name === 'hold') dot.style.transform = 'scale(1.8)';
+        else dot.style.transform = 'scale('+(1.8 - 0.8*progress)+')';
+
+        timer.textContent = 'Phase: '+phase.toUpperCase()+ ' — '+Math.max(0, phaseLen - phaseTimer)+'s remaining | '+Math.floor((total-elapsed)/60)+':'+String((total-elapsed)%60).padStart(2,'0');
+
+        if(phaseTimer >= phaseLen){ cycle++; updatePhase(); }
+        elapsed++;
+      }
+
+      start.onclick = function(){ if(breathRunning) return; breathRunning=true; elapsed=0; cycle=0; updatePhase(); breathInterval = setInterval(tick,1000); };
+      stop.onclick = function(){ if(breathInterval){ clearInterval(breathInterval); breathInterval=null; breathRunning=false; timer.textContent='Paused'; } };
+    }
+
+    // Journaling: guided prompts with timer and intent formation
+    function renderJourn(){
+      modalBody.innerHTML = '';
+      const title = document.createElement('h3'); title.textContent = 'Guided intention journaling (10 min)';
+      const desc = document.createElement('div'); desc.className='small'; desc.textContent = 'Short prompts to clarify priorities and set one modest intention.';
+      const promptBox = document.createElement('div'); promptBox.style.padding='10px'; promptBox.style.borderRadius='8px'; promptBox.style.background='linear-gradient(180deg, #fff, #fbfffc)';
+      const promptText = document.createElement('div'); promptText.style.minHeight='64px'; promptText.style.fontSize='15px'; promptText.style.color='#133531';
+      const timer = document.createElement('div'); timer.className='timer'; timer.textContent = 'Prompt 1 of 3 • 03:00';
+      const controls = document.createElement('div'); controls.style.display='flex'; controls.style.gap='8px'; controls.style.justifyContent='space-between'; controls.style.marginTop='12px';
+      const left = document.createElement('div'); const right = document.createElement('div');
+      const start = document.createElement('button'); start.className='btn'; start.textContent='Start';
+      const next = document.createElement('button'); next.className='btn secondary'; next.textContent='Next prompt';
+      const finish = document.createElement('button'); finish.className='btn'; finish.textContent='Finish';
+      left.appendChild(start); left.appendChild(next); right.appendChild(finish);
+      controls.appendChild(left); controls.appendChild(right);
+
+      promptBox.appendChild(promptText);
+      modalBody.appendChild(title); modalBody.appendChild(desc); modalBody.appendChild(promptBox); modalBody.appendChild(timer); modalBody.appendChild(controls);
+
+      const prompts = [
+        'What two issues matter most to you right now? Write freely for 3 minutes without editing.',
+        'What small action (under 10 minutes) could you try this week to shift the first item? Be concrete.',
+        'What supports would make that action easier? Who or what could help you follow through?'
+      ];
+      let current = 0; let tInterval = null; let tLeft = 180;
+
+      function renderPrompt(){
+        promptText.textContent = prompts[current];
+        tLeft = 180; timer.textContent = 'Prompt '+(current+1)+' of '+prompts.length+' • '+formatTime(tLeft);
+      }
+      function formatTime(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+
+      function startTimer(){ if(tInterval) return; tInterval = setInterval(function(){ tLeft--; timer.textContent='Prompt '+(current+1)+' of '+prompts.length+' • '+formatTime(tLeft); if(tLeft<=0){ clearInterval(tInterval); tInterval=null; } },1000); }
+      function goNext(){ if(tInterval){ clearInterval(tInterval); tInterval=null; } current++; if(current >= prompts.length){ showFinish(); } else { renderPrompt(); }
+      }
+      function showFinish(){ promptText.textContent = 'Take a moment to form ONE intention based on these notes. Keep it specific and kind. Example: "Start a 5‑minute walk after lunch 3x this week."'; timer.textContent = 'Set your intention — 01:00'; let finishLeft=60; if(tInterval) clearInterval(tInterval); tInterval=setInterval(function(){ finishLeft--; timer.textContent = 'Set your intention — 00:'+String(finishLeft).padStart(2,'0'); if(finishLeft<=0){ clearInterval(tInterval); tInterval=null; } },1000); }
+
+      start.onclick = function(){ renderPrompt(); startTimer(); };
+      next.onclick = function(){ goNext(); };
+      finish.onclick = function(){ if(tInterval) clearInterval(tInterval); tInterval=null; promptText.textContent = 'Well done — if you like, copy these notes into your inquiry or bring them to your first visit.'; timer.textContent = ''; };
+
+      renderPrompt();
+    }
+
+    // close modal if click backdrop
+    modal.addEventListener('click', function(e){ if(e.target === modal) closeModal(); });
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Investment — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Clear, clinician-led pricing and options for therapy and short-term therapeutic supports.">
+  <style>
+    :root{--bg:#fbfbfb;--card:#ffffff;--muted:#6b6b6b;--accent:#6b8e7f;--accent-2:#4a6b5b;--glass:rgba(255,255,255,0.6);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#0f1720}
+    html,body{height:100%}
+    body{margin:0;background:linear-gradient(180deg, #f7f9f8 0%, #ffffff 40%);background-attachment:fixed}
+    header{display:flex;align-items:center;justify-content:space-between;padding:22px 28px;background:linear-gradient(90deg,rgba(255,255,255,0.9),rgba(250,250,250,0.8));backdrop-filter: blur(6px);position:sticky;top:0;z-index:10;border-bottom:1px solid #eef1ef}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:48px;height:48px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:white;font-weight:700}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none;font-size:15px}
+    .hero{padding:36px 28px;display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start}
+    .panel{background:var(--card);border-radius:12px;box-shadow:0 6px 18px rgba(14,20,18,0.06);padding:22px}
+    h1{margin:0 0 8px 0;font-size:22px;color:#0b2a22}
+    p.lead{margin:0 0 18px 0;color:var(--muted)}
+    /* pricing list */
+    .plans{display:flex;flex-direction:column;gap:12px}
+    .plan{display:flex;justify-content:space-between;align-items:center;padding:14px;border-radius:10px;border:1px solid #edf2ef}
+    .plan strong{display:block;color:#08281f}
+    .plan small{display:block;color:var(--muted)}
+    .price{font-weight:700;color:var(--accent-2)}
+    .muted{color:var(--muted);font-size:14px}
+
+    /* mood-to-method */
+    .picker{display:flex;flex-direction:column;gap:10px}
+    .choices{display:flex;flex-wrap:wrap;gap:8px}
+    .choice{padding:8px 10px;border-radius:8px;border:1px solid #e6efe8;background:#fcfffb;color:#0b2a22;cursor:pointer}
+    .choice[aria-pressed="true"]{background:var(--accent);color:white;border-color:var(--accent-2)}
+
+    .cta{display:flex;gap:10px;margin-top:12px}
+    .btn{padding:10px 14px;border-radius:8px;border:0;background:var(--accent);color:white;text-decoration:none;font-weight:600}
+    .btn.secondary{background:#eff6f2;color:var(--accent-2);border:1px solid #e6efe8}
+
+    /* accordion */
+    .accordion{margin-top:16px}
+    .acc-item{border-top:1px solid #eef2ef}
+    .acc-trigger{width:100%;padding:14px 0;background:none;border:0;text-align:left;font-weight:700;cursor:pointer;font-size:15px}
+    .acc-panel{padding:8px 0;color:var(--muted);display:none}
+
+    footer{padding:22px 28px;color:var(--muted);font-size:13px}
+    .note{font-size:13px;color:var(--muted)}
+
+    /* responsive */
+    @media (max-width:880px){.hero{grid-template-columns:1fr;}.brand .hide-sm{display:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">T</div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">A private clinical practice</div>
+      </div>
+    </div>
+    <nav aria-label="Primary navigation">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="specialties.html">Specialties</a>
+      <a href="approach.html">How I Work</a>
+      <a href="fees.html" style="color:var(--accent-2);font-weight:600">Investment</a>
+      <a href="faq.html">FAQ</a>
+      <a href="book.html">Book</a>
+      <a href="contact.html">Reach Out</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <div class="panel">
+          <h1>Fees & Packages</h1>
+          <p class="lead">My approach is individual first — here are the common ways I structure time and support. If you’d like a different rhythm (e.g., more frequent check-ins or brief consultations), let’s discuss it when you book.</p>
+
+          <div class="plans" role="list">
+            <div class="plan" role="listitem">
+              <div>
+                <strong>Clarity Session</strong>
+                <small class="muted">A single focused 50-minute appointment to explore a specific concern.</small>
+              </div>
+              <div class="price">Starting $160</div>
+            </div>
+
+            <div class="plan" role="listitem">
+              <div>
+                <strong>Ongoing Therapy</strong>
+                <small class="muted">Weekly or biweekly clinical sessions, 45–60 minutes. Recommended when deeper relational or mood patterns are in focus.</small>
+              </div>
+              <div class="price">Starting $180 / session</div>
+            </div>
+
+            <div class="plan" role="listitem">
+              <div>
+                <strong>Short-Term Intensive</strong>
+                <small class="muted">A 4-session package intended to create momentum during transitional periods.</small>
+              </div>
+              <div class="price">Package $660</div>
+            </div>
+
+            <div class="plan" role="listitem">
+              <div>
+                <strong>Maintenance Add-On</strong>
+                <small class="muted">A reduced-rate check-in option for clients who prefer less frequent support between blocks of therapy.</small>
+              </div>
+              <div class="price">Ask for details</div>
+            </div>
+          </div>
+
+          <p class="note" style="margin-top:12px">Insurance: I do not bill insurance directly in most cases. I can provide a receipt (superbill) you may submit to your insurer; coverage varies by plan. Fees are subject to periodic review. There are no guarantees of outcomes; therapy aims to support exploration and change over time.</p>
+
+          <div class="accordion">
+            <div class="acc-item">
+              <button class="acc-trigger" aria-expanded="false">Session boundaries & confidentiality</button>
+              <div class="acc-panel">
+                <p>Sessions are 45–60 minutes unless otherwise arranged. I maintain clinical records in a secure system. Communications by email or text are used for scheduling and brief touchpoints; they are not a substitute for clinical work. Confidentiality is protected within legal limits (e.g., risk of harm, child or elder safety, court orders). If you have questions about privacy, please ask — I will explain limits clearly.</p>
+                <p class="muted">Cancellation: Please provide at least 48 hours' notice when possible. Late cancellations or missed sessions may incur a fee.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <aside class="panel" aria-labelledby="mood-heading">
+        <h2 id="mood-heading">Mood-to-Method</h2>
+        <p class="muted">Choose how you’re feeling and I’ll suggest a way to begin. The button will update to match that suggestion.</p>
+
+        <div class="picker">
+          <div class="choices" role="radiogroup" aria-label="Mood choices">
+            <button class="choice" role="radio" aria-checked="false" data-key="overwhelmed">Overwhelmed</button>
+            <button class="choice" role="radio" aria-checked="false" data-key="stuck">Stuck</button>
+            <button class="choice" role="radio" aria-checked="false" data-key="grief">Navigating loss</button>
+            <button class="choice" role="radio" aria-checked="false" data-key="coping">Need tools to cope</button>
+            <button class="choice" role="radio" aria-checked="false" data-key="clarity">Want clarity fast</button>
+          </div>
+
+          <div style="margin-top:10px">
+            <div id="method-summary" style="min-height:64px;color:#123327;font-weight:600">Select a state to see an approach.</div>
+            <div class="cta">
+              <a id="mood-cta" class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+              <a class="btn secondary" href="faq.html">Learn about privacy</a>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;font-size:13px;color:var(--muted)">
+          <div style="font-weight:700">Quick note on fees</div>
+          <div>Fees are due at the time of service. If cost is a barrier, we can discuss limited sliding-scale availability during first contact.</div>
+        </div>
+      </aside>
+    </section>
+
+    <section style="padding:0 28px 18px 28px">
+      <div class="panel">
+        <h3 style="margin-top:0">A clinician's framing</h3>
+        <p class="muted">I describe options plainly because clarity around commitments helps therapy begin. If you're unsure where to start, the Clarity Session is a low-commitment way to see if the fit feels right. There are no promises of specific outcomes; therapy is collaborative and takes time.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>Questions? Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</div>
+    <div style="margin-top:8px" class="muted">If you are in immediate danger, call emergency services (e.g., 911) or your local crisis line. For urgent mental health support, contact your local crisis resources. Clinician communications are not monitored 24/7.</div>
+  </footer>
+
+  <script>
+    (function(){
+      const map = {
+        overwhelmed: {label:'Stabilization path',desc:'Short-term work focused on immediate coping strategies and pacing. Helpful when stress feels heavy.',cta:'Book a Stabilization Session',url:'{{PRIMARY_CTA_URL}}?type=stabilize'},
+        stuck: {label:'Pattern-focused sessions',desc:'Sessions that map repeated patterns and small practice steps to interrupt them.',cta:'Request Ongoing Sessions',url:'{{PRIMARY_CTA_URL}}?type=ongoing'},
+        grief: {label:'Grief & transition support',desc:'Gentle, time-bound work to make room for loss and practical reorganization.',cta:'Book a Grief Conversation',url:'{{PRIMARY_CTA_URL}}?type=grief'},
+        coping: {label:'Skills & toolbox',desc:'Short blocks that emphasize concrete coping skills and practices to use between sessions.',cta:'Try a Skills Session',url:'{{PRIMARY_CTA_URL}}?type=skills'},
+        clarity: {label:'Focused clarity session',desc:'A single-session format to clarify next steps and create a small plan.',cta:'Book a Clarity Session',url:'{{PRIMARY_CTA_URL}}?type=clarity'}
+      };
+
+      const choices = document.querySelectorAll('.choice');
+      const summary = document.getElementById('method-summary');
+      const moodCta = document.getElementById('mood-cta');
+
+      choices.forEach(btn => btn.addEventListener('click', ()=>{
+        choices.forEach(b=> {b.setAttribute('aria-pressed','false'); b.setAttribute('aria-checked','false');});
+        btn.setAttribute('aria-pressed','true'); btn.setAttribute('aria-checked','true');
+        const key = btn.getAttribute('data-key');
+        const info = map[key];
+        summary.textContent = info.label + ' — ' + info.desc;
+        moodCta.textContent = info.cta;
+        moodCta.href = info.url;
+      }));
+
+      // Simple accordion
+      document.querySelectorAll('.acc-trigger').forEach(t=>{
+        t.addEventListener('click',()=>{
+          const expanded = t.getAttribute('aria-expanded') === 'true';
+          t.setAttribute('aria-expanded', String(!expanded));
+          const panel = t.nextElementSibling;
+          panel.style.display = expanded ? 'none' : 'block';
+        });
+      });
+
+    })();
+  </script>
+</body>
+</html>

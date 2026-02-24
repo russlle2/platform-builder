@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Questions & Self-Screening • {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f7f8f7;--ink:#0f1a1a;--muted:#5d6166;--accent:#7a9a8f}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#fbfdfc,#f6f8f7);color:var(--ink)}
+    .wrap{max-width:980px;margin:28px auto;padding:20px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin:0 9px;color:var(--muted);text-decoration:none;font-weight:600}
+    h1{margin:8px 0}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .card{background:#fff;border-radius:10px;padding:18px;box-shadow:0 6px 18px rgba(18,24,22,0.04)}
+    .faq q{font-style:italic}
+    .small{font-size:13px;color:var(--muted)}
+    button{background:var(--accent);color:#fff;padding:8px 12px;border-radius:8px;border:0;font-weight:700}
+    .btn-ghost{background:transparent;border:1px solid #e6e9e7;color:var(--muted)}
+    label{display:block;margin-top:10px;font-weight:700}
+    input,select,textarea{width:100%;padding:8px;margin-top:6px;border-radius:8px;border:1px solid #e6e9e7}
+    .result{white-space:pre-wrap;background:#f2f6f4;padding:12px;border-radius:8px;margin-top:10px;font-family:monospace;font-size:13px}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+      <nav aria-label="Main">
+        <a href="index.html">Start</a>
+        <a href="about.html">Practice</a>
+        <a href="specialties.html">Focus Areas</a>
+        <a href="approach.html">Method</a>
+        <a href="fees.html">Investment</a>
+        <a href="faq.html" aria-current="page">Questions</a>
+        <a href="book.html">Reserve</a>
+        <a href="contact.html">Connect</a>
+      </nav>
+    </header>
+
+    <h1>Questions, quick answers, and a self-check tool</h1>
+    <p class="small">Below are common questions about sessions and a short, non-diagnostic self-screening wizard you can complete to prepare for a first meeting. It produces suggested talking points to bring to consultation.</p>
+
+    <div class="grid" role="main">
+      <main>
+        <section class="card">
+          <h2 style="margin-top:0">Frequently asked</h2>
+          <div class="faq">
+            <h3 style="margin-bottom:6px">How long are sessions?</h3>
+            <p class="small">Typical sessions are 50 minutes. Intensives are longer as specified on the Investment page. We’ll discuss what length feels useful at intake.</p>
+
+            <h3 style="margin-top:12px;margin-bottom:6px">Do you take insurance?</h3>
+            <p class="small">Sometimes. If you plan to use insurance, let me know so we can discuss billing options and any necessary information.</p>
+
+            <h3 style="margin-top:12px;margin-bottom:6px">What can I expect at the first appointment?</h3>
+            <p class="small">We’ll review confidentiality, your goals, current concerns, and any prior treatment history that feels relevant. You can bring the self-screening summary created below to help focus the conversation.</p>
+          </div>
+        </section>
+
+        <section class="card" style="margin-top:16px">
+          <h2>Self-screening intake wizard</h2>
+          <p class="small">This is a guided set of reflections to help you notice patterns and generate questions you'd like to bring to a consultation. It is not a diagnosis.</p>
+
+          <form id="wizard" onsubmit="return false;">
+            <label for="mainConcern">Main concern or reason you're seeking support</label>
+            <input id="mainConcern" name="mainConcern" placeholder="e.g., feeling stuck at work, persistent worry" />
+
+            <label for="duration">How long have you noticed this concern?</label>
+            <select id="duration" name="duration">
+              <option value="weeks">A few weeks</option>
+              <option value="months">A few months</option>
+              <option value="year">A year or more</option>
+              <option value="variable">On and off over years</option>
+            </select>
+
+            <label for="impact">Which areas of life are affected? (check any)</label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+              <label class="small"><input type="checkbox" value="Mood" name="impact"> Mood</label>
+              <label class="small"><input type="checkbox" value="Work" name="impact"> Work or school</label>
+              <label class="small"><input type="checkbox" value="Relationships" name="impact"> Relationships</label>
+              <label class="small"><input type="checkbox" value="Sleep" name="impact"> Sleep</label>
+              <label class="small"><input type="checkbox" value="Health" name="impact"> Physical health</label>
+            </div>
+
+            <label for="goals">What would you like to be different? (1–2 short goals)</label>
+            <input id="goals" name="goals" placeholder="e.g., feel less overwhelmed; improve communication" />
+
+            <label for="concernsAboutTherapy">Any concerns about beginning therapy?</label>
+            <input id="concernsAboutTherapy" name="concernsAboutTherapy" placeholder="e.g., worried about cost, unsure what to say" />
+
+            <div style="margin-top:12px;display:flex;gap:8px">
+              <button id="generate" onclick="generateNotes()">Create summary</button>
+              <button class="btn-ghost" onclick="clearWizard()">Clear</button>
+            </div>
+          </form>
+
+          <div id="wizardOutput" class="result" aria-live="polite" style="display:none"></div>
+          <div style="margin-top:8px">
+            <button id="copyWizard" style="display:none" onclick="copyWizard()">Copy summary</button>
+          </div>
+
+          <p class="small" style="margin-top:12px">Bring this summary to your first meeting if you like — it can help shape the first session efficiently.</p>
+        </section>
+
+      </main>
+
+      <aside>
+        <div class="card">
+          <h3 style="margin-top:0">If you're unsure</h3>
+          <p class="small">A brief phone or video consult can help decide which offering suits you. No pressure; it's a short conversation about fit and logistics.</p>
+          <a class="small" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0">Quick links</h4>
+          <ul class="small">
+            <li><a href="fees.html">Investment options</a></li>
+            <li><a href="book.html">Reserve a time</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0">Safety & boundaries</h4>
+          <p class="small">This wizard is not a clinical diagnosis. If you are experiencing an emergency or immediate risk, please contact emergency services or a crisis resource in {{CITY}}, {{STATE}}.</p>
+        </div>
+      </aside>
+    </div>
+
+    <footer style="margin-top:18px" class="small">
+      Confidentiality: clinical notes are stored according to professional guidelines. I do not provide emergency services. For urgent help, contact local emergency services or crisis lines.
+    </footer>
+  </div>
+
+  <script>
+    function collectCheckboxes(name){
+      const checks = Array.from(document.querySelectorAll('input[name="'+name+'"]:checked'));
+      return checks.map(c=>c.value);
+    }
+    function generateNotes(){
+      const main = document.getElementById('mainConcern').value.trim();
+      const duration = document.getElementById('duration').value;
+      const impact = collectCheckboxes('impact');
+      const goals = document.getElementById('goals').value.trim();
+      const concerns = document.getElementById('concernsAboutTherapy').value.trim();
+
+      const durationText = ({weeks:'a few weeks',months:'a few months',year:'a year or more',variable:'variable/episodic'})[duration] || duration;
+
+      let lines = [];
+      lines.push('Self-check summary for initial consultation');
+      lines.push('—');
+      if(main) lines.push('Primary reason: ' + main);
+      lines.push('Duration: ' + durationText);
+      if(impact.length) lines.push('Areas affected: ' + impact.join(', '));
+      if(goals) lines.push('Goals to bring to therapy: ' + goals);
+      if(concerns) lines.push('Concerns about starting therapy: ' + concerns);
+
+      lines.push('Questions to raise:');
+      const suggestedQs = [];
+      if(!main) suggestedQs.push('Can I describe how I noticed this issue?');
+      if(impact.includes('Work')) suggestedQs.push('How might therapy support work-related stress or decisions?');
+      if(impact.includes('Relationships')) suggestedQs.push('Could we look at communication patterns with important people?');
+      if(goals) suggestedQs.push('How do we measure progress toward my goals?');
+      suggestedQs.push('What is your approach to pacing and structure in sessions?');
+      suggestedQs.push('How do you manage confidentiality and coordination of care?');
+      suggestedQs.slice(0,6).forEach(q=>lines.push('- ' + q));
+
+      const out = lines.join('\n');
+      const oEl = document.getElementById('wizardOutput');
+      oEl.style.display = 'block';
+      oEl.textContent = out;
+      document.getElementById('copyWizard').style.display = 'inline-block';
+    }
+    function copyWizard(){
+      const text = document.getElementById('wizardOutput').textContent;
+      navigator.clipboard && navigator.clipboard.writeText(text).then(()=>{
+        const b = document.getElementById('copyWizard');
+        const old = b.textContent;
+        b.textContent = 'Copied';
+        setTimeout(()=>b.textContent = old,1500);
+      });
+    }
+    function clearWizard(){
+      document.getElementById('wizard').reset();
+      document.getElementById('wizardOutput').style.display='none';
+      document.getElementById('copyWizard').style.display='none';
+    }
+  </script>
+</body>
+</html>

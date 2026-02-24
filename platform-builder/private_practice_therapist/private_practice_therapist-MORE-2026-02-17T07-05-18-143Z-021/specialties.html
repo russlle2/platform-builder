@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Services — Areas of focus</title>
+  <style>
+    :root{--bg:#fbf6f1;--accent:#7a4f2b;--muted:#5b4841;--card:#fffdfb;--accent-2:#b07445}
+    html,body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--muted);background:var(--bg) url("assets/img/pattern.svg") repeat}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:1px solid rgba(122,79,43,0.06)}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none}
+    .wrap{max-width:980px;margin:26px auto;padding:18px}
+    .intro{display:flex;gap:20px;align-items:center}
+    .panel{background:var(--card);padding:16px;border-radius:10px}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+    .card{background:white;padding:14px;border-radius:10px;border:1px solid rgba(122,79,43,0.06)}
+    .label{font-weight:700;color:var(--accent-2)}
+    .small{font-size:14px;color:#6b5850}
+    .actions{margin-top:12px}
+    .btn{padding:10px 12px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:white}
+    .primary{background:var(--accent);color:white;border:none}
+    @media(max-width:860px){.grid{grid-template-columns:repeat(2,1fr)}.intro{flex-direction:column;align-items:stretch}}
+    @media(max-width:520px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:700;color:var(--accent)">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Welcome</a>
+      <a href="about.html">About</a>
+      <a href="specialties.html">Services</a>
+      <a href="approach.html">Ways of Working</a>
+      <a href="book.html">Book</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <div class="intro">
+      <div style="flex:1">
+        <h1 style="margin:0;color:#47372f">Services & focus areas</h1>
+        <p class="small">Structured sessions, flexible check-ins, and short-term consultations. Options designed for ongoing support or time-limited work.</p>
+      </div>
+      <div style="width:260px" class="panel">
+        <div style="font-weight:700">How I name offerings</div>
+        <p class="small" style="margin-top:6px">Rather than fixed packages, I offer a membership for ongoing partnership and focused collaborations for short-term concerns.</p>
+        <div class="actions"><a class="btn primary" href="fees.html">See rates & options</a></div>
+      </div>
+    </div>
+
+    <section style="margin-top:18px">
+      <h2 style="margin-bottom:6px;color:#47372f">Areas I commonly work with</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="label">Transitions & role change</div>
+          <div class="small">Shifts in identity—career, family, or life stage. We map values and small next steps that respect time and energy.</div>
+          <div style="margin-top:10px"><a class="btn" href="book.html">Book a consultation</a></div>
+        </div>
+
+        <div class="card">
+          <div class="label">Persistent worry & rumination</div>
+          <div class="small">Practical approaches to interrupt cycles of worry; skills to steady attention and daily routines that support regulation.</div>
+          <div style="margin-top:10px"><a class="btn" href="book.html">Book a consultation</a></div>
+        </div>
+
+        <div class="card">
+          <div class="label">Relationship patterns</div>
+          <div class="small">Working with patterns in partnerships and family roles—improving understanding and communication without blaming.</div>
+          <div style="margin-top:10px"><a class="btn" href="book.html">Book a consultation</a></div>
+        </div>
+
+        <div class="card">
+          <div class="label">Decision fatigue & career clarity</div>
+          <div class="small">Pragmatic sessions to clarify options, values, and a next step you can test within your real schedule.</div>
+          <div style="margin-top:10px"><a class="btn" href="book.html">Book a consultation</a></div>
+        </div>
+
+        <div class="card">
+          <div class="label">Caregiver stress</div>
+          <div class="small">Support managing competing responsibilities and preserving boundaries so you can sustain care without losing yourself.</div>
+          <div style="margin-top:10px"><a class="btn" href="book.html">Book a consultation</a></div>
+        </div>
+
+        <div class="card">
+          <div class="label">Short-term focused work</div>
+          <div class="small">A limited number of sessions (e.g., 4–8) focused on a specific question or skill set—clear aims, measurable steps.</div>
+          <div style="margin-top:10px"><a class="btn" href="book.html">Inquire</a></div>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:18px" class="panel">
+      <h3 style="margin-top:0">Self-check: a quick guided intake</h3>
+      <p class="small">If you're deciding about care, use this brief tool to gather details to bring to a consultation. It's not a diagnosis—it's a way to organize what's most important right now.</p>
+      <div style="margin-top:10px;display:flex;gap:8px">
+        <button class="btn" id="open-wizard">Open quick intake</button>
+        <a class="btn primary" href="book.html">Schedule a consult</a>
+      </div>
+    </section>
+
+    <section style="margin-top:18px">
+      <h3 style="margin-top:0;color:#47372f">Boundaries & crisis information</h3>
+      <p class="small">This practice offers individual psychotherapy and ongoing membership support. I do not provide emergency response. If you are in immediate danger or need urgent care, please call local emergency services or your local crisis line.</p>
+    </section>
+
+  </main>
+
+  <!-- simple copy of the wizard modal used elsewhere to keep pages self-contained -->
+  <div id="wizard-modal" style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(10,8,7,0.45);z-index:60">
+    <div style="background:white;padding:18px;border-radius:10px;max-width:700px;width:94%">
+      <h3 style="margin-top:0">Quick intake</h3>
+      <div style="display:grid;grid-template-columns:1fr 240px;gap:12px">
+        <div>
+          <label class="small">Primary concern</label>
+          <input id="s1" style="width:100%;padding:8px;border-radius:6px;border:1px solid #eee;margin-top:6px" />
+          <label class="small" style="margin-top:10px;display:block">How long?</label>
+          <select id="s2" style="width:100%;padding:8px;border-radius:6px;border:1px solid #eee;margin-top:6px"><option>Less than 1 month</option><option>1-6 months</option><option>6+ months</option></select>
+          <label class="small" style="margin-top:10px;display:block">One practical goal (3 months)</label>
+          <input id="s3" style="width:100%;padding:8px;border-radius:6px;border:1px solid #eee;margin-top:6px" />
+        </div>
+        <div>
+          <div style="font-weight:700">Output</div>
+          <pre id="sout" style="background:#fbf7f5;padding:8px;border-radius:6px;border:1px dashed #eedfd2;height:140px;overflow:auto;margin-top:8px"> </pre>
+          <div style="margin-top:8px;display:flex;gap:8px"><button class="btn" id="sbtn">Create</button><button class="btn" id="sclose">Close</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('open-wizard').addEventListener('click',()=>{document.getElementById('wizard-modal').style.display='flex';});
+    document.getElementById('sclose').addEventListener('click',()=>{document.getElementById('wizard-modal').style.display='none';});
+    document.getElementById('sbtn').addEventListener('click',()=>{
+      const a=document.getElementById('s1').value||'[no primary concern]';
+      const b=document.getElementById('s2').value;
+      const c=document.getElementById('s3').value||'[no goal]';
+      const out=['Brief intake summary','Primary concern: '+a,'Duration: '+b,'3-month goal: '+c].join('\n');
+      document.getElementById('sout').textContent=out;
+    });
+  </script>
+</body>
+</html>

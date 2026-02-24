@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Concerns we support — {{BUSINESS_NAME}}</title>
+  <meta name='description' content='A compassionate guide to common concerns and how we approach them in cohort or individual pathways.'>
+  <style>
+    :root{--bg:#ffffff;--card:#fff;--ink:#0b1220;--muted:#555;--accent:#0b8a6b}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#fff,#fbfcff);margin:0;color:var(--ink)}
+    .site{max-width:920px;margin:28px auto;padding:20px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;margin-left:10px}
+    .hero{padding:18px;background:rgba(11,138,107,0.06);border-radius:12px;margin-top:14px}
+    .columns{display:grid;grid-template-columns:1fr 320px;gap:16px;margin-top:16px}
+    .card{background:var(--card);padding:14px;border-radius:12px;box-shadow:0 12px 30px rgba(11,18,25,0.03)}
+    .muted{color:var(--muted)}
+    .tag{display:inline-block;background:var(--accent);color:#fff;padding:6px 10px;border-radius:20px}
+    ul.concerns{padding-left:18px}
+    footer{margin-top:18px;font-size:13px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class='site'>
+    <header>
+      <div>
+        <strong>{{BUSINESS_NAME}}</strong>
+        <div class='muted'>Thoughtful, integrative group and individual support</div>
+      </div>
+      <nav>
+        <a href='index.html'>Studio</a>
+        <a href='services.html'>Programs</a>
+        <a href='conditions.html'>Concerns</a>
+        <a href='approach.html'>Method</a>
+        <a href='pricing.html'>Rates</a>
+        <a href='book.html'>Reserve</a>
+      </nav>
+    </header>
+
+    <section class='hero'>
+      <div style='display:flex;justify-content:space-between;align-items:center'>
+        <div>
+          <h2 style='margin:0'>Concerns we commonly work with</h2>
+          <div class='muted' style='margin-top:6px'>We frame support as a learning and change process; not a promise of cure.</div>
+        </div>
+        <div class='tag'>Supportive guidance</div>
+      </div>
+    </section>
+
+    <div class='columns'>
+      <main>
+        <div class='card'>
+          <h3 style='margin-top:0'>Typical areas</h3>
+          <p class='muted'>Our approach is educational and exploratory. We help people build sustainable routines and interpret evidence relevant to their lives. Not every path suits every person; clinical decisions are individualized.</p>
+          <ul class='concerns'>
+            <li><strong>Sleep disturbances</strong> — habit, environment, circadian patterns</li>
+            <li><strong>Low energy & fatigue</strong> — lifestyle, pacing, nutritional patterns</li>
+            <li><strong>Digestive complaints</strong> — dietary patterns, routines, symptom tracking</li>
+            <li><strong>Pain & movement</strong> — pacing, movement prescription, recovery habits</li>
+            <li><strong>Mood & stress</strong> — regulation practices, structure, rest cycles</li>
+            <li><strong>Women's health</strong> — cycle awareness, lifestyle interactions</li>
+          </ul>
+
+          <h4 style='margin-top:12px'>What we do and do not do</h4>
+          <p class='muted'>We provide educational assessment, collaborative planning, and cohort-supported behavior change. We do not provide emergency services, guarantee cure, or replace specialist medical care when needed.</p>
+
+          <div style='margin-top:12px'>
+            <strong>Typical path</strong>
+            <ol class='muted'>
+              <li>Initial consult to map priorities (60 min)</li>
+              <li>Actionable practices + cohort learning</li>
+              <li>Check-ins and measure review (individual or group)</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class='card' style='margin-top:14px'>
+          <h3 style='margin-top:0'>Session Planner & Inventory</h3>
+          <p class='muted'>Quick tools to prepare for a consult — generate an agenda and follow-up cadence you can bring to the first meeting.</p>
+
+          <div>
+            <label class='muted' style='font-weight:600'>Pick your areas</label>
+            <form id='condInventory' style='margin-top:8px'>
+              <label><input type='checkbox' name='area' value='Sleep'/> Sleep</label><br>
+              <label><input type='checkbox' name='area' value='Pain'/> Pain & movement</label><br>
+              <label><input type='checkbox' name='area' value='Energy'/> Energy</label><br>
+              <label><input type='checkbox' name='area' value='Digestive'/> Digestive</label><br>
+            </form>
+            <div style='margin-top:8px'>
+              <button onclick='generateCondAgenda()' class='small-btn'>Create agenda</button>
+            </div>
+            <pre id='condOutput' style='background:#081622;color:#dff3ea;padding:12px;border-radius:8px;margin-top:10px'>No agenda yet.</pre>
+            <button onclick='copyOut("condOutput")' style='margin-top:8px;padding:8px 10px;border-radius:8px;background:#0b8a6b;color:#fff;border:0;cursor:pointer'>Copy</button>
+          </div>
+        </div>
+
+      </main>
+
+      <aside>
+        <div class='card'>
+          <strong>Important disclaimer</strong>
+          <p class='muted' style='margin-top:8px'>This site offers educational resources and integrative guidance. It is not a medical diagnosis nor a guarantee of results. If you are experiencing a medical emergency, please call local emergency services immediately.</p>
+        </div>
+
+        <div class='card' style='margin-top:12px'>
+          <strong>How we protect people</strong>
+          <p class='muted' style='margin-top:8px'>Care plans are collaborative. Where medical tests or specialized care are needed, referrals are made to appropriate clinicians.</p>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      <div class='muted'>Questions? Call {{PHONE}} or <a href='mailto:{{EMAIL}}'>email</a>.</div>
+    </footer>
+  </div>
+
+  <script>
+    function generateCondAgenda(){
+      const checked = Array.from(document.querySelectorAll('#condInventory input[name="area"]:checked')).map(i=>i.value);
+      if(checked.length===0){document.getElementById('condOutput').textContent='No areas selected.';return}
+      const out = [];
+      out.push('Consult agenda (60 min):');
+      out.push('- 0–10 min: Presenting concern and medical context');
+      out.push('- 10–25 min: Primary focus — ' + checked[0]);
+      if(checked.length>1) out.push('- 25–40 min: Secondary priorities — ' + checked.slice(1).join(', '));
+      out.push('- 40–55 min: Practical steps and monitoring plan');
+      out.push('- 55–60 min: Next actions and resources');
+      out.push('\nFollow-up cadence:');
+      out.push('- Brief check-in 1–2 weeks (15 min)');
+      out.push('- Focused review 6 weeks (30–45 min)');
+      document.getElementById('condOutput').textContent = out.join('\n');
+    }
+    function copyOut(id){
+      const txt = document.getElementById(id).textContent;
+      if(navigator.clipboard){navigator.clipboard.writeText(txt).then(()=>alert('Copied'))}else{alert('Copy not supported')}
+    }
+  </script>
+</body>
+</html>

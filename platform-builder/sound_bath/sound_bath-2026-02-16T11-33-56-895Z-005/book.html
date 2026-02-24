@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reserve — {{BUSINESS_NAME}}</title>
+<style>
+:root{--bg:#041018;--card:#0b1a1f;--accent:#dffaf0;--muted:#98b1b7}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;color:var(--accent);background:linear-gradient(180deg,#021018, #052028)}
+.container{max-width:960px;margin:36px auto;padding:36px;background:rgba(255,255,255,0.01);border-radius:12px}
+nav{display:flex;gap:14px;align-items:center;margin-bottom:18px}
+nav a{color:var(--accent);text-decoration:none}
+.brand{font-weight:700}
+.header{display:flex;justify-content:space-between;align-items:center}
+.grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+.card{padding:16px;border-radius:12px;background:linear-gradient(180deg,transparent,rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.03)}
+.h1{font-size:26px;margin:0}
+.label{color:var(--muted);font-size:13px}
+.input{padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--accent)}
+.btn{display:inline-block;padding:10px 14px;background:linear-gradient(90deg,#69dfbe,#35c39f);color:#04261b;border-radius:10px;text-decoration:none}
+.small{font-size:13px;color:var(--muted)}
+.note{font-size:13px;color:var(--muted);margin-top:8px}
+.pattern{position:absolute;right:-40px;top:-40px;opacity:.09}
+</style>
+</head>
+<body>
+<svg class="pattern" width="360" height="360" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<defs>
+<linearGradient id="lg2" x1="0" x2="1">
+  <stop offset="0" stop-color="#c9f6e6"/>
+  <stop offset="1" stop-color="#77e1c0"/>
+</linearGradient>
+</defs>
+<rect width="200" height="200" fill="url(#lg2)" rx="30"/>
+<g fill="rgba(0,0,0,0.04)">
+  <ellipse cx="50" cy="50" rx="30" ry="18"/>
+  <ellipse cx="150" cy="140" rx="38" ry="22"/>
+</g>
+</svg>
+
+<div class="container">
+<nav>
+<span class="brand">{{BUSINESS_NAME}}</span>
+<a href="index.html">Main</a>
+<a href="events.html">Events</a>
+<a href="private-sessions.html">1:1</a>
+<a href="pricing.html">Rates</a>
+<a href="about.html">About</a>
+<a href="faq.html" style="margin-left:auto">Questions</a>
+</nav>
+
+<header class="header">
+<div>
+<h1 class="h1">Reserve your place</h1>
+<p class="small">Next group evening: <strong>{{NEXT_EVENT_DATE}}</strong>. Spaces are limited to preserve intimacy.</p>
+</div>
+<a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+</header>
+
+<div class="grid" style="margin-top:18px">
+<div>
+<section class="card">
+<h3>Quick booking</h3>
+<form method="post" action="{{PRIMARY_CTA_URL}}">
+<label class="label">Full name</label>
+<input class="input" type="text" name="name" placeholder="Your name" required />
+<label class="label" style="margin-top:8px">Email</label>
+<input class="input" type="email" name="email" placeholder="you@domain.com" required />
+<label class="label" style="margin-top:8px">Phone</label>
+<input class="input" type="tel" name="phone" placeholder="{{PHONE}}" />
+<label class="label" style="margin-top:8px">Event</label>
+<select class="input" name="event">
+<option>Group Sound Bath — {{NEXT_EVENT_DATE}}</option>
+</select>
+<button class="btn" style="margin-top:12px" type="submit">Reserve &amp; Pay</button>
+</form>
+<p class="note">You'll receive a confirmation email with arrival details. For special requests call {{PHONE}}.</p>
+</section>
+
+<section class="card" style="margin-top:12px">
+<h3>Flow of an evening</h3>
+<p class="small">We welcome you, orient for safety, guide to a relaxed posture, then unfold a rich sound landscape for 45–55 minutes followed by soft re-entry and space for tea.</p>
+<ol class="small">
+<li>Arrival &amp; grounding</li>
+<li>Layered sound journey</li>
+<li>Integration &amp; closing</li>
+</ol>
+</section>
+
+<section class="card" style="margin-top:12px">
+<h3>What to bring</h3>
+<ul class="small">
+<li>Mat, blanket, pillow/bolster</li>
+<li>Water bottle</li>
+<li>Any small comforts for lying quietly</li>
+</ul>
+<p class="small">Light snacks available post-session at {{VENUE_NAME}}.</p>
+</section>
+
+<section class="card" style="margin-top:12px">
+<h3>Contraindications &amp; safety</h3>
+<p class="small">Please check with your healthcare provider if pregnant, epileptic, recently concussed, or on medication altering consciousness. Contact us if you have implants or heart devices.</p>
+</section>
+
+</div>
+
+<aside>
+<section class="card">
+<h3 class="small">Private sessions</h3>
+<p class="small">We offer 1:1, couples and corporate sound journeys by appointment. Choose <a href="private-sessions.html">Private Sessions</a> for bespoke options.</p>
+<h3 class="small" style="margin-top:12px">Instruments featured</h3>
+<p class="small">Crystal bowls, gong textures, chime overlays and tuning forks appear across offerings.</p>
+</section>
+
+<section class="card" style="margin-top:12px">
+<h3 class="small">Policies</h3>
+<p class="small">Refunds available &gt;72 hours. Late arrivals may reduce session time.</p>
+<a class="btn" href="mailto:{{EMAIL}}">Email us</a>
+</section>
+
+<section class="card" style="margin-top:12px">
+<h3 class="small">Testimonials</h3>
+<blockquote class="small">"A beautiful evening — felt seen and soothed." — L.</blockquote>
+<blockquote class="small">"Highly professional and deeply restorative." — M.</blockquote>
+</section>
+</aside>
+</div>
+
+<footer style="margin-top:18px" class="small">Questions? Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></footer>
+</div>
+
+</body>
+</html>

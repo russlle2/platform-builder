@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Fees & Plans — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg1:#f6fbf9;--accent:#5aa897;--muted:#6b7785;--card:#ffffff;--glass:rgba(255,255,255,0.6)}
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#123;background:linear-gradient(180deg,var(--bg1),#eef7f5)}
+    .canvas{position:fixed;inset:0;pointer-events:none;opacity:0.25}
+    .pattern{width:100%;height:100%}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 32px}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#2b8f7a);display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    nav a{margin-left:18px;color:var(--muted);text-decoration:none;font-weight:600}
+    nav a[href$="pricing.html"]{color:var(--accent)}
+    main{max-width:1100px;margin:32px auto;padding:28px}
+    .hero{display:grid;grid-template-columns:1fr 320px;gap:28px;align-items:start}
+    .hero .lead{background:linear-gradient(180deg,rgba(255,255,255,0.75),rgba(255,255,255,0.6));padding:28px;border-radius:14px;box-shadow:0 6px 20px rgba(16,24,32,0.06)}
+    h1{margin:0 0 8px 0;font-size:28px;letter-spacing:-0.2px}
+    p.lead-sub{margin:0;color:var(--muted)}
+    .quick{padding:20px;border-radius:12px;background:linear-gradient(90deg,#fff,#f9fffb);box-shadow:inset 0 1px 0 rgba(255,255,255,0.6)}
+    .pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px}
+    .card{background:var(--card);padding:18px;border-radius:12px;border:1px solid rgba(10,20,15,0.04);box-shadow:0 8px 30px rgba(10,20,15,0.04)}
+    .card h3{margin:0 0 6px 0;color:#0e3b33}
+    .price{font-size:22px;font-weight:700;color:var(--accent)}
+    ul{padding-left:18px;margin:10px 0;color:#334}
+    .cta{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#2b8f7a);color:#fff;text-decoration:none;font-weight:700}
+    .note{font-size:13px;color:var(--muted);margin-top:12px}
+    .faq{margin-top:28px}
+    .faq details{background:var(--glass);padding:14px;border-radius:10px;margin-bottom:10px}
+    footer{max-width:1100px;margin:40px auto;padding:28px;color:var(--muted);font-size:14px}
+    @media (max-width:860px){.hero{grid-template-columns:1fr}.pricing-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <svg class="canvas" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#e6fbf4"/><stop offset="1" stop-color="#f0fff8"/></linearGradient>
+      <filter id="f1"><feGaussianBlur stdDeviation="20"/></filter>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#g1)"/>
+    <g opacity="0.7" transform="translate(40,20)" filter="url(#f1)">
+      <circle cx="120" cy="120" r="100" fill="#bff0dd"/>
+      <circle cx="420" cy="240" r="140" fill="#d8f7ee"/>
+      <circle cx="700" cy="90" r="80" fill="#c9f2e4"/>
+    </g>
+    <g opacity="0.18">
+      <path d="M0,420 C120,360 320,460 480,420 C640,380 820,460 800,520 L0,520 Z" fill="#bff0dd"/>
+    </g>
+  </svg>
+
+  <header>
+    <div class="brand">
+      <div class="logo">HM</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Our Care</a>
+      <a href="conditions.html">Concerns</a>
+      <a href="approach.html">Method</a>
+      <a href="pricing.html">Fees</a>
+      <a href="about.html">About</a>
+      <a href="book.html">Book</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="lead">
+        <h1>Transparent pricing for whole-person care</h1>
+        <p class="lead-sub">We center education, measurable goals, and collaborative plans. Costs below describe typical pathways — every plan is adapted to your needs.</p>
+
+        <div class="pricing-grid">
+          <div class="card">
+            <h3>Initial Comprehensive Visit</h3>
+            <div class="price">$220 — 90 minutes</div>
+            <p class="note">A thorough intake: history, lifestyle review, and personalized next steps. May include discussion of optional labs.</p>
+            <a class="cta" href="book.html">Schedule initial</a>
+          </div>
+
+          <div class="card">
+            <h3>Follow-up Visit</h3>
+            <div class="price">$110 — 50 minutes</div>
+            <p class="note">Review progress, refine plan, and adjust therapies. Typical cadence: 4–12 weeks depending on goals.</p>
+            <a class="cta" href="book.html">Book follow-up</a>
+          </div>
+
+          <div class="card">
+            <h3>Focused Visit</h3>
+            <div class="price">$70 — 25 minutes</div>
+            <p class="note">Short visits for targeted questions or rapid adjustments (telehealth friendly).</p>
+            <a class="cta" href="book.html">Fast scheduling</a>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;font-size:13px;color:var(--muted)">Packages and bundle pricing available for ongoing plans. Ask about sliding scale options and fee adjustments based on financial need.</div>
+      </div>
+
+      <aside class="quick">
+        <h4 style="margin:0 0 8px 0;color:#0e3b33">Payment & Logistics</h4>
+        <ul style="margin:6px 0 0 16px;padding:0;color:#234">
+          <li>Card, HSA/FSA accepted</li>
+          <li>Superbills provided for insurance reimbursement</li>
+          <li>Telehealth and in-person visits available</li>
+        </ul>
+        <div class="note">Cancellations: please give 48 hours notice to avoid 50% fee. Contact: <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+        <a class="cta" href="{{PRIMARY_CTA_URL}}" style="display:inline-block;margin-top:14px">{{PRIMARY_CTA_LABEL}}</a>
+      </aside>
+    </section>
+
+    <section class="faq">
+      <h2 style="margin-top:22px">Common questions about billing & care</h2>
+      <details>
+        <summary style="font-weight:700">Do you take insurance?</summary>
+        <div style="margin-top:8px;color:var(--muted)">We provide superbills to help you seek reimbursement. Some services and lab work may bill separately. We can review options during intake.</div>
+      </details>
+
+      <details>
+        <summary style="font-weight:700">Are there payment plans?</summary>
+        <div style="margin-top:8px;color:var(--muted)">We offer package discounts and can discuss a sliding scale for long-term care. Our aim is accessible, sustainable plans that prioritize health outcomes.</div>
+      </details>
+
+      <details>
+        <summary style="font-weight:700">What if I need labs or supplements?</summary>
+        <div style="margin-top:8px;color:var(--muted)">Optional labs are educational tools — we discuss the benefits, costs, and how results would change your plan. Supplement recommendations are individualized and evidence-informed.</div>
+      </details>
+    </section>
+  </main>
+
+  <footer>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>Questions? Call <a href="tel:{{PHONE}}">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+      <div><a href="book.html" style="text-decoration:none;padding:8px 12px;border-radius:8px;background:#0e3b33;color:#fff;font-weight:700">Book an appointment</a></div>
+    </div>
+    <div style="margin-top:12px;color:var(--muted);font-size:13px">{{BUSINESS_NAME}} — caring for the whole person in {{CITY}}, {{STATE}}. Services emphasize education and collaboration; outcomes vary by individual.</div>
+  </footer>
+</body>
+</html>

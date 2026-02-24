@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#061018;--glass:rgba(255,255,255,0.04);--accent:#56c5d1;--muted:rgba(255,255,255,0.78);font-family:Inter,system-ui,Segoe UI,Roboto,Arial}
+    body{margin:0;min-height:100vh;background:#061018;color:whitesmoke;background-image:url('assets/img/pattern.svg');background-size:260px}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px}
+    nav a{margin-left:16px;color:rgba(255,255,255,0.9);text-decoration:none}
+    main{max-width:980px;margin:18px auto;padding:20px}
+    .card{background:var(--glass);backdrop-filter:blur(8px);padding:18px;border-radius:12px;box-shadow:0 10px 40px rgba(2,6,23,0.6)}
+    .layout{display:grid;grid-template-columns:1fr 340px;gap:18px}
+    label{display:block;font-size:13px;margin-bottom:6px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:whitesmoke}
+    .row{display:flex;gap:10px}
+    .btn{background:linear-gradient(90deg,var(--accent),#7ad0e0);color:#042;padding:10px 12px;border-radius:10px;border:none;font-weight:800;cursor:pointer}
+    .muted{color:rgba(255,255,255,0.7);font-size:13px}
+    .note{margin-top:8px;color:rgba(255,255,255,0.6);font-size:13px}
+    /* Comparator */
+    .cmp{display:flex;align-items:center;gap:12px;margin-top:12px}
+    .cmp .switch{background:rgba(255,255,255,0.04);padding:6px;border-radius:999px;display:flex}
+    .cmp .opt{padding:6px 10px;border-radius:8px;cursor:pointer}
+    .cmp .opt.active{background:linear-gradient(90deg,var(--accent),#7ad0e0);color:#042}
+    .price{font-size:22px;font-weight:900}
+    .small{font-size:13px;color:rgba(255,255,255,0.6)}
+    @media (max-width:920px){.layout{grid-template-columns:1fr}.card{padding:14px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Gatherings</a>
+      <a href="events.html">Calendar</a>
+      <a href="pricing.html">Rates</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQ</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2 style="margin:0">Reserve a session</h2>
+      <p class="muted" style="margin-top:8px">Choose an available slot below, tell us a little about your preference, and confirm with a quick payment or invoice request.</p>
+    </section>
+
+    <div class="layout" style="margin-top:14px">
+      <form class="card" id="bookingForm" onsubmit="return false;">
+        <label for="name">Your name</label>
+        <input id="name" name="name" required>
+
+        <div style="display:flex;gap:10px;margin-top:10px">
+          <div style="flex:1">
+            <label for="date">Date</label>
+            <input id="date" name="date" type="date" required>
+          </div>
+          <div style="width:140px">
+            <label for="time">Time</label>
+            <input id="time" name="time" type="time" required>
+          </div>
+        </div>
+
+        <label for="type" style="margin-top:12px">Session type</label>
+        <select id="type" name="type">
+          <option value="evening">Evening Gathering — 50m</option>
+          <option value="shortform">Shortform — 30m</option>
+          <option value="private">Private session — 60m</option>
+        </select>
+
+        <label for="note" style="margin-top:12px">Notes (optional)</label>
+        <textarea id="note" name="note" rows="4" placeholder="Allergies, mobility needs, or anything we should know"></textarea>
+
+        <div style="margin-top:12px;display:flex;align-items:center;gap:10px">
+          <button class="btn" id="payBtn">Confirm & Pay</button>
+          <button type="button" id="invoiceBtn" style="background:transparent;border:1px solid rgba(255,255,255,0.06);color:whitesmoke;padding:10px;border-radius:10px">Request invoice</button>
+        </div>
+
+        <div class="note">We will follow up to confirm your reservation and give arrival details. For private bookings, we will propose a tailored rate.</div>
+      </form>
+
+      <aside class="card">
+        <div style="font-weight:800">Pricing quick view</div>
+        <div class="small" style="margin-top:6px">Toggle between single-session and package pricing. Numbers animate for clarity.</div>
+
+        <div class="cmp" style="margin-top:12px">
+          <div class="switch" role="tablist" aria-label="Booking pricing toggle">
+            <div class="opt active" data-mode="single">Single</div>
+            <div class="opt" data-mode="package">6-Pack</div>
+          </div>
+
+          <div style="margin-left:auto;text-align:right">
+            <div class="price" id="bookPrice">$28</div>
+            <div class="small" id="bookNote">per session</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <div style="font-weight:700">Payment options</div>
+          <div class="small" style="margin-top:6px">Card, or request an invoice. We use secure payment processing and never store card data on this site.</div>
+        </div>
+
+        <div style="margin-top:12px">
+          <div style="font-weight:700">Accessibility</div>
+          <div class="small" style="margin-top:6px">Our space is accessible; chairs available. Contact {{EMAIL}} if you have specific mobility needs.</div>
+        </div>
+
+        <div style="margin-top:14px;font-size:13px;color:rgba(255,255,255,0.6)">Phone: {{PHONE}}</div>
+      </aside>
+    </div>
+
+    <div style="max-width:980px;margin:18px auto;text-align:center;color:rgba(255,255,255,0.6)">
+      <div style="font-weight:700">Contraindications</div>
+      <p class="muted" style="margin-top:8px">If you are pregnant, have epilepsy, recent head trauma, or implanted electronic devices, please consult your clinician before attending. We offer alternatives and can advise on suitability — reach out at {{EMAIL}}.</p>
+    </div>
+  </main>
+
+  <script>
+    // Pricing comparator with animated numbers
+    const opts = document.querySelectorAll('.opt');
+    const priceEl = document.getElementById('bookPrice');
+    const noteEl = document.getElementById('bookNote');
+    const pricing = {single:28, package:140}; // package shows total for 6 sessions (so per-session implied savings)
+
+    function animateTo(target){
+      const from = parseInt(priceEl.textContent.replace(/[^0-9]/g,'')) || 0;
+      const start = performance.now();
+      const duration = 500;
+      function tick(now){
+        const t = Math.min(1,(now-start)/duration);
+        const eased = t<.5 ? 2*t*t : -1 + (4 - 2*t)*t; // easeInOutQuad-ish
+        const val = Math.round(from + (target - from) * eased);
+        priceEl.textContent = '$' + val;
+        if(t < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+
+    opts.forEach(o => o.addEventListener('click', ()=>{
+      opts.forEach(x=>x.classList.remove('active'));
+      o.classList.add('active');
+      const mode = o.getAttribute('data-mode');
+      if(mode === 'single'){
+        animateTo(pricing.single);
+        noteEl.textContent = 'per session';
+      } else {
+        animateTo(pricing.package);
+        noteEl.textContent = '6-session total';
+      }
+    }));
+
+    // Simple form stub: open modal confirmation (lightweight)
+    document.getElementById('payBtn').addEventListener('click', ()=>{
+      const name = document.getElementById('name').value.trim();
+      const date = document.getElementById('date').value;
+      if(!name || !date){
+        alert('Please provide your name and a date for the reservation.');
+        return;
+      }
+      alert('Thank you, ' + name + '. We received your reservation request for ' + date + '. We will contact you to complete payment or send an invoice.');
+      document.getElementById('bookingForm').reset();
+    });
+
+    document.getElementById('invoiceBtn').addEventListener('click', ()=>{
+      const name = document.getElementById('name').value.trim();
+      if(!name){ alert('Please include your name so we can prepare an invoice.'); return; }
+      alert('Invoice request received. We will email you at ' + '{{EMAIL}}' + ' with next steps.');
+    });
+  </script>
+</body>
+</html>

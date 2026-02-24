@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Connect — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Get in touch with {{THERAPIST_NAME}} — confidential, respectful, trauma-informed care in {{CITY}}, {{STATE}}." />
+  <style>
+    :root{
+      --bg:#faf8f6; --card:#fff; --muted:#6b6b6b; --accent:#6a4eff; --accent-2:#ff8fb6; --glass:rgba(255,255,255,0.7);
+      --radius:14px; --maxw:1100px; --gutter:28px; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#fff);color:#222;line-height:1.5}
+    header{padding:28px 24px;display:flex;align-items:center;justify-content:space-between;max-width:var(--maxw);margin:0 auto}
+    .brand{display:flex;gap:16px;align-items:center}
+    .brand .logo{width:56px;height:56px;border-radius:12px;overflow:hidden;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    nav a{margin-left:18px;color:#333;text-decoration:none;padding:8px 12px;border-radius:10px;font-weight:600}
+    nav a.cta{background:var(--accent);color:white}
+    main{max-width:var(--maxw);margin:18px auto;padding:0 24px}
+
+    /* Hero */
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:32px;align-items:center;padding:34px;background:linear-gradient(180deg,rgba(106,78,255,0.06),rgba(255,143,182,0.03));border-radius:18px}
+    .hero h1{font-size:34px;margin:0 0 8px}
+    .hero p.lead{color:var(--muted);margin:0 0 18px}
+    .hero .actions{display:flex;gap:12px}
+    .btn{display:inline-block;padding:12px 16px;border-radius:10px;text-decoration:none;font-weight:700}
+    .btn.primary{background:var(--accent);color:white}
+    .btn.ghost{background:transparent;border:1px solid rgba(0,0,0,0.06)}
+
+    .hero-visual{width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+    .hero-visual img{width:100%;max-width:360px;border-radius:12px;box-shadow:0 18px 40px rgba(17,12,71,0.08)}
+
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:20px;margin-top:28px}
+    .card{background:var(--card);padding:20px;border-radius:14px;box-shadow:0 6px 18px rgba(16,12,48,0.04)}
+
+    /* Social proof */
+    .testimonials{grid-column:span 8;display:grid;gap:14px}
+    .testimonial{display:flex;gap:14px;align-items:flex-start}
+    .avatar{width:56px;height:56px;border-radius:12px;overflow:hidden;background:linear-gradient(135deg,var(--accent-2),var(--accent));flex-shrink:0;display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    .quote{font-size:14px;color:var(--muted)}
+
+    /* Contact details */
+    .contact-card{grid-column:span 4;padding:18px}
+    .contact-list{display:flex;flex-direction:column;gap:12px}
+    .contact-item{display:flex;gap:12px;align-items:center}
+    .meta{font-size:13px;color:var(--muted)}
+
+    /* Lead magnet */
+    .magnet{grid-column:span 12;display:flex;gap:18px;align-items:center;padding:18px;background:linear-gradient(90deg,rgba(106,78,255,0.04),rgba(255,143,182,0.02));border-radius:12px}
+    .magnet .copy{flex:1}
+    .magnet .form{display:flex;gap:8px}
+    .input{padding:10px 12px;border-radius:10px;border:1px solid rgba(10,10,10,0.06);min-width:220px}
+
+    /* Process & FAQ & CTA */
+    .process{grid-column:span 6;display:grid;gap:12px}
+    .steps{display:flex;flex-direction:column;gap:8px}
+    .step{display:flex;gap:12px;align-items:flex-start}
+    .step .num{width:36px;height:36px;border-radius:9px;background:var(--accent);color:white;font-weight:700;display:flex;align-items:center;justify-content:center}
+
+    .faq{grid-column:span 6}
+    .faq-item{margin-bottom:12px}
+    .faq-item summary{cursor:pointer;font-weight:700}
+    details{background:var(--card);padding:14px;border-radius:12px}
+
+    footer{max-width:var(--maxw);margin:36px auto;padding:18px 24px;color:var(--muted);font-size:13px}
+
+    @media (max-width:980px){
+      .hero{grid-template-columns:1fr;}
+      .grid{grid-template-columns:1fr}
+      .testimonials{grid-column:span 12}
+      .contact-card{grid-column:span 12}
+      .magnet{flex-direction:column;align-items:stretch}
+      nav a{display:none}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo" aria-hidden="true">{{THERAPIST_NAME.slice(0,1)}}</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="specialties.html">Areas</a>
+      <a href="approach.html">Approach</a>
+      <a href="fees.html">Investment</a>
+      <a href="faq.html">Answers</a>
+      <a href="book.html" class="cta">Book</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="contact-hero">
+      <div>
+        <h1 id="contact-hero">Reach out when you’re ready — confidential support in {{CITY}}</h1>
+        <p class="lead">I offer thoughtful, evidence-informed therapy for adults facing anxiety, loss, relationship difficulty, burnout and life transitions. Appointments are private and respectfully paced to your needs.</p>
+        <div class="actions">
+          <a class="btn primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <a class="btn ghost" href="mailto:{{EMAIL}}">Email {{THERAPIST_NAME}}</a>
+        </div>
+        <p class="meta" style="margin-top:12px">Tel: <a href="tel:{{PHONE}}">{{PHONE}}</a> • License: {{LICENSE}}</p>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <img src="assets/img/hero.svg" alt="soft gallery illustration" />
+      </div>
+    </section>
+
+    <div class="grid">
+      <section class="testimonials card">
+        <h3 style="margin:0 0 8px">What people say after a few sessions</h3>
+        <div class="testimonial">
+          <div class="avatar" aria-hidden="true"><img src="assets/img/avatar.svg" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:12px;"/></div>
+          <div>
+            <div style="font-weight:700">"I finally feel like I can breathe again"</div>
+            <div class="quote">Short-term, practical tools grounded in compassion helped me manage panic and return to work with steadier footing.</div>
+            <div class="meta">— Client, 6 months</div>
+          </div>
+        </div>
+
+        <div class="testimonial">
+          <div class="avatar" aria-hidden="true">A</div>
+          <div>
+            <div style="font-weight:700">"Gentle, clear guidance"</div>
+            <div class="quote">{{THERAPIST_NAME}} created a non-judgmental space where I could explore patterns and try new ways of being.</div>
+            <div class="meta">— Client, ongoing</div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="card contact-card">
+        <h4 style="margin-top:0">Contact & availability</h4>
+        <div class="contact-list">
+          <div class="contact-item">
+            <div style="font-weight:700">Phone</div>
+            <div class="meta"><a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+          </div>
+          <div class="contact-item">
+            <div style="font-weight:700">Email</div>
+            <div class="meta"><a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+          </div>
+          <div class="contact-item">
+            <div style="font-weight:700">Location</div>
+            <div class="meta">Private practice — {{CITY}}, {{STATE}}</div>
+          </div>
+          <div>
+            <a class="btn primary" href="{{PRIMARY_CTA_URL}}">Schedule a session</a>
+          </div>
+        </div>
+
+        <hr style="margin:16px 0;border:none;border-top:1px solid rgba(0,0,0,0.04)" />
+        <div style="font-size:13px;color:var(--muted)">
+          <strong>Confidentiality:</strong> Conversations are confidential within the limits of the law. For details on data and privacy, please ask for a copy of the privacy notice.
+        </div>
+      </aside>
+
+      <section class="magnet">
+        <div class="copy">
+          <strong style="display:block;font-weight:800">Free guide: "Gentle Steps for Managing Overwhelm"</strong>
+          <div class="meta">A short, practical PDF with breathing practices and quick reframes that clients often find useful between sessions.</div>
+        </div>
+        <form class="form" action="{{PRIMARY_CTA_URL}}" method="post" style="display:flex;align-items:center">
+          <input class="input" type="email" name="email" placeholder="Your email" required />
+          <button class="btn primary" type="submit">Send me the guide</button>
+        </form>
+      </section>
+
+      <section class="process card">
+        <h4 style="margin-top:0">How booking works</h4>
+        <div class="steps">
+          <div class="step">
+            <div class="num">1</div>
+            <div>
+              <div style="font-weight:700">Reach out</div>
+              <div class="meta">Use the scheduling link or email to share a brief note. No clinical history required.</div>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="num">2</div>
+            <div>
+              <div style="font-weight:700">Initial meeting</div>
+              <div class="meta">A 50-minute intake to clarify goals, scope of work, and practical logistics.</div>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="num">3</div>
+            <div>
+              <div style="font-weight:700">Ongoing care</div>
+              <div class="meta">Regular sessions tailored to your pace. We'll check in and adapt as needed.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="faq card">
+        <h4 style="margin-top:0">Common questions about connecting</h4>
+        <details class="faq-item">
+          <summary>What happens during our first conversation?</summary>
+          <div class="meta">We'll review confidential intake information, discuss your immediate concerns, and set collaborative goals. The focus is understanding needs and practical next steps, not labeling.</div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Do you accept insurance?</summary>
+          <div class="meta">I currently offer private-pay services. I can provide a superbill you may submit to your insurer for out-of-network reimbursement. Please ask for details.</div>
+        </details>
+
+        <details class="faq-item">
+          <summary>What if I’m in crisis?</summary>
+          <div class="meta">If you are in immediate danger or are thinking of harming yourself, call local emergency services or 911 (USA). If you're in the U.S., you can also call or text 988 for the Suicide & Crisis Lifeline. I am not available for crisis management via email—please use emergency resources.</div>
+        </details>
+      </section>
+
+      <section class="card" style="grid-column:span 12">
+        <h4 style="margin-top:0">Send a message</h4>
+        <form action="{{PRIMARY_CTA_URL}}" method="post" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <input class="input" type="text" name="name" placeholder="Your name" required />
+          <input class="input" type="email" name="email" placeholder="Your email" required />
+          <input class="input" type="tel" name="phone" placeholder="Phone (optional)" />
+          <select class="input" name="service">
+            <option value="intake">Request an intake</option>
+            <option value="question">Ask a question</option>
+            <option value="work">Professional collaboration</option>
+          </select>
+          <textarea name="message" class="input" placeholder="Brief note about what brings you here" style="grid-column:1 / -1;min-height:120px;padding:12px;border-radius:10px;border:1px solid rgba(0,0,0,0.06)"></textarea>
+          <div style="grid-column:1 / -1;display:flex;justify-content:space-between;align-items:center">
+            <div style="font-size:13px;color:var(--muted);max-width:70%">By contacting me you consent to brief email/phone communication for scheduling. For full privacy details, request the practice policies. Therapy is voluntary and outcomes are not guaranteed.</div>
+            <button class="btn primary" type="submit">Send message</button>
+          </div>
+        </form>
+      </section>
+
+    </div>
+
+    <section style="margin-top:22px;background:transparent;border-radius:12px;padding:18px">
+      <div style="display:flex;gap:16px;align-items:center;max-width:var(--maxw);margin:0 auto">
+        <img src="assets/img/pattern.svg" alt="pattern" style="width:72px;height:72px;border-radius:12px;object-fit:cover"/>
+        <div>
+          <div style="font-weight:800">Ready to begin?</div>
+          <div class="meta">If you’re thinking about therapy, a single message can start a different kind of conversation.</div>
+        </div>
+        <div style="margin-left:auto">
+          <a class="btn primary" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="max-width:var(--maxw);margin:0 auto;display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div>{{THERAPIST_NAME}} — {{LICENSE}} • {{CITY}}, {{STATE}}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="meta">Not a crisis line. For emergencies call 911 or your local emergency services. Confidentiality and limits of care apply — ask for full practice policies.</div>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

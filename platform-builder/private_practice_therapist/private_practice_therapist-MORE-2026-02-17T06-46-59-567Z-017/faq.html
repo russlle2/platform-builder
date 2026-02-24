@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FAQ — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--muted:#6b7280;--accent:#0f766e;--card:#ffffff;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    body{margin:0;background:linear-gradient(180deg,#fbfdff,#fff);color:#042022}
+    .wrap{max-width:920px;margin:28px auto;padding:20px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    .nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    h1{margin:10px 0}
+    .faq-list{display:grid;gap:12px}
+    .faq{background:var(--card);padding:14px;border-radius:10px;box-shadow:0 6px 18px rgba(3,7,18,0.04)}
+    .q{font-weight:700}
+    .a{color:var(--muted);margin-top:6px}
+    details summary{cursor:pointer}
+    .muted{color:var(--muted)}
+    .try{background:#f0fdf4;border:1px solid #bbf7d0;color:#065f46;padding:8px 12px;border-radius:8px}
+    .reveal{opacity:0;transform:translateY(12px);transition:opacity .5s ease,transform .5s ease}
+    @media (prefers-reduced-motion: reduce){ .reveal{transition:none;opacity:1;transform:none} }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div class="muted">Helpful answers to common questions</div>
+      </div>
+      <nav class="nav" aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="about.html">Why Work Together</a>
+        <a href="specialties.html">Services</a>
+        <a href="fees.html">Fees</a>
+        <a href="faq.html">FAQ</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <section style="margin-top:18px" class="reveal" id="top">
+        <h1>Frequently asked questions</h1>
+        <p class="muted">Short, plain answers. If something is still unclear, please reach out — I aim to be transparent about how I work.</p>
+      </section>
+
+      <section style="margin-top:18px" class="faq-list">
+        <details class="faq reveal"><summary class="q">What happens in a first session?</summary><div class="a">We review why you're coming, current concerns, and your preferences for therapy. We'll discuss confidentiality, set boundaries and develop an initial plan. There is space to ask questions about the process as well.</div></details>
+
+        <details class="faq reveal"><summary class="q">Do you take insurance?</summary><div class="a">I provide receipts for out-of-network reimbursement but do not bill insurance directly. I can offer a conversation about sliding scale options when appropriate.</div></details>
+
+        <details class="faq reveal"><summary class="q">Are sessions confidential?</summary><div class="a">Yes, conversations are confidential within legal and ethical limits (e.g., safety concerns, court orders, child or elder safety). I will review confidentiality and its limits at intake.</div></details>
+
+        <details class="faq reveal"><summary class="q">What if I am in crisis?</summary><div class="a">If you are in immediate danger or a medical emergency, call local emergency services. If you're feeling like you might harm yourself, please call your local crisis line or go to an emergency room. I do not provide crisis care via email or text.</div></details>
+
+        <details class="faq reveal"><summary class="q">How long are sessions?</summary><div class="a">Standard sessions are 50 minutes. Some programs use longer or shorter blocks; these will be discussed and agreed upon in advance.</div></details>
+
+        <details class="faq reveal"><summary class="q">Can I schedule remotely?</summary><div class="a">Yes. I offer telehealth appointments and, where available, in-person meetings. We'll discuss privacy and the logistics before starting telehealth.</div></details>
+
+        <details class="faq reveal"><summary class="q">What won't therapy here provide?</summary><div class="a">I do not offer medication management, forensic assessments, or emergency psychiatric care. If those are needed, I will help with referrals within appropriate professional channels.</div></details>
+
+        <details class="faq reveal"><summary class="q">How do you measure progress?</summary><div class="a">Progress is collaborative. We check in regularly, adjusting goals and tools together. If you prefer structured measures, we can build in brief questionnaires or tracking tools to guide our work.</div></details>
+      </section>
+
+      <section style="margin-top:18px" class="reveal">
+        <p class="muted">Still have a question? <a class="try" href="contact.html">Send a note</a> or <a class="try" href="book.html">request a session</a>.</p>
+      </section>
+
+      <section style="margin-top:18px" class="card reveal">
+        <h3 style="margin-top:0">A brief note on limits</h3>
+        <p class="muted">Therapy is best thought of as a collaborative effort to build skills, understanding, and ways to cope. It does not guarantee outcomes; rather, it supports you with clinical tools and steady attention.</p>
+      </section>
+    </main>
+
+    <footer style="margin-top:20px;color:var(--muted)">
+      <div>Contact: {{PHONE}} • {{EMAIL}}</div>
+      <div style="margin-top:6px">Licensed clinician in {{CITY}}, {{STATE}}. If you are in crisis, contact local emergency services.</div>
+    </footer>
+  </div>
+
+  <script>
+    // Scroll reveal with reduced motion support
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const items = document.querySelectorAll('.reveal');
+      if(prefersReduced){ items.forEach(i=>i.classList.add('visible')); return; }
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{ if(e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+      },{threshold:0.08});
+      items.forEach(i=>io.observe(i));
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FAQ — Fees & Policies — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fff;--ink:#072021;--muted:#54636b;--accent:#7aab96}
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:linear-gradient(180deg,#fbfdfc,#fff)}
+    header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px}
+    nav a{margin:0 6px;color:var(--muted);text-decoration:none}
+    main{padding:12px 24px 80px;max-width:900px;margin:0 auto}
+    h1{margin-top:8px}
+    .qa{margin-top:18px}
+    details{background:#fff;border-radius:10px;padding:12px;border:1px solid rgba(7,32,33,0.06);margin-bottom:12px}
+    summary{font-weight:700;cursor:pointer}
+    .answer{color:var(--muted);margin-top:8px}
+    .cta{display:flex;justify-content:space-between;align-items:center;background:linear-gradient(90deg,#fff,#fbfbfb);padding:14px;border-radius:10px;border:1px solid rgba(7,32,33,0.04);margin-top:18px}
+    .btn{background:var(--accent);color:white;padding:10px 14px;border-radius:8px;border:0;cursor:pointer}
+    .muted{color:var(--muted);font-size:14px}
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity .5s ease,transform .5s ease}
+    .reveal--visible{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){.reveal{transition:none;opacity:1;transform:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="specialties.html">Specialties</a>
+      <a href="approach.html">Approach</a>
+      <a href="book.html">Book</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Frequently asked questions</h1>
+    <p class="muted">Below are practical answers written with clarity and clinical care. If you don’t see what you need, email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>.</p>
+
+    <section class="qa reveal">
+      <details>
+        <summary>How do I pay and what methods are accepted?</summary>
+        <div class="answer">Card payments and invoicing are accepted. Membership plans are billed monthly when selected. If you need a different arrangement, please mention it in a private message and we will discuss options.</div>
+      </details>
+
+      <details>
+        <summary>Is telehealth available?</summary>
+        <div class="answer">Yes—sessions over a secure, HIPAA-conscious platform are available for most clients. In-person availability is noted on the booking page for those local to {{CITY}}, {{STATE}}.</div>
+      </details>
+
+      <details>
+        <summary>What if I need to cancel or reschedule?</summary>
+        <div class="answer">Please notify me as early as possible. Cancellation policies vary by plan; membership agreements will include specific terms. If an emergency arises, reach out and we will work to reschedule fairly.</div>
+      </details>
+
+      <details>
+        <summary>Do you provide documentation for insurance?</summary>
+        <div class="answer">I can provide a superbill if you wish to seek out-of-network reimbursement from your insurer. Some documents may require additional time and a fee—please ask in advance.</div>
+      </details>
+
+      <details>
+        <summary>How is confidentiality handled?</summary>
+        <div class="answer">Sessions are confidential within legal and ethical limits. Information is only shared with consent except in situations such as imminent risk of harm, suspected abuse, or as otherwise required by law. I will always discuss these limits with you.</div>
+      </details>
+
+      <details>
+        <summary>What should I do in a crisis?</summary>
+        <div class="answer">If you are in immediate danger or need urgent medical help, contact local emergency services or go to the nearest emergency department. This practice is not an emergency service and cannot guarantee immediate responses outside scheduled sessions.</div>
+      </details>
+
+      <details>
+        <summary>How long does therapy typically last?</summary>
+        <div class="answer">The length of work varies based on your goals and needs. Some people find short-term, focused support is enough; others prefer ongoing, periodic work. We’ll discuss a plan that fits your priorities during early sessions.</div>
+      </details>
+
+    </section>
+
+    <div class="cta reveal" role="region" aria-label="Next steps">
+      <div>
+        <div style="font-weight:700">Ready to begin?</div>
+        <div class="muted">Schedule an intake or ask a question first.</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn" id="bookNow">Book a time</button>
+        <button class="btn" id="tryExercise">Try a short practice</button>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    document.getElementById('bookNow').addEventListener('click',()=>location.href='book.html');
+
+    // Lightweight modal reuse from other pages — open a simple exercise in a new window-like panel
+    document.getElementById('tryExercise').addEventListener('click',()=>{
+      // Create a small in-page modal
+      const m = document.createElement('div'); m.style.position='fixed';m.style.inset='0';m.style.background='rgba(2,6,8,0.45)';m.style.display='flex';m.style.alignItems='center';m.style.justifyContent='center';m.id='tempModal';
+      const panel = document.createElement('div'); panel.style.background='#fff';panel.style.padding='18px';panel.style.borderRadius='10px';panel.style.maxWidth='520px';panel.style.width='92%';
+      panel.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center"><strong>Try a moment</strong><button id="closeX">Close</button></div><p class="muted">Choose breathing or a quick intention to bring focus.</p>';
+      const b1 = document.createElement('button'); b1.className='btn'; b1.textContent='Breathing'; b1.style.marginRight='8px';
+      const b2 = document.createElement('button'); b2.className='btn'; b2.textContent='Intention';
+      panel.appendChild(b1);panel.appendChild(b2); m.appendChild(panel); document.body.appendChild(m);
+      document.getElementById('closeX').addEventListener('click',()=>m.remove());
+      b1.addEventListener('click',()=>{alert('Box breathing: 4s inhale, 4s hold, 4s exhale, 4s hold. Repeat 3 times.');});
+      b2.addEventListener('click',()=>{const i=prompt('Write a single small intention for today:'); if(i)alert('Your intention: '+i)});
+    });
+
+    // Scroll reveal
+    (function(){
+      const prefersReduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const els = document.querySelectorAll('.reveal');
+      if(prefersReduce){els.forEach(e=>e.classList.add('reveal--visible'));return}
+      const io = new IntersectionObserver((entries)=>{entries.forEach(en=>{if(en.isIntersecting){en.target.classList.add('reveal--visible');io.unobserve(en.target)}})},{threshold:0.12});
+      els.forEach(e=>io.observe(e));
+    })();
+  </script>
+</body>
+</html>

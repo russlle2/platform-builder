@@ -1,0 +1,62 @@
+/* Glass-morphism aromatherapy template - styles.css */
+:root{
+  --bg:#0f1720;
+  --glass:rgba(255,255,255,0.06);
+  --glass-2:rgba(255,255,255,0.04);
+  --accent:#7bd389;
+  --muted:#b9c2c8;
+  --card-bg:linear-gradient(135deg, rgba(255,255,255,0.035), rgba(255,255,255,0.02));
+  --radius:14px;
+  --shadow:0 6px 24px rgba(2,6,23,0.6);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Ubuntu,'Helvetica Neue',Arial; background:radial-gradient(1200px 600px at 10% 10%, rgba(123,211,137,0.06), transparent 10%), radial-gradient(900px 400px at 90% 90%, rgba(123,211,211,0.03), transparent 12%), var(--bg); color:#e9f0ee; -webkit-font-smoothing:antialiased}
+.container{max-width:1080px;margin:0 auto;padding:28px}
+.site-header{position:sticky;top:0;backdrop-filter: blur(8px);background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-bottom:1px solid rgba(255,255,255,0.03);z-index:40}
+.nav-wrap{display:flex;align-items:center;justify-content:space-between}
+.brand{font-weight:700;color:#fff;text-decoration:none}
+.nav{display:flex;gap:14px;align-items:center}
+.nav a{color:var(--muted);text-decoration:none;padding:10px;border-radius:10px}
+.nav a.primary-cta{background:linear-gradient(90deg,var(--accent),#6fc2ff);color:#042226;padding:8px 14px}
+.mobile-toggle{display:none;background:none;border:0;color:var(--muted);font-size:20px}
+.hero{position:relative;min-height:56vh;display:flex;align-items:center}
+.hero-bg{position:absolute;inset:0;background-image:url('assets/img/pattern.svg');opacity:0.14;mix-blend-mode:screen}
+.hero-content{position:relative;padding:80px 28px}
+.hero h1{font-size:clamp(28px,4vw,44px);margin:0 0 12px}
+.lead{color:var(--muted);margin:0 0 18px}
+.hero-actions{display:flex;gap:12px;margin-bottom:12px}
+.btn{display:inline-block;padding:10px 16px;border-radius:12px;text-decoration:none;color:inherit;border:1px solid rgba(255,255,255,0.06)}
+.btn-primary{background:linear-gradient(90deg,var(--accent),#6fc2ff);color:#042226;border:none}
+.btn-ghost{background:transparent;color:var(--muted)}
+.meta{color:var(--muted);font-size:13px}
+.panel{padding:44px 0}
+.glass{background:var(--glass);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid rgba(255,255,255,0.04);padding:28px}
+.ritual-list{margin:16px 0;padding-left:18px}
+.ritual-note{font-size:13px;color:var(--muted);margin-top:10px}
+.expect-list{display:grid;grid-template-columns:1fr 1fr;gap:12px;color:var(--muted)}
+.schedule-grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
+.booking-form label{display:block;margin-bottom:10px}
+.booking-form input,.booking-form select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+.form-actions{display:flex;gap:10px;align-items:center;margin-top:12px}
+.hours{padding:18px}
+.pricing-grid{display:flex;gap:14px;margin-top:12px}
+.card{background:var(--card-bg);padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+.price{font-size:20px;margin:8px 0}
+.faq-list{margin-top:8px}
+.faq-item{width:100%;text-align:left;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--muted);margin-top:8px}
+.faq-panel{display:none;padding:12px;margin-top:6px;background:rgba(0,0,0,0.12);border-radius:10px;color:var(--muted)}
+.cta{padding:36px 0}
+.cta-inner{display:flex;align-items:center;justify-content:space-between;padding:18px}
+.cta-actions{display:flex;gap:12px}
+.site-footer{padding:22px 0;border-top:1px solid rgba(255,255,255,0.03);color:var(--muted)}
+.footer-grid{display:flex;justify-content:space-between;gap:12px}
+.small{font-size:13px}
+.muted{color:var(--muted)}
+@media(max-width:880px){.expect-list{grid-template-columns:1fr}.schedule-grid{grid-template-columns:1fr}.nav a{display:none}.mobile-toggle{display:block}}
+/* subtle ripple effect */
+.ripple{position:relative;overflow:hidden}
+.ripple:after{content:"";position:absolute;border-radius:50%;transform:scale(0);opacity:0.6;background:rgba(255,255,255,0.25);transition:transform 600ms,opacity 900ms}
+.ripple.rippling:after{transform:scale(4);opacity:0}
+/* accessibility focus */
+.btn:focus,.faq-item:focus,.mobile-toggle:focus{outline:2px solid rgba(123,211,137,0.25);outline-offset:3px}

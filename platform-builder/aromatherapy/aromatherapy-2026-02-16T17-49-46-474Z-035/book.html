@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve a Session — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Book private consultations or sign up for the next seasonal aromatherapy event series. Safety-first approach.">
+  <style>
+    :root{--bg:#fff8f2;--accent:#6f3f24;--warm:#d9b89b;--ink:#523f37}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--ink);background-image:url('assets/img/pattern.svg')}
+    .shell{max-width:900px;margin:36px auto;padding:26px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{margin-left:12px;text-decoration:none;color:var(--ink);font-weight:600}
+    .hero{padding:18px;background:linear-gradient(180deg,#fff 0%,#fff6f2 100%);border-radius:12px;display:flex;justify-content:space-between;align-items:center}
+    .hero h1{margin:0;color:var(--accent)}
+    .booking{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
+    .form{background:#fff;padding:16px;border-radius:12px}
+    label{display:block;margin-top:10px;font-weight:600}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #ecd9cd}
+    button.primary{background:var(--accent);color:#fff;border:0;padding:10px 14px;border-radius:10px;margin-top:12px}
+    .aside{background:rgba(255,255,255,0.9);padding:14px;border-radius:12px}
+    .steps{display:flex;flex-direction:column;gap:8px}
+    .step{padding:10px;border-radius:8px;background:#fff7f2;border:1px solid rgba(111,63,36,0.06)}
+    .faq dt{font-weight:700;margin-top:10px}
+    .social{margin-top:12px}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div>
+        <strong style="color:var(--accent)">{{BUSINESS_NAME}}</strong>
+        <div style="font-size:13px;color:#7b6356">Reserve a private consult or join the event series</div>
+      </div>
+      <nav>
+        <a href="index.html">Start</a>
+        <a href="services.html">Services</a>
+        <a href="pricing.html">Investments</a>
+        <a href="about.html">Story</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div>
+        <h1>Reserve your time or a seat</h1>
+        <p style="margin:6px 0 0;color:#6b584f">Choose a private consultation or the next seasonal gathering. We keep groups small and instructions thorough.</p>
+      </div>
+      <div style="text-align:right">
+        <a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none;font-weight:700">Call to ask: {{PHONE}}</a>
+      </div>
+    </section>
+
+    <div class="booking">
+      <main class="form">
+        <h3 style="margin-top:0;color:var(--accent)">Booking form</h3>
+        <form onsubmit="event.preventDefault();alert('Booked: ' + this.service.value + ' on ' + this.date.value + '. We will contact ' + this.email.value );">
+          <label for="service">Choose a session</label>
+          <select id="service" name="service" required>
+            <option>Private Aromatherapy Consult — 60 min</option>
+            <option>Deep Consult + Starter Kit — 90 min</option>
+            <option>Seasonal Event Series — 4-part workshop pass</option>
+            <option>Small Group Workshop — half-day</option>
+          </select>
+
+          <label for="date">Preferred date</label>
+          <input id="date" name="date" type="date" required>
+
+          <label for="name">Full name</label>
+          <input id="name" name="name" type="text" required>
+
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required>
+
+          <label for="notes">Sensitivities & notes</label>
+          <textarea id="notes" name="notes" rows="3" placeholder="Any allergies, pregnancy status, or scent sensitivities?" ></textarea>
+
+          <div style="display:flex;gap:8px;align-items:center;margin-top:10px">
+            <input type="checkbox" id="terms" required>
+            <label for="terms" style="font-size:13px">I understand this is aromatherapy and not medical care; I agree to follow dilution and patch-test guidance.</label>
+          </div>
+
+          <button class="primary" type="submit">Request Booking</button>
+        </form>
+
+        <!-- benefits (short) -->
+        <div style="margin-top:14px">
+          <h4 style="margin:0;color:var(--accent)">What to expect</h4>
+          <ul>
+            <li>Clear safety instructions and dilution guidance.</li>
+            <li>Written notes and suggested blends; no medical claims.</li>
+            <li>Small groups for events; limited seats for clarity and comfort.</li>
+          </ul>
+        </div>
+      </main>
+
+      <aside class="aside">
+        <!-- process (compact) -->
+        <h4 style="margin-top:0;color:var(--accent)">Booking flow</h4>
+        <div class="steps">
+          <div class="step"><strong>Reserve</strong> — request a date and session type.</div>
+          <div class="step"><strong>Confirm</strong> — receive confirmation, safety notes, and payment link.</div>
+          <div class="step"><strong>Attend</strong> — arrive with questions; receive written blend notes and aftercare.</div>
+        </div>
+
+        <!-- social proof -->
+        <div class="social">
+          <h5 style="margin:12px 0 6px;color:var(--accent)">Praise</h5>
+          <div style="font-size:14px">"Careful guidance, and a pacing that felt safe and informative." — S.</div>
+        </div>
+
+        <!-- faq (concise) -->
+        <div style="margin-top:12px">
+          <h5 style="color:var(--accent)">Quick FAQ</h5>
+          <dl class="faq">
+            <dt>Do you require patch tests?</dt>
+            <dd>We recommend them for any topical use; we provide simple instructions.</dd>
+            <dt>Will there be strong scent in sessions?</dt>
+            <dd>Sessions are intentionally moderate; we avoid overpowering diffusing and offer ventilation breaks.</dd>
+            <dt>What about pregnancy?</dt>
+            <dd>Please note pregnancy status in the intake; we will avoid certain oils and recommend consulting your provider.</dd>
+          </dl>
+        </div>
+
+        <!-- lead magnet CTA -->
+        <div style="margin-top:12px">
+          <button onclick="alert('Thanks — we\'ll send event invites to the email you provide.')" class="primary">Join the series waitlist</button>
+        </div>
+      </aside>
+    </div>
+
+    <footer style="margin-top:18px;text-align:center;color:#7b6356">
+      <small>Questions? Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a>. {{BUSINESS_NAME}} — {{TAGLINE}}</small>
+    </footer>
+  </div>
+</body>
+</html>

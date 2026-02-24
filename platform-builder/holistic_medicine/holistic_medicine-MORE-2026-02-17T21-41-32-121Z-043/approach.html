@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Our Method — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="A cohort-based, practical framework for layering skills and supports. Educational and collaborative care in {{CITY}}, {{STATE}}.">
+  <style>
+    :root{--bg:#f7fbfb;--accent:#d45d79;--muted:#6a6a6a;--card:#fff;font-family:Inter,system-ui,Segoe UI,Roboto}
+    body{margin:0;background:var(--bg);color:#111}
+    header{display:flex;justify-content:space-between;align-items:center;padding:16px 22px}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,#d45d79,#6f4e9b);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800}
+    nav a{margin:0 8px;color:var(--muted);text-decoration:none}
+    main{max-width:980px;margin:18px auto;padding:0 20px}
+    .hero{padding:18px;background:#fff;border-radius:12px;box-shadow:0 12px 36px rgba(20,20,20,0.06)}
+    h1{margin:0;color:var(--accent)}
+    .badge{display:inline-block;padding:6px 8px;background:#fff4f7;border-radius:10px;color:var(--accent);font-weight:700}
+    .flow{display:flex;gap:14px;margin-top:18px}
+    .step{background:var(--card);padding:12px;border-radius:12px;flex:1;box-shadow:0 8px 26px rgba(20,20,20,0.04)}
+    .muted{color:var(--muted)}
+    .reveal{opacity:0;transform:translateY(10px);transition:opacity .6s ease,transform .6s ease}
+    .reveal.visible{opacity:1;transform:none}
+    .try{margin-top:12px}
+    footer{padding:30px;text-align:center;color:var(--muted)}
+    @media(max-width:900px){.flow{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo">H</div>
+      <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+    </div>
+    <nav aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="approach.html" aria-current="page">Our Method</a>
+      <a href="services.html">Programs</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="book.html">Book</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" data-reveal>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div class="badge">Cohort model</div>
+          <h1>Layered skills, short timelines</h1>
+          <p class="muted">We design programs so you can learn, try, and keep the parts that work. Each cohort emphasizes one clear target—sleep, digestion, energy, concentration—and teaches a small toolkit to test over weeks.</p>
+        </div>
+        <div style="text-align:right">
+          <div class="muted">Questions?</div>
+          <div style="font-weight:800">{{PHONE}}</div>
+          <div class="muted">or</div>
+          <a href="contact.html" style="text-decoration:none;color:var(--accent);font-weight:700">{{EMAIL}}</a>
+        </div>
+      </div>
+
+      <div class="try" style="margin-top:12px"><button class="btn" id="try-inline" style="background:var(--accent);color:#fff;padding:10px 12px;border-radius:9px;border:0;font-weight:700">Try a 2-minute cue</button></div>
+    </section>
+
+    <section style="margin-top:18px" aria-labelledby="frame-title">
+      <h2 id="frame-title" data-reveal>Practical framework</h2>
+      <p class="muted" data-reveal>Three layers to bring a skill into daily life.</p>
+
+      <div class="flow" style="margin-top:12px">
+        <div class="step reveal" data-reveal>
+          <strong>Anchor</strong>
+          <p class="muted">One simple habit to use as a reliable scaffold (e.g., a 3-minute breath before bed).</p>
+        </div>
+        <div class="step reveal" data-reveal>
+          <strong>Micro-practice</strong>
+          <p class="muted">Short, repeatable practices you can do in pockets of time.</p>
+        </div>
+        <div class="step reveal" data-reveal>
+          <strong>Environment tune</strong>
+          <p class="muted">Small context edits—lighting, meal timing, device rules—that reduce friction for the habit.</p>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:18px" aria-labelledby="evidence-title">
+      <h2 id="evidence-title" data-reveal>Evidence and limits</h2>
+      <div class="card reveal" data-reveal style="margin-top:12px">
+        <p class="muted">We use practices supported by behavior-change and sleep research. Our work is educational and community-based; it is not individualized medical treatment. We welcome collaboration with clinicians and will refer when specialized care is needed.</p>
+      </div>
+    </section>
+
+    <section style="margin-top:18px" aria-labelledby="join-title">
+      <h2 id="join-title" data-reveal>Working with a cohort</h2>
+      <div class="card reveal" data-reveal style="margin-top:12px">
+        <ol class="muted">
+          <li>Pick a target and join the next cycle.</li>
+          <li>Practice short assignments and bring questions to the group.</li>
+          <li>At the end of the cycle, choose what to keep and how to adapt it.</li>
+        </ol>
+        <div style="margin-top:12px"><a href="book.html" class="btn" style="background:var(--accent);color:#fff;padding:10px 12px;border-radius:8px;text-decoration:none;font-weight:700">See upcoming cycles</a></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="muted">Serving {{CITY}}, {{STATE}} · Call {{PHONE}} · {{EMAIL}}</div>
+  </footer>
+
+  <script>
+    // Simple inline 2-minute cue when pressing the inline try button
+    (function(){
+      const btn = document.getElementById('try-inline');
+      btn.addEventListener('click',()=>{
+        const start = Date.now(); const total=120000; btn.disabled=true; const orig=btn.textContent;
+        const id = setInterval(()=>{
+          const rem = Math.max(0, total - (Date.now()-start));
+          const s = Math.ceil(rem/1000);
+          btn.textContent = 'Breath cue — '+s+"s";
+          if(rem<=0){ clearInterval(id); btn.textContent=orig; btn.disabled=false; alert('Nice — a short reset. Try it again when you need a pause.'); }
+        },250);
+        // gentle audio-free guidance via aria-live
+        const live = document.createElement('div'); live.setAttribute('aria-live','polite'); live.className='sr-only'; live.textContent='Start with a slow inhale. Then exhale for longer.'; document.body.appendChild(live);
+        setTimeout(()=>live.remove(),4000);
+      });
+    })();
+
+    // Reveal logic with prefers-reduced-motion
+    (function(){
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const items = document.querySelectorAll('[data-reveal]');
+      if(reduced){ items.forEach(i=>i.classList.add('visible')); return }
+      const observer = new IntersectionObserver((entries)=>{ entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); observer.unobserve(e.target); } }) },{threshold:0.1});
+      items.forEach(i=>observer.observe(i));
+    })();
+  </script>
+</body>
+</html>

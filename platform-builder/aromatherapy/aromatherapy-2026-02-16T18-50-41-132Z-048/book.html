@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reserve a Session — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fffdf9;--ink:#4f4036;--accent:#8fb996;--card:#fff;font-family:Arial, Helvetica, sans-serif}
+    body{margin:0;background:linear-gradient(180deg,#fffdf9,#f7fbf7);color:var(--ink)}
+    header{display:flex;justify-content:space-between;padding:18px 32px;align-items:center}
+    .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(120deg,#f6c89f,#8fb996);display:flex;align-items:center;justify-content:center;color:white}
+    nav a{margin-left:12px;text-decoration:none;color:var(--ink)}
+    .wrap{max-width:980px;margin:20px auto;padding:18px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 30px rgba(79,64,54,0.06)}
+    form label{display:block;font-weight:600;margin:10px 0 6px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e1db}
+    button{background:linear-gradient(90deg,var(--accent),#f6c89f);border:none;padding:10px 14px;border-radius:10px;color:white;cursor:pointer}
+    .times{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+    .slot{padding:8px 10px;border-radius:8px;border:1px solid #efe8e1;background:#fff}
+    .note{font-size:13px;color:#7a6859}
+    .policy{font-size:13px;color:#6f5f52;margin-top:12px}
+    .pattern{position:fixed;left:0;bottom:0;opacity:0.09;width:360px;height:360px}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}.pattern{display:none}}
+  </style>
+</head>
+<body>
+  <svg class="pattern" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <defs>
+      <linearGradient id="bg" x1="0" x2="1"><stop offset="0" stop-color="#8fb996"/><stop offset="1" stop-color="#f6c89f"/></linearGradient>
+      <pattern id="gr" width="24" height="24" patternUnits="userSpaceOnUse"><rect width="24" height="24" fill="transparent" /><circle cx="4" cy="4" r="2" fill="#fff" opacity="0.12"/></pattern>
+    </defs>
+    <rect x="0" y="0" width="200" height="200" rx="18" fill="url(#bg)"/>
+    <rect x="20" y="20" width="160" height="160" rx="12" fill="url(#gr)"/>
+  </svg>
+
+  <header>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="logo">A</div>
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+    </div>
+    <nav>
+      <a href="index.html">Welcome</a>
+      <a href="services.html">Sessions</a>
+      <a href="pricing.html">Plans</a>
+      <a href="about.html">Story</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <div class="grid">
+      <section class="card">
+        <h2 style="margin-top:0">Reserve time for an aromatic session</h2>
+        <p class="note">Choose your session length and share any relevant health notes. Please mention pregnancy, breastfeeding, pets in the home, or known sensitivities — these details guide safe blend selection.</p>
+
+        <form action="{{PRIMARY_CTA_URL}}" method="post" aria-label="booking form">
+          <label for="name">Full name</label>
+          <input id="name" name="name" placeholder="Your name" required>
+
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="you@domain.com" required>
+
+          <label for="phone">Phone (for confirmations)</label>
+          <input id="phone" name="phone" placeholder="{{PHONE}}">
+
+          <label for="session">Session type</label>
+          <select id="session" name="session">
+            <option>Intro — 30 minutes — $45</option>
+            <option>Standard — 60 minutes — $85</option>
+            <option>Double — 90 minutes — $125</option>
+          </select>
+
+          <label for="date">Preferred date &amp; time</label>
+          <input id="date" name="date" type="datetime-local" required>
+
+          <label for="notes">Short notes (allergies, pregnancy, pets, topical interest)</label>
+          <textarea id="notes" name="notes" rows="4" placeholder="Tell us about household, sensitivities, or goals (no medical details needed)"></textarea>
+
+          <div style="margin-top:12px;display:flex;gap:12px;align-items:center">
+            <button type="submit">Confirm Reservation</button>
+            <div class="note">You will receive an email confirmation and intake form.</div>
+          </div>
+        </form>
+
+        <div class="policy">
+          <strong>Cancellation & safety policy:</strong> Please cancel 48 hours in advance to avoid charge. We will guide you through patch testing and dilution; please avoid applying new products before a visit. This practice offers supportive aromatherapy; it is not medical care.
+        </div>
+      </section>
+
+      <aside class="card">
+        <h4 style="margin-top:0">Available slots</h4>
+        <div class="times" aria-hidden>
+          <div class="slot">Mon 10:00</div>
+          <div class="slot">Mon 13:00</div>
+          <div class="slot">Tue 09:30</div>
+          <div class="slot">Tue 15:00</div>
+          <div class="slot">Wed 11:00</div>
+          <div class="slot">Thu 14:30</div>
+        </div>
+
+        <h5 style="margin-top:16px">Quick reminders</h5>
+        <ul style="padding-left:18px;color:#6f5f52">
+          <li>Bring a list of preferred scents or aversions</li>
+          <li>Patch tests are included when topical blends are requested</li>
+          <li>We do not give medical diagnoses or treatment</li>
+        </ul>
+
+        <div style="margin-top:14px">
+          <strong>Membership benefit</strong>
+          <p style="margin:6px 0 0;color:#6f5f52">Members receive priority booking and a monthly curated blend. Consider a membership if you want seasonal rhythm.</p>
+        </div>
+
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <a href="pricing.html" style="text-decoration:none;padding:8px 10px;border-radius:8px;border:1px solid #efe8e1">Plans</a>
+          <a href="contact.html" style="text-decoration:none;padding:8px 10px;border-radius:8px;background:linear-gradient(90deg,#8fb996,#f6c89f);color:white">Ask a question</a>
+        </div>
+      </aside>
+    </div>
+
+    <section style="margin-top:20px" class="card">
+      <h4 style="margin-top:0">Before your visit</h4>
+      <p class="note">To make the most of your time, arrive scent-neutral if possible. Avoid heavy perfumes. If topical application is requested, we will do a patch test to check for sensitivity. If you are pregnant, nursing, or under medical care, please mention this so we can choose oils that follow conservative safety guidance. This is advisory and not medical advice.</p>
+
+      <h4 style="margin-top:12px">Payment & cancellations</h4>
+      <p style="margin:6px 0 0" class="note">Payment is taken at booking. Cancel at least 48 hours prior for a full refund. Memberships bill monthly and can be cancelled anytime; prorating may apply.</p>
+    </section>
+  </main>
+
+  <footer style="padding:20px 32px;color:#7b6c5e">
+    <div style="display:flex;justify-content:space-between;flex-wrap:wrap">
+      <div>{{BUSINESS_NAME}} — {{PRACTITIONER_NAME}}</div>
+      <div><a href="mailto:{{EMAIL}}">{{EMAIL}}</a> &middot; <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    </div>
+  </footer>
+</body>
+</html>

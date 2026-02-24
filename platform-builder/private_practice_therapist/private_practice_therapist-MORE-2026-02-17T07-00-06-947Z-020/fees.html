@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Fees & Options — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1724;--glass:rgba(255,255,255,0.06);--glass-2:rgba(255,255,255,0.04);--accent:#7bd389;--muted:#cbd5e1;--card:#0b1220}
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    body{background:linear-gradient(180deg,#071028 0%, #071522 60%),url('assets/img/pattern.svg');background-size:600px 600px;color:var(--muted);-webkit-font-smoothing:antialiased}
+    .wrap{max-width:980px;margin:40px auto;padding:28px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .brand{display:flex;flex-direction:column}
+    .brand h1{margin:0;font-size:18px;color:#fff;letter-spacing:0.2px}
+    .brand p{margin:0;font-size:13px;color:var(--muted)}
+    nav{display:flex;gap:12px;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:8px}
+    nav a.active,nav a:hover{background:var(--glass);color:#fff}
+
+    main{margin-top:22px}
+    .hero{display:grid;grid-template-columns:1fr 320px;gap:20px}
+    .card{background:linear-gradient(180deg,var(--glass),var(--glass-2));border-radius:14px;padding:18px;backdrop-filter:blur(8px);box-shadow:0 6px 18px rgba(2,6,23,0.6)}
+    .lead{font-size:20px;color:#eef2ff;margin-bottom:8px}
+    .sub{color:var(--muted);font-size:14px}
+
+    /* Pricing comparator */
+    .comparator{display:flex;gap:12px;align-items:center;margin-top:18px}
+    .toggle{background:rgba(255,255,255,0.06);padding:6px;border-radius:999px;display:flex;align-items:center}
+    .toggle button{background:transparent;border:0;color:var(--muted);padding:8px 12px;border-radius:999px;cursor:pointer}
+    .toggle button.active{background:linear-gradient(90deg,var(--accent),#5aa3ff);color:#042a15}
+
+    .prices{display:flex;gap:14px;margin-top:16px}
+    .price-card{flex:1;padding:14px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));display:flex;flex-direction:column;align-items:flex-start}
+    .price-head{font-size:13px;color:var(--muted);margin-bottom:8px}
+    .price-amount{font-size:32px;color:#fff;font-weight:600}
+    .price-desc{font-size:13px;color:var(--muted);margin-top:6px}
+    .cta{margin-top:12px}
+    .btn{background:var(--accent);border:0;padding:10px 14px;border-radius:10px;color:#042a15;font-weight:600;cursor:pointer}
+
+    /* Mood-to-Method */
+    .mood{margin-top:18px}
+    .mood .opts{display:flex;gap:8px;flex-wrap:wrap}
+    .mood button{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);padding:8px 10px;border-radius:10px;cursor:pointer}
+    .mood button.active{background:rgba(255,255,255,0.04);border-color:var(--accent);color:#fff}
+    .recommend{margin-top:12px;padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(123,211,137,0.06),rgba(90,163,255,0.03));color:#eafaf0}
+
+    footer{margin-top:28px;color:var(--muted);font-size:13px}
+
+    /* small responsive */
+    @media (max-width:880px){.hero{grid-template-columns:1fr}.wrap{margin:18px auto;padding:16px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <h1>{{BUSINESS_NAME}}</h1>
+        <p class="sub">Therapeutic offerings & fee options</p>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="approach.html">How I Work</a>
+        <a href="specialties.html">Services</a>
+        <a href="fees.html" class="active">Pricing</a>
+        <a href="faq.html">FAQs</a>
+        <a href="book.html">Book</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <div class="hero">
+        <section class="card">
+          <div class="lead">Options that respect time, need, and budget</div>
+          <div class="sub">Choose ongoing monthly support or focused short series. The numbers below shift instantly so you can compare what fits right now.</div>
+
+          <div class="comparator" aria-hidden>
+            <div style="font-size:13px;color:var(--muted)">View prices as</div>
+            <div class="toggle" role="tablist" aria-label="Pricing toggle">
+              <button id="opt-monthly" class="active" data-mode="monthly">Monthly</button>
+              <button id="opt-package" data-mode="package">Short series</button>
+            </div>
+          </div>
+
+          <div class="prices" id="prices">
+            <div class="price-card">
+              <div class="price-head">Focused Series</div>
+              <div class="price-amount" data-month="120" data-package="320">$<span class="num">120</span></div>
+              <div class="price-desc">Four sessions, practical check-ins and a clear plan.</div>
+              <div class="cta"><button class="btn" data-plan="series">Choose short series</button></div>
+            </div>
+            <div class="price-card">
+              <div class="price-head">Weekly Support</div>
+              <div class="price-amount" data-month="155" data-package="600">$<span class="num">155</span></div>
+              <div class="price-desc">Weekly sessions for steady work and integration.</div>
+              <div class="cta"><button class="btn" data-plan="monthly">Choose monthly</button></div>
+            </div>
+            <div class="price-card">
+              <div class="price-head">Brief Consults</div>
+              <div class="price-amount" data-month="90" data-package="220">$<span class="num">90</span></div>
+              <div class="price-desc">Check-ins and targeted guidance for immediate needs.</div>
+              <div class="cta"><button class="btn" data-plan="brief">Choose consults</button></div>
+            </div>
+          </div>
+
+          <div class="mood">
+            <div style="font-size:13px;color:var(--muted);margin-bottom:8px">Right now I feel</div>
+            <div class="opts" role="tablist" aria-label="Mood selector">
+              <button data-mood="overwhelmed">Overwhelmed</button>
+              <button data-mood="stuck">Stuck</button>
+              <button data-mood="transitioning">Transitioning</button>
+              <button data-mood="curious">Curious</button>
+            </div>
+
+            <div class="recommend" id="recommend">
+              <strong id="rec-title">Suggested approach</strong>
+              <div id="rec-body" style="margin-top:6px;color:#e6f8ea;font-size:14px">Choose a focused short series if you need a contained plan; weekly support when you want steady momentum. Click a plan to move toward booking.</div>
+              <div style="margin-top:10px"><button id="rec-cta" class="btn">{{PRIMARY_CTA_LABEL}}</button></div>
+            </div>
+          </div>
+        </section>
+
+        <aside class="card">
+          <div style="font-size:13px;color:var(--muted)">Quick notes</div>
+          <ul style="margin-top:10px;font-size:13px;color:var(--muted);padding-left:18px">
+            <li>Sliding scale available for certain time-limited offerings (discussed at intake).</li>
+            <li>Package prices reflect a single upfront payment for a set of sessions.</li>
+            <li>Sessions are confidential within professional and legal limits.</li>
+          </ul>
+
+          <div style="margin-top:14px;font-size:13px;color:var(--muted)">Questions? Call <a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none">{{PHONE}}</a> or <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a>.</div>
+        </aside>
+      </div>
+
+      <section class="card" style="margin-top:18px">
+        <div style="font-size:15px;color:#fff;margin-bottom:8px">How decisions are framed here</div>
+        <div style="color:var(--muted);font-size:14px">I present options as a conversation: what you want most now, time you can commit, and how you prefer to work. No obligation to continue beyond an agreed plan. If you have questions about a specific offer, it’s fine to ask before booking.</div>
+      </section>
+
+      <footer>
+        <div style="font-size:13px;color:var(--muted)">Confidentiality note: Records are kept secure; I will discuss limits to confidentiality during intake. Scope: I offer psychotherapy for common life challenges and transitions. I do not provide emergency services. If you are in crisis or feel you may harm yourself or others, call local emergency services or a crisis line immediately.</div>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    // Pricing comparator with animated numbers
+    (function(){
+      const monthlyBtn = document.getElementById('opt-monthly');
+      const packageBtn = document.getElementById('opt-package');
+      const priceEls = document.querySelectorAll('.price-amount');
+      let mode = 'monthly';
+
+      function animateValue(el, start, end, duration){
+        const span = el.querySelector('.num');
+        const startTime = performance.now();
+        function step(now){
+          const elapsed = now - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const value = Math.round(start + (end - start) * progress);
+          span.textContent = value;
+          if(progress < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+
+      function setMode(newMode){
+        mode = newMode;
+        document.querySelectorAll('.toggle button').forEach(b=>b.classList.remove('active'));
+        if(mode==='monthly') monthlyBtn.classList.add('active'); else packageBtn.classList.add('active');
+
+        priceEls.forEach(el=>{
+          const from = parseInt(el.querySelector('.num').textContent,10) || 0;
+          const to = parseInt(el.getAttribute('data-' + mode),10) || 0;
+          animateValue(el, from, to, 500);
+        });
+      }
+
+      monthlyBtn.addEventListener('click',()=>setMode('monthly'));
+      packageBtn.addEventListener('click',()=>setMode('package'));
+
+      // initial settle
+      setMode('monthly');
+
+      // plan buttons forward to booking
+      document.querySelectorAll('.price-card .btn').forEach(b=>{
+        b.addEventListener('click',(e)=>{
+          const plan = e.currentTarget.getAttribute('data-plan');
+          // link to booking with a query hint
+          window.location = 'book.html?plan=' + encodeURIComponent(plan);
+        });
+      });
+    })();
+
+    // Mood-to-Method selector
+    (function(){
+      const options = document.querySelectorAll('[data-mood]');
+      const title = document.getElementById('rec-title');
+      const body = document.getElementById('rec-body');
+      const cta = document.getElementById('rec-cta');
+
+      const map = {
+        overwhelmed: {
+          t: 'Short, practical pathway',
+          b: 'When days feel like too much, brief weekly sessions with clear tasks can relieve immediate strain and create breathing room.',
+          label: 'Start a short series', link: 'book.html?plan=series'
+        },
+        stuck: {
+          t: 'Steady momentum work',
+          b: 'If you feel stalled, ongoing weekly sessions help track patterns, try small experiments, and build forward motion over time.',
+          label: 'Book steady support', link: 'book.html?plan=monthly'
+        },
+        transitioning: {
+          t: 'Navigation-focused sessions',
+          b: 'Transitions invite clarity work; focused consults paired with planning sessions can feel efficient and supportive.',
+          label: 'Explore navigation plan', link: 'book.html?plan=navigate'
+        },
+        curious: {
+          t: 'Exploratory consults',
+          b: 'Want to see how it feels? Short consults let you judge fit and form an early plan without commitment to long-term scheduling.',
+          label: 'Book a consult', link: 'book.html?plan=brief'
+        }
+      };
+
+      function setMood(key){
+        options.forEach(o=>o.classList.toggle('active', o.getAttribute('data-mood')===key));
+        const data = map[key];
+        if(data){
+          title.textContent = data.t;
+          body.textContent = data.b;
+          cta.textContent = data.label;
+          cta.onclick = ()=> window.location = data.link;
+        }
+      }
+
+      options.forEach(o=>o.addEventListener('click',()=>setMood(o.getAttribute('data-mood'))));
+
+      // auto-select if query string has mood
+      const q = new URLSearchParams(location.search);
+      if(q.has('mood')){
+        const m = q.get('mood'); if(map[m]) setMood(m);
+      }
+    })();
+  </script>
+</body>
+</html>

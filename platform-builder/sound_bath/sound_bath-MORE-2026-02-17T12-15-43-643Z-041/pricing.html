@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Rates & Add-ons — {{BUSINESS_NAME}}</title>
+  <meta name='description' content='Pricing for group gatherings, private sessions, and optional retail add-ons.'>
+  <style>
+    :root{--bg:#06131a;--card:#071a20;--accent:#bfa678;--muted:#9fb0bf}
+    body{margin:0;background:linear-gradient(180deg,#06131a,#07131a);color:#e8f2f7;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto}
+    .wrap{max-width:980px;margin:28px auto;padding:22px}
+    header{display:flex;justify-content:space-between;align-items:center}
+    nav a{color:var(--muted);margin-left:12px;text-decoration:none}
+    h1{margin:12px 0}
+    .cards{display:grid;grid-template-columns:1fr 320px;gap:18px}
+    .card{background:rgba(255,255,255,0.02);padding:16px;border-radius:12px}
+    .price{font-weight:800;font-size:20px;color:var(--accent)}
+    .addons{display:grid;gap:8px;margin-top:12px}
+    .addon{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:8px;background:rgba(255,255,255,0.01)}
+    .calc{background:#03171a;padding:12px;border-radius:10px}
+    .summary{white-space:pre-wrap;background:#021018;padding:10px;border-radius:8px;margin-top:10px;border:1px solid rgba(255,255,255,0.02)}
+    .btn{background:var(--accent);padding:10px 12px;border-radius:8px;color:#07202a;text-decoration:none;font-weight:700}
+    @media(max-width:920px){.cards{grid-template-columns:1fr}} 
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <header>
+      <div>
+        <div style='font-weight:800'>Pricing</div>
+        <div style='color:var(--muted);font-size:13px'>Transparent rates and optional retail items</div>
+      </div>
+      <nav>
+        <a href='index.html'>Home</a>
+        <a href='events.html'>Gatherings</a>
+        <a href='private-sessions.html'>Privates</a>
+      </nav>
+    </header>
+
+    <main style='margin-top:18px'>
+      <h1>Packages & Add-ons</h1>
+      <div class='cards'>
+        <section class='card'>
+          <h3 style='margin-top:0'>Group Gatherings</h3>
+          <div style='display:flex;gap:12px;align-items:center'>
+            <div>
+              <div class='price'>$35</div>
+              <div style='color:var(--muted);font-size:13px'>per person — typical 75–90 minute session</div>
+            </div>
+            <div style='margin-left:auto'>
+              <a href='events.html' class='btn'>See calendar</a>
+            </div>
+          </div>
+
+          <hr style='border:none;border-top:1px solid rgba(255,255,255,0.03);margin:12px 0'>
+
+          <h3 style='margin-bottom:6px'>Private Sessions</h3>
+          <div style='display:flex;gap:10px;align-items:center'>
+            <div>
+              <div style='font-weight:800'>$120</div>
+              <div style='color:var(--muted);font-size:13px'>60-minute private (studio)</div>
+            </div>
+            <div style='margin-left:auto'><a href='private-sessions.html' class='btn' style='background:#8f7a5a'>Plan yours</a></div>
+          </div>
+
+          <div style='margin-top:12px;color:var(--muted);font-size:13px'>Bulk sessions and corporate rates available on request.</div>
+
+          <div style='margin-top:14px'>
+            <strong style='display:block;margin-bottom:8px'>Retail add-ons (purchase at booking)</strong>
+            <div class='addons'>
+              <label class='addon'><span>Hand-stitched blanket</span><span>$28 <input type='checkbox' data-price='28' class='addonCheck' style='margin-left:8px'></span></label>
+              <label class='addon'><span>Travel eye pillow</span><span>$14 <input type='checkbox' data-price='14' class='addonCheck' style='margin-left:8px'></span></label>
+              <label class='addon'><span>Organic botanical spray</span><span>$12 <input type='checkbox' data-price='12' class='addonCheck' style='margin-left:8px'></span></label>
+            </div>
+          </div>
+        </section>
+
+        <aside class='card'>
+          <h3 style='margin-top:0'>Price builder</h3>
+          <div class='calc'>
+            <div style='margin-bottom:8px'>
+              <label style='display:block;color:var(--muted);font-size:13px'>Choose a package</label>
+              <select id='pkg' style='width:100%;padding:8px;border-radius:8px;background:#041819;border:1px solid rgba(255,255,255,0.02);color:#eaf2f8'>
+                <option value='group' data-price='35'>Group — $35 per person</option>
+                <option value='private' data-price='120'>Private (60m) — $120</option>
+                <option value='private90' data-price='170'>Private (90m) — $170</option>
+              </select>
+            </div>
+
+            <div style='margin-bottom:8px'>
+              <label style='display:block;color:var(--muted);font-size:13px'>Quantity</label>
+              <input id='qty' type='number' value='1' min='1' style='width:100%;padding:8px;border-radius:8px;background:#041819;border:1px solid rgba(255,255,255,0.02);color:#eaf2f8'>
+            </div>
+
+            <div style='font-size:13px;color:var(--muted)'>Select add-ons below (also available as retail on arrival)</div>
+            <div style='display:flex;flex-direction:column;gap:8px;margin-top:8px'>
+              <label style='display:flex;justify-content:space-between;align-items:center'><span style='font-size:14px'>Blanket</span><input type='checkbox' class='calcAddon' data-price='28'></label>
+              <label style='display:flex;justify-content:space-between;align-items:center'><span style='font-size:14px'>Eye pillow</span><input type='checkbox' class='calcAddon' data-price='14'></label>
+              <label style='display:flex;justify-content:space-between;align-items:center'><span style='font-size:14px'>Botanical spray</span><input type='checkbox' class='calcAddon' data-price='12'></label>
+            </div>
+
+            <div style='margin-top:12px;display:flex;gap:8px;align-items:center'>
+              <div style='font-size:13px;color:var(--muted)'>Total</div>
+              <div style='margin-left:auto;font-weight:800;font-size:18px;color:var(--accent)' id='total'>$0</div>
+            </div>
+
+            <div class='summary' id='receipt'>No selection made.</div>
+
+            <div style='display:flex;gap:8px;margin-top:8px'>
+              <button id='calcBtn' class='btn'>Calculate</button>
+              <button id='copyPrice' class='btn' style='background:#6b5a44'>Copy summary</button>
+              <a href='book.html' class='btn' style='margin-left:auto'>Proceed to reserve</a>
+            </div>
+          </div>
+        </aside>
+
+      </div>
+
+      <div style='margin-top:18px;color:var(--muted);font-size:13px'>Note: prices shown are examples and subject to change. All sessions include a brief consultation and time to return to seated awareness. If you have medical questions, consult your clinician.</div>
+    </main>
+  </div>
+
+  <script>
+    function currency(n){ return '$'+(n.toFixed(2)); }
+    function compute(){
+      const pkg = document.getElementById('pkg');
+      const price = Number(pkg.selectedOptions[0].dataset.price);
+      const qty = Math.max(1,Number(document.getElementById('qty').value||1));
+      const addChecks = document.querySelectorAll('.calcAddon');
+      let addons = [];
+      let addonTotal = 0;
+      addChecks.forEach(a=>{ if(a.checked){ const p=Number(a.dataset.price); addons.push({label:a.previousSibling? a.previousSibling.textContent.trim():'Addon',price:p}); addonTotal+=p; } });
+      const subtotal = (price*qty)+addonTotal;
+      document.getElementById('total').textContent = currency(subtotal);
+      const parts = [];
+      parts.push('Selection summary');
+      parts.push('Package: '+pkg.value+' ('+currency(price)+')');
+      parts.push('Quantity: '+qty);
+      if(addons.length) parts.push('Add-ons: '+addons.map(a=>a.label+' ('+currency(a.price)+')').join(', '));
+      parts.push('\nTotal: '+currency(subtotal));
+      parts.push('\nTo reserve, proceed to the Reserve page or contact '+ '{{EMAIL}}' +'.');
+      document.getElementById('receipt').textContent = parts.join('\n');
+    }
+
+    document.getElementById('calcBtn').addEventListener('click',compute);
+    document.getElementById('copyPrice').addEventListener('click',()=>{
+      const t = document.getElementById('receipt').textContent;
+      if(!t || t.includes('No selection')){ alert('Calculate first.'); return; }
+      navigator.clipboard && navigator.clipboard.writeText(t).then(()=>{ alert('Price summary copied.'); },()=>{ alert('Copy not available.'); });
+    });
+
+    // init
+    document.addEventListener('DOMContentLoaded',()=>{ compute(); });
+  </script>
+</body>
+</html>

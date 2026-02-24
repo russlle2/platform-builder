@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1720;--card:#0b1220;--accent:#9be3d6;--muted:#9aa6b2;--glass:rgba(255,255,255,0.04);--joy:#ffd166}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;color:#e6eef3;background:linear-gradient(180deg,#071422 0%,#081925 60%);-webkit-font-smoothing:antialiased}
+    .wrap{max-width:980px;margin:28px auto;padding:28px}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:56px;height:56px;background:var(--glass);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent);}
+    nav a{color:#cfe9e3;margin-left:18px;text-decoration:none;font-weight:600}
+    .hero{background:linear-gradient(180deg,rgba(15,23,32,0.6),rgba(4,10,14,0.6));padding:26px;border-radius:14px;display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start}
+    .hero h1{margin:0;font-size:28px;line-height:1.05}
+    .lead{color:var(--muted);margin-top:8px}
+    .panel{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 20px rgba(2,8,12,0.48)}
+    .method-card{border-radius:10px;padding:14px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);display:flex;gap:12px;align-items:center}
+    .method-bubble{width:52px;height:52px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#6ee7b7);display:flex;align-items:center;justify-content:center;color:#072227;font-weight:700}
+    .muted{color:var(--muted);font-size:14px}
+    .cta{display:inline-block;padding:10px 16px;border-radius:10px;background:var(--accent);color:#062a26;font-weight:700;text-decoration:none}
+
+    /* Mood selector */
+    .mood-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
+    .mood{padding:10px;border-radius:10px;background:rgba(255,255,255,0.03);cursor:pointer;border:1px solid transparent;display:flex;align-items:center;gap:10px}
+    .mood.active{border-color:rgba(155,227,214,0.18);box-shadow:0 6px 18px rgba(9,16,19,0.6);transform:translateY(-4px)}
+    .mood .ico{width:36px;height:36;border-radius:8px;background:linear-gradient(135deg,var(--joy),#ffd7a6);display:flex;align-items:center;justify-content:center;font-weight:700}
+
+    .recommend{padding:14px;margin-top:12px;border-radius:10px;background:linear-gradient(90deg,rgba(0,0,0,0.18),rgba(255,255,255,0.02));min-height:92px}
+    .recommend h3{margin:0 0 8px 0}
+    .recommend p{margin:0;color:var(--muted)}
+    .small{font-size:13px;color:var(--muted);margin-top:12px}
+
+    footer{margin-top:18px;color:var(--muted);font-size:13px}
+
+    /* pattern overlay */
+    .pattern{position:fixed;inset:0;pointer-events:none;background-image:url('assets/img/pattern.svg');opacity:0.06;background-repeat:repeat}
+
+    @media (max-width:840px){.hero{grid-template-columns:1fr;}.wrap{padding:18px}}
+  </style>
+</head>
+<body>
+  <div class="pattern" aria-hidden></div>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">SB</div>
+        <div>
+          <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+          <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="events.html">Sessions</a>
+        <a href="pricing.html">Plans</a>
+        <a href="about.html">About</a>
+        <a href="faq.html">FAQ</a>
+        <a href="book.html" style="background:var(--accent);padding:8px 12px;border-radius:8px;color:#052a26;margin-left:12px;font-weight:700;text-decoration:none">{{PRIMARY_CTA_LABEL}}</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div>
+        <h1>How we guide a room — technique and intent, simplified</h1>
+        <div class="lead">We treat sound as a framework: not only to relax the body, but to shift attention and reframe tired nervous systems. Below, the approach you can expect and how to choose what fits right now.</div>
+        <div class="panel" style="margin-top:16px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="color:var(--muted);font-size:13px">Current lead facilitator</div>
+              <div style="font-weight:700">Lead Musician — somatic orientation</div>
+            </div>
+            <div style="text-align:right">
+              <div class="muted">Connect</div>
+              <a class="cta" href="mailto:{{EMAIL}}">Email team</a>
+            </div>
+          </div>
+
+          <div style="margin-top:14px" class="small">Sessions are curated to match a tone: restorative, focusing, or exploratory. Each gathering is short on instruction and long on guided sonic architecture.</div>
+        </div>
+
+        <div class="panel" style="margin-top:14px">
+          <div style="font-weight:700">Find your method — quick selector</div>
+          <div class="muted" style="margin-top:6px">Pick how you feel; we suggest the approach most likely to help.</div>
+
+          <div class="mood-grid" id="moodGrid" role="list">
+            <button class="mood" data-key="tired" aria-pressed="false"><div class="ico">Z</div><div><strong>Worn out</strong><div class="muted">Slow, enveloping tones</div></div></button>
+            <button class="mood" data-key="wired" aria-pressed="false"><div class="ico">⚡</div><div><strong>Overactive</strong><div class="muted">Steady pulses & grounding drones</div></div></button>
+            <button class="mood" data-key="sad" aria-pressed="false"><div class="ico">☽</div><div><strong>Low mood</strong><div class="muted">Warm timbres with breath-led pacing</div></div></button>
+            <button class="mood" data-key="curious" aria-pressed="false"><div class="ico">✦</div><div><strong>Curious</strong><div class="muted">Interactive tones & short motifs</div></div></button>
+          </div>
+
+          <div class="recommend" id="recommend">
+            <h3>Choose a feeling to see a recommended approach</h3>
+            <p class="muted">Recommendations include a short description and a suggested reservation action. Your choice will also change the booking call-to-action below.</p>
+          </div>
+
+          <div class="small">Contraindications: Not recommended if you have uncontrolled hypertension, recent head injury, or are acutely psychotic. If pregnant, epileptic, or on heavy medication, consult your practitioner before attending. If in doubt, contact us at {{PHONE}} or {{EMAIL}}.</div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="panel">
+          <div style="font-size:14px;color:var(--muted)">Quick facts</div>
+          <div style="font-weight:700;margin-top:6px">Sessions in {{CITY}}, {{STATE}}</div>
+
+          <div style="margin-top:12px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px"><div class="muted">Typical length</div><div style="font-weight:700">50 minutes</div></div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px"><div class="muted">Capacity</div><div style="font-weight:700">12 people</div></div>
+            <div style="display:flex;justify-content:space-between"><div class="muted">Price range</div><div style="font-weight:700">Sliding / membership options</div></div>
+          </div>
+
+          <div style="margin-top:12px;text-align:center">
+            <a href="book.html" class="cta" id="sideCta">{{PRIMARY_CTA_LABEL}}</a>
+            <div style="font-size:12px;color:var(--muted);margin-top:8px">Reserve a spot or explore memberships</div>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:14px">
+          <div style="font-weight:700">What we are not</div>
+          <div class="muted" style="margin-top:8px">This offering is experiential and not a substitute for therapy. If you are seeking treatment for severe mental health conditions, please consult a licensed professional.</div>
+        </div>
+      </aside>
+    </section>
+
+    <footer>
+      <div>Questions? Call <strong>{{PHONE}}</strong> or email <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a>.</div>
+    </footer>
+  </div>
+
+  <script>
+    (function(){
+      const moods = {
+        tired:{title:'Slow Unwind',desc:'We lean on long, harmonic tones and a spacious pace. Expect soft transitions and emphasis on breath sync.' ,cta:'Reserve a Slow Unwind'},
+        wired:{title:'Grounding Pulse',desc:'Rhythmic drones and low-frequency anchors encourage orientation and steadying of attention.',cta:'Reserve a Grounding Session'},
+        sad:{title:'Warm Reframe',desc:'Close, warm textures and voice-guided micro-invitations to move attention toward gentle safety.',cta:'Reserve a Warm Reframe'},
+        curious:{title:'Exploratory Flow',desc:'Short motifs and responsive layers for gentle curiosity and attention play.',cta:'Reserve an Exploratory Flow'}
+      };
+
+      const grid = document.getElementById('moodGrid');
+      const rec = document.getElementById('recommend');
+      const sideCta = document.getElementById('sideCta');
+
+      grid.addEventListener('click', (e)=>{
+        const btn = e.target.closest('.mood');
+        if(!btn) return;
+        [...grid.querySelectorAll('.mood')].forEach(n=>{n.classList.remove('active');n.setAttribute('aria-pressed','false')});
+        btn.classList.add('active');btn.setAttribute('aria-pressed','true');
+        const key = btn.getAttribute('data-key');
+        if(!moods[key]) return;
+        const data = moods[key];
+        // morph recommendation
+        rec.innerHTML = '<h3>'+data.title+'</h3><p class="muted">'+data.desc+'</p>';
+        // animate CTA text change
+        animateTextChange(sideCta, data.cta);
+      });
+
+      function animateTextChange(el, text){
+        const original = el.textContent;
+        let i=0;
+        el.style.transition='transform .18s ease';
+        el.style.transform='translateY(-6px) scale(.98)';
+        setTimeout(()=>{
+          el.textContent = text;
+          el.style.transform='translateY(0) scale(1)';
+        },160);
+      }
+    })();
+  </script>
+</body>
+</html>

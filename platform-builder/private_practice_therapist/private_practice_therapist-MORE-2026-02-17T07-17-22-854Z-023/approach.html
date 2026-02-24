@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>How I Work — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#071827;--card:#08131a;--muted:#9eb0bd;--accent:#8be9ff}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:linear-gradient(180deg,#04121a 0%,#071827 100%);color:#e9fbff}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 26px}
+    nav a{color:var(--muted);text-decoration:none;margin:0 10px;font-weight:600}
+    main{max-width:980px;margin:22px auto;padding:22px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:12px}
+    h1{margin-top:0}
+    .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+    .pillar{background:rgba(255,255,255,0.02);padding:14px;border-radius:10px}
+    .muted{color:var(--muted)}
+    .mood-panel{display:flex;gap:12px;margin-top:16px}
+    .mood-list{display:flex;flex-direction:column;gap:8px;width:260px}
+    .mood-list button{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:10px;border-radius:8px;text-align:left;color:var(--muted);cursor:pointer}
+    .mood-list button.active{background:linear-gradient(180deg,rgba(139,233,255,0.08),transparent);border-color:rgba(139,233,255,0.14);color:#e8fbff}
+    .method-card{flex:1;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:14px;border-radius:10px}
+    .method-title{font-weight:800;color:#bff7ff}
+    .method-body{margin-top:8px;color:var(--muted)}
+    .cta{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:8px;background:linear-gradient(90deg,var(--accent),#38bde2);color:#031617;text-decoration:none;font-weight:700}
+    .pattern{height:120px;margin-top:16px;border-radius:8px;overflow:hidden}
+    .mutedsmall{color:var(--muted);font-size:13px}
+    @media (max-width:880px){.pillars{grid-template-columns:1fr}.mood-panel{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="width:44px;height:44px;background:linear-gradient(135deg,#083c49,#04414a);border-radius:8px"></div>
+      <div>
+        <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">An approach for adults navigating change</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Welcome</a>
+      <a href="about.html">The Guide</a>
+      <a href="specialties.html">Focus Areas</a>
+      <a href="approach.html">How I Work</a>
+      <a href="faq.html">Common Qs</a>
+      <a href="contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>How I work with people</h1>
+    <p class="muted">Clinical listening, small experiments, and practical scaffolding. Below are the pillars that shape sessions and the way I translate a current mood into a recommended method.</p>
+
+    <section class="pillars" aria-hidden>
+      <div class="pillar">
+        <div style="font-weight:800">Pause & Notice</div>
+        <div class="muted" style="margin-top:8px">We begin by slowing to notice what’s active right now — thoughts, body sensations, and the immediate pattern.</div>
+      </div>
+      <div class="pillar">
+        <div style="font-weight:800">Map & Experiment</div>
+        <div class="muted" style="margin-top:8px">We map recurring cycles and try small, testable changes between sessions to see what shifts.</div>
+      </div>
+      <div class="pillar">
+        <div style="font-weight:800">Skill & Context</div>
+        <div class="muted" style="margin-top:8px">Tools are practical and tailored: brief exercises, communication moves, or pacing adjustments for daily life.</div>
+      </div>
+    </section>
+
+    <section class="mood-panel">
+      <div class="mood-list" id="mood-list">
+        <button data-key="anx">Tense / Anxious</button>
+        <button data-key="adrift">Adrift / Confused</button>
+        <button data-key="heavy">Heavy / Low</button>
+        <button data-key="rupture">Rupture / Conflict</button>
+      </div>
+
+      <div class="method-card">
+        <div class="method-title" id="method-title">Pick how you feel now</div>
+        <div class="method-body" id="method-body">Selecting a current state will shape the recommended session focus and the call-to-action. The aim is clarity and a next practical step, not promises of outcomes.</div>
+
+        <div style="display:flex;gap:12px;align-items:center;margin-top:12px">
+          <a href="{{PRIMARY_CTA_URL}}" id="method-cta" class="cta">{{PRIMARY_CTA_LABEL}}</a>
+          <div class="mutedsmall">Or reach out: <a href="tel:{{PHONE}}" style="color:#c6f8ff;text-decoration:none">{{PHONE}}</a></div>
+        </div>
+
+        <div class="pattern" role="img" aria-hidden>
+          <img src="assets/img/pattern.svg" alt="" style="width:100%;height:100%;object-fit:cover;filter:contrast(0.9) brightness(0.9);">
+        </div>
+
+        <div class="mutedsmall" style="margin-top:10px">Confidentiality: sessions are private. Limits include harm to self/others, abuse of minors/elders, and legal requirements.</div>
+      </div>
+    </section>
+
+    <footer style="margin-top:18px;color:var(--muted)">
+      <div style="font-weight:700">A practical caution</div>
+      <div class="muted" style="margin-top:8px">Therapy is a collaborative process. I do not provide crisis or emergency services. If you are in immediate danger, call local emergency services. For urgent support, use your local crisis line.</div>
+    </footer>
+  </main>
+
+  <script>
+    (function(){
+      const map = {
+        anx:{title:'Calm the system: regulation first',body:'When tension is high, early sessions emphasize grounding skills, short regulation practices, and a plan for evenings or stressful moments. The aim is to make space for clearer reflection rather than pushing for immediate insight.',cta:'Request a Stabilizing Session'},
+        adrift:{title:'Clarify next moves: mapping & choices',body:'When you feel unsure, we make a practical map of options, test a small change, and pick one step to try. Sessions are oriented around clarity and choice rather than indefinite exploration.',cta:'Book a Mapping Visit'},
+        heavy:{title:'Slow grief work & pacing',body:'Low energy or sadness is met with paced sessions that honour limits: brief measures, compassionate check-ins, and attention to sleep and routine. We take time and keep goals small and attainable.',cta:'Schedule a Gentle Session'},
+        rupture:{title:'Repair & communication practice',body:'After conflicts or ruptures, work focuses on repair, clear communication moves, and safety planning for conversations. We practice language and real-time strategies you can try between sessions.',cta:'Arrange a Repair Session'}
+      };
+
+      const list = document.getElementById('mood-list');
+      const title = document.getElementById('method-title');
+      const body = document.getElementById('method-body');
+      const cta = document.getElementById('method-cta');
+
+      list.addEventListener('click', (e)=>{
+        const b = e.target.closest('button');
+        if(!b) return;
+        const key = b.dataset.key;
+        [...list.querySelectorAll('button')].forEach(btn=>btn.classList.remove('active'));
+        b.classList.add('active');
+        const obj = map[key];
+        // Morphing animation for title and body
+        title.animate([{opacity:0,transform:'translateY(-6px)'},{opacity:1,transform:'translateY(0)'}],{duration:260,easing:'ease'});
+        body.animate([{opacity:0,transform:'translateY(6px)'},{opacity:1,transform:'translateY(0)'}],{duration:260,easing:'ease'});
+        title.textContent = obj.title;
+        body.textContent = obj.body;
+        cta.textContent = obj.cta;
+        // Subtle color flash
+        cta.animate([{background:'#bff7ff'},{background:'linear-gradient(90deg,var(--accent),#38bde2)'}],{duration:420});
+      });
+    })();
+  </script>
+</body>
+</html>

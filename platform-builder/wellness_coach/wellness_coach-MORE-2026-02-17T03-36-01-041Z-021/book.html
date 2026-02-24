@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Book a session — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#07121b;--panel:#072028;--muted:#9fb2ba;--accent:#7de0c9;color:#eaf7f3;font-family:Inter, system-ui, -apple-system, Arial, sans-serif}
+    body{margin:0;background:radial-gradient(1200px 600px at 10% 10%,rgba(124,58,237,0.08),transparent),linear-gradient(180deg,var(--bg),#021018);min-height:100vh}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 26px}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#7de0c9,#60a5fa);display:flex;align-items:center;justify-content:center;color:#022630;font-weight:800}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none}
+    main{max-width:980px;margin:28px auto;padding:16px}
+    .hero{padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);display:flex;gap:18px;align-items:center}
+    .hero h1{margin:0}
+
+    .book-wrap{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px}
+    .panel{background:var(--panel);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+
+    /* Session Planner - main */
+    .planner-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    label{font-size:13px;color:var(--muted)}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--muted)}
+    .full{grid-column:1/3}
+    .controls{display:flex;gap:8px;margin-top:10px}
+    button.primary{background:linear-gradient(90deg,var(--accent),#60a5fa);border:none;padding:10px 12px;border-radius:8px;color:#022630;font-weight:800}
+    button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:10px;border-radius:8px;color:var(--muted)}
+    .output{margin-top:12px;background:#02161a;padding:12px;border-radius:8px;color:var(--muted);font-family:ui-monospace,monospace;white-space:pre-wrap}
+
+    [data-reveal]{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+    [data-reveal].revealed{opacity:1;transform:none}
+
+    @media (max-width:940px){.book-wrap{grid-template-columns:1fr}.planner-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo">W</div>
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+    </div>
+    <nav aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="about.html">Approach</a>
+      <a href="programs.html">Plans</a>
+      <a href="services.html">Schedule</a>
+      <a href="testimonials.html">Stories</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="book.html" style="color:var(--accent);font-weight:700">Book</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" data-reveal>
+      <div>
+        <h1>Reserve your focused session</h1>
+        <p style="color:var(--muted)">Start by shaping the outcome. Use the planner to craft a short agenda we can use to make your time highly productive.</p>
+      </div>
+      <div style="margin-left:auto"><a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">Questions? Email</a></div>
+    </section>
+
+    <div class="book-wrap">
+      <section class="panel" data-reveal>
+        <h3>Session Planner</h3>
+        <p style="color:var(--muted)">Build a concise session agenda and an actionable follow-through list. Then copy the summary to paste into your calendar or booking form.</p>
+
+        <form id="planner-form" onsubmit="return false;" class="planner-grid" aria-label="Session planner">
+          <div>
+            <label for="goal">Primary outcome</label>
+            <input id="goal" placeholder="e.g., steadier afternoon energy" />
+          </div>
+
+          <div>
+            <label for="audience">Your weekly load</label>
+            <select id="audience"><option>High tempo (40+ hrs)</option><option>Moderate (25-40 hrs)</option><option>Light (under 25 hrs)</option></select>
+          </div>
+
+          <div>
+            <label for="session-type">Session type</label>
+            <select id="session-type"><option value="vip">VIP Day — 4 hours</option><option value="sprint">Sprint — 2 hours</option><option value="tune">Tune-up — 1 hour</option></select>
+          </div>
+
+          <div>
+            <label for="frequency">Post-session cadence</label>
+            <select id="frequency"><option>Weekly check-ins</option><option>Bi-weekly</option><option>One follow-up</option></select>
+          </div>
+
+          <div class="full">
+            <label for="constraints">Constraints or notes</label>
+            <textarea id="constraints" rows="3" placeholder="Time windows, travel, co-attendees, or other needs"></textarea>
+          </div>
+
+          <div class="full controls">
+            <button class="primary" id="build">Create summary</button>
+            <button class="ghost" id="clear">Clear</button>
+            <a href="{{PRIMARY_CTA_URL}}" class="ghost" style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:var(--muted)">Go to booking form</a>
+          </div>
+
+          <div class="full">
+            <div id="plan-output" class="output" aria-live="polite">Your plan summary will appear here.</div>
+            <div style="display:flex;gap:8px;margin-top:8px"><button class="primary" id="copy">Copy summary</button><button class="ghost" id="download">Download .txt</button></div>
+          </div>
+        </form>
+      </section>
+
+      <aside class="panel" data-reveal>
+        <h4>What to expect</h4>
+        <ul style="color:var(--muted)">
+          <li>Focused agenda tailored to your primary outcome</li>
+          <li>Three concrete habits to test the week after</li>
+          <li>A short follow-up rhythm to secure gains</li>
+        </ul>
+
+        <h4 style="margin-top:14px">Need help deciding?</h4>
+        <p style="color:var(--muted)">Call <a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none">{{PHONE}}</a> or email <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a></p>
+      </aside>
+    </div>
+
+    <section style="margin-top:18px" data-reveal>
+      <h4>Small print</h4>
+      <p style="color:var(--muted)">Sessions focus on outcomes, habits and repeatable frameworks. This coaching is not medical advice and does not replace professional medical care.</p>
+    </section>
+
+  </main>
+
+  <script>
+    (function(){
+      // reveal sections
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if(prefersReduced){document.querySelectorAll('[data-reveal]').forEach(e=>e.classList.add('revealed'));}
+      else{const io = new IntersectionObserver((entries)=>{entries.forEach(en=>{if(en.isIntersecting){en.target.classList.add('revealed');io.unobserve(en.target)}})},{threshold:0.12});document.querySelectorAll('[data-reveal]').forEach(e=>io.observe(e));}
+
+      // Planner logic
+      function buildPlan(){
+        const goal = document.getElementById('goal').value.trim() || 'Clarify a practical routine';
+        const load = document.getElementById('audience').value;
+        const type = document.getElementById('session-type').value;
+        const sessionLabel = {vip:'VIP Day — 4 hours',sprint:'Sprint — 2 hours',tune:'Tune-up — 1 hour'}[type] || 'Session';
+        const freq = document.getElementById('frequency').value;
+        const notes = document.getElementById('constraints').value.trim();
+
+        const habits = [];
+        if(load.includes('High')){
+          habits.push('1) Anchor cue: fixed short ritual at transition times (5 min).');
+          habits.push('2) Micro-check: two-minute logging at midday.');
+          habits.push('3) End-of-day reset: 3 clear steps to close work.');
+        } else if(load.includes('Moderate')){
+          habits.push('1) One morning anchor tied to existing habit.');
+          habits.push('2) Midday energy check (one simple metric).');
+          habits.push('3) Weekly reflection slot (15 min).');
+        } else {
+          habits.push('1) Gentle morning anchor to start the day.');
+          habits.push('2) Short planning ritual before heavy tasks.');
+          habits.push('3) Simple end-of-day note to close the loop.');
+        }
+
+        const planLines = [];
+        planLines.push('Session summary');
+        planLines.push('--------------');
+        planLines.push('Desired outcome: ' + goal);
+        planLines.push('Session format: ' + sessionLabel);
+        planLines.push('Recommended follow-up cadence: ' + freq);
+        planLines.push('\nKey habit anchors:');
+        habits.forEach(h=>planLines.push('- ' + h));
+        planLines.push('\nImmediate outputs:');
+        planLines.push('- A concise 7-day experiment with prompts');
+        planLines.push('- A short checklist for each day to run the experiment');
+        planLines.push('- A follow-up checkpoint schedule to review progress');
+        if(notes) planLines.push('\nConstraints / notes: ' + notes);
+        planLines.push('\nBooking link: ' + '{{PRIMARY_CTA_URL}}');
+        return planLines.join('\n');
+      }
+
+      document.getElementById('build').addEventListener('click',()=>{
+        const out = buildPlan();
+        document.getElementById('plan-output').textContent = out;
+      });
+
+      document.getElementById('clear').addEventListener('click',()=>{
+        document.getElementById('goal').value='';document.getElementById('constraints').value='';document.getElementById('plan-output').textContent='Your plan summary will appear here.';
+      });
+
+      document.getElementById('copy').addEventListener('click',async ()=>{
+        const text = document.getElementById('plan-output').textContent;
+        if(!text) return;
+        try{await navigator.clipboard.writeText(text);document.getElementById('copy').textContent='Copied';setTimeout(()=>document.getElementById('copy').textContent='Copy summary',1200);}catch(e){alert('Unable to copy. Select and copy manually.');}
+      });
+
+      document.getElementById('download').addEventListener('click',()=>{
+        const text = document.getElementById('plan-output').textContent;
+        if(!text) return;
+        const blob = new Blob([text],{type:'text/plain'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');a.href = url;a.download = 'session-plan.txt';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+      });
+
+    })();
+  </script>
+</body>
+</html>

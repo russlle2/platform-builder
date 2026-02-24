@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{{BUSINESS_NAME}} — {{TAGLINE}}</title>
+  <meta name="description" content="Practical frameworks, bite-sized habits, measurable outcomes from {{BUSINESS_NAME}}. Build routines that fit your life." />
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="/">{{BUSINESS_NAME}}</a>
+      <nav class="main-nav">
+        <a href="/about.html">Who I Am</a>
+        <a href="/programs.html">Journeys</a>
+        <a href="/services.html">Offerings</a>
+        <a href="/pricing.html">Investments</a>
+        <a href="/testimonials.html">Stories</a>
+        <a href="/book.html" class="cta">{{PRIMARY_CTA_LABEL}}</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <h1>{{BUSINESS_NAME}}</h1>
+          <p class="lead">Practical approaches to steady living — frameworks and habits you can actually keep in the middle of your life.</p>
+          <p class="sub">From small weekly experiments to guided sessions that card your priorities into practice.</p>
+          <p class="actions">
+            <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            <a class="link" href="/contact.html">Call: {{PHONE}}</a>
+          </p>
+        </div>
+        <div class="hero-art">
+          <svg class="pattern" width="360" height="240" viewBox="0 0 360 240" aria-hidden="true">
+            <defs>
+              <pattern id="p" width="40" height="40" patternUnits="userSpaceOnUse">
+                <rect width="40" height="40" fill="#efe6dc" />
+                <path d="M0 30 Q20 10 40 30" stroke="#d1b89b" stroke-width="2" fill="none"/>
+                <circle cx="8" cy="8" r="2" fill="#c8a17a" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#p)"/>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- Benefits (moved earlier for a different flow) -->
+    <section class="benefits wrap">
+      <h2>What we shape together</h2>
+      <div class="cards">
+        <article>
+          <h3>Daily anchors</h3>
+          <p>Anchor practices you actually return to — short, repeatable actions that build steadiness over time.</p>
+        </article>
+        <article>
+          <h3>Systemic habits</h3>
+          <p>Habit scaffolds that connect motivation to context: triggers, cues, and friction-free routines.</p>
+        </article>
+        <article>
+          <h3>Outcome maps</h3>
+          <p>Simple measurements and checkpoints that show progress without creating pressure.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Process -->
+    <section class="process wrap">
+      <h2>How a short collaboration works</h2>
+      <ol class="process-list">
+        <li>
+          <strong>Discovery session</strong>
+          <p>We clarify the one or two outcomes worth your time now.</p>
+        </li>
+        <li>
+          <strong>Design a micro-plan</strong>
+          <p>Buildable routines and a checklist you can actually follow between sessions.</p>
+        </li>
+        <li>
+          <strong>Adjust & anchor</strong>
+          <p>Iteration and reinforcement so the new actions survive real days.</p>
+        </li>
+      </ol>
+
+      <div class="tool-grid">
+        <div class="widget" id="session-planner">
+          <h3>Session Planner</h3>
+          <p>Create a short personalized session plan to practice between meetings.</p>
+          <label>Primary focus
+            <select id="sp-focus">
+              <option value="stress">Manage stress & tension</option>
+              <option value="sleep">Improve sleep quality</option>
+              <option value="energy">Daily energy flow</option>
+              <option value="focus">Sustained focus</option>
+            </select>
+          </label>
+          <label>Length
+            <select id="sp-length">
+              <option>15 minutes</option>
+              <option>30 minutes</option>
+              <option>60 minutes</option>
+            </select>
+          </label>
+          <fieldset>
+            <legend>Include</legend>
+            <label><input type="checkbox" value="breath" checked> Breathwork</label>
+            <label><input type="checkbox" value="movement"> Movement</label>
+            <label><input type="checkbox" value="reflection"> Guided reflection</label>
+            <label><input type="checkbox" value="nutrition"> Simple nourishment tip</label>
+          </fieldset>
+          <label>Days per week
+            <input id="sp-days" type="number" min="1" max="7" value="3" />
+          </label>
+          <div class="widget-actions">
+            <button id="sp-build" class="btn">Build session note</button>
+            <button id="sp-download" class="btn light">Download</button>
+          </div>
+          <textarea id="sp-output" readonly rows="6" aria-label="Session summary"></textarea>
+          <div class="copy-row">
+            <button id="sp-copy" class="btn">Copy summary</button>
+            <span id="sp-copy-status" class="muted"></span>
+          </div>
+        </div>
+
+        <div class="widget" id="habit-builder">
+          <h3>7-Day Challenge Builder</h3>
+          <p>Generate a printable 7-day checklist tuned to one habit.</p>
+          <label>Habit focus
+            <select id="hb-focus">
+              <option value="sleep">Better sleep</option>
+              <option value="water">Hydration</option>
+              <option value="move">Daily movement</option>
+              <option value="mindful">Mindful breaks</option>
+            </select>
+          </label>
+          <label>Intensity
+            <select id="hb-intensity">
+              <option value="gentle">Gentle (1 action/day)</option>
+              <option value="moderate">Moderate (2 actions/day)</option>
+              <option value="bold">Bold (3 actions/day)</option>
+            </select>
+          </label>
+          <div class="widget-actions">
+            <button id="hb-generate" class="btn">Make checklist</button>
+            <button id="hb-print" class="btn light">Print</button>
+          </div>
+          <div id="hb-output" class="checklist" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Social proof -->
+    <section class="social-proof wrap">
+      <h2>Client snapshots</h2>
+      <div class="testimonials">
+        <blockquote>
+          <p>"I finally have a simple evening routine that actually sticks. Weeks feel calmer and clearer."</p>
+          <cite>— L., {{CITY}}</cite>
+        </blockquote>
+        <blockquote>
+          <p>"The 7-day challenge got me moving without overwhelm. Small wins added up fast."</p>
+          <cite>— M., {{STATE}}</cite>
+        </blockquote>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq wrap">
+      <h2>Common questions</h2>
+      <details>
+        <summary>Is this medical advice?</summary>
+        <p>No — offerings focus on habits, routines, and practical frameworks. They do not replace medical care.</p>
+      </details>
+      <details>
+        <summary>How long before I see change?</summary>
+        <p>Clients often notice small shifts in days and clearer momentum within a few weeks. We measure what matters most to you.</p>
+      </details>
+      <details>
+        <summary>What if I can't keep up?</summary>
+        <p>Plans are designed to be adjustable. We scale practices down and refocus until they fit your real days.</p>
+      </details>
+    </section>
+
+    <!-- CTA -->
+    <section class="final-cta wrap">
+      <h2>Ready to try a livable plan?</h2>
+      <p>Book a short discovery session and get a custom one-week action map you can use right away.</p>
+      <p><a class="btn large" href="{{PRIMARY_CTA_URL}}">Reserve a session</a></p>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div>
+        <strong>{{BUSINESS_NAME}}</strong>
+        <p>{{TAGLINE}}</p>
+      </div>
+      <nav>
+        <a href="/contact.html">Contact</a>
+        <a href="/pricing.html">Pricing</a>
+        <a href="/book.html">Book</a>
+      </nav>
+      <div class="muted">Email: <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> · Phone: {{PHONE}}</div>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

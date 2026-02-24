@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book a Session — Session Planner</title>
+  <style>
+    :root{--bg:#fbfbfc;--ink:#222;--muted:#666;--accent:#7aa07a}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial;background:var(--bg);color:var(--ink)}
+    .wrap{max-width:980px;margin:0 auto;padding:28px}
+    nav{display:flex;gap:14px;margin-bottom:22px}
+    nav a{color:var(--ink);text-decoration:none;font-weight:600}
+    h1{margin:0 0 8px}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:22px}
+    .card{background:#fff;padding:16px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.04)}
+    label{display:block;margin-top:10px;font-weight:600}
+    input[type="text"],textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)}
+    .btn{padding:10px 12px;border-radius:8px;background:var(--accent);color:white;border:0;font-weight:700}
+    .muted{color:var(--muted);font-size:13px}
+    .planOutput{white-space:pre-wrap;background:#f7f8f7;padding:12px;border-radius:8px;margin-top:10px}
+    .pattern{background-image:url('assets/img/pattern.svg');opacity:0.06;height:120px;background-size:cover;border-radius:8px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <a href="index.html">Gather</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Boutique</a>
+      <a href="pricing.html">Plans</a>
+      <a href="about.html">Story</a>
+      <a href="book.html" aria-current="page">Reserve</a>
+      <a href="contact.html">Reach</a>
+    </nav>
+
+    <h1>Plan a Session</h1>
+    <div class="muted">Use the session planner to create a simple, shareable plan for a single session or a series. Export the plan as plaintext to share or save.</div>
+
+    <div class="grid" style="margin-top:18px">
+      <section>
+        <div class="card">
+          <h3 style="margin:0 0 8px">Session Planner</h3>
+          <label>Participant name</label>
+          <input id="name" type="text" placeholder="Your name or group's name">
+
+          <label>Primary aim (what you hope this may support)</label>
+          <select id="aim">
+            <option value="relax">Gentle relaxation</option>
+            <option value="focus">Quiet focus</option>
+            <option value="sleep">Ease into sleep</option>
+            <option value="ritual">Personal ritual / grounding</option>
+            <option value="learn">Learn blends & practice</option>
+          </select>
+
+          <label>Format</label>
+          <select id="format">
+            <option value="one">Single session (60–90 min)</option>
+            <option value="series">Short series (4 meetings)</option>
+            <option value="circle">Small-group circle (monthly)</option>
+          </select>
+
+          <label>Duration per meeting</label>
+          <input id="duration" type="text" placeholder="e.g. 60 minutes">
+
+          <label>Frequency</label>
+          <select id="frequency">
+            <option>Once</option>
+            <option>Weekly</option>
+            <option>Bi-weekly</option>
+          </select>
+
+          <label>Preferred vibe / blend direction</label>
+          <select id="vibe">
+            <option>Calming</option>
+            <option>Clarity</option>
+            <option>Sleep-friendly</option>
+            <option>Uplift</option>
+            <option>Grounding</option>
+          </select>
+
+          <label>Special considerations (pets, pregnancy, sensitive skin)</label>
+          <textarea id="notes" placeholder="List any precautions or preferences"></textarea>
+
+          <div style="margin-top:12px;display:flex;gap:8px">
+            <button id="generate" class="btn">Build Plan</button>
+            <a href="{{PRIMARY_CTA_URL}}" class="btn" style="background:#e6f0e6;color:var(--accent)">Proceed to Booking</a>
+          </div>
+
+          <div id="planCard" class="planOutput" style="display:none"></div>
+
+          <div style="margin-top:8px;display:flex;gap:8px;">
+            <button id="copyPlan" class="btn" style="background:#ddd;color:var(--ink);display:none">Copy Plan</button>
+            <a id="emailLink" class="muted" style="align-self:center;display:none">Email plan</a>
+          </div>
+
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0 0 6px">What this planner does</h4>
+          <div class="small">It frames a practical session layout, a suggested aromatic direction, and safety reminders. It does not replace professional medical advice.</div>
+        </div>
+      </section>
+
+      <aside>
+        <div class="card">
+          <h4 style="margin:0 0 6px">Quick Safety Reminder</h4>
+          <div class="small">When planning blends or topical use: include patch-test steps, keep dilutions low for sensitive people, avoid certain oils in pregnancy, and be mindful of pets. For specifics, ask before booking: {{EMAIL}}</div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0 0 6px">Preview Blend Suggestion</h4>
+          <div id="previewBlend" class="small">Choose a vibe on the planner and press Build Plan to see a suggested companion blend and an educational dilution note.</div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <div class="pattern" aria-hidden="true"></div>
+          <div class="small" style="margin-top:8px">Need help? Call <strong>{{PHONE}}</strong> or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    function suggestedOils(vibe){
+      var map={
+        'Calming': ['Lavender','Sweet Orange','Frankincense'],
+        'Clarity': ['Rosemary','Lemon','Basil (light)'],
+        'Sleep-friendly': ['Lavender','Mandarin','Marjoram (low)'],
+        'Uplift': ['Grapefruit','Bergamot (phototoxic caution)','Sweet Orange'],
+        'Grounding': ['Cedarwood','Patchouli','Vetiver (sparingly)']
+      };
+      return map[vibe]||['Lavender'];
+    }
+
+    function dilutionText(size,notes){
+      size = size || 10;
+      function dropsForPercent(percent){return Math.max(1,Math.round(percent * 6 * (size/30)));}
+      return 'Educational dilution suggestion for topical mixes:\n- 1% general use: ~' + dropsForPercent(1) + ' drops total for ' + size + 'ml.\n- 0.25%–0.5% for sensitive skin or older adults.\nPatch test before full use. Not medical advice.' + (notes?('\nNote: ' + notes):'');
+    }
+
+    document.getElementById('generate').addEventListener('click', function(){
+      var name = document.getElementById('name').value || 'Participant';
+      var aim = document.getElementById('aim').value;
+      var format = document.getElementById('format').value;
+      var duration = document.getElementById('duration').value || '60 minutes';
+      var freq = document.getElementById('frequency').value;
+      var vibe = document.getElementById('vibe').value;
+      var notes = document.getElementById('notes').value;
+
+      var oils = suggestedOils(vibe).join(', ');
+      var dilution = dilutionText(10, notes);
+
+      var plan = 'Session Plan for: ' + name + '\nFormat: ' + format + '\nAim: ' + aim + '\nDuration: ' + duration + '\nFrequency: ' + freq + '\nVibe: ' + vibe + '\n\nSuggested companion blend (educational):\n' + oils + '\n\n' + dilution + '\n\nSafety: Patch test, avoid use in pregnancy unless cleared, consider pet sensitivities.\n\nTo confirm this plan and secure a booking, follow the booking link.';
+
+      var out = document.getElementById('planCard');
+      out.textContent = plan;
+      out.style.display = 'block';
+      document.getElementById('copyPlan').style.display = 'inline-block';
+      document.getElementById('emailLink').style.display = 'inline-block';
+      document.getElementById('previewBlend').textContent = 'Companion blend: ' + oils + '. ' + dilution.split('\n')[0];
+
+      document.getElementById('emailLink').textContent = 'Email this plan';
+      document.getElementById('emailLink').href = 'mailto:{{EMAIL}}?subject=' + encodeURIComponent('Session Plan for ' + name) + '&body=' + encodeURIComponent(plan);
+    });
+
+    document.getElementById('copyPlan').addEventListener('click', function(){
+      var txt = document.getElementById('planCard').textContent;
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(txt).then(function(){alert('Plan copied to clipboard');}).catch(function(){fallbackCopy(txt)});
+      } else { fallbackCopy(txt); }
+      function fallbackCopy(t){var ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');alert('Plan copied')}catch(e){alert('Unable to copy') }ta.remove();}
+    });
+  </script>
+</body>
+</html>

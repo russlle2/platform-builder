@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Gatherings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1720;--panel:#071021;--accent:#9be7e0;--muted:#9aa5b1;--glass:rgba(255,255,255,0.04);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#041019 0%,#061827 60%);color:#e6f7f6}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#6edbe0);display:grid;place-items:center;color:#042;box-shadow:0 6px 18px rgba(0,0,0,0.5)}
+    nav a{color:var(--muted);text-decoration:none;margin-left:16px;font-weight:600}
+    nav a.active{color:var(--accent)}
+    main{max-width:1100px;margin:26px auto;padding:28px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:14px;box-shadow:0 10px 40px rgba(2,6,23,0.7)}
+    .hero{display:grid;grid-template-columns:1fr 340px;gap:22px;align-items:start}
+    .hero h1{margin:0;font-size:28px;letter-spacing:-0.02em}
+    .hero p{color:var(--muted);margin-top:12px}
+    .next-event{background:linear-gradient(180deg,#05232b 0%,#02242a 100%);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .next-event .date{font-size:20px;color:var(--accent);font-weight:700}
+    .calendar{margin-top:16px;background:var(--panel);padding:12px;border-radius:10px}
+    ul.events{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+    li.event{display:flex;justify-content:space-between;padding:10px;border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent)}
+    .mixer{padding:14px;background:var(--glass);border-radius:10px;border:1px dashed rgba(255,255,255,0.03)}
+    .switches{display:flex;gap:8px;margin-top:12px}
+    .switches button{flex:1;padding:10px;border-radius:8px;border:0;background:transparent;color:var(--muted);cursor:pointer}
+    .switches button.active{background:linear-gradient(90deg,rgba(155,231,224,0.06),rgba(110,219,224,0.06));color:var(--accent);box-shadow:inset 0 -2px 0 rgba(0,0,0,0.2)}
+    .recommendations{margin-top:12px}
+    .rec-item{padding:10px;border-radius:8px;background:rgba(255,255,255,0.02);display:flex;justify-content:space-between;align-items:center}
+    .cta{display:inline-block;margin-top:14px;padding:10px 14px;border-radius:10px;background:var(--accent);color:#042;text-decoration:none;font-weight:700}
+    .proof{margin-top:22px;padding:14px;background:linear-gradient(180deg,rgba(0,0,0,0.12),transparent);border-radius:12px}
+    .testimony{height:64px;display:flex;align-items:center;gap:12px}
+    .avatar{width:52px;height:52;border-radius:10px;background:linear-gradient(180deg,#123 0%,#0b6 100%);display:grid;place-items:center;color:#042;font-weight:700}
+    .badge-row{display:flex;gap:8px;margin-top:10px}
+    .badge{background:rgba(255,255,255,0.03);padding:8px;border-radius:8px;font-size:13px;position:relative;cursor:default}
+    .badge:hover::after{content:attr(data-tip);position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 8px);white-space:nowrap;background:#0b2730;padding:6px 8px;border-radius:6px;color:var(--accent);font-size:12px}
+    footer{margin-top:20px;color:var(--muted);font-size:13px;padding:10px}
+    .svg-bg{position:fixed;right:20px;top:20px;width:200px;height:200px;opacity:0.08;pointer-events:none}
+    .disclaimer{margin-top:18px;padding:12px;border-radius:8px;background:rgba(255,255,255,0.02);font-size:13px}
+    @media(max-width:880px){.hero{grid-template-columns:1fr;}.svg-bg{display:none};nav{display:none}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">SB</div>
+      <div>
+        <div style="font-weight:800">{{BUSINESS_NAME}}</div>
+        <div style="font-size:13px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="events.html" class="active">Gatherings</a>
+      <a href="private-sessions.html">One-to-One</a>
+      <a href="pricing.html">Invest</a>
+      <a href="about.html">The Circle</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h1>Open gatherings — tuned for shared quiet</h1>
+        <p>Choose how you want sound to meet you tonight. Flip a preference and watch event suggestions shift. Book a spot or bring a friend; we keep the room intentional and small.</p>
+
+        <div class="mixer" aria-label="Sound preference mixer">
+          <strong>How intense would you like the session?</strong>
+          <div class="switches" role="tablist" aria-label="Intensity">
+            <button data-level="gentle" class="active" role="tab" aria-selected="true">Gentle</button>
+            <button data-level="medium" role="tab">Medium</button>
+            <button data-level="intense" role="tab">Intense</button>
+          </div>
+
+          <div class="recommendations" id="recs">
+            <!-- recommendations populate here -->
+          </div>
+          <a href="book.html" class="cta" id="mixer-cta">Reserve a seat</a>
+        </div>
+
+        <div class="proof" aria-live="polite">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <strong>Proof & cred</strong>
+            <small style="color:var(--muted)">rotates every 6s</small>
+          </div>
+          <div id="testimonial" class="testimony" style="margin-top:10px">
+            <div class="avatar">A</div>
+            <div>
+              <div id="quote" style="color:#dff7f6">"A room that lets the day settle in sensible waves."</div>
+              <div id="who" style="font-size:13px;color:var(--muted);margin-top:6px">— Attendee, {{CITY}}</div>
+            </div>
+          </div>
+
+          <div class="badge-row" id="badges">
+            <div class="badge" data-tip="Licensed sound therapist network">Certified Practitioner</div>
+            <div class="badge" data-tip="Featured in lifestyle monthly">Local Press</div>
+            <div class="badge" data-tip="Five-star reviews across platforms">Top-rated</div>
+          </div>
+        </div>
+
+      </div>
+
+      <aside>
+        <div class="next-event">
+          <div style="font-size:13px;color:var(--muted)">Next gathering</div>
+          <div class="date" id="next-date">—</div>
+          <div style="margin-top:8px;color:var(--muted);font-size:13px">Small circle • Instruments provided • Guided arrival</div>
+          <a href="book.html" class="cta" style="display:inline-block;margin-top:12px">Join next</a>
+        </div>
+
+        <div class="calendar">
+          <strong style="display:block;margin-bottom:8px;color:var(--accent)">This month's list</strong>
+          <ul class="events" id="events-list">
+            <!-- calendar items inserted by JS -->
+          </ul>
+        </div>
+
+        <div class="disclaimer">
+          <strong>Contraindications</strong>
+          <div style="color:var(--muted);margin-top:6px">People with active seizures, deep ear wounds, or recent cranial surgery should consult their physician before attending. If you have concerns about pregnancy, implanted devices, or significant hearing changes, please contact us at {{EMAIL}}.</div>
+        </div>
+      </aside>
+    </section>
+
+    <footer>
+      <div>Questions? Call <a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none">{{PHONE}}</a> or <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a></div>
+    </footer>
+  </main>
+
+  <svg class="svg-bg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1">
+        <stop offset="0" stop-color="#7ee9e3"/>
+        <stop offset="1" stop-color="#5fd6d9"/>
+      </linearGradient>
+      <pattern id="p1" width="14" height="14" patternUnits="userSpaceOnUse">
+        <rect width="14" height="14" fill="transparent"/>
+        <circle cx="2" cy="2" r="1.4" fill="url(#g1)" />
+        <circle cx="11" cy="11" r="1.4" fill="url(#g1)" />
+      </pattern>
+    </defs>
+    <rect width="200" height="200" fill="url(#p1)" opacity="0.8" rx="18"/>
+  </svg>
+
+  <script>
+    // sample event data (would be dynamic in production)
+    const events = [
+      {id:1,title:'Tonal Drift — Gentle arrival',date:'2026-03-05T19:00:00',level:'gentle'},
+      {id:2,title:'Harmonic Midline — Medium depth',date:'2026-03-12T19:00:00',level:'medium'},
+      {id:3,title:'Deep Resonance — Intensive session',date:'2026-03-19T19:00:00',level:'intense'},
+      {id:4,title:'Evening Calm — Gentle',date:'2026-03-26T19:00:00',level:'gentle'}
+    ];
+
+    function formatDate(iso){
+      const d=new Date(iso);
+      return d.toLocaleString(undefined,{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'numeric'});
+    }
+
+    // populate calendar
+    const eventsList=document.getElementById('events-list');
+    events.forEach(ev=>{
+      const li=document.createElement('li');li.className='event';
+      li.innerHTML=`<div><strong>${ev.title}</strong><div style=\"color:var(--muted);font-size:13px\">${formatDate(ev.date)}</div></div><div style=\"color:var(--accent)\">${ev.level}</div>`;
+      eventsList.appendChild(li);
+    });
+
+    // next-event: pick first future date
+    const now=new Date();
+    const next=events.find(e=>new Date(e.date)>now) || events[0];
+    document.getElementById('next-date').textContent = formatDate(next.date) + ' • ' + next.title;
+
+    // Mixer logic
+    const recMap = {
+      gentle:[{name:'Tonal Drift',desc:'Slow bowl waves, soft chimes, guided breath',link:'book.html'},{name:'Evening Calm',desc:'Short arrival + gentle enveloping tones',link:'book.html'}],
+      medium:[{name:'Harmonic Midline',desc:'Layered gongs with breathwork and space',link:'book.html'},{name:'Resonant Flow',desc:'Movement into sound for subtle release',link:'book.html'}],
+      intense:[{name:'Deep Resonance',desc:'Long sustaining bowls and fuller gong work',link:'book.html'},{name:'Substrate',desc:'Extended immersion with low-frequency focus',link:'book.html'}]
+    };
+
+    const recContainer=document.getElementById('recs');
+    const buttons=document.querySelectorAll('.switches button');
+    function renderRecs(level){
+      recContainer.innerHTML='';
+      recMap[level].forEach(r=>{
+        const div=document.createElement('div');div.className='rec-item';
+        div.innerHTML=`<div><strong>${r.name}</strong><div style=\"font-size:13px;color:var(--muted)\">${r.desc}</div></div><a href=\"${r.link}\" class=\"cta\" style=\"background:transparent;color:var(--accent);padding:8px;border-radius:8px;text-decoration:none;font-weight:700\">Explore</a>`;
+        recContainer.appendChild(div);
+      });
+      document.getElementById('mixer-cta').textContent = (level==='gentle'?'Book an easy spot':'Book a guided seat');
+    }
+
+    buttons.forEach(b=>b.addEventListener('click',e=>{
+      buttons.forEach(x=>{x.classList.remove('active');x.setAttribute('aria-selected','false')});
+      e.currentTarget.classList.add('active');e.currentTarget.setAttribute('aria-selected','true');
+      renderRecs(e.currentTarget.getAttribute('data-level'));
+    }));
+
+    // initial
+    renderRecs('gentle');
+
+    // Proof gallery rotate
+    const testimonials=[
+      {quote:'A clear evening arc — each note like a small arrival.',who:'Maya — Teacher'},
+      {quote:'The space felt held; I left softer around the edges.',who:'Jon — Designer'},
+      {quote:'Not what I expected, and exactly what I needed.',who:'Priya — Nurse'}
+    ];
+    let tIdx=0;
+    function rotateTestimony(){
+      tIdx=(tIdx+1)%testimonials.length;
+      document.getElementById('quote').textContent = '"'+testimonials[tIdx].quote+'"';
+      document.getElementById('who').textContent = '— '+testimonials[tIdx].who;
+    }
+    setInterval(rotateTestimony,6000);
+
+  </script>
+</body>
+</html>

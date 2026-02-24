@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>About • {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbfbf9;--card:#ffffff;--accent:#6b8e6b;--muted:#6f6f6f;--glass:rgba(255,255,255,0.7);--maxw:1100px}
+    *{box-sizing:border-box}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#1b1b1b;margin:0;background:linear-gradient(180deg,#fbfbf9 0%,#f6fff6 100%);line-height:1.45}
+    .wrap{max-width:var(--maxw);margin:36px auto;padding:24px}
+    nav{display:flex;gap:18px;align-items:center;justify-content:space-between}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),#9bbf9b);color:#fff;font-weight:700}
+    .navlinks{display:flex;gap:14px;align-items:center}
+    .navlinks a{color:#234;opacity:.9;text-decoration:none;padding:8px 10px;border-radius:8px;font-weight:600}
+    .navlinks a[href$='about.html']{background:var(--glass);backdrop-filter:blur(6px)}
+    header.hero{margin-top:22px;padding:32px;border-radius:16px;background:linear-gradient(90deg,rgba(255,255,255,0.6),rgba(240,255,240,0.6));display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:center;position:relative;overflow:hidden}
+    /* inline SVG pattern backdrop */
+    header.hero svg{position:absolute;right:-60px;top:-80px;opacity:.12;width:480px;height:480px}
+    .hero-left h1{font-size:clamp(22px,3.2vw,34px);margin:0 0 12px}
+    .hero-left p{margin:0 0 18px;color:var(--muted)}
+    .cta-row{display:flex;gap:12px}
+    .btn{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:700}
+    .btn.alt{background:#fff;color:var(--accent);border:1px solid rgba(0,0,0,0.06)}
+    /* sections */
+    section{margin:28px 0;padding:22px;border-radius:12px;background:var(--card);box-shadow:0 6px 18px rgba(20,20,20,0.04);opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+    section.revealed{opacity:1;transform:none}
+    .two-col{display:grid;grid-template-columns:1fr 320px;gap:18px;align-items:start}
+    .meta{color:var(--muted);font-size:0.95rem}
+    .pill{display:inline-block;padding:6px 8px;border-radius:999px;background:#eef7ee;color:#2e6b2e;font-weight:700;font-size:0.85rem}
+    .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .tile{height:110px;border-radius:8px;background:linear-gradient(135deg,#f1fff1,#ffffff);display:grid;place-items:center;color:var(--accent);font-weight:700}
+    footer{margin:44px 0 12px;color:var(--muted);font-size:0.9rem}
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(10,10,10,0.45);display:none;align-items:center;justify-content:center}
+    .modal{width:min(680px,94vw);background:#fff;padding:18px;border-radius:12px;box-shadow:0 18px 48px rgba(10,10,10,0.28)}
+    .modal h3{margin:0 0 10px}
+    .controls{display:flex;gap:10px;align-items:center;margin-top:12px}
+    .switch{display:flex;gap:8px}
+    .timer{font-family:monospace;font-size:1.4rem}
+    .close{margin-left:auto;background:none;border:0;font-size:1.1rem}
+    .try-btn{cursor:pointer}
+    @media(max-width:800px){header.hero{grid-template-columns:1fr;padding:18px} .two-col{grid-template-columns:1fr}}
+    /* reduced motion */
+    @media (prefers-reduced-motion:reduce){section{transition:none !important;transform:none !important}}
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <nav>
+      <div class='brand'>
+        <div class='logo'>W</div>
+        <div>
+          <div style='font-weight:800'>{{BUSINESS_NAME}}</div>
+          <div style='font-size:0.86rem;color:var(--muted)'>{{TAGLINE}}</div>
+        </div>
+      </div>
+      <div class='navlinks'>
+        <a href='index.html'>Start</a>
+        <a href='about.html'>About</a>
+        <a href='services.html'>Offerings</a>
+        <a href='programs.html'>Series</a>
+        <a href='pricing.html'>Rates</a>
+        <a href='testimonials.html'>Stories</a>
+        <a href='book.html' class='btn'>Reserve a Spot</a>
+        <a href='contact.html'>Connect</a>
+      </div>
+    </nav>
+
+    <header class='hero'>
+      <div class='hero-left'>
+        <div class='pill'>Events Series • Small groups</div>
+        <h1>Practical ways to settle your days into steady, repeatable practices</h1>
+        <p>We run short event-series that teach dependable habits: rhythm-setting sessions, gentle resets and weekly labs that build toward durable routines. No medical claims — just frameworks that lead to consistent outcomes.</p>
+        <div class='cta-row'>
+          <a href='{{PRIMARY_CTA_URL}}' class='btn'>{{PRIMARY_CTA_LABEL}}</a>
+          <button class='btn alt try-btn' data-action='open-modal'>Try a quick exercise</button>
+        </div>
+      </div>
+      <aside>
+        <div style='background:linear-gradient(180deg,#fff,#f7fff7);padding:18px;border-radius:12px'>
+          <strong>Location</strong>
+          <div style='margin-top:6px' class='meta'>{{CITY}}, {{STATE}}</div>
+          <div style='margin-top:12px;font-size:0.95rem'>Upcoming Series</div>
+          <ul style='margin:10px 0 0;padding-left:18px;color:var(--muted)'>
+            <li>Rhythm Lab: 4-week evening series</li>
+            <li>Morning Calibration: weekend intensives</li>
+            <li>Monthly Reset: one-off guided session</li>
+          </ul>
+        </div>
+      </aside>
+      <!-- decorative SVG pattern -->
+      <svg aria-hidden='true' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
+        <defs>
+          <linearGradient id='g1' x1='0' x2='1'>
+            <stop offset='0' stop-color='#bfe6bd' stop-opacity='0.9'/>
+            <stop offset='1' stop-color='#f0fff0' stop-opacity='0.8'/>
+          </linearGradient>
+        </defs>
+        <rect x='0' y='0' width='200' height='200' rx='32' fill='url(#g1)'/>
+        <g fill='rgba(80,120,80,0.06)'>
+          <circle cx='40' cy='40' r='28'/>
+          <circle cx='140' cy='110' r='38'/>
+          <circle cx='90' cy='150' r='22'/>
+        </g>
+      </svg>
+    </header>
+
+    <main>
+      <!-- order: what_to_expect, gallery, objections, cta (different order than other pages) -->
+      <section id='what' class='reveal' data-reveal>
+        <div class='two-col'>
+          <div>
+            <h2>What to expect from a series</h2>
+            <p class='meta'>Short group gatherings focused on three outcomes: clearer routine, small daily practices, a repeatable framework you can keep.</p>
+            <ul>
+              <li><strong>Outcomes:</strong> clearer time for practices; a 3-step morning or evening scaffold.</li>
+              <li><strong>Habits:</strong> daily micro-rituals that stick without willpower wars.</li>
+              <li><strong>Frameworks:</strong> templates for planning, tracking and adjusting.</li>
+            </ul>
+          </div>
+          <aside>
+            <div style='padding:12px;border-radius:10px;background:#fbfff7'>
+              <div style='font-weight:700'>Next session</div>
+              <div class='meta' style='margin-top:6px'>Starts Mar 7 • Weekly • 6 spots left</div>
+              <a href='programs.html' class='btn' style='display:inline-block;margin-top:12px'>Join the Series</a>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section id='gallery' class='reveal' data-reveal>
+        <h3>Snapshots from recent sessions</h3>
+        <div class='gallery'>
+          <div class='tile'>Opening Lab</div>
+          <div class='tile'>Journaling Sprint</div>
+          <div class='tile'>Evening Pause</div>
+        </div>
+      </section>
+
+      <section id='objections' class='reveal' data-reveal>
+        <h3>Common questions</h3>
+        <details>
+          <summary>Is this a therapy or medical program?</summary>
+          <p class='meta'>No. These are educational events focused on building habits and routines. Outcomes center on clarity, consistency and practical frameworks.</p>
+        </details>
+        <details>
+          <summary>What if I miss a week?</summary>
+          <p class='meta'>Most participants catch up with a single recap. The series is cumulative but designed for real-life schedules.</p>
+        </details>
+      </section>
+
+      <section id='cta' class='reveal' data-reveal>
+        <div style='display:flex;align-items:center;gap:16px'>
+          <div>
+            <h3>Ready to try a lean practice?</h3>
+            <p class='meta'>Reserve a spot in the next small cohort or try the quick in-browser exercise to feel the method.</p>
+          </div>
+          <div style='margin-left:auto;display:flex;gap:10px'>
+            <a href='{{PRIMARY_CTA_URL}}' class='btn'>{{PRIMARY_CTA_LABEL}}</a>
+            <button class='btn alt try-btn' data-action='open-modal'>Try it now</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div>Questions? Call {{PHONE}} or email <a href='mailto:{{EMAIL}}'>{{EMAIL}}</a></div>
+    </footer>
+  </div>
+
+  <!-- modal for guided exercise -->
+  <div class='modal-backdrop' id='modal' aria-hidden='true'>
+    <div class='modal' role='dialog' aria-modal='true' aria-labelledby='modal-title'>
+      <div style='display:flex;align-items:center'>
+        <h3 id='modal-title'>Guided Mini-Exercise</h3>
+        <button class='close' data-action='close-modal' aria-label='Close'>✕</button>
+      </div>
+      <p class='meta'>Pick a 2–6 minute practice: breathing, journaling, or setting an intention. Designed for immediate focus.</p>
+      <div style='display:flex;gap:10px;margin-top:8px;align-items:center'>
+        <div class='switch'>
+          <label><input type='radio' name='mode' value='breath' checked> Breathing</label>
+          <label style='margin-left:8px'><input type='radio' name='mode' value='journaling'> Journaling</label>
+          <label style='margin-left:8px'><input type='radio' name='mode' value='intend'> Intention</label>
+        </div>
+        <div style='margin-left:auto'>
+          <label class='meta'>Duration:
+            <select id='duration'>
+              <option value='2'>2m</option>
+              <option value='4' selected>4m</option>
+              <option value='6'>6m</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <div id='exercise-area' style='margin-top:12px'>
+        <!-- dynamic content -->
+      </div>
+
+      <div class='controls'>
+        <button class='btn' id='start'>Start</button>
+        <button class='btn alt' id='stop'>Stop</button>
+        <div class='timer' id='timer'>00:00</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Utility: prefers-reduced-motion
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Section reveal
+    (function(){
+      const els = document.querySelectorAll('[data-reveal]');
+      if(reduced){ els.forEach(s=>s.classList.add('revealed')) ; return }
+      const obs = new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{
+          if(e.isIntersecting) e.target.classList.add('revealed');
+        });
+      },{threshold: 0.12});
+      els.forEach(e=>obs.observe(e));
+    })();
+
+    // Modal + guided exercise
+    const modal = document.getElementById('modal');
+    const openBtns = document.querySelectorAll('[data-action="open-modal"]');
+    const closeBtns = document.querySelectorAll('[data-action="close-modal"]');
+    openBtns.forEach(b=>b.addEventListener('click',()=>openModal()));
+    closeBtns.forEach(b=>b.addEventListener('click',()=>closeModal()));
+
+    function openModal(){ modal.style.display='flex'; modal.setAttribute('aria-hidden','false'); prepareArea(); }
+    function closeModal(){ stopExercise(); modal.style.display='none'; modal.setAttribute('aria-hidden','true'); }
+
+    // Exercise logic
+    let timerInterval=null; let remaining=0; let total=0; let mode='breath';
+    const area = document.getElementById('exercise-area');
+    const timerEl = document.getElementById('timer');
+
+    document.querySelectorAll('input[name="mode"]').forEach(r=>r.addEventListener('change',e=>{ mode=e.target.value; prepareArea(); }));
+    document.getElementById('duration').addEventListener('change',prepareArea);
+    document.getElementById('start').addEventListener('click',startExercise);
+    document.getElementById('stop').addEventListener('click',stopExercise);
+
+    function prepareArea(){
+      const dur = Number(document.getElementById('duration').value);
+      total = dur*60; remaining = total;
+      timerEl.textContent = formatTime(remaining);
+      mode = document.querySelector('input[name="mode"]:checked').value;
+      area.innerHTML = '';
+      if(mode==='breath'){
+        const note = document.createElement('div'); note.textContent='Follow the inhale / exhale guide. Sit comfortably.'; note.className='meta';
+        const circle = document.createElement('div'); circle.style.width='120px'; circle.style.height='120px'; circle.style.borderRadius='999px'; circle.style.margin='12px auto'; circle.style.background='linear-gradient(135deg,#e9f8e9,#ffffff)'; circle.style.display='grid'; circle.style.placeItems='center'; circle.style.fontWeight='700'; circle.id='breath-circle';
+        area.appendChild(note); area.appendChild(circle);
+      } else if(mode==='journaling'){
+        const prompt = document.createElement('textarea'); prompt.placeholder='Write for a few minutes: what went well this week? What one tiny change would help tomorrow?'; prompt.style.width='100%'; prompt.style.height='140px'; prompt.style.padding='10px'; prompt.style.fontSize='1rem'; area.appendChild(prompt);
+      } else {
+        const prompt = document.createElement('div'); prompt.className='meta'; prompt.textContent='Bring to mind one clear intention for the day. Answer: What will I do differently?'; prompt.style.padding='12px'; area.appendChild(prompt);
+      }
+    }
+
+    function startExercise(){ if(timerInterval) return; if(total===0) prepareArea();
+      if(mode==='breath') startBreath();
+      timerInterval = setInterval(()=>{
+        remaining--; timerEl.textContent = formatTime(remaining);
+        if(remaining<=0) stopExercise();
+      },1000);
+    }
+    function stopExercise(){ if(timerInterval){ clearInterval(timerInterval); timerInterval=null;} remaining=0; timerEl.textContent='00:00'; if(document.getElementById('breath-circle')) document.getElementById('breath-circle').style.transform='none'; }
+
+    function startBreath(){ const circle = document.getElementById('breath-circle'); if(!circle) return; const cycle = 4000; // default 4s breath cycle
+      if(reduced){ circle.textContent='Breathe slowly.'; return }
+      let growing=true; const anim = (ts)=>{
+        if(!timerInterval) return; // stop
+        circle.animate([{transform: 'scale(1)'},{transform: 'scale(1.45)'}],{duration:cycle/2,fill:'forwards'});
+        setTimeout(()=>{ if(!timerInterval) return; circle.animate([{transform: 'scale(1.45)'},{transform:'scale(1)'}],{duration:cycle/2,fill:'forwards'}); },cycle/2);
+        setTimeout(()=>{ if(timerInterval) requestAnimationFrame(anim); },cycle);
+      };
+      requestAnimationFrame(anim);
+    }
+
+    function formatTime(s){ if(s<=0) return '00:00'; const m=Math.floor(s/60); const sec=s%60; return String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0'); }
+
+    // initialize
+    prepareArea();
+
+    // Accessibility: close modal with Escape
+    window.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+  </script>
+</body>
+</html>

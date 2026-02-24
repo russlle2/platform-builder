@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Services — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--brand:#7a9a7a;--bg:#fbfbfa;--card:#fff;--muted:#666}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto;line-height:1.5;color:#112}
+    header{background:linear-gradient(135deg,#fff,#f5f7f6);padding:28px 18px}
+    .wrap{max-width:1100px;margin:0 auto}
+    nav{display:flex;gap:12px;justify-content:flex-end;margin-bottom:12px}
+    nav a{color:#222;text-decoration:none;padding:8px;border-radius:8px}
+    .hero{display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:center}
+    .hero .panel{background:var(--card);padding:20px;border-radius:12px}
+    h1{margin:0;font-size:26px}
+    .lead{color:var(--muted)}
+
+    .services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:22px}
+    .svc{padding:16px;border-radius:10px;background:linear-gradient(180deg,#fff,#fcfffb);border:1px solid #eef6ee}
+    .price{font-weight:700;color:var(--brand)}
+    .note{font-size:13px;color:var(--muted)}
+
+    .cta-strip{margin-top:20px;padding:14px;border-radius:10px;background:linear-gradient(90deg,#f6fff6,#ffffff);display:flex;align-items:center;justify-content:space-between}
+    .try-btn{background:transparent;border:2px solid var(--brand);padding:8px 10px;border-radius:9px;color:var(--brand);cursor:pointer}
+
+    .reveal{opacity:0;transform:translateY(10px);transition:opacity .5s ease,transform .5s ease}
+    @media (prefers-reduced-motion: reduce){.reveal{transition:none;opacity:1;transform:none}}
+
+    footer{max-width:1100px;margin:28px auto;color:var(--muted);padding:0 18px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <a href="index.html">Main</a>
+      <a href="about.html">About</a>
+      <a href="services.html" class="cta">Offerings</a>
+      <a href="programs.html">Courses</a>
+      <a href="pricing.html">Cost</a>
+      <a href="book.html">Book</a>
+    </nav>
+
+    <header class="hero">
+      <div class="panel">
+        <h1>Services framed for measurable change</h1>
+        <p class="lead">Each service is built to move one specific outcome: clearer mornings, steadier focus, or an evening wind-down. We pair a short structure with a single tracking habit so you can see progress fast.</p>
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <a href="book.html" class="try-btn">Schedule a session</a>
+          <button id="open-guided-services" class="try-btn">Try it now — reset</button>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <strong>Service pathways</strong>
+        <div class="note" style="margin-top:8px">Pick a path and we'll create a short plan you can run in days, not months.</div>
+      </aside>
+    </header>
+
+    <main>
+      <section style="margin-top:18px">
+        <h2>Core offerings</h2>
+        <div class="services-grid">
+          <div class="svc reveal" data-reveal>
+            <h3>Morning Anchor</h3>
+            <div class="note">Design a reliable 10-minute morning ritual that primes energy and focus.</div>
+            <div style="margin-top:8px" class="price">From $250 (single session)</div>
+          </div>
+
+          <div class="svc reveal" data-reveal>
+            <h3>Focus Reset</h3>
+            <div class="note">A short toolkit to interrupt overwhelm and return to prioritized work.</div>
+            <div style="margin-top:8px" class="price">From $175</div>
+          </div>
+
+          <div class="svc reveal" data-reveal>
+            <h3>Evening Integration</h3>
+            <div class="note">Create a 7-minute practice for winding down and consolidating gains.</div>
+            <div style="margin-top:8px" class="price">From $150</div>
+          </div>
+
+          <div class="svc reveal" data-reveal>
+            <h3>VIP Day — Build Your System</h3>
+            <div class="note">An intensive day where we build a daily architecture and leave with a 30-day action plan.</div>
+            <div style="margin-top:8px" class="price">Starting at $1,200</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="cta-strip reveal" data-reveal>
+        <div>
+          <strong>Prefer a shorter commitment?</strong>
+          <div class="note">Try a single-session sprint to test a new practice and get a concrete plan you can use the next day.</div>
+        </div>
+        <div style="text-align:right">
+          <a href="book.html" class="try-btn">Book a sprint</a>
+        </div>
+      </section>
+
+      <section style="margin-top:18px" class="reveal" data-reveal>
+        <h3>How we price</h3>
+        <p class="lead">Prices reflect focused time and follow-up materials. Services are modular—many clients combine a VIP Day with weekly check-ins or one-off sprints.</p>
+      </section>
+
+      <section style="margin-top:18px" class="card reveal" data-reveal>
+        <h3>Still unsure?</h3>
+        <div class="note">If you’re not sure which path fits, book a short 20-minute clarity call. We'll align on the smallest next step that will show impact.</div>
+        <div style="margin-top:12px"><a href="contact.html" class="try-btn">Request clarity call</a></div>
+      </section>
+
+    </main>
+
+    <footer>
+      <div class="note">Questions? Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> or call <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+    </footer>
+  </div>
+
+  <!-- Guided modal used across site -->
+  <div id="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);align-items:center;justify-content:center;padding:18px;z-index:60"> 
+    <div style="background:#fff;border-radius:12px;padding:18px;max-width:640px;width:100%">
+      <div style="display:flex;align-items:center">
+        <h3 style="margin:0">Quick Reset</h3>
+        <button id="close" style="margin-left:auto;border:0;background:transparent;cursor:pointer">✕</button>
+      </div>
+      <p style="color:var(--muted)">Choose a short guided practice — breathing, journaling, or a micro-intention prompt.</p>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button data-action="breath" class="try-btn">Breathing</button>
+        <button data-action="journ" class="try-btn">Journaling</button>
+        <button data-action="intent" class="try-btn">Intention</button>
+      </div>
+      <div id="area" style="margin-top:10px"></div>
+    </div>
+  </div>
+
+  <script>
+    // reveal
+    (function(){
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const els = document.querySelectorAll('[data-reveal]');
+      if(prefersReduced){els.forEach(e=>e.classList.add('visible'));return}
+      const obs = new IntersectionObserver((entries)=>{entries.forEach(ent=>{if(ent.isIntersecting){ent.target.classList.add('visible');obs.unobserve(ent.target)}}),{threshold:.14});
+      els.forEach(e=>{e.classList.add('reveal');obs.observe(e)});
+    })();
+
+    // modal logic
+    const modal = document.getElementById('modal');
+    const area = document.getElementById('area');
+    document.getElementById('open-guided-services').addEventListener('click',()=>{modal.style.display='flex'});
+    document.getElementById('close').addEventListener('click',()=>{modal.style.display='none';area.innerHTML=''});
+    modal.addEventListener('click',(e)=>{if(e.target===modal){modal.style.display='none';area.innerHTML=''}});
+    document.addEventListener('keydown',(e)=>{if(e.key==='Escape'){modal.style.display='none';area.innerHTML=''}});
+
+    function startBreathing(target){target.innerHTML='<p style="color:var(--muted)">Simple paced breathing: inhale 4 - hold 3 - exhale 6. Repeat for three minutes.</p>'}
+    function startJourn(target){target.innerHTML='<textarea style="width:100%;height:120px" placeholder="Write for five minutes without editing."></textarea>'}
+    function startIntent(target){
+      target.innerHTML='<div><p style="font-weight:600">One small intention</p><input style="width:100%" placeholder="What one action matters today?" /></div>'
+    }
+
+    document.querySelectorAll('[data-action]').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const a=btn.getAttribute('data-action'); if(a==='breath')startBreathing(area); if(a==='journ')startJourn(area); if(a==='intent')startIntent(area);
+      });
+    });
+  </script>
+</body>
+</html>

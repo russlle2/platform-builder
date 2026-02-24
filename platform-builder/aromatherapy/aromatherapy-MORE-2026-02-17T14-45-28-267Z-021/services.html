@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Offerings — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#0f1114;--card:#0f1720;--muted:#9aa4a8;--accent:#b58fff;--accent-2:#7fe3d6;--glass:rgba(255,255,255,0.03)}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#e6eef0;background-color:var(--bg);background-image:url('assets/img/pattern.svg');background-size:220px}
+    .wrap{max-width:1100px;margin:36px auto;padding:28px}
+    nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+    .brand{font-weight:700;color:#fff;letter-spacing:0.6px}
+    .navlinks{display:flex;gap:12px}
+    .navlinks a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:8px}
+    .navlinks a:hover{background:var(--glass);color:#fff}
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:22px;align-items:start;margin-bottom:26px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:22px;border-radius:14px;box-shadow:0 6px 18px rgba(2,6,10,0.6)}
+    h1{margin:0 0 8px;font-size:22px;color:#fff}
+    p.lead{margin:0;color:var(--muted)}
+    .mood{margin-top:12px}
+    select{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff}
+    .approach{margin-top:12px;padding:12px;border-radius:10px;background:linear-gradient(90deg,rgba(125,95,255,0.08),rgba(127,227,214,0.04));color:#ecf2f2}
+    .cta{display:inline-block;margin-top:12px;padding:10px 16px;background:var(--accent);color:#071019;border-radius:12px;text-decoration:none;font-weight:700}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}
+    .svc{padding:14px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);border-radius:12px}
+    .svc h3{margin:0 0 6px;color:#fff;font-size:16px}
+    .price{color:var(--accent-2);font-weight:700}
+    .faq{margin-top:18px;padding:14px;border-radius:10px;background:rgba(255,255,255,0.02)}
+    footer{margin-top:26px;padding-top:16px;border-top:1px dashed rgba(255,255,255,0.03);color:var(--muted);display:flex;justify-content:space-between}
+    .muted{color:var(--muted)}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.02);color:var(--muted);font-size:13px}
+    @media(max-width:900px){.hero{grid-template-columns:1fr}.grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:560px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class='wrap'>
+    <nav>
+      <div class='brand'>{{BUSINESS_NAME}}</div>
+      <div class='navlinks'>
+        <a href='index.html'>Home</a>
+        <a href='services.html' aria-current='page'>Offerings</a>
+        <a href='blends.html'>Elixirs</a>
+        <a href='shop.html'>Market</a>
+        <a href='pricing.html'>Rates</a>
+        <a href='about.html'>About the Practice</a>
+        <a href='book.html'>Book</a>
+        <a href='contact.html'>Connect</a>
+      </div>
+    </nav>
+
+    <section class='hero'>
+      <div class='card'>
+        <h1>Tailored sessions, crafted rituals</h1>
+        <p class='lead'>Blends and sessions that may support short, compositional shifts in mood and clarity. Choose a state below to reveal a focused approach and a suggested next step.</p>
+
+        <div class='mood card'>
+          <label for='moodSelect' class='muted'>Mood-to-Method selector</label>
+          <select id='moodSelect' aria-label='Select your current mood'>
+            <option value='calm'>Quiet / Overstretched</option>
+            <option value='clarity'>Cloudy / Distracted</option>
+            <option value='lift'>Low Energy / Heavy</option>
+            <option value='ground'>Scattered / Wired</option>
+            <option value='celebrate'>Joyful / Playful</option>
+          </select>
+          <div id='approach' class='approach' aria-live='polite'>Choose a mood to see a suggested method.</div>
+          <a id='moodCta' class='cta' href='{{PRIMARY_CTA_URL}}'>{{PRIMARY_CTA_LABEL}}</a>
+        </div>
+
+        <div class='faq'>
+          <strong>Quick safety notes</strong>
+          <ul class='muted' style='margin:8px 0 0;padding-left:18px'>
+            <li>Always perform a patch test for topical use; discontinue if irritation occurs.</li>
+            <li>Respect dilution guidelines; essential oils are concentrated and may require carrier oils.</li>
+            <li>Keep blends away from curious pets; some oils are not pet-safe.</li>
+            <li>For pregnancy or serious health questions, consult a qualified healthcare practitioner before use.</li>
+          </ul>
+        </div>
+      </div>
+
+      <aside class='card'>
+        <h2 style='margin:0 0 8px'>Offerings — focused intensives</h2>
+        <p class='muted' style='margin:0 0 12px'>Each program uses scent mapping and hands-on blending to build short practices you can keep.</p>
+        <div class='grid'>
+          <div class='svc'>
+            <h3>Essence Mapping — 90-min intensive</h3>
+            <div class='muted'>Exploratory intake + tailored aromatic recipe</div>
+            <div class='price'>$185</div>
+          </div>
+          <div class='svc'>
+            <h3>Rhythms Reset — 3-session course</h3>
+            <div class='muted'>Short series to embed scent routines into your week</div>
+            <div class='price'>$420</div>
+          </div>
+          <div class='svc'>
+            <h3>Scent Atelier — custom single-blend</h3>
+            <div class='muted'>A crafted roll-on or diffuser set with instructions</div>
+            <div class='price'>$140</div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class='card'>
+      <h2 style='margin:0 0 8px'>What to expect</h2>
+      <p class='muted'>Sessions focus on scent education, safe application, and a small set of practices you can reasonably keep. Nothing is framed as treatment; rather, tools that may support shifts in attention and atmosphere.</p>
+      <div style='display:flex;gap:12px;margin-top:12px;flex-wrap:wrap'>
+        <span class='pill'>Guided blending</span>
+        <span class='pill'>Home ritual plan</span>
+        <span class='pill'>Patch testing</span>
+      </div>
+    </section>
+
+    <footer>
+      <div>
+        <div class='muted'>Questions? Call <strong style='color:#fff'>{{PHONE}}</strong> or email <a href='mailto:{{EMAIL}}' style='color:var(--accent-2);text-decoration:none'>{{EMAIL}}</a></div>
+        <div class='muted' style='font-size:13px;margin-top:6px'>Serving {{CITY}}, {{STATE}} — Sessions by appointment</div>
+      </div>
+      <div class='muted'>© <span id='year'></span> {{BUSINESS_NAME}}</div>
+    </footer>
+  </div>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const moodMap = {
+      calm:{label:'Mindful Inhale — a slow, grounding protocol. Three inhalations with 15s rests; supportive middle and base notes to settle the surface.',ctaText:'Request a grounding session',ctaUrl:'book.html?focus=grounding'},
+      clarity:{label:'Focused Draft — an attentive routine: short bursts of bright top notes for cueing attention, paired with a stabilizing base.',ctaText:'Explore clarity options',ctaUrl:'services.html#clarity'},
+      lift:{label:'Lift Sequence — buoyant top notes with an energizing micro-ritual: a morning spritz or roll-on to cue activity.',ctaText:'Find uplifting blends',ctaUrl:'blends.html#lift'},
+      ground:{label:'Anchor Protocol — tactile blending and a carrying oil; small, repeatable actions to steady fast thinking.',ctaText:'Book an anchoring consult',ctaUrl:'book.html?focus=anchor'},
+      celebrate:{label:'Play Potion — a short, joyful single-blend to share or gift; bright, safe top notes with minimal dilution.',ctaText:'Create a celebratory blend',ctaUrl:'blends.html?celebrate'}
+    };
+
+    const select = document.getElementById('moodSelect');
+    const approach = document.getElementById('approach');
+    const moodCta = document.getElementById('moodCta');
+
+    function updateMood(){
+      const key = select.value;
+      const spec = moodMap[key];
+      approach.textContent = spec.label;
+      moodCta.textContent = spec.ctaText || '{{PRIMARY_CTA_LABEL}}';
+      moodCta.href = spec.ctaUrl || '{{PRIMARY_CTA_URL}}';
+      // gentle visual cue
+      document.querySelector('.card').animate([{boxShadow:'0 6px 18px rgba(2,6,10,0.6)'},{boxShadow:'0 18px 36px rgba(125,95,255,0.12)'}],{duration:420,fill:'forwards'});
+    }
+    select.addEventListener('change',updateMood);
+    updateMood();
+  </script>
+</body>
+</html>

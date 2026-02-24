@@ -1,0 +1,63 @@
+/* Core design for aromatherapy site — no external assets */
+:root{
+  --bg:#f7f6f4; --card:#ffffff; --muted:#6b6b6b; --accent:#4a7c59; --accent-2:#7aa68a; --text:#1b1b1b; --radius:12px; --max:1100px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial; color:var(--text); background:var(--bg); -webkit-font-smoothing:antialiased}
+.wrap{max-width:var(--max);margin:0 auto;padding:2rem}
+.site-header{background:linear-gradient(180deg, rgba(255,255,255,0.9), transparent);position:sticky;top:0;z-index:40;border-bottom:1px solid rgba(0,0,0,0.04)}
+.site-header .wrap{display:flex;align-items:center;gap:1rem}
+.brand{font-weight:700;color:var(--text);text-decoration:none}
+.main-nav ul{list-style:none;margin:0;padding:0;display:flex;gap:1rem}
+.main-nav a{color:var(--muted);text-decoration:none;padding:.5rem .25rem}
+.actions{margin-left:auto;display:flex;gap:.5rem}
+.btn{border:1px solid rgba(0,0,0,0.08);background:transparent;padding:.6rem .9rem;border-radius:8px;cursor:pointer}
+.btn.primary{background:var(--accent);color:white;border:none}
+.btn.ghost{background:transparent}
+.btn.small{padding:.4rem .6rem;font-size:.9rem}
+.hero{padding:3rem 0;background-color:var(--bg);background-image:none}
+.hero-inner{display:grid;grid-template-columns:1fr 320px;gap:2rem;align-items:center}
+.hero-card .card{background:var(--card);padding:1rem;border-radius:var(--radius);box-shadow:0 6px 18px rgba(23,23,23,0.06)}
+.hero-title{font-size:clamp(1.5rem,2.5vw,2.25rem);margin:0 0 .5rem}
+.hero-lead{color:var(--muted);margin:0 0 1rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}
+.offer{background:var(--card);padding:1rem;border-radius:12px;box-shadow:0 6px 14px rgba(20,20,20,0.04)}
+.price-card{background:var(--card);padding:1rem;border-radius:12px;text-align:center}
+.price{font-weight:700;font-size:1.25rem;color:var(--accent)}
+.testimonials blockquote{font-style:italic;color:var(--muted);border-left:4px solid var(--accent-2);padding-left:1rem}
+footer.site-footer{border-top:1px solid rgba(0,0,0,0.05);padding:1.5rem 0;background:transparent}
+.site-footer .wrap{display:flex;justify-content:space-between;align-items:center}
+.muted{color:var(--muted)}
+.small{font-size:.9rem}
+/* Modal */
+.modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:2rem;background:rgba(10,10,10,0.35);opacity:0;pointer-events:none;transition:opacity .18s ease}
+.modal[aria-hidden="false"]{opacity:1;pointer-events:auto}
+.modal-panel{background:var(--card);width:min(720px,94%);border-radius:12px;padding:1rem;box-shadow:0 12px 40px rgba(10,10,10,0.2)}
+.modal-header{display:flex;justify-content:space-between;align-items:center}
+.modal-close{background:transparent;border:none;font-size:1.25rem;cursor:pointer}
+.exercise-tabs{display:flex;gap:.5rem;margin:.75rem 0}
+.ex-tab{padding:.4rem .6rem;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:transparent;cursor:pointer}
+.ex-tab.active{background:var(--accent);color:white}
+.exercise{margin-top:1rem}
+.breath-circle{width:160px;height:160px;margin:1rem auto;border-radius:50%;background:radial-gradient(circle at 40% 30%, rgba(122,166,138,.95), rgba(74,124,89,.95));display:block}
+.breath-circle.pulse{animation:breath 4s ease-in-out infinite}
+@keyframes breath{0%{transform:scale(1)}40%{transform:scale(1.25)}70%{transform:scale(1)}100%{transform:scale(1)}}
+.breath-controls{display:flex;gap:.5rem;justify-content:center}
+textarea{width:100%;padding:.6rem;border-radius:8px;border:1px solid rgba(0,0,0,0.08)}
+.intent-grid{display:flex;gap:.5rem;flex-wrap:wrap}
+.intent{padding:.5rem .7rem;border-radius:8px;border:1px solid rgba(0,0,0,0.08);background:transparent}
+/* Reveal animations */
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+.reveal.in-view{opacity:1;transform:none}
+/* prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce){
+  .breath-circle.pulse{animation:none}
+  .reveal{transition:none;opacity:1;transform:none}
+}
+/* Responsive */
+@media (max-width:800px){
+  .hero-inner{grid-template-columns:1fr}
+  .actions{display:none}
+  .main-nav ul{display:none}
+}

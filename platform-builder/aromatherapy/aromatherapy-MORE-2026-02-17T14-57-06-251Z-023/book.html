@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book a Session — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#f6f5ff;--card:#ffffffcc;--accent:#7b5cff;--muted:#606060}
+    *{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#fff);color:#222}
+    .nav{display:flex;justify-content:space-between;align-items:center;padding:14px 22px;background:rgba(255,255,255,0.5);backdrop-filter:blur(6px)}
+    .menu a{margin-left:12px;color:#333;text-decoration:none}
+    .container{max-width:980px;margin:26px auto;padding:18px}
+    .grid{display:grid;grid-template-columns:1fr 380px;gap:18px}
+    .panel{background:var(--card);padding:18px;border-radius:12px;backdrop-filter:blur(6px);box-shadow:0 8px 30px rgba(16,12,40,0.04)}
+    h1{margin:0 0 8px}
+    .form-row{display:flex;gap:8px}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)}
+    button{padding:10px 12px;border-radius:10px;border:0;background:linear-gradient(90deg,var(--accent),#ff8da1);color:white}
+    .small{font-size:13px;color:var(--muted)}
+    .method-box{padding:10px;border-radius:10px;background:linear-gradient(180deg,#fff,#fafaff);border:1px solid rgba(0,0,0,0.04);margin-top:10px}
+
+    /* interactive aroma wheel larger */
+    .wheel-large{display:flex;justify-content:center;margin-top:12px}
+    svg#wheel{width:320px;height:320px}
+    .note-tag{display:inline-block;padding:6px 8px;border-radius:999px;background:#ffffffcc;border:1px solid rgba(0,0,0,0.04);margin:6px;font-size:13px}
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+    <div class="menu">
+      <a href="index.html">Gather</a>
+      <a href="services.html">Offerings</a>
+      <a href="blends.html">Blends</a>
+      <a href="shop.html">Boutique</a>
+      <a href="pricing.html">Investment</a>
+      <a href="about.html">About</a>
+      <a href="book.html">Sessions</a>
+      <a href="contact.html">Reach</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="grid">
+      <section class="panel">
+        <h1>Reserve a session</h1>
+        <p class="small">Choose a format and share a little about your intentions. Sessions include a safety briefing; all blends come with dilution notes and patch-test instructions.</p>
+
+        <form id="booking-form" style="margin-top:12px">
+          <label class="small">Session type</label>
+          <select id="session-type" required>
+            <option value="intro">Intro — 30 minutes (light plan)</option>
+            <option value="deep">Guided session — 50 minutes (custom blend)</option>
+            <option value="follow">Follow-up — 25 minutes (adjustments)</option>
+          </select>
+
+          <div style="margin-top:10px" class="form-row">
+            <input id="name" placeholder="Your name" required />
+            <input id="phone" placeholder="Phone" />
+          </div>
+
+          <div style="margin-top:10px" class="form-row">
+            <input id="email" placeholder="Email" required />
+            <input id="city" placeholder="City" />
+          </div>
+
+          <div style="margin-top:10px">
+            <label class="small">What's your current mood?</label>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button type="button" class="mood-btn" data-mood="stressed">Frazzled</button>
+              <button type="button" class="mood-btn" data-mood="sleepy">Tired</button>
+              <button type="button" class="mood-btn" data-mood="focus">Distracted</button>
+              <button type="button" class="mood-btn" data-mood="grounded">Neutral</button>
+            </div>
+          </div>
+
+          <div class="method-box" id="selected-method">
+            <strong>Recommended approach</strong>
+            <div id="method-desc" class="small" style="margin-top:6px">Select a mood above to see a suggested approach. The suggestion will also update the primary booking button below.</div>
+          </div>
+
+          <div style="margin-top:12px;display:flex;gap:10px;align-items:center">
+            <button id="primary-book" type="submit">Book now</button>
+            <div class="small" style="color:var(--muted)">Or email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+          </div>
+        </form>
+      </section>
+
+      <aside class="panel">
+        <h3>Explore the aroma wheel</h3>
+        <p class="small">Hover or tap each note to reveal descriptors. Use them as a language to describe what you want from a session.</p>
+
+        <div class="wheel-large">
+          <svg id="wheel" viewBox="0 0 240 240" role="img" aria-label="Interactive aroma wheel">
+            <defs>
+              <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            </defs>
+            <circle cx="120" cy="120" r="110" fill="#fff" stroke="#eee"/>
+            <!-- create clickable petals -->
+            <g class="petals">
+              <path class="pet" data-type="Top" d="M120 10 A110 110 0 0 1 210 120 L160 120 A60 60 0 0 0 120 60 Z" fill="#ffd27f" stroke="#fff"/>
+              <path class="pet" data-type="Middle" d="M210 120 A110 110 0 0 1 120 230 L120 170 A60 60 0 0 0 170 120 Z" fill="#a7e3a0" stroke="#fff"/>
+              <path class="pet" data-type="Base" d="M120 230 A110 110 0 0 1 30 120 L80 120 A60 60 0 0 0 120 180 Z" fill="#cdb8ff" stroke="#fff"/>
+            </g>
+            <circle cx="120" cy="120" r="40" fill="#fff" stroke="#eee"/>
+            <text x="120" y="126" font-size="14" text-anchor="middle" fill="#333">Aroma wheel</text>
+          </svg>
+        </div>
+
+        <div id="note-details" style="margin-top:12px">
+          <div class="note-tag" id="note-type">Type: —</div>
+          <div class="small" id="note-desc">Hover a section to read a brief description.</div>
+        </div>
+
+        <div style="margin-top:12px">
+          <h4 style="margin:0 0 6px">Pre-session checklist</h4>
+          <ul class="small" style="margin:0;padding-left:16px">
+            <li>Do a patch test for topical use.</li>
+            <li>Notify if pregnant, nursing, or have severe allergies.</li>
+            <li>Let us know about pets at home for safety precautions.</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    // Mood-to-Method for booking page
+    const moodButtons = document.querySelectorAll('.mood-btn');
+    const methodDesc = document.getElementById('method-desc');
+    const primaryBook = document.getElementById('primary-book');
+
+    const moodGuide = {
+      stressed: {title:'Short centering', desc:'15–20 second inhalation practice, a grounding blend with a resinous base and mellow middle notes.', cta:'Book a centering session'},
+      sleepy: {title:'Wind-down', desc:'A gentle bedtime recipe focusing on soft middle notes and a light base; avoid stimulating top notes.', cta:'Book a sleep consult'},
+      focus: {title:'Focus cue', desc:'A targeted inhaler with bright middle notes to cue attention without overstimulation.', cta:'Book a focus consult'},
+      grounded: {title:'Steady anchor', desc:'A repeated anchor sequence: slow breaths and a consistent base note for steadiness.', cta:'Book a grounding session'}
+    };
+
+    moodButtons.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        moodButtons.forEach(b=>b.style.opacity='');
+        btn.style.opacity='0.8';
+        const m = moodGuide[btn.getAttribute('data-mood')];
+        methodDesc.innerHTML = '<strong>'+m.title+'</strong><div style="margin-top:6px;color:var(--muted)">'+m.desc+'</div>';
+        primaryBook.textContent = m.cta;
+      });
+    });
+
+    // Aroma wheel interactivity
+    const petals = document.querySelectorAll('.pet');
+    const noteType = document.getElementById('note-type');
+    const noteDesc = document.getElementById('note-desc');
+    const details = {
+      Top: 'Top notes are immediate and bright — citrus, light herbs. They change quickly and cue initial perception.',
+      Middle: 'Middle notes form the character: florals, spices, and greens. They carry the theme of a blend.',
+      Base: 'Base notes are long-lasting anchors like woods and resins, providing depth and slow release.'
+    };
+    petals.forEach(p=>{
+      p.addEventListener('mouseenter', ()=>{
+        const t = p.getAttribute('data-type');
+        noteType.textContent = 'Type: ' + t;
+        noteDesc.textContent = details[t];
+        p.style.filter='url(#glow)';
+      });
+      p.addEventListener('mouseleave', ()=>{
+        noteType.textContent = 'Type: —';
+        noteDesc.textContent = 'Hover a section to read a brief description.';
+        p.style.filter='none';
+      });
+      p.addEventListener('click', ()=>{alert('You selected ' + p.getAttribute('data-type') + ' notes as a focus for your session.');});
+    });
+
+    // Basic booking form handler (local-only simulation)
+    document.getElementById('booking-form').addEventListener('submit', function(e){
+      e.preventDefault();
+      const name = document.getElementById('name').value || 'Guest';
+      alert('Thanks, ' + name + '! A confirmation will be sent to the email you provided.');
+      // simulate redirect or send
+      window.location.href = '{{PRIMARY_CTA_URL}}' || 'thank-you.html';
+    });
+  </script>
+</body>
+</html>

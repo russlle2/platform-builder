@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book a Session — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#ffffff;--ink:#0b1a1a;--muted:#6b7678;--accent:#6c5ce7;--card:#fbfbff;--max:980px}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:var(--ink);background:var(--bg)}
+    .wrap{max-width:var(--max);margin:40px auto;padding:28px}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
+    nav a{margin-left:14px;color:var(--muted);text-decoration:none}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:22px}
+    .panel{background:var(--card);padding:18px;border-radius:10px;border:1px solid rgba(12,18,26,0.04)}
+    h1{margin:0 0 8px;font-size:26px}
+    label{display:block;margin-top:10px;font-weight:700}
+    input,select,textarea{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid #e6e9ee}
+    .submit{margin-top:12px;background:var(--accent);color:white;padding:10px 14px;border-radius:9px;text-decoration:none;display:inline-block}
+    .mini{font-size:14px;color:var(--muted)}
+    .myth{margin-top:16px;padding:12px;background:#f5f7ff;border-left:4px solid var(--accent);border-radius:6px}
+    .pillars{margin-top:12px;display:flex;gap:8px}
+    .pill{background:#f1efff;padding:8px;border-radius:999px;color:#2a1b8f;font-weight:700;font-size:13px}
+    .faq{margin-top:18px;color:var(--muted);font-size:14px}
+    footer{margin-top:22px;color:var(--muted)}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div style="font-weight:700">{{BUSINESS_NAME}} <span style="font-weight:400;color:var(--muted)">• Book</span></div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="services.html">Services</a>
+        <a href="testimonials.html">Stories</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </header>
+
+    <div class="grid">
+      <main>
+        <div class="panel">
+          <h1>Schedule Your First Habit Reset Session</h1>
+          <p class="mini">A focused 60-minute session to set an evidence-informed 30-day practice window. Includes follow-up resources and a planning template.</p>
+
+          <form action="{{PRIMARY_CTA_URL}}" method="post" style="margin-top:12px">
+            <label for="name">Full name</label>
+            <input id="name" name="name" placeholder="Your name" required>
+
+            <label for="email">Email</label>
+            <input id="email" name="email" placeholder="you@example.com" type="email" required>
+
+            <label for="goal">Primary outcome you want</label>
+            <select id="goal" name="goal">
+              <option>Sleep consistency</option>
+              <option>Daily movement</option>
+              <option>Stress management</option>
+              <option>Time and focus</option>
+              <option>Other</option>
+            </select>
+
+            <label for="notes">A short note about your current routine</label>
+            <textarea id="notes" name="notes" rows="4" placeholder="What have you tried? What works sometimes?"></textarea>
+
+            <div style="display:flex;gap:10px;align-items:center;margin-top:12px">
+              <button class="submit" type="submit">{{PRIMARY_CTA_LABEL}}</button>
+              <div class="mini">Or call <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+            </div>
+          </form>
+
+          <div class="myth">
+            <strong>Myth vs Method</strong>
+            <p style="margin:8px 0 0;color:var(--muted)">Myth: You need willpower to start. Method: Design practice cues and tiny habits so action becomes automatic over repeated contexts.</p>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:12px">
+          <h2 style="margin:0 0 8px">Small Wins — Big Shifts</h2>
+          <p style="margin:0;color:var(--muted)">Typical session outcomes: clarified a single target behavior, designed a 14-day micro-experiment, and created a relapse-safe return plan.</p>
+        </div>
+      </main>
+
+      <aside>
+        <div class="panel">
+          <img src="assets/img/avatar.svg" alt="avatar" style="width:100%;height:auto;display:block;border-radius:6px;margin-bottom:12px">
+          <strong>{{COACH_NAME}}, {{CREDENTIALS}}</strong>
+          <p style="color:var(--muted);margin:6px 0 0">I pair quantified practice windows with simple environment edits. Expect evidence-first guidance and humane accountability.</p>
+
+          <div class="pillars">
+            <div class="pill">14-day labs</div>
+            <div class="pill">Relapse playbook</div>
+            <div class="pill">Measurement kit</div>
+          </div>
+
+          <div class="faq">
+            <strong>Booking & Prep</strong>
+            <p style="margin:8px 0 0">Bring one specific behavior you want to test. We’ll outline a protocol and simple metrics during the session.</p>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:12px">
+          <h3 style="margin:0 0 8px">Need a tailored package?</h3>
+          <p style="margin:0;color:var(--muted)">Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> for multi-session packages or group workshops.</p>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      <div style="color:var(--muted)">{{COACH_NAME}}, {{CREDENTIALS}} • {{CITY}}, {{STATE}} • <a href="privacy.html">Privacy</a></div>
+    </footer>
+  </div>
+</body>
+</html>

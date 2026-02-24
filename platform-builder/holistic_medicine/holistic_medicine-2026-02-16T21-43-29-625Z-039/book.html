@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Book a Session — {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Reserve time for an intake, follow-up, or lab review. Practical booking and pre-visit guidance.">
+  <style>
+    :root{--bg:#041426;--panel:#071a26;--accent:#8be6ff;--muted:#9fbfc8;--glass:rgba(255,255,255,0.03);--radius:14px}
+    body{margin:0;background:linear-gradient(180deg,#021824 0%,#041026 100%);color:#e9fbff;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}
+    .pattern{position:fixed;inset:0;background-image:url('assets/img/pattern.svg');opacity:0.13;pointer-events:none}
+    header{display:flex;justify-content:space-between;padding:18px 20px}
+    .brand{display:flex;gap:10px;align-items:center}
+    .mark{width:44px;height:44px;border-radius:12px;background:linear-gradient(90deg,#7dd3fc,#8b5cf6);display:grid;place-items:center;color:#021018;font-weight:800}
+    nav a{color:rgba(233,251,255,0.9);text-decoration:none;margin:0 8px}
+    nav a.active{font-weight:800}
+    main{max-width:1000px;margin:18px auto;padding:18px}
+    .grid{display:grid;grid-template-columns:1fr 380px;gap:18px}
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:var(--radius)}
+    h1{margin:0;font-size:26px}
+    form{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+    input,select,textarea{padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:#fff}
+    .btn{background:linear-gradient(90deg,#7dd3fc,#a78bfa);padding:10px;border-radius:10px;border:none;font-weight:800}
+    .benefits{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+    .small{color:var(--muted);font-size:13px}
+    details{background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;margin-top:8px}
+    @media(max-width:920px){.grid{grid-template-columns:1fr}.benefits{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="pattern" aria-hidden="true"></div>
+  <header>
+    <div class="brand">
+      <div class="mark">HM</div>
+      <div style="font-weight:700">{{BUSINESS_NAME}}</div>
+    </div>
+    <nav>
+      <a href="/index.html">Welcome</a>
+      <a href="/services.html">Programs</a>
+      <a href="/conditions.html">Concerns</a>
+      <a href="/approach.html">Approach</a>
+      <a href="/pricing.html">Fees</a>
+      <a href="/about.html">Team</a>
+      <a href="/book.html" class="active">Book</a>
+      <a href="/contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="grid">
+      <div>
+        <div class="panel">
+          <h1>Reserve time — Intake, Follow-up, or Lab Review</h1>
+          <p class="small">Choose a visit type below. If you are new, please book an intake so we can allocate the necessary time. All appointments include educational guidance; outcomes vary by person.</p>
+
+          <form action="{{PRIMARY_CTA_URL}}" method="get" aria-label="Booking form">
+            <label class="small">Name
+              <input type="text" name="name" placeholder="Your full name" required>
+            </label>
+            <label class="small">Email
+              <input type="email" name="email" placeholder="you@example.com" required>
+            </label>
+            <label class="small">Phone
+              <input type="tel" name="phone" placeholder="Optional phone" >
+            </label>
+            <label class="small">Visit type
+              <select name="visit">
+                <option>New Patient Intake — 90–120 min</option>
+                <option>Follow-up — 45–60 min</option>
+                <option>Lab Review — 45–60 min</option>
+                <option>Consultation Call — 20–30 min</option>
+              </select>
+            </label>
+            <label class="small">Brief note (symptoms / goals)
+              <textarea name="note" rows="4" placeholder="What brings you in? Be concise."></textarea>
+            </label>
+            <div style="display:flex;gap:10px;align-items:center;margin-top:6px">
+              <button class="btn" type="submit">Request Booking</button>
+              <a href="mailto:{{EMAIL}}" class="small" style="color:var(--accent);text-decoration:none">Questions? Email us</a>
+            </div>
+            <div class="small" style="margin-top:8px">By submitting you agree to receive scheduling communication. We do not guarantee outcomes; appointments are educational and therapeutic in scope.</div>
+          </form>
+        </div>
+
+        <div class="panel" style="margin-top:12px">
+          <h3 style="margin-top:0">Lead magnet — Pre-visit checklist</h3>
+          <p class="small">Download a short checklist to prepare labs, medication list, and symptom trackers before your session.</p>
+          <form action="{{PRIMARY_CTA_URL}}" method="get" style="display:flex;gap:8px;margin-top:8px">
+            <input type="email" name="email" placeholder="Email to receive the checklist" required style="flex:1">
+            <button class="btn" type="submit">Get Checklist</button>
+          </form>
+        </div>
+
+        <div class="panel" style="margin-top:12px">
+          <h3 style="margin-top:0">What to expect</h3>
+          <div class="benefits">
+            <div>
+              <b>Thorough history</b>
+              <div class="small">We ask about lifestyle, stress, and relevant labs.</div>
+            </div>
+            <div>
+              <b>Individualized steps</b>
+              <div class="small">Small, measurable changes prioritized first.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="panel">
+          <h3 style="margin-top:0">Quick process guide</h3>
+          <ol class="small">
+            <li>Book online or request a call.</li>
+            <li>Complete pre-visit intake sent via email.</li>
+            <li>Attend the session — bring questions and recent labs.</li>
+            <li>We provide an action plan and resources.</li>
+          </ol>
+        </div>
+
+        <div class="panel" style="margin-top:12px">
+          <h3 style="margin-top:0">Safety & labs</h3>
+          <p class="small">We may recommend optional lab testing for clearer data. Labs are educational and billed separately. All recommendations consider medication interactions and contraindications.</p>
+        </div>
+
+        <div class="panel" style="margin-top:12px">
+          <h3 style="margin-top:0">Practical matters</h3>
+          <div class="small">Need to reschedule? Please provide 48-hour notice. For urgent issues, call <a href="tel:{{PHONE}}" style="color:var(--accent);text-decoration:none">{{PHONE}}</a>.</div>
+        </div>
+
+        <div class="panel" style="margin-top:12px">
+          <h3 style="margin-top:0">Common FAQs</h3>
+          <details>
+            <summary>How long until I see change?</summary>
+            <div class="small">Timing depends on the concern. Some symptoms shift within weeks; others take months. We set realistic milestones.</div>
+          </details>
+          <details>
+            <summary>Will I need supplements?</summary>
+            <div class="small">Sometimes — we prefer evidence-informed choices and review interactions. Supplements are optional retail items.</div>
+          </details>
+        </div>
+      </aside>
+    </div>
+
+    <footer style="margin-top:18px;color:var(--muted);font-size:13px">
+      <div>{{BUSINESS_NAME}} • {{CITY}}, {{STATE}} • <a href="mailto:{{EMAIL}}" style="color:var(--accent);text-decoration:none">{{EMAIL}}</a></div>
+    </footer>
+  </main>
+</body>
+</html>

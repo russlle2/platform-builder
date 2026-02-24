@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Gatherings — Events | {{BUSINESS_NAME}}</title>
+  <meta name="description" content="Upcoming sound gatherings and calendar — reserve a seat and get a tailored packing list for your session.">
+  <style>
+    :root{--bg:#f6efe6;--accent:#7a4b2a;--muted:#7f6a59;--card:#fff;--glass:rgba(255,255,255,0.6);--green:#2f7a4a}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;color:var(--muted);background:linear-gradient(180deg,var(--bg),#efe7da);}
+    .pattern{background-image:url('/assets/img/pattern.svg');background-size:220px;background-repeat:repeat;background-position:0 0}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#b67a4b);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    nav a{margin-left:18px;color:var(--muted);text-decoration:none}
+    .hero{padding:28px;border-radius:14px;margin:10px auto;max-width:980px;background:linear-gradient(180deg,rgba(255,255,255,0.6),rgba(255,255,255,0.45));box-shadow:0 6px 30px rgba(120,90,60,0.08)}
+    .hero h1{margin:0;color:var(--accent);font-size:28px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(90,70,50,0.06)}
+    .muted{color:#8a7a6e;font-size:14px}
+    .event-title{font-weight:700;color:var(--accent);font-size:18px}
+    .date{font-weight:600}
+    .seat-control{display:flex;align-items:center;gap:8px;margin-top:10px}
+    .seat-control button{padding:8px 12px;border-radius:8px;border:1px solid #e6d7c9;background:#fff;cursor:pointer}
+    .book-btn{display:inline-block;margin-top:12px;padding:10px 14px;background:var(--accent);color:#fff;border-radius:10px;text-decoration:none}
+    .calendar-list{display:flex;flex-direction:column;gap:8px}
+    .calendar-item{display:flex;justify-content:space-between;padding:10px;border-radius:8px;border:1px dashed #efe2d6;cursor:pointer}
+    .packing{margin-top:12px}
+    .packing label{display:flex;align-items:center;gap:10px;margin:8px 0}
+    .pack-output{margin-top:10px;padding:12px;border-radius:8px;background:linear-gradient(180deg,#fff,#fbf6f1);min-height:48px}
+    footer{margin:28px 0;padding:16px;text-align:center;color:#6f5e51}
+    .disclaimer{font-size:13px;color:#6b5f58;margin-top:12px}
+    .cta-row{display:flex;gap:10px;align-items:center;margin-top:16px}
+    .try-btn{background:transparent;border:1px solid var(--accent);padding:8px 12px;border-radius:9px;color:var(--accent);cursor:pointer}
+    @media(max-width:860px){.grid{grid-template-columns:1fr}.hero{padding:18px}}
+  </style>
+</head>
+<body class="pattern">
+  <header>
+    <div class="brand">
+      <div class="logo">S</div>
+      <div>
+        <div style="font-weight:700;color:var(--accent)">{{BUSINESS_NAME}}</div>
+        <div style="font-size:12px;color:var(--muted)">{{TAGLINE}}</div>
+      </div>
+    </div>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/events.html">Gatherings</a>
+      <a href="/private-sessions.html">Sessions</a>
+      <a href="/pricing.html">Invest</a>
+      <a href="/about.html">Story</a>
+      <a href="/book.html">Book</a>
+      <a href="/contact.html">Connect</a>
+    </nav>
+  </header>
+
+  <main class="hero">
+    <h1>Upcoming Sound Gatherings — pick a moment to arrive</h1>
+    <p class="muted">Select a date, reserve a seat, and get a tailored 'what to bring' checklist based on how you'd like to show up.</p>
+
+    <div class="grid">
+      <section class="card">
+        <div id="nextEvent" aria-live="polite">
+          <div class="event-title">Next gathering: Forestlight Evening</div>
+          <div class="muted date" id="nextEventDate">Sat • {{CITY}}, {{STATE}} • Mar 06 • 6:30pm</div>
+          <div class="muted" id="nextEventSpots" style="margin-top:8px">Seats left: <strong id="seatsLeft">12</strong></div>
+
+          <div class="seat-control">
+            <label style="font-size:14px">Reserve </label>
+            <button id="minus">−</button>
+            <div id="seatCount" style="min-width:28px;text-align:center">1</div>
+            <button id="plus">+</button>
+            <a id="reserveBtn" class="book-btn" href="{{PRIMARY_CTA_URL}}">Reserve</a>
+          </div>
+
+          <div class="disclaimer">Contraindications: If you are pregnant, have uncontrolled epilepsy, recent head trauma, or are under the influence of substances that impair consciousness, consult with a healthcare provider before attending. If in doubt, reach out: {{PHONE}} • {{EMAIL}}</div>
+        </div>
+
+        <div style="margin-top:14px">
+          <div class="muted">What to bring — personalize for your comfort</div>
+          <div class="packing">
+            <label><input type="checkbox" id="bringMat"> Comfortable mat/yoga mat</label>
+            <label><input type="checkbox" id="bringBlanket"> Warm blanket</label>
+            <label><input type="checkbox" id="bringPillow"> Pillow/bolster</label>
+            <label><input type="checkbox" id="bringJournal"> Journal & pen</label>
+            <label><input type="checkbox" id="bringEarplugs"> Earplugs</label>
+            <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+              <select id="intensity" style="padding:8px;border-radius:8px;border:1px solid #ead9cc">
+                <option value="gentle">Prefer gentle / restorative</option>
+                <option value="balanced">Balanced</option>
+                <option value="deeper">Deeper, immersive</option>
+              </select>
+              <button id="genPack" class="try-btn">Generate list</button>
+            </div>
+            <div id="packOutput" class="pack-output" aria-live="polite">Your tailored list will appear here.</div>
+          </div>
+        </div>
+      </section>
+
+      <aside>
+        <div class="card" style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div style="font-weight:700">Calendar</div>
+            <div class="muted" style="font-size:13px">Upcoming • New spaces weekly</div>
+          </div>
+          <div class="calendar-list" id="calendarList">
+            <!-- populated by JS -->
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="font-weight:700">Practical details</div>
+          <div class="muted" style="margin-top:8px">Arrive 10–15 minutes early to settle. Sessions last about 75 minutes. We provide mats on request (limited supply).</div>
+          <div class="cta-row">
+            <a class="book-btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+            <button class="try-btn" id="openTry">Try a 3-minute pause</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <div>{{BUSINESS_NAME}} — <a href="tel:{{PHONE}}">{{PHONE}}</a> • <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+    <div class="muted" style="margin-top:6px">Limited space. Reservations are held locally for the session and are not a formal purchase.</div>
+  </footer>
+
+  <!-- Try-it modal (lightweight practice) -->
+  <div id="tryModal" style="display:none;position:fixed;inset:0;background:rgba(20,16,12,0.6);align-items:center;justify-content:center;padding:20px">
+    <div role="dialog" aria-modal="true" style="max-width:540px;width:100%;background:#fff;padding:18px;border-radius:12px;box-shadow:0 20px 50px rgba(60,40,30,0.3)">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-weight:700;color:var(--accent)">A brief guided pause</div>
+        <button id="closeTry" style="border:0;background:transparent;font-size:18px">✕</button>
+      </div>
+      <div id="tryContent" style="margin-top:12px">
+        <div id="guideText">Settle comfortably. We'll breathe together for three cycles.</div>
+        <div id="breathBall" style="margin:18px auto;width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,#f6efe6,#e9d7c8)"></div>
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:8px">
+          <button id="startGuide" class="book-btn">Begin</button>
+          <button id="stopGuide" class="try-btn">Stop</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Fake calendar + next-event logic
+    (function(){
+      const events = [
+        {id:'forestlight',title:'Forestlight Evening',date:'2026-03-06T18:30:00',spots:12,location:'Studio A'},
+        {id:'dawn-bathe',title:'Dawn Quiet',date:'2026-03-14T07:00:00',spots:10,location:'Riverside Room'},
+        {id:'midweek-rest',title:'Midweek Rest',date:'2026-03-18T19:00:00',spots:16,location:'Studio B'}
+      ];
+      const list = document.getElementById('calendarList');
+      events.forEach(e=>{
+        const el = document.createElement('div');
+        el.className='calendar-item';
+        el.tabIndex=0;
+        const d = new Date(e.date);
+        el.innerHTML = '<div><strong>'+e.title+'</strong><div class="muted" style="font-size:13px">'+d.toDateString()+' • '+d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})+'</div></div>' +
+                       '<div style="text-align:right"><div class="muted">'+e.location+'</div><div style="font-weight:700;color:var(--accent)">Seats: <span>'+e.spots+'</span></div></div>';
+        el.onclick = ()=>selectEvent(e);
+        el.onkeypress = (ev)=>{ if(ev.key==='Enter') selectEvent(e); };
+        list.appendChild(el);
+      });
+
+      const seatLeftEl = document.getElementById('seatsLeft');
+      const seatCountEl = document.getElementById('seatCount');
+      const minus = document.getElementById('minus');
+      const plus = document.getElementById('plus');
+      const reserveBtn = document.getElementById('reserveBtn');
+      let selected = events[0];
+      // load saved per-event seats (fake)
+      function availFor(e){
+        const key='ev-'+e.id+'-avail';
+        const stored = localStorage.getItem(key);
+        return stored?Number(stored):e.spots;
+      }
+      function setAvail(e,v){ localStorage.setItem('ev-'+e.id+'-avail',String(v)); }
+      function selectEvent(e){ selected = e; document.getElementById('nextEventDate').textContent = new Date(e.date).toLocaleString(); updateSeatsDisplay(); }
+      function updateSeatsDisplay(){ const a = availFor(selected); seatLeftEl.textContent = a; seatCountEl.textContent = '1'; reserveBtn.onclick = handleReserve; reserveBtn.href = '{{PRIMARY_CTA_URL}}'; }
+      function handleReserve(ev){ ev.preventDefault(); const wanted = Number(seatCountEl.textContent); const a=availFor(selected); if(wanted<=0){ alert('Choose at least one seat.'); return;} if(wanted>a){ alert('Not enough seats available.'); return;} setAvail(selected,a-wanted); updateSeatsDisplay(); alert('Reserved '+wanted+' seat(s) for '+selected.title+". This is a local reservation."); }
+      plus.onclick = ()=>{ let v = Number(seatCountEl.textContent); if(v<9) seatCountEl.textContent = v+1; };
+      minus.onclick = ()=>{ let v = Number(seatCountEl.textContent); if(v>1) seatCountEl.textContent = v-1; };
+      // init
+      selectEvent(selected);
+    })();
+
+    // Packing list generator
+    (function(){
+      const gen = document.getElementById('genPack');
+      const out = document.getElementById('packOutput');
+      gen.addEventListener('click',()=>{
+        const bringMat = document.getElementById('bringMat').checked;
+        const bringBlanket = document.getElementById('bringBlanket').checked;
+        const bringPillow = document.getElementById('bringPillow').checked;
+        const bringJournal = document.getElementById('bringJournal').checked;
+        const bringEarplugs = document.getElementById('bringEarplugs').checked;
+        const intensity = document.getElementById('intensity').value;
+        const items = [];
+        // Core items
+        items.push('Water bottle (small)');
+        if(bringMat) items.push('Your mat — for ground comfort');
+        if(bringBlanket) items.push('A warm blanket — helpful for stillness');
+        if(bringPillow) items.push('Neck pillow or bolster');
+        if(bringJournal) items.push('Journal + pen — for after-session notes');
+        if(bringEarplugs) items.push('Earplugs — to tune inward if desired');
+        if(intensity==='gentle') items.push('Light layers — you may feel cool while resting');
+        if(intensity==='deeper') items.push('An eye mask — darkness deepens the listening');
+        // Extra gentle advice
+        items.push('Arrive slightly hungry or lightly fed — very full may be uncomfortable.');
+        out.textContent = items.map((i,idx)=> (idx+1)+'. '+i).join('\n');
+      });
+    })();
+
+    // Try modal breathing guide simple animation
+    (function(){
+      const modal = document.getElementById('tryModal');
+      const open = document.getElementById('openTry');
+      const close = document.getElementById('closeTry');
+      const start = document.getElementById('startGuide');
+      const stop = document.getElementById('stopGuide');
+      const ball = document.getElementById('breathBall');
+      const guideText = document.getElementById('guideText');
+      let anim=null; let running=false;
+      open.onclick = ()=>{ modal.style.display='flex'; guideText.textContent='Settle. We will breathe: 4s inhale, 6s exhale — three rounds.'; };
+      close.onclick = ()=>{ stopGuide(); modal.style.display='none'; };
+      start.onclick = startGuide;
+      stop.onclick = stopGuide;
+      function startGuide(){ if(running) return; running=true; let phase=0; let cycle=0; guideText.textContent='Ready...'; ball.style.transition='transform 4s ease-in-out, box-shadow 4s ease-in-out'; anim = setInterval(()=>{
+          // phase 0: inhale (scale up), phase 1: hold, phase 2: exhale (scale down)
+          if(phase===0){ guideText.textContent='Inhale — 4 seconds'; ball.style.transform='scale(1.15)'; ball.style.boxShadow='0 8px 30px rgba(120,90,60,0.18)'; phase=1; setTimeout(()=>{ phase=2; },4000);} else if(phase===2){ guideText.textContent='Exhale — 6 seconds'; ball.style.transform='scale(0.85)'; ball.style.boxShadow='0 4px 10px rgba(80,60,40,0.08)'; phase=3; setTimeout(()=>{ phase=0; cycle++; if(cycle>=3){ stopGuide(); guideText.textContent='Finished. Sit quietly for a moment.'; } },6000);} }, 1000);
+        // kick off first inhale
+        phase=0;
+      }
+      function stopGuide(){ if(anim) clearInterval(anim); anim=null; running=false; ball.style.transform='scale(1)'; }
+    })();
+  </script>
+</body>
+</html>

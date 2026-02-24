@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>About — {{BUSINESS_NAME}}</title>
+  <style>
+    :root{--bg:#fbf9f6;--muted:#6b6b6b;--accent:#2f7a6d;--card:#ffffff;--glass:rgba(255,255,255,0.6)}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#1f2933;background:var(--bg);-webkit-font-smoothing:antialiased}
+    .wrap{max-width:980px;margin:28px auto;padding:28px}
+    .nav{display:flex;gap:14px;align-items:center;justify-content:space-between}
+    .nav .links{display:flex;gap:12px}
+    .nav a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:8px;font-weight:600}
+    .nav a:hover{background:rgba(47,122,109,0.08);color:var(--accent)}
+    header.hero{background:linear-gradient(180deg,rgba(47,122,109,0.06),transparent);padding:30px;border-radius:14px;position:relative;overflow:hidden}
+    header h1{margin:0 0 8px;font-size:1.6rem;color:#0f1720}
+    header p.lead{margin:0;color:var(--muted)}
+    .decor{position:absolute;right:-40px;top:-40px;opacity:0.18}
+    /* unique inline SVG pattern used as decorative element */
+    .intro{display:grid;grid-template-columns:1fr 320px;gap:22px;margin-top:20px}
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(22,28,33,0.04)}
+    .what{line-height:1.5}
+    .expect{display:flex;flex-direction:column;gap:10px}
+    .expect b{color:var(--accent)}
+    /* Proof gallery */
+    .proof{margin-top:20px;display:grid;grid-template-columns:1fr 260px;gap:18px;align-items:start}
+    .testimonial{background:linear-gradient(180deg,rgba(47,122,109,0.02),transparent);padding:18px;border-radius:12px;min-height:150px;display:flex;flex-direction:column;justify-content:center}
+    .quote{font-style:italic;color:#0b1720;font-size:1rem}
+    .by{margin-top:12px;color:var(--muted);font-weight:600}
+    .badges{display:flex;flex-wrap:wrap;gap:10px}
+    .badge{background:var(--glass);padding:8px 10px;border-radius:10px;font-size:13px;color:#0b2b23;border:1px solid rgba(47,122,109,0.08);position:relative}
+    .badge:hover{transform:translateY(-3px)}
+    .tooltip{position:absolute;left:0;top:calc(100% + 8px);background:#0b1720;color:#fff;padding:8px;border-radius:6px;font-size:13px;white-space:nowrap;display:none}
+    .badge:hover .tooltip{display:block}
+    .cta-row{margin-top:18px;display:flex;gap:12px}
+    .btn{background:var(--accent);color:#fff;padding:10px 12px;border-radius:10px;text-decoration:none;font-weight:700}
+    footer{margin-top:28px;color:var(--muted);font-size:14px}
+    @media(max-width:800px){.intro{grid-template-columns:1fr;}.proof{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="nav">
+      <div class="logo"><a href="index.html" style="font-weight:800;color:#0f1720;text-decoration:none">{{BUSINESS_NAME}}</a></div>
+      <div class="links">
+        <a href="index.html">Begin</a>
+        <a href="about.html" aria-current="page">Who we are</a>
+        <a href="services.html">Support</a>
+        <a href="programs.html">Paths</a>
+        <a href="pricing.html">Investment</a>
+        <a href="testimonials.html">Stories</a>
+        <a href="book.html">Schedule</a>
+        <a href="contact.html">Connect</a>
+      </div>
+    </nav>
+
+    <header class="hero card">
+      <svg class="decor" width="220" height="220" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+        <defs>
+          <pattern id="p-about" width="20" height="20" patternUnits="userSpaceOnUse">
+            <rect width="10" height="10" fill="#dff3ee" />
+            <rect x="10" y="10" width="10" height="10" fill="#eaf8f4" />
+          </pattern>
+          <linearGradient id="g" x1="0" x2="1">
+            <stop offset="0" stop-color="#bdeada" />
+            <stop offset="1" stop-color="#e6fbf6" />
+          </linearGradient>
+        </defs>
+        <rect width="220" height="220" fill="url(#p-about)" rx="26" />
+        <circle cx="60" cy="60" r="40" fill="url(#g)" opacity="0.9" />
+      </svg>
+      <h1>{{BUSINESS_NAME}} — steady, sensible steps toward balanced habits</h1>
+      <p class="lead">A calm, evidence-minded coaching approach that centers daily rhythms and small changes to lift energy and resilience without sweeping disruption.</p>
+    </header>
+
+    <div class="intro">
+      <div class="card what">
+        <h3>How we work</h3>
+        <p class="what_to_expect">We pair clear frameworks with practical habit cues and short check-ins. Expect measurable shifts in routines, clarity about priorities, and simple exercises you can repeat each week.</p>
+        <div class="expect">
+          <div><b>Outcome focus:</b> simple indicators to track progress (energy, routine consistency, confidence in choices).</div>
+          <div><b>Micro-habits:</b> short, repeatable behaviors that build momentum without overwhelm.</div>
+          <div><b>Frame-by-frame:</b> a three-step framework to notice, practice, and integrate.</div>
+        </div>
+        <div class="cta-row">
+          <a class="btn" href="{{PRIMARY_CTA_URL}}">{{PRIMARY_CTA_LABEL}}</a>
+          <a href="contact.html" style="align-self:center;color:var(--muted);text-decoration:none">Contact {{BUSINESS_NAME}}</a>
+        </div>
+      </div>
+      <aside class="card">
+        <h4>Quick details</h4>
+        <p style="margin:6px 0;color:var(--muted)">Based in {{CITY}}, {{STATE}} • Reach us at <a href="tel:{{PHONE}}">{{PHONE}}</a> or <a href="mailto:{{EMAIL}}">{{EMAIL}}</a></p>
+        <hr />
+        <h5>What people notice</h5>
+        <ul style="margin:8px 0 0 16px;color:var(--muted)">
+          <li>More consistent mornings</li>
+          <li>Clearer priorities after a week</li>
+          <li>Tools you keep using</li>
+        </ul>
+      </aside>
+    </div>
+
+    <section class="proof">
+      <div class="testimonial card" id="testimonial">
+        <div class="quote" id="quote">"Creating a short, repeatable check-in changed how I start every day — small but steady gains."</div>
+        <div class="by" id="by">— A coach client</div>
+      </div>
+
+      <div class="card">
+        <h4>Trust markers</h4>
+        <p style="color:var(--muted)">A rotating sample of recognitions and client contexts. Hover each badge for context.</p>
+        <div class="badges" id="badges"></div>
+        <div style="margin-top:10px;color:var(--muted);font-size:13px">Updated weekly</div>
+      </div>
+    </section>
+
+    <footer>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div>{{BUSINESS_NAME}} — thoughtful coaching and steady habit support</div>
+        <div style="color:var(--muted)">Prefer a call? <a href="tel:{{PHONE}}">{{PHONE}}</a></div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Proof gallery: rotating testimonials + credibility badges
+    (function(){
+      const testimonials=[
+        {quote:'I learned how to break a week into manageable steps — results without drama.', by:'Client, small business owner'},
+        {quote:'Three short practices rewired my routine. I feel steadier and more intentional.', by:'Client, educator'},
+        {quote:'The framework made choices simple. Less second-guessing, more forward motion.', by:'Client, parent of two'}
+      ];
+      const badges=[
+        {label:'Local Wellness Feature','tip':'Interviewed on the city wellness segment.'},
+        {label:'Corporate Pilot','tip':'Short-term program run for a local employer.'},
+        {label:'Community Series','tip':'Monthly sessions led for neighborhood groups.'},
+        {label:'Press: Lifestyle Column','tip':'Mentioned in a regional lifestyle column.'}
+      ];
+
+      let idx=0;
+      const quoteEl=document.getElementById('quote');
+      const byEl=document.getElementById('by');
+      const badgesEl=document.getElementById('badges');
+
+      function renderTest(i){
+        const t=testimonials[i%testimonials.length];
+        quoteEl.style.opacity=0;byEl.style.opacity=0;
+        setTimeout(()=>{quoteEl.textContent='"'+t.quote+'"';byEl.textContent='— '+t.by;quoteEl.style.opacity=1;byEl.style.opacity=1},300);
+      }
+
+      function renderBadges(){
+        badgesEl.innerHTML='';
+        badges.forEach(b=>{
+          const el=document.createElement('div');el.className='badge';el.tabIndex=0;el.innerHTML='<strong>'+b.label+'</strong>';
+          const tip=document.createElement('div');tip.className='tooltip';tip.textContent=b.tip;el.appendChild(tip);
+          badgesEl.appendChild(el);
+        });
+      }
+
+      renderBadges();renderTest(idx);
+      setInterval(()=>{idx++;renderTest(idx)},5000);
+    })();
+  </script>
+</body>
+</html>
