@@ -18,17 +18,21 @@ const body = Sora({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Platform Builder for HVAC Pros',
+    default: 'Platform Builder — Professional Website Templates',
     template: '%s | Platform Builder',
   },
   description:
-    'Launch a premium HVAC platform with guided intake, instant templates, and managed integrations.',
+    'Browse 500+ unique website templates across multiple industries. Pick a design, enter your details, preview it live, and launch.',
   keywords: [
-    'HVAC website builder',
-    'HVAC contractor website',
-    'HVAC marketing platform',
-    'service business website',
-    'local service marketing',
+    'website builder',
+    'website templates',
+    'professional website',
+    'small business website',
+    'HVAC website',
+    'therapist website',
+    'wellness website',
+    'aromatherapy website',
+    'holistic medicine website',
   ],
   robots: 'index, follow',
   category: 'business',

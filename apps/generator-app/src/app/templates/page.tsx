@@ -1,55 +1,25 @@
-'use client'
-
-import Image from 'next/image'
 import Link from 'next/link'
-import { track } from '@/lib/analytics'
+import { getNiches } from '@/lib/templates/niche-registry'
+import type { Metadata } from 'next'
 
-const templates = [
-  {
-    id: 1,
-    name: 'Modern HVAC',
-    description: 'Premium, conversion-focused layout built for service calls.',
-    image: '/images/template-1.jpg',
-    category: 'HVAC',
-  },
-  {
-    id: 2,
-    name: 'Emergency Response',
-    description: 'Urgent callouts and trust-focused sections.',
-    image: '/images/template-2.jpg',
-    category: 'HVAC',
-  },
-  {
-    id: 3,
-    name: 'Residential Comfort',
-    description: 'Warm and modern layout for residential service brands.',
-    image: '/images/template-3.jpg',
-    category: 'HVAC',
-  },
-  {
-    id: 4,
-    name: 'Commercial Pro',
-    description: 'Built for larger commercial HVAC contracts.',
-    image: '/images/template-4.jpg',
-    category: 'HVAC',
-  },
-  {
-    id: 5,
-    name: 'Seasonal Tune-Up',
-    description: 'Maintenance-first layout optimized for recurring HVAC service plans.',
-    image: '/images/template-5.jpg',
-    category: 'HVAC',
-  },
-  {
-    id: 6,
-    name: 'Luxury Service',
-    description: 'High-end design for premium service positioning.',
-    image: '/images/template-6.jpg',
-    category: 'HVAC',
-  },
-]
+export const metadata: Metadata = {
+  title: 'Browse Website Templates',
+  description: 'Browse 500+ unique website templates across aromatherapy, holistic medicine, HVAC, therapy, sound bath, and wellness coaching.',
+}
+
+const accentMap: Record<string, { border: string; text: string; bg: string }> = {
+  emerald: { border: 'border-emerald-400/30', text: 'text-emerald-300', bg: 'bg-emerald-500/10' },
+  violet: { border: 'border-violet-400/30', text: 'text-violet-300', bg: 'bg-violet-500/10' },
+  cyan: { border: 'border-cyan-400/30', text: 'text-cyan-300', bg: 'bg-cyan-500/10' },
+  amber: { border: 'border-amber-400/30', text: 'text-amber-300', bg: 'bg-amber-500/10' },
+  indigo: { border: 'border-indigo-400/30', text: 'text-indigo-300', bg: 'bg-indigo-500/10' },
+  rose: { border: 'border-rose-400/30', text: 'text-rose-300', bg: 'bg-rose-500/10' },
+}
 
 export default function TemplatesPage() {
+  const niches = getNiches()
+  const total = niches.reduce((sum, n) => sum + n.templateCount, 0)
+
   return (
     <main className="min-h-screen pt-24 pb-20">
       <div className="container-hvac">
@@ -57,57 +27,48 @@ export default function TemplatesPage() {
           <div className="space-y-6">
             <span className="signal-chip">Templates</span>
             <h1 className="text-5xl md:text-6xl font-bold text-white">
-              Pick a layout built for HVAC conversions
+              {total}+ unique templates across {niches.length} industries
             </h1>
             <p className="text-lg text-slate-300 max-w-2xl">
-              These are placeholders until tomorrow&apos;s full library arrives. Each one maps
-              your intake data into a launch-ready structure.
+              Every template is professionally designed, mobile-first, and SEO-ready.
+              Pick your industry to start browsing.
             </p>
           </div>
           <div className="glass-panel rounded-3xl p-8">
-            <h2 className="text-2xl font-bold text-white">Template standards</h2>
+            <h2 className="text-2xl font-bold text-white">What&apos;s included</h2>
             <ul className="mt-4 space-y-3 text-slate-200">
-              <li>Mobile-first CTA placement</li>
-              <li>SEO-ready service sections</li>
-              <li>Trust + review blocks baked in</li>
-              <li>Easy updates from the portal</li>
+              <li>Multi-page website (6-8 pages each)</li>
+              <li>Mobile-first responsive design</li>
+              <li>SEO meta tags + sitemaps</li>
+              <li>Instant live preview with your info</li>
+              <li>Managed hosting + integrations</li>
             </ul>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {templates.map((template) => (
-            <div
-              key={template.id}
-              className="card-mahogany overflow-hidden hover:scale-[1.01] transition-transform"
-            >
-              <div className="relative h-48">
-                <Image
-                  src={template.image}
-                  alt={template.name}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                />
-              </div>
-              <div className="p-6 space-y-4">
-                <div className="text-xs uppercase tracking-[0.3em] text-cyan-200">
-                  {template.category}
+          {niches.map((niche) => {
+            const accent = accentMap[niche.accent] || accentMap.cyan
+            return (
+              <Link
+                key={niche.slug}
+                href={`/templates/${niche.slug}`}
+                className="card-mahogany space-y-4 hover:scale-[1.03] transition-all duration-300 group"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-4xl">{niche.icon}</span>
+                  <span className={`text-xs font-bold px-3 py-1 rounded-full ${accent.bg} ${accent.text} border ${accent.border}`}>
+                    {niche.templateCount} templates
+                  </span>
                 </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-white">{template.name}</h3>
-                  <p className="text-slate-300 text-sm mt-2">{template.description}</p>
-                </div>
-                <Link
-                  href="/wizard"
-                  onClick={() => track('template_selected', { template: template.name })}
-                  className="cta-button w-full text-center"
-                >
-                  Use Template
-                </Link>
-              </div>
-            </div>
-          ))}
+                <h3 className="text-2xl font-bold text-bright-white">{niche.label}</h3>
+                <p className="text-gray-300 leading-relaxed text-sm">{niche.description}</p>
+                <span className={`inline-flex items-center gap-1 text-sm font-semibold ${accent.text} group-hover:gap-2 transition-all`}>
+                  Browse templates <span aria-hidden="true">→</span>
+                </span>
+              </Link>
+            )
+          })}
         </div>
       </div>
     </main>
