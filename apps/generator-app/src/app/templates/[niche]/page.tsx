@@ -1,6 +1,7 @@
-import { getNiches, getTemplatesForNiche, NICHE_META } from '@/lib/templates/niche-registry'
+import { getTemplatesForNiche, NICHE_META } from '@/lib/templates/niche-registry'
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import { TemplateGalleryGrid } from './GalleryGrid'
 
 export async function generateStaticParams() {
   return Object.keys(NICHE_META).map((slug) => ({ niche: slug }))
@@ -20,7 +21,7 @@ export async function generateMetadata({
   }
 }
 
-/* ---------- Accent map (same as landing page) ---------- */
+/* ---------- Accent map ---------- */
 const accentMap: Record<string, { chip: string; heading: string; btn: string; glow: string; card: string }> = {
   emerald: { chip: 'bg-emerald-500/10 text-emerald-300 border-emerald-400/30', heading: 'text-emerald-200', btn: 'from-emerald-500 to-green-600 border-emerald-200/40', glow: 'rgba(16,185,129,0.3)', card: 'hover:border-emerald-400/40' },
   violet: { chip: 'bg-violet-500/10 text-violet-300 border-violet-400/30', heading: 'text-violet-200', btn: 'from-violet-500 to-purple-600 border-violet-200/40', glow: 'rgba(139,92,246,0.3)', card: 'hover:border-violet-400/40' },
@@ -52,6 +53,17 @@ export default async function TemplateGalleryPage({
   const templates = getTemplatesForNiche(niche)
   const colors = accentMap[meta.accent] || accentMap.cyan
 
+  // Serialize template data for the client component
+  const templateCards = templates.map((t) => ({
+    slug: t.slug,
+    name: t.name,
+    layoutFamily: t.layoutFamily,
+    voiceFamily: t.voiceFamily,
+    pages: t.pages,
+    fieldCount: t.fields.length,
+    snippet: t.snippet,
+  }))
+
   return (
     <main className="min-h-screen pt-24 pb-20">
       <div className="container-hvac">
@@ -70,7 +82,7 @@ export default async function TemplateGalleryPage({
               Browse {meta.label} Templates
             </h1>
             <p className="text-lg text-slate-300 max-w-2xl">
-              Each template is unique — different layouts, voice styles, and page structures. 
+              Each template is unique — different layouts, voice styles, and page structures.
               Pick one to customize with your business information and preview it live.
             </p>
           </div>
@@ -86,79 +98,16 @@ export default async function TemplateGalleryPage({
           </div>
         </div>
 
-        {/* Template grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {templates.map((template, index) => (
-            <div
-              key={template.slug}
-              className={`card-mahogany overflow-hidden transition-all duration-300 hover:scale-[1.02] ${colors.card}`}
-            >
-              {/* Visual preview header */}
-              <div className="relative h-44 bg-gradient-to-br from-slate-800 to-slate-900 border-b border-white/10 flex items-center justify-center overflow-hidden">
-                <div className="absolute inset-0 opacity-30">
-                  <div className="absolute top-3 left-3 right-3 h-2 rounded-full bg-white/20" />
-                  <div className="absolute top-8 left-3 w-1/2 h-1.5 rounded-full bg-white/10" />
-                  <div className="absolute top-14 left-3 right-3 bottom-3 rounded bg-white/5 border border-white/10" />
-                </div>
-                <div className="relative text-center px-4">
-                  <p className="text-6xl mb-2">{meta.icon}</p>
-                  <p className={`text-xs font-semibold uppercase tracking-[0.2em] ${colors.heading}`}>
-                    {template.layoutFamily?.replace(/_/g, ' ') || 'Custom Layout'}
-                  </p>
-                </div>
-                <div className="absolute top-3 right-3">
-                  <span className="text-xs bg-black/40 backdrop-blur px-2 py-1 rounded text-slate-300">
-                    #{index + 1}
-                  </span>
-                </div>
-              </div>
+        {/* Template grid — client component with live iframe previews */}
+        <TemplateGalleryGrid
+          niche={niche}
+          templates={templateCards}
+          accentBtn={colors.btn}
+          accentGlow={colors.glow}
+          accentHeading={colors.heading}
+          accentCard={colors.card}
+        />
 
-              {/* Card body */}
-              <div className="p-6 space-y-4">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <h3 className="text-lg font-semibold text-white leading-tight">
-                      {template.name}
-                    </h3>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {template.layoutFamily && (
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-slate-300 uppercase tracking-wider">
-                          {template.layoutFamily.replace(/_/g, ' ')}
-                        </span>
-                      )}
-                      {template.voiceFamily && (
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-slate-300 uppercase tracking-wider">
-                          {template.voiceFamily.replace(/_/g, ' ')}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 text-xs text-slate-400">
-                  <span>{template.pages.length} pages</span>
-                  <span>•</span>
-                  <span>{template.fields.length} fields</span>
-                </div>
-
-                {template.snippet && (
-                  <p className="text-sm text-slate-400 line-clamp-2">
-                    {template.snippet}
-                  </p>
-                )}
-
-                <Link
-                  href={`/templates/${niche}/${template.slug}`}
-                  className={`block w-full text-center px-6 py-3 text-sm font-bold rounded-lg transition-all duration-300 text-white bg-gradient-to-r shadow-lg hover:shadow-xl hover:scale-105 border ${colors.btn}`}
-                >
-                  Customize This Template
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Bottom CTA */}
         {templates.length === 0 && (
           <div className="text-center py-20">
             <p className="text-2xl text-slate-400">No templates available yet for this niche.</p>

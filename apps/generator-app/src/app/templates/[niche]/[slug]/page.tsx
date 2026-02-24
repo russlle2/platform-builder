@@ -42,6 +42,107 @@ const nicheLabels: Record<string, string> = {
   wellness_coach: 'Wellness Coach',
 }
 
+/* ---------- Script injected into preview iframe for editing + nav ---------- */
+function getIframeInjectionScript(): string {
+  return `
+<script>
+(function(){
+  /* ---- Inline text editing ---- */
+  var editableSelectors = 'h1,h2,h3,h4,h5,h6,p,span,li,td,th,a,blockquote,figcaption,label,button,dt,dd';
+
+  document.addEventListener('dblclick', function(e) {
+    var el = e.target.closest(editableSelectors);
+    if (!el || el.isContentEditable) return;
+    el.contentEditable = 'true';
+    el.style.outline = '2px solid #3b82f6';
+    el.style.outlineOffset = '2px';
+    el.style.borderRadius = '2px';
+    el.style.cursor = 'text';
+    el.focus();
+
+    el.addEventListener('blur', function onBlur() {
+      el.contentEditable = 'false';
+      el.style.outline = '';
+      el.style.outlineOffset = '';
+      el.style.cursor = '';
+      el.removeEventListener('blur', onBlur);
+      // Notify parent of the edit
+      window.parent.postMessage({ type: 'textEdited', tag: el.tagName, text: el.textContent }, '*');
+    }, { once: true });
+
+    e.preventDefault();
+    e.stopPropagation();
+  });
+
+  /* ---- Hover outlines for editable text ---- */
+  var lastHovered = null;
+  document.addEventListener('mouseover', function(e) {
+    var el = e.target.closest(editableSelectors);
+    if (lastHovered && lastHovered !== el && !lastHovered.isContentEditable) {
+      lastHovered.style.outline = '';
+      lastHovered.style.outlineOffset = '';
+    }
+    if (el && !el.isContentEditable) {
+      el.style.outline = '1px dashed rgba(59,130,246,0.4)';
+      el.style.outlineOffset = '1px';
+      lastHovered = el;
+    }
+  });
+  document.addEventListener('mouseout', function(e) {
+    var el = e.target.closest(editableSelectors);
+    if (el && !el.isContentEditable) {
+      el.style.outline = '';
+      el.style.outlineOffset = '';
+    }
+  });
+
+  /* ---- Image swap / insert ---- */
+  document.addEventListener('click', function(e) {
+    var img = e.target.closest('img');
+    if (!img) return;
+    e.preventDefault();
+    e.stopPropagation();
+    // Ask parent to open file picker
+    window.parent.postMessage({ type: 'imageSwapRequest', src: img.src, id: img.id || '' }, '*');
+  });
+
+  // Listen for image swap response from parent
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'imageSwapResponse' && e.data.dataUrl) {
+      // Find the img matching the original src
+      var imgs = document.querySelectorAll('img');
+      for (var i = 0; i < imgs.length; i++) {
+        if (imgs[i].src === e.data.originalSrc || (!e.data.originalSrc && i === 0)) {
+          imgs[i].src = e.data.dataUrl;
+          break;
+        }
+      }
+    }
+  });
+
+  /* ---- Live page navigation ---- */
+  document.addEventListener('click', function(e) {
+    var link = e.target.closest('a[href]');
+    if (!link) return;
+    var href = link.getAttribute('href');
+    if (!href) return;
+    // Only intercept internal .html links
+    if (href.endsWith('.html') || href === '/' || href === './') {
+      e.preventDefault();
+      e.stopPropagation();
+      var page = href;
+      if (page === '/' || page === './') page = 'index.html';
+      if (!page.endsWith('.html')) page = page + '.html';
+      // Strip leading ./ or /
+      page = page.replace(/^\\.?\\//, '');
+      window.parent.postMessage({ type: 'navigatePage', page: page }, '*');
+    }
+  });
+})();
+</script>
+`
+}
+
 export default function TemplateCustomizePage({
   params: paramsPromise,
 }: {
@@ -56,7 +157,10 @@ export default function TemplateCustomizePage({
   const [previewLoading, setPreviewLoading] = useState(false)
   const [currentPage, setCurrentPage] = useState('index.html')
   const [step, setStep] = useState<'form' | 'preview'>('form')
+  const [editMode, setEditMode] = useState(false)
   const iframeRef = useRef<HTMLIFrameElement>(null!)
+  const fileInputRef = useRef<HTMLInputElement>(null!)
+  const pendingImageSwapSrc = useRef<string>('')
 
   // Resolve params promise
   useEffect(() => {
@@ -73,7 +177,6 @@ export default function TemplateCustomizePage({
       })
       .then((data: TemplateData) => {
         setTemplate(data)
-        // Initialize form values with defaults
         const initial: Record<string, string> = {}
         data.fields.forEach((f) => {
           initial[f.name] = f.default && !f.default.startsWith('{{') ? f.default : ''
@@ -86,6 +189,50 @@ export default function TemplateCustomizePage({
         setLoading(false)
       })
   }, [params])
+
+  // Listen for postMessage from iframe
+  useEffect(() => {
+    function handleMessage(e: MessageEvent) {
+      if (!e.data || typeof e.data !== 'object') return
+
+      if (e.data.type === 'navigatePage') {
+        const page = e.data.page as string
+        if (template?.pages.includes(page)) {
+          loadPreview(page)
+        }
+      }
+
+      if (e.data.type === 'imageSwapRequest') {
+        pendingImageSwapSrc.current = e.data.src
+        fileInputRef.current?.click()
+      }
+    }
+
+    window.addEventListener('message', handleMessage)
+    return () => window.removeEventListener('message', handleMessage)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [template])
+
+  // Handle image file selection
+  const handleImageFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = () => {
+      const dataUrl = reader.result as string
+      const iframe = iframeRef.current
+      if (iframe?.contentWindow) {
+        iframe.contentWindow.postMessage(
+          { type: 'imageSwapResponse', dataUrl, originalSrc: pendingImageSwapSrc.current },
+          '*',
+        )
+      }
+    }
+    reader.readAsDataURL(file)
+    // Reset input so same file can be selected again
+    e.target.value = ''
+  }, [])
 
   // Load preview
   const loadPreview = useCallback(
@@ -101,18 +248,14 @@ export default function TemplateCustomizePage({
         if (!res.ok) throw new Error('Failed to load preview')
         const data = await res.json()
 
-        // Rewrite asset paths to use our API
         let html = data.html as string
         const assetBase = `/api/templates/${params.niche}/${params.slug}/assets`
 
-        // Rewrite relative href/src paths to use asset API
+        // Rewrite relative href/src paths to use asset API (skip .html links)
         html = html.replace(
           /(href|src)="(?!https?:\/\/|\/\/|data:|mailto:|tel:|#)([^"]+)"/g,
           (match, attr, path) => {
-            if (path.endsWith('.html')) {
-              // Keep HTML links as-is for page navigation
-              return match
-            }
+            if (path.endsWith('.html')) return match
             return `${attr}="${assetBase}/${path}"`
           }
         )
@@ -122,14 +265,17 @@ export default function TemplateCustomizePage({
           html = html.replace('</head>', `<style>${data.css}</style></head>`)
         }
 
-        // Inject base styles for iframe
+        // Inject base styles + editing/navigation scripts
         html = html.replace('</head>', `
           <style>
             body { margin: 0; }
-            /* Disable all links in preview */
-            a[href$=".html"] { pointer-events: none; }
+            img { cursor: pointer; transition: outline 0.15s; }
+            img:hover { outline: 3px solid #8b5cf6; outline-offset: 2px; border-radius: 2px; }
           </style>
         </head>`)
+
+        // Inject interaction scripts before </body>
+        html = html.replace('</body>', getIframeInjectionScript() + '</body>')
 
         setPreviewHtml(html)
         setCurrentPage(page)
@@ -179,6 +325,15 @@ export default function TemplateCustomizePage({
 
   return (
     <main className="min-h-screen pt-24 pb-20">
+      {/* Hidden file input for image swap */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleImageFileChange}
+      />
+
       <div className="container-hvac">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-slate-400 mb-8">
@@ -215,6 +370,8 @@ export default function TemplateCustomizePage({
             nicheLabel={nicheLabel}
             niche={params.niche}
             iframeRef={iframeRef}
+            editMode={editMode}
+            setEditMode={setEditMode}
           />
         )}
       </div>
@@ -384,6 +541,8 @@ function PreviewStep({
   nicheLabel,
   niche,
   iframeRef,
+  editMode,
+  setEditMode,
 }: {
   template: TemplateData
   previewHtml: string | null
@@ -395,6 +554,8 @@ function PreviewStep({
   nicheLabel: string
   niche: string
   iframeRef: React.RefObject<HTMLIFrameElement>
+  editMode: boolean
+  setEditMode: (v: boolean) => void
 }) {
   return (
     <div className="space-y-8">
@@ -405,7 +566,10 @@ function PreviewStep({
             Live Preview
           </span>
           <h1 className="text-3xl font-bold text-white">{template.name}</h1>
-          <p className="text-slate-400">Your business info has been populated into every page.</p>
+          <p className="text-slate-400">
+            Your business info has been populated into every page.
+            <span className="text-blue-300 ml-1">Double-click text to edit &bull; Click images to swap</span>
+          </p>
         </div>
         <div className="flex gap-3">
           <button
@@ -443,15 +607,43 @@ function PreviewStep({
 
       {/* Preview iframe */}
       <div className="glass-panel rounded-2xl overflow-hidden">
-        {/* Browser chrome */}
-        <div className="flex items-center gap-2 px-4 py-3 bg-slate-900/80 border-b border-white/10">
-          <div className="flex gap-1.5">
-            <div className="w-3 h-3 rounded-full bg-red-500/60" />
-            <div className="w-3 h-3 rounded-full bg-yellow-500/60" />
-            <div className="w-3 h-3 rounded-full bg-green-500/60" />
+        {/* Windows-style browser chrome */}
+        <div className="flex items-center justify-between px-4 py-2 bg-[#202225] border-b border-white/10">
+          {/* Left: page favicon + URL bar */}
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            {/* Navigation arrows */}
+            <div className="flex items-center gap-1">
+              <button className="w-7 h-7 flex items-center justify-center rounded hover:bg-white/10 text-slate-400 hover:text-white transition-colors" title="Back">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 3L5 7l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </button>
+              <button className="w-7 h-7 flex items-center justify-center rounded hover:bg-white/10 text-slate-400 hover:text-white transition-colors" title="Forward">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </button>
+              <button className="w-7 h-7 flex items-center justify-center rounded hover:bg-white/10 text-slate-400 hover:text-white transition-colors" title="Refresh" onClick={() => onPageChange(currentPage)}>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M11.5 7A4.5 4.5 0 1 1 7 2.5M7 2.5V5.5M7 2.5H10" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </button>
+            </div>
+            {/* URL bar */}
+            <div className="flex-1 mx-2 flex items-center gap-2 px-3 py-1.5 rounded-md bg-[#2b2d31] border border-white/5 text-xs text-slate-400 font-mono">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1C3.24 1 1 3.24 1 6s2.24 5 5 5 5-2.24 5-5S8.76 1 6 1z" stroke="#6b7280" strokeWidth="0.8"/><path d="M1 6h10M6 1c1.1 1.2 1.7 3 1.7 5s-.6 3.8-1.7 5c-1.1-1.2-1.7-3-1.7-5s.6-3.8 1.7-5z" stroke="#6b7280" strokeWidth="0.8"/></svg>
+              <span className="truncate">yourbusiness.platformbuilder.com/{currentPage}</span>
+            </div>
           </div>
-          <div className="flex-1 mx-4 px-4 py-1 rounded bg-slate-800 text-xs text-slate-400 text-center font-mono">
-            yourbusiness.platformbuilder.com/{currentPage}
+
+          {/* Right: Window controls */}
+          <div className="flex items-center ml-4">
+            {/* Minimize */}
+            <div className="w-[34px] h-[28px] flex items-center justify-center hover:bg-white/10 transition-colors cursor-default">
+              <svg width="10" height="1" viewBox="0 0 10 1"><rect width="10" height="1" fill="#999"/></svg>
+            </div>
+            {/* Maximize */}
+            <div className="w-[34px] h-[28px] flex items-center justify-center hover:bg-white/10 transition-colors cursor-default">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="1" y="1" width="8" height="8" stroke="#999" strokeWidth="1"/></svg>
+            </div>
+            {/* Close */}
+            <div className="w-[34px] h-[28px] flex items-center justify-center hover:bg-[#e81123] transition-colors cursor-default rounded-tr-xl">
+              <svg width="10" height="10" viewBox="0 0 10 10"><line x1="1" y1="1" x2="9" y2="9" stroke="#999" strokeWidth="1.2"/><line x1="9" y1="1" x2="1" y2="9" stroke="#999" strokeWidth="1.2"/></svg>
+            </div>
           </div>
         </div>
 
@@ -467,8 +659,9 @@ function PreviewStep({
           <iframe
             ref={iframeRef}
             srcDoc={previewHtml}
-            className="w-full h-[700px] bg-white"
-            sandbox="allow-same-origin"
+            className="w-full bg-white"
+            style={{ height: '700px' }}
+            sandbox="allow-same-origin allow-scripts"
             title="Template preview"
           />
         ) : (
@@ -476,6 +669,22 @@ function PreviewStep({
             <p className="text-slate-400">Preview will appear here</p>
           </div>
         )}
+      </div>
+
+      {/* Editing hint bar */}
+      <div className="flex flex-wrap items-center gap-6 px-6 py-3 rounded-xl bg-slate-800/60 border border-white/5 text-xs text-slate-400">
+        <span className="flex items-center gap-2">
+          <span className="inline-block w-2.5 h-2.5 rounded-sm bg-blue-400/60" />
+          <strong className="text-slate-300">Double-click</strong> any text to edit inline
+        </span>
+        <span className="flex items-center gap-2">
+          <span className="inline-block w-2.5 h-2.5 rounded-sm bg-violet-400/60" />
+          <strong className="text-slate-300">Click</strong> any image to swap or replace it
+        </span>
+        <span className="flex items-center gap-2">
+          <span className="inline-block w-2.5 h-2.5 rounded-sm bg-emerald-400/60" />
+          <strong className="text-slate-300">Click links</strong> in the preview to navigate between pages
+        </span>
       </div>
 
       {/* Bottom CTA */}
