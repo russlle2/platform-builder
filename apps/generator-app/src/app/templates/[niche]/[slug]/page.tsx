@@ -167,7 +167,7 @@ export default function TemplateCustomizePage({
     paramsPromise.then(setParams)
   }, [paramsPromise])
 
-  // Fetch template metadata
+  // Fetch template metadata — pre-populate ALL fields with their defaults
   useEffect(() => {
     if (!params) return
     fetch(`/api/templates/${params.niche}/${params.slug}`)
@@ -179,6 +179,7 @@ export default function TemplateCustomizePage({
         setTemplate(data)
         const initial: Record<string, string> = {}
         data.fields.forEach((f) => {
+          // Pre-populate with defaults so users can keep existing copy
           initial[f.name] = f.default && !f.default.startsWith('{{') ? f.default : ''
         })
         setValues(initial)
@@ -380,8 +381,53 @@ export default function TemplateCustomizePage({
 }
 
 /* ================================================================== */
-/* Form Step                                                           */
+/* Form Step — Paginated by field groups                               */
 /* ================================================================== */
+
+const FIELDS_PER_PAGE = 4
+
+/** Group template fields into logical pages based on field semantics */
+function groupFieldsIntoPages(fields: TemplateField[]): { label: string; fields: TemplateField[] }[] {
+  const groups: Record<string, TemplateField[]> = {
+    'Business Identity': [],
+    'Contact & Location': [],
+    'Calls to Action': [],
+    'Professional Details': [],
+    'Additional Info': [],
+  }
+
+  for (const f of fields) {
+    const key = f.name.toUpperCase()
+    if (key.includes('BUSINESS_NAME') || key.includes('TAGLINE') || key === 'SITENAME' || key === 'SITETITLE') {
+      groups['Business Identity'].push(f)
+    } else if (key.includes('PHONE') || key.includes('EMAIL') || key.includes('ADDRESS') || key.includes('CITY') || key.includes('STATE') || key.includes('ZIP') || key.includes('HOURS')) {
+      groups['Contact & Location'].push(f)
+    } else if (key.includes('CTA') || key.includes('BUTTON') || key.includes('URL') || key.includes('LINK')) {
+      groups['Calls to Action'].push(f)
+    } else if (key.includes('NAME') || key.includes('LICENSE') || key.includes('MODALITIES') || key.includes('PRACTITIONER') || key.includes('THERAPIST') || key.includes('BLEND') || key.includes('DISCLAIMER')) {
+      groups['Professional Details'].push(f)
+    } else {
+      groups['Additional Info'].push(f)
+    }
+  }
+
+  // Filter empty groups and split any large group into sub-pages
+  const pages: { label: string; fields: TemplateField[] }[] = []
+  for (const [label, fieldList] of Object.entries(groups)) {
+    if (fieldList.length === 0) continue
+    if (fieldList.length <= FIELDS_PER_PAGE) {
+      pages.push({ label, fields: fieldList })
+    } else {
+      for (let i = 0; i < fieldList.length; i += FIELDS_PER_PAGE) {
+        const chunk = fieldList.slice(i, i + FIELDS_PER_PAGE)
+        const pageNum = Math.floor(i / FIELDS_PER_PAGE) + 1
+        pages.push({ label: `${label} (${pageNum})`, fields: chunk })
+      }
+    }
+  }
+
+  return pages.length > 0 ? pages : [{ label: 'Template Fields', fields }]
+}
 
 function FormStep({
   template,
@@ -400,9 +446,18 @@ function FormStep({
   nicheLabel: string
   niche: string
 }) {
+  const [currentPage, setCurrentPage] = useState(0)
+
+  const pages = groupFieldsIntoPages(template.fields)
+  const totalPages = pages.length
+  const page = pages[currentPage] || pages[0]
+
   const filledCount = Object.values(values).filter((v) => v.trim()).length
   const totalFields = template.fields.length
   const progress = totalFields > 0 ? Math.round((filledCount / totalFields) * 100) : 0
+
+  const goNext = () => setCurrentPage((p) => Math.min(totalPages - 1, p + 1))
+  const goPrev = () => setCurrentPage((p) => Math.max(0, p - 1))
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
@@ -416,8 +471,9 @@ function FormStep({
             {template.name}
           </h1>
           <p className="text-lg text-slate-300">
-            Fill in your business information below. Every field populates directly into
-            your website template. When you&apos;re ready, generate a live preview.
+            Fill in your business information below — every field is pre-populated
+            with placeholder copy you can keep or replace. Navigate pages with the
+            arrows, then generate a live preview when you&apos;re ready.
           </p>
           <div className="flex flex-wrap gap-3 text-xs text-slate-400">
             {template.layoutFamily && (
@@ -433,13 +489,38 @@ function FormStep({
             <span className="px-2 py-1 rounded bg-white/5 border border-white/10">
               {template.pages.length} pages
             </span>
+            <span className="px-2 py-1 rounded bg-white/5 border border-white/10">
+              {totalFields} customizable fields
+            </span>
           </div>
         </div>
 
         <div className="glass-panel rounded-2xl p-8 space-y-6">
+          {/* Page header with progress */}
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-white">Your Business Information</h2>
-            <span className="text-sm text-slate-400">{filledCount}/{totalFields} fields</span>
+            <div>
+              <h2 className="text-xl font-bold text-white">{page.label}</h2>
+              <p className="text-sm text-slate-400 mt-1">
+                Page {currentPage + 1} of {totalPages} &middot; {filledCount}/{totalFields} fields filled
+              </p>
+            </div>
+            {/* Page indicator dots */}
+            <div className="flex items-center gap-1.5">
+              {pages.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrentPage(idx)}
+                  className={`w-2.5 h-2.5 rounded-full transition-all ${
+                    idx === currentPage
+                      ? 'bg-white scale-110'
+                      : idx < currentPage
+                      ? 'bg-white/40'
+                      : 'bg-white/15'
+                  }`}
+                  aria-label={`Go to page ${idx + 1}`}
+                />
+              ))}
+            </div>
           </div>
 
           {/* Progress bar */}
@@ -450,39 +531,101 @@ function FormStep({
             />
           </div>
 
+          {/* Fields for current page */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {template.fields.map((field) => (
-              <div key={field.name} className={field.name === 'TAGLINE' || field.name === 'BUSINESS_NAME' ? 'md:col-span-2' : ''}>
+            {page.fields.map((field) => (
+              <div key={field.name} className={
+                field.name === 'TAGLINE' || field.name === 'BUSINESS_NAME' || field.name === 'DISCLAIMER'
+                  ? 'md:col-span-2'
+                  : ''
+              }>
                 <label className="block text-sm font-semibold text-slate-300 mb-2">
                   {field.label}
                   {field.required && <span className="text-red-400 ml-1">*</span>}
                 </label>
-                <input
-                  type={field.type === 'tel' ? 'tel' : field.type === 'email' ? 'email' : 'text'}
-                  value={values[field.name] || ''}
-                  onChange={(e) =>
-                    setValues({ ...values, [field.name]: e.target.value })
-                  }
-                  placeholder={field.default || `Enter ${field.label.toLowerCase()}`}
-                  className="w-full px-4 py-3 rounded-lg bg-slate-800/80 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-400/50 focus:ring-1 focus:ring-cyan-400/30 transition-all"
-                />
+                {(field.name === 'TAGLINE' || field.name === 'DISCLAIMER' || field.name === 'MODALITIES') ? (
+                  <textarea
+                    rows={3}
+                    value={values[field.name] || ''}
+                    onChange={(e) =>
+                      setValues({ ...values, [field.name]: e.target.value })
+                    }
+                    placeholder={field.default || `Enter ${field.label.toLowerCase()}`}
+                    className="w-full px-4 py-3 rounded-lg bg-slate-800/80 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-400/50 focus:ring-1 focus:ring-cyan-400/30 transition-all resize-none"
+                  />
+                ) : (
+                  <input
+                    type={field.type === 'tel' ? 'tel' : field.type === 'email' ? 'email' : field.type === 'url' ? 'url' : 'text'}
+                    value={values[field.name] || ''}
+                    onChange={(e) =>
+                      setValues({ ...values, [field.name]: e.target.value })
+                    }
+                    placeholder={field.default || `Enter ${field.label.toLowerCase()}`}
+                    className="w-full px-4 py-3 rounded-lg bg-slate-800/80 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-400/50 focus:ring-1 focus:ring-cyan-400/30 transition-all"
+                  />
+                )}
+                {/* Show default hint if the field has one */}
+                {field.default && !field.default.startsWith('{{') && (
+                  <p className="text-xs text-slate-500 mt-1">
+                    Default: {field.default}
+                  </p>
+                )}
               </div>
             ))}
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 pt-4">
+          {/* Pagination arrows and action buttons */}
+          <div className="flex items-center justify-between pt-4">
             <button
-              onClick={onPreview}
-              className={`px-8 py-4 text-lg font-bold rounded-lg transition-all duration-300 text-white bg-gradient-to-r shadow-lg hover:shadow-xl hover:scale-105 border ${colors.btn}`}
-              style={{ boxShadow: `0 0 30px ${colors.glow}` }}
+              onClick={goPrev}
+              disabled={currentPage === 0}
+              className="flex items-center gap-2 px-5 py-3 text-sm font-bold text-white border border-white/20 rounded-lg hover:bg-white/10 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
             >
-              Generate Live Preview
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+              Previous
             </button>
+
+            <div className="flex items-center gap-3">
+              {currentPage === totalPages - 1 ? (
+                <button
+                  onClick={onPreview}
+                  className={`px-8 py-3 text-sm font-bold rounded-lg transition-all duration-300 text-white bg-gradient-to-r shadow-lg hover:shadow-xl hover:scale-105 border ${colors.btn}`}
+                  style={{ boxShadow: `0 0 30px ${colors.glow}` }}
+                >
+                  Generate Live Preview
+                </button>
+              ) : (
+                <button
+                  onClick={goNext}
+                  className={`flex items-center gap-2 px-8 py-3 text-sm font-bold rounded-lg transition-all duration-300 text-white bg-gradient-to-r shadow-lg hover:shadow-xl hover:scale-105 border ${colors.btn}`}
+                  style={{ boxShadow: `0 0 20px ${colors.glow}` }}
+                >
+                  Next
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Quick-skip to preview */}
+          {currentPage < totalPages - 1 && (
+            <div className="text-center">
+              <button
+                onClick={onPreview}
+                className="text-sm text-slate-400 hover:text-white transition-colors underline underline-offset-4"
+              >
+                Skip to preview with current values →
+              </button>
+            </div>
+          )}
+
+          {/* Back to templates link */}
+          <div className="text-center pt-2">
             <Link
               href={`/templates/${niche}`}
-              className="px-8 py-4 text-lg font-bold text-white border border-white/20 rounded-lg hover:bg-white/10 transition-all text-center"
+              className="text-sm text-slate-500 hover:text-white transition-colors"
             >
-              ← Back to Templates
+              ← Back to {nicheLabel} Templates
             </Link>
           </div>
         </div>
@@ -510,6 +653,37 @@ function FormStep({
               <span className="font-semibold text-white">{progress}%</span>
             </div>
           </div>
+          <hr className="border-white/10" />
+
+          {/* Page quick nav */}
+          <h4 className="text-sm font-bold text-white">Customization Pages</h4>
+          <ul className="space-y-1.5">
+            {pages.map((p, idx) => (
+              <li key={idx}>
+                <button
+                  onClick={() => setCurrentPage(idx)}
+                  className={`flex items-center gap-2 text-sm w-full text-left px-2 py-1 rounded transition-colors ${
+                    idx === currentPage
+                      ? 'text-white bg-white/10'
+                      : 'text-slate-400 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                    idx < currentPage
+                      ? 'bg-green-500/30 text-green-300'
+                      : idx === currentPage
+                      ? 'bg-white/20 text-white'
+                      : 'bg-white/5 text-slate-500'
+                  }`}>
+                    {idx < currentPage ? '✓' : idx + 1}
+                  </span>
+                  {p.label}
+                  <span className="ml-auto text-xs text-slate-500">{p.fields.length}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+
           <hr className="border-white/10" />
           <h4 className="text-sm font-bold text-white">Pages Included</h4>
           <ul className="space-y-1.5">
