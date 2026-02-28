@@ -60,6 +60,12 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   </div>
                 )}
               </div>
+              <Link
+                href="/preview-your-business"
+                className="px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300 hover:text-white hover:bg-cyan-500/20 transition-all duration-200 border border-cyan-400/30"
+              >
+                Preview Your Business
+              </Link>
               {[
                 { label: 'Live Demo', href: '/demo' },
                 { label: 'Pricing', href: '/pricing' },
@@ -105,6 +111,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               <Link href="/pricing" onClick={() => setMobileOpen(false)} className="block px-4 py-2 text-sm text-slate-200 hover:text-white">Pricing</Link>
               <Link href="/portal" onClick={() => setMobileOpen(false)} className="block px-4 py-2 text-sm text-slate-200 hover:text-white">Portal</Link>
               <Link href="/contact" onClick={() => setMobileOpen(false)} className="block px-4 py-2 text-sm text-slate-200 hover:text-white">Contact</Link>
+              <Link href="/preview-your-business" onClick={() => setMobileOpen(false)} className="block px-4 py-2 text-sm font-semibold text-cyan-300 hover:text-white">Preview Your Business</Link>
             </div>
           </div>
         )}

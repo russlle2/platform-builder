@@ -488,6 +488,12 @@ export default async function NicheLandingPage({
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
+                  href="/preview-your-business"
+                  className="px-8 py-4 text-lg font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all border border-cyan-200/40 text-center"
+                >
+                  Preview Your Business
+                </Link>
+                <Link
                   href={`/templates/${niche}`}
                   className={`px-8 py-4 text-lg font-bold rounded-lg transition-all duration-300 text-white bg-gradient-to-r shadow-lg hover:shadow-xl hover:scale-105 border text-center ${colors.btn}`}
                   style={{ boxShadow: `0 0 30px ${colors.glow}` }}
@@ -620,6 +626,12 @@ export default async function NicheLandingPage({
               and preview your fully customized site in minutes. No commitment until you purchase.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link
+                href="/preview-your-business"
+                className="px-8 py-4 text-lg font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all border border-cyan-200/40"
+              >
+                Preview Your Business
+              </Link>
               <Link
                 href={`/templates/${niche}`}
                 className={`px-8 py-4 text-lg font-bold rounded-lg transition-all duration-300 text-white bg-gradient-to-r shadow-lg hover:shadow-xl hover:scale-105 border ${colors.btn}`}

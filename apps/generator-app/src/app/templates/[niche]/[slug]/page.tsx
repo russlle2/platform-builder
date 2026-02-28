@@ -168,6 +168,7 @@ export default function TemplateCustomizePage({
   }, [paramsPromise])
 
   // Fetch template metadata — pre-populate ALL fields with their defaults
+  // + auto-populate from saved Preview Your Business info if available
   useEffect(() => {
     if (!params) return
     fetch(`/api/templates/${params.niche}/${params.slug}`)
@@ -177,10 +178,47 @@ export default function TemplateCustomizePage({
       })
       .then((data: TemplateData) => {
         setTemplate(data)
+
+        // Try to load saved business info from Preview Your Business flow
+        let savedValues: Record<string, string> = {}
+        try {
+          const savedInfo = sessionStorage.getItem('pb_biz_info')
+          const infoSaved = sessionStorage.getItem('pb_info_saved')
+          if (savedInfo && infoSaved === 'true') {
+            const info = JSON.parse(savedInfo)
+            savedValues = {
+              BUSINESS_NAME: info.businessName || '',
+              OWNER_NAME: info.ownerName || '',
+              EMAIL: info.email || '',
+              PHONE: info.phone || '',
+              PHONE_NUMBER: info.phone || '',
+              ADDRESS: info.address || '',
+              TAGLINE: info.tagline || '',
+              DESCRIPTION: info.description || '',
+              SERVICES: info.services || '',
+              WEBSITE: info.website || '',
+              business_name: info.businessName || '',
+              owner_name: info.ownerName || '',
+              email: info.email || '',
+              phone: info.phone || '',
+              phone_number: info.phone || '',
+              address: info.address || '',
+              tagline: info.tagline || '',
+              description: info.description || '',
+            }
+          }
+        } catch { /* ignore */ }
+
         const initial: Record<string, string> = {}
         data.fields.forEach((f) => {
-          // Pre-populate with defaults so users can keep existing copy
-          initial[f.name] = f.default && !f.default.startsWith('{{') ? f.default : ''
+          // Priority: saved business info > template default > empty
+          const upperName = f.name.toUpperCase()
+          const savedVal = savedValues[f.name] || savedValues[upperName] || ''
+          if (savedVal) {
+            initial[f.name] = savedVal
+          } else {
+            initial[f.name] = f.default && !f.default.startsWith('{{') ? f.default : ''
+          }
         })
         setValues(initial)
         setLoading(false)

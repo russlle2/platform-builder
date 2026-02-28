@@ -85,6 +85,14 @@ export default async function TemplateGalleryPage({
               Each template is unique — different layouts, voice styles, and page structures.
               Pick one to customize with your business information and preview it live.
             </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Link
+                href="/preview-your-business"
+                className="px-6 py-3 text-base font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all border border-cyan-200/40 text-center"
+              >
+                Preview Your Business
+              </Link>
+            </div>
           </div>
           <div className="glass-panel rounded-3xl p-8">
             <h2 className="text-2xl font-bold text-white">What&apos;s included</h2>

@@ -32,10 +32,11 @@ const onboardingSteps = [
   },
 ]
 
-const integrations = [
-  { name: 'Postmark', status: 'Pending' },
-  { name: 'Supabase', status: 'Pending' },
-  { name: 'Stripe', status: 'Pending' },
+const integrationDefaults = [
+  { name: 'Postmark', status: 'Checking...' },
+  { name: 'Supabase', status: 'Checking...' },
+  { name: 'Stripe', status: 'Checking...' },
+  { name: 'Netlify', status: 'Checking...' },
 ]
 
 const normalizeSlug = (value: string) => {
@@ -53,6 +54,7 @@ export default function PortalClient() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'saving' | 'saved' | 'error'>(
     'idle'
   )
+  const [integrations, setIntegrations] = useState(integrationDefaults)
   const [formData, setFormData] = useState({
     businessName: '',
     tagline: '',
@@ -68,6 +70,25 @@ export default function PortalClient() {
     }
     loadSite(initialSlug)
   }, [initialSlug])
+
+  // Fetch live integration status
+  useEffect(() => {
+    fetch('/api/integrations/status')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.integrations) {
+          setIntegrations(
+            data.integrations.map((i: { name: string; configured: boolean; detail: string }) => ({
+              name: i.name,
+              status: i.configured ? 'Connected' : 'Not configured',
+            }))
+          )
+        }
+      })
+      .catch(() => {
+        setIntegrations(integrationDefaults.map((i) => ({ ...i, status: 'Unknown' })))
+      })
+  }, [])
 
   const loadSite = async (targetSlug: string) => {
     const normalized = normalizeSlug(targetSlug)
@@ -284,7 +305,13 @@ export default function PortalClient() {
                 {integrations.map((item) => (
                   <div key={item.name} className="flex items-center justify-between text-sm text-slate-200">
                     <span>{item.name}</span>
-                    <span className="px-3 py-1 rounded-full bg-white/10 text-slate-200">
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                      item.status === 'Connected'
+                        ? 'bg-emerald-500/20 text-emerald-200'
+                        : item.status === 'Not configured'
+                        ? 'bg-red-500/20 text-red-200'
+                        : 'bg-white/10 text-slate-200'
+                    }`}>
                       {item.status}
                     </span>
                   </div>

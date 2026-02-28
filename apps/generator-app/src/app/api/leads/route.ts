@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { sendEmail } from '@/lib/email'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -37,6 +38,26 @@ export async function POST(req: Request) {
         { error: 'Unable to save lead.' },
         { status: 500 }
       )
+    }
+
+    // Notify platform owner about the new lead
+    const platformOwnerEmail = process.env.PLATFORM_OWNER_EMAIL
+    const postmarkConfigured = !!(process.env.POSTMARK_SERVER_TOKEN && process.env.EMAIL_FROM_ADDRESS)
+
+    if (postmarkConfigured && platformOwnerEmail) {
+      await sendEmail({
+        to: platformOwnerEmail,
+        subject: `New lead captured: ${email || phone}`,
+        htmlBody: `
+          <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #1e293b;">New lead captured</h2>
+            <p><strong>Email:</strong> ${email || '—'}</p>
+            <p><strong>Phone:</strong> ${phone || '—'}</p>
+            <p><strong>Source:</strong> ${source || 'modal'}</p>
+            <p style="color: #64748b; font-size: 0.875rem;">Captured at ${new Date().toISOString()}</p>
+          </div>
+        `,
+      }).catch((err) => console.error('[leads] notification failed:', err))
     }
 
     return NextResponse.json({ ok: true })

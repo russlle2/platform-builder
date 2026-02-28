@@ -33,6 +33,12 @@ export default function TemplatesPage() {
               Every template is professionally designed, mobile-first, and SEO-ready.
               Pick your industry to start browsing.
             </p>
+            <Link
+              href="/preview-your-business"
+              className="inline-block px-8 py-4 text-lg font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all border border-cyan-200/40"
+            >
+              Preview Your Business
+            </Link>
           </div>
           <div className="glass-panel rounded-3xl p-8">
             <h2 className="text-2xl font-bold text-white">What&apos;s included</h2>
