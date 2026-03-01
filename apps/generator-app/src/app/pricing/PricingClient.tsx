@@ -180,7 +180,7 @@ export default function PricingClient() {
         </section>
 
         {/* ═══ DEV-ONLY: Test Purchase ═══ */}
-        {process.env.NODE_ENV !== 'production' && (
+        {process.env.NEXT_PUBLIC_APP_STAGE !== 'production' && (
           <section className="container-hvac pb-12">
             <div className="rounded-2xl border-2 border-dashed border-yellow-500/40 bg-yellow-500/5 p-8 space-y-4">
               <div className="flex items-center gap-3">

@@ -21,8 +21,8 @@ import { buildVariationCSS } from '@/lib/templates/variations'
  * Only available in development (NODE_ENV !== 'production').
  */
 export async function POST(req: Request) {
-  // Block in production
-  if (process.env.NODE_ENV === 'production') {
+  // Block in production — uses NEXT_PUBLIC_APP_STAGE so it works in Next.js builds
+  if (process.env.NEXT_PUBLIC_APP_STAGE === 'production') {
     return NextResponse.json(
       { error: 'Test purchase is disabled in production.' },
       { status: 403 },
