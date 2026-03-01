@@ -162,10 +162,28 @@ export default function TemplateCustomizePage({
   const fileInputRef = useRef<HTMLInputElement>(null!)
   const pendingImageSwapSrc = useRef<string>('')
 
+  // Variation state
+  const [colorScheme, setColorScheme] = useState('original')
+  const [fontVariation, setFontVariation] = useState('original')
+  const [structureVariation, setStructureVariation] = useState('original')
+  const [variationOptions, setVariationOptions] = useState<{
+    colorSchemes: { id: string; name: string }[]
+    fontVariations: { id: string; name: string }[]
+    structureVariations: { id: string; name: string }[]
+  } | null>(null)
+
   // Resolve params promise
   useEffect(() => {
     paramsPromise.then(setParams)
   }, [paramsPromise])
+
+  // Fetch available variation options
+  useEffect(() => {
+    fetch('/api/templates/variations')
+      .then((r) => r.json())
+      .then(setVariationOptions)
+      .catch(() => {})
+  }, [])
 
   // Fetch template metadata — pre-populate ALL fields with their defaults
   // + auto-populate from saved Preview Your Business info if available
@@ -282,7 +300,7 @@ export default function TemplateCustomizePage({
         const res = await fetch(`/api/templates/${params.niche}/${params.slug}/preview`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ page, values }),
+          body: JSON.stringify({ page, values, colorScheme, fontVariation, structureVariation }),
         })
         if (!res.ok) throw new Error('Failed to load preview')
         const data = await res.json()
@@ -302,6 +320,11 @@ export default function TemplateCustomizePage({
         // Inject CSS if available
         if (data.css) {
           html = html.replace('</head>', `<style>${data.css}</style></head>`)
+        }
+
+        // Inject variation CSS overrides (must come after base CSS)
+        if (data.variationCSS) {
+          html = html.replace('</head>', `<style id="variation-overrides">${data.variationCSS}</style></head>`)
         }
 
         // Inject base styles + editing/navigation scripts
@@ -324,10 +347,14 @@ export default function TemplateCustomizePage({
         setPreviewLoading(false)
       }
     },
-    [params, template, values]
+    [params, template, values, colorScheme, fontVariation, structureVariation]
   )
 
   const handleGeneratePreview = () => {
+    // Persist customer values so they survive navigation to pricing page
+    try {
+      sessionStorage.setItem('pb_template_values', JSON.stringify(values))
+    } catch { /* ignore */ }
     setStep('preview')
     loadPreview('index.html')
   }
@@ -411,6 +438,14 @@ export default function TemplateCustomizePage({
             iframeRef={iframeRef}
             editMode={editMode}
             setEditMode={setEditMode}
+            colorScheme={colorScheme}
+            setColorScheme={setColorScheme}
+            fontVariation={fontVariation}
+            setFontVariation={setFontVariation}
+            structureVariation={structureVariation}
+            setStructureVariation={setStructureVariation}
+            variationOptions={variationOptions}
+            onReloadPreview={() => loadPreview(currentPage)}
           />
         )}
       </div>
@@ -755,6 +790,14 @@ function PreviewStep({
   iframeRef,
   editMode,
   setEditMode,
+  colorScheme,
+  setColorScheme,
+  fontVariation,
+  setFontVariation,
+  structureVariation,
+  setStructureVariation,
+  variationOptions,
+  onReloadPreview,
 }: {
   template: TemplateData
   previewHtml: string | null
@@ -768,7 +811,53 @@ function PreviewStep({
   iframeRef: React.RefObject<HTMLIFrameElement>
   editMode: boolean
   setEditMode: (v: boolean) => void
+  colorScheme: string
+  setColorScheme: (v: string) => void
+  fontVariation: string
+  setFontVariation: (v: string) => void
+  structureVariation: string
+  setStructureVariation: (v: string) => void
+  variationOptions: {
+    colorSchemes: { id: string; name: string }[]
+    fontVariations: { id: string; name: string }[]
+    structureVariations: { id: string; name: string }[]
+  } | null
+  onReloadPreview: () => void
 }) {
+  // Generic cycler helper
+  const cycle = (
+    list: { id: string; name: string }[] | undefined,
+    current: string,
+    dir: 1 | -1,
+    setter: (v: string) => void,
+  ) => {
+    if (!list || list.length === 0) return
+    const idx = list.findIndex((o) => o.id === current)
+    const next = (idx + dir + list.length) % list.length
+    setter(list[next].id)
+  }
+
+  // When any variation changes, reload the preview
+  const prevColor = useRef(colorScheme)
+  const prevFont = useRef(fontVariation)
+  const prevStructure = useRef(structureVariation)
+  useEffect(() => {
+    if (
+      prevColor.current !== colorScheme ||
+      prevFont.current !== fontVariation ||
+      prevStructure.current !== structureVariation
+    ) {
+      prevColor.current = colorScheme
+      prevFont.current = fontVariation
+      prevStructure.current = structureVariation
+      onReloadPreview()
+    }
+  }, [colorScheme, fontVariation, structureVariation, onReloadPreview])
+
+  const currentColorName = variationOptions?.colorSchemes.find((o) => o.id === colorScheme)?.name || 'Original'
+  const currentFontName = variationOptions?.fontVariations.find((o) => o.id === fontVariation)?.name || 'Original'
+  const currentStructureName = variationOptions?.structureVariations.find((o) => o.id === structureVariation)?.name || 'Original'
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -791,7 +880,7 @@ function PreviewStep({
             ← Edit Info
           </button>
           <Link
-            href={`/pricing?template=${template.slug}&niche=${niche}`}
+            href={`/pricing?template=${template.slug}&niche=${niche}&color=${colorScheme}&font=${fontVariation}&structure=${structureVariation}`}
             className={`px-6 py-3 text-sm font-bold rounded-lg transition-all duration-300 text-white bg-gradient-to-r shadow-lg hover:shadow-xl hover:scale-105 border ${colors.btn}`}
             style={{ boxShadow: `0 0 20px ${colors.glow}` }}
           >
@@ -799,6 +888,84 @@ function PreviewStep({
           </Link>
         </div>
       </div>
+
+      {/* ═══════ Variation Switcher Bar ═══════ */}
+      {variationOptions && (
+        <div className="glass-panel rounded-2xl p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" /></svg>
+            <span className="text-sm font-semibold text-white">Style Variations</span>
+            <span className="text-xs text-slate-500 ml-2">Use arrows to cycle through 10 options for each</span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {/* Color Scheme */}
+            <div className="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2.5 border border-white/10">
+              <button
+                onClick={() => cycle(variationOptions.colorSchemes, colorScheme, -1, setColorScheme)}
+                className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 text-white transition-all hover:scale-110 flex-shrink-0"
+                title="Previous color scheme"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" /></svg>
+              </button>
+              <div className="flex-1 text-center min-w-0">
+                <div className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Color</div>
+                <div className="text-sm font-bold text-white truncate">{currentColorName}</div>
+              </div>
+              <button
+                onClick={() => cycle(variationOptions.colorSchemes, colorScheme, 1, setColorScheme)}
+                className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 text-white transition-all hover:scale-110 flex-shrink-0"
+                title="Next color scheme"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
+              </button>
+            </div>
+
+            {/* Font */}
+            <div className="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2.5 border border-white/10">
+              <button
+                onClick={() => cycle(variationOptions.fontVariations, fontVariation, -1, setFontVariation)}
+                className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 text-white transition-all hover:scale-110 flex-shrink-0"
+                title="Previous font"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" /></svg>
+              </button>
+              <div className="flex-1 text-center min-w-0">
+                <div className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Font</div>
+                <div className="text-sm font-bold text-white truncate">{currentFontName}</div>
+              </div>
+              <button
+                onClick={() => cycle(variationOptions.fontVariations, fontVariation, 1, setFontVariation)}
+                className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 text-white transition-all hover:scale-110 flex-shrink-0"
+                title="Next font"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
+              </button>
+            </div>
+
+            {/* Structure */}
+            <div className="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2.5 border border-white/10">
+              <button
+                onClick={() => cycle(variationOptions.structureVariations, structureVariation, -1, setStructureVariation)}
+                className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 text-white transition-all hover:scale-110 flex-shrink-0"
+                title="Previous structure"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" /></svg>
+              </button>
+              <div className="flex-1 text-center min-w-0">
+                <div className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Layout</div>
+                <div className="text-sm font-bold text-white truncate">{currentStructureName}</div>
+              </div>
+              <button
+                onClick={() => cycle(variationOptions.structureVariations, structureVariation, 1, setStructureVariation)}
+                className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 text-white transition-all hover:scale-110 flex-shrink-0"
+                title="Next structure"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Page tabs */}
       <div className="flex flex-wrap gap-2">

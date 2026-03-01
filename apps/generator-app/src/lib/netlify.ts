@@ -103,8 +103,79 @@ export async function provisionSite(slug: string): Promise<ProvisionResult> {
 }
 
 /* ------------------------------------------------------------------ */
-/*  2.  Deploy files to a Netlify site                                 */
+/*  2.  Deploy files to a Netlify site (direct file upload)            */
 /* ------------------------------------------------------------------ */
+
+import crypto from 'crypto'
+
+/**
+ * Deploy a set of files directly to a Netlify site using the
+ * file-digest deploy API. No git repo or build hook required.
+ *
+ * @param siteId  – Netlify site ID
+ * @param files   – Map of path → content, e.g. { "index.html": "<html>...", "about.html": "..." }
+ * @returns       – The deploy ID and URL
+ */
+export async function deploySiteFiles(
+  siteId: string,
+  files: Record<string, string>,
+): Promise<{ deployId: string; deployUrl: string }> {
+  const token = getToken()
+
+  // Step 1: Calculate SHA1 digests for each file
+  const fileDigests: Record<string, string> = {}
+  const digestToPath: Record<string, string> = {}
+  const digestToContent: Record<string, string> = {}
+
+  for (const [filePath, content] of Object.entries(files)) {
+    const sha1 = crypto.createHash('sha1').update(content).digest('hex')
+    const normalizedPath = '/' + filePath.replace(/^\/+/, '')
+    fileDigests[normalizedPath] = sha1
+    digestToPath[sha1] = normalizedPath
+    digestToContent[sha1] = content
+  }
+
+  // Step 2: Create a deploy with file digests
+  const deployRes = await netlifyFetch(`/sites/${siteId}/deploys`, {
+    method: 'POST',
+    body: JSON.stringify({
+      files: fileDigests,
+    }),
+  })
+
+  if (!deployRes.ok) {
+    const errBody = await deployRes.text()
+    throw new Error(`Netlify deploy creation failed (${deployRes.status}): ${errBody}`)
+  }
+
+  const deploy = await deployRes.json()
+  const deployId = deploy.id as string
+  const required: string[] = deploy.required || []
+
+  // Step 3: Upload any files Netlify needs (ones it doesn't already have)
+  for (const sha1 of required) {
+    const content = digestToContent[sha1]
+    if (!content) continue
+
+    const uploadRes = await fetch(`${NETLIFY_API}/deploys/${deployId}/files${digestToPath[sha1]}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/octet-stream',
+      },
+      body: content,
+    })
+
+    if (!uploadRes.ok) {
+      console.error(`Failed to upload file ${digestToPath[sha1]}: ${uploadRes.status}`)
+    }
+  }
+
+  return {
+    deployId,
+    deployUrl: deploy.ssl_url || deploy.url || `https://${deploy.subdomain}.netlify.app`,
+  }
+}
 
 /**
  * Triggers a new deploy on an existing Netlify site.

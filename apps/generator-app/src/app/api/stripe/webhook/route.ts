@@ -3,7 +3,13 @@ import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
 import { sendWelcomeEmail } from '@/lib/email'
-import { provisionSite } from '@/lib/netlify'
+import { provisionSite, deploySiteFiles } from '@/lib/netlify'
+import {
+  readTemplateFile,
+  hydrateTemplate,
+  getTemplate,
+} from '@/lib/templates/niche-registry'
+import { buildVariationCSS } from '@/lib/templates/variations'
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
@@ -57,7 +63,22 @@ export async function POST(req: Request) {
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session
-    const slug = session.metadata?.slug
+    const meta = session.metadata || {}
+    const slug = meta.slug
+    const templateSlug = meta.template
+    const niche = meta.niche
+    const colorScheme = meta.colorScheme || 'original'
+    const fontVariation = meta.fontVariation || 'original'
+    const structureVariation = meta.structureVariation || 'original'
+
+    // Parse customer field values from metadata
+    let customerValues: Record<string, string> = {}
+    try {
+      if (meta.customerValues) {
+        customerValues = JSON.parse(meta.customerValues)
+      }
+    } catch { /* ignore malformed JSON */ }
+
     if (slug) {
       await reserveSlug(slug)
 
@@ -65,7 +86,75 @@ export async function POST(req: Request) {
       if (process.env.NETLIFY_ACCESS_TOKEN) {
         try {
           const site = await provisionSite(slug)
+
+          // Build and deploy the customized template
+          if (templateSlug && niche) {
+            try {
+              const templateData = getTemplate(niche, templateSlug)
+              if (templateData) {
+                const variationCSS = buildVariationCSS(colorScheme, fontVariation, structureVariation)
+                const cssFile = readTemplateFile(niche, templateSlug, 'assets/css/styles.css')
+                const jsFile = readTemplateFile(niche, templateSlug, 'assets/js/main.js')
+
+                const deployFiles: Record<string, string> = {}
+
+                // Hydrate and collect all HTML pages
+                for (const page of templateData.pages) {
+                  const rawHtml = readTemplateFile(niche, templateSlug, page)
+                  if (!rawHtml) continue
+                  let html = hydrateTemplate(rawHtml, customerValues)
+
+                  // Inject CSS and variation overrides into each page
+                  const injectedStyles: string[] = []
+                  if (cssFile) injectedStyles.push(cssFile)
+                  if (variationCSS) injectedStyles.push(variationCSS)
+                  if (injectedStyles.length > 0) {
+                    html = html.replace('</head>', `<style>${injectedStyles.join('\n')}</style></head>`)
+                  }
+
+                  // Inject contact form handler script that posts to our API
+                  const contactScript = `
+<script>
+(function(){
+  var forms = document.querySelectorAll('form');
+  forms.forEach(function(form) {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var data = {};
+      new FormData(form).forEach(function(v, k) { data[k] = v; });
+      data.slug = '${slug}';
+      fetch('${process.env.NEXT_PUBLIC_API_URL || ''}/api/forms/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }).then(function() {
+        form.innerHTML = '<p style="text-align:center;padding:2rem;color:var(--primary,#22c55e)">Thank you! We\\'ll be in touch soon.</p>';
+      }).catch(function() {
+        alert('Something went wrong. Please try again.');
+      });
+    });
+  });
+})();
+</script>`
+                  html = html.replace('</body>', contactScript + '</body>')
+
+                  deployFiles[page] = html
+                }
+
+                // Include CSS and JS as static assets
+                if (cssFile) deployFiles['assets/css/styles.css'] = cssFile
+                if (jsFile) deployFiles['assets/js/main.js'] = jsFile
+
+                // Deploy all files to the Netlify site
+                await deploySiteFiles(site.siteId, deployFiles)
+              }
+            } catch (deployErr) {
+              console.error('[webhook] template deploy failed:', deployErr)
+            }
+          }
+
           // Update the slug record with hosting info
+          const normalizedSlug = slug.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-+|-+$/g, '')
           await supabase
             .from('site_slugs')
             .update({
@@ -73,7 +162,28 @@ export async function POST(req: Request) {
               netlify_site_id: site.siteId,
               site_url: site.siteUrl,
             })
-            .eq('slug', slug.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-+|-+$/g, ''))
+            .eq('slug', normalizedSlug)
+
+          // Store full site config in portal_sites for future edits
+          await supabase
+            .from('portal_sites')
+            .upsert({
+              slug: normalizedSlug,
+              status: 'active',
+              data: {
+                niche,
+                template: templateSlug,
+                colorScheme,
+                fontVariation,
+                structureVariation,
+                customerValues,
+                email: customerValues.EMAIL || session.customer_details?.email || '',
+                netlify_site_id: site.siteId,
+                site_url: site.siteUrl,
+                plan: meta.planKey,
+              },
+            }, { onConflict: 'slug' })
+
         } catch (err) {
           console.error('[webhook] site provisioning failed:', err)
         }
@@ -82,7 +192,7 @@ export async function POST(req: Request) {
 
     // Send welcome email to the customer
     const customerEmail = session.customer_details?.email
-    const businessName = session.metadata?.slug || 'your business'
+    const businessName = customerValues.BUSINESS_NAME || meta.slug || 'your business'
     if (customerEmail && slug) {
       await sendWelcomeEmail(customerEmail, businessName, slug).catch((err) =>
         console.error('[webhook] welcome email failed:', err)

@@ -22,7 +22,7 @@ export async function POST(req: Request) {
       apiVersion: '2023-10-16',
     })
 
-    const { planKey, slug } = await req.json()
+    const { planKey, slug, template, niche, colorScheme, fontVariation, structureVariation, customerValues } = await req.json()
     const priceId = priceMap[planKey]
 
     if (!priceId) {
@@ -34,9 +34,22 @@ export async function POST(req: Request) {
 
     const origin = (await headers()).get('origin') || 'http://localhost:3000'
 
-    const metadata = {
+    // Stripe metadata has a 500-char limit per value, so we store
+    // template config as compact JSON. Customer form values are stored
+    // separately so the webhook can build the deployed site.
+    const metadata: Record<string, string> = {
       planKey,
       slug: typeof slug === 'string' ? slug : '',
+      template: typeof template === 'string' ? template : '',
+      niche: typeof niche === 'string' ? niche : '',
+      colorScheme: typeof colorScheme === 'string' ? colorScheme : 'original',
+      fontVariation: typeof fontVariation === 'string' ? fontVariation : 'original',
+      structureVariation: typeof structureVariation === 'string' ? structureVariation : 'original',
+    }
+
+    // Store customer field values so the webhook can hydrate the template
+    if (customerValues && typeof customerValues === 'object') {
+      metadata.customerValues = JSON.stringify(customerValues).slice(0, 500)
     }
 
     const session = await stripe.checkout.sessions.create({

@@ -102,52 +102,77 @@ function extractSnippet(htmlPath: string): string {
   }
 }
 
+/** Strip leading/trailing {{ }} from a key string */
+function stripBraces(key: string): string {
+  return key.replace(/^\{\{/, '').replace(/\}\}$/, '')
+}
+
+/** Normalize a single raw field object into a TemplateField */
+function normalizeField(f: any): TemplateField {
+  const rawKey = f.key || f.name || ''
+  const name = stripBraces(rawKey)
+  return {
+    name,
+    label: f.label || name.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()),
+    type: f.type || (name.toLowerCase().includes('email') ? 'email' : name.toLowerCase().includes('phone') ? 'tel' : name.toLowerCase().includes('url') ? 'url' : 'text'),
+    required: f.required ?? true,
+    default: f.default ?? f.placeholder ?? f.example ?? undefined,
+  }
+}
+
 function parseFields(fieldsPath: string): TemplateField[] {
   try {
     const raw = JSON.parse(fs.readFileSync(fieldsPath, 'utf-8'))
 
-    // Format 1: { fields: [{ key/name, label, type }] }
+    // Format A: Top-level array of field objects  [{ key, label, type }]
+    if (Array.isArray(raw)) {
+      return raw.map(normalizeField)
+    }
+
+    // Format B: { groups: [{ label, fields: [...] }] }  (grouped / premium style)
+    if (raw.groups && Array.isArray(raw.groups)) {
+      const all: TemplateField[] = []
+      for (const group of raw.groups) {
+        if (Array.isArray(group.fields)) {
+          all.push(...group.fields.map(normalizeField))
+        }
+      }
+      return all
+    }
+
+    // Format C: { fields: [{ key/name, label, type }] }
     if (Array.isArray(raw.fields)) {
-      return raw.fields.map((f: any) => ({
-        name: f.key || f.name,
-        label: f.label || f.key || f.name,
-        type: f.type || 'text',
-        required: f.required ?? true,
-        default: f.default,
-      }))
+      return raw.fields.map(normalizeField)
     }
 
-    // Format 2: { title, fields: [{ name, label, type, default }] }
-    if (raw.title && Array.isArray(raw.fields)) {
-      return raw.fields.map((f: any) => ({
-        name: f.name,
-        label: f.label || f.name,
-        type: f.type || 'text',
-        required: true,
-        default: f.default,
-      }))
-    }
-
-    // Format 3: { placeholders: { KEY: "default" } }
+    // Format D: { placeholders: { KEY: "default" } }
     if (raw.placeholders && typeof raw.placeholders === 'object') {
-      return Object.entries(raw.placeholders).map(([key, val]) => ({
-        name: key,
-        label: key.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()),
-        type: key.toLowerCase().includes('email') ? 'email' : key.toLowerCase().includes('phone') ? 'tel' : 'text',
-        required: Array.isArray(raw.required) ? raw.required.includes(key) : true,
-        default: typeof val === 'string' && !val.startsWith('{{') ? val : undefined,
-      }))
+      return Object.entries(raw.placeholders).map(([key, val]) => {
+        const name = stripBraces(key)
+        return {
+          name,
+          label: name.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()),
+          type: name.toLowerCase().includes('email') ? 'email' : name.toLowerCase().includes('phone') ? 'tel' : 'text',
+          required: Array.isArray(raw.required) ? raw.required.includes(key) : true,
+          default: typeof val === 'string' && !val.startsWith('{{') ? val : undefined,
+        }
+      })
     }
 
-    // Format 4: flat object with keys = field names, values = defaults (therapist style)
-    if (typeof raw === 'object' && !Array.isArray(raw) && raw.BUSINESS_NAME !== undefined) {
-      return Object.entries(raw).map(([key, val]) => ({
-        name: key,
-        label: key.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()),
-        type: key.toLowerCase().includes('email') ? 'email' : key.toLowerCase().includes('phone') ? 'tel' : 'text',
-        required: true,
-        default: typeof val === 'string' && !val.startsWith('[') && !val.startsWith('{{') ? val : undefined,
-      }))
+    // Format E: flat object with keys = field names, values = defaults (therapist style)
+    if (typeof raw === 'object' && (raw.BUSINESS_NAME !== undefined || raw.business_name !== undefined)) {
+      return Object.entries(raw)
+        .filter(([k]) => k !== 'notes')
+        .map(([key, val]) => {
+          const name = stripBraces(key)
+          return {
+            name,
+            label: name.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()),
+            type: name.toLowerCase().includes('email') ? 'email' : name.toLowerCase().includes('phone') ? 'tel' : 'text',
+            required: true,
+            default: typeof val === 'string' && !val.startsWith('[') && !val.startsWith('{{') ? val : undefined,
+          }
+        })
     }
 
     return []

@@ -46,18 +46,42 @@ export default function PricingClient() {
   const billingPeriod: 'monthly' | 'annual' = 'monthly'
   const [checkoutError, setCheckoutError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState<string | null>(null)
+  const [testRunning, setTestRunning] = useState(false)
+  const [testResult, setTestResult] = useState<{ success: boolean; slug: string; siteUrl: string | null; log: string[] } | null>(null)
   const searchParams = useSearchParams()
   const slug = useMemo(() => searchParams.get('slug'), [searchParams])
+  const template = useMemo(() => searchParams.get('template'), [searchParams])
+  const niche = useMemo(() => searchParams.get('niche'), [searchParams])
+  const colorScheme = useMemo(() => searchParams.get('color') || 'original', [searchParams])
+  const fontVariation = useMemo(() => searchParams.get('font') || 'original', [searchParams])
+  const structureVariation = useMemo(() => searchParams.get('structure') || 'original', [searchParams])
 
   const startCheckout = async (planKey: string) => {
     try {
       track('checkout_started', { planKey })
       setCheckoutError(null)
       setIsSubmitting(planKey)
+
+      // Retrieve saved customer values from sessionStorage
+      let customerValues: Record<string, string> = {}
+      try {
+        const saved = sessionStorage.getItem('pb_template_values')
+        if (saved) customerValues = JSON.parse(saved)
+      } catch { /* ignore */ }
+
       const response = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planKey, slug }),
+        body: JSON.stringify({
+          planKey,
+          slug: slug || template,
+          template,
+          niche,
+          colorScheme,
+          fontVariation,
+          structureVariation,
+          customerValues,
+        }),
       })
       if (!response.ok) {
         throw new Error('Checkout failed')
@@ -154,6 +178,100 @@ export default function PricingClient() {
             </p>
           )}
         </section>
+
+        {/* ═══ DEV-ONLY: Test Purchase ═══ */}
+        {process.env.NODE_ENV !== 'production' && (
+          <section className="container-hvac pb-12">
+            <div className="rounded-2xl border-2 border-dashed border-yellow-500/40 bg-yellow-500/5 p-8 space-y-4">
+              <div className="flex items-center gap-3">
+                <span className="px-2.5 py-1 rounded bg-yellow-500/20 text-yellow-300 text-[10px] font-bold uppercase tracking-widest">Dev Only</span>
+                <h3 className="text-lg font-bold text-yellow-200">Simulate Purchase</h3>
+              </div>
+              <p className="text-sm text-yellow-100/70">
+                Runs the full provisioning pipeline (slug reservation, Netlify deploy, Supabase records) without Stripe.
+                {template && niche && (
+                  <span className="block mt-1 text-yellow-200/90">
+                    Template: <strong>{template}</strong> &middot; Niche: <strong>{niche}</strong> &middot; Color: <strong>{colorScheme}</strong> &middot; Font: <strong>{fontVariation}</strong> &middot; Layout: <strong>{structureVariation}</strong>
+                  </span>
+                )}
+              </p>
+              <div className="flex flex-wrap items-center gap-4">
+                <button
+                  onClick={async () => {
+                    setTestRunning(true)
+                    setTestResult(null)
+                    try {
+                      let customerValues: Record<string, string> = {}
+                      try {
+                        const saved = sessionStorage.getItem('pb_template_values')
+                        if (saved) customerValues = JSON.parse(saved)
+                      } catch { /* ignore */ }
+
+                      const res = await fetch('/api/test-purchase', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          slug: slug || template || 'test-site',
+                          template,
+                          niche,
+                          planKey: 'basic',
+                          colorScheme,
+                          fontVariation,
+                          structureVariation,
+                          customerValues,
+                        }),
+                      })
+                      const data = await res.json()
+                      setTestResult(data)
+                    } catch (err) {
+                      setTestResult({ success: false, slug: '', siteUrl: null, log: [`Error: ${err}`] })
+                    } finally {
+                      setTestRunning(false)
+                    }
+                  }}
+                  disabled={testRunning}
+                  className="px-6 py-3 text-sm font-bold rounded-lg bg-yellow-500 hover:bg-yellow-400 text-slate-900 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {testRunning ? 'Provisioning...' : 'Simulate Purchase (Free)'}
+                </button>
+                {testResult && (
+                  <button
+                    onClick={() => window.location.assign('/success')}
+                    className="px-6 py-3 text-sm font-bold rounded-lg bg-green-500 hover:bg-green-400 text-slate-900 transition-all"
+                  >
+                    Go to Success Page &rarr;
+                  </button>
+                )}
+              </div>
+              {testResult && (
+                <div className="mt-4 rounded-lg bg-slate-900/80 border border-white/10 p-4 space-y-2 text-sm font-mono">
+                  <div className="flex items-center gap-2">
+                    <span className={testResult.success ? 'text-green-400' : 'text-red-400'}>
+                      {testResult.success ? '\u2713' : '\u2717'}
+                    </span>
+                    <span className="text-white font-bold">
+                      {testResult.success ? 'Purchase simulated successfully' : 'Simulation completed with issues'}
+                    </span>
+                  </div>
+                  {testResult.slug && (
+                    <p className="text-slate-300">Slug: <span className="text-cyan-300">{testResult.slug}</span></p>
+                  )}
+                  {testResult.siteUrl && (
+                    <p className="text-slate-300">
+                      Site: <a href={testResult.siteUrl} target="_blank" rel="noopener noreferrer" className="text-cyan-300 underline">{testResult.siteUrl}</a>
+                    </p>
+                  )}
+                  <div className="space-y-1 pt-2 border-t border-white/10">
+                    <p className="text-slate-500 text-xs uppercase tracking-wider">Pipeline log</p>
+                    {testResult.log.map((line, i) => (
+                      <p key={i} className="text-slate-400 text-xs">{line}</p>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
 
         <section className="container-hvac pb-20">
           <div className="glass-panel rounded-3xl p-10">
