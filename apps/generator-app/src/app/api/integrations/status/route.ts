@@ -8,13 +8,27 @@ import { NextRequest, NextResponse } from 'next/server'
  * hardcoded "Pending" badges.
  */
 export async function GET(req: NextRequest) {
+  const hasStripeSecret = !!process.env.STRIPE_SECRET_KEY
+  const hasStripeWebhook = !!process.env.STRIPE_WEBHOOK_SECRET
+  const hasStripePriceBasic = !!process.env.STRIPE_PRICE_BASIC
+  const hasStripePriceGrowth = !!process.env.STRIPE_PRICE_GROWTH
+  const stripeCheckoutReady =
+    hasStripeSecret &&
+    hasStripeWebhook &&
+    hasStripePriceBasic &&
+    hasStripePriceGrowth
+
   const integrations = [
     {
       name: 'Stripe',
-      configured: !!(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET),
-      detail: process.env.STRIPE_SECRET_KEY
-        ? 'Connected'
-        : 'Missing STRIPE_SECRET_KEY',
+      configured: hasStripeSecret && hasStripeWebhook,
+      detail: !hasStripeSecret
+        ? 'Missing STRIPE_SECRET_KEY'
+        : !hasStripeWebhook
+          ? 'Missing STRIPE_WEBHOOK_SECRET'
+          : !hasStripePriceBasic || !hasStripePriceGrowth
+            ? `Missing price IDs (basic: ${hasStripePriceBasic ? 'ok' : 'no'}, growth: ${hasStripePriceGrowth ? 'ok' : 'no'})`
+            : 'Connected',
     },
     {
       name: 'Postmark',
@@ -39,5 +53,18 @@ export async function GET(req: NextRequest) {
     },
   ]
 
-  return NextResponse.json({ integrations })
+  const netlifyReady = !!process.env.NETLIFY_ACCESS_TOKEN
+  const supabaseReady = !!(
+    process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY
+  )
+  const postmarkReady = !!(
+    process.env.POSTMARK_SERVER_TOKEN && process.env.EMAIL_FROM_ADDRESS
+  )
+
+  return NextResponse.json({
+    integrations,
+    checkoutReady: stripeCheckoutReady,
+    fulfillmentReady: stripeCheckoutReady && netlifyReady && supabaseReady,
+    emailReady: postmarkReady,
+  })
 }
