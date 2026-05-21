@@ -1,15 +1,15 @@
-# Daily Clarity — Launch Audit (2026-05-21)
+# Daily Clarity app — Launch Audit (separate product)
+
+> **Note:** `dailyclarity.org` is **Platform Builder** (template marketplace). See `PLATFORM_BUILDER_LAUNCH_AUDIT.md` for that site.
+>
+> This document is only for the **Daily Clarity** AI assistant at `dailyclarity.netlify.app`.
 
 ## Executive summary
 
-You have **two different websites** tied to your domain name:
-
-| URL | What visitors see | Correct for Daily Clarity? |
-|-----|-------------------|----------------------------|
-| **https://dailyclarity.org** | Platform Builder template marketplace (Next.js) | **No** |
-| **https://dailyclarity.netlify.app** | Your real Daily Clarity app (React + AI tools) | **Yes** |
-
-Until you move the custom domain, **dailyclarity.org will not show your product or take payments for Daily Clarity.**
+| URL | Product |
+|-----|---------|
+| **https://dailyclarity.org** | Platform Builder (correct) |
+| **https://dailyclarity.netlify.app** | Daily Clarity AI app (separate) |
 
 ---
 
