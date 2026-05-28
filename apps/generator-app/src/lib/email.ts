@@ -82,6 +82,11 @@ export async function sendEmail(options: SendEmailOptions): Promise<PostmarkResp
  */
 export async function sendWelcomeEmail(to: string, businessName: string, slug: string) {
   const portalUrl = `${process.env.NEXT_PUBLIC_API_URL || 'https://yourdomain.com'}/portal?slug=${encodeURIComponent(slug)}`
+  const platformDomain =
+    process.env.PLATFORM_DOMAIN ||
+    process.env.NEXT_PUBLIC_PLATFORM_DOMAIN ||
+    'dailyclarity.org'
+  const siteUrl = `https://${slug}.${platformDomain}`
 
   return sendEmail({
     to,
@@ -89,12 +94,13 @@ export async function sendWelcomeEmail(to: string, businessName: string, slug: s
     htmlBody: `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
         <h1 style="color: #1e293b;">Welcome aboard, ${escapeHtml(businessName)}!</h1>
-        <p>Your subscription is active and we're provisioning your platform now.</p>
+        <p>Your subscription is active and we're provisioning your website now.</p>
+        <p>Your included address: <a href="${siteUrl}">${escapeHtml(siteUrl)}</a></p>
         <h2 style="color: #334155;">What happens next</h2>
         <ol>
-          <li><strong>Integrations</strong> — Postmark email, Supabase storage, and Stripe payments are being connected to your site.</li>
-          <li><strong>Template build</strong> — Your chosen layout is being populated with your data.</li>
-          <li><strong>Launch</strong> — We'll confirm your subdomain and go live within 48 hours.</li>
+          <li><strong>Your site</strong> — We're deploying your template to <strong>${escapeHtml(slug)}.${escapeHtml(platformDomain)}</strong>.</li>
+          <li><strong>Email</strong> — Contact forms on your site can notify you via Postmark.</li>
+          <li><strong>Custom domain</strong> — Add your own domain anytime in the portal.</li>
         </ol>
         <p>
           <a href="${portalUrl}" style="display: inline-block; padding: 12px 32px; background: #0891b2; color: white; border-radius: 8px; text-decoration: none; font-weight: bold;">

@@ -55,6 +55,17 @@ export default function PortalClient() {
     'idle'
   )
   const [integrations, setIntegrations] = useState(integrationDefaults)
+  const [platformDomain, setPlatformDomain] = useState('dailyclarity.org')
+  const [domainAffiliateUrl, setDomainAffiliateUrl] = useState<string | null>(null)
+  const [customDomain, setCustomDomain] = useState('')
+  const [domainInfo, setDomainInfo] = useState<{
+    subdomain: string
+    siteUrl: string
+    customDomain: string | null
+    dnsInstructions: string | null
+  } | null>(null)
+  const [domainStatus, setDomainStatus] = useState<'idle' | 'loading' | 'saving' | 'saved' | 'error'>('idle')
+  const [domainMessage, setDomainMessage] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     businessName: '',
     tagline: '',
@@ -70,6 +81,56 @@ export default function PortalClient() {
     }
     loadSite(initialSlug)
   }, [initialSlug])
+
+  useEffect(() => {
+    fetch('/api/platform/config')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.platformDomain) setPlatformDomain(data.platformDomain)
+        if (data?.domainAffiliateUrl) setDomainAffiliateUrl(data.domainAffiliateUrl)
+      })
+      .catch(() => {})
+  }, [])
+
+  const normalizedSlug = useMemo(() => normalizeSlug(slug), [slug])
+
+  useEffect(() => {
+    if (!normalizedSlug) {
+      setDomainInfo(null)
+      return
+    }
+    setDomainStatus('loading')
+    fetch(`/api/sites/domain?slug=${encodeURIComponent(normalizedSlug)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.subdomain) {
+          setDomainInfo({
+            subdomain: data.subdomain,
+            siteUrl: data.siteUrl,
+            customDomain: data.customDomain || null,
+            dnsInstructions: data.dnsInstructions || null,
+          })
+          if (data.customDomain) setCustomDomain(data.customDomain)
+        } else {
+          setDomainInfo({
+            subdomain: `${normalizedSlug}.${platformDomain}`,
+            siteUrl: `https://${normalizedSlug}.${platformDomain}`,
+            customDomain: null,
+            dnsInstructions: null,
+          })
+        }
+        setDomainStatus('idle')
+      })
+      .catch(() => {
+        setDomainInfo({
+          subdomain: `${normalizedSlug}.${platformDomain}`,
+          siteUrl: `https://${normalizedSlug}.${platformDomain}`,
+          customDomain: null,
+          dnsInstructions: null,
+        })
+        setDomainStatus('idle')
+      })
+  }, [normalizedSlug, platformDomain])
 
   // Fetch live integration status
   useEffect(() => {
@@ -145,6 +206,44 @@ export default function PortalClient() {
       track('portal_saved', { slug: normalized })
     } catch (error) {
       setStatus('error')
+    }
+  }
+
+  const saveCustomDomain = async () => {
+    if (!normalizedSlug || !customDomain.trim()) {
+      setDomainStatus('error')
+      setDomainMessage('Enter a valid domain name.')
+      return
+    }
+    setDomainStatus('saving')
+    setDomainMessage(null)
+    try {
+      const response = await fetch('/api/sites/domain', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          slug: normalizedSlug,
+          customDomain: customDomain.trim(),
+        }),
+      })
+      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(data?.error || 'Domain setup failed')
+      }
+      setDomainInfo({
+        subdomain: domainInfo?.subdomain || `${normalizedSlug}.${platformDomain}`,
+        siteUrl: domainInfo?.siteUrl || `https://${normalizedSlug}.${platformDomain}`,
+        customDomain: data.customDomain,
+        dnsInstructions: data.dnsInstructions || null,
+      })
+      setDomainStatus('saved')
+      setDomainMessage('Custom domain added. Follow the DNS steps below.')
+      track('portal_domain_saved', { slug: normalizedSlug })
+    } catch (error) {
+      setDomainStatus('error')
+      setDomainMessage(
+        error instanceof Error ? error.message : 'Unable to configure domain.'
+      )
     }
   }
 
@@ -299,6 +398,74 @@ export default function PortalClient() {
           </div>
 
           <aside className="space-y-6">
+            <div id="domain" className="glass-panel rounded-2xl p-6">
+              <h3 className="text-xl font-bold text-white">Your domain</h3>
+              {normalizedSlug ? (
+                <div className="mt-4 space-y-4 text-sm text-slate-200">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Included subdomain</p>
+                    <a
+                      href={domainInfo?.siteUrl || `https://${normalizedSlug}.${platformDomain}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-cyan-200 hover:text-cyan-100 break-all"
+                    >
+                      {domainInfo?.subdomain || `${normalizedSlug}.${platformDomain}`}
+                    </a>
+                  </div>
+                  <div>
+                    <label className="text-xs uppercase tracking-[0.3em] text-slate-400 block mb-2">
+                      Custom domain (optional)
+                    </label>
+                    <input
+                      value={customDomain}
+                      onChange={(event) => setCustomDomain(event.target.value)}
+                      placeholder="www.yourbusiness.com"
+                      className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-sm"
+                    />
+                    <button
+                      type="button"
+                      onClick={saveCustomDomain}
+                      disabled={domainStatus === 'saving' || domainStatus === 'loading'}
+                      className="mt-3 w-full px-4 py-2 text-sm font-semibold text-white border border-white/20 rounded-lg hover:bg-white/10 disabled:opacity-60"
+                    >
+                      {domainStatus === 'saving' ? 'Saving…' : 'Connect custom domain'}
+                    </button>
+                    {domainMessage && (
+                      <p className={`mt-2 text-xs ${domainStatus === 'error' ? 'text-red-200' : 'text-emerald-200'}`}>
+                        {domainMessage}
+                      </p>
+                    )}
+                  </div>
+                  {domainInfo?.dnsInstructions && (
+                    <div className="rounded-xl bg-white/5 border border-white/10 p-4">
+                      <p className="text-xs uppercase tracking-[0.3em] text-slate-400 mb-2">DNS records</p>
+                      <pre className="text-xs text-slate-300 font-mono whitespace-pre-wrap">
+                        {domainInfo.dnsInstructions}
+                      </pre>
+                    </div>
+                  )}
+                  {domainAffiliateUrl && (
+                    <p className="text-xs text-slate-400">
+                      Need a domain?{' '}
+                      <a
+                        href={domainAffiliateUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-cyan-200 hover:text-cyan-100"
+                      >
+                        Register one here
+                      </a>
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <p className="text-slate-300 text-sm mt-2">
+                  Load your slug above after checkout to manage domains.
+                </p>
+              )}
+            </div>
+
             <div id="integrations" className="glass-panel rounded-2xl p-6">
               <h3 className="text-xl font-bold text-white">Integrations</h3>
               <div className="mt-4 space-y-3">
