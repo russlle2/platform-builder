@@ -20,6 +20,8 @@ export interface TemplateMeta {
   nicheSlug: string
   layoutFamily?: string
   voiceFamily?: string
+  /** Gallery ordering key (lower = earlier). Undefined sorts last. */
+  order?: number
   pages: string[]
   dir: string          // absolute path on disk
   fields: TemplateField[]
@@ -53,12 +55,28 @@ export const NICHE_META: Record<string, Omit<NicheInfo, 'slug' | 'templateCount'
     icon: '🧘',
     accent: 'violet',
   },
-  hvac: {
-    label: 'HVAC',
-    description: 'Conversion-focused websites for heating, cooling, and air quality professionals.',
-    icon: '❄️',
-    accent: 'cyan',
-  },
+  // NOTE: Deactivated categories. A niche only becomes browsable when present in
+  // NICHE_META — removing/omitting an entry hides it from the gallery, landing pages,
+  // niche API, and static generation (its template folder stays on disk, untouched).
+  // Re-add an entry to reactivate. Currently deactivated: hvac, dental, injury_law (legal).
+  // hvac: {
+  //   label: 'HVAC',
+  //   description: 'Conversion-focused websites for heating, cooling, and air quality professionals.',
+  //   icon: '❄️',
+  //   accent: 'cyan',
+  // },
+  // dental: {
+  //   label: 'Dental',
+  //   description: 'Patient-focused websites for dental practices and orthodontic clinics.',
+  //   icon: '🦷',
+  //   accent: 'cyan',
+  // },
+  // injury_law: {
+  //   label: 'Personal Injury Law',
+  //   description: 'Conversion-focused websites for personal injury and accident law firms.',
+  //   icon: '⚖️',
+  //   accent: 'amber',
+  // },
   private_practice_therapist: {
     label: 'Private Practice Therapist',
     description: 'Warm, trust-building websites for therapists, counselors, and mental health professionals in private practice.',
@@ -107,6 +125,21 @@ function stripBraces(key: string): string {
   return key.replace(/^\{\{/, '').replace(/\}\}$/, '')
 }
 
+/** Type-name keywords that should be treated as a field *type*, not a default value */
+const TYPE_KEYWORDS = new Set([
+  'string', 'text', 'textarea', 'email', 'tel', 'phone', 'url', 'number',
+  'int', 'integer', 'boolean', 'bool', 'date', 'datetime', 'time', 'json', 'array', 'object',
+])
+
+/** Infer an input type from a field name */
+function inferType(name: string): string {
+  const n = name.toLowerCase()
+  if (n.includes('email')) return 'email'
+  if (n.includes('phone')) return 'tel'
+  if (n.includes('url') || n.includes('link') || n.includes('website')) return 'url'
+  return 'text'
+}
+
 /** Normalize a single raw field object into a TemplateField */
 function normalizeField(f: any): TemplateField {
   const rawKey = f.key || f.name || ''
@@ -114,9 +147,60 @@ function normalizeField(f: any): TemplateField {
   return {
     name,
     label: f.label || name.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()),
-    type: f.type || (name.toLowerCase().includes('email') ? 'email' : name.toLowerCase().includes('phone') ? 'tel' : name.toLowerCase().includes('url') ? 'url' : 'text'),
+    type: f.type || inferType(name),
     required: f.required ?? true,
     default: f.default ?? f.placeholder ?? f.example ?? undefined,
+  }
+}
+
+/** Build a field from an object-map entry: value may be a type keyword, a default, or a config object */
+function fieldFromMapEntry(key: string, val: unknown): TemplateField {
+  const name = stripBraces(key)
+  if (val && typeof val === 'object' && !Array.isArray(val)) {
+    return normalizeField({ key: name, ...(val as Record<string, unknown>) })
+  }
+  if (typeof val === 'string') {
+    const lower = val.trim().toLowerCase()
+    // e.g. { "BUSINESS_NAME": "string" } → type hint, no default
+    if (TYPE_KEYWORDS.has(lower)) {
+      return normalizeField({ key: name, type: lower === 'string' ? inferType(name) : lower })
+    }
+    // a real default value (skip unresolved placeholder tokens)
+    if (!val.startsWith('{{') && !val.startsWith('[')) {
+      return normalizeField({ key: name, default: val })
+    }
+  }
+  return normalizeField({ key: name })
+}
+
+/** Dedupe fields by name, keeping the first occurrence (which carries richest metadata) */
+function dedupeFields(fields: TemplateField[]): TemplateField[] {
+  const seen = new Set<string>()
+  const out: TemplateField[] = []
+  for (const f of fields) {
+    if (!f.name || seen.has(f.name)) continue
+    seen.add(f.name)
+    out.push(f)
+  }
+  return out
+}
+
+/** Derive fields from a list of {{PLACEHOLDER}} tokens (from template.json or raw HTML) */
+function fieldsFromPlaceholders(placeholders: string[]): TemplateField[] {
+  return placeholders.map((p) => normalizeField({ key: stripBraces(p) }))
+}
+
+/** Scan raw HTML for {{TOKEN}} placeholders and build fields from them */
+function fieldsFromHtml(htmlPath: string): TemplateField[] {
+  try {
+    const html = fs.readFileSync(htmlPath, 'utf-8')
+    const tokens = new Set<string>()
+    const re = /\{\{\s*([A-Za-z0-9_]+)\s*\}\}/g
+    let m: RegExpExecArray | null
+    while ((m = re.exec(html)) !== null) tokens.add(m[1])
+    return fieldsFromPlaceholders([...tokens])
+  } catch {
+    return []
   }
 }
 
@@ -143,6 +227,13 @@ function parseFields(fieldsPath: string): TemplateField[] {
     // Format C: { fields: [{ key/name, label, type }] }
     if (Array.isArray(raw.fields)) {
       return raw.fields.map(normalizeField)
+    }
+
+    // Format C2: { fields: { KEY: "string" | "default" | { type, label, ... } } }
+    // (object map — the most common shape across the template library; previously
+    // unhandled, which caused those templates to show ZERO customizable fields)
+    if (raw.fields && typeof raw.fields === 'object' && !Array.isArray(raw.fields)) {
+      return Object.entries(raw.fields).map(([key, val]) => fieldFromMapEntry(key, val))
     }
 
     // Format D: { placeholders: { KEY: "default" } }
@@ -198,6 +289,20 @@ function parseTemplateMeta(templateDir: string, niche: string): TemplateMeta | n
   const slug = meta.slug || path.basename(templateDir)
   const pages = meta.pages || fs.readdirSync(templateDir).filter((f: string) => f.endsWith('.html'))
 
+  // Resolve customizable fields with a robust fallback chain so that EVERY
+  // template with any placeholders becomes editable:
+  //   1. fields.json (all supported shapes)
+  //   2. template.json "placeholders" array
+  //   3. {{TOKENS}} scanned directly from index.html
+  let fields = fs.existsSync(fieldsJsonPath) ? parseFields(fieldsJsonPath) : []
+  if (fields.length === 0 && Array.isArray(meta.placeholders)) {
+    fields = fieldsFromPlaceholders(meta.placeholders as string[])
+  }
+  if (fields.length === 0) {
+    fields = fieldsFromHtml(indexPath)
+  }
+  fields = dedupeFields(fields)
+
   return {
     slug,
     name: meta.name || slug.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()),
@@ -205,9 +310,10 @@ function parseTemplateMeta(templateDir: string, niche: string): TemplateMeta | n
     nicheSlug: niche,
     layoutFamily: meta.layoutFamily,
     voiceFamily: meta.voiceFamily,
+    order: typeof meta.order === 'number' ? meta.order : undefined,
     pages,
     dir: templateDir,
-    fields: fs.existsSync(fieldsJsonPath) ? parseFields(fieldsJsonPath) : [],
+    fields,
     snippet: extractSnippet(indexPath),
   }
 }
@@ -234,6 +340,15 @@ function ensureCache(): Map<string, TemplateMeta[]> {
       const t = parseTemplateMeta(templateDir, nicheSlug)
       if (t) templates.push(t)
     }
+
+    // Order by the explicit numeric `order` from template.json (ascending).
+    // Templates without an order sort last, then alphabetically by name.
+    templates.sort((a, b) => {
+      const ao = typeof a.order === 'number' ? a.order : Number.POSITIVE_INFINITY
+      const bo = typeof b.order === 'number' ? b.order : Number.POSITIVE_INFINITY
+      if (ao !== bo) return ao - bo
+      return a.name.localeCompare(b.name)
+    })
 
     _cache.set(nicheSlug, templates)
   }

@@ -20,7 +20,6 @@ import type {
 const NICHE_OPTIONS = [
   { slug: 'aromatherapy', label: 'Aromatherapy', icon: '🌿' },
   { slug: 'holistic_medicine', label: 'Holistic Medicine', icon: '🧘' },
-  { slug: 'hvac', label: 'HVAC', icon: '❄️' },
   { slug: 'private_practice_therapist', label: 'Private Practice Therapist', icon: '💬' },
   { slug: 'sound_bath', label: 'Sound Bath', icon: '🔔' },
   { slug: 'wellness_coach', label: 'Wellness Coach', icon: '✨' },
@@ -199,7 +198,7 @@ export default function PreviewYourBusinessPage() {
     if (tpls.length === 0) {
       // Fallback
       setMatchedTemplate({
-        nicheSlug: businessInfo.niche || 'hvac',
+        nicheSlug: businessInfo.niche || 'wellness_coach',
         templateSlug: '',
         templateName: 'No templates found',
         matchScore: 0,
