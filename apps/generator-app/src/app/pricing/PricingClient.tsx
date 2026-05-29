@@ -11,15 +11,16 @@ const pricingTiers = [
     price: 20,
     period: 'monthly',
     planKey: 'basic',
-    description: 'Launch fast with core integrations included',
+    description: 'Your automated HVAC platform — launched and self-serve',
     features: [
       'Template-driven site launch',
       'Hosted subdomain included',
-      'Postmark email setup',
+      'Postmark transactional email setup',
       'Supabase storage & database',
       'Stripe payments connected',
-      'Portal edits anytime',
-      'Email support',
+      'Self-serve portal — edit & publish anytime',
+      'Template & style switching',
+      '7-day free trial',
     ],
     highlight: false,
     badge: 'Starter',
@@ -29,13 +30,11 @@ const pricingTiers = [
     price: 80,
     period: 'monthly',
     planKey: 'growth',
-    description: 'Weekly optimization and promotional support',
+    description: 'Everything in Basic, plus monitoring and promo check-ins',
     features: [
       'Everything in Basic Services',
-      'Weekly website reviews',
-      'SEO guidance and fixes',
-      'Free advertising management',
-      'Priority support',
+      'Platform & uptime monitoring, checked weekly',
+      'Promo & ad setup, reviewed a few times a week',
     ],
     highlight: true,
     badge: 'Most Popular',
@@ -150,7 +149,7 @@ export default function PricingClient() {
               <div className="flex flex-wrap gap-6 text-sm text-slate-300">
                 <span>⚡ 30-member cap</span>
                 <span>🔐 Portal edits included</span>
-                <span>📈 Weekly optimization on Growth</span>
+                <span>📈 Monitoring + promo on Growth</span>
               </div>
             </div>
             <div className="glass-panel rounded-3xl p-8 space-y-6">
@@ -182,9 +181,9 @@ export default function PricingClient() {
               <p className="text-sm text-slate-300">From intake to hosted platform</p>
             </div>
             <div className="stat-card">
-              <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Support response</p>
-              <p className="text-3xl font-bold text-white">Under 2 hrs</p>
-              <p className="text-sm text-slate-300">Priority response on Growth</p>
+              <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Platform uptime</p>
+              <p className="text-3xl font-bold text-white">Hosted 24/7</p>
+              <p className="text-sm text-slate-300">Monitored weekly on Growth</p>
             </div>
           </div>
         </section>
@@ -332,12 +331,14 @@ export default function PricingClient() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-sm text-slate-200">
               <div className="space-y-3">
                 <p className="text-slate-400 uppercase tracking-[0.3em] text-xs">Included</p>
-                <p>Hosted HVAC platform</p>
+                <p>Hosted HVAC platform + subdomain</p>
                 <p>Postmark email + Supabase</p>
                 <p>Stripe payments connected</p>
-                <p>Portal edits anytime</p>
-                <p>Template switching</p>
-                <p>Support response</p>
+                <p>Self-serve portal edits</p>
+                <p>Template &amp; style switching</p>
+                <p>7-day free trial</p>
+                <p>Platform &amp; uptime monitoring</p>
+                <p>Promo &amp; ad setup check-ins</p>
               </div>
               <div className="space-y-3">
                 <p className="text-cyan-200 uppercase tracking-[0.3em] text-xs">Basic</p>
@@ -346,7 +347,9 @@ export default function PricingClient() {
                 <p>Included</p>
                 <p>Included</p>
                 <p>Included</p>
-                <p>Standard</p>
+                <p>Included</p>
+                <p className="text-slate-500">—</p>
+                <p className="text-slate-500">—</p>
               </div>
               <div className="space-y-3">
                 <p className="text-amber-200 uppercase tracking-[0.3em] text-xs">Growth</p>
@@ -355,7 +358,9 @@ export default function PricingClient() {
                 <p>Included</p>
                 <p>Included</p>
                 <p>Included</p>
-                <p>Priority + weekly reviews</p>
+                <p>Included</p>
+                <p>Checked weekly</p>
+                <p>Reviewed a few times/week</p>
               </div>
             </div>
           </div>
@@ -403,7 +408,11 @@ export default function PricingClient() {
             <div className="max-w-3xl mx-auto space-y-6">
               <FAQItem
                 question="What's included in Basic Services?"
-                answer="We launch your site on a hosted subdomain and connect Postmark for email, Supabase for storage, and Stripe for payments. You can edit anytime through your portal."
+                answer="Basic is the fully automated platform: we launch your site on a hosted subdomain and connect Postmark for email, Supabase for storage, and Stripe for payments. From there it's self-serve — switch templates and styles, edit, and publish anytime through your portal, with a 7-day free trial to start."
+              />
+              <FAQItem
+                question="What does Growth Partner add?"
+                answer="Growth includes everything in Basic, plus a light human touch: we keep an eye on your platform and uptime each week, and set up and review your promos and ads a few times a week. It's hands-on monitoring rather than a guarantee — a good fit if you'd rather not watch the dashboard yourself."
               />
               <FAQItem
                 question="How fast can I launch?"
