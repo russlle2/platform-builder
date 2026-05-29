@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getPlatformDomain } from '@/lib/platform-config'
 
 /**
  * GET /api/integrations/status
  *
  * Returns the live configuration status of all platform integrations.
- * Used by the portal to show real-time integration health instead of
- * hardcoded "Pending" badges.
  */
 export async function GET(req: NextRequest) {
   const hasStripeSecret = !!process.env.STRIPE_SECRET_KEY
@@ -48,7 +47,7 @@ export async function GET(req: NextRequest) {
       name: 'Netlify',
       configured: !!process.env.NETLIFY_ACCESS_TOKEN,
       detail: process.env.NETLIFY_ACCESS_TOKEN
-        ? 'Connected'
+        ? `Connected (${getPlatformDomain()})`
         : 'Missing NETLIFY_ACCESS_TOKEN',
     },
   ]
@@ -66,5 +65,6 @@ export async function GET(req: NextRequest) {
     checkoutReady: stripeCheckoutReady,
     fulfillmentReady: stripeCheckoutReady && netlifyReady && supabaseReady,
     emailReady: postmarkReady,
+    platformDomain: getPlatformDomain(),
   })
 }

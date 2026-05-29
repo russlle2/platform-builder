@@ -1,6 +1,7 @@
 import { headers } from 'next/headers'
 import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
+import { getStripeTrialDays } from '@/lib/platform-config'
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY
 
@@ -58,23 +59,30 @@ export async function POST(req: Request) {
       metadata.customerValues = JSON.stringify(customerValues).slice(0, 500)
     }
 
+    const trialDays = getStripeTrialDays()
+    const subscriptionData: Stripe.Checkout.SessionCreateParams.SubscriptionData = {
+      metadata,
+    }
+    if (trialDays > 0) {
+      subscriptionData.trial_period_days = trialDays
+    }
+
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
       line_items: [{ price: priceId, quantity: 1 }],
       success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/cancel`,
       allow_promotion_codes: true,
+      payment_method_collection: 'always',
       metadata,
-      subscription_data: {
-        metadata,
-      },
+      subscription_data: subscriptionData,
     })
 
     return NextResponse.json({ url: session.url })
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Unable to create checkout session.' },
-      { status: 500 }
-    )
+    const message =
+      error instanceof Error ? error.message : 'Unable to create checkout session.'
+    console.error('[stripe/checkout]', message)
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
