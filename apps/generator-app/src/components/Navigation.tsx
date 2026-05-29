@@ -26,7 +26,7 @@ export default function Navigation() {
             href="/" 
             className="text-2xl font-bold text-bright-white hover:scale-105 transition-transform"
           >
-            HVAC <span className="text-blue-500">Pro</span>
+            Platform <span className="text-blue-500">Builder</span>
           </Link>
 
           {/* Navigation Links */}

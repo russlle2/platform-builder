@@ -28,7 +28,6 @@ export const metadata: Metadata = {
     'website templates',
     'professional website',
     'small business website',
-    'HVAC website',
     'therapist website',
     'wellness website',
     'aromatherapy website',

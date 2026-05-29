@@ -63,13 +63,20 @@ function TemplateThumbnail({
 
   const iframeSrc = `/api/templates/${niche}/${template.slug}/html?page=index.html`
 
+  const viewHref = `/templates/${niche}/${template.slug}/view`
+
   return (
     <div
       ref={cardRef}
       className={`card-mahogany overflow-hidden transition-all duration-300 hover:scale-[1.02] ${accentCard}`}
     >
-      {/* Live iframe preview */}
-      <div className="relative bg-slate-900 border-b border-white/10 overflow-hidden" style={{ height: 280 }}>
+      {/* Live iframe preview — click opens full-site browser */}
+      <Link
+        href={viewHref}
+        className="block relative bg-slate-900 border-b border-white/10 overflow-hidden group/preview cursor-pointer"
+        style={{ height: 280 }}
+        aria-label={`View full site: ${template.name}`}
+      >
         {/* Windows-style browser chrome */}
         <div className="flex items-center justify-between px-3 py-1.5 bg-[#202225] border-b border-white/5 z-10 relative">
           <div className="flex items-center gap-2 min-w-0">
@@ -129,7 +136,13 @@ function TemplateThumbnail({
             #{index + 1}
           </span>
         </div>
-      </div>
+
+        <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/0 group-hover/preview:bg-black/40 transition-colors pointer-events-none">
+          <span className="opacity-0 group-hover/preview:opacity-100 px-4 py-2 rounded-lg bg-white/95 text-slate-900 text-sm font-bold shadow-lg transition-opacity">
+            View full website →
+          </span>
+        </div>
+      </Link>
 
       {/* Card body */}
       <div className="p-5 space-y-3">
@@ -161,12 +174,20 @@ function TemplateThumbnail({
           <p className="text-sm text-slate-400 line-clamp-2">{template.snippet}</p>
         )}
 
-        <Link
-          href={`/templates/${niche}/${template.slug}`}
-          className={`block w-full text-center px-6 py-3 text-sm font-bold rounded-lg transition-all duration-300 text-white bg-gradient-to-r shadow-lg hover:shadow-xl hover:scale-105 border ${accentBtn}`}
-        >
-          Customize This Template
-        </Link>
+        <div className="flex flex-col gap-2">
+          <Link
+            href={viewHref}
+            className="block w-full text-center px-6 py-3 text-sm font-bold rounded-lg transition-all duration-300 text-white bg-white/10 hover:bg-white/15 border border-white/20"
+          >
+            View Full Website
+          </Link>
+          <Link
+            href={`/templates/${niche}/${template.slug}`}
+            className={`block w-full text-center px-6 py-3 text-sm font-bold rounded-lg transition-all duration-300 text-white bg-gradient-to-r shadow-lg hover:shadow-xl hover:scale-105 border ${accentBtn}`}
+          >
+            Customize This Template
+          </Link>
+        </div>
       </div>
     </div>
   )

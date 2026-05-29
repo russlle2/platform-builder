@@ -26,14 +26,14 @@ export default function ArchivePage() {
 }
 
 const templates = [
-  { id: 1, name: 'Modern HVAC', category: 'HVAC' },
-  { id: 2, name: 'Industrial Pro', category: 'HVAC' },
-  { id: 3, name: 'Comfort Classic', category: 'HVAC' },
-  { id: 4, name: 'Emergency Ready', category: 'HVAC' },
-  { id: 5, name: 'Residential Focus', category: 'HVAC' },
-  { id: 7, name: 'Commercial Grade', category: 'HVAC' },
-  { id: 8, name: 'Service Pro', category: 'HVAC' },
-  { id: 9, name: 'Maintenance Pro', category: 'HVAC' },
+  { id: 1, name: 'Serene Aromatherapy', category: 'Aromatherapy' },
+  { id: 2, name: 'Holistic Flow', category: 'Holistic Medicine' },
+  { id: 3, name: 'Calm Practice', category: 'Therapist' },
+  { id: 4, name: 'Resonance Sound Bath', category: 'Sound Bath' },
+  { id: 5, name: 'Vitality Coach', category: 'Wellness Coach' },
+  { id: 7, name: 'Botanical Studio', category: 'Aromatherapy' },
+  { id: 8, name: 'Integrative Care', category: 'Holistic Medicine' },
+  { id: 9, name: 'Mindful Wellness', category: 'Wellness Coach' },
 ]
 
 function TemplateCard({ template }: { template: typeof templates[0] }) {

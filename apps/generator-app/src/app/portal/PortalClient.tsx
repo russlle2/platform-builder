@@ -12,13 +12,13 @@ const onboardingSteps = [
     title: 'Confirm business details',
     description: 'Review your business name, services, and contact info.',
     action: 'Review details',
-    href: '/wizard?step=1',
+    href: '/preview-your-business',
   },
   {
     title: 'Select your template',
     description: 'Choose the layout that fits your market and positioning.',
     action: 'Pick template',
-    href: '/wizard?step=5',
+    href: '/preview-your-business',
   },
   {
     title: 'Connect integrations',
@@ -282,10 +282,10 @@ export default function PortalClient() {
               Your platform command center
             </h1>
             <p className="text-slate-300 text-lg">
-              Track launch progress, manage updates, and keep your HVAC platform performing.
+              Track launch progress, manage updates, and keep your website platform performing.
             </p>
             <div className="flex flex-wrap gap-4">
-              <Link href="/wizard" className="cta-button">
+              <Link href="/preview-your-business" className="cta-button">
                 Continue intake
               </Link>
               <Link

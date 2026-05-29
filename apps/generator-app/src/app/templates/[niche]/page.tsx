@@ -83,7 +83,7 @@ export default async function TemplateGalleryPage({
             </h1>
             <p className="text-lg text-slate-300 max-w-2xl">
               Each template is unique — different layouts, voice styles, and page structures.
-              Pick one to customize with your business information and preview it live.
+              Click any template to browse the full multi-page site, then customize when you are ready.
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
               <Link

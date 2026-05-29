@@ -22,13 +22,13 @@ export default function BuildsPage() {
               No builds yet
             </h2>
             <p className="text-gray-300 max-w-2xl mx-auto">
-              Start building your first website with our Live Build Wizard. Your projects will appear here.
+              Browse templates in your niche and launch when you are ready. Your projects will appear here.
             </p>
             <Link 
-              href="/wizard"
+              href="/#niches"
               className="cta-button inline-block"
             >
-              Create Your First Build
+              View Custom Templates
             </Link>
           </div>
         </div>

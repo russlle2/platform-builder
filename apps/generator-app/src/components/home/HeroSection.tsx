@@ -17,12 +17,12 @@ export function HeroSection() {
           <h1 className="text-4xl md:text-6xl font-bold text-white leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
             Skip the learning curve
             <br />
-            Build Your HVAC Services Presence Like A Pro
+            Build Your Professional Presence Like A Pro
           </h1>
 
           {/* Supporting text — pure white, 100% opacity */}
           <p className="text-xl md:text-2xl text-white max-w-3xl mx-auto">
-            The industrial-premium platform where HVAC professionals can instantly see,
+            The premium platform where wellness and practice owners can instantly see,
             shape, and understand their website without learning tools, without confusion, and without
             committing until they approve.
           </p>

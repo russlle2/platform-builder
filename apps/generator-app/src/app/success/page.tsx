@@ -40,7 +40,7 @@ export default function SuccessPage() {
             Go to portal
           </Link>
           <Link
-            href="/wizard"
+            href="/preview-your-business"
             className="px-8 py-4 text-lg font-bold text-white border-2 border-white rounded-lg hover:bg-white/10 transition-all"
           >
             Review your details

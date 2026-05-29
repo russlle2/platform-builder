@@ -11,7 +11,7 @@ export default function LiveDemoPage() {
             Live Demo
           </h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Experience the platform in action. Click below to start building your site with our guided wizard.
+            Experience the platform in action. Browse templates and preview your full site before you buy.
           </p>
         </div>
 
@@ -44,10 +44,10 @@ export default function LiveDemoPage() {
                 />
               </ul>
               <Link 
-                href="/wizard"
+                href="/preview-your-business"
                 className="cta-button inline-block"
               >
-                Launch Live Build Wizard
+                Preview Your Business
               </Link>
             </div>
 

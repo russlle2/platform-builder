@@ -7,7 +7,6 @@ import LeadCaptureModal from '@/components/LeadCaptureModal';
 const nicheLinks = [
   { label: '🌿 Aromatherapy', href: '/aromatherapy' },
   { label: '🧘 Holistic Medicine', href: '/holistic_medicine' },
-  { label: '❄️ HVAC', href: '/hvac' },
   { label: '💬 Therapist', href: '/private_practice_therapist' },
   { label: '🔔 Sound Bath', href: '/sound_bath' },
   { label: '✨ Wellness Coach', href: '/wellness_coach' },

@@ -44,7 +44,6 @@ interface TemplateData {
 const accentMap: Record<string, { chip: string; heading: string; btn: string; glow: string }> = {
   aromatherapy: { chip: 'bg-emerald-500/10 text-emerald-300 border-emerald-400/30', heading: 'text-emerald-200', btn: 'from-emerald-500 to-green-600 border-emerald-200/40', glow: 'rgba(16,185,129,0.3)' },
   holistic_medicine: { chip: 'bg-violet-500/10 text-violet-300 border-violet-400/30', heading: 'text-violet-200', btn: 'from-violet-500 to-purple-600 border-violet-200/40', glow: 'rgba(139,92,246,0.3)' },
-  hvac: { chip: 'bg-cyan-500/10 text-cyan-300 border-cyan-400/30', heading: 'text-cyan-200', btn: 'from-cyan-500 to-blue-600 border-cyan-200/40', glow: 'rgba(34,211,238,0.3)' },
   private_practice_therapist: { chip: 'bg-amber-500/10 text-amber-300 border-amber-400/30', heading: 'text-amber-200', btn: 'from-amber-500 to-orange-600 border-amber-200/40', glow: 'rgba(245,158,11,0.3)' },
   sound_bath: { chip: 'bg-indigo-500/10 text-indigo-300 border-indigo-400/30', heading: 'text-indigo-200', btn: 'from-indigo-500 to-blue-600 border-indigo-200/40', glow: 'rgba(99,102,241,0.3)' },
   wellness_coach: { chip: 'bg-rose-500/10 text-rose-300 border-rose-400/30', heading: 'text-rose-200', btn: 'from-rose-500 to-pink-600 border-rose-200/40', glow: 'rgba(244,63,94,0.3)' },
@@ -53,7 +52,6 @@ const accentMap: Record<string, { chip: string; heading: string; btn: string; gl
 const nicheLabels: Record<string, string> = {
   aromatherapy: 'Aromatherapy',
   holistic_medicine: 'Holistic Medicine',
-  hvac: 'HVAC',
   private_practice_therapist: 'Private Practice Therapist',
   sound_bath: 'Sound Bath',
   wellness_coach: 'Wellness Coach',
@@ -478,7 +476,7 @@ export default function TemplateCustomizePage({
     )
   }
 
-  const colors = accentMap[params.niche] || accentMap.hvac
+  const colors = accentMap[params.niche] || accentMap.wellness_coach
   const nicheLabel = nicheLabels[params.niche] || params.niche
 
   return (
@@ -1156,7 +1154,7 @@ function PreviewStep({
             ref={iframeRef}
             srcDoc={previewHtml}
             className="w-full bg-white"
-            style={{ height: '700px' }}
+            style={{ height: 'min(85vh, 1200px)', minHeight: '70vh' }}
             sandbox="allow-same-origin allow-scripts"
             title="Template preview"
           />

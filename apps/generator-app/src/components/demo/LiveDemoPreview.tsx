@@ -9,13 +9,13 @@ export function LiveDemoPreview() {
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold text-white mb-3">Live Demo</h2>
         <p className="text-white text-lg">
-          Click the preview below to launch the Live Build Wizard
+          Click the preview below to browse templates and preview your business
         </p>
       </div>
 
       {/* Desktop-like zoomed-out preview — entire area is clickable */}
       <Link
-        href="/editor"
+        href="/#niches"
         className="block group cursor-pointer"
       >
         <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-gray-700/50 bg-gray-900 transition-all duration-300 group-hover:shadow-amber-500/20 group-hover:border-amber-500/50 group-hover:scale-[1.02]">
@@ -46,7 +46,7 @@ export function LiveDemoPreview() {
                   Your Business Name
                 </h3>
                 <p className="text-white text-sm mb-4">
-                  Professional HVAC Services
+                  Professional Wellness Services
                 </p>
                 <div className="flex space-x-3">
                   <div className="px-4 py-2 bg-white/20 rounded-lg text-white text-sm">

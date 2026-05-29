@@ -72,7 +72,7 @@ const normalizePage = (value: string) => {
 }
 
 const fallbackSite: PreviewSiteData = {
-	businessName: 'Preview HVAC Business',
+	businessName: 'Preview Wellness Business',
 	tagline: 'Reliable comfort for every season.',
 	description: 'Your generated preview appears here once wizard data is saved.',
 	phoneNumber: '(555) 123-4567',
@@ -81,8 +81,8 @@ const fallbackSite: PreviewSiteData = {
 	accentColor: '#2563eb',
 	headingFont: 'Inter',
 	bodyFont: 'Inter',
-	heroImage: '/images/hvac-condenser.jpg',
-	backgroundImage: '/images/hvac-background.jpg',
+	heroImage: '/images/template-bg-1.jpg',
+	backgroundImage: '/images/template-bg-2.jpg',
 	logo: '/images/logo-placeholder.png',
 	templateName: 'Service First',
 	structureSummary: 'Hero with urgent CTA, then services and trust badges.',

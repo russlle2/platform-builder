@@ -4,7 +4,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Browse Website Templates',
-  description: 'Browse 500+ unique website templates across aromatherapy, holistic medicine, HVAC, therapy, sound bath, and wellness coaching.',
+  description: 'Browse 500+ unique website templates across aromatherapy, holistic medicine, therapy, sound bath, and wellness coaching.',
 }
 
 const accentMap: Record<string, { border: string; text: string; bg: string }> = {

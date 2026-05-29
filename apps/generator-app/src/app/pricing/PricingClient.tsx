@@ -11,7 +11,7 @@ const pricingTiers = [
     price: 20,
     period: 'monthly',
     planKey: 'basic',
-    description: 'Your automated HVAC platform — launched and self-serve',
+    description: 'Your automated website platform — launched and self-serve',
     features: [
       'Template-driven site launch',
       'Hosted subdomain included',
@@ -147,7 +147,7 @@ export default function PricingClient() {
             <div className="space-y-6">
               <span className="signal-chip">Pricing</span>
               <h1 className="text-5xl md:text-6xl font-bold text-bright-white">
-                Choose the plan that launches your HVAC platform
+                Choose the plan that launches your website platform
               </h1>
               <p className="text-xl text-slate-200 max-w-xl">
                 Every plan includes hosting, integrations, and portal access.
@@ -184,7 +184,7 @@ export default function PricingClient() {
             <div className="stat-card">
               <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Customer rating</p>
               <p className="text-3xl font-bold text-white">4.9 / 5</p>
-              <p className="text-sm text-slate-300">Based on early HVAC client pilots</p>
+              <p className="text-sm text-slate-300">Based on early wellness &amp; practice client pilots</p>
             </div>
             <div className="stat-card">
               <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Avg launch time</p>
@@ -353,7 +353,7 @@ export default function PricingClient() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-sm text-slate-200">
               <div className="space-y-3">
                 <p className="text-slate-400 uppercase tracking-[0.3em] text-xs">Included</p>
-                <p>Hosted HVAC platform + subdomain</p>
+                <p>Hosted website platform + subdomain</p>
                 <p>Postmark email + Supabase</p>
                 <p>Stripe payments connected</p>
                 <p>Self-serve portal edits</p>
@@ -390,23 +390,23 @@ export default function PricingClient() {
 
         <section className="container-hvac pb-20">
           <div className="glass-panel rounded-3xl p-10">
-            <h2 className="text-3xl font-bold text-white mb-6">What HVAC owners say</h2>
+            <h2 className="text-3xl font-bold text-white mb-6">What practitioners say</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
                 {
-                  quote: 'Booked five new service calls in week one after launch.',
+                  quote: 'Booked five new discovery calls in week one after launch.',
                   name: 'Jordan M.',
-                  company: 'Phoenix HVAC Group',
+                  company: 'Lumen Wellness Studio',
                 },
                 {
-                  quote: 'The platform made our ads and booking flow feel premium overnight.',
+                  quote: 'The platform made our booking flow feel premium overnight.',
                   name: 'Renee K.',
-                  company: 'Blue Ridge Mechanical',
+                  company: 'Stillwater Holistic',
                 },
                 {
                   quote: 'Finally a site that matches our brand and converts on mobile.',
                   name: 'Carlos D.',
-                  company: 'Summit Air Pros',
+                  company: 'Harmony Sound Bath',
                 },
               ].map((item) => (
                 <div key={item.name} className="card-mahogany space-y-4">
@@ -477,8 +477,8 @@ export default function PricingClient() {
             <p className="text-xl text-pure-white mb-8 max-w-2xl mx-auto">
               Join the elite professionals who build like pros
             </p>
-            <Link href="/wizard" className="cta-button">
-              Start Building Now
+            <Link href="/preview-your-business" className="cta-button">
+              Preview Your Business
             </Link>
           </div>
         </section>

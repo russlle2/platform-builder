@@ -6,24 +6,24 @@ import Link from 'next/link'
 
 const testimonials = [
   {
-    quote: 'We booked four installs in the first week after launch.',
+    quote: 'We filled four new client slots in the first week after launch.',
     name: 'Logan P.',
-    company: 'Summit HVAC Partners',
+    company: 'Evergreen Wellness Co.',
   },
   {
     quote: 'The platform looks premium and the mobile calls-to-action convert.',
     name: 'Alana G.',
-    company: 'Everflow Mechanical',
+    company: 'Stillwater Holistic',
   },
   {
-    quote: 'Finally a system that feels built for service businesses, not SaaS.',
+    quote: 'Finally a system that feels built for practitioners, not generic SaaS.',
     name: 'Micah R.',
-    company: 'Horizon Air Experts',
+    company: 'Harmony Sound Bath',
   },
   {
-    quote: 'Calls doubled once our booking flow went live on mobile.',
+    quote: 'Inquiries doubled once our booking flow went live on mobile.',
     name: 'Priya S.',
-    company: 'Delta Ridge Cooling',
+    company: 'Lumen Aromatherapy',
   },
 ]
 
@@ -53,11 +53,11 @@ export default function ProofPage() {
           <div className="space-y-6">
             <span className="signal-chip">Proof</span>
             <h1 className="text-5xl md:text-6xl font-bold text-bright-white">
-              Results that convert for HVAC teams
+              Results that convert for wellness businesses
             </h1>
             <p className="text-xl text-slate-200 max-w-2xl">
-              We build platforms that feel premium on mobile, surface calls fast, and
-              turn clicks into booked jobs.
+              We build platforms that feel premium on mobile, surface bookings fast, and
+              turn clicks into new clients.
             </p>
             <div className="flex flex-wrap gap-6 text-sm text-slate-300">
               <span>⚡ 48-hour average launch</span>
@@ -69,7 +69,7 @@ export default function ProofPage() {
             <h2 className="text-2xl font-bold text-white">Pilot metrics</h2>
             <div className="grid grid-cols-2 gap-4 mt-6">
               <div className="stat-card">
-                <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Calls</p>
+                <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Inquiries</p>
                 <p className="text-3xl font-bold text-white">+32%</p>
               </div>
               <div className="stat-card">
@@ -137,7 +137,7 @@ export default function ProofPage() {
         <div className="glass-panel rounded-3xl p-10">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             <div>
-              <h2 className="text-3xl font-bold text-white">What HVAC owners say</h2>
+              <h2 className="text-3xl font-bold text-white">What clients say</h2>
               <p className="text-slate-300 mt-2">
                 Rotating highlights from early pilots and launch partners.
               </p>
@@ -230,10 +230,10 @@ export default function ProofPage() {
             Ready to build yours?
           </h2>
           <p className="text-lg text-slate-200 mb-8 max-w-2xl mx-auto">
-            Start the intake, choose a template, and launch a platform that earns trust fast.
+            Browse templates in your niche, preview the full site, and launch when you&apos;re ready.
           </p>
-          <Link href="/wizard" className="cta-button">
-            Start the Wizard
+          <Link href="/#niches" className="cta-button">
+            View Custom Templates
           </Link>
         </div>
       </section>

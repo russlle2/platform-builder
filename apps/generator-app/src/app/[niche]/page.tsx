@@ -81,18 +81,6 @@ const nicheSalesCopy: Record<string, { headline: string; subheadline: string; be
     objection: 'Patients research online before booking. Make their first impression count.',
     proof: '100 unique templates for holistic medicine practices.',
   },
-  hvac: {
-    headline: 'Websites that turn searches into service calls.',
-    subheadline: 'Conversion-focused HVAC websites built for trust, speed, and emergency bookings. Your business info fills in instantly.',
-    benefits: [
-      'Emergency CTA placement on every page',
-      'Service area and financing pages included',
-      'Review and trust badge sections built in',
-      'Optimized for "HVAC repair near me" searches',
-    ],
-    objection: 'Homeowners choose the first HVAC company they trust online. Be that company.',
-    proof: '15 battle-tested HVAC templates ready for launch.',
-  },
   private_practice_therapist: {
     headline: "Your practice's online home should feel as welcoming as your office.",
     subheadline: 'Warm, professional websites for therapists and counselors — designed to reduce client anxiety and increase bookings.',
@@ -143,10 +131,6 @@ const NICHE_BG_IMAGES: Record<string, { url: string; credit: string }> = {
     url: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1920&q=80',
     credit: 'Unsplash — meditation at sunrise',
   },
-  hvac: {
-    url: 'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&w=1920&q=80',
-    credit: 'Unsplash — industrial building ventilation',
-  },
   private_practice_therapist: {
     url: 'https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=1920&q=80',
     credit: 'Unsplash — serene nature path',
@@ -165,7 +149,6 @@ function NicheBackground({ niche }: { niche: string }) {
   const gradients: Record<string, string> = {
     aromatherapy: 'radial-gradient(ellipse 800px 600px at 20% 15%,rgba(16,185,129,0.15),transparent),radial-gradient(ellipse 600px 800px at 80% 70%,rgba(20,184,166,0.12),transparent),radial-gradient(ellipse 400px 400px at 50% 40%,rgba(52,211,153,0.06),transparent)',
     holistic_medicine: 'radial-gradient(ellipse 800px 600px at 20% 15%,rgba(139,92,246,0.15),transparent),radial-gradient(ellipse 600px 800px at 80% 70%,rgba(167,139,250,0.10),transparent),radial-gradient(ellipse 400px 400px at 50% 40%,rgba(192,132,252,0.06),transparent)',
-    hvac: 'radial-gradient(ellipse 800px 600px at 20% 15%,rgba(34,211,238,0.15),transparent),radial-gradient(ellipse 600px 800px at 80% 70%,rgba(56,189,248,0.12),transparent),radial-gradient(ellipse 400px 400px at 50% 40%,rgba(14,165,233,0.06),transparent)',
     private_practice_therapist: 'radial-gradient(ellipse 800px 600px at 20% 15%,rgba(245,158,11,0.12),transparent),radial-gradient(ellipse 600px 800px at 80% 70%,rgba(251,191,36,0.08),transparent),radial-gradient(ellipse 400px 400px at 50% 40%,rgba(252,211,77,0.05),transparent)',
     sound_bath: 'radial-gradient(ellipse 800px 600px at 20% 15%,rgba(99,102,241,0.15),transparent),radial-gradient(ellipse 600px 800px at 80% 70%,rgba(129,140,248,0.10),transparent),radial-gradient(ellipse 400px 400px at 50% 40%,rgba(165,180,252,0.06),transparent)',
     wellness_coach: 'radial-gradient(ellipse 800px 600px at 20% 15%,rgba(244,63,94,0.12),transparent),radial-gradient(ellipse 600px 800px at 80% 70%,rgba(251,113,133,0.08),transparent),radial-gradient(ellipse 400px 400px at 50% 40%,rgba(253,164,175,0.05),transparent)',
@@ -173,7 +156,6 @@ function NicheBackground({ niche }: { niche: string }) {
   const orbColors: Record<string, string[]> = {
     aromatherapy: ['bg-emerald-400/20','bg-teal-400/15','bg-green-400/10'],
     holistic_medicine: ['bg-violet-400/20','bg-purple-400/15','bg-fuchsia-400/10'],
-    hvac: ['bg-cyan-400/20','bg-sky-400/15','bg-blue-400/10'],
     private_practice_therapist: ['bg-amber-400/15','bg-yellow-400/10','bg-orange-300/8'],
     sound_bath: ['bg-indigo-400/20','bg-blue-400/15','bg-violet-400/10'],
     wellness_coach: ['bg-rose-400/15','bg-pink-400/10','bg-red-300/8'],
@@ -272,52 +254,6 @@ function NicheSymbols({ niche }: { niche: string }) {
           <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="2"/>
           <path d="M50 5 A45 45 0 0 1 50 95 A22.5 22.5 0 0 1 50 50 A22.5 22.5 0 0 0 50 5Z" opacity="0.5"/>
           <circle cx="50" cy="27.5" r="5" opacity="0.3"/><circle cx="50" cy="72.5" r="5" fill="none" stroke="currentColor" strokeWidth="1.5"/>
-        </svg>
-      </>
-    )
-    case 'hvac': return (
-      <>
-        {/* Large snowflake — detailed */}
-        <svg className="absolute -top-8 -right-12 w-[450px] h-[450px] text-cyan-400/[0.06]" viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-          <line x1="100" y1="15" x2="100" y2="185"/><line x1="26" y1="57" x2="174" y2="143"/><line x1="26" y1="143" x2="174" y2="57"/>
-          <line x1="100" y1="40" x2="82" y2="55"/><line x1="100" y1="40" x2="118" y2="55"/>
-          <line x1="100" y1="160" x2="82" y2="145"/><line x1="100" y1="160" x2="118" y2="145"/>
-          <line x1="50" y1="71" x2="48" y2="92"/><line x1="50" y1="71" x2="68" y2="62"/>
-          <line x1="150" y1="129" x2="152" y2="108"/><line x1="150" y1="129" x2="132" y2="138"/>
-          {/* Crystal details */}
-          <line x1="50" y1="129" x2="48" y2="108"/><line x1="50" y1="129" x2="68" y2="138"/>
-          <line x1="150" y1="71" x2="152" y2="92"/><line x1="150" y1="71" x2="132" y2="62"/>
-        </svg>
-        {/* Gear / compressor icon */}
-        <svg className="absolute bottom-[12%] -left-12 w-[350px] h-[350px] text-cyan-400/[0.05]" viewBox="0 0 200 200" fill="currentColor">
-          <circle cx="100" cy="100" r="35" fill="none" stroke="currentColor" strokeWidth="3"/>
-          <circle cx="100" cy="100" r="18" fill="none" stroke="currentColor" strokeWidth="2"/>
-          {/* Gear teeth */}
-          <rect x="94" y="55" width="12" height="18" rx="2" opacity="0.5"/>
-          <rect x="94" y="127" width="12" height="18" rx="2" opacity="0.5"/>
-          <rect x="55" y="94" width="18" height="12" rx="2" opacity="0.5"/>
-          <rect x="127" y="94" width="18" height="12" rx="2" opacity="0.5"/>
-          <rect x="67" y="67" width="14" height="14" rx="2" transform="rotate(45 74 74)" opacity="0.4"/>
-          <rect x="119" y="67" width="14" height="14" rx="2" transform="rotate(45 126 74)" opacity="0.4"/>
-          <rect x="67" y="119" width="14" height="14" rx="2" transform="rotate(45 74 126)" opacity="0.4"/>
-          <rect x="119" y="119" width="14" height="14" rx="2" transform="rotate(45 126 126)" opacity="0.4"/>
-        </svg>
-        {/* Thermometer */}
-        <svg className="absolute top-[50%] right-[8%] w-[140px] h-[200px] text-sky-300/[0.05]" viewBox="0 0 80 200" fill="none" stroke="currentColor" strokeWidth="2">
-          <rect x="28" y="10" width="24" height="140" rx="12"/>
-          <circle cx="40" cy="165" r="25"/>
-          <circle cx="40" cy="165" r="14" fill="currentColor" opacity="0.3"/>
-          <rect x="36" y="60" width="8" height="95" rx="4" fill="currentColor" opacity="0.3"/>
-          {/* Tick marks */}
-          <line x1="52" y1="40" x2="62" y2="40" strokeWidth="1.5"/><line x1="52" y1="60" x2="60" y2="60" strokeWidth="1"/>
-          <line x1="52" y1="80" x2="62" y2="80" strokeWidth="1.5"/><line x1="52" y1="100" x2="60" y2="100" strokeWidth="1"/>
-          <line x1="52" y1="120" x2="62" y2="120" strokeWidth="1.5"/>
-        </svg>
-        {/* Air flow lines */}
-        <svg className="absolute bottom-[30%] left-[20%] w-[200px] h-[60px] text-cyan-300/[0.04]" viewBox="0 0 200 60" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-          <path d="M0 30 Q30 10 60 30 Q90 50 120 30 Q150 10 180 30"/>
-          <path d="M0 15 Q30 0 60 15 Q90 30 120 15 Q150 0 180 15" opacity="0.5"/>
-          <path d="M0 45 Q30 25 60 45 Q90 60 120 45 Q150 25 180 45" opacity="0.5"/>
         </svg>
       </>
     )
