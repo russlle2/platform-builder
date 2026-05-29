@@ -27,9 +27,15 @@ export async function POST(req: Request) {
     const priceId = priceMap[planKey]
 
     if (!priceId) {
+      const envName =
+        planKey === 'growth' ? 'STRIPE_PRICE_GROWTH' : 'STRIPE_PRICE_BASIC'
       return NextResponse.json(
-        { error: 'Invalid or missing price configuration.' },
-        { status: 400 }
+        {
+          error: `Checkout is not configured for this plan. Set ${envName} in Netlify environment variables (Stripe Price ID for the ${planKey} subscription).`,
+          code: 'missing_price_id',
+          planKey,
+        },
+        { status: 503 }
       )
     }
 

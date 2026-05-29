@@ -137,7 +137,7 @@ export default function PricingClient() {
             <div className="space-y-6">
               <span className="signal-chip">Pricing</span>
               <h1 className="text-5xl md:text-6xl font-bold text-bright-white">
-                Choose the plan that launches your HVAC platform
+                Choose the plan that launches your website
               </h1>
               <p className="text-xl text-slate-200 max-w-xl">
                 Every plan includes hosting, integrations, and portal access.
@@ -174,7 +174,7 @@ export default function PricingClient() {
             <div className="stat-card">
               <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Customer rating</p>
               <p className="text-3xl font-bold text-white">4.9 / 5</p>
-              <p className="text-sm text-slate-300">Based on early HVAC client pilots</p>
+              <p className="text-sm text-slate-300">Based on early client launches</p>
             </div>
             <div className="stat-card">
               <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Avg launch time</p>
@@ -195,6 +195,9 @@ export default function PricingClient() {
             <div className="mb-8 rounded-2xl border border-amber-400/40 bg-amber-500/10 p-6 text-amber-100">
               <p className="font-semibold text-amber-50">Checkout is not live yet</p>
               <p className="mt-2 text-sm text-amber-100/90">
+                Stripe price IDs are missing in production. Add <code className="text-amber-200">STRIPE_PRICE_BASIC</code> and{' '}
+                <code className="text-amber-200">STRIPE_PRICE_GROWTH</code> in Netlify, then redeploy.
+                See <code className="text-amber-200">docs/PLATFORM_BUILDER_LAUNCH_AUDIT.md</code> in the repo.
                 Stripe price IDs are missing in production. Add STRIPE_PRICE_BASIC and
                 STRIPE_PRICE_GROWTH in Netlify, then redeploy. See docs/LAUNCH_RUNBOOK.md.
               </p>
@@ -204,6 +207,8 @@ export default function PricingClient() {
             <div className="mb-8 rounded-2xl border border-cyan-400/30 bg-cyan-500/10 p-6 text-cyan-50">
               <p className="font-semibold">Checkout works — auto-launch needs Netlify</p>
               <p className="mt-2 text-sm text-cyan-100/90">
+                Payments can be taken, but customer sites will not deploy until{' '}
+                <code className="text-cyan-200">NETLIFY_ACCESS_TOKEN</code> is set.
                 Payments can be taken, but customer sites will not deploy until
                 NETLIFY_ACCESS_TOKEN is set.
               </p>
@@ -462,6 +467,7 @@ function PricingCard({
   trialDays,
   onCheckout,
   isSubmitting,
+  checkoutDisabled = false,
   checkoutDisabled,
 }: {
   tier: (typeof pricingTiers)[0]
@@ -469,6 +475,7 @@ function PricingCard({
   trialDays: number
   onCheckout: () => void
   isSubmitting: boolean
+  checkoutDisabled?: boolean
   checkoutDisabled: boolean
 }) {
   const displayPrice = tier.price
@@ -538,6 +545,7 @@ function PricingCard({
             : 'bg-white/10 hover:bg-white/20 text-white'
         } ${isSubmitting || checkoutDisabled ? 'opacity-70 cursor-not-allowed' : ''}`}
       >
+        {isSubmitting ? 'Redirecting…' : checkoutDisabled ? 'Checkout unavailable' : 'Choose Plan'}
         {checkoutDisabled
           ? 'Checkout unavailable'
           : isSubmitting
