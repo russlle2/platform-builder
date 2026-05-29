@@ -2,6 +2,7 @@ import { headers } from 'next/headers'
 import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { getStripeTrialDays } from '@/lib/platform-config'
+import { chunkJsonToMetadata } from '@/lib/site-deploy'
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY
 
@@ -23,7 +24,7 @@ export async function POST(req: Request) {
       apiVersion: '2023-10-16',
     })
 
-    const { planKey, slug, template, niche, colorScheme, fontVariation, structureVariation, customerValues } = await req.json()
+    const { planKey, slug, template, niche, colorScheme, fontVariation, structureVariation, customerValues, inlineEdits } = await req.json()
     const priceId = priceMap[planKey]
 
     if (!priceId) {
@@ -35,9 +36,6 @@ export async function POST(req: Request) {
 
     const origin = (await headers()).get('origin') || 'http://localhost:3000'
 
-    // Stripe metadata has a 500-char limit per value, so we store
-    // template config as compact JSON. Customer form values are stored
-    // separately so the webhook can build the deployed site.
     const metadata: Record<string, string> = {
       planKey,
       slug: typeof slug === 'string' ? slug : '',
@@ -48,9 +46,14 @@ export async function POST(req: Request) {
       structureVariation: typeof structureVariation === 'string' ? structureVariation : 'original',
     }
 
-    // Store customer field values so the webhook can hydrate the template
+    // Stripe caps each metadata value at 500 chars. A full intake easily
+    // exceeds that, so chunk the customer's values + inline edits across
+    // numbered keys; the webhook reassembles them. (See lib/site-deploy.)
     if (customerValues && typeof customerValues === 'object') {
-      metadata.customerValues = JSON.stringify(customerValues).slice(0, 500)
+      Object.assign(metadata, chunkJsonToMetadata('customerValues', customerValues, 18))
+    }
+    if (inlineEdits && typeof inlineEdits === 'object') {
+      Object.assign(metadata, chunkJsonToMetadata('inlineEdits', inlineEdits, 10))
     }
 
     const trialDays = getStripeTrialDays()

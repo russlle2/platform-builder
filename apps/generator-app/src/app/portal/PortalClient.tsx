@@ -54,6 +54,7 @@ export default function PortalClient() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'saving' | 'saved' | 'error'>(
     'idle'
   )
+  const [publishNote, setPublishNote] = useState<string | null>(null)
   const [integrations, setIntegrations] = useState(integrationDefaults)
   const [platformDomain, setPlatformDomain] = useState('dailyclarity.org')
   const [domainAffiliateUrl, setDomainAffiliateUrl] = useState<string | null>(null)
@@ -160,14 +161,18 @@ export default function PortalClient() {
     try {
       const response = await fetch(`/api/portal/site?slug=${encodeURIComponent(normalized)}`)
       const data = await response.json()
-      if (response.ok && data?.site?.data) {
+      const d = data?.site?.data
+      if (response.ok && d) {
+        // Canonical shape stores values under customerValues ({{TOKEN}} keys).
+        // Fall back to legacy flat fields for older records.
+        const cv = (d.customerValues || {}) as Record<string, string>
         setFormData({
-          businessName: data.site.data.businessName || '',
-          tagline: data.site.data.tagline || '',
-          phone: data.site.data.phone || '',
-          email: data.site.data.email || '',
-          address: data.site.data.address || '',
-          services: data.site.data.services || '',
+          businessName: cv.BUSINESS_NAME || d.businessName || '',
+          tagline: cv.TAGLINE || d.tagline || '',
+          phone: cv.PHONE || cv.PHONE_NUMBER || d.phone || '',
+          email: cv.EMAIL || d.email || '',
+          address: cv.ADDRESS || d.address || '',
+          services: cv.SERVICES || d.services || '',
         })
       }
       setStatus('idle')
@@ -183,27 +188,42 @@ export default function PortalClient() {
       return
     }
     setStatus('saving')
+    setPublishNote(null)
     try {
+      // Write back into the canonical {{TOKEN}} value map (with lowercase
+      // aliases) so the redeploy hydrates templates the same way the preview did.
+      const customerValues: Record<string, string> = {
+        BUSINESS_NAME: formData.businessName,
+        TAGLINE: formData.tagline,
+        PHONE: formData.phone,
+        PHONE_NUMBER: formData.phone,
+        EMAIL: formData.email,
+        ADDRESS: formData.address,
+        SERVICES: formData.services,
+        business_name: formData.businessName,
+        tagline: formData.tagline,
+        phone: formData.phone,
+        phone_number: formData.phone,
+        email: formData.email,
+        address: formData.address,
+        services: formData.services,
+      }
       const response = await fetch('/api/portal/site', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          slug: normalized,
-          data: {
-            businessName: formData.businessName,
-            tagline: formData.tagline,
-            phone: formData.phone,
-            email: formData.email,
-            address: formData.address,
-            services: formData.services,
-          },
-        }),
+        body: JSON.stringify({ slug: normalized, customerValues }),
       })
+      const result = await response.json().catch(() => ({}))
       if (!response.ok) {
         throw new Error('Failed')
       }
       setStatus('saved')
-      track('portal_saved', { slug: normalized })
+      setPublishNote(
+        result?.republished
+          ? 'Saved and published to your live site.'
+          : 'Saved. Changes publish to your live site once it is provisioned.'
+      )
+      track('portal_saved', { slug: normalized, republished: !!result?.republished })
     } catch (error) {
       setStatus('error')
     }
@@ -361,10 +381,13 @@ export default function PortalClient() {
                 disabled={status === 'saving'}
                 className="cta-button"
               >
-                {status === 'saving' ? 'Saving...' : 'Save changes'}
+                {status === 'saving' ? 'Saving...' : 'Save & publish'}
               </button>
               {status === 'error' && (
                 <span className="text-sm text-red-200">Unable to save.</span>
+              )}
+              {status === 'saved' && publishNote && (
+                <span className="text-sm text-emerald-200 self-center">{publishNote}</span>
               )}
             </div>
 

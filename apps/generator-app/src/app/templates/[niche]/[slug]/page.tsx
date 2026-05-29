@@ -2,6 +2,13 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react'
 import Link from 'next/link'
+import {
+  type InlineTextEdit,
+  INLINE_EDITS_KEY,
+  mergeInlineEdit,
+  applyInlineEditsToHtml,
+  loadInlineEdits,
+} from '@/lib/inline-edits'
 
 interface TemplateField {
   name: string
@@ -53,6 +60,7 @@ function getIframeInjectionScript(): string {
   document.addEventListener('dblclick', function(e) {
     var el = e.target.closest(editableSelectors);
     if (!el || el.isContentEditable) return;
+    var originalText = el.textContent;
     el.contentEditable = 'true';
     el.style.outline = '2px solid #3b82f6';
     el.style.outlineOffset = '2px';
@@ -66,8 +74,8 @@ function getIframeInjectionScript(): string {
       el.style.outlineOffset = '';
       el.style.cursor = '';
       el.removeEventListener('blur', onBlur);
-      // Notify parent of the edit
-      window.parent.postMessage({ type: 'textEdited', tag: el.tagName, text: el.textContent }, '*');
+      // Notify parent of the edit (include the pre-edit text so it can persist)
+      window.parent.postMessage({ type: 'textEdited', tag: el.tagName, original: originalText, text: el.textContent }, '*');
     }, { once: true });
 
     e.preventDefault();
@@ -161,6 +169,13 @@ export default function TemplateCustomizePage({
   const iframeRef = useRef<HTMLIFrameElement>(null!)
   const fileInputRef = useRef<HTMLInputElement>(null!)
   const pendingImageSwapSrc = useRef<string>('')
+  // Inline text edits keyed by page filename, persisted so they survive page
+  // navigation, variation switches, and carry through to purchase.
+  const [inlineEdits, setInlineEdits] = useState<Record<string, InlineTextEdit[]>>({})
+  const inlineEditsRef = useRef<Record<string, InlineTextEdit[]>>({})
+  inlineEditsRef.current = inlineEdits
+  const currentPageRef = useRef('index.html')
+  currentPageRef.current = currentPage
 
   // Variation state
   const [colorScheme, setColorScheme] = useState('original')
@@ -176,6 +191,11 @@ export default function TemplateCustomizePage({
   useEffect(() => {
     paramsPromise.then(setParams)
   }, [paramsPromise])
+
+  // Restore any inline edits captured earlier this session
+  useEffect(() => {
+    setInlineEdits(loadInlineEdits())
+  }, [])
 
   // Fetch available variation options
   useEffect(() => {
@@ -263,6 +283,22 @@ export default function TemplateCustomizePage({
         pendingImageSwapSrc.current = e.data.src
         fileInputRef.current?.click()
       }
+
+      if (e.data.type === 'textEdited') {
+        const page = currentPageRef.current
+        const original = (e.data.original as string) || ''
+        const updated = (e.data.text as string) || ''
+        const pageEdits = mergeInlineEdit(
+          inlineEditsRef.current[page] || [],
+          original,
+          updated,
+        )
+        const next = { ...inlineEditsRef.current, [page]: pageEdits }
+        setInlineEdits(next)
+        try {
+          sessionStorage.setItem(INLINE_EDITS_KEY, JSON.stringify(next))
+        } catch { /* ignore */ }
+      }
     }
 
     window.addEventListener('message', handleMessage)
@@ -335,6 +371,10 @@ export default function TemplateCustomizePage({
             img:hover { outline: 3px solid #8b5cf6; outline-offset: 2px; border-radius: 2px; }
           </style>
         </head>`)
+
+        // Re-apply any inline text edits the user made (they aren't part of
+        // the server hydration, which only fills {{TOKENS}}).
+        html = applyInlineEditsToHtml(html, inlineEditsRef.current[page])
 
         // Inject interaction scripts before </body>
         html = html.replace('</body>', getIframeInjectionScript() + '</body>')

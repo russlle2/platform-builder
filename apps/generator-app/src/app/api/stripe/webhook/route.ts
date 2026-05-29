@@ -5,11 +5,10 @@ import { createClient } from '@supabase/supabase-js'
 import { sendWelcomeEmail } from '@/lib/email'
 import { provisionSite, deploySiteFiles } from '@/lib/netlify'
 import {
-  readTemplateFile,
-  hydrateTemplate,
-  getTemplate,
-} from '@/lib/templates/niche-registry'
-import { buildVariationCSS } from '@/lib/templates/variations'
+  buildDeployFiles,
+  unchunkJsonFromMetadata,
+  type InlineTextEdit,
+} from '@/lib/site-deploy'
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
@@ -71,13 +70,17 @@ export async function POST(req: Request) {
     const fontVariation = meta.fontVariation || 'original'
     const structureVariation = meta.structureVariation || 'original'
 
-    // Parse customer field values from metadata
-    let customerValues: Record<string, string> = {}
-    try {
-      if (meta.customerValues) {
-        customerValues = JSON.parse(meta.customerValues)
-      }
-    } catch { /* ignore malformed JSON */ }
+    // Reassemble chunked customer values + inline edits from metadata.
+    const customerValues = unchunkJsonFromMetadata<Record<string, string>>(
+      'customerValues',
+      meta,
+      {},
+    )
+    const inlineEdits = unchunkJsonFromMetadata<Record<string, InlineTextEdit[]>>(
+      'inlineEdits',
+      meta,
+      {},
+    )
 
     if (slug) {
       await reserveSlug(slug)
@@ -90,62 +93,17 @@ export async function POST(req: Request) {
           // Build and deploy the customized template
           if (templateSlug && niche) {
             try {
-              const templateData = getTemplate(niche, templateSlug)
-              if (templateData) {
-                const variationCSS = buildVariationCSS(colorScheme, fontVariation, structureVariation)
-                const cssFile = readTemplateFile(niche, templateSlug, 'assets/css/styles.css')
-                const jsFile = readTemplateFile(niche, templateSlug, 'assets/js/main.js')
-
-                const deployFiles: Record<string, string> = {}
-
-                // Hydrate and collect all HTML pages
-                for (const page of templateData.pages) {
-                  const rawHtml = readTemplateFile(niche, templateSlug, page)
-                  if (!rawHtml) continue
-                  let html = hydrateTemplate(rawHtml, customerValues)
-
-                  // Inject CSS and variation overrides into each page
-                  const injectedStyles: string[] = []
-                  if (cssFile) injectedStyles.push(cssFile)
-                  if (variationCSS) injectedStyles.push(variationCSS)
-                  if (injectedStyles.length > 0) {
-                    html = html.replace('</head>', `<style>${injectedStyles.join('\n')}</style></head>`)
-                  }
-
-                  // Inject contact form handler script that posts to our API
-                  const contactScript = `
-<script>
-(function(){
-  var forms = document.querySelectorAll('form');
-  forms.forEach(function(form) {
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-      var data = {};
-      new FormData(form).forEach(function(v, k) { data[k] = v; });
-      data.slug = '${slug}';
-      fetch('${process.env.NEXT_PUBLIC_API_URL || ''}/api/forms/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      }).then(function() {
-        form.innerHTML = '<p style="text-align:center;padding:2rem;color:var(--primary,#22c55e)">Thank you! We\\'ll be in touch soon.</p>';
-      }).catch(function() {
-        alert('Something went wrong. Please try again.');
-      });
-    });
-  });
-})();
-</script>`
-                  html = html.replace('</body>', contactScript + '</body>')
-
-                  deployFiles[page] = html
-                }
-
-                // Include CSS and JS as static assets
-                if (cssFile) deployFiles['assets/css/styles.css'] = cssFile
-                if (jsFile) deployFiles['assets/js/main.js'] = jsFile
-
-                // Deploy all files to the Netlify site
+              const deployFiles = buildDeployFiles({
+                niche,
+                templateSlug,
+                customerValues,
+                colorScheme,
+                fontVariation,
+                structureVariation,
+                inlineEdits,
+                slug,
+              })
+              if (deployFiles) {
                 await deploySiteFiles(site.siteId, deployFiles)
               }
             } catch (deployErr) {
@@ -177,6 +135,7 @@ export async function POST(req: Request) {
                 fontVariation,
                 structureVariation,
                 customerValues,
+                inlineEdits,
                 email: customerValues.EMAIL || session.customer_details?.email || '',
                 netlify_site_id: site.siteId,
                 site_url: site.siteUrl,

@@ -3,6 +3,13 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import Link from 'next/link'
 import { usePreviewStore } from '@/store/previewStore'
+import {
+  type InlineEditMap,
+  mergeInlineEdit,
+  applyInlineEditsToHtml,
+  loadInlineEdits,
+  saveInlineEdits,
+} from '@/lib/inline-edits'
 import type {
   BusinessInfo,
   StylePreferences,
@@ -163,6 +170,12 @@ export default function PreviewYourBusinessPage() {
   const fileInputRef = useRef<HTMLInputElement>(null!)
   const pendingImageSwapSrc = useRef('')
 
+  // Inline text edits captured from the preview, persisted so they survive
+  // page navigation and carry through to purchase.
+  const inlineEditsRef = useRef<InlineEditMap>({})
+  const currentPageRef = useRef('index.html')
+  currentPageRef.current = currentPage
+
   /* ---- Color & font customization ---- */
   const [customColors, setCustomColors] = useState({ primary: '#0ea5e9', bg: '#0f172a', text: '#e2e8f0' })
   const [customFonts, setCustomFonts] = useState({ heading: 'inherit', body: 'inherit' })
@@ -235,6 +248,11 @@ export default function PreviewYourBusinessPage() {
       setPreviewLoading(true)
 
       try {
+        // Persist the intake values so checkout (on /pricing) can pick them up.
+        try {
+          sessionStorage.setItem('pb_template_values', JSON.stringify(getFieldValues()))
+        } catch { /* ignore */ }
+
         const res = await fetch(`/api/templates/${ns}/${ts}/preview`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -268,6 +286,9 @@ export default function PreviewYourBusinessPage() {
           </style>
         </head>`)
 
+        // Re-apply inline text edits captured earlier (not part of hydration)
+        html = applyInlineEditsToHtml(html, inlineEditsRef.current[page])
+
         // Inject editing + nav scripts
         html = html.replace('</body>', getIframeInjectionScript() + '</body>')
 
@@ -282,6 +303,11 @@ export default function PreviewYourBusinessPage() {
     [matchedTemplate, getFieldValues],
   )
 
+  /* ================ Restore persisted inline edits ================ */
+  useEffect(() => {
+    inlineEditsRef.current = loadInlineEdits()
+  }, [])
+
   /* ================ Iframe messaging ================ */
   useEffect(() => {
     function handleMessage(e: MessageEvent) {
@@ -292,6 +318,16 @@ export default function PreviewYourBusinessPage() {
       if (e.data.type === 'imageSwapRequest') {
         pendingImageSwapSrc.current = e.data.src
         fileInputRef.current?.click()
+      }
+      if (e.data.type === 'textEdited') {
+        const page = currentPageRef.current
+        const pageEdits = mergeInlineEdit(
+          inlineEditsRef.current[page] || [],
+          (e.data.original as string) || '',
+          (e.data.text as string) || '',
+        )
+        inlineEditsRef.current = { ...inlineEditsRef.current, [page]: pageEdits }
+        saveInlineEdits(inlineEditsRef.current)
       }
     }
     window.addEventListener('message', handleMessage)
@@ -979,7 +1015,7 @@ function EditorStep({
             Browse Custom Templates
           </button>
           <Link
-            href="/pricing"
+            href={`/pricing?template=${encodeURIComponent(matched.templateSlug)}&niche=${encodeURIComponent(matched.nicheSlug)}`}
             className="px-6 py-2 text-sm font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg hover:scale-105 transition-all"
           >
             Purchase & Launch
@@ -1228,6 +1264,7 @@ function getIframeInjectionScript(): string {
   document.addEventListener('dblclick', function(e) {
     var el = e.target.closest(editableSelectors);
     if (!el || el.isContentEditable) return;
+    var originalText = el.textContent;
     el.contentEditable = 'true';
     el.style.outline = '2px solid #3b82f6';
     el.style.outlineOffset = '2px';
@@ -1240,7 +1277,7 @@ function getIframeInjectionScript(): string {
       el.style.outlineOffset = '';
       el.style.cursor = '';
       el.removeEventListener('blur', onBlur);
-      window.parent.postMessage({ type: 'textEdited', tag: el.tagName, text: el.textContent }, '*');
+      window.parent.postMessage({ type: 'textEdited', tag: el.tagName, original: originalText, text: el.textContent }, '*');
     }, { once: true });
     e.preventDefault();
     e.stopPropagation();

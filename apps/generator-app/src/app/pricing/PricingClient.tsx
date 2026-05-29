@@ -86,11 +86,14 @@ export default function PricingClient() {
       setCheckoutError(null)
       setIsSubmitting(planKey)
 
-      // Retrieve saved customer values from sessionStorage
+      // Retrieve saved customer values + inline edits from sessionStorage
       let customerValues: Record<string, string> = {}
+      let inlineEdits: Record<string, unknown> = {}
       try {
         const saved = sessionStorage.getItem('pb_template_values')
         if (saved) customerValues = JSON.parse(saved)
+        const savedEdits = sessionStorage.getItem('pb_inline_edits')
+        if (savedEdits) inlineEdits = JSON.parse(savedEdits)
       } catch { /* ignore */ }
 
       const response = await fetch('/api/stripe/checkout', {
@@ -105,6 +108,7 @@ export default function PricingClient() {
           fontVariation,
           structureVariation,
           customerValues,
+          inlineEdits,
         }),
       })
       const data = await response.json().catch(() => ({}))
@@ -254,9 +258,12 @@ export default function PricingClient() {
                     setTestResult(null)
                     try {
                       let customerValues: Record<string, string> = {}
+                      let inlineEdits: Record<string, unknown> = {}
                       try {
                         const saved = sessionStorage.getItem('pb_template_values')
                         if (saved) customerValues = JSON.parse(saved)
+                        const savedEdits = sessionStorage.getItem('pb_inline_edits')
+                        if (savedEdits) inlineEdits = JSON.parse(savedEdits)
                       } catch { /* ignore */ }
 
                       const res = await fetch('/api/test-purchase', {
@@ -271,6 +278,7 @@ export default function PricingClient() {
                           fontVariation,
                           structureVariation,
                           customerValues,
+                          inlineEdits,
                         }),
                       })
                       const data = await res.json()

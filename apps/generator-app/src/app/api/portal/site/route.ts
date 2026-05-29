@@ -3,9 +3,26 @@ import { createClient } from '@supabase/supabase-js'
 import path from 'path'
 import { mkdir, readFile, writeFile } from 'fs/promises'
 import { existsSync } from 'fs'
+import { buildDeployFiles, type InlineTextEdit } from '@/lib/site-deploy'
+import { deploySiteFiles } from '@/lib/netlify'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+interface SiteData {
+  niche?: string
+  template?: string
+  colorScheme?: string
+  fontVariation?: string
+  structureVariation?: string
+  customerValues?: Record<string, string>
+  inlineEdits?: Record<string, InlineTextEdit[]>
+  email?: string
+  netlify_site_id?: string
+  site_url?: string
+  plan?: string
+  [key: string]: unknown
+}
 
 const normalizeSlug = (value: string) => {
   return value
@@ -42,7 +59,7 @@ const readLocalSite = async (slug: string) => {
   }
 }
 
-const writeLocalSite = async (slug: string, site: any) => {
+const writeLocalSite = async (slug: string, site: unknown) => {
   const dirPath = path.join('/tmp', 'platform-builder-portal-sites')
   await mkdir(dirPath, { recursive: true })
   const filePath = getLocalCacheFilePath(slug)
@@ -74,6 +91,31 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({ site: data })
 }
 
+/**
+ * Re-build and re-deploy the customer's live site from its stored
+ * configuration. No-op (returns false) when Netlify isn't configured or the
+ * site was never provisioned.
+ */
+async function republishSite(slug: string, data: SiteData): Promise<boolean> {
+  const siteId = data.netlify_site_id
+  if (!process.env.NETLIFY_ACCESS_TOKEN || !siteId || !data.niche || !data.template) {
+    return false
+  }
+  const deployFiles = buildDeployFiles({
+    niche: data.niche,
+    templateSlug: data.template,
+    customerValues: data.customerValues || {},
+    colorScheme: data.colorScheme,
+    fontVariation: data.fontVariation,
+    structureVariation: data.structureVariation,
+    inlineEdits: data.inlineEdits,
+    slug,
+  })
+  if (!deployFiles) return false
+  await deploySiteFiles(siteId, deployFiles)
+  return true
+}
+
 export async function POST(req: NextRequest) {
   const body = await req.json()
   const slug = normalizeSlug(body.slug || '')
@@ -81,27 +123,66 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Slug is required.' }, { status: 400 })
   }
 
-  const data = body.data || {}
-  const sitePayload = {
-    slug,
-    data,
-    status: body.status || 'draft',
-    updated_at: new Date().toISOString(),
-  }
+  // Incoming edits: a partial customerValues map (canonical {{TOKEN}} keys) and
+  // optional inline text edits. We merge them onto the existing stored config
+  // so we never clobber niche/template/variation/hosting info.
+  const incomingValues: Record<string, string> =
+    body.customerValues && typeof body.customerValues === 'object' ? body.customerValues : {}
+  const incomingInlineEdits: Record<string, InlineTextEdit[]> | undefined =
+    body.inlineEdits && typeof body.inlineEdits === 'object' ? body.inlineEdits : undefined
 
   const supabase = getSupabase()
+
   if (!supabase) {
+    const existing = (await readLocalSite(slug)) || {}
+    const prevData: SiteData = (existing.data as SiteData) || {}
+    const mergedData: SiteData = {
+      ...prevData,
+      customerValues: { ...(prevData.customerValues || {}), ...incomingValues },
+      ...(incomingInlineEdits ? { inlineEdits: incomingInlineEdits } : {}),
+    }
+    const sitePayload = {
+      slug,
+      data: mergedData,
+      status: body.status || existing.status || 'active',
+      updated_at: new Date().toISOString(),
+    }
     await writeLocalSite(slug, sitePayload)
-    return NextResponse.json({ ok: true, fallback: 'local-cache' })
+    return NextResponse.json({ ok: true, fallback: 'local-cache', republished: false })
+  }
+
+  // Load current config so the merge is non-destructive.
+  const { data: existingRow } = await supabase
+    .from('portal_sites')
+    .select('data, status')
+    .eq('slug', slug)
+    .maybeSingle()
+
+  const prevData: SiteData = (existingRow?.data as SiteData) || {}
+  const mergedData: SiteData = {
+    ...prevData,
+    customerValues: { ...(prevData.customerValues || {}), ...incomingValues },
+    ...(incomingInlineEdits ? { inlineEdits: incomingInlineEdits } : {}),
   }
 
   const { error } = await supabase.from('portal_sites').upsert({
-    ...sitePayload,
+    slug,
+    data: mergedData,
+    status: body.status || existingRow?.status || 'active',
+    updated_at: new Date().toISOString(),
   })
 
   if (error) {
     return NextResponse.json({ error: 'Unable to save site.' }, { status: 500 })
   }
 
-  return NextResponse.json({ ok: true })
+  // Push the edits live so post-purchase changes actually reach the site.
+  let republished = false
+  try {
+    republished = await republishSite(slug, mergedData)
+  } catch (err) {
+    console.error('[portal/site] republish failed:', err)
+  }
+
+  return NextResponse.json({ ok: true, republished })
 }

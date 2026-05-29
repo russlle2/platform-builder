@@ -1,12 +1,8 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { provisionSite, deploySiteFiles } from '@/lib/netlify'
-import {
-  readTemplateFile,
-  hydrateTemplate,
-  getTemplate,
-} from '@/lib/templates/niche-registry'
-import { buildVariationCSS } from '@/lib/templates/variations'
+import { getTemplate } from '@/lib/templates/niche-registry'
+import { buildDeployFiles, type InlineTextEdit } from '@/lib/site-deploy'
 
 /**
  * POST /api/test-purchase
@@ -42,6 +38,7 @@ export async function POST(req: Request) {
     fontVariation = 'original',
     structureVariation = 'original',
     customerValues = {},
+    inlineEdits = {},
   } = body as {
     slug?: string
     template?: string
@@ -51,6 +48,7 @@ export async function POST(req: Request) {
     fontVariation?: string
     structureVariation?: string
     customerValues?: Record<string, string>
+    inlineEdits?: Record<string, InlineTextEdit[]>
   }
 
   if (!slug) {
@@ -95,58 +93,17 @@ export async function POST(req: Request) {
       // ── 3. Build & deploy customized template ────────────────────
       if (templateSlug && niche) {
         try {
-          const templateData = getTemplate(niche, templateSlug)
-          if (templateData) {
-            const variationCSS = buildVariationCSS(colorScheme, fontVariation, structureVariation)
-            const cssFile = readTemplateFile(niche, templateSlug, 'assets/css/styles.css')
-            const jsFile = readTemplateFile(niche, templateSlug, 'assets/js/main.js')
-
-            const deployFiles: Record<string, string> = {}
-
-            for (const page of templateData.pages) {
-              const rawHtml = readTemplateFile(niche, templateSlug, page)
-              if (!rawHtml) continue
-              let html = hydrateTemplate(rawHtml, customerValues)
-
-              // Inject CSS + variation overrides
-              const injectedStyles: string[] = []
-              if (cssFile) injectedStyles.push(cssFile)
-              if (variationCSS) injectedStyles.push(variationCSS)
-              if (injectedStyles.length > 0) {
-                html = html.replace('</head>', `<style>${injectedStyles.join('\n')}</style></head>`)
-              }
-
-              // Inject contact form handler
-              const contactScript = `
-<script>
-(function(){
-  var forms = document.querySelectorAll('form');
-  forms.forEach(function(form) {
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-      var data = {};
-      new FormData(form).forEach(function(v, k) { data[k] = v; });
-      data.slug = '${normalizedSlug}';
-      fetch('${process.env.NEXT_PUBLIC_API_URL || ''}/api/forms/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      }).then(function() {
-        form.innerHTML = '<p style="text-align:center;padding:2rem;color:var(--primary,#22c55e)">Thank you! We\\'ll be in touch soon.</p>';
-      }).catch(function() {
-        alert('Something went wrong. Please try again.');
-      });
-    });
-  });
-})();
-</script>`
-              html = html.replace('</body>', contactScript + '</body>')
-              deployFiles[page] = html
-            }
-
-            if (cssFile) deployFiles['assets/css/styles.css'] = cssFile
-            if (jsFile) deployFiles['assets/js/main.js'] = jsFile
-
+          const deployFiles = buildDeployFiles({
+            niche,
+            templateSlug,
+            customerValues,
+            colorScheme,
+            fontVariation,
+            structureVariation,
+            inlineEdits,
+            slug: normalizedSlug,
+          })
+          if (deployFiles) {
             const deploy = await deploySiteFiles(siteId, deployFiles)
             log.push(`Template deployed: ${Object.keys(deployFiles).length} files (deploy ${deploy.deployId})`)
           } else {
@@ -186,6 +143,7 @@ export async function POST(req: Request) {
               fontVariation,
               structureVariation,
               customerValues,
+              inlineEdits,
               email: customerValues.EMAIL || '',
               netlify_site_id: siteId,
               site_url: siteUrl,
