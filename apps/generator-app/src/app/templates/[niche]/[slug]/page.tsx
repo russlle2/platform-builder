@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import {
   type InlineTextEdit,
   INLINE_EDITS_KEY,
@@ -9,6 +10,15 @@ import {
   applyInlineEditsToHtml,
   loadInlineEdits,
 } from '@/lib/inline-edits'
+import {
+  type ImageSwapMap,
+  loadImageSwaps,
+  applyImageSwapsToHtml,
+  handlePersistentImageUpload,
+  getOrCreateImageOwnerId,
+  saveImageSwaps,
+} from '@/lib/image-swaps'
+import { CustomerImageLibrary } from '@/components/CustomerImageLibrary'
 
 interface TemplateField {
   name: string
@@ -116,12 +126,13 @@ function getIframeInjectionScript(): string {
 
   // Listen for image swap response from parent
   window.addEventListener('message', function(e) {
-    if (e.data && e.data.type === 'imageSwapResponse' && e.data.dataUrl) {
-      // Find the img matching the original src
+    if (e.data && e.data.type === 'imageSwapResponse') {
+      var newSrc = e.data.imageUrl || e.data.dataUrl;
+      if (!newSrc) return;
       var imgs = document.querySelectorAll('img');
       for (var i = 0; i < imgs.length; i++) {
         if (imgs[i].src === e.data.originalSrc || (!e.data.originalSrc && i === 0)) {
-          imgs[i].src = e.data.dataUrl;
+          imgs[i].src = newSrc;
           break;
         }
       }
@@ -156,7 +167,10 @@ export default function TemplateCustomizePage({
 }: {
   params: Promise<{ niche: string; slug: string }>
 }) {
+  const searchParams = useSearchParams()
+  const portalSlug = searchParams.get('portalSlug')
   const [params, setParams] = useState<{ niche: string; slug: string } | null>(null)
+  const [publishStatus, setPublishStatus] = useState<'idle' | 'saving' | 'done' | 'error'>('idle')
   const [template, setTemplate] = useState<TemplateData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -174,6 +188,9 @@ export default function TemplateCustomizePage({
   const [inlineEdits, setInlineEdits] = useState<Record<string, InlineTextEdit[]>>({})
   const inlineEditsRef = useRef<Record<string, InlineTextEdit[]>>({})
   inlineEditsRef.current = inlineEdits
+  const [imageSwaps, setImageSwaps] = useState<ImageSwapMap>({})
+  const imageSwapsRef = useRef<ImageSwapMap>({})
+  imageSwapsRef.current = imageSwaps
   const currentPageRef = useRef('index.html')
   currentPageRef.current = currentPage
 
@@ -195,7 +212,11 @@ export default function TemplateCustomizePage({
   // Restore any inline edits captured earlier this session
   useEffect(() => {
     setInlineEdits(loadInlineEdits())
-  }, [])
+    const swaps = loadImageSwaps()
+    setImageSwaps(swaps)
+    imageSwapsRef.current = swaps
+    getOrCreateImageOwnerId(portalSlug)
+  }, [portalSlug])
 
   // Fetch available variation options
   useEffect(() => {
@@ -307,23 +328,30 @@ export default function TemplateCustomizePage({
   }, [template])
 
   // Handle image file selection
-  const handleImageFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-
-    const reader = new FileReader()
-    reader.onload = () => {
-      const dataUrl = reader.result as string
-      const iframe = iframeRef.current
-      if (iframe?.contentWindow) {
-        iframe.contentWindow.postMessage(
-          { type: 'imageSwapResponse', dataUrl, originalSrc: pendingImageSwapSrc.current },
-          '*',
-        )
-      }
+    const page = currentPageRef.current
+    const originalSrc = pendingImageSwapSrc.current
+    const owner = getOrCreateImageOwnerId()
+    try {
+      const { map, url } = await handlePersistentImageUpload(
+        file,
+        owner,
+        originalSrc,
+        page,
+        imageSwapsRef.current,
+      )
+      setImageSwaps(map)
+      imageSwapsRef.current = map
+      iframeRef.current?.contentWindow?.postMessage(
+        { type: 'imageSwapResponse', imageUrl: url, originalSrc },
+        '*',
+      )
+    } catch (err) {
+      console.error('Image upload failed:', err)
+      alert(err instanceof Error ? err.message : 'Image upload failed')
     }
-    reader.readAsDataURL(file)
-    // Reset input so same file can be selected again
     e.target.value = ''
   }, [])
 
@@ -375,6 +403,7 @@ export default function TemplateCustomizePage({
         // Re-apply any inline text edits the user made (they aren't part of
         // the server hydration, which only fills {{TOKENS}}).
         html = applyInlineEditsToHtml(html, inlineEditsRef.current[page])
+        html = applyImageSwapsToHtml(html, imageSwapsRef.current[page])
 
         // Inject interaction scripts before </body>
         html = html.replace('</body>', getIframeInjectionScript() + '</body>')
@@ -394,10 +423,33 @@ export default function TemplateCustomizePage({
     // Persist customer values so they survive navigation to pricing page
     try {
       sessionStorage.setItem('pb_template_values', JSON.stringify(values))
+      saveImageSwaps(imageSwapsRef.current)
     } catch { /* ignore */ }
     setStep('preview')
     loadPreview('index.html')
   }
+
+  const publishToLiveSite = useCallback(async () => {
+    if (!portalSlug) return
+    setPublishStatus('saving')
+    try {
+      const res = await fetch('/api/portal/site', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          slug: portalSlug,
+          customerValues: values,
+          inlineEdits,
+          imageSwaps: imageSwapsRef.current,
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Publish failed')
+      setPublishStatus('done')
+    } catch {
+      setPublishStatus('error')
+    }
+  }, [portalSlug, values, inlineEdits])
 
   if (loading || !params) {
     return (
@@ -486,6 +538,9 @@ export default function TemplateCustomizePage({
             setStructureVariation={setStructureVariation}
             variationOptions={variationOptions}
             onReloadPreview={() => loadPreview(currentPage)}
+            portalSlug={portalSlug}
+            publishStatus={publishStatus}
+            onPublishLive={publishToLiveSite}
           />
         )}
       </div>
@@ -838,6 +893,9 @@ function PreviewStep({
   setStructureVariation,
   variationOptions,
   onReloadPreview,
+  portalSlug,
+  publishStatus,
+  onPublishLive,
 }: {
   template: TemplateData
   previewHtml: string | null
@@ -863,6 +921,9 @@ function PreviewStep({
     structureVariations: { id: string; name: string }[]
   } | null
   onReloadPreview: () => void
+  portalSlug: string | null
+  publishStatus: 'idle' | 'saving' | 'done' | 'error'
+  onPublishLive: () => void
 }) {
   // Generic cycler helper
   const cycle = (
@@ -912,13 +973,27 @@ function PreviewStep({
             <span className="text-blue-300 ml-1">Double-click text to edit &bull; Click images to swap</span>
           </p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-3 flex-wrap">
           <button
             onClick={onBack}
             className="px-6 py-3 text-sm font-bold text-white border border-white/20 rounded-lg hover:bg-white/10 transition-all"
           >
             ← Edit Info
           </button>
+          {portalSlug && (
+            <button
+              type="button"
+              onClick={onPublishLive}
+              disabled={publishStatus === 'saving'}
+              className="px-6 py-3 text-sm font-bold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-60"
+            >
+              {publishStatus === 'saving'
+                ? 'Publishing…'
+                : publishStatus === 'done'
+                  ? 'Published ✓'
+                  : 'Publish to live site'}
+            </button>
+          )}
           <Link
             href={`/pricing?template=${template.slug}&niche=${niche}&color=${colorScheme}&font=${fontVariation}&structure=${structureVariation}`}
             className={`px-6 py-3 text-sm font-bold rounded-lg transition-all duration-300 text-white bg-gradient-to-r shadow-lg hover:shadow-xl hover:scale-105 border ${colors.btn}`}
@@ -928,6 +1003,8 @@ function PreviewStep({
           </Link>
         </div>
       </div>
+
+      <CustomerImageLibrary owner={portalSlug || undefined} />
 
       {/* ═══════ Variation Switcher Bar ═══════ */}
       {variationOptions && (

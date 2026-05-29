@@ -3,6 +3,8 @@ import { createClient } from '@supabase/supabase-js'
 import { provisionSite, deploySiteFiles } from '@/lib/netlify'
 import { getTemplate } from '@/lib/templates/niche-registry'
 import { buildDeployFiles, type InlineTextEdit } from '@/lib/site-deploy'
+import type { ImageSwap } from '@/lib/image-swaps'
+import { migrateImagesToSiteSlug, rewriteImageSwapUrls } from '@/lib/customer-images'
 
 /**
  * POST /api/test-purchase
@@ -39,6 +41,8 @@ export async function POST(req: Request) {
     structureVariation = 'original',
     customerValues = {},
     inlineEdits = {},
+    imageSwaps = {},
+    imageOwner = '',
   } = body as {
     slug?: string
     template?: string
@@ -49,6 +53,8 @@ export async function POST(req: Request) {
     structureVariation?: string
     customerValues?: Record<string, string>
     inlineEdits?: Record<string, InlineTextEdit[]>
+    imageSwaps?: Record<string, ImageSwap[]>
+    imageOwner?: string
   }
 
   if (!slug) {
@@ -64,6 +70,16 @@ export async function POST(req: Request) {
   const log: string[] = []
   let siteUrl = ''
   let siteId = ''
+  let resolvedImageSwaps = imageSwaps as Record<string, ImageSwap[]>
+
+  if (imageOwner && imageOwner.startsWith('draft-')) {
+    try {
+      await migrateImagesToSiteSlug(imageOwner, normalizedSlug)
+      resolvedImageSwaps = rewriteImageSwapUrls(resolvedImageSwaps, imageOwner, normalizedSlug)
+    } catch {
+      /* non-fatal */
+    }
+  }
 
   // ── 1. Reserve slug in Supabase ──────────────────────────────────
   if (supabaseUrl && supabaseServiceKey) {
@@ -101,6 +117,7 @@ export async function POST(req: Request) {
             fontVariation,
             structureVariation,
             inlineEdits,
+            imageSwaps: resolvedImageSwaps,
             slug: normalizedSlug,
           })
           if (deployFiles) {
@@ -144,6 +161,8 @@ export async function POST(req: Request) {
               structureVariation,
               customerValues,
               inlineEdits,
+              imageSwaps: resolvedImageSwaps,
+              imageOwner: normalizedSlug,
               email: customerValues.EMAIL || '',
               netlify_site_id: siteId,
               site_url: siteUrl,

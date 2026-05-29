@@ -18,6 +18,7 @@ import {
   getTemplate,
 } from '@/lib/templates/niche-registry'
 import { buildVariationCSS } from '@/lib/templates/variations'
+import { applyImageSwapsToHtml, type ImageSwap } from '@/lib/image-swaps'
 
 /** A single inline text override captured from the live editor. */
 export interface InlineTextEdit {
@@ -37,6 +38,8 @@ export interface BuildSiteOptions {
   structureVariation?: string
   /** Inline text edits keyed by page filename (e.g. "index.html"). */
   inlineEdits?: Record<string, InlineTextEdit[]>
+  /** Image src replacements keyed by page filename. */
+  imageSwaps?: Record<string, ImageSwap[]>
   /** Slug used by the injected contact-form handler to attribute submissions. */
   slug: string
 }
@@ -106,6 +109,7 @@ export function buildDeployFiles(opts: BuildSiteOptions): Record<string, string>
     fontVariation = 'original',
     structureVariation = 'original',
     inlineEdits,
+    imageSwaps,
     slug,
   } = opts
 
@@ -125,6 +129,7 @@ export function buildDeployFiles(opts: BuildSiteOptions): Record<string, string>
 
     let html = hydrateTemplate(rawHtml, customerValues)
     html = applyInlineTextEdits(html, inlineEdits?.[page])
+    html = applyImageSwapsToHtml(html, imageSwaps?.[page])
 
     const injectedStyles: string[] = []
     if (cssFile) injectedStyles.push(cssFile)

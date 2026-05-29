@@ -10,6 +10,14 @@ import {
   loadInlineEdits,
   saveInlineEdits,
 } from '@/lib/inline-edits'
+import {
+  type ImageSwapMap,
+  loadImageSwaps,
+  applyImageSwapsToHtml,
+  handlePersistentImageUpload,
+  getOrCreateImageOwnerId,
+} from '@/lib/image-swaps'
+import { CustomerImageLibrary } from '@/components/CustomerImageLibrary'
 import type {
   BusinessInfo,
   StylePreferences,
@@ -173,6 +181,7 @@ export default function PreviewYourBusinessPage() {
   // Inline text edits captured from the preview, persisted so they survive
   // page navigation and carry through to purchase.
   const inlineEditsRef = useRef<InlineEditMap>({})
+  const imageSwapsRef = useRef<ImageSwapMap>({})
   const currentPageRef = useRef('index.html')
   currentPageRef.current = currentPage
 
@@ -288,6 +297,7 @@ export default function PreviewYourBusinessPage() {
 
         // Re-apply inline text edits captured earlier (not part of hydration)
         html = applyInlineEditsToHtml(html, inlineEditsRef.current[page])
+        html = applyImageSwapsToHtml(html, imageSwapsRef.current[page])
 
         // Inject editing + nav scripts
         html = html.replace('</body>', getIframeInjectionScript() + '</body>')
@@ -306,6 +316,8 @@ export default function PreviewYourBusinessPage() {
   /* ================ Restore persisted inline edits ================ */
   useEffect(() => {
     inlineEditsRef.current = loadInlineEdits()
+    imageSwapsRef.current = loadImageSwaps()
+    getOrCreateImageOwnerId()
   }, [])
 
   /* ================ Iframe messaging ================ */
@@ -334,18 +346,29 @@ export default function PreviewYourBusinessPage() {
     return () => window.removeEventListener('message', handleMessage)
   }, [loadPreview])
 
-  const handleImageFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    const reader = new FileReader()
-    reader.onload = () => {
-      const dataUrl = reader.result as string
+    const page = currentPageRef.current
+    const originalSrc = pendingImageSwapSrc.current
+    const owner = getOrCreateImageOwnerId()
+    try {
+      const { map, url } = await handlePersistentImageUpload(
+        file,
+        owner,
+        originalSrc,
+        page,
+        imageSwapsRef.current,
+      )
+      imageSwapsRef.current = map
       iframeRef.current?.contentWindow?.postMessage(
-        { type: 'imageSwapResponse', dataUrl, originalSrc: pendingImageSwapSrc.current },
+        { type: 'imageSwapResponse', imageUrl: url, originalSrc },
         '*',
       )
+    } catch (err) {
+      console.error('Image upload failed:', err)
+      alert(err instanceof Error ? err.message : 'Image upload failed')
     }
-    reader.readAsDataURL(file)
     e.target.value = ''
   }, [])
 
@@ -1023,6 +1046,8 @@ function EditorStep({
         </div>
       </div>
 
+      <CustomerImageLibrary compact />
+
       {/* Color panel */}
       {showColorPanel && (
         <div className="glass-panel rounded-xl p-4 mb-4">
@@ -1313,11 +1338,13 @@ function getIframeInjectionScript(): string {
   });
 
   window.addEventListener('message', function(e) {
-    if (e.data && e.data.type === 'imageSwapResponse' && e.data.dataUrl) {
+    if (e.data && e.data.type === 'imageSwapResponse') {
+      var newSrc = e.data.imageUrl || e.data.dataUrl;
+      if (!newSrc) return;
       var imgs = document.querySelectorAll('img');
       for (var i = 0; i < imgs.length; i++) {
         if (imgs[i].src === e.data.originalSrc || (!e.data.originalSrc && i === 0)) {
-          imgs[i].src = e.data.dataUrl;
+          imgs[i].src = newSrc;
           break;
         }
       }

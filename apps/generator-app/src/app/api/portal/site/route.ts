@@ -4,6 +4,7 @@ import path from 'path'
 import { mkdir, readFile, writeFile } from 'fs/promises'
 import { existsSync } from 'fs'
 import { buildDeployFiles, type InlineTextEdit } from '@/lib/site-deploy'
+import type { ImageSwap } from '@/lib/image-swaps'
 import { deploySiteFiles } from '@/lib/netlify'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -17,6 +18,8 @@ interface SiteData {
   structureVariation?: string
   customerValues?: Record<string, string>
   inlineEdits?: Record<string, InlineTextEdit[]>
+  imageSwaps?: Record<string, ImageSwap[]>
+  imageOwner?: string
   email?: string
   netlify_site_id?: string
   site_url?: string
@@ -109,6 +112,7 @@ async function republishSite(slug: string, data: SiteData): Promise<boolean> {
     fontVariation: data.fontVariation,
     structureVariation: data.structureVariation,
     inlineEdits: data.inlineEdits,
+    imageSwaps: data.imageSwaps,
     slug,
   })
   if (!deployFiles) return false
@@ -130,6 +134,8 @@ export async function POST(req: NextRequest) {
     body.customerValues && typeof body.customerValues === 'object' ? body.customerValues : {}
   const incomingInlineEdits: Record<string, InlineTextEdit[]> | undefined =
     body.inlineEdits && typeof body.inlineEdits === 'object' ? body.inlineEdits : undefined
+  const incomingImageSwaps: Record<string, ImageSwap[]> | undefined =
+    body.imageSwaps && typeof body.imageSwaps === 'object' ? body.imageSwaps : undefined
 
   const supabase = getSupabase()
 
@@ -140,6 +146,8 @@ export async function POST(req: NextRequest) {
       ...prevData,
       customerValues: { ...(prevData.customerValues || {}), ...incomingValues },
       ...(incomingInlineEdits ? { inlineEdits: incomingInlineEdits } : {}),
+      ...(incomingImageSwaps ? { imageSwaps: incomingImageSwaps } : {}),
+      imageOwner: slug,
     }
     const sitePayload = {
       slug,
@@ -163,6 +171,8 @@ export async function POST(req: NextRequest) {
     ...prevData,
     customerValues: { ...(prevData.customerValues || {}), ...incomingValues },
     ...(incomingInlineEdits ? { inlineEdits: incomingInlineEdits } : {}),
+    ...(incomingImageSwaps ? { imageSwaps: incomingImageSwaps } : {}),
+    imageOwner: slug,
   }
 
   const { error } = await supabase.from('portal_sites').upsert({

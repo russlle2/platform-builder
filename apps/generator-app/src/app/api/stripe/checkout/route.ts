@@ -24,7 +24,7 @@ export async function POST(req: Request) {
       apiVersion: '2023-10-16',
     })
 
-    const { planKey, slug, template, niche, colorScheme, fontVariation, structureVariation, customerValues, inlineEdits } = await req.json()
+    const { planKey, slug, template, niche, colorScheme, fontVariation, structureVariation, customerValues, inlineEdits, imageSwaps, imageOwner } = await req.json()
     const priceId = priceMap[planKey]
 
     if (!priceId) {
@@ -54,6 +54,12 @@ export async function POST(req: Request) {
     }
     if (inlineEdits && typeof inlineEdits === 'object') {
       Object.assign(metadata, chunkJsonToMetadata('inlineEdits', inlineEdits, 10))
+    }
+    if (imageSwaps && typeof imageSwaps === 'object') {
+      Object.assign(metadata, chunkJsonToMetadata('imageSwaps', imageSwaps, 12))
+    }
+    if (typeof imageOwner === 'string' && imageOwner.trim()) {
+      metadata.imageOwner = imageOwner.trim().slice(0, 64)
     }
 
     const trialDays = getStripeTrialDays()

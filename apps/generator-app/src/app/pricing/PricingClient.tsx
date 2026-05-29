@@ -89,11 +89,16 @@ export default function PricingClient() {
       // Retrieve saved customer values + inline edits from sessionStorage
       let customerValues: Record<string, string> = {}
       let inlineEdits: Record<string, unknown> = {}
+      let imageSwaps: Record<string, unknown> = {}
+      let imageOwner = ''
       try {
         const saved = sessionStorage.getItem('pb_template_values')
         if (saved) customerValues = JSON.parse(saved)
         const savedEdits = sessionStorage.getItem('pb_inline_edits')
         if (savedEdits) inlineEdits = JSON.parse(savedEdits)
+        const savedImages = sessionStorage.getItem('pb_image_swaps')
+        if (savedImages) imageSwaps = JSON.parse(savedImages)
+        imageOwner = sessionStorage.getItem('pb_image_owner') || ''
       } catch { /* ignore */ }
 
       const response = await fetch('/api/stripe/checkout', {
@@ -109,6 +114,8 @@ export default function PricingClient() {
           structureVariation,
           customerValues,
           inlineEdits,
+          imageSwaps,
+          imageOwner,
         }),
       })
       const data = await response.json().catch(() => ({}))
@@ -259,11 +266,16 @@ export default function PricingClient() {
                     try {
                       let customerValues: Record<string, string> = {}
                       let inlineEdits: Record<string, unknown> = {}
+                      let imageSwaps: Record<string, unknown> = {}
+                      let imageOwner = ''
                       try {
                         const saved = sessionStorage.getItem('pb_template_values')
                         if (saved) customerValues = JSON.parse(saved)
                         const savedEdits = sessionStorage.getItem('pb_inline_edits')
                         if (savedEdits) inlineEdits = JSON.parse(savedEdits)
+                        const savedImages = sessionStorage.getItem('pb_image_swaps')
+                        if (savedImages) imageSwaps = JSON.parse(savedImages)
+                        imageOwner = sessionStorage.getItem('pb_image_owner') || ''
                       } catch { /* ignore */ }
 
                       const res = await fetch('/api/test-purchase', {
@@ -279,6 +291,8 @@ export default function PricingClient() {
                           structureVariation,
                           customerValues,
                           inlineEdits,
+                          imageSwaps,
+                          imageOwner,
                         }),
                       })
                       const data = await res.json()

@@ -9,6 +9,11 @@ import {
   unchunkJsonFromMetadata,
   type InlineTextEdit,
 } from '@/lib/site-deploy'
+import {
+  migrateImagesToSiteSlug,
+  rewriteImageSwapUrls,
+} from '@/lib/customer-images'
+import type { ImageSwap } from '@/lib/image-swaps'
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
@@ -81,9 +86,31 @@ export async function POST(req: Request) {
       meta,
       {},
     )
+    let imageSwaps = unchunkJsonFromMetadata<Record<string, ImageSwap[]>>(
+      'imageSwaps',
+      meta,
+      {},
+    )
+    const imageOwner = meta.imageOwner || ''
 
     if (slug) {
       await reserveSlug(slug)
+
+      const normalizedSlug = slug
+        .toLowerCase()
+        .replace(/[^a-z0-9-]/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-+|-+$/g, '')
+
+      // Move draft uploads to the purchased site slug folder when applicable.
+      if (imageOwner && imageOwner.startsWith('draft-') && normalizedSlug) {
+        try {
+          await migrateImagesToSiteSlug(imageOwner, normalizedSlug)
+          imageSwaps = rewriteImageSwapUrls(imageSwaps, imageOwner, normalizedSlug)
+        } catch (migrateErr) {
+          console.error('[webhook] image migration failed:', migrateErr)
+        }
+      }
 
       // Auto-provision a Netlify site at slug.yourdomain.com
       if (process.env.NETLIFY_ACCESS_TOKEN) {
@@ -101,6 +128,7 @@ export async function POST(req: Request) {
                 fontVariation,
                 structureVariation,
                 inlineEdits,
+                imageSwaps,
                 slug,
               })
               if (deployFiles) {
@@ -112,7 +140,6 @@ export async function POST(req: Request) {
           }
 
           // Update the slug record with hosting info
-          const normalizedSlug = slug.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-+|-+$/g, '')
           await supabase
             .from('site_slugs')
             .update({
@@ -136,6 +163,8 @@ export async function POST(req: Request) {
                 structureVariation,
                 customerValues,
                 inlineEdits,
+                imageSwaps,
+                imageOwner: normalizedSlug || imageOwner,
                 email: customerValues.EMAIL || session.customer_details?.email || '',
                 netlify_site_id: site.siteId,
                 site_url: site.siteUrl,

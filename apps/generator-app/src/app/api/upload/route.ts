@@ -1,210 +1,69 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { writeFile, mkdir, readdir, stat, unlink } from 'fs/promises'
-import { existsSync } from 'fs'
-import path from 'path'
-import sharp from 'sharp'
-
-// Maximum file size: 10MB
-const MAX_FILE_SIZE = 10 * 1024 * 1024
-
-// Allowed image types
-const ALLOWED_TYPES = [
-  'image/jpeg',
-  'image/jpg',
-  'image/png',
-  'image/gif',
-  'image/webp',
-  'image/avif',
-  'image/tiff',
-  'image/bmp',
-  'image/heic',
-  'image/heif',
-]
+import {
+  storeCustomerImage,
+  listCustomerImages,
+  deleteCustomerImage,
+  normalizeImageOwner,
+} from '@/lib/customer-images'
 
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()
-    const file = formData.get('file') as File
-    const optimizeFlag = formData.get('optimize') === 'true'
+    const file = formData.get('file') as File | null
+    const owner = normalizeImageOwner(
+      (formData.get('owner') as string) || request.nextUrl.searchParams.get('owner') || 'anonymous',
+    )
 
     if (!file) {
-      return NextResponse.json(
-        { error: 'No file provided' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'No file provided' }, { status: 400 })
     }
 
-    // Validate file type
-    if (!ALLOWED_TYPES.includes(file.type)) {
-      return NextResponse.json(
-        { error: 'Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed.' },
-        { status: 400 }
-      )
-    }
+    const stored = await storeCustomerImage(owner, file)
 
-    // Validate file size
-    if (file.size > MAX_FILE_SIZE) {
-      return NextResponse.json(
-        { error: 'File too large. Maximum size is 10MB.' },
-        { status: 400 }
-      )
-    }
-
-    // Create upload directory if it doesn't exist
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads')
-    if (!existsSync(uploadDir)) {
-      await mkdir(uploadDir, { recursive: true })
-    }
-
-    // Generate unique filename
-    const timestamp = Date.now()
-    const baseName = file.name.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9-]/g, '_')
-    const fileName = `${timestamp}-${baseName}.webp`
-    const filePath = path.join(uploadDir, fileName)
-
-    // Convert file to buffer
-    const bytes = await file.arrayBuffer()
-    const inputBuffer = Buffer.from(bytes)
-
-    let outputBuffer: Buffer
-    let outputMime = 'image/webp'
-
-    try {
-      outputBuffer = await sharp(inputBuffer, { animated: true })
-        .resize({ width: 1600, withoutEnlargement: true })
-        .webp({ quality: optimizeFlag ? 78 : 90 })
-        .toBuffer()
-    } catch {
-      if (['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'].includes(file.type)) {
-        outputBuffer = inputBuffer
-        outputMime = file.type
-      } else {
-        return NextResponse.json(
-          { error: 'Unsupported image format. Please upload JPG, PNG, WebP, GIF, AVIF, TIFF, BMP, HEIC, or HEIF.' },
-          { status: 400 }
-        )
-      }
-    }
-
-    const embeddedDataUrl = `data:${outputMime};base64,${outputBuffer.toString('base64')}`
-
-    if (process.env.VERCEL === '1') {
-      return NextResponse.json({
-        success: true,
-        url: embeddedDataUrl,
-        filename: file.name,
-        size: file.size,
-        type: file.type,
-        optimized: false,
-        embedded: true,
-      })
-    }
-
-    // Save file
-    try {
-      await writeFile(filePath, outputBuffer)
-    } catch {
-      return NextResponse.json({
-        success: true,
-        url: embeddedDataUrl,
-        filename: file.name,
-        size: outputBuffer.length,
-        type: outputMime,
-        optimized: true,
-        embedded: true,
-      })
-    }
-
-    // TODO: Integrate Sharp optimization when optimize flag is true
-    // For now, optimization is not implemented
     return NextResponse.json({
       success: true,
-      url: `/uploads/${fileName}`,
-      filename: fileName,
-      size: outputBuffer.length,
-      type: outputMime,
-      optimized: true,
+      url: stored.url,
+      path: stored.path,
+      filename: stored.filename,
+      size: stored.size,
+      uploadedAt: stored.uploadedAt,
+      owner,
+      embedded: false,
     })
-
   } catch (error) {
-    console.error('Upload error:', error)
-    return NextResponse.json(
-      { error: 'Upload failed. Please try again.' },
-      { status: 500 }
-    )
+    const message = error instanceof Error ? error.message : 'Upload failed. Please try again.'
+    console.error('[upload]', message)
+    return NextResponse.json({ error: message }, { status: 400 })
   }
 }
 
-// GET endpoint to list uploaded images (for user image library)
 export async function GET(request: NextRequest) {
   try {
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads')
-    
-    if (!existsSync(uploadDir)) {
+    const owner = normalizeImageOwner(request.nextUrl.searchParams.get('owner') || '')
+    if (!owner || owner === 'anonymous') {
       return NextResponse.json({ images: [] })
     }
-
-    const files = await readdir(uploadDir)
-    
-    const images = await Promise.all(
-      files
-        .filter((file: string) => {
-          const ext = path.extname(file).toLowerCase()
-          return ['.jpg', '.jpeg', '.png', '.gif', '.webp'].includes(ext)
-        })
-        .map(async (file: string) => {
-          const stats = await stat(path.join(uploadDir, file))
-          return {
-            filename: file,
-            url: `/uploads/${file}`,
-            size: stats.size,
-            uploadedAt: stats.birthtime,
-          }
-        })
-    )
-    
-    images.sort((a: any, b: any) => b.uploadedAt - a.uploadedAt)
-
-    return NextResponse.json({ images })
+    const images = await listCustomerImages(owner)
+    return NextResponse.json({ images, owner })
   } catch (error) {
     console.error('Error fetching images:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch images' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch images' }, { status: 500 })
   }
 }
 
-// DELETE endpoint to remove an image
 export async function DELETE(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const filename = searchParams.get('filename')
+    const owner = normalizeImageOwner(request.nextUrl.searchParams.get('owner') || '')
+    const storagePath = request.nextUrl.searchParams.get('path') || request.nextUrl.searchParams.get('filename')
 
-    if (!filename) {
-      return NextResponse.json(
-        { error: 'Filename required' },
-        { status: 400 }
-      )
+    if (!owner || !storagePath) {
+      return NextResponse.json({ error: 'owner and path are required' }, { status: 400 })
     }
 
-    const filePath = path.join(process.cwd(), 'public', 'uploads', filename)
-    
-    if (!existsSync(filePath)) {
-      return NextResponse.json(
-        { error: 'File not found' },
-        { status: 404 }
-      )
-    }
-
-    await unlink(filePath)
-
+    await deleteCustomerImage(owner, storagePath)
     return NextResponse.json({ success: true, message: 'Image deleted' })
   } catch (error) {
     console.error('Delete error:', error)
-    return NextResponse.json(
-      { error: 'Failed to delete image' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to delete image' }, { status: 500 })
   }
 }

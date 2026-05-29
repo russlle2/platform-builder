@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { track } from '@/lib/analytics'
+import { CustomerImageLibrary } from '@/components/CustomerImageLibrary'
+import { getOrCreateImageOwnerId } from '@/lib/image-swaps'
 
 const onboardingSteps = [
   {
@@ -75,6 +77,7 @@ export default function PortalClient() {
     address: '',
     services: '',
   })
+  const [siteTemplate, setSiteTemplate] = useState<{ niche?: string; template?: string }>({})
 
   useEffect(() => {
     if (!initialSlug) {
@@ -174,6 +177,8 @@ export default function PortalClient() {
           address: cv.ADDRESS || d.address || '',
           services: cv.SERVICES || d.services || '',
         })
+        setSiteTemplate({ niche: d.niche, template: d.template })
+        getOrCreateImageOwnerId(normalized)
       }
       setStatus('idle')
     } catch (error) {
@@ -508,6 +513,25 @@ export default function PortalClient() {
                 ))}
               </div>
             </div>
+
+            {normalizedSlug && (
+              <CustomerImageLibrary owner={normalizedSlug} compact />
+            )}
+
+            {siteTemplate.niche && siteTemplate.template && (
+              <div className="glass-panel rounded-2xl p-6">
+                <h3 className="text-xl font-bold text-white">Visual editor</h3>
+                <p className="text-slate-300 text-sm mt-2">
+                  Replace images and text on your live template, then purchase updates are applied on save from the editor checkout flow.
+                </p>
+                <Link
+                  href={`/templates/${siteTemplate.niche}/${siteTemplate.template}?portalSlug=${encodeURIComponent(normalizedSlug)}`}
+                  className="mt-4 inline-block text-sm font-semibold text-cyan-200 hover:text-cyan-100"
+                >
+                  Open template editor →
+                </Link>
+              </div>
+            )}
 
             <div className="glass-panel rounded-2xl p-6">
               <h3 className="text-xl font-bold text-white">Recent activity</h3>
