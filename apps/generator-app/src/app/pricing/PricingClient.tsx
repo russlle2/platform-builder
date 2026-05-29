@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { track } from '@/lib/analytics'
@@ -45,6 +45,9 @@ const pricingTiers = [
 export default function PricingClient() {
   const billingPeriod: 'monthly' | 'annual' = 'monthly'
   const [checkoutError, setCheckoutError] = useState<string | null>(null)
+  const [checkoutReady, setCheckoutReady] = useState<boolean | null>(null)
+  const [fulfillmentReady, setFulfillmentReady] = useState<boolean | null>(null)
+  const [trialDays, setTrialDays] = useState(7)
   const [isSubmitting, setIsSubmitting] = useState<string | null>(null)
   const [testRunning, setTestRunning] = useState(false)
   const [testResult, setTestResult] = useState<{ success: boolean; slug: string; siteUrl: string | null; log: string[] } | null>(null)
@@ -55,6 +58,28 @@ export default function PricingClient() {
   const colorScheme = useMemo(() => searchParams.get('color') || 'original', [searchParams])
   const fontVariation = useMemo(() => searchParams.get('font') || 'original', [searchParams])
   const structureVariation = useMemo(() => searchParams.get('structure') || 'original', [searchParams])
+
+  useEffect(() => {
+    fetch('/api/integrations/status')
+      .then((res) => res.json())
+      .then((data) => {
+        setCheckoutReady(!!data?.checkoutReady)
+        setFulfillmentReady(!!data?.fulfillmentReady)
+      })
+      .catch(() => {
+        setCheckoutReady(false)
+        setFulfillmentReady(false)
+      })
+
+    fetch('/api/platform/config')
+      .then((res) => res.json())
+      .then((data) => {
+        if (typeof data?.trialDays === 'number' && data.trialDays > 0) {
+          setTrialDays(data.trialDays)
+        }
+      })
+      .catch(() => {})
+  }, [])
 
   const startCheckout = async (planKey: string) => {
     try {
@@ -83,17 +108,21 @@ export default function PricingClient() {
           customerValues,
         }),
       })
+      const data = await response.json().catch(() => ({}))
       if (!response.ok) {
-        throw new Error('Checkout failed')
+        throw new Error(
+          (data as { error?: string }).error || 'Checkout failed. Please try again.'
+        )
       }
-      const data = await response.json()
       if (data?.url) {
         window.location.assign(data.url)
       } else {
         throw new Error('Missing checkout URL')
       }
     } catch (error) {
-      setCheckoutError('Unable to start checkout. Please try again.')
+      setCheckoutError(
+        error instanceof Error ? error.message : 'Unable to start checkout. Please try again.'
+      )
     } finally {
       setIsSubmitting(null)
     }
@@ -111,8 +140,12 @@ export default function PricingClient() {
                 Choose the plan that launches your HVAC platform
               </h1>
               <p className="text-xl text-slate-200 max-w-xl">
-                Every plan includes hosting, integrations, and portal access. Upgrade anytime
-                when you want ongoing optimization and ad support.
+                Every plan includes hosting, integrations, and portal access.
+                {trialDays > 0 && (
+                  <span className="block mt-2 text-cyan-200">
+                    {trialDays}-day free trial — card required, cancel anytime before billing starts.
+                  </span>
+                )}
               </p>
               <div className="flex flex-wrap gap-6 text-sm text-slate-300">
                 <span>⚡ 30-member cap</span>
@@ -158,14 +191,34 @@ export default function PricingClient() {
 
         {/* Pricing Cards */}
         <section className="container-hvac pb-16">
+          {checkoutReady === false && (
+            <div className="mb-8 rounded-2xl border border-amber-400/40 bg-amber-500/10 p-6 text-amber-100">
+              <p className="font-semibold text-amber-50">Checkout is not live yet</p>
+              <p className="mt-2 text-sm text-amber-100/90">
+                Stripe price IDs are missing in production. Add STRIPE_PRICE_BASIC and
+                STRIPE_PRICE_GROWTH in Netlify, then redeploy. See docs/LAUNCH_RUNBOOK.md.
+              </p>
+            </div>
+          )}
+          {checkoutReady && fulfillmentReady === false && (
+            <div className="mb-8 rounded-2xl border border-cyan-400/30 bg-cyan-500/10 p-6 text-cyan-50">
+              <p className="font-semibold">Checkout works — auto-launch needs Netlify</p>
+              <p className="mt-2 text-sm text-cyan-100/90">
+                Payments can be taken, but customer sites will not deploy until
+                NETLIFY_ACCESS_TOKEN is set.
+              </p>
+            </div>
+          )}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {pricingTiers.map((tier) => (
               <PricingCard
                 key={tier.name}
                 tier={tier}
                 billingPeriod={billingPeriod}
+                trialDays={trialDays}
                 onCheckout={() => startCheckout(tier.planKey)}
                 isSubmitting={isSubmitting === tier.planKey}
+                checkoutDisabled={checkoutReady === false}
               />
             ))}
           </div>
@@ -357,6 +410,14 @@ export default function PricingClient() {
                 answer="Most builds go live within 48 hours once your intake is complete and your subscription is active."
               />
               <FAQItem
+                question="Is there a free trial?"
+                answer={
+                  trialDays > 0
+                    ? `Yes — every plan includes a ${trialDays}-day trial. We collect your card at checkout, but you are not charged until the trial ends. Cancel anytime in Stripe before then.`
+                    : 'Subscriptions start billing when you complete checkout.'
+                }
+              />
+              <FAQItem
                 question="Can I switch plans later?"
                 answer="Absolutely! You can upgrade or downgrade at any time. Changes take effect immediately, and we'll prorate any differences."
               />
@@ -398,13 +459,17 @@ export default function PricingClient() {
 function PricingCard({
   tier,
   billingPeriod,
+  trialDays,
   onCheckout,
   isSubmitting,
+  checkoutDisabled,
 }: {
   tier: (typeof pricingTiers)[0]
   billingPeriod: 'monthly' | 'annual'
+  trialDays: number
   onCheckout: () => void
   isSubmitting: boolean
+  checkoutDisabled: boolean
 }) {
   const displayPrice = tier.price
   const isPeriodic = tier.period !== 'one-time'
@@ -437,6 +502,9 @@ function PricingCard({
           )}
         </div>
         <p className="text-gray-300">{tier.description}</p>
+        {trialDays > 0 && (
+          <p className="text-sm text-cyan-300">{trialDays}-day free trial, then billed monthly</p>
+        )}
       </div>
 
       {/* Features */}
@@ -463,14 +531,20 @@ function PricingCard({
       <button
         type="button"
         onClick={onCheckout}
-        disabled={isSubmitting}
+        disabled={isSubmitting || checkoutDisabled}
         className={`block w-full text-center px-6 py-3 rounded-lg font-bold transition-all ${
           tier.highlight
             ? 'bg-cyan-400 hover:bg-cyan-300 text-slate-900 shadow-lg hover:shadow-xl'
             : 'bg-white/10 hover:bg-white/20 text-white'
-        } ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
+        } ${isSubmitting || checkoutDisabled ? 'opacity-70 cursor-not-allowed' : ''}`}
       >
-        {isSubmitting ? 'Redirecting…' : 'Choose Plan'}
+        {checkoutDisabled
+          ? 'Checkout unavailable'
+          : isSubmitting
+            ? 'Redirecting…'
+            : trialDays > 0
+              ? `Start ${trialDays}-day trial`
+              : 'Choose Plan'}
       </button>
     </div>
   )
