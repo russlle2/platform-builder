@@ -53,6 +53,7 @@ export default function PortalClient() {
   const searchParams = useSearchParams()
   const initialSlug = useMemo(() => searchParams.get('slug') || '', [searchParams])
   const [slug, setSlug] = useState(initialSlug)
+  const [lookupInput, setLookupInput] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'saving' | 'saved' | 'error'>(
     'idle'
   )
@@ -136,24 +137,8 @@ export default function PortalClient() {
       })
   }, [normalizedSlug, platformDomain])
 
-  // Fetch live integration status
-  useEffect(() => {
-    fetch('/api/integrations/status')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data?.integrations) {
-          setIntegrations(
-            data.integrations.map((i: { name: string; configured: boolean; detail: string }) => ({
-              name: i.name,
-              status: i.configured ? 'Connected' : 'Not configured',
-            }))
-          )
-        }
-      })
-      .catch(() => {
-        setIntegrations(integrationDefaults.map((i) => ({ ...i, status: 'Unknown' })))
-      })
-  }, [])
+  // Integration status is admin-only — omit client-side fetch
+  // (The integrations panel shows defaults from integrationDefaults)
 
   const loadSite = async (targetSlug: string) => {
     const normalized = normalizeSlug(targetSlug)
@@ -270,6 +255,69 @@ export default function PortalClient() {
         error instanceof Error ? error.message : 'Unable to configure domain.'
       )
     }
+  }
+
+  // Show signed-out/lookup state when no slug is available
+  if (!initialSlug && !slug) {
+    return (
+      <main className="min-h-screen pt-24 pb-20">
+        <div className="container-hvac">
+          <div className="max-w-lg mx-auto space-y-8 py-20">
+            <div className="space-y-4 text-center">
+              <span className="signal-chip">Portal</span>
+              <h1 className="text-4xl md:text-5xl font-bold text-white">
+                Access your website dashboard
+              </h1>
+              <p className="text-slate-300 text-lg">
+                Enter the email or site slug you used at checkout.
+              </p>
+            </div>
+            <div className="glass-panel rounded-3xl p-8 space-y-6">
+              <div className="space-y-3">
+                <label className="text-sm text-slate-300 block">Your site slug or email</label>
+                <input
+                  value={lookupInput}
+                  onChange={(e) => setLookupInput(e.target.value)}
+                  placeholder="your-site-slug"
+                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-slate-500"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && lookupInput.trim()) {
+                      setSlug(normalizeSlug(lookupInput.trim()))
+                    }
+                  }}
+                />
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  if (lookupInput.trim()) setSlug(normalizeSlug(lookupInput.trim()))
+                }}
+                className="w-full cta-button text-center"
+              >
+                Find My Website
+              </button>
+              <p className="text-xs text-slate-400 text-center">
+                Your website is created after checkout. Check your email for your access link.
+              </p>
+            </div>
+            <div className="text-center space-y-3">
+              <Link
+                href="/preview-your-business"
+                className="block text-cyan-200 hover:text-cyan-100 font-semibold"
+              >
+                Preview a New Website →
+              </Link>
+              <p className="text-sm text-slate-400">
+                Need help?{' '}
+                <Link href="/contact" className="text-cyan-300 hover:text-cyan-200 underline">
+                  Contact us
+                </Link>
+              </p>
+            </div>
+          </div>
+        </div>
+      </main>
+    )
   }
 
   return (

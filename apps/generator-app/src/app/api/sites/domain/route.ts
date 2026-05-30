@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { setCustomDomain, getCustomDomainInstructions } from '@/lib/netlify'
+import { requireInternalAdminOrThrow } from '@/lib/server-auth'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -15,7 +16,10 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
  * Returns DNS instructions the customer needs to follow,
  * then Netlify auto-provisions SSL via Let's Encrypt.
  */
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  const authError = requireInternalAdminOrThrow(req)
+  if (authError) return authError
+
   try {
     const { slug, customDomain } = await req.json()
 
@@ -107,6 +111,9 @@ export async function POST(req: Request) {
  * Returns current domain configuration and DNS instructions.
  */
 export async function GET(req: NextRequest) {
+  const authError = requireInternalAdminOrThrow(req)
+  if (authError) return authError
+
   const slug = req.nextUrl.searchParams.get('slug')
 
   if (!slug || !supabaseUrl || !supabaseServiceKey) {

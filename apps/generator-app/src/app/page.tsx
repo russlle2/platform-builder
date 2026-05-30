@@ -59,30 +59,27 @@ export default function HomePage() {
         <section className="container-hvac py-20">
           <div className="hero-grid">
             <div className="space-y-8">
-              <span className="signal-chip">Platform Builder Studio</span>
+              <span className="signal-chip">DailyClarity Platform Builder</span>
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-bright-white">
-                Professional websites for your business.
-                <span className="block text-cyan-200">Never the same website twice.</span>
+                Launch a premium website for your wellness or professional brand.
+                <span className="block text-cyan-200">One guided flow. Live preview. No designer needed.</span>
               </h1>
               <p className="text-lg md:text-2xl text-slate-200 max-w-2xl">
-                {totalTemplates}+ unique templates across {niches.length} industries. Pick a design,
-                enter your details, preview it live, and launch — all in minutes.
+                Choose your niche, preview a polished site, customize the details, and launch without hiring a designer or waiting weeks.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="#niches" className="cta-button">
-                  View Custom Templates
+                <Link href="/preview-your-business" className="cta-button">
+                  Preview Your Business
                 </Link>
                 <Link
-                  href="/pricing"
+                  href="/preview-your-business"
                   className="px-8 py-4 text-lg font-bold text-white border border-white/20 rounded-lg hover:bg-white/10 transition-all"
                 >
-                  View Plans
+                  See Live Demo
                 </Link>
               </div>
               <div className="flex flex-wrap gap-6 text-sm text-slate-300">
-                <span>⚡ {totalTemplates}+ templates</span>
-                <span>🧰 Managed launch + hosting</span>
-                <span>🔐 Portal edits anytime</span>
+                <span>No code. No generic templates. Built for service businesses that need leads.</span>
               </div>
             </div>
             <div className="glass-panel rounded-3xl p-8 space-y-6">
@@ -227,15 +224,15 @@ export default function HomePage() {
         <section className="container-hvac py-20">
           <div className="glass-panel rounded-3xl p-12 text-center">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Your new website is one click away.
+              Your new website is one guided flow away.
             </h2>
             <p className="text-lg text-slate-200 mb-8 max-w-2xl mx-auto">
               Browse {totalTemplates}+ professionally designed templates, enter your details,
               preview it live, and launch. No coding. No hassle.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link href="#niches" className="cta-button">
-                View Custom Templates
+              <Link href="/preview-your-business" className="cta-button">
+                Preview Your Business
               </Link>
               <Link
                 href="/pricing"
@@ -247,6 +244,41 @@ export default function HomePage() {
           </div>
         </section>
       </div>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@graph': [
+              {
+                '@type': 'WebApplication',
+                name: 'DailyClarity Platform Builder',
+                url: 'https://dailyclarity.org',
+                description:
+                  'Generate, preview, customize, and launch premium websites for wellness and professional service businesses.',
+                applicationCategory: 'BusinessApplication',
+                operatingSystem: 'Web',
+                offers: {
+                  '@type': 'Offer',
+                  price: '20',
+                  priceCurrency: 'USD',
+                },
+              },
+              {
+                '@type': 'Organization',
+                name: 'DailyClarity',
+                url: 'https://dailyclarity.org',
+                contactPoint: {
+                  '@type': 'ContactPoint',
+                  contactType: 'customer support',
+                  url: 'https://dailyclarity.org/contact',
+                },
+              },
+            ],
+          }),
+        }}
+      />
     </main>
   )
 }

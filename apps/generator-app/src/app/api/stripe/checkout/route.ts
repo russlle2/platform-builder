@@ -1,8 +1,9 @@
 import { headers } from 'next/headers'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { getStripeTrialDays } from '@/lib/platform-config'
 import { chunkJsonToMetadata } from '@/lib/site-deploy'
+import { rateLimitByIp, jsonTooManyRequests } from '@/lib/server-auth'
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY
 
@@ -11,7 +12,10 @@ const priceMap: Record<string, string | undefined> = {
   growth: process.env.STRIPE_PRICE_GROWTH,
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  const allowed = rateLimitByIp(req, 'checkout', 10, 10 * 60 * 1000)
+  if (!allowed) return jsonTooManyRequests()
+
   try {
     if (!stripeSecretKey) {
       return NextResponse.json(

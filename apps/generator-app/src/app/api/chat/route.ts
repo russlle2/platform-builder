@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { rateLimitByIp, jsonTooManyRequests } from '@/lib/server-auth';
 
 const SYSTEM_PROMPT = `
 You are the helpful AI assistant for "Platform Builder", a website builder for wellness and professional service businesses.
@@ -22,9 +23,19 @@ Tone: Professional, encouraging, warm and premium, helpful.
 Keep answers concise and directed towards browsing templates or "Preview Your Business".
 `
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  const allowed = rateLimitByIp(req, 'chat', 10, 10 * 60 * 1000)
+  if (!allowed) return jsonTooManyRequests()
+
   try {
-    const { messages } = await req.json();
+    const { messages: rawMessages } = await req.json();
+    // Cap message count and character length to prevent abuse
+    const messages = (Array.isArray(rawMessages) ? rawMessages.slice(0, 20) : []).map(
+      (m: { role: string; content: string }) => ({
+        role: m.role,
+        content: typeof m.content === 'string' ? m.content.slice(0, 10000) : '',
+      })
+    );
     const apiKey = process.env.OPENAI_API_KEY;
 
     if (!apiKey) {
@@ -60,8 +71,9 @@ export async function POST(req: Request) {
       message: data.choices[0].message.content 
     });
 
-  } catch (error: any) {
-    console.error('Chat API Error:', error);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    console.error('Chat API Error:', message);
     return NextResponse.json(
       { message: "Sorry, I encountered an error processing your request." }, 
       { status: 500 }

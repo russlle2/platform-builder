@@ -2,6 +2,7 @@
   "name": "platform-builder-monorepo",
   "version": "1.0.0",
   "private": true,
+  "packageManager": "pnpm@9.0.0",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -10,18 +11,16 @@
     "dev": "pnpm --filter @platform-builder/generator-app dev",
     "build": "pnpm -r --if-present build",
     "lint": "pnpm -r --if-present lint",
-    "test": "pnpm -r --if-present test",
+    "typecheck": "pnpm --filter @platform-builder/generator-app exec tsc --noEmit",
+    "test": "pnpm --filter @platform-builder/generator-app test",
+    "test:e2e": "pnpm --filter @platform-builder/generator-app exec playwright test",
+    "validate": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
     "clean": "rm -rf node_modules apps/*/node_modules apps/*/.next apps/*/dist packages/*/node_modules packages/*/dist",
     "generator:dev": "pnpm --filter @platform-builder/generator-app dev",
     "generator:build": "pnpm --filter @platform-builder/generator-app build",
-    "client:dev": "pnpm --filter @platform-builder/client-template dev",
-    "client:build": "pnpm --filter @platform-builder/client-template build",
     "create-client": "node infrastructure/scripts/create-client-site.js",
     "sync-content": "node infrastructure/scripts/sync-content.js",
-    "optimize-images": "node infrastructure/scripts/optimize-images.js",
-    "deploy:dev": "netlify deploy --site dev --config infrastructure/netlify/dev.toml",
-    "deploy:staging": "netlify deploy --site staging --config infrastructure/netlify/staging.toml",
-    "deploy:production": "netlify deploy --prod --config infrastructure/netlify/production.toml"
+    "optimize-images": "node infrastructure/scripts/optimize-images.js"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",

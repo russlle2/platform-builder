@@ -10,20 +10,35 @@ import { migrateImagesToSiteSlug, rewriteImageSwapUrls } from '@/lib/customer-im
  * POST /api/test-purchase
  *
  * Simulates a completed purchase without going through Stripe.
- * Runs the same provisioning pipeline as the real webhook:
- *   1. Reserve slug in Supabase
- *   2. Provision Netlify site
- *   3. Build & deploy customized template
- *   4. Store config in portal_sites
+ * Only enabled when:
+ *   ENABLE_TEST_PURCHASE=true
+ *   TEST_PURCHASE_ADMIN_SECRET is set and matches x-test-purchase-secret header
  *
- * Only available in development (NODE_ENV !== 'production').
+ * Never enabled based on NEXT_PUBLIC_APP_STAGE alone (client-accessible, bypassable).
  */
 export async function POST(req: Request) {
-  // Block in production — uses NEXT_PUBLIC_APP_STAGE so it works in Next.js builds
-  if (process.env.NEXT_PUBLIC_APP_STAGE === 'production') {
+  // Gate 1: feature flag (server-only)
+  if (process.env.ENABLE_TEST_PURCHASE !== 'true') {
     return NextResponse.json(
-      { error: 'Test purchase is disabled in production.' },
-      { status: 403 },
+      { error: 'Test purchase is not enabled.' },
+      { status: 403 }
+    )
+  }
+
+  // Gate 2: secret header must match TEST_PURCHASE_ADMIN_SECRET
+  const expectedSecret = process.env.TEST_PURCHASE_ADMIN_SECRET
+  if (!expectedSecret) {
+    return NextResponse.json(
+      { error: 'Test purchase is not configured.' },
+      { status: 403 }
+    )
+  }
+
+  const providedSecret = (req.headers.get('x-test-purchase-secret') || '').trim()
+  if (!providedSecret || providedSecret !== expectedSecret) {
+    return NextResponse.json(
+      { error: 'Forbidden.' },
+      { status: 403 }
     )
   }
 
@@ -178,7 +193,6 @@ export async function POST(req: Request) {
     }
   } else {
     log.push('NETLIFY_ACCESS_TOKEN not set — skipping site provisioning')
-    // Still build the template locally so we can show what would be deployed
     if (templateSlug && niche) {
       const templateData = getTemplate(niche, templateSlug)
       if (templateData) {

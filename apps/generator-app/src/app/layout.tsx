@@ -1,6 +1,7 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Barlow_Condensed, Sora } from 'next/font/google'
+import Script from 'next/script'
 import Chatbot from '@/components/Chatbot'
 import { AppLayout } from '@/components/layout/AppLayout'
 import type { ReactNode } from 'react'
@@ -18,22 +19,37 @@ const body = Sora({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Platform Builder — Professional Website Templates',
-    template: '%s | Platform Builder',
+    default: 'DailyClarity — Professional Website Templates for Service Businesses',
+    template: '%s | DailyClarity',
   },
   description:
-    'Browse 500+ unique website templates across multiple industries. Pick a design, enter your details, preview it live, and launch.',
+    'Choose from 500+ unique website templates for wellness coaches, therapists, sound bath facilitators, aromatherapy, and holistic medicine. Preview live, customize, launch.',
   keywords: [
     'website builder',
     'website templates',
     'professional website',
-    'small business website',
-    'therapist website',
     'wellness website',
+    'therapist website',
+    'wellness coach website',
     'aromatherapy website',
     'holistic medicine website',
+    'sound bath website',
+    'DailyClarity',
   ],
-  robots: 'index, follow',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://dailyclarity.org'),
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    type: 'website',
+    siteName: 'DailyClarity',
+    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://dailyclarity.org',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
+  },
   category: 'business',
 }
 
@@ -48,11 +64,30 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${body.variable} ${display.variable} bg-slate-950 text-white antialiased`}> 
+      <body className={`${body.variable} ${display.variable} bg-slate-950 text-white antialiased`}>
         <AppLayout>
           {children}
         </AppLayout>
         <Chatbot />
+        {process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN && (
+          <Script
+            defer
+            data-domain={process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN}
+            src="https://plausible.io/js/script.js"
+            strategy="afterInteractive"
+          />
+        )}
+        {process.env.NEXT_PUBLIC_GA_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="ga-init" strategy="afterInteractive">
+              {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${process.env.NEXT_PUBLIC_GA_ID}');`}
+            </Script>
+          </>
+        )}
       </body>
     </html>
   )

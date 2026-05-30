@@ -1,6 +1,7 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { sendContactNotification, sendContactConfirmation } from '@/lib/email'
+import { rateLimitByIp, jsonTooManyRequests } from '@/lib/server-auth'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -17,7 +18,10 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
  * 3. Sends the owner a notification email via Postmark.
  * 4. Sends the visitor a confirmation email.
  */
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  const allowed = rateLimitByIp(req, 'contact', 5, 10 * 60 * 1000)
+  if (!allowed) return jsonTooManyRequests()
+
   try {
     const body = await req.json()
     const { slug, name, email, phone, message } = body

@@ -1,5 +1,6 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { rateLimitByIp, jsonTooManyRequests } from '@/lib/server-auth'
 
 const MIN_SLUG_LENGTH = 3
 const MAX_SLUG_LENGTH = 30
@@ -44,7 +45,10 @@ const validateSlug = (value: string) => {
   return null
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  const allowed = rateLimitByIp(req, 'slug-check', 60, 10 * 60 * 1000)
+  if (!allowed) return jsonTooManyRequests()
+
   try {
     const { slug } = await req.json()
     const normalized = normalizeSlug(String(slug || ''))

@@ -208,13 +208,17 @@ export async function deleteCustomerImage(owner: string, storagePath: string): P
     return
   }
 
-  const filePath = path.join(
-    process.cwd(),
-    'public',
-    storagePath.replace(/^\//, '').replace(/^uploads\//, 'uploads/'),
-  )
-  if (existsSync(filePath)) {
-    await unlink(filePath)
+  // Path traversal prevention: resolve and verify the candidate path stays
+  // within the owner's upload directory before deleting.
+  const uploadRoot = path.resolve(process.cwd(), 'public', 'uploads', safeOwner)
+  const filename = path.basename(storagePath)
+  const candidate = path.resolve(uploadRoot, filename)
+  if (!candidate.startsWith(uploadRoot + path.sep)) {
+    throw new Error('Invalid storage path')
+  }
+
+  if (existsSync(candidate)) {
+    await unlink(candidate)
   }
 }
 

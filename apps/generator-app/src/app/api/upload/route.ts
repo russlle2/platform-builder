@@ -5,8 +5,12 @@ import {
   deleteCustomerImage,
   normalizeImageOwner,
 } from '@/lib/customer-images'
+import { rateLimitByIp, jsonTooManyRequests } from '@/lib/server-auth'
 
 export async function POST(request: NextRequest) {
+  const allowed = rateLimitByIp(request, 'upload', 20, 10 * 60 * 1000)
+  if (!allowed) return jsonTooManyRequests()
+
   try {
     const formData = await request.formData()
     const file = formData.get('file') as File | null

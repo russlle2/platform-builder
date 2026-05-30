@@ -1,11 +1,15 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { sendEmail } from '@/lib/email'
+import { rateLimitByIp, jsonTooManyRequests } from '@/lib/server-auth'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  const allowed = rateLimitByIp(req, 'leads', 10, 10 * 60 * 1000)
+  if (!allowed) return jsonTooManyRequests()
+
   try {
     const { email, phone, source } = await req.json()
 

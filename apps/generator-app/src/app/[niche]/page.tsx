@@ -377,7 +377,7 @@ export async function generateMetadata({
   const meta = NICHE_META[niche]
   if (!meta) return { title: 'Templates' }
   return {
-    title: `${meta.label} Website Templates | Platform Builder`,
+    title: `${meta.label} Website Templates | DailyClarity`,
     description: meta.description,
   }
 }

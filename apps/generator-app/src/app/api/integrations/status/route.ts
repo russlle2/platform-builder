@@ -1,12 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPlatformDomain } from '@/lib/platform-config'
+import { requireInternalAdminOrThrow } from '@/lib/server-auth'
 
 /**
  * GET /api/integrations/status
  *
  * Returns the live configuration status of all platform integrations.
+ * Admin-only: requires INTERNAL_ADMIN_TOKEN.
  */
 export async function GET(req: NextRequest) {
+  const authError = requireInternalAdminOrThrow(req)
+  if (authError) return authError
+
   const hasStripeSecret = !!process.env.STRIPE_SECRET_KEY
   const hasStripeWebhook = !!process.env.STRIPE_WEBHOOK_SECRET
   const hasStripePriceBasic = !!process.env.STRIPE_PRICE_BASIC

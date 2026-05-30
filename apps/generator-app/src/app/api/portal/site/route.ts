@@ -6,6 +6,7 @@ import { existsSync } from 'fs'
 import { buildDeployFiles, type InlineTextEdit } from '@/lib/site-deploy'
 import type { ImageSwap } from '@/lib/image-swaps'
 import { deploySiteFiles } from '@/lib/netlify'
+import { requireInternalAdminOrThrow } from '@/lib/server-auth'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -70,6 +71,9 @@ const writeLocalSite = async (slug: string, site: unknown) => {
 }
 
 export async function GET(req: NextRequest) {
+  const authError = requireInternalAdminOrThrow(req)
+  if (authError) return authError
+
   const slug = normalizeSlug(req.nextUrl.searchParams.get('slug') || '')
   if (!slug) {
     return NextResponse.json({ error: 'Slug is required.' }, { status: 400 })
@@ -121,6 +125,9 @@ async function republishSite(slug: string, data: SiteData): Promise<boolean> {
 }
 
 export async function POST(req: NextRequest) {
+  const authError = requireInternalAdminOrThrow(req)
+  if (authError) return authError
+
   const body = await req.json()
   const slug = normalizeSlug(body.slug || '')
   if (!slug) {

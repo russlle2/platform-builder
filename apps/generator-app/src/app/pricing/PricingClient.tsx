@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { track } from '@/lib/analytics'
 
+// Track pricing page view
+
 const pricingTiers = [
   {
     name: 'Basic Services',
@@ -59,15 +61,20 @@ export default function PricingClient() {
   const structureVariation = useMemo(() => searchParams.get('structure') || 'original', [searchParams])
 
   useEffect(() => {
+    track('pricing_view', {})
+
     fetch('/api/integrations/status')
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) return null
+        return res.json()
+      })
       .then((data) => {
+        if (!data) return
         setCheckoutReady(!!data?.checkoutReady)
         setFulfillmentReady(!!data?.fulfillmentReady)
       })
       .catch(() => {
-        setCheckoutReady(false)
-        setFulfillmentReady(false)
+        // Admin-only endpoint — no auth in browser context, stay null
       })
 
     fetch('/api/platform/config')
@@ -82,7 +89,7 @@ export default function PricingClient() {
 
   const startCheckout = async (planKey: string) => {
     try {
-      track('checkout_started', { planKey })
+      track('checkout_start', { planKey })
       setCheckoutError(null)
       setIsSubmitting(planKey)
 
@@ -240,6 +247,12 @@ export default function PricingClient() {
               Tip: add a preferred slug in the wizard to reserve your subdomain sooner.
             </p>
           )}
+          <p className="text-center text-slate-400 text-sm mt-6">
+            Need help choosing?{' '}
+            <Link href="/contact" className="text-cyan-300 hover:text-cyan-200 underline">
+              Contact us before checkout
+            </Link>
+          </p>
         </section>
 
         {/* ═══ DEV-ONLY: Test Purchase ═══ */}
@@ -464,6 +477,14 @@ export default function PricingClient() {
                 question="What if I want to cancel?"
                 answer="No long-term contracts. Cancel anytime and keep access through the end of your billing period."
               />
+              <FAQItem
+                question="Can I edit my site after launch?"
+                answer="Yes — through your portal anytime. Update your business name, tagline, phone, email, services, and images without touching code. Changes publish to your live site automatically."
+              />
+              <FAQItem
+                question="What if I need help?"
+                answer="Contact us before or after checkout — we're here to help. Reach us through the contact page and we'll get back to you within one business day."
+              />
             </div>
           </div>
         </section>
@@ -577,6 +598,12 @@ function PricingCard({
               ? `Start ${trialDays}-day trial`
               : 'Choose Plan'}
       </button>
+      <p className="text-center text-xs text-slate-400 mt-3">
+        Need help choosing?{' '}
+        <Link href="/contact" className="text-cyan-300 hover:text-cyan-200 underline">
+          Contact us before checkout
+        </Link>
+      </p>
     </div>
   )
 }

@@ -1,383 +1,250 @@
-# Platform Builder - Industrial-Premium HVAC & Plumbing Platform
+# DailyClarity Platform Builder
 
-An advanced, industrial-premium platform where HVAC and Plumbing professionals can instantly see, shape, and understand their website without learning tools, without confusion, and without committing until they approve.
+A web-only Next.js platform for wellness and professional service businesses to preview, customize, purchase, and launch a premium website — without hiring a designer or waiting weeks.
 
-## 🏗️ Monorepo Architecture
+**Live:** [dailyclarity.org](https://dailyclarity.org)
+
+---
+
+## What It Does
+
+DailyClarity Platform Builder walks service businesses through a guided flow:
+
+1. **Choose your niche** — aromatherapy, holistic medicine, private practice therapy, sound bath, or wellness coaching
+2. **Preview your site live** — fill in your details and see a real template populate instantly
+3. **Customize** — swap colors, fonts, images, and text through the visual editor
+4. **Purchase** — checkout via Stripe; your subdomain is provisioned within 48 hours
+5. **Manage via portal** — edit and publish changes anytime after launch
+
+---
+
+## Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 15 (App Router) |
+| Package manager | pnpm workspaces |
+| Styling | Tailwind CSS |
+| Database & Auth | Supabase (PostgreSQL + Storage) |
+| Payments | Stripe Subscriptions |
+| Hosting (customer sites) | Netlify (wildcard subdomain) |
+| Email | Postmark |
+| Analytics | Plausible / PostHog / GA4 (optional) |
+
+---
+
+## Monorepo Structure
 
 ```
 platform-builder/
 ├── apps/
-│   ├── generator-app/          # Main dashboard, editor, wizard, pricing
-│   │   ├── src/
-│   │   │   ├── app/           # Next.js App Router pages
-│   │   │   │   ├── page.tsx           # Home with hero section
-│   │   │   │   ├── wizard/            # Live Build Wizard
-│   │   │   │   ├── pricing/           # Transparent pricing tiers
-│   │   │   │   ├── live-demo/         # Interactive demo
-│   │   │   │   ├── proof/             # Social proof gallery
-│   │   │   │   ├── archive/           # Template archive
-│   │   │   │   ├── builds/            # User builds dashboard
-│   │   │   │   └── api/upload/        # Image upload endpoint
-│   │   │   ├── components/    # React components
-│   │   │   │   ├── Navigation.tsx
-│   │   │   │   ├── ImageUploadWithOptimize.tsx
-│   │   │   │   ├── LivePreview.tsx
-│   │   │   │   └── TemplateSelector.tsx
-│   │   │   └── store/         # Zustand state management
-│   │   └── public/
-│   │       ├── images/        # Placeholder image paths
-│   │       └── uploads/       # User-uploaded images
-│   │
-│   └── client-template/        # Base template for generated sites
+│   └── generator-app/        # Main Next.js 15 app (this is the product)
 │       ├── src/
-│       └── public/
-│
-├── packages/
-│   ├── ui-components/         # Shared React/Tailwind components
-│   │   └── src/components/
-│   ├── utils/                 # Shared utilities (SEO, routing)
-│   │   └── src/
-│   ├── image-optimizer/       # Sharp-based optimization pipeline
-│   │   └── src/index.ts
-│   └── scripts/               # Build and deployment scripts
-│       └── src/
-│
-├── infrastructure/
-│   ├── netlify/               # Multi-environment Netlify configs
-│   │   ├── dev.toml
-│   │   ├── staging.toml
-│   │   ├── production.toml
-│   │   └── netlify.toml
-│   ├── github/workflows/      # CI/CD GitHub Actions
-│   │   ├── deploy.yml             # Production deployment
-│   │   ├── preview.yml            # PR preview deployments
-│   │   ├── tests.yml              # Automated testing
-│   │   ├── lighthouse.yml         # Performance audits
-│   │   ├── optimize-images.yml    # Image optimization
-│   │   └── scheduled-builds.yml   # Nightly rebuilds
-│   └── scripts/               # Automation scripts
-│       ├── create-client-site.js
-│       ├── sync-content.js
-│       └── optimize-images.js
-│
-├── package.json               # Root workspace config
-└── .lighthouserc.json        # Lighthouse CI config
+│       │   ├── app/           # Next.js App Router pages and API routes
+│       │   ├── components/    # React components
+│       │   ├── lib/           # Server and client utilities
+│       │   └── middleware.ts  # Security headers (CSP, X-Frame-Options, etc.)
+│       ├── __tests__/         # Vitest unit tests
+│       └── e2e/               # Playwright smoke tests
+├── packages/                  # Shared internal packages
+├── .github/workflows/ci.yml   # CI pipeline
+└── README.md
 ```
-
-## 🎨 Design System
-
-### Global Environment
-- **Background**: Aerial top-down HVAC condenser (90° vertical angle)
-- **Fan Motion**: Smooth Z-axis rotation illusion
-- **Lighting**: Industrial daylight with neutral-cool metal tones
-- **Persistence**: Background appears across all pages
-
-### Surface System
-- **Primary Surface**: Lacquered mahogany wood
-- **Finish**: High-gloss with real wood grain texture
-- **Usage**: Text blocks, cards, editor panels, previews, pricing
-
-### Color Palette
-```css
---hvac-industrial-blue: #2563eb
---hvac-metal-gray: #64748b
---mahogany-primary: #3e1f1f
---mahogany-gloss: #5a2e2e
---text-bright-white: #ffffff (high contrast)
-```
-
-### Navigation
-- Persistent top navigation with high contrast
-- Items: Home, Live Demo, Editor, Pricing, Proof, Archive, Builds
-- Immediate hover feedback
-- Clear, direct navigation
-
-## 🚀 Features
-
-### Homepage
-- **Hero Section**: Mahogany plank with bold headline
-- **Headline**: "Skip the learning curve - Build Your HVAC And Plumbing Services Presence Like A Pro"
-- **Primary CTA**: "Reserve your spot"
-- **Scarcity Message**: "Limited to 30 active monthly members nationwide"
-
-### Live Build Wizard
-- **Split Panel Layout**: Questions on left, live preview on right
-- **Step-Based Navigation**: No scrolling required
-- **Real-Time Updates**: Every change updates preview instantly
-- **Features**:
-  - Template switching with content preservation
-  - Accent color picker
-  - Font selection (heading/body)
-  - Image uploads (logo, hero, background, gallery)
-  - Auto-fill toggle for suggested content
-  - Service selection
-
-### Image Handling System
-1. **User Uploads**: Drag-and-drop, file picker, real-time preview
-2. **Optimize Toggle**: Optional Sharp optimization
-3. **User Library**: Account-based image storage (for logged-in users)
-4. **API Endpoints**:
-   - `POST /api/upload` - Upload images
-   - `GET /api/upload` - List user images
-   - `DELETE /api/upload?filename=xxx` - Delete images
-
-### Pricing Tiers
-- **Custom Build**: $499 (50/50 split, refund before approval)
-- **Entrepreneur**: $99/month
-- **Executive**: $399/month (Most Popular)
-- **CEO**: $999/month (Premium)
-
-### Template System
-- 9+ HVAC-relevant templates
-- 1080p media
-- Template switching preserves user data
-- Only layout/background changes
-
-## 📦 Installation
-
-```bash
-# Install all workspace dependencies
-pnpm install
-
-# Install dependencies for specific workspace
-pnpm install --filter ./apps/generator-app...
-```
-
-## 🛠️ Development
-
-```bash
-# Start generator app
-pnpm run generator:dev
-# → http://localhost:3000
-
-# Start client template
-pnpm run client:dev
-# → http://localhost:3001
-
-# Build all workspaces
-pnpm run build
-
-# Run tests
-pnpm run test
-
-# Lint all workspaces
-pnpm run lint
-```
-
-## 🎨 Available Scripts
-
-### Root Level
-```bash
-pnpm run dev                  # Start generator-app
-pnpm run build                # Build all workspaces
-pnpm run lint                 # Lint all workspaces
-pnpm run test                 # Test all workspaces
-pnpm run clean                # Clean build artifacts
-
-# Client site management
-pnpm run create-client <name>  # Create new client site
-pnpm run sync-content          # Sync content to all sites
-pnpm run optimize-images       # Optimize all images
-
-# Deployment
-pnpm run deploy:dev            # Deploy to dev
-pnpm run deploy:staging        # Deploy to staging
-pnpm run deploy:production     # Deploy to production
-```
-
-### Generator App
-```bash
-pnpm run generator:dev         # Development mode
-pnpm run generator:build       # Build for production
-```
-
-### Client Template
-```bash
-pnpm run client:dev            # Development mode
-pnpm run client:build          # Build for production
-```
-
-## 🌐 CI/CD Pipeline
-
-### GitHub Actions Workflows
-
-1. **deploy.yml** - Production Deployment
-   - Triggers on push to `main`
-   - Builds and deploys to Netlify production
-   - Deploys both generator-app and client-template
-
-2. **preview.yml** - Preview Deployments
-   - Triggers on pull requests and branches
-   - Deploys preview sites to Netlify
-   - Comments preview URLs on PRs
-
-3. **tests.yml** - Automated Testing
-   - Runs linting, type checking, unit tests
-   - Tests on Node.js 18 and 20
-   - Security scanning with pnpm audit
-   - Blocks deployment on failure
-
-4. **lighthouse.yml** - Performance Audits
-   - Runs Lighthouse CI on every deployment
-   - Enforces performance > 90%
-   - Comments scores on PRs
-   - Fails build if thresholds not met
-
-5. **optimize-images.yml** - Image Optimization
-   - Triggers on image file changes
-   - Automatically optimizes with Sharp
-   - Commits optimized images back to repo
-
-6. **scheduled-builds.yml** - Nightly Rebuilds
-   - Runs daily at midnight UTC
-   - Rebuilds all sites
-   - Regenerates sitemaps
-   - Syncs CMS content
-   - Performs health checks
-
-### Multi-Environment Setup
-
-Configure these secrets in GitHub:
-- `NETLIFY_AUTH_TOKEN` - Your Netlify auth token
-- `NETLIFY_SITE_ID` - Generator app site ID
-- `NETLIFY_SITE_ID_CLIENT` - Client template site ID
-
-### Netlify Environments
-
-- **Development**: `dev.yourdomain.com` (dev.toml)
-- **Staging**: `staging.yourdomain.com` (staging.toml)
-- **Production**: `yourdomain.com` (production.toml)
-
-Each environment has:
-- Separate environment variables
-- Separate build settings
-- Separate deployment triggers
-
-## 📸 Image Optimization
-
-Built-in Sharp-based optimization pipeline:
-
-```bash
-# Optimize specific directory
-node infrastructure/scripts/optimize-images.js apps/generator-app/public
-
-# Optimize all images
-npm run optimize-images
-```
-
-Features:
-- Automatic compression (80% quality)
-- WebP and AVIF conversion
-- Responsive variants (320w, 640w, 768w, 1024w, 1280w, 1920w)
-- Preserves original files
-- Comprehensive optimization reports
-
-## 🧪 Testing
-
-```bash
-# Run all tests
-npm run test
-
-# Lint all code
-npm run lint
-
-# Type checking
-npx tsc --noEmit
-```
-
-## 🚢 Deployment
-
-### Manual Deployment
-```bash
-# Build production
-npm run build
-
-# Deploy to Netlify
-npm run deploy:production
-```
-
-### Automatic Deployment
-- Push to `main` → Auto-deploy to production
-- Create PR → Auto-deploy preview
-- Merge PR → Auto-deploy to production
-
-## 📋 Environment Variables
-
-Create `.env.local` in `apps/generator-app/`:
-
-```env
-NEXT_PUBLIC_SITE_NAME="HVAC Pro"
-NEXT_PUBLIC_API_URL=https://api.yourdomain.com
-NETLIFY_AUTH_TOKEN=your_token_here
-NETLIFY_SITE_ID=your_site_id_here
-```
-
-## 🎯 Technology Stack
-
-- **Framework**: Next.js 14 (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **State Management**: Zustand
-- **Image Processing**: Sharp
-- **Package Manager**: npm workspaces
-- **CI/CD**: GitHub Actions
-- **Deployment**: Netlify
-- **Performance**: Lighthouse CI
-
-## 📖 Documentation
-
-- [Image Assets Guide](apps/generator-app/public/images/README.md)
-- [Upload System Guide](apps/generator-app/public/uploads/README.md)
-- [Image Optimizer API](packages/image-optimizer/src/index.ts)
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests: `npm run test`
-5. Submit a pull request
-
-## 📄 License
-
-Private - All Rights Reserved
 
 ---
 
-**Built for Elite HVAC & Plumbing Professionals**
+## Active Niches
 
-Skip the learning curve. Build like a pro.
-3. Use in apps: `import { YourComponent } from '@platform-builder/ui'`
+| Slug | Label |
+|------|-------|
+| `aromatherapy` | Aromatherapy |
+| `holistic_medicine` | Holistic Medicine |
+| `private_practice_therapist` | Private Practice Therapist |
+| `sound_bath` | Sound Bath |
+| `wellness_coach` | Wellness Coach |
 
-### To the Generator App
+> Inactive niches (HVAC, dental, injury law) are commented out in the niche registry and redirect to the homepage.
 
-1. Create component in `apps/generator/src/components/`
-2. Import and use in pages or other components
+---
 
-## 📚 Placeholder Images
+## Local Development
 
-The project uses placeholder images from:
-- `via.placeholder.com` - For template previews and component defaults
-- Custom placeholders can be configured in `next.config.js`
+### Prerequisites
 
-## 🤝 Contributing
+- Node.js 20+
+- pnpm (via Corepack: `corepack enable && corepack prepare pnpm@latest --activate`)
 
-1. Create a new branch for your feature
-2. Make your changes
-3. Run linting and builds: `npm run lint && npm run build`
-4. Submit a pull request
+### Setup
 
-## 📄 License
+```bash
+# 1. Clone the repo
+git clone https://github.com/russlle2/platform-builder.git
+cd platform-builder
 
-MIT
+# 2. Install dependencies
+pnpm install
 
-## 🎯 Future Enhancements
+# 3. Copy and fill in environment variables
+cp apps/generator-app/.env.example apps/generator-app/.env.local
 
-- [ ] Add testing infrastructure (Jest, React Testing Library)
-- [ ] Implement real cloud storage for image uploads (S3, Cloudinary)
-- [ ] Add database integration for saving projects
-- [ ] Implement user authentication
-- [ ] Add more component types to the library
-- [ ] Create more client site templates
-- [ ] Add export functionality for generated sites
-- [ ] Implement version control for projects
+# 4. Start development server
+pnpm dev
+```
+
+The app runs at `http://localhost:3000`.
+
+---
+
+## Environment Variables
+
+All variables live in `apps/generator-app/.env.local` (local) or in your hosting provider's environment (production).
+
+### Core
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `NEXT_PUBLIC_SITE_URL` | Yes | Production domain — used for sitemap, canonical, OG tags. E.g. `https://dailyclarity.org` |
+| `NEXT_PUBLIC_PLATFORM_URL` | No | Fallback if SITE_URL is not set |
+
+### Supabase
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Your Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Public anon key (safe to expose) |
+| `SUPABASE_SERVICE_ROLE_KEY` | Yes | Service role key — never expose to clients |
+
+> **RLS Note:** `site_slugs` and `contact_messages` tables currently have RLS disabled. Enable RLS and add appropriate policies before going to production with real user data.
+
+### Stripe
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `STRIPE_SECRET_KEY` | Yes | Stripe secret key (`sk_live_...` or `sk_test_...`) |
+| `STRIPE_WEBHOOK_SECRET` | Yes | Webhook signing secret (`whsec_...`) |
+| `STRIPE_PRICE_BASIC` | Yes | Price ID for Basic Services plan |
+| `STRIPE_PRICE_GROWTH` | Yes | Price ID for Growth Partner plan |
+| `STRIPE_TRIAL_DAYS` | No | Free trial length in days (default: 7, set 0 to disable) |
+
+**Stripe Webhook Setup:**
+1. In Stripe Dashboard → Webhooks → Add endpoint: `https://dailyclarity.org/api/stripe/webhook`
+2. Select events: `checkout.session.completed`, `customer.subscription.created`
+3. Copy the signing secret to `STRIPE_WEBHOOK_SECRET`
+
+### Netlify (Customer Site Hosting)
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `NETLIFY_ACCESS_TOKEN` | Yes | Personal access token from Netlify |
+| `NETLIFY_TEAM_SLUG` | No | Your Netlify team slug |
+| `PLATFORM_DOMAIN` | Yes | Your wildcard domain (e.g. `dailyclarity.org`) |
+| `NEXT_PUBLIC_PLATFORM_DOMAIN` | Yes | Same as above, accessible client-side |
+
+**Netlify Wildcard DNS:** Add a wildcard CNAME `*.dailyclarity.org → [netlify-team].netlify.app`
+
+### Postmark (Email)
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `POSTMARK_SERVER_TOKEN` | For email | Server API token from Postmark |
+| `EMAIL_FROM_ADDRESS` | For email | Verified sender address |
+| `PLATFORM_OWNER_EMAIL` | No | Receives lead capture and alert notifications |
+
+### Security
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `INTERNAL_ADMIN_TOKEN` | Yes | Protects `/api/portal/site`, `/api/sites/provision`, `/api/sites/domain`, `/api/integrations/status`. Generate: `openssl rand -hex 32` |
+
+### Test Purchase Gate
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `ENABLE_TEST_PURCHASE` | `false` | Set to `"true"` to enable test purchase endpoint |
+| `TEST_PURCHASE_ADMIN_SECRET` | — | Required when test purchase is enabled. Pass as `x-test-purchase-secret` header |
+
+> **Never enable test purchase in production.** It is disabled by default and requires both env vars plus a matching secret header.
+
+### Analytics (All Optional)
+
+| Variable | Provider | Description |
+|----------|----------|-------------|
+| `NEXT_PUBLIC_PLAUSIBLE_DOMAIN` | Plausible | Your domain registered in Plausible |
+| `NEXT_PUBLIC_POSTHOG_KEY` | PostHog | PostHog project API key |
+| `NEXT_PUBLIC_POSTHOG_HOST` | PostHog | Default: `https://app.posthog.com` |
+| `NEXT_PUBLIC_GA_ID` | Google Analytics 4 | Measurement ID (`G-XXXXXXXXXX`) |
+
+---
+
+## Deployment
+
+The app is deployed on Netlify (or any Next.js-compatible host).
+
+### Netlify Setup
+
+1. Connect the repo to Netlify
+2. Set build command: `pnpm --filter @platform-builder/generator-app build`
+3. Set publish directory: `apps/generator-app/.next`
+4. Add all environment variables in Netlify → Site settings → Environment variables
+5. Redeploy after adding variables
+
+---
+
+## Supabase Setup
+
+Required tables (run migrations from `supabase/migrations/`):
+
+- `site_slugs` — tracks reserved/provisioned customer slugs
+- `portal_sites` — stores customer site configuration and hosting info
+- `contact_messages` — contact form submissions from generated sites
+- `lead_captures` — email/phone leads from the homepage
+- `customer-images` storage bucket — customer-uploaded images
+
+**RLS:** Currently disabled on `site_slugs` and `contact_messages`. Enable before handling sensitive user data.
+
+---
+
+## Test Commands
+
+```bash
+# Unit tests (Vitest)
+pnpm test
+
+# Watch mode
+pnpm --filter @platform-builder/generator-app test:watch
+
+# E2E tests (Playwright — runs against BASE_URL)
+BASE_URL=http://localhost:3000 pnpm test:e2e
+
+# TypeScript typecheck
+pnpm typecheck
+
+# Lint
+pnpm lint
+
+# Full validation (lint + typecheck + test + build)
+pnpm validate
+```
+
+---
+
+## Security Notes
+
+- **`INTERNAL_ADMIN_TOKEN`**: All admin API endpoints (`/api/portal/site`, `/api/sites/provision`, `/api/sites/domain`, `/api/integrations/status`) require this token via `Authorization: Bearer <token>` or `x-internal-admin-token` header. Generate a strong random value.
+- **Stripe webhook**: `/api/stripe/webhook` does NOT require admin auth — Stripe signs requests with `STRIPE_WEBHOOK_SECRET`. Never add auth to this route.
+- **Rate limiting**: All public API routes have in-memory rate limiting. Complement with edge-level rate limiting (Netlify, Cloudflare) for strict enforcement.
+- **Path traversal**: Image deletion validates paths stay within the owner's upload directory.
+- **CSP headers**: Set via middleware on all routes.
+- **Test purchase**: Disabled by default. Enable only in staging with a strong secret.
+
+---
+
+## Analytics Integration
+
+The analytics wrapper (`src/lib/analytics.ts`) supports Plausible, PostHog, and GA4 simultaneously. No code changes needed — set the relevant env vars and the scripts load automatically.
+
+Key tracked events:
+- `pricing_view` — pricing page visited
+- `checkout_start` — checkout initiated
+- `portal_saved` — portal changes saved
+- `portal_domain_saved` — custom domain configured
