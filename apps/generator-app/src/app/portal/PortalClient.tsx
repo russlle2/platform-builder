@@ -147,7 +147,7 @@ export default function PortalClient() {
     }
     setStatus('loading')
     try {
-      const response = await fetch(`/api/portal/site?slug=${encodeURIComponent(normalized)}`)
+      const response = await fetch(`/api/portal/customer?slug=${encodeURIComponent(normalized)}`)
       const data = await response.json()
       const d = data?.site?.data
       if (response.ok && d) {
@@ -198,7 +198,7 @@ export default function PortalClient() {
         address: formData.address,
         services: formData.services,
       }
-      const response = await fetch('/api/portal/site', {
+      const response = await fetch('/api/portal/customer', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ slug: normalized, customerValues }),
