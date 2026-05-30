@@ -40,6 +40,69 @@ const NICHE_OPTIONS = [
   { slug: 'wellness_coach', label: 'Wellness Coach', icon: '✨' },
 ]
 
+/**
+ * Example placeholder copy shown in the intake form. These are tailored to the
+ * selected industry so the suggestions always feel relevant to the customer's
+ * business — and never reference unrelated trades.
+ */
+interface NicheExample {
+  businessName: string
+  tagline: string
+  description: string
+  services: string
+}
+
+const NICHE_EXAMPLES: Record<string, NicheExample> = {
+  aromatherapy: {
+    businessName: 'Wildflower Aromatherapy',
+    tagline: 'Pure essential oils for everyday calm.',
+    description: 'A boutique aromatherapy studio crafting custom essential oil blends and guided scent rituals for relaxation and balance.',
+    services: 'Custom Blends, Aromatherapy Massage, Scent Workshops, Wellness Consultations',
+  },
+  holistic_medicine: {
+    businessName: 'Whole Roots Holistic Health',
+    tagline: 'Whole-person care, naturally.',
+    description: 'An integrative health practice blending naturopathic medicine, nutrition, and mind-body therapies to support lasting wellness.',
+    services: 'Naturopathic Consults, Nutrition Coaching, Herbal Medicine, Acupuncture',
+  },
+  private_practice_therapist: {
+    businessName: 'Stillwater Therapy',
+    tagline: 'A safe space to grow and heal.',
+    description: 'A private counseling practice offering compassionate, evidence-based therapy for individuals and couples navigating difficult seasons.',
+    services: 'Individual Therapy, Couples Counseling, Anxiety Support, Telehealth Sessions',
+  },
+  sound_bath: {
+    businessName: 'Resonance Sound Healing',
+    tagline: 'Restore your rhythm.',
+    description: 'A sound healing studio offering immersive sound bath journeys and guided meditation to ease stress and deepen relaxation.',
+    services: 'Group Sound Baths, Private Sessions, Guided Meditation, Corporate Wellness',
+  },
+  wellness_coach: {
+    businessName: 'Thrive Wellness Coaching',
+    tagline: 'Small changes, lasting results.',
+    description: 'A personalized wellness coaching practice helping clients build healthier habits, more energy, and a balanced lifestyle.',
+    services: 'Health Coaching, Habit Building, Nutrition Planning, Accountability Programs',
+  },
+  default: {
+    businessName: 'Your Business Name',
+    tagline: 'A short, memorable line about what you do.',
+    description: 'Tell us what makes your business unique — who you help and the results you deliver.',
+    services: 'Service One, Service Two, Service Three',
+  },
+}
+
+function getNicheExample(niche: string): NicheExample {
+  return NICHE_EXAMPLES[niche] || NICHE_EXAMPLES.default
+}
+
+/** Font customization applied to the live preview iframe. */
+interface CustomFonts {
+  heading: string
+  body: string
+  /** Optional Google Fonts stylesheet URL loaded into the iframe. */
+  importUrl?: string
+}
+
 const VIBE_OPTIONS: { value: VibeOption; label: string; icon: string; desc: string }[] = [
   { value: 'warm', label: 'Warm', icon: '🌅', desc: 'Inviting, cozy, human' },
   { value: 'bold', label: 'Bold', icon: '⚡', desc: 'Strong, assertive, high-impact' },
@@ -172,6 +235,7 @@ export default function PreviewYourBusinessPage() {
   // ---- preview state ----
   const [previewHtml, setPreviewHtml] = useState<string | null>(null)
   const [previewLoading, setPreviewLoading] = useState(false)
+  const [previewError, setPreviewError] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState('index.html')
   const [editMode, setEditMode] = useState(false)
   const iframeRef = useRef<HTMLIFrameElement>(null!)
@@ -187,7 +251,7 @@ export default function PreviewYourBusinessPage() {
 
   /* ---- Color & font customization ---- */
   const [customColors, setCustomColors] = useState({ primary: '#0ea5e9', bg: '#0f172a', text: '#e2e8f0' })
-  const [customFonts, setCustomFonts] = useState({ heading: 'inherit', body: 'inherit' })
+  const [customFonts, setCustomFonts] = useState<CustomFonts>({ heading: 'inherit', body: 'inherit' })
   const [showColorPanel, setShowColorPanel] = useState(false)
   const [showFontPanel, setShowFontPanel] = useState(false)
 
@@ -255,6 +319,12 @@ export default function PreviewYourBusinessPage() {
       const ts = templateSlug || matchedTemplate?.templateSlug
       if (!ns || !ts) return
       setPreviewLoading(true)
+      setPreviewError(null)
+
+      // Abort the request if it stalls (common on flaky mobile connections) so
+      // the user gets a retry prompt instead of an endless spinner.
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 20000)
 
       try {
         // Persist the intake values so checkout (on /pricing) can pick them up.
@@ -266,8 +336,9 @@ export default function PreviewYourBusinessPage() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ page, values: getFieldValues() }),
+          signal: controller.signal,
         })
-        if (!res.ok) throw new Error('Preview failed')
+        if (!res.ok) throw new Error(`Preview failed (HTTP ${res.status})`)
         const data = await res.json()
 
         let html = data.html as string
@@ -279,6 +350,25 @@ export default function PreviewYourBusinessPage() {
           (match, attr, path) => {
             if (path.endsWith('.html')) return match
             return `${attr}="${assetBase}/${path}"`
+          },
+        )
+
+        // Lazy-load every image and route raster images through the Netlify
+        // Image CDN so mobile devices download smaller, optimized files. This is
+        // the single biggest win for slow connections and prevents the preview
+        // from stalling on large hero images.
+        html = html.replace(
+          /<img\b([^>]*?)\ssrc="([^"]+)"([^>]*?)>/gi,
+          (match, pre: string, src: string, post: string) => {
+            let newSrc = src
+            const bare = src.split('?')[0]
+            if (src.startsWith('/api/templates/') && /\.(png|jpe?g|webp)$/i.test(bare)) {
+              newSrc = `/.netlify/images?url=${encodeURIComponent(src)}&w=1200&q=72`
+            }
+            const attrs = `${pre} ${post}`
+            const lazy = /\bloading=/.test(attrs) ? '' : ' loading="lazy"'
+            const decode = /\bdecoding=/.test(attrs) ? '' : ' decoding="async"'
+            return `<img${pre} src="${newSrc}"${post}${lazy}${decode}>`
           },
         )
 
@@ -306,7 +396,14 @@ export default function PreviewYourBusinessPage() {
         setCurrentPage(page)
       } catch (e) {
         console.error('Preview error:', e)
+        const aborted = e instanceof DOMException && e.name === 'AbortError'
+        setPreviewError(
+          aborted
+            ? 'The preview took too long to load. Check your connection and tap Retry.'
+            : 'We couldn’t load the preview just now. Please tap Retry.',
+        )
       } finally {
+        clearTimeout(timeoutId)
         setPreviewLoading(false)
       }
     },
@@ -426,7 +523,7 @@ export default function PreviewYourBusinessPage() {
 
       <div className="relative z-10">
         {/* Progress bar */}
-        <div className="container-hvac mb-8">
+        <div className="container-wide mb-8">
           <div className="flex items-center gap-2 overflow-x-auto pb-2">
             {(['info', 'style', 'matching', 'editor'] as PreviewStep[]).map((s) => {
               const meta = STEP_META[s]
@@ -490,6 +587,7 @@ export default function PreviewYourBusinessPage() {
             matched={matchedTemplate}
             previewHtml={previewHtml}
             previewLoading={previewLoading}
+            previewError={previewError}
             currentPage={currentPage}
             editMode={editMode}
             setEditMode={setEditMode}
@@ -557,8 +655,11 @@ function InfoStep({
     if (validate()) onNext()
   }
 
+  // Example copy adapts to the chosen industry so suggestions always fit.
+  const ex = getNicheExample(info.niche)
+
   return (
-    <section className="container-hvac py-8 max-w-3xl mx-auto">
+    <section className="container-wide py-8 max-w-3xl mx-auto">
       <div className="space-y-2 mb-8">
         <span className="signal-chip">Step 1 of 4</span>
         <h1 className="text-4xl md:text-5xl font-bold text-white">
@@ -598,7 +699,7 @@ function InfoStep({
         {/* Core fields */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <Field label="Business Name" required value={info.businessName} error={errors.businessName}
-            onChange={(v) => onChange({ businessName: v })} placeholder="Acme Heating & Cooling" />
+            onChange={(v) => onChange({ businessName: v })} placeholder={ex.businessName} />
           <Field label="Owner / Contact Name" value={info.ownerName}
             onChange={(v) => onChange({ ownerName: v })} placeholder="Jane Smith" />
           <Field label="Email" required type="email" value={info.email} error={errors.email}
@@ -610,19 +711,19 @@ function InfoStep({
         <Field label="Address / Service Area" value={info.address}
           onChange={(v) => onChange({ address: v })} placeholder="123 Main St, Denver, CO" />
         <Field label="Tagline" value={info.tagline}
-          onChange={(v) => onChange({ tagline: v })} placeholder="Your comfort is our priority." />
+          onChange={(v) => onChange({ tagline: v })} placeholder={ex.tagline} />
         <div>
           <label className="block text-sm font-semibold text-slate-200 mb-2">Description</label>
           <textarea
             value={info.description}
             onChange={(e) => onChange({ description: e.target.value })}
             rows={3}
-            placeholder="Tell us what makes your business unique..."
+            placeholder={ex.description}
             className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 resize-y"
           />
         </div>
         <Field label="Services (comma-separated)" value={info.services}
-          onChange={(v) => onChange({ services: v })} placeholder="AC Repair, Heating, Maintenance" />
+          onChange={(v) => onChange({ services: v })} placeholder={ex.services} />
         <Field label="Existing Website (optional)" value={info.website}
           onChange={(v) => onChange({ website: v })} placeholder="https://yourbusiness.com" />
       </div>
@@ -664,7 +765,7 @@ function StyleStep({
   }
 
   return (
-    <section className="container-hvac py-8 max-w-3xl mx-auto">
+    <section className="container-wide py-8 max-w-3xl mx-auto">
       <div className="space-y-2 mb-8">
         <span className="signal-chip">Step 2 of 4</span>
         <h1 className="text-4xl md:text-5xl font-bold text-white">
@@ -843,7 +944,7 @@ function MatchStep({
   onBrowse: () => void
 }) {
   return (
-    <section className="container-hvac py-8 max-w-3xl mx-auto">
+    <section className="container-wide py-8 max-w-3xl mx-auto">
       <div className="space-y-2 mb-8">
         <span className="signal-chip">Step 3 of 4</span>
         <h1 className="text-4xl md:text-5xl font-bold text-white">
@@ -931,6 +1032,7 @@ function EditorStep({
   matched,
   previewHtml,
   previewLoading,
+  previewError,
   currentPage,
   editMode,
   setEditMode,
@@ -951,6 +1053,7 @@ function EditorStep({
   matched: MatchedTemplate
   previewHtml: string | null
   previewLoading: boolean
+  previewError: string | null
   currentPage: string
   editMode: boolean
   setEditMode: (v: boolean) => void
@@ -965,8 +1068,8 @@ function EditorStep({
   setShowFontPanel: (v: boolean) => void
   customColors: { primary: string; bg: string; text: string }
   setCustomColors: (v: { primary: string; bg: string; text: string }) => void
-  customFonts: { heading: string; body: string }
-  setCustomFonts: (v: { heading: string; body: string }) => void
+  customFonts: CustomFonts
+  setCustomFonts: (v: CustomFonts) => void
 }) {
   const COLOR_PRESETS = [
     { label: 'Ocean', primary: '#0ea5e9', bg: '#0f172a', text: '#e2e8f0' },
@@ -977,25 +1080,92 @@ function EditorStep({
     { label: 'Slate', primary: '#64748b', bg: '#0f172a', text: '#e2e8f0' },
   ]
 
-  const FONT_PRESETS = [
-    { label: 'Modern Sans', heading: 'Inter, sans-serif', body: 'Inter, sans-serif' },
+  const FONT_PRESETS: { label: string; heading: string; body: string; importUrl?: string }[] = [
+    {
+      label: 'Modern Sans',
+      heading: "'Inter', sans-serif",
+      body: "'Inter', sans-serif",
+      importUrl: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap',
+    },
+    {
+      label: 'Elegant Serif',
+      heading: "'Playfair Display', serif",
+      body: "'Lora', serif",
+      importUrl: 'https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=Playfair+Display:wght@500;600;700&display=swap',
+    },
+    {
+      label: 'Warm Editorial',
+      heading: "'Cormorant Garamond', serif",
+      body: "'Nunito Sans', sans-serif",
+      importUrl: 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Nunito+Sans:wght@400;600;700&display=swap',
+    },
+    {
+      label: 'Geometric',
+      heading: "'Poppins', sans-serif",
+      body: "'Poppins', sans-serif",
+      importUrl: 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap',
+    },
+    {
+      label: 'Refined Mix',
+      heading: "'Montserrat', sans-serif",
+      body: "'Source Serif 4', serif",
+      importUrl: 'https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Source+Serif+4:wght@400;500&display=swap',
+    },
+    {
+      label: 'Calm & Rounded',
+      heading: "'Quicksand', sans-serif",
+      body: "'Karla', sans-serif",
+      importUrl: 'https://fonts.googleapis.com/css2?family=Karla:wght@400;500;600&family=Quicksand:wght@500;600;700&display=swap',
+    },
+    {
+      label: 'Soft Grotesk',
+      heading: "'Space Grotesk', sans-serif",
+      body: "'Inter', sans-serif",
+      importUrl: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap',
+    },
     { label: 'Classic Serif', heading: 'Georgia, serif', body: 'Georgia, serif' },
-    { label: 'Bold Display', heading: 'Impact, sans-serif', body: 'Arial, sans-serif' },
-    { label: 'Elegant Mix', heading: 'Georgia, serif', body: 'Arial, sans-serif' },
-    { label: 'Rounded', heading: 'Verdana, sans-serif', body: 'Verdana, sans-serif' },
-    { label: 'Monospace', heading: 'Courier New, monospace', body: 'Courier New, monospace' },
+    { label: 'System Default', heading: 'system-ui, sans-serif', body: 'system-ui, sans-serif' },
   ]
 
-  // Inject custom styles when changed
-  useEffect(() => {
+  // Apply custom colors and fonts into the iframe. Re-run whenever the choices
+  // change AND whenever the iframe reloads (onLoad), so customizations survive
+  // page navigation inside the preview.
+  const applyCustomStyles = useCallback(() => {
     const iframe = iframeRef.current
-    if (!iframe?.contentDocument) return
-    let styleEl = iframe.contentDocument.getElementById('pb-custom-styles') as HTMLStyleElement | null
-    if (!styleEl) {
-      styleEl = iframe.contentDocument.createElement('style')
-      styleEl.id = 'pb-custom-styles'
-      iframe.contentDocument.head.appendChild(styleEl)
+    const doc = iframe?.contentDocument
+    if (!doc) return
+
+    // Load the web font (if any) into the iframe head.
+    if (customFonts.importUrl) {
+      let link = doc.getElementById('pb-font-link') as HTMLLinkElement | null
+      if (!link) {
+        link = doc.createElement('link')
+        link.id = 'pb-font-link'
+        link.rel = 'stylesheet'
+        doc.head.appendChild(link)
+      }
+      if (link.getAttribute('href') !== customFonts.importUrl) {
+        link.setAttribute('href', customFonts.importUrl)
+      }
     }
+
+    let styleEl = doc.getElementById('pb-custom-styles') as HTMLStyleElement | null
+    if (!styleEl) {
+      styleEl = doc.createElement('style')
+      styleEl.id = 'pb-custom-styles'
+      doc.head.appendChild(styleEl)
+    }
+
+    // When a real font is selected, force it onto the document so the change is
+    // visible even on templates that don't reference the CSS variables.
+    const fontChosen = customFonts.heading && customFonts.heading !== 'inherit'
+    const fontRules = fontChosen
+      ? `
+        body, p, li, a, span, td, th, blockquote, label, input, textarea, button { font-family: ${customFonts.body} !important; }
+        h1, h2, h3, h4, h5, h6, .h1, .h2, .brand, .logo { font-family: ${customFonts.heading} !important; }
+      `
+      : ''
+
     styleEl.textContent = `
       :root {
         --pb-primary: ${customColors.primary};
@@ -1004,11 +1174,16 @@ function EditorStep({
         --pb-heading-font: ${customFonts.heading};
         --pb-body-font: ${customFonts.body};
       }
+      ${fontRules}
     `
   }, [customColors, customFonts, iframeRef])
 
+  useEffect(() => {
+    applyCustomStyles()
+  }, [applyCustomStyles])
+
   return (
-    <section className="container-hvac py-4">
+    <section className="container-wide py-4">
       <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold text-white">{matched.templateName}</h1>
@@ -1095,8 +1270,12 @@ function EditorStep({
             {FONT_PRESETS.map((f) => (
               <button
                 key={f.label}
-                onClick={() => setCustomFonts({ heading: f.heading, body: f.body })}
-                className="px-3 py-2 rounded-lg border border-white/10 hover:border-white/30 transition-all bg-white/5"
+                onClick={() => setCustomFonts({ heading: f.heading, body: f.body, importUrl: f.importUrl })}
+                className={`px-3 py-2 rounded-lg border transition-all bg-white/5 ${
+                  customFonts.heading === f.heading
+                    ? 'border-cyan-400 ring-1 ring-cyan-400/40'
+                    : 'border-white/10 hover:border-white/30'
+                }`}
               >
                 <span className="text-sm text-white" style={{ fontFamily: f.heading }}>{f.label}</span>
               </button>
@@ -1108,13 +1287,27 @@ function EditorStep({
       {/* Preview */}
       <div className="rounded-2xl overflow-hidden border border-white/10 bg-white">
         {previewLoading ? (
-          <div className="flex items-center justify-center h-[70vh] bg-slate-900">
+          <div className="flex flex-col items-center justify-center h-[70vh] bg-slate-900 gap-4">
             <div className="w-12 h-12 border-4 border-cyan-400 border-t-transparent rounded-full animate-spin" />
+            <p className="text-slate-400 text-sm">Building your preview…</p>
+          </div>
+        ) : previewError ? (
+          <div className="flex flex-col items-center justify-center h-[70vh] bg-slate-900 gap-4 px-6 text-center">
+            <span className="text-4xl">😕</span>
+            <p className="text-slate-300 max-w-sm">{previewError}</p>
+            <button
+              onClick={() => onLoadPreview(matched.nicheSlug, matched.templateSlug, currentPage)}
+              className="px-6 py-3 text-sm font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg hover:scale-105 transition-all"
+            >
+              Retry preview
+            </button>
           </div>
         ) : previewHtml ? (
           <iframe
             ref={iframeRef}
             srcDoc={previewHtml}
+            onLoad={applyCustomStyles}
+            loading="lazy"
             className="w-full h-[70vh] border-0"
             title="Template preview"
           />
@@ -1173,7 +1366,7 @@ function BrowseStep({
   const nicheLabel = NICHE_OPTIONS.find((n) => n.slug === niche)?.label || niche
 
   return (
-    <section className="container-hvac py-8">
+    <section className="container-wide py-8">
       <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
         <div>
           <span className="signal-chip">Browse Templates</span>
@@ -1285,9 +1478,9 @@ function getIframeInjectionScript(): string {
 <script>
 (function(){
   var editableSelectors = 'h1,h2,h3,h4,h5,h6,p,span,li,td,th,a,blockquote,figcaption,label,button,dt,dd';
+  var supportsHover = window.matchMedia && window.matchMedia('(hover: hover)').matches;
 
-  document.addEventListener('dblclick', function(e) {
-    var el = e.target.closest(editableSelectors);
+  function startEditing(el) {
     if (!el || el.isContentEditable) return;
     var originalText = el.textContent;
     el.contentEditable = 'true';
@@ -1304,30 +1497,57 @@ function getIframeInjectionScript(): string {
       el.removeEventListener('blur', onBlur);
       window.parent.postMessage({ type: 'textEdited', tag: el.tagName, original: originalText, text: el.textContent }, '*');
     }, { once: true });
+  }
+
+  // Desktop: double-click to edit.
+  document.addEventListener('dblclick', function(e) {
+    var el = e.target.closest(editableSelectors);
+    if (!el) return;
+    startEditing(el);
     e.preventDefault();
     e.stopPropagation();
   });
 
-  var lastHovered = null;
-  document.addEventListener('mouseover', function(e) {
+  // Mobile: double-tap to edit (no dblclick on touch devices).
+  var lastTap = 0;
+  var lastTapEl = null;
+  document.addEventListener('touchend', function(e) {
     var el = e.target.closest(editableSelectors);
-    if (lastHovered && lastHovered !== el && !lastHovered.isContentEditable) {
-      lastHovered.style.outline = '';
-      lastHovered.style.outlineOffset = '';
+    var now = Date.now();
+    if (el && el === lastTapEl && now - lastTap < 400) {
+      startEditing(el);
+      e.preventDefault();
+      lastTap = 0;
+      lastTapEl = null;
+      return;
     }
-    if (el && !el.isContentEditable) {
-      el.style.outline = '1px dashed rgba(59,130,246,0.4)';
-      el.style.outlineOffset = '1px';
-      lastHovered = el;
-    }
-  });
-  document.addEventListener('mouseout', function(e) {
-    var el = e.target.closest(editableSelectors);
-    if (el && !el.isContentEditable) {
-      el.style.outline = '';
-      el.style.outlineOffset = '';
-    }
-  });
+    lastTap = now;
+    lastTapEl = el;
+  }, { passive: false });
+
+  // Hover outlines only on devices with a real pointer — avoids touch jank.
+  if (supportsHover) {
+    var lastHovered = null;
+    document.addEventListener('mouseover', function(e) {
+      var el = e.target.closest(editableSelectors);
+      if (lastHovered && lastHovered !== el && !lastHovered.isContentEditable) {
+        lastHovered.style.outline = '';
+        lastHovered.style.outlineOffset = '';
+      }
+      if (el && !el.isContentEditable) {
+        el.style.outline = '1px dashed rgba(59,130,246,0.4)';
+        el.style.outlineOffset = '1px';
+        lastHovered = el;
+      }
+    });
+    document.addEventListener('mouseout', function(e) {
+      var el = e.target.closest(editableSelectors);
+      if (el && !el.isContentEditable) {
+        el.style.outline = '';
+        el.style.outlineOffset = '';
+      }
+    });
+  }
 
   document.addEventListener('click', function(e) {
     var img = e.target.closest('img');

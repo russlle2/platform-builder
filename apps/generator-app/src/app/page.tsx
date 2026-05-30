@@ -56,7 +56,7 @@ export default function HomePage() {
       </div>
       <div className="relative z-10">
         {/* Hero */}
-        <section className="container-hvac py-20">
+        <section className="container-wide py-20">
           <div className="hero-grid">
             <div className="space-y-8">
               <span className="signal-chip">DailyClarity Platform Builder</span>
@@ -115,7 +115,7 @@ export default function HomePage() {
         </section>
 
         {/* Niche Cards — main CTA section */}
-        <section id="niches" className="container-hvac py-16">
+        <section id="niches" className="container-wide py-16">
           <div className="text-center mb-12 space-y-4">
             <span className="signal-chip">Choose Your Industry</span>
             <h2 className="text-4xl md:text-5xl font-bold text-white">
@@ -157,7 +157,7 @@ export default function HomePage() {
         </section>
 
         {/* How it works */}
-        <section className="container-hvac py-16">
+        <section className="container-wide py-16">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="glass-panel rounded-2xl p-8">
               <h2 className="text-3xl font-bold text-white mb-4">How it works</h2>
@@ -195,7 +195,7 @@ export default function HomePage() {
         </section>
 
         {/* Feature cards */}
-        <section className="container-hvac py-16">
+        <section className="container-wide py-16">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <FeatureCard
               icon="🎨"
@@ -221,7 +221,7 @@ export default function HomePage() {
         </section>
 
         {/* CTA */}
-        <section className="container-hvac py-20">
+        <section className="container-wide py-20">
           <div className="glass-panel rounded-3xl p-12 text-center">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
               Your new website is one guided flow away.

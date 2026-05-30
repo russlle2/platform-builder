@@ -452,7 +452,7 @@ export default function TemplateCustomizePage({
   if (loading || !params) {
     return (
       <main className="min-h-screen pt-24 pb-20">
-        <div className="container-hvac py-20 text-center">
+        <div className="container-wide py-20 text-center">
           <div className="animate-pulse space-y-4">
             <div className="h-8 w-64 bg-white/10 rounded mx-auto" />
             <div className="h-4 w-96 bg-white/10 rounded mx-auto" />
@@ -465,7 +465,7 @@ export default function TemplateCustomizePage({
   if (error || !template) {
     return (
       <main className="min-h-screen pt-24 pb-20">
-        <div className="container-hvac text-center py-20">
+        <div className="container-wide text-center py-20">
           <h1 className="text-4xl font-bold text-white">Template not found</h1>
           <p className="text-slate-400 mt-4">{error}</p>
           <Link href={`/templates/${params.niche}`} className="text-cyan-300 mt-4 inline-block">
@@ -490,7 +490,7 @@ export default function TemplateCustomizePage({
         onChange={handleImageFileChange}
       />
 
-      <div className="container-hvac">
+      <div className="container-wide">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-slate-400 mb-8">
           <Link href={`/${params.niche}`} className="hover:text-white transition-colors">

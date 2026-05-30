@@ -149,7 +149,7 @@ export default function PricingClient() {
     <main className="relative min-h-screen pt-24 pb-20">
       <div className="relative z-10">
         {/* Header */}
-        <section className="container-hvac py-16">
+        <section className="container-wide py-16">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
             <div className="space-y-6">
               <span className="signal-chip">Pricing</span>
@@ -186,7 +186,7 @@ export default function PricingClient() {
           </div>
         </section>
 
-        <section className="container-hvac pb-12">
+        <section className="container-wide pb-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="stat-card">
               <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Customer rating</p>
@@ -207,7 +207,7 @@ export default function PricingClient() {
         </section>
 
         {/* Pricing Cards */}
-        <section className="container-hvac pb-16">
+        <section className="container-wide pb-16">
           {checkoutReady === false && (
             <div className="mb-8 rounded-2xl border border-amber-400/40 bg-amber-500/10 p-6 text-amber-100">
               <p className="font-semibold text-amber-50">Checkout is not live yet</p>
@@ -257,7 +257,7 @@ export default function PricingClient() {
 
         {/* ═══ DEV-ONLY: Test Purchase ═══ */}
         {process.env.NEXT_PUBLIC_APP_STAGE !== 'production' && (
-          <section className="container-hvac pb-12">
+          <section className="container-wide pb-12">
             <div className="rounded-2xl border-2 border-dashed border-yellow-500/40 bg-yellow-500/5 p-8 space-y-4">
               <div className="flex items-center gap-3">
                 <span className="px-2.5 py-1 rounded bg-yellow-500/20 text-yellow-300 text-[10px] font-bold uppercase tracking-widest">Dev Only</span>
@@ -360,7 +360,7 @@ export default function PricingClient() {
           </section>
         )}
 
-        <section className="container-hvac pb-20">
+        <section className="container-wide pb-20">
           <div className="glass-panel rounded-3xl p-10">
             <h2 className="text-3xl font-bold text-white mb-6">Compare plans</h2>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-sm text-slate-200">
@@ -401,7 +401,7 @@ export default function PricingClient() {
           </div>
         </section>
 
-        <section className="container-hvac pb-20">
+        <section className="container-wide pb-20">
           <div className="glass-panel rounded-3xl p-10">
             <h2 className="text-3xl font-bold text-white mb-6">What practitioners say</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -435,7 +435,7 @@ export default function PricingClient() {
         </section>
 
         {/* FAQ Section */}
-        <section className="container-hvac py-16">
+        <section className="container-wide py-16">
           <div className="glass-panel rounded-3xl p-12">
             <h2 className="text-4xl font-bold text-bright-white mb-8 text-center">
               Frequently Asked Questions
@@ -490,7 +490,7 @@ export default function PricingClient() {
         </section>
 
         {/* Final CTA */}
-        <section className="container-hvac py-20">
+        <section className="container-wide py-20">
           <div className="glass-panel rounded-3xl p-12 text-center">
             <h2 className="text-4xl md:text-5xl font-bold text-bright-white mb-6">
               Ready to Claim Your Spot?

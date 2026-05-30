@@ -45,7 +45,7 @@ export default async function TemplateViewPage({
 
   return (
     <main className="min-h-screen pt-24 pb-20">
-      <div className="container-hvac">
+      <div className="container-wide">
         <div className="flex items-center gap-2 text-sm text-slate-400 mb-8">
           <Link href={`/${niche}`} className="hover:text-white transition-colors">
             {meta.label}

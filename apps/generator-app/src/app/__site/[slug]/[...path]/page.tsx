@@ -87,11 +87,11 @@ const fallbackSite: PreviewSiteData = {
 	templateName: 'Service First',
 	structureSummary: 'Hero with urgent CTA, then services and trust badges.',
 	services: [
-		{ name: 'AC Repair', summary: 'Fast diagnostics and dependable repairs.' },
-		{ name: 'Heating Repair', summary: 'Reliable winter comfort support.' },
+		{ name: 'Initial Consultation', summary: 'A relaxed first session to understand your goals.' },
+		{ name: 'Personalized Sessions', summary: 'Ongoing, tailored support to help you thrive.' },
 	],
 	faq: [
-		{ question: 'How soon can you come out?', answer: 'Same-day and priority windows are available.' },
+		{ question: 'How soon can I book?', answer: 'Same-week and priority appointments are available.' },
 	],
 	customInfo: [],
 	includePastJobs: false,

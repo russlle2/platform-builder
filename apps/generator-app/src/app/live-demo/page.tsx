@@ -5,7 +5,7 @@ import Link from 'next/link'
 export default function LiveDemoPage() {
   return (
     <main className="min-h-screen pt-16">
-      <section className="container-hvac py-16">
+      <section className="container-wide py-16">
         <div className="text-center mb-12">
           <h1 className="text-5xl md:text-6xl font-bold text-bright-white mb-6">
             Live Demo

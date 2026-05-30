@@ -10,7 +10,7 @@ export interface BusinessInfo {
   email: string
   phone: string
   address: string
-  niche: string          // slug — aromatherapy, hvac, etc.
+  niche: string          // slug — aromatherapy, wellness_coach, etc.
   tagline: string
   description: string
   services: string       // comma-separated list

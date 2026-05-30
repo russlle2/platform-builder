@@ -48,7 +48,7 @@ export default function ProofPage() {
 
   return (
     <main className="min-h-screen pt-24 pb-20">
-      <section className="container-hvac py-16">
+      <section className="container-wide py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           <div className="space-y-6">
             <span className="signal-chip">Proof</span>
@@ -89,7 +89,7 @@ export default function ProofPage() {
         </div>
       </section>
 
-      <section className="container-hvac pb-20">
+      <section className="container-wide pb-20">
         <div
           className="glass-panel rounded-3xl p-10"
           onMouseEnter={() => setIsPaused(true)}
@@ -133,7 +133,7 @@ export default function ProofPage() {
         </div>
       </section>
 
-      <section className="container-hvac pb-20">
+      <section className="container-wide pb-20">
         <div className="glass-panel rounded-3xl p-10">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             <div>
@@ -224,7 +224,7 @@ export default function ProofPage() {
         </div>
       </section>
 
-      <section className="container-hvac pb-20">
+      <section className="container-wide pb-20">
         <div className="glass-panel rounded-3xl p-12 text-center">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
             Ready to build yours?

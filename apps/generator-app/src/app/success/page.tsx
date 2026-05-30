@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 export default function SuccessPage() {
   return (
-    <main className="min-h-screen pt-24 pb-16 container-hvac">
+    <main className="min-h-screen pt-24 pb-16 container-wide">
       <div className="glass-panel rounded-3xl p-12 max-w-4xl mx-auto">
         <div className="text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-bright-white mb-4">

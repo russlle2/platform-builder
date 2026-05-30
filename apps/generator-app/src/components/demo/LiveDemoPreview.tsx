@@ -62,7 +62,7 @@ export function LiveDemoPreview() {
               </div>
 
               <div className="grid grid-cols-3 gap-4">
-                {['AC Repair', 'Heating', 'Maintenance'].map((service) => (
+                {['Wellness Sessions', 'Coaching', 'Consultations'].map((service) => (
                   <div key={service} className="bg-gray-800/60 rounded-xl p-4 backdrop-blur-sm border border-gray-700/30">
                     <div className="w-10 h-10 bg-amber-600/20 rounded-lg mb-3" />
                     <h4 className="text-white font-medium text-sm">{service}</h4>

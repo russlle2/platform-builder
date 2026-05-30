@@ -42,7 +42,7 @@ export default async function TemplateGalleryPage({
   if (!meta) {
     return (
       <main className="min-h-screen pt-24 pb-20">
-        <div className="container-hvac text-center py-20">
+        <div className="container-wide text-center py-20">
           <h1 className="text-4xl font-bold text-white">Niche not found</h1>
           <Link href="/" className="text-cyan-300 mt-4 inline-block">Go home</Link>
         </div>
@@ -66,7 +66,7 @@ export default async function TemplateGalleryPage({
 
   return (
     <main className="min-h-screen pt-24 pb-20">
-      <div className="container-hvac">
+      <div className="container-wide">
         {/* Header */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center mb-12">
           <div className="space-y-6">

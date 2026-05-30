@@ -47,7 +47,10 @@ export async function GET(
   return new NextResponse(content, {
     headers: {
       'Content-Type': contentType,
-      'Cache-Control': 'public, max-age=3600',
+      // Template assets are effectively immutable per (niche, slug, path); cache
+      // aggressively on the CDN and client so the preview only fetches each
+      // asset once — a meaningful speed-up on repeat loads and slow connections.
+      'Cache-Control': 'public, max-age=86400, s-maxage=31536000, immutable',
     },
   })
 }

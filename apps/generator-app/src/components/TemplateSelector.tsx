@@ -8,51 +8,51 @@ interface Template {
   name: string
   description: string
   thumbnail: string
-  category: 'hvac'
+  category: 'wellness'
 }
 
 const templates: Template[] = [
   {
-    id: 'modern-hvac',
-    name: 'Modern HVAC',
-    description: 'Clean, professional design for HVAC companies',
+    id: 'modern-wellness',
+    name: 'Modern Wellness',
+    description: 'Clean, professional design for wellness practices',
     thumbnail: '/images/template-modern-hvac.jpg',
-    category: 'hvac',
+    category: 'wellness',
   },
   {
     id: 'industrial-pro',
     name: 'Industrial Pro',
     description: 'Bold, industrial aesthetic for established businesses',
     thumbnail: '/images/template-industrial.jpg',
-    category: 'hvac',
+    category: 'wellness',
   },
   {
     id: 'comfort-classic',
     name: 'Comfort Classic',
     description: 'Warm, welcoming design that builds trust',
     thumbnail: '/images/template-comfort.jpg',
-    category: 'hvac',
+    category: 'wellness',
   },
   {
     id: 'service-first',
     name: 'Service First',
-    description: 'High-visibility HVAC CTAs for fast booking conversions',
+    description: 'High-visibility CTAs for fast booking conversions',
     thumbnail: '/images/template-emergency.jpg',
-    category: 'hvac',
+    category: 'wellness',
   },
   {
     id: 'emergency-ready',
     name: 'Emergency Ready',
     description: '24/7 service focus with high-visibility CTAs',
     thumbnail: '/images/template-emergency.jpg',
-    category: 'hvac',
+    category: 'wellness',
   },
   {
     id: 'residential-focus',
     name: 'Residential Focus',
     description: 'Family-friendly design for residential services',
     thumbnail: '/images/template-residential.jpg',
-    category: 'hvac',
+    category: 'wellness',
   },
 ]
 

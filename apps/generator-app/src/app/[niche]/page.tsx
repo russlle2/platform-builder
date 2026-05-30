@@ -407,7 +407,7 @@ export default async function NicheLandingPage({
 
       <div className="relative z-10">
         {/* Hero */}
-        <section className="container-hvac py-20">
+        <section className="container-wide py-20">
           <div className="hero-grid">
             <div className="space-y-8">
               <span className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] border ${colors.chip}`}>
@@ -474,7 +474,7 @@ export default async function NicheLandingPage({
         </section>
 
         {/* How it works */}
-        <section className="container-hvac py-16">
+        <section className="container-wide py-16">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="glass-panel rounded-2xl p-8">
               <h2 className="text-3xl font-bold text-white mb-4">How it works</h2>
@@ -512,7 +512,7 @@ export default async function NicheLandingPage({
         </section>
 
         {/* Objection + Proof */}
-        <section className="container-hvac py-16">
+        <section className="container-wide py-16">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="glass-panel rounded-2xl p-10 space-y-6">
               <div className="text-5xl">{meta.icon}</div>
@@ -534,7 +534,7 @@ export default async function NicheLandingPage({
         </section>
 
         {/* Feature cards */}
-        <section className="container-hvac py-16">
+        <section className="container-wide py-16">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               { icon: '🎨', title: 'Unique Designs', description: `Every template has a distinct layout, color palette, and content strategy tailored for ${meta.label.toLowerCase()}.` },
@@ -552,7 +552,7 @@ export default async function NicheLandingPage({
         </section>
 
         {/* CTA */}
-        <section className="container-hvac py-20">
+        <section className="container-wide py-20">
           <div className="glass-panel rounded-3xl p-12 text-center">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
               Ready to see your {meta.label.toLowerCase()} website?

@@ -22,7 +22,7 @@ export default function TemplatesPage() {
 
   return (
     <main className="min-h-screen pt-24 pb-20">
-      <div className="container-hvac">
+      <div className="container-wide">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center mb-12">
           <div className="space-y-6">
             <span className="signal-chip">Templates</span>

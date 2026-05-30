@@ -25,7 +25,7 @@ interface WizardData {
 
 const INITIAL_DATA: WizardData = {
   businessName: '',
-  businessType: 'hvac',
+  businessType: 'wellness',
   phone: '',
   email: '',
   address: '',
@@ -35,30 +35,30 @@ const INITIAL_DATA: WizardData = {
   headingFont: 'Inter',
   bodyFont: 'Inter',
   heroStyle: 'clean and modern',
-  backgroundPreference: 'industrial metal',
-  templateId: 'hvac-pro',
+  backgroundPreference: 'soft natural light',
+  templateId: 'wellness-pro',
   logoImage: '/images/placeholder-logo.png',
   heroImage: '/images/template-bg-1.jpg',
-  backgroundImage: '/images/hvac-condenser.jpg',
+  backgroundImage: '/images/template-bg-2.jpg',
   galleryImages: [],
 };
 
 const AUTO_FILL_DATA: Partial<WizardData> = {
-  businessName: 'Pro HVAC Services',
+  businessName: 'Thrive Wellness Coaching',
   phone: '(555) 123-4567',
-  email: 'contact@prohvac.com',
-  address: '123 Industrial Blvd, Suite 100',
-  services: 'AC Repair, Heating Installation, Duct Cleaning, Maintenance Plans',
-  description: 'Professional HVAC services with 20+ years of experience.',
+  email: 'hello@thrivewellness.com',
+  address: '123 Wellness Way, Suite 100',
+  services: 'Health Coaching, Habit Building, Nutrition Planning, Accountability Programs',
+  description: 'Personalized wellness coaching helping clients build lasting healthy habits.',
 };
 
 const TEMPLATES = [
-  { id: 'hvac-pro', name: 'HVAC Professional', bg: '/images/template-bg-1.jpg' },
-  { id: 'hvac-modern', name: 'Modern HVAC', bg: '/images/template-bg-2.jpg' },
+  { id: 'wellness-pro', name: 'Wellness Professional', bg: '/images/template-bg-1.jpg' },
+  { id: 'wellness-modern', name: 'Modern Wellness', bg: '/images/template-bg-2.jpg' },
   { id: 'comfort-classic', name: 'Comfort Classic', bg: '/images/template-bg-3.jpg' },
-  { id: 'industrial', name: 'Industrial Pro', bg: '/images/template-bg-4.jpg' },
-  { id: 'hvac-elite', name: 'Elite HVAC', bg: '/images/template-bg-5.jpg' },
-  { id: 'service-first', name: 'Service First HVAC', bg: '/images/template-bg-6.jpg' },
+  { id: 'studio', name: 'Studio Pro', bg: '/images/template-bg-4.jpg' },
+  { id: 'wellness-elite', name: 'Elite Wellness', bg: '/images/template-bg-5.jpg' },
+  { id: 'service-first', name: 'Service First', bg: '/images/template-bg-6.jpg' },
 ];
 
 const ACCENT_COLORS = [
@@ -164,10 +164,10 @@ export function EditorWizard() {
         <div className="flex-grow overflow-y-auto px-6 py-6 space-y-5">
           {step === 1 && (
             <>
-              <InputField label="Business Name" value={data.businessName} onChange={(v) => updateField('businessName', v)} placeholder="e.g. Pro HVAC Services" />
+              <InputField label="Business Name" value={data.businessName} onChange={(v) => updateField('businessName', v)} placeholder="e.g. Thrive Wellness Coaching" />
               <div>
                 <label className="block text-white font-medium text-sm mb-2">Business Type</label>
-                <div className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/15 text-white">HVAC</div>
+                <div className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/15 text-white">Wellness</div>
               </div>
               <InputField label="Phone" value={data.phone} onChange={(v) => updateField('phone', v)} placeholder="(555) 123-4567" />
               <InputField label="Email" value={data.email} onChange={(v) => updateField('email', v)} placeholder="contact@yourbusiness.com" />
@@ -177,7 +177,7 @@ export function EditorWizard() {
 
           {step === 2 && (
             <>
-              <TextAreaField label="What services do you offer?" value={data.services} onChange={(v) => updateField('services', v)} placeholder="AC Repair, Heating Installation, Duct Cleaning..." />
+              <TextAreaField label="What services do you offer?" value={data.services} onChange={(v) => updateField('services', v)} placeholder="Health Coaching, Nutrition Planning, Habit Building..." />
               <TextAreaField label="Describe your business" value={data.description} onChange={(v) => updateField('description', v)} placeholder="Tell us about your business, experience, and what makes you stand out..." />
             </>
           )}
@@ -226,7 +226,7 @@ export function EditorWizard() {
 
               {/* Style questions */}
               <InputField label="What style should your hero image have?" value={data.heroStyle} onChange={(v) => updateField('heroStyle', v)} placeholder="e.g. clean and modern" />
-              <InputField label="What background do you want?" value={data.backgroundPreference} onChange={(v) => updateField('backgroundPreference', v)} placeholder="e.g. industrial metal" />
+              <InputField label="What background do you want?" value={data.backgroundPreference} onChange={(v) => updateField('backgroundPreference', v)} placeholder="e.g. soft natural light" />
             </>
           )}
 
