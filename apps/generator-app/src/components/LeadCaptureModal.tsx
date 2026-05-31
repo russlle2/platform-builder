@@ -41,13 +41,21 @@ export default function LeadCaptureModal() {
     }
   }, [pathname])
 
+  const trimmedEmail = email.trim()
+  const trimmedPhone = phone.trim()
+  const canSubmit = trimmedEmail.length > 0 || trimmedPhone.length > 0
+
   const submitLead = async () => {
+    if (!canSubmit) {
+      setStatus('error')
+      return
+    }
     try {
       setStatus('submitting')
       const response = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, phone, source: 'modal' }),
+        body: JSON.stringify({ email: trimmedEmail, phone: trimmedPhone, source: 'modal' }),
       })
       if (!response.ok) {
         throw new Error('Failed')
@@ -73,10 +81,13 @@ export default function LeadCaptureModal() {
         >
           ✕
         </button>
-        <span className="signal-chip">Join the waitlist</span>
+        <span className="signal-chip">Early access</span>
         <h3 className="text-3xl font-bold text-white mt-4">
-          Sign up to recieve notifications when new website builds drop and for %15 off any package
+          Get your 15% launch discount
         </h3>
+        <p className="text-slate-200 mt-3">
+          Join the early-access list and get notified when new website builds, niche demos, and launch slots open.
+        </p>
         <div className="mt-6 space-y-4">
           <input
             type="email"
@@ -94,7 +105,9 @@ export default function LeadCaptureModal() {
           />
         </div>
         {status === 'error' && (
-          <p className="text-sm text-red-200 mt-4">Unable to save. Try again.</p>
+          <p className="text-sm text-red-200 mt-4">
+            {canSubmit ? 'Unable to save. Try again.' : 'Enter your email or phone to continue.'}
+          </p>
         )}
         {status === 'success' ? (
           <div className="mt-6 p-4 bg-cyan-400/20 text-cyan-100 rounded-xl">
@@ -104,10 +117,10 @@ export default function LeadCaptureModal() {
           <button
             type="button"
             onClick={submitLead}
-            disabled={status === 'submitting'}
-            className="cta-button mt-6 w-full"
+            disabled={status === 'submitting' || !canSubmit}
+            className="cta-button mt-6 w-full disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {status === 'submitting' ? 'Submitting...' : 'Notify me'}
+            {status === 'submitting' ? 'Submitting...' : 'Claim 15% Off'}
           </button>
         )}
       </div>
