@@ -19,6 +19,7 @@ export async function GET(
   const templates = getTemplatesForNiche(niche).map((t) => ({
     slug: t.slug,
     name: t.name,
+    nicheSlug: niche,
     layoutFamily: t.layoutFamily,
     voiceFamily: t.voiceFamily,
     pages: t.pages,

@@ -384,23 +384,31 @@ async function recordScenario(s: DemoScenario, scenarioRawDir: string): Promise<
   const page = await context.newPage()
 
   try {
-    // Homepage
-    console.log('  → Homepage...')
-    await page.goto(BASE_URL, { waitUntil: 'networkidle', timeout: 30000 }).catch(() =>
-      page.goto(BASE_URL, { waitUntil: 'domcontentloaded' })
-    )
-    await waitAndPause(page, 2500)
-    await page.mouse.wheel(0, 350)
-    await pause(1000)
-    await page.mouse.wheel(0, 400)
-    await pause(1000)
-    await page.mouse.wheel(0, -800)
-    await pause(1500)
-
-    // Navigate to intake wizard
-    console.log('  → Navigating to intake...')
-    await page.goto(`${BASE_URL}/preview-your-business`, { waitUntil: 'domcontentloaded' })
-    await waitAndPause(page, 1500)
+    if (s.id === 'platform-builder') {
+      console.log('  → Homepage...')
+      await page.goto(BASE_URL, { waitUntil: 'networkidle', timeout: 30000 }).catch(() =>
+        page.goto(BASE_URL, { waitUntil: 'domcontentloaded' })
+      )
+      await waitAndPause(page, 2500)
+      await page.mouse.wheel(0, 350)
+      await pause(1000)
+      await page.mouse.wheel(0, 400)
+      await pause(1000)
+      await page.mouse.wheel(0, -800)
+      await pause(1500)
+      const cta = page.getByRole('link', { name: /Preview Your Business/i }).first()
+      if (await cta.isVisible().catch(() => false)) {
+        await cta.click()
+        await page.waitForURL('**/preview-your-business**', { timeout: 15000 }).catch(() => {})
+      } else {
+        await page.goto(`${BASE_URL}/preview-your-business`, { waitUntil: 'domcontentloaded' })
+      }
+      await waitAndPause(page, 1500)
+    } else {
+      console.log('  → Intake wizard...')
+      await page.goto(`${BASE_URL}/preview-your-business`, { waitUntil: 'domcontentloaded' })
+      await waitAndPause(page, 1500)
+    }
 
     await completeInfoStep(page, s)
     await completeStyleStep(page, s)
@@ -434,7 +442,12 @@ async function main() {
 
   const results: { name: string; path: string; ok: boolean }[] = []
 
-  for (const scenario of SCENARIOS) {
+  const only = process.env.DEMO_ONLY?.split(',').map((s) => s.trim()).filter(Boolean)
+  const toRun = only?.length
+    ? SCENARIOS.filter((s) => only.includes(s.id) || only.includes(s.outputName))
+    : SCENARIOS
+
+  for (const scenario of toRun) {
     const scenarioRawDir = path.join(RAW_DIR, scenario.id)
     fs.mkdirSync(scenarioRawDir, { recursive: true })
 

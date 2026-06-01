@@ -174,6 +174,7 @@ export default function PreviewYourBusinessPage() {
   // ---- preview state ----
   const [previewHtml, setPreviewHtml] = useState<string | null>(null)
   const [previewLoading, setPreviewLoading] = useState(false)
+  const [previewError, setPreviewError] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState('index.html')
   const [editMode, setEditMode] = useState(false)
   const iframeRef = useRef<HTMLIFrameElement>(null!)
@@ -208,8 +209,12 @@ export default function PreviewYourBusinessPage() {
       const res = await fetch(`/api/templates/${niche}`)
       if (res.ok) {
         const data = await res.json()
-        setTemplates(data.templates || [])
-        return data.templates || []
+        const withNiche = (data.templates || []).map((t: ApiTemplate) => ({
+          ...t,
+          nicheSlug: t.nicheSlug || niche,
+        }))
+        setTemplates(withNiche)
+        return withNiche
       }
     } catch { /* ignore */ }
     setTemplatesLoading(false)
@@ -238,15 +243,16 @@ export default function PreviewYourBusinessPage() {
     }
 
     // Score all
-    const scored = tpls.map((t: ApiTemplate) => ({
-      ...t,
-      ...scoreTemplate(t, stylePreferences, businessInfo.niche),
-    }))
+    const scored = tpls.map((t: ApiTemplate) => {
+      const withNiche = { ...t, nicheSlug: t.nicheSlug || businessInfo.niche }
+      return { ...withNiche, ...scoreTemplate(withNiche, stylePreferences, businessInfo.niche) }
+    })
     scored.sort((a: { score: number }, b: { score: number }) => b.score - a.score)
 
     const best = scored[0]
+    const resolvedNiche = best.nicheSlug || businessInfo.niche
     setMatchedTemplate({
-      nicheSlug: best.nicheSlug,
+      nicheSlug: resolvedNiche,
       templateSlug: best.slug,
       templateName: best.name,
       matchScore: best.score,
@@ -258,10 +264,15 @@ export default function PreviewYourBusinessPage() {
   /* ================ Load live preview ================ */
   const loadPreview = useCallback(
     async (nicheSlug?: string, templateSlug?: string, page = 'index.html') => {
-      const ns = nicheSlug || matchedTemplate?.nicheSlug
+      const ns = nicheSlug || matchedTemplate?.nicheSlug || businessInfo.niche
       const ts = templateSlug || matchedTemplate?.templateSlug
-      if (!ns || !ts) return
+      if (!ns || !ts) {
+        setPreviewError('Choose a template with a valid niche and layout before previewing.')
+        setPreviewHtml(null)
+        return
+      }
       setPreviewLoading(true)
+      setPreviewError(null)
 
       try {
         // Persist the intake values so checkout (on /pricing) can pick them up.
@@ -272,9 +283,20 @@ export default function PreviewYourBusinessPage() {
         const res = await fetch(`/api/templates/${ns}/${ts}/preview`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ page, values: getFieldValues() }),
+          body: JSON.stringify({
+            page,
+            values: getFieldValues(),
+            colorScheme: stylePreferences.colorMood,
+            fontVariation: stylePreferences.fontPreference,
+            structureVariation: stylePreferences.layoutDensity,
+          }),
         })
-        if (!res.ok) throw new Error('Preview failed')
+        if (!res.ok) {
+          const errBody = await res.json().catch(() => ({}))
+          throw new Error(
+            typeof errBody?.error === 'string' ? errBody.error : `Preview failed (${res.status})`,
+          )
+        }
         const data = await res.json()
 
         let html = data.html as string
@@ -291,6 +313,12 @@ export default function PreviewYourBusinessPage() {
 
         if (data.css) {
           html = html.replace('</head>', `<style>${data.css}</style></head>`)
+        }
+        if (data.variationCSS) {
+          html = html.replace(
+            '</head>',
+            `<style id="variation-overrides">${data.variationCSS}</style></head>`,
+          )
         }
 
         // Inject custom colors/fonts
@@ -313,11 +341,15 @@ export default function PreviewYourBusinessPage() {
         setCurrentPage(page)
       } catch (e) {
         console.error('Preview error:', e)
+        setPreviewHtml(null)
+        setPreviewError(
+          e instanceof Error ? e.message : 'Unable to load template preview. Try again or pick another template.',
+        )
       } finally {
         setPreviewLoading(false)
       }
     },
-    [matchedTemplate, getFieldValues],
+    [matchedTemplate, businessInfo.niche, getFieldValues, stylePreferences],
   )
 
   /* ================ Restore persisted inline edits ================ */
@@ -399,16 +431,17 @@ export default function PreviewYourBusinessPage() {
 
   /* ================ Select a template from browse ================ */
   const selectBrowseTemplate = useCallback((t: ApiTemplate) => {
+    const resolvedNiche = t.nicheSlug || businessInfo.niche
     setMatchedTemplate({
-      nicheSlug: t.nicheSlug,
+      nicheSlug: resolvedNiche,
       templateSlug: t.slug,
       templateName: t.name,
       matchScore: 0,
       reason: 'manually selected',
     })
     setStep('editor')
-    loadPreview(t.nicheSlug, t.slug)
-  }, [setMatchedTemplate, setStep, loadPreview])
+    loadPreview(resolvedNiche, t.slug)
+  }, [businessInfo.niche, setMatchedTemplate, setStep, loadPreview])
 
   /* ================================================================ */
   /* Render                                                           */
@@ -499,6 +532,7 @@ export default function PreviewYourBusinessPage() {
             readiness={clientReadiness}
             previewHtml={previewHtml}
             previewLoading={previewLoading}
+            previewError={previewError}
             currentPage={currentPage}
             editMode={editMode}
             setEditMode={setEditMode}
@@ -947,6 +981,7 @@ function EditorStep({
   readiness,
   previewHtml,
   previewLoading,
+  previewError,
   currentPage,
   editMode,
   setEditMode,
@@ -968,6 +1003,7 @@ function EditorStep({
   readiness: ReturnType<typeof computeClientReadiness>
   previewHtml: string | null
   previewLoading: boolean
+  previewError: string | null
   currentPage: string
   editMode: boolean
   setEditMode: (v: boolean) => void
@@ -1138,6 +1174,17 @@ function EditorStep({
             className="w-full h-[70vh] border-0"
             title="Template preview"
           />
+        ) : previewError ? (
+          <div className="flex flex-col items-center justify-center gap-4 h-[70vh] bg-slate-900 px-6 text-center">
+            <p className="text-red-200 text-sm max-w-md">{previewError}</p>
+            <button
+              type="button"
+              onClick={() => onLoadPreview(matched.nicheSlug, matched.templateSlug, currentPage)}
+              className="px-4 py-2 text-sm font-semibold text-white border border-white/20 rounded-lg hover:bg-white/10"
+            >
+              Retry preview
+            </button>
+          </div>
         ) : (
           <div className="flex items-center justify-center h-[70vh] bg-slate-900 text-slate-400">
             Loading preview...
