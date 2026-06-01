@@ -1,7 +1,7 @@
 [build]
-  # Run from root to ensure workspace dependencies like ui-components are installed correctly
+  # Monorepo: install from repo root so workspace:* deps resolve (do not set base to apps/generator-app).
   base = "/"
-  command = "pnpm install --frozen-lockfile && pnpm run generator:build"
+  command = "corepack enable && corepack prepare pnpm@9.0.0 --activate && pnpm install --frozen-lockfile && pnpm run generator:build"
   publish = "apps/generator-app/.next"
 
 [build.environment]
