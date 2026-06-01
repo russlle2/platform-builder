@@ -1,7 +1,7 @@
 /**
- * Customer-facing portal route — no admin token required.
- * Rate-limited; reads/writes portal_sites using the service role key server-side.
- * This is the public equivalent of /api/portal/site for authenticated customer use.
+ * Customer portal API — slug alone does not grant access to editable site data.
+ * GET: public summary without token; full site payload with valid portal token.
+ * POST: requires valid portal token.
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
@@ -11,7 +11,15 @@ import { existsSync } from 'fs'
 import { buildDeployFiles, type InlineTextEdit } from '@/lib/site-deploy'
 import type { ImageSwap } from '@/lib/image-swaps'
 import { deploySiteFiles } from '@/lib/netlify'
-import { rateLimitByIp, jsonTooManyRequests } from '@/lib/server-auth'
+import { rateLimitByIp, jsonTooManyRequests, jsonUnauthorized, jsonForbidden } from '@/lib/server-auth'
+import {
+  getPortalTokenFromRequest,
+  toAuthenticatedPortalSite,
+  toPublicPortalSite,
+  validatePortalTokenForSlug,
+  verifyPortalTokenHash,
+  type PortalSiteRow,
+} from '@/lib/portal-auth'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -33,6 +41,14 @@ interface SiteData {
   [key: string]: unknown
 }
 
+interface LocalPortalCache {
+  slug: string
+  data: SiteData
+  status?: string
+  updated_at?: string
+  portal_token_hash?: string | null
+}
+
 const normalizeSlug = (value: string) =>
   value
     .toLowerCase()
@@ -48,13 +64,17 @@ const getSupabase = () => {
 const localCachePath = (slug: string) =>
   path.join('/tmp', 'platform-builder-portal-sites', `${slug}.json`)
 
-const readLocalSite = async (slug: string) => {
+const readLocalSite = async (slug: string): Promise<LocalPortalCache | null> => {
   const fp = localCachePath(slug)
   if (!existsSync(fp)) return null
-  try { return JSON.parse(await readFile(fp, 'utf-8')) } catch { return null }
+  try {
+    return JSON.parse(await readFile(fp, 'utf-8')) as LocalPortalCache
+  } catch {
+    return null
+  }
 }
 
-const writeLocalSite = async (slug: string, site: unknown) => {
+const writeLocalSite = async (slug: string, site: LocalPortalCache) => {
   const dir = path.join('/tmp', 'platform-builder-portal-sites')
   await mkdir(dir, { recursive: true })
   await writeFile(localCachePath(slug), JSON.stringify(site), 'utf-8')
@@ -89,14 +109,30 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Slug is required.' }, { status: 400 })
   }
 
+  const token = getPortalTokenFromRequest(req)
   const supabase = getSupabase()
+
   if (!supabase) {
-    return NextResponse.json({ site: await readLocalSite(slug) })
+    const local = await readLocalSite(slug)
+    if (!local) {
+      return NextResponse.json({ site: null, authenticated: false })
+    }
+    const authenticated = verifyPortalTokenHash(token || '', local.portal_token_hash)
+    if (!authenticated) {
+      return NextResponse.json({
+        site: toPublicPortalSite(local as PortalSiteRow),
+        authenticated: false,
+      })
+    }
+    return NextResponse.json({
+      site: toAuthenticatedPortalSite(local as PortalSiteRow),
+      authenticated: true,
+    })
   }
 
   const { data, error } = await supabase
     .from('portal_sites')
-    .select('slug, data, status, updated_at')
+    .select('slug, data, status, updated_at, portal_token_hash')
     .eq('slug', slug)
     .maybeSingle()
 
@@ -104,7 +140,22 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unable to load site.' }, { status: 500 })
   }
 
-  return NextResponse.json({ site: data })
+  if (!data) {
+    return NextResponse.json({ site: null, authenticated: false })
+  }
+
+  const authenticated = await validatePortalTokenForSlug(supabase, slug, token)
+  if (!authenticated) {
+    return NextResponse.json({
+      site: toPublicPortalSite(data as PortalSiteRow),
+      authenticated: false,
+    })
+  }
+
+  return NextResponse.json({
+    site: toAuthenticatedPortalSite(data as PortalSiteRow),
+    authenticated: true,
+  })
 }
 
 export async function POST(req: NextRequest) {
@@ -118,6 +169,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Slug is required.' }, { status: 400 })
   }
 
+  const token = getPortalTokenFromRequest(req, body)
+  const supabase = getSupabase()
+
   const incomingValues: Record<string, string> =
     body.customerValues && typeof body.customerValues === 'object' ? body.customerValues : {}
   const incomingInlineEdits: Record<string, InlineTextEdit[]> | undefined =
@@ -125,11 +179,13 @@ export async function POST(req: NextRequest) {
   const incomingImageSwaps: Record<string, ImageSwap[]> | undefined =
     body.imageSwaps && typeof body.imageSwaps === 'object' ? body.imageSwaps : undefined
 
-  const supabase = getSupabase()
-
   if (!supabase) {
-    const existing = (await readLocalSite(slug)) || {}
-    const prevData: SiteData = (existing.data as SiteData) || {}
+    const local = await readLocalSite(slug)
+    if (!verifyPortalTokenHash(token || '', local?.portal_token_hash)) {
+      return jsonUnauthorized()
+    }
+
+    const prevData: SiteData = local?.data || {}
     const mergedData: SiteData = {
       ...prevData,
       customerValues: { ...(prevData.customerValues || {}), ...incomingValues },
@@ -140,15 +196,21 @@ export async function POST(req: NextRequest) {
     await writeLocalSite(slug, {
       slug,
       data: mergedData,
-      status: body.status || existing.status || 'active',
+      status: body.status || local?.status || 'active',
       updated_at: new Date().toISOString(),
+      portal_token_hash: local?.portal_token_hash ?? null,
     })
     return NextResponse.json({ ok: true, fallback: 'local-cache', republished: false })
   }
 
+  const authorized = await validatePortalTokenForSlug(supabase, slug, token)
+  if (!authorized) {
+    return jsonForbidden()
+  }
+
   const { data: existingRow } = await supabase
     .from('portal_sites')
-    .select('data, status')
+    .select('data, status, portal_token_hash')
     .eq('slug', slug)
     .maybeSingle()
 
@@ -166,6 +228,7 @@ export async function POST(req: NextRequest) {
     data: mergedData,
     status: body.status || existingRow?.status || 'active',
     updated_at: new Date().toISOString(),
+    portal_token_hash: existingRow?.portal_token_hash,
   })
 
   if (error) {

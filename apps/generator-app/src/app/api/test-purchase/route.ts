@@ -5,6 +5,7 @@ import { getTemplate } from '@/lib/templates/niche-registry'
 import { buildDeployFiles, type InlineTextEdit } from '@/lib/site-deploy'
 import type { ImageSwap } from '@/lib/image-swaps'
 import { migrateImagesToSiteSlug, rewriteImageSwapUrls } from '@/lib/customer-images'
+import { createPortalAccessCredentials } from '@/lib/portal-auth'
 
 /**
  * POST /api/test-purchase
@@ -86,6 +87,7 @@ export async function POST(req: Request) {
   let siteUrl = ''
   let siteId = ''
   let resolvedImageSwaps = imageSwaps as Record<string, ImageSwap[]>
+  const portalCredentials = createPortalAccessCredentials()
 
   if (imageOwner && imageOwner.startsWith('draft-')) {
     try {
@@ -168,6 +170,7 @@ export async function POST(req: Request) {
           .upsert({
             slug: normalizedSlug,
             status: 'active',
+            portal_token_hash: portalCredentials?.hash ?? null,
             data: {
               niche,
               template: templateSlug,
@@ -206,6 +209,10 @@ export async function POST(req: Request) {
     slug: normalizedSlug,
     siteUrl: siteUrl || null,
     siteId: siteId || null,
+    portalAccessToken: portalCredentials?.token ?? null,
+    portalUrl: portalCredentials
+      ? `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/portal?slug=${encodeURIComponent(normalizedSlug)}&token=${encodeURIComponent(portalCredentials.token)}`
+      : null,
     log,
   })
 }

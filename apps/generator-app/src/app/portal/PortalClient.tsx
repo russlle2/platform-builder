@@ -1,11 +1,15 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { track } from '@/lib/analytics'
 import { CustomerImageLibrary } from '@/components/CustomerImageLibrary'
 import { getOrCreateImageOwnerId } from '@/lib/image-swaps'
+import {
+  getStoredPortalToken,
+  storePortalToken,
+} from '@/lib/portal-token-client'
 
 const onboardingSteps = [
   {
@@ -52,7 +56,11 @@ const normalizeSlug = (value: string) => {
 export default function PortalClient() {
   const searchParams = useSearchParams()
   const initialSlug = useMemo(() => searchParams.get('slug') || '', [searchParams])
+  const initialToken = useMemo(() => searchParams.get('token') || '', [searchParams])
   const [slug, setSlug] = useState(initialSlug)
+  const [portalToken, setPortalToken] = useState('')
+  const [portalAuthenticated, setPortalAuthenticated] = useState(false)
+  const [publicSiteUrl, setPublicSiteUrl] = useState<string | null>(null)
   const [lookupInput, setLookupInput] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'saving' | 'saved' | 'error'>(
     'idle'
@@ -80,12 +88,75 @@ export default function PortalClient() {
   })
   const [siteTemplate, setSiteTemplate] = useState<{ niche?: string; template?: string }>({})
 
-  useEffect(() => {
-    if (!initialSlug) {
+  const loadSite = useCallback(async (targetSlug: string, tokenOverride?: string) => {
+    const normalized = normalizeSlug(targetSlug)
+    if (!normalized) {
       return
     }
-    loadSite(initialSlug)
-  }, [initialSlug])
+    const token = tokenOverride || portalToken || getStoredPortalToken(normalized) || ''
+    if (token) {
+      setPortalToken(token)
+      storePortalToken(normalized, token)
+    }
+    setStatus('loading')
+    setPortalAuthenticated(false)
+    setPublicSiteUrl(null)
+    try {
+      const query = new URLSearchParams({ slug: normalized })
+      if (token) query.set('token', token)
+      const response = await fetch(`/api/portal/customer?${query.toString()}`)
+      const data = await response.json()
+      if (!response.ok) {
+        setStatus('error')
+        return
+      }
+
+      if (data.authenticated && data.site?.data) {
+        const d = data.site.data as Record<string, unknown>
+        const cv = (d.customerValues || {}) as Record<string, string>
+        setFormData({
+          businessName: cv.BUSINESS_NAME || (d.businessName as string) || '',
+          tagline: cv.TAGLINE || (d.tagline as string) || '',
+          phone: cv.PHONE || cv.PHONE_NUMBER || (d.phone as string) || '',
+          email: cv.EMAIL || (d.email as string) || '',
+          address: cv.ADDRESS || (d.address as string) || '',
+          services: cv.SERVICES || (d.services as string) || '',
+        })
+        setSiteTemplate({
+          niche: d.niche as string | undefined,
+          template: d.template as string | undefined,
+        })
+        setPortalAuthenticated(true)
+        getOrCreateImageOwnerId(normalized)
+      } else if (data.site?.public) {
+        setPublicSiteUrl(data.site.public.siteUrl || null)
+        setSiteTemplate({
+          niche: data.site.public.niche || undefined,
+          template: data.site.public.template || undefined,
+        })
+        setPortalAuthenticated(false)
+      } else {
+        setPortalAuthenticated(false)
+      }
+      setStatus('idle')
+    } catch {
+      setStatus('error')
+    }
+  }, [portalToken])
+
+  useEffect(() => {
+    if (!initialSlug) return
+    if (initialToken) {
+      storePortalToken(normalizeSlug(initialSlug), initialToken)
+      setPortalToken(initialToken)
+      if (typeof window !== 'undefined') {
+        const url = new URL(window.location.href)
+        url.searchParams.delete('token')
+        window.history.replaceState({}, '', `${url.pathname}${url.search}`)
+      }
+    }
+    loadSite(initialSlug, initialToken || getStoredPortalToken(normalizeSlug(initialSlug)) || undefined)
+  }, [initialSlug, initialToken, loadSite])
 
   useEffect(() => {
     fetch('/api/platform/config')
@@ -100,12 +171,16 @@ export default function PortalClient() {
   const normalizedSlug = useMemo(() => normalizeSlug(slug), [slug])
 
   useEffect(() => {
-    if (!normalizedSlug) {
+    if (!normalizedSlug || !portalAuthenticated) {
       setDomainInfo(null)
       return
     }
+    const token = portalToken || getStoredPortalToken(normalizedSlug)
+    if (!token) return
     setDomainStatus('loading')
-    fetch(`/api/sites/domain?slug=${encodeURIComponent(normalizedSlug)}`)
+    fetch(
+      `/api/sites/domain?slug=${encodeURIComponent(normalizedSlug)}&token=${encodeURIComponent(token)}`,
+    )
       .then((res) => res.json())
       .then((data) => {
         if (data?.subdomain) {
@@ -135,45 +210,19 @@ export default function PortalClient() {
         })
         setDomainStatus('idle')
       })
-  }, [normalizedSlug, platformDomain])
+  }, [normalizedSlug, platformDomain, portalAuthenticated, portalToken])
 
   // Integration status is admin-only — omit client-side fetch
   // (The integrations panel shows defaults from integrationDefaults)
 
-  const loadSite = async (targetSlug: string) => {
-    const normalized = normalizeSlug(targetSlug)
-    if (!normalized) {
-      return
-    }
-    setStatus('loading')
-    try {
-      const response = await fetch(`/api/portal/customer?slug=${encodeURIComponent(normalized)}`)
-      const data = await response.json()
-      const d = data?.site?.data
-      if (response.ok && d) {
-        // Canonical shape stores values under customerValues ({{TOKEN}} keys).
-        // Fall back to legacy flat fields for older records.
-        const cv = (d.customerValues || {}) as Record<string, string>
-        setFormData({
-          businessName: cv.BUSINESS_NAME || d.businessName || '',
-          tagline: cv.TAGLINE || d.tagline || '',
-          phone: cv.PHONE || cv.PHONE_NUMBER || d.phone || '',
-          email: cv.EMAIL || d.email || '',
-          address: cv.ADDRESS || d.address || '',
-          services: cv.SERVICES || d.services || '',
-        })
-        setSiteTemplate({ niche: d.niche, template: d.template })
-        getOrCreateImageOwnerId(normalized)
-      }
-      setStatus('idle')
-    } catch (error) {
-      setStatus('error')
-    }
-  }
-
   const saveSite = async () => {
     const normalized = normalizeSlug(slug)
-    if (!normalized) {
+    const token = portalToken || getStoredPortalToken(normalized)
+    if (!normalized || !token) {
+      setStatus('error')
+      return
+    }
+    if (!portalAuthenticated) {
       setStatus('error')
       return
     }
@@ -200,8 +249,11 @@ export default function PortalClient() {
       }
       const response = await fetch('/api/portal/customer', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slug: normalized, customerValues }),
+        headers: {
+          'Content-Type': 'application/json',
+          'x-portal-token': token,
+        },
+        body: JSON.stringify({ slug: normalized, customerValues, token }),
       })
       const result = await response.json().catch(() => ({}))
       if (!response.ok) {
@@ -220,7 +272,8 @@ export default function PortalClient() {
   }
 
   const saveCustomDomain = async () => {
-    if (!normalizedSlug || !customDomain.trim()) {
+    const token = portalToken || getStoredPortalToken(normalizedSlug)
+    if (!normalizedSlug || !customDomain.trim() || !token || !portalAuthenticated) {
       setDomainStatus('error')
       setDomainMessage('Enter a valid domain name.')
       return
@@ -230,10 +283,14 @@ export default function PortalClient() {
     try {
       const response = await fetch('/api/sites/domain', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-portal-token': token,
+        },
         body: JSON.stringify({
           slug: normalizedSlug,
           customDomain: customDomain.trim(),
+          token,
         }),
       })
       const data = await response.json()
@@ -269,12 +326,12 @@ export default function PortalClient() {
                 Access your website dashboard
               </h1>
               <p className="text-slate-300 text-lg">
-                Enter the email or site slug you used at checkout.
+                Use the secure link from your welcome email. Slug lookup alone cannot unlock edits.
               </p>
             </div>
             <div className="glass-panel rounded-3xl p-8 space-y-6">
               <div className="space-y-3">
-                <label className="text-sm text-slate-300 block">Your site slug or email</label>
+                <label className="text-sm text-slate-300 block">Site slug (read-only preview)</label>
                 <input
                   value={lookupInput}
                   onChange={(e) => setLookupInput(e.target.value)}
@@ -294,10 +351,10 @@ export default function PortalClient() {
                 }}
                 className="w-full cta-button text-center"
               >
-                Find My Website
+                Check site status
               </button>
               <p className="text-xs text-slate-400 text-center">
-                Your website is created after checkout. Check your email for your access link.
+                After checkout, your welcome email includes a private portal link with an access token.
               </p>
             </div>
             <div className="text-center space-y-3">
@@ -320,9 +377,38 @@ export default function PortalClient() {
     )
   }
 
+  const showDevPortalWarning =
+    process.env.NODE_ENV !== 'production' && normalizedSlug && !portalAuthenticated
+
   return (
     <main className="min-h-screen pt-24 pb-20">
       <div className="container-hvac space-y-10">
+        {showDevPortalWarning && (
+          <div
+            role="alert"
+            className="rounded-xl border border-amber-400/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-100"
+          >
+            <strong>Dev:</strong> Portal edits require a valid access token. Use{' '}
+            <code className="text-amber-200">/portal?slug=…&amp;token=…</code> from test-purchase or set{' '}
+            <code className="text-amber-200">PORTAL_TOKEN_SECRET</code> and provision{' '}
+            <code className="text-amber-200">portal_token_hash</code> in Supabase.
+          </div>
+        )}
+        {!portalAuthenticated && normalizedSlug && (
+          <div className="rounded-xl border border-cyan-400/30 bg-cyan-500/10 px-4 py-3 text-sm text-cyan-100">
+            {publicSiteUrl ? (
+              <>
+                Site found at{' '}
+                <a href={publicSiteUrl} className="underline font-semibold" target="_blank" rel="noreferrer">
+                  {publicSiteUrl}
+                </a>
+                . Open the secure link from your welcome email to edit and publish changes.
+              </>
+            ) : (
+              <>This slug does not have portal access yet, or your access token is missing or invalid.</>
+            )}
+          </div>
+        )}
         <header className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
           <div className="space-y-4">
             <span className="signal-chip">Portal</span>
@@ -386,53 +472,59 @@ export default function PortalClient() {
                 </button>
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 ${!portalAuthenticated ? 'opacity-60 pointer-events-none' : ''}`}>
               <input
                 value={formData.businessName}
                 onChange={(event) =>
                   setFormData({ ...formData, businessName: event.target.value })
                 }
                 placeholder="Business name"
-                className="px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white"
+                disabled={!portalAuthenticated}
+                className="px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white disabled:cursor-not-allowed"
               />
               <input
                 value={formData.tagline}
                 onChange={(event) => setFormData({ ...formData, tagline: event.target.value })}
                 placeholder="Tagline"
-                className="px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white"
+                disabled={!portalAuthenticated}
+                className="px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white disabled:cursor-not-allowed"
               />
               <input
                 value={formData.phone}
                 onChange={(event) => setFormData({ ...formData, phone: event.target.value })}
                 placeholder="Phone"
-                className="px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white"
+                disabled={!portalAuthenticated}
+                className="px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white disabled:cursor-not-allowed"
               />
               <input
                 value={formData.email}
                 onChange={(event) => setFormData({ ...formData, email: event.target.value })}
                 placeholder="Email"
-                className="px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white"
+                disabled={!portalAuthenticated}
+                className="px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white disabled:cursor-not-allowed"
               />
               <input
                 value={formData.address}
                 onChange={(event) => setFormData({ ...formData, address: event.target.value })}
                 placeholder="Service area"
-                className="px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white md:col-span-2"
+                disabled={!portalAuthenticated}
+                className="px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white md:col-span-2 disabled:cursor-not-allowed"
               />
               <textarea
                 value={formData.services}
                 onChange={(event) => setFormData({ ...formData, services: event.target.value })}
                 placeholder="Services (comma-separated)"
                 rows={3}
-                className="px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white md:col-span-2"
+                disabled={!portalAuthenticated}
+                className="px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white md:col-span-2 disabled:cursor-not-allowed"
               />
             </div>
             <div className="flex flex-wrap gap-4 mt-6">
               <button
                 type="button"
                 onClick={saveSite}
-                disabled={status === 'saving'}
-                className="cta-button"
+                disabled={status === 'saving' || !portalAuthenticated}
+                className="cta-button disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {status === 'saving' ? 'Saving...' : 'Save & publish'}
               </button>
@@ -562,11 +654,11 @@ export default function PortalClient() {
               </div>
             </div>
 
-            {normalizedSlug && (
+            {portalAuthenticated && normalizedSlug && (
               <CustomerImageLibrary owner={normalizedSlug} compact />
             )}
 
-            {siteTemplate.niche && siteTemplate.template && (
+            {portalAuthenticated && siteTemplate.niche && siteTemplate.template && (
               <div className="glass-panel rounded-2xl p-6">
                 <h3 className="text-xl font-bold text-white">Visual editor</h3>
                 <p className="text-slate-300 text-sm mt-2">

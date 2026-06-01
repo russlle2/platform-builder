@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { sendEmail } from '@/lib/email'
 import { rateLimitByIp, jsonTooManyRequests } from '@/lib/server-auth'
+import { normalizeLeadInput, validateLeadContact } from '@/lib/lead-validation'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -11,13 +12,15 @@ export async function POST(req: NextRequest) {
   if (!allowed) return jsonTooManyRequests()
 
   try {
-    const { email, phone, source } = await req.json()
-
-    if (!email && !phone) {
-      return NextResponse.json(
-        { error: 'Email or phone is required.' },
-        { status: 400 }
-      )
+    const body = await req.json()
+    const { email: rawEmail, phone: rawPhone, source } = body
+    const { email, phone } = normalizeLeadInput(
+      typeof rawEmail === 'string' ? rawEmail : '',
+      typeof rawPhone === 'string' ? rawPhone : '',
+    )
+    const validationError = validateLeadContact(email, phone)
+    if (validationError) {
+      return NextResponse.json({ error: validationError }, { status: 400 })
     }
 
     if (!supabaseUrl || !supabaseServiceKey) {

@@ -189,9 +189,9 @@ export default function PricingClient() {
         <section className="container-hvac pb-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="stat-card">
-              <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Customer rating</p>
-              <p className="text-3xl font-bold text-white">4.9 / 5</p>
-              <p className="text-sm text-slate-300">Based on early wellness &amp; practice client pilots</p>
+              <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Built for</p>
+              <p className="text-3xl font-bold text-white">Wellness</p>
+              <p className="text-sm text-slate-300">Therapy, coaching, sound, scent &amp; integrative care</p>
             </div>
             <div className="stat-card">
               <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Avg launch time</p>

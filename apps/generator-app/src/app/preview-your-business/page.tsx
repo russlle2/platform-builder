@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback, useRef } from 'react'
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react'
 import Link from 'next/link'
 import { usePreviewStore } from '@/store/previewStore'
 import {
@@ -27,6 +27,8 @@ import type {
   MatchedTemplate,
   PreviewStep,
 } from '@/store/previewStore'
+import { computeClientReadiness } from '@/lib/client-readiness'
+import { ClientReadinessPanel } from '@/components/preview/ClientReadinessPanel'
 
 /* ================================================================== */
 /* Constants & helpers                                                 */
@@ -193,6 +195,11 @@ export default function PreviewYourBusinessPage() {
 
   // ---- Browse templates state ----
   const [browseTemplates, setBrowseTemplates] = useState<ApiTemplate[]>([])
+
+  const clientReadiness = useMemo(
+    () => computeClientReadiness(businessInfo, stylePreferences),
+    [businessInfo, stylePreferences],
+  )
 
   /* ================ Fetch templates for niche ================ */
   const fetchTemplatesForNiche = useCallback(async (niche: string) => {
@@ -479,6 +486,7 @@ export default function PreviewYourBusinessPage() {
           <MatchStep
             matched={matchedTemplate}
             loading={templatesLoading}
+            readiness={clientReadiness}
             onEdit={openEditor}
             onBrowse={openBrowse}
           />
@@ -488,6 +496,7 @@ export default function PreviewYourBusinessPage() {
         {step === 'editor' && matchedTemplate && (
           <EditorStep
             matched={matchedTemplate}
+            readiness={clientReadiness}
             previewHtml={previewHtml}
             previewLoading={previewLoading}
             currentPage={currentPage}
@@ -834,16 +843,18 @@ function StyleStep({
 function MatchStep({
   matched,
   loading,
+  readiness,
   onEdit,
   onBrowse,
 }: {
   matched: MatchedTemplate | null
   loading: boolean
+  readiness: ReturnType<typeof computeClientReadiness>
   onEdit: () => void
   onBrowse: () => void
 }) {
   return (
-    <section className="container-hvac py-8 max-w-3xl mx-auto">
+    <section className="container-hvac py-8 max-w-4xl mx-auto">
       <div className="space-y-2 mb-8">
         <span className="signal-chip">Step 3 of 4</span>
         <h1 className="text-4xl md:text-5xl font-bold text-white">
@@ -852,6 +863,10 @@ function MatchStep({
         <p className="text-lg text-slate-300">
           Based on your style preferences and business type.
         </p>
+      </div>
+
+      <div className="mb-8">
+        <ClientReadinessPanel result={readiness} />
       </div>
 
       {loading ? (
@@ -929,6 +944,7 @@ function MatchStep({
 
 function EditorStep({
   matched,
+  readiness,
   previewHtml,
   previewLoading,
   currentPage,
@@ -949,6 +965,7 @@ function EditorStep({
   setCustomFonts,
 }: {
   matched: MatchedTemplate
+  readiness: ReturnType<typeof computeClientReadiness>
   previewHtml: string | null
   previewLoading: boolean
   currentPage: string
@@ -1009,6 +1026,9 @@ function EditorStep({
 
   return (
     <section className="container-hvac py-4">
+      <div className="mb-6">
+        <ClientReadinessPanel result={readiness} compact />
+      </div>
       <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold text-white">{matched.templateName}</h1>

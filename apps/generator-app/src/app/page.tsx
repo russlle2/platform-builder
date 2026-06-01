@@ -72,14 +72,14 @@ export default function HomePage() {
                   Preview Your Business
                 </Link>
                 <Link
-                  href="/preview-your-business"
+                  href="/demo/platform-builder"
                   className="px-8 py-4 text-lg font-bold text-white border border-white/20 rounded-lg hover:bg-white/10 transition-all"
                 >
-                  See Live Demo
+                  Watch Demo
                 </Link>
               </div>
               <div className="flex flex-wrap gap-6 text-sm text-slate-300">
-                <span>No code. No generic templates. Built for service businesses that need leads.</span>
+                <span>No code. Built for practices that need trust, clarity, and booking paths.</span>
               </div>
             </div>
             <div className="glass-panel rounded-3xl p-8 space-y-6">
@@ -89,10 +89,10 @@ export default function HomePage() {
               </div>
               <div className="space-y-4">
                 {[
-                  'Browse templates in your niche',
+                  'Pick a layout for your niche',
                   'Enter your info — it fills every page',
                   'Preview your complete site live',
-                  'Purchase & launch with integrations',
+                  'Launch with hosting and portal access',
                 ].map((item) => (
                   <div key={item} className="flex items-center gap-3 text-slate-200">
                     <span className="w-2 h-2 rounded-full bg-cyan-400" />
@@ -119,11 +119,11 @@ export default function HomePage() {
           <div className="text-center mb-12 space-y-4">
             <span className="signal-chip">Choose Your Industry</span>
             <h2 className="text-4xl md:text-5xl font-bold text-white">
-              Templates built for your business
+              Sites built for your industry
             </h2>
             <p className="text-lg text-slate-300 max-w-2xl mx-auto">
-              Every niche has dozens of unique, professionally designed templates.
-              Pick your industry to start browsing.
+              Each niche includes layouts shaped for trust, services, and contact — not generic
+              one-size-fits-all pages.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -172,7 +172,7 @@ export default function HomePage() {
               {
                 step: '01',
                 title: 'Browse & pick',
-                copy: 'Choose from hundreds of unique templates in your industry.',
+                copy: 'Choose a layout tuned for your niche and positioning.',
               },
               {
                 step: '02',
@@ -200,7 +200,7 @@ export default function HomePage() {
             <FeatureCard
               icon="🎨"
               title="Unique Designs"
-              description={`${totalTemplates}+ templates — each with its own layout, voice, and content structure.`}
+              description={`${totalTemplates}+ unique layouts — each with its own voice, structure, and conversion flow.`}
             />
             <FeatureCard
               icon="📱"
@@ -227,12 +227,18 @@ export default function HomePage() {
               Your new website is one guided flow away.
             </h2>
             <p className="text-lg text-slate-200 mb-8 max-w-2xl mx-auto">
-              Browse {totalTemplates}+ professionally designed templates, enter your details,
-              preview it live, and launch. No coding. No hassle.
+              Enter your details, preview a booking-ready site live, and launch when you are ready.
+              No coding. No designer required.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link href="/preview-your-business" className="cta-button">
                 Preview Your Business
+              </Link>
+              <Link
+                href="/demo/platform-builder"
+                className="px-8 py-4 text-lg font-bold text-white border border-white/20 rounded-lg hover:bg-white/10 transition-all"
+              >
+                Watch Demo
               </Link>
               <Link
                 href="/pricing"

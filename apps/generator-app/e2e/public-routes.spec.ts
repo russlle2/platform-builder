@@ -49,3 +49,27 @@ test('active niche page has no duplicate brand in title', async ({ page }) => {
   const lastIndex = title.lastIndexOf('DailyClarity')
   expect(firstIndex).toBe(lastIndex)
 })
+
+test('homepage Watch Demo links to platform builder walkthrough', async ({ page }) => {
+  await page.goto('/')
+  const demo = page.getByRole('link', { name: /Watch Demo/i }).first()
+  await expect(demo).toHaveAttribute('href', '/demo/platform-builder')
+})
+
+test('demo hub page loads', async ({ page }) => {
+  await page.goto('/demo')
+  await expect(page.locator('h1')).toContainText(/walkthrough/i)
+  await expect(page.getByRole('link', { name: /Platform overview/i })).toBeVisible()
+})
+
+test('demo platform page loads', async ({ page }) => {
+  await page.goto('/demo/platform-builder')
+  await expect(page).toHaveTitle(/DailyClarity/)
+  await expect(page.locator('h1')).toBeVisible()
+})
+
+test('niche page links to matching demo route', async ({ page }) => {
+  await page.goto('/aromatherapy')
+  const demo = page.getByRole('link', { name: /Watch Aromatherapy Demo/i })
+  await expect(demo.first()).toHaveAttribute('href', '/demo/aromatherapy')
+})

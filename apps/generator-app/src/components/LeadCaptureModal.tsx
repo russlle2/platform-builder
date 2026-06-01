@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { track } from '@/lib/analytics'
+import { validateLeadContact } from '@/lib/lead-validation'
 import { usePathname } from 'next/navigation'
 
 export default function LeadCaptureModal() {
@@ -10,6 +11,7 @@ export default function LeadCaptureModal() {
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
+  const [fieldError, setFieldError] = useState<string | null>(null)
 
   useEffect(() => {
     if (pathname?.startsWith('/preview') || pathname?.startsWith('/__site')) {
@@ -42,14 +44,23 @@ export default function LeadCaptureModal() {
   }, [pathname])
 
   const submitLead = async () => {
+    const validationError = validateLeadContact(email.trim(), phone.trim())
+    if (validationError) {
+      setFieldError(validationError)
+      setStatus('error')
+      return
+    }
+    setFieldError(null)
     try {
       setStatus('submitting')
       const response = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, phone, source: 'modal' }),
+        body: JSON.stringify({ email: email.trim(), phone: phone.trim(), source: 'modal' }),
       })
       if (!response.ok) {
+        const data = await response.json().catch(() => ({}))
+        setFieldError((data as { error?: string }).error || 'Unable to save. Try again.')
         throw new Error('Failed')
       }
       setStatus('success')
@@ -75,7 +86,7 @@ export default function LeadCaptureModal() {
         </button>
         <span className="signal-chip">Join the waitlist</span>
         <h3 className="text-3xl font-bold text-white mt-4">
-          Sign up to recieve notifications when new website builds drop and for %15 off any package
+          Get notified when new industry layouts launch — plus 15% off your first package
         </h3>
         <div className="mt-6 space-y-4">
           <input
@@ -93,8 +104,8 @@ export default function LeadCaptureModal() {
             className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400"
           />
         </div>
-        {status === 'error' && (
-          <p className="text-sm text-red-200 mt-4">Unable to save. Try again.</p>
+        {(fieldError || status === 'error') && (
+          <p className="text-sm text-red-200 mt-4">{fieldError || 'Unable to save. Try again.'}</p>
         )}
         {status === 'success' ? (
           <div className="mt-6 p-4 bg-cyan-400/20 text-cyan-100 rounded-xl">

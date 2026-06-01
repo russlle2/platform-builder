@@ -1,52 +1,72 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { setCustomDomain, getCustomDomainInstructions } from '@/lib/netlify'
-import { requireInternalAdminOrThrow } from '@/lib/server-auth'
+import {
+  jsonForbidden,
+  jsonUnauthorized,
+  requireInternalAdminOrThrow,
+} from '@/lib/server-auth'
+import { getPortalTokenFromRequest, validatePortalTokenForSlug } from '@/lib/portal-auth'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+async function authorizePortalOrAdmin(
+  req: NextRequest,
+  slug: string,
+  body?: { token?: string },
+): Promise<NextResponse | null> {
+  const adminError = requireInternalAdminOrThrow(req)
+  if (!adminError) return null
+
+  if (!supabaseUrl || !supabaseServiceKey) {
+    return jsonForbidden()
+  }
+
+  const token = getPortalTokenFromRequest(req, body)
+  const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+    auth: { persistSession: false },
+  })
+  const ok = await validatePortalTokenForSlug(supabase, slug, token)
+  if (!ok) {
+    return jsonUnauthorized()
+  }
+  return null
+}
 
 /**
  * POST /api/sites/domain
  *
  * Configures a custom domain on an existing Netlify-hosted client site.
- *
- * Body: { slug, customDomain }
- *
- * Returns DNS instructions the customer needs to follow,
- * then Netlify auto-provisions SSL via Let's Encrypt.
+ * Requires internal admin or valid portal access token for the slug.
  */
 export async function POST(req: NextRequest) {
-  const authError = requireInternalAdminOrThrow(req)
-  if (authError) return authError
-
   try {
-    const { slug, customDomain } = await req.json()
+    const body = await req.json()
+    const { slug, customDomain } = body
 
     if (!slug || !customDomain) {
       return NextResponse.json(
         { error: 'slug and customDomain are required.' },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
-    if (!process.env.NETLIFY_ACCESS_TOKEN) {
-      return NextResponse.json(
-        { error: 'Netlify is not configured.' },
-        { status: 500 }
-      )
-    }
-
-    // Normalise
     const normalizedSlug = slug
       .toLowerCase()
       .replace(/[^a-z0-9-]/g, '-')
       .replace(/-+/g, '-')
       .replace(/^-+|-+$/g, '')
 
+    const authError = await authorizePortalOrAdmin(req, normalizedSlug, body)
+    if (authError) return authError
+
+    if (!process.env.NETLIFY_ACCESS_TOKEN) {
+      return NextResponse.json({ error: 'Netlify is not configured.' }, { status: 500 })
+    }
+
     const domain = customDomain.toLowerCase().trim()
 
-    // Look up the Netlify site ID from Supabase
     let siteId: string | null = null
     let subdomain: string | null = null
 
@@ -68,14 +88,12 @@ export async function POST(req: NextRequest) {
     if (!siteId) {
       return NextResponse.json(
         { error: 'Site not found. Provision the site first.' },
-        { status: 404 }
+        { status: 404 },
       )
     }
 
-    // Set the custom domain on Netlify
     const result = await setCustomDomain(siteId, domain)
 
-    // Update Supabase with the custom domain
     if (supabaseUrl && supabaseServiceKey) {
       const supabase = createClient(supabaseUrl, supabaseServiceKey, {
         auth: { persistSession: false },
@@ -87,7 +105,6 @@ export async function POST(req: NextRequest) {
         .eq('slug', normalizedSlug)
     }
 
-    // Return DNS instructions
     const instructions = getCustomDomainInstructions(domain, subdomain || '')
 
     return NextResponse.json({
@@ -96,11 +113,11 @@ export async function POST(req: NextRequest) {
       sslUrl: result.sslUrl,
       dnsInstructions: instructions,
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[domain] error:', error)
     return NextResponse.json(
-      { error: error?.message || 'Domain configuration failed.' },
-      { status: 500 }
+      { error: error instanceof Error ? error.message : 'Domain configuration failed.' },
+      { status: 500 },
     )
   }
 }
@@ -108,12 +125,9 @@ export async function POST(req: NextRequest) {
 /**
  * GET /api/sites/domain?slug=xxx
  *
- * Returns current domain configuration and DNS instructions.
+ * Returns domain configuration. Internal admin or portal token required.
  */
 export async function GET(req: NextRequest) {
-  const authError = requireInternalAdminOrThrow(req)
-  if (authError) return authError
-
   const slug = req.nextUrl.searchParams.get('slug')
 
   if (!slug || !supabaseUrl || !supabaseServiceKey) {
@@ -125,6 +139,9 @@ export async function GET(req: NextRequest) {
     .replace(/[^a-z0-9-]/g, '-')
     .replace(/-+/g, '-')
     .replace(/^-+|-+$/g, '')
+
+  const authError = await authorizePortalOrAdmin(req, normalizedSlug)
+  if (authError) return authError
 
   const supabase = createClient(supabaseUrl, supabaseServiceKey, {
     auth: { persistSession: false },

@@ -80,8 +80,19 @@ export async function sendEmail(options: SendEmailOptions): Promise<PostmarkResp
 /**
  * Send the welcome email to a new customer after checkout.
  */
-export async function sendWelcomeEmail(to: string, businessName: string, slug: string) {
-  const portalUrl = `${process.env.NEXT_PUBLIC_API_URL || 'https://yourdomain.com'}/portal?slug=${encodeURIComponent(slug)}`
+export async function sendWelcomeEmail(
+  to: string,
+  businessName: string,
+  slug: string,
+  portalAccessToken?: string,
+) {
+  const base =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.NEXT_PUBLIC_API_URL ||
+    'https://dailyclarity.org'
+  const portalUrl = portalAccessToken
+    ? `${base.replace(/\/$/, '')}/portal?slug=${encodeURIComponent(slug)}&token=${encodeURIComponent(portalAccessToken)}`
+    : `${base.replace(/\/$/, '')}/portal?slug=${encodeURIComponent(slug)}`
   const platformDomain =
     process.env.PLATFORM_DOMAIN ||
     process.env.NEXT_PUBLIC_PLATFORM_DOMAIN ||
@@ -104,8 +115,11 @@ export async function sendWelcomeEmail(to: string, businessName: string, slug: s
         </ol>
         <p>
           <a href="${portalUrl}" style="display: inline-block; padding: 12px 32px; background: #0891b2; color: white; border-radius: 8px; text-decoration: none; font-weight: bold;">
-            Go to your portal
+            Open your secure portal
           </a>
+        </p>
+        <p style="color: #64748b; font-size: 0.875rem;">
+          ${portalAccessToken ? 'This link includes your private portal access token. Do not share it publicly.' : 'Check your email for your secure portal access link.'}
         </p>
         <p style="color: #64748b; font-size: 0.875rem;">If you have any questions, just reply to this email.</p>
       </div>

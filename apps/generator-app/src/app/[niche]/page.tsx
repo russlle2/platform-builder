@@ -55,68 +55,208 @@ const accentMap: Record<string, { badge: string; heading: string; btn: string; g
   },
 }
 
-/* ---------- Sales copy per niche ---------- */
-const nicheSalesCopy: Record<string, { headline: string; subheadline: string; benefits: string[]; objection: string; proof: string }> = {
+/* ---------- Landing content per active niche ---------- */
+
+type FunnelStep = { title: string; description: string }
+
+type NicheLandingContent = {
+  headline: string
+  subheadline: string
+  benefits: string[]
+  objection: string
+  proof: string
+  conversionJob: { title: string; body: string }
+  funnelSteps: FunnelStep[]
+  sectionsIncluded: string[]
+  demoBlurb: string
+}
+
+const BASE_SECTIONS = [
+  'Hero and CTA',
+  'About/practitioner story',
+  'Services/programs',
+  'Testimonials/proof',
+  'FAQ',
+  'Contact/booking',
+  'Local SEO structure',
+]
+
+const nicheLandingContent: Record<string, NicheLandingContent> = {
   aromatherapy: {
     headline: 'A website as refined as your blends.',
-    subheadline: 'Custom-designed aromatherapy websites that attract clients, book sessions, and build memberships — without lifting a finger.',
+    subheadline:
+      'Aromatherapy sites built to explain your blends, earn scent-based trust, and guide visitors toward consultations, workshops, or product packages.',
     benefits: [
-      'Membership and package booking built in',
-      'Service menus with scent profiles and pricing',
-      'SEO-optimized for "aromatherapy near me" searches',
-      'Mobile-first design for on-the-go bookings',
+      'Blend menus with notes, benefits, and use context',
+      'Workshop and consultation booking paths',
+      'Safety, dilution, and ritual guidance sections',
+      'Lead capture built to guide visitors toward booking/contact',
     ],
-    objection: 'Most aromatherapy practitioners lose clients to poor websites. Not anymore.',
-    proof: '99 professionally designed templates ready to customize.',
+    objection: 'Clients choose practitioners who feel credible before the first inhale.',
+    proof: 'Professionally designed aromatherapy templates ready to customize.',
+    conversionJob: {
+      title: 'What your aromatherapy website needs to do',
+      body: 'Visitors often arrive curious but cautious about essential oils. Your site should translate scent expertise into clarity — what you offer, who it helps, how to use it safely — then make the next step (consult, workshop, or package) obvious without pressure.',
+    },
+    funnelSteps: [
+      { title: 'Explain the blends', description: 'Show how custom or signature blends are crafted, what each supports, and who they are for.' },
+      { title: 'Build sensory trust', description: 'Use imagery, practitioner story, and ritual language so the experience feels intentional, not generic retail.' },
+      { title: 'Show safety and use guidance', description: 'Address dilution, contraindications, and at-home use so clients feel informed and cared for.' },
+      { title: 'Sell consultations, workshops, or packages', description: 'Present sessions, classes, and product tiers with clear outcomes and booking paths.' },
+      { title: 'Capture email/phone leads', description: 'Offer a low-friction way to ask questions or join your list before they are ready to book.' },
+    ],
+    sectionsIncluded: [...BASE_SECTIONS, 'Blend menu & scent profiles', 'Safety & use guidance'],
+    demoBlurb: 'Watch a Sol Botanica–style aromatherapy site get selected, filled with real business details, and previewed live.',
   },
   holistic_medicine: {
     headline: 'Your healing practice deserves a professional presence.',
-    subheadline: 'Beautifully crafted websites for integrative health practitioners — designed to build trust, educate patients, and fill your schedule.',
+    subheadline:
+      'Integrative health websites built to balance clinical credibility with holistic warmth — and guide visitors toward a consult with clear expectations.',
     benefits: [
-      'Patient intake and booking flow integration',
-      'Treatment approach and conditions pages',
-      'HIPAA-conscious design patterns',
-      'Trust signals and testimonial blocks built in',
+      'Conditions and modality pages in plain language',
+      'Consult booking and intake expectation blocks',
+      'Practitioner credentials without cold clinical tone',
+      'Built to guide visitors toward booking/contact',
     ],
-    objection: 'Patients research online before booking. Make their first impression count.',
-    proof: '100 unique templates for holistic medicine practices.',
+    objection: 'Patients compare practitioners online long before they call.',
+    proof: 'Holistic medicine templates tuned for integrative practices.',
+    conversionJob: {
+      title: 'What your holistic medicine website needs to do',
+      body: 'Prospective patients need to understand how you work, what you treat, and whether you are a fit — without wading through jargon or skepticism triggers. The site should build dual trust (clinical + holistic), then route ready visitors into consult booking with intake clarity.',
+    },
+    funnelSteps: [
+      { title: 'Build clinical and holistic trust', description: 'Credentials, philosophy, and care approach presented as one coherent story.' },
+      { title: 'Explain conditions/modalities clearly', description: 'Help visitors map symptoms and goals to the services you actually provide.' },
+      { title: 'Reduce skepticism', description: 'Answer common doubts with FAQs, process transparency, and realistic outcome framing.' },
+      { title: 'Guide visitors toward consult booking', description: 'Prominent consult CTAs with what happens on the first visit.' },
+      { title: 'Provide intake expectations', description: 'Forms, timing, what to bring, and how follow-up works — before they commit.' },
+    ],
+    sectionsIncluded: [...BASE_SECTIONS, 'Conditions & modalities', 'Intake expectations'],
+    demoBlurb: 'See Root & Radiance–style integrative health content populate across pages in one guided build.',
   },
   private_practice_therapist: {
     headline: "Your practice's online home should feel as welcoming as your office.",
-    subheadline: 'Warm, professional websites for therapists and counselors — designed to reduce client anxiety and increase bookings.',
+    subheadline:
+      'Therapy websites designed for emotional safety first — then specialties, session expectations, and a clear path to request a consult.',
     benefits: [
-      'Specialties and approach pages that build trust',
-      'Secure booking integration ready',
-      'Insurance and fee transparency sections',
-      'Calming, professional design language',
+      'Specialty and approach pages that reduce uncertainty',
+      'First-session and telehealth expectation copy',
+      'Fees, insurance, and sliding-scale transparency blocks',
+      'Built to guide visitors toward booking/contact',
     ],
-    objection: 'Potential clients decide in seconds whether to call. Your website tips the scale.',
-    proof: '100 therapist-specific templates, each unique.',
+    objection: 'Many potential clients leave sites that feel cold, vague, or overwhelming.',
+    proof: 'Therapist-specific templates with calm, trust-forward layouts.',
+    conversionJob: {
+      title: 'What your therapy website needs to do',
+      body: 'Therapy is a high-trust decision. Your site should help someone feel emotionally safe, understand your specialties, know what the first session looks like, and see practical details (fees, insurance, telehealth) — then offer a low-pressure consult request.',
+    },
+    funnelSteps: [
+      { title: 'Create emotional safety', description: 'Warm tone, inclusive language, and visuals that feel grounding — not corporate.' },
+      { title: 'Clarify specialties', description: 'Anxiety, trauma, couples, life transitions — stated plainly so the right clients self-select.' },
+      { title: 'Explain first-session expectations', description: 'What happens, how long, and what preparation looks like.' },
+      { title: 'Show fees/insurance/telehealth', description: 'Reduce back-and-forth by answering practical questions upfront.' },
+      { title: 'Guide toward consult request', description: 'A clear, compassionate CTA for a brief call or intake form — not a hard sell.' },
+    ],
+    sectionsIncluded: [...BASE_SECTIONS, 'Specialties & approach', 'Fees, insurance & telehealth'],
+    demoBlurb: 'Follow a Safe Harbor–style private practice site from template pick through consult-ready preview.',
   },
   sound_bath: {
     headline: 'An online experience as immersive as your sessions.',
-    subheadline: 'Stunning websites for sound healing practitioners — designed to convey the transformative nature of your work and fill group sessions.',
+    subheadline:
+      'Sound healing websites that make the bowl experience tangible online — then fill group sessions, privates, and event inquiries.',
     benefits: [
-      'Session booking and package pricing built in',
-      'Event calendar and group session sections',
-      'Rich visual design that mirrors the experience',
-      'Contraindication and FAQ sections included',
+      'Session types, pricing, and what-to-expect sections',
+      'Contraindications and FAQ for nervous-system care',
+      'Event and private booking inquiry paths',
+      'Built to guide visitors toward booking/contact',
     ],
-    objection: 'Sound healing is experiential. Your website should give a taste of it.',
-    proof: '100 beautifully designed sound bath templates.',
+    objection: 'Sound work is felt in the room — your site still has to earn the first yes.',
+    proof: 'Sound bath templates with immersive visual language.',
+    conversionJob: {
+      title: 'What your sound bath website needs to do',
+      body: 'Most visitors have never attended a sound bath. Your site should help them picture the room, understand benefits and limits, see schedules and pricing, and inquire about group or private events — without overselling mystical claims.',
+    },
+    funnelSteps: [
+      { title: 'Make the experience feel tangible online', description: 'Atmosphere, instruments, and session flow described so the body can imagine being there.' },
+      { title: 'Show what to expect', description: 'Duration, setting, what to bring, and how people typically feel during and after.' },
+      { title: 'Show contraindications/FAQ', description: 'Honest guidance for pregnancy, sound sensitivity, trauma, and other considerations.' },
+      { title: 'Sell group sessions/private events', description: 'Public schedule plus corporate, retreat, and private event pathways.' },
+      { title: 'Capture event inquiries', description: 'Simple forms for organizers who are not ready for instant checkout.' },
+    ],
+    sectionsIncluded: [...BASE_SECTIONS, 'What to expect & contraindications', 'Group & private event inquiry'],
+    demoBlurb: 'Watch a Resonance Room–style sound healing site come together with session and event pages.',
   },
   wellness_coach: {
     headline: 'The website your coaching business actually deserves.',
-    subheadline: 'Results-driven websites for wellness coaches — built to convert visitors into clients with clear programs, pricing, and social proof.',
+    subheadline:
+      'Coaching websites that clarify the transformation you deliver, showcase programs with credibility, and move visitors toward a discovery call.',
     benefits: [
-      'Program and package showcase pages',
-      'VIP day and intensive booking flows',
-      'Testimonial and transformation sections',
-      'SEO-optimized for coaching-related searches',
+      'Program and package pages with clear outcomes',
+      'Testimonial and transformation story blocks',
+      'Discovery call booking paths',
+      'Built to guide visitors toward booking/contact',
     ],
-    objection: 'Your coaching transforms lives. Your website should communicate that instantly.',
-    proof: '155 premium coaching website templates.',
+    objection: 'Coaching is crowded online — clarity and proof separate you from generic wellness pages.',
+    proof: 'Wellness coaching templates built for program-led practices.',
+    conversionJob: {
+      title: 'What your wellness coaching website needs to do',
+      body: 'Coaching buyers want to know the outcome, the container (1:1, group, intensive), and why you are credible. Your site should articulate transformation, show programs and social proof, then invite a discovery call for fit — not push a purchase on first visit.',
+    },
+    funnelSteps: [
+      { title: 'Clarify transformation outcome', description: 'Name the before/after in language your ideal client already uses.' },
+      { title: 'Show programs/packages', description: '8-week reset, VIP day, membership — structured so buyers can compare paths.' },
+      { title: 'Establish credibility', description: 'Training, methodology, and who you are best suited to coach.' },
+      { title: 'Display social proof/testimonials', description: 'Stories and quotes that reinforce realistic results.' },
+      { title: 'Move visitors toward discovery call', description: 'A warm CTA to explore fit before committing to a package.' },
+    ],
+    sectionsIncluded: [...BASE_SECTIONS, 'Programs & packages', 'Discovery call CTA'],
+    demoBlurb: 'See Vital Path–style coaching content flow into programs, proof, and discovery-call pages.',
   },
+}
+
+function NicheActionLinks({
+  niche,
+  metaLabel,
+  colors,
+  layout = 'hero',
+}: {
+  niche: string
+  metaLabel: string
+  colors: (typeof accentMap)[string]
+  layout?: 'hero' | 'center'
+}) {
+  const wrap = layout === 'center' ? 'justify-center items-center' : ''
+  return (
+    <div className={`space-y-4 ${wrap}`}>
+      <div className={`flex flex-col sm:flex-row gap-4 ${wrap}`}>
+        <Link
+          href="/preview-your-business"
+          className="px-8 py-4 text-lg font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all border border-cyan-200/40 text-center"
+        >
+          Build My Preview
+        </Link>
+        <Link
+          href={`/demo/${niche}`}
+          className={`px-8 py-4 text-lg font-bold rounded-lg transition-all duration-300 text-white bg-gradient-to-r shadow-lg hover:shadow-xl hover:scale-105 border text-center ${colors.btn}`}
+          style={{ boxShadow: `0 0 30px ${colors.glow}` }}
+        >
+          Watch {metaLabel} Demo
+        </Link>
+        <Link
+          href="/pricing"
+          className="px-8 py-4 text-lg font-bold text-white border border-white/20 rounded-lg hover:bg-white/10 transition-all text-center"
+        >
+          See Pricing
+        </Link>
+      </div>
+      <Link
+        href={`/templates/${niche}`}
+        className={`inline-block text-sm font-semibold ${colors.heading} hover:underline`}
+      >
+        View custom templates (browse layouts) →
+      </Link>
+    </div>
+  )
 }
 
 /* ---------- Niche background visuals ---------- */
@@ -398,8 +538,11 @@ export default async function NicheLandingPage({
   const niches = getNiches()
   const nicheInfo = niches.find((n) => n.slug === niche)
   const templateCount = nicheInfo?.templateCount || 0
-  const copy = nicheSalesCopy[niche]
+  const copy = nicheLandingContent[niche]
   const colors = accentMap[meta.accent] || accentMap.cyan
+  if (!copy) {
+    notFound()
+  }
 
   return (
     <main className="relative min-h-screen pt-24 pb-20 overflow-hidden">
@@ -422,27 +565,7 @@ export default async function NicheLandingPage({
               <p className="text-lg md:text-2xl text-slate-200 max-w-2xl">
                 {copy.subheadline}
               </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link
-                  href="/preview-your-business"
-                  className="px-8 py-4 text-lg font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all border border-cyan-200/40 text-center"
-                >
-                  Preview Your Business
-                </Link>
-                <Link
-                  href={`/templates/${niche}`}
-                  className={`px-8 py-4 text-lg font-bold rounded-lg transition-all duration-300 text-white bg-gradient-to-r shadow-lg hover:shadow-xl hover:scale-105 border text-center ${colors.btn}`}
-                  style={{ boxShadow: `0 0 30px ${colors.glow}` }}
-                >
-                  View Custom Templates
-                </Link>
-                <Link
-                  href="/pricing"
-                  className="px-8 py-4 text-lg font-bold text-white border border-white/20 rounded-lg hover:bg-white/10 transition-all text-center"
-                >
-                  See Pricing
-                </Link>
-              </div>
+              <NicheActionLinks niche={niche} metaLabel={meta.label} colors={colors} />
             </div>
 
             {/* Stats panel */}
@@ -470,6 +593,76 @@ export default async function NicheLandingPage({
                 </div>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* Conversion job */}
+        <section className="container-hvac py-16">
+          <div className="glass-panel rounded-3xl p-10 md:p-12 space-y-6 max-w-4xl">
+            <h2 className="text-3xl md:text-4xl font-bold text-white">{copy.conversionJob.title}</h2>
+            <p className="text-lg text-slate-300 leading-relaxed">{copy.conversionJob.body}</p>
+          </div>
+        </section>
+
+        {/* Funnel cards */}
+        <section className="container-hvac py-16">
+          <div className="mb-10">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">Your {meta.label.toLowerCase()} client funnel</h2>
+            <p className="text-slate-300 text-lg max-w-2xl">
+              Each section of your site plays a role — built to guide visitors toward booking or contact, step by step.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {copy.funnelSteps.map((step, index) => (
+              <div key={step.title} className={`card-mahogany space-y-3 ${index === copy.funnelSteps.length - 1 && copy.funnelSteps.length % 3 !== 0 ? 'lg:col-span-1' : ''}`}>
+                <span className={`text-sm font-semibold ${colors.heading}`}>Step {index + 1}</span>
+                <h3 className="text-xl font-bold text-white">{step.title}</h3>
+                <p className="text-slate-300 leading-relaxed">{step.description}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Demo CTA */}
+        <section className="container-hvac py-16">
+          <div className={`glass-panel rounded-3xl p-10 md:p-12 border ${colors.border} space-y-6`}>
+            <div className="flex flex-wrap items-center gap-3">
+              <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider border ${colors.chip}`}>
+                Walkthrough
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-white">Watch this niche build happen</h2>
+            </div>
+            <p className="text-lg text-slate-300 max-w-2xl">{copy.demoBlurb}</p>
+            <Link
+              href={`/demo/${niche}`}
+              className={`inline-flex px-8 py-4 text-lg font-bold rounded-lg transition-all duration-300 text-white bg-gradient-to-r shadow-lg hover:shadow-xl hover:scale-105 border ${colors.btn}`}
+              style={{ boxShadow: `0 0 30px ${colors.glow}` }}
+            >
+              Watch {meta.label} Demo →
+            </Link>
+          </div>
+        </section>
+
+        {/* Sections included */}
+        <section className="container-hvac py-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Sections included in your site</h2>
+              <p className="text-slate-300 text-lg">
+                Templates are structured for {meta.label.toLowerCase()} practices — core pages and blocks you can customize in the preview wizard.
+              </p>
+            </div>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {copy.sectionsIncluded.map((item) => (
+                <li
+                  key={item}
+                  className={`flex items-start gap-3 rounded-xl px-4 py-3 border ${colors.border} bg-white/5 text-slate-200`}
+                >
+                  <span className={`mt-1.5 w-2 h-2 shrink-0 rounded-full ${colors.badge.split(' ')[0].replace('/15', '/60')}`} />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
 
@@ -518,8 +711,8 @@ export default async function NicheLandingPage({
               <div className="text-5xl">{meta.icon}</div>
               <h2 className="text-3xl font-bold text-white">{copy.objection}</h2>
               <p className="text-slate-300 text-lg">
-                Every template is professionally designed, mobile-first, SEO-ready, and
-                built to convert visitors into paying clients. No coding required.
+                Every template is professionally designed, mobile-first, and SEO-ready —
+                built to guide visitors toward booking and contact. No coding required.
               </p>
             </div>
             <div className="card-mahogany space-y-6 flex flex-col justify-center">
@@ -561,27 +754,7 @@ export default async function NicheLandingPage({
               Browse {templateCount} professional templates, fill in your info,
               and preview your fully customized site in minutes. No commitment until you purchase.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link
-                href="/preview-your-business"
-                className="px-8 py-4 text-lg font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all border border-cyan-200/40"
-              >
-                Preview Your Business
-              </Link>
-              <Link
-                href={`/templates/${niche}`}
-                className={`px-8 py-4 text-lg font-bold rounded-lg transition-all duration-300 text-white bg-gradient-to-r shadow-lg hover:shadow-xl hover:scale-105 border ${colors.btn}`}
-                style={{ boxShadow: `0 0 30px ${colors.glow}` }}
-              >
-                View Custom Templates
-              </Link>
-              <Link
-                href="/pricing"
-                className="px-8 py-4 text-lg font-bold text-white border border-white/20 rounded-lg hover:bg-white/10 transition-all"
-              >
-                See Pricing
-              </Link>
-            </div>
+            <NicheActionLinks niche={niche} metaLabel={meta.label} colors={colors} layout="center" />
           </div>
         </section>
       </div>

@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
 import { sendWelcomeEmail } from '@/lib/email'
+import { createPortalAccessCredentials } from '@/lib/portal-auth'
 import { provisionSite, deploySiteFiles } from '@/lib/netlify'
 import {
   buildDeployFiles,
@@ -93,6 +94,8 @@ export async function POST(req: Request) {
     )
     const imageOwner = meta.imageOwner || ''
 
+    let portalAccessToken: string | undefined
+
     if (slug) {
       await reserveSlug(slug)
 
@@ -101,6 +104,9 @@ export async function POST(req: Request) {
         .replace(/[^a-z0-9-]/g, '-')
         .replace(/-+/g, '-')
         .replace(/^-+|-+$/g, '')
+
+      const portalCredentials = createPortalAccessCredentials()
+      portalAccessToken = portalCredentials?.token
 
       // Move draft uploads to the purchased site slug folder when applicable.
       if (imageOwner && imageOwner.startsWith('draft-') && normalizedSlug) {
@@ -111,6 +117,9 @@ export async function POST(req: Request) {
           console.error('[webhook] image migration failed:', migrateErr)
         }
       }
+
+      let netlifySiteId: string | undefined
+      let netlifySiteUrl: string | undefined
 
       // Auto-provision a Netlify site at slug.yourdomain.com
       if (process.env.NETLIFY_ACCESS_TOKEN) {
@@ -139,7 +148,9 @@ export async function POST(req: Request) {
             }
           }
 
-          // Update the slug record with hosting info
+          netlifySiteId = site.siteId
+          netlifySiteUrl = site.siteUrl
+
           await supabase
             .from('site_slugs')
             .update({
@@ -148,41 +159,43 @@ export async function POST(req: Request) {
               site_url: site.siteUrl,
             })
             .eq('slug', normalizedSlug)
-
-          // Store full site config in portal_sites for future edits
-          await supabase
-            .from('portal_sites')
-            .upsert({
-              slug: normalizedSlug,
-              status: 'active',
-              data: {
-                niche,
-                template: templateSlug,
-                colorScheme,
-                fontVariation,
-                structureVariation,
-                customerValues,
-                inlineEdits,
-                imageSwaps,
-                imageOwner: normalizedSlug || imageOwner,
-                email: customerValues.EMAIL || session.customer_details?.email || '',
-                netlify_site_id: site.siteId,
-                site_url: site.siteUrl,
-                plan: meta.planKey,
-              },
-            }, { onConflict: 'slug' })
-
         } catch (err) {
           console.error('[webhook] site provisioning failed:', err)
         }
       }
+
+      await supabase
+        .from('portal_sites')
+        .upsert(
+          {
+            slug: normalizedSlug,
+            status: 'active',
+            portal_token_hash: portalCredentials?.hash ?? null,
+            data: {
+              niche,
+              template: templateSlug,
+              colorScheme,
+              fontVariation,
+              structureVariation,
+              customerValues,
+              inlineEdits,
+              imageSwaps,
+              imageOwner: normalizedSlug || imageOwner,
+              email: customerValues.EMAIL || session.customer_details?.email || '',
+              netlify_site_id: netlifySiteId,
+              site_url: netlifySiteUrl,
+              plan: meta.planKey,
+            },
+          },
+          { onConflict: 'slug' },
+        )
     }
 
-    // Send welcome email to the customer
+    // Send welcome email to the customer (includes magic portal link when token was issued)
     const customerEmail = session.customer_details?.email
     const businessName = customerValues.BUSINESS_NAME || meta.slug || 'your business'
     if (customerEmail && slug) {
-      await sendWelcomeEmail(customerEmail, businessName, slug).catch((err) =>
+      await sendWelcomeEmail(customerEmail, businessName, slug, portalAccessToken).catch((err) =>
         console.error('[webhook] welcome email failed:', err)
       )
     }

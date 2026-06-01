@@ -16,7 +16,7 @@ export async function generateMetadata({
   const meta = NICHE_META[niche]
   if (!meta) return { title: 'Templates' }
   return {
-    title: `Browse ${meta.label} Templates | Platform Builder`,
+    title: `Browse ${meta.label} Layouts`,
     description: `Browse ${meta.label} website templates. Pick one, customize it with your business info, preview it live, then purchase.`,
   }
 }

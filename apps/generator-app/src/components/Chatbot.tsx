@@ -10,7 +10,7 @@ interface Message {
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', content: 'Hi! I can help you understand how Platform Builder works. What would you like to know?' }
+    { role: 'assistant', content: 'Hi! I can help you understand DailyClarity Platform Builder — pricing, preview flow, and launch. What would you like to know?' }
   ])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
