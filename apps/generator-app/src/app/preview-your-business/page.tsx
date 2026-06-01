@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef, useMemo } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { usePreviewStore } from '@/store/previewStore'
 import {
   type InlineEditMap,
@@ -154,6 +155,9 @@ function scoreTemplate(
 /* ================================================================== */
 
 export default function PreviewYourBusinessPage() {
+  const searchParams = useSearchParams()
+  const demoRecord = searchParams.get('demoRecord') === '1'
+
   const {
     step,
     setStep,
@@ -533,6 +537,7 @@ export default function PreviewYourBusinessPage() {
             previewHtml={previewHtml}
             previewLoading={previewLoading}
             previewError={previewError}
+            demoRecord={demoRecord}
             currentPage={currentPage}
             editMode={editMode}
             setEditMode={setEditMode}
@@ -982,6 +987,7 @@ function EditorStep({
   previewHtml,
   previewLoading,
   previewError,
+  demoRecord,
   currentPage,
   editMode,
   setEditMode,
@@ -1004,6 +1010,7 @@ function EditorStep({
   previewHtml: string | null
   previewLoading: boolean
   previewError: string | null
+  demoRecord: boolean
   currentPage: string
   editMode: boolean
   setEditMode: (v: boolean) => void
@@ -1061,16 +1068,23 @@ function EditorStep({
   }, [customColors, customFonts, iframeRef])
 
   return (
-    <section className="container-hvac py-4">
-      <div className="mb-6">
-        <ClientReadinessPanel result={readiness} compact />
-      </div>
-      <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-white">{matched.templateName}</h1>
-          <p className="text-sm text-slate-400">Double-click text to edit • Click images to replace</p>
+    <section className={`container-hvac ${demoRecord ? 'py-2' : 'py-4'}`}>
+      {!demoRecord && (
+        <div className="mb-6">
+          <ClientReadinessPanel result={readiness} compact />
         </div>
-        <div className="flex items-center gap-2 flex-wrap">
+      )}
+      {demoRecord ? (
+        <p className="text-center text-sm text-cyan-200/90 mb-3 font-medium">
+          Your live website preview — filled with your business details
+        </p>
+      ) : (
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
+          <div>
+            <h1 className="text-2xl font-bold text-white">{matched.templateName}</h1>
+            <p className="text-sm text-slate-400">Double-click text to edit • Click images to replace</p>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={() => setShowColorPanel(!showColorPanel)}
             className={`px-4 py-2 text-sm font-semibold rounded-lg border transition-all ${
@@ -1101,11 +1115,12 @@ function EditorStep({
           </Link>
         </div>
       </div>
+      )}
 
-      <CustomerImageLibrary compact />
+      {!demoRecord && <CustomerImageLibrary compact />}
 
       {/* Color panel */}
-      {showColorPanel && (
+      {!demoRecord && showColorPanel && (
         <div className="glass-panel rounded-xl p-4 mb-4">
           <h3 className="text-sm font-bold text-white mb-3">Color Presets</h3>
           <div className="flex flex-wrap gap-3">
@@ -1144,7 +1159,7 @@ function EditorStep({
       )}
 
       {/* Font panel */}
-      {showFontPanel && (
+      {!demoRecord && showFontPanel && (
         <div className="glass-panel rounded-xl p-4 mb-4">
           <h3 className="text-sm font-bold text-white mb-3">Font Presets</h3>
           <div className="flex flex-wrap gap-3">
@@ -1162,20 +1177,32 @@ function EditorStep({
       )}
 
       {/* Preview */}
-      <div className="rounded-2xl overflow-hidden border border-white/10 bg-white">
+      <div
+        className={`rounded-2xl overflow-hidden border border-white/10 bg-white ${
+          demoRecord ? 'shadow-2xl ring-1 ring-cyan-400/30' : ''
+        }`}
+      >
         {previewLoading ? (
-          <div className="flex items-center justify-center h-[70vh] bg-slate-900">
+          <div
+            className={`flex items-center justify-center bg-slate-900 ${
+              demoRecord ? 'h-[88vh] min-h-[720px]' : 'h-[70vh]'
+            }`}
+          >
             <div className="w-12 h-12 border-4 border-cyan-400 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : previewHtml ? (
           <iframe
             ref={iframeRef}
             srcDoc={previewHtml}
-            className="w-full h-[70vh] border-0"
+            className={`w-full border-0 ${demoRecord ? 'h-[88vh] min-h-[720px]' : 'h-[70vh]'}`}
             title="Template preview"
           />
         ) : previewError ? (
-          <div className="flex flex-col items-center justify-center gap-4 h-[70vh] bg-slate-900 px-6 text-center">
+          <div
+            className={`flex flex-col items-center justify-center gap-4 bg-slate-900 px-6 text-center ${
+              demoRecord ? 'h-[88vh] min-h-[720px]' : 'h-[70vh]'
+            }`}
+          >
             <p className="text-red-200 text-sm max-w-md">{previewError}</p>
             <button
               type="button"
@@ -1186,7 +1213,11 @@ function EditorStep({
             </button>
           </div>
         ) : (
-          <div className="flex items-center justify-center h-[70vh] bg-slate-900 text-slate-400">
+          <div
+            className={`flex items-center justify-center bg-slate-900 text-slate-400 ${
+              demoRecord ? 'h-[88vh] min-h-[720px]' : 'h-[70vh]'
+            }`}
+          >
             Loading preview...
           </div>
         )}
