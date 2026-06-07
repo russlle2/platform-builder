@@ -28,7 +28,7 @@ jobs:
         run: pnpm run generator:build
       
       - name: Deploy to Netlify
-        if: ${{ secrets.NETLIFY_SITE_ID != '' }}
+        continue-on-error: true
         uses: nwtgck/actions-netlify@v2
         with:
           publish-dir: './apps/generator-app/.next'
@@ -38,10 +38,6 @@ jobs:
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-
-      - name: Skip Netlify deploy (NETLIFY_SITE_ID not configured)
-        if: ${{ secrets.NETLIFY_SITE_ID == '' }}
-        run: echo "Build succeeded. Configure NETLIFY_SITE_ID secret or rely on Netlify Git deploy."
   
   deploy-client-site:
     runs-on: ubuntu-latest
@@ -65,7 +61,7 @@ jobs:
         run: pnpm run client:build
       
       - name: Deploy to Netlify
-        if: ${{ secrets.NETLIFY_SITE_ID_CLIENT != '' }}
+        continue-on-error: true
         uses: nwtgck/actions-netlify@v2
         with:
           publish-dir: './apps/client-template/.next'
@@ -75,7 +71,3 @@ jobs:
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID_CLIENT }}
-
-      - name: Skip client Netlify deploy (NETLIFY_SITE_ID_CLIENT not configured)
-        if: ${{ secrets.NETLIFY_SITE_ID_CLIENT == '' }}
-        run: echo "Client build succeeded. Configure NETLIFY_SITE_ID_CLIENT or deploy manually."
