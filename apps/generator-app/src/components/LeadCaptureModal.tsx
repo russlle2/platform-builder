@@ -84,10 +84,13 @@ export default function LeadCaptureModal() {
         >
           ✕
         </button>
-        <span className="signal-chip">Join the waitlist</span>
+        <span className="signal-chip">Early access</span>
         <h3 className="text-3xl font-bold text-white mt-4">
-          Get notified when new industry layouts launch — plus 15% off your first package
+          Get your 15% launch discount
         </h3>
+        <p className="text-slate-200 mt-3">
+          Join the early-access list and get notified when new website builds, niche demos, and launch slots open.
+        </p>
         <div className="mt-6 space-y-4">
           <input
             type="email"
@@ -118,7 +121,7 @@ export default function LeadCaptureModal() {
             disabled={status === 'submitting'}
             className="cta-button mt-6 w-full"
           >
-            {status === 'submitting' ? 'Submitting...' : 'Notify me'}
+            {status === 'submitting' ? 'Submitting...' : 'Claim 15% Off'}
           </button>
         )}
       </div>

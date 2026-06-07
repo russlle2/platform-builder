@@ -61,15 +61,17 @@ export default function HomePage() {
             <div className="space-y-8">
               <span className="signal-chip">DailyClarity Platform Builder</span>
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-bright-white">
-                Launch a premium website for your wellness or professional brand.
-                <span className="block text-cyan-200">One guided flow. Live preview. No designer needed.</span>
+                Turn your wellness offer into a client-booking website.
+                <span className="block text-cyan-200">One guided flow. Live preview. Launch support built in.</span>
               </h1>
               <p className="text-lg md:text-2xl text-slate-200 max-w-2xl">
-                Choose your niche, preview a polished site, customize the details, and launch without hiring a designer or waiting weeks.
+                Preview a complete website with your real business info, edit the copy and images
+                live, then launch with hosting, contact forms, SEO structure, booking-ready pages,
+                and a customer portal.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link href="/preview-your-business" className="cta-button">
-                  Preview Your Business
+                  Build My Client-Ready Preview
                 </Link>
                 <Link
                   href="/demo/platform-builder"
@@ -79,7 +81,7 @@ export default function HomePage() {
                 </Link>
               </div>
               <div className="flex flex-wrap gap-6 text-sm text-slate-300">
-                <span>No code. Built for practices that need trust, clarity, and booking paths.</span>
+                <span>Not a blank-canvas builder — a client-conversion launch system for wellness and service businesses.</span>
               </div>
             </div>
             <div className="glass-panel rounded-3xl p-8 space-y-6">
@@ -89,10 +91,10 @@ export default function HomePage() {
               </div>
               <div className="space-y-4">
                 {[
-                  'Pick a layout for your niche',
+                  'Browse templates in your niche',
                   'Enter your info — it fills every page',
                   'Preview your complete site live',
-                  'Launch with hosting and portal access',
+                  'Purchase & launch with integrations',
                 ].map((item) => (
                   <div key={item} className="flex items-center gap-3 text-slate-200">
                     <span className="w-2 h-2 rounded-full bg-cyan-400" />
@@ -114,16 +116,56 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* Why this is different */}
+        <section className="container-hvac py-16">
+          <div className="text-center mb-12 space-y-4">
+            <span className="signal-chip">Why this is different</span>
+            <h2 className="text-4xl md:text-5xl font-bold text-white max-w-4xl mx-auto">
+              Most website builders give you a blank canvas. DailyClarity gives you a business-ready funnel.
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              {
+                icon: '🎯',
+                title: 'Offer clarity',
+                copy: 'Helps visitors understand what you sell and why it matters within seconds.',
+              },
+              {
+                icon: '🛡️',
+                title: 'Trust structure',
+                copy: 'Sections for credentials, testimonials, approach, FAQs, and what to expect.',
+              },
+              {
+                icon: '📅',
+                title: 'Booking path',
+                copy: 'Every page guides visitors toward calling, booking, messaging, or joining.',
+              },
+              {
+                icon: '🚀',
+                title: 'Launch system',
+                copy: 'Preview, edit, checkout, portal, and publish support are part of one flow.',
+              },
+            ].map((item) => (
+              <div key={item.title} className="card-mahogany space-y-4">
+                <div className="text-4xl">{item.icon}</div>
+                <h3 className="text-2xl font-bold text-bright-white">{item.title}</h3>
+                <p className="text-gray-300 leading-relaxed">{item.copy}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
         {/* Niche Cards — main CTA section */}
         <section id="niches" className="container-hvac py-16">
           <div className="text-center mb-12 space-y-4">
-            <span className="signal-chip">Choose Your Industry</span>
+            <span className="signal-chip">Built for real wellness businesses</span>
             <h2 className="text-4xl md:text-5xl font-bold text-white">
-              Sites built for your industry
+              Templates shaped around how your clients decide
             </h2>
             <p className="text-lg text-slate-300 max-w-2xl mx-auto">
-              Each niche includes layouts shaped for trust, services, and contact — not generic
-              one-size-fits-all pages.
+              Pick your practice to see conversion-focused templates designed for the way your
+              clients research, build trust, and book.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -156,67 +198,59 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* How it works */}
+        {/* What happens after checkout */}
         <section className="container-hvac py-16">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="glass-panel rounded-2xl p-8">
-              <h2 className="text-3xl font-bold text-white mb-4">How it works</h2>
-              <p className="text-slate-300 mb-6">
-                A streamlined flow from template selection to a launched website with integrations.
-              </p>
-              <Link href="#niches" className="text-cyan-300 font-semibold">
-                Start browsing →
-              </Link>
-            </div>
+          <div className="text-center mb-12 space-y-4">
+            <span className="signal-chip">What happens after checkout</span>
+            <h2 className="text-4xl md:text-5xl font-bold text-white">
+              From details to a live site, one step at a time
+            </h2>
+          </div>
+          <div className="relative grid grid-cols-1 md:grid-cols-5 gap-6">
             {[
-              {
-                step: '01',
-                title: 'Browse & pick',
-                copy: 'Choose a layout tuned for your niche and positioning.',
-              },
-              {
-                step: '02',
-                title: 'Enter your info',
-                copy: 'Your content fills in across every page instantly.',
-              },
-              {
-                step: '03',
-                title: 'Preview & purchase',
-                copy: 'See your real site live, then buy and launch when ready.',
-              },
+              { step: '01', title: 'Choose your niche', copy: 'Pick your practice and fill in your business details.' },
+              { step: '02', title: 'Match & customize', copy: 'Match with a template and customize it live.' },
+              { step: '03', title: 'Checkout', copy: 'Check out with the plan that fits your launch.' },
+              { step: '04', title: 'We provision', copy: 'We provision your site and subdomain for you.' },
+              { step: '05', title: 'Manage in portal', copy: 'Manage future edits through your customer portal.' },
             ].map((item) => (
-              <div key={item.step} className="card-mahogany space-y-3">
-                <span className="text-sm text-cyan-200">{item.step}</span>
-                <h3 className="text-2xl font-bold text-white">{item.title}</h3>
-                <p className="text-slate-200">{item.copy}</p>
+              <div key={item.step} className="glass-panel rounded-2xl p-6 space-y-3">
+                <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-cyan-500/15 text-cyan-200 font-bold border border-cyan-400/30">
+                  {item.step}
+                </span>
+                <h3 className="text-xl font-bold text-white">{item.title}</h3>
+                <p className="text-slate-200 text-sm leading-relaxed">{item.copy}</p>
               </div>
             ))}
           </div>
         </section>
 
-        {/* Feature cards */}
+        {/* Proof / trust — honest, no fabricated claims */}
         <section className="container-hvac py-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <FeatureCard
-              icon="🎨"
-              title="Unique Designs"
-              description={`${totalTemplates}+ unique layouts — each with its own voice, structure, and conversion flow.`}
-            />
-            <FeatureCard
-              icon="📱"
-              title="Mobile-First"
-              description="Every template is responsive and optimized for conversions on any device."
-            />
-            <FeatureCard
-              icon="⚡"
-              title="Instant Preview"
-              description="See your real info in the template before you purchase. No surprises."
-            />
-            <FeatureCard
-              icon="🛠️"
-              title="Managed Launch"
-              description="Hosting, domain, email, and integrations — all set up and managed for you."
-            />
+          <div className="text-center mb-12 space-y-4">
+            <span className="signal-chip">Early access</span>
+            <h2 className="text-4xl md:text-5xl font-bold text-white">
+              Pilot builds are going live now
+            </h2>
+            <p className="text-lg text-slate-300 max-w-2xl mx-auto">
+              DailyClarity is in early access. Pilot client screenshots and case studies will be
+              added here as builds go live — real proof only, no inflated numbers.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { title: 'Pilot builds', copy: 'Launch examples coming soon as early-access sites go live.' },
+              { title: 'Case studies', copy: 'Real before-and-after results will be published here.' },
+              { title: 'Launch slots', copy: 'Early-access slots are opening for new wellness practices.' },
+            ].map((item) => (
+              <div key={item.title} className="card-mahogany space-y-3">
+                <div className="h-32 rounded-xl border border-dashed border-white/15 bg-white/5 flex items-center justify-center text-sm text-slate-400">
+                  Coming soon
+                </div>
+                <h3 className="text-xl font-bold text-bright-white">{item.title}</h3>
+                <p className="text-gray-300 text-sm leading-relaxed">{item.copy}</p>
+              </div>
+            ))}
           </div>
         </section>
 
@@ -224,27 +258,20 @@ export default function HomePage() {
         <section className="container-hvac py-20">
           <div className="glass-panel rounded-3xl p-12 text-center">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Your new website is one guided flow away.
+              Your website should do more than look good.
             </h2>
             <p className="text-lg text-slate-200 mb-8 max-w-2xl mx-auto">
-              Enter your details, preview a booking-ready site live, and launch when you are ready.
-              No coding. No designer required.
+              It should explain your offer, build trust, and move people toward the next step.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link href="/preview-your-business" className="cta-button">
-                Preview Your Business
+                Build My Preview
               </Link>
               <Link
                 href="/demo/platform-builder"
                 className="px-8 py-4 text-lg font-bold text-white border border-white/20 rounded-lg hover:bg-white/10 transition-all"
               >
                 Watch Demo
-              </Link>
-              <Link
-                href="/pricing"
-                className="px-8 py-4 text-lg font-bold text-white border border-white/20 rounded-lg hover:bg-white/10 transition-all"
-              >
-                See Pricing
               </Link>
             </div>
           </div>
@@ -286,23 +313,5 @@ export default function HomePage() {
         }}
       />
     </main>
-  )
-}
-
-function FeatureCard({ 
-  icon, 
-  title, 
-  description 
-}: { 
-  icon: string
-  title: string
-  description: string 
-}) {
-  return (
-    <div className="card-mahogany text-center space-y-4 hover:scale-105 transition-transform">
-      <div className="text-4xl">{icon}</div>
-      <h3 className="text-2xl font-bold text-bright-white">{title}</h3>
-      <p className="text-gray-300 leading-relaxed">{description}</p>
-    </div>
   )
 }
