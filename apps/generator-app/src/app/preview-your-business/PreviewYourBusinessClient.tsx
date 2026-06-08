@@ -36,12 +36,76 @@ import { ClientReadinessPanel } from '@/components/preview/ClientReadinessPanel'
 /* ================================================================== */
 
 const NICHE_OPTIONS = [
-  { slug: 'aromatherapy', label: 'Aromatherapy', icon: '≡ƒî┐' },
-  { slug: 'holistic_medicine', label: 'Holistic Medicine', icon: '≡ƒºÿ' },
-  { slug: 'private_practice_therapist', label: 'Private Practice Therapist', icon: '≡ƒÆ¼' },
-  { slug: 'sound_bath', label: 'Sound Bath', icon: '≡ƒöö' },
-  { slug: 'wellness_coach', label: 'Wellness Coach', icon: 'Γ£¿' },
+  { slug: 'aromatherapy', label: 'Aromatherapy', icon: '🌿' },
+  { slug: 'holistic_medicine', label: 'Holistic Medicine', icon: '🧘' },
+  { slug: 'private_practice_therapist', label: 'Private Practice Therapist', icon: '💬' },
+  { slug: 'sound_bath', label: 'Sound Bath', icon: '🔔' },
+  { slug: 'wellness_coach', label: 'Wellness Coach', icon: '✨' },
 ]
+
+type NicheExample = {
+  businessName: string
+  tagline: string
+  description: string
+  services: string
+}
+
+const NICHE_EXAMPLES: Record<string, NicheExample> = {
+  default: {
+    businessName: 'Bloom Wellness Studio',
+    tagline: 'Care that meets you where you are.',
+    description:
+      'A wellness practice helping clients feel grounded, supported, and ready to take the next step.',
+    services: 'Consultations, Programs, Workshops, Virtual Sessions',
+  },
+  aromatherapy: {
+    businessName: 'Wildflower Aromatherapy',
+    tagline: 'Pure essential oils for everyday calm.',
+    description:
+      'A boutique aromatherapy studio crafting custom essential oil blends and guided scent rituals for relaxation and balance.',
+    services: 'Custom Blends, Aromatherapy Massage, Scent Workshops, Wellness Consultations',
+  },
+  holistic_medicine: {
+    businessName: 'Whole Roots Holistic Health',
+    tagline: 'Whole-person care, naturally.',
+    description:
+      'An integrative health practice blending naturopathic medicine, nutrition, and mind-body therapies to support lasting wellness.',
+    services: 'Naturopathic Consults, Nutrition Coaching, Herbal Medicine, Acupuncture',
+  },
+  private_practice_therapist: {
+    businessName: 'Stillwater Therapy',
+    tagline: 'A safe space to grow and heal.',
+    description:
+      'A private counseling practice offering compassionate, evidence-based therapy for individuals and couples navigating difficult seasons.',
+    services: 'Individual Therapy, Couples Counseling, Anxiety Support, Telehealth Sessions',
+  },
+  sound_bath: {
+    businessName: 'Resonance Sound Healing',
+    tagline: 'Restore your rhythm.',
+    description:
+      'A sound healing studio offering immersive sound bath journeys and guided meditation to ease stress and deepen relaxation.',
+    services: 'Group Sound Baths, Private Sessions, Guided Meditation, Corporate Wellness',
+  },
+  wellness_coach: {
+    businessName: 'Vitality Path Coaching',
+    tagline: 'Build habits that last.',
+    description:
+      'A wellness coaching practice helping clients create sustainable routines for energy, clarity, and long-term health.',
+    services: '1:1 Coaching, Group Programs, Habit Reset Intensives, Discovery Calls',
+  },
+}
+
+function getNicheExample(niche: string): NicheExample {
+  return NICHE_EXAMPLES[niche] || NICHE_EXAMPLES.default
+}
+
+const DEMO_RECORD_CALLOUTS: Record<PreviewStep, string> = {
+  info: 'Step 1 — Add your business details once',
+  style: 'Step 2 — Choose the look and voice for your brand',
+  matching: 'Step 3 — We match you with a layout for your niche',
+  editor: 'Your website preview — filled with your real business info',
+  browse: 'Browse personalized layouts — every page already has your details',
+}
 
 const VIBE_OPTIONS: { value: VibeOption; label: string; icon: string; desc: string }[] = [
   { value: 'warm', label: 'Warm', icon: '≡ƒîà', desc: 'Inviting, cozy, human' },
@@ -157,6 +221,8 @@ function scoreTemplate(
 export default function PreviewYourBusinessClient() {
   const searchParams = useSearchParams()
   const demoRecord = searchParams.get('demoRecord') === '1'
+  const nichePrefill = searchParams.get('niche')
+  const nichePrefilledRef = useRef(false)
 
   const {
     step,
@@ -194,7 +260,11 @@ export default function PreviewYourBusinessClient() {
 
   /* ---- Color & font customization ---- */
   const [customColors, setCustomColors] = useState({ primary: '#0ea5e9', bg: '#0f172a', text: '#e2e8f0' })
-  const [customFonts, setCustomFonts] = useState({ heading: 'inherit', body: 'inherit' })
+  const [customFonts, setCustomFonts] = useState<{
+    heading: string
+    body: string
+    importUrl?: string
+  }>({ heading: 'inherit', body: 'inherit' })
   const [showColorPanel, setShowColorPanel] = useState(false)
   const [showFontPanel, setShowFontPanel] = useState(false)
 
@@ -278,8 +348,10 @@ export default function PreviewYourBusinessClient() {
       setPreviewLoading(true)
       setPreviewError(null)
 
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 20000)
+
       try {
-        // Persist the intake values so checkout (on /pricing) can pick them up.
         try {
           sessionStorage.setItem('pb_template_values', JSON.stringify(getFieldValues()))
         } catch { /* ignore */ }
@@ -294,6 +366,7 @@ export default function PreviewYourBusinessClient() {
             fontVariation: stylePreferences.fontPreference,
             structureVariation: stylePreferences.layoutDensity,
           }),
+          signal: controller.signal,
         })
         if (!res.ok) {
           const errBody = await res.json().catch(() => ({}))
@@ -306,12 +379,23 @@ export default function PreviewYourBusinessClient() {
         let html = data.html as string
         const assetBase = `/api/templates/${ns}/${ts}/assets`
 
-        // Rewrite relative paths
         html = html.replace(
           /(href|src)="(?!https?:\/\/|\/\/|data:|mailto:|tel:|#)([^"]+)"/g,
           (match, attr, path) => {
             if (path.endsWith('.html')) return match
             return `${attr}="${assetBase}/${path}"`
+          },
+        )
+
+        html = html.replace(
+          /<img([^>]*?)src="([^"]+)"([^>]*)>/gi,
+          (_m, before, src, after) => {
+            let imgSrc = src
+            if (src.startsWith('/api/templates')) {
+              imgSrc = `/.netlify/images?url=${encodeURIComponent(src)}&w=1200&q=72`
+            }
+            const lazy = after.includes('loading=') ? after : `${after} loading="lazy" decoding="async"`
+            return `<img${before}src="${imgSrc}"${lazy}>`
           },
         )
 
@@ -346,15 +430,30 @@ export default function PreviewYourBusinessClient() {
       } catch (e) {
         console.error('Preview error:', e)
         setPreviewHtml(null)
+        const aborted = e instanceof DOMException && e.name === 'AbortError'
         setPreviewError(
-          e instanceof Error ? e.message : 'Unable to load template preview. Try again or pick another template.',
+          aborted
+            ? 'The preview took too long to load. Check your connection and tap Retry.'
+            : e instanceof Error
+              ? e.message
+              : 'Unable to load template preview. Try again or pick another template.',
         )
       } finally {
+        clearTimeout(timeoutId)
         setPreviewLoading(false)
       }
     },
     [matchedTemplate, businessInfo.niche, getFieldValues, stylePreferences],
   )
+
+  useEffect(() => {
+    if (nichePrefilledRef.current || !nichePrefill) return
+    if (!NICHE_OPTIONS.some((n) => n.slug === nichePrefill)) return
+    if (!businessInfo.niche) {
+      setBusinessInfo({ niche: nichePrefill })
+    }
+    nichePrefilledRef.current = true
+  }, [nichePrefill, businessInfo.niche, setBusinessInfo])
 
   /* ================ Restore persisted inline edits ================ */
   useEffect(() => {
@@ -545,7 +644,6 @@ export default function PreviewYourBusinessClient() {
             fileInputRef={fileInputRef}
             handleImageFileChange={handleImageFileChange}
             onLoadPreview={loadPreview}
-            onBrowse={openBrowse}
             showColorPanel={showColorPanel}
             setShowColorPanel={setShowColorPanel}
             showFontPanel={showFontPanel}
@@ -573,6 +671,12 @@ export default function PreviewYourBusinessClient() {
           />
         )}
       </div>
+
+      {demoRecord && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-xl bg-slate-950/95 border border-cyan-400/40 text-cyan-100 text-sm font-medium shadow-2xl max-w-xl text-center pointer-events-none">
+          {DEMO_RECORD_CALLOUTS[step]}
+        </div>
+      )}
     </main>
   )
 }
@@ -604,6 +708,8 @@ function InfoStep({
   const handleNext = () => {
     if (validate()) onNext()
   }
+
+  const ex = getNicheExample(info.niche)
 
   return (
     <section className="container-hvac py-8 max-w-3xl mx-auto">
@@ -646,7 +752,7 @@ function InfoStep({
         {/* Core fields */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <Field label="Business Name" required value={info.businessName} error={errors.businessName}
-            onChange={(v) => onChange({ businessName: v })} placeholder="Acme Heating & Cooling" />
+            onChange={(v) => onChange({ businessName: v })} placeholder={ex.businessName} />
           <Field label="Owner / Contact Name" value={info.ownerName}
             onChange={(v) => onChange({ ownerName: v })} placeholder="Jane Smith" />
           <Field label="Email" required type="email" value={info.email} error={errors.email}
@@ -658,19 +764,19 @@ function InfoStep({
         <Field label="Address / Service Area" value={info.address}
           onChange={(v) => onChange({ address: v })} placeholder="123 Main St, Denver, CO" />
         <Field label="Tagline" value={info.tagline}
-          onChange={(v) => onChange({ tagline: v })} placeholder="Your comfort is our priority." />
+          onChange={(v) => onChange({ tagline: v })} placeholder={ex.tagline} />
         <div>
           <label className="block text-sm font-semibold text-slate-200 mb-2">Description</label>
           <textarea
             value={info.description}
             onChange={(e) => onChange({ description: e.target.value })}
             rows={3}
-            placeholder="Tell us what makes your business unique..."
+            placeholder={ex.description}
             className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 resize-y"
           />
         </div>
         <Field label="Services (comma-separated)" value={info.services}
-          onChange={(v) => onChange({ services: v })} placeholder="AC Repair, Heating, Maintenance" />
+          onChange={(v) => onChange({ services: v })} placeholder={ex.services} />
         <Field label="Existing Website (optional)" value={info.website}
           onChange={(v) => onChange({ website: v })} placeholder="https://yourbusiness.com" />
       </div>
@@ -995,7 +1101,6 @@ function EditorStep({
   fileInputRef,
   handleImageFileChange,
   onLoadPreview,
-  onBrowse,
   showColorPanel,
   setShowColorPanel,
   showFontPanel,
@@ -1018,15 +1123,14 @@ function EditorStep({
   fileInputRef: React.RefObject<HTMLInputElement>
   handleImageFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   onLoadPreview: (niche?: string, slug?: string, page?: string) => void
-  onBrowse: () => void
   showColorPanel: boolean
   setShowColorPanel: (v: boolean) => void
   showFontPanel: boolean
   setShowFontPanel: (v: boolean) => void
   customColors: { primary: string; bg: string; text: string }
   setCustomColors: (v: { primary: string; bg: string; text: string }) => void
-  customFonts: { heading: string; body: string }
-  setCustomFonts: (v: { heading: string; body: string }) => void
+  customFonts: { heading: string; body: string; importUrl?: string }
+  setCustomFonts: (v: { heading: string; body: string; importUrl?: string }) => void
 }) {
   const COLOR_PRESETS = [
     { label: 'Ocean', primary: '#0ea5e9', bg: '#0f172a', text: '#e2e8f0' },
@@ -1037,24 +1141,79 @@ function EditorStep({
     { label: 'Slate', primary: '#64748b', bg: '#0f172a', text: '#e2e8f0' },
   ]
 
-  const FONT_PRESETS = [
-    { label: 'Modern Sans', heading: 'Inter, sans-serif', body: 'Inter, sans-serif' },
+  const FONT_PRESETS: { label: string; heading: string; body: string; importUrl?: string }[] = [
+    {
+      label: 'Modern Sans',
+      heading: "'Inter', sans-serif",
+      body: "'Inter', sans-serif",
+      importUrl: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap',
+    },
+    {
+      label: 'Elegant Serif',
+      heading: "'Playfair Display', serif",
+      body: "'Lora', serif",
+      importUrl:
+        'https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=Playfair+Display:wght@500;600;700&display=swap',
+    },
+    {
+      label: 'Warm Editorial',
+      heading: "'Cormorant Garamond', serif",
+      body: "'Nunito Sans', sans-serif",
+      importUrl:
+        'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Nunito+Sans:wght@400;600;700&display=swap',
+    },
+    {
+      label: 'Geometric',
+      heading: "'Poppins', sans-serif",
+      body: "'Poppins', sans-serif",
+      importUrl: 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap',
+    },
+    {
+      label: 'Editorial Mix',
+      heading: "'Montserrat', sans-serif",
+      body: "'Source Serif 4', serif",
+      importUrl:
+        'https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Source+Serif+4:wght@400;600&display=swap',
+    },
+    {
+      label: 'Soft Rounded',
+      heading: "'Quicksand', sans-serif",
+      body: "'Karla', sans-serif",
+      importUrl:
+        'https://fonts.googleapis.com/css2?family=Karla:wght@400;500;600&family=Quicksand:wght@500;600;700&display=swap',
+    },
+    {
+      label: 'Tech Clean',
+      heading: "'Space Grotesk', sans-serif",
+      body: "'Inter', sans-serif",
+      importUrl:
+        'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap',
+    },
     { label: 'Classic Serif', heading: 'Georgia, serif', body: 'Georgia, serif' },
-    { label: 'Bold Display', heading: 'Impact, sans-serif', body: 'Arial, sans-serif' },
-    { label: 'Elegant Mix', heading: 'Georgia, serif', body: 'Arial, sans-serif' },
-    { label: 'Rounded', heading: 'Verdana, sans-serif', body: 'Verdana, sans-serif' },
-    { label: 'Monospace', heading: 'Courier New, monospace', body: 'Courier New, monospace' },
+    { label: 'System Default', heading: 'inherit', body: 'inherit' },
   ]
 
-  // Inject custom styles when changed
-  useEffect(() => {
+  const applyCustomStyles = useCallback(() => {
     const iframe = iframeRef.current
-    if (!iframe?.contentDocument) return
-    let styleEl = iframe.contentDocument.getElementById('pb-custom-styles') as HTMLStyleElement | null
+    const doc = iframe?.contentDocument
+    if (!doc) return
+
+    if (customFonts.importUrl) {
+      let linkEl = doc.getElementById('pb-google-fonts') as HTMLLinkElement | null
+      if (!linkEl) {
+        linkEl = doc.createElement('link')
+        linkEl.id = 'pb-google-fonts'
+        linkEl.rel = 'stylesheet'
+        doc.head.appendChild(linkEl)
+      }
+      linkEl.href = customFonts.importUrl
+    }
+
+    let styleEl = doc.getElementById('pb-custom-styles') as HTMLStyleElement | null
     if (!styleEl) {
-      styleEl = iframe.contentDocument.createElement('style')
+      styleEl = doc.createElement('style')
       styleEl.id = 'pb-custom-styles'
-      iframe.contentDocument.head.appendChild(styleEl)
+      doc.head.appendChild(styleEl)
     }
     styleEl.textContent = `
       :root {
@@ -1064,8 +1223,14 @@ function EditorStep({
         --pb-heading-font: ${customFonts.heading};
         --pb-body-font: ${customFonts.body};
       }
+      h1, h2, h3, h4, h5, h6 { font-family: ${customFonts.heading} !important; }
+      body, p, li, span, a, button, label { font-family: ${customFonts.body} !important; }
     `
   }, [customColors, customFonts, iframeRef])
+
+  useEffect(() => {
+    applyCustomStyles()
+  }, [applyCustomStyles])
 
   return (
     <section className={`container-hvac ${demoRecord ? 'py-2' : 'py-4'}`}>
@@ -1099,13 +1264,7 @@ function EditorStep({
               showFontPanel ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300' : 'border-white/20 text-slate-300 hover:bg-white/10'
             }`}
           >
-            ≡ƒöñ Fonts
-          </button>
-          <button
-            onClick={onBrowse}
-            className="px-4 py-2 text-sm font-semibold text-white border border-white/20 rounded-lg hover:bg-white/10 transition-all"
-          >
-            Browse Custom Templates
+            🔤 Fonts
           </button>
           <Link
             href={`/pricing?template=${encodeURIComponent(matched.templateSlug)}&niche=${encodeURIComponent(matched.nicheSlug)}`}
@@ -1166,8 +1325,12 @@ function EditorStep({
             {FONT_PRESETS.map((f) => (
               <button
                 key={f.label}
-                onClick={() => setCustomFonts({ heading: f.heading, body: f.body })}
-                className="px-3 py-2 rounded-lg border border-white/10 hover:border-white/30 transition-all bg-white/5"
+                onClick={() => setCustomFonts({ heading: f.heading, body: f.body, importUrl: f.importUrl })}
+                className={`px-3 py-2 rounded-lg border transition-all bg-white/5 ${
+                  customFonts.heading === f.heading
+                    ? 'border-cyan-400 ring-1 ring-cyan-400/40'
+                    : 'border-white/10 hover:border-white/30'
+                }`}
               >
                 <span className="text-sm text-white" style={{ fontFamily: f.heading }}>{f.label}</span>
               </button>
@@ -1194,6 +1357,8 @@ function EditorStep({
           <iframe
             ref={iframeRef}
             srcDoc={previewHtml}
+            onLoad={applyCustomStyles}
+            loading="lazy"
             className={`w-full border-0 ${demoRecord ? 'h-[88vh] min-h-[720px]' : 'h-[70vh]'}`}
             title="Template preview"
           />
@@ -1383,9 +1548,9 @@ function getIframeInjectionScript(): string {
 <script>
 (function(){
   var editableSelectors = 'h1,h2,h3,h4,h5,h6,p,span,li,td,th,a,blockquote,figcaption,label,button,dt,dd';
+  var supportsHover = window.matchMedia && window.matchMedia('(hover: hover)').matches;
 
-  document.addEventListener('dblclick', function(e) {
-    var el = e.target.closest(editableSelectors);
+  function startEditing(el) {
     if (!el || el.isContentEditable) return;
     var originalText = el.textContent;
     el.contentEditable = 'true';
@@ -1402,30 +1567,50 @@ function getIframeInjectionScript(): string {
       el.removeEventListener('blur', onBlur);
       window.parent.postMessage({ type: 'textEdited', tag: el.tagName, original: originalText, text: el.textContent }, '*');
     }, { once: true });
+  }
+
+  document.addEventListener('dblclick', function(e) {
+    var el = e.target.closest(editableSelectors);
+    if (!el) return;
+    startEditing(el);
     e.preventDefault();
     e.stopPropagation();
   });
 
+  var lastTap = 0;
+  document.addEventListener('touchend', function(e) {
+    var el = e.target.closest(editableSelectors);
+    if (!el) return;
+    var now = Date.now();
+    if (now - lastTap < 400) {
+      startEditing(el);
+      e.preventDefault();
+    }
+    lastTap = now;
+  });
+
   var lastHovered = null;
-  document.addEventListener('mouseover', function(e) {
-    var el = e.target.closest(editableSelectors);
-    if (lastHovered && lastHovered !== el && !lastHovered.isContentEditable) {
-      lastHovered.style.outline = '';
-      lastHovered.style.outlineOffset = '';
-    }
-    if (el && !el.isContentEditable) {
-      el.style.outline = '1px dashed rgba(59,130,246,0.4)';
-      el.style.outlineOffset = '1px';
-      lastHovered = el;
-    }
-  });
-  document.addEventListener('mouseout', function(e) {
-    var el = e.target.closest(editableSelectors);
-    if (el && !el.isContentEditable) {
-      el.style.outline = '';
-      el.style.outlineOffset = '';
-    }
-  });
+  if (supportsHover) {
+    document.addEventListener('mouseover', function(e) {
+      var el = e.target.closest(editableSelectors);
+      if (lastHovered && lastHovered !== el && !lastHovered.isContentEditable) {
+        lastHovered.style.outline = '';
+        lastHovered.style.outlineOffset = '';
+      }
+      if (el && !el.isContentEditable) {
+        el.style.outline = '1px dashed rgba(59,130,246,0.4)';
+        el.style.outlineOffset = '1px';
+        lastHovered = el;
+      }
+    });
+    document.addEventListener('mouseout', function(e) {
+      var el = e.target.closest(editableSelectors);
+      if (el && !el.isContentEditable) {
+        el.style.outline = '';
+        el.style.outlineOffset = '';
+      }
+    });
+  }
 
   document.addEventListener('click', function(e) {
     var img = e.target.closest('img');
@@ -1465,6 +1650,5 @@ function getIframeInjectionScript(): string {
     }
   });
 })();
-</script>
-`
+</script>`
 }

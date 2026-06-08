@@ -70,8 +70,8 @@ export default function SoundBathWebsiteTemplatePage() {
             Explore sound bath templates
           </Link>
           {' · '}
-          <Link href="/templates/sound_bath" className="text-indigo-300 hover:underline">
-            Browse gallery
+          <Link href="/preview-your-business?niche=sound_bath" className="text-indigo-300 hover:underline">
+            Start your preview
           </Link>
         </p>
 

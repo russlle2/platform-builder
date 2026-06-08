@@ -1,4 +1,5 @@
 import { getNiches, NICHE_META } from '@/lib/templates/niche-registry'
+import { NicheExampleGallery } from '@/components/niche/NicheExampleGallery'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
@@ -230,7 +231,7 @@ function NicheActionLinks({
     <div className={`space-y-4 ${wrap}`}>
       <div className={`flex flex-col sm:flex-row gap-4 ${wrap}`}>
         <Link
-          href="/preview-your-business"
+          href={`/preview-your-business?niche=${encodeURIComponent(niche)}`}
           className="px-8 py-4 text-lg font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all border border-cyan-200/40 text-center"
         >
           Build My Preview
@@ -249,12 +250,6 @@ function NicheActionLinks({
           See Pricing
         </Link>
       </div>
-      <Link
-        href={`/templates/${niche}`}
-        className={`inline-block text-sm font-semibold ${colors.heading} hover:underline`}
-      >
-        View custom templates (browse layouts) →
-      </Link>
     </div>
   )
 }
@@ -517,7 +512,7 @@ export async function generateMetadata({
   const meta = NICHE_META[niche]
   if (!meta) return { title: 'Templates' }
   return {
-    title: `${meta.label} Website Templates | DailyClarity`,
+    title: `${meta.label} Website Templates`,
     description: meta.description,
   }
 }
@@ -572,7 +567,7 @@ export default async function NicheLandingPage({
             <div className="glass-panel rounded-3xl p-8 space-y-6">
               <div className="flex items-center justify-between">
                 <span className="text-sm uppercase tracking-[0.3em] text-slate-400">{meta.label} Studio</span>
-                <span className={`text-xs ${colors.heading}`}>Live templates</span>
+                <span className={`text-xs ${colors.heading}`}>Example styles</span>
               </div>
               <div className="space-y-4">
                 {copy.benefits.map((item) => (
@@ -595,6 +590,8 @@ export default async function NicheLandingPage({
             </div>
           </div>
         </section>
+
+        <NicheExampleGallery niche={niche} nicheLabel={meta.label} headingClass={colors.heading} />
 
         {/* Conversion job */}
         <section className="container-hvac py-16">
@@ -672,27 +669,30 @@ export default async function NicheLandingPage({
             <div className="glass-panel rounded-2xl p-8">
               <h2 className="text-3xl font-bold text-white mb-4">How it works</h2>
               <p className="text-slate-300 mb-6">
-                Browse, customize, preview, and launch — all in one streamlined flow.
+                Enter your details, match a layout, preview live, and launch — one guided flow.
               </p>
-              <Link href={`/templates/${niche}`} className={`font-semibold ${colors.heading}`}>
-                Browse templates →
+              <Link
+                href={`/preview-your-business?niche=${encodeURIComponent(niche)}`}
+                className={`font-semibold ${colors.heading}`}
+              >
+                Start your preview →
               </Link>
             </div>
             {[
               {
                 step: '01',
-                title: 'Browse & pick',
-                copy: `Choose from ${templateCount} unique ${meta.label.toLowerCase()} templates, each with its own design DNA.`,
+                title: 'Share your details',
+                copy: `Tell us about your ${meta.label.toLowerCase()} practice — content fills every page automatically.`,
               },
               {
                 step: '02',
-                title: 'Enter your info',
-                copy: 'Fill in your business details and watch content populate across every page instantly.',
+                title: 'Match a layout',
+                copy: 'Browse pre-populated designs tuned for your niche and pick the one that fits.',
               },
               {
                 step: '03',
-                title: 'Preview & purchase',
-                copy: 'See your fully customized site live in preview, then purchase when you love it.',
+                title: 'Preview & launch',
+                copy: 'Edit live, purchase when ready, and manage updates from your portal.',
               },
             ].map((item) => (
               <div key={item.step} className="card-mahogany space-y-3">
@@ -751,8 +751,8 @@ export default async function NicheLandingPage({
               Ready to see your {meta.label.toLowerCase()} website?
             </h2>
             <p className="text-lg text-slate-200 mb-8 max-w-2xl mx-auto">
-              Browse {templateCount} professional templates, fill in your info,
-              and preview your fully customized site in minutes. No commitment until you purchase.
+              Add your business details once, preview {templateCount}+ layouts filled with your real info,
+              and launch when you are ready. No commitment until you purchase.
             </p>
             <NicheActionLinks niche={niche} metaLabel={meta.label} colors={colors} layout="center" />
           </div>

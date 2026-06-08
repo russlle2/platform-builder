@@ -22,13 +22,14 @@ export default function BuildsPage() {
               No builds yet
             </h2>
             <p className="text-gray-300 max-w-2xl mx-auto">
-              Browse templates in your niche and launch when you are ready. Your projects will appear here.
+              Start with your business details, preview your full site, and launch when you are ready.
+              Your projects will appear here.
             </p>
             <Link 
-              href="/#niches"
+              href="/preview-your-business"
               className="cta-button inline-block"
             >
-              View Custom Templates
+              Build My Preview
             </Link>
           </div>
         </div>

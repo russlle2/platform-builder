@@ -65,16 +65,16 @@ export default async function NicheDemoPage({
 
         <div className="flex flex-col sm:flex-row gap-4">
           <Link
-            href="/preview-your-business"
+            href={`/preview-your-business?niche=${encodeURIComponent(niche)}`}
             className="px-8 py-4 text-lg font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all border border-cyan-200/40 text-center"
           >
             Build My Preview
           </Link>
           <Link
-            href={`/templates/${niche}`}
+            href={`/${niche}`}
             className="px-8 py-4 text-lg font-bold text-white border border-white/20 rounded-lg hover:bg-white/10 transition-all text-center"
           >
-            View {meta.label} Templates
+            See {meta.label} Examples
           </Link>
         </div>
       </div>

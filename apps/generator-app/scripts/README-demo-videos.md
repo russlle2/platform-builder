@@ -8,11 +8,14 @@ Walkthrough videos for DailyClarity Platform Builder — used on `/demo`, `/demo
 
 ## Option A — Playwright (automated)
 
+Records at **1920×1080**, speeds to **1.35×**, burns in ASS captions from `scripts/demo-captions.ts` (CRF **22**).
+
 ### Dependencies
 
 ```bash
 pnpm install
 npx playwright install chromium
+# ffmpeg on PATH for MP4 + caption burn-in
 ```
 
 ### Run
@@ -22,6 +25,46 @@ pnpm --filter @platform-builder/generator-app dev
 # other terminal:
 BASE_URL=http://localhost:3000 pnpm --filter @platform-builder/generator-app record:demos
 ```
+
+Single scenario: `DEMO_ONLY=aromatherapy BASE_URL=http://localhost:3000 pnpm --filter @platform-builder/generator-app record:demos`
+
+### Niche example screenshots (one-time)
+
+```bash
+pnpm --filter @platform-builder/generator-app dev
+BASE_URL=http://localhost:3000 pnpm --filter @platform-builder/generator-app capture:niche-examples
+```
+
+Output: `public/images/niche-examples/{niche}/*.webp`
+
+### Gemini-assisted caption review (optional)
+
+After MP4s exist, use Vertex Gemini 2.5 Pro to draft chapter timestamps:
+
+```bash
+# One-time GCP setup — see below
+GOOGLE_CLOUD_PROJECT=your-project-id \
+GCS_DEMO_BUCKET=dailyclarity-demo-work \
+VERTEX_LOCATION=us-central1 \
+pnpm --filter @platform-builder/generator-app analyze:demos -- public/demo-videos/aromatherapy-walkthrough.mp4
+```
+
+Review `test-results/demo-analysis/*.segments.json`, merge into `scripts/demo-captions.ts`, then re-run ffmpeg conversion only if you skip re-recording.
+
+### Google Cloud credentials (Vertex + GCS)
+
+| Variable | Purpose |
+|----------|---------|
+| `GOOGLE_CLOUD_PROJECT` | GCP project ID |
+| `GOOGLE_APPLICATION_CREDENTIALS` | Service account JSON path (local/CI) |
+| `GCS_DEMO_BUCKET` | Temp bucket for video upload (e.g. `dailyclarity-demo-work`) |
+| `VERTEX_LOCATION` | Region (default `us-central1`) |
+
+Enable **Vertex AI API** and **Cloud Storage** in the GCP console. Service account needs **Vertex AI User** + **Storage Object Admin**.
+
+Do **not** commit service account keys — use `.env` locally and GitHub Actions secrets for automation.
+
+**Veo 3.1** is optional for 4–6s branded intro/outro b-roll only; the walkthrough body stays Playwright + ffmpeg.
 
 ### Output
 
@@ -43,10 +86,10 @@ BASE_URL=http://localhost:3000 pnpm --filter @platform-builder/generator-app rec
 
 ```bash
 ffmpeg -y -i "test-results/demo-recordings/raw/aromatherapy/page@abc.webm" \
-  -vf "setpts=0.5882*PTS,fade=t=in:st=0:d=0.5:color=black" \
+  -vf "setpts=0.7407*PTS,fade=t=in:st=0:d=0.5:color=black,subtitles='captions/aromatherapy.ass'" \
   -r 30 -c:v libx264 -profile:v baseline -level:v 4.0 \
   -pix_fmt yuv420p -colorspace bt709 -color_primaries bt709 -color_trc bt709 \
-  -crf 28 -movflags +faststart \
+  -crf 22 -movflags +faststart \
   "public/demo-videos/aromatherapy-walkthrough.mp4"
 ```
 
@@ -182,7 +225,7 @@ All paths come from `src/lib/demo-videos.ts` + `DemoVideoPlayer` component.
 
 ## Keeping file sizes small
 
-- CRF **28** (raise toward **35** for smaller files).
-- Speed up **1.6×–1.75×** in ffmpeg (`setpts`).
+- CRF **22** (raise toward **28** for smaller files).
+- Speed up **1.35×** in ffmpeg (`setpts=0.7407*PTS` or script default).
 - H.264 baseline + `faststart` for web playback.
 - Re-encode with Windows-friendly color tags: `-colorspace bt709 -color_primaries bt709 -color_trc bt709`

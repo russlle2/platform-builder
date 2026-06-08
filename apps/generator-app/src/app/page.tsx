@@ -91,8 +91,8 @@ export default function HomePage() {
               </div>
               <div className="space-y-4">
                 {[
-                  'Browse templates in your niche',
-                  'Enter your info — it fills every page',
+                  'Share your business details once',
+                  'Your info fills every page automatically',
                   'Preview your complete site live',
                   'Purchase & launch with integrations',
                 ].map((item) => (
@@ -190,7 +190,7 @@ export default function HomePage() {
                     {niche.description}
                   </p>
                   <span className={`inline-flex items-center gap-1 text-sm font-semibold ${accent.text} group-hover:gap-2 transition-all`}>
-                    View Custom Templates <span aria-hidden="true">→</span>
+                    View example styles →
                   </span>
                 </Link>
               )

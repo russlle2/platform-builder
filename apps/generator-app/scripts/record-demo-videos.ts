@@ -9,15 +9,17 @@ import path from 'path'
 import fs from 'fs'
 import { spawnSync } from 'child_process'
 import { SCENARIOS, type DemoScenario } from './demo-scenarios'
+import { captionsForScenario, writeAssCaptions } from './demo-captions'
 
 const BASE_URL = process.env.BASE_URL || 'https://dailyclarity.org'
 const PREVIEW_URL = `${BASE_URL}/preview-your-business?demoRecord=1`
-const VIEWPORT = { width: 1440, height: 1000 }
+const VIEWPORT = { width: 1920, height: 1080 }
 const APP_ROOT = path.resolve(__dirname, '..')
 const RAW_DIR = path.join(APP_ROOT, 'test-results', 'demo-recordings', 'raw')
 const OUT_DIR = path.join(APP_ROOT, 'public', 'demo-videos')
-const SPEED = 1.65
-const CRF = 28
+const CAPTION_DIR = path.join(APP_ROOT, 'test-results', 'demo-recordings', 'captions')
+const SPEED = 1.35
+const CRF = 22
 
 function findFfmpeg(): string | null {
   const fromEnv = process.env.FFMPEG_PATH?.trim()
@@ -225,7 +227,7 @@ async function scrollInsidePreview(page: Page, steps: number, fraction = 0.42) {
       const step = Math.max(180, win.innerHeight * frac)
       win.scrollBy({ top: step, behavior: 'instant' })
     }, fraction)
-    await pause(750)
+    await pause(1100)
   }
 }
 
@@ -267,7 +269,7 @@ async function showcaseWebsitePreview(page: Page) {
     if (!(await tab.isVisible().catch(() => false))) continue
     console.log(`  → Preview page: ${pageName}`)
     await tab.click()
-    await pause(3200)
+    await pause(4500)
     await pinPreviewToViewport(page)
     await hoverPreviewCenter(page)
     await scrollInsidePreview(page, 5, 0.4)
@@ -320,13 +322,18 @@ async function showPricingAndWelcomeFlow(page: Page, slug: string) {
   await pause(2200)
 }
 
-function convertWithFfmpegIfAvailable(rawPath: string, outPath: string): boolean {
+function convertWithFfmpegIfAvailable(rawPath: string, outPath: string, scenarioId: string): boolean {
   if (!FFMPEG) {
     console.log(`\n  [ffmpeg not found] Manual convert:\n  ffmpeg -y -i "${rawPath}" ... "${outPath}"\n`)
     const webmOut = outPath.replace(/\.mp4$/, '.webm')
     fs.copyFileSync(rawPath, webmOut)
     return false
   }
+
+  fs.mkdirSync(CAPTION_DIR, { recursive: true })
+  const assPath = path.join(CAPTION_DIR, `${scenarioId}.ass`)
+  writeAssCaptions(captionsForScenario(scenarioId), assPath, SPEED)
+  const assEscaped = assPath.replace(/\\/g, '/').replace(/:/g, '\\:')
 
   let durationSec = 90
   try {
@@ -342,6 +349,7 @@ function convertWithFfmpegIfAvailable(rawPath: string, outPath: string): boolean
     `setpts=${(1 / SPEED).toFixed(4)}*PTS`,
     `fade=t=in:st=0:d=0.5:color=black`,
     `fade=t=out:st=${fadeStart.toFixed(1)}:d=1.0:color=black`,
+    `subtitles='${assEscaped}'`,
   ].join(',')
 
   const args = [
@@ -454,7 +462,7 @@ async function main() {
     try {
       const rawPath = await recordScenario(scenario, scenarioRawDir)
       const outPath = path.join(OUT_DIR, `${scenario.outputName}.mp4`)
-      const ok = convertWithFfmpegIfAvailable(rawPath, outPath)
+      const ok = convertWithFfmpegIfAvailable(rawPath, outPath, scenario.id)
       results.push({ name: scenario.outputName, ok })
     } catch (err) {
       console.error(`FAILED ${scenario.id}:`, err)

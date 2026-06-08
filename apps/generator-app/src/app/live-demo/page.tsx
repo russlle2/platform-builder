@@ -11,7 +11,7 @@ export default function LiveDemoPage() {
             Live Demo
           </h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Experience the platform in action. Browse templates and preview your full site before you buy.
+            Experience the platform in action. Enter your details once and preview your full site before you buy.
           </p>
         </div>
 
@@ -47,7 +47,7 @@ export default function LiveDemoPage() {
                 href="/preview-your-business"
                 className="cta-button inline-block"
               >
-                Preview Your Business
+                Build My Client-Ready Preview
               </Link>
             </div>
 

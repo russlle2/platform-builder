@@ -468,7 +468,8 @@ export default function TemplateCustomizePage({
         <div className="container-hvac text-center py-20">
           <h1 className="text-4xl font-bold text-white">Template not found</h1>
           <p className="text-slate-400 mt-4">{error}</p>
-          <Link href={`/templates/${params.niche}`} className="text-cyan-300 mt-4 inline-block">
+          <Link href={`/preview-your-business?niche=${encodeURIComponent(params.niche)}`} className="text-cyan-300 mt-4 inline-block">
+            Start preview wizard →
             ← Back to templates
           </Link>
         </div>
@@ -497,8 +498,8 @@ export default function TemplateCustomizePage({
             {nicheLabel}
           </Link>
           <span>/</span>
-          <Link href={`/templates/${params.niche}`} className="hover:text-white transition-colors">
-            Templates
+          <Link href={`/preview-your-business?niche=${encodeURIComponent(params.niche)}`} className="hover:text-white transition-colors">
+            Intake
           </Link>
           <span>/</span>
           <span className="text-white">{template.name}</span>
@@ -788,10 +789,10 @@ function FormStep({
           {/* Back to templates link */}
           <div className="text-center pt-2">
             <Link
-              href={`/templates/${niche}`}
+              href={`/portal`}
               className="text-sm text-slate-500 hover:text-white transition-colors"
             >
-              ← Back to {nicheLabel} Templates
+              ← Back to Portal
             </Link>
           </div>
         </div>
@@ -1197,10 +1198,10 @@ function PreviewStep({
             Purchase This Site
           </Link>
           <Link
-            href={`/templates/${niche}`}
+            href="/portal"
             className="px-8 py-4 text-lg font-bold text-white border border-white/20 rounded-lg hover:bg-white/10 transition-all"
           >
-            Browse Other Templates
+            Back to Portal
           </Link>
         </div>
       </div>

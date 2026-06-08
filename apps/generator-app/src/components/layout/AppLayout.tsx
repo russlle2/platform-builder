@@ -5,11 +5,11 @@ import Link from 'next/link';
 import LeadCaptureModal from '@/components/LeadCaptureModal';
 
 const nicheLinks = [
-  { label: '🌿 Aromatherapy', href: '/aromatherapy' },
-  { label: '🧘 Holistic Medicine', href: '/holistic_medicine' },
-  { label: '💬 Therapist', href: '/private_practice_therapist' },
-  { label: '🔔 Sound Bath', href: '/sound_bath' },
-  { label: '✨ Wellness Coach', href: '/wellness_coach' },
+  { label: '🌿 Aromatherapy', href: '/preview-your-business?niche=aromatherapy' },
+  { label: '🧘 Holistic Medicine', href: '/preview-your-business?niche=holistic_medicine' },
+  { label: '💬 Therapist', href: '/preview-your-business?niche=private_practice_therapist' },
+  { label: '🔔 Sound Bath', href: '/preview-your-business?niche=sound_bath' },
+  { label: '✨ Wellness Coach', href: '/preview-your-business?niche=wellness_coach' },
 ];
 
 export function AppLayout({ children }: { children: React.ReactNode }) {

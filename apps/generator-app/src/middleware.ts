@@ -1,7 +1,42 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
+/** Public template catalog routes redirect to intake; portal edit keeps ?portalSlug= */
+function templateCatalogRedirect(req: NextRequest): NextResponse | null {
+  const { pathname, searchParams } = req.nextUrl
+
+  if (pathname === '/templates') {
+    return NextResponse.redirect(new URL('/preview-your-business', req.url))
+  }
+
+  const nicheOnly = pathname.match(/^\/templates\/([^/]+)$/)
+  if (nicheOnly) {
+    return NextResponse.redirect(
+      new URL(`/preview-your-business?niche=${encodeURIComponent(nicheOnly[1])}`, req.url),
+    )
+  }
+
+  const viewPath = pathname.match(/^\/templates\/([^/]+)\/([^/]+)\/view$/)
+  if (viewPath) {
+    return NextResponse.redirect(
+      new URL(`/preview-your-business?niche=${encodeURIComponent(viewPath[1])}`, req.url),
+    )
+  }
+
+  const slugPath = pathname.match(/^\/templates\/([^/]+)\/([^/]+)$/)
+  if (slugPath && !searchParams.has('portalSlug')) {
+    return NextResponse.redirect(
+      new URL(`/preview-your-business?niche=${encodeURIComponent(slugPath[1])}`, req.url),
+    )
+  }
+
+  return null
+}
+
 export default function middleware(req: NextRequest) {
+  const catalogRedirect = templateCatalogRedirect(req)
+  if (catalogRedirect) return catalogRedirect
+
   const res = NextResponse.next()
 
   res.headers.set('X-Frame-Options', 'DENY')

@@ -8,8 +8,13 @@ test('homepage loads', async ({ page }) => {
 
 test('homepage CTA links to preview wizard', async ({ page }) => {
   await page.goto('/')
-  const cta = page.getByRole('link', { name: /Preview Your Business/i }).first()
+  const cta = page.getByRole('link', { name: /Build My Client-Ready Preview/i }).first()
   await expect(cta).toHaveAttribute('href', /preview-your-business/)
+})
+
+test('public template catalog redirects to intake', async ({ page }) => {
+  await page.goto('/templates/aromatherapy')
+  await expect(page).toHaveURL(/\/preview-your-business\?niche=aromatherapy/)
 })
 
 test('preview wizard page loads', async ({ page }) => {

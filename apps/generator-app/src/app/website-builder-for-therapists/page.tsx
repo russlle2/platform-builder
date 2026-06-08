@@ -73,11 +73,11 @@ export default function WebsiteBuilderForTherapistsPage() {
           <p className="text-slate-400 text-sm">
             Explore{' '}
             <Link href="/private_practice_therapist" className="text-amber-300 hover:underline">
-              therapist templates
+              therapist landing page
             </Link>{' '}
             or{' '}
-            <Link href="/templates/private_practice_therapist" className="text-amber-300 hover:underline">
-              browse the full gallery
+            <Link href="/preview-your-business?niche=private_practice_therapist" className="text-amber-300 hover:underline">
+              start your preview
             </Link>
             .
           </p>
