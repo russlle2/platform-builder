@@ -1,0 +1,14 @@
+main:
+  steps:
+    - call_agent:
+        call: http.post
+        args:
+          url: https://ai-agent-service-84301339531.us-central1.run.app/optimize
+          auth:
+            type: OIDC
+          body:
+            repo: "your-github/repo"
+            netlify_site_id: "your-netlify-site-id"
+        result: response
+    - return_result:
+        return: ${response}
