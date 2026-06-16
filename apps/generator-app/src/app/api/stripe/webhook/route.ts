@@ -1,8 +1,12 @@
 import { headers } from 'next/headers'
 import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
-import { createClient } from '@supabase/supabase-js'
-import { sendWelcomeEmail } from '@/lib/email'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
+import {
+  sendOrderConfirmationEmail,
+  sendWebsiteLiveEmail,
+  sendManualServiceAlert,
+} from '@/lib/email'
 import { createPortalAccessCredentials } from '@/lib/portal-auth'
 import { provisionSite, deploySiteFiles } from '@/lib/netlify'
 import {
@@ -15,11 +19,215 @@ import {
   rewriteImageSwapUrls,
 } from '@/lib/customer-images'
 import type { ImageSwap } from '@/lib/image-swaps'
+import { isManagedPlan, normalizePlanKey } from '@/lib/plans'
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+function normalizeSlug(slug: string): string {
+  return slug
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+async function reserveSlug(supabase: SupabaseClient, slug: string) {
+  const normalized = normalizeSlug(slug)
+  if (!normalized) return
+  await supabase
+    .from('site_slugs')
+    .upsert({ slug: normalized, status: 'reserved' }, { onConflict: 'slug' })
+}
+
+/**
+ * Fulfillment for a completed checkout: reserve slug, provision + deploy the
+ * site, persist the portal record, queue the manual premium service for the
+ * Security + Ads tier, and send transactional emails. All failures are caught
+ * and recorded so the handler can still return 200 to Stripe.
+ */
+async function handleCheckoutCompleted(
+  stripe: Stripe,
+  supabase: SupabaseClient,
+  session: Stripe.Checkout.Session,
+) {
+  const meta = session.metadata || {}
+  const slug = meta.slug
+  const templateSlug = meta.template
+  const niche = meta.niche
+  const colorScheme = meta.colorScheme || 'original'
+  const fontVariation = meta.fontVariation || 'original'
+  const structureVariation = meta.structureVariation || 'original'
+  const planKey = normalizePlanKey(meta.planKey) || 'basic'
+
+  // Reassemble chunked customer values + inline edits from metadata.
+  const customerValues = unchunkJsonFromMetadata<Record<string, string>>('customerValues', meta, {})
+  const inlineEdits = unchunkJsonFromMetadata<Record<string, InlineTextEdit[]>>('inlineEdits', meta, {})
+  let imageSwaps = unchunkJsonFromMetadata<Record<string, ImageSwap[]>>('imageSwaps', meta, {})
+  const imageOwner = meta.imageOwner || ''
+
+  const customerEmail = customerValues.EMAIL || session.customer_details?.email || ''
+  const businessName = customerValues.BUSINESS_NAME || slug || 'your business'
+
+  if (!slug) {
+    // Without a slug we cannot provision or build a site. Record the lead so
+    // the purchase is not silently lost, then bail out gracefully.
+    console.error('[webhook] checkout.session.completed missing slug; cannot provision', session.id)
+    if (customerEmail) {
+      await sendOrderConfirmationEmail(customerEmail, businessName, 'your-site').catch((err) =>
+        console.error('[webhook] order confirmation email failed:', err),
+      )
+    }
+    return
+  }
+
+  const normalizedSlug = normalizeSlug(slug)
+  await reserveSlug(supabase, slug)
+
+  const portalCredentials = createPortalAccessCredentials()
+  const portalAccessToken = portalCredentials?.token
+
+  let imageMigrationError: string | undefined
+  if (imageOwner && imageOwner.startsWith('draft-') && normalizedSlug) {
+    try {
+      await migrateImagesToSiteSlug(imageOwner, normalizedSlug)
+      imageSwaps = rewriteImageSwapUrls(imageSwaps, imageOwner, normalizedSlug)
+    } catch (migrateErr) {
+      imageMigrationError = migrateErr instanceof Error ? migrateErr.message : 'Image migration failed'
+      console.error('[webhook] image migration failed:', migrateErr)
+    }
+  }
+
+  let netlifySiteId: string | undefined
+  let netlifySiteUrl: string | undefined
+  let provisioningError: string | undefined
+  let provisioningSucceeded = false
+
+  if (process.env.NETLIFY_ACCESS_TOKEN) {
+    try {
+      const site = await provisionSite(slug)
+
+      if (templateSlug && niche) {
+        try {
+          const deployFiles = buildDeployFiles({
+            niche,
+            templateSlug,
+            customerValues,
+            colorScheme,
+            fontVariation,
+            structureVariation,
+            inlineEdits,
+            imageSwaps,
+            slug,
+          })
+          if (deployFiles) {
+            await deploySiteFiles(site.siteId, deployFiles)
+          }
+        } catch (deployErr) {
+          console.error('[webhook] template deploy failed:', deployErr)
+        }
+      }
+
+      netlifySiteId = site.siteId
+      netlifySiteUrl = site.siteUrl
+      provisioningSucceeded = true
+
+      await supabase
+        .from('site_slugs')
+        .update({ status: 'provisioned', netlify_site_id: site.siteId, site_url: site.siteUrl })
+        .eq('slug', normalizedSlug)
+    } catch (err) {
+      provisioningError = err instanceof Error ? err.message : 'Site provisioning failed'
+      console.error('[webhook] site provisioning failed:', err)
+    }
+  } else {
+    // Netlify not configured: provisioning is pending manual/automated setup.
+    provisioningError = undefined
+  }
+
+  // Persist the portal record. Status is only "active" when the site actually
+  // deployed; otherwise it is pending (Netlify unconfigured) or failed.
+  const status = provisioningError
+    ? 'provisioning_failed'
+    : provisioningSucceeded
+      ? 'active'
+      : process.env.NETLIFY_ACCESS_TOKEN
+        ? 'provisioning_failed'
+        : 'pending'
+
+  await supabase
+    .from('portal_sites')
+    .upsert(
+      {
+        slug: normalizedSlug,
+        status,
+        portal_token_hash: portalCredentials?.hash ?? null,
+        data: {
+          niche,
+          template: templateSlug,
+          colorScheme,
+          fontVariation,
+          structureVariation,
+          customerValues,
+          inlineEdits,
+          imageSwaps,
+          imageOwner: normalizedSlug || imageOwner,
+          email: customerEmail,
+          netlify_site_id: netlifySiteId,
+          site_url: netlifySiteUrl,
+          plan: planKey,
+          managed_service: isManagedPlan(planKey),
+          provisioning_error: provisioningError,
+          image_migration_error: imageMigrationError,
+          provisioning_succeeded: provisioningSucceeded,
+        },
+      },
+      { onConflict: 'slug' },
+    )
+
+  // Security + Ads ($80): queue the manually delivered premium service and
+  // alert the platform owner. Everything else is automated above.
+  if (isManagedPlan(planKey)) {
+    try {
+      await supabase.from('manual_service_tasks').insert({
+        slug: normalizedSlug,
+        plan: planKey,
+        email: customerEmail,
+        business_name: businessName,
+        task_type: 'security_ads',
+        status: 'open',
+        details: { stripe_session: session.id, site_url: netlifySiteUrl },
+      })
+    } catch (taskErr) {
+      console.error('[webhook] manual_service_tasks insert failed:', taskErr)
+    }
+
+    const ownerEmail = process.env.PLATFORM_OWNER_EMAIL
+    if (ownerEmail) {
+      await sendManualServiceAlert({
+        ownerEmail,
+        businessName,
+        slug: normalizedSlug,
+        customerEmail,
+        plan: planKey,
+      }).catch((err) => console.error('[webhook] manual service alert failed:', err))
+    }
+  }
+
+  // Transactional emails to the customer.
+  if (customerEmail) {
+    await sendOrderConfirmationEmail(customerEmail, businessName, slug, portalAccessToken).catch((err) =>
+      console.error('[webhook] order confirmation email failed:', err),
+    )
+    if (provisioningSucceeded) {
+      await sendWebsiteLiveEmail(customerEmail, businessName, slug, portalAccessToken).catch((err) =>
+        console.error('[webhook] website live email failed:', err),
+      )
+    }
+  }
+}
 
 export async function POST(req: Request) {
   if (!stripeSecretKey || !webhookSecret || !supabaseUrl || !supabaseServiceKey) {
@@ -29,28 +237,10 @@ export async function POST(req: Request) {
     )
   }
 
-  const stripeWebhookSecret = webhookSecret as string
-  const stripe = new Stripe(stripeSecretKey, {
-    apiVersion: '2023-10-16',
-  })
+  const stripe = new Stripe(stripeSecretKey, { apiVersion: '2023-10-16' })
   const supabase = createClient(supabaseUrl, supabaseServiceKey, {
     auth: { persistSession: false },
   })
-  const reserveSlug = async (slug: string) => {
-    const normalized = slug
-      .toLowerCase()
-      .replace(/[^a-z0-9-]/g, '-')
-      .replace(/-+/g, '-')
-      .replace(/^-+|-+$/g, '')
-
-    if (!normalized) {
-      return
-    }
-
-    await supabase
-      .from('site_slugs')
-      .upsert({ slug: normalized, status: 'reserved' }, { onConflict: 'slug' })
-  }
 
   const signature = (await headers()).get('stripe-signature')
   if (!signature) {
@@ -59,154 +249,32 @@ export async function POST(req: Request) {
 
   const body = await req.text()
   let event: Stripe.Event
-
   try {
-    event = stripe.webhooks.constructEvent(body, signature, stripeWebhookSecret)
-  } catch (error) {
+    event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
+  } catch {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
   }
 
-  if (event.type === 'checkout.session.completed') {
-    const session = event.data.object as Stripe.Checkout.Session
-    const meta = session.metadata || {}
-    const slug = meta.slug
-    const templateSlug = meta.template
-    const niche = meta.niche
-    const colorScheme = meta.colorScheme || 'original'
-    const fontVariation = meta.fontVariation || 'original'
-    const structureVariation = meta.structureVariation || 'original'
-
-    // Reassemble chunked customer values + inline edits from metadata.
-    const customerValues = unchunkJsonFromMetadata<Record<string, string>>(
-      'customerValues',
-      meta,
-      {},
-    )
-    const inlineEdits = unchunkJsonFromMetadata<Record<string, InlineTextEdit[]>>(
-      'inlineEdits',
-      meta,
-      {},
-    )
-    let imageSwaps = unchunkJsonFromMetadata<Record<string, ImageSwap[]>>(
-      'imageSwaps',
-      meta,
-      {},
-    )
-    const imageOwner = meta.imageOwner || ''
-
-    let portalAccessToken: string | undefined
-
-    if (slug) {
-      await reserveSlug(slug)
-
-      const normalizedSlug = slug
-        .toLowerCase()
-        .replace(/[^a-z0-9-]/g, '-')
-        .replace(/-+/g, '-')
-        .replace(/^-+|-+$/g, '')
-
-      const portalCredentials = createPortalAccessCredentials()
-      portalAccessToken = portalCredentials?.token
-
-      // Move draft uploads to the purchased site slug folder when applicable.
-      if (imageOwner && imageOwner.startsWith('draft-') && normalizedSlug) {
-        try {
-          await migrateImagesToSiteSlug(imageOwner, normalizedSlug)
-          imageSwaps = rewriteImageSwapUrls(imageSwaps, imageOwner, normalizedSlug)
-        } catch (migrateErr) {
-          console.error('[webhook] image migration failed:', migrateErr)
-        }
+  try {
+    switch (event.type) {
+      case 'checkout.session.completed':
+        await handleCheckoutCompleted(stripe, supabase, event.data.object as Stripe.Checkout.Session)
+        break
+      case 'customer.subscription.created': {
+        const subscription = event.data.object as Stripe.Subscription
+        const slug = subscription.metadata?.slug
+        if (slug) await reserveSlug(supabase, slug)
+        break
       }
-
-      let netlifySiteId: string | undefined
-      let netlifySiteUrl: string | undefined
-
-      // Auto-provision a Netlify site at slug.yourdomain.com
-      if (process.env.NETLIFY_ACCESS_TOKEN) {
-        try {
-          const site = await provisionSite(slug)
-
-          // Build and deploy the customized template
-          if (templateSlug && niche) {
-            try {
-              const deployFiles = buildDeployFiles({
-                niche,
-                templateSlug,
-                customerValues,
-                colorScheme,
-                fontVariation,
-                structureVariation,
-                inlineEdits,
-                imageSwaps,
-                slug,
-              })
-              if (deployFiles) {
-                await deploySiteFiles(site.siteId, deployFiles)
-              }
-            } catch (deployErr) {
-              console.error('[webhook] template deploy failed:', deployErr)
-            }
-          }
-
-          netlifySiteId = site.siteId
-          netlifySiteUrl = site.siteUrl
-
-          await supabase
-            .from('site_slugs')
-            .update({
-              status: 'provisioned',
-              netlify_site_id: site.siteId,
-              site_url: site.siteUrl,
-            })
-            .eq('slug', normalizedSlug)
-        } catch (err) {
-          console.error('[webhook] site provisioning failed:', err)
-        }
-      }
-
-      await supabase
-        .from('portal_sites')
-        .upsert(
-          {
-            slug: normalizedSlug,
-            status: 'active',
-            portal_token_hash: portalCredentials?.hash ?? null,
-            data: {
-              niche,
-              template: templateSlug,
-              colorScheme,
-              fontVariation,
-              structureVariation,
-              customerValues,
-              inlineEdits,
-              imageSwaps,
-              imageOwner: normalizedSlug || imageOwner,
-              email: customerValues.EMAIL || session.customer_details?.email || '',
-              netlify_site_id: netlifySiteId,
-              site_url: netlifySiteUrl,
-              plan: meta.planKey,
-            },
-          },
-          { onConflict: 'slug' },
-        )
+      default:
+        // Acknowledge all other subscribed events so Stripe doesn't retry.
+        break
     }
-
-    // Send welcome email to the customer (includes magic portal link when token was issued)
-    const customerEmail = session.customer_details?.email
-    const businessName = customerValues.BUSINESS_NAME || meta.slug || 'your business'
-    if (customerEmail && slug) {
-      await sendWelcomeEmail(customerEmail, businessName, slug, portalAccessToken).catch((err) =>
-        console.error('[webhook] welcome email failed:', err)
-      )
-    }
-  }
-
-  if (event.type === 'customer.subscription.created') {
-    const subscription = event.data.object as Stripe.Subscription
-    const slug = subscription.metadata?.slug
-    if (slug) {
-      await reserveSlug(slug)
-    }
+  } catch (err) {
+    // Log but still acknowledge: re-delivery rarely fixes app-level errors and
+    // would otherwise wedge the Stripe event queue. Fulfillment steps above
+    // already catch their own failures and record them on the portal record.
+    console.error('[webhook] handler error:', err)
   }
 
   return NextResponse.json({ received: true })

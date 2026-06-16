@@ -78,6 +78,10 @@ export default function PortalClient() {
   } | null>(null)
   const [domainStatus, setDomainStatus] = useState<'idle' | 'loading' | 'saving' | 'saved' | 'error'>('idle')
   const [domainMessage, setDomainMessage] = useState<string | null>(null)
+  const [provisioningStatus, setProvisioningStatus] = useState<'pending' | 'active' | 'failed' | null>(null)
+  const [provisioningError, setProvisioningError] = useState<string | null>(null)
+  const [imageMigrationError, setImageMigrationError] = useState<string | null>(null)
+  const [managedService, setManagedService] = useState(false)
   const [formData, setFormData] = useState({
     businessName: '',
     tagline: '',
@@ -128,6 +132,19 @@ export default function PortalClient() {
         })
         setPortalAuthenticated(true)
         getOrCreateImageOwnerId(normalized)
+        // Extract and display provisioning status
+        const siteStatus = (data.site?.status as string) || 'active'
+        if (siteStatus === 'provisioning_failed') {
+          setProvisioningStatus('failed')
+          setProvisioningError((d.provisioning_error as string) || 'Unknown provisioning error')
+        } else if (siteStatus === 'active') {
+          setProvisioningStatus('active')
+        } else {
+          setProvisioningStatus('pending')
+        }
+        setImageMigrationError((d.image_migration_error as string) || null)
+        const plan = (d.plan as string) || ''
+        setManagedService(Boolean(d.managed_service) || plan === 'security_ads' || plan === 'growth')
       } else if (data.site?.public) {
         setPublicSiteUrl(data.site.public.siteUrl || null)
         setSiteTemplate({
@@ -407,6 +424,91 @@ export default function PortalClient() {
             ) : (
               <>This slug does not have portal access yet, or your access token is missing or invalid.</>
             )}
+          </div>
+        )}
+        {provisioningStatus && (
+          <>
+            {provisioningStatus === 'active' && (
+              <div className="rounded-xl border border-emerald-400/40 bg-emerald-500/10 px-6 py-4 text-sm text-emerald-50">
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-emerald-400 animate-pulse" />
+                  <div>
+                    <p className="font-semibold">🎉 Your website is live!</p>
+                    <p className="text-emerald-100/80 mt-1">
+                      Your site is now live and ready to receive visitors. Start promoting it!
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+            {provisioningStatus === 'pending' && (
+              <div className="rounded-xl border border-amber-400/40 bg-amber-500/10 px-6 py-4 text-sm text-amber-50">
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-amber-400 animate-pulse" />
+                  <div>
+                    <p className="font-semibold">We&rsquo;re provisioning your website</p>
+                    <p className="text-amber-100/80 mt-1">
+                      Your website is being set up. This typically takes less than 48 hours. We&rsquo;ll send you an email when it&rsquo;s live!
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+            {provisioningStatus === 'failed' && (
+              <div className="rounded-xl border border-red-400/40 bg-red-500/10 px-6 py-4 text-sm text-red-50">
+                <div className="flex items-start gap-3">
+                  <div className="text-xl">⚠️</div>
+                  <div className="flex-1">
+                    <p className="font-semibold">Site provisioning encountered an error</p>
+                    <p className="text-red-100/80 mt-1">{provisioningError}</p>
+                    <p className="text-red-100/70 mt-2">
+                      Our team has been notified. Please{' '}
+                      <Link href="/contact" className="underline font-semibold hover:text-red-50">
+                        contact us
+                      </Link>{' '}
+                      if this isn&rsquo;t resolved within a few hours.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+            {imageMigrationError && (
+              <div className="rounded-xl border border-orange-400/40 bg-orange-500/10 px-6 py-4 text-sm text-orange-50">
+                <div className="flex items-start gap-3">
+                  <div className="text-xl">📸</div>
+                  <div className="flex-1">
+                    <p className="font-semibold">Image upload notice</p>
+                    <p className="text-orange-100/80 mt-1">{imageMigrationError}</p>
+                    <p className="text-orange-100/70 mt-2">
+                      You can re-upload images anytime in the Images section below, or contact support for help.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+        {portalAuthenticated && managedService && (
+          <div className="rounded-xl border border-cyan-400/40 bg-cyan-500/10 px-6 py-5 text-sm text-cyan-50">
+            <div className="flex items-start gap-3">
+              <div className="text-xl">🛡️</div>
+              <div className="flex-1">
+                <p className="font-semibold text-base">Security + Ads — managed by our team</p>
+                <p className="text-cyan-100/80 mt-1">
+                  You&rsquo;re on our done-for-you plan. Alongside your fully automated website, our
+                  team personally sets up and manages your ad &amp; promo campaigns and hardens and
+                  monitors your site&rsquo;s security and uptime. We&rsquo;ll reach out by email to
+                  coordinate — no action needed from you.
+                </p>
+                <p className="text-cyan-100/70 mt-2">
+                  Want to brief us on goals or audiences?{' '}
+                  <Link href="/contact" className="underline font-semibold hover:text-white">
+                    Send us a note
+                  </Link>
+                  .
+                </p>
+              </div>
+            </div>
           </div>
         )}
         <header className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">

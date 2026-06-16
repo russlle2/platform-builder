@@ -13,8 +13,8 @@ Key information:
   2. Match a niche layout and see a live preview.
   3. Customize copy and images in the portal after purchase.
 - Pricing (monthly, card required for trial):
-  - Basic Services: $20/mo — hosted subdomain, integrations (Postmark, Supabase, Stripe), self-serve portal, 7-day free trial.
-  - Growth Partner: $80/mo — everything in Basic plus weekly platform monitoring and periodic promo/ad check-ins.
+  - Basic: $20/mo — the fully automated platform: professional website built and launched for you, hosted subdomain + SSL, contact forms with email notifications, secure storage, online-payment ready, and a self-serve portal to edit anytime. 7-day free trial.
+  - Security + Ads: $80/mo — everything in Basic (all still automated), PLUS one done-for-you service our team runs by hand: we set up and manage your ad/promo campaigns and we harden and monitor your site's security and uptime. 7-day free trial.
   - Custom or enterprise needs: direct them to /contact — do not quote old $99/$399/$499 tiers.
 - Member cap: Limited active members to protect quality — mention when relevant without overpromising.
 

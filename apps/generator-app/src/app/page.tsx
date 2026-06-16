@@ -127,28 +127,44 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               {
-                icon: '🎯',
+                icon: (
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                    <circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none" />
+                  </svg>
+                ),
                 title: 'Offer clarity',
                 copy: 'Helps visitors understand what you sell and why it matters within seconds.',
               },
               {
-                icon: '🛡️',
+                icon: (
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 3l7 3v5c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6l7-3z" /><path strokeLinecap="round" strokeLinejoin="round" d="M9.5 12l1.8 1.8L15 10" />
+                  </svg>
+                ),
                 title: 'Trust structure',
                 copy: 'Sections for credentials, testimonials, approach, FAQs, and what to expect.',
               },
               {
-                icon: '📅',
+                icon: (
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                    <rect x="3.5" y="5" width="17" height="15" rx="2" /><path strokeLinecap="round" d="M3.5 9.5h17M8 3.5v3M16 3.5v3" /><path strokeLinecap="round" strokeLinejoin="round" d="M8.5 14l2 2 4-4" />
+                  </svg>
+                ),
                 title: 'Booking path',
                 copy: 'Every page guides visitors toward calling, booking, messaging, or joining.',
               },
               {
-                icon: '🚀',
+                icon: (
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 15c0-5 3-10 7-12 4 2 7 7 7 12l-3.5-1.5L12 19l-3.5-5.5L5 15z" /><circle cx="12" cy="9" r="1.6" />
+                  </svg>
+                ),
                 title: 'Launch system',
                 copy: 'Preview, edit, checkout, portal, and publish support are part of one flow.',
               },
             ].map((item) => (
               <div key={item.title} className="card-mahogany space-y-4">
-                <div className="text-4xl">{item.icon}</div>
+                <span className="feature-icon">{item.icon}</span>
                 <h3 className="text-2xl font-bold text-bright-white">{item.title}</h3>
                 <p className="text-gray-300 leading-relaxed">{item.copy}</p>
               </div>
