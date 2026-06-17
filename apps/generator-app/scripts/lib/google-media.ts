@@ -14,6 +14,15 @@ export type MediaResult<T> = { ok: true; data: T } | { ok: false; error: string 
 
 function apiKey(): string | null {
   return (
+    process.env.GOOGLE_CLOUD_TTS_API_KEY?.trim() ||
+    process.env.GOOGLE_CLOUD_API_KEY?.trim() ||
+    process.env.GEMINI_API_KEY?.trim() ||
+    null
+  )
+}
+
+function geminiApiKey(): string | null {
+  return (
     process.env.GOOGLE_CLOUD_API_KEY?.trim() ||
     process.env.GEMINI_API_KEY?.trim() ||
     null
