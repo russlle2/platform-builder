@@ -78,22 +78,16 @@ async function fillByLabelOrPlaceholder(
 ): Promise<boolean> {
   const byLabel = page.getByLabel(label, { exact: false })
   if ((await byLabel.count()) > 0) {
+    await byLabel.first().waitFor({ state: 'visible', timeout: 12000 })
     await byLabel.first().click()
-    await byLabel.first().fill('')
-    for (const ch of value) {
-      await page.keyboard.type(ch)
-      await pause(38)
-    }
+    await byLabel.first().fill(value)
     return true
   }
   const byPH = page.getByPlaceholder(label, { exact: false })
   if ((await byPH.count()) > 0) {
+    await byPH.first().waitFor({ state: 'visible', timeout: 12000 })
     await byPH.first().click()
-    await byPH.first().fill('')
-    for (const ch of value) {
-      await page.keyboard.type(ch)
-      await pause(38)
-    }
+    await byPH.first().fill(value)
     return true
   }
   console.warn(`  [skip] fill not found: "${label}"`)
@@ -290,10 +284,18 @@ async function showcaseWebsitePreview(page: Page) {
 
 async function openEditor(page: Page) {
   console.log('  → Opening editor...')
-  const clicked = await clickByText(page, 'Customize This Template', 'button')
-  if (!clicked) await clickByText(page, 'Customize', 'button')
+  const customize = page.getByRole('button', { name: /Customize This Template/i })
+  if (await customize.isVisible({ timeout: 8000 }).catch(() => false)) {
+    await customize.click()
+  } else {
+    await clickByText(page, 'Customize', 'button')
+  }
   await pause(1000)
-  await showcaseWebsitePreview(page)
+  try {
+    await showcaseWebsitePreview(page)
+  } catch (err) {
+    console.warn('  [warn] preview showcase partial:', err instanceof Error ? err.message : err)
+  }
 }
 
 async function showPricingAndWelcomeFlow(page: Page, slug: string) {
@@ -431,6 +433,8 @@ async function recordScenario(s: DemoScenario, scenarioRawDir: string): Promise<
       await page.goto(PREVIEW_URL, { waitUntil: 'domcontentloaded' })
       await waitAndPause(page, 1200)
     }
+
+    await page.getByLabel('Business Name', { exact: false }).first().waitFor({ state: 'visible', timeout: 20000 }).catch(() => {})
 
     await completeInfoStep(page, s)
     await completeStyleStep(page, s)
