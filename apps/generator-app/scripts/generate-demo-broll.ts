@@ -8,7 +8,7 @@
  */
 import fs from 'fs'
 import path from 'path'
-import { NARRATION_SCRIPTS } from './demo-narration'
+import { NARRATION_SCRIPTS, narrationForScenario } from './demo-narration'
 import { findFfmpeg, generateVeoClip, renderFfmpegBookend } from './lib/google-media'
 
 const OUT_DIR = path.join(__dirname, '..', 'test-results', 'demo-recordings', 'broll')
@@ -37,7 +37,8 @@ async function main() {
     )
     if (!veoIntro.ok) {
       console.warn(`  Veo intro: ${veoIntro.error} — using ffmpeg`)
-      if (!renderFfmpegBookend(ffmpeg, script.introTitle, script.accentColor, introPath, BOOKEND_SEC)) {
+      const introTitle = narrationForScenario(script.scenarioId)?.introTitle || script.introTitle
+      if (!renderFfmpegBookend(ffmpeg, introTitle, script.accentColor, introPath, BOOKEND_SEC)) {
         throw new Error(`ffmpeg intro failed for ${script.scenarioId}`)
       }
     }
@@ -49,7 +50,8 @@ async function main() {
     )
     if (!veoOutro.ok) {
       console.warn(`  Veo outro: ${veoOutro.error} — using ffmpeg`)
-      if (!renderFfmpegBookend(ffmpeg, script.outroTitle, script.accentColor, outroPath, BOOKEND_SEC)) {
+      const outroTitle = narrationForScenario(script.scenarioId)?.outroTitle || script.outroTitle
+      if (!renderFfmpegBookend(ffmpeg, outroTitle, script.accentColor, outroPath, BOOKEND_SEC)) {
         throw new Error(`ffmpeg outro failed for ${script.scenarioId}`)
       }
     }

@@ -1,4 +1,4 @@
-import { NICHE_DEMO_VIDEO, ACTIVE_DEMO_NICHES } from '@/lib/demo-videos'
+import { NICHE_DEMO_VIDEO, NICHE_DEMO_POSTER, ACTIVE_DEMO_NICHES } from '@/lib/demo-videos'
 import { NICHE_META } from '@/lib/templates/niche-registry'
 import { DemoVideoPlayer } from '@/components/demo/DemoVideoPlayer'
 import Link from 'next/link'
@@ -60,6 +60,7 @@ export default async function NicheDemoPage({
           <DemoVideoPlayer
             src={videoSrc}
             title={`${meta.label} build walkthrough`}
+            poster={NICHE_DEMO_POSTER[niche]}
           />
         </div>
 

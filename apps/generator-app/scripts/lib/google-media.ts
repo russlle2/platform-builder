@@ -12,19 +12,25 @@ import { spawnSync } from 'child_process'
 
 export type MediaResult<T> = { ok: true; data: T } | { ok: false; error: string }
 
-function apiKey(): string | null {
+function ttsApiKey(): string | null {
+  return process.env.GOOGLE_CLOUD_TTS_API_KEY?.trim() || null
+}
+
+/** Service-bound key (AQ.…) — Gemini OR Agent Platform, one per key. */
+function geminiApiKey(): string | null {
   return (
-    process.env.GOOGLE_CLOUD_TTS_API_KEY?.trim() ||
+    process.env.GOOGLE_GEMINI_API_KEY?.trim() ||
     process.env.GOOGLE_CLOUD_API_KEY?.trim() ||
     process.env.GEMINI_API_KEY?.trim() ||
     null
   )
 }
 
-function geminiApiKey(): string | null {
+/** Service-bound key (AQ.…) — use the key restricted to Agent Platform API. */
+function vertexApiKey(): string | null {
   return (
-    process.env.GOOGLE_CLOUD_API_KEY?.trim() ||
-    process.env.GEMINI_API_KEY?.trim() ||
+    process.env.GOOGLE_VERTEX_API_KEY?.trim() ||
+    process.env.GOOGLE_CLOUD_VERTEX_API_KEY?.trim() ||
     null
   )
 }
@@ -35,8 +41,8 @@ export async function synthesizeVoiceover(
   outPath: string,
   voice = 'en-US-Chirp3-HD-Charon',
 ): Promise<MediaResult<string>> {
-  const key = apiKey()
-  if (!key) return { ok: false, error: 'No GOOGLE_CLOUD_API_KEY set' }
+  const key = ttsApiKey()
+  if (!key) return { ok: false, error: 'Set GOOGLE_CLOUD_TTS_API_KEY (standard AIza key, TTS-only)' }
 
   const body = {
     input: { text },
@@ -80,6 +86,11 @@ export async function generateVeoClip(
   const model = process.env.VEO_MODEL || 'veo-2.0-generate-001'
 
   let token = process.env.GCLOUD_ACCESS_TOKEN?.trim()
+  const vertexKey = vertexApiKey()
+  if (!token && vertexKey) {
+    // Agent Platform–bound API keys authenticate Vertex calls via key= param on some endpoints
+    token = vertexKey
+  }
   if (!token && process.env.GOOGLE_APPLICATION_CREDENTIALS) {
     const r = spawnSync(
       'gcloud',
@@ -128,20 +139,37 @@ export function findFfmpeg(): string | null {
   return null
 }
 
+function defaultFontFile(): string {
+  if (process.env.DEMO_FONT_FILE) return process.env.DEMO_FONT_FILE.replace(/\\/g, '/').replace(/:/g, '\\:')
+  const candidates = [
+    'C:/Windows/Fonts/segoeuib.ttf',
+    'C:/Windows/Fonts/segoeui.ttf',
+    'C:/Windows/Fonts/arial.ttf',
+  ]
+  for (const c of candidates) {
+    if (fs.existsSync(c.replace(/\//g, '\\'))) return c.replace(/\\/g, '/').replace(/:/g, '\\:')
+  }
+  return 'Arial'
+}
+
 /** Motion-graphic bookend when Veo is unavailable (plan fallback). */
 export function renderFfmpegBookend(
   ffmpeg: string,
-  _title: string,
+  title: string,
   accentHex: string,
   outPath: string,
   durationSec = 3,
 ): boolean {
   const fadeOut = Math.max(durationSec - 0.5, 0.1)
-  // Solid brand wash + vignette — no drawtext (avoids fontconfig issues on Windows CI)
+  const font = defaultFontFile()
+  const safeTitle = title.replace(/'/g, "\\'").replace(/:/g, '\\:').slice(0, 48)
   const filter = [
-    `color=c=0x${accentHex}:s=1920x1080:d=${durationSec}`,
-    `vignette=angle=PI/4`,
-    `fade=t=in:st=0:d=0.4`,
+    `color=c=0x0f172a:s=1920x1080:d=${durationSec}`,
+    `drawbox=x=0:y=0:w=iw:h=ih:color=0x${accentHex}@0.42:t=fill`,
+    `vignette=angle=PI/5`,
+    `drawtext=fontfile='${font}':text='DailyClarity':fontcolor=white@0.35:fontsize=36:x=(w-text_w)/2:y=h*0.38`,
+    `drawtext=fontfile='${font}':text='${safeTitle}':fontcolor=white:fontsize=52:x=(w-text_w)/2:y=h*0.46`,
+    `fade=t=in:st=0:d=0.5`,
     `fade=t=out:st=${fadeOut.toFixed(2)}:d=0.5`,
   ].join(',')
 

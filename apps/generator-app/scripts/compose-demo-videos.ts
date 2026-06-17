@@ -1,32 +1,49 @@
 /**
- * Composite intro bookend + product footage + outro + optional voiceover.
- * Re-encodes web-optimized H.264 for public/demo-videos/.
+ * Professional composite: branded bookends + clean product footage + Chirp3 voiceover + captions.
  *
  * Usage:
- *   npx tsx scripts/compose-demo-videos.ts
- *   DEMO_ONLY=platform-builder npx tsx scripts/compose-demo-videos.ts
- *   SKIP_VOICEOVER=1 npx tsx scripts/compose-demo-videos.ts
+ *   FFMPEG_PATH=... GOOGLE_CLOUD_TTS_API_KEY=... npx tsx scripts/compose-demo-videos.ts
  */
 import fs from 'fs'
 import path from 'path'
 import { spawnSync } from 'child_process'
 import { SCENARIOS } from './demo-scenarios'
 import { narrationForScenario } from './demo-narration'
+import { captionsForScenario, writeAssCaptions, type CaptionSegment } from './demo-captions'
 import { findFfmpeg } from './lib/google-media'
 
 const APP_ROOT = path.join(__dirname, '..')
-const FOOTAGE_DIR = path.join(APP_ROOT, 'public', 'demo-videos')
+const SOURCE_DIR =
+  process.env.DEMO_SOURCE_DIR ||
+  path.join(APP_ROOT, 'test-results', 'demo-recordings', 'source-footage')
 const BROLL_DIR = path.join(APP_ROOT, 'test-results', 'demo-recordings', 'broll')
 const VOICE_DIR = path.join(APP_ROOT, 'test-results', 'demo-recordings', 'voiceover')
+const CAPTION_DIR = path.join(APP_ROOT, 'test-results', 'demo-recordings', 'captions')
 const OUT_DIR = path.join(APP_ROOT, 'public', 'demo-videos')
+const POSTER_DIR = path.join(OUT_DIR, 'posters')
 const WORK_DIR = path.join(APP_ROOT, 'test-results', 'demo-recordings', 'composed')
-const CRF = 22
 
+const BOOKEND_SEC = Number(process.env.BOOKEND_SEC || '3')
+const FOOTAGE_SPEED = 1.35 // matches record-demo-videos.ts export timing
+const CRF = 23
 const only = process.env.DEMO_ONLY?.split(',').map((s) => s.trim()).filter(Boolean)
 const skipVoice = process.env.SKIP_VOICEOVER === '1'
 
-function scalePadFilter(): string {
-  return 'scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2:black,setsar=1'
+function escAssPath(p: string): string {
+  return p.replace(/\\/g, '/').replace(/:/g, '\\:').replace(/'/g, "\\'")
+}
+
+function offsetCaptions(segments: CaptionSegment[], introSec: number): CaptionSegment[] {
+  return segments.map((s) => ({
+    startSec: introSec + s.startSec / FOOTAGE_SPEED,
+    endSec: introSec + s.endSec / FOOTAGE_SPEED,
+    text: s.text,
+  }))
+}
+
+function scalePadFilter(extra = ''): string {
+  const base = 'scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2:color=0x0f172a,setsar=1'
+  return extra ? `${base},${extra}` : base
 }
 
 function concatVideos(ffmpeg: string, parts: string[], outPath: string): boolean {
@@ -41,63 +58,8 @@ function concatVideos(ffmpeg: string, parts: string[], outPath: string): boolean
   return r.status === 0
 }
 
-function addVoiceover(ffmpeg: string, videoPath: string, audioPath: string, outPath: string): boolean {
-  const r = spawnSync(
-    ffmpeg,
-    [
-      '-y',
-      '-i',
-      videoPath,
-      '-i',
-      audioPath,
-      '-filter_complex',
-      '[1:a]volume=0.92[a];[0:a][a]amix=inputs=2:duration=first:dropout_transition=2[aout]',
-      '-map',
-      '0:v',
-      '-map',
-      '[aout]',
-      '-c:v',
-      'copy',
-      '-c:a',
-      'aac',
-      '-b:a',
-      '128k',
-      '-shortest',
-      outPath,
-    ],
-    { stdio: 'inherit' },
-  )
-  if (r.status !== 0) {
-    // Video may have no audio track — map voiceover only
-    const r2 = spawnSync(
-      ffmpeg,
-      [
-        '-y',
-        '-i',
-        videoPath,
-        '-i',
-        audioPath,
-        '-map',
-        '0:v',
-        '-map',
-        '1:a',
-        '-c:v',
-        'copy',
-        '-c:a',
-        'aac',
-        '-b:a',
-        '128k',
-        '-shortest',
-        outPath,
-      ],
-      { stdio: 'inherit' },
-    )
-    return r2.status === 0
-  }
-  return true
-}
-
-function reencode(ffmpeg: string, inPath: string, outPath: string): boolean {
+function encodeFootage(ffmpeg: string, inPath: string, assPath: string, outPath: string): boolean {
+  const subs = escAssPath(assPath)
   const r = spawnSync(
     ffmpeg,
     [
@@ -105,7 +67,7 @@ function reencode(ffmpeg: string, inPath: string, outPath: string): boolean {
       '-i',
       inPath,
       '-vf',
-      scalePadFilter(),
+      scalePadFilter(`subtitles='${subs}'`),
       '-r',
       '30',
       '-c:v',
@@ -128,42 +90,50 @@ function reencode(ffmpeg: string, inPath: string, outPath: string): boolean {
   return r.status === 0
 }
 
-function composeOne(
+function mixVoiceover(
   ffmpeg: string,
-  scenarioId: string,
-  outputName: string,
-): { ok: boolean; note: string } {
-  const footage = path.join(FOOTAGE_DIR, `${outputName}.mp4`)
-  const intro = path.join(BROLL_DIR, `${scenarioId}-intro.mp4`)
-  const outro = path.join(BROLL_DIR, `${scenarioId}-outro.mp4`)
-  const voice = path.join(VOICE_DIR, `${scenarioId}.wav`)
-  const scaledFootage = path.join(WORK_DIR, `${scenarioId}-footage-scaled.mp4`)
-  const concatPath = path.join(WORK_DIR, `${scenarioId}-concat.mp4`)
-  const voicedPath = path.join(WORK_DIR, `${scenarioId}-voiced.mp4`)
-  const finalPath = path.join(OUT_DIR, `${outputName}.mp4`)
-
-  if (!fs.existsSync(footage)) return { ok: false, note: `missing footage ${footage}` }
-  if (!fs.existsSync(intro) || !fs.existsSync(outro)) {
-    return { ok: false, note: 'missing bookends — run generate-demo-broll.ts first' }
-  }
-
-  fs.mkdirSync(WORK_DIR, { recursive: true })
-  if (!reencode(ffmpeg, footage, scaledFootage)) return { ok: false, note: 'footage reencode failed' }
-  if (!concatVideos(ffmpeg, [intro, scaledFootage, outro], concatPath)) {
-    return { ok: false, note: 'concat failed' }
-  }
-
-  let publishSource = concatPath
-  if (!skipVoice && fs.existsSync(voice)) {
-    if (addVoiceover(ffmpeg, concatPath, voice, voicedPath)) publishSource = voicedPath
-  }
-
+  videoPath: string,
+  audioPath: string,
+  outPath: string,
+  delayMs: number,
+): boolean {
+  const delay = Math.max(0, delayMs)
+  const filter = `[1:a]adelay=${delay}|${delay},loudnorm=I=-16:TP=-1.5:LRA=11[vox]`
   const r = spawnSync(
     ffmpeg,
     [
       '-y',
       '-i',
-      publishSource,
+      videoPath,
+      '-i',
+      audioPath,
+      '-filter_complex',
+      filter,
+      '-map',
+      '0:v',
+      '-map',
+      '[vox]',
+      '-c:v',
+      'copy',
+      '-c:a',
+      'aac',
+      '-b:a',
+      '160k',
+      '-shortest',
+      outPath,
+    ],
+    { stdio: 'inherit' },
+  )
+  return r.status === 0
+}
+
+function finalEncode(ffmpeg: string, inPath: string, outPath: string): boolean {
+  const r = spawnSync(
+    ffmpeg,
+    [
+      '-y',
+      '-i',
+      inPath,
       '-vf',
       scalePadFilter(),
       '-r',
@@ -183,15 +153,71 @@ function composeOne(
       '-c:a',
       'aac',
       '-b:a',
-      '128k',
-      finalPath,
+      '160k',
+      outPath,
     ],
     { stdio: 'inherit' },
   )
-  if (r.status !== 0) return { ok: false, note: 'final encode failed' }
+  return r.status === 0
+}
+
+function writePoster(ffmpeg: string, videoPath: string, posterPath: string): void {
+  fs.mkdirSync(path.dirname(posterPath), { recursive: true })
+  spawnSync(
+    ffmpeg,
+    ['-y', '-ss', String(BOOKEND_SEC + 2), '-i', videoPath, '-vframes', '1', '-q:v', '2', posterPath],
+    { stdio: 'pipe' },
+  )
+}
+
+function composeOne(
+  ffmpeg: string,
+  scenarioId: string,
+  outputName: string,
+): { ok: boolean; note: string } {
+  const source = path.join(SOURCE_DIR, `${outputName}.mp4`)
+  const intro = path.join(BROLL_DIR, `${scenarioId}-intro.mp4`)
+  const outro = path.join(BROLL_DIR, `${scenarioId}-outro.mp4`)
+  const voice = path.join(VOICE_DIR, `${scenarioId}.wav`)
+  const assPath = path.join(CAPTION_DIR, `${scenarioId}-composed.ass`)
+  const captionedFootage = path.join(WORK_DIR, `${scenarioId}-footage-captioned.mp4`)
+  const concatPath = path.join(WORK_DIR, `${scenarioId}-concat.mp4`)
+  const voicedPath = path.join(WORK_DIR, `${scenarioId}-voiced.mp4`)
+  const finalPath = path.join(OUT_DIR, `${outputName}.mp4`)
+  const posterPath = path.join(POSTER_DIR, `${outputName}.jpg`)
+
+  if (!fs.existsSync(source)) return { ok: false, note: `missing source ${source}` }
+  if (!fs.existsSync(intro) || !fs.existsSync(outro)) {
+    return { ok: false, note: 'missing bookends — run broll:demos first' }
+  }
+
+  fs.mkdirSync(WORK_DIR, { recursive: true })
+  fs.mkdirSync(CAPTION_DIR, { recursive: true })
+
+  const caps = offsetCaptions(captionsForScenario(scenarioId), BOOKEND_SEC)
+  writeAssCaptions(caps, assPath, 1) // times already adjusted; speed=1
+
+  if (!encodeFootage(ffmpeg, source, assPath, captionedFootage)) {
+    return { ok: false, note: 'captioned footage encode failed' }
+  }
+  if (!concatVideos(ffmpeg, [intro, captionedFootage, outro], concatPath)) {
+    return { ok: false, note: 'concat failed' }
+  }
+
+  let publishSource = concatPath
+  if (!skipVoice && fs.existsSync(voice)) {
+    const delayMs = BOOKEND_SEC * 1000
+    if (mixVoiceover(ffmpeg, concatPath, voice, voicedPath, delayMs)) publishSource = voicedPath
+  }
+
+  if (!finalEncode(ffmpeg, publishSource, finalPath)) {
+    return { ok: false, note: 'final encode failed' }
+  }
+
+  writePoster(ffmpeg, finalPath, posterPath)
 
   const mb = (fs.statSync(finalPath).size / 1024 / 1024).toFixed(1)
-  return { ok: true, note: `${mb} MB → ${finalPath}` }
+  return { ok: true, note: `${mb} MB + poster → ${finalPath}` }
 }
 
 function main() {
@@ -202,8 +228,8 @@ function main() {
     ? SCENARIOS.filter((s) => only.includes(s.id) || only.includes(s.outputName))
     : SCENARIOS
 
-  console.log(`Composing ${scenarios.length} demo video(s)...`)
-  console.log(`Footage: ${FOOTAGE_DIR}`)
+  console.log(`Professional compose: ${scenarios.length} video(s)`)
+  console.log(`Source footage: ${SOURCE_DIR}`)
   console.log(`Bookends: ${BROLL_DIR}`)
   console.log(`Voice: ${skipVoice ? 'skipped' : VOICE_DIR}\n`)
 
@@ -219,7 +245,7 @@ function main() {
   }
 
   const okCount = results.filter((r) => r.ok).length
-  console.log(`\nDone: ${okCount}/${results.length} composed`)
+  console.log(`\nDone: ${okCount}/${results.length}`)
   if (okCount === 0) process.exit(1)
 }
 

@@ -51,7 +51,7 @@ export default function DemoHubPage() {
         </div>
 
         <div className="glass-panel rounded-2xl overflow-hidden border border-white/10">
-          <DemoVideoPlayer src={featured.videoSrc} title={featured.title} />
+          <DemoVideoPlayer src={featured.videoSrc} title={featured.title} poster={featured.posterSrc} />
           <div className="px-6 py-4 flex flex-wrap items-center justify-between gap-3 border-t border-white/10">
             <p className="text-sm text-slate-300">{featured.description}</p>
             <Link href={featured.href} className="text-sm font-semibold text-cyan-300 hover:text-cyan-200">

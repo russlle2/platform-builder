@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { PLATFORM_DEMO_VIDEO } from '@/lib/demo-videos'
+import { PLATFORM_DEMO_VIDEO, PLATFORM_DEMO_POSTER } from '@/lib/demo-videos'
 import { DemoVideoPlayer } from '@/components/demo/DemoVideoPlayer'
 
 export const metadata: Metadata = {
@@ -29,6 +29,7 @@ export default function PlatformBuilderDemoPage() {
           <DemoVideoPlayer
             src={PLATFORM_DEMO_VIDEO}
             title="DailyClarity Platform Builder walkthrough"
+            poster={PLATFORM_DEMO_POSTER}
           />
         </div>
 
