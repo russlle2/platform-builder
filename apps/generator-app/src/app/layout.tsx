@@ -4,6 +4,8 @@ import { Barlow_Condensed, Sora } from 'next/font/google'
 import Script from 'next/script'
 import Chatbot from '@/components/Chatbot'
 import { AppLayout } from '@/components/layout/AppLayout'
+import { JsonLd } from '@/components/JsonLd'
+import { organizationSchema, websiteSchema, serviceSchema } from '@/lib/seo'
 import type { ReactNode } from 'react'
 
 const display = Barlow_Condensed({
@@ -18,6 +20,7 @@ const body = Sora({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://dailyclarity.org'),
   title: {
     default: 'DailyClarity — Professional Website Templates for Service Businesses',
     template: '%s | DailyClarity',
@@ -36,7 +39,6 @@ export const metadata: Metadata = {
     'sound bath website',
     'DailyClarity',
   ],
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://dailyclarity.org'),
   alternates: {
     canonical: '/',
   },
@@ -51,6 +53,7 @@ export const metadata: Metadata = {
     googleBot: { index: true, follow: true },
   },
   category: 'business',
+  formatDetection: { telephone: false },
 }
 
 export const viewport = {
@@ -65,6 +68,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${body.variable} ${display.variable} bg-slate-950 text-white antialiased`}>
+        <JsonLd data={[organizationSchema, websiteSchema, serviceSchema]} />
         <AppLayout>
           {children}
         </AppLayout>
