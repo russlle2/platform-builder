@@ -14,6 +14,7 @@ import { captionsForScenario, writeAssCaptions } from './demo-captions'
 const BASE_URL = process.env.BASE_URL || 'https://dailyclarity.org'
 const PREVIEW_URL = `${BASE_URL}/preview-your-business?demoRecord=1`
 const VIEWPORT = { width: 1920, height: 1080 }
+const HEADLESS = process.env.HEADLESS === '1' || process.env.HEADLESS === 'true'
 const APP_ROOT = path.resolve(__dirname, '..')
 const RAW_DIR = path.join(APP_ROOT, 'test-results', 'demo-recordings', 'raw')
 const OUT_DIR = path.join(APP_ROOT, 'public', 'demo-videos')
@@ -112,18 +113,8 @@ async function selectNiche(page: Page, niche: string) {
 }
 
 async function selectVibes(page: Page, vibes: string[]) {
-  const vibeDesc: Record<string, string> = {
-    Warm: 'Inviting, cozy, human',
-    Bold: 'Strong, assertive, high-impact',
-    Clean: 'Minimal, organized, crisp',
-    Luxurious: 'Premium, sophisticated, refined',
-    Earthy: 'Natural, grounded, organic',
-    Playful: 'Creative, fun, approachable',
-  }
   for (const v of vibes) {
-    const desc = vibeDesc[v]
-    if (desc) await clickByText(page, desc, 'button')
-    else await clickByText(page, v, 'button')
+    await clickByText(page, v, 'button')
     await pause(400)
   }
 }
@@ -131,19 +122,21 @@ async function selectVibes(page: Page, vibes: string[]) {
 async function completeInfoStep(page: Page, s: DemoScenario) {
   console.log('  → Filling business info...')
   await selectNiche(page, s.niche)
+
   const fields: [string, string][] = [
-    ['Acme Heating', s.businessName],
-    ['Jane Smith', s.ownerName],
-    ['hello@yourbusiness.com', s.email],
-    ['(555) 123', s.phone],
-    ['123 Main', s.address],
-    ['Your comfort', s.tagline],
-    ['AC Repair', s.services],
+    ['Business Name', s.businessName],
+    ['Owner / Contact Name', s.ownerName],
+    ['Email', s.email],
+    ['Phone', s.phone],
+    ['Address / Service Area', s.address],
+    ['Tagline', s.tagline],
+    ['Services (comma-separated)', s.services],
   ]
-  for (const [ph, val] of fields) {
-    await fillByLabelOrPlaceholder(page, ph, val)
+  for (const [label, val] of fields) {
+    await fillByLabelOrPlaceholder(page, label, val)
     await pause(180)
   }
+
   const ta = page.locator('textarea').first()
   if (await ta.isVisible().catch(() => false)) {
     await ta.click()
@@ -154,8 +147,11 @@ async function completeInfoStep(page: Page, s: DemoScenario) {
     }
     await pause(200)
   }
+
   await pause(500)
-  const continued = await clickByText(page, 'Continue to Style', 'button')
+  const continued =
+    (await clickByText(page, 'Continue to Style Preferences', 'button')) ||
+    (await safeClick(page, 'button:has-text("Continue to Style")'))
   if (!continued) await safeClick(page, 'button:has-text("Continue")')
   await pause(1000)
 }
@@ -163,17 +159,13 @@ async function completeInfoStep(page: Page, s: DemoScenario) {
 async function completeStyleStep(page: Page, s: DemoScenario) {
   console.log('  → Selecting style preferences...')
   await selectVibes(page, s.vibes)
-  const toneDesc: Record<string, string> = {
-    Professional: 'Polished, industry-standard language',
-    Conversational: 'Friendly tone, like talking to a friend',
-    Storytelling: 'Narrative-driven, brand-story focused',
-    Minimal: 'Short, punchy, to-the-point',
-    Authoritative: 'Expert voice, data-driven confidence',
+
+  const toneLabel = s.writingTone
+  if (!(await clickByText(page, toneLabel, 'button'))) {
+    await clickByText(page, toneLabel, '*')
   }
-  const tDesc = toneDesc[s.writingTone]
-  if (tDesc) await clickByText(page, tDesc, 'button')
-  else await clickByText(page, s.writingTone, 'button')
   await pause(400)
+
   const colorPick = s.vibes.includes('Earthy')
     ? 'Nature & Organic'
     : s.vibes.includes('Clean')
@@ -188,8 +180,10 @@ async function completeStyleStep(page: Page, s: DemoScenario) {
   await clickByText(page, 'Spacious', 'button')
   await pause(300)
   await pause(400)
-  const found = await clickByText(page, 'Find My Perfect Template', 'button')
-  if (!found) await safeClick(page, 'button:has-text("Find My")')
+  const found =
+    (await clickByText(page, 'Find My Perfect Template', 'button')) ||
+    (await safeClick(page, 'button:has-text("Find My")'))
+  if (!found) await safeClick(page, 'button:has-text("Template")')
   await pause(500)
 }
 
@@ -233,9 +227,13 @@ async function scrollInsidePreview(page: Page, steps: number, fraction = 0.42) {
 
 async function hoverPreviewCenter(page: Page) {
   const preview = page.locator('iframe[title="Template preview"]')
-  const box = await preview.boundingBox()
-  if (!box) return
-  await page.mouse.move(box.x + box.width / 2, box.y + box.height * 0.45)
+  try {
+    const box = await preview.boundingBox({ timeout: 8000 })
+    if (!box) return
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height * 0.45)
+  } catch {
+    console.warn('  [skip] preview iframe not visible for hover')
+  }
 }
 
 /** Maximize visible preview area: tall iframe, in-frame scroll, multi-page tour. */
@@ -299,7 +297,7 @@ async function openEditor(page: Page) {
 }
 
 async function showPricingAndWelcomeFlow(page: Page, slug: string) {
-  console.log('  → Showing pricing...')
+  console.log('  → Showing pricing (Basic vs Security + Ads)...')
   const purchaseLink = page.locator('a:has-text("Purchase"), a:has-text("Launch")').first()
   if (await purchaseLink.isVisible({ timeout: 3000 }).catch(() => false)) {
     await purchaseLink.click()
@@ -307,11 +305,22 @@ async function showPricingAndWelcomeFlow(page: Page, slug: string) {
   } else {
     await page.goto(`${BASE_URL}/pricing`, { waitUntil: 'domcontentloaded' })
   }
-  await pause(1800)
-  await page.mouse.wheel(0, 400)
+  await pause(2000)
+  // Scroll through both plan cards so viewers see the $20 / $80 divide.
+  const basicCard = page.getByRole('heading', { name: /^Basic$/i }).first()
+  if (await basicCard.isVisible({ timeout: 4000 }).catch(() => false)) {
+    await basicCard.scrollIntoViewIfNeeded()
+    await pause(1500)
+  }
+  await page.mouse.wheel(0, 500)
+  await pause(1500)
+  const premiumCard = page.getByRole('heading', { name: /Security \+ Ads/i }).first()
+  if (await premiumCard.isVisible({ timeout: 4000 }).catch(() => false)) {
+    await premiumCard.scrollIntoViewIfNeeded()
+    await pause(2000)
+  }
+  await page.mouse.wheel(0, -300)
   await pause(1000)
-  await page.mouse.wheel(0, -400)
-  await pause(800)
 
   console.log('  → Success page...')
   await page.goto(`${BASE_URL}/success`, { waitUntil: 'domcontentloaded' })
@@ -392,9 +401,9 @@ function convertWithFfmpegIfAvailable(rawPath: string, outPath: string, scenario
 }
 
 async function recordScenario(s: DemoScenario, scenarioRawDir: string): Promise<string> {
-  console.log(`\n${'─'.repeat(60)}\nRecording: ${s.outputName}\n${'─'.repeat(60)}`)
+  console.log(`\n${'─'.repeat(60)}\nRecording: ${s.outputName} (${new Date().toLocaleTimeString()})\n${'─'.repeat(60)}`)
 
-  const browser = await chromium.launch({ headless: false })
+  const browser = await chromium.launch({ headless: HEADLESS })
   const context: BrowserContext = await browser.newContext({
     viewport: VIEWPORT,
     deviceScaleFactor: 1,
@@ -445,14 +454,17 @@ async function main() {
   fs.mkdirSync(RAW_DIR, { recursive: true })
   fs.mkdirSync(OUT_DIR, { recursive: true })
 
-  console.log(`Base URL: ${BASE_URL}`)
-  console.log(`Preview:  ${PREVIEW_URL}`)
-  console.log(`Output:   ${OUT_DIR}`)
-
   const only = process.env.DEMO_ONLY?.split(',').map((s) => s.trim()).filter(Boolean)
   const toRun = only?.length
     ? SCENARIOS.filter((s) => only.includes(s.id) || only.includes(s.outputName))
     : SCENARIOS
+
+  console.log(`Base URL: ${BASE_URL}`)
+  console.log(`Preview:  ${PREVIEW_URL}`)
+  console.log(`Output:   ${OUT_DIR}`)
+  console.log(`Headless: ${HEADLESS} (set HEADLESS=0 to show browser)`)
+  console.log(`FFmpeg:   ${FFMPEG || 'NOT FOUND — set FFMPEG_PATH'}`)
+  console.log(`Scenarios: ${toRun.length} (~${toRun.length * 2}–${toRun.length * 3} min total)\n`)
 
   const results: { name: string; ok: boolean }[] = []
 

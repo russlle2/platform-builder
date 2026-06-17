@@ -14,7 +14,8 @@ export const PLATFORM_CAPTIONS: CaptionSegment[] = [
   { startSec: 28, endSec: 40, text: 'Choose the style that fits your brand' },
   { startSec: 48, endSec: 58, text: 'We match you with a layout for your niche' },
   { startSec: 62, endSec: 95, text: 'Every page fills in with your real business info' },
-  { startSec: 98, endSec: 115, text: 'Browse personalized layouts — already populated for you' },
+  { startSec: 98, endSec: 115, text: 'Compare Basic ($20) vs Security + Ads ($80)' },
+  { startSec: 118, endSec: 130, text: 'Everything automated — one premium service done for you on the $80 plan' },
 ]
 
 export const NICHE_WALKTHROUGH_CAPTIONS: CaptionSegment[] = [
@@ -22,7 +23,8 @@ export const NICHE_WALKTHROUGH_CAPTIONS: CaptionSegment[] = [
   { startSec: 14, endSec: 26, text: 'Your niche shapes the templates you see' },
   { startSec: 32, endSec: 44, text: 'Match a layout, then preview your live site' },
   { startSec: 50, endSec: 88, text: 'Scroll through pages filled with your business info' },
-  { startSec: 92, endSec: 105, text: 'Edit copy and images, then checkout when ready' },
+  { startSec: 92, endSec: 108, text: 'Basic is fully automated; Security + Ads adds done-for-you ads & security' },
+  { startSec: 110, endSec: 125, text: 'Review your profile, then checkout with a 7-day trial' },
 ]
 
 export function captionsForScenario(scenarioId: string): CaptionSegment[] {
