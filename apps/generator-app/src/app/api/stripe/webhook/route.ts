@@ -133,7 +133,7 @@ async function handleCheckoutCompleted(
 
       if (templateSlug && niche) {
         try {
-          const deployFiles = buildDeployFiles({
+          const deployFiles = await buildDeployFiles({
             niche,
             templateSlug,
             customerValues,

@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readTemplateFile, getTemplate } from '@/lib/templates/niche-registry'
+import { getTemplate, readTemplateFileBuffer } from '@/lib/templates/niche-registry'
 import path from 'path'
-import fs from 'fs'
 
 export async function GET(
-  req: NextRequest,
+  _req: NextRequest,
   { params }: { params: Promise<{ niche: string; slug: string; path: string[] }> }
 ) {
   const { niche, slug, path: pathSegments } = await params
@@ -15,17 +14,18 @@ export async function GET(
     return NextResponse.json({ error: 'Template not found' }, { status: 404 })
   }
 
-  const fullPath = path.join(template.dir, filePath)
-  // Security: must stay within template dir
-  if (!fullPath.startsWith(template.dir)) {
+  // Defense in depth — the registry already sandboxes reads, but reject any
+  // segment that tries to escape the template dir.
+  if (pathSegments.some((s) => s === '..' || s === '' || s.includes('\\') || s.startsWith('/'))) {
     return NextResponse.json({ error: 'Access denied' }, { status: 403 })
   }
 
-  if (!fs.existsSync(fullPath)) {
+  const content = await readTemplateFileBuffer(niche, slug, filePath)
+  if (!content) {
     return NextResponse.json({ error: 'File not found' }, { status: 404 })
   }
 
-  const ext = path.extname(fullPath).toLowerCase()
+  const ext = path.extname(filePath).toLowerCase()
   const mimeMap: Record<string, string> = {
     '.css': 'text/css',
     '.js': 'application/javascript',
@@ -42,9 +42,12 @@ export async function GET(
   }
 
   const contentType = mimeMap[ext] || 'application/octet-stream'
-  const content = fs.readFileSync(fullPath)
 
-  return new NextResponse(content, {
+  // Copy into a fresh ArrayBuffer so the TS BodyInit union accepts it
+  // (Node Buffer's underlying buffer could in theory be a SharedArrayBuffer).
+  const ab = new ArrayBuffer(content.byteLength)
+  new Uint8Array(ab).set(content)
+  return new NextResponse(ab, {
     headers: {
       'Content-Type': contentType,
       'Cache-Control': 'public, max-age=86400, s-maxage=31536000, immutable',

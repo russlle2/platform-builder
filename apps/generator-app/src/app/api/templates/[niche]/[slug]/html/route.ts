@@ -20,7 +20,10 @@ export async function GET(
     return new NextResponse('Template not found', { status: 404 })
   }
 
-  const html = readTemplateFile(niche, slug, page)
+  const [html, cssFile] = await Promise.all([
+    readTemplateFile(niche, slug, page),
+    readTemplateFile(niche, slug, 'assets/css/styles.css'),
+  ])
   if (!html) {
     return new NextResponse('Page not found', { status: 404 })
   }
@@ -40,8 +43,6 @@ export async function GET(
     }
   )
 
-  // Inline the CSS if available
-  const cssFile = readTemplateFile(niche, slug, 'assets/css/styles.css')
   if (cssFile) {
     output = output.replace('</head>', `<style>${cssFile}</style></head>`)
   }

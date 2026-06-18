@@ -22,15 +22,15 @@ export async function POST(
     structureVariation?: string
   }
 
-  const html = readTemplateFile(niche, slug, page)
+  const [html, cssFile] = await Promise.all([
+    readTemplateFile(niche, slug, page),
+    readTemplateFile(niche, slug, 'assets/css/styles.css'),
+  ])
   if (!html) {
     return NextResponse.json({ error: 'Template file not found' }, { status: 404 })
   }
 
   const hydrated = hydrateTemplate(html, values)
-
-  // Also hydrate linked CSS/JS if in the same template
-  const cssFile = readTemplateFile(niche, slug, 'assets/css/styles.css')
 
   // Build variation CSS overrides
   const variationCSS = buildVariationCSS(colorScheme, fontVariation, structureVariation)

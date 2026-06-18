@@ -12,6 +12,19 @@
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
+# Belt-and-suspenders for the SSR function 250 MB bundle limit:
+# Next.js's outputFileTracingExcludes (next.config.js) drops the template
+# library from the trace, and this clause makes the Netlify bundler ALSO
+# exclude the source dir and the public/_templates copy. Templates are
+# 302 MB across 58k files — without this every function bundle blows up
+# because the trace walks process.cwd() based fs.readFileSync calls.
+[functions]
+  included_files = [
+    "!platform-builder/**",
+    "!apps/generator-app/public/_templates/**",
+    "!apps/generator-app/.next/cache/**",
+  ]
+
 # Context-specific commands MUST also include corepack activation so pnpm is
 # available — without this, Netlify production builds fail with
 # "'pnpm' is not recognized" because the base [build] command is overridden.

@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "predev": "node scripts/copy-templates.mjs && node scripts/build-template-manifest.mjs",
     "dev": "next dev",
+    "prebuild": "node scripts/copy-templates.mjs && node scripts/build-template-manifest.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -20,6 +22,7 @@
     "smoke:health": "npx --yes tsx@4.19.2 scripts/smoke-fulfillment.ts --health"
   },
   "dependencies": {
+    "@opentelemetry/api": "^1.9.0",
     "@platform-builder/image-optimizer": "workspace:*",
     "@platform-builder/ui-components": "workspace:*",
     "@platform-builder/utils": "workspace:*",

@@ -127,7 +127,7 @@ export async function POST(req: Request) {
       // ── 3. Build & deploy customized template ────────────────────
       if (templateSlug && niche) {
         try {
-          const deployFiles = buildDeployFiles({
+          const deployFiles = await buildDeployFiles({
             niche,
             templateSlug,
             customerValues,
