@@ -1,5 +1,6 @@
 import fs from 'fs'
 import path from 'path'
+import { getStore } from '@netlify/blobs'
 import { NICHE_META, NICHE_SLUGS, getNicheSlugs } from './niche-meta'
 
 export { NICHE_META, NICHE_SLUGS, getNicheSlugs }
@@ -94,12 +95,9 @@ function templateBaseUrl(): string {
   )
 }
 
-/** Lazily obtain a Netlify Blobs store. Returns null if env vars are absent. */
+/** Obtain a Netlify Blobs store, or null if the env is not configured. */
 function getBlobsStore() {
-  // Dynamic import so this module doesn't break in local dev without Netlify context.
   try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { getStore } = require('@netlify/blobs')
     return getStore({ name: 'templates', consistency: 'strong' })
   } catch {
     return null
