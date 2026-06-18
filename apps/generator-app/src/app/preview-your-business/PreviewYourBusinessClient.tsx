@@ -154,10 +154,20 @@ interface ApiTemplate {
   snippet: string
 }
 
+/** Deterministic hash 0–9 from slug for jitter (avoids Math.random) */
+function slugHash(slug: string): number {
+  let h = 0
+  for (let i = 0; i < slug.length; i++) {
+    h = (Math.imul(31, h) + slug.charCodeAt(i)) | 0
+  }
+  return Math.abs(h) % 10
+}
+
 function scoreTemplate(
   t: ApiTemplate,
   prefs: StylePreferences,
   niche: string,
+  businessInfo?: BusinessInfo,
 ): { score: number; reason: string } {
   let score = 0
   const reasons: string[] = []
@@ -207,8 +217,39 @@ function scoreTemplate(
     }
   }
 
-  // Small random jitter for variety
-  score += Math.random() * 3
+  // Color mood keyword matching
+  const colorKeywords: Record<ColorMood, string[]> = {
+    'dark-elegant': ['dark', 'slate', 'charcoal', 'noir', 'midnight', 'deep'],
+    'light-airy': ['light', 'soft', 'airy', 'pastel', 'white', 'cloud', 'clean'],
+    'rich-warm': ['warm', 'amber', 'gold', 'terracotta', 'sunset', 'cozy'],
+    'cool-modern': ['cool', 'blue', 'cyan', 'minimal', 'modern', 'crisp'],
+    'nature-organic': ['earth', 'green', 'forest', 'botanical', 'natural', 'sage', 'herb'],
+    'vibrant-energy': ['vibrant', 'bold', 'energetic', 'rose', 'violet', 'dynamic'],
+  }
+  const cKeywords = colorKeywords[prefs.colorMood] || []
+  for (const kw of cKeywords) {
+    if (snippet.includes(kw)) {
+      score += 4
+      reasons.push('color match')
+      break
+    }
+  }
+
+  // Business name / description keyword matching
+  if (businessInfo) {
+    const bizText = `${businessInfo.businessName || ''} ${businessInfo.description || ''}`.toLowerCase()
+    const bizWords = bizText.split(/\W+/).filter((w) => w.length > 4)
+    for (const word of bizWords.slice(0, 5)) {
+      if (snippet.includes(word)) {
+        score += 6
+        reasons.push('brand match')
+        break
+      }
+    }
+  }
+
+  // Deterministic jitter from slug hash (0–4.5 range, replaces Math.random)
+  score += slugHash(t.slug) * 0.5
 
   if (reasons.length === 0) reasons.push('diverse design')
   return { score, reason: reasons.join(', ') }
@@ -241,6 +282,12 @@ export default function PreviewYourBusinessClient() {
   const [templates, setTemplates] = useState<ApiTemplate[]>([])
   const [templatesLoading, setTemplatesLoading] = useState(false)
 
+  // ---- session seed for consistent browse pagination ----
+  const [sessionSeed] = useState(() => Date.now() % 10000)
+
+  // ---- alternative matches ----
+  const [alternativeTemplates, setAlternativeTemplates] = useState<ApiTemplate[]>([])
+
   // ---- preview state ----
   const [previewHtml, setPreviewHtml] = useState<string | null>(null)
   const [previewLoading, setPreviewLoading] = useState(false)
@@ -270,6 +317,10 @@ export default function PreviewYourBusinessClient() {
 
   // ---- Browse templates state ----
   const [browseTemplates, setBrowseTemplates] = useState<ApiTemplate[]>([])
+  const [browsePage, setBrowsePage] = useState(1)
+  const [browseTotal, setBrowseTotal] = useState(0)
+  const [browseHasMore, setBrowseHasMore] = useState(false)
+  const [browseLoading, setBrowseLoading] = useState(false)
 
   const clientReadiness = useMemo(
     () => computeClientReadiness(businessInfo, stylePreferences),
@@ -280,7 +331,7 @@ export default function PreviewYourBusinessClient() {
   const fetchTemplatesForNiche = useCallback(async (niche: string) => {
     setTemplatesLoading(true)
     try {
-      const res = await fetch(`/api/templates/${niche}`)
+      const res = await fetch(`/api/templates/${niche}?all=true`)
       if (res.ok) {
         const data = await res.json()
         const withNiche = (data.templates || []).map((t: ApiTemplate) => ({
@@ -316,10 +367,10 @@ export default function PreviewYourBusinessClient() {
       return
     }
 
-    // Score all
+    // Score all templates with businessInfo for brand matching
     const scored = tpls.map((t: ApiTemplate) => {
       const withNiche = { ...t, nicheSlug: t.nicheSlug || businessInfo.niche }
-      return { ...withNiche, ...scoreTemplate(withNiche, stylePreferences, businessInfo.niche) }
+      return { ...withNiche, ...scoreTemplate(withNiche, stylePreferences, businessInfo.niche, businessInfo) }
     })
     scored.sort((a: { score: number }, b: { score: number }) => b.score - a.score)
 
@@ -332,8 +383,26 @@ export default function PreviewYourBusinessClient() {
       matchScore: best.score,
       reason: best.reason,
     })
+
+    // Find 2 alternatives with different layoutFamily or voiceFamily
+    const alts: ApiTemplate[] = []
+    for (const t of scored.slice(1)) {
+      if (alts.length >= 2) break
+      const diffVoice = t.voiceFamily !== best.voiceFamily
+      const diffLayout = t.layoutFamily !== best.layoutFamily
+      if (diffVoice || diffLayout) {
+        alts.push(t)
+      }
+    }
+    // If we didn't find 2 diverse ones, just grab the next top scorers
+    for (const t of scored.slice(1)) {
+      if (alts.length >= 2) break
+      if (!alts.some((a) => a.slug === t.slug)) alts.push(t)
+    }
+    setAlternativeTemplates(alts)
+
     setTemplatesLoading(false)
-  }, [templates, businessInfo.niche, stylePreferences, setStep, setMatchedTemplate, fetchTemplatesForNiche])
+  }, [templates, businessInfo, stylePreferences, setStep, setMatchedTemplate, fetchTemplatesForNiche])
 
   /* ================ Load live preview ================ */
   const loadPreview = useCallback(
@@ -525,12 +594,41 @@ export default function PreviewYourBusinessClient() {
   const openBrowse = useCallback(async () => {
     markInfoSaved()
     setStep('browse')
-    let tpls = templates
-    if (tpls.length === 0 && businessInfo.niche) {
-      tpls = await fetchTemplatesForNiche(businessInfo.niche)
-    }
-    setBrowseTemplates(tpls)
-  }, [markInfoSaved, setStep, templates, businessInfo.niche, fetchTemplatesForNiche])
+    setBrowseTemplates([])
+    setBrowsePage(1)
+    setBrowseLoading(true)
+    try {
+      const res = await fetch(`/api/templates/${businessInfo.niche}?page=1&limit=12&seed=${sessionSeed}`)
+      if (res.ok) {
+        const data = await res.json()
+        setBrowseTemplates(
+          (data.templates || []).map((t: ApiTemplate) => ({ ...t, nicheSlug: t.nicheSlug || businessInfo.niche })),
+        )
+        setBrowseTotal(data.total || 0)
+        setBrowseHasMore(data.hasMore || false)
+      }
+    } catch { /* ignore */ }
+    setBrowseLoading(false)
+  }, [markInfoSaved, setStep, businessInfo.niche, sessionSeed])
+
+  /* ================ Load more browse templates ================ */
+  const loadMoreBrowse = useCallback(async () => {
+    const nextPage = browsePage + 1
+    setBrowseLoading(true)
+    try {
+      const res = await fetch(`/api/templates/${businessInfo.niche}?page=${nextPage}&limit=12&seed=${sessionSeed}`)
+      if (res.ok) {
+        const data = await res.json()
+        setBrowseTemplates((prev) => [
+          ...prev,
+          ...(data.templates || []).map((t: ApiTemplate) => ({ ...t, nicheSlug: t.nicheSlug || businessInfo.niche })),
+        ])
+        setBrowseHasMore(data.hasMore || false)
+        setBrowsePage(nextPage)
+      }
+    } catch { /* ignore */ }
+    setBrowseLoading(false)
+  }, [browsePage, businessInfo.niche, sessionSeed])
 
   /* ================ Select a template from browse ================ */
   const selectBrowseTemplate = useCallback((t: ApiTemplate) => {
@@ -617,14 +715,28 @@ export default function PreviewYourBusinessClient() {
           />
         )}
 
-        {/* ============ STEP 3 ΓÇö MATCHING ============ */}
+        {/* ============ STEP 3 — MATCHING ============ */}
         {step === 'matching' && (
           <MatchStep
             matched={matchedTemplate}
+            alternatives={alternativeTemplates}
             loading={templatesLoading}
             readiness={clientReadiness}
             onEdit={openEditor}
             onBrowse={openBrowse}
+            onSelectAlternative={(t) => {
+              const resolvedNiche = t.nicheSlug || businessInfo.niche
+              setMatchedTemplate({
+                nicheSlug: resolvedNiche,
+                templateSlug: t.slug,
+                templateName: t.name,
+                matchScore: 0,
+                reason: 'alternative style selected',
+              })
+              markInfoSaved()
+              setStep('editor')
+              loadPreview(resolvedNiche, t.slug)
+            }}
           />
         )}
 
@@ -655,7 +767,7 @@ export default function PreviewYourBusinessClient() {
           />
         )}
 
-        {/* ============ STEP 5 ΓÇö BROWSE TEMPLATES ============ */}
+        {/* ============ STEP 5 — BROWSE TEMPLATES ============ */}
         {step === 'browse' && (
           <BrowseStep
             templates={browseTemplates}
@@ -668,6 +780,10 @@ export default function PreviewYourBusinessClient() {
                 setStep('matching')
               }
             }}
+            total={browseTotal}
+            hasMore={browseHasMore}
+            loading={browseLoading}
+            onLoadMore={loadMoreBrowse}
           />
         )}
       </div>
@@ -982,21 +1098,25 @@ function StyleStep({
 }
 
 /* ================================================================== */
-/* STEP 3 ΓÇö Match reveal                                               */
+/* STEP 3 — Match reveal                                               */
 /* ================================================================== */
 
 function MatchStep({
   matched,
+  alternatives,
   loading,
   readiness,
   onEdit,
   onBrowse,
+  onSelectAlternative,
 }: {
   matched: MatchedTemplate | null
+  alternatives: ApiTemplate[]
   loading: boolean
   readiness: ReturnType<typeof computeClientReadiness>
   onEdit: () => void
   onBrowse: () => void
+  onSelectAlternative: (t: ApiTemplate) => void
 }) {
   return (
     <section className="container-hvac py-8 max-w-4xl mx-auto">
@@ -1067,6 +1187,39 @@ function MatchStep({
               Browse Custom Templates
             </button>
           </div>
+
+          {/* Alternative style suggestions */}
+          {alternatives.length > 0 && (
+            <div>
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-3">
+                Alternative Styles
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {alternatives.map((alt) => (
+                  <button
+                    key={alt.slug}
+                    onClick={() => onSelectAlternative(alt)}
+                    className="p-4 rounded-xl border border-white/10 bg-white/5 text-left hover:bg-white/10 hover:border-white/20 transition-all group"
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm font-semibold text-white group-hover:text-cyan-200 transition-colors line-clamp-1">
+                        {alt.name}
+                      </span>
+                      {alt.layoutFamily && (
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-slate-400 shrink-0 ml-2">
+                          {alt.layoutFamily}
+                        </span>
+                      )}
+                    </div>
+                    {alt.snippet && (
+                      <p className="text-xs text-slate-500 line-clamp-2">{alt.snippet}</p>
+                    )}
+                    <span className="text-xs text-cyan-400 mt-2 block">Try this style →</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       ) : (
         <div className="glass-panel rounded-2xl p-8 text-center">
@@ -1419,7 +1572,7 @@ function EditorStep({
 }
 
 /* ================================================================== */
-/* STEP 5 ΓÇö Browse templates                                           */
+/* STEP 5 — Browse templates                                           */
 /* ================================================================== */
 
 function BrowseStep({
@@ -1427,11 +1580,19 @@ function BrowseStep({
   niche,
   onSelect,
   onBack,
+  total,
+  hasMore,
+  loading,
+  onLoadMore,
 }: {
   templates: ApiTemplate[]
   niche: string
   onSelect: (t: ApiTemplate) => void
   onBack: () => void
+  total: number
+  hasMore: boolean
+  loading: boolean
+  onLoadMore: () => void
 }) {
   const nicheLabel = NICHE_OPTIONS.find((n) => n.slug === niche)?.label || niche
 
@@ -1444,56 +1605,84 @@ function BrowseStep({
             {nicheLabel} Templates
           </h1>
           <p className="text-slate-300 mt-1">
-            Your business info will auto-populate on any template you choose.
+            {total > 0 ? `${total} templates available.` : ''} Your business info will auto-populate on any template you choose.
           </p>
         </div>
         <button
           onClick={onBack}
           className="px-6 py-3 text-sm font-bold text-white border border-white/20 rounded-lg hover:bg-white/10 transition-all"
         >
-          ΓåÉ Back to Editor
+          ← Back to Editor
         </button>
       </div>
 
       {/* Info saved banner */}
       <div className="bg-cyan-500/10 border border-cyan-400/30 rounded-xl p-4 mb-8 flex items-center gap-3">
-        <span className="text-cyan-400 text-xl">≡ƒÆ╛</span>
+        <span className="text-cyan-400 text-xl">💾</span>
         <p className="text-cyan-200 text-sm">
           <strong>Your info is saved.</strong> Any template you open will be automatically filled with your business details.
         </p>
       </div>
 
-      {templates.length === 0 ? (
+      {templates.length === 0 && !loading ? (
         <div className="glass-panel rounded-2xl p-12 text-center">
           <p className="text-slate-300">No templates found for this niche.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {templates.map((t) => (
-            <button
-              key={t.slug}
-              onClick={() => onSelect(t)}
-              className="card-mahogany text-left space-y-3 hover:scale-[1.02] transition-all group"
-            >
-              <div className="flex items-center justify-between">
-                <h3 className="text-xl font-bold text-white group-hover:text-cyan-200 transition-colors">
-                  {t.name}
-                </h3>
-                {t.layoutFamily && (
-                  <span className="text-xs px-2 py-1 rounded-full bg-white/10 text-slate-300">
-                    {t.layoutFamily}
-                  </span>
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {templates.map((t) => (
+              <button
+                key={t.slug}
+                onClick={() => onSelect(t)}
+                className="card-mahogany text-left space-y-3 hover:scale-[1.02] transition-all group"
+              >
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xl font-bold text-white group-hover:text-cyan-200 transition-colors">
+                    {t.name}
+                  </h3>
+                  {t.layoutFamily && (
+                    <span className="text-xs px-2 py-1 rounded-full bg-white/10 text-slate-300">
+                      {t.layoutFamily}
+                    </span>
+                  )}
+                </div>
+                {t.snippet && (
+                  <p className="text-sm text-slate-400 line-clamp-3">{t.snippet}</p>
                 )}
-              </div>
-              {t.snippet && (
-                <p className="text-sm text-slate-400 line-clamp-3">{t.snippet}</p>
-              )}
-              <span className="inline-flex items-center gap-1 text-sm font-semibold text-cyan-300 group-hover:gap-2 transition-all">
-                Preview with your info <span aria-hidden="true">ΓåÆ</span>
-              </span>
-            </button>
-          ))}
-        </div>
+                <span className="inline-flex items-center gap-1 text-sm font-semibold text-cyan-300 group-hover:gap-2 transition-all">
+                  Preview with your info <span aria-hidden="true">→</span>
+                </span>
+              </button>
+            ))}
+          </div>
+
+          {/* Pagination */}
+          {(hasMore || loading) && (
+            <div className="flex justify-center mt-10">
+              <button
+                onClick={onLoadMore}
+                disabled={loading}
+                className="px-8 py-3 text-sm font-bold text-white border border-white/20 rounded-lg hover:bg-white/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {loading ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
+                    Loading...
+                  </>
+                ) : (
+                  `Load More (${templates.length} of ${total} shown)`
+                )}
+              </button>
+            </div>
+          )}
+
+          {!hasMore && templates.length > 0 && !loading && (
+            <p className="text-center text-sm text-slate-500 mt-8">
+              Showing all {templates.length} templates for this niche.
+            </p>
+          )}
+        </>
       )}
     </section>
   )
