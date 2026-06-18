@@ -12,21 +12,6 @@
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-# Strip the 302 MB template library out of every SSR function bundle so
-# we stay under Netlify's 50 MB zipped function upload limit. Next.js's
-# File Tracing pulls these in transitively via the niche-registry's
-# fs.readFileSync calls; the bundler exclusions below drop them before
-# Netlify packages the function. Patterns use `**/` prefixes so they
-# match the trace's relative-from-nft.json paths regardless of depth.
-[functions]
-  node_bundler = "esbuild"
-  included_files = [
-    "!**/platform-builder/**",
-    "!**/public/_templates/**",
-    "!**/.next/cache/**",
-    "!**/.next/diagnostics/**",
-  ]
-
 # Context-specific commands MUST also include corepack activation so pnpm is
 # available — without this, Netlify production builds fail with
 # "'pnpm' is not recognized" because the base [build] command is overridden.

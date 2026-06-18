@@ -50,7 +50,8 @@ export async function GET(
   return new NextResponse(ab, {
     headers: {
       'Content-Type': contentType,
-      'Cache-Control': 'public, max-age=86400, s-maxage=31536000, immutable',
+      'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=86400',
+      'Netlify-CDN-Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=86400',
     },
   })
 }

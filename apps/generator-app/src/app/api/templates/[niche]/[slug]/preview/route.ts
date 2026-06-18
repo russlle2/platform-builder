@@ -35,10 +35,13 @@ export async function POST(
   // Build variation CSS overrides
   const variationCSS = buildVariationCSS(colorScheme, fontVariation, structureVariation)
 
-  return NextResponse.json({
+  const res = NextResponse.json({
     html: hydrated,
     css: cssFile || null,
     variationCSS: variationCSS || null,
     page,
   })
+  res.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400')
+  res.headers.set('Netlify-CDN-Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400')
+  return res
 }

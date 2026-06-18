@@ -1,0 +1,39 @@
+name: Upload templates to Netlify Blobs
+
+on:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Force re-upload all files (skip idempotency)'
+        required: false
+        default: 'false'
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        # platform-builder/ is still in the repo index at the time this workflow
+        # is first run (before the git rm --cached cleanup commit). After the
+        # cleanup commit, this workflow will need to fetch templates from LFS or
+        # an alternate source — but for the initial upload, the files are present.
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install @netlify/blobs
+        run: npm install @netlify/blobs
+
+      - name: Upload templates
+        working-directory: apps/generator-app
+        run: |
+          ARGS=""
+          if [ "${{ github.event.inputs.force }}" = "true" ]; then
+            ARGS="--force"
+          fi
+          node scripts/upload-templates-to-blobs.mjs $ARGS
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}

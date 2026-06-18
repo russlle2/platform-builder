@@ -1,4 +1,6 @@
 import { getFeaturedTemplatesForNiche, getNiches, NICHE_META } from '@/lib/templates/niche-registry'
+
+export const revalidate = 3600
 import { LiveTemplateShowcase } from '@/components/niche/LiveTemplateShowcase'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
