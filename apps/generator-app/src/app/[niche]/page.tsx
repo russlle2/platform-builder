@@ -1,10 +1,10 @@
 import { getFeaturedTemplatesForNiche, getNiches, NICHE_META } from '@/lib/templates/niche-registry'
-
-export const revalidate = 3600
 import { LiveTemplateShowcase } from '@/components/niche/LiveTemplateShowcase'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
+
+export const revalidate = 3600
 
 /* ---------- Accent color lookup for Tailwind classes ---------- */
 const accentMap: Record<string, { badge: string; heading: string; btn: string; glow: string; border: string; chip: string }> = {
