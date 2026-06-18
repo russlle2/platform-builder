@@ -262,7 +262,12 @@ if (!process.env.NETLIFY_AUTH_TOKEN || !process.env.NETLIFY_SITE_ID) {
   process.exit(1)
 }
 
-const store = getStore({ name: 'templates', consistency: 'strong' })
+const store = getStore({
+  name: 'templates',
+  consistency: 'strong',
+  siteID: process.env.NETLIFY_SITE_ID,
+  token: process.env.NETLIFY_AUTH_TOKEN,
+})
 const nicheSlugs = loadNicheSlugs()
 
 // Build manifest
