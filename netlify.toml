@@ -7,15 +7,19 @@
 [build.environment]
   NODE_VERSION = "20"
   NEXT_TELEMETRY_DISABLED = "1"
+  NODE_OPTIONS = "--max-old-space-size=8192"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
+# Context-specific commands MUST also include corepack activation so pnpm is
+# available — without this, Netlify production builds fail with
+# "'pnpm' is not recognized" because the base [build] command is overridden.
 [context.production]
-  command = "pnpm install --frozen-lockfile && pnpm run generator:build"
+  command = "corepack enable && corepack prepare pnpm@9.0.0 --activate && pnpm install --frozen-lockfile && pnpm run generator:build"
 
 [context.deploy-preview]
-  command = "pnpm install --frozen-lockfile && pnpm run generator:build"
+  command = "corepack enable && corepack prepare pnpm@9.0.0 --activate && pnpm install --frozen-lockfile && pnpm run generator:build"
 
 [context.branch-deploy]
-  command = "pnpm install --frozen-lockfile && pnpm run generator:build"
+  command = "corepack enable && corepack prepare pnpm@9.0.0 --activate && pnpm install --frozen-lockfile && pnpm run generator:build"
