@@ -15,15 +15,14 @@ export async function GET(
   const page = url.searchParams.get('page') || 'index.html'
   const browse = url.searchParams.get('browse') === '1'
 
-  const template = getTemplate(niche, slug)
-  if (!template) {
-    return new NextResponse('Template not found', { status: 404 })
-  }
-
-  const [html, cssFile] = await Promise.all([
+  const [template, html, cssFile] = await Promise.all([
+    getTemplate(niche, slug),
     readTemplateFile(niche, slug, page),
     readTemplateFile(niche, slug, 'assets/css/styles.css'),
   ])
+  if (!template) {
+    return new NextResponse('Template not found', { status: 404 })
+  }
   if (!html) {
     return new NextResponse('Page not found', { status: 404 })
   }

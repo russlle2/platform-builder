@@ -21,7 +21,12 @@ import { fileURLToPath } from 'node:url'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const APP_ROOT = path.resolve(__dirname, '..')
 const TEMPLATES_ROOT = path.join(APP_ROOT, 'public', '_templates')
-const OUTPUT = path.join(APP_ROOT, 'src', 'lib', 'templates', 'manifest.generated.json')
+// Manifest lives ALONGSIDE the templates as a static asset (served by the
+// CDN at /_templates/_manifest.json). niche-registry.ts loads it lazily:
+// fs first (build, dev) then HTTP fallback (production runtime functions).
+// Keeping it out of the bundled source means the function bundle stays
+// well under Netlify's 50 MB zipped upload limit.
+const OUTPUT = path.join(TEMPLATES_ROOT, '_manifest.json')
 
 // Keep this list in sync with src/lib/templates/niche-meta.ts NICHE_SLUGS.
 // We import it lazily below so the script stays plain ESM with no TS deps.

@@ -10,8 +10,8 @@ const nicheAccentClasses: Record<string, { border: string; text: string; bg: str
   rose: { border: 'border-rose-400/30', text: 'text-rose-300', bg: 'bg-rose-500/10', glow: 'hover:shadow-rose-500/20' },
 }
 
-export default function HomePage() {
-  const niches = getNiches()
+export default async function HomePage() {
+  const niches = await getNiches()
   const totalTemplates = niches.reduce((sum, n) => sum + n.templateCount, 0)
 
   return (

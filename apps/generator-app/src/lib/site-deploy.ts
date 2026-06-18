@@ -115,7 +115,7 @@ export async function buildDeployFiles(
     slug,
   } = opts
 
-  const templateData = getTemplate(niche, templateSlug)
+  const templateData = await getTemplate(niche, templateSlug)
   if (!templateData) return null
 
   const variationCSS = buildVariationCSS(colorScheme, fontVariation, structureVariation)

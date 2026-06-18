@@ -9,7 +9,7 @@ export async function GET(
   const { niche, slug, path: pathSegments } = await params
   const filePath = pathSegments.join('/')
 
-  const template = getTemplate(niche, slug)
+  const template = await getTemplate(niche, slug)
   if (!template) {
     return NextResponse.json({ error: 'Template not found' }, { status: 404 })
   }

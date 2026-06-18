@@ -207,7 +207,7 @@ export async function POST(req: Request) {
   } else {
     log.push('NETLIFY_ACCESS_TOKEN not set — skipping site provisioning')
     if (templateSlug && niche) {
-      const templateData = getTemplate(niche, templateSlug)
+      const templateData = await getTemplate(niche, templateSlug)
       if (templateData) {
         log.push(`Template "${templateData.name}" found with ${templateData.pages.length} pages — would deploy on purchase`)
       }

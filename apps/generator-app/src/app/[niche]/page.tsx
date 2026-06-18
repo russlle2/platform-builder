@@ -602,12 +602,15 @@ export default async function NicheLandingPage({
     notFound()
   }
 
-  const niches = getNiches()
+  const [niches, featuredRaw] = await Promise.all([
+    getNiches(),
+    getFeaturedTemplatesForNiche(niche),
+  ])
   const nicheInfo = niches.find((n) => n.slug === niche)
   const templateCount = nicheInfo?.templateCount || 0
   const copy = nicheLandingContent[niche]
   const colors = accentMap[meta.accent] || accentMap.cyan
-  const featuredTemplates = getFeaturedTemplatesForNiche(niche).map((t) => ({
+  const featuredTemplates = featuredRaw.map((t) => ({
     slug: t.slug,
     name: t.name,
     layoutFamily: t.layoutFamily,

@@ -15,13 +15,16 @@ export async function GET(
   const all = searchParams.get('all') === 'true'
   const featuredOnly = searchParams.get('featured') === 'true'
 
-  const niches = getNiches()
+  const [niches, rawTemplates] = await Promise.all([
+    getNiches(),
+    getTemplatesForNiche(niche),
+  ])
   const nicheInfo = niches.find((n) => n.slug === niche)
   if (!nicheInfo) {
     return NextResponse.json({ error: 'Niche not found' }, { status: 404 })
   }
 
-  let templates = getTemplatesForNiche(niche).map((t) => ({
+  let templates = rawTemplates.map((t) => ({
     slug: t.slug,
     name: t.name,
     nicheSlug: niche,
