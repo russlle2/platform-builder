@@ -6,6 +6,7 @@ import { buildDeployFiles, type InlineTextEdit } from '@/lib/site-deploy'
 import type { ImageSwap } from '@/lib/image-swaps'
 import { migrateImagesToSiteSlug, rewriteImageSwapUrls } from '@/lib/customer-images'
 import { createPortalAccessCredentials } from '@/lib/portal-auth'
+import { sendOrderConfirmationEmail } from '@/lib/email'
 
 /**
  * POST /api/test-purchase
@@ -190,6 +191,15 @@ export async function POST(req: Request) {
           }, { onConflict: 'slug' })
 
         log.push('Supabase records updated (site_slugs + portal_sites)')
+
+        const customerEmail = customerValues.EMAIL || ''
+        const businessName = customerValues.BUSINESS_NAME || normalizedSlug
+        if (customerEmail) {
+          await sendOrderConfirmationEmail(customerEmail, businessName, normalizedSlug, portalCredentials?.token, niche).catch((err) =>
+            console.error('[test-purchase] order confirmation email failed:', err),
+          )
+          log.push(`Order confirmation email sent to ${customerEmail}`)
+        }
       }
     } catch (err) {
       log.push(`Netlify provisioning failed: ${err}`)
@@ -201,6 +211,15 @@ export async function POST(req: Request) {
       if (templateData) {
         log.push(`Template "${templateData.name}" found with ${templateData.pages.length} pages — would deploy on purchase`)
       }
+    }
+    // Send confirmation email even without Netlify (so customers know their order was received)
+    const customerEmail = customerValues.EMAIL || ''
+    const businessName = customerValues.BUSINESS_NAME || normalizedSlug
+    if (customerEmail) {
+      await sendOrderConfirmationEmail(customerEmail, businessName, normalizedSlug, portalCredentials?.token, niche).catch((err) =>
+        console.error('[test-purchase] order confirmation email failed:', err),
+      )
+      log.push(`Order confirmation email sent to ${customerEmail}`)
     }
   }
 

@@ -69,6 +69,9 @@ export default async function SuccessPage({
     )
   }
 
+  const portalHref = result.slug ? `/portal?slug=${encodeURIComponent(result.slug)}` : '/portal'
+  const platformDomain = process.env.NEXT_PUBLIC_PLATFORM_DOMAIN || 'dailyclarity.org'
+
   return (
     <main className="min-h-screen pt-24 pb-16 container-hvac">
       <div className="glass-panel rounded-3xl p-12 max-w-4xl mx-auto">
@@ -80,6 +83,26 @@ export default async function SuccessPage({
             Your {result.planName ? <strong>{result.planName}</strong> : null} subscription is active.
             We&rsquo;re provisioning your website now and will email you when it&rsquo;s live.
           </p>
+
+          {/* Email notice */}
+          <div className="mt-6 inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-cyan-500/10 border border-cyan-400/30 text-cyan-100 text-sm">
+            <svg className="w-5 h-5 flex-shrink-0 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            <span>
+              <strong className="text-cyan-200">Check your email</strong> — your private portal access link will arrive shortly.
+            </span>
+          </div>
+
+          {/* Slug / site URL preview */}
+          {result.slug && (
+            <p className="mt-4 text-slate-300 text-sm">
+              Your site will be at:{' '}
+              <span className="font-mono text-cyan-200">
+                {result.slug}.{platformDomain}
+              </span>
+            </p>
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
@@ -110,8 +133,8 @@ export default async function SuccessPage({
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10">
-          <Link href="/portal" className="cta-button">
-            Go to portal
+          <Link href={portalHref} className="cta-button">
+            Go to My Dashboard
           </Link>
           <Link
             href="/preview-your-business"

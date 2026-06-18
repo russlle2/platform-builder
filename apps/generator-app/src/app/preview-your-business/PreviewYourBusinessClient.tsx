@@ -31,17 +31,13 @@ import type {
 import { computeClientReadiness } from '@/lib/client-readiness'
 import { ClientReadinessPanel } from '@/components/preview/ClientReadinessPanel'
 
+import { getNicheOptions } from '@/lib/templates/niche-meta'
+
 /* ================================================================== */
 /* Constants & helpers                                                 */
 /* ================================================================== */
 
-const NICHE_OPTIONS = [
-  { slug: 'aromatherapy', label: 'Aromatherapy', icon: '🌿' },
-  { slug: 'holistic_medicine', label: 'Holistic Medicine', icon: '🧘' },
-  { slug: 'private_practice_therapist', label: 'Private Practice Therapist', icon: '💬' },
-  { slug: 'sound_bath', label: 'Sound Bath', icon: '🔔' },
-  { slug: 'wellness_coach', label: 'Wellness Coach', icon: '✨' },
-]
+const NICHE_OPTIONS = getNicheOptions()
 
 type NicheExample = {
   businessName: string
@@ -326,6 +322,38 @@ export default function PreviewYourBusinessClient() {
     () => computeClientReadiness(businessInfo, stylePreferences),
     [businessInfo, stylePreferences],
   )
+
+  const handleInfoStepNext = useCallback(() => {
+    const { businessInfo: info, stylePreferences: prefs } = usePreviewStore.getState()
+
+    if (info.email && info.businessName) {
+      fetch('/api/intake/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: info.email,
+          name: info.ownerName,
+          phone: info.phone,
+          businessName: info.businessName,
+          niche: info.niche,
+        }),
+      }).catch(() => {})
+
+      fetch('/api/profile/save-draft', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: info.email,
+          profile: {
+            businessInfo: info,
+            stylePreferences: prefs,
+          },
+        }),
+      }).catch(() => {})
+    }
+
+    setStep('style')
+  }, [setStep])
 
   /* ================ Fetch templates for niche ================ */
   const fetchTemplatesForNiche = useCallback(async (niche: string) => {
@@ -701,7 +729,7 @@ export default function PreviewYourBusinessClient() {
           <InfoStep
             info={businessInfo}
             onChange={setBusinessInfo}
-            onNext={() => setStep('style')}
+            onNext={handleInfoStepNext}
           />
         )}
 

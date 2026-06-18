@@ -1,5 +1,5 @@
-import { getNiches, NICHE_META } from '@/lib/templates/niche-registry'
-import { NicheExampleGallery } from '@/components/niche/NicheExampleGallery'
+import { getFeaturedTemplatesForNiche, getNiches, NICHE_META } from '@/lib/templates/niche-registry'
+import { LiveTemplateShowcase } from '@/components/niche/LiveTemplateShowcase'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
@@ -63,6 +63,10 @@ type FunnelStep = { title: string; description: string }
 type NicheLandingContent = {
   headline: string
   subheadline: string
+  painPoints: string[]
+  trustBuilders: string[]
+  ctaHeadline: string
+  ctaUrgency: string
   benefits: string[]
   objection: string
   proof: string
@@ -84,9 +88,21 @@ const BASE_SECTIONS = [
 
 const nicheLandingContent: Record<string, NicheLandingContent> = {
   aromatherapy: {
-    headline: 'A website as refined as your blends.',
+    headline: 'Your aromatherapy practice deserves a website that smells as good as it feels.',
     subheadline:
-      'Aromatherapy sites built to explain your blends, earn scent-based trust, and guide visitors toward consultations, workshops, or product packages.',
+      'Stop losing clients to generic wellness pages. DailyClarity builds aromatherapy sites that explain your blends, earn scent-based trust, and guide visitors toward consultations, workshops, or product packages.',
+    painPoints: [
+      'Clients searching for aromatherapy near you land on competitors with clearer, more professional sites',
+      'Generic templates cannot capture your blend philosophy, safety guidance, or ritual language',
+      'Booking paths are buried — visitors leave before they understand how to work with you',
+    ],
+    trustBuilders: [
+      'Blend menus with notes, benefits, and use context built into every template',
+      'Safety and dilution guidance sections that show you take client care seriously',
+      'Workshop and consultation booking paths designed for scent-curious first-timers',
+    ],
+    ctaHeadline: 'See your aromatherapy site live in the next 10 minutes',
+    ctaUrgency: 'Your next client is searching right now — preview your site before they book elsewhere.',
     benefits: [
       'Blend menus with notes, benefits, and use context',
       'Workshop and consultation booking paths',
@@ -110,9 +126,21 @@ const nicheLandingContent: Record<string, NicheLandingContent> = {
     demoBlurb: 'Watch a Sol Botanica–style aromatherapy site get selected, filled with real business details, and previewed live.',
   },
   holistic_medicine: {
-    headline: 'Your healing practice deserves a professional presence.',
+    headline: 'Your integrative practice needs a website that earns trust before the first consult.',
     subheadline:
-      'Integrative health websites built to balance clinical credibility with holistic warmth — and guide visitors toward a consult with clear expectations.',
+      'Patients compare practitioners online long before they call. Build a holistic medicine site that balances clinical credibility with warmth — and routes ready visitors into consult booking.',
+    painPoints: [
+      'Prospective patients cannot tell what you treat or how your approach differs from conventional care',
+      'Skepticism spikes when your site looks like a generic wellness blog instead of a real practice',
+      'Intake and booking details are missing, so interested patients never make the leap to schedule',
+    ],
+    trustBuilders: [
+      'Conditions and modality pages written in plain language patients actually understand',
+      'Practitioner credentials presented without cold, corporate clinical tone',
+      'Consult booking blocks with clear first-visit expectations and intake guidance',
+    ],
+    ctaHeadline: 'Build the site that converts curious visitors into consult bookings',
+    ctaUrgency: 'Every day without a clear online presence, another patient chooses a competitor they found first.',
     benefits: [
       'Conditions and modality pages in plain language',
       'Consult booking and intake expectation blocks',
@@ -136,9 +164,21 @@ const nicheLandingContent: Record<string, NicheLandingContent> = {
     demoBlurb: 'See Root & Radiance–style integrative health content populate across pages in one guided build.',
   },
   private_practice_therapist: {
-    headline: "Your practice's online home should feel as welcoming as your office.",
+    headline: "Your therapy practice deserves a website as welcoming as your office.",
     subheadline:
-      'Therapy websites designed for emotional safety first — then specialties, session expectations, and a clear path to request a consult.',
+      'Many potential clients leave sites that feel cold, vague, or overwhelming. Build a therapy website designed for emotional safety first — then specialties, session expectations, and a clear consult path.',
+    painPoints: [
+      'Clients cannot find you when searching for therapists in your specialty and location',
+      'Your current site (or lack of one) does not convey the warmth and safety you provide in session',
+      'Fees, insurance, and telehealth details are unclear — so inquiries stall before they start',
+    ],
+    trustBuilders: [
+      'Calm, trust-forward layouts built specifically for private practice therapists',
+      'Specialty and approach pages that help the right clients self-select with confidence',
+      'First-session, fees, and telehealth blocks that reduce back-and-forth before booking',
+    ],
+    ctaHeadline: 'Give potential clients the clarity they need to reach out',
+    ctaUrgency: 'Someone in your area is looking for a therapist today — make sure they find you, not a directory listing.',
     benefits: [
       'Specialty and approach pages that reduce uncertainty',
       'First-session and telehealth expectation copy',
@@ -162,9 +202,21 @@ const nicheLandingContent: Record<string, NicheLandingContent> = {
     demoBlurb: 'Follow a Safe Harbor–style private practice site from template pick through consult-ready preview.',
   },
   sound_bath: {
-    headline: 'An online experience as immersive as your sessions.',
+    headline: 'Your sound healing practice deserves an online experience as immersive as your sessions.',
     subheadline:
-      'Sound healing websites that make the bowl experience tangible online — then fill group sessions, privates, and event inquiries.',
+      'Most visitors have never attended a sound bath. Your site must make the experience tangible, answer honest questions, and fill group sessions, privates, and event inquiries.',
+    painPoints: [
+      'People curious about sound healing cannot picture what happens in the room from your current online presence',
+      'Schedules, pricing, and what-to-expect details are hard to find — so interest fades before booking',
+      'Event and private inquiry paths are missing, leaving corporate and retreat organizers without a clear next step',
+    ],
+    trustBuilders: [
+      'Immersive visual language that helps visitors feel the atmosphere before they arrive',
+      'Contraindications and FAQ sections that show responsible, nervous-system-aware care',
+      'Group session, private event, and inquiry forms structured for organizers and first-timers alike',
+    ],
+    ctaHeadline: 'Fill your next sound bath before you announce it',
+    ctaUrgency: 'Workshops and private events book weeks ahead — get your site live while slots are still open.',
     benefits: [
       'Session types, pricing, and what-to-expect sections',
       'Contraindications and FAQ for nervous-system care',
@@ -188,9 +240,21 @@ const nicheLandingContent: Record<string, NicheLandingContent> = {
     demoBlurb: 'Watch a Resonance Room–style sound healing site come together with session and event pages.',
   },
   wellness_coach: {
-    headline: 'The website your coaching business actually deserves.',
+    headline: 'Your coaching business deserves a website that sells the transformation — not just the sessions.',
     subheadline:
-      'Coaching websites that clarify the transformation you deliver, showcase programs with credibility, and move visitors toward a discovery call.',
+      'Coaching is crowded online. Build a site that clarifies the outcome you deliver, showcases programs with credibility, and moves visitors toward a discovery call.',
+    painPoints: [
+      'Potential clients cannot tell what transformation you deliver or who you are best suited to coach',
+      'Generic wellness templates make you look like every other coach on Instagram',
+      'Discovery call and program booking paths are unclear — so interested leads never take the next step',
+    ],
+    trustBuilders: [
+      'Program and package pages with clear outcomes and container details (1:1, group, intensive)',
+      'Testimonial and transformation story blocks that reinforce realistic results',
+      'Discovery call CTAs designed for fit-checking, not hard-sell pressure',
+    ],
+    ctaHeadline: 'Launch the site that turns browsers into discovery calls',
+    ctaUrgency: 'Your ideal client is comparing coaches right now — show them why you are the right fit.',
     benefits: [
       'Program and package pages with clear outcomes',
       'Testimonial and transformation story blocks',
@@ -511,9 +575,17 @@ export async function generateMetadata({
   const { niche } = await params
   const meta = NICHE_META[niche]
   if (!meta) return { title: 'Templates' }
+  const builderLabel: Record<string, string> = {
+    aromatherapy: 'Aromatherapy Website Builder',
+    holistic_medicine: 'Holistic Medicine Website Builder',
+    private_practice_therapist: 'Therapist Website Builder',
+    sound_bath: 'Sound Bath Website Builder',
+    wellness_coach: 'Wellness Coach Website Builder',
+  }
+  const title = `${builderLabel[niche] || `${meta.label} Website Builder`} | DailyClarity`
   return {
-    title: `${meta.label} Website Templates`,
-    description: meta.description,
+    title,
+    description: `${meta.description} Preview real templates with your business details — no coding required.`,
   }
 }
 
@@ -535,6 +607,12 @@ export default async function NicheLandingPage({
   const templateCount = nicheInfo?.templateCount || 0
   const copy = nicheLandingContent[niche]
   const colors = accentMap[meta.accent] || accentMap.cyan
+  const featuredTemplates = getFeaturedTemplatesForNiche(niche).map((t) => ({
+    slug: t.slug,
+    name: t.name,
+    layoutFamily: t.layoutFamily,
+    snippet: t.snippet,
+  }))
   if (!copy) {
     notFound()
   }
@@ -591,7 +669,45 @@ export default async function NicheLandingPage({
           </div>
         </section>
 
-        <NicheExampleGallery niche={niche} nicheLabel={meta.label} headingClass={colors.heading} />
+        {/* Pain points */}
+        <section className="container-hvac py-12">
+          <div className="max-w-3xl mx-auto text-center mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold text-white">Sound familiar?</h2>
+          </div>
+          <ul className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
+            {copy.painPoints.map((point) => (
+              <li
+                key={point}
+                className={`rounded-xl px-5 py-4 border ${colors.border} bg-white/5 text-slate-300 text-sm leading-relaxed`}
+              >
+                {point}
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <LiveTemplateShowcase
+          niche={niche}
+          nicheLabel={meta.label}
+          templates={featuredTemplates}
+          totalCount={templateCount}
+          headingClass={colors.heading}
+        />
+
+        {/* Trust builders */}
+        <section className="container-hvac py-12">
+          <div className="glass-panel rounded-3xl p-8 md:p-10 max-w-4xl mx-auto space-y-6">
+            <h2 className="text-2xl md:text-3xl font-bold text-white">Built for {meta.label.toLowerCase()} professionals like you</h2>
+            <ul className="space-y-4">
+              {copy.trustBuilders.map((item) => (
+                <li key={item} className="flex items-start gap-3 text-slate-200">
+                  <span className={`mt-2 w-2 h-2 shrink-0 rounded-full ${colors.badge.split(' ')[0].replace('/15', '/60')}`} />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
 
         {/* Conversion job */}
         <section className="container-hvac py-16">
@@ -747,11 +863,11 @@ export default async function NicheLandingPage({
         {/* CTA */}
         <section className="container-hvac py-20">
           <div className="glass-panel rounded-3xl p-12 text-center">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Ready to see your {meta.label.toLowerCase()} website?
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              {copy.ctaHeadline}
             </h2>
             <p className="text-lg text-slate-200 mb-8 max-w-2xl mx-auto">
-              Add your business details once, preview {templateCount}+ layouts filled with your real info,
+              {copy.ctaUrgency} Add your business details once, preview {templateCount}+ layouts filled with your real info,
               and launch when you are ready. No commitment until you purchase.
             </p>
             <NicheActionLinks niche={niche} metaLabel={meta.label} colors={colors} layout="center" />

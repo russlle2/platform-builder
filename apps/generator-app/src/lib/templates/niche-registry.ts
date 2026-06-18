@@ -1,5 +1,8 @@
 import fs from 'fs'
 import path from 'path'
+import { NICHE_META, NICHE_SLUGS, getNicheSlugs } from './niche-meta'
+
+export { NICHE_META, NICHE_SLUGS, getNicheSlugs }
 
 /* ------------------------------------------------------------------ */
 /* Types                                                               */
@@ -22,6 +25,10 @@ export interface TemplateMeta {
   voiceFamily?: string
   /** Gallery ordering key (lower = earlier). Undefined sorts last. */
   order?: number
+  /** Featured on niche landing pages */
+  featured?: boolean
+  /** Showcase card order on niche landing (lower = earlier) */
+  showcaseOrder?: number
   pages: string[]
   dir: string          // absolute path on disk
   fields: TemplateField[]
@@ -36,65 +43,6 @@ export interface NicheInfo {
   icon: string
   accent: string
   templateCount: number
-}
-
-/* ------------------------------------------------------------------ */
-/* Niche metadata – one entry per qualifying niche (20+ templates)      */
-/* ------------------------------------------------------------------ */
-
-export const NICHE_META: Record<string, Omit<NicheInfo, 'slug' | 'templateCount'>> = {
-  aromatherapy: {
-    label: 'Aromatherapy',
-    description: 'Premium websites for aromatherapy practices, essential oil studios, and holistic scent healing businesses.',
-    icon: '🌿',
-    accent: 'emerald',
-  },
-  holistic_medicine: {
-    label: 'Holistic Medicine',
-    description: 'Professional websites for integrative health practitioners, naturopathic doctors, and holistic healing centers.',
-    icon: '🧘',
-    accent: 'violet',
-  },
-  // NOTE: Deactivated categories. A niche only becomes browsable when present in
-  // NICHE_META — removing/omitting an entry hides it from the gallery, landing pages,
-  // niche API, and static generation (its template folder stays on disk, untouched).
-  // Re-add an entry to reactivate. Currently deactivated: hvac, dental, injury_law (legal).
-  // hvac: {
-  //   label: 'HVAC',
-  //   description: 'Conversion-focused websites for heating, cooling, and air quality professionals.',
-  //   icon: '❄️',
-  //   accent: 'cyan',
-  // },
-  // dental: {
-  //   label: 'Dental',
-  //   description: 'Patient-focused websites for dental practices and orthodontic clinics.',
-  //   icon: '🦷',
-  //   accent: 'cyan',
-  // },
-  // injury_law: {
-  //   label: 'Personal Injury Law',
-  //   description: 'Conversion-focused websites for personal injury and accident law firms.',
-  //   icon: '⚖️',
-  //   accent: 'amber',
-  // },
-  private_practice_therapist: {
-    label: 'Private Practice Therapist',
-    description: 'Warm, trust-building websites for therapists, counselors, and mental health professionals in private practice.',
-    icon: '💬',
-    accent: 'amber',
-  },
-  sound_bath: {
-    label: 'Sound Bath',
-    description: 'Immersive, beautifully designed websites for sound healing practitioners and meditation studios.',
-    icon: '🔔',
-    accent: 'indigo',
-  },
-  wellness_coach: {
-    label: 'Wellness Coach',
-    description: 'Results-driven websites for health coaches, wellness consultants, and lifestyle transformation experts.',
-    icon: '✨',
-    accent: 'rose',
-  },
 }
 
 /* ------------------------------------------------------------------ */
@@ -311,6 +259,8 @@ function parseTemplateMeta(templateDir: string, niche: string): TemplateMeta | n
     layoutFamily: meta.layoutFamily,
     voiceFamily: meta.voiceFamily,
     order: typeof meta.order === 'number' ? meta.order : undefined,
+    featured: meta.featured === true,
+    showcaseOrder: typeof meta.showcaseOrder === 'number' ? meta.showcaseOrder : undefined,
     pages,
     dir: templateDir,
     fields,
@@ -370,6 +320,17 @@ export function getNiches(): NicheInfo[] {
 export function getTemplatesForNiche(nicheSlug: string): TemplateMeta[] {
   const cache = ensureCache()
   return cache.get(nicheSlug) || []
+}
+
+/** Featured templates for niche landing showcase, ordered by showcaseOrder */
+export function getFeaturedTemplatesForNiche(nicheSlug: string): TemplateMeta[] {
+  return getTemplatesForNiche(nicheSlug)
+    .filter((t) => t.featured)
+    .sort((a, b) => {
+      const ao = typeof a.showcaseOrder === 'number' ? a.showcaseOrder : Number.POSITIVE_INFINITY
+      const bo = typeof b.showcaseOrder === 'number' ? b.showcaseOrder : Number.POSITIVE_INFINITY
+      return ao - bo
+    })
 }
 
 /** Get a single template by niche + slug */

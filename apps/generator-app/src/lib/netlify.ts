@@ -277,6 +277,77 @@ export function getCustomDomainInstructions(customDomain: string, siteSubdomain:
   ].join('\n')
 }
 
+export interface DnsRecord {
+  type: 'CNAME' | 'A' | 'TXT'
+  name: string
+  value: string
+  ttl?: string
+  purpose: string
+}
+
+export function getDomainDnsRecords(
+  customDomain: string,
+  netlifyUrl: string,
+): {
+  records: DnsRecord[]
+  isApexDomain: boolean
+  hasWww: boolean
+  warnings: string[]
+} {
+  // Extract the bare hostname from the Netlify URL so we always emit a valid
+  // CNAME target (e.g. "amazing-abc.netlify.app" rather than the full https:// URL
+  // or the platform subdomain like "mysite.dailyclarity.org").
+  let netlifyHostname: string
+  try {
+    netlifyHostname = new URL(netlifyUrl).hostname
+  } catch {
+    // Already a bare hostname or fallback value — use as-is
+    netlifyHostname = netlifyUrl
+  }
+
+  const isApex = !customDomain.startsWith('www.')
+  const records: DnsRecord[] = []
+
+  if (customDomain.startsWith('www.') || !isApex) {
+    records.push({
+      type: 'CNAME',
+      name: 'www',
+      value: netlifyHostname,
+      ttl: '3600',
+      purpose: 'Points www subdomain to your DailyClarity site',
+    })
+  }
+
+  if (isApex) {
+    records.push({
+      type: 'A',
+      name: '@',
+      value: '75.2.60.5',
+      ttl: '3600',
+      purpose: 'Points root domain to Netlify load balancer',
+    })
+    records.push({
+      type: 'CNAME',
+      name: 'www',
+      value: netlifyHostname,
+      ttl: '3600',
+      purpose: 'Optional: also add www redirect',
+    })
+  }
+
+  return {
+    records,
+    isApexDomain: isApex,
+    hasWww: customDomain.startsWith('www.'),
+    warnings: isApex
+      ? [
+          'For root/apex domains, use an A record pointing to 75.2.60.5',
+          'If using Cloudflare, disable the orange proxy cloud during initial setup',
+        ]
+      : [],
+  }
+}
+
 /* ------------------------------------------------------------------ */
 /*  5.  Check certificate / SSL status                                */
 /* ------------------------------------------------------------------ */

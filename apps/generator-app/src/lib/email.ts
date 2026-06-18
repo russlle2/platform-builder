@@ -85,115 +85,216 @@ export async function sendOrderConfirmationEmail(
   businessName: string,
   slug: string,
   portalAccessToken?: string,
+  niche?: string,
 ) {
   const base =
     process.env.NEXT_PUBLIC_SITE_URL ||
     process.env.NEXT_PUBLIC_API_URL ||
     'https://dailyclarity.org'
+  const baseClean = base.replace(/\/$/, '')
   const portalUrl = portalAccessToken
-    ? `${base.replace(/\/$/, '')}/portal?slug=${encodeURIComponent(slug)}&token=${encodeURIComponent(portalAccessToken)}`
-    : `${base.replace(/\/$/, '')}/portal?slug=${encodeURIComponent(slug)}`
-  const platformDomain =
-    process.env.PLATFORM_DOMAIN ||
-    process.env.NEXT_PUBLIC_PLATFORM_DOMAIN ||
-    'dailyclarity.org'
-  const siteUrl = `https://${slug}.${platformDomain}`
+    ? `${baseClean}/portal?slug=${encodeURIComponent(slug)}&token=${encodeURIComponent(portalAccessToken)}`
+    : `${baseClean}/portal?slug=${encodeURIComponent(slug)}`
+  const nicheLabel = niche ? ` ${escapeHtml(niche)}` : ''
 
   return sendEmail({
     to,
-    subject: `Your order is confirmed — we're building your site now`,
-    htmlBody: `
-      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-        <h1 style="color: #1e293b;">Your order is confirmed, ${escapeHtml(businessName)}!</h1>
-        <p style="font-size: 1.1rem; color: #334155;">Thank you for your purchase. We've received your order and are provisioning your website now.</p>
-        
-        <div style="background: #f0f9ff; border-left: 4px solid #0891b2; padding: 16px; margin: 24px 0;">
-          <p style="margin: 0; color: #075985;"><strong>Your site will be live at:</strong></p>
-          <p style="margin: 8px 0 0 0; color: #0891b2;"><strong>${escapeHtml(siteUrl)}</strong></p>
-        </div>
+    subject: `Your DailyClarity website is being built now`,
+    htmlBody: `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background:#f1f5f9;font-family:Arial,Helvetica,sans-serif;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;">
+  <tr><td align="center" style="padding:40px 16px;">
+    <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
 
-        <h2 style="color: #334155; margin-top: 24px;">What's happening right now</h2>
-        <ul style="color: #475569;">
-          <li>Provisioning your subdomain at <strong>${escapeHtml(slug)}.${escapeHtml(platformDomain)}</strong></li>
-          <li>Deploying your customized template</li>
-          <li>Connecting your email and integrations</li>
-          <li>Setting up SSL certificates</li>
-        </ul>
-        
-        <p style="color: #475569; margin-top: 16px;"><strong>Expected time:</strong> Your site should be live within 48 hours. We'll send you a follow-up email as soon as it's ready!</p>
+      <!-- HEADER -->
+      <tr>
+        <td style="padding:28px 40px;background:#ffffff;border-bottom:1px solid #e2e8f0;text-align:center;">
+          <img src="https://dailyclarity.org/logo.png" alt="DailyClarity" width="44" height="44" style="display:block;margin:0 auto 10px;border-radius:8px;" />
+          <span style="font-size:18px;font-weight:700;color:#0f172a;letter-spacing:-0.01em;">DailyClarity</span>
+        </td>
+      </tr>
 
-        <p style="margin-top: 24px;">
-          <a href="${portalUrl}" style="display: inline-block; padding: 12px 32px; background: #0891b2; color: white; border-radius: 8px; text-decoration: none; font-weight: bold;">
-            Visit your portal
-          </a>
-        </p>
-        <p style="color: #64748b; font-size: 0.875rem; margin-top: 12px;">
-          ${portalAccessToken ? 'This link includes your private portal access token. Keep it safe!' : 'You can access your portal anytime with your email and slug.'}
-        </p>
-        <p style="color: #64748b; font-size: 0.875rem;">Questions? Reply to this email and we'll help.</p>
-      </div>
-    `,
+      <!-- HERO -->
+      <tr>
+        <td style="padding:48px 40px 44px;background:#0f172a;text-align:center;">
+          <h1 style="margin:0 0 14px;font-size:26px;font-weight:700;color:#ffffff;line-height:1.3;">Your website is being built, ${escapeHtml(businessName)}!</h1>
+          <p style="margin:0;font-size:15px;color:#94a3b8;line-height:1.6;">You'll hear from us within a few minutes when it's live.</p>
+        </td>
+      </tr>
+
+      <!-- STEPS -->
+      <tr>
+        <td style="padding:40px;background:#f8fafc;">
+          <p style="margin:0 0 24px;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;">What's happening now</p>
+
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+            <tr><td style="padding-bottom:20px;">
+              <table role="presentation" cellpadding="0" cellspacing="0"><tr>
+                <td style="width:36px;height:36px;min-width:36px;background:#0f172a;border-radius:50%;text-align:center;vertical-align:middle;font-size:13px;font-weight:700;color:#ffffff;">1</td>
+                <td style="padding-left:16px;vertical-align:top;">
+                  <p style="margin:0 0 3px;font-size:14px;font-weight:700;color:#1e293b;">We're building your site</p>
+                  <p style="margin:0;font-size:13px;color:#64748b;line-height:1.5;">Your custom${nicheLabel} website is being assembled now</p>
+                </td>
+              </tr></table>
+            </td></tr>
+            <tr><td style="padding-bottom:20px;">
+              <table role="presentation" cellpadding="0" cellspacing="0"><tr>
+                <td style="width:36px;height:36px;min-width:36px;background:#0f172a;border-radius:50%;text-align:center;vertical-align:middle;font-size:13px;font-weight:700;color:#ffffff;">2</td>
+                <td style="padding-left:16px;vertical-align:top;">
+                  <p style="margin:0 0 3px;font-size:14px;font-weight:700;color:#1e293b;">You'll get a link</p>
+                  <p style="margin:0;font-size:13px;color:#64748b;line-height:1.5;">Check your inbox — we'll email your live site URL and portal access link</p>
+                </td>
+              </tr></table>
+            </td></tr>
+            <tr><td>
+              <table role="presentation" cellpadding="0" cellspacing="0"><tr>
+                <td style="width:36px;height:36px;min-width:36px;background:#0f172a;border-radius:50%;text-align:center;vertical-align:middle;font-size:13px;font-weight:700;color:#ffffff;">3</td>
+                <td style="padding-left:16px;vertical-align:top;">
+                  <p style="margin:0 0 3px;font-size:14px;font-weight:700;color:#1e293b;">Edit anytime</p>
+                  <p style="margin:0;font-size:13px;color:#64748b;line-height:1.5;">Log in to your dashboard at dailyclarity.org/dashboard to make changes</p>
+                </td>
+              </tr></table>
+            </td></tr>
+          </table>
+        </td>
+      </tr>
+
+      <!-- CTA -->
+      <tr>
+        <td style="padding:36px 40px;text-align:center;background:#ffffff;">
+          <a href="${portalUrl}" style="display:inline-block;padding:14px 36px;background:#10b981;color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;border-radius:8px;">Go to My Dashboard</a>
+          <p style="margin:20px 0 0;font-size:13px;color:#94a3b8;">Or use your portal direct access link:<br>
+            <a href="${portalUrl}" style="color:#10b981;text-decoration:underline;word-break:break-all;">Access My Site Portal &rarr;</a>
+          </p>
+        </td>
+      </tr>
+
+      <!-- DOMAIN TIP -->
+      <tr>
+        <td style="padding:20px 40px;background:#f0fdf4;border-top:1px solid #d1fae5;border-bottom:1px solid #d1fae5;">
+          <p style="margin:0;font-size:13px;color:#065f46;line-height:1.6;">
+            <strong>Want a custom domain?</strong> Point your DNS and get a professional address.&nbsp;
+            <a href="https://dailyclarity.org/help/custom-domain" style="color:#059669;text-decoration:underline;">Learn how &rarr;</a>
+          </p>
+        </td>
+      </tr>
+
+      <!-- FOOTER -->
+      <tr>
+        <td style="padding:28px 40px;background:#f8fafc;text-align:center;">
+          <p style="margin:0 0 6px;font-size:12px;color:#64748b;">DailyClarity — Wellness websites for wellness professionals</p>
+          <p style="margin:0;font-size:12px;color:#94a3b8;">Questions? Reply to this email or visit <a href="https://dailyclarity.org/contact" style="color:#64748b;text-decoration:underline;">dailyclarity.org/contact</a></p>
+        </td>
+      </tr>
+
+    </table>
+  </td></tr>
+</table>
+</body></html>`,
   })
 }
 
 /**
  * Send website live notification when provisioning completes.
+ * @param siteUrlOverride – the actual deployed Netlify URL (e.g. https://amazing-abc.netlify.app)
  */
 export async function sendWebsiteLiveEmail(
   to: string,
   businessName: string,
   slug: string,
   portalAccessToken?: string,
+  siteUrlOverride?: string,
 ) {
   const base =
     process.env.NEXT_PUBLIC_SITE_URL ||
     process.env.NEXT_PUBLIC_API_URL ||
     'https://dailyclarity.org'
+  const baseClean = base.replace(/\/$/, '')
   const portalUrl = portalAccessToken
-    ? `${base.replace(/\/$/, '')}/portal?slug=${encodeURIComponent(slug)}&token=${encodeURIComponent(portalAccessToken)}`
-    : `${base.replace(/\/$/, '')}/portal?slug=${encodeURIComponent(slug)}`
+    ? `${baseClean}/portal?slug=${encodeURIComponent(slug)}&token=${encodeURIComponent(portalAccessToken)}`
+    : `${baseClean}/portal?slug=${encodeURIComponent(slug)}`
   const platformDomain =
     process.env.PLATFORM_DOMAIN ||
     process.env.NEXT_PUBLIC_PLATFORM_DOMAIN ||
     'dailyclarity.org'
-  const siteUrl = `https://${slug}.${platformDomain}`
+  const siteUrl = siteUrlOverride || `https://${slug}.${platformDomain}`
 
   return sendEmail({
     to,
     subject: `🎉 Your website is live!`,
-    htmlBody: `
-      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-        <h1 style="color: #059669;">🎉 Your website is live!</h1>
-        <p style="font-size: 1.1rem; color: #334155;">Congratulations, ${escapeHtml(businessName)}! Your website is now live and ready to start attracting clients.</p>
-        
-        <div style="background: #f0fdf4; border-left: 4px solid #059669; padding: 16px; margin: 24px 0;">
-          <p style="margin: 0; color: #166534;"><strong>Your website is now live at:</strong></p>
-          <p style="margin: 8px 0 0 0; color: #059669;"><a href="${siteUrl}" style="color: #059669; font-weight: bold; text-decoration: none; font-size: 1.05rem;">${escapeHtml(siteUrl)}</a></p>
-        </div>
+    htmlBody: `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background:#f1f5f9;font-family:Arial,Helvetica,sans-serif;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;">
+  <tr><td align="center" style="padding:40px 16px;">
+    <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
 
-        <h2 style="color: #334155; margin-top: 24px;">What you can do now</h2>
-        <ul style="color: #475569;">
-          <li>📱 View your live website</li>
-          <li>✏️ Edit your content anytime in the portal</li>
-          <li>📧 Set up custom domain (optional)</li>
-          <li>📊 Start tracking contact form submissions</li>
-        </ul>
+      <!-- HEADER -->
+      <tr>
+        <td style="padding:28px 40px;background:#ffffff;border-bottom:1px solid #e2e8f0;text-align:center;">
+          <img src="https://dailyclarity.org/logo.png" alt="DailyClarity" width="44" height="44" style="display:block;margin:0 auto 10px;border-radius:8px;" />
+          <span style="font-size:18px;font-weight:700;color:#0f172a;letter-spacing:-0.01em;">DailyClarity</span>
+        </td>
+      </tr>
 
-        <p style="margin-top: 24px;">
-          <a href="${siteUrl}" style="display: inline-block; padding: 12px 32px; background: #059669; color: white; border-radius: 8px; text-decoration: none; font-weight: bold; margin-right: 12px;">
-            View your website
-          </a>
-          <a href="${portalUrl}" style="display: inline-block; padding: 12px 32px; background: #0891b2; color: white; border-radius: 8px; text-decoration: none; font-weight: bold;">
-            Go to portal
-          </a>
-        </p>
-        
-        <p style="color: #64748b; font-size: 0.875rem; margin-top: 16px;">
-          Share your website URL with colleagues, add it to your email signature, and start promoting it!
-        </p>
-        <p style="color: #64748b; font-size: 0.875rem;">Need help? Reply to this email anytime.</p>
-      </div>
-    `,
+      <!-- HERO -->
+      <tr>
+        <td style="padding:48px 40px 44px;background:#0f172a;text-align:center;">
+          <h1 style="margin:0 0 14px;font-size:28px;font-weight:700;color:#ffffff;line-height:1.3;">🎉 Your website is live!</h1>
+          <p style="margin:0;font-size:15px;color:#94a3b8;line-height:1.6;">Congratulations, ${escapeHtml(businessName)}! Your site is ready for the world.</p>
+        </td>
+      </tr>
+
+      <!-- SITE URL CALLOUT -->
+      <tr>
+        <td style="padding:32px 40px;background:#f0fdf4;text-align:center;">
+          <p style="margin:0 0 8px;font-size:11px;font-weight:700;color:#065f46;text-transform:uppercase;letter-spacing:0.08em;">Your live site</p>
+          <a href="${escapeHtml(siteUrl)}" style="font-size:17px;font-weight:700;color:#059669;text-decoration:none;word-break:break-all;">${escapeHtml(siteUrl)}</a>
+        </td>
+      </tr>
+
+      <!-- PRIMARY CTA -->
+      <tr>
+        <td style="padding:32px 40px 20px;text-align:center;background:#ffffff;">
+          <a href="${escapeHtml(siteUrl)}" style="display:inline-block;padding:14px 36px;background:#10b981;color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;border-radius:8px;margin-bottom:12px;">Visit My Live Site</a>
+        </td>
+      </tr>
+
+      <!-- SECONDARY CTA -->
+      <tr>
+        <td style="padding:0 40px 32px;text-align:center;background:#ffffff;">
+          <a href="${portalUrl}" style="display:inline-block;padding:12px 28px;background:#0f172a;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;border-radius:8px;">Edit My Site</a>
+          <p style="margin:16px 0 0;font-size:13px;color:#94a3b8;">
+            Direct portal link: <a href="${portalUrl}" style="color:#10b981;text-decoration:underline;word-break:break-all;">Access My Site Portal &rarr;</a>
+          </p>
+        </td>
+      </tr>
+
+      <!-- DOMAIN TIP -->
+      <tr>
+        <td style="padding:20px 40px;background:#f0fdf4;border-top:1px solid #d1fae5;border-bottom:1px solid #d1fae5;">
+          <p style="margin:0;font-size:13px;color:#065f46;line-height:1.6;">
+            <strong>Want a custom domain?</strong> Point your DNS and get a professional address.&nbsp;
+            <a href="https://dailyclarity.org/help/custom-domain" style="color:#059669;text-decoration:underline;">Learn how &rarr;</a>
+          </p>
+        </td>
+      </tr>
+
+      <!-- FOOTER -->
+      <tr>
+        <td style="padding:28px 40px;background:#f8fafc;text-align:center;">
+          <p style="margin:0 0 6px;font-size:12px;color:#64748b;">DailyClarity — Wellness websites for wellness professionals</p>
+          <p style="margin:0;font-size:12px;color:#94a3b8;">Questions? Reply to this email or visit <a href="https://dailyclarity.org/contact" style="color:#64748b;text-decoration:underline;">dailyclarity.org/contact</a></p>
+        </td>
+      </tr>
+
+    </table>
+  </td></tr>
+</table>
+</body></html>`,
   })
 }
 

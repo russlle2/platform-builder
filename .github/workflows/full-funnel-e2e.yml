@@ -1,0 +1,31 @@
+name: Full Funnel E2E
+
+on:
+  workflow_dispatch:
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9.0.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm --filter @platform-builder/generator-app exec playwright install --with-deps chromium
+
+      - run: pnpm --filter @platform-builder/generator-app exec playwright test e2e/full-funnel.spec.ts
+        env:
+          BASE_URL: ${{ secrets.STAGING_BASE_URL }}
+          ENABLE_TEST_PURCHASE: 'true'
+          TEST_PURCHASE_ADMIN_SECRET: ${{ secrets.TEST_PURCHASE_ADMIN_SECRET }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}

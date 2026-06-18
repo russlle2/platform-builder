@@ -45,8 +45,10 @@ async function reserveSlug(supabase: SupabaseClient, slug: string) {
 /**
  * Fulfillment for a completed checkout: reserve slug, provision + deploy the
  * site, persist the portal record, queue the manual premium service for the
- * Security + Ads tier, and send transactional emails. All failures are caught
- * and recorded so the handler can still return 200 to Stripe.
+ * Security + Ads tier, and send transactional emails. Each major step is
+ * individually try/caught so a single failure cannot crash the whole handler.
+ * All failures are recorded in `partialFailures` and persisted on the portal
+ * record so they're visible without tailing logs.
  */
 async function handleCheckoutCompleted(
   stripe: Stripe,
@@ -61,6 +63,15 @@ async function handleCheckoutCompleted(
   const fontVariation = meta.fontVariation || 'original'
   const structureVariation = meta.structureVariation || 'original'
   const planKey = normalizePlanKey(meta.planKey) || 'basic'
+
+  // Normalize stripe_customer_id — Stripe types it as string | Customer | DeletedCustomer | null
+  const rawCustomer = session.customer
+  const stripeCustomerId =
+    typeof rawCustomer === 'string'
+      ? rawCustomer
+      : (rawCustomer as { id?: string } | null)?.id ?? null
+
+  const partialFailures: string[] = []
 
   // Reassemble chunked customer values + inline edits from metadata.
   const customerValues = unchunkJsonFromMetadata<Record<string, string>>('customerValues', meta, {})
@@ -84,11 +95,20 @@ async function handleCheckoutCompleted(
   }
 
   const normalizedSlug = normalizeSlug(slug)
-  await reserveSlug(supabase, slug)
+
+  // ── Step 1: Reserve slug ──────────────────────────────────────────────────
+  try {
+    await reserveSlug(supabase, slug)
+  } catch (slugErr) {
+    const msg = slugErr instanceof Error ? slugErr.message : 'Slug reservation failed'
+    console.error('[webhook] slug reservation failed:', slugErr)
+    partialFailures.push(`slug_reservation: ${msg}`)
+  }
 
   const portalCredentials = createPortalAccessCredentials()
   const portalAccessToken = portalCredentials?.token
 
+  // ── Step 2: Image migration ───────────────────────────────────────────────
   let imageMigrationError: string | undefined
   if (imageOwner && imageOwner.startsWith('draft-') && normalizedSlug) {
     try {
@@ -97,9 +117,11 @@ async function handleCheckoutCompleted(
     } catch (migrateErr) {
       imageMigrationError = migrateErr instanceof Error ? migrateErr.message : 'Image migration failed'
       console.error('[webhook] image migration failed:', migrateErr)
+      partialFailures.push(`image_migration: ${imageMigrationError}`)
     }
   }
 
+  // ── Step 3: Netlify provisioning ──────────────────────────────────────────
   let netlifySiteId: string | undefined
   let netlifySiteUrl: string | undefined
   let provisioningError: string | undefined
@@ -127,6 +149,7 @@ async function handleCheckoutCompleted(
           }
         } catch (deployErr) {
           console.error('[webhook] template deploy failed:', deployErr)
+          partialFailures.push(`template_deploy: ${deployErr instanceof Error ? deployErr.message : String(deployErr)}`)
         }
       }
 
@@ -134,21 +157,28 @@ async function handleCheckoutCompleted(
       netlifySiteUrl = site.siteUrl
       provisioningSucceeded = true
 
-      await supabase
-        .from('site_slugs')
-        .update({ status: 'provisioned', netlify_site_id: site.siteId, site_url: site.siteUrl })
-        .eq('slug', normalizedSlug)
+      try {
+        await supabase
+          .from('site_slugs')
+          .update({ status: 'provisioned', netlify_site_id: site.siteId, site_url: site.siteUrl })
+          .eq('slug', normalizedSlug)
+      } catch (slugUpdateErr) {
+        console.error('[webhook] site_slugs update after provisioning failed:', slugUpdateErr)
+        partialFailures.push(`site_slugs_update: ${slugUpdateErr instanceof Error ? slugUpdateErr.message : String(slugUpdateErr)}`)
+      }
     } catch (err) {
       provisioningError = err instanceof Error ? err.message : 'Site provisioning failed'
       console.error('[webhook] site provisioning failed:', err)
+      partialFailures.push(`provisioning: ${provisioningError}`)
     }
   } else {
     // Netlify not configured: provisioning is pending manual/automated setup.
     provisioningError = undefined
   }
 
-  // Persist the portal record. Status is only "active" when the site actually
-  // deployed; otherwise it is pending (Netlify unconfigured) or failed.
+  // ── Step 4: Persist portal record ────────────────────────────────────────
+  // Status is only "active" when the site actually deployed; otherwise it is
+  // pending (Netlify unconfigured) or failed.
   const status = provisioningError
     ? 'provisioning_failed'
     : provisioningSucceeded
@@ -157,38 +187,45 @@ async function handleCheckoutCompleted(
         ? 'provisioning_failed'
         : 'pending'
 
-  await supabase
-    .from('portal_sites')
-    .upsert(
-      {
-        slug: normalizedSlug,
-        status,
-        portal_token_hash: portalCredentials?.hash ?? null,
-        data: {
-          niche,
-          template: templateSlug,
-          colorScheme,
-          fontVariation,
-          structureVariation,
-          customerValues,
-          inlineEdits,
-          imageSwaps,
-          imageOwner: normalizedSlug || imageOwner,
-          email: customerEmail,
-          netlify_site_id: netlifySiteId,
-          site_url: netlifySiteUrl,
-          plan: planKey,
-          managed_service: isManagedPlan(planKey),
-          provisioning_error: provisioningError,
-          image_migration_error: imageMigrationError,
-          provisioning_succeeded: provisioningSucceeded,
+  try {
+    await supabase
+      .from('portal_sites')
+      .upsert(
+        {
+          slug: normalizedSlug,
+          status,
+          portal_token_hash: portalCredentials?.hash ?? null,
+          data: {
+            niche,
+            template: templateSlug,
+            colorScheme,
+            fontVariation,
+            structureVariation,
+            customerValues,
+            inlineEdits,
+            imageSwaps,
+            imageOwner: normalizedSlug || imageOwner,
+            email: customerEmail,
+            netlify_site_id: netlifySiteId,
+            site_url: netlifySiteUrl,
+            plan: planKey,
+            managed_service: isManagedPlan(planKey),
+            provisioning_error: provisioningError,
+            image_migration_error: imageMigrationError,
+            provisioning_succeeded: provisioningSucceeded,
+            stripe_customer_id: stripeCustomerId,
+            partial_failures: partialFailures,
+          },
         },
-      },
-      { onConflict: 'slug' },
-    )
+        { onConflict: 'slug' },
+      )
+  } catch (upsertErr) {
+    const msg = upsertErr instanceof Error ? upsertErr.message : 'Portal record upsert failed'
+    console.error('[webhook] portal_sites upsert failed:', upsertErr)
+    partialFailures.push(`portal_upsert: ${msg}`)
+  }
 
-  // Security + Ads ($80): queue the manually delivered premium service and
-  // alert the platform owner. Everything else is automated above.
+  // ── Step 5: Manual premium service (Security + Ads) ──────────────────────
   if (isManagedPlan(planKey)) {
     try {
       await supabase.from('manual_service_tasks').insert({
@@ -216,13 +253,15 @@ async function handleCheckoutCompleted(
     }
   }
 
-  // Transactional emails to the customer.
+  // ── Step 6: Transactional emails ─────────────────────────────────────────
+  // Email failures must never crash the webhook — Postmark outages are
+  // non-fatal. Both calls already have .catch() guards.
   if (customerEmail) {
-    await sendOrderConfirmationEmail(customerEmail, businessName, slug, portalAccessToken).catch((err) =>
+    await sendOrderConfirmationEmail(customerEmail, businessName, slug, portalAccessToken, niche).catch((err) =>
       console.error('[webhook] order confirmation email failed:', err),
     )
     if (provisioningSucceeded) {
-      await sendWebsiteLiveEmail(customerEmail, businessName, slug, portalAccessToken).catch((err) =>
+      await sendWebsiteLiveEmail(customerEmail, businessName, slug, portalAccessToken, netlifySiteUrl).catch((err) =>
         console.error('[webhook] website live email failed:', err),
       )
     }

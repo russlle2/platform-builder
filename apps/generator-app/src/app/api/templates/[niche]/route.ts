@@ -13,6 +13,7 @@ export async function GET(
   const limit = Math.min(50, Math.max(1, parseInt(searchParams.get('limit') || '12')))
   const seed = parseInt(searchParams.get('seed') || '0')
   const all = searchParams.get('all') === 'true'
+  const featuredOnly = searchParams.get('featured') === 'true'
 
   const niches = getNiches()
   const nicheInfo = niches.find((n) => n.slug === niche)
@@ -20,16 +21,29 @@ export async function GET(
     return NextResponse.json({ error: 'Niche not found' }, { status: 404 })
   }
 
-  const templates = getTemplatesForNiche(niche).map((t) => ({
+  let templates = getTemplatesForNiche(niche).map((t) => ({
     slug: t.slug,
     name: t.name,
     nicheSlug: niche,
     layoutFamily: t.layoutFamily,
     voiceFamily: t.voiceFamily,
+    featured: t.featured ?? false,
+    showcaseOrder: t.showcaseOrder,
     pages: t.pages,
     snippet: t.snippet,
     fieldCount: t.fields.length,
   }))
+
+  if (featuredOnly) {
+    templates = templates
+      .filter((t) => t.featured)
+      .sort((a, b) => {
+        const ao = typeof a.showcaseOrder === 'number' ? a.showcaseOrder : Number.POSITIVE_INFINITY
+        const bo = typeof b.showcaseOrder === 'number' ? b.showcaseOrder : Number.POSITIVE_INFINITY
+        return ao - bo
+      })
+    return NextResponse.json({ niche: nicheInfo, templates, total: templates.length })
+  }
 
   if (all) {
     return NextResponse.json({ niche: nicheInfo, templates, total: templates.length })

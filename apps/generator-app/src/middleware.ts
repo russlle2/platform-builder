@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { updateSession } from '@/lib/supabase/middleware'
 
 /** Public template catalog routes redirect to intake; portal edit keeps ?portalSlug= */
 function templateCatalogRedirect(req: NextRequest): NextResponse | null {
@@ -33,20 +34,29 @@ function templateCatalogRedirect(req: NextRequest): NextResponse | null {
   return null
 }
 
-export default function middleware(req: NextRequest) {
+export default async function middleware(req: NextRequest) {
   const catalogRedirect = templateCatalogRedirect(req)
   if (catalogRedirect) return catalogRedirect
 
-  const res = NextResponse.next()
+  // Refresh the Supabase auth session on every request (required for @supabase/ssr).
+  const { supabaseResponse, user } = await updateSession(req)
 
-  res.headers.set('X-Frame-Options', 'DENY')
-  res.headers.set('X-Content-Type-Options', 'nosniff')
-  res.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
-  res.headers.set(
+  // Protect /dashboard: unauthenticated visitors are sent to /login.
+  if (req.nextUrl.pathname.startsWith('/dashboard') && !user) {
+    const loginUrl = new URL('/login', req.url)
+    loginUrl.searchParams.set('next', req.nextUrl.pathname)
+    return NextResponse.redirect(loginUrl)
+  }
+
+  // Apply security headers to the final response.
+  supabaseResponse.headers.set('X-Frame-Options', 'DENY')
+  supabaseResponse.headers.set('X-Content-Type-Options', 'nosniff')
+  supabaseResponse.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+  supabaseResponse.headers.set(
     'Permissions-Policy',
     'camera=(), microphone=(), geolocation=()'
   )
-  res.headers.set(
+  supabaseResponse.headers.set(
     'Content-Security-Policy',
     [
       "default-src 'self'",
@@ -60,7 +70,7 @@ export default function middleware(req: NextRequest) {
     ].join('; ')
   )
 
-  return res
+  return supabaseResponse
 }
 
 export const config = {

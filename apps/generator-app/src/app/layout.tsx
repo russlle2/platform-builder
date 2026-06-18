@@ -46,11 +46,30 @@ export const metadata: Metadata = {
     type: 'website',
     siteName: 'DailyClarity',
     url: process.env.NEXT_PUBLIC_SITE_URL || 'https://dailyclarity.org',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'DailyClarity — Professional Website Templates for Service Businesses',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    images: ['/og-image.png'],
+  },
+  icons: {
+    icon: '/icon.png',
+    apple: '/icon.png',
   },
   robots: {
     index: true,
     follow: true,
     googleBot: { index: true, follow: true },
+  },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
   },
   category: 'business',
   formatDetection: { telephone: false },

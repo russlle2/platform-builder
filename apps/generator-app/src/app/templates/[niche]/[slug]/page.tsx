@@ -19,6 +19,7 @@ import {
   saveImageSwaps,
 } from '@/lib/image-swaps'
 import { CustomerImageLibrary } from '@/components/CustomerImageLibrary'
+import { getStoredPortalToken } from '@/lib/portal-token-client'
 
 interface TemplateField {
   name: string
@@ -431,18 +432,25 @@ export default function TemplateCustomizePage({
     if (!portalSlug) return
     setPublishStatus('saving')
     try {
-      const res = await fetch('/api/portal/site', {
+      // Use the customer portal API (portal-token authenticated) instead of
+      // the admin-only /api/portal/site route.
+      const token = getStoredPortalToken(portalSlug) || ''
+      const res = await fetch('/api/portal/customer', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'x-portal-token': token } : {}),
+        },
         body: JSON.stringify({
           slug: portalSlug,
+          token,
           customerValues: values,
           inlineEdits,
           imageSwaps: imageSwapsRef.current,
         }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Publish failed')
+      if (!res.ok) throw new Error((data as { error?: string }).error || 'Publish failed')
       setPublishStatus('done')
     } catch {
       setPublishStatus('error')
