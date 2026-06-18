@@ -1,7 +1,7 @@
 [build]
   # Monorepo: install from repo root so workspace:* deps resolve (do not set base to apps/generator-app).
   base = "/"
-  command = "corepack enable && corepack prepare pnpm@9.0.0 --activate && pnpm install --frozen-lockfile && pnpm run generator:build"
+  command = "corepack enable && pnpm install --frozen-lockfile && pnpm run generator:build"
   publish = "apps/generator-app/.next"
 
 [build.environment]
@@ -12,14 +12,11 @@
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-# Context-specific commands MUST also include corepack activation so pnpm is
-# available — without this, Netlify production builds fail with
-# "'pnpm' is not recognized" because the base [build] command is overridden.
 [context.production]
-  command = "corepack enable && corepack prepare pnpm@9.0.0 --activate && pnpm install --frozen-lockfile && pnpm run generator:build"
+  command = "corepack enable && pnpm install --frozen-lockfile && pnpm run generator:build"
 
 [context.deploy-preview]
-  command = "corepack enable && corepack prepare pnpm@9.0.0 --activate && pnpm install --frozen-lockfile && pnpm run generator:build"
+  command = "corepack enable && pnpm install --frozen-lockfile && pnpm run generator:build"
 
 [context.branch-deploy]
-  command = "corepack enable && corepack prepare pnpm@9.0.0 --activate && pnpm install --frozen-lockfile && pnpm run generator:build"
+  command = "corepack enable && pnpm install --frozen-lockfile && pnpm run generator:build"
