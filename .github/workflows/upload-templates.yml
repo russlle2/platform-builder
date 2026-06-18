@@ -23,8 +23,11 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install @netlify/blobs
-        run: npm install @netlify/blobs
+      - name: Enable pnpm via corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Upload templates
         working-directory: apps/generator-app
