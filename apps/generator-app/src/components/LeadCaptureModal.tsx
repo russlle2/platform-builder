@@ -5,6 +5,11 @@ import { track } from '@/lib/analytics'
 import { validateLeadContact } from '@/lib/lead-validation'
 import { usePathname } from 'next/navigation'
 
+function isVideoPlaying(): boolean {
+  const videos = document.querySelectorAll('video')
+  return Array.from(videos).some(v => !v.paused && !v.ended)
+}
+
 export default function LeadCaptureModal() {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
@@ -23,13 +28,26 @@ export default function LeadCaptureModal() {
       return
     }
 
-    const timer = setTimeout(() => {
-      setIsOpen(true)
-      sessionStorage.setItem('lead_modal_seen', 'true')
-    }, 25000)
+    function tryOpen() {
+      if (sessionStorage.getItem('lead_modal_seen')) return
+      if (isVideoPlaying()) return 25_000
+      return 0
+    }
+
+    let timerId: ReturnType<typeof setTimeout>
+    function scheduleCheck() {
+      timerId = setTimeout(() => {
+        const delay = tryOpen()
+        if (delay === undefined) return
+        if (delay > 0) { scheduleCheck(); return }
+        setIsOpen(true)
+        sessionStorage.setItem('lead_modal_seen', 'true')
+      }, 25_000)
+    }
+    scheduleCheck()
 
     const handleExit = (event: MouseEvent) => {
-      if (event.clientY <= 0 && !sessionStorage.getItem('lead_modal_seen')) {
+      if (event.clientY <= 0 && !sessionStorage.getItem('lead_modal_seen') && !isVideoPlaying()) {
         setIsOpen(true)
         sessionStorage.setItem('lead_modal_seen', 'true')
       }
@@ -38,7 +56,7 @@ export default function LeadCaptureModal() {
     window.addEventListener('mouseout', handleExit)
 
     return () => {
-      clearTimeout(timer)
+      clearTimeout(timerId)
       window.removeEventListener('mouseout', handleExit)
     }
   }, [pathname])

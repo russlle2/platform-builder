@@ -730,6 +730,7 @@ export default function PreviewYourBusinessClient() {
             info={businessInfo}
             onChange={setBusinessInfo}
             onNext={handleInfoStepNext}
+            nicheFromUrl={nichePrefill}
           />
         )}
 
@@ -833,11 +834,14 @@ function InfoStep({
   info,
   onChange,
   onNext,
+  nicheFromUrl,
 }: {
   info: BusinessInfo
   onChange: (info: Partial<BusinessInfo>) => void
   onNext: () => void
+  nicheFromUrl?: string | null
 }) {
+  const nicheIsLocked = !!(nicheFromUrl && NICHE_OPTIONS.some((n) => n.slug === nicheFromUrl))
   const [errors, setErrors] = useState<Partial<Record<keyof BusinessInfo, string>>>({})
 
   const validate = () => {
@@ -868,29 +872,41 @@ function InfoStep({
       </div>
 
       <div className="glass-panel rounded-2xl p-8 space-y-6">
-        {/* Niche selector */}
+        {/* Niche selector -- hidden when arriving from a niche landing page */}
         <div>
-          <label className="block text-sm font-semibold text-slate-200 mb-3">
-            What industry are you in? <span className="text-red-400">*</span>
-          </label>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {NICHE_OPTIONS.map((n) => (
-              <button
-                key={n.slug}
-                type="button"
-                onClick={() => onChange({ niche: n.slug })}
-                className={`p-4 rounded-xl border text-left transition-all ${
-                  info.niche === n.slug
-                    ? 'border-cyan-400 bg-cyan-500/15 text-white ring-2 ring-cyan-400/40'
-                    : 'border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 hover:border-white/20'
-                }`}
-              >
-                <span className="text-2xl block mb-1">{n.icon}</span>
-                <span className="text-sm font-semibold">{n.label}</span>
-              </button>
-            ))}
-          </div>
-          {errors.niche && <p className="text-red-400 text-sm mt-1">{errors.niche}</p>}
+          {nicheIsLocked ? (
+            <div className="flex items-center gap-3 p-4 rounded-xl border border-cyan-400/30 bg-cyan-500/10">
+              <span className="text-2xl">{NICHE_OPTIONS.find((n) => n.slug === info.niche)?.icon}</span>
+              <div>
+                <p className="text-xs text-slate-400 uppercase tracking-wide">Industry</p>
+                <p className="text-white font-semibold">{NICHE_OPTIONS.find((n) => n.slug === info.niche)?.label}</p>
+              </div>
+            </div>
+          ) : (
+            <>
+              <label className="block text-sm font-semibold text-slate-200 mb-3">
+                What industry are you in? <span className="text-red-400">*</span>
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {NICHE_OPTIONS.map((n) => (
+                  <button
+                    key={n.slug}
+                    type="button"
+                    onClick={() => onChange({ niche: n.slug })}
+                    className={`p-4 rounded-xl border text-left transition-all ${
+                      info.niche === n.slug
+                        ? 'border-cyan-400 bg-cyan-500/15 text-white ring-2 ring-cyan-400/40'
+                        : 'border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 hover:border-white/20'
+                    }`}
+                  >
+                    <span className="text-2xl block mb-1">{n.icon}</span>
+                    <span className="text-sm font-semibold">{n.label}</span>
+                  </button>
+                ))}
+              </div>
+              {errors.niche && <p className="text-red-400 text-sm mt-1">{errors.niche}</p>}
+            </>
+          )}
         </div>
 
         {/* Core fields */}
