@@ -13,6 +13,7 @@ const nicheAccentClasses: Record<string, { border: string; text: string; bg: str
 export default async function HomePage() {
   const niches = await getNiches()
   const totalTemplates = niches.reduce((sum, n) => sum + n.templateCount, 0)
+  const hasTemplateCounts = totalTemplates > 0
 
   return (
     <main className="relative min-h-screen pt-24 pb-20 overflow-hidden">
@@ -109,7 +110,9 @@ export default async function HomePage() {
                 </div>
                 <div className="stat-card">
                   <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Templates</p>
-                  <p className="text-3xl font-bold text-white">{totalTemplates}+</p>
+                  <p className="text-3xl font-bold text-white">
+                    {hasTemplateCounts ? `${totalTemplates}+` : 'Curated'}
+                  </p>
                 </div>
               </div>
             </div>
@@ -196,7 +199,7 @@ export default async function HomePage() {
                   <div className="flex items-center justify-between">
                     <span className="text-4xl">{niche.icon}</span>
                     <span className={`text-xs font-bold px-3 py-1 rounded-full ${accent.bg} ${accent.text} border ${accent.border}`}>
-                      {niche.templateCount} templates
+                      {niche.templateCount > 0 ? `${niche.templateCount} templates` : 'Multiple styles'}
                     </span>
                   </div>
                   <h3 className="text-2xl font-bold text-bright-white group-hover:scale-[1.01] transition-transform">
