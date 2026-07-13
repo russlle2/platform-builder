@@ -10,15 +10,15 @@ import {
 } from '@/lib/seo'
 
 export const metadata: Metadata = {
-  title: 'Pricing — Launch from $20/month with a 7-day free trial',
+  title: 'Pricing — Plans from $20/month or a $500 custom website',
   description:
-    'Simple monthly pricing for a fully hosted business website. Basic Services at $20/month or Growth Partner at $80/month, each with a 7-day free trial. ' +
+    'Choose a hosted website plan at $20 or $80 per month with a 7-day free trial, or submit a detailed brief for a one-time $500 custom website build. ' +
     SITE_DESCRIPTION,
   alternates: { canonical: '/pricing' },
   openGraph: {
     title: 'Pricing | DailyClarity',
     description:
-      'Launch a hosted business website from $20/month. Includes email, database, and Stripe payments, plus a 7-day free trial.',
+      'Launch from $20/month or purchase a one-time $500 custom website build through secure Stripe Checkout.',
     url: '/pricing',
     type: 'website',
   },

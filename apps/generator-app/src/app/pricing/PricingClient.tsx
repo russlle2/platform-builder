@@ -24,6 +24,7 @@ export default function PricingClient() {
   const [checkoutError, setCheckoutError] = useState<string | null>(null)
   const [trialDays, setTrialDays] = useState(7)
   const [isSubmitting, setIsSubmitting] = useState<string | null>(null)
+  const [checkoutReady, setCheckoutReady] = useState(false)
   const [testRunning, setTestRunning] = useState(false)
   const [testResult, setTestResult] = useState<{ success: boolean; slug: string; siteUrl: string | null; log: string[] } | null>(null)
   const searchParams = useSearchParams()
@@ -34,9 +35,8 @@ export default function PricingClient() {
   const fontVariation = useMemo(() => searchParams.get('font') || 'original', [searchParams])
   const structureVariation = useMemo(() => searchParams.get('structure') || 'original', [searchParams])
 
-  // The wizard/template pages pass slug/template/niche/style via URL. The
-  // profile-review round-trip strips them, so we persist them to sessionStorage
-  // on arrival and always read from there at checkout time.
+  // The wizard/template pages pass slug/template/niche/style via URL. Persist
+  // that context so a customer can revisit pricing without losing their build.
   const readCheckoutContext = useCallback((): CheckoutContext => {
     let stored: Partial<CheckoutContext> = {}
     try {
@@ -57,7 +57,6 @@ export default function PricingClient() {
     try {
       track('checkout_start', { planKey })
       setCheckoutError(null)
-      setIsSubmitting(planKey)
 
       // Retrieve saved customer values + inline edits from sessionStorage
       let customerValues: Record<string, string> = {}
@@ -74,26 +73,29 @@ export default function PricingClient() {
         imageOwner = sessionStorage.getItem('pb_image_owner') || ''
       } catch { /* ignore */ }
 
-      // Validate required profile fields before checkout
+      const ctx = readCheckoutContext()
+
+      // A paid order must include enough information to provision a real site.
+      // Send direct pricing visitors into the preview flow instead of failing
+      // after they click a button that appears to start checkout.
       const businessName = (customerValues.BUSINESS_NAME || '').trim()
       const email = (customerValues.EMAIL || '').trim()
-      if (!businessName) {
-        throw new Error('Business name is required. Please go back and fill in your details.')
-      }
-      if (!email) {
-        throw new Error('Email address is required. Please go back and fill in your details.')
-      }
-
-      // Check if profile has been reviewed. If not, redirect to review page.
-      const profileReviewed = sessionStorage.getItem('pb_profile_reviewed') === 'true'
-      if (!profileReviewed) {
-        window.location.href = `/pricing/review-profile?plan=${encodeURIComponent(planKey)}`
+      if (!businessName || !email || !ctx.template || !ctx.niche) {
+        sessionStorage.setItem('pb_selected_plan', planKey)
+        track('checkout_prerequisite_redirect', {
+          planKey,
+          hasBusinessName: Boolean(businessName),
+          hasEmail: Boolean(email),
+          hasTemplate: Boolean(ctx.template),
+          hasNiche: Boolean(ctx.niche),
+        })
+        window.location.assign(`/preview-your-business?plan=${encodeURIComponent(planKey)}`)
         return
       }
-      // One-shot: clear the flag so a later manual click re-confirms the profile.
-      sessionStorage.removeItem('pb_profile_reviewed')
 
-      const ctx = readCheckoutContext()
+      // The customer already reviewed these details in the live preview. Go
+      // directly to Stripe instead of inserting another confirmation page.
+      setIsSubmitting(planKey)
       const response = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -134,8 +136,7 @@ export default function PricingClient() {
   useEffect(() => {
     track('pricing_view', {})
 
-    // Persist any wizard context that arrived via URL so it survives the
-    // profile-review redirect (which only carries ?plan=).
+    // Persist any wizard context that arrived via URL.
     if (template || niche || slug) {
       try {
         sessionStorage.setItem(
@@ -152,6 +153,20 @@ export default function PricingClient() {
       } catch { /* ignore */ }
     }
 
+    try {
+      const saved = sessionStorage.getItem('pb_template_values')
+      const customerValues = saved ? JSON.parse(saved) as Record<string, string> : {}
+      const ctx = readCheckoutContext()
+      setCheckoutReady(Boolean(
+        customerValues.BUSINESS_NAME?.trim() &&
+        customerValues.EMAIL?.trim() &&
+        ctx.template &&
+        ctx.niche
+      ))
+    } catch {
+      setCheckoutReady(false)
+    }
+
     fetch('/api/platform/config')
       .then((res) => res.json())
       .then((data) => {
@@ -160,17 +175,7 @@ export default function PricingClient() {
         }
       })
       .catch(() => {})
-  }, [template, niche, slug, colorScheme, fontVariation, structureVariation])
-
-  // Auto-resume checkout after the customer confirms their profile.
-  useEffect(() => {
-    const reviewed = searchParams.get('reviewed') === 'true'
-    const plan = searchParams.get('plan')
-    if (reviewed && plan && sessionStorage.getItem('pb_profile_reviewed') === 'true') {
-      startCheckout(plan)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [template, niche, slug, colorScheme, fontVariation, structureVariation, readCheckoutContext])
 
   return (
     <main className="relative min-h-screen pt-24 pb-20">
@@ -244,6 +249,7 @@ export default function PricingClient() {
                 trialDays={trialDays}
                 onCheckout={() => startCheckout(tier.key)}
                 isSubmitting={isSubmitting === tier.key}
+                checkoutReady={checkoutReady}
               />
             ))}
           </div>
@@ -261,6 +267,41 @@ export default function PricingClient() {
               Contact us before checkout
             </Link>
           </p>
+        </section>
+
+        <section id="custom-build" className="container-hvac pb-16">
+          <div className="rounded-3xl border border-amber-300/35 bg-gradient-to-br from-amber-500/15 via-slate-900/80 to-cyan-500/10 p-8 md:p-10">
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-8 items-center">
+              <div>
+                <span className="inline-flex px-3 py-1 rounded-full bg-amber-400/15 border border-amber-300/30 text-amber-200 text-xs font-bold uppercase tracking-[0.2em]">
+                  One-time custom build
+                </span>
+                <h2 className="text-3xl md:text-4xl font-bold text-white mt-5">
+                  Want a website designed around your exact instructions?
+                </h2>
+                <p className="text-slate-200 mt-4 max-w-3xl leading-relaxed">
+                  Describe how your site should look and function in detail. Your brief is saved,
+                  you make one immediate $500 Stripe payment, and the request is delivered to our
+                  manual custom-build queue.
+                </p>
+                <div className="flex flex-wrap gap-x-6 gap-y-2 mt-5 text-sm text-slate-300">
+                  <span>Detailed design brief</span>
+                  <span>Custom functionality request</span>
+                  <span>No monthly plan required</span>
+                </div>
+              </div>
+              <div className="lg:text-right min-w-[230px]">
+                <div className="flex lg:justify-end items-baseline gap-2">
+                  <span className="text-5xl font-bold text-white">$500</span>
+                  <span className="text-slate-300">one time</span>
+                </div>
+                <p className="text-sm text-amber-200 mt-2 mb-5">Charged immediately</p>
+                <Link href="/custom-build" className="cta-button inline-flex justify-center">
+                  Start my custom build
+                </Link>
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* ═══ DEV-ONLY: Test Purchase ═══ */}
@@ -444,6 +485,10 @@ export default function PricingClient() {
                 answer="Everything in Basic is still fully automated. On top of that, we personally run one done-for-you service: we set up and manage your ad and promo campaigns, and we harden and monitor your site's security and uptime. It's hands-on work delivered by our team — the rest of the platform stays self-serve."
               />
               <FAQItem
+                question="How does the $500 custom website build work?"
+                answer="Choose Custom Website Build, submit a detailed description of the appearance and functionality you want, and complete one immediate $500 Stripe payment. Your full brief is saved before checkout and delivered to our manual build queue after Stripe confirms payment. We then review the scope and contact you by email with next steps."
+              />
+              <FAQItem
                 question="How fast can I launch?"
                 answer="Most builds go live within 48 hours once your intake is complete and your subscription is active."
               />
@@ -518,12 +563,14 @@ function PricingCard({
   trialDays,
   onCheckout,
   isSubmitting,
+  checkoutReady,
 }: {
   tier: (typeof pricingTiers)[0]
   billingPeriod: 'monthly' | 'annual'
   trialDays: number
   onCheckout: () => void
   isSubmitting: boolean
+  checkoutReady: boolean
 }) {
   const displayPrice = tier.price
   const isPeriodic = true
@@ -594,10 +641,17 @@ function PricingCard({
       >
         {isSubmitting
           ? 'Redirecting…'
+          : !checkoutReady
+            ? 'Build preview to start trial'
           : trialDays > 0
             ? `Start ${trialDays}-day trial`
             : 'Choose Plan'}
       </button>
+      <p className="text-center text-xs text-slate-300 mt-3">
+        {checkoutReady
+          ? 'Secure Stripe checkout. Pay by card without creating a Stripe Link account.'
+          : 'Choose a template and add your business details before payment.'}
+      </p>
       <p className="text-center text-xs text-slate-400 mt-3">
         Need help choosing?{' '}
         <Link href="/contact" className="text-cyan-300 hover:text-cyan-200 underline">

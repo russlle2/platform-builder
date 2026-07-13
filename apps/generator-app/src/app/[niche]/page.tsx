@@ -584,7 +584,9 @@ export async function generateMetadata({
     sound_bath: 'Sound Bath Website Builder',
     wellness_coach: 'Wellness Coach Website Builder',
   }
-  const title = `${builderLabel[niche] || `${meta.label} Website Builder`} | DailyClarity`
+  // Root metadata applies the "| DailyClarity" suffix through its title
+  // template, so child pages must provide only their page-specific title.
+  const title = builderLabel[niche] || `${meta.label} Website Builder`
   return {
     title,
     description: `${meta.description} Preview real templates with your business details — no coding required.`,

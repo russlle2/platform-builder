@@ -349,6 +349,71 @@ export async function sendManualServiceAlert(options: {
   })
 }
 
+export async function sendCustomBuildCustomerConfirmation(options: {
+  to: string
+  businessName: string
+  requestId: string
+}) {
+  return sendEmail({
+    to: options.to,
+    subject: 'Your $500 custom website build is confirmed',
+    htmlBody: `
+      <div style="font-family:Arial,Helvetica,sans-serif;max-width:620px;margin:0 auto;color:#1e293b;">
+        <h1 style="font-size:26px;">We received your custom website request</h1>
+        <p>Thank you, ${escapeHtml(options.businessName)}. Your one-time <strong>$500 payment</strong> was confirmed and your complete project brief has been delivered to DailyClarity.</p>
+        <p>We will review the appearance and functionality you requested and contact you at this email address with the next steps for your build.</p>
+        <div style="margin:24px 0;padding:16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;">
+          <strong>Request reference:</strong><br />
+          <code>${escapeHtml(options.requestId)}</code>
+        </div>
+        <p style="font-size:13px;color:#64748b;">Keep this reference in case you contact support. Questions? Reply to this email or visit <a href="https://dailyclarity.org/contact">dailyclarity.org/contact</a>.</p>
+      </div>
+    `,
+  })
+}
+
+export async function sendCustomBuildOwnerAlert(options: {
+  ownerEmail: string
+  requestId: string
+  businessName: string
+  contactName?: string | null
+  customerEmail: string
+  phone?: string | null
+  siteVision: string
+  requiredFunctionality: string
+  inspirationLinks?: string | null
+  existingWebsite?: string | null
+  stripeSessionId: string
+}) {
+  const row = (label: string, value?: string | null) => value
+    ? `<tr><td style="padding:8px 12px;font-weight:bold;border-bottom:1px solid #e2e8f0;vertical-align:top;">${label}</td><td style="padding:8px 12px;border-bottom:1px solid #e2e8f0;">${escapeHtml(value).replace(/\n/g, '<br>')}</td></tr>`
+    : ''
+
+  return sendEmail({
+    to: options.ownerEmail,
+    replyTo: options.customerEmail,
+    subject: `PAID custom website build — ${options.businessName}`,
+    htmlBody: `
+      <div style="font-family:Arial,Helvetica,sans-serif;max-width:760px;margin:0 auto;color:#1e293b;">
+        <h1 style="font-size:26px;">New paid $500 custom website build</h1>
+        <p>The payment is confirmed. Reply directly to this email to contact the customer.</p>
+        <table style="border-collapse:collapse;width:100%;margin-top:18px;">
+          ${row('Business', options.businessName)}
+          ${row('Contact', options.contactName)}
+          ${row('Email', options.customerEmail)}
+          ${row('Phone', options.phone)}
+          ${row('How the site should look', options.siteVision)}
+          ${row('Required functionality', options.requiredFunctionality)}
+          ${row('Inspiration / links', options.inspirationLinks)}
+          ${row('Existing website', options.existingWebsite)}
+          ${row('Request ID', options.requestId)}
+          ${row('Stripe session', options.stripeSessionId)}
+        </table>
+      </div>
+    `,
+  })
+}
+
 /**
  * Send a notification to the site owner when a visitor submits a contact form.
  */

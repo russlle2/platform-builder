@@ -19,7 +19,19 @@ export default function LeadCaptureModal() {
   const [fieldError, setFieldError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (pathname?.startsWith('/preview') || pathname?.startsWith('/__site')) {
+    const suppressOnHighIntentPath = [
+      '/preview',
+      '/__site',
+      '/pricing',
+      '/custom-build',
+      '/success',
+      '/cancel',
+      '/portal',
+      '/dashboard',
+      '/login',
+    ].some((path) => pathname?.startsWith(path))
+
+    if (suppressOnHighIntentPath) {
       return
     }
 
