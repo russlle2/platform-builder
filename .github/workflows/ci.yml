@@ -38,14 +38,23 @@ jobs:
         run: pnpm --filter @platform-builder/generator-app exec playwright install --with-deps chromium
 
       - name: Start dev server for e2e
-        run: pnpm --filter @platform-builder/generator-app dev &
+        run: |
+          pnpm --filter @platform-builder/generator-app dev > /tmp/server.log 2>&1 &
+          echo $! > /tmp/dev-server.pid
         env:
           NEXT_PUBLIC_SITE_URL: https://dailyclarity.org
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 
       - name: Wait for dev server
-        run: timeout 120 bash -c 'until curl -sf http://localhost:3000 > /dev/null; do sleep 2; done'
+        run: |
+          timeout 120 bash -c 'until curl -sSf http://localhost:3000 > /dev/null; do sleep 2; done' || {
+            echo "Dev server failed to return a successful response. Server logs:"
+            cat /tmp/server.log
+            echo "Last HTTP response:"
+            curl -sS -i http://localhost:3000 || true
+            exit 1
+          }
 
       - name: Run e2e tests (public routes only)
         run: pnpm --filter @platform-builder/generator-app exec playwright test e2e/public-routes.spec.ts
