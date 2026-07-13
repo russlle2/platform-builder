@@ -4,9 +4,19 @@ import { NextResponse, type NextRequest } from 'next/server'
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
 
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  // Public pages and CI smoke tests should remain available when Supabase is
+  // intentionally not configured. Protected routes still receive user=null
+  // and are redirected to login by the caller, so this fails closed for auth.
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return { supabaseResponse, user: null }
+  }
+
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         getAll() {
