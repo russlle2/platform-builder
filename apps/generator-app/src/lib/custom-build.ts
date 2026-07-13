@@ -1,6 +1,9 @@
 export const CUSTOM_BUILD_AMOUNT_CENTS = 50_000
 export const CUSTOM_BUILD_CURRENCY = 'usd'
 export const CUSTOM_BUILD_LOOKUP_KEY = 'dailyclarity_custom_website_build_500_usd'
+// Public, non-secret Stripe price ID for the verified live $500 one-time product.
+// Deployments can override it with STRIPE_PRICE_CUSTOM_BUILD.
+export const DEFAULT_CUSTOM_BUILD_PRICE_ID = 'price_1TsXd19AeloaKLwtRriEcNuA'
 
 export type CustomBuildInput = {
   businessName: string
