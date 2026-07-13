@@ -110,7 +110,7 @@ async function handleCustomBuildCompleted(
     }
   }
 
-  const ownerEmail = process.env.PLATFORM_OWNER_EMAIL
+  const ownerEmail = process.env.PLATFORM_OWNER_EMAIL || process.env.EMAIL_FROM_ADDRESS
   if (ownerEmail && !request.owner_notified_at) {
     try {
       await sendCustomBuildOwnerAlert({
