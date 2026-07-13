@@ -63,8 +63,8 @@ export const pricingSchema = {
     '@type': 'AggregateOffer',
     priceCurrency: 'USD',
     lowPrice: '20.00',
-    highPrice: '80.00',
-    offerCount: 2,
+    highPrice: '500.00',
+    offerCount: 3,
     offers: [
       {
         '@type': 'Offer',
@@ -82,6 +82,14 @@ export const pricingSchema = {
         url: `${SITE_URL}/pricing`,
         availability: 'https://schema.org/InStock',
       },
+      {
+        '@type': 'Offer',
+        name: 'Custom Website Build',
+        price: '500.00',
+        priceCurrency: 'USD',
+        url: `${SITE_URL}/custom-build`,
+        availability: 'https://schema.org/InStock',
+      },
     ],
   },
 }
@@ -94,6 +102,10 @@ const pricingFaq: Array<{ q: string; a: string }> = [
   {
     q: 'How fast can I launch?',
     a: 'Most builds go live within 48 hours once your intake is complete and your subscription is active.',
+  },
+  {
+    q: 'How does the $500 custom website build work?',
+    a: 'Submit a detailed design and functionality brief, then complete one immediate $500 Stripe payment. DailyClarity securely saves the brief before checkout and manually reviews it after payment is confirmed.',
   },
   {
     q: 'Is there a free trial?',
