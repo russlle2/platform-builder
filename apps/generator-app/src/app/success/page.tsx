@@ -10,6 +10,8 @@ type VerifiedSession = {
   slug?: string
   planName?: string
   managed?: boolean
+  customBuild?: boolean
+  requestId?: string
 }
 
 async function verifySession(sessionId: string | undefined): Promise<VerifiedSession> {
@@ -22,6 +24,13 @@ async function verifySession(sessionId: string | undefined): Promise<VerifiedSes
     // A completed Checkout Session means payment succeeded or a trial started.
     if (session.status !== 'complete') return { ok: false }
     const meta = session.metadata || {}
+    if (meta.checkoutType === 'custom_build') {
+      return {
+        ok: session.payment_status === 'paid',
+        customBuild: true,
+        requestId: meta.customBuildRequestId || undefined,
+      }
+    }
     const plan = getPlan(meta.planKey)
     return {
       ok: true,
@@ -57,6 +66,52 @@ export default async function SuccessPage({
             <Link href="/pricing" className="cta-button">
               Back to pricing
             </Link>
+            <Link
+              href="/contact"
+              className="px-8 py-4 text-lg font-bold text-white border-2 border-white/30 rounded-lg hover:bg-white/10 transition-all"
+            >
+              Contact support
+            </Link>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
+  if (result.customBuild) {
+    return (
+      <main className="min-h-screen pt-24 pb-16 container-hvac">
+        <div className="glass-panel rounded-3xl p-10 md:p-14 max-w-4xl mx-auto text-center">
+          <span className="signal-chip">Payment confirmed</span>
+          <h1 className="text-4xl md:text-5xl font-bold text-bright-white mt-5 mb-4">
+            Your custom website brief is in our build queue.
+          </h1>
+          <p className="text-gray-300 text-lg max-w-2xl mx-auto">
+            Your one-time $500 payment was successful. DailyClarity received the appearance and
+            functionality instructions you submitted and will contact you by email with the next steps.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-10 text-left">
+            {[
+              { title: 'Brief secured', copy: 'Your full project description was saved before checkout.' },
+              { title: 'Payment verified', copy: 'Stripe confirmed the immediate one-time $500 payment.' },
+              { title: 'Manual review', copy: 'We will review the scope and contact you at your checkout email.' },
+            ].map((item) => (
+              <div key={item.title} className="stat-card">
+                <p className="text-xs uppercase tracking-[0.25em] text-cyan-300">{item.title}</p>
+                <p className="text-slate-200 mt-3 text-sm">{item.copy}</p>
+              </div>
+            ))}
+          </div>
+
+          {result.requestId && (
+            <p className="mt-8 text-xs text-slate-400">
+              Request reference: <code className="text-cyan-200">{result.requestId}</code>
+            </p>
+          )}
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10">
+            <Link href="/" className="cta-button">Return home</Link>
             <Link
               href="/contact"
               className="px-8 py-4 text-lg font-bold text-white border-2 border-white/30 rounded-lg hover:bg-white/10 transition-all"
