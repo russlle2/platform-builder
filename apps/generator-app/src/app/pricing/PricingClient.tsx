@@ -269,6 +269,41 @@ export default function PricingClient() {
           </p>
         </section>
 
+        <section id="custom-build" className="container-hvac pb-16">
+          <div className="rounded-3xl border border-amber-300/35 bg-gradient-to-br from-amber-500/15 via-slate-900/80 to-cyan-500/10 p-8 md:p-10">
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-8 items-center">
+              <div>
+                <span className="inline-flex px-3 py-1 rounded-full bg-amber-400/15 border border-amber-300/30 text-amber-200 text-xs font-bold uppercase tracking-[0.2em]">
+                  One-time custom build
+                </span>
+                <h2 className="text-3xl md:text-4xl font-bold text-white mt-5">
+                  Want a website designed around your exact instructions?
+                </h2>
+                <p className="text-slate-200 mt-4 max-w-3xl leading-relaxed">
+                  Describe how your site should look and function in detail. Your brief is saved,
+                  you make one immediate $500 Stripe payment, and the request is delivered to our
+                  manual custom-build queue.
+                </p>
+                <div className="flex flex-wrap gap-x-6 gap-y-2 mt-5 text-sm text-slate-300">
+                  <span>Detailed design brief</span>
+                  <span>Custom functionality request</span>
+                  <span>No monthly plan required</span>
+                </div>
+              </div>
+              <div className="lg:text-right min-w-[230px]">
+                <div className="flex lg:justify-end items-baseline gap-2">
+                  <span className="text-5xl font-bold text-white">$500</span>
+                  <span className="text-slate-300">one time</span>
+                </div>
+                <p className="text-sm text-amber-200 mt-2 mb-5">Charged immediately</p>
+                <Link href="/custom-build" className="cta-button inline-flex justify-center">
+                  Start my custom build
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* ═══ DEV-ONLY: Test Purchase ═══ */}
         {process.env.NEXT_PUBLIC_APP_STAGE !== 'production' && (
           <section className="container-hvac pb-12">
@@ -448,6 +483,10 @@ export default function PricingClient() {
               <FAQItem
                 question="What does Security + Ads ($80) add?"
                 answer="Everything in Basic is still fully automated. On top of that, we personally run one done-for-you service: we set up and manage your ad and promo campaigns, and we harden and monitor your site's security and uptime. It's hands-on work delivered by our team — the rest of the platform stays self-serve."
+              />
+              <FAQItem
+                question="How does the $500 custom website build work?"
+                answer="Choose Custom Website Build, submit a detailed description of the appearance and functionality you want, and complete one immediate $500 Stripe payment. Your full brief is saved before checkout and delivered to our manual build queue after Stripe confirms payment. We then review the scope and contact you by email with next steps."
               />
               <FAQItem
                 question="How fast can I launch?"
