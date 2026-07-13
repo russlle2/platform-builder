@@ -23,6 +23,7 @@ export default function LeadCaptureModal() {
       '/preview',
       '/__site',
       '/pricing',
+      '/custom-build',
       '/success',
       '/cancel',
       '/portal',
