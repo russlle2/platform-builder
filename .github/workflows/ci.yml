@@ -61,6 +61,14 @@ jobs:
         env:
           BASE_URL: http://localhost:3000
 
+      - name: Stop dev server
+        if: always()
+        run: |
+          if [ -f /tmp/dev-server.pid ]; then
+            kill "$(cat /tmp/dev-server.pid)" 2>/dev/null || true
+          fi
+          pkill -f "next dev" 2>/dev/null || true
+
       - name: Build
         run: pnpm build
         env:
