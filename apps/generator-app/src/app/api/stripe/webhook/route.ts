@@ -6,6 +6,8 @@ import {
   sendOrderConfirmationEmail,
   sendWebsiteLiveEmail,
   sendManualServiceAlert,
+  sendCustomBuildCustomerConfirmation,
+  sendCustomBuildOwnerAlert,
 } from '@/lib/email'
 import { createPortalAccessCredentials } from '@/lib/portal-auth'
 import { provisionSite, deploySiteFiles } from '@/lib/netlify'
@@ -40,6 +42,98 @@ async function reserveSlug(supabase: SupabaseClient, slug: string) {
   await supabase
     .from('site_slugs')
     .upsert({ slug: normalized, status: 'reserved' }, { onConflict: 'slug' })
+}
+
+async function handleCustomBuildCompleted(
+  supabase: SupabaseClient,
+  session: Stripe.Checkout.Session,
+) {
+  const requestId = session.metadata?.customBuildRequestId
+  if (!requestId) {
+    console.error('[webhook] custom build checkout missing request ID:', session.id)
+    return
+  }
+
+  const rawPaymentIntent = session.payment_intent
+  const paymentIntentId =
+    typeof rawPaymentIntent === 'string'
+      ? rawPaymentIntent
+      : (rawPaymentIntent as { id?: string } | null)?.id ?? null
+
+  if (session.payment_status !== 'paid') {
+    await supabase
+      .from('custom_build_requests')
+      .update({
+        status: 'payment_pending',
+        stripe_session_id: session.id,
+        stripe_payment_intent_id: paymentIntentId,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', requestId)
+    return
+  }
+
+  const paidAt = new Date().toISOString()
+  const { data: request, error } = await supabase
+    .from('custom_build_requests')
+    .update({
+      status: 'paid',
+      stripe_session_id: session.id,
+      stripe_payment_intent_id: paymentIntentId,
+      paid_at: paidAt,
+      updated_at: paidAt,
+    })
+    .eq('id', requestId)
+    .select('*')
+    .single()
+
+  if (error || !request) {
+    console.error('[webhook] custom build request update failed:', error || requestId)
+    return
+  }
+
+  const customerEmail = request.email || session.customer_details?.email || ''
+
+  if (customerEmail && !request.customer_notified_at) {
+    try {
+      await sendCustomBuildCustomerConfirmation({
+        to: customerEmail,
+        businessName: request.business_name,
+        requestId,
+      })
+      await supabase
+        .from('custom_build_requests')
+        .update({ customer_notified_at: new Date().toISOString() })
+        .eq('id', requestId)
+    } catch (emailError) {
+      console.error('[webhook] custom build customer email failed:', emailError)
+    }
+  }
+
+  const ownerEmail = process.env.PLATFORM_OWNER_EMAIL
+  if (ownerEmail && !request.owner_notified_at) {
+    try {
+      await sendCustomBuildOwnerAlert({
+        ownerEmail,
+        requestId,
+        businessName: request.business_name,
+        contactName: request.contact_name,
+        customerEmail,
+        phone: request.phone,
+        siteVision: request.site_vision,
+        requiredFunctionality: request.required_functionality,
+        inspirationLinks: request.inspiration_links,
+        existingWebsite: request.existing_website,
+        stripeSessionId: session.id,
+      })
+      await supabase
+        .from('custom_build_requests')
+        .update({ owner_notified_at: new Date().toISOString() })
+        .eq('id', requestId)
+    } catch (emailError) {
+      console.error('[webhook] custom build owner alert failed:', emailError)
+    }
+  }
 }
 
 /**
@@ -297,7 +391,14 @@ export async function POST(req: Request) {
   try {
     switch (event.type) {
       case 'checkout.session.completed':
-        await handleCheckoutCompleted(stripe, supabase, event.data.object as Stripe.Checkout.Session)
+        {
+          const session = event.data.object as Stripe.Checkout.Session
+          if (session.metadata?.checkoutType === 'custom_build') {
+            await handleCustomBuildCompleted(supabase, session)
+          } else {
+            await handleCheckoutCompleted(stripe, supabase, session)
+          }
+        }
         break
       case 'customer.subscription.created': {
         const subscription = event.data.object as Stripe.Subscription
