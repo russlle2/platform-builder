@@ -6,6 +6,7 @@ import {
   CUSTOM_BUILD_AMOUNT_CENTS,
   CUSTOM_BUILD_CURRENCY,
   CUSTOM_BUILD_LOOKUP_KEY,
+  DEFAULT_CUSTOM_BUILD_PRICE_ID,
   validateCustomBuildInput,
 } from '@/lib/custom-build'
 import { jsonTooManyRequests, rateLimitByIp } from '@/lib/server-auth'
@@ -15,7 +16,7 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
 async function resolveCustomBuildPrice(stripe: Stripe): Promise<string> {
-  const configuredPriceId = process.env.STRIPE_PRICE_CUSTOM_BUILD
+  const configuredPriceId = process.env.STRIPE_PRICE_CUSTOM_BUILD || DEFAULT_CUSTOM_BUILD_PRICE_ID
   if (configuredPriceId) {
     const configuredPrice = await stripe.prices.retrieve(configuredPriceId)
     if (
