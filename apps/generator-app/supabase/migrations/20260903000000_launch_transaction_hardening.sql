@@ -3,9 +3,22 @@
 
 alter table public.site_slugs
   add column if not exists reserved_for text,
-  add column if not exists reservation_expires_at timestamptz;
+  add column if not exists reservation_expires_at timestamptz,
+  add column if not exists netlify_default_domain text;
 
 drop index if exists public.site_slugs_slug_key; -- primary key already enforces uniqueness
+do $$
+begin
+  if exists (
+    select 1 from public.site_slugs
+    where custom_domain is not null
+    group by lower(custom_domain)
+    having count(*) > 1
+  ) then
+    raise exception 'launch preflight: duplicate site_slugs.custom_domain values require operator remediation';
+  end if;
+end;
+$$;
 create index if not exists site_slugs_reservation_expiry_idx
   on public.site_slugs (reservation_expires_at)
   where reservation_expires_at is not null;
@@ -92,14 +105,54 @@ alter table public.stripe_webhook_events enable row level security;
 alter table public.orders
   add column if not exists stripe_subscription_id text,
   add column if not exists stripe_event_id text,
+  add column if not exists billing_event_created bigint,
   add column if not exists currency text,
   add column if not exists updated_at timestamptz not null default now();
+do $$
+begin
+  if exists (
+    select 1 from public.orders
+    where stripe_session_id is not null
+    group by stripe_session_id
+    having count(*) > 1
+  ) then
+    raise exception 'launch preflight: duplicate orders.stripe_session_id values require operator remediation';
+  end if;
+end;
+$$;
 create unique index if not exists orders_stripe_session_unique_idx
   on public.orders (stripe_session_id);
+do $$
+begin
+  if exists (
+    select 1 from public.orders
+    where stripe_subscription_id is not null
+    group by stripe_subscription_id
+    having count(*) > 1
+  ) then
+    raise exception 'launch preflight: duplicate orders.stripe_subscription_id values require operator remediation';
+  end if;
+end;
+$$;
+create unique index if not exists orders_stripe_subscription_unique_idx
+  on public.orders (stripe_subscription_id)
+  where stripe_subscription_id is not null;
 create index if not exists orders_slug_idx on public.orders (slug);
 
 alter table public.manual_service_tasks
   add column if not exists stripe_session_id text;
+do $$
+begin
+  if exists (
+    select 1 from public.manual_service_tasks
+    where stripe_session_id is not null
+    group by stripe_session_id, task_type
+    having count(*) > 1
+  ) then
+    raise exception 'launch preflight: duplicate manual service checkout tasks require operator remediation';
+  end if;
+end;
+$$;
 create unique index if not exists manual_service_tasks_checkout_type_unique_idx
   on public.manual_service_tasks (stripe_session_id, task_type);
 
@@ -366,16 +419,140 @@ revoke all on function public.merge_portal_site_data(text, jsonb, jsonb)
 grant execute on function public.merge_portal_site_data(text, jsonb, jsonb)
   to service_role;
 
+-- Checkout retries may resume after a customer edit or a newer billing event.
+-- Seed editable fields only on the first insert; thereafter merge only
+-- provisioning-owned keys and never replace billing/domain/customer state.
+create or replace function public.upsert_portal_checkout_state(
+  p_slug text,
+  p_owner_email text,
+  p_status text,
+  p_portal_token_hash text,
+  p_data_patch jsonb
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_data jsonb;
+begin
+  insert into public.portal_sites (slug, owner_email, status, portal_token_hash, data, updated_at)
+  values (
+    p_slug,
+    p_owner_email,
+    p_status,
+    p_portal_token_hash,
+    coalesce(p_data_patch, '{}'::jsonb),
+    now()
+  )
+  on conflict (slug) do update
+  set owner_email = coalesce(public.portal_sites.owner_email, excluded.owner_email),
+      status = case
+        -- Provisioning progress/failure is authoritative while a checkout is
+        -- running. On successful deployment, derive access from the newest
+        -- billing state so a healthy trial can recover from an earlier deploy
+        -- failure without bypassing a canceled or past-due subscription.
+        when public.portal_sites.data->>'billing_status' in ('canceled', 'unpaid', 'incomplete_expired')
+          and public.portal_sites.data ? 'billing_event_created'
+          then 'billing_suspended'
+        when excluded.status <> 'active' then excluded.status
+        when not (public.portal_sites.data ? 'billing_event_created') then excluded.status
+        when public.portal_sites.data->>'billing_status' in ('active', 'trialing', 'paid')
+          then 'active'
+        else 'billing_attention'
+      end,
+      portal_token_hash = coalesce(public.portal_sites.portal_token_hash, excluded.portal_token_hash),
+      data = coalesce(public.portal_sites.data, '{}'::jsonb)
+        || (excluded.data - array[
+             'custom_domain', 'billing_status', 'billing_updated_at',
+             'billing_event_created', 'billing_event_id',
+             'customerValues', 'inlineEdits', 'imageSwaps', 'customTheme',
+             'colorScheme', 'fontVariation', 'structureVariation', 'template'
+           ]::text[])
+        || case
+             when public.portal_sites.data ? 'billing_event_created'
+               or not (excluded.data ? 'billing_status')
+               then '{}'::jsonb
+             else jsonb_build_object('billing_status', excluded.data->'billing_status')
+           end
+        || case when public.portal_sites.data ? 'customerValues' or not (excluded.data ? 'customerValues')
+             then '{}'::jsonb else jsonb_build_object('customerValues', excluded.data->'customerValues') end
+        || case when public.portal_sites.data ? 'inlineEdits' or not (excluded.data ? 'inlineEdits')
+             then '{}'::jsonb else jsonb_build_object('inlineEdits', excluded.data->'inlineEdits') end
+        || case when public.portal_sites.data ? 'imageSwaps' or not (excluded.data ? 'imageSwaps')
+             then '{}'::jsonb else jsonb_build_object('imageSwaps', excluded.data->'imageSwaps') end
+        || case when public.portal_sites.data ? 'customTheme' or not (excluded.data ? 'customTheme')
+             then '{}'::jsonb else jsonb_build_object('customTheme', excluded.data->'customTheme') end
+        || case when public.portal_sites.data ? 'colorScheme' or not (excluded.data ? 'colorScheme')
+             then '{}'::jsonb else jsonb_build_object('colorScheme', excluded.data->'colorScheme') end
+        || case when public.portal_sites.data ? 'fontVariation' or not (excluded.data ? 'fontVariation')
+             then '{}'::jsonb else jsonb_build_object('fontVariation', excluded.data->'fontVariation') end
+        || case when public.portal_sites.data ? 'structureVariation' or not (excluded.data ? 'structureVariation')
+             then '{}'::jsonb else jsonb_build_object('structureVariation', excluded.data->'structureVariation') end
+        || case when public.portal_sites.data ? 'template' or not (excluded.data ? 'template')
+             then '{}'::jsonb else jsonb_build_object('template', excluded.data->'template') end,
+      updated_at = now()
+  returning data into v_data;
+  return v_data;
+end;
+$$;
+revoke all on function public.upsert_portal_checkout_state(text, text, text, text, jsonb)
+  from public, anon, authenticated;
+grant execute on function public.upsert_portal_checkout_state(text, text, text, text, jsonb)
+  to service_role;
+
+create or replace function public.upsert_checkout_order(
+  p_slug text,
+  p_stripe_session_id text,
+  p_stripe_customer_id text,
+  p_stripe_subscription_id text,
+  p_email text,
+  p_plan text,
+  p_amount_cents integer,
+  p_currency text,
+  p_status text
+)
+returns void
+language sql
+security definer
+set search_path = ''
+as $$
+  insert into public.orders (
+    slug, stripe_session_id, stripe_customer_id, stripe_subscription_id,
+    email, plan, amount_cents, currency, status, updated_at
+  ) values (
+    p_slug, p_stripe_session_id, p_stripe_customer_id, p_stripe_subscription_id,
+    p_email, p_plan, p_amount_cents, p_currency, p_status, now()
+  )
+  on conflict (stripe_session_id) do update
+  set slug = excluded.slug,
+      stripe_customer_id = coalesce(public.orders.stripe_customer_id, excluded.stripe_customer_id),
+      stripe_subscription_id = coalesce(public.orders.stripe_subscription_id, excluded.stripe_subscription_id),
+      email = coalesce(public.orders.email, excluded.email),
+      plan = excluded.plan,
+      amount_cents = excluded.amount_cents,
+      currency = excluded.currency,
+      status = case
+        when public.orders.billing_event_created is null then excluded.status
+        else public.orders.status
+      end,
+      updated_at = now();
+$$;
+revoke all on function public.upsert_checkout_order(text, text, text, text, text, text, integer, text, text)
+  from public, anon, authenticated;
+grant execute on function public.upsert_checkout_order(text, text, text, text, text, text, integer, text, text)
+  to service_role;
+
 -- Billing webhooks update only their owned keys while holding the portal row
--- lock. This prevents an event that started from a stale JSON snapshot from
--- erasing a simultaneous customer edit or custom-domain mirror. The Stripe
--- event creation time is checked inside the same transaction so out-of-order
--- events cannot win a race.
+-- lock. Stripe's (created,event_id) tuple makes equal-second races deterministic.
+drop function if exists public.merge_portal_billing_state(text, text, jsonb, bigint);
 create or replace function public.merge_portal_billing_state(
   p_slug text,
-  p_status text,
+  p_billing_status text,
   p_data_patch jsonb,
-  p_event_created bigint
+  p_event_created bigint,
+  p_event_id text
 )
 returns boolean
 language plpgsql
@@ -384,14 +561,24 @@ set search_path = ''
 as $$
 declare
   v_previous_event bigint;
+  v_previous_event_id text;
+  v_portal_status text;
+  v_provisioning_succeeded boolean;
   v_patch jsonb := coalesce(p_data_patch, '{}'::jsonb);
 begin
   select case
            when data->>'billing_event_created' ~ '^[0-9]+$'
              then (data->>'billing_event_created')::bigint
            else null
+         end,
+         data->>'billing_event_id',
+         status,
+         case
+           when lower(data->>'provisioning_succeeded') in ('true', 'false')
+             then (data->>'provisioning_succeeded')::boolean
+           else false
          end
-    into v_previous_event
+    into v_previous_event, v_previous_event_id, v_portal_status, v_provisioning_succeeded
     from public.portal_sites
     where slug = p_slug
     for update;
@@ -399,6 +586,9 @@ begin
   if not found then
     raise exception 'portal site not found';
   end if;
+  -- Stripe event IDs are opaque and event.created is only second-granular.
+  -- Accept every event from the newest observed second so a terminal event
+  -- cannot be discarded merely because its ID sorts before a peer event.
   if p_event_created is not null
      and v_previous_event is not null
      and v_previous_event > p_event_created then
@@ -406,21 +596,127 @@ begin
   end if;
 
   if p_event_created is not null then
-    v_patch := v_patch || jsonb_build_object('billing_event_created', p_event_created);
+    v_patch := v_patch || jsonb_build_object(
+      'billing_event_created', p_event_created,
+      'billing_event_id', p_event_id
+    );
   end if;
 
   update public.portal_sites
-  set status = p_status,
-      data = coalesce(data, '{}'::jsonb) || v_patch,
+  set status = case
+        when p_billing_status in ('active', 'trialing', 'paid')
+          then case when v_provisioning_succeeded then 'active' else v_portal_status end
+        when p_billing_status in ('canceled', 'unpaid', 'incomplete_expired')
+          then 'billing_suspended'
+        else 'billing_attention'
+      end,
+      data = coalesce(data, '{}'::jsonb) || v_patch || jsonb_build_object('billing_status', p_billing_status),
       updated_at = now()
   where slug = p_slug;
   return true;
 end;
 $$;
-revoke all on function public.merge_portal_billing_state(text, text, jsonb, bigint)
+revoke all on function public.merge_portal_billing_state(text, text, jsonb, bigint, text)
   from public, anon, authenticated;
-grant execute on function public.merge_portal_billing_state(text, text, jsonb, bigint)
+grant execute on function public.merge_portal_billing_state(text, text, jsonb, bigint, text)
   to service_role;
+
+create or replace function public.merge_order_billing_state(
+  p_subscription_id text,
+  p_status text,
+  p_event_created bigint,
+  p_event_id text
+)
+returns boolean
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_previous_event bigint;
+  v_previous_event_id text;
+begin
+  select billing_event_created, stripe_event_id
+    into v_previous_event, v_previous_event_id
+    from public.orders
+    where stripe_subscription_id = p_subscription_id
+    order by created_at desc
+    limit 1
+    for update;
+  if not found then
+    raise exception 'order not found';
+  end if;
+  -- Do not order opaque Stripe event IDs within the same second. Every event
+  -- is applied under this row lock; only events from an older second lose.
+  if p_event_created is not null
+     and v_previous_event is not null
+     and v_previous_event > p_event_created then
+    return false;
+  end if;
+  update public.orders
+  set status = p_status,
+      billing_event_created = p_event_created,
+      stripe_event_id = p_event_id,
+      updated_at = now()
+  where stripe_subscription_id = p_subscription_id;
+  return true;
+end;
+$$;
+revoke all on function public.merge_order_billing_state(text, text, bigint, text)
+  from public, anon, authenticated;
+grant execute on function public.merge_order_billing_state(text, text, bigint, text)
+  to service_role;
+
+-- A value-free deployment sentinel. Application promotion fails before Netlify
+-- publication unless the matching schema/RPC contract is already present.
+create or replace function public.launch_schema_readiness()
+returns jsonb
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select jsonb_build_object(
+    'schemaVersion', '20260903.2',
+    'ready',
+      to_regclass('public.checkout_intents') is not null
+      and to_regclass('public.stripe_webhook_events') is not null
+      and to_regprocedure('public.upsert_portal_checkout_state(text,text,text,text,jsonb)') is not null
+      and to_regprocedure('public.upsert_checkout_order(text,text,text,text,text,text,integer,text,text)') is not null
+      and to_regprocedure('public.merge_portal_billing_state(text,text,jsonb,bigint,text)') is not null
+      and to_regprocedure('public.merge_order_billing_state(text,text,bigint,text)') is not null
+      and to_regclass('public.site_slugs_custom_domain_unique_idx') is not null
+      and to_regclass('public.orders_stripe_session_unique_idx') is not null
+      and to_regclass('public.orders_stripe_subscription_unique_idx') is not null
+      and to_regclass('public.manual_service_tasks_checkout_type_unique_idx') is not null
+      and not exists (
+        select 1
+        from (values
+          ('site_slugs', 'reserved_for'),
+          ('site_slugs', 'reservation_expires_at'),
+          ('site_slugs', 'netlify_default_domain'),
+          ('portal_sites', 'owner_id'),
+          ('portal_sites', 'portal_token_expires_at'),
+          ('orders', 'stripe_subscription_id'),
+          ('orders', 'billing_event_created'),
+          ('orders', 'stripe_event_id'),
+          ('stripe_webhook_events', 'business_key'),
+          ('stripe_webhook_events', 'payload'),
+          ('stripe_webhook_events', 'lease_token'),
+          ('manual_service_tasks', 'stripe_session_id'),
+          ('contact_messages', 'owner_notification_status')
+        ) as required(table_name, column_name)
+        where not exists (
+          select 1 from information_schema.columns as actual
+          where actual.table_schema = 'public'
+            and actual.table_name = required.table_name
+            and actual.column_name = required.column_name
+        )
+      )
+  );
+$$;
+revoke all on function public.launch_schema_readiness() from public, anon, authenticated;
+grant execute on function public.launch_schema_readiness() to service_role;
 
 revoke all on public.intake_contacts from anon, authenticated;
 revoke all on public.lead_captures from anon, authenticated;

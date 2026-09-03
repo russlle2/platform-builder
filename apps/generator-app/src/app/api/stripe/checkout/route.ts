@@ -11,7 +11,7 @@ import { validateCheckoutImageSession } from '@/lib/checkout-image-session'
 import { sanitizeCustomTheme } from '@/lib/custom-theme'
 import { sanitizeCustomerValues, sanitizeInlineEditMap } from '@/lib/site-deploy'
 import { getTemplate } from '@/lib/templates/niche-registry'
-import { createStripeClient } from '@/lib/stripe-client'
+import { createStripeClient, stripeIntegrationIdentifier } from '@/lib/stripe-client'
 import {
   TEMPLATE_CHECKOUT_TYPE,
   getTemplateFulfillmentConfigIssues,
@@ -249,6 +249,7 @@ export async function POST(req: NextRequest) {
       expires_at: Math.floor(expiresAt.getTime() / 1000),
       ...(email ? { customer_email: email } : {}),
       client_reference_id: checkoutIntentId,
+      integration_identifier: stripeIntegrationIdentifier('dailyclarity-template', checkoutIntentId),
       metadata,
       subscription_data: subscriptionData,
     }, { idempotencyKey: `dailyclarity-checkout-${checkoutIntentId}` })

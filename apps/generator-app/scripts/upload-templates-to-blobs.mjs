@@ -2,15 +2,17 @@
 /**
  * upload-templates-to-blobs.mjs
  *
- * Walks ../../platform-builder/<niche>/<slug>/ directories and uploads every
- * template file to the Netlify Blobs "templates" store, keyed as
- * "<niche>/<slug>/<filename>". Also builds and uploads the manifest JSON.
+ * Reads an explicit deterministic curated export and uploads every template
+ * file to an immutable digest-prefixed release in the Netlify Blobs
+ * "templates" store. The live `_manifest.json` pointer is switched only after
+ * every release object and the release manifest have been verified.
  *
  * Designed to run in GitHub Actions where platform-builder/ is checked out.
  * Auth is read from NETLIFY_AUTH_TOKEN + NETLIFY_SITE_ID env vars.
  *
  * Usage:
- *   node scripts/upload-templates-to-blobs.mjs [--force] [--dry-run]
+ *   node scripts/upload-templates-to-blobs.mjs --root <curated-export>
+ *     [--force] [--dry-run]
  *     [--only <niche[/slug]>]...
  *
  *   --force    Re-upload selected files even if they already exist in Blobs.
@@ -31,8 +33,8 @@ import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const APP_ROOT = path.resolve(__dirname, '..')
-const DEFAULT_PLATFORM_BUILDER_ROOT = path.resolve(APP_ROOT, '..', '..', 'platform-builder')
-let PLATFORM_BUILDER_ROOT = DEFAULT_PLATFORM_BUILDER_ROOT
+let PLATFORM_BUILDER_ROOT = ''
+const SHA256_RE = /^[a-f0-9]{64}$/
 
 function loadLaunchCatalogContract() {
   const contractPath = path.join(
@@ -50,7 +52,11 @@ function loadLaunchCatalogContract() {
     parsed.totalTemplates < 1 ||
     !parsed.templatesByNiche ||
     typeof parsed.templatesByNiche !== 'object' ||
-    Array.isArray(parsed.templatesByNiche)
+    Array.isArray(parsed.templatesByNiche) ||
+    typeof parsed.curatedReportSha256 !== 'string' ||
+    !SHA256_RE.test(parsed.curatedReportSha256) ||
+    typeof parsed.templateIdentitySha256 !== 'string' ||
+    !SHA256_RE.test(parsed.templateIdentitySha256)
   ) {
     throw new Error('Launch catalog contract is malformed')
   }
@@ -73,15 +79,86 @@ function loadLaunchCatalogContract() {
     contractVersion: parsed.contractVersion,
     totalTemplates: parsed.totalTemplates,
     templatesByNiche: Object.freeze(templatesByNiche),
+    curatedReportSha256: parsed.curatedReportSha256,
+    templateIdentitySha256: parsed.templateIdentitySha256,
   })
 }
 
 export const LAUNCH_CATALOG_CONTRACT = loadLaunchCatalogContract()
 
+function expectedTemplateKeySet() {
+  const keys = new Set()
+  for (const [niche, count] of Object.entries(LAUNCH_CATALOG_CONTRACT.templatesByNiche)) {
+    for (let index = 1; index <= count; index++) {
+      const ordinal = String(index).padStart(2, '0')
+      keys.add(`${niche}/curated-v2-${niche.replace(/_/g, '-')}-${ordinal}`)
+    }
+  }
+  return keys
+}
+
+const EXPECTED_TEMPLATE_KEYS = expectedTemplateKeySet()
+
+function normalizedTemplateIdentities(templates) {
+  return templates
+    .map(({ niche, slug, sha256 }) => ({ niche, slug, sha256 }))
+    .sort((a, b) => `${a.niche}/${a.slug}`.localeCompare(`${b.niche}/${b.slug}`))
+}
+
+export function templateIdentityDigest(templates) {
+  return createHash('sha256')
+    .update(JSON.stringify(normalizedTemplateIdentities(templates)))
+    .digest('hex')
+}
+
+function loadApprovedCatalogReceipt() {
+  const receiptPath = path.join(
+    APP_ROOT,
+    'src',
+    'lib',
+    'templates',
+    'launch-catalog-approved-receipt.json',
+  )
+  const parsed = JSON.parse(readFileSync(receiptPath, 'utf-8'))
+  if (
+    parsed?.contractVersion !== 2 ||
+    parsed?.totalTemplates !== LAUNCH_CATALOG_CONTRACT.totalTemplates ||
+    !Array.isArray(parsed?.templates) ||
+    parsed.templates.length !== LAUNCH_CATALOG_CONTRACT.totalTemplates
+  ) {
+    throw new Error('Approved catalog receipt is malformed')
+  }
+  const seen = new Set()
+  for (const item of parsed.templates) {
+    const key = `${item?.niche}/${item?.slug}`
+    if (!EXPECTED_TEMPLATE_KEYS.has(key) || seen.has(key) || !SHA256_RE.test(String(item?.sha256 || ''))) {
+      throw new Error(`Approved catalog receipt contains an invalid identity: ${key}`)
+    }
+    seen.add(key)
+  }
+  if (
+    seen.size !== EXPECTED_TEMPLATE_KEYS.size ||
+    templateIdentityDigest(parsed.templates) !== LAUNCH_CATALOG_CONTRACT.templateIdentitySha256
+  ) {
+    throw new Error('Approved catalog receipt digest does not match the launch contract')
+  }
+  return Object.freeze({
+    ...parsed,
+    templates: Object.freeze(parsed.templates.map((item) => Object.freeze({ ...item }))),
+  })
+}
+
+export const LAUNCH_CATALOG_APPROVED_RECEIPT = loadApprovedCatalogReceipt()
+const APPROVED_TEMPLATE_SHA_BY_KEY = new Map(
+  LAUNCH_CATALOG_APPROVED_RECEIPT.templates.map((item) => [`${item.niche}/${item.slug}`, item.sha256]),
+)
+
 /** Require the exact launch distribution after template validation/quarantine. */
 export function validateLaunchCatalogManifest(manifest) {
   const errors = []
   const countsByNiche = {}
+  const identities = []
+  const seenTemplateKeys = new Set()
   const isManifestObject = Boolean(manifest && typeof manifest === 'object' && !Array.isArray(manifest))
   const source = isManifestObject ? manifest : {}
   if (!isManifestObject) errors.push('manifest is missing or malformed')
@@ -92,6 +169,21 @@ export function validateLaunchCatalogManifest(manifest) {
     countsByNiche[niche] = actual
     if (!Array.isArray(templates)) errors.push(`${niche}: manifest entry is missing or malformed`)
     if (actual !== expected) errors.push(`${niche}: expected ${expected}, found ${actual}`)
+    for (const template of Array.isArray(templates) ? templates : []) {
+      const slug = typeof template?.slug === 'string' ? template.slug : ''
+      const sha256 = typeof template?.artifactSha256 === 'string'
+        ? template.artifactSha256.toLowerCase()
+        : ''
+      const key = `${niche}/${slug}`
+      if (!EXPECTED_TEMPLATE_KEYS.has(key)) errors.push(`${key}: template is not in the approved launch receipt`)
+      if (seenTemplateKeys.has(key)) errors.push(`${key}: duplicate template identity`)
+      seenTemplateKeys.add(key)
+      if (!SHA256_RE.test(sha256)) errors.push(`${key}: missing or invalid artifact SHA-256`)
+      if (APPROVED_TEMPLATE_SHA_BY_KEY.get(key) !== sha256) {
+        errors.push(`${key}: artifact SHA-256 differs from the approved launch receipt`)
+      }
+      identities.push({ niche, slug, sha256 })
+    }
   }
 
   for (const niche of Object.keys(source)) {
@@ -104,6 +196,15 @@ export function validateLaunchCatalogManifest(manifest) {
   const totalTemplates = Object.values(countsByNiche).reduce((sum, count) => sum + count, 0)
   if (totalTemplates !== LAUNCH_CATALOG_CONTRACT.totalTemplates) {
     errors.push(`total: expected ${LAUNCH_CATALOG_CONTRACT.totalTemplates}, found ${totalTemplates}`)
+  }
+  for (const key of EXPECTED_TEMPLATE_KEYS) {
+    if (!seenTemplateKeys.has(key)) errors.push(`${key}: approved template is missing`)
+  }
+  if (
+    identities.length === LAUNCH_CATALOG_CONTRACT.totalTemplates &&
+    templateIdentityDigest(identities) !== LAUNCH_CATALOG_CONTRACT.templateIdentitySha256
+  ) {
+    errors.push('template identity digest differs from the approved curated receipt')
   }
 
   return {
@@ -383,8 +484,8 @@ Options:
   --help, -h                   Show this help
 
 Examples:
-  node scripts/upload-templates-to-blobs.mjs --dry-run --only aromatherapy
-  node scripts/upload-templates-to-blobs.mjs --only aromatherapy/my-template --force
+  node scripts/upload-templates-to-blobs.mjs --root /tmp/curated --dry-run --only aromatherapy
+  node scripts/upload-templates-to-blobs.mjs --root /tmp/curated --only aromatherapy/my-template --force
 
 Partial uploads merge into the last validated remote manifest. A selected
 template is always uploaded as a complete directory. Existing objects are
@@ -605,6 +706,90 @@ function listDeployableFiles(templateDir, currentDir = templateDir, prefix = '')
   return files.sort()
 }
 
+function listAllTemplateFiles(templateDir, currentDir = templateDir, prefix = '') {
+  const files = []
+  for (const entry of readdirSync(currentDir).sort()) {
+    const full = path.resolve(currentDir, entry)
+    if (!isPathWithin(templateDir, full)) throw new Error(`Unsafe template artifact path: ${full}`)
+    const stat = lstatSync(full)
+    if (stat.isSymbolicLink()) throw new Error(`Template artifacts may not be symbolic links: ${full}`)
+    const relative = prefix ? `${prefix}/${entry}` : entry
+    if (stat.isDirectory()) files.push(...listAllTemplateFiles(templateDir, full, relative))
+    else if (stat.isFile()) files.push(relative.split(path.sep).join('/'))
+  }
+  return files.sort()
+}
+
+function hashTemplateDirectory(templateDir) {
+  const hash = createHash('sha256')
+  for (const file of listAllTemplateFiles(templateDir)) {
+    hash.update(file)
+    hash.update('\0')
+    hash.update(readFileSync(path.join(templateDir, ...file.split('/'))))
+    hash.update('\0')
+  }
+  return hash.digest('hex')
+}
+
+/** Verify the export marker plus every directory against its signed-off receipt. */
+export function validateCuratedExportRoot(root) {
+  const reportPath = path.join(root, 'curated-report.json')
+  if (!existsSync(reportPath) || lstatSync(reportPath).isSymbolicLink()) {
+    throw new Error('Curated export marker is missing or unsafe: curated-report.json')
+  }
+  const reportBytes = readFileSync(reportPath)
+  const reportSha256 = createHash('sha256').update(reportBytes).digest('hex')
+  if (reportSha256 !== LAUNCH_CATALOG_CONTRACT.curatedReportSha256) {
+    throw new Error(
+      `Curated report SHA-256 is not approved: expected ${LAUNCH_CATALOG_CONTRACT.curatedReportSha256}, found ${reportSha256}`,
+    )
+  }
+
+  let report
+  try {
+    report = JSON.parse(reportBytes.toString('utf-8'))
+  } catch {
+    throw new Error('Curated export marker is not valid JSON')
+  }
+  if (
+    report?.contractVersion !== 2 ||
+    report?.templateCount !== LAUNCH_CATALOG_CONTRACT.totalTemplates ||
+    !Array.isArray(report?.templates)
+  ) {
+    throw new Error('Curated export marker does not match publication contract v2')
+  }
+
+  const identities = []
+  const seen = new Set()
+  for (const receipt of report.templates) {
+    const niche = typeof receipt?.niche === 'string' ? receipt.niche : ''
+    const slug = typeof receipt?.slug === 'string' ? receipt.slug : ''
+    const sha256 = typeof receipt?.sha256 === 'string' ? receipt.sha256.toLowerCase() : ''
+    const key = `${niche}/${slug}`
+    if (!EXPECTED_TEMPLATE_KEYS.has(key) || seen.has(key) || !SHA256_RE.test(sha256)) {
+      throw new Error(`Curated export marker contains an unapproved or duplicate identity: ${key}`)
+    }
+    seen.add(key)
+    const directory = path.resolve(root, niche, slug)
+    if (!isPathWithin(root, directory) || !existsSync(directory) || !lstatSync(directory).isDirectory()) {
+      throw new Error(`Curated template directory is missing or unsafe: ${key}`)
+    }
+    const actualSha256 = hashTemplateDirectory(directory)
+    if (actualSha256 !== sha256) {
+      throw new Error(`Curated template artifact differs from its receipt: ${key}`)
+    }
+    identities.push({ niche, slug, sha256 })
+  }
+  if (seen.size !== EXPECTED_TEMPLATE_KEYS.size) {
+    throw new Error(`Curated export contains ${seen.size} approved identities, expected ${EXPECTED_TEMPLATE_KEYS.size}`)
+  }
+  const identitySha256 = templateIdentityDigest(identities)
+  if (identitySha256 !== LAUNCH_CATALOG_CONTRACT.templateIdentitySha256) {
+    throw new Error('Curated template identity digest differs from the approved launch receipt')
+  }
+  return { reportSha256, identitySha256, receipts: new Map(identities.map((item) => [`${item.niche}/${item.slug}`, item])) }
+}
+
 function validateTemplateDirectory(templateDir, nicheSlug, templateKey) {
   const meta = parseTemplateMeta(templateDir, nicheSlug, templateKey)
   if (!meta) return { meta: null, result: { pass: false, errors: ['missing index.html'], tokens: [] } }
@@ -719,6 +904,8 @@ function buildManifest(nicheSlugs) {
       }
       templates.push({
         ...template,
+        artifactSha256: hashTemplateDirectory(templateDir),
+        catalogReportSha256: LAUNCH_CATALOG_CONTRACT.curatedReportSha256,
         editable: true,
         validation: {
           status: 'passed',
@@ -754,7 +941,31 @@ function hasValidationStamp(template) {
     template.validation?.status === 'passed' &&
     template.validation?.contractVersion === 2 &&
     Array.isArray(template.validation?.tokens) &&
-    template.validation.tokens.length > 0,
+    template.validation.tokens.length > 0 &&
+    SHA256_RE.test(String(template.artifactSha256 || '')) &&
+    template.catalogReportSha256 === LAUNCH_CATALOG_CONTRACT.curatedReportSha256,
+  )
+}
+
+function sourceTemplateDir(template) {
+  return typeof template?.sourceDir === 'string' ? template.sourceDir : template?.dir
+}
+
+export function releasePrefix() {
+  return `_releases/${LAUNCH_CATALOG_CONTRACT.templateIdentitySha256}`
+}
+
+export function buildReleaseManifest(localManifest) {
+  const prefix = releasePrefix()
+  return Object.fromEntries(
+    Object.entries(localManifest).map(([niche, templates]) => [
+      niche,
+      templates.map((template) => ({
+        ...template,
+        sourceDir: sourceTemplateDir(template),
+        dir: `${prefix}/${niche}/${template.slug}`,
+      })),
+    ]),
   )
 }
 
@@ -779,8 +990,8 @@ export function mergeValidatedManifest(remoteManifest, localManifest, selectors,
     }
 
     const selectedDirs = new Set(nicheSelectors)
-    const retained = remoteTemplates.filter((template) => !selectedDirs.has(template.dir))
-    const replacements = localTemplates.filter((template) => selectedDirs.has(template.dir))
+    const retained = remoteTemplates.filter((template) => !selectedDirs.has(sourceTemplateDir(template)))
+    const replacements = localTemplates.filter((template) => selectedDirs.has(sourceTemplateDir(template)))
     merged[niche] = [...retained, ...replacements].sort((a, b) => {
       const ao = typeof a.order === 'number' ? a.order : Number.POSITIVE_INFINITY
       const bo = typeof b.order === 'number' ? b.order : Number.POSITIVE_INFINITY
@@ -830,14 +1041,23 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
     return { dryRun: true, files: 0, bytes: 0 }
   }
 
-  PLATFORM_BUILDER_ROOT = options.root ||
-    (env.TEMPLATE_LIBRARY_ROOT ? path.resolve(env.TEMPLATE_LIBRARY_ROOT) : DEFAULT_PLATFORM_BUILDER_ROOT)
-  if (!existsSync(PLATFORM_BUILDER_ROOT)) {
+  const configuredRoot = options.root || env.TEMPLATE_LIBRARY_ROOT
+  if (!configuredRoot) {
     throw new Error(
-      `platform-builder directory not found: ${PLATFORM_BUILDER_ROOT}\n` +
-      'This script requires the ignored local template library at the repository root.',
+      'An explicit curated export root is required via --root or TEMPLATE_LIBRARY_ROOT; ' +
+      'implicit ignored template directories are never publishable.',
     )
   }
+  PLATFORM_BUILDER_ROOT = path.resolve(configuredRoot)
+  if (!existsSync(PLATFORM_BUILDER_ROOT)) {
+    throw new Error(
+      `curated template export directory not found: ${PLATFORM_BUILDER_ROOT}`,
+    )
+  }
+  const curatedReceipt = validateCuratedExportRoot(PLATFORM_BUILDER_ROOT)
+  console.log(
+    `[upload-templates] Curated receipt verified (report=${curatedReceipt.reportSha256} identities=${curatedReceipt.identitySha256}).`,
+  )
 
   const nicheSlugs = loadNicheSlugs()
   for (const selector of options.only) {
@@ -933,27 +1153,30 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
     siteID: env.NETLIFY_SITE_ID,
     token: env.NETLIFY_AUTH_TOKEN,
   })
-  let manifestToPublish = manifest
+  const releaseManifest = buildReleaseManifest(manifest)
+  let manifestToPublish = releaseManifest
   if (options.only.length > 0) {
     const remoteManifest = await store.get('_manifest.json', { type: 'json' })
     if (!remoteManifest || typeof remoteManifest !== 'object') {
       throw new Error('A partial upload requires an existing validated remote manifest; run a full upload first')
     }
-    manifestToPublish = mergeValidatedManifest(remoteManifest, manifest, options.only, nicheSlugs)
+    manifestToPublish = mergeValidatedManifest(remoteManifest, releaseManifest, options.only, nicheSlugs)
   }
   assertLaunchCatalogManifest(manifestToPublish, 'Manifest publish plan')
 
   let uploaded = 0
   let skipped = 0
   let errors = 0
+  const prefix = releasePrefix()
 
   for (let i = 0; i < files.length; i++) {
     const { full, key } = files[i]
+    const destinationKey = `${prefix}/${key}`
     try {
       const content = await fsp.readFile(full)
       const sha256 = createHash('sha256').update(content).digest('hex')
       if (!options.force) {
-        const meta = await store.getMetadata(key)
+        const meta = await store.getMetadata(destinationKey)
         if (meta?.metadata?.sha256 === sha256 && meta.metadata.contractVersion === 2) {
           skipped++
           if ((i + 1) % 500 === 0) {
@@ -962,8 +1185,12 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
           continue
         }
       }
-      await store.set(key, content, {
-        metadata: { sha256, contractVersion: 2 },
+      await store.set(destinationKey, content, {
+        metadata: {
+          sha256,
+          contractVersion: 2,
+          catalogReportSha256: LAUNCH_CATALOG_CONTRACT.curatedReportSha256,
+        },
       })
       uploaded++
       if ((uploaded + skipped) % 100 === 0 || (i + 1) % 500 === 0) {
@@ -972,7 +1199,7 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
     } catch (error) {
       errors++
       const message = error instanceof Error ? error.message : String(error)
-      console.error(`[upload-templates] Error uploading ${key}:`, message)
+      console.error(`[upload-templates] Error uploading ${destinationKey}:`, message)
     }
   }
 
@@ -982,6 +1209,33 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
     )
   }
 
+  for (const { full, key } of files) {
+    const content = await fsp.readFile(full)
+    const sha256 = createHash('sha256').update(content).digest('hex')
+    const destinationKey = `${prefix}/${key}`
+    const readback = await store.getWithMetadata(destinationKey, {
+      type: 'arrayBuffer',
+      consistency: 'strong',
+    })
+    const readbackSha256 = readback?.data
+      ? createHash('sha256').update(Buffer.from(readback.data)).digest('hex')
+      : null
+    if (
+      readbackSha256 !== sha256 ||
+      readback?.metadata?.sha256 !== sha256 ||
+      readback.metadata.contractVersion !== 2 ||
+      readback.metadata.catalogReportSha256 !== LAUNCH_CATALOG_CONTRACT.curatedReportSha256
+    ) {
+      throw new Error(`Strong readback failed for immutable release object: ${destinationKey}`)
+    }
+  }
+
+  await store.setJSON(`${prefix}/_manifest.json`, manifestToPublish)
+  const releaseReadback = await store.get(`${prefix}/_manifest.json`, { type: 'json' })
+  const verifiedRelease = verifyPublishedManifest(manifestToPublish, releaseReadback)
+  if (!verifiedRelease.pass) {
+    throw new Error(`Immutable release manifest verification failed:\n  - ${verifiedRelease.errors.join('\n  - ')}`)
+  }
   await store.setJSON('_manifest.json', manifestToPublish)
   const publishedManifest = await store.get('_manifest.json', { type: 'json' })
   const readback = verifyPublishedManifest(manifestToPublish, publishedManifest)
@@ -991,7 +1245,7 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
     )
   }
   const publishedTemplates = Object.values(manifestToPublish).flat().length
-  console.log(`[upload-templates] Uploaded _manifest.json (niches=${nicheSlugs.length} templates=${publishedTemplates})`)
+  console.log(`[upload-templates] Atomically switched _manifest.json (release=${prefix} niches=${nicheSlugs.length} templates=${publishedTemplates})`)
   console.log(`[upload-templates] Readback verified (sha256=${readback.publishedDigest})`)
   console.log(`[upload-templates] Done. uploaded=${uploaded} skipped=${skipped} errors=0 total=${files.length}`)
   return { dryRun: false, files: files.length, bytes: totalBytes, totalTemplates, uploaded, skipped }

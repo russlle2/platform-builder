@@ -3,6 +3,7 @@ import path from 'path'
 import { getStore } from '@netlify/blobs'
 import { NICHE_META, NICHE_SLUGS, getNicheSlugs } from './niche-meta'
 import { inspectLaunchCatalog } from './launch-catalog-integrity'
+import launchCatalogContract from './launch-catalog-contract.json'
 export { hydrateTemplate } from './template-hydration'
 
 export { NICHE_META, NICHE_SLUGS, getNicheSlugs }
@@ -41,6 +42,12 @@ export interface TemplateMeta {
    * The registry composes both filesystem paths and CDN URLs from this.
    */
   dir: string
+  /** SHA-256 of the complete deterministic template directory. */
+  artifactSha256: string
+  /** SHA-256 of the approved curated export report. */
+  catalogReportSha256: string
+  /** Original niche/slug path retained when Blob objects use release prefixes. */
+  sourceDir?: string
   fields: TemplateField[]
   /** First 160 chars of visible text from index.html (for card preview) */
   snippet: string
@@ -211,7 +218,10 @@ async function getCache(): Promise<Map<string, TemplateMeta[]>> {
   const integrity = inspectLaunchCatalog(
     [...out.entries()].map(([slug, templates]) => ({
       slug,
-      templateCount: templates.length,
+      templates: templates.map((template) => ({
+        slug: template.slug,
+        artifactSha256: template.artifactSha256,
+      })),
     })),
   )
   if (!integrity.ready) {
@@ -235,7 +245,11 @@ export function isPublishableTemplateMeta(value: unknown): value is TemplateMeta
     validation?.status !== 'passed' ||
     validation.contractVersion !== 2 ||
     !Array.isArray(validation.tokens) ||
-    validation.tokens.length === 0
+    validation.tokens.length === 0 ||
+    typeof template.artifactSha256 !== 'string' ||
+    !/^[a-f0-9]{64}$/.test(template.artifactSha256) ||
+    typeof template.catalogReportSha256 !== 'string' ||
+    template.catalogReportSha256 !== launchCatalogContract.curatedReportSha256
   ) {
     return false
   }
@@ -319,6 +333,18 @@ function safeJoin(root: string, ...parts: string[]): string | null {
   const relative = path.relative(resolvedRoot, resolvedPath)
   if (relative.startsWith('..') || path.isAbsolute(relative)) return null
   return resolvedPath
+}
+
+/** Exact identities used by readiness checks; never exposes file contents. */
+export async function getLaunchCatalogIdentitySnapshot() {
+  const cache = await getCache()
+  return [...cache.entries()].map(([slug, templates]) => ({
+    slug,
+    templates: templates.map((template) => ({
+      slug: template.slug,
+      artifactSha256: template.artifactSha256,
+    })),
+  }))
 }
 
 function safeTemplateKey(...parts: string[]): string | null {

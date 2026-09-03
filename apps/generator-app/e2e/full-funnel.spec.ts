@@ -12,8 +12,8 @@ test.describe('Full purchase funnel (test mode)', () => {
     'requires ENABLE_TEST_PURCHASE=true',
   )
 
-  test.afterAll(async () => {
-    await cleanupTestData(testEmail)
+  test.afterAll(async ({ request }) => {
+    await cleanupTestData(testEmail, testSlug, request)
   })
 
   test('intake -> contact saved -> test-purchase -> portal access', async ({ page, request }) => {
@@ -76,16 +76,15 @@ test.describe('Full purchase funnel (test mode)', () => {
     const result = (await response.json()) as {
       slug?: string
       portalAccessToken?: string | null
+      portalUrl?: string | null
       success?: boolean
     }
     expect(result.success).toBe(true)
     expect(result.slug).toBeTruthy()
 
     // STEP 6–7: Visit portal with slug and token
-    if (result.portalAccessToken && result.slug) {
-      await page.goto(
-        `/portal?slug=${encodeURIComponent(result.slug)}&token=${encodeURIComponent(result.portalAccessToken)}`,
-      )
+    if (result.portalAccessToken && result.slug && result.portalUrl) {
+      await page.goto(result.portalUrl)
       await expect(page.getByPlaceholder('Business name')).toHaveValue(testBusinessName, {
         timeout: 15000,
       })

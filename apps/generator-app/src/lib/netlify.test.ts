@@ -3,6 +3,7 @@ import {
   getCustomDomainInstructions,
   getDomainDnsRecords,
   provisionSite,
+  setCustomDomain,
   verifyPublishedSite,
 } from './netlify'
 
@@ -28,6 +29,7 @@ describe('published Netlify site verification', () => {
     await expect(provisionSite('calm-co')).resolves.toMatchObject({
       siteUrl: 'https://calm-co.dailyclarity.org',
       subdomain: 'calm-co.dailyclarity.org',
+      defaultDomain: 'platform-calm-co.netlify.app',
     })
   })
 
@@ -85,6 +87,41 @@ describe('published Netlify site verification', () => {
 })
 
 describe('custom-domain DNS records', () => {
+  it('promotes a customer domain while retaining the branded hostname alias', async () => {
+    vi.stubEnv('NETLIFY_ACCESS_TOKEN', 'netlify-test-token')
+    const fetchMock = vi.fn<typeof fetch>()
+      .mockResolvedValueOnce(new Response(JSON.stringify({
+        ssl_url: 'https://www.customer.example',
+      }), { status: 200 }))
+      .mockResolvedValueOnce(new Response('{}', { status: 202 }))
+    vi.stubGlobal('fetch', fetchMock)
+
+    await setCustomDomain('site-123', 'www.customer.example', ['calm-co.dailyclarity.org'])
+
+    expect(fetchMock.mock.calls[0][1]).toMatchObject({ method: 'PATCH' })
+    expect(JSON.parse(String(fetchMock.mock.calls[0][1]?.body))).toEqual({
+      custom_domain: 'www.customer.example',
+      domain_aliases: ['calm-co.dailyclarity.org'],
+    })
+  })
+
+  it('replaces aliases instead of retaining a superseded customer domain', async () => {
+    vi.stubEnv('NETLIFY_ACCESS_TOKEN', 'netlify-test-token')
+    const fetchMock = vi.fn<typeof fetch>()
+      .mockResolvedValueOnce(new Response(JSON.stringify({
+        ssl_url: 'https://new.customer.example',
+      }), { status: 200 }))
+      .mockResolvedValueOnce(new Response('{}', { status: 202 }))
+    vi.stubGlobal('fetch', fetchMock)
+
+    await setCustomDomain('site-123', 'new.customer.example', ['calm-co.dailyclarity.org'])
+
+    expect(JSON.parse(String(fetchMock.mock.calls[0][1]?.body))).toEqual({
+      custom_domain: 'new.customer.example',
+      domain_aliases: ['calm-co.dailyclarity.org'],
+    })
+  })
+
   it('distinguishes root domains from arbitrary subdomains using the public suffix list', () => {
     const dotCom = getDomainDnsRecords('example.com', 'https://site.netlify.app')
     expect(dotCom.isApexDomain).toBe(true)

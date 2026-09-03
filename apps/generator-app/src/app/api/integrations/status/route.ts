@@ -5,7 +5,7 @@ import {
   getTemplateFulfillmentConfigIssues,
   isDedicatedSupabaseProjectConfigured,
 } from '@/lib/stripe-runtime'
-import { getNiches } from '@/lib/templates/niche-registry'
+import { getLaunchCatalogIdentitySnapshot } from '@/lib/templates/niche-registry'
 import {
   inspectLaunchCatalog,
   type LaunchCatalogIntegrity,
@@ -56,7 +56,7 @@ export async function GET(req: NextRequest) {
 
   let catalogIntegrity: LaunchCatalogIntegrity = inspectLaunchCatalog([])
   try {
-    const niches = await getNiches()
+    const niches = await getLaunchCatalogIdentitySnapshot()
     catalogIntegrity = inspectLaunchCatalog(niches)
   } catch (error) {
     console.error('[integrations/status] template catalog check failed:', error)

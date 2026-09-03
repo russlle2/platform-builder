@@ -117,6 +117,19 @@ export function isManagedPlan(input: string | null | undefined): boolean {
   return normalizePlanKey(input) === 'security_ads'
 }
 
+/**
+ * A fulfilled managed-plan checkout opens its work item when the subscription
+ * starts, including a trial or 100%-discounted `no_payment_required` session.
+ */
+export function shouldCreateManagedServiceTask(
+  input: string | null | undefined,
+  paymentStatus: string | null | undefined,
+): boolean {
+  return isManagedPlan(input) && (
+    paymentStatus === 'paid' || paymentStatus === 'no_payment_required'
+  )
+}
+
 /** Resolve a plan definition from any planKey/alias. */
 export function getPlan(input: string | null | undefined): Plan | null {
   const key = normalizePlanKey(input)

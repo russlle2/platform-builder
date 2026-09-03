@@ -35,8 +35,13 @@ describe('stripe fulfillment queue safeguards', () => {
     expect(stripeEventBusinessKey({
       id: 'evt_checkout',
       type: 'checkout.session.async_payment_succeeded',
-      data: { object: { id: 'cs_same' } },
-    })).toBe('checkout:cs_same')
+      data: { object: { id: 'cs_same', subscription: 'sub_same' } },
+    })).toBe('subscription:sub_same')
+    expect(stripeEventBusinessKey({
+      id: 'evt_checkout_one_time',
+      type: 'checkout.session.completed',
+      data: { object: { id: 'cs_one_time' } },
+    })).toBe('checkout:cs_one_time')
     expect(stripeEventBusinessKey({
       id: 'evt_invoice',
       type: 'invoice.paid',

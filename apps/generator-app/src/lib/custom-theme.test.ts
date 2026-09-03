@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { buildCustomThemeCss, sanitizeCustomTheme } from './custom-theme'
+import {
+  buildCustomThemeCss,
+  customThemeAfterVariationChange,
+  sanitizeCustomTheme,
+} from './custom-theme'
 
 const validTheme = {
   primary: '#0EA5E9',
@@ -22,5 +26,13 @@ describe('custom theme', () => {
     expect(sanitizeCustomTheme({ ...validTheme, primary: 'red;display:none' })).toBeNull()
     expect(sanitizeCustomTheme({ ...validTheme, fontImportUrl: 'https://evil.test/font.css' })).toBeNull()
     expect(buildCustomThemeCss({ ...validTheme, headingFont: 'Inter;display:none' })).toBe('')
+  })
+
+  it('preserves custom colors and fonts across structure-only changes', () => {
+    const sanitized = sanitizeCustomTheme(validTheme)
+
+    expect(customThemeAfterVariationChange(sanitized, 'structure')).toBe(sanitized)
+    expect(customThemeAfterVariationChange(sanitized, 'color')).toBeNull()
+    expect(customThemeAfterVariationChange(sanitized, 'font')).toBeNull()
   })
 })

@@ -10,6 +10,8 @@ function validTemplate() {
     pages: ['index.html'],
     files: ['index.html', 'assets/css/styles.css'],
     dir: 'aromatherapy/calm-studio',
+    artifactSha256: 'a'.repeat(64),
+    catalogReportSha256: 'e3fd5bbf7dc43e3b7707f69905ac4a124820a1e9aa09fe9bcb3aebd7e14bfb22',
     fields: [{ name: 'BUSINESS_NAME', label: 'Business name', type: 'text' }],
     snippet: 'A calm introduction.',
     editable: true,

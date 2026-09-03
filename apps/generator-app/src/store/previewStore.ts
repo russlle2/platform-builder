@@ -178,8 +178,8 @@ export const usePreviewStore = create<PreviewState>((set, get) => ({
       TAGLINE: b.tagline,
       DESCRIPTION: b.description,
       SERVICES: b.services,
-      PRIMARY_CTA_URL: 'contact.html',
-      BOOKING_URL: 'contact.html',
+      PRIMARY_CTA_URL: '/contact.html',
+      BOOKING_URL: '/contact.html',
       PRIMARY_CTA_LABEL: 'Get in touch',
       CTA_LABEL: 'Get in touch',
       // Common aliases used in templates

@@ -2,6 +2,8 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
   LAUNCH_CATALOG_CONTRACT,
+  LAUNCH_CATALOG_APPROVED_RECEIPT,
+  buildReleaseManifest,
   matchesOnlySelector,
   mergeValidatedManifest,
   normalizeOnlySelector,
@@ -12,17 +14,21 @@ import {
 } from './upload-templates-to-blobs.mjs'
 
 function completeLaunchManifest() {
-  return Object.fromEntries(
-    Object.entries(LAUNCH_CATALOG_CONTRACT.templatesByNiche).map(([niche, count]) => [
-      niche,
-      Array.from({ length: count }, (_, index) => ({
-        dir: `${niche}/template-${String(index + 1).padStart(2, '0')}`,
+  return Object.fromEntries(Object.keys(LAUNCH_CATALOG_CONTRACT.templatesByNiche).map((niche) => [
+    niche,
+    LAUNCH_CATALOG_APPROVED_RECEIPT.templates
+      .filter((template) => template.niche === niche)
+      .map((template, index) => ({
+        slug: template.slug,
+        nicheSlug: niche,
+        dir: `${niche}/${template.slug}`,
         name: `Template ${index + 1}`,
+        artifactSha256: template.sha256,
+        catalogReportSha256: LAUNCH_CATALOG_CONTRACT.curatedReportSha256,
         editable: true,
         validation: { status: 'passed', contractVersion: 2, tokens: ['BUSINESS_NAME'] },
       })),
-    ]),
-  )
+  ]))
 }
 
 test('parses repeatable selectors, force, and dry-run without side effects', () => {
@@ -73,26 +79,21 @@ test('rejects traversal, Windows separators, absolute paths, and unknown flags',
 })
 
 test('partial manifest updates retain only previously validated remote entries', () => {
-  const stamp = { status: 'passed', contractVersion: 2, tokens: ['BUSINESS_NAME', 'EMAIL'] }
-  const remote = {
-    aromatherapy: [
-      { dir: 'aromatherapy/old', name: 'Old', editable: true, validation: stamp },
-      { dir: 'aromatherapy/legacy', name: 'Legacy' },
-    ],
-    sound_bath: [{ dir: 'sound_bath/kept', name: 'Kept', editable: true, validation: stamp }],
-  }
-  const local = {
-    aromatherapy: [{ dir: 'aromatherapy/old', name: 'New', editable: true, validation: stamp }],
-    sound_bath: [],
-  }
+  const remote = buildReleaseManifest(completeLaunchManifest())
+  const local = buildReleaseManifest(completeLaunchManifest())
+  const selected = local.aromatherapy[0].sourceDir
+  remote.aromatherapy[0].name = 'Old'
+  local.aromatherapy[0].name = 'New'
+  remote.aromatherapy.push({ dir: 'aromatherapy/legacy', name: 'Legacy' })
   const merged = mergeValidatedManifest(
     remote,
     local,
-    ['aromatherapy/old'],
-    ['aromatherapy', 'sound_bath'],
+    [selected],
+    Object.keys(LAUNCH_CATALOG_CONTRACT.templatesByNiche),
   )
-  assert.deepEqual(merged.aromatherapy.map((entry) => entry.name), ['New'])
-  assert.deepEqual(merged.sound_bath.map((entry) => entry.name), ['Kept'])
+  assert.equal(merged.aromatherapy.find((entry) => entry.sourceDir === selected).name, 'New')
+  assert.equal(merged.aromatherapy.some((entry) => entry.name === 'Legacy'), false)
+  assert.equal(merged.sound_bath.length, 12)
 })
 
 test('upload contract fails closed on zero-token, fake-data, and stale-field output', () => {
@@ -155,6 +156,32 @@ test('launch catalog rejects unexpected niches even when the required counts are
   const result = validateLaunchCatalogManifest(manifest)
   assert.equal(result.pass, false)
   assert.match(result.errors.join('\n'), /unexpected launch niche/i)
+})
+
+test('launch catalog rejects an alternate valid-looking 60 and a one-byte artifact mutation', () => {
+  const alternate = completeLaunchManifest()
+  alternate.aromatherapy[0].slug = 'another-valid-looking-template'
+  let result = validateLaunchCatalogManifest(alternate)
+  assert.equal(result.pass, false)
+  assert.match(result.errors.join('\n'), /not in the approved launch receipt/i)
+
+  const mutated = completeLaunchManifest()
+  const originalSha = mutated.sound_bath[3].artifactSha256
+  mutated.sound_bath[3].artifactSha256 = `${originalSha.slice(0, -1)}${originalSha.endsWith('0') ? '1' : '0'}`
+  result = validateLaunchCatalogManifest(mutated)
+  assert.equal(result.pass, false)
+  assert.match(result.errors.join('\n'), /artifact SHA-256 differs/i)
+})
+
+test('release manifest points only to immutable catalog-digest keys', () => {
+  const released = buildReleaseManifest(completeLaunchManifest())
+  for (const [niche, templates] of Object.entries(released)) {
+    for (const template of templates) {
+      assert.equal(template.sourceDir, `${niche}/${template.slug}`)
+      assert.match(template.dir, new RegExp(`^_releases/[a-f0-9]{64}/${niche}/${template.slug}$`))
+    }
+  }
+  assert.equal(validateLaunchCatalogManifest(released).pass, true)
 })
 
 test('published manifest readback must exactly match the validated publish plan', () => {

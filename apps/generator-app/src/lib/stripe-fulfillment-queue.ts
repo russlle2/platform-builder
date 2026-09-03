@@ -58,6 +58,8 @@ export function stripeEventBusinessKey(event: {
 }): string {
   const object = (event.data?.object || {}) as Record<string, unknown>
   if (event.type.startsWith('checkout.session.')) {
+    const subscriptionId = objectId(object.subscription)
+    if (subscriptionId) return `subscription:${subscriptionId}`
     return `checkout:${objectId(object) || event.id}`
   }
   if (event.type.startsWith('customer.subscription.')) {

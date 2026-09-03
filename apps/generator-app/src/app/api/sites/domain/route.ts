@@ -155,7 +155,7 @@ export async function POST(req: NextRequest) {
     }
 
     let siteId: string | null = null
-    let subdomain: string | null = null
+    let netlifyDefaultDomain: string | null = null
     let previousDomain: string | null = null
     let serviceClient: SupabaseClient | null = null
 
@@ -166,7 +166,7 @@ export async function POST(req: NextRequest) {
 
       const { data } = await serviceClient
         .from('site_slugs')
-        .select('netlify_site_id, site_url, status, custom_domain')
+        .select('netlify_site_id, site_url, netlify_default_domain, status, custom_domain')
         .eq('slug', normalizedSlug)
         .maybeSingle()
 
@@ -174,7 +174,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'The site must finish provisioning first.' }, { status: 409 })
       }
       siteId = data.netlify_site_id || null
-      subdomain = data.site_url || `https://${normalizedSlug}.${process.env.PLATFORM_DOMAIN}`
+      netlifyDefaultDomain = data.netlify_default_domain || `platform-${normalizedSlug}.netlify.app`
       previousDomain = data.custom_domain || null
       if (!siteId) {
         return NextResponse.json(
@@ -207,7 +207,11 @@ export async function POST(req: NextRequest) {
 
     let result: Awaited<ReturnType<typeof setCustomDomain>>
     try {
-      result = await setCustomDomain(siteId, domain)
+      result = await setCustomDomain(
+        siteId,
+        domain,
+        [`${normalizedSlug}.${process.env.PLATFORM_DOMAIN}`],
+      )
     } catch (error) {
       // Compensate only if this request still owns the reservation. This avoids
       // leaving the database ahead of Netlify without clobbering a later update.
@@ -242,7 +246,11 @@ export async function POST(req: NextRequest) {
           throw new Error('The active domain reservation is invalid.')
         }
         if (desiredDomain === appliedDomain) break
-        result = await setCustomDomain(siteId, desiredDomain)
+        result = await setCustomDomain(
+          siteId,
+          desiredDomain,
+          [`${normalizedSlug}.${process.env.PLATFORM_DOMAIN}`],
+        )
         appliedDomain = desiredDomain
       }
 
@@ -269,9 +277,9 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const siteSubdomain = subdomain || normalizedSlug
-    const instructions = getCustomDomainInstructions(domain, siteSubdomain)
-    const records = getDomainDnsRecords(domain, siteSubdomain)
+    const dnsTarget = netlifyDefaultDomain || `platform-${normalizedSlug}.netlify.app`
+    const instructions = getCustomDomainInstructions(domain, dnsTarget)
+    const records = getDomainDnsRecords(domain, dnsTarget)
 
     return NextResponse.json({
       ok: true,
@@ -319,7 +327,7 @@ export async function GET(req: NextRequest) {
 
   const { data } = await supabase
     .from('site_slugs')
-    .select('slug, status, netlify_site_id, site_url, custom_domain')
+    .select('slug, status, netlify_site_id, site_url, netlify_default_domain, custom_domain')
     .eq('slug', normalizedSlug)
     .maybeSingle()
 
@@ -332,9 +340,9 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Platform domain is not configured.' }, { status: 503 })
   }
   const subdomain = `${normalizedSlug}.${platformDomain}`
-  // Use the stored Netlify URL for CNAME target; fall back to the platform subdomain
-  // (which getDomainDnsRecords will use as a bare hostname)
-  const netlifyUrl = data.site_url || `https://${normalizedSlug}.${platformDomain}`
+  // DNS must target the stable Netlify-owned hostname, not a branded alias that
+  // may itself be promoted or redirected during a custom-domain transition.
+  const netlifyUrl = data.netlify_default_domain || `platform-${normalizedSlug}.netlify.app`
 
   if (checkDns) {
     if (!data.custom_domain) {
@@ -356,7 +364,7 @@ export async function GET(req: NextRequest) {
 
   const customDomain = data.custom_domain
   const instructions = customDomain
-    ? getCustomDomainInstructions(customDomain, subdomain)
+    ? getCustomDomainInstructions(customDomain, netlifyUrl)
     : null
   const records = customDomain ? getDomainDnsRecords(customDomain, netlifyUrl) : null
 

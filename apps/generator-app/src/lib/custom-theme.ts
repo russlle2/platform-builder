@@ -9,6 +9,15 @@ export interface CustomTheme {
   fontImportUrl?: string
 }
 
+export type TemplateVariationDimension = 'color' | 'font' | 'structure'
+
+export function customThemeAfterVariationChange(
+  currentTheme: CustomTheme | null,
+  dimension: TemplateVariationDimension,
+): CustomTheme | null {
+  return dimension === 'structure' ? currentTheme : null
+}
+
 const HEX_COLOR = /^#[0-9a-f]{6}$/i
 const FONT_STACK = /^[a-z0-9,'" -]{1,120}$/i
 
