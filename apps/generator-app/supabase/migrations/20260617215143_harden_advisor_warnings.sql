@@ -1,25 +1,36 @@
 -- Tighten Supabase security-advisor warnings.
 -- Applied via MCP on 2026-06-17; mirrored here for version control.
 
--- Lock down orders: financial table, service-role only (Stripe webhook).
-drop policy if exists "Allow order insert" on public.orders;
-drop policy if exists "Allow anon select orders" on public.orders;
-drop policy if exists "Allow order update" on public.orders;
-revoke all on public.orders from anon, authenticated;
+-- Some of these tables were introduced by a later drift-reconciliation
+-- migration. Guard every relation so a fresh database can replay the history.
+do $$
+begin
+  if to_regclass('public.orders') is not null then
+    execute 'drop policy if exists "Allow order insert" on public.orders';
+    execute 'drop policy if exists "Allow anon select orders" on public.orders';
+    execute 'drop policy if exists "Allow order update" on public.orders';
+    execute 'revoke all on public.orders from anon, authenticated';
+  end if;
 
--- contact_messages: keep public INSERT (forms), remove read/discoverability.
-drop policy if exists "Allow anon select contact" on public.contact_messages;
-revoke select on public.contact_messages from anon, authenticated;
+  if to_regclass('public.contact_messages') is not null then
+    execute 'drop policy if exists "Allow anon select contact" on public.contact_messages';
+    execute 'revoke select on public.contact_messages from anon, authenticated';
+  end if;
 
--- booking_inquiries: public forms may INSERT only; strip TRUNCATE/DELETE/UPDATE/SELECT.
-drop policy if exists "Allow anon select booking" on public.booking_inquiries;
-revoke all on public.booking_inquiries from anon, authenticated;
-grant insert on public.booking_inquiries to anon, authenticated;
+  if to_regclass('public.booking_inquiries') is not null then
+    execute 'drop policy if exists "Allow anon select booking" on public.booking_inquiries';
+    execute 'revoke all on public.booking_inquiries from anon, authenticated';
+    execute 'grant insert on public.booking_inquiries to anon, authenticated';
+  end if;
 
--- newsletter_subscribers: public forms may INSERT only; strip the rest.
-drop policy if exists "Allow anon select newsletter" on public.newsletter_subscribers;
-revoke all on public.newsletter_subscribers from anon, authenticated;
-grant insert on public.newsletter_subscribers to anon, authenticated;
+  if to_regclass('public.newsletter_subscribers') is not null then
+    execute 'drop policy if exists "Allow anon select newsletter" on public.newsletter_subscribers';
+    execute 'revoke all on public.newsletter_subscribers from anon, authenticated';
+    execute 'grant insert on public.newsletter_subscribers to anon, authenticated';
+  end if;
 
--- customer-images is a public bucket: drop broad listing policy; direct URL access still works.
-drop policy if exists "customer_images_public_read" on storage.objects;
+  if to_regclass('storage.objects') is not null then
+    execute 'drop policy if exists "customer_images_public_read" on storage.objects';
+  end if;
+end;
+$$;

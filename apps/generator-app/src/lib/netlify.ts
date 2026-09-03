@@ -41,7 +41,9 @@ function getToken(): string {
 }
 
 function getDomain(): string {
-  return process.env.PLATFORM_DOMAIN || 'yourdomain.com'
+  const domain = process.env.PLATFORM_DOMAIN?.trim().toLowerCase()
+  if (!domain) throw new Error('PLATFORM_DOMAIN is not configured.')
+  return domain
 }
 
 async function netlifyFetch(path: string, options: RequestInit = {}): Promise<Response> {
@@ -53,6 +55,7 @@ async function netlifyFetch(path: string, options: RequestInit = {}): Promise<Re
       'Content-Type': 'application/json',
       ...(options.headers || {}),
     },
+    signal: options.signal || AbortSignal.timeout(20_000),
   })
 }
 
@@ -71,10 +74,31 @@ async function netlifyFetch(path: string, options: RequestInit = {}): Promise<Re
 export async function provisionSite(slug: string): Promise<ProvisionResult> {
   const domain = getDomain()
   const subdomain = `${slug}.${domain}`
+  const siteName = `platform-${slug}`
   const teamSlug = process.env.NETLIFY_TEAM_SLUG
 
+  // The deterministic Netlify hostname closes the crash window between site
+  // creation and our database checkpoint: a retry discovers and reuses the
+  // already-created external resource instead of orphaning a second site.
+  const existingResponse = await netlifyFetch(`/sites/${encodeURIComponent(`${siteName}.netlify.app`)}`)
+  if (existingResponse.ok) {
+    const existing: NetlifySite = await existingResponse.json()
+    if (existing.name !== siteName || existing.custom_domain !== subdomain) {
+      throw new Error('The deterministic Netlify site name is already bound to another domain.')
+    }
+    return {
+      siteId: existing.id,
+      subdomain,
+      siteUrl: `https://${subdomain}`,
+      adminUrl: existing.admin_url,
+    }
+  }
+  if (existingResponse.status !== 404) {
+    throw new Error(`Netlify site lookup failed (${existingResponse.status}).`)
+  }
+
   const body: Record<string, unknown> = {
-    name: `platform-${slug}`,
+    name: siteName,
     custom_domain: subdomain,
   }
 
@@ -97,7 +121,10 @@ export async function provisionSite(slug: string): Promise<ProvisionResult> {
   return {
     siteId: site.id,
     subdomain,
-    siteUrl: site.ssl_url || site.url,
+    // `ssl_url` is commonly the Netlify-owned fallback hostname. The product
+    // promises the branded wildcard hostname, so canonical metadata, customer
+    // email, and the portal must all use that URL and wait for its TLS endpoint.
+    siteUrl: `https://${subdomain}`,
     adminUrl: site.admin_url,
   }
 }
@@ -107,6 +134,7 @@ export async function provisionSite(slug: string): Promise<ProvisionResult> {
 /* ------------------------------------------------------------------ */
 
 import crypto from 'crypto'
+import { parse as parseDomain } from 'tldts'
 
 /**
  * Deploy a set of files directly to a Netlify site using the
@@ -118,14 +146,14 @@ import crypto from 'crypto'
  */
 export async function deploySiteFiles(
   siteId: string,
-  files: Record<string, string>,
+  files: Record<string, string | Buffer>,
 ): Promise<{ deployId: string; deployUrl: string }> {
   const token = getToken()
 
   // Step 1: Calculate SHA1 digests for each file
   const fileDigests: Record<string, string> = {}
   const digestToPath: Record<string, string> = {}
-  const digestToContent: Record<string, string> = {}
+  const digestToContent: Record<string, string | Buffer> = {}
 
   for (const [filePath, content] of Object.entries(files)) {
     const sha1 = crypto.createHash('sha1').update(content).digest('hex')
@@ -155,26 +183,114 @@ export async function deploySiteFiles(
   // Step 3: Upload any files Netlify needs (ones it doesn't already have)
   for (const sha1 of required) {
     const content = digestToContent[sha1]
-    if (!content) continue
+    if (content === undefined) {
+      throw new Error(`Netlify requested an unknown file digest: ${sha1}`)
+    }
 
-    const uploadRes = await fetch(`${NETLIFY_API}/deploys/${deployId}/files${digestToPath[sha1]}`, {
+    const encodedPath = digestToPath[sha1]
+      .split('/')
+      .map((segment) => encodeURIComponent(segment))
+      .join('/')
+
+    const uploadRes = await fetch(`${NETLIFY_API}/deploys/${deployId}/files${encodedPath}`, {
       method: 'PUT',
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/octet-stream',
       },
-      body: content,
+      body: typeof content === 'string' ? content : Uint8Array.from(content).buffer,
+      signal: AbortSignal.timeout(30_000),
     })
 
     if (!uploadRes.ok) {
-      console.error(`Failed to upload file ${digestToPath[sha1]}: ${uploadRes.status}`)
+      const detail = await uploadRes.text()
+      throw new Error(
+        `Netlify file upload failed for ${digestToPath[sha1]} (${uploadRes.status}): ${detail}`,
+      )
     }
+  }
+
+  // A successful PUT means Netlify has the bytes, not necessarily that the
+  // atomic deploy is live. Wait for the documented `ready` state and fail the
+  // fulfillment attempt on terminal/timeout states so Stripe can retry.
+  let deployState = String(deploy.state || '')
+  for (let attempt = 0; deployState !== 'ready' && attempt < 20; attempt++) {
+    if (deployState === 'error' || deployState === 'rejected') {
+      throw new Error(`Netlify deploy ${deployId} entered terminal state: ${deployState}`)
+    }
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    const statusResponse = await netlifyFetch(`/deploys/${deployId}`)
+    if (!statusResponse.ok) {
+      throw new Error(`Netlify deploy status failed (${statusResponse.status})`)
+    }
+    const status = await statusResponse.json()
+    deployState = String(status.state || '')
+  }
+  if (deployState !== 'ready') {
+    throw new Error(`Netlify deploy ${deployId} was not ready before the verification timeout.`)
   }
 
   return {
     deployId,
     deployUrl: deploy.ssl_url || deploy.url || `https://${deploy.subdomain}.netlify.app`,
   }
+}
+
+export interface PublishedSiteVerificationOptions {
+  attempts?: number
+  delayMs?: number
+  timeoutMs?: number
+  cacheKey?: string
+}
+
+/**
+ * Verify the exact customer-facing HTTPS hostname after Netlify reports the
+ * deploy ready. This catches wildcard-DNS, certificate, and edge-publication
+ * failures before a site is marked active or announced to the customer.
+ */
+export async function verifyPublishedSite(
+  siteUrl: string,
+  options: PublishedSiteVerificationOptions = {},
+): Promise<void> {
+  const target = new URL(siteUrl)
+  if (target.protocol !== 'https:' || target.username || target.password) {
+    throw new Error('Published site verification requires a credential-free HTTPS URL.')
+  }
+
+  const attempts = Math.max(1, Math.min(60, Math.floor(options.attempts ?? 18)))
+  const delayMs = Math.max(0, Math.min(30_000, Math.floor(options.delayMs ?? 5_000)))
+  const timeoutMs = Math.max(1_000, Math.min(30_000, Math.floor(options.timeoutMs ?? 10_000)))
+  if (options.cacheKey) target.searchParams.set('__dc_verify', options.cacheKey.slice(0, 128))
+
+  let lastFailure = 'unknown response'
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      const response = await fetch(target, {
+        method: 'GET',
+        redirect: 'manual',
+        cache: 'no-store',
+        headers: { accept: 'text/html' },
+        signal: AbortSignal.timeout(timeoutMs),
+      })
+      if (response.ok) {
+        const html = await response.text()
+        if (/<!doctype\s+html|<html[\s>]/i.test(html)) return
+        lastFailure = `HTTP ${response.status} returned non-HTML content`
+      } else {
+        lastFailure = `HTTP ${response.status}`
+      }
+    } catch (error) {
+      lastFailure = error instanceof Error ? error.message : 'network failure'
+    }
+
+    if (attempt < attempts && delayMs > 0) {
+      await new Promise((resolve) => setTimeout(resolve, delayMs))
+    }
+  }
+
+  throw new Error(
+    `Published site did not become reachable over HTTPS after ${attempts} attempts (${lastFailure}).`,
+  )
 }
 
 /**
@@ -200,7 +316,10 @@ export async function triggerDeploy(siteId: string): Promise<{ deployId: string 
   const hook = await hookRes.json()
 
   // Trigger the build
-  const triggerRes = await fetch(hook.url, { method: 'POST' })
+  const triggerRes = await fetch(hook.url, {
+    method: 'POST',
+    signal: AbortSignal.timeout(20_000),
+  })
   if (!triggerRes.ok) {
     throw new Error(`Failed to trigger deploy: ${triggerRes.status}`)
   }
@@ -255,19 +374,51 @@ export async function setCustomDomain(
 /*  4.  Get DNS instructions for a custom domain                      */
 /* ------------------------------------------------------------------ */
 
+function domainDnsShape(customDomain: string): {
+  isApex: boolean
+  recordName: string
+} {
+  const normalized = customDomain.toLowerCase().replace(/\.$/, '')
+  const parsed = parseDomain(normalized)
+  const isApex = Boolean(parsed.domain && parsed.domain === normalized)
+  const recordName = !isApex && parsed.domain && normalized.endsWith(`.${parsed.domain}`)
+    ? normalized.slice(0, -(parsed.domain.length + 1))
+    : '@'
+  return { isApex, recordName }
+}
+
+export function isApexCustomDomain(customDomain: string): boolean {
+  return domainDnsShape(customDomain).isApex
+}
+
+function hostnameFromUrlOrHost(value: string): string {
+  try {
+    return new URL(value).hostname
+  } catch {
+    return value.replace(/^\/+|\/+$/g, '')
+  }
+}
+
 export function getCustomDomainInstructions(customDomain: string, siteSubdomain: string): string {
+  const { isApex, recordName } = domainDnsShape(customDomain)
+  const target = hostnameFromUrlOrHost(siteSubdomain)
+  const recordLines = isApex
+    ? [
+        'Add this record for the root domain:',
+        '  Type:  A',
+        '  Name:  @',
+        '  Value: 75.2.60.5  (Netlify load balancer)',
+      ]
+    : [
+        'Add this record for the subdomain:',
+        '  Type:  CNAME',
+        `  Name:  ${recordName}`,
+        `  Value: ${target}`,
+      ]
   return [
     `To point "${customDomain}" to your site:`,
     '',
-    'Option A — CNAME record (recommended for subdomains like www):',
-    `  Type:  CNAME`,
-    `  Name:  ${customDomain.startsWith('www.') ? 'www' : customDomain.split('.')[0]}`,
-    `  Value: ${siteSubdomain}`,
-    '',
-    'Option B — A record + ALIAS (for apex/root domains):',
-    `  Type:  A`,
-    `  Name:  @`,
-    `  Value: 75.2.60.5  (Netlify load balancer)`,
+    ...recordLines,
     '',
     'After DNS propagates (usually 5-30 minutes), Netlify will automatically',
     'provision a free SSL certificate via Let\'s Encrypt.',
@@ -297,24 +448,17 @@ export function getDomainDnsRecords(
   // Extract the bare hostname from the Netlify URL so we always emit a valid
   // CNAME target (e.g. "amazing-abc.netlify.app" rather than the full https:// URL
   // or the platform subdomain like "mysite.dailyclarity.org").
-  let netlifyHostname: string
-  try {
-    netlifyHostname = new URL(netlifyUrl).hostname
-  } catch {
-    // Already a bare hostname or fallback value — use as-is
-    netlifyHostname = netlifyUrl
-  }
-
-  const isApex = !customDomain.startsWith('www.')
+  const netlifyHostname = hostnameFromUrlOrHost(netlifyUrl)
+  const { isApex, recordName } = domainDnsShape(customDomain)
   const records: DnsRecord[] = []
 
-  if (customDomain.startsWith('www.') || !isApex) {
+  if (!isApex) {
     records.push({
       type: 'CNAME',
-      name: 'www',
+      name: recordName,
       value: netlifyHostname,
       ttl: '3600',
-      purpose: 'Points www subdomain to your DailyClarity site',
+      purpose: `Points ${customDomain} to your DailyClarity site`,
     })
   }
 

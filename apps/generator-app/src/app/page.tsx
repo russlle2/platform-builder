@@ -1,5 +1,27 @@
 import Link from 'next/link'
+import type { Metadata } from 'next'
 import { getNiches } from '@/lib/templates/niche-registry'
+
+// The launch catalog lives in a site-wide Netlify Blobs store. Reading it at
+// request time prevents a credential-less CI build from permanently baking an
+// empty catalog into the homepage.
+export const dynamic = 'force-dynamic'
+
+const homeDescription =
+  'Explore published website templates for wellness coaches, therapists, sound bath facilitators, aromatherapy, and holistic medicine. Preview supported fields with your content, customize, and launch.'
+
+export const metadata: Metadata = {
+  title: { absolute: 'DailyClarity — Professional Website Templates for Service Businesses' },
+  description: homeDescription,
+  alternates: { canonical: '/' },
+  openGraph: {
+    title: 'DailyClarity — Professional Website Templates for Service Businesses',
+    description: homeDescription,
+    url: '/',
+    type: 'website',
+    images: ['/og-image.png'],
+  },
+}
 
 const nicheAccentClasses: Record<string, { border: string; text: string; bg: string; glow: string }> = {
   emerald: { border: 'border-emerald-400/30', text: 'text-emerald-300', bg: 'bg-emerald-500/10', glow: 'hover:shadow-emerald-500/20' },
@@ -93,7 +115,7 @@ export default async function HomePage() {
               <div className="space-y-4">
                 {[
                   'Share your business details once',
-                  'Your info fills every page automatically',
+                  'Supported fields populate across the preview',
                   'Preview your complete site live',
                   'Purchase & launch with integrations',
                 ].map((item) => (
@@ -111,7 +133,7 @@ export default async function HomePage() {
                 <div className="stat-card">
                   <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Templates</p>
                   <p className="text-3xl font-bold text-white">
-                    {hasTemplateCounts ? `${totalTemplates}+` : 'Curated'}
+                    {hasTemplateCounts ? totalTemplates : 'In review'}
                   </p>
                 </div>
               </div>
@@ -154,7 +176,7 @@ export default async function HomePage() {
                   </svg>
                 ),
                 title: 'Booking path',
-                copy: 'Every page guides visitors toward calling, booking, messaging, or joining.',
+                copy: 'Page structures are designed to guide visitors toward calling, booking, messaging, or joining.',
               },
               {
                 icon: (
@@ -260,7 +282,7 @@ export default async function HomePage() {
             {[
               { title: 'Pilot builds', copy: 'Launch examples coming soon as early-access sites go live.' },
               { title: 'Case studies', copy: 'Real before-and-after results will be published here.' },
-              { title: 'Launch slots', copy: 'Early-access slots are opening for new wellness practices.' },
+              { title: 'Product updates', copy: 'Join the early-access list for new templates and launch updates.' },
             ].map((item) => (
               <div key={item.title} className="card-mahogany space-y-3">
                 <div className="h-32 rounded-xl border border-dashed border-white/15 bg-white/5 flex items-center justify-center text-sm text-slate-400">

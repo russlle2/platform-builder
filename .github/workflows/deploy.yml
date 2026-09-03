@@ -1,73 +1,58 @@
-name: Deploy
+name: Promote generator to production
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type DEPLOY to run the validated production promotion'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dailyclarity-production
+  cancel-in-progress: false
 
 jobs:
-  deploy-generator:
+  validate-and-deploy:
+    if: ${{ inputs.confirm == 'DEPLOY' }}
     runs-on: ubuntu-latest
-    
+    environment: production
+
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Enable Corepack
-        run: corepack enable
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
+          node-version: '22'
           cache: 'pnpm'
-      
+
+      - name: Install the repository pnpm version
+        run: |
+          corepack enable
+          corepack install
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      
-      - name: Build generator app
-        run: pnpm run generator:build
-      
-      - name: Deploy to Netlify
-        continue-on-error: true
-        uses: nwtgck/actions-netlify@v2
-        with:
-          publish-dir: './apps/generator-app/.next'
-          production-branch: main
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          deploy-message: "Deploy from GitHub Actions"
+
+      - name: Run the complete release gate
+        run: |
+          pnpm validate
+          pnpm audit --prod --audit-level moderate
+
+      - name: Build and deploy with the Netlify Next.js runtime
+        run: >-
+          pnpm dlx netlify-cli@27.4.2 deploy
+          --build
+          --prod
+          --site "$NETLIFY_SITE_ID"
+          --auth "$NETLIFY_AUTH_TOKEN"
+          --message "Validated GitHub promotion $GITHUB_SHA"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-  
-  deploy-client-site:
-    runs-on: ubuntu-latest
-    
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Enable Corepack
-        run: corepack enable
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.x'
-          cache: 'pnpm'
-      
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-      
-      - name: Build client site
-        run: pnpm run client:build
-      
-      - name: Deploy to Netlify
-        continue-on-error: true
-        uses: nwtgck/actions-netlify@v2
-        with:
-          publish-dir: './apps/client-template/.next'
-          production-branch: main
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          deploy-message: "Deploy from GitHub Actions"
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID_CLIENT }}
+# Customer sites are provisioned and deployed by the fulfillment pipeline.
+# Do not publish the raw client-template .next directory as a static site.

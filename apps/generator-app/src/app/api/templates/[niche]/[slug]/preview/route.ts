@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readTemplateFile, hydrateTemplate } from '@/lib/templates/niche-registry'
+import { readTemplateFile, hydrateTemplate, getTemplate } from '@/lib/templates/niche-registry'
 import { buildVariationCSS } from '@/lib/templates/variations'
+import { buildCustomThemeCss, type CustomTheme } from '@/lib/custom-theme'
 
 export async function POST(
   req: NextRequest,
@@ -14,12 +15,19 @@ export async function POST(
     colorScheme = 'original',
     fontVariation = 'original',
     structureVariation = 'original',
+    customTheme = null,
   } = body as {
     page?: string
     values?: Record<string, string>
     colorScheme?: string
     fontVariation?: string
     structureVariation?: string
+    customTheme?: CustomTheme | null
+  }
+
+  const template = await getTemplate(niche, slug)
+  if (!template || typeof page !== 'string' || !template.pages.includes(page)) {
+    return NextResponse.json({ error: 'Template page not found' }, { status: 404 })
   }
 
   const [html, cssFile] = await Promise.all([
@@ -30,10 +38,17 @@ export async function POST(
     return NextResponse.json({ error: 'Template file not found' }, { status: 404 })
   }
 
-  const hydrated = hydrateTemplate(html, values)
+  const hydrated = hydrateTemplate(
+    html,
+    values && typeof values === 'object' && !Array.isArray(values) ? values : {},
+    template.fields,
+  )
 
   // Build variation CSS overrides
-  const variationCSS = buildVariationCSS(colorScheme, fontVariation, structureVariation)
+  const variationCSS = [
+    buildVariationCSS(colorScheme, fontVariation, structureVariation),
+    buildCustomThemeCss(customTheme),
+  ].filter(Boolean).join('\n')
 
   const res = NextResponse.json({
     html: hydrated,
@@ -41,7 +56,8 @@ export async function POST(
     variationCSS: variationCSS || null,
     page,
   })
-  res.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400')
-  res.headers.set('Netlify-CDN-Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400')
+  // Personalized HTML can contain contact details and must never enter a shared cache.
+  res.headers.set('Cache-Control', 'private, no-store')
+  res.headers.set('Netlify-CDN-Cache-Control', 'no-store')
   return res
 }

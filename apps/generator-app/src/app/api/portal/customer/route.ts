@@ -4,22 +4,29 @@
  * POST: requires valid portal token.
  */
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import path from 'path'
 import { mkdir, readFile, writeFile } from 'fs/promises'
 import { existsSync } from 'fs'
-import { buildDeployFiles, type InlineTextEdit } from '@/lib/site-deploy'
-import type { ImageSwap } from '@/lib/image-swaps'
+import {
+  buildDeployFiles,
+  sanitizeCustomerValues,
+  sanitizeInlineEditMap,
+  type InlineTextEdit,
+} from '@/lib/site-deploy'
+import { sanitizeImageSwapMap, type ImageSwap } from '@/lib/image-swaps'
 import { deploySiteFiles } from '@/lib/netlify'
+import { isAuthenticatedPortalOwnerForSlug } from '@/lib/portal-owner-auth'
 import { rateLimitByIp, jsonTooManyRequests, jsonUnauthorized, jsonForbidden } from '@/lib/server-auth'
 import {
   getPortalTokenFromRequest,
   toAuthenticatedPortalSite,
   toPublicPortalSite,
-  validatePortalTokenForSlug,
   verifyPortalTokenHash,
   type PortalSiteRow,
 } from '@/lib/portal-auth'
+import { sanitizeCustomTheme, type CustomTheme } from '@/lib/custom-theme'
+import { getColorScheme, getFontVariation, getStructureVariation } from '@/lib/templates/variations'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -30,6 +37,7 @@ interface SiteData {
   colorScheme?: string
   fontVariation?: string
   structureVariation?: string
+  customTheme?: CustomTheme | null
   customerValues?: Record<string, string>
   inlineEdits?: Record<string, InlineTextEdit[]>
   imageSwaps?: Record<string, ImageSwap[]>
@@ -47,6 +55,7 @@ interface LocalPortalCache {
   status?: string
   updated_at?: string
   portal_token_hash?: string | null
+  portal_token_expires_at?: string | null
 }
 
 const normalizeSlug = (value: string) =>
@@ -80,9 +89,22 @@ const writeLocalSite = async (slug: string, site: LocalPortalCache) => {
   await writeFile(localCachePath(slug), JSON.stringify(site), 'utf-8')
 }
 
+async function isAuthorizedPortalOwner(
+  serviceClient: SupabaseClient,
+  row: OwnedPortalRow,
+  token: string | null,
+): Promise<boolean> {
+  if (verifyPortalTokenHash(
+    token || '',
+    row.portal_token_hash,
+    row.portal_token_expires_at,
+  )) return true
+  return isAuthenticatedPortalOwnerForSlug(serviceClient, row.slug)
+}
+
 async function republishSite(slug: string, data: SiteData): Promise<boolean> {
   const siteId = data.netlify_site_id
-  if (!process.env.NETLIFY_ACCESS_TOKEN || !siteId || !data.niche || !data.template) return false
+  if (!process.env.NETLIFY_ACCESS_TOKEN || !siteId || !data.site_url || !data.niche || !data.template) return false
   const deployFiles = await buildDeployFiles({
     niche: data.niche,
     templateSlug: data.template,
@@ -90,9 +112,11 @@ async function republishSite(slug: string, data: SiteData): Promise<boolean> {
     colorScheme: data.colorScheme,
     fontVariation: data.fontVariation,
     structureVariation: data.structureVariation,
+    customTheme: data.customTheme,
     inlineEdits: data.inlineEdits,
     imageSwaps: data.imageSwaps,
     slug,
+    siteUrl: data.site_url,
   })
   if (!deployFiles) return false
   await deploySiteFiles(siteId, deployFiles)
@@ -117,7 +141,11 @@ export async function GET(req: NextRequest) {
     if (!local) {
       return NextResponse.json({ site: null, authenticated: false })
     }
-    const authenticated = verifyPortalTokenHash(token || '', local.portal_token_hash)
+    const authenticated = verifyPortalTokenHash(
+      token || '',
+      local.portal_token_hash,
+      local.portal_token_expires_at,
+    )
     if (!authenticated) {
       return NextResponse.json({
         site: toPublicPortalSite(local as PortalSiteRow),
@@ -132,7 +160,7 @@ export async function GET(req: NextRequest) {
 
   const { data, error } = await supabase
     .from('portal_sites')
-    .select('slug, data, status, updated_at, portal_token_hash')
+    .select('slug, data, status, updated_at, portal_token_hash, portal_token_expires_at, owner_id, owner_email')
     .eq('slug', slug)
     .maybeSingle()
 
@@ -144,7 +172,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ site: null, authenticated: false })
   }
 
-  const authenticated = await validatePortalTokenForSlug(supabase, slug, token)
+  const authenticated = await isAuthorizedPortalOwner(supabase, data as OwnedPortalRow, token)
   if (!authenticated) {
     return NextResponse.json({
       site: toPublicPortalSite(data as PortalSiteRow),
@@ -172,17 +200,45 @@ export async function POST(req: NextRequest) {
   const token = getPortalTokenFromRequest(req, body)
   const supabase = getSupabase()
 
-  const incomingValues: Record<string, string> =
-    body.customerValues && typeof body.customerValues === 'object' ? body.customerValues : {}
-  const incomingInlineEdits: Record<string, InlineTextEdit[]> | undefined =
-    body.inlineEdits && typeof body.inlineEdits === 'object' ? body.inlineEdits : undefined
-  const incomingImageSwaps: Record<string, ImageSwap[]> | undefined =
-    body.imageSwaps && typeof body.imageSwaps === 'object' ? body.imageSwaps : undefined
+  const incomingValues = sanitizeCustomerValues(body.customerValues)
+  const incomingInlineEdits = body.inlineEdits === undefined
+    ? undefined
+    : sanitizeInlineEditMap(body.inlineEdits)
+  const incomingImageSwaps = body.imageSwaps === undefined
+    ? undefined
+    : sanitizeImageSwapMap(body.imageSwaps)
+  const incomingColorScheme = typeof body.colorScheme === 'string'
+    ? getColorScheme(body.colorScheme).id
+    : undefined
+  const incomingFontVariation = typeof body.fontVariation === 'string'
+    ? getFontVariation(body.fontVariation).id
+    : undefined
+  const incomingStructureVariation = typeof body.structureVariation === 'string'
+    ? getStructureVariation(body.structureVariation).id
+    : undefined
+  const incomingCustomTheme = body.customTheme === undefined
+    ? undefined
+    : body.customTheme === null
+      ? null
+      : sanitizeCustomTheme(body.customTheme)
+  if (body.customTheme !== undefined && body.customTheme !== null && !incomingCustomTheme) {
+    return NextResponse.json({ error: 'Custom theme settings are invalid.' }, { status: 400 })
+  }
 
   if (!supabase) {
     const local = await readLocalSite(slug)
-    if (!verifyPortalTokenHash(token || '', local?.portal_token_hash)) {
+    if (!verifyPortalTokenHash(
+      token || '',
+      local?.portal_token_hash,
+      local?.portal_token_expires_at,
+    )) {
       return jsonUnauthorized()
+    }
+    if (local?.status === 'billing_suspended') {
+      return NextResponse.json(
+        { error: 'Publishing is paused while billing needs attention.', code: 'billing_suspended' },
+        { status: 402 },
+      )
     }
 
     const prevData: SiteData = local?.data || {}
@@ -191,56 +247,89 @@ export async function POST(req: NextRequest) {
       customerValues: { ...(prevData.customerValues || {}), ...incomingValues },
       ...(incomingInlineEdits ? { inlineEdits: incomingInlineEdits } : {}),
       ...(incomingImageSwaps ? { imageSwaps: incomingImageSwaps } : {}),
+      ...(incomingColorScheme ? { colorScheme: incomingColorScheme } : {}),
+      ...(incomingFontVariation ? { fontVariation: incomingFontVariation } : {}),
+      ...(incomingStructureVariation ? { structureVariation: incomingStructureVariation } : {}),
+      ...(incomingCustomTheme !== undefined ? { customTheme: incomingCustomTheme } : {}),
       imageOwner: slug,
     }
     await writeLocalSite(slug, {
       slug,
       data: mergedData,
-      status: body.status || local?.status || 'active',
+      // Billing/provisioning status is server-controlled; portal edits cannot
+      // promote a suspended or failed site back to active.
+      status: local?.status || 'pending',
       updated_at: new Date().toISOString(),
       portal_token_hash: local?.portal_token_hash ?? null,
+      portal_token_expires_at: local?.portal_token_expires_at ?? null,
     })
     return NextResponse.json({ ok: true, fallback: 'local-cache', republished: false })
   }
 
-  const authorized = await validatePortalTokenForSlug(supabase, slug, token)
-  if (!authorized) {
-    return jsonForbidden()
-  }
-
-  const { data: existingRow } = await supabase
+  const { data: existingRow, error: existingError } = await supabase
     .from('portal_sites')
-    .select('data, status, portal_token_hash')
+    .select('slug, data, status, updated_at, portal_token_hash, portal_token_expires_at, owner_id, owner_email')
     .eq('slug', slug)
     .maybeSingle()
+  if (existingError || !existingRow) {
+    return NextResponse.json({ error: 'Unable to load site.' }, { status: 500 })
+  }
+  const authorized = await isAuthorizedPortalOwner(supabase, existingRow as OwnedPortalRow, token)
+  if (!authorized) return jsonForbidden()
+  if (existingRow.status === 'billing_suspended') {
+    return NextResponse.json(
+      { error: 'Publishing is paused while billing needs attention.', code: 'billing_suspended' },
+      { status: 402 },
+    )
+  }
 
-  const prevData: SiteData = (existingRow?.data as SiteData) || {}
-  const mergedData: SiteData = {
-    ...prevData,
-    customerValues: { ...(prevData.customerValues || {}), ...incomingValues },
+  const dataPatch: Partial<SiteData> = {
     ...(incomingInlineEdits ? { inlineEdits: incomingInlineEdits } : {}),
     ...(incomingImageSwaps ? { imageSwaps: incomingImageSwaps } : {}),
+    ...(incomingColorScheme ? { colorScheme: incomingColorScheme } : {}),
+    ...(incomingFontVariation ? { fontVariation: incomingFontVariation } : {}),
+    ...(incomingStructureVariation ? { structureVariation: incomingStructureVariation } : {}),
+    ...(incomingCustomTheme !== undefined ? { customTheme: incomingCustomTheme } : {}),
     imageOwner: slug,
   }
 
-  const { error } = await supabase.from('portal_sites').upsert({
-    slug,
-    data: mergedData,
-    status: body.status || existingRow?.status || 'active',
-    updated_at: new Date().toISOString(),
-    portal_token_hash: existingRow?.portal_token_hash,
+  const { data: mergedResult, error } = await supabase.rpc('merge_portal_site_data', {
+    p_slug: slug,
+    p_customer_values: incomingValues,
+    p_data_patch: dataPatch,
   })
 
-  if (error) {
+  if (error || !mergedResult || typeof mergedResult !== 'object' || Array.isArray(mergedResult)) {
     return NextResponse.json({ error: 'Unable to save site.' }, { status: 500 })
   }
+  const mergedData = mergedResult as SiteData
 
   let republished = false
+  let publishError: string | null = null
   try {
     republished = await republishSite(slug, mergedData)
   } catch (err) {
     console.error('[portal/customer] republish failed:', err)
+    publishError = err instanceof Error ? err.message : 'Publish failed'
+  }
+
+  if (mergedData.netlify_site_id && !republished) {
+    return NextResponse.json(
+      {
+        error: 'Your changes were saved, but the live publish failed. Please retry.',
+        saved: true,
+        republished: false,
+        code: 'publish_failed',
+        ...(process.env.NODE_ENV === 'development' && publishError ? { detail: publishError } : {}),
+      },
+      { status: 502 },
+    )
   }
 
   return NextResponse.json({ ok: true, republished })
+}
+
+interface OwnedPortalRow extends PortalSiteRow {
+  owner_id?: string | null
+  owner_email?: string | null
 }

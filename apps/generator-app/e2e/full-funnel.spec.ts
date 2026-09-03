@@ -95,6 +95,6 @@ test.describe('Full purchase funnel (test mode)', () => {
 
 test('homepage to dashboard auth flow', async ({ page }) => {
   await page.goto('/login')
-  await expect(page.getByRole('heading', { name: 'Welcome back' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Sign in or create your account' })).toBeVisible()
   await expect(page.getByLabel('Email address')).toBeVisible()
 })

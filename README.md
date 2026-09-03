@@ -13,7 +13,7 @@ DailyClarity Platform Builder walks service businesses through a guided flow:
 1. **Choose your niche** — aromatherapy, holistic medicine, private practice therapy, sound bath, or wellness coaching
 2. **Preview your site live** — fill in your details and see a real template populate instantly
 3. **Customize** — swap colors, fonts, images, and text through the visual editor
-4. **Purchase** — checkout via Stripe; your subdomain is provisioned within 48 hours
+4. **Purchase** — checkout via Stripe; provisioning begins after the verified checkout event
 5. **Manage via portal** — edit and publish changes anytime after launch
 
 ---
@@ -38,6 +38,7 @@ DailyClarity Platform Builder walks service businesses through a guided flow:
 ```
 platform-builder/
 ├── apps/
+│   ├── client-template/      # Minimal provisioned-site application
 │   └── generator-app/        # Main Next.js 15 app (this is the product)
 │       ├── src/
 │       │   ├── app/           # Next.js App Router pages and API routes
@@ -46,7 +47,9 @@ platform-builder/
 │       │   └── middleware.ts  # Security headers (CSP, X-Frame-Options, etc.)
 │       ├── __tests__/         # Vitest unit tests
 │       └── e2e/               # Playwright smoke tests
-├── packages/                  # Shared internal packages
+├── packages/
+│   ├── template-factory/      # Deterministic curated-template exporter + QA
+│   └── ...                    # Shared internal packages
 ├── .github/workflows/ci.yml   # CI pipeline
 └── README.md
 ```
@@ -71,8 +74,8 @@ platform-builder/
 
 ### Prerequisites
 
-- Node.js 20+
-- pnpm (via Corepack: `corepack enable && corepack prepare pnpm@latest --activate`)
+- Node.js 22.x
+- Corepack (the repository pins its pnpm release in `packageManager`)
 
 ### Setup
 
@@ -82,6 +85,8 @@ git clone https://github.com/russlle2/platform-builder.git
 cd platform-builder
 
 # 2. Install dependencies
+corepack enable
+corepack install
 pnpm install
 
 # 3. Copy and fill in environment variables
@@ -113,8 +118,9 @@ All variables live in `apps/generator-app/.env.local` (local) or in your hosting
 | `NEXT_PUBLIC_SUPABASE_URL` | Yes | Your Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Public anon key (safe to expose) |
 | `SUPABASE_SERVICE_ROLE_KEY` | Yes | Service role key — never expose to clients |
+| `DAILYCLARITY_SUPABASE_PROJECT_REF` | Yes | Safety pin for the dedicated DailyClarity project; must match the ref in `NEXT_PUBLIC_SUPABASE_URL` or checkout stays disabled |
 
-> **RLS Note:** `site_slugs` and `contact_messages` tables currently have RLS disabled. Enable RLS and add appropriate policies before going to production with real user data.
+> **Isolation gate:** use a dedicated DailyClarity Supabase project and replay every migration there. The launch-hardening migration enables RLS and revokes browser access to operational tables; verify the resulting policies before configuring live keys.
 
 ### Stripe
 
@@ -124,12 +130,16 @@ All variables live in `apps/generator-app/.env.local` (local) or in your hosting
 | `STRIPE_WEBHOOK_SECRET` | Yes | Webhook signing secret (`whsec_...`) |
 | `STRIPE_PRICE_BASIC` | Yes | Price ID for Basic Services plan |
 | `STRIPE_PRICE_GROWTH` | Yes | Price ID for Growth Partner plan |
+| `STRIPE_PRICE_CUSTOM_BUILD` | For custom builds | Active one-time USD $500 Price ID; the server verifies type, currency, and amount |
+| `STRIPE_CUSTOMER_PORTAL_CONFIGURATION_ID` | Yes | Dedicated active Portal configuration with plan switching disabled until plan/service reconciliation is implemented |
 | `STRIPE_TRIAL_DAYS` | No | Free trial length in days (default: 7, set 0 to disable) |
 
 **Stripe Webhook Setup:**
 1. In Stripe Dashboard → Webhooks → Add endpoint: `https://dailyclarity.org/api/stripe/webhook`
-2. Select events: `checkout.session.completed`, `customer.subscription.created`
-3. Copy the signing secret to `STRIPE_WEBHOOK_SECRET`
+2. Pin the endpoint API version to `2026-08-26.dahlia` (the version used by the server-side Stripe client)
+3. Select events: `checkout.session.completed`, `checkout.session.expired`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.paid`, and `invoice.payment_failed`
+4. Copy the endpoint signing secret to `STRIPE_WEBHOOK_SECRET`
+5. Test paid, trial (`no_payment_required`), delayed-payment success/failure, duplicate delivery, and subscription cancellation events in Stripe test mode before enabling live checkout
 
 ### Netlify (Customer Site Hosting)
 
@@ -155,6 +165,10 @@ All variables live in `apps/generator-app/.env.local` (local) or in your hosting
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `INTERNAL_ADMIN_TOKEN` | Yes | Protects `/api/portal/site`, `/api/sites/provision`, `/api/sites/domain`, `/api/integrations/status`. Generate: `openssl rand -hex 32` |
+| `PORTAL_TOKEN_SECRET` | Yes | Signs private, slug-bound portal access tokens; generate at least 32 random bytes |
+| `STRIPE_FULFILLMENT_WORKER_SECRET` | Yes | Authenticates queue dispatches to the Netlify background worker; generate independently with `openssl rand -hex 32` |
+| `UPLOAD_TOKEN_SECRET` | Recommended | Dedicated signing secret for upload sessions; falls back to `PORTAL_TOKEN_SECRET` |
+| `DRAFT_PROFILE_SECRET` | Recommended | Dedicated signing secret for draft profiles; falls back to `PORTAL_TOKEN_SECRET` |
 
 ### Test Purchase Gate
 
@@ -200,7 +214,43 @@ Required tables (run migrations from `supabase/migrations/`):
 - `lead_captures` — email/phone leads from the homepage
 - `customer-images` storage bucket — customer-uploaded images
 
-**RLS:** Currently disabled on `site_slugs` and `contact_messages`. Enable before handling sensitive user data.
+**RLS:** The launch-hardening migration enables RLS on operational tables and
+revokes browser roles from service-only tables. Launch only after replaying the
+entire migration chain in a clean, dedicated project and verifying the resulting
+policies and grants.
+
+Contact-form rows retain independent owner-notification and visitor-confirmation
+states. During launch operations, monitor messages that still need attention:
+
+```sql
+select id, slug, visitor_email, owner_notification_status,
+       visitor_confirmation_status, notification_last_error, created_at
+from public.contact_messages
+where owner_notification_status <> 'sent'
+order by created_at desc;
+```
+
+---
+
+## Curated Template Catalog
+
+The launch catalog is generated deterministically from 60 checked-in foundations
+(12 per active niche). Generation is network-free and does not publish anything.
+
+```bash
+# Export, validate, and review the curated catalog
+pnpm --filter @platform/template-factory export:curated -- --output /absolute/path/to/curated-template-library
+
+# Exercise the exact publisher contract without credentials or writes
+node apps/generator-app/scripts/upload-templates-to-blobs.mjs --dry-run --root /absolute/path/to/curated-template-library
+
+# Publish only after the dry-run report has been reviewed
+node apps/generator-app/scripts/upload-templates-to-blobs.mjs --root /absolute/path/to/curated-template-library
+```
+
+The uploader publishes only templates that satisfy publication contract v2.
+Legacy generated templates remain excluded until they are normalized and pass
+the same contract.
 
 ---
 
@@ -230,12 +280,22 @@ pnpm validate
 
 ## Security Notes
 
-- **`INTERNAL_ADMIN_TOKEN`**: All admin API endpoints (`/api/portal/site`, `/api/sites/provision`, `/api/sites/domain`, `/api/integrations/status`) require this token via `Authorization: Bearer <token>` or `x-internal-admin-token` header. Generate a strong random value.
+- **`INTERNAL_ADMIN_TOKEN`**: Admin API endpoints require this token via `Authorization: Bearer <token>` or `x-internal-admin-token`. The custom-domain endpoint also accepts a valid slug-bound customer portal token.
 - **Stripe webhook**: `/api/stripe/webhook` does NOT require admin auth — Stripe signs requests with `STRIPE_WEBHOOK_SECRET`. Never add auth to this route.
-- **Rate limiting**: All public API routes have in-memory rate limiting. Complement with edge-level rate limiting (Netlify, Cloudflare) for strict enforcement.
+- **Stripe fulfillment queue**: verified event JSON is stored service-role-only, then dispatched to an authenticated Netlify background function. Failed work backs off, a five-minute sweep recovers missed/stale jobs, and attempt 8 becomes a retained dead letter. After fixing the cause, an operator can `POST {"eventId":"evt_..."}` to `/api/admin/stripe/fulfillment/retry` with `Authorization: Bearer $INTERNAL_ADMIN_TOKEN`.
+- **Rate limiting**: Abuse-sensitive API routes have endpoint-specific in-memory limits plus a shared Netlify edge rule. Verify both code-based rules appear in every production deploy log; serverless instances do not share memory.
 - **Path traversal**: Image deletion validates paths stay within the owner's upload directory.
 - **CSP headers**: Set via middleware on all routes.
 - **Test purchase**: Disabled by default. Enable only in staging with a strong secret.
+
+> **Live-checkout gate:** verified Stripe events are durably queued before a
+> fast `202` response. Netlify background fulfillment has database leases,
+> exponential retry scheduling, dead-letter retention, and a five-minute
+> recovery sweep. Apply the launch migration, configure the worker secret, and
+> run the documented Stripe/Netlify test matrix before enabling live checkout.
+
+Operational setup and recovery steps are in
+[`docs/STRIPE_FULFILLMENT_RUNBOOK.md`](docs/STRIPE_FULFILLMENT_RUNBOOK.md).
 
 ---
 

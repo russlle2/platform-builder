@@ -4,9 +4,18 @@ import { SeoPageShell } from '@/components/seo/SeoPageShell'
 import { SeoCtaGroup } from '@/components/seo/SeoCtaGroup'
 
 export const metadata: Metadata = {
-  title: 'Website Builder for Therapists | DailyClarity',
+  title: 'Website Builder for Therapists',
   description:
     'A guided website builder for private practice therapists — templates with specialties, session expectations, fees, and consult paths built in.',
+  alternates: { canonical: '/website-builder-for-therapists' },
+  openGraph: {
+    title: 'Website Builder for Therapists | DailyClarity',
+    description:
+      'A guided website builder for private practice therapists — templates with specialties, session expectations, fees, and consult paths built in.',
+    url: '/website-builder-for-therapists',
+    type: 'website',
+    images: ['/og-image.png'],
+  },
 }
 
 const DIFFERENTIATORS = [

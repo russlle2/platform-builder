@@ -1,4 +1,4 @@
-name: Full Funnel E2E
+name: Provisioning Simulation E2E (No Stripe)
 
 on:
   workflow_dispatch:
@@ -9,14 +9,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 9.0.0
-
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: pnpm
+          node-version: '22'
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install the repository pnpm version
+        run: corepack install
 
       - run: pnpm install --frozen-lockfile
 

@@ -19,6 +19,9 @@ export async function GET(
   if (pathSegments.some((s) => s === '..' || s === '' || s.includes('\\') || s.startsWith('/'))) {
     return NextResponse.json({ error: 'Access denied' }, { status: 403 })
   }
+  if (!template.files.includes(filePath) || template.pages.includes(filePath)) {
+    return NextResponse.json({ error: 'Asset not found' }, { status: 404 })
+  }
 
   const content = await readTemplateFileBuffer(niche, slug, filePath)
   if (!content) {
@@ -41,7 +44,7 @@ export async function GET(
     '.html': 'text/html',
   }
 
-  const contentType = mimeMap[ext] || 'application/octet-stream'
+  const contentType = ext === '.js' ? 'text/plain; charset=utf-8' : (mimeMap[ext] || 'application/octet-stream')
 
   // Copy into a fresh ArrayBuffer so the TS BodyInit union accepts it
   // (Node Buffer's underlying buffer could in theory be a SharedArrayBuffer).
@@ -52,6 +55,10 @@ export async function GET(
       'Content-Type': contentType,
       'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=86400',
       'Netlify-CDN-Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=86400',
+      'Content-Security-Policy': "sandbox; default-src 'none'; style-src 'unsafe-inline'",
+      'Referrer-Policy': 'no-referrer',
+      'X-Content-Type-Options': 'nosniff',
+      ...(ext === '.js' ? { 'Content-Disposition': 'attachment' } : {}),
     },
   })
 }

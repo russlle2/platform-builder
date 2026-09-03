@@ -4,9 +4,18 @@ import { SeoPageShell } from '@/components/seo/SeoPageShell'
 import { SeoCtaGroup } from '@/components/seo/SeoCtaGroup'
 
 export const metadata: Metadata = {
-  title: 'Website Builder for Wellness Coaches | DailyClarity',
+  title: 'Website Builder for Wellness Coaches',
   description:
     'Launch a coaching website with clear programs, credibility blocks, and discovery-call paths — guided templates for wellness coaches.',
+  alternates: { canonical: '/website-builder-for-wellness-coaches' },
+  openGraph: {
+    title: 'Website Builder for Wellness Coaches | DailyClarity',
+    description:
+      'Launch a coaching website with clear programs, credibility blocks, and discovery-call paths — guided templates for wellness coaches.',
+    url: '/website-builder-for-wellness-coaches',
+    type: 'website',
+    images: ['/og-image.png'],
+  },
 }
 
 const DIFFERENTIATORS = [

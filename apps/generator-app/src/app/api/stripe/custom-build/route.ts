@@ -5,70 +5,33 @@ import { createClient } from '@supabase/supabase-js'
 import {
   CUSTOM_BUILD_AMOUNT_CENTS,
   CUSTOM_BUILD_CURRENCY,
-  CUSTOM_BUILD_LOOKUP_KEY,
-  DEFAULT_CUSTOM_BUILD_PRICE_ID,
   validateCustomBuildInput,
 } from '@/lib/custom-build'
 import { jsonTooManyRequests, rateLimitByIp } from '@/lib/server-auth'
+import { getTrustedSiteOrigin } from '@/lib/site-origin'
+import { createStripeClient } from '@/lib/stripe-client'
+import {
+  CUSTOM_BUILD_CHECKOUT_TYPE,
+  isDedicatedSupabaseProjectConfigured,
+} from '@/lib/stripe-runtime'
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
 async function resolveCustomBuildPrice(stripe: Stripe): Promise<string> {
-  const configuredPriceId = process.env.STRIPE_PRICE_CUSTOM_BUILD || DEFAULT_CUSTOM_BUILD_PRICE_ID
-  if (configuredPriceId) {
-    const configuredPrice = await stripe.prices.retrieve(configuredPriceId)
-    if (
-      configuredPrice.active &&
-      configuredPrice.type === 'one_time' &&
-      configuredPrice.currency === CUSTOM_BUILD_CURRENCY &&
-      configuredPrice.unit_amount === CUSTOM_BUILD_AMOUNT_CENTS
-    ) {
-      return configuredPrice.id
-    }
-    throw new Error('STRIPE_PRICE_CUSTOM_BUILD is not an active one-time $500 USD price.')
+  const configuredPriceId = process.env.STRIPE_PRICE_CUSTOM_BUILD
+  if (!configuredPriceId) throw new Error('custom_build_price_not_configured')
+  const configuredPrice = await stripe.prices.retrieve(configuredPriceId)
+  if (
+    configuredPrice.active &&
+    configuredPrice.type === 'one_time' &&
+    configuredPrice.currency === CUSTOM_BUILD_CURRENCY &&
+    configuredPrice.unit_amount === CUSTOM_BUILD_AMOUNT_CENTS
+  ) {
+    return configuredPrice.id
   }
-
-  const existing = await stripe.prices.list({
-    active: true,
-    lookup_keys: [CUSTOM_BUILD_LOOKUP_KEY],
-    limit: 1,
-  })
-  const price = existing.data[0]
-  if (price) {
-    if (
-      price.type !== 'one_time' ||
-      price.currency !== CUSTOM_BUILD_CURRENCY ||
-      price.unit_amount !== CUSTOM_BUILD_AMOUNT_CENTS
-    ) {
-      throw new Error('The custom-build Stripe lookup key is attached to the wrong price.')
-    }
-    return price.id
-  }
-
-  const product = await stripe.products.create(
-    {
-      name: 'Custom Website Build',
-      description:
-        'A one-time custom website design and build based on the detailed project brief submitted at DailyClarity.org.',
-      metadata: { offering: 'custom_website_build', platform: 'dailyclarity' },
-    },
-    { idempotencyKey: 'dailyclarity-custom-build-product-v1' },
-  )
-
-  const createdPrice = await stripe.prices.create(
-    {
-      product: product.id,
-      currency: CUSTOM_BUILD_CURRENCY,
-      unit_amount: CUSTOM_BUILD_AMOUNT_CENTS,
-      lookup_key: CUSTOM_BUILD_LOOKUP_KEY,
-      metadata: { offering: 'custom_website_build', amount: '500_usd' },
-    },
-    { idempotencyKey: 'dailyclarity-custom-build-price-v1' },
-  )
-
-  return createdPrice.id
+  throw new Error('custom_build_price_invalid')
 }
 
 export async function POST(req: NextRequest) {
@@ -76,10 +39,21 @@ export async function POST(req: NextRequest) {
     return jsonTooManyRequests()
   }
 
-  if (!stripeSecretKey || !supabaseUrl || !supabaseServiceKey) {
+  const customBuildRuntimeReady = Boolean(
+    stripeSecretKey &&
+    process.env.STRIPE_WEBHOOK_SECRET &&
+    (process.env.STRIPE_FULFILLMENT_WORKER_SECRET?.trim().length || 0) >= 32 &&
+    process.env.STRIPE_PRICE_CUSTOM_BUILD &&
+    supabaseUrl &&
+    supabaseServiceKey &&
+    process.env.POSTMARK_SERVER_TOKEN &&
+    process.env.EMAIL_FROM_ADDRESS &&
+    isDedicatedSupabaseProjectConfigured(),
+  )
+  if (!customBuildRuntimeReady || !stripeSecretKey || !supabaseUrl || !supabaseServiceKey) {
     return NextResponse.json(
-      { error: 'Custom-build checkout is not configured.' },
-      { status: 500 },
+      { error: 'Custom-build checkout is temporarily unavailable.' },
+      { status: 503 },
     )
   }
 
@@ -121,25 +95,25 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const stripe = new Stripe(stripeSecretKey, { apiVersion: '2023-10-16' })
+    const stripe = createStripeClient(stripeSecretKey)
     const priceId = await resolveCustomBuildPrice(stripe)
-    const origin = (process.env.NEXT_PUBLIC_SITE_URL || new URL(req.url).origin).replace(/\/$/, '')
+    const origin = getTrustedSiteOrigin(req.url)
+    if (!origin) throw new Error('checkout_redirect_not_configured')
 
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       line_items: [{ price: priceId, quantity: 1 }],
       customer_email: parsed.data.email,
       client_reference_id: requestId,
-      payment_method_types: ['card', 'cashapp'],
       success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/custom-build?canceled=1`,
       metadata: {
-        checkoutType: 'custom_build',
+        checkoutType: CUSTOM_BUILD_CHECKOUT_TYPE,
         customBuildRequestId: requestId,
       },
       payment_intent_data: {
         metadata: {
-          checkoutType: 'custom_build',
+          checkoutType: CUSTOM_BUILD_CHECKOUT_TYPE,
           customBuildRequestId: requestId,
         },
       },
@@ -149,7 +123,7 @@ export async function POST(req: NextRequest) {
             'Your $500 payment is charged immediately. Your saved project brief is sent to DailyClarity after successful payment.',
         },
       },
-    })
+    }, { idempotencyKey: `dailyclarity-custom-build-${requestId}` })
 
     const { error: updateError } = await supabase
       .from('custom_build_requests')
@@ -173,6 +147,9 @@ export async function POST(req: NextRequest) {
           .eq('id', requestId)
       } catch { /* preserve the original checkout error */ }
     }
-    return NextResponse.json({ error: message }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Unable to start custom-build checkout. Please try again.' },
+      { status: 500 },
+    )
   }
 }

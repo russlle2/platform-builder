@@ -5,10 +5,11 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import {
   type InlineTextEdit,
-  INLINE_EDITS_KEY,
+  buildCustomizationScope,
   mergeInlineEdit,
   applyInlineEditsToHtml,
   loadInlineEdits,
+  saveInlineEdits,
 } from '@/lib/inline-edits'
 import {
   type ImageSwapMap,
@@ -16,10 +17,23 @@ import {
   applyImageSwapsToHtml,
   handlePersistentImageUpload,
   getOrCreateImageOwnerId,
+  sanitizeImageSwapMap,
   saveImageSwaps,
 } from '@/lib/image-swaps'
 import { CustomerImageLibrary } from '@/components/CustomerImageLibrary'
 import { getStoredPortalToken } from '@/lib/portal-token-client'
+import {
+  isSafePreviewImageUrl,
+  isSafePreviewPage,
+  isSafePreviewText,
+  rewriteTemplateAssetReferences,
+  sanitizeTemplatePreviewHtml,
+} from '@/lib/template-preview-security'
+import {
+  CUSTOM_THEME_STORAGE_KEY,
+  sanitizeCustomTheme,
+  type CustomTheme,
+} from '@/lib/custom-theme'
 
 interface TemplateField {
   name: string
@@ -64,7 +78,7 @@ function getIframeInjectionScript(): string {
 <script>
 (function(){
   /* ---- Inline text editing ---- */
-  var editableSelectors = 'h1,h2,h3,h4,h5,h6,p,span,li,td,th,a,blockquote,figcaption,label,button,dt,dd';
+  var editableSelectors = 'h1,h2,h3,h4,h5,h6,p,span,li,td,th,a,blockquote,figcaption,label,button,dt,dd,small,summary,strong,em,b,i,cite,legend,address,time,code,pre,div:not(:has(h1,h2,h3,h4,h5,h6,p,span,li,td,th,a,blockquote,figcaption,label,button,dt,dd,small,summary,strong,em,b,i,cite,legend,address,time,code,pre,div,section,article)),section:not(:has(*)),article:not(:has(*))';
 
   document.addEventListener('dblclick', function(e) {
     var el = e.target.closest(editableSelectors);
@@ -84,7 +98,7 @@ function getIframeInjectionScript(): string {
       el.style.cursor = '';
       el.removeEventListener('blur', onBlur);
       // Notify parent of the edit (include the pre-edit text so it can persist)
-      window.parent.postMessage({ type: 'textEdited', tag: el.tagName, original: originalText, text: el.textContent }, '*');
+      window.parent.postMessage({ type: 'textEdited', id: el.getAttribute('data-pb-edit-id') || '', tag: el.tagName, original: originalText, text: el.textContent }, '*');
     }, { once: true });
 
     e.preventDefault();
@@ -125,9 +139,10 @@ function getIframeInjectionScript(): string {
 
   // Listen for image swap response from parent
   window.addEventListener('message', function(e) {
+    if (e.source !== window.parent || !e.data || typeof e.data !== 'object') return;
     if (e.data && e.data.type === 'imageSwapResponse') {
       var newSrc = e.data.imageUrl || e.data.dataUrl;
-      if (!newSrc) return;
+      if (typeof newSrc !== 'string' || newSrc.length > 2048 || !/^(https?:\\/\\/|data:image\\/|blob:|\\/)/i.test(newSrc)) return;
       var imgs = document.querySelectorAll('img');
       for (var i = 0; i < imgs.length; i++) {
         if (imgs[i].src === e.data.originalSrc || (!e.data.originalSrc && i === 0)) {
@@ -190,6 +205,7 @@ export default function TemplateCustomizePage({
   const [imageSwaps, setImageSwaps] = useState<ImageSwapMap>({})
   const imageSwapsRef = useRef<ImageSwapMap>({})
   imageSwapsRef.current = imageSwaps
+  const activeCustomizationScopeRef = useRef('')
   const currentPageRef = useRef('index.html')
   currentPageRef.current = currentPage
 
@@ -197,6 +213,7 @@ export default function TemplateCustomizePage({
   const [colorScheme, setColorScheme] = useState('original')
   const [fontVariation, setFontVariation] = useState('original')
   const [structureVariation, setStructureVariation] = useState('original')
+  const [customTheme, setCustomTheme] = useState<CustomTheme | null>(null)
   const [variationOptions, setVariationOptions] = useState<{
     colorSchemes: { id: string; name: string }[]
     fontVariations: { id: string; name: string }[]
@@ -210,12 +227,17 @@ export default function TemplateCustomizePage({
 
   // Restore any inline edits captured earlier this session
   useEffect(() => {
-    setInlineEdits(loadInlineEdits())
-    const swaps = loadImageSwaps()
+    if (!params) return
+    const scope = buildCustomizationScope(params.niche, params.slug, portalSlug)
+    activeCustomizationScopeRef.current = scope
+    const edits = loadInlineEdits(scope)
+    setInlineEdits(edits)
+    inlineEditsRef.current = edits
+    const swaps = loadImageSwaps(scope)
     setImageSwaps(swaps)
     imageSwapsRef.current = swaps
     getOrCreateImageOwnerId(portalSlug)
-  }, [portalSlug])
+  }, [params, portalSlug])
 
   // Fetch available variation options
   useEffect(() => {
@@ -234,8 +256,39 @@ export default function TemplateCustomizePage({
         if (!r.ok) throw new Error('Template not found')
         return r.json()
       })
-      .then((data: TemplateData) => {
+      .then(async (data: TemplateData) => {
         setTemplate(data)
+
+        let portalData: Record<string, unknown> | null = null
+        if (portalSlug) {
+          const token = getStoredPortalToken(portalSlug) || ''
+          const response = await fetch(`/api/portal/customer?slug=${encodeURIComponent(portalSlug)}`, {
+            headers: token ? { 'x-portal-token': token } : undefined,
+          })
+          const result = await response.json().catch(() => ({}))
+          if (!response.ok || !result.authenticated || !result.site?.data) {
+            throw new Error('Your portal session could not authorize this site editor.')
+          }
+          portalData = result.site.data as Record<string, unknown>
+          if (portalData.niche !== params.niche || portalData.template !== params.slug) {
+            throw new Error('This template does not match the site in your portal.')
+          }
+          if (typeof portalData.colorScheme === 'string') setColorScheme(portalData.colorScheme)
+          if (typeof portalData.fontVariation === 'string') setFontVariation(portalData.fontVariation)
+          if (typeof portalData.structureVariation === 'string') setStructureVariation(portalData.structureVariation)
+          setCustomTheme(sanitizeCustomTheme(portalData.customTheme))
+
+          if (portalData.inlineEdits && typeof portalData.inlineEdits === 'object') {
+            const edits = portalData.inlineEdits as Record<string, InlineTextEdit[]>
+            setInlineEdits(edits)
+            inlineEditsRef.current = edits
+            saveInlineEdits(edits, activeCustomizationScopeRef.current)
+          }
+          const swaps = sanitizeImageSwapMap(portalData.imageSwaps)
+          setImageSwaps(swaps)
+          imageSwapsRef.current = swaps
+          saveImageSwaps(swaps, activeCustomizationScopeRef.current)
+        }
 
         // Try to load saved business info from Preview Your Business flow
         let savedValues: Record<string, string> = {}
@@ -246,7 +299,13 @@ export default function TemplateCustomizePage({
             const info = JSON.parse(savedInfo)
             savedValues = {
               BUSINESS_NAME: info.businessName || '',
+              PRACTICE_NAME: info.businessName || '',
+              BRAND_NAME: info.businessName || '',
+              STUDIO_NAME: info.businessName || '',
               OWNER_NAME: info.ownerName || '',
+              PRACTITIONER_NAME: info.ownerName || '',
+              COACH_NAME: info.ownerName || '',
+              FACILITATOR_NAME: info.ownerName || '',
               EMAIL: info.email || '',
               PHONE: info.phone || '',
               PHONE_NUMBER: info.phone || '',
@@ -255,6 +314,10 @@ export default function TemplateCustomizePage({
               DESCRIPTION: info.description || '',
               SERVICES: info.services || '',
               WEBSITE: info.website || '',
+              PRIMARY_CTA_URL: 'contact.html',
+              BOOKING_URL: 'contact.html',
+              PRIMARY_CTA_LABEL: 'Get in touch',
+              CTA_LABEL: 'Get in touch',
               business_name: info.businessName || '',
               owner_name: info.ownerName || '',
               email: info.email || '',
@@ -266,6 +329,9 @@ export default function TemplateCustomizePage({
             }
           }
         } catch { /* ignore */ }
+        if (portalData?.customerValues && typeof portalData.customerValues === 'object') {
+          savedValues = portalData.customerValues as Record<string, string>
+        }
 
         const initial: Record<string, string> = {}
         data.fields.forEach((f) => {
@@ -285,39 +351,43 @@ export default function TemplateCustomizePage({
         setError(e.message)
         setLoading(false)
       })
-  }, [params])
+  }, [params, portalSlug])
 
   // Listen for postMessage from iframe
   useEffect(() => {
     function handleMessage(e: MessageEvent) {
+      if (e.source !== iframeRef.current?.contentWindow) return
       if (!e.data || typeof e.data !== 'object') return
 
       if (e.data.type === 'navigatePage') {
-        const page = e.data.page as string
-        if (template?.pages.includes(page)) {
+        const page = e.data.page
+        if (isSafePreviewPage(page) && template?.pages.includes(page)) {
           loadPreview(page)
         }
       }
 
       if (e.data.type === 'imageSwapRequest') {
-        pendingImageSwapSrc.current = e.data.src
-        fileInputRef.current?.click()
+        if (isSafePreviewImageUrl(e.data.src)) {
+          pendingImageSwapSrc.current = e.data.src
+          fileInputRef.current?.click()
+        }
       }
 
       if (e.data.type === 'textEdited') {
+        if (!isSafePreviewText(e.data.original) || !isSafePreviewText(e.data.text)) return
         const page = currentPageRef.current
-        const original = (e.data.original as string) || ''
-        const updated = (e.data.text as string) || ''
+        const original = e.data.original
+        const updated = e.data.text
         const pageEdits = mergeInlineEdit(
           inlineEditsRef.current[page] || [],
           original,
           updated,
+          e.data.id,
         )
         const next = { ...inlineEditsRef.current, [page]: pageEdits }
         setInlineEdits(next)
-        try {
-          sessionStorage.setItem(INLINE_EDITS_KEY, JSON.stringify(next))
-        } catch { /* ignore */ }
+        inlineEditsRef.current = next
+        saveInlineEdits(next, activeCustomizationScopeRef.current)
       }
     }
 
@@ -332,7 +402,7 @@ export default function TemplateCustomizePage({
     if (!file) return
     const page = currentPageRef.current
     const originalSrc = pendingImageSwapSrc.current
-    const owner = getOrCreateImageOwnerId()
+    const owner = getOrCreateImageOwnerId(portalSlug)
     try {
       const { map, url } = await handlePersistentImageUpload(
         file,
@@ -340,6 +410,8 @@ export default function TemplateCustomizePage({
         originalSrc,
         page,
         imageSwapsRef.current,
+        portalSlug ? getStoredPortalToken(portalSlug) || undefined : undefined,
+        activeCustomizationScopeRef.current,
       )
       setImageSwaps(map)
       imageSwapsRef.current = map
@@ -352,7 +424,7 @@ export default function TemplateCustomizePage({
       alert(err instanceof Error ? err.message : 'Image upload failed')
     }
     e.target.value = ''
-  }, [])
+  }, [portalSlug])
 
   // Load preview
   const loadPreview = useCallback(
@@ -363,26 +435,24 @@ export default function TemplateCustomizePage({
         const res = await fetch(`/api/templates/${params.niche}/${params.slug}/preview`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ page, values, colorScheme, fontVariation, structureVariation }),
+          body: JSON.stringify({ page, values, colorScheme, fontVariation, structureVariation, customTheme }),
         })
         if (!res.ok) throw new Error('Failed to load preview')
         const data = await res.json()
 
-        let html = data.html as string
+        let html = sanitizeTemplatePreviewHtml(data.html as string)
         const assetBase = `/api/templates/${params.niche}/${params.slug}/assets`
 
-        // Rewrite relative href/src paths to use asset API (skip .html links)
-        html = html.replace(
-          /(href|src)="(?!https?:\/\/|\/\/|data:|mailto:|tel:|#)([^"]+)"/g,
-          (match, attr, path) => {
-            if (path.endsWith('.html')) return match
-            return `${attr}="${assetBase}/${path}"`
-          }
-        )
+        html = rewriteTemplateAssetReferences(html, assetBase, page)
 
         // Inject CSS if available
         if (data.css) {
-          html = html.replace('</head>', `<style>${data.css}</style></head>`)
+          const rewrittenCss = rewriteTemplateAssetReferences(
+            data.css,
+            assetBase,
+            'assets/css/styles.css',
+          )
+          html = html.replace('</head>', `<style>${rewrittenCss}</style></head>`)
         }
 
         // Inject variation CSS overrides (must come after base CSS)
@@ -401,7 +471,7 @@ export default function TemplateCustomizePage({
 
         // Re-apply any inline text edits the user made (they aren't part of
         // the server hydration, which only fills {{TOKENS}}).
-        html = applyInlineEditsToHtml(html, inlineEditsRef.current[page])
+        html = applyInlineEditsToHtml(html, inlineEditsRef.current[page], page)
         html = applyImageSwapsToHtml(html, imageSwapsRef.current[page])
 
         // Inject interaction scripts before </body>
@@ -415,14 +485,15 @@ export default function TemplateCustomizePage({
         setPreviewLoading(false)
       }
     },
-    [params, template, values, colorScheme, fontVariation, structureVariation]
+    [params, template, values, colorScheme, fontVariation, structureVariation, customTheme]
   )
 
   const handleGeneratePreview = () => {
     // Persist customer values so they survive navigation to pricing page
     try {
       sessionStorage.setItem('pb_template_values', JSON.stringify(values))
-      saveImageSwaps(imageSwapsRef.current)
+      saveImageSwaps(imageSwapsRef.current, activeCustomizationScopeRef.current)
+      if (!portalSlug) sessionStorage.removeItem(CUSTOM_THEME_STORAGE_KEY)
     } catch { /* ignore */ }
     setStep('preview')
     loadPreview('index.html')
@@ -447,6 +518,10 @@ export default function TemplateCustomizePage({
           customerValues: values,
           inlineEdits,
           imageSwaps: imageSwapsRef.current,
+          colorScheme,
+          fontVariation,
+          structureVariation,
+          customTheme,
         }),
       })
       const data = await res.json()
@@ -455,7 +530,7 @@ export default function TemplateCustomizePage({
     } catch {
       setPublishStatus('error')
     }
-  }, [portalSlug, values, inlineEdits])
+  }, [portalSlug, values, inlineEdits, colorScheme, fontVariation, structureVariation, customTheme])
 
   if (loading || !params) {
     return (
@@ -538,11 +613,20 @@ export default function TemplateCustomizePage({
             editMode={editMode}
             setEditMode={setEditMode}
             colorScheme={colorScheme}
-            setColorScheme={setColorScheme}
+            setColorScheme={(value) => {
+              setCustomTheme(null)
+              setColorScheme(value)
+            }}
             fontVariation={fontVariation}
-            setFontVariation={setFontVariation}
+            setFontVariation={(value) => {
+              setCustomTheme(null)
+              setFontVariation(value)
+            }}
             structureVariation={structureVariation}
-            setStructureVariation={setStructureVariation}
+            setStructureVariation={(value) => {
+              setCustomTheme(null)
+              setStructureVariation(value)
+            }}
             variationOptions={variationOptions}
             onReloadPreview={() => loadPreview(currentPage)}
             portalSlug={portalSlug}
@@ -976,7 +1060,7 @@ function PreviewStep({
           </span>
           <h1 className="text-3xl font-bold text-white">{template.name}</h1>
           <p className="text-slate-400">
-            Your business info has been populated into every page.
+            Supported business fields have been populated across the template pages.
             <span className="text-blue-300 ml-1">Double-click text to edit &bull; Click images to swap</span>
           </p>
         </div>
@@ -1002,7 +1086,7 @@ function PreviewStep({
             </button>
           )}
           <Link
-            href={`/pricing?template=${template.slug}&niche=${niche}&color=${colorScheme}&font=${fontVariation}&structure=${structureVariation}`}
+            href={`/pricing?template=${encodeURIComponent(template.slug)}&niche=${encodeURIComponent(niche)}&color=${encodeURIComponent(colorScheme)}&font=${encodeURIComponent(fontVariation)}&structure=${encodeURIComponent(structureVariation)}`}
             className={`px-6 py-3 text-sm font-bold rounded-lg transition-all duration-300 text-white bg-gradient-to-r shadow-lg hover:shadow-xl hover:scale-105 border ${colors.btn}`}
             style={{ boxShadow: `0 0 20px ${colors.glow}` }}
           >
@@ -1011,7 +1095,10 @@ function PreviewStep({
         </div>
       </div>
 
-      <CustomerImageLibrary owner={portalSlug || undefined} />
+      <CustomerImageLibrary
+        owner={portalSlug || undefined}
+        portalToken={portalSlug ? getStoredPortalToken(portalSlug) || undefined : undefined}
+      />
 
       {/* ═══════ Variation Switcher Bar ═══════ */}
       {variationOptions && (
@@ -1164,7 +1251,8 @@ function PreviewStep({
             srcDoc={previewHtml}
             className="w-full bg-white"
             style={{ height: 'min(85vh, 1200px)', minHeight: '70vh' }}
-            sandbox="allow-same-origin allow-scripts"
+            sandbox="allow-scripts"
+            referrerPolicy="no-referrer"
             title="Template preview"
           />
         ) : (
@@ -1199,7 +1287,7 @@ function PreviewStep({
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
-            href={`/pricing?template=${template.slug}&niche=${niche}`}
+            href={`/pricing?template=${encodeURIComponent(template.slug)}&niche=${encodeURIComponent(niche)}&color=${encodeURIComponent(colorScheme)}&font=${encodeURIComponent(fontVariation)}&structure=${encodeURIComponent(structureVariation)}`}
             className={`px-8 py-4 text-lg font-bold rounded-lg transition-all duration-300 text-white bg-gradient-to-r shadow-lg hover:shadow-xl hover:scale-105 border ${colors.btn}`}
             style={{ boxShadow: `0 0 30px ${colors.glow}` }}
           >

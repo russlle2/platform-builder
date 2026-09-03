@@ -40,7 +40,10 @@ function getSupabase() {
 }
 
 function escapeCsvField(value: string | null | undefined): string {
-  const s = value ?? ''
+  const raw = value ?? ''
+  // Spreadsheet applications can execute cells beginning with these symbols.
+  // Prefix untrusted values with an apostrophe so CSV exports remain inert.
+  const s = /^[\t\r ]*[=+\-@]/.test(raw) ? `'${raw}` : raw
   if (s.includes(',') || s.includes('"') || s.includes('\n') || s.includes('\r')) {
     return `"${s.replace(/"/g, '""')}"`
   }

@@ -1,7 +1,18 @@
 packages:
   - "apps/*"
   - "packages/*"
+# Keep dependency paths comfortably below Windows' legacy path limits, even
+# when this workspace is checked out in a deep worktree.
+virtualStoreDirMaxLength: 40
 allowBuilds:
+  esbuild: true
   sharp: true
   unrs-resolver: true
-
+overrides:
+  "nanoid@<3.3.18": 3.3.18
+  "postcss@<8.5.23": 8.5.28
+  "sharp@<0.35.0": 0.35.4
+# Security patch intentionally exempted from the workspace's global release-age
+# delay after review of the upstream advisory and a full local validation pass.
+minimumReleaseAgeExclude:
+  - postcss@8.5.28

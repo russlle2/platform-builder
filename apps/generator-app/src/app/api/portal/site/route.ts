@@ -3,10 +3,16 @@ import { createClient } from '@supabase/supabase-js'
 import path from 'path'
 import { mkdir, readFile, writeFile } from 'fs/promises'
 import { existsSync } from 'fs'
-import { buildDeployFiles, type InlineTextEdit } from '@/lib/site-deploy'
-import type { ImageSwap } from '@/lib/image-swaps'
+import {
+  buildDeployFiles,
+  sanitizeCustomerValues,
+  sanitizeInlineEditMap,
+  type InlineTextEdit,
+} from '@/lib/site-deploy'
+import { sanitizeImageSwapMap, type ImageSwap } from '@/lib/image-swaps'
 import { deploySiteFiles } from '@/lib/netlify'
 import { requireInternalAdminOrThrow } from '@/lib/server-auth'
+import type { CustomTheme } from '@/lib/custom-theme'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -17,6 +23,7 @@ interface SiteData {
   colorScheme?: string
   fontVariation?: string
   structureVariation?: string
+  customTheme?: CustomTheme | null
   customerValues?: Record<string, string>
   inlineEdits?: Record<string, InlineTextEdit[]>
   imageSwaps?: Record<string, ImageSwap[]>
@@ -105,7 +112,7 @@ export async function GET(req: NextRequest) {
  */
 async function republishSite(slug: string, data: SiteData): Promise<boolean> {
   const siteId = data.netlify_site_id
-  if (!process.env.NETLIFY_ACCESS_TOKEN || !siteId || !data.niche || !data.template) {
+  if (!process.env.NETLIFY_ACCESS_TOKEN || !siteId || !data.site_url || !data.niche || !data.template) {
     return false
   }
   const deployFiles = await buildDeployFiles({
@@ -115,9 +122,11 @@ async function republishSite(slug: string, data: SiteData): Promise<boolean> {
     colorScheme: data.colorScheme,
     fontVariation: data.fontVariation,
     structureVariation: data.structureVariation,
+    customTheme: data.customTheme,
     inlineEdits: data.inlineEdits,
     imageSwaps: data.imageSwaps,
     slug,
+    siteUrl: data.site_url,
   })
   if (!deployFiles) return false
   await deploySiteFiles(siteId, deployFiles)
@@ -137,12 +146,13 @@ export async function POST(req: NextRequest) {
   // Incoming edits: a partial customerValues map (canonical {{TOKEN}} keys) and
   // optional inline text edits. We merge them onto the existing stored config
   // so we never clobber niche/template/variation/hosting info.
-  const incomingValues: Record<string, string> =
-    body.customerValues && typeof body.customerValues === 'object' ? body.customerValues : {}
-  const incomingInlineEdits: Record<string, InlineTextEdit[]> | undefined =
-    body.inlineEdits && typeof body.inlineEdits === 'object' ? body.inlineEdits : undefined
-  const incomingImageSwaps: Record<string, ImageSwap[]> | undefined =
-    body.imageSwaps && typeof body.imageSwaps === 'object' ? body.imageSwaps : undefined
+  const incomingValues = sanitizeCustomerValues(body.customerValues)
+  const incomingInlineEdits = body.inlineEdits === undefined
+    ? undefined
+    : sanitizeInlineEditMap(body.inlineEdits)
+  const incomingImageSwaps = body.imageSwaps === undefined
+    ? undefined
+    : sanitizeImageSwapMap(body.imageSwaps)
 
   const supabase = getSupabase()
 

@@ -22,7 +22,7 @@ export function NicheExampleGallery({ niche, nicheLabel, headingClass = 'text-cy
           A few looks {nicheLabel} practices launch with
         </h2>
         <p className="text-slate-300 text-lg">
-          Static previews only — tap any style to start with your business details. Every layout
+          Static previews only — tap any style to start with your business details. Available layouts
           fills in with your real info before you browse.
         </p>
       </div>

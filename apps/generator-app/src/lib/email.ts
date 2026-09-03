@@ -66,6 +66,7 @@ export async function sendEmail(options: SendEmailOptions): Promise<PostmarkResp
       'X-Postmark-Server-Token': token,
     },
     body: JSON.stringify(body),
+    signal: AbortSignal.timeout(10_000),
   })
 
   const data: PostmarkResponse = await response.json()
@@ -93,7 +94,7 @@ export async function sendOrderConfirmationEmail(
     'https://dailyclarity.org'
   const baseClean = base.replace(/\/$/, '')
   const portalUrl = portalAccessToken
-    ? `${baseClean}/portal?slug=${encodeURIComponent(slug)}&token=${encodeURIComponent(portalAccessToken)}`
+    ? `${baseClean}/portal?slug=${encodeURIComponent(slug)}#token=${encodeURIComponent(portalAccessToken)}`
     : `${baseClean}/portal?slug=${encodeURIComponent(slug)}`
   const nicheLabel = niche ? ` ${escapeHtml(niche)}` : ''
 
@@ -213,7 +214,7 @@ export async function sendWebsiteLiveEmail(
     'https://dailyclarity.org'
   const baseClean = base.replace(/\/$/, '')
   const portalUrl = portalAccessToken
-    ? `${baseClean}/portal?slug=${encodeURIComponent(slug)}&token=${encodeURIComponent(portalAccessToken)}`
+    ? `${baseClean}/portal?slug=${encodeURIComponent(slug)}#token=${encodeURIComponent(portalAccessToken)}`
     : `${baseClean}/portal?slug=${encodeURIComponent(slug)}`
   const platformDomain =
     process.env.PLATFORM_DOMAIN ||

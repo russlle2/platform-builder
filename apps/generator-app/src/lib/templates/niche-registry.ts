@@ -2,6 +2,8 @@ import fs from 'fs'
 import path from 'path'
 import { getStore } from '@netlify/blobs'
 import { NICHE_META, NICHE_SLUGS, getNicheSlugs } from './niche-meta'
+import { inspectLaunchCatalog } from './launch-catalog-integrity'
+export { hydrateTemplate } from './template-hydration'
 
 export { NICHE_META, NICHE_SLUGS, getNicheSlugs }
 
@@ -31,6 +33,8 @@ export interface TemplateMeta {
   /** Showcase card order on niche landing (lower = earlier) */
   showcaseOrder?: number
   pages: string[]
+  /** Complete deployable file list relative to this template directory. */
+  files: string[]
   /**
    * Path to the template's directory RELATIVE to the templates root
    * (e.g. `"aromatherapy/aromatherapy-2026-02-16T14-59-46-083Z-001"`).
@@ -40,8 +44,14 @@ export interface TemplateMeta {
   fields: TemplateField[]
   /** First 160 chars of visible text from index.html (for card preview) */
   snippet: string
+  /** Set only by the audited publisher after the full editability contract passes. */
+  editable?: boolean
+  validation?: {
+    status: 'passed'
+    contractVersion: number
+    tokens: string[]
+  }
 }
-
 export interface NicheInfo {
   slug: string
   label: string
@@ -85,14 +95,14 @@ function getFsRoot(): string | null {
 }
 
 /** Base URL used to fetch template assets at runtime as a last resort. */
-function templateBaseUrl(): string {
-  return (
+function templateBaseUrl(): string | null {
+  const configured = (
     process.env.NEXT_PUBLIC_BASE_URL ||
     process.env.URL ||
     process.env.DEPLOY_PRIME_URL ||
-    process.env.DEPLOY_URL ||
-    `http://localhost:${process.env.PORT || 3000}`
+    process.env.DEPLOY_URL
   )
+  return configured ? configured.replace(/\/$/, '') : null
 }
 
 /** Obtain a Netlify Blobs store, or null if the env is not configured. */
@@ -103,18 +113,21 @@ function getBlobsStore() {
     return null
   }
 }
-
 /* ------------------------------------------------------------------ */
 /* Manifest loading                                                    */
 /* ------------------------------------------------------------------ */
 
 const MANIFEST_RELATIVE = '_manifest.json'
+const MANIFEST_CACHE_TTL_MS = 5 * 60 * 1000
+const EMPTY_MANIFEST_CACHE_TTL_MS = 5 * 1000
 
 let _manifestPromise: Promise<ManifestShape> | null = null
+let _manifestExpiresAt = 0
 
 function loadManifest(): Promise<ManifestShape> {
-  if (_manifestPromise) return _manifestPromise
-  _manifestPromise = (async () => {
+  if (_manifestPromise && Date.now() < _manifestExpiresAt) return _manifestPromise
+
+  const request = (async () => {
     // 1. Filesystem (local dev / build)
     const fsRoot = getFsRoot()
     if (fsRoot) {
@@ -142,7 +155,9 @@ function loadManifest(): Promise<ManifestShape> {
 
     // 3. HTTP fallback (last resort)
     try {
-      const url = `${templateBaseUrl()}/_templates/${MANIFEST_RELATIVE}`
+      const baseUrl = templateBaseUrl()
+      if (!baseUrl) return {}
+      const url = `${baseUrl}/_templates/${MANIFEST_RELATIVE}`
       const res = await fetch(url)
       if (res.ok) {
         return (await res.json()) as ManifestShape
@@ -154,18 +169,106 @@ function loadManifest(): Promise<ManifestShape> {
 
     return {}
   })()
-  // Allow retry on next call if the load throws.
-  _manifestPromise.catch(() => { _manifestPromise = null })
-  return _manifestPromise
+
+  _manifestPromise = request
+  // Keep concurrent callers on one request, but retry quickly after a missing
+  // manifest and periodically refresh healthy Blob-backed catalogs.
+  _manifestExpiresAt = Number.POSITIVE_INFINITY
+  request.then(
+    (manifest) => {
+      if (_manifestPromise !== request) return
+      _manifestExpiresAt = Date.now() + (
+        Object.keys(manifest).length > 0
+          ? MANIFEST_CACHE_TTL_MS
+          : EMPTY_MANIFEST_CACHE_TTL_MS
+      )
+    },
+    () => {
+      if (_manifestPromise === request) {
+        _manifestPromise = null
+        _manifestExpiresAt = 0
+      }
+    },
+  )
+  return request
 }
 
 async function getCache(): Promise<Map<string, TemplateMeta[]>> {
   const manifest = await loadManifest()
   const out = new Map<string, TemplateMeta[]>()
   for (const nicheSlug of Object.keys(NICHE_META)) {
-    out.set(nicheSlug, manifest[nicheSlug] || [])
+    const templates = manifest[nicheSlug] || []
+    const publishable = templates.filter(isPublishableTemplateMeta)
+    if (publishable.length !== templates.length) {
+      console.warn(
+        `[niche-registry] quarantined ${templates.length - publishable.length} ` +
+        `unvalidated template(s) in ${nicheSlug}`,
+      )
+    }
+    out.set(nicheSlug, publishable)
+  }
+
+  const integrity = inspectLaunchCatalog(
+    [...out.entries()].map(([slug, templates]) => ({
+      slug,
+      templateCount: templates.length,
+    })),
+  )
+  if (!integrity.ready) {
+    console.error(
+      `[niche-registry] launch catalog integrity failed; disabling the catalog: ${integrity.issues.join('; ')}`,
+    )
+    for (const nicheSlug of Object.keys(NICHE_META)) out.set(nicheSlug, [])
   }
   return out
+}
+/**
+ * Fail-closed catalog boundary. Only manifests emitted by the audited uploader
+ * can make a template visible to preview or checkout.
+ */
+export function isPublishableTemplateMeta(value: unknown): value is TemplateMeta {
+  if (!value || typeof value !== 'object') return false
+  const template = value as Partial<TemplateMeta>
+  const validation = template.validation
+  if (
+    template.editable !== true ||
+    validation?.status !== 'passed' ||
+    validation.contractVersion !== 2 ||
+    !Array.isArray(validation.tokens) ||
+    validation.tokens.length === 0
+  ) {
+    return false
+  }
+  if (
+    typeof template.slug !== 'string' ||
+    !/^[A-Za-z0-9_-][A-Za-z0-9._-]*$/.test(template.slug) ||
+    typeof template.nicheSlug !== 'string' ||
+    typeof template.dir !== 'string' ||
+    !safeTemplateKey(template.dir) ||
+    !Array.isArray(template.pages) ||
+    template.pages.length === 0 ||
+    !template.pages.every((page) => typeof page === 'string' && Boolean(safeTemplateKey(page))) ||
+    !Array.isArray(template.files) ||
+    !template.files.every((file) => typeof file === 'string' && Boolean(safeTemplateKey(file))) ||
+    !template.pages.every((page) => template.files!.includes(page)) ||
+    !Array.isArray(template.fields)
+  ) {
+    return false
+  }
+
+  const tokens = new Set(validation.tokens)
+  if (
+    tokens.size !== validation.tokens.length ||
+    validation.tokens.some((token) => !/^[A-Z0-9_]+$/.test(token))
+  ) {
+    return false
+  }
+  const fields = new Set(
+    template.fields
+      .map((field) => typeof field?.name === 'string' ? field.name.trim().toUpperCase() : '')
+      .filter(Boolean),
+  )
+  return fields.size === tokens.size && [...tokens].every((token) => fields.has(token))
 }
 
 /* ------------------------------------------------------------------ */
@@ -211,10 +314,23 @@ export async function getTemplate(nicheSlug: string, templateSlug: string): Prom
 /* ------------------------------------------------------------------ */
 
 function safeJoin(root: string, ...parts: string[]): string | null {
-  const full = path.join(root, ...parts)
-  const normRoot = path.resolve(root) + path.sep
-  if (!path.resolve(full).startsWith(normRoot.slice(0, -1))) return null
-  return full
+  const resolvedRoot = path.resolve(root)
+  const resolvedPath = path.resolve(root, ...parts)
+  const relative = path.relative(resolvedRoot, resolvedPath)
+  if (relative.startsWith('..') || path.isAbsolute(relative)) return null
+  return resolvedPath
+}
+
+function safeTemplateKey(...parts: string[]): string | null {
+  const combined = parts.join('/')
+  if (!combined || combined.startsWith('/') || combined.includes('\\') || /[\0-\x1f]/.test(combined)) {
+    return null
+  }
+  const segments = combined.split('/')
+  if (segments.some((segment) => !segment || segment === '.' || segment === '..')) {
+    return null
+  }
+  return segments.join('/')
 }
 
 /**
@@ -228,11 +344,13 @@ export async function readTemplateFile(
 ): Promise<string | null> {
   const template = await getTemplate(nicheSlug, templateSlug)
   if (!template) return null
+  const templateKey = safeTemplateKey(template.dir, filePath)
+  if (!templateKey) return null
 
   // 1. Filesystem (local dev / build)
   const fsRoot = getFsRoot()
   if (fsRoot) {
-    const fullPath = safeJoin(fsRoot, template.dir, filePath)
+    const fullPath = safeJoin(fsRoot, ...templateKey.split('/'))
     if (fullPath) {
       try {
         if (fs.existsSync(fullPath)) {
@@ -246,14 +364,17 @@ export async function readTemplateFile(
   try {
     const store = getBlobsStore()
     if (store) {
-      const text = await store.get(`${template.dir}/${filePath}`)
+      const text = await store.get(templateKey)
       if (text !== null) return text
     }
   } catch { /* fall through */ }
 
   // 3. HTTP fallback (last resort)
   try {
-    const url = `${templateBaseUrl()}/_templates/${template.dir}/${filePath}`
+    const baseUrl = templateBaseUrl()
+    if (!baseUrl) return null
+    const encodedKey = templateKey.split('/').map(encodeURIComponent).join('/')
+    const url = `${baseUrl}/_templates/${encodedKey}`
     const res = await fetch(url)
     if (!res.ok) return null
     return await res.text()
@@ -261,7 +382,6 @@ export async function readTemplateFile(
     return null
   }
 }
-
 /**
  * Read a template asset as raw bytes. Resolution order: filesystem → Netlify Blobs → HTTP.
  */
@@ -272,11 +392,13 @@ export async function readTemplateFileBuffer(
 ): Promise<Buffer | null> {
   const template = await getTemplate(nicheSlug, templateSlug)
   if (!template) return null
+  const templateKey = safeTemplateKey(template.dir, filePath)
+  if (!templateKey) return null
 
   // 1. Filesystem (local dev / build)
   const fsRoot = getFsRoot()
   if (fsRoot) {
-    const fullPath = safeJoin(fsRoot, template.dir, filePath)
+    const fullPath = safeJoin(fsRoot, ...templateKey.split('/'))
     if (fullPath) {
       try {
         if (fs.existsSync(fullPath)) {
@@ -290,14 +412,17 @@ export async function readTemplateFileBuffer(
   try {
     const store = getBlobsStore()
     if (store) {
-      const buf = await store.get(`${template.dir}/${filePath}`, { type: 'arrayBuffer' })
+      const buf = await store.get(templateKey, { type: 'arrayBuffer' })
       if (buf !== null) return Buffer.from(buf)
     }
   } catch { /* fall through */ }
 
   // 3. HTTP fallback (last resort)
   try {
-    const url = `${templateBaseUrl()}/_templates/${template.dir}/${filePath}`
+    const baseUrl = templateBaseUrl()
+    if (!baseUrl) return null
+    const encodedKey = templateKey.split('/').map(encodeURIComponent).join('/')
+    const url = `${baseUrl}/_templates/${encodedKey}`
     const res = await fetch(url)
     if (!res.ok) return null
     const arr = await res.arrayBuffer()
@@ -305,15 +430,4 @@ export async function readTemplateFileBuffer(
   } catch {
     return null
   }
-}
-
-/** Replace all {{PLACEHOLDER}} tokens with provided values */
-export function hydrateTemplate(html: string, values: Record<string, string>): string {
-  let result = html
-  for (const [key, value] of Object.entries(values)) {
-    const regex = new RegExp(`\\{\\{${key}\\}\\}`, 'g')
-    result = result.replace(regex, value)
-  }
-  result = result.replace(/\{\{[A-Z_]+\}\}/g, '')
-  return result
 }

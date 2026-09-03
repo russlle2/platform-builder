@@ -1,42 +1,78 @@
-name: Upload templates to Netlify Blobs
+name: Validate or publish curated templates
 
 on:
   workflow_dispatch:
     inputs:
-      force:
-        description: 'Force re-upload all files (skip idempotency)'
+      publish:
+        description: 'Publish the validated catalog to Netlify Blobs'
         required: false
-        default: 'false'
+        default: false
+        type: boolean
+      force:
+        description: 'Overwrite existing Blob objects (use only for an intentional replacement)'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dailyclarity-template-catalog
+  cancel-in-progress: false
 
 jobs:
-  upload:
+  curated-catalog:
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - uses: actions/checkout@v4
-        # platform-builder/ is still in the repo index at the time this workflow
-        # is first run (before the git rm --cached cleanup commit). After the
-        # cleanup commit, this workflow will need to fetch templates from LFS or
-        # an alternate source — but for the initial upload, the files are present.
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
+          cache: 'pnpm'
 
-      - name: Enable pnpm via corepack
-        run: corepack enable
+      - name: Install the repository pnpm version
+        run: |
+          corepack enable
+          corepack install
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Upload templates
-        working-directory: apps/generator-app
+      - name: Test the factory and publication contract
         run: |
-          ARGS=""
-          if [ "${{ github.event.inputs.force }}" = "true" ]; then
-            ARGS="--force"
+          pnpm --filter @platform/template-factory test
+          node apps/generator-app/scripts/upload-templates-to-blobs.test.mjs
+
+      - name: Export the deterministic launch catalog
+        run: >-
+          pnpm --filter @platform/template-factory export:curated --
+          --output "$RUNNER_TEMP/dailyclarity-curated"
+
+      - name: Validate the exact upload plan without credentials or writes
+        run: >-
+          node apps/generator-app/scripts/upload-templates-to-blobs.mjs
+          --dry-run
+          --root "$RUNNER_TEMP/dailyclarity-curated"
+
+      - name: Preserve the signed catalog report
+        uses: actions/upload-artifact@v4
+        with:
+          name: dailyclarity-curated-report
+          path: ${{ runner.temp }}/dailyclarity-curated/curated-report.json
+          if-no-files-found: error
+
+      - name: Publish the reviewed catalog
+        if: ${{ inputs.publish }}
+        shell: bash
+        run: |
+          args=(--root "$RUNNER_TEMP/dailyclarity-curated")
+          if [[ "${{ inputs.force }}" == "true" ]]; then
+            args+=(--force)
           fi
-          node scripts/upload-templates-to-blobs.mjs $ARGS
+          node apps/generator-app/scripts/upload-templates-to-blobs.mjs "${args[@]}"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}

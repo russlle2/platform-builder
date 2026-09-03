@@ -5,8 +5,11 @@ import { getTemplate } from '@/lib/templates/niche-registry'
 import { buildDeployFiles, type InlineTextEdit } from '@/lib/site-deploy'
 import type { ImageSwap } from '@/lib/image-swaps'
 import { migrateImagesToSiteSlug, rewriteImageSwapUrls } from '@/lib/customer-images'
-import { createPortalAccessCredentials } from '@/lib/portal-auth'
+import { buildPortalMagicLink, createPortalAccessCredentials } from '@/lib/portal-auth'
 import { sendOrderConfirmationEmail } from '@/lib/email'
+import { sanitizeCustomTheme, type CustomTheme } from '@/lib/custom-theme'
+import { isDraftImageOwner } from '@/lib/image-owner'
+import { validateCheckoutImageSession } from '@/lib/checkout-image-session'
 
 /**
  * POST /api/test-purchase
@@ -60,6 +63,7 @@ export async function POST(req: Request) {
     inlineEdits = {},
     imageSwaps = {},
     imageOwner = '',
+    customTheme = null,
   } = body as {
     slug?: string
     template?: string
@@ -72,6 +76,7 @@ export async function POST(req: Request) {
     inlineEdits?: Record<string, InlineTextEdit[]>
     imageSwaps?: Record<string, ImageSwap[]>
     imageOwner?: string
+    customTheme?: CustomTheme | null
   }
 
   if (!slug) {
@@ -87,15 +92,39 @@ export async function POST(req: Request) {
   const log: string[] = []
   let siteUrl = ''
   let siteId = ''
+  let deploymentSucceeded = false
+  let deploymentError: string | null = null
   let resolvedImageSwaps = imageSwaps as Record<string, ImageSwap[]>
   const portalCredentials = createPortalAccessCredentials()
 
-  if (imageOwner && imageOwner.startsWith('draft-')) {
+  const imageSession = validateCheckoutImageSession(
+    resolvedImageSwaps,
+    isDraftImageOwner(imageOwner) ? imageOwner : null,
+  )
+  if (!imageSession.ok) {
+    return NextResponse.json(
+      { error: imageSession.error, code: imageSession.code },
+      { status: 409 },
+    )
+  }
+  if (imageSession.draftImageUrls.length > 0) {
     try {
-      await migrateImagesToSiteSlug(imageOwner, normalizedSlug)
-      resolvedImageSwaps = rewriteImageSwapUrls(resolvedImageSwaps, imageOwner, normalizedSlug)
-    } catch {
-      /* non-fatal */
+      await migrateImagesToSiteSlug(
+        imageSession.imageOwner,
+        normalizedSlug,
+        imageSession.draftImageUrls,
+      )
+      resolvedImageSwaps = rewriteImageSwapUrls(
+        resolvedImageSwaps,
+        imageSession.imageOwner,
+        normalizedSlug,
+      )
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Image migration failed.'
+      return NextResponse.json(
+        { error: `Test purchase image migration failed: ${message}` },
+        { status: 502 },
+      )
     }
   }
 
@@ -137,17 +166,23 @@ export async function POST(req: Request) {
             inlineEdits,
             imageSwaps: resolvedImageSwaps,
             slug: normalizedSlug,
+            siteUrl,
+            customTheme: sanitizeCustomTheme(customTheme),
           })
           if (deployFiles) {
             const deploy = await deploySiteFiles(siteId, deployFiles)
+            deploymentSucceeded = true
             log.push(`Template deployed: ${Object.keys(deployFiles).length} files (deploy ${deploy.deployId})`)
           } else {
+            deploymentError = `Template "${templateSlug}" was not found in niche "${niche}".`
             log.push(`Template "${templateSlug}" not found in niche "${niche}" — site created but empty`)
           }
         } catch (deployErr) {
+          deploymentError = deployErr instanceof Error ? deployErr.message : String(deployErr)
           log.push(`Template deploy failed: ${deployErr}`)
         }
       } else {
+        deploymentError = 'Template and niche are required for deployment.'
         log.push('No template/niche specified — site created but empty')
       }
 
@@ -160,7 +195,7 @@ export async function POST(req: Request) {
         await supabase
           .from('site_slugs')
           .update({
-            status: 'provisioned',
+            status: deploymentSucceeded ? 'provisioned' : 'failed',
             netlify_site_id: siteId,
             site_url: siteUrl,
           })
@@ -170,14 +205,16 @@ export async function POST(req: Request) {
           .from('portal_sites')
           .upsert({
             slug: normalizedSlug,
-            status: 'active',
+            status: deploymentSucceeded ? 'active' : 'provisioning_failed',
             portal_token_hash: portalCredentials?.hash ?? null,
+            owner_email: customerValues.EMAIL?.trim().toLowerCase() || null,
             data: {
               niche,
               template: templateSlug,
               colorScheme,
               fontVariation,
               structureVariation,
+              customTheme: sanitizeCustomTheme(customTheme),
               customerValues,
               inlineEdits,
               imageSwaps: resolvedImageSwaps,
@@ -187,6 +224,7 @@ export async function POST(req: Request) {
               site_url: siteUrl,
               plan: planKey,
               test_purchase: true,
+              ...(deploymentError ? { provisioning_error: deploymentError } : {}),
             },
           }, { onConflict: 'slug' })
 
@@ -194,7 +232,7 @@ export async function POST(req: Request) {
 
         const customerEmail = customerValues.EMAIL || ''
         const businessName = customerValues.BUSINESS_NAME || normalizedSlug
-        if (customerEmail) {
+        if (customerEmail && deploymentSucceeded) {
           await sendOrderConfirmationEmail(customerEmail, businessName, normalizedSlug, portalCredentials?.token, niche).catch((err) =>
             console.error('[test-purchase] order confirmation email failed:', err),
           )
@@ -202,6 +240,7 @@ export async function POST(req: Request) {
         }
       }
     } catch (err) {
+      deploymentError = err instanceof Error ? err.message : String(err)
       log.push(`Netlify provisioning failed: ${err}`)
     }
   } else {
@@ -223,15 +262,22 @@ export async function POST(req: Request) {
     }
   }
 
-  return NextResponse.json({
-    success: true,
+  const responseBody = {
+    success: process.env.NETLIFY_ACCESS_TOKEN ? deploymentSucceeded : true,
     slug: normalizedSlug,
     siteUrl: siteUrl || null,
     siteId: siteId || null,
     portalAccessToken: portalCredentials?.token ?? null,
     portalUrl: portalCredentials
-      ? `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/portal?slug=${encodeURIComponent(normalizedSlug)}&token=${encodeURIComponent(portalCredentials.token)}`
+      ? buildPortalMagicLink(normalizedSlug, portalCredentials.token)
       : null,
     log,
-  })
+  }
+  if (process.env.NETLIFY_ACCESS_TOKEN && !deploymentSucceeded) {
+    return NextResponse.json(
+      { ...responseBody, error: 'Test purchase provisioning did not complete successfully.' },
+      { status: 502 },
+    )
+  }
+  return NextResponse.json(responseBody)
 }

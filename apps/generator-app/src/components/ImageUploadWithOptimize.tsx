@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useState } from 'react'
 import Image from 'next/image'
+import { getOrCreateImageOwnerId, uploadCustomerImageFile } from '@/lib/image-swaps'
 
 interface ImageUploadProps {
   onUpload: (url: string) => void
@@ -39,23 +40,9 @@ export function ImageUploadWithOptimize({ onUpload, currentImage }: ImageUploadP
     setError(null)
 
     try {
-      const formData = new FormData()
-      formData.append('file', file)
-      formData.append('optimize', optimizeEnabled.toString())
-
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      })
-
-      const data = await response.json()
-
-      if (response.ok) {
-        onUpload(data.url)
-        setPreview(data.url)
-      } else {
-        setError(data.error || 'Image upload failed. Please check your Supabase configuration.')
-      }
+      const uploaded = await uploadCustomerImageFile(file, getOrCreateImageOwnerId())
+      onUpload(uploaded.url)
+      setPreview(uploaded.url)
     } catch (err) {
       setError('Image upload failed. Please check your Supabase configuration.')
     } finally {
@@ -126,7 +113,7 @@ export function ImageUploadWithOptimize({ onUpload, currentImage }: ImageUploadP
                 Drop image here or click to browse
               </p>
               <p className="text-sm text-gray-400">
-                PNG, JPG, GIF up to 10MB
+                PNG, JPG, GIF, WebP, or AVIF up to 4MB
               </p>
             </div>
           )}
